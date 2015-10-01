@@ -6,7 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.apache.commons.lang3.text.WordUtils;
+//import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 public class TradeTableModel
 extends AbstractTableModel
@@ -160,13 +161,13 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		if (columnIndex == 0) {
 			// 2014-11-17 Capitalized Resource Names
 			Object result =  goodsList.get(rowIndex).getName();
-			return WordUtils.capitalize(result.toString());
+			return Conversion.capitalize(result.toString());
 		}
 
 		else if (columnIndex == 1) {
 			// 2014-11-17 Capitalized Category Names
 			Object result = getGoodCategoryName(goodsList.get(rowIndex));
-			return WordUtils.capitalize(result.toString());
+			return Conversion.capitalize(result.toString());
 		}
 
 		else {

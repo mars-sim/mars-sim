@@ -42,7 +42,6 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -59,6 +58,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 //import de.matthiasmann.twl.GUI;
 //import de.matthiasmann.twl.demo.test.TestUtils;
@@ -214,7 +214,7 @@ implements Serializable, MouseListener {
                         double mass0, mass1;
                         double water, PAR;
                         String cropName, cat;
-                        cropName = WordUtils.capitalize(crop.getCropType().getName());
+                        cropName = Conversion.capitalize(crop.getCropType().getName());
                         cat = crop.getCropType().getCropCategory();
                     	mass0 = crop.getCropType().getEdibleBiomass();
                     	water = 100 * crop.getCropType().getEdibleWaterContent();
@@ -708,7 +708,7 @@ implements Serializable, MouseListener {
 				else if (condition > ((double) 1 / (double) 3)) return yellowDot;
 				else return redDot;
 			}
-			else if (column == 1) return WordUtils.capitalize(crop.getCropType().getName());
+			else if (column == 1) return Conversion.capitalize(crop.getCropType().getName());
 			else if (column == 2) return phase;
 			else if (column == 3) {
 				int growth = 0;

@@ -16,13 +16,13 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /** TODO externalize strings */
 public class SupplyTableModel
@@ -77,7 +77,7 @@ extends AbstractTableModel {
 		populateSupplyTypeList(VEHICLE, resupply.getNewVehicles());
 
 		// Populate equipment.
-		List<String> sortEquipment = 
+		List<String> sortEquipment =
 				new ArrayList<String>(resupply.getNewEquipment().keySet());
 		Collections.sort(sortEquipment);
 		Iterator<String> i = sortEquipment.iterator();
@@ -89,20 +89,20 @@ extends AbstractTableModel {
 		}
 
 		// Populate resources.
-		List<AmountResource> sortResources = 
+		List<AmountResource> sortResources =
 				new ArrayList<AmountResource>(resupply.getNewResources().keySet());
 		Collections.sort(sortResources);
 		Iterator<AmountResource> j = sortResources.iterator();
 		while (j.hasNext()) {
 			AmountResource resource = j.next();
 			double amount = resupply.getNewResources().get(resource);
-			// 2014-12-01 Added WordUtils.capitalize()
-			SupplyItem supplyItem = new SupplyItem(RESOURCE, WordUtils.capitalize(resource.getName()), amount);
+			// 2014-12-01 Added Conversion.capitalize()
+			SupplyItem supplyItem = new SupplyItem(RESOURCE, Conversion.capitalize(resource.getName()), amount);
 			supplyList.add(supplyItem);
 		}
 
 		// Populate parts.
-		List<Part> sortParts = 
+		List<Part> sortParts =
 		new ArrayList<Part>(resupply.getNewParts().keySet());
 		Collections.sort(sortParts);
 		Iterator<Part> k = sortParts.iterator();
@@ -110,7 +110,7 @@ extends AbstractTableModel {
 			Part part = k.next();
 			int num = resupply.getNewParts().get(part);
 			// 2014-12-01 Added WordUtils.capitalize()
-			SupplyItem supplyItem = new SupplyItem(PART, WordUtils.capitalize(part.getName()), num);
+			SupplyItem supplyItem = new SupplyItem(PART, Conversion.capitalize(part.getName()), num);
 			supplyList.add(supplyItem);
 		}
 	}
@@ -123,7 +123,7 @@ extends AbstractTableModel {
 	private void populateSupplyTypeList(String category, List<String> supplies) {
 
 		// Create map of supplies and their numbers.
-		Map<String, Integer> supplyMap = 
+		Map<String, Integer> supplyMap =
 				new HashMap<String, Integer>(supplies.size());
 		Iterator<String> i = supplies.iterator();
 		while (i.hasNext()) {
@@ -144,8 +144,8 @@ extends AbstractTableModel {
 		while (j.hasNext()) {
 			String supplyType = j.next();
 			int num = supplyMap.get(supplyType);
-			// 2014-12-01 Added WordUtils.capitalize()
-			SupplyItem supplyItem = new SupplyItem(category, WordUtils.capitalize(supplyType), num);
+			// 2014-12-01 Added Conversion.capitalize()
+			SupplyItem supplyItem = new SupplyItem(category, Conversion.capitalize(supplyType), num);
 			supplyList.add(supplyItem);
 		}
 	}
@@ -183,8 +183,8 @@ extends AbstractTableModel {
 		if (rowIndex < supplyList.size()) {
 			SupplyItem item = supplyList.get(rowIndex);
 			if (colIndex == 0) result = item.category;
-			// 2014-12-01 Added WordUtils.capitalize()
-			else if (colIndex == 1) result = WordUtils.capitalize(item.type);
+			// 2014-12-01 Added Conversion.capitalize()
+			else if (colIndex == 1) result = Conversion.capitalize(item.type);
 			else if (colIndex == 2) result = item.number.intValue();
 		}
 		return result;
@@ -204,8 +204,8 @@ extends AbstractTableModel {
 				item.category = (String) value;
 			}
 			else if (col == 1) {
-				// 2014-12-01 Added WordUtils.capitalize()
-				item.type = WordUtils.capitalize((String) value);
+				// 2014-12-01 Added Conversion.capitalize()
+				item.type = Conversion.capitalize((String) value);
 			}
 			else if (col == 2) {
 				try {

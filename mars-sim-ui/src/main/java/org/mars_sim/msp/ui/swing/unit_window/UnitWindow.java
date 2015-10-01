@@ -24,6 +24,7 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -95,7 +96,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-        JLabel nameLabel = new JLabel(" " + unit.getName() + " ", displayInfo.getButtonIcon(), SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel(" " + Conversion.capitalize(unit.getName()) + " ", displayInfo.getButtonIcon(), SwingConstants.CENTER);
         nameLabel.setOpaque(true);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);

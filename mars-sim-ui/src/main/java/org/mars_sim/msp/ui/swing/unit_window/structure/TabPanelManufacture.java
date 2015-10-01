@@ -36,7 +36,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
@@ -54,6 +53,7 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
@@ -122,7 +122,7 @@ extends TabPanel {
 		manufactureScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		manufactureScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		manufactureScrollPane.setPreferredSize(new Dimension(220, 215));
-		centerContentPanel.add(manufactureScrollPane);  
+		centerContentPanel.add(manufactureScrollPane);
 
 		// Prepare manufacture outer list pane.
 		JPanel manufactureOuterListPane = new JPanel(new BorderLayout(0, 0));
@@ -204,7 +204,7 @@ extends TabPanel {
 								if (ManufactureUtil.canProcessBeStarted(selectedProcess, workshop)) {
 									workshop.addProcess(new ManufactureProcess(selectedProcess, workshop));
 									update();
-									
+
 									// 2014-12-09 Added PromptComboBoxRenderer() & setSelectedIndex(-1)
 									buildingComboBox.setRenderer(new PromptComboBoxRenderer(" (1). Select a Building"));
 									buildingComboBox.setSelectedIndex(-1);
@@ -219,8 +219,8 @@ extends TabPanel {
 									Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage, settlement);
 									workshop.addSalvageProcess(new SalvageProcess(selectedSalvage, workshop, salvagedUnit));
 									update();
-									
-									
+
+
 								}
 							}
 						}
@@ -274,7 +274,7 @@ extends TabPanel {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			Component c = defaultRenderer.getListCellRendererComponent(
 	                list, value, index, isSelected, cellHasFocus);
-			
+
 			if (value == null) {
 				setText( prompt );
 				return this;
@@ -293,7 +293,7 @@ extends TabPanel {
 	        return c;
 		}
 	}
-	
+
 	@Override
 	public void update() {
 
@@ -306,7 +306,7 @@ extends TabPanel {
 			Iterator<ManufactureProcess> i = processes.iterator();
 			while (i.hasNext()) {
 				ManufactureProcess process = i.next();
-				if (!processCache.contains(process)) 
+				if (!processCache.contains(process))
 					manufactureListPane.add(new ManufacturePanel(process, true, 30));
 			}
 
@@ -373,7 +373,7 @@ extends TabPanel {
 			while (k.hasNext()) buildingComboBox.addItem(k.next());
 
 			if (currentSelection != null) {
-				if (buildingComboBoxCache.contains(currentSelection)) 
+				if (buildingComboBoxCache.contains(currentSelection))
 					buildingComboBox.setSelectedItem(currentSelection);
 			}
 		}
@@ -395,7 +395,7 @@ extends TabPanel {
 			while (m.hasNext()) processSelection.addItem(m.next());
 
 			if (currentSelection != null) {
-				if (processSelectionCache.contains(currentSelection)) 
+				if (processSelectionCache.contains(currentSelection))
 					processSelection.setSelectedItem(currentSelection);
 			}
 		}
@@ -404,7 +404,7 @@ extends TabPanel {
 		newProcessButton.setEnabled(processSelection.getItemCount() > 0);
 
 		// Update ooverride check box.
-		if (settlement.getManufactureOverride() != overrideCheckbox.isSelected()) 
+		if (settlement.getManufactureOverride() != overrideCheckbox.isSelected())
 			overrideCheckbox.setSelected(settlement.getManufactureOverride());
 	}
 
@@ -498,7 +498,7 @@ extends TabPanel {
 
 		try {
 			if (manufactureBuilding != null) {
-			    
+
 			    // Determine highest materials science skill level at settlement.
 	            Settlement settlement = manufactureBuilding.getBuildingManager().getSettlement();
 	            int highestSkillLevel = 0;
@@ -511,15 +511,15 @@ extends TabPanel {
 	                    highestSkillLevel = skill;
 	                }
 	            }
-			    
+
 				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
 				if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
-					Iterator<ManufactureProcessInfo> j = 
+					Iterator<ManufactureProcessInfo> j =
 							ManufactureUtil.getManufactureProcessesForTechSkillLevel(
 									workshop.getTechLevel(), highestSkillLevel).iterator();
 					while (j.hasNext()) {
 						ManufactureProcessInfo process = j.next();
-						if (ManufactureUtil.canProcessBeStarted(process, workshop)) 
+						if (ManufactureUtil.canProcessBeStarted(process, workshop))
 							result.add(process);
 					}
 				}
@@ -574,7 +574,7 @@ extends TabPanel {
 
 		private static final int PROCESS_NAME_LENGTH = 40;
 		private String prompt;
-		
+
 		/*
 		 *  Set the text to display when no item has been selected.
 		 */
@@ -584,20 +584,20 @@ extends TabPanel {
 			this.prompt = prompt;
 		}
 
-	
+
 		// TODO check actual combobox size before cutting off too much of the processes' names
 		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, 
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index,
 				boolean isSelected, boolean cellHasFocus) {
 			Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			if (value instanceof ManufactureProcessInfo) {
 				ManufactureProcessInfo info = (ManufactureProcessInfo) value;
 				if (info != null) {
 					String processName = info.getName();
-					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH) 
+					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH)
 							+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
 					// 2014-11-19 Capitalized process names
-					((JLabel) result).setText(WordUtils.capitalize(processName));
+					((JLabel) result).setText(Conversion.capitalize(processName));
 					((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
 				}
 			}
@@ -605,18 +605,18 @@ extends TabPanel {
 				SalvageProcessInfo info = (SalvageProcessInfo) value;
 				if (info != null) {
 					String processName = info.toString();
-					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH) 
+					if (processName.length() > PROCESS_NAME_LENGTH) processName = processName.substring(0, PROCESS_NAME_LENGTH)
 							+ Msg.getString("TabPanelManufacture.cutOff"); //$NON-NLS-1$
 					// 2014-11-19 Capitalized process names
-					((JLabel) result).setText(WordUtils.capitalize(processName));
+					((JLabel) result).setText(Conversion.capitalize(processName));
 					((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 				}
 			}
-			
+
 			// 2014-12-01 Added setText()
 			if (value == null)
 				setText(prompt);
-			
+
 			return result;
 		}
 	}

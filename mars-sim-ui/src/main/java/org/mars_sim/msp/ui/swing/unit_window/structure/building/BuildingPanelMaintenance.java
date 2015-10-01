@@ -6,13 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import javax.swing.*;
 
@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * The BuildingPanelMaintenance class is a building function panel representing 
+ * The BuildingPanelMaintenance class is a building function panel representing
  * the maintenance state of a settlement building.
  */
 public class BuildingPanelMaintenance
@@ -79,7 +79,7 @@ extends BuildingFunctionPanel {
 
 		// Create lastCompletedLabel.
 		lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-		lastCompletedLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.lastCompleted", 
+		lastCompletedLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.lastCompleted",
 				lastCompletedTime), JLabel.CENTER);
 		add(lastCompletedLabel);
 
@@ -88,7 +88,7 @@ extends BuildingFunctionPanel {
 		add(progressPanel);
 		progressPanel.setOpaque(false);
 		progressPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Prepare progress bar.
 		JProgressBar progressBar = new JProgressBar();
 		progressBarModel = progressBar.getModel();
@@ -127,13 +127,13 @@ extends BuildingFunctionPanel {
 		int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 		if (lastComplete != lastCompletedTime) {
 			lastCompletedTime = lastComplete;
-			lastCompletedLabel.setText(Msg.getString("BuildingPanelMaintenance.lastCompleted", 
+			lastCompletedLabel.setText(Msg.getString("BuildingPanelMaintenance.lastCompleted",
 					lastCompletedTime));
 		}
 
 		// Update tool tip.
 		lastCompletedLabel.setToolTipText(getToolTipString());
-		
+
 		// Update progress bar.
 		double completed = manager.getMaintenanceWorkTimeCompleted();
 		double total = manager.getMaintenanceWorkTime();
@@ -163,9 +163,9 @@ extends BuildingFunctionPanel {
 				int number = parts.get(part);
 				// 2014-11-21 Capitalized part.getName()
 				if (useHtml) buf.append("<br>");
-				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
+				buf.append(number).append(" ").append(Conversion.capitalize(part.getName()));
 				if (i.hasNext()) buf.append(", ");
-				else {		
+				else {
 					buf.append(".");
 					if (useHtml) buf.append("<br>");
 				}
@@ -185,6 +185,6 @@ extends BuildingFunctionPanel {
 		result.append("</html>");
 		return result.toString();
 	}
-	
-	
+
+
 }

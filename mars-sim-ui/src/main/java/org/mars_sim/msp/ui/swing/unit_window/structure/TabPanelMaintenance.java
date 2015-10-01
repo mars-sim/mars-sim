@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -35,6 +34,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 public class TabPanelMaintenance
@@ -56,7 +56,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelMaintenance(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelMaintenance(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			"Maint",
@@ -86,7 +86,7 @@ extends TabPanel {
 		// increase vertical mousewheel scrolling speed for this one
 		maintenanceScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		maintenanceScrollPane.setPreferredSize(new Dimension(200, 75));
-		maintenancePanel.add(maintenanceScrollPane, BorderLayout.CENTER);  
+		maintenancePanel.add(maintenanceScrollPane, BorderLayout.CENTER);
 
 		// Prepare maintenance list panel.
 		maintenanceListPanel = new JPanel(new GridLayout(0, 1, 0, 0));
@@ -109,7 +109,7 @@ extends TabPanel {
 		// increase vertical mousewheel scrolling speed for this one
 		malfunctionsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		malfunctionsScrollPane.setPreferredSize(new Dimension(200, 75));
-		malfunctionsPanel.add(malfunctionsScrollPane, BorderLayout.CENTER);  
+		malfunctionsPanel.add(malfunctionsScrollPane, BorderLayout.CENTER);
 
 		// Prepare malfunctions outer list panel.
 		JPanel malfunctionsOuterListPanel = new JPanel(new BorderLayout(0, 0));
@@ -216,14 +216,14 @@ extends TabPanel {
 				Part part = i.next();
 				int number = parts.get(part);
 				// 2014-11-20 Capitalized part.getName()
-				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
+				buf.append(number).append(" ").append(Conversion.capitalize(part.getName()));
 				if (i.hasNext()) buf.append(", ");
 			}
 		}
 		else buf.append("None.");
 		return buf.toString();
 		*/
-        StringBuilder buf = new StringBuilder("Needed Parts: ");	
+        StringBuilder buf = new StringBuilder("Needed Parts: ");
     	//Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
     	if (parts.size() > 0) {
     		Iterator<Part> i = parts.keySet().iterator();
@@ -231,16 +231,16 @@ extends TabPanel {
     			Part part = i.next();
     			int number = parts.get(part);
 				if (useHtml) buf.append("<br>");
-				buf.append(number).append(" ").append(WordUtils.capitalize(part.getName()));
+				buf.append(number).append(" ").append(Conversion.capitalize(part.getName()));
 				if (i.hasNext()) buf.append(", ");
-				else {		
+				else {
 					buf.append(".");
 					if (useHtml) buf.append("<br>");
-				}		
+				}
       		}
     	}
     	else buf.append("None.");
-    	
+
     	return buf.toString();
 	}
 
@@ -253,7 +253,7 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		// Data members 
+		// Data members
 		private MalfunctionManager manager;
 		private int lastCompletedCache;
 		private int wearConditionCache;
@@ -264,7 +264,7 @@ extends TabPanel {
 
 		/**
 		 * Constructor.
-		 * @param building the building to display. 
+		 * @param building the building to display.
 		 */
 		public BuildingMaintenancePanel(Building building) {
 			// User JPanel constructor.
@@ -284,10 +284,10 @@ extends TabPanel {
 					wearConditionCache), JLabel.CENTER);
 			wearConditionLabel.setToolTipText(Msg.getString("BuildingPanelMaintenance.toolTip"));
 			add(wearConditionLabel);
-			
+
 			JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
 			add(mainPanel);
-			
+
 			lastCompletedCache = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			lastLabel = new JLabel("Last Completed: " + lastCompletedCache + " Sols", JLabel.LEFT);
 			mainPanel.add(lastLabel, BorderLayout.WEST);
@@ -335,7 +335,7 @@ extends TabPanel {
 				wearConditionLabel.setText(Msg.getString("BuildingPanelMaintenance.wearCondition",
 						wearConditionCache));
 			}
-			
+
 			// Update last completed.
 			int lastCompleted = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
 			if (lastCompleted != lastCompletedCache) {
@@ -344,13 +344,13 @@ extends TabPanel {
 			}
 
 			Map<Part, Integer> parts = manager.getMaintenanceParts();
-			
+
 			// Update parts label.
 			partsLabel.setText(getPartsString(parts, false));
 
 			// Update tool tip.
 			lastLabel.setToolTipText(getToolTipString());
-			
+
 	        // Update tool tip.
 			partsLabel.setToolTipText("<html>" + getPartsString(parts, true) + "</html>");
 
@@ -358,7 +358,7 @@ extends TabPanel {
 
 		/**
 		 * Creates multi-line tool tip text.
-		 
+
 		private String getToolTipString() {
 			StringBuilder result = new StringBuilder("<html>");
 			int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
@@ -431,9 +431,9 @@ extends TabPanel {
 			progressBarPanel.add(progressBar, BorderLayout.CENTER);
 
 			// Set initial value for repair progress bar.
-			double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime() 
+			double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
 					+ malfunction.getEVAWorkTime();
-			double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
+			double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
 					malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
 			int percentComplete = 0;
 			if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));
@@ -463,9 +463,9 @@ extends TabPanel {
 			}
 
 			// Update progress bar.
-			double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime() 
+			double totalRequiredWork = malfunction.getEmergencyWorkTime() + malfunction.getWorkTime()
 					+ malfunction.getEVAWorkTime();
-			double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() + 
+			double totalCompletedWork = malfunction.getCompletedEmergencyWorkTime() +
 					malfunction.getCompletedWorkTime() + malfunction.getCompletedEVAWorkTime();
 			int percentComplete = 0;
 			if (totalRequiredWork > 0D) percentComplete = (int) (100D * (totalCompletedWork / totalRequiredWork));

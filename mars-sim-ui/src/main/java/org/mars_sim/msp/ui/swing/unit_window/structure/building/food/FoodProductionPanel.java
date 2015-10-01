@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
@@ -27,6 +26,7 @@ import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * A panel showing information about a foodProduction process.
@@ -84,7 +84,7 @@ public class FoodProductionPanel extends JPanel {
         }
         if (name.length() > processStringWidth) name = name.substring(0, processStringWidth) + "...";
 		// 2014-11-19 Capitalized process names
-        JLabel nameLabel = new JLabel(WordUtils.capitalize(name), JLabel.CENTER);
+        JLabel nameLabel = new JLabel(Conversion.capitalize(name), JLabel.CENTER);
         namePane.add(nameLabel);
 
         if (showBuilding) {
@@ -166,7 +166,7 @@ public class FoodProductionPanel extends JPanel {
     public static String getToolTipString(FoodProductionProcessInfo info, Building building) {
         StringBuilder result = new StringBuilder("<html>");
 
-        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(WordUtils.capitalize(info.getName())).append("<br>");
+        result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(Conversion.capitalize(info.getName())).append("<br>");
     	// 2014-11-19 Changed from getName() to getNickName()
     	//if (building != null) result.append("&emsp;&emsp;&emsp;&emsp;Building: ").append(building.getNickName()).append("<br>");
         result.append("&emsp;&emsp;&emsp;&nbsp;Labor Req : ").append(info.getWorkTimeRequired()).append(" millisols<br>");
@@ -182,8 +182,8 @@ public class FoodProductionPanel extends JPanel {
     	while (i.hasNext()) {
     		FoodProductionProcessItem item = i.next();
     		// 2014-11-19 Capitalized process names
-    		if (ii==0) result.append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
-    		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+    		if (ii==0) result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
+    		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
     		ii++;
     	}
 
@@ -194,8 +194,8 @@ public class FoodProductionPanel extends JPanel {
     	while (j.hasNext()) {
     		FoodProductionProcessItem item = j.next();
     		// 2014-11-19 Capitalized process names
-    		if (jj==0)  result.append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
-    		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(WordUtils.capitalize(item.getName())).append("<br>");
+    		if (jj==0)  result.append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
+    		else result.append("&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;").append(getItemAmountString(item)).append(" ").append(Conversion.capitalize(item.getName())).append("<br>");
     		jj++;
     	}
 

@@ -27,7 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -39,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -61,7 +61,7 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelResourceProcesses(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelResourceProcesses(Unit unit, MainDesktopPane desktop) {
 
 		// Use the TabPanel constructor
 		super(
@@ -89,7 +89,7 @@ extends TabPanel {
 		processesScrollPane.setPreferredSize(new Dimension(220, 280));
 		// increase vertical mousewheel scrolling speed for this one
 		processesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(processesScrollPane,BorderLayout.CENTER);         
+		centerContentPanel.add(processesScrollPane,BorderLayout.CENTER);
 
 		// Prepare process list panel.
 		processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
@@ -245,7 +245,7 @@ extends TabPanel {
 				//result.append("&nbsp;&nbsp;&emsp;");
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
 				// 2014-11-20 Capitalized resource.getName()
-				result.append(WordUtils.capitalize(resource.getName())).append(ambientStr).append(" @ ").append(rateString).append(" kg/sol<br>");
+				result.append(Conversion.capitalize(resource.getName())).append(ambientStr).append(" @ ").append(rateString).append(" kg/sol<br>");
 				ii++;
 			}
 			result.append("&emsp;&nbsp;&nbsp;Outputs:&emsp;");
@@ -258,10 +258,10 @@ extends TabPanel {
 				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				// 2014-11-20 Capitalized resource.getName()
-				result.append(WordUtils.capitalize(resource.getName())).append(" @ ").append(rateString).append(" kg/sol<br>");
+				result.append(Conversion.capitalize(resource.getName())).append(" @ ").append(rateString).append(" kg/sol<br>");
 				jj++;
 			}
-			// 2014-11-20 Moved * from front to back of the text 
+			// 2014-11-20 Moved * from front to back of the text
 			// Added a note to denote an ambient input resource
 			if (ambientStr == "*")
 				result.append("&emsp;<i>Note:  * denotes an ambient resource</i>");

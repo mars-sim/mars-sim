@@ -15,12 +15,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -68,7 +68,7 @@ extends TabPanel {
 
 		// Prepare gender label
 		String gender = person.getGender().getName();
-		JTextField genderTF = new JTextField(WordUtils.capitalize(gender));
+		JTextField genderTF = new JTextField(Conversion.capitalize(gender));
 		genderTF.setEditable(false);
 		genderTF.setColumns(12);
 		//JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
@@ -99,7 +99,7 @@ extends TabPanel {
 		// Prepare birth location label
 		String birthLocation = person.getBirthplace();
 		//JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
-		JTextField birthLocationTF = new JTextField(WordUtils.capitalize(birthLocation));
+		JTextField birthLocationTF = new JTextField(Conversion.capitalize(birthLocation));
 		birthLocationTF.setEditable(false);
 		birthLocationTF.setColumns(12);
 		infoPanel.add(birthLocationTF);
@@ -160,7 +160,7 @@ extends TabPanel {
 		// Prepare personality label
 		String personality = person.getMind().getPersonalityType().getTypeString();
 		//JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
-		JTextField personalityTF = new JTextField(WordUtils.capitalize(personality));
+		JTextField personalityTF = new JTextField(Conversion.capitalize(personality));
 		personalityTF.setEditable(false);
 		personalityTF.setColumns(12);
 		infoPanel.add(personalityTF);

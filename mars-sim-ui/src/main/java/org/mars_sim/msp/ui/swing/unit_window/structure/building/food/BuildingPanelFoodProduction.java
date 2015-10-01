@@ -33,7 +33,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
@@ -44,6 +43,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
 
 /**
@@ -440,7 +440,7 @@ extends BuildingFunctionPanel {
 			    FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;
 			    if (info != null) {
 			    	// 2014-11-21 Capitalized processName
-			        String processName = WordUtils.capitalize(info.getName());
+			        String processName = Conversion.capitalize(info.getName());
 			        if (processName.length() > 30) processName = processName.substring(0, 30) + "...";
 			        ((JLabel) result).setText(processName);
 			        ((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));

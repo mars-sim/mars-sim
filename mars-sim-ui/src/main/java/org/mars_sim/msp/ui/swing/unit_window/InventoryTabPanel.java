@@ -33,7 +33,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -44,6 +43,7 @@ import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
@@ -244,7 +244,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             if (column == 0) {
     			// 2014-11-17 Capitalize Resource Names
             	Object result = keys.get(row);
-            	return WordUtils.capitalize(result.toString());
+            	return Conversion.capitalize(result.toString());
             }
             else if (column == 1) {
             	Resource resource = keys.get(row);

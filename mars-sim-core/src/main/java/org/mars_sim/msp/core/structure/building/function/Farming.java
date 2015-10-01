@@ -57,27 +57,31 @@ implements Serializable {
     /** (arbitrary) amount of crop tissue culture needed per square meter of growing area */
     private static final double TISSUE_PER_SQM = .05D;
 
-    private Inventory inv;
-    private Settlement settlement;
-    private Building building;
-    //private BeeGrowing beeGrowing;
-	//private GoodsManager goodsManager;
-
     private int cropNum;
 	private int solCache = 1;
+
     private double powerGrowingCrop;
     private double powerSustainingCrop;
     private double maxGrowingArea;
     private double remainingGrowingArea;
     private double totalHarvestinKgPerDay;
+
+    private String cropInQueue;
+
     private List<Crop> crops = new ArrayList<Crop>();
 
   	// 2014-12-09 Added cropInQueue, cropListInQueue
-    private String cropInQueue;
     private List<CropType> cropListInQueue = new ArrayList<CropType>();
     private List<CropType> cropTypeList = new ArrayList<CropType>();
+    private List<CropType> historyList = new ArrayList<CropType>();
+
     //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
 
+    private Inventory inv;
+    private Settlement settlement;
+    private Building building;
+    //private BeeGrowing beeGrowing;
+	//private GoodsManager goodsManager;
 
     /**
      * Constructor.
@@ -129,31 +133,36 @@ implements Serializable {
    	// 2014-12-09 Added new param cropInQueue and changed method name to getNewCrop()
     // 2015-03-02 Added highest VP crop selection
 	public CropType getNewCrop(String cropInQueue, boolean isInitialCrop) {
-		CropType crop = null;
+		CropType ct = null;
 		List<CropType> cropTypes = cropTypeList;
 		if (cropInQueue.equals("0")) {
 			if (!isInitialCrop) {
 				int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
-				crop = cropTypes.get(r);
+				ct = cropTypes.get(r);
 			}
 			else
-				crop = selectHighestDemandCropType();
+				ct = selectHighestDemandCropType();
 		} else {
 			// select the CropType currently in the user queue
 			Iterator<CropType> i = cropTypes.iterator();
 			while (i.hasNext()) {
 				CropType c = i.next();
 				if (c.getName() == cropInQueue)
-					crop = c;
+					ct = c;
 			}
 		}
-		return crop;
+		historyList.add(ct);
+		return ct;
 	}
 
     // 2015-03-02 Added selectHighestDemandCropType()
+	// 2015-09-30 Revised to choose 2nd highest demand
 	public CropType selectHighestDemandCropType() {
-		CropType highestDemandCropType = null;
-		double highestCropVP = 0;
+		CropType highestDemand = null;
+		CropType secondDemand = null;
+		CropType chosen = null;
+		double highestVP = 0;
+		double secondVP = 0;
 		List<CropType> cropCache = new ArrayList<CropType>(cropTypeList);
 		Iterator<CropType> i = cropCache.iterator();
 		while (i.hasNext()) {
@@ -161,12 +170,66 @@ implements Serializable {
 			String cropName = c.getName();
 			AmountResource ar = AmountResource.findAmountResource(cropName);
 			double cropVP = getCropValue(ar);
-			if (cropVP >= highestCropVP) {
-				highestCropVP = cropVP;
-				highestDemandCropType = c;
+			if (cropVP >= highestVP) {
+				highestVP = cropVP;
+				highestDemand = c;
+			} else {
+				if (cropVP > secondVP) {
+					secondVP = cropVP;
+					secondDemand = c;
+				}
 			}
 		}
-		return highestDemandCropType;
+		int size = historyList.size();
+		if (size == 3) {
+			// remove the oldest crop type (the 1st element)
+			List<CropType> list = (List<CropType>) historyList.subList(0, 1);
+			historyList = list;
+			// delete all elements except the last two
+			//List<CropType> temp = new ArrayList<CropType>();
+			//Iterator<CropType> ii = historyList.iterator();
+			//while (ii.hasNext()) {
+			//	   CropType ct = ii.next();
+			//	   //some condition
+			//	    ii.remove();
+			//	}
+		}
+
+		CropType lastCT = null;
+		CropType last2CT = null;
+		boolean compareVP = false;
+
+		if (size == 2) {
+			last2CT = historyList.get(size-2);
+			lastCT = historyList.get(size-1);
+		}
+		else if (size == 1)
+			lastCT = historyList.get(size-1);
+
+		if (lastCT != null) {
+			// if highestDemand has already been selected for planting last time,
+			if (highestDemand.equals(lastCT) )
+			compareVP = true;
+		}
+
+		if (last2CT != null) {
+			// if highestDemand has already been selected for planting last time,
+			if (highestDemand.equals(last2CT) )
+			compareVP = true;
+		}
+
+		if (compareVP){
+			// compare secondVP with highestVP
+			// if they are within 15%, choose secondDemand since highestDemand has been planted last time already and secondDemand is very close in VP
+			if ((highestVP - secondVP) < .15*secondVP)
+				chosen = highestDemand;
+			else
+				chosen = secondDemand;
+		}
+		else
+			chosen = highestDemand;
+
+		return chosen;
 	}
 
 	// 2015-03-02 Added	getCropValue()
@@ -735,6 +798,7 @@ implements Serializable {
 
         inv = null;
         settlement = null;
+        building = null;
 
         Iterator<CropType> i = cropListInQueue.iterator();
         while (i.hasNext()) {
@@ -744,6 +808,16 @@ implements Serializable {
         while (ii.hasNext()) {
             ii.next().destroy();
         }
+
+        Iterator<CropType> iii = cropTypeList.iterator();
+        while (iii.hasNext()) {
+            iii.next().destroy();
+        }
+        Iterator<CropType> iv = historyList.iterator();
+        while (iv.hasNext()) {
+            iv.next().destroy();
+        }
+
     }
 
 	@Override

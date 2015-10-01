@@ -36,7 +36,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -48,6 +47,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
 /**
@@ -169,7 +169,7 @@ extends TransportItemEditingPanel {
 		monthCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Update sol combo box values.
-				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1, 
+				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
 						Integer.parseInt((String) orbitCB.getSelectedItem()));
 			}
 		});
@@ -192,7 +192,7 @@ extends TransportItemEditingPanel {
 		orbitCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Update sol combo box values.
-				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1, 
+				martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1,
 						Integer.parseInt((String) orbitCB.getSelectedItem()));
 			}
 		});
@@ -357,7 +357,7 @@ extends TransportItemEditingPanel {
 	/**
 	 * Inner class for editing the Category cell with a combo box.
 	 */
-	private class CategoryCellEditor extends AbstractCellEditor 
+	private class CategoryCellEditor extends AbstractCellEditor
 	implements TableCellEditor, ActionListener {
 
 		/** default serial id. */
@@ -402,8 +402,8 @@ extends TransportItemEditingPanel {
 
 				// Update supply type cell in row if category has changed.
 				String defaultType = SupplyTableModel.getCategoryTypeMap().get(category).get(0);
-				// 2014-12-01 Added WordUtils.capitalize
-				//supplyTable.setValueAt(WordUtils.capitalize(defaultType), editingRow, 1);
+				// 2014-12-01 Added Conversion.capitalize
+				//supplyTable.setValueAt(Conversion.capitalize(defaultType), editingRow, 1);
 				supplyTable.setValueAt(defaultType, editingRow, 1);
 			}
 		}
@@ -435,8 +435,8 @@ extends TransportItemEditingPanel {
 				Iterator<String> j = types.iterator();
 				while (j.hasNext()) {
 					String type = j.next();
-					// 2014-12-01 Added WordUtils.capitalize
-					categoryCB.addItem(WordUtils.capitalize(type));
+					// 2014-12-01 Added Conversion.capitalize
+					categoryCB.addItem(Conversion.capitalize(type));
 				}
 				typeCBMap.put(category, categoryCB);
 			}
@@ -542,14 +542,14 @@ extends TransportItemEditingPanel {
 				if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
 					int num = item.number.intValue();
 					for (int x = 0; x < num; x++) {
-						String type = item.type.trim();						
+						String type = item.type.trim();
 
 						int scenarioID = destination.getID();
 						String scenario = getCharForNumber(scenarioID + 1);
 			            //System.out.println("ResupplyMissionEditingPanel.java Line 548: scenario is " + scenario);
-			            //System.out.println("ResupplyMissionEditingPanel.java Line 549: buildingNickName is " + buildingNickName);        
+			            //System.out.println("ResupplyMissionEditingPanel.java Line 549: buildingNickName is " + buildingNickName);
 
-						BuildingTemplate template = new BuildingTemplate(0, scenario, type, type, -1D, -1D, 
+						BuildingTemplate template = new BuildingTemplate(0, scenario, type, type, -1D, -1D,
 								-0D, 0D, 0D);
 						newBuildings.add(template);
 					}
@@ -632,8 +632,8 @@ extends TransportItemEditingPanel {
 		// NOTE: i must be > 1, if i = 0, return null
 	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 	}
-	
-	
+
+
 	/**
 	 * Modify existing resupply mission new buildings based on supply table.
 	 * @param resupplyMission resupply mission.
@@ -674,10 +674,10 @@ extends TransportItemEditingPanel {
 				if (num > existingNum) {
 					// Add new building templates.
 					int diff = num - existingNum;
-					for (int x = 0; x < diff; x++) {				
+					for (int x = 0; x < diff; x++) {
 						   // 2014-10-29 Added a dummy type parameter
-			                // TODO: currently building id = 0 
-							// May need to assemble the buildingNickName 
+			                // TODO: currently building id = 0
+							// May need to assemble the buildingNickName
 							//by obtaining the next building id and settlement id
 						newBuildings.add(new BuildingTemplate(0, null, type, type, -1D, -1D, -0D, 0D, 0D));
 					}
@@ -744,7 +744,7 @@ extends TransportItemEditingPanel {
 
 				// Set millisols to current time if resupply is current date, otherwise 0.
 				double millisols = 0D;
-				if ((sol == currentTime.getSolOfMonth()) && (month == currentTime.getMonth()) && 
+				if ((sol == currentTime.getSolOfMonth()) && (month == currentTime.getMonth()) &&
 						(orbit == currentTime.getOrbit())) {
 					millisols = currentTime.getMillisol();
 				}

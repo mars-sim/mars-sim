@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -20,7 +21,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -104,9 +105,9 @@ extends TabPanel {
 		//goodsTablePanel.add(goodsTable, BorderLayout.CENTER);
 
 		// 2015-09-28 Align the preference score to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		goodsTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//goodsTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// 2015-06-08 Added sorting
 		goodsTable.setAutoCreateRowSorter(true);
@@ -144,6 +145,8 @@ extends TabPanel {
 		GoodsManager manager;
 		List<?> goods;
 
+		//private DecimalFormat twoDecimal = new DecimalFormat("#,###,##0.00");
+
 		private GoodsTableModel(GoodsManager manager) {
 			this.manager = manager;
 			goods = GoodsUtil.getGoodsList();
@@ -179,9 +182,11 @@ extends TabPanel {
 			if (row < getRowCount()) {
 				Good good = (Good) goods.get(row);
 				// 2014-11-20  Capitalized good's names
-				if (column == 0) return WordUtils.capitalize(good.getName());
+				if (column == 0) return Conversion.capitalize(good.getName());
 				else if (column == 1) {
 					try {
+						// Note: twoDecimal format is in conflict with Table column number sorting
+						//return twoDecimal.format(manager.getGoodValuePerItem(good));
 						return manager.getGoodValuePerItem(good);
 					}
 					catch (Exception e) {

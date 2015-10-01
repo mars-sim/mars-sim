@@ -26,7 +26,6 @@ import javax.swing.UIManager;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -38,6 +37,7 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 import javafx.application.Platform;
@@ -147,8 +147,8 @@ public class PopUpUnitMenu extends JPopupMenu {
                 if (unit instanceof Vehicle) {
                 	Vehicle vehicle = (Vehicle) unit;
                 	description = vehicle.getDescription(vehicle.getVehicleType());
-                	type = WordUtils.capitalize(vehicle.getVehicleType());
-                	name = WordUtils.capitalize(vehicle.getName());
+                	type = Conversion.capitalize(vehicle.getVehicleType());
+                	name = Conversion.capitalize(vehicle.getName());
                 }
                 else {
                 	Building building = (Building) unit;

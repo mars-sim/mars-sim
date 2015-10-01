@@ -29,7 +29,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
@@ -43,6 +42,7 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * A panel showing a selected resupply mission details.
@@ -329,8 +329,8 @@ implements ClockListener, HistoricalEventListener {
 			buildingsPanel.add(new JScrollPane(buildingTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
-			int panelHeight = buildingTable.getPreferredSize().height + 
-					buildingTable.getTableHeader().getPreferredSize().height + 
+			int panelHeight = buildingTable.getPreferredSize().height +
+					buildingTable.getTableHeader().getPreferredSize().height +
 					buildingsLabel.getPreferredSize().height + 7;
 			buildingsPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
@@ -395,8 +395,8 @@ implements ClockListener, HistoricalEventListener {
 			vehiclesPanel.add(new JScrollPane(vehicleTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
-			int panelHeight = vehicleTable.getPreferredSize().height + 
-					vehicleTable.getTableHeader().getPreferredSize().height + 
+			int panelHeight = vehicleTable.getPreferredSize().height +
+					vehicleTable.getTableHeader().getPreferredSize().height +
 					vehiclesLabel.getPreferredSize().height + 7;
 			vehiclesPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
@@ -447,8 +447,8 @@ implements ClockListener, HistoricalEventListener {
 			equipmentPanel.add(new JScrollPane(equipmentTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
-			int panelHeight = equipmentTable.getPreferredSize().height + 
-					equipmentTable.getTableHeader().getPreferredSize().height + 
+			int panelHeight = equipmentTable.getPreferredSize().height +
+					equipmentTable.getTableHeader().getPreferredSize().height +
 					equipmentLabel.getPreferredSize().height + 7;
 			equipmentPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
@@ -485,8 +485,8 @@ implements ClockListener, HistoricalEventListener {
 			while (j.hasNext()) {
 				AmountResource resourceType = j.next();
 				double amount = resources.get(resourceType);
-				// 2014-12-01 Added WordUtils.capitalize()
-				String resourceName = WordUtils.capitalize(resourceType.getName());
+				// 2014-12-01 Added Conversion.capitalize()
+				String resourceName = Conversion.capitalize(resourceType.getName());
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
 				//rowData.add(resourceType);
 				rowData.add(resourceName);
@@ -502,8 +502,8 @@ implements ClockListener, HistoricalEventListener {
 			resourcesPanel.add(new JScrollPane(resourcesTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
-			int panelHeight = resourcesTable.getPreferredSize().height + 
-					resourcesTable.getTableHeader().getPreferredSize().height + 
+			int panelHeight = resourcesTable.getPreferredSize().height +
+					resourcesTable.getTableHeader().getPreferredSize().height +
 					resourcesLabel.getPreferredSize().height + 7;
 			resourcesPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
@@ -541,8 +541,8 @@ implements ClockListener, HistoricalEventListener {
 				Part partType = j.next();
 				int num = parts.get(partType);
 				Vector<Comparable<?>> rowData = new Vector<Comparable<?>>(2);
-				// 2014-12-01 Added WordUtils.capitalize()
-				String partName = WordUtils.capitalize(partType.getName());
+				// 2014-12-01 Added Conversion.capitalize()
+				String partName = Conversion.capitalize(partType.getName());
 				rowData.add(partName);
 				//rowData.add(partType);
 				rowData.add(num);
@@ -557,8 +557,8 @@ implements ClockListener, HistoricalEventListener {
 			partsPanel.add(new JScrollPane(partsTable), BorderLayout.CENTER);
 
 			// Set preferred height for panel to show all of table.
-			int panelHeight = partsTable.getPreferredSize().height + 
-					partsTable.getTableHeader().getPreferredSize().height + 
+			int panelHeight = partsTable.getPreferredSize().height +
+					partsTable.getTableHeader().getPreferredSize().height +
 					partsLabel.getPreferredSize().height + 7;
 			partsPanel.setPreferredSize(new Dimension(100, panelHeight));
 		}
@@ -583,7 +583,7 @@ implements ClockListener, HistoricalEventListener {
 
 	@Override
 	public void eventAdded(int index, HistoricalEvent event) {
-		if (HistoricalEventCategory.TRANSPORT == event.getCategory() && 
+		if (HistoricalEventCategory.TRANSPORT == event.getCategory() &&
 				EventType.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
 			if ((resupply != null) && event.getSource().equals(resupply)) {
 				SwingUtilities.invokeLater(new Runnable() {

@@ -30,7 +30,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -41,6 +40,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
@@ -310,8 +310,8 @@ extends TabPanel {
 			String result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				// 2014-12-01 Added WordUtils.capitalize()
-				if (columnIndex == 0) result = WordUtils.capitalize(study.toString());
+				// 2014-12-01 Added Conversion.capitalize()
+				if (columnIndex == 0) result = Conversion.capitalize(study.toString());
 				else if (columnIndex == 1) {
 					if (study.isCompleted()) result = study.getCompletionState();
 					else result = study.getPhase();

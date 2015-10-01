@@ -21,7 +21,6 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -30,6 +29,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -84,7 +84,7 @@ extends TabPanel {
 		//JLabel mainDishLabel = new JLabel(mainDish, JLabel.RIGHT);
 		//infoPanel.add(mainDishLabel);
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField mainDishTF = new JTextField(WordUtils.capitalize(mainDish));
+		JTextField mainDishTF = new JTextField(Conversion.capitalize(mainDish));
 		mainDishTF.setEditable(false);
 		mainDishTF.setColumns(17);
 		wrapper1.add(mainDishTF);
@@ -99,7 +99,7 @@ extends TabPanel {
 		//JLabel sideDishLabel = new JLabel(sideDish, JLabel.RIGHT);
 		//infoPanel.add(sideDishLabel);
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField sideDishTF = new JTextField(WordUtils.capitalize(sideDish));
+		JTextField sideDishTF = new JTextField(Conversion.capitalize(sideDish));
 		sideDishTF.setEditable(false);
 		sideDishTF.setColumns(17);
 		wrapper2.add(sideDishTF);
@@ -111,10 +111,10 @@ extends TabPanel {
 
 		// Prepare dessert label
 		String dessert = person.getFavorite().getFavoriteDessert();
-		//JLabel dessertLabel = new JLabel(WordUtils.capitalize(dessert), JLabel.RIGHT);
+		//JLabel dessertLabel = new JLabel(Conversion.capitalize(dessert), JLabel.RIGHT);
 		//infoPanel.add(dessertLabel);
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField dessertTF = new JTextField(WordUtils.capitalize(dessert));
+		JTextField dessertTF = new JTextField(Conversion.capitalize(dessert));
 		dessertTF.setEditable(false);
 		dessertTF.setColumns(17);
 		wrapper3.add(dessertTF);
@@ -127,13 +127,13 @@ extends TabPanel {
 		// Prepare activity label
 		String activity = person.getFavorite().getFavoriteActivity();
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		JTextField activityTF = new JTextField(WordUtils.capitalize(activity));
+		JTextField activityTF = new JTextField(Conversion.capitalize(activity));
 		activityTF.setEditable(false);
 		activityTF.setColumns(15);
 		wrapper4.add(activityTF);
 		infoPanel.add(wrapper4);
 
-		//JLabel activityLabel = new JLabel(WordUtils.capitalize(activity), JLabel.RIGHT);
+		//JLabel activityLabel = new JLabel(Conversion.capitalize(activity), JLabel.RIGHT);
 		//infoPanel.add(activityLabel);
 
 		// Create label panel.

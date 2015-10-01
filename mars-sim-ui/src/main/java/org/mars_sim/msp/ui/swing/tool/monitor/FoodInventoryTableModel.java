@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.apache.commons.lang3.text.WordUtils;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +27,7 @@ import org.mars_sim.msp.core.foodProduction.Food;
 import org.mars_sim.msp.core.foodProduction.FoodUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 public class FoodInventoryTableModel
 extends AbstractTableModel
@@ -166,13 +165,13 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		if (columnIndex == 0) {
 			// 2014-11-17 Capitalized Resource Names
 			Object result =  foodList.get(rowIndex).getName();
-			return WordUtils.capitalize(result.toString());
+			return Conversion.capitalize(result.toString());
 		}
 	/*
 		else if (columnIndex == 1) {
 			// 2014-11-17 Capitalized Category Names
 			Object result = getFoodCategoryName(foodList.get(rowIndex));
-			return WordUtils.capitalize(result.toString());
+			return Conversion.capitalize(result.toString());
 		}
 			*/
 		else {
