@@ -164,11 +164,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		toolWindows = new ArrayList<ToolWindow>();
 
 		prepareToolWindows();
-        //setupToolWindowExecutor();
 
 		// Prepare unit windows.
 		unitWindows = new ArrayList<UnitWindow>();
-        //setupUnitWindowExecutor();
 
 		// Set background color to black
 		setBackground(Color.black);
@@ -197,7 +195,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Create update thread.
 
-		//setupToolWindowTasks();
+		setupToolWindowTasks();
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
 		updateThread.start();
@@ -561,45 +559,48 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Closes a tool window if it is open
 	 * @param toolName the name of the tool window
 	 */
+	@SuppressWarnings("restriction")
 	public void closeToolWindow(String toolName) {
 		ToolWindow window = getToolWindow(toolName);
 		if ((window != null) && !window.isClosed()) {
 			try { window.setClosed(true); }
 			catch (java.beans.PropertyVetoException e) {}
 		}
-/*
+	    // 2015-10-01 Added Platform.runLater()
 		if (mainScene != null) {
+			//System.out.println(toolName + " is running closeToolWindow().");
+			Platform.runLater(() -> {
+				if (toolName.equals(NavigatorWindow.NAME)) {
+					//System.out.println("closing nav");
+					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
+				}
 
-			if (toolName.equals(NavigatorWindow.NAME)) {
-				//System.out.println("closing nav");
-				mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
-			}
+				else if (toolName.equals(SearchWindow.NAME)) {
+					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(false);
+				}
 
-			else if (toolName.equals(SearchWindow.NAME)) {
-				mainScene.getMainSceneMenu().getSearchToolItem().setSelected(false);
-			}
+				else if (toolName.equals(MonitorWindow.NAME)) {
+					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(false);
+				}
 
-			else if (toolName.equals(MonitorWindow.NAME)) {
-				mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(false);
-			}
+				else if (toolName.equals(MissionWindow.NAME)) {
+					mainScene.getMainSceneMenu().getMissionToolItem().setSelected(false);
+				}
 
-			else if (toolName.equals(MissionWindow.NAME)) {
-				mainScene.getMainSceneMenu().getMissionToolItem().setSelected(false);
-			}
+				else if (toolName.equals(ScienceWindow.NAME)) {
+					mainScene.getMainSceneMenu().getScienceToolItem().setSelected(false);
+				}
 
-			else if (toolName.equals(ScienceWindow.NAME)) {
-				mainScene.getMainSceneMenu().getScienceToolItem().setSelected(false);
-			}
+				else if (toolName.equals(SettlementWindow.NAME)) {
+					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
+				}
 
-			else if (toolName.equals(SettlementWindow.NAME)) {
-				mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
-			}
-
-			else if (toolName.equals(ResupplyWindow.NAME)) {
-				mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
-			}
+				else if (toolName.equals(ResupplyWindow.NAME)) {
+					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
+				}
+			});
 		}
-
+/*
 		else if (mainWindow != null) {
 
 			if (toolName.equals(NavigatorWindow.NAME)) {
@@ -849,8 +850,29 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 	}
 
+	private void runUnitWindowExecutor() {
+		// set up unitWindowExecutor
+		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4);
+
+		// Update all unit windows.
+		//Iterator<UnitWindow> i1 = unitWindows.iterator();
+		//while (i1.hasNext()) {
+		//	unitWindowTask = new UnitWindowTask(i1.next());
+		//	if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
+		//		unitWindowExecutor.execute(unitWindowTask);
+        //}
+
+		unitWindows.forEach(u -> {
+			if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
+				unitWindowExecutor.execute(new UnitWindowTask(u));
+		});
+
+		if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
+	}
+
+
 	class ToolWindowTask implements Runnable {
-		long SLEEP_TIME = 500;
+		long SLEEP_TIME = 1000;
 		ToolWindow toolWindow;
 
 		protected ToolWindow getToolWindow() {
@@ -877,7 +899,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			} catch (ConcurrentModificationException e) {} //Exception e) {}
 		}
 	}
-/*
+
 	private void setupToolWindowTasks() {
 		// set up toolWindowExecutor even though it is not used right now inside this method
 		toolWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
@@ -904,32 +926,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 					toolWindowExecutor.execute(t);
 		});
 	}
-*/
-	private void runUnitWindowExecutor() {
-		// set up unitWindowExecutor
-		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4);
 
-		// Update all unit windows.
-		//Iterator<UnitWindow> i1 = unitWindows.iterator();
-		//while (i1.hasNext()) {
-		//	unitWindowTask = new UnitWindowTask(i1.next());
-		//	if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
-		//		unitWindowExecutor.execute(unitWindowTask);
-        //}
-
-		unitWindows.forEach(u -> {
-			if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
-				unitWindowExecutor.execute(new UnitWindowTask(u));
-		});
-
-		if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
-	}
 
 	/**
 	 * Update the desktop and all of its windows.
 	 */
 	private void update() {
-		long SLEEP_TIME = 50;
+		long SLEEP_TIME = 1000;
 
 		// Update all unit windows.
 		runUnitWindowExecutor();
@@ -943,10 +946,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 
 		// Update all tool windows.
-		//runToolWindowExecutor();
-
-
-
+		runToolWindowExecutor();
 /*
         // Update all unit windows.
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
@@ -982,15 +982,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
         //threadPoolExecutor.shutdown();
-        //if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
+        if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
         if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
 		//logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 		toolWindowTaskList.clear();
 
 		// Give some time for the update thread to finish updating.
-		try {
-			Thread.sleep(100L);
-		} catch (InterruptedException e) {};
+		//try {
+		//	Thread.sleep(100L);
+		//} catch (InterruptedException e) {};
 
 		// Dispose unit windows
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
@@ -1027,11 +1027,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
         //threadPoolExecutor.shutdown();
 
-		//if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
+		if ( !toolWindowExecutor.isShutdown()) toolWindowExecutor.shutdown();
         if ( !unitWindowExecutor.isShutdown()) unitWindowExecutor.shutdown();
 
         // Restart update threads.
-        //setupToolWindowTasks();
+        setupToolWindowTasks();
 		updateThread.setRun(true);
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
 
@@ -1401,10 +1401,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public void destroy() {
 		updateThread = null;
 		//updateThreadTask = null;
-		toolWindowTask = null;
+		//toolWindowTask = null;
 		//unitWindowTask = null;
 		//threadPoolExecutor = null;
-		toolWindowExecutor = null;
+		//toolWindowExecutor = null;
 		unitWindowExecutor = null;
 		soundPlayer = null;
 		announcementWindow = null;

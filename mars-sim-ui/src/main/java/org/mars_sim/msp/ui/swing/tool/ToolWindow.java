@@ -13,6 +13,7 @@ import javax.swing.WindowConstants;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
+import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
 
 /**
@@ -60,8 +61,11 @@ extends JInternalFrame {
 			msm = desktop.getMainScene().getMainSceneMenu();
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		//setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		// Set internal frame listener
+		//ToolFrameListener tool = new ToolFrameListener(this);
+		//addInternalFrameListener(tool);
 		addInternalFrameListener(new ToolFrameListener());
 	}
 
@@ -93,16 +97,27 @@ extends JInternalFrame {
 	 * Update window.
 	 */
     // 2015-06-05 Added checking if the tool window is invisible/closed while its check menu item is still toggle on
+    // 2015-10-01 Added Platform.runLater()
+	@SuppressWarnings("restriction")
 	public void update() {
-		if(!this.isVisible()) {
+		//System.out.println("ToolWindow : update()");
+		if(!this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {
 			if (desktop.getMainScene() != null) {
-				if (msm == null)
-					msm = desktop.getMainScene().getMainSceneMenu();
-				item = msm.getCheckMenuItem(name);
-				if (item != null)
-					// if item is a guide window, it will be null
-					if (item.isSelected())
-						msm.setCheckMenuItem(name);
+				//System.out.println(name + " is not visible");
+				Platform.runLater(() -> {
+					if (msm == null)
+							msm = desktop.getMainScene().getMainSceneMenu();
+					item = msm.getCheckMenuItem(name);
+					//System.out.println(item + " is obtained");
+					if (item != null) {
+						// Note: need to accommodate if item is a guide window, as it is always null
+						//System.out.println(item + " is obtained");
+						if (item.isSelected()) {
+							msm.uncheckToolWindow(name);
+							//System.out.println(name + " is unchecked");
+						}
+					}
+				});
 			}
 		}
 	}

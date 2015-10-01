@@ -665,8 +665,7 @@ public class MainSceneMenu extends MenuBar  {
         cmi.setSelected(false);
 
         cmi.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            public void changed(ObservableValue ov,
-            Boolean old_val, Boolean new_val) {
+            public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
             	if (new_val) {
             		long SLEEP_TIME = 100;
             		cmi.setSelected(true);
@@ -686,7 +685,10 @@ public class MainSceneMenu extends MenuBar  {
                 	//desktop.repaint();
             	} else {
 	                cmi.setSelected(false);
-	            	desktop.closeToolWindow(toolName);
+	                SwingUtilities.invokeLater(() -> {
+                   	 	desktop.closeToolWindow(toolName);
+                   	 	//desktop.repaint();
+                	});
             	}
             }
         });
@@ -694,11 +696,10 @@ public class MainSceneMenu extends MenuBar  {
         return cmi;
     }
 
-    // 2015-06-05 Added setCheckMenuItem()
-    public void setCheckMenuItem(String toolName) {
+    // 2015-10-01 Renamed to uncheckToolWindow()
+    public void uncheckToolWindow(String toolName) {
 
 		if (toolName.equals(NavigatorWindow.NAME)) {
-			//System.out.println("closing nav");
 			getMarsNavigatorItem().setSelected(false);
 		}
 
@@ -706,8 +707,13 @@ public class MainSceneMenu extends MenuBar  {
 			getSearchToolItem().setSelected(false);
 		}
 
+		else if (toolName.equals(TimeWindow.NAME)) {
+			getTimeToolItem().setSelected(false);
+		}
+
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			getMonitorToolItem().setSelected(false);
+			System.out.println(toolName + " is unchecked");
 		}
 
 		else if (toolName.equals(MissionWindow.NAME)) {
@@ -740,6 +746,10 @@ public class MainSceneMenu extends MenuBar  {
 
 		else if (toolName.equals(SearchWindow.NAME)) {
 			return getSearchToolItem();
+		}
+
+		else if (toolName.equals(TimeWindow.NAME)) {
+			return getTimeToolItem();
 		}
 
 		else if (toolName.equals(MonitorWindow.NAME)) {
