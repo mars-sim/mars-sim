@@ -35,8 +35,10 @@ import javax.swing.event.TableModelListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
@@ -51,6 +53,7 @@ import com.jidesoft.swing.SearchableBar;
 //import com.jidesoft.swing.SearchableBar;
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
+import com.jidesoft.utils.WildcardSupport;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables
@@ -98,6 +101,8 @@ implements TableModelListener, ActionListener {
 	private JButton buttonProps;
 
 	private MainDesktopPane desktop;
+	private MainScene mainScene;
+	private MainWindow mainWindow;
 
 	private JPanel statusPanel;
 	private JTable table ;
@@ -113,6 +118,13 @@ implements TableModelListener, ActionListener {
 		// Use TableWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
+
+		if (desktop.getMainScene() != null)
+			this.mainScene = desktop.getMainScene();
+		else if (desktop.getMainWindow() != null)
+			this.mainWindow = desktop.getMainWindow();
+
+
 		this.setOpaque(true);
 		//this.setBackground(new Color(205, 133, 63, 50));//Color.ORANGE);
 		//this.setBackground(new Color(0, 0, 0, 0));
@@ -236,13 +248,13 @@ implements TableModelListener, ActionListener {
 
 		// Open the people tab
 		tabsSection.setSelectedIndex(6);
-		tabChanged();
+		tabChanged(true);
 
 		// Add a listener for the tab changes
 		tabsSection.addChangeListener(
 			new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
-					tabChanged();
+					tabChanged(true);
 				}
 			}
 		);
@@ -250,9 +262,9 @@ implements TableModelListener, ActionListener {
 		// 2015-06-17 Added createSearchBar();
 		//setTable();
 		//createSearchableBar();
-		statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
-		statusPanel.invalidate();
-		statusPanel.revalidate();
+		//statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+		//statusPanel.invalidate();
+		//statusPanel.revalidate();
 
 
 		// Have to define a starting size
@@ -264,62 +276,6 @@ implements TableModelListener, ActionListener {
 
 		pack();
 	}
-
-
-    public void setTable() {
-        //System.out.println("setTable()");
-		MonitorTab monitorTab = getSelected();
-    	if (searchable != null)
-    		SearchableUtils.uninstallSearchable(table);
-    	if (monitorTab instanceof TableTab) {
-    	    TableTab tableTab = (TableTab) monitorTab;
-    	    table = tableTab.getTable();
-
-    	   	// 2015-09-25 Update skin theme using TableStyle's setTableStyle()
-            TableStyle.setTableStyle(table);
-            JTable rowTable = new RowNumberTable(table);
-            TableStyle.setTableStyle(rowTable);
-
-    	    //System.out.println("tab : " + tableTab + "\n    table : " + table);
-    	}
-    }
-
-    //public void switchTable() {
-    //	_tableSearchableBar.getSearchable();
-    //}
-
-    public void createSearchableBar() {
-        //System.out.println("createSearchableBar()");
-    	if (searchable != null)
-    		SearchableUtils.uninstallSearchable(searchable);
-
-    	if (table != null) {
-    	    searchable = SearchableUtils.installSearchable(table);
-    	    searchable.setRepeats(true);
-    	    //searchable.setPopupTimeout(5000);
-    	    searchable.setCaseSensitive(false);
-
-    	    if (_tableSearchableBar != null) {
-    	        _tableSearchableBar.setSearchingText("");
-    	        _tableSearchableBar = null;
-    	        //statusPanel.remove(_tableSearchableBar);
-    	    }
-
-    	    _tableSearchableBar = new SearchableBar(searchable);
-    	    _tableSearchableBar.setCompact(false);
-    	    _tableSearchableBar.setToolTipText("Type in your search terms");
-    	    ((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
-    	    //_tableSearchableBar.setVisibleButtons(_tableSearchableBar.getVisibleButtons());
-    	    //_tableSearchableBar.setName("TableSearchableBar");
-    	    _tableSearchableBar.setShowMatchCount(true);
-    	    _tableSearchableBar.setVisible(true);
-
-    	    //statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
-    	    //statusPanel.invalidate();
-    	    //statusPanel.revalidate();
-    	}
-    }
-
 
 	/**
 	 * This method add the specified Unit table as a new tab in the Monitor. The
@@ -369,9 +325,17 @@ implements TableModelListener, ActionListener {
 	 */
 	private void createBarChart() {
 		MonitorModel model = getSelected().getModel();
+		int columns[] = null;
 
-		// Show modal column selector
-		int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow().getFrame(), model);
+		if (mainScene != null) {
+			this.mainScene = desktop.getMainScene();
+		}
+
+		else if (mainWindow != null) {
+			// Show modal column selector
+			columns = ColumnSelector.createBarSelector(mainWindow.getFrame(), model);
+		}
+
 		if (columns.length > 0) {
 			addTab(new BarChartTab(model, columns));
 		}
@@ -379,9 +343,17 @@ implements TableModelListener, ActionListener {
 
 	private void createPieChart() {
 		MonitorModel model = getSelected().getModel();
+		int column = 0;
 
-		// Show modal column selector
-		int column = ColumnSelector.createPieSelector(desktop.getMainWindow().getFrame(), model);
+		if (mainScene != null) {
+			this.mainScene = desktop.getMainScene();
+		}
+
+		else if (mainWindow != null) {
+			// Show modal column selector
+			column = ColumnSelector.createPieSelector(mainWindow.getFrame(), model);
+		}
+
 		if (column >= 0) {
 			addTab(new PieChartTab(model, column));
 		}
@@ -399,10 +371,12 @@ implements TableModelListener, ActionListener {
 		return selected;
 	}
 
-	private void tabChanged() {
+	public void tabChanged(boolean reloadSearch) {
 		//System.out.println("tabChanged()");
 		MonitorTab selected = getSelected();
+		JTable table = null;
 		if (selected != null) {
+			//System.out.println("tabChanged() : selected is " + selected);
 			String status = selected.getCountString();
 			rowCount.setText(status);
 			if (oldTab != null) {
@@ -411,11 +385,6 @@ implements TableModelListener, ActionListener {
 			}
 			selected.getModel().addTableModelListener(this);
 			oldTab = selected;
-
-			// 2015-06-17 Added setTable();
-			setTable();
-			//statusPanel.remove(_tableSearchableBar);
-			createSearchableBar();
 
 			// Enable/disable buttons based on selected tab.
 			buttonMap.setEnabled(false);
@@ -426,20 +395,99 @@ implements TableModelListener, ActionListener {
 			if (selected instanceof UnitTab) {
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
+				table = ((UnitTab) selected).getTable();
 			}
 			else if (selected instanceof MissionTab) {
 				buttonMap.setEnabled(true);
 				buttonMissions.setEnabled(true);
+				table = ((MissionTab) selected).getTable();
 			}
 			else if (selected instanceof EventTab) {
 				buttonMap.setEnabled(true);
 				buttonDetails.setEnabled(true);
 				buttonFilter.setEnabled(true);
+				table = ((EventTab) selected).getTable();
 			}
+			else if (selected instanceof FoodInventoryTab) {
+				buttonMap.setEnabled(true);
+				buttonDetails.setEnabled(true);
+				buttonFilter.setEnabled(true);
+				table = ((FoodInventoryTab) selected).getTable();
+			}
+			else if (selected instanceof TradeTab) {
+				buttonMap.setEnabled(true);
+				buttonDetails.setEnabled(true);
+				buttonFilter.setEnabled(true);
+				table = ((TradeTab) selected).getTable();
+			}
+
+			// Note: needed for periodic refreshing in ToolWindow
+			this.table = table;
+
+			// 2015-09-25 Update skin theme using TableStyle's setTableStyle()
+            TableStyle.setTableStyle(table);
+            TableStyle.setTableStyle(new RowNumberTable(table));
+            //System.out.println("Starting createSearchableBar() for "+ table);
+
+			//statusPanel.remove(_tableSearchableBar);
+            if (reloadSearch)
+            	createSearchableBar(table);
 		}
 
 		SwingUtilities.updateComponentTreeUI(this);
 	}
+
+    public void createSearchableBar(JTable table) {
+        //System.out.println("Starting createSearchableBar() for "+ table.getName());
+    	//Searchable searchable = null;
+    	//SearchableBar _tableSearchableBar = null;
+
+    	if (searchable != null)
+    		SearchableUtils.uninstallSearchable(searchable);
+
+    	if (table != null) {
+    	    //System.out.println("table is " + table.getName());
+    	    //SearchableUtils.uninstallSearchable(searchable);
+    	    searchable = SearchableUtils.installSearchable(table);
+    	    //searchable.setRepeats(true);
+    	    searchable.setPopupTimeout(5000);
+    	    searchable.setCaseSensitive(false);
+    	    searchable.setHideSearchPopupOnEvent(false);
+    	    searchable.setWildcardEnabled(true);
+    	    searchable.setHeavyweightComponentEnabled(true);
+    	    //searchable.setSearchableProvider(searchableProvider)
+    	    searchable.setMismatchForeground(java.awt.Color.PINK);
+    	    //WildcardSupport WildcardSupport = new WildcardSupport();
+    	    //searchable.setWildcardSupport(new WildcardSupport());
+
+    	    if (_tableSearchableBar != null) {
+    	        _tableSearchableBar.setSearchingText("");
+    	        statusPanel.remove(_tableSearchableBar);
+    	        _tableSearchableBar = null;
+    	    }
+    	        _tableSearchableBar = new SearchableBar(searchable);
+    	        _tableSearchableBar.setSearchingText("");
+	    	    _tableSearchableBar.setCompact(true);
+
+	    	    //_tableSearchableBar.setVisibleButtons(1);
+	    	    _tableSearchableBar.setToolTipText("Type in your search terms. Can use wildcards (*, +, ?)");
+
+	    	    ((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
+	    	    _tableSearchableBar.setVisibleButtons(_tableSearchableBar.getVisibleButtons());
+	    	    _tableSearchableBar.setName(table.getName());
+	    	    _tableSearchableBar.setShowMatchCount(true);
+	    	    _tableSearchableBar.setVisible(true);
+
+	    	    statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+
+	    	    //pack();
+
+    	    //statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+    	    //statusPanel.invalidate();
+    	    //statusPanel.revalidate();
+    	}
+    }
+
 
 	public void tableChanged(TableModelEvent e) {
 		if (e.getType() != TableModelEvent.UPDATE) {
@@ -456,7 +504,7 @@ implements TableModelListener, ActionListener {
 		tabs.add(newTab);
 		tabsSection.addTab(newTab.getName(), newTab.getIcon(), newTab);
 		tabsSection.setSelectedIndex(tabs.size()-1);
-		tabChanged();
+		tabChanged(true);
 	}
 
 	private void removeTab(MonitorTab oldTab) {
@@ -467,7 +515,7 @@ implements TableModelListener, ActionListener {
 		if (getSelected() == oldTab) {
 			tabsSection.setSelectedIndex(0);
 		}
-		tabChanged();
+		tabChanged(true);
 	}
 
 	private void centerMap() {
@@ -503,6 +551,14 @@ implements TableModelListener, ActionListener {
 		if (events != null) {
 			events.filterCategories(desktop);
 		}
+	}
+
+	/*
+	 * Refreshes the table column/row header
+	 */
+	public void refreshTable() {
+        TableStyle.setTableStyle(table);
+        TableStyle.setTableStyle(new RowNumberTable(table));
 	}
 
 	/**

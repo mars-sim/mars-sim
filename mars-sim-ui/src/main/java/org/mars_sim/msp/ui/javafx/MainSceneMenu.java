@@ -713,7 +713,7 @@ public class MainSceneMenu extends MenuBar  {
 
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			getMonitorToolItem().setSelected(false);
-			System.out.println(toolName + " is unchecked");
+			//System.out.println(toolName + " is unchecked");
 		}
 
 		else if (toolName.equals(MissionWindow.NAME)) {

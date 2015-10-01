@@ -45,7 +45,7 @@
         brown,
         radial-gradient(center 50% 50%, radius 100%, brown, black);
     -fx-text-fill: yellow;
-    -fx-border-color: rgb(49, 89, 23);
+/*    -fx-border-color: rgb(49, 89, 23); */
 }
 
 .tool-bar:horizontal {

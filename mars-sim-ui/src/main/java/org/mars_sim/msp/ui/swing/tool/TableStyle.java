@@ -89,7 +89,7 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255); // white
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4 dark brown orange
-    		selBack = new Color( 0, 100 ,0); // 0 100 0	006400	dark green
+    		selBack = new Color(110,139,61); // 110,139,61	pale olive green
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.GRAY;
@@ -100,7 +100,7 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = new Color( 0, 100 ,0); // 0 100 0	006400	dark green
+    		selBack = new Color(139,26,26); // 139,26,26 firebrick
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood
     		border = Color.RED;
@@ -111,7 +111,7 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = new Color( 0, 100 ,0); // 0 100 0	006400	dark green
+    		selBack = new Color(139,87,66); // 139,87,66 lightsalmon 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood
     		border = Color.GRAY;
@@ -122,7 +122,7 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = new Color( 0, 100 ,0); // 0 100 0	006400	dark green
+    		selBack = new Color(139,119,101); // 139,119,101 peachpuff 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood
     		border = Color.GREEN;
@@ -133,7 +133,7 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = new Color( 0, 100 ,0); // 0 100 0	006400	dark green
+    		selBack = new Color(22,55,139); // 22	55	139	mediumorchid 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood
     		border = Color.DARK_GRAY;
@@ -144,7 +144,7 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = new Color( 0, 100 ,0); // 0 100 0	006400	dark green
+    		selBack = new Color(70,130,180); //70 130	180	 steelblue
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood
     		border = Color.LIGHT_GRAY;
@@ -156,7 +156,7 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = Color.GRAY;
+    		selBack = new Color(189,183,107); // 189,183,107 darkkhaki
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = new Color(222, 184, 135); // 222 184 135 burlywood
     		border = Color.orange;

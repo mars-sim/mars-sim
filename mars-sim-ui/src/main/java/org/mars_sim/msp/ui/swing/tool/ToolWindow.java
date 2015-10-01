@@ -8,10 +8,13 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 import javax.swing.JInternalFrame;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 
 import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
@@ -33,6 +36,10 @@ extends JInternalFrame {
 	private MainSceneMenu msm;
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
+
+	protected MainScene mainScene;
+	protected MonitorWindow monitorWindow;
+
 	/** True if window is open. */
 	protected boolean opened;
 
@@ -55,10 +62,15 @@ extends JInternalFrame {
 		// Initialize data members
 		this.name = name;
 		this.desktop = desktop;
+		this.mainScene = desktop.getMainScene();
+
+		if (this instanceof MonitorWindow)
+			this.monitorWindow = (MonitorWindow)this;
+
 		opened = false;
 
-		if (desktop.getMainScene() != null)
-			msm = desktop.getMainScene().getMainSceneMenu();
+		if (mainScene != null)
+			msm = mainScene.getMainSceneMenu();
 
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		//setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -100,13 +112,31 @@ extends JInternalFrame {
     // 2015-10-01 Added Platform.runLater()
 	@SuppressWarnings("restriction")
 	public void update() {
-		//System.out.println("ToolWindow : update()");
-		if(!this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {
-			if (desktop.getMainScene() != null) {
+
+		if (mainScene != null) {
+
+			if(this.isVisible() || this.isShowing() ) {
+				//System.out.println("this.getToolName() is "+ this.getToolName());
+				// Note: need to refresh the table column/row header
+				if (this.getToolName().equals("Monitor Tool"))
+					monitorWindow.refreshTable();
+					//pack(); // create time lag, and draw artifact
+					SwingUtilities.invokeLater(() -> {
+						//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
+						//SwingUtilities.updateComponentTreeUI(this); // create time lag, draw artifact and search text out of focus
+					});
+					//mainScene.setLookAndFeel(1); causing java.lang.NullPointerException at com.jidesoft.plaf.basic.BasicJideTabbedPaneUI.getFontMetrics(BasicJideTabbedPaneUI.java:5063)
+					//SwingUtilities.updateComponentTreeUI(this); causing java.lang.NullPointerException
+				//Platform.runLater(() -> {
+						//mainScene.changeTheme(mainScene.getTheme());
+					//});
+				}
+
+			else if(!this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {
 				//System.out.println(name + " is not visible");
 				Platform.runLater(() -> {
 					if (msm == null)
-							msm = desktop.getMainScene().getMainSceneMenu();
+							msm = mainScene.getMainSceneMenu();
 					item = msm.getCheckMenuItem(name);
 					//System.out.println(item + " is obtained");
 					if (item != null) {

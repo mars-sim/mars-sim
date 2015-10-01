@@ -872,7 +872,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 
 	class ToolWindowTask implements Runnable {
-		long SLEEP_TIME = 1000;
+		long SLEEP_TIME = 450;
 		ToolWindow toolWindow;
 
 		protected ToolWindow getToolWindow() {
@@ -932,7 +932,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Update the desktop and all of its windows.
 	 */
 	private void update() {
-		long SLEEP_TIME = 1000;
+		long SLEEP_TIME = 450;
 
 		// Update all unit windows.
 		runUnitWindowExecutor();

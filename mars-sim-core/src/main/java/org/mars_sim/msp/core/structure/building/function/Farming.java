@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 // 2014-12-09 Added crop queue
 // 2015-02-16 Added Germination phase and custom growing area
 // 2015-02-28 Added soil usage (and changed fertilizer usage) based on sq meter
+// 2015-09-30 Changed the algorithm of selecting a new crop to plant
 public class Farming
 extends Function
 implements Serializable {
@@ -141,7 +142,7 @@ implements Serializable {
 				ct = cropTypes.get(r);
 			}
 			else
-				ct = selectHighestDemandCropType();
+				ct = selectNewCrop();
 		} else {
 			// select the CropType currently in the user queue
 			Iterator<CropType> i = cropTypes.iterator();
@@ -155,11 +156,11 @@ implements Serializable {
 		return ct;
 	}
 
-    // 2015-03-02 Added selectHighestDemandCropType()
-	// 2015-09-30 Revised to choose 2nd highest demand
-	public CropType selectHighestDemandCropType() {
-		CropType highestDemand = null;
-		CropType secondDemand = null;
+    // 2015-03-02 Added selecthighestCropCropType()
+	// 2015-09-30 Revised the decision branch on how the crop type is chosen
+	public CropType selectNewCrop() {
+		CropType highestCrop = null;
+		CropType secondCrop = null;
 		CropType chosen = null;
 		double highestVP = 0;
 		double secondVP = 0;
@@ -172,11 +173,11 @@ implements Serializable {
 			double cropVP = getCropValue(ar);
 			if (cropVP >= highestVP) {
 				highestVP = cropVP;
-				highestDemand = c;
+				highestCrop = c;
 			} else {
 				if (cropVP > secondVP) {
 					secondVP = cropVP;
-					secondDemand = c;
+					secondCrop = c;
 				}
 			}
 		}
@@ -202,32 +203,64 @@ implements Serializable {
 		if (size == 2) {
 			last2CT = historyList.get(size-2);
 			lastCT = historyList.get(size-1);
+
+			if (highestCrop.equals(last2CT) || highestCrop.equals(lastCT)) {
+				// if highestCrop has already been selected once
+
+				if (last2CT.equals(lastCT)) {
+					// since the highestCrop has already been chosen twice,
+					// should not choose the same crop type again
+					//compareVP = false;
+					chosen = secondCrop;
+				}
+
+				else
+					compareVP = true;
+			}
+
+			else if (secondCrop.equals(last2CT) || secondCrop.equals(lastCT)) {
+				// if secondCrop has already been selected once
+
+				if (last2CT.equals(lastCT)) {
+					// since the secondCrop has already been chosen twice,
+					// should not choose the same crop type again
+					//compareVP = false;
+					chosen = highestCrop;
+				}
+
+				else
+					compareVP = true;
+			}
+
 		}
-		else if (size == 1)
+
+		else if (size == 1) {
 			lastCT = historyList.get(size-1);
 
-		if (lastCT != null) {
-			// if highestDemand has already been selected for planting last time,
-			if (highestDemand.equals(lastCT) )
-			compareVP = true;
-		}
-
-		if (last2CT != null) {
-			// if highestDemand has already been selected for planting last time,
-			if (highestDemand.equals(last2CT) )
-			compareVP = true;
+			if (lastCT != null) {
+				// if highestCrop has already been selected for planting last time,
+				if (highestCrop.equals(lastCT))
+					compareVP = true;
+			}
 		}
 
 		if (compareVP){
 			// compare secondVP with highestVP
-			// if they are within 15%, choose secondDemand since highestDemand has been planted last time already and secondDemand is very close in VP
-			if ((highestVP - secondVP) < .15*secondVP)
-				chosen = highestDemand;
+			// if their VP are within 15%, toss a dice
+			// if they are further apart, should pick highestCrop
+			//if ((highestVP - secondVP) < .15 * secondVP)
+			if ((secondVP/highestVP) > .85) {
+				int rand = RandomUtil.getRandomInt(0, 1);
+				if (rand == 0)
+					chosen = highestCrop;
+				else
+					chosen = secondCrop;
+			}
 			else
-				chosen = secondDemand;
+				chosen = secondCrop;
 		}
 		else
-			chosen = highestDemand;
+			chosen = highestCrop;
 
 		return chosen;
 	}

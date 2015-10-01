@@ -710,9 +710,8 @@ implements LifeSupportType {
         	// 2015-03-06 Added clearing of weather data map
         	Simulation.instance().getMars().getWeather().clearMap();
 
-        	logger.info("Just compacted supply & demand data map and cleared weather data maps");
+        	logger.info("Just compacted supply/demand data map and cleared weather data maps at " + name);
         }
-
 
    	}
 

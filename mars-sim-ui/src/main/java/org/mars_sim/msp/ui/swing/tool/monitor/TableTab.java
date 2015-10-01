@@ -191,7 +191,7 @@ extends MonitorTab {
             // Create a sortable model to act as a proxy
             sortedModel = new TableSorter(model);
             // Create scrollable table window
-            table = new JTable(sortedModel) {
+            this.table = new JTable(sortedModel) {
             	/** default serial id. */
 				//private static final long serialVersionUID = 1L;
 
@@ -273,13 +273,14 @@ extends MonitorTab {
         }
         else {
             // Simple JTable
-            table = new JTable(model) {
+            this.table = new JTable(model) {
             	/** default serial id. */
 				//private static final long serialVersionUID = 1L;
 				/**
             	 * Overriding table change so that selections aren't cleared when rows are deleted.
             	 */
             	public void tableChanged(TableModelEvent e) {
+              	    //System.out.println("table is " + table.getName());
 
             		if (e.getType() == TableModelEvent.DELETE) {
             			// Store selected row objects.
@@ -432,6 +433,7 @@ extends MonitorTab {
      * @param e MouseEvent triggering tool tip.
      * @return Tooltip text.
      */
+
     private String getCellText(MouseEvent e) {
         Point p = e.getPoint();
         int column = table.columnAtPoint(p);
