@@ -14,9 +14,13 @@
 <?import javafx.scene.web.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="380.0" minWidth="450.0" pickOnBounds="true"
-prefHeight="400.0" prefWidth="640.0" styleClass="clientarea-background" xmlns="http://javafx.com/javafx/8.0.40"
-xmlns:fx="http://javafx.com/fxml/1" fx:controller="EditorController" stylesheets="../css/editor.css">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="-Infinity""
+minHeight="380.0" minWidth="450.0" pickOnBounds="true"
+prefHeight="400.0" prefWidth="640.0"
+styleClass="clientarea-background"
+xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="org.mars_sim.msp.javafx.controller.EditorController"
+stylesheets="../css/editor.css">
   <children>
     <AnchorPane id="decorationRoot" fx:id="decorationRoot" pickOnBounds="false" prefHeight="37.0" prefWidth="640.0" style="-fx-background-color: transparent;" visible="true">
       <children>
@@ -55,7 +59,7 @@ xmlns:fx="http://javafx.com/fxml/1" fx:controller="EditorController" stylesheets
 	         <cursor>
 	            <Cursor fx:constant="DEFAULT" />
 	         </cursor></Button>
-	    <Label id="TitleLabel" fx:id="title" layoutY="7.0" mouseTransparent="true" prefWidth="384.0" text="Mars Simulation Project" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="166.0">
+	    <Label id="TitleLabel" fx:id="title" layoutY="7.0" mouseTransparent="true" prefWidth="384.0" text="Mars Simulation Project v3.08" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="166.0">
 	      <effect>
 	        <Glow />
 	      </effect>

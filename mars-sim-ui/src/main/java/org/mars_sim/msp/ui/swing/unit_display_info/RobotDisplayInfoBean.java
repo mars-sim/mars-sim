@@ -31,10 +31,10 @@ implements UnitDisplayInfo {
 	 * Constructor.
 	 */
 	RobotDisplayInfoBean() {
-		buttonIcon = ImageLoader.getIcon("PersonIcon");
+		buttonIcon = ImageLoader.getIcon("RobotIcon");
 	}
 
-	/** 
+	/**
 	 * Checks if unit is to be displayed on the navigator tool map.
 	 * @param unit the unit to display
 	 * @return true if unit is to be displayed on navigator map.
@@ -43,18 +43,18 @@ implements UnitDisplayInfo {
 		return false;
 	}
 
-	/** 
-	 * Gets display icon for the surface navigator map. 
-	 * @param unit the unit to display 
+	/**
+	 * Gets display icon for the surface navigator map.
+	 * @param unit the unit to display
 	 * @return icon
 	 */
 	public Icon getSurfMapIcon(Unit unit) {
 		return null;
 	}
 
-	/** 
-	 * Gets display icon for topo navigator map. 
-	 * @param unit the unit to display 
+	/**
+	 * Gets display icon for topo navigator map.
+	 * @param unit the unit to display
 	 * @return icon
 	 */
 	public Icon getTopoMapIcon(Unit unit) {
@@ -70,39 +70,39 @@ implements UnitDisplayInfo {
 		return false;
 	}
 
-	/** 
-	 * Gets the label color for surface navigator map. 
+	/**
+	 * Gets the label color for surface navigator map.
 	 * @return color
 	 */
 	public Color getSurfMapLabelColor() {
 		return null;
 	}
 
-	/** 
-	 * Gets the label color for topo navigator map. 
+	/**
+	 * Gets the label color for topo navigator map.
 	 * @return color
 	 */
 	public Color getTopoMapLabelColor() {
 		return null;
 	}
 
-	/** 
-	 * Gets the label font for navigator map. 
+	/**
+	 * Gets the label font for navigator map.
 	 * @return font
 	 */
 	public Font getMapLabelFont() {
 		return null;
 	}
 
-	/** 
-	 * Gets the range (km) for clicking on unit on navigator map. 
+	/**
+	 * Gets the range (km) for clicking on unit on navigator map.
 	 * @return clicking range
 	 */
 	public double getMapClickRange() {
 		return 0;
 	}
 
-	/** 
+	/**
 	 * Checks if the unit is to be displayed on the navigator tool globe.
 	 * @param unit the unit to display.
 	 * @return true if unit is to be displayed on globe
@@ -111,15 +111,15 @@ implements UnitDisplayInfo {
 		return false;
 	}
 
-	/** 
-	 * Gets display color for surface globe. 
+	/**
+	 * Gets display color for surface globe.
 	 * @return color
 	 */
 	public Color getSurfGlobeColor() {
 		return null;
 	}
 
-	/** 
+	/**
 	 * Gets display color for topo globe.
 	 * @return color
 	 */
@@ -127,11 +127,11 @@ implements UnitDisplayInfo {
 		return null;
 	}
 
-	/** 
+	/**
 	 * Gets icon for unit button.
 	 * @return icon
 	 */
-	public Icon getButtonIcon() {
+	public Icon getButtonIcon(Unit unit) {
 		return buttonIcon;
 	}
 
@@ -148,9 +148,9 @@ implements UnitDisplayInfo {
 		if (robot.getPhysicalCondition().isDead()) result = SoundConstants.SND_PERSON_DEAD;
 		else {
 			//if (male) {
-				//if (randomSoundNum == 1) 
+				//if (randomSoundNum == 1)
 					result = SoundConstants.SND_PERSON_MALE1;
-				//else if (randomSoundNum == 2) 
+				//else if (randomSoundNum == 2)
 					//result = SoundConstants.SND_PERSON_MALE2;
 			//}
 			//else {

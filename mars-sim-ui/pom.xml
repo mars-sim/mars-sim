@@ -197,7 +197,7 @@
 	<dependency>
 	    <groupId>de.jensd</groupId>
 	    <artifactId>fontawesomefx</artifactId>
-	    <version>8.4</version>
+	    <version>8.6</version>
 	</dependency>
     <dependency>
         <groupId>org.testfx</groupId>

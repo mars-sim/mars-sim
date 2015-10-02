@@ -1,4 +1,4 @@
-package org.mars_sim.msp.javafx;
+package org.mars_sim.msp.javafx.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;

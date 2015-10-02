@@ -46,6 +46,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import org.mars_sim.msp.core.Simulation;
@@ -90,7 +91,7 @@ public class MainMenu {
 
     private Group root;
 	private Stage primaryStage;
-	private Stage stage;
+	private Stage mainSceneStage;
 	public Scene mainMenuScene;
 
 	public MainMenu mainMenu;
@@ -134,15 +135,15 @@ public class MainMenu {
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
-	void initAndShowGUI(Stage primaryStage) {
+	void initAndShowGUI(Stage mainMenuStage) {
 	   //Logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
-	   this.primaryStage = primaryStage;
+	   this.primaryStage = mainMenuStage;
 
     	Platform.setImplicitExit(false);
 
-    	primaryStage.setOnCloseRequest(e -> {
-			boolean isExit = exitDialog(primaryStage);
+    	mainMenuStage.setOnCloseRequest(e -> {
+			boolean isExit = exitDialog(mainMenuStage);
 			if (!isExit) {
 				e.consume();
 			}
@@ -151,17 +152,18 @@ public class MainMenu {
 			}
 		});
 
-       ScreensSwitcher switcher = new ScreensSwitcher(this);
-       switcher.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);
-       switcher.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
-       switcher.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
-       switcher.setScreen(MainMenu.screen1ID);
+       ScreensSwitcher screen = new ScreensSwitcher(this);
+       screen.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);
+       screen.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
+       screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
+       screen.setScreen(MainMenu.screen1ID);
 
        root = new Group();
        Parent parent = createMarsGlobe();
-       root.getChildren().addAll(parent, switcher);
+       root.getChildren().addAll(parent, screen);
        Scene mainMenuScene = new Scene(root);
-       mainMenuScene.getStylesheets().add( this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
+       mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
+
 
        // 2015-09-26 Added adjustRotation()
        adjustRotation(mainMenuScene, parent);
@@ -169,22 +171,24 @@ public class MainMenu {
        //scene.setFill(Color.rgb(10, 10, 40));
        mainMenuScene.setFill(Color.BLACK);
        mainMenuScene.setCursor(Cursor.HAND);
-       //primaryStage.initStyle(StageStyle.UNDECORATED);
+       mainMenuScene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
+       mainMenuStage.initStyle(StageStyle.TRANSPARENT);
+       //mainMenuStage.initStyle(StageStyle.TRANSPARENT);
        //primaryStage.initStyle (StageStyle.UTILITY);
        //primaryStage.getStyleClass().add("rootPane");
-       primaryStage.centerOnScreen();
-       primaryStage.setResizable(false);
-	   primaryStage.setTitle(Simulation.WINDOW_TITLE);
-       primaryStage.setScene(mainMenuScene);
-       primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+       mainMenuStage.centerOnScreen();
+       mainMenuStage.setResizable(false);
+	   mainMenuStage.setTitle(Simulation.WINDOW_TITLE);
+       mainMenuStage.setScene(mainMenuScene);
+       mainMenuStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
        //primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       primaryStage.show();
+       mainMenuStage.show();
 
        // Starts a new stage for MainScene
-	   stage = new Stage();
-	   stage.setMinWidth(1024);
-	   stage.setMinHeight(400);
-	   stage.setTitle(Simulation.WINDOW_TITLE);
+	   mainSceneStage = new Stage();
+	   mainSceneStage.setMinWidth(1024);
+	   mainSceneStage.setMinHeight(400);
+	   mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
 	   //menuScene = new MenuScene(stage);
 	   //modtoolScene = new ModtoolScene(stage);
    }
@@ -202,7 +206,7 @@ public class MainMenu {
 
 	   primaryStage.setIconified(true);
 
-	   mainScene = new MainScene(stage);
+	   mainScene = new MainScene(mainSceneStage);
 
 	   marsProjectFX.handleNewSimulation();
    }
@@ -212,7 +216,7 @@ public class MainMenu {
 	   primaryStage.setIconified(true);
 
 	   try {
-		   mainScene = new MainScene(stage);
+		   mainScene = new MainScene(mainSceneStage);
 		   Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 		   // TODO:
 		   //root.setCursor(Cursor.WAIT);
@@ -251,12 +255,12 @@ public class MainMenu {
 
 		   // prepare stage
 		   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-	       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
+	       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
 
-		   stage.setResizable(true);
+		   mainSceneStage.setResizable(true);
 		   //stage.setFullScreen(true);
-		   stage.setScene(scene);
-		   stage.show();
+		   mainSceneStage.setScene(scene);
+		   mainSceneStage.show();
 
 		   //mainScene.getMarsNode().createSettlementWindow();
 		   //mainScene.getMarsNode().createJMEWindow(stage);

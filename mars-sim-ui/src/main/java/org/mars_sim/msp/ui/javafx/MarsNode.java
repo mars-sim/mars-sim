@@ -200,6 +200,7 @@ public class MarsNode {
 	    Pane pane = new Pane();
 	    //pane.setPrefSize(400, 200);
 	    pane.setStyle("-fx-background-color: " + color);
+	    //pane.setEffect(new DropShadow(2d, 0d, +2d, Color.BLACK));
 	    VBox v = new VBox(10);
 	    v.setSpacing(10);
 	    v.setPadding(new Insets(20, 20, 20, 20));

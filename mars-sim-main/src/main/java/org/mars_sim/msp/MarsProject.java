@@ -55,7 +55,7 @@ public class MarsProject extends SimpleApplication {
      * @param args command line arguments.
      */
     public MarsProject(String args[]) {
-		logger.info("MarsProject's constructor is on "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProject's constructor is on "+Thread.currentThread().getName() + " Thread");
 	   	Simulation.instance().startSimExecutor();
 	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
     }

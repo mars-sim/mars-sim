@@ -23,33 +23,33 @@ public class LUVDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	// Data members
 	private Icon buttonIcon;
-	
+
 	/**
 	 * Constructor
 	 */
 	public LUVDisplayInfoBean() {
 		// Use VehicleDisplayInfoBean
 		super();
-		
+
 		buttonIcon = ImageLoader.getIcon("LUVIcon");
 	}
-	
-	
+
+
 	@Override
 	public boolean isMapDisplayed(Unit unit) {
         return false;
     }
-	
+
 	@Override
     public boolean isGlobeDisplayed(Unit unit) {
         return false;
     }
-	
-    /** 
+
+    /**
      * Gets icon for unit button.
      * @return icon
      */
-	public Icon getButtonIcon() {
+	public Icon getButtonIcon(Unit unit) {
 		return buttonIcon;
 	}
 

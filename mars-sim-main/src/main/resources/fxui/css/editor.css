@@ -24,14 +24,86 @@ Defines the rectangle responsible for the shadow
 -fx-arc-height:20px;
 }
 
-.button {
-    -fx-text-fill: white;
-    -fx-font-family: "Arial Narrow";
-    -fx-font-weight: bold;
-    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+
+#startButton {
+    -fx-padding: 5 15 5 15;
+	-fx-font-size: 15.0px;
+	-fx-base: #00a7d4;
+	-fx-background: #e5f3f6;
+	-fx-focus-color: #0093FF;
+	-fx-control-inner-background: #FFFFFF;
+	-fx-text-base-color: #FFFFFF;
+	-fx-background-color:#00a7d4;
+    -fx-background-insets: -1.4, 0, 1, 2;
+    -fx-color:#00a7d4;
+	-fx-background-radius: 5;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }
 
-.button:hover {
-    -fx-background-color: linear-gradient(#2A5058, #61a2b1);
+#startButton Text {
+    -fx-fill: yellow;
+    -fx-effect: dropshadow( gaussian , #a30000 , 0,0,0,2 );
 }
+#startButton:hover {
+	-fx-font-size: 17.0px;
+    -fx-background-color: linear-gradient(#1E90FF, #61a2b1);
+}
+
+.button {
+	-fx-font-size: 15.0px;
+	-fx-base: #00a7d4;
+	-fx-background: #e5f3f6;
+	-fx-focus-color: #0093FF;
+	-fx-control-inner-background: #FFFFFF;
+	-fx-text-base-color: #FFFFFF;
+	-fx-background-color:#00a7d4;
+	-fx-inner-border: linear-gradient(to bottom, derive(-fx-color,73.6%) 0%, derive(-fx-color,29.200000000000003%) 100%);
+	-fx-body-color: linear-gradient( to bottom, derive(-fx-color, 34.0%) 0%, derive(-fx-color, -18.0%) 100%);
+	-fx-background-insets: 0px;
+	-fx-background-radius: 0px;
+	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
+	-fx-text-fill: -fx-text-base-color;
+	-fx-alignment: CENTER;
+	-fx-content-display: LEFT;
+	-fx-background-radius: 5;
+}
+
+.button:focused {
+	-fx-color:#00a7d4;
+	-fx-background-color:#ED9C28, #00a7d4;
+	-fx-background-insets: -1.4, 0, 1, 2;
+	-fx-background-radius: 0;
+}
+
+.button:hover {
+	-fx-focus-color: #FF0000;
+	-fx-background-color: #ED9C28, #0187ab;
+}
+
+.button:pressed {
+/*
+    -fx-padding: 15 5 15 5;
+    -fx-background-insets: 2 0 0 0,2 0 1 0, 2 0 2 0, 2 0 3 0;
+*/
+}
+
+#clientIDLabel {
+	-fx-focus-color: #FF0000;
+	-fx-text-base-color: #0187ab;
+}
+
+#playerLabel {
+	-fx-focus-color: #FF0000;
+	-fx-text-base-color: #0187ab;
+}
+
+#gameModeLabel {
+	-fx-focus-color: #FF0000;
+	-fx-text-base-color: #0187ab;
+}
+
+#titleLabel {
+	-fx-focus-color: #FF0000;
+	-fx-text-base-color:  #0187ab;
+}
+

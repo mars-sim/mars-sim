@@ -23,23 +23,23 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 public class UnitButton extends JButton {
 
 	private static final long serialVersionUID = 1L;
-	// Data members	
+	// Data members
 	private Unit unit;
 
-    /** 
+    /**
      * Constructor
      *
      * @param unit the unit the button is for.
      */
 	public UnitButton(Unit unit) {
-		
-		// Use JButton constructor	
-		super(unit.getName(), 
-            UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getButtonIcon()); 
-		
+
+		// Use JButton constructor
+		super(unit.getName(),
+            UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getButtonIcon(unit));
+
 		// Initialize unit
 		this.unit = unit;
-		
+
 		// Prepare default unit button values
 		setFont(new Font("SansSerif", Font.PLAIN, 9));
 		setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -47,13 +47,13 @@ public class UnitButton extends JButton {
 		setAlignmentX(.5F);
 		setAlignmentY(.5F);
 	}
-	
-	/** 
+
+	/**
      * Gets the button's unit.
      *
      * @return the button's unit
      */
-	public Unit getUnit() { 
-        return unit; 
+	public Unit getUnit() {
+        return unit;
     }
 }

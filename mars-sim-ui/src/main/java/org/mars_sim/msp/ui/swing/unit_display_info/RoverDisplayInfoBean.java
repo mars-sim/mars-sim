@@ -21,7 +21,7 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 
 	// Data members
 	private Icon buttonIcon;
-	
+
 	/**
 	 * Constructor
 	 */
@@ -33,7 +33,7 @@ public class RoverDisplayInfoBean extends VehicleDisplayInfoBean {
 	/* (non-Javadoc)
 	 * @see org.mars_sim.msp.ui.standard.unit_display_info.UnitDisplayInfo#getButtonIcon()
 	 */
-	public Icon getButtonIcon() {
+	public Icon getButtonIcon(Unit unit) {
 		return buttonIcon;
 	}
 
