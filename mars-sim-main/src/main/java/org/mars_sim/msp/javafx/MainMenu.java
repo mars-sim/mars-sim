@@ -111,11 +111,11 @@ public class MainMenu {
 
     public boolean exitDialog(Stage stage) {
     	Alert alert = new Alert(AlertType.CONFIRMATION);
-    	alert.setTitle("Mars Simulation Project");
-    	alert.setHeaderText("Confirmation Dialog");
+    	alert.setTitle("Confirmation Dialog");
+    	alert.setHeaderText("Exiting MSP");
     	//alert.initModality(Modality.APPLICATION_MODAL);
 		alert.initOwner(stage);
-    	alert.setContentText("Do you really want to quit MSP?");
+    	alert.setContentText("Do you really want to do this?");
     	ButtonType buttonTypeYes = new ButtonType("Yes");
     	ButtonType buttonTypeNo = new ButtonType("No");
     	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);

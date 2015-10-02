@@ -179,9 +179,7 @@ public class CrewEditorFX {
 		stage.setScene(scene);
 		stage.sizeToScene();
 		stage.toFront();
-
-        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-
+	    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
         stage.centerOnScreen();
         //stage.setResizable(true);
  	   	stage.setFullScreen(false);

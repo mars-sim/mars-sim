@@ -843,11 +843,11 @@ public class MainScene {
 	private void newSimulationProcess() {
 		//logger.info("MainScene's newSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Confirm on New");
+		alert.setTitle("Starting new sim");
 		alert.setHeaderText(Msg.getString("MainScene.new.header"));
 		alert.setContentText(Msg.getString("MainScene.new.content"));
-		ButtonType buttonTypeOne = new ButtonType("Save and End the Sim");
-		ButtonType buttonTypeTwo = new ButtonType("End the Sim");
+		ButtonType buttonTypeOne = new ButtonType("Save and End");
+		ButtonType buttonTypeTwo = new ButtonType("End Sim");
 		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();
@@ -1138,13 +1138,13 @@ public class MainScene {
 	public void alertOnExit() {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Confirm on Exit");
+		alert.setTitle("Leaving the sim");
 		alert.initOwner(stage);
 		alert.setHeaderText(Msg.getString("MainScene.exit.header"));
 		alert.setContentText(Msg.getString("MainScene.exit.content"));
 		ButtonType buttonTypeOne = new ButtonType("Save and End");
-		ButtonType buttonTypeTwo = new ButtonType("End the Sim");
-		ButtonType buttonTypeThree = new ButtonType("Exit the MSP");
+		ButtonType buttonTypeTwo = new ButtonType("End Sim");
+		ButtonType buttonTypeThree = new ButtonType("Exit MSP");
 		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();

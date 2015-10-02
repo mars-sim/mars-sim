@@ -234,9 +234,9 @@ implements Serializable {
 			double solar_time = marsClock.getMillisol() ;
 			//System.out.println("solar_time is " + (int) solar_time);
 
-        	double result = 0;
-			//double lat = location.getPhi2LatRadian();
-			double lat =  1.5708 - location.getPhi() ;
+        	//double result = 0;
+        	// compute latitude in radians rather than in degree
+			double lat = location.getPhi2LatRadian();
 			//System.out.println("location.getPhi2LatRadian() : " + lat);
 			//double dec = getSolarDeclinationAngle(); //getL_s());
 			//System.out.println("solar dec angle is " + dec);
@@ -261,6 +261,10 @@ implements Serializable {
 			// 2. https://en.wiki2.org/wiki/Equation_of_time
 			// 3. https://en.wiki2.org/wiki/Analemma
 			// 4. http://www.planetary.org/blogs/emily-lakdawalla/2014/a-martian-analemma.html?referrer=https://www.google.com/
+
+
+			computeSineSolarDeclinationAngle();
+			double d = getSolarDeclinationAngle();
 
 			double equation_of_time_offset = 0;
 			computeL_s();
@@ -290,12 +294,11 @@ implements Serializable {
 			double h = 0.0063 * Math.abs(modified_solar_time - 500D);
 			// 0.0063 = 2D * Math.PI / 1000D;
 
-			computeSineSolarDeclinationAngle();
-			double d = getSolarDeclinationAngle();
+			//computeSineSolarDeclinationAngle();
+			//double d = getSolarDeclinationAngle();
 
-			result = Math.sin (lat) * sineSolarDeclinationAngle +  Math.cos (lat)  * Math.cos (d) * Math.cos (h) ;
+			return Math.sin (lat) * sineSolarDeclinationAngle +  Math.cos (lat)  * Math.cos (d) * Math.cos (h) ;
 
-			return result;
 
 			//cosineSolarZenithAngleMap.put(location, result);
         //}
@@ -316,9 +319,9 @@ implements Serializable {
 		double part1 = SEMI_MAJOR_AXIS * (1 - ECCENTRICITY *  ECCENTRICITY) / instantaneousSunMarsDistance;//   radius is in A.U.  no need of * 149597871000D
 		//System.out.println("part1 is " + part1);
 		double part2 = ( part1 - 1 ) / ECCENTRICITY ;
-		double v = Math.acos(part2);
+		//double v = Math.acos(part2);
 		//System.out.println("true anomally is " + v);
-		return v;
+		return Math.acos(part2);
 	}
 
 
@@ -375,7 +378,7 @@ implements Serializable {
 	 */
 	// 2015-03-17 Added getSolarZenithAngleDegree()
 	public double getSolarDeclinationAngleDegree() {
-		return getSolarDeclinationAngle() * 57.2975;
+		return getSolarDeclinationAngle() / DEGREE_TO_RADIAN;
 	}
 
 	/**
@@ -389,6 +392,7 @@ implements Serializable {
 		//double lat = location.getPhi2Lat(location.getPhi());
 		return 318.3152 * Math.acos ( -Math.tan (location.getPhi2LatRadian()) * Math.tan (getSolarDeclinationAngle()) );
 		// Note: 318.3152 = 1000 millisols / 24 hours / DEGREE_TO_RADIAN * 2 / 360 degrees * 24 hours
+		// TODO: is 24 hours wrong on Mars?
 	}
 
 	/**
@@ -404,5 +408,6 @@ implements Serializable {
 	 */
 	public void destroy() {
 		sunDirection = null;
+		marsClock = null;
 	}
 }

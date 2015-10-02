@@ -129,14 +129,16 @@ public class SurfaceFeatures implements Serializable {
      */
     public double getSurfaceSunlight(Coordinates location) {
     	double result = 1D;
-      	//if (sunDirection == null)
-      	//	sunDirection = Simulation.instance().getMars().getOrbitInfo().getSunDirection();
 /*
 // Method 1:
+
+      	if (sunDirection == null)
+      		sunDirection = Simulation.instance().getMars().getOrbitInfo().getSunDirection();
+
         double angleFromSun = sunDirection.getAngle(location);
         //System.out.print ("z1 : "+  Math.round(angleFromSun * 180D / Math.PI * 1000D)/1000D + "   ");
 
-        //double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
+        double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
 
         if (angleFromSun < (Math.PI / 2D) - (twilightzone / 2D)) {
             result = 1D;
@@ -147,7 +149,7 @@ public class SurfaceFeatures implements Serializable {
             result = 1D - (twilightAngle / twilightzone);
         }
 
-        // Below is the numerically shortened equivalent of the above if-else block
+        // NOTE: Below is the numerically shortened equivalent of the above if-else block
         if (angleFromSun  < 1.4708) {
             result = 1D;
         } else if (angleFromSun  > 1.6708) {
@@ -156,15 +158,9 @@ public class SurfaceFeatures implements Serializable {
             //double twilightAngle = z - 1.6708;
             result = 8.354 - 5 * angleFromSun;
         }
-
 */
-// Method 2:
 
-    	if (orbitInfo == null) {
-    	    if (mars != null) {
-    	        orbitInfo = mars.getOrbitInfo();
-    	    }
-    	}
+// Method 2:
 
     	if (orbitInfo != null) {
     	    double z =  orbitInfo.getSolarZenithAngle(location);
@@ -178,6 +174,12 @@ public class SurfaceFeatures implements Serializable {
     	    } else {
     	        //double twilightAngle = z - 1.6708;
     	        result = 8.354 - 5 * z;
+    	    }
+    	}
+
+    	else  {
+    	    if (mars != null) {
+    	        orbitInfo = mars.getOrbitInfo();
     	    }
     	}
 

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,7 +32,9 @@ import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -203,6 +206,7 @@ public class ScenarioConfigEditorFX {
 
 			stage = new Stage();
 			stage.setTitle("Mars Simulation Project v3.08 - Scenario Configuration Editor");
+		    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 
 			Undecorator undecorator = new Undecorator(stage, (Region) parent);
 			undecorator.getStylesheets().add("skin/undecorator.css");
@@ -396,7 +400,10 @@ public class ScenarioConfigEditorFX {
 		removeButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.remove"))); //$NON-NLS-1$
 		removeButton.setId("removeButton");
 		removeButton.setOnAction((event) -> {
-			removeSelectedSettlements();
+			boolean isYes = confirmDeleteDialog("Removing settlement", "Are you sure you want to do this?");
+			if (isYes) {
+				removeSelectedSettlements();
+			}
 		});
 		vbTopLeft.getChildren().add(removeButton);
 
@@ -1629,4 +1636,29 @@ public class ScenarioConfigEditorFX {
 	    	//jme.setupJME();
 		}
 	}
+
+	public boolean confirmDeleteDialog(String header, String text) {
+        Alert dialog = new Alert(Alert.AlertType.CONFIRMATION);
+		dialog.initOwner(stage);
+        dialog.setHeaderText(header);
+        dialog.setContentText(text);
+        dialog.getDialogPane().setPrefSize(300, 180);
+        ButtonType buttonTypeYes = new ButtonType("Yes");
+        ButtonType buttonTypeNo = new ButtonType("No");
+        dialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+        final Optional<ButtonType> result = dialog.showAndWait();
+        return result.get() == buttonTypeYes;
+    }
+
+	public void destroy() {
+
+		config  = null;
+		mainMenu  = null;
+		crewEditorFX  = null;
+		marsProjectFX  = null;
+		multiplayerClient  = null;
+		settlementConfig  = null;
+
+	}
+
 }
