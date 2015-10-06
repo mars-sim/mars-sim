@@ -478,7 +478,7 @@ public class ScenarioConfigEditorFX {
 
 		TilePane tileButtons = new TilePane(Orientation.HORIZONTAL);
 		tileButtons.setPadding(new Insets(5, 5, 5, 5));
-		tileButtons.setHgap(40.0);
+		tileButtons.setHgap(50.0);
 		tileButtons.setVgap(8.0);
 		tileButtons.getChildren().addAll(refreshDefaultButton, startButton, crewButton);
 		tileButtons.setAlignment(Pos.CENTER);

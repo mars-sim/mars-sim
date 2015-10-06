@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,10 +32,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
@@ -85,14 +89,12 @@ public class SimulationConfigEditor {
 		hasError = false;
 
 		try {
-			UIManager.setLookAndFeel(new NimRODLookAndFeel());
-/*
-			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/Burdeos.theme"));
+			//UIManager.setLookAndFeel(new NimRODLookAndFeel());
+			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/Snow.theme"));
 			NimRODLookAndFeel nf = new NimRODLookAndFeel();
 			nf.setCurrentTheme(nt);
 			UIManager.setLookAndFeel(nf);
-*/
-			}
+		}
 	    catch(Exception ex){
 			logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), ex); //$NON-NLS-1$
 	    }
@@ -128,6 +130,15 @@ public class SimulationConfigEditor {
 		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(75);
 		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(55);
 
+		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
+		settlementTable.setBackground(java.awt.Color.WHITE);
+
+		JTableHeader header = settlementTable.getTableHeader();
+		header.setFont(new Font("Dialog", Font.BOLD, 12));
+		header.setBackground(new java.awt.Color(0, 167, 212));
+		header.setForeground(java.awt.Color.white);
+
 		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create combo box for editing template column in settlement table.
@@ -157,7 +168,14 @@ public class SimulationConfigEditor {
 		// Create configuration button inner top panel.
 		JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(3, 1));
 		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
-
+/*
+		 try {
+             UIManager.setLookAndFeel(
+                     UIManager.getSystemLookAndFeelClassName());
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+*/
 		// Create add settlement button.
 		JButton addButton = new JButton(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
 		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
@@ -166,7 +184,14 @@ public class SimulationConfigEditor {
 				addNewSettlement();
 			}
 		});
-		configurationButtonInnerTopPanel.add(addButton);
+/*		addButton.setBackground(new java.awt.Color(0, 167, 212));
+		addButton.setForeground(Color.WHITE);
+		addButton.setContentAreaFilled(false);
+		addButton.setOpaque(true);
+		addButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+*/		configurationButtonInnerTopPanel.add(addButton);
+
+		configurationButtonInnerTopPanel.add(new JLabel()); // empty label
 
 		// Create remove settlement button.
 		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
@@ -176,21 +201,31 @@ public class SimulationConfigEditor {
 				removeSelectedSettlements();
 			}
 		});
-		configurationButtonInnerTopPanel.add(removeButton);
+/*		removeButton.setBackground(new java.awt.Color(0, 167, 212));
+		removeButton.setForeground(Color.WHITE);
+		removeButton.setContentAreaFilled(false);
+		removeButton.setOpaque(true);
+		removeButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+*/		configurationButtonInnerTopPanel.add(removeButton);
 
 		// Create configuration button inner bottom panel.
 		JPanel configurationButtonInnerBottomPanel = new JPanel(new GridLayout(1, 1));
 		configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
 
 		// Create default button.
-		JButton defaultButton = new JButton(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
+		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.default") + " "); //$NON-NLS-1$
 		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
 		defaultButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setDefaultSettlements();
 			}
 		});
-		configurationButtonInnerBottomPanel.add(defaultButton);
+/*		defaultButton.setBackground(new java.awt.Color(0, 167, 212));
+		defaultButton.setForeground(Color.WHITE);
+		defaultButton.setContentAreaFilled(false);
+		defaultButton.setOpaque(true);
+		defaultButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+*/		configurationButtonInnerBottomPanel.add(defaultButton);
 
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
@@ -207,7 +242,7 @@ public class SimulationConfigEditor {
 
 
 		// Create the create button.
-		createButton = new JButton(Msg.getString("SimulationConfigEditor.button.newSim")); //$NON-NLS-1$
+		createButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.newSim")+ " "); //$NON-NLS-1$
 		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		createButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -236,20 +271,27 @@ public class SimulationConfigEditor {
 				}
 			}
 		});
-
-		bottomButtonPanel.add(createButton);
+/*		createButton.setBackground(new java.awt.Color(0, 167, 212));
+		createButton.setForeground(Color.WHITE);
+		createButton.setContentAreaFilled(false);
+		createButton.setOpaque(true);
+		createButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+*/		bottomButtonPanel.add(createButton);
 
 		// 2014-12-15 Added Edit Alpha Crew button.
-		JButton alphaButton = new JButton(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
+		JButton alphaButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.crewEditor")+ " "); //$NON-NLS-1$
 		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		alphaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				editCrewProfile("alpha");
 			}
 		});
-		bottomButtonPanel.add(alphaButton);
-
-		//f.pack();
+/*		alphaButton.setBackground(new java.awt.Color(0, 167, 212));
+		alphaButton.setForeground(Color.WHITE);
+		alphaButton.setContentAreaFilled(false);
+		alphaButton.setOpaque(true);
+		alphaButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+*/		bottomButtonPanel.add(alphaButton);
 
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

@@ -31,6 +31,9 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
+import org.mars_sim.msp.core.reportingAuthority.FindingLife;
+import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -101,6 +104,8 @@ implements VehicleOperator, MissionMember, Serializable {
     private Role role;
     private Preference preference;
 
+    private ReportingAuthority ra;
+
     /**
      * Constructs a Person object at a given settlement.
      * @param name the person's name
@@ -165,6 +170,20 @@ implements VehicleOperator, MissionMember, Serializable {
 
         support = getLifeSupportType();
 
+        setupMissionControl();
+    }
+
+    // 2015-10-05 added setupMissionControl()
+    public void setupMissionControl() {
+
+    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
+        ra = new NASAMissionControl();
+        ra.setMissionAgenda(new FindingLife());
+        //ra.conductMissionObjective();
+    }
+
+    public ReportingAuthority getReportingAuthority() {
+    	return ra;
     }
 
     public Preference getPreference() {
