@@ -26,7 +26,7 @@ Defines the rectangle responsible for the shadow
 
 
 #startButton {
-    -fx-padding: 5 15 5 15;
+    -fx-padding: 0 15 0 15;
 	-fx-font-size: 15.0px;
 	-fx-base: #00a7d4;
 	-fx-background: #e5f3f6;
@@ -46,7 +46,7 @@ Defines the rectangle responsible for the shadow
 }
 #startButton:hover {
 	-fx-font-size: 17.0px;
-    -fx-background-color: linear-gradient(#1E90FF, #61a2b1);
+/*    -fx-background-color: linear-gradient(#1E90FF, #61a2b1); */
 }
 
 .button {

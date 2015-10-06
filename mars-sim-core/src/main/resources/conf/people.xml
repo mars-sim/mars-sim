@@ -368,11 +368,16 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<!-- name: the person's name (required) -->
 		<!-- gender: the person's gender ("male" or "female") (optional) -->
 		<!-- personality-type: the person's MBTI personality type. (optional) -->
-		<!-- settlement: the person's starting settlement. Must be a named settlement -->
-		<!--   configured in settlements.xml.  (optional) -->
+		<!-- settlement: the person's starting settlement. Must be a named settlement configured in settlements.xml.  (optional) -->
 		<!-- job: the person's permanent job. (optional) -->
+		<!-- favorite-main-dish: the person's favorite main dish. (optional) -->
+		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
+		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
+		<!-- favorite-activity: the person's favorite hobby. (optional) -->
 		<person name="Karen Andersen" gender="female" personality-type="ISTJ" settlement="Schiaparelli Point" job="Botanist"
-			favorite-main-dish="Bean Sprout Garlic Stir Fry" favorite-side-dish="Roasted Carrot Soup" favorite-dessert="strawberry"
+			favorite-main-dish="Bean Sprout Garlic Stir Fry"
+			favorite-side-dish="Roasted Carrot Soup"
+			favorite-dessert="strawberry"
 			favorite-activity="Field Work">
 
 			<!-- List of configured natural attributes. (optional) -->

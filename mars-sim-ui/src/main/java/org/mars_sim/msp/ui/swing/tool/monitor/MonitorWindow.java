@@ -465,22 +465,26 @@ implements TableModelListener, ActionListener {
     	        statusPanel.remove(_tableSearchableBar);
     	        _tableSearchableBar = null;
     	    }
-    	        _tableSearchableBar = new SearchableBar(searchable);
-    	        _tableSearchableBar.setSearchingText("");
-	    	    _tableSearchableBar.setCompact(true);
+    	    
+	        _tableSearchableBar = new SearchableBar(searchable);
+	        _tableSearchableBar.setSearchingText("");
+    	    _tableSearchableBar.setCompact(true);
 
-	    	    //_tableSearchableBar.setVisibleButtons(1);
-	    	    _tableSearchableBar.setToolTipText("Type in your search terms. Can use wildcards (*, +, ?)");
+    	    //_tableSearchableBar.setVisibleButtons(1);
+    	    _tableSearchableBar.setToolTipText("Type in your search terms. Can use wildcards (*, +, ?)");
 
-	    	    ((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
-	    	    _tableSearchableBar.setVisibleButtons(_tableSearchableBar.getVisibleButtons());
-	    	    _tableSearchableBar.setName(table.getName());
-	    	    _tableSearchableBar.setShowMatchCount(true);
-	    	    _tableSearchableBar.setVisible(true);
+    	    ((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
+    	    _tableSearchableBar.setVisibleButtons(SearchableBar.SHOW_NAVIGATION
+    	    		| SearchableBar.SHOW_MATCHCASE
+    	    		| SearchableBar.SHOW_WHOLE_WORDS
+    	    		| SearchableBar.SHOW_STATUS);
+    	    _tableSearchableBar.setName(table.getName());
+    	    _tableSearchableBar.setShowMatchCount(true);
+    	    _tableSearchableBar.setVisible(true);
 
-	    	    statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
+    	    statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
 
-	    	    //pack();
+    	    //pack();
 
     	    //statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
     	    //statusPanel.invalidate();

@@ -109,29 +109,6 @@ public class MainMenu {
     	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
 	}
 
-    public boolean exitDialog(Stage stage) {
-    	Alert alert = new Alert(AlertType.CONFIRMATION);
-    	alert.setTitle("Confirmation Dialog");
-    	alert.setHeaderText("Exiting MSP");
-    	//alert.initModality(Modality.APPLICATION_MODAL);
-		alert.initOwner(stage);
-    	alert.setContentText("Do you really want to do this?");
-    	ButtonType buttonTypeYes = new ButtonType("Yes");
-    	ButtonType buttonTypeNo = new ButtonType("No");
-    	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-    	Optional<ButtonType> result = alert.showAndWait();
-    	if (result.get() == buttonTypeYes){
-    		if (multiplayerMode != null)
-    			if (multiplayerMode.getChoiceDialog() != null)
-    				multiplayerMode.getChoiceDialog().close();
-    		alert.close();
-    		return true;
-    	} else {
-    		alert.close();
-    	    return false;
-    	}
-    }
-
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
@@ -245,32 +222,32 @@ public class MainMenu {
 		}
 	}
 
-	   public void prepareStage() {
-		   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+	public void prepareStage() {
+	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 
-		   // prepare main scene
-		   mainScene.prepareMainScene();
-		   Scene scene = mainScene.initializeScene();
-		   mainScene.prepareOthers();
+	   // prepare main scene
+	   mainScene.prepareMainScene();
+	   Scene scene = mainScene.initializeScene();
+	   mainScene.prepareOthers();
 
-		   // prepare stage
-		   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-	       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
+	   // prepare stage
+	   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
 
-		   mainSceneStage.setResizable(true);
-		   //stage.setFullScreen(true);
-		   mainSceneStage.setScene(scene);
-		   mainSceneStage.show();
+	   mainSceneStage.setResizable(true);
+	   //stage.setFullScreen(true);
+	   mainSceneStage.setScene(scene);
+	   mainSceneStage.show();
 
-		   //mainScene.getMarsNode().createSettlementWindow();
-		   //mainScene.getMarsNode().createJMEWindow(stage);
+	   //mainScene.getMarsNode().createSettlementWindow();
+	   //mainScene.getMarsNode().createJMEWindow(stage);
 
-		   //logger.info("done with stage.show() in MainMenu's prepareStage()");
+	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
 
-		   mainScene.initializeTheme();
+	   mainScene.initializeTheme();
 
-		   //logger.info("done with MainMenu's prepareStage()");
-	  }
+	   //logger.info("done with MainMenu's prepareStage()");
+	}
 
    public void runThree() {
 	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
@@ -437,4 +414,28 @@ public class MainMenu {
    public void setDefaultRotation() {
 	   rt.setRate(1.0);
    }
+
+	public boolean exitDialog(Stage stage) {
+	   Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Confirmation Dialog");
+		alert.setHeaderText("Exiting MSP");
+		//alert.initModality(Modality.APPLICATION_MODAL);
+		alert.initOwner(stage);
+		alert.setContentText("Do you really want to do this?");
+		ButtonType buttonTypeYes = new ButtonType("Yes");
+		ButtonType buttonTypeNo = new ButtonType("No");
+		   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+		   	Optional<ButtonType> result = alert.showAndWait();
+		   	if (result.get() == buttonTypeYes){
+		   		if (multiplayerMode != null)
+		   			if (multiplayerMode.getChoiceDialog() != null)
+		   				multiplayerMode.getChoiceDialog().close();
+		   		alert.close();
+		   		return true;
+		   	} else {
+		   		alert.close();
+		   	    return false;
+		   	}
+   	}
+
 }

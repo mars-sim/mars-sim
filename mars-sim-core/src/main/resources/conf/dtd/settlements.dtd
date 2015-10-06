@@ -1,12 +1,13 @@
-<!ELEMENT settlement-configuration (settlement-template-list, 
+<!ELEMENT settlement-configuration (settlement-template-list,
 initial-settlement-list, new-arriving-settlement-list, settlement-name-list)>
 <!ELEMENT settlement-template-list (template*)>
-<!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, 
+<!ELEMENT template (building*, vehicle*, equipment*, resource*, part*,
 part-package*, resupply?)>
 <!ATTLIST template name CDATA #REQUIRED>
 <!ATTLIST template id CDATA #REQUIRED>
 <!ATTLIST template default-population CDATA #REQUIRED>
 <!ATTLIST template number-of-robots CDATA #REQUIRED>
+<!ATTLIST template max-MSD CDATA #REQUIRED>
 <!ELEMENT building (connection-list?)>
 <!ATTLIST building id CDATA #REQUIRED>
 <!ATTLIST building type CDATA #REQUIRED>
@@ -19,7 +20,7 @@ part-package*, resupply?)>
 <!ELEMENT connection EMPTY>
 <!ATTLIST connection id CDATA #REQUIRED>
 <!ATTLIST connection x-location CDATA #REQUIRED>
-<!ATTLIST connection y-location CDATA #REQUIRED> 
+<!ATTLIST connection y-location CDATA #REQUIRED>
 <!ELEMENT vehicle EMPTY>
 <!ATTLIST vehicle type CDATA #REQUIRED>
 <!ATTLIST vehicle number CDATA #REQUIRED>
@@ -40,11 +41,11 @@ part-package*, resupply?)>
 <!ATTLIST resupply-mission name CDATA #REQUIRED>
 <!ATTLIST resupply-mission arrival-time CDATA #REQUIRED>
 <!ELEMENT initial-settlement-list (settlement*)>
-<!ELEMENT settlement (location, population, number-of-robots)>
+<!ELEMENT settlement (location, population, number-of-robots, max-MSD)>
 <!ATTLIST settlement name CDATA #REQUIRED>
 <!ATTLIST settlement template CDATA #REQUIRED>
 <!ELEMENT new-arriving-settlement-list (arriving-settlement*)>
-<!ELEMENT arriving-settlement (location, population, number-of-robots)>
+<!ELEMENT arriving-settlement (location, population, number-of-robots, max-MSD)>
 <!ATTLIST arriving-settlement name CDATA #REQUIRED>
 <!ATTLIST arriving-settlement template CDATA #REQUIRED>
 <!ATTLIST arriving-settlement arrival-time CDATA #REQUIRED>
@@ -55,6 +56,8 @@ part-package*, resupply?)>
 <!ATTLIST population number CDATA #REQUIRED>
 <!ELEMENT number-of-robots EMPTY>
 <!ATTLIST number-of-robots number CDATA #REQUIRED>
+<!ELEMENT max-MSD EMPTY>
+<!ATTLIST max-MSD number CDATA #REQUIRED>
 <!ELEMENT settlement-name-list (settlement-name*)>
 <!ELEMENT settlement-name EMPTY>
 <!ATTLIST settlement-name value CDATA #REQUIRED>

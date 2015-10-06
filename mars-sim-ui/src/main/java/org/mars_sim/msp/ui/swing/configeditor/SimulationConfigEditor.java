@@ -29,9 +29,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
@@ -55,6 +57,8 @@ public class SimulationConfigEditor {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SimulationConfigEditor.class.getName());
+
+	private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
 	private boolean hasError;
@@ -95,7 +99,7 @@ public class SimulationConfigEditor {
 
 	    f = new JFrame();
 
-	    f.setSize(700, 500);
+	    f.setSize(HORIZONTAL_SIZE, 500);
 
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
@@ -108,7 +112,7 @@ public class SimulationConfigEditor {
 
 		// Create settlement scroll panel.
 		JScrollPane settlementScrollPane = new JScrollPane();
-		settlementScrollPane.setPreferredSize(new Dimension(485, 250));//585, 200));
+		settlementScrollPane.setPreferredSize(new Dimension(HORIZONTAL_SIZE, 250));//585, 200));
 		f.add(settlementScrollPane, BorderLayout.CENTER);
 
 		// Create settlement table.
@@ -117,11 +121,13 @@ public class SimulationConfigEditor {
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(125);
-		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(205);
+		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(175);
 		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(75);
-		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(75);
+		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(60);
 		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(75);
 		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(75);
+		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(55);
+
 		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create combo box for editing template column in settlement table.
@@ -133,6 +139,16 @@ public class SimulationConfigEditor {
 			templateCB.addItem(i.next().getTemplateName());
 		}
 		templateColumn.setCellEditor(new DefaultCellEditor(templateCB));
+
+      	// 2015-10-03 Align content to center of cell
+    	DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+    	defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    	TableColumn column = null;
+    	for (int ii = 0; ii < 7; ii++) {
+            column = settlementTable.getColumnModel().getColumn(ii);
+        	// 2015-10-03 Align content to center of cell
+    		column.setCellRenderer(defaultTableCellRenderer);
+    	}
 
 		// Create configuration button outer panel.
 		JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
@@ -316,7 +332,10 @@ public class SimulationConfigEditor {
 			//System.out.println("SimulationConfigEditor : numOfRobots is " + numOfRobots);
 			String latitude = (String) settlementTableModel.getValueAt(x, 4);
 			String longitude = (String) settlementTableModel.getValueAt(x, 5);
-			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude);
+			//String maxMSDStr = (String) settlementTableModel.getValueAt(x, 6);
+			//int maxMSD = Integer.parseInt(maxMSDStr);
+			int maxMSD = 0;
+			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude, maxMSD);
 		}
 	}
 
@@ -362,6 +381,8 @@ public class SimulationConfigEditor {
 		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
 		settlement.latitude = determineNewSettlementLatitude();
 		settlement.longitude = determineNewSettlementLongitude();
+		settlement.maxMSD = "0";
+
 
 		return settlement;
 	}
@@ -528,6 +549,8 @@ public class SimulationConfigEditor {
 		String numOfRobots;
 		String latitude;
 		String longitude;
+		String maxMSD;
+		boolean hasMaxMSD = true;
 	}
 
 	/**
@@ -554,7 +577,8 @@ public class SimulationConfigEditor {
 				Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.longitude"), //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.hasMSD") //$NON-NLS-1$
 			};
 
 			// Load default settlements.
@@ -576,6 +600,7 @@ public class SimulationConfigEditor {
 				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
+				info.maxMSD = "0";
 				settlements.add(info);
 			}
 			fireTableDataChanged();
@@ -590,6 +615,16 @@ public class SimulationConfigEditor {
 		public int getColumnCount() {
 			return columns.length;
 		}
+
+	    /*
+	     * JTable uses this method to determine the default renderer/
+	     * editor for each cell.  If we didn't implement this method,
+	     * then the last column would contain text ("true"/"false"),
+	     * rather than a check box.
+	     */
+	    public Class getColumnClass(int c) {
+	        return getValueAt(0, c).getClass();
+	    }
 
 		@Override
 		public String getColumnName(int columnIndex) {
@@ -631,6 +666,12 @@ public class SimulationConfigEditor {
 						break;
 					case 5:
 						result = info.longitude;
+						break;
+					case 6:
+						result = info.hasMaxMSD; //new Boolean(true);
+						break;
+					case 7:
+
 						break;
 					}
 				} else {
@@ -699,10 +740,21 @@ public class SimulationConfigEditor {
 							info.longitude = (String) aValue;
 
 						break;
+
+					case 6:
+						info.hasMaxMSD =  new Boolean(true); //(Boolean) aValue;
+						info.maxMSD = "1"; // TODO: correct maxMSD should be loaded
+						break;
+
+					case 7:
+
+						break;
 					}
 				}
 
-				checkForErrors();
+				if (columnIndex != 6)
+					checkForErrors();
+
 				fireTableDataChanged();
 			}
 		}

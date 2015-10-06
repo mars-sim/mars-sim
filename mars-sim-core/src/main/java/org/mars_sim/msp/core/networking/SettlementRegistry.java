@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * SettlementRegistry.java
+ * @version 3.08 2015-10-03
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.core.networking;
 
 import java.io.Serializable;
@@ -17,6 +24,7 @@ public class SettlementRegistry implements Serializable{
 	private String template;
 	private double longitude;
 	private double latitude;
+	private int maxMSD;
 
 	public SettlementRegistry(String p, int id, String n, String template, int pop, int bots, double lat, double lo) {
 		playerName = p; clientID = id; name = n; this.template = template; population = pop; numOfRobots = bots; latitude = lat; longitude = lo;
@@ -100,6 +108,7 @@ public class SettlementRegistry implements Serializable{
 		  dir = "W";
 	  return Math.abs(longitude) + " " + dir;
   }
+
 
 }
 

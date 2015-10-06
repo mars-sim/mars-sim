@@ -291,7 +291,7 @@ public class MarsProject extends SimpleApplication {
 
         // starting the simulation
         MarsProject mp = new MarsProject(args);
-        mp.start(com.jme3.system.JmeContext.Type.Headless);
+        //mp.start(com.jme3.system.JmeContext.Type.Headless);
 
     }
 
