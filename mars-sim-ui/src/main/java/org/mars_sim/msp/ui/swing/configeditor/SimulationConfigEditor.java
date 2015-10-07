@@ -68,7 +68,7 @@ public class SimulationConfigEditor {
 	private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
-	private boolean hasError;
+	private boolean hasError, crewEditorClosed;
 
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
@@ -76,6 +76,7 @@ public class SimulationConfigEditor {
 	private JButton createButton;
 	private JFrame f;
 
+	private CrewEditor crewEditor;
 	private SimulationConfig config;
 
 	/**
@@ -387,7 +388,11 @@ public class SimulationConfigEditor {
 	 * Edits team profile.
 	 */
 	private void editCrewProfile(String crew) {
-		CrewEditor c = new CrewEditor(config);
+		if (crewEditor == null) {
+			crewEditor = new CrewEditor(config, this);
+		} else if (crewEditorClosed) {
+			crewEditor.createGUI();
+		}
 		/*
 		Image img;
 	   	String IMAGE_DIR = "/images/";
@@ -410,6 +415,10 @@ public class SimulationConfigEditor {
 		    }
 		});
 		*/
+	}
+
+	public void setCrewEditorClosed(boolean value) {
+		crewEditorClosed = value;
 	}
 
 
