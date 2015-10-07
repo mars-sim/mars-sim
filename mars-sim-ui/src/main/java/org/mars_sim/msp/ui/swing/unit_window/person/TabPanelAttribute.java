@@ -34,6 +34,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
@@ -113,12 +114,16 @@ extends TabPanel {
 		centerContentPanel.add(attributeScrollPanel);
 
 		// Create attribute table
-		attributeTable = new JTable(attributeTableModel);
+		attributeTable = new ZebraJTable(attributeTableModel);
 		attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
 		attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
 		attributeTable.setCellSelectionEnabled(false);
 		// attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+
+		// 2015-06-08 Added setTableStyle()
+		//attributeTable = TableStyle.setTableStyle(attributeTable);
+
 		attributeScrollPanel.setViewportView(attributeTable);
 
 		// 2015-06-08 Added sorting
@@ -131,8 +136,6 @@ extends TabPanel {
 		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
-		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(attributeTable);
 	}
 
 	/**

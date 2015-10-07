@@ -41,6 +41,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -59,6 +60,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 //import de.matthiasmann.twl.GUI;
 //import de.matthiasmann.twl.demo.test.TestUtils;
@@ -186,8 +188,12 @@ implements Serializable, MouseListener {
 
 		// Create scroll panel for crop table
 		JScrollPane scrollPanel = new JScrollPane();
-		// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
-		scrollPanel.setPreferredSize(new Dimension(200, 130));
+		if (farm.getBuilding().getName().equals("Large Greenhouse"))
+			scrollPanel.setPreferredSize(new Dimension(200, 280)); // 280 is the best fit for 15 crops
+		else
+			// 2014-10-10 mkung: increased the height from 100 to 130 to make the first 5 rows of crop FULLY visible
+			scrollPanel.setPreferredSize(new Dimension(200, 110)); // 110 is the best fit for 5 crops
+
 		scrollPanel.setOpaque(false);
 		scrollPanel.setBackground(new Color(0,0,0,128));
 		add(scrollPanel, BorderLayout.CENTER);
@@ -198,6 +204,19 @@ implements Serializable, MouseListener {
 		// Prepare crop table
 		JTable cropTable = new JTable(cropTableModel){
 			private static final long serialVersionUID = 1L;
+
+			public Component prepareRenderer(TableCellRenderer renderer,int Index_row, int Index_col) {
+			                Component comp = super.prepareRenderer(renderer, Index_row, Index_col);
+			                //even index, selected or not selected
+			                if (Index_row % 2 == 0 && !isCellSelected(Index_row, Index_col)) {
+			                    comp.setBackground(new Color(242, 242, 242));
+			                }
+			                else {
+			                    comp.setBackground(Color.white);
+			                }
+			                return comp;
+			            }
+
 			// 2014-11-20 Implement Table Cell ToolTip for crops
             public String getToolTipText(MouseEvent e) {
                 String name = null;
@@ -249,8 +268,8 @@ implements Serializable, MouseListener {
 	     //   	ColumnResizer.adjustColumnPreferredWidths(ctable);
 	    //     } });
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-		cropTable.setCellSelectionEnabled(false);
-		cropTable.getColumnModel().getColumn(0).setPreferredWidth(7);
+		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
+		cropTable.getColumnModel().getColumn(0).setPreferredWidth(5);
 		cropTable.getColumnModel().getColumn(1).setPreferredWidth(40);
 		cropTable.getColumnModel().getColumn(2).setPreferredWidth(40);
 		cropTable.getColumnModel().getColumn(3).setPreferredWidth(20);
@@ -260,6 +279,7 @@ implements Serializable, MouseListener {
 		//cropTable.setBackground(new Color(0,0,0,128));
 		setTableStyle(cropTable);
 
+		//cropTable = TableStyle.setTableStyle(cropTable);
 		scrollPanel.setViewportView(cropTable);
 
 
@@ -469,8 +489,8 @@ implements Serializable, MouseListener {
 		// set cell to have a light color border
 		//table.setBorder(border);
 		table.setShowGrid(true);
-	    table.setShowVerticalLines(true);
-		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
+	    table.setShowVerticalLines(false);
+		table.setGridColor(Color.white);//new Color(222, 184, 135)); // 222 184 135burlywood
 		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
 
 	}

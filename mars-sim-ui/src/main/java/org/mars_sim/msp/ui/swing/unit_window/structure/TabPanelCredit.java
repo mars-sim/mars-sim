@@ -38,6 +38,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 public class TabPanelCredit
@@ -90,7 +91,7 @@ extends TabPanel {
 		CreditTableModel creditTableModel = new CreditTableModel((Settlement) unit);
 
 		// Prepare credit table.
-		creditTable = new JTable(creditTableModel);
+		creditTable = new ZebraJTable(creditTableModel);
 		creditScrollPanel.setViewportView(creditTable);
 		creditTable.setCellSelectionEnabled(false);
 		creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
@@ -115,7 +116,7 @@ extends TabPanel {
 
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(creditTable);
+		//TableStyle.setTableStyle(creditTable);
 
 	}
 

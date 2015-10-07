@@ -10,6 +10,7 @@ import org.mars_sim.msp.javafx.SettlementTable;
 import org.mars_sim.msp.javafx.SettlementTableModel;
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
 import org.mars_sim.msp.networking.MultiplayerClient;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -494,7 +495,7 @@ public class ScenarioConfigEditorFX {
 
         SwingUtilities.invokeLater(() -> {
     		settlementTableModel = new SettlementTableModel(this);
-    		settlementTable = new SettlementTable(this, settlementTableModel );
+    		settlementTable = new SettlementTable(this, settlementTableModel);
         });
 
 

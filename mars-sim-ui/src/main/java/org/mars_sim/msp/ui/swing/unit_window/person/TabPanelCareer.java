@@ -53,6 +53,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -262,7 +263,7 @@ implements ActionListener {
 		centerContentPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// Create schedule table
-		table = new JTable(jobHistoryTableModel);
+		table = new ZebraJTable(jobHistoryTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(50);
 		table.getColumnModel().getColumn(1).setPreferredWidth(50);
@@ -276,7 +277,7 @@ implements ActionListener {
 		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(table);
+		//TableStyle.setTableStyle(table);
 
 		update();
 

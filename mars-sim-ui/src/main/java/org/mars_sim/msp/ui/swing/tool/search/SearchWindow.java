@@ -384,8 +384,20 @@ extends ToolWindow {
 			Collection<? extends Unit> units = null;
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			if (category.equals(UnitCategory.PEOPLE)) {
-				Collection<Person> people = unitManager.getPeople();
-				units = CollectionUtils.sortByName(people);
+
+				if (unitManager.getPeople() == null) {
+					Thread.yield();
+					try {
+						Thread.sleep(2L);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else {
+					Collection<Person> people = unitManager.getPeople();
+					units = CollectionUtils.sortByName(people);
+				}
 			}
 			else if (category.equals(UnitCategory.SETTLEMENTS)) {
 				Collection<Settlement> settlement = unitManager.getSettlements();

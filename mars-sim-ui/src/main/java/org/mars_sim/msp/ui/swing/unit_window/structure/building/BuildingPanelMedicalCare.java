@@ -22,9 +22,10 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 /**
- * The MedicalCareBuildingPanel class is a building function panel representing 
+ * The MedicalCareBuildingPanel class is a building function panel representing
  * the medical info of a settlement building.
  */
 public class BuildingPanelMedicalCare
@@ -66,7 +67,7 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-        
+
 		// Create medical care label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for labels
@@ -82,7 +83,7 @@ extends BuildingFunctionPanel {
 
 		// Create physician label
 		physicianCache = medical.getPhysicianNum();
-		physicianLabel = new JLabel(Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians", 
+		physicianLabel = new JLabel(Msg.getString("BuildingPanelMedicalCare.numberOfPhysicians",
 				physicianCache), JLabel.CENTER);
 		labelPanel.add(physicianLabel);
 
@@ -96,12 +97,12 @@ extends BuildingFunctionPanel {
 	    scrollPanel.setBackground(new Color(0, 0, 0, 0));
         //scrollPanel.setBorder( BorderFactory.createLineBorder(Color.orange) );
 
-		
+
 		// Prepare medical table model
 		medicalTableModel = new MedicalTableModel(medical);
 
 		// Prepare medical table
-		JTable medicalTable = new JTable(medicalTableModel);
+		JTable medicalTable = new ZebraJTable(medicalTableModel);
 		medicalTable.setCellSelectionEnabled(false);
 		scrollPanel.setViewportView(medicalTable);
 	}
@@ -121,7 +122,7 @@ extends BuildingFunctionPanel {
 		medicalTableModel.update();
 	}
 
-	/** 
+	/**
 	 * Internal class used as model for the medical table.
 	 */
 	private static class MedicalTableModel extends AbstractTableModel {

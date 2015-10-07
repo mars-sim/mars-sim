@@ -32,6 +32,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -165,14 +166,14 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(person);
 
 		// Create radiation table
-		radiationTable = new JTable(radiationTableModel);
+		radiationTable = new ZebraJTable(radiationTableModel);
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
 		radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(radiationTable);
+		//TableStyle.setTableStyle(radiationTable);
 
 
 		// Prepare table panel.
@@ -196,7 +197,7 @@ extends TabPanel {
 		medicationTableModel = new MedicationTableModel(person);
 
 		// Prepare medication table.
-		medicationTable = new JTable(medicationTableModel);
+		medicationTable = new ZebraJTable(medicationTableModel);
 		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		medicationTable.setCellSelectionEnabled(false);
 		medicationScrollPanel.setViewportView(medicationTable);
@@ -206,7 +207,7 @@ extends TabPanel {
 		medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(medicationTable);
+		//TableStyle.setTableStyle(medicationTable);
 
 		// Prepare health problem panel
 		JPanel healthProblemPanel = new JPanel(new BorderLayout());
@@ -225,7 +226,7 @@ extends TabPanel {
 		healthProblemTableModel = new HealthProblemTableModel(person);
 
 		// Create health problem table
-		healthProblemTable = new JTable(healthProblemTableModel);
+		healthProblemTable = new ZebraJTable(healthProblemTableModel);
 		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		healthProblemTable.setCellSelectionEnabled(false);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
@@ -235,7 +236,7 @@ extends TabPanel {
 		healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(healthProblemTable);
+		//TableStyle.setTableStyle(healthProblemTable);
 	}
 
 

@@ -46,6 +46,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.jidesoft.swing.SearchableUtils;
@@ -235,7 +236,7 @@ extends TabPanel {
 		powerTableModel = new PowerTableModel(settlement);
 
 		// Prepare power table.
-		powerTable = new JTable(powerTableModel);
+		powerTable = new ZebraJTable(powerTableModel);
 	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(powerTable));
 
 	    powerTable.setCellSelectionEnabled(false);
@@ -254,7 +255,7 @@ extends TabPanel {
 		//powerTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(powerTable);
+		//TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
 

@@ -41,6 +41,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -107,7 +108,7 @@ extends TabPanel {
 
 		// Create the study table.
 		studyTableModel = new StudyTableModel(person);
-		studyTable = new JTable(studyTableModel);
+		studyTable = new ZebraJTable(studyTableModel);
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
@@ -126,7 +127,7 @@ extends TabPanel {
 		studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(studyTable);
+		//TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -170,7 +171,7 @@ extends TabPanel {
 
 		// Create the achievement table.
 		achievementTableModel = new AchievementTableModel(person);
-		achievementTable = new JTable(achievementTableModel);
+		achievementTable = new ZebraJTable(achievementTableModel);
 		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		achievementTable.setCellSelectionEnabled(false);
 		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
@@ -188,7 +189,7 @@ extends TabPanel {
 		achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(achievementTable);
+		//TableStyle.setTableStyle(achievementTable);
 	}
 
 	@Override

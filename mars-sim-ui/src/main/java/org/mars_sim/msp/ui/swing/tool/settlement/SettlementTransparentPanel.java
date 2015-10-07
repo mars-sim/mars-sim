@@ -428,7 +428,7 @@ public class SettlementTransparentPanel extends JComponent {
         buttonPane = new JPanel();
         buttonPane.setBackground(new Color(0,0,0,0));
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise"))); //$NON-NLS-1$
-		rotateClockwiseButton.setPreferredSize(new Dimension(20, 20));
+		rotateClockwiseButton.setPreferredSize(new Dimension(30, 30));
 		rotateClockwiseButton.setOpaque(false);
 		rotateClockwiseButton.setForeground(Color.GREEN);
 		rotateClockwiseButton.setBorder(new LineBorder(Color.GREEN, 1, true));
@@ -442,10 +442,10 @@ public class SettlementTransparentPanel extends JComponent {
 
 		buttonPane.add(rotateClockwiseButton);
 
-		JButton recenterButton = new JButton("+");//Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
-		recenterButton.setPreferredSize(new Dimension(20, 20));
+		JButton recenterButton = new JButton(Msg.getString("SettlementTransparentPanel.button.recenter")); //$NON-NLS-1$
+		recenterButton.setPreferredSize(new Dimension(35, 35));
 		recenterButton.setOpaque(false);
-		recenterButton.setForeground(Color.BLUE);
+		recenterButton.setForeground(Color.GREEN);
 		recenterButton.setBorder(new LineBorder(Color.GREEN, 1, true));
 		recenterButton.setContentAreaFilled(false);
 		recenterButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
@@ -460,7 +460,7 @@ public class SettlementTransparentPanel extends JComponent {
 
 		// Create rotate counter-clockwise button.
 		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.counterClockwise"))); //$NON-NLS-1$
-		rotateCounterClockwiseButton.setPreferredSize(new Dimension(20, 20));
+		rotateCounterClockwiseButton.setPreferredSize(new Dimension(30, 30));
 		rotateCounterClockwiseButton.setOpaque(false);
 		rotateCounterClockwiseButton.setForeground(Color.GREEN);
 		rotateCounterClockwiseButton.setContentAreaFilled(false);

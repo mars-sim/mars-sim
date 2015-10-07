@@ -26,7 +26,7 @@ Defines the rectangle responsible for the shadow
 
 
 #startButton {
-    -fx-padding: 5 15 5 15;
+    -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
 	-fx-base: #00a7d4;
 	-fx-background: #e5f3f6;

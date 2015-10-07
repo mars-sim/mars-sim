@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 public class ConstructedBuildingsPanel
 extends JPanel {
@@ -68,7 +69,7 @@ extends JPanel {
 		constructedTableModel = new ConstructedBuildingTableModel(manager);
 
 		// Prepare constructed table.
-		constructedTable = new JTable(constructedTableModel);
+		constructedTable = new ZebraJTable(constructedTableModel);
 		scrollPanel.setViewportView(constructedTable);
 		constructedTable.setCellSelectionEnabled(false);
 		constructedTable.getColumnModel().getColumn(0).setPreferredWidth(105);
@@ -86,7 +87,7 @@ extends JPanel {
 		constructedTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(constructedTable);
+		//TableStyle.setTableStyle(constructedTable);
 
 	}
 

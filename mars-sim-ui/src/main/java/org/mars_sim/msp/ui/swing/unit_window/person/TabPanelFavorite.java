@@ -32,6 +32,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -153,7 +154,7 @@ extends TabPanel {
 
 		// Create skill table
 		tableModel = new PreferenceTableModel(person);
-		table = new JTable(tableModel);
+		table = new ZebraJTable(tableModel);
 
 		// 2015-09-24 Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
@@ -172,7 +173,7 @@ extends TabPanel {
 		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(table);
+		//TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);
 

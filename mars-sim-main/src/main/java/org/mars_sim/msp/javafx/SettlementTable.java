@@ -36,6 +36,8 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.javafx.SettlementTableModel;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
@@ -74,10 +76,18 @@ public class SettlementTable extends JTable {
 		this.settlementTableModel = settlementTableModel;
 		this.simulationConfig = SimulationConfig.instance();
 
-		setRowSelectionAllowed(true);
+		// 2015-10-06 Added setTableStyle()
+        JTable table = new ZebraJTable(settlementTableModel);
+
+        init(table);
+	}
+
+	public void init(JTable t) {
+
+		t.setRowSelectionAllowed(true);
 		setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
-		setBackground(java.awt.Color.WHITE);
+		setGridColor(java.awt.Color.WHITE); // 0,128,0 is green
+		//setBackground(java.awt.Color.WHITE);
 
 		header = getTableHeader();
 		header.setFont(new Font("Dialog", Font.BOLD, 12));

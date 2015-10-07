@@ -115,6 +115,7 @@ extends ToolWindow {
         timeLabel = new JLabel();
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
         statusBar.addRightComponent(timeLabel, false);
+        statusBar.setOpaque(true);
 
         //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
 

@@ -32,6 +32,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.jidesoft.swing.SearchableUtils;
@@ -91,7 +92,7 @@ extends TabPanel {
 		goodsTableModel = new GoodsTableModel(((Settlement) unit).getGoodsManager());
 
 		// Prepare goods table.
-		goodsTable = new JTable(goodsTableModel);
+		goodsTable = new ZebraJTable(goodsTableModel);
 		goodsScrollPane.setViewportView(goodsTable);
 		goodsTable.setCellSelectionEnabled(false);
 		goodsTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
@@ -114,7 +115,7 @@ extends TabPanel {
 		goodsTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(goodsTable);
+		//TableStyle.setTableStyle(goodsTable);
 
      	// 2015-06-17 Added goodsSearchable
      	TableSearchable searchable = SearchableUtils.installSearchable(goodsTable);

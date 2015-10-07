@@ -45,6 +45,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -185,7 +186,7 @@ extends TabPanel {
 		// Prepare thermal control table model.
 		heatTableModel = new HeatTableModel(settlement);
 		// Prepare thermal control table.
-		heatTable = new JTable(heatTableModel);
+		heatTable = new ZebraJTable(heatTableModel);
 	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(heatTable));
 
 		heatTable.setCellSelectionEnabled(false);
@@ -205,7 +206,7 @@ extends TabPanel {
 		//heatTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(heatTable);
+		//TableStyle.setTableStyle(heatTable);
 
 		heatScrollPane.setViewportView(heatTable);
 

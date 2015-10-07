@@ -39,6 +39,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -191,7 +192,7 @@ extends MonitorTab {
             // Create a sortable model to act as a proxy
             sortedModel = new TableSorter(model);
             // Create scrollable table window
-            this.table = new JTable(sortedModel) {
+            table = new ZebraJTable(sortedModel) {
             	/** default serial id. */
 				//private static final long serialVersionUID = 1L;
 
@@ -273,7 +274,7 @@ extends MonitorTab {
         }
         else {
             // Simple JTable
-            this.table = new JTable(model) {
+            this.table = new ZebraJTable(model) {
             	/** default serial id. */
 				//private static final long serialVersionUID = 1L;
 				/**
@@ -316,22 +317,25 @@ extends MonitorTab {
         }
 
         // Set single selection mode if necessary.
-        if (singleSelection) table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        if (singleSelection)
+        	table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+
+		// 2015-06-08 Added RowNumberTable
+        JTable rowTable = new RowNumberTable(table);
+    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+        //TableStyle.setTableStyle(rowTable);
+
+    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+        //table = TableStyle.setTableStyle(table);
 
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
         scroller.setBorder(new MarsPanelBorder());
 
-    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
-        TableStyle.setTableStyle(table);
-
-		// 2015-06-08 Added RowNumberTable
-        JTable rowTable = new RowNumberTable(table);
-    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
-        TableStyle.setTableStyle(rowTable);
-
         scroller.setRowHeaderView(rowTable);
-        scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER,rowTable.getTableHeader());
+        scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());
+
         add(scroller, BorderLayout.CENTER);
 
         setName(model.getName());
@@ -349,39 +353,6 @@ extends MonitorTab {
     	return table;
     }
 
-/*
-	// 2014-12-30 Added setTableStyle()
-    public void setTableStyle(JTable table) {
-
-        // 2014-12-29 Added ColumnResizer
-    	SwingUtilities.invokeLater(() -> adjustColumnPreferredWidths(table));
-
-    	// Get the TableColumn header to display sorted column
-    	theHeader = table.getTableHeader();
-    	theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
-    	theHeader.setDefaultRenderer(theRenderer);
-
-	    // 2014-11-11 Added auto resize
-    	//table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		table.getTableHeader().setOpaque(false);
-		table.getTableHeader().setBackground(new Color(205, 133, 63));//Color.ORANGE);
-		table.getTableHeader().setForeground(new Color(255, 255, 120));
-		table.getTableHeader().setFont( new Font( "Dialog", Font.BOLD, 12 ) );
-		// Font doesn't get rendered yet
-		table.setSelectionForeground(new Color( 0, 100 ,0)); // 0 100 0	006400	dark green
-		table.setSelectionBackground(new Color(255, 255, 224)); // 255 255 224	LightYellow1
-		// 255 228 225	MistyRose1
-		table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
-		table.setForeground(new Color(139, 71, 38)); // 139 71 38		sienna4
-			table.setShowGrid(true);
-	    table.setShowVerticalLines(true);
-		table.setGridColor(new Color(222, 184, 135)); // 222 184 135burlywood
-		table.setBorder(BorderFactory.createLineBorder(Color.orange,1)); // HERE
-
-	}
-*/
     public void adjustColumnPreferredWidths(JTable table) {
         // Gets max width for cells in column as the preferred width
         TableColumnModel columnModel = table.getColumnModel();

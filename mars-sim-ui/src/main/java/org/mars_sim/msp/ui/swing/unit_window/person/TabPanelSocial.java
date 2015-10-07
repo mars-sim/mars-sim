@@ -30,6 +30,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -77,7 +78,7 @@ implements ListSelectionListener {
 		relationshipTableModel = new RelationshipTableModel(person);
 
 		// Create relationship table
-		relationshipTable = new JTable(relationshipTableModel);
+		relationshipTable = new ZebraJTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(70);
@@ -98,7 +99,7 @@ implements ListSelectionListener {
 		//relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(relationshipTable);
+		//TableStyle.setTableStyle(relationshipTable);
 	}
 
 	/**

@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -39,6 +40,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -50,6 +52,7 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
@@ -123,23 +126,28 @@ public class SimulationConfigEditor {
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.getColumnModel().getColumn(0).setPreferredWidth(125);
-		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(175);
-		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(75);
-		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(60);
-		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(75);
-		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(75);
-		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(55);
+		settlementTable.getColumnModel().getColumn(1).setPreferredWidth(185);
+		settlementTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		settlementTable.getColumnModel().getColumn(3).setPreferredWidth(50);
+		settlementTable.getColumnModel().getColumn(4).setPreferredWidth(65);
+		settlementTable.getColumnModel().getColumn(5).setPreferredWidth(65);
+		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(50);
 
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
 		settlementTable.setBackground(java.awt.Color.WHITE);
 
+		// 2015-10-06 Added setTableStyle()
+		settlementTable = TableStyle.setTableStyle(settlementTable);
+
+		adjustColumn(settlementTable);
+
+		settlementScrollPane.setViewportView(settlementTable);
+
 		JTableHeader header = settlementTable.getTableHeader();
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
 		header.setBackground(new java.awt.Color(0, 167, 212));
 		header.setForeground(java.awt.Color.white);
-
-		settlementScrollPane.setViewportView(settlementTable);
 
 		// Create combo box for editing template column in settlement table.
 		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
@@ -191,7 +199,7 @@ public class SimulationConfigEditor {
 		addButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 */		configurationButtonInnerTopPanel.add(addButton);
 
-		configurationButtonInnerTopPanel.add(new JLabel()); // empty label
+		//configurationButtonInnerTopPanel.add(new JLabel()); // empty label
 
 		// Create remove settlement button.
 		JButton removeButton = new JButton(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
@@ -242,7 +250,7 @@ public class SimulationConfigEditor {
 
 
 		// Create the create button.
-		createButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.newSim")+ " "); //$NON-NLS-1$
+		createButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.newSim")+ "  "); //$NON-NLS-1$
 		createButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		createButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -278,8 +286,10 @@ public class SimulationConfigEditor {
 		createButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 */		bottomButtonPanel.add(createButton);
 
+		bottomButtonPanel.add(new JLabel("    "));
+
 		// 2014-12-15 Added Edit Alpha Crew button.
-		JButton alphaButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.crewEditor")+ " "); //$NON-NLS-1$
+		JButton alphaButton = new JButton("  " + Msg.getString("SimulationConfigEditor.button.crewEditor")+ "  "); //$NON-NLS-1$
 		alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		alphaButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -298,6 +308,64 @@ public class SimulationConfigEditor {
 		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
         f.setVisible(true);
 	}
+
+
+    /*
+     * Determines proper width for each column and center aligns each cell content
+     */
+	// 2015-10-03 Added adjustColumn()
+    private void adjustColumn(JTable t) {
+    	// If all column heads are wider than the column's cells'
+        // contents, then you can just use column.sizeWidthToFit().
+    	final Object[] longValues = {
+    			"Schiaparelli Point",
+                "Mars Direct Base (phase 1)",
+                new Integer(18),
+                new Integer(16),
+                new Integer(22),
+                new Integer(22),
+                Boolean.TRUE};
+
+    	boolean DEBUG = false;
+    	//SettlementTableModel model = settlementTableModel; //(SettlementTableModel)table.getModel();
+        TableColumn column = null;
+        Component comp = null;
+        int headerWidth = 0;
+        int cellWidth = 0;
+        TableCellRenderer headerRenderer = t.getTableHeader().getDefaultRenderer();
+
+       	// 2015-10-03 Align content to center of cell
+    	DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
+    	defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+        for (int i = 0; i < 7; i++) {
+
+            column = t.getColumnModel().getColumn(i);
+
+        	// 2015-10-03 Align content to center of cell
+    		column.setCellRenderer(defaultTableCellRenderer);
+
+            comp = headerRenderer.getTableCellRendererComponent(
+                                 null, column.getHeaderValue(),
+                                 false, false, 0, 0);
+
+            headerWidth = comp.getPreferredSize().width;
+
+            comp = t.getDefaultRenderer(settlementTableModel.getColumnClass(i)).getTableCellRendererComponent(
+                                 t, longValues[i], false, false, 0, i);
+
+            cellWidth = comp.getPreferredSize().width;
+
+            if (DEBUG) {
+                System.out.println("Initializing width of column "
+                                   + i + ". "
+                                   + "headerWidth = " + headerWidth
+                                   + "; cellWidth = " + cellWidth);
+            }
+
+            column.setPreferredWidth(Math.max(headerWidth, cellWidth));
+        }
+    }
 
 	/**
 	 * Adds a new settlement with default values.

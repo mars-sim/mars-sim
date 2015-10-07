@@ -33,6 +33,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -108,7 +109,7 @@ extends TabPanel {
 		centerContentPanel.add(skillScrollPanel);
 
 		// Create skill table
-		skillTable = new JTable(skillTableModel);
+		skillTable = new ZebraJTable(skillTableModel);
 		skillTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		skillTable.getColumnModel().getColumn(0).setPreferredWidth(50);
 		skillTable.getColumnModel().getColumn(1).setPreferredWidth(120);
@@ -128,7 +129,7 @@ extends TabPanel {
 		skillTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(skillTable);
+		//TableStyle.setTableStyle(skillTable);
 	}
 
 	/**
