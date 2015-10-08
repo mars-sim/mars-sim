@@ -155,14 +155,41 @@ extends TabPanel {
 		// Prepare personality name label
 		JLabel personalityNameLabel = new JLabel(Msg.getString("TabPanelGeneral.personalityMBTI"), JLabel.RIGHT); //$NON-NLS-1$
 		personalityNameLabel.setSize(5, 2);
+		personalityNameLabel.setToolTipText("<html>Myers–Briggs Type Indicator (MBTI) <br> as a metric for personality type</html>");
 		infoPanel.add(personalityNameLabel);
 
 		// Prepare personality label
 		String personality = person.getMind().getPersonalityType().getTypeString();
 		//JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
-		JTextField personalityTF = new JTextField(Conversion.capitalize(personality));
+		JTextField personalityTF = new JTextField(personality);
 		personalityTF.setEditable(false);
 		personalityTF.setColumns(12);
+
+		String type1 = personality.substring(0,1);
+		if (type1.equals("E"))
+			type1 = "Extrovert";
+		else
+			type1 = "Introvert";
+
+		String type2 = personality.substring(1,2);
+		if (type2.equals("N"))
+			type2 = "Intuitive";
+		else
+			type2 = "Sensing";
+
+		String type3 = personality.substring(2,3);
+		if (type3.equals("F"))
+			type3 = "Feeling";
+		else
+			type3 = "Thinking";
+
+		String type4 = personality.substring(3,4);
+		if (type4.equals("J"))
+			type4 = "Judging";
+		else
+			type4 = "Perceiving";
+
+		personalityTF.setToolTipText("<html>" + type1 + "<br>" + type2 + "<br>" + type3 + "<br>" + type4 + "</html>");
 		infoPanel.add(personalityTF);
 	}
 

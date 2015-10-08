@@ -6,13 +6,24 @@
  */
 package org.mars_sim.msp.javafx;
 
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -20,11 +31,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import org.mars_sim.msp.core.SimulationConfig;
@@ -59,17 +77,31 @@ public class CrewEditorFX {
 	private List<ComboBox<String>> jobsList = new ArrayList<ComboBox<String>>();
 	private List<ComboBox<String>> personalityList = new ArrayList<ComboBox<String>>();
 
+	private boolean[][] personalityArray;// = new boolean [4][SIZE_OF_CREW];
 
 	private Stage stage;
+	private ScenarioConfigEditorFX scenarioConfigEditorFX;
 
 	/**
 	 * Constructor.
 	 * @param config SimulationConfig
+	 * @param scenarioConfigEditorFX ScenarioConfigEditorFX
 	 */
-	public CrewEditorFX(SimulationConfig config) {
+	public CrewEditorFX(SimulationConfig config, ScenarioConfigEditorFX scenarioConfigEditorFX ) {
 
 		//this.config = config;
 		pc = config.getPersonConfiguration();
+		this.scenarioConfigEditorFX = scenarioConfigEditorFX;
+
+		personalityArray = new boolean [4][SIZE_OF_CREW];
+
+		createGUI();
+	}
+
+	// 2015-10-07 Added and revised createGUI()
+	public void createGUI() {
+
+		scenarioConfigEditorFX.setCrewEditorOpen(true);
 
 		stage = new Stage();
 
@@ -78,17 +110,14 @@ public class CrewEditorFX {
 		BorderPane borderAll = new BorderPane();
 		borderAll.setPadding(new Insets(5, 5, 5, 5));
 
-		borderAll.setCenter(gridPane);
 		root.getChildren().add(borderAll);
 
 		Label titleLabel = new Label("Alpha Crew Manifest");
 		titleLabel.setAlignment(Pos.CENTER);
-
 		HBox hTop = new HBox();
 		hTop.setAlignment(Pos.CENTER);
 		hTop.getChildren().add(titleLabel);
-
-		borderAll.setTop(hTop);
+		borderAll.setTop(titleLabel);
 
 		// Create list panel.
 		gridPane = new GridPane();
@@ -109,25 +138,28 @@ public class CrewEditorFX {
 	    GridPane.setConstraints(slotThree, 3, 0);
 	    GridPane.setConstraints(slotFour, 4, 0);
 
-	    // don't forget to add children to gridpane
+	    // Note: don't forget to add children to gridpane
 	    gridPane.getChildren().addAll(empty, slotOne, slotTwo, slotThree, slotFour);
 
 		Label name = new Label("Name :");
 		Label gender = new Label("Gender :");
-		Label personality = new Label("Personality :");
 		Label job = new Label("Job :");
+		Label personality = new Label("MBTI :");
 
 	    GridPane.setConstraints(name, 0, 1);
 	    GridPane.setConstraints(gender, 0, 2);
-	    GridPane.setConstraints(personality, 0, 3);
-	    GridPane.setConstraints(job, 0, 4);
+	    GridPane.setConstraints(job, 0, 3);
+	    GridPane.setConstraints(personality, 0, 4);
 
-	    gridPane.getChildren().addAll(name, gender, personality, job);
+	    gridPane.getChildren().addAll(name, gender, job, personality);
 
 		setUpCrewName();
 		setUpCrewGender();
-		setUpCrewPersonality();
 		setUpCrewJob();
+
+		for (int col = 1 ; col < SIZE_OF_CREW + 1; col++) {
+			setUpCrewPersonality(col);
+		}
 
 		// Create button pane.
 		HBox hBottom = new HBox();
@@ -138,34 +170,37 @@ public class CrewEditorFX {
 		commitButton.setAlignment(Pos.CENTER);
 		commitButton.setOnAction((event) -> {
 
-			for (int i = 0; i< SIZE_OF_CREW; i++) {
-				String nameStr = nameTF.get(i).getText();
-				//System.out.println(" name is " + nameStr);
-				// update PersonConfig with the new name
-				pc.setPersonName(i, nameStr);
-				//System.out.println(" i is " + i);
-				String genderStr = genderList.get(i).getValue();
-				if ( genderStr.equals("M")  )
-					genderStr = "MALE";
-				else if ( genderStr.equals("F") )
-					genderStr = "FEMALE";
-				//System.out.println(" gender is " + genderStr);
-				// update PersonConfig with the new gender
-				pc.setPersonGender(i, genderStr);
+				for (int i = 0; i< SIZE_OF_CREW; i++) {
+					String nameStr = nameTF.get(i).getText();
+					//System.out.println(" name is " + nameStr);
+					// update PersonConfig with the new name
+					pc.setPersonName(i, nameStr);
+					//System.out.println(" i is " + i);
+					String genderStr = genderList.get(i).getValue();
+					if ( genderStr.equals("M")  )
+						genderStr = "MALE";
+					else if ( genderStr.equals("F") )
+						genderStr = "FEMALE";
+					//System.out.println(" gender is " + genderStr);
+					// update PersonConfig with the new gender
+					pc.setPersonGender(i, genderStr);
 
-				String personalityStr = (String) personalityList.get(i).getValue();
-				//System.out.println(" personality is " + personalityStr);
-				// update PersonConfig with the new personality
-				pc.setPersonPersonality(i, personalityStr);
+					String personalityStr = getPersonality(i); //(String) personalityList.get(i).getValue();
+					//System.out.println(" personality is " + personalityStr);
+					// update PersonConfig with the new personality
+					pc.setPersonPersonality(i, personalityStr);
 
-				//String jobStr = jobTF.get(i).getText();
-				String jobStr = (String) jobsList.get(i).getValue();
-				//System.out.println(" job is " + jobStr);
-				// update PersonConfig with the new job
-				pc.setPersonJob(i, jobStr);
-			}
+					//String jobStr = jobTF.get(i).getText();
+					String jobStr = (String) jobsList.get(i).getValue();
+					//System.out.println(" job is " + jobStr);
+					// update PersonConfig with the new job
+					pc.setPersonJob(i, jobStr);
+				}
 
-			stage.close();
+				scenarioConfigEditorFX.setCrewEditorOpen(false);
+				stage.close();
+
+
 		});
 
 		hBottom.getChildren().add(commitButton);
@@ -185,6 +220,11 @@ public class CrewEditorFX {
  	   	stage.setFullScreen(false);
         stage.setTitle(TITLE);
         stage.show();
+
+    	stage.setOnCloseRequest(e -> {
+			scenarioConfigEditorFX.setCrewEditorOpen(false);
+			//stage.close(); already implied
+		} );
 	}
 
 	public Stage getStage() {
@@ -220,8 +260,8 @@ public class CrewEditorFX {
 		ComboBox<String> m = null;
 		if (choice == 0)
 			 m = setUpGenderCB() ;
-		else if (choice == 1)
-			 m = setUpPersonalityCB();
+		//else if (choice == 1)
+			 //m = setUpPersonalityCB();
 		else if (choice == 2)
 			 m = setUpJobCB();
 
@@ -247,14 +287,14 @@ public class CrewEditorFX {
 
 			ComboBox<String> g = setUpCB(0); // 0 = Gender
 			//g.setMaximumRowCount(2);
-			gridPane.add(g, j+1, 2);
+			gridPane.add(g, j+1, 2);			// row = 2
 			//genderOListComboBox.add(g);
 			g.setValue(s[j]);
 			genderList.add(g);
 		}
 	}
 
-
+/*
 	public ComboBox<String> setUpPersonalityCB() {
 
 		List<String> personalityTypes = new ArrayList<String>(16);
@@ -283,10 +323,7 @@ public class CrewEditorFX {
 
 	}
 
-
-
 	public void setUpCrewPersonality() {
-
 		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
 			String n[] = new String[16];
 			n[j] = pc.getConfiguredPersonPersonalityType(j);
@@ -301,6 +338,122 @@ public class CrewEditorFX {
 		}
 
 	}
+*/
+
+	// 2015-10-07 Revised setUpCrewPersonality()
+	public void setUpCrewPersonality(int col) {
+		//String n[] = new String[SIZE_OF_CREW];
+
+		String quadrant1A = "Extravert", quadrant1B = "Introvert";
+		String quadrant2A = "Intuition", quadrant2B = "Sensing";
+		String quadrant3A = "Feeling", quadrant3B = "Thinking";
+		String quadrant4A = "Judging", quadrant4B = "Perceiving";
+		String cat1 = "World", cat2 = "Information", cat3 = "Decision", cat4 = "Structure";
+		String a = null, b = null, c = null;
+
+		VBox vbox = new VBox();
+
+		for (int row = 0 ; row < 4; row++) {
+			VBox options = new VBox();
+			if (row == 0) {
+				a = quadrant1A;
+				b = quadrant1B;
+				c = cat1;
+			}
+			else if (row == 1) {
+				a = quadrant2A;
+				b = quadrant2B;
+				c = cat2;
+			}
+			else if (row == 2) {
+				a = quadrant3A;
+				b = quadrant3B;
+				c = cat3;
+			}
+			else if (row == 3) {
+				a = quadrant4A;
+				b = quadrant4B;
+				c = cat4;
+			}
+
+			RadioButton ra = new RadioButton(a);
+			RadioButton rb = new RadioButton(b);
+			ra.setUserData(a);
+			rb.setUserData(b);
+
+			if (personalityArray[row][col-1])
+				ra.setSelected(true);
+			else
+				rb.setSelected(true);
+
+			final ToggleGroup group = new ToggleGroup();
+			group.setUserData(c);
+			ra.setToggleGroup(group);
+			rb.setToggleGroup(group);
+
+        	final int r = row;
+			group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+			    public void changed(ObservableValue<? extends Toggle> ov,
+			        Toggle old_toggle, Toggle new_toggle) {
+			            if (group.getSelectedToggle() != null) {
+			            	String s = group.getSelectedToggle().getUserData().toString();
+			            	//System.out.println(" selected : " + s);
+			                if (s.equals(quadrant1A) | s.equals(quadrant2A) | s.equals(quadrant3A) | s.equals(quadrant4A))
+			                	personalityArray [r][col-1] = true;
+			                else
+			                	personalityArray [r][col-1] = false;
+			            }
+			    }
+			});
+
+			options.getChildren().addAll(ra, rb);
+			TitledPane border = new TitledPane(c, options);
+		    border.setPrefSize(100, 50);
+			vbox.getChildren().add(border);
+		}
+
+		gridPane.add(vbox, col, 4);
+	}
+
+
+	// 2015-10-07 Added getPersonality()
+	public String getPersonality(int col) {
+		String type = null;
+		boolean value = true;
+
+		for (int row = 0 ; row < 4; row++) {
+			value = personalityArray[row][col];
+
+			switch (row) {
+				case 0:
+					if (value)
+						type = "E";
+					else
+						type = "I";
+					break;
+				case 1:
+					if (value)
+						type += "N";
+					else
+						type += "S";
+					break;
+				case 2:
+					if (value)
+						type += "F";
+					else
+						type += "T";
+					break;
+				case 3:
+					if (value)
+						type += "J";
+					else
+						type += "P";
+					break;
+			}
+		}
+		//System.out.println("For " + col + " type is " + type);
+		return type;
+	}
 
 	public ComboBox<String> setUpJobCB() {
 	/*
@@ -314,21 +467,22 @@ public class CrewEditorFX {
 	*/
 
 		List<String> jobs = new ArrayList<String>(15);
-		jobs.add("Botanist");
-		jobs.add("Areologist");
-		jobs.add("Doctor");
-		jobs.add("Engineer");
-		jobs.add("Driver");
-		jobs.add("Chef");
-		jobs.add("Trader");
-		jobs.add("Technician");
 		jobs.add("Architect");
-		jobs.add("Biologist");
+		jobs.add("Areologist");
 		jobs.add("Astronomer");
+		jobs.add("Biologist");
+		jobs.add("Botanist");
+		jobs.add("Chef");
 		jobs.add("Chemist");
-		jobs.add("Physicist");
+		jobs.add("Doctor");
+		jobs.add("Driver");
+		jobs.add("Engineer");
+		//jobs.add("Manager");
 		jobs.add("Mathematician");
 		jobs.add("Meteorologist");
+		jobs.add("Physicist");
+		jobs.add("Technician");
+		jobs.add("Trader");
 		Collections.sort(jobs);
 
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
@@ -338,15 +492,13 @@ public class CrewEditorFX {
 	}
 
 
-
-
 	public void setUpCrewJob() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
 			String n[] = new String[15];
 			n[i] = pc.getConfiguredPersonJob(i);
 			ComboBox<String> g = setUpCB(2);		// 2 = Job
 		    //g.setMaximumRowCount(8);
-		    gridPane.add(g, i+1, 4);
+		    gridPane.add(g, i+1, 3);			// row = 3
 			g.setValue(n[i]);
 			jobsList.add(g);
 		}

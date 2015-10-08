@@ -16,6 +16,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -35,6 +37,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -68,7 +71,7 @@ public class SimulationConfigEditor {
 	private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
-	private boolean hasError, crewEditorClosed;
+	private boolean hasError, isCrewEditorOpen = false;
 
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
@@ -308,6 +311,16 @@ public class SimulationConfigEditor {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		f.setLocation((screenSize.width - f.getWidth()) / 2, (screenSize.height - f.getHeight()) / 2);
         f.setVisible(true);
+
+        f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        f.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent ev) {
+				if (isCrewEditorOpen) {
+					crewEditor.getJFrame().dispose();
+				}
+            	f.dispose();
+            }
+        });
 	}
 
 
@@ -390,8 +403,10 @@ public class SimulationConfigEditor {
 	private void editCrewProfile(String crew) {
 		if (crewEditor == null) {
 			crewEditor = new CrewEditor(config, this);
-		} else if (crewEditorClosed) {
+			//System.out.println("new CrewEditor()");
+		} else if (!isCrewEditorOpen) {
 			crewEditor.createGUI();
+			//System.out.println("crewEditor.createGUI()");
 		}
 		/*
 		Image img;
@@ -417,8 +432,8 @@ public class SimulationConfigEditor {
 		*/
 	}
 
-	public void setCrewEditorClosed(boolean value) {
-		crewEditorClosed = value;
+	public void setCrewEditorOpen(boolean value) {
+		isCrewEditorOpen = value;
 	}
 
 

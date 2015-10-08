@@ -72,6 +72,7 @@ public class CrewEditor implements ActionListener {
 	/**
 	 * Constructor.
 	 * @param config SimulationConfig
+	 * @param simulationConfigEditor SimulationConfigEditor
 	 */
 	public CrewEditor(SimulationConfig config, SimulationConfigEditor simulationConfigEditor) {
 
@@ -86,6 +87,8 @@ public class CrewEditor implements ActionListener {
 
 	// 2015-10-07 Added and revised createGUI()
 	public void createGUI() {
+
+		simulationConfigEditor.setCrewEditorOpen(true);
 
 		f = new JFrame(TITLE);
 	    //f.setSize(600, 300);
@@ -151,10 +154,14 @@ public class CrewEditor implements ActionListener {
         f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         f.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent ev) {
-                f.dispose();
-				simulationConfigEditor.setCrewEditorClosed(true);
+				simulationConfigEditor.setCrewEditorOpen(false);
+            	f.dispose();
             }
         });
+	}
+
+	public JFrame getJFrame() {
+		return f;
 	}
 
 	// 2015-10-07 Revised actionPerformed()
@@ -206,9 +213,9 @@ public class CrewEditor implements ActionListener {
 
 			}
 
-			f.dispose();
+			simulationConfigEditor.setCrewEditorOpen(false);
 			f.setVisible(false);
-			simulationConfigEditor.setCrewEditorClosed(true);
+			f.dispose();
 		}
 	}
 
@@ -479,7 +486,7 @@ public class CrewEditor implements ActionListener {
 	 */
 	public void destroy() {
 		pc = null;
-		simulationConfigEditor.setCrewEditorClosed(false);
+		simulationConfigEditor.setCrewEditorOpen(false);
 		simulationConfigEditor = null;
 	}
 

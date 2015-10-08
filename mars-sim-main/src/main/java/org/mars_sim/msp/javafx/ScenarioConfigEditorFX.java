@@ -10,6 +10,7 @@ import org.mars_sim.msp.javafx.SettlementTable;
 import org.mars_sim.msp.javafx.SettlementTableModel;
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
 import org.mars_sim.msp.networking.MultiplayerClient;
+import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import java.awt.Dimension;
@@ -86,7 +87,7 @@ public class ScenarioConfigEditorFX {
 
 	private boolean hasError;
 	private boolean hasSettlement;
-	private boolean hasMSD;
+	private boolean hasMSD, isCrewEditorOpen = false;
 
 	private String playerName;
 	private String gameMode;
@@ -96,7 +97,7 @@ public class ScenarioConfigEditorFX {
 	//private JTable settlementTable;
 	private SettlementTable settlementTable;
 	private JScrollPane settlementScrollPane;
-	private TableCellEditor editor;
+	private TableCellEditor tableCellEditor;
 
 	private Label errorLabel;
 	private Button startButton;
@@ -180,7 +181,7 @@ public class ScenarioConfigEditorFX {
 
 		try {
 			fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/EditorFX.fxml"));//ClientArea.fxml"));
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ConfigEditorFX.fxml"));//ClientArea.fxml"));
             fxmlLoader.setController(this);
 			parent = (Parent) fxmlLoader.load();
 		} catch (IOException e) {
@@ -192,12 +193,12 @@ public class ScenarioConfigEditorFX {
 		Platform.runLater(() -> {
 
 			stage = new Stage();
-			stage.setTitle("Mars Simulation Project v3.08 - Scenario Configuration Editor");
+			stage.setTitle("Mars Simulation Project v3.08 - Configuration Editor");
 		    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-
+	        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 
 			Undecorator undecorator = new Undecorator(stage, (Region) parent);
-			undecorator.getStylesheets().add("skin/undecorator.css");
+			undecorator.getStylesheets().add("/skin/undecorator.css");
 			if ( parent.lookup("#anchorRoot") == null)
 				System.out.println("not found");
 
@@ -210,7 +211,7 @@ public class ScenarioConfigEditorFX {
 		    anchorpane.getChildren().add(bp);
 
 			Scene scene = new Scene(undecorator);
-			scene.getStylesheets().add("/fxui/css/editor.css");
+			scene.getStylesheets().add("/fxui/css/configEditor.css");
 			//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
 
 			// Transparent scene and stage
@@ -224,7 +225,6 @@ public class ScenarioConfigEditorFX {
 			stage.sizeToScene();
 			stage.toFront();
 
-	        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 
 	        stage.centerOnScreen();
 	        stage.setResizable(true);
@@ -238,7 +238,7 @@ public class ScenarioConfigEditorFX {
 				if (isExit) {
 					 borderAll.setOpacity(0);
 					 undecorator.setFadeOutTransition();
-					 if (crewEditorFX != null)
+					 if (crewEditorFX != null || isCrewEditorOpen)
 						 crewEditorFX.getStage().close();
 					 Platform.exit();
 				}
@@ -450,8 +450,8 @@ public class ScenarioConfigEditorFX {
 		startButton.setId("startButton");
 		startButton.setOnAction((event) -> {
 			// Make sure any editing cell is completed, then check if error.
-			if (editor != null) {
-				editor.stopCellEditing();
+			if (tableCellEditor != null) {
+				tableCellEditor.stopCellEditing();
 			}
 
 			if (!hasError) {
@@ -525,9 +525,20 @@ public class ScenarioConfigEditorFX {
 	 * Edits team profile.
 	 */
 	private void editCrewProile(String crew) {
-		crewEditorFX = new CrewEditorFX(config);
+		if (crewEditorFX == null) {
+			crewEditorFX = new CrewEditorFX(config, this);
+			//System.out.println("new CrewEditorFX()");
+		} else if (!isCrewEditorOpen) {
+			crewEditorFX.createGUI();
+			//System.out.println("crewEditorFX.createGUI()");
+		}
+		else
+			crewEditorFX.getStage().requestFocus();
 	}
 
+	public void setCrewEditorOpen(boolean value) {
+		isCrewEditorOpen = value;
+	}
 
 
 	/**
