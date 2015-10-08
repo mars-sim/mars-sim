@@ -139,7 +139,7 @@ public class SimulationConfigEditor {
 		settlementTable.setBackground(java.awt.Color.WHITE);
 
 		// 2015-10-06 Added setTableStyle()
-		settlementTable = TableStyle.setTableStyle(settlementTable);
+		TableStyle.setTableStyle(settlementTable);
 
 		adjustColumn(settlementTable);
 
@@ -347,7 +347,7 @@ public class SimulationConfigEditor {
     		column.setCellRenderer(defaultTableCellRenderer);
 
             comp = headerRenderer.getTableCellRendererComponent(
-                                 null, column.getHeaderValue(),
+                                 t, column.getHeaderValue(),
                                  false, false, 0, 0);
 
             headerWidth = comp.getPreferredSize().width;
