@@ -43,6 +43,21 @@
 		<version>4.0</version>
 		<classifier>no_aop</classifier>
 	</dependency>
+	<dependency>
+		<groupId>net.mikera</groupId>
+		<artifactId>mikera-gui</artifactId>
+		<version>0.3.1</version>
+	</dependency>
+	<dependency>
+		<groupId>net.mikera</groupId>
+		<artifactId>swing-console</artifactId>
+		<version>0.1.2</version>
+	</dependency>
+	<dependency>
+		<groupId>org.luaj</groupId>
+		<artifactId>luaj-jse</artifactId>
+		<version>3.0.1</version>
+	</dependency>
     <dependency>
     	<groupId>net.sf.mars-sim</groupId>
     	<artifactId>mars-sim-mapdata</artifactId>
@@ -54,4 +69,11 @@
     	<version>${project.version}</version>
     </dependency>
   </dependencies>
+ 	<repositories>
+		<repository>
+			<id>clojars.org</id>
+			<name>Clojars repository</name>
+			<url>https://clojars.org/repo</url>
+		</repository>
+	</repositories>
 </project>

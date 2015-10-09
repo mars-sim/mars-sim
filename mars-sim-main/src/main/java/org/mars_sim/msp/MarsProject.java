@@ -19,12 +19,23 @@ import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 import com.jme3.app.SimpleApplication;
 
+import mikera.gui.Frames;
+import mikera.gui.JConsole;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.*;
 
+import java.awt.Color;
+import java.awt.GraphicsEnvironment;
+import java.io.Console;
 import java.io.File;
-import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.List;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -263,7 +274,7 @@ public class MarsProject extends SimpleApplication {
      *
      * @param args the command line arguments
      */
-    public static void main(final String args[]) {
+    public static void main(String [] args) throws IOException, InterruptedException, URISyntaxException{
 
     	Logger.getLogger("").setLevel(Level.FINE);
 

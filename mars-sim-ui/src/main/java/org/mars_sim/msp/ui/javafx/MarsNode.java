@@ -30,6 +30,7 @@ import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -52,6 +53,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -100,6 +102,33 @@ public class MarsNode {
 
 	}
 
+	public void createDragDrop() {
+		DragDrop3 dd = new DragDrop3();
+		StackPane pane = dd.createDragDropBox();
+
+		FXInternalWindow window = createFXInternalWindow("Drag and Drop", pane, 100, 200, false);
+		window.setMinWidth(600);
+		window.setMinHeight(500);
+	}
+
+	public void createStory() {
+
+		Story story = new Story();
+		//Scene scene = story.createGUI();
+		//StackPane pane = new StackPane();
+		StackPane pane = story.createGUI();
+		pane.getStylesheets().add(getClass().getResource("/css/story.css").toExternalForm());
+
+		FXInternalWindow window = createFXInternalWindow("Day One", pane, 800, 400, false);
+		window.setMinWidth(600);
+		window.setMinHeight(500);
+
+		//Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+		//window.setX((screenBounds.getWidth() - fxDesktopPane.getWidth()) / 2);
+		//window.setY((screenBounds.getHeight() - fxDesktopPane.getHeight()) / 2);
+
+	}
+
 	//2015-09-27 for testing the use of fxml
 	public void createMaterialDesignWindow() {
 		//Pane pane = createPane("black");
@@ -135,6 +164,7 @@ public class MarsNode {
 		fxInternalWindow.setMinWidth(1024);
 
 		windowManager.addWindow(fxInternalWindow);
+		windowManager.updateActiveWindow();
 	}
 
 	public void createSettlementWindow() {
@@ -154,6 +184,7 @@ public class MarsNode {
 		fxInternalWindow.setMinWidth(210);
 
 		windowManager.addWindow(fxInternalWindow);
+		windowManager.updateActiveWindow();
 	}
 
 
@@ -174,9 +205,9 @@ public class MarsNode {
 		fxInternalWindow.setActive(true);
 		fxInternalWindow.setCloseable(false);
 		fxInternalWindow.setMinimizable(true);
-		//fxInternalWindow.setPrefSize(prefWidth, prefHeight); // not compatible with webView
-		fxInternalWindow.setMinHeight(prefHeight);
-		fxInternalWindow.setMinWidth(prefWidth);
+		fxInternalWindow.setPrefSize(prefWidth, prefHeight); // not compatible with webView
+		//fxInternalWindow.setMinHeight(prefHeight);
+		//fxInternalWindow.setMinWidth(prefWidth);
 		fxInternalWindow.setMaxHeight(fxDesktopPane.getHeight());
 		fxInternalWindow.setMaxWidth(fxDesktopPane.getWidth());
 		fxInternalWindow.setResizeable(resizable);

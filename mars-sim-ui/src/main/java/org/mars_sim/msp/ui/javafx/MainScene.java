@@ -287,6 +287,8 @@ public class MainScene {
 		//2015-09-27 for testing the use of fxml
 		marsNode.createMaterialDesignWindow();
 		marsNode.createSettlementWindow();
+		marsNode.createStory();
+		marsNode.createDragDrop();
 
 		// 2015-05-26 Create the dndTabPane.
 		dndTabPane = new DndTabPane();

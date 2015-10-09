@@ -1,0 +1,67 @@
+/** file: gettysburg.css
+ *  place in same directory as Gettysburg.java and have your build system copy it
+ *  to the same location as Gettysburg.class */
+.root {
+  -fx-background-color: cornsilk;
+}
+
+.titled-address .label {
+  -fx-font: 18px Vivaldi;
+}
+
+.bordered-titled-title {
+  -fx-background-color: white;
+  -fx-translate-y: -16;
+}
+
+.bordered-titled-border {
+  -fx-content-display: top;
+  -fx-border-insets: 20 15 15 15;
+  -fx-background-color: white;
+  -fx-border-color: black;
+  -fx-border-width: 2;
+}
+
+.bordered-titled-content {
+  -fx-padding: 26 10 10 10;
+}
+
+.address {
+  -fx-spacing: 10;
+}
+
+.address .scroll-pane {
+  -fx-background-color: transparent;
+}
+
+.address .scroll-bar .increment-button {
+  visibility: hidden;
+}
+
+.address .scroll-bar .decrement-button {
+  visibility: hidden;
+}
+
+.address .scroll-bar:vertical {
+  -fx-background-color: transparent;
+}
+
+.address .scroll-bar:vertical .track {
+  visibility: hidden;
+}
+
+.address .scroll-bar:vertical .track-background {
+  visibility: hidden;
+}
+
+.address .hide-thumb .scroll-bar:vertical .thumb {
+  -fx-background-color: transparent;
+}
+
+#portrait {
+  -fx-image: url('');
+}
+
+#signature {
+  -fx-image: url('');
+}

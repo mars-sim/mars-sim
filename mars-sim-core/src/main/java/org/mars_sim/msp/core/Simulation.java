@@ -7,6 +7,7 @@
  */
 package org.mars_sim.msp.core;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,6 +25,8 @@ import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import javax.swing.SwingUtilities;
+
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -37,6 +40,10 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
+
+import javafx.application.Platform;
+import mikera.gui.Frames;
+import mikera.gui.JConsole;
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
@@ -174,11 +181,13 @@ implements ClockListener, Serializable {
     /** Manages transportation of settlements and resupplies from Earth. */
     private TransportManager transportManager;
 
+	public JConsole jc;
 
     /** constructor. */
     public Simulation() {
+    	// Simulation's constructor is on both JavaFX-Launcher Thread and pool-2-thread-1
         //logger.info("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
-        initializeTransientData();
+    	initializeTransientData();
     }
 
     public void startSimExecutor() {
@@ -315,6 +324,10 @@ implements ClockListener, Serializable {
      */
     public void start() {
         //logger.info("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
+
+		SwingUtilities.invokeLater(() -> {
+	        testConsole();
+		});
 
         masterClock.addClockListener(this);
         masterClock.startClockListenerExecutor();
@@ -768,6 +781,29 @@ implements ClockListener, Serializable {
     	return clockScheduler;
     }
 
+    // 2015-10-08 Added testConsole() for outputting text messages to mars-simmers
+    public void testConsole() {
+    	if (jc == null) {
+    		jc = new JConsole(60,30);
+	    	jc.setCursorVisible(true);
+	    	jc.setCursorBlink(true);
+	    	jc.write("Welcome to Mars Simulation Project!\n\n");
+	    	jc.write("Dear Mars-simmer,\n\nSee hidden logs below. Have fun!\n\n",Color.GREEN,Color.BLACK);
+	    	//System.out.println("Normal output");
+	    	//jc.setCursorPos(0, 0);
+
+	    	//jc.captureStdOut();
+	    	//System.out.println("Captured output");
+
+	    	Frames.display(jc,"MSP Output Console");
+
+	    	//jc.write("after the fact\n");
+    	}
+    }
+
+    public JConsole getJConsole() {
+    	return jc;
+    }
 
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
