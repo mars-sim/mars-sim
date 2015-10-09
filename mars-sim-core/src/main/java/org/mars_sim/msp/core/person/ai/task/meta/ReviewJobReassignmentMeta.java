@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReviewJobReassignmentMeta.java
- * @version 3.08 2015-06-15
+ * @version 3.08 2015-10-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -115,50 +115,53 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 			    	                //		+ ") : found a pending job reassignment request");
 			                    	result += 500D;
 			                    	//result = result + result * preference / 10D ;
+			                    	
+			                    	// 2015-09-24 Added adjustment based on how many sol the request has since been submitted
+		                            if (clock == null)
+		                                clock = Simulation.instance().getMasterClock().getMarsClock();
+		                            // if the job assignment submitted date is > 1 sol
+		                            int sol = MarsClock.getTotalSol(clock);
+		                            int solRequest = list.get(list.size()-1).getSolSubmitted();
+		                            if (sol == solRequest+1)
+		                                result += 1000D;
+		                            else if (sol == solRequest+2)
+		                                result += 1500D;
+		                            else if (sol == solRequest+3)
+		                                result += 2000D;
+		                            else if (sol > solRequest+3)
+		                                result += 3000D;
 			                    }
 		                    }
-
-		                    // 2015-09-24 Added adjustment based on how many sol the request has since been submitted
-		                    if (clock == null)
-		    					clock = Simulation.instance().getMasterClock().getMarsClock();
-		                    // if the job assignment submitted date is > 1 sol
-		                    int sol = MarsClock.getTotalSol(clock);
-		                    int solRequest = list.get(list.size()-1).getSolSubmitted();
-		                    if (sol == solRequest+1)
-		                    	result += 1000D;
-		                    else if (sol == solRequest+2)
-		                    	result += 1500D;
-		                    else if (sol == solRequest+3)
-		                    	result += 2000D;
-		                    else if (sol > solRequest+3)
-		                    	result += 3000D;
-
 	                    }
 	                }
+	                
+	                if (result > 0D) {
+	                    // Get an available office space.
+	                    Building building = ReviewJobReassignment.getAvailableOffice(person);
+	                    if (building != null) {
+	                        result += 200D;
+	                        result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+	                        result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+	                    }
 
-    	            // Get an available office space.
-    	            Building building = ReviewJobReassignment.getAvailableOffice(person);
-    	            if (building != null) {
-    	            	result += 200D;
-     	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-    	                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-    	            }
+	                    // Modify if working out is the person's favorite activity.
+	                    if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Administration")) {
+	                        result *= 1.5D;
+	                    }
 
-    	            // Modify if working out is the person's favorite activity.
-    	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Administration")) {
-    	                result *= 1.5D;
-    	            }
+	                    // 2015-06-07 Added Preference modifier
+	                    if (result > 0)
+	                        result += result / 8D * person.getPreference().getPreferenceScore(this);
 
-			        // 2015-06-07 Added Preference modifier
-			        if (result > 0)
-			        	result += result / 8D * person.getPreference().getPreferenceScore(this);
+	                    // Effort-driven task modifier.
+	                    result *= person.getPerformanceRating();
+	                }
+                    
+                    if (result < 0) {
+                        result = 0;
+                    }
 
-		            // Effort-driven task modifier.
-		            result *= person.getPerformanceRating();
-
-			        if (result < 0) result = 0;
-
-			        //if (result > 0) System.out.println("ReviewJobReassignmentMeta : probability is " + result);
+//                    if (result > 0) System.out.println("ReviewJobReassignmentMeta : probability is " + result);
 	            }
             }
         }
