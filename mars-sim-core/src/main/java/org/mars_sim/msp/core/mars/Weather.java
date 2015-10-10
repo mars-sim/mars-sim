@@ -104,8 +104,7 @@ implements Serializable {
 
 	/** Constructs a Weather object */
 	public Weather() {
-
-
+		//System.out.println("Starting Weather constructor");
 
 		viking_dt = 28D - 15D * Math.sin(2 * Math.PI/180D * VIKING_LATITUDE + Math.PI/2D) - 13D;
 		viking_dt = Math.round (viking_dt * 100.0)/ 100.00;

@@ -465,10 +465,12 @@ implements TableModelListener, ActionListener {
     	        statusPanel.remove(_tableSearchableBar);
     	        _tableSearchableBar = null;
     	    }
-    	    
+
 	        _tableSearchableBar = new SearchableBar(searchable);
 	        _tableSearchableBar.setSearchingText("");
     	    _tableSearchableBar.setCompact(true);
+    	    //_tableSearchableBar.setSearchingText("*" + _tableSearchableBar.getSearchingText());
+
 
     	    //_tableSearchableBar.setVisibleButtons(1);
     	    _tableSearchableBar.setToolTipText("Type in your search terms. Can use wildcards (*, +, ?)");
@@ -487,8 +489,8 @@ implements TableModelListener, ActionListener {
     	    //pack();
 
     	    //statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
-    	    //statusPanel.invalidate();
-    	    //statusPanel.revalidate();
+    	    statusPanel.invalidate();
+    	    statusPanel.revalidate();
     	}
     }
 

@@ -47,6 +47,10 @@ implements Runnable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
 
+	public final static int GLOBE_BOX_HEIGHT = 300;
+	public final static int GLOBE_BOX_WIDTH = 300;
+
+
 	private static final double HALF_PI = Math.PI / 2d;
 	private static int dragx, dragy;
 
@@ -105,13 +109,15 @@ implements Runnable {
 	 * @param width the width of the globe display
 	 * @param height the height of the globe display
 	 */
-	public GlobeDisplay(final NavigatorWindow navwin, int width, int height) {
+	public GlobeDisplay(final NavigatorWindow navwin) {//, int width, int height) {
 
 		// Initialize data members
-		this.width = width;
-		this.height = height;
+		this.width = GLOBE_BOX_WIDTH;
+		this.height = GLOBE_BOX_HEIGHT;
 
-		starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
+		//starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
+		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
+
 
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
@@ -122,8 +128,8 @@ implements Runnable {
 		setMinimumSize(getPreferredSize());
 
 		// Construct sphere objects for both real and topographical modes
-		marsSphere = new MarsGlobe(MarsGlobeType.SURFACE, this);
-		topoSphere = new MarsGlobe(MarsGlobeType.TOPO, this);
+		marsSphere = new MarsGlobe(MarsGlobeType.SURFACE_MID, this);
+		topoSphere = new MarsGlobe(MarsGlobeType.TOPO_MID, this);
 
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
@@ -131,7 +137,7 @@ implements Runnable {
 		topo = false;
 		recreate = true;
 		useUSGSMap = false;
-		shadingArray = new int[width * height];
+		shadingArray = new int[width * height *2 *2];
 		showDayNightShading = true;
 
 		addMouseMotionListener(new MouseAdapter() {
@@ -144,15 +150,16 @@ implements Runnable {
 				dify = dragy - y;
 				dragx = x;
 				dragy = y;
-				
+
 				if ((difx != 0) || (dify != 0)) {
 
 				    // Globe circumference in pixels.
-				    double globeCircumference = 300D;
+				    //double globeCircumference =	300D;
+				    double globeCircumference = height *2;
 				    double rho = globeCircumference / (2D * Math.PI);
                     centerCoords = centerCoords.convertRectToSpherical(
                             (double) difx, (double) dify, rho);
-				    
+
 					if (topo) {
 						topoSphere.drawSphere(centerCoords);
 					} else {
@@ -275,9 +282,10 @@ implements Runnable {
 				//paintScreen();
 
 			} else {
-				// Pause for 2 seconds between display refreshs
+				// Pause for 2 seconds between display refreshes
 				try {
-					Thread.sleep(2000);
+					//Thread.sleep(2000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {}
 
 
@@ -312,7 +320,8 @@ implements Runnable {
 	 */
 	public void paintDoubleBuffer() {
 		if (dbImage == null) {
-			dbImage = createImage(150,150);
+			//dbImage = createImage(150,150);
+			dbImage = createImage(height, height);
 			if (dbImage == null) {
 				//System.out.println("dbImage is null");
 				return;
@@ -322,7 +331,8 @@ implements Runnable {
 		}
 
 		dbg.setColor(Color.black);
-		dbg.fillRect(0, 0, 150, 150);
+		//dbg.fillRect(0, 0, 150, 150);
+		dbg.fillRect(0, 0, height, height);
 
 		//Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		dbg.drawImage(starfield, 0, 0, Color.black, null);
@@ -339,7 +349,7 @@ implements Runnable {
 		}
 
 		drawUnits(dbg);
-		drawCrossHair(dbg);
+		//drawCrossHair(dbg);
 
 	}
 
@@ -388,14 +398,16 @@ implements Runnable {
 		// Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
 		Coordinates location = new Coordinates(0D, 0D);
-		for (int x = 0; x < 150; x++) {
-			for (int y = 0; y < 150; y++) {
+		//for (int x = 0; x < 150; x++) {
+			//for (int y = 0; y < 150; y++) {
+		for (int x = 0; x < width *2; x++) {
+			for (int y = 0; y < height *2; y++) {
 				int xDiff = x - centerX;
 				int yDiff = y - centerY;
 				if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
 					centerCoords.convertRectToSpherical(xDiff, yDiff,
 							47.74648293D, location);
-					
+
 					double sunlight = 1D;
 					try {
 					    sunlight = surfaceFeatures.getSurfaceSunlight(location);
@@ -410,15 +422,17 @@ implements Runnable {
 					    sunlight = 1D;
 					}
 					int sunlightInt = (int) (127 * sunlight);
-					shadingArray[x + (y * width)] = ((127 - sunlightInt) << 24) & 0xFF000000;
+					shadingArray[x + (y * width )] = ((127 - sunlightInt) << 24) & 0xFF000000;
 				}
 				else if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 49D) {
 				    // Draw black opaque pixel at boundary of Mars.
-				    shadingArray[x + (y * 150)] = 0xFF000000;
-				} 
+				    //shadingArray[x + (y * 150)] = 0xFF000000;
+				    shadingArray[x + (y * height )] = 0xFF000000;
+				}
 				else {
 				    // Draw transparent pixel so background stars will show through.
-					shadingArray[x + (y * 150)] = 0x00000000;
+					//shadingArray[x + (y * 150)] = 0x00000000;
+					shadingArray[x + (y * height )] = 0x00000000;
 				}
 			}
 		}
@@ -475,7 +489,7 @@ implements Runnable {
 	 * Draw green rectanges and lines (cross-hair type thingy), and write the
 	 * latitude and logitude of the center point of the current globe view.
 	 * @param g graphics context
-	 */
+
 	protected void drawCrossHair(Graphics g) {
 		g.setColor(Color.green);
 
@@ -515,7 +529,7 @@ implements Runnable {
 		g.drawString(latString, latPosition, 142);
 		g.drawString(longString, longPosition, 142);
 	}
-
+*/
 	/**
 	 * Returns unit x, y position on globe panel
 	 * @param unitCoords the unit's location

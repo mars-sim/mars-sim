@@ -235,7 +235,7 @@ extends TabPanel {
         bottomPanel.add(dataP, BorderLayout.CENTER);
 
         // Prepare air pressure label
-        JLabel airPressureLabel = new JLabel("Air Pressure : ", JLabel.RIGHT);
+        JLabel airPressureLabel = new JLabel(Msg.getString("TabPanelWeather.airPressure.label"), JLabel.RIGHT);
         airPressureLabel.setOpaque(false);
         airPressureLabel.setFont(new Font("Serif", Font.PLAIN, 12));
         dataP.add(airPressureLabel);
@@ -243,8 +243,8 @@ extends TabPanel {
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         pressureTF = new JTextField();
         pressureTF.setEditable(false);
-        pressureTF.setColumns(8);
-        pressureTF.setFont(new Font("Serif", Font.ITALIC, 12));
+        pressureTF.setColumns(6);
+        pressureTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper1.add(pressureTF);//, BorderLayout.CENTER);
         dataP.add(wrapper1);
 
@@ -257,9 +257,9 @@ extends TabPanel {
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         airDensityTF = new JTextField();
         airDensityTF.setEditable(false);
-        airDensityTF.setColumns(8);
+        airDensityTF.setColumns(6);
         airDensityTF.setOpaque(false);
-        airDensityTF.setFont(new Font("Serif", Font.ITALIC, 12));
+        airDensityTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //airDensityValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper2.add(airDensityTF);//, BorderLayout.CENTER);
         dataP.add(wrapper2);
@@ -272,7 +272,7 @@ extends TabPanel {
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         windSpeedTF = new JTextField();
         windSpeedTF.setEditable(false);
-        windSpeedTF.setColumns(8);
+        windSpeedTF.setColumns(5);
         windSpeedTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper3.add(windSpeedTF);
         dataP.add(wrapper3);
@@ -285,7 +285,7 @@ extends TabPanel {
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         windDirTF = new JTextField();
         windDirTF.setEditable(false);
-        windDirTF.setColumns(8);
+        windDirTF.setColumns(4);
         windDirTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper4.add(windDirTF);
         dataP.add(wrapper4);
@@ -299,7 +299,7 @@ extends TabPanel {
         solarIrradianceCache = getSolarIrradiance();
         solarIrradianceTF = new JTextField(getSolarIrradianceString(solarIrradianceCache));
         solarIrradianceTF.setEditable(false);
-        solarIrradianceTF.setColumns(8);
+        solarIrradianceTF.setColumns(7);
         solarIrradianceTF.setOpaque(false);
         solarIrradianceTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper5.add(solarIrradianceTF);
@@ -313,7 +313,7 @@ extends TabPanel {
 		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         opticalDepthTF = new JTextField();
         opticalDepthTF.setEditable(false);
-        opticalDepthTF.setColumns(8);
+        opticalDepthTF.setColumns(4);
         opticalDepthTF.setOpaque(false);
         opticalDepthTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper6.add(opticalDepthTF);
@@ -328,7 +328,7 @@ extends TabPanel {
 		JPanel wrapper7 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         zenithAngleTF = new JTextField();
         zenithAngleTF.setEditable(false);
-        zenithAngleTF.setColumns(8);
+        zenithAngleTF.setColumns(6);
         zenithAngleTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //zenithAngleValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper7.add(zenithAngleTF);
@@ -343,7 +343,7 @@ extends TabPanel {
 		JPanel wrapper8 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		solarDeclinationTF = new JTextField();
         solarDeclinationTF.setEditable(false);
-        solarDeclinationTF.setColumns(8);
+        solarDeclinationTF.setColumns(6);
         solarDeclinationTF.setFont(new Font("Serif", Font.PLAIN, 12));
         //solarDeclinationValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
         wrapper8.add(solarDeclinationTF);

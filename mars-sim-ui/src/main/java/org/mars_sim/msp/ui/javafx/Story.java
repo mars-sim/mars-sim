@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 
 import javafx.animation.FadeTransition;
@@ -19,19 +20,30 @@ import javafx.util.Duration;
 
 /** Displays the Gettysburg Address */
 public class Story {
-  private static final String TITLE   = "The Mars Journal";
-  private static final String ADDRESS = "We've landed. This time our mission is to settle Mars. Humanity is finally going multiplanetary..."
-  		+ "Mars needs no explanation of its richest for scientific discovery and human exploration. "
-  		+ "No doubt, Mars' planetary history is a repository of geological knowledge will "
-  		+ "help us earthlings understand our own planet’s history and future. Mars had conditions suitable for life in its past. "
-  		+ "Besides paying for the trip, yet the biggest challenge remains. How do we keep ourselves healthy for over a year or so? "
-  		+ "We must manufacture any parts that are broken and beyond repair. "
-  		+ "Mars is now over 140 million miles from Earth. Sometimes it is closer. Sometimes farther, depending on its position in its orbit around the sun "
-  		+ "and just in case of emergency evacuation, it would still take us an average of 200+ days, or just over 6 months, to get back home, at least. "
+  private static final String TITLE  = "Mars Journal";
+
+  private static final String START1 = "We've made it! We landed at fairly close to the prescribed coordinates. Our mission has just begun. We are the first wave of human to settle Mars. Humanity is finally going multiplanetary.";
+
+  private static final String START2 = "Mars needs no explanation of its richest for scientific discovery and human exploration. From all the plausible evidence, it has conditions suitable for life in its past. ";
+
+  private static final String MID1 =  "Mars is a fascinating place. Its untouched landscape is a repository of geological knowledge will even "
+  		+ "uncover for us to understand our own planet’s history and future. ";
+
+  private static final String MID2 = "'What would it be like to spend nearly two Earth years at the Martian north pole,' "
+	  		+ "we're asked, 'a place where darkness falls for nine months of the year, carbon dioxide snow flutters down in winter "
+	  		+ "and temperatures drop to a chilly minus 150 C?' I would think it's still a far more delightful place to live than the sterilized environment of Moon. ";
+
+  private static final String MID3 = "Mars is now over 140 million miles from Earth. Sometimes it is closer. Sometimes farther, depending on its position in its orbit around the sun "
+  		+ "In case of emergency evacuation, it would still take us an average of 200+ days, or just over 6 months, to get back home, at least. "
   		+ "In order to cover that distance, we will need a return ascent vehicle with sufficient fuel. I hate to bust our bubble of hope. Fat chance for such a trip within a year with the shoestring budget of our Mars Program";
+
+  private static final String MID4 = "Besides paying for the trip, yet the biggest challenge remains, namely, how do we keep ourselves healthy for the next two years ? "
+	  		+ "We would have to grow crops to sustain us. We would have to manufacture parts if things break. We would have to ensure we don't get depressed and do stupid things. ";
+
   private static final String DATE    = "September 30, 2043.\nEarth.";
   private static final String ICON    = "/images/paper/scroll.png";
   private static final String PAPER   = "/images/paper/crumpled_paper_273118.JPG";
+
 
 
   /** render the application on a stage */
@@ -93,7 +105,10 @@ public class Story {
   private Pane getContent() {
     final VBox content = new VBox();
     content.getStyleClass().add("address");
-    final Label address = new Label(ADDRESS);
+
+    //int rand = RandomUtil.getRandomInt(1);
+
+    final Label address = new Label(START1+START2+MID1+MID2+MID3+MID4);
 
     address.setWrapText(true);
     ScrollPane addressScroll = makeScrollable(address);

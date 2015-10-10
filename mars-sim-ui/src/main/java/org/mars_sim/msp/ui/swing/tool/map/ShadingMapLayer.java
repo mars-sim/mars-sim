@@ -106,5 +106,6 @@ public class ShadingMapLayer implements MapLayer {
             // Draw the shading image
             g.drawImage(shadingMap, 0, 0, displayComponent);
         }
+
     }
 }

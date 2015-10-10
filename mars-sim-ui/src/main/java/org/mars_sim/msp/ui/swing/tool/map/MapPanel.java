@@ -39,6 +39,10 @@ implements Runnable {
 
 	private static Logger logger = Logger.getLogger(MapPanel.class.getName());
 	private static final double HALF_PI = Math.PI / 2d;
+
+	public final static int MAP_BOX_HEIGHT = 300;
+	public final static int MAP_BOX_WIDTH = 300;
+
 	private static int dragx, dragy;
 
 	// Data members.
@@ -80,7 +84,7 @@ implements Runnable {
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
 
-		setPreferredSize(new Dimension(300, 300));
+		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT ));
 		setBackground(Color.BLACK);
 		setOpaque(true);
 	}
@@ -105,11 +109,11 @@ implements Runnable {
 				dragy = y;
 
 				if ((difx != 0) || (dify != 0)) {
-				    
+
 				    double rho = CannedMarsMap.PIXEL_RHO;
 		            centerCoords = centerCoords.convertRectToSpherical(
 		                    (double) difx, (double) dify, rho);
-				    
+
 					map.drawMap(centerCoords);
 
 					paintDoubleBuffer();
@@ -150,7 +154,7 @@ implements Runnable {
 	public void addMapLayer(MapLayer newLayer, int index) {
 		if (newLayer != null) {
 			if (!mapLayers.contains(newLayer)) {
-			    if (index < mapLayers.size()) { 
+			    if (index < mapLayers.size()) {
 			        mapLayers.add(index, newLayer);
 			    }
 			    else {

@@ -79,13 +79,15 @@ implements ActionListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 
+	public static final int HORIZONTAL = 635;
+	public static final int VERTICAL = 435;
 	// Data members
 	/** map navigation. */
 	private MapPanel map;
 	/** Globe navigation. */
 	private GlobeDisplay globeNav;
 	/** Compass navigation buttons. */
-	private NavButtonDisplay navButtons;
+	//private NavButtonDisplay navButtons;
 	/** Topographical and distance legend. */
 	private LegendDisplay legend;
 	/** Latitude entry. */
@@ -141,8 +143,12 @@ implements ActionListener {
 		// use ToolWindow constructor
 		super(NAME, desktop);
 
+		setSize(1024,1024);
+		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
+
 		// Set window resizable to false.
-		setResizable(false);
+		//setResizable(false);
+		setResizable(true);
 
 		// Prepare content pane
 		JPanel mainPane = new JPanel();
@@ -160,7 +166,8 @@ implements ActionListener {
 		topMainPane.add(leftTopPane);
 
 		// Prepare globe display
-		globeNav = new GlobeDisplay(this, 150, 150);
+		//globeNav = new GlobeDisplay(this, 150, 150);
+		globeNav = new GlobeDisplay(this);//, GlobeDisplay.GLOBE_MAP_WIDTH, GlobeDisplay.GLOBE_MAP_HEIGHT);
 		JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		globePane.setBackground(Color.black);
 		globePane.setOpaque(true);
@@ -168,7 +175,7 @@ implements ActionListener {
 				new LineBorder(Color.gray)));
 		globePane.add(globeNav);
 		leftTopPane.add(globePane);
-
+/*
 		// Prepare navigation buttons display
 		navButtons = new NavButtonDisplay(this);
 		JPanel navPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -176,7 +183,7 @@ implements ActionListener {
 				new LineBorder(Color.gray)));
 		navPane.add(navButtons);
 		leftTopPane.add(navPane);
-
+*/
 		// Put strut spacer in
 		topMainPane.add(Box.createHorizontalStrut(5));
 
@@ -250,7 +257,7 @@ implements ActionListener {
 		);
 		optionsPane.add(optionsButton);
 
-		// Prepare minerals button.
+		// Prepare minerals button.0
 		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
@@ -335,7 +342,7 @@ implements ActionListener {
 	 *  @param newCoords the new center location
 	 */
 	public void updateCoords(Coordinates newCoords) {
-		navButtons.updateCoords(newCoords);
+		//navButtons.updateCoords(newCoords);
 		map.showMap(newCoords);
 		globeNav.showGlobe(newCoords);
 	}
@@ -643,7 +650,7 @@ implements ActionListener {
 	public void destroy() {
 		map.destroy();
 		globeNav.destroy();
-		navButtons = null;
+		//navButtons = null;
 		legend = null;
 		unitIconLayer = null;
 		unitLabelLayer = null;
