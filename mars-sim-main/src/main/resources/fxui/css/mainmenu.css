@@ -11,10 +11,10 @@
 
 .root {
 
-	-fx-border-insets: 23;
-	-fx-background-insets: 23;
+	-fx-border-insets: 2;
+	-fx-background-insets: 2;
 	-fx-background-radius: 6;
-	-fx-border-radius: 6;
+	-fx-border-radius: 2;
 	-fx-border-color: gray;
  	-fx-border-style: solid;
 	-fx-border-width: 0;
@@ -41,10 +41,11 @@ Defines the rectangle responsible for the shadow
 }
 
 .text{
-    -fx-fill: #FFB03B;
+    -fx-fill: #FFB03B; /*light mud color*/
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 
 .text:hover{
-    -fx-fill: #ffef00;
+    -fx-fill: #ffffff   /*#90ff00 pure (or mostly pure) green.*/
+
 }

@@ -9,7 +9,9 @@ package org.mars_sim.msp.javafx;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -48,6 +50,24 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableView;
+import javafx.scene.control.ProgressIndicator;
+import org.pdfsam.ui.FillProgressIndicator;
+import org.pdfsam.ui.RingProgressIndicator;
+
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
@@ -75,7 +95,9 @@ public class MainMenu {
 
     private double anchorX;
     private double rate;
-    private RotateTransition rt;
+
+    private boolean isDone;
+
     //private boolean cleanUI = true;
 
     private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
@@ -85,18 +107,20 @@ public class MainMenu {
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
     //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
+
+    private RotateTransition rt;
     private Sphere mars;
     private PhongMaterial material;
     private PointLight sun;
 
     private Group root;
-	private Stage primaryStage;
-	private Stage mainSceneStage;
+	private Stage mainSceneStage, mainMenuStage, circleStage;
 	public Scene mainMenuScene;
 
 	public MainMenu mainMenu;
 	public MainScene mainScene;
-	//public ModtoolScene modtoolScene;
+
+
 	private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
 	private MultiplayerMode multiplayerMode;
@@ -115,7 +139,7 @@ public class MainMenu {
 	void initAndShowGUI(Stage mainMenuStage) {
 	   //Logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
-	   this.primaryStage = mainMenuStage;
+	   this.mainMenuStage = mainMenuStage;
 
     	Platform.setImplicitExit(false);
 
@@ -138,7 +162,7 @@ public class MainMenu {
        root = new Group();
        Parent parent = createMarsGlobe();
        root.getChildren().addAll(parent, screen);
-       Scene mainMenuScene = new Scene(root);
+       mainMenuScene = new Scene(root);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
 
 
@@ -149,29 +173,29 @@ public class MainMenu {
        mainMenuScene.setFill(Color.BLACK);
        mainMenuScene.setCursor(Cursor.HAND);
        mainMenuScene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
-       mainMenuStage.initStyle(StageStyle.TRANSPARENT);
-       //mainMenuStage.initStyle(StageStyle.TRANSPARENT);
-       //primaryStage.initStyle (StageStyle.UTILITY);
-       //primaryStage.getStyleClass().add("rootPane");
+
+       mainMenuStage.initStyle (StageStyle.UTILITY); //or  (StageStyle.TRANSPARENT);;
        mainMenuStage.centerOnScreen();
        mainMenuStage.setResizable(false);
 	   mainMenuStage.setTitle(Simulation.WINDOW_TITLE);
        mainMenuStage.setScene(mainMenuScene);
        mainMenuStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-       //primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+       //mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        mainMenuStage.show();
+
+       createProgressCircle();
+       circleStage.hide();
 
        // Starts a new stage for MainScene
 	   mainSceneStage = new Stage();
-	   mainSceneStage.setMinWidth(1024);
-	   mainSceneStage.setMinHeight(400);
+	   //mainSceneStage.setMinWidth(1024);
+	   //mainSceneStage.setMinHeight(400);
 	   mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
-	   //menuScene = new MenuScene(stage);
-	   //modtoolScene = new ModtoolScene(stage);
+
    }
 
    public Stage getStage() {
-	   return primaryStage;
+	   return mainMenuStage;
    }
 
    public MultiplayerMode getMultiplayerMode() {
@@ -180,35 +204,55 @@ public class MainMenu {
 
    public void runOne() {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
-
-	   primaryStage.setIconified(true);
-
+	   mainMenuStage.setIconified(true); //hide();
 	   mainScene = new MainScene(mainSceneStage);
-
 	   marsProjectFX.handleNewSimulation();
    }
 
    public void runTwo() {
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
-	   primaryStage.setIconified(true);
+		Platform.runLater(() -> {
+			// TODO: the ring won't turn until a couple of seconds later
+			circleStage.show();
+			circleStage.requestFocus();
+
+		});
+
+	   mainMenuStage.setIconified(true);//hide();
+
+	   ExecutorService setUpSimTasks = Simulation.instance().getSimExecutor();
 
 	   try {
 		   mainScene = new MainScene(mainSceneStage);
-		   Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
+		   //isDone = true;
+		   Future future = setUpSimTasks.submit(new LoadSimulationTask());
 		   // TODO:
-		   //root.setCursor(Cursor.WAIT);
-		   TimeUnit.SECONDS.sleep(4L);
+		   //mainMenuScene.setCursor(Cursor.WAIT);
+		   //TimeUnit.SECONDS.sleep(4L);
 		   // Note: java8u60 requires a longer time (than 8u45) such as 4 secs instead of 2 secs on some machines.
 		   // or else it will proceed to prepareStage() below prematurely and results in NullPointerException
 		   // as it tries to read people data before it was properly populated in UnitManager.
+		   //service.shutdownNow();
+		   //try {
+		   //   service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		   //} catch (InterruptedException e) {}
 
 		   // Note 1: The delay time for launching the JavaFX UI should also be based on the file size of the default.sim
-		   long delay_time = (long) (fileSize * 4000L);
-		   TimeUnit.MILLISECONDS.sleep(delay_time);
-		   prepareStage();
+		   //long delay_time = (long) (fileSize * 4000L);
+		   //TimeUnit.MILLISECONDS.sleep(delay_time);
+
+		   // 2015-10-10 use future.get to check if setUpSimTasks are finished before moving onto setting up the main scene
+		   while(future.get() == null && isDone) {
+			   prepareStage();
+			   isDone = false;
+		   }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		Platform.runLater(() -> {
+			circleStage.close();
+		});
    }
 
 	public class LoadSimulationTask implements Runnable {
@@ -218,11 +262,12 @@ public class MainMenu {
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
 			Simulation.instance().start();
 			fileSize = Simulation.instance().getFileSize();
+			isDone = true;
 			//System.out.println("filesize is "+ fileSize);
 		}
 	}
 
-	public void prepareStage() {
+	public boolean prepareStage() {
 	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 
 	   // prepare main scene
@@ -233,7 +278,6 @@ public class MainMenu {
 	   // prepare stage
 	   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
-
 	   mainSceneStage.setResizable(true);
 	   //stage.setFullScreen(true);
 	   mainSceneStage.setScene(scene);
@@ -241,18 +285,16 @@ public class MainMenu {
 
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);
-
-	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
-
 	   mainScene.initializeTheme();
 
-	   //logger.info("done with MainMenu's prepareStage()");
+	   return true;
+	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
 	}
 
    public void runThree() {
 	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
 	   Simulation.instance().getSimExecutor().submit(new MultiplayerTask());
-	   //primaryStage.setIconified(true);
+	   mainMenuStage.setIconified(true);//hide();
 /*
 	   try {
 			multiplayerMode = new MultiplayerMode(this);
@@ -264,7 +306,7 @@ public class MainMenu {
 		executor.execute(multiplayerMode.getModeTask());
 */
 	    //pool.shutdown();
-	     //primaryStage.toFront();
+	     //mainSceneStage.toFront();
    		//modtoolScene = new SettlementScene().createSettlementScene();
 	    //stage.setScene(modtoolScene);
 	    //stage.show();
@@ -298,16 +340,13 @@ public class MainMenu {
 	   //}
    //}
 
-   //public Scene getMainScene() {
-   //	return mainScene;
-   //}
 
    public Parent createMarsGlobe() {
 	   logger.info("Is ConditionalFeature.SCENE3D supported on this platform? " + Platform.isSupported(ConditionalFeature.SCENE3D));
 
-	   Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
-       Image dImage = new Image(this.getClass().getResource("/maps/MarsV3-Shaded-2k.jpg").toExternalForm());
-       Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal2048x1024.png").toExternalForm()); //.toString());
+	   Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
+       Image dImage = new Image(this.getClass().getResource("/maps/MarsV3Shaded1k.jpg").toExternalForm());
+       Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
        //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.jpg").toExternalForm()); //.toString());
 
        material = new PhongMaterial();
@@ -437,5 +476,120 @@ public class MainMenu {
 		   	    return false;
 		   	}
    	}
+
+	public void createProgressCircle() {
+
+		StackPane stackPane = new StackPane();
+
+		//BorderPane controlsPane = new BorderPane();
+		//controlsPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		//stackPane.getChildren().add(controlsPane);
+		//controlsPane.setCenter(new TableView<Void>());
+
+		ProgressIndicator indicator = new ProgressIndicator();
+		indicator.setMaxSize(120, 120);
+		//indicator.setProgress(50);
+		javafx.scene.effect.ColorAdjust adjust = new javafx.scene.effect.ColorAdjust();
+		//Green HUE value -0.4
+		adjust.setHue(17);
+		indicator.setEffect(adjust);
+		stackPane.getChildren().add(indicator);
+		StackPane.setAlignment(indicator, Pos.CENTER);
+		StackPane.setMargin(indicator, new Insets(20));
+		stackPane.setBackground(javafx.scene.layout.Background.EMPTY);
+
+		circleStage = new Stage();
+		Scene scene = new Scene(stackPane, 120, 120);
+		scene.setFill(Color.TRANSPARENT);
+		circleStage.initStyle (StageStyle.TRANSPARENT);
+		circleStage.setScene(scene);
+        circleStage.show();
+/*
+
+		final Float[] values = new Float[] {-1.0f, 0f, 0.6f, 1.0f};
+		final Label [] labels = new Label[values.length];
+		final ProgressBar[] pbs = new ProgressBar[values.length];
+		final ProgressIndicator[] pins = new ProgressIndicator[values.length];
+		final HBox hbs [] = new HBox [values.length];
+
+
+		circleStage = new Stage();
+		Group root = new Group();
+		Scene scene = new Scene(root, 300, 250);
+		circleStage.setScene(scene);
+		circleStage.setTitle("Progress Controls");
+
+        for (int i = 0; i < values.length; i++) {
+            final Label label = labels[i] = new Label();
+            label.setText("progress:" + values[i]);
+
+            final ProgressBar pb = pbs[i] = new ProgressBar();
+            pb.setProgress(values[i]);
+
+            final ProgressIndicator pin = pins[i] = new ProgressIndicator();
+            pin.setProgress(values[i]);
+            final HBox hb = hbs[i] = new HBox();
+            hb.setSpacing(5);
+            hb.setAlignment(Pos.CENTER);
+            hb.getChildren().addAll(label, pb, pin);
+        }
+
+        final VBox vb = new VBox();
+        vb.setSpacing(5);
+        vb.getChildren().addAll(hbs);
+        scene.setRoot(vb);
+        circleStage.show();
+
+
+	    circleStage = new Stage();
+
+		RingProgressIndicator indicator = new RingProgressIndicator();
+		//Slider slider = new Slider(0, 100, 50);
+
+		final ProgressIndicator ring = new ProgressIndicator();
+
+		//slider.valueProperty().addListener((o, oldVal, newVal) -> indicator.setProgress(newVal.intValue()));
+		//VBox main = new VBox(1, indicator, slider);
+		VBox main = new VBox(ring); //2,inindicator, ring);
+		//indicator.setProgress(Double.valueOf(slider.getValue()).intValue());
+		Group root = new Group();
+		//root.getChildren().add(main);
+        Scene scene = new Scene(root);//, 200, 150);
+		//circleStage.initStyle(StageStyle.TRANSPARENT);
+        //scene.setFill(Color.BLACK);
+        //scene.setCursor(Cursor.WAIT);
+        //scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
+        //circleStage.initStyle (StageStyle.TRANSPARENT); //(StageStyle.UTILITY); //or
+        circleStage.initStyle (StageStyle.UTILITY);
+		circleStage.setScene(scene);
+		scene.setRoot(main);
+		circleStage.setTitle("Processing");
+		circleStage.show();
+*/
+
+	}
+
+	public Stage getCircleStage() {
+		return circleStage;
+	}
+
+	public void destroy() {
+
+		rt = null;
+		mars = null;
+		material = null;
+		sun = null;
+		root = null;
+		mainSceneStage = null;
+		mainMenuStage = null;
+		circleStage = null;
+		mainMenuScene = null;
+		mainMenu = null;
+		mainScene = null;
+		marsProjectFX = null;
+		executor = null;
+		multiplayerMode = null;
+		mainMenuController = null;
+	}
 
 }

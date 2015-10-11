@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,6 +89,7 @@ public class ScenarioConfigEditorFX {
 	private boolean hasError;
 	private boolean hasSettlement;
 	private boolean hasMSD, isCrewEditorOpen = false;
+    private boolean isDone;
 
 	private String playerName;
 	private String gameMode;
@@ -455,14 +457,32 @@ public class ScenarioConfigEditorFX {
 			}
 
 			if (!hasError) {
+				isDone = true;
+				//2015-10-10 Added createProgressCircle()
+				Platform.runLater(() -> {
+					// TODO: the ring won't turn until a couple of seconds later
+					mainMenu.getCircleStage().show();
+					mainMenu.getCircleStage().requestFocus();
+				});
+
 			    //logger.info("ScenarioConfigEditorFX's createEditor() is on " + Thread.currentThread().getName() + " Thread");
 				stage.hide();
 				setConfiguration();
 				//System.out.println("calling Simulation.createNewSimulation()");
-				//Runnable r = new SimulationTask();
-				//(new Thread(r)).start();
-				Simulation.instance().getSimExecutor().submit(new SimulationTask());
+				Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
 				closeWindow();
+
+	           	try {
+					while(future.get() == null && isDone) {
+						Platform.runLater(() -> {
+							mainMenu.getCircleStage().close();
+						});
+						isDone = false;
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 		});
@@ -618,6 +638,7 @@ public class ScenarioConfigEditorFX {
 	private void closeWindow() {
 		stage.setIconified(true);
 		stage.hide();
+
 	}
 
 
@@ -810,6 +831,7 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
+			boolean isDone = false;
 			Simulation.createNewSimulation();
 			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");
 			Simulation.instance().start();

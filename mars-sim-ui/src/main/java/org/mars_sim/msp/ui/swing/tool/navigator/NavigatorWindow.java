@@ -143,12 +143,12 @@ implements ActionListener {
 		// use ToolWindow constructor
 		super(NAME, desktop);
 
-		setSize(1024,1024);
+		//setSize(1024,1024);
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 
 		// Set window resizable to false.
-		//setResizable(false);
-		setResizable(true);
+		setResizable(false);
+		//setResizable(true);
 
 		// Prepare content pane
 		JPanel mainPane = new JPanel();

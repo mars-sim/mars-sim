@@ -1,0 +1,12 @@
+.progress-indicator .indicator {
+    -fx-background-color: transparent ;
+}
+.progress-indicator {
+    -fx-progress-color: green ;
+}
+.progress-indicator:critical {
+    -fx-progress-color: red ;
+}
+.progress-indicator:warning {
+    -fx-progress-color: orange ;
+}

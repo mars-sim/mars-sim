@@ -562,8 +562,7 @@ public class MasterClock implements Serializable { // Runnable,
 				//while (!clockListenerExecutor.isTerminated()){
 				//while (!isPaused)
 					listener.clockPulse(time);
-				//	TimeUnit.SECONDS.sleep(SLEEP_TIME);
-				//}
+					//TimeUnit.SECONDS.sleep(SLEEP_TIME);
 			} catch (ConcurrentModificationException e) {} //Exception e) {}
 		}
 	}

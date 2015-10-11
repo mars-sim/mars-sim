@@ -96,8 +96,6 @@ public class MarsNode {
 		this.mainScene = mainScene;
 		this.stage = stage;
 
- 		panel = new JPanel(new BorderLayout(0, 0));
-
 		windowManager = new FXDesktopWindowManager();
 
 	}

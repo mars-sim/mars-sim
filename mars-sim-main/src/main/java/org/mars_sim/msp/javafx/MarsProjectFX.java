@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -41,6 +42,8 @@ public class MarsProjectFX extends Application  {
 
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
+
+    private boolean isDone;
 
     private MainMenu mainMenu;
 
@@ -270,16 +273,22 @@ public class MarsProjectFX extends Application  {
      */
     void handleNewSimulation() {
 		//logger.info("MarsProjectFX's handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
-
+		//isDone = true;
         try {
             SimulationConfig.loadConfig();
             if (useGUI) {
+
 //        		System.out.println("MarsProjectFX's handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
             	//Runnable r = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
 				//(new Thread(r)).start();
-        	   	Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
+            	Future future = Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
             	// note: cannot load editor in macosx if it was a JDialog
                 // ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
+            	//while(future.get() == null && isDone) {
+            	//	mainMenu.getCircleStage().close();
+     			//   isDone = false;
+     		    //}
+
             }
         } catch (Exception e) {
             e.printStackTrace();

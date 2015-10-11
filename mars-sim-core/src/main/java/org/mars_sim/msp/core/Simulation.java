@@ -325,9 +325,9 @@ implements ClockListener, Serializable {
     public void start() {
         //logger.info("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
 
-		SwingUtilities.invokeLater(() -> {
-	        testConsole();
-		});
+		//SwingUtilities.invokeLater(() -> {
+	    //    testConsole();
+		//});
 
         masterClock.addClockListener(this);
         masterClock.startClockListenerExecutor();

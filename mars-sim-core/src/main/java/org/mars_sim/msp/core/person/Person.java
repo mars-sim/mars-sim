@@ -408,8 +408,12 @@ implements VehicleOperator, MissionMember, Serializable {
 
             	taskSchedule.timePassing(time);
 
-                // Mental changes with time passing.
-                mind.timePassing(time);
+            	//try {
+	                // Mental changes with time passing.
+	                mind.timePassing(time);
+            	//} catch(Exception ex)  {
+        		//	ex.printStackTrace();
+        		//}
             }
             else {
                 // Person has died as a result of physical condition
