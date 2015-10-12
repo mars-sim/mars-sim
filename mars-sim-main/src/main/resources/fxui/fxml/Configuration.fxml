@@ -8,11 +8,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen2Controller">
+<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="768.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.Screen2Controller">
     <children>
-      <BorderPane prefHeight="640.0" prefWidth="640.0">
+      <BorderPane prefHeight="768.0" prefWidth="768.0">
          <center>
-          <VBox alignment="CENTER" prefHeight="640.0" prefWidth="640.0" spacing="20.0" BorderPane.alignment="CENTER">
+          <VBox alignment="CENTER" prefHeight="800.0" prefWidth="800.0" spacing="20.0" BorderPane.alignment="CENTER">
             <padding>
               <Insets />
             </padding>
@@ -29,14 +29,7 @@
                         <Font name="Caladea Bold" size="18.0" />
                      </font>
                      <VBox.margin>
-                        <Insets />
-                     </VBox.margin></Button>
-			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen1" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Back" textAlignment="CENTER" textFill="#f75d0c">
-			        <font>
-                        <Font name="Caladea Bold" size="18.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets />
+                        <Insets bottom="400.0" />
                      </VBox.margin></Button>
                </children>
                <BorderPane.margin>
@@ -45,7 +38,13 @@
           </VBox>
          </center>
          <bottom>
-            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="640.0" BorderPane.alignment="CENTER" />
+            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="640.0" BorderPane.alignment="CENTER">
+               <children>
+			        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen1" prefHeight="35.0" prefWidth="190.0" style="-fx-background-color: transparent;" text="Back" textAlignment="CENTER" textFill="#f75d0c">
+			        <font>
+                        <Font name="Caladea Bold" size="18.0" />
+                     </font></Button>
+               </children></HBox>
          </bottom>
          <top>
            <Label prefHeight="53.0" prefWidth="235.0" style="-fx-background-color: transparent;" text="Configuration" textFill="#fff600" BorderPane.alignment="CENTER">

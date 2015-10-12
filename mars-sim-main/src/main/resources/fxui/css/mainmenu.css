@@ -5,40 +5,7 @@
  * @version 3.08 2015-01-27
  * @author Lars Næsbye Christensen
  */
-/*
- The Stage background.
-*/
 
-.root {
-
-	-fx-border-insets: 2;
-	-fx-background-insets: 2;
-	-fx-background-radius: 6;
-	-fx-border-radius: 2;
-	-fx-border-color: gray;
- 	-fx-border-style: solid;
-	-fx-border-width: 0;
-
-}
-
-.decoration-background{
-	-fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 25% 25%, radius 50%, reflect, #eeeeee88, #aaaaaa88 75%, gray);
-	-fx-stroke-width: 0;
-	-fx-arc-width:20px;
-	-fx-arc-height:20px;
-
-	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
-
-}
-/*
-Defines the rectangle responsible for the shadow
-*/
-.decoration-shadow{
-	-fx-fill: black;
-	-fx-stroke-width: 0;
-	-fx-arc-width:20px;
-	-fx-arc-height:20px;
-}
 
 .text{
     -fx-fill: #FFB03B; /*light mud color*/
@@ -46,6 +13,14 @@ Defines the rectangle responsible for the shadow
 }
 
 .text:hover{
-    -fx-fill: #ffffff   /*#90ff00 pure (or mostly pure) green.*/
+    -fx-fill: #ffffff;   /*#90ff00 pure (or mostly pure) green.*/
+}
+
+#menu:hover {
+	-fx-font-size: 26.0px;
+	-fx-text-fill: white;
+    -fx-stroke-width: 2;
+    -fx-font-weight: bold;
+	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
 
 }

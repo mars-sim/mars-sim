@@ -235,7 +235,7 @@ public class ScenarioConfigEditorFX {
 	        stage.show();
 
 	    	stage.setOnCloseRequest(e -> {
-				boolean isExit = mainMenu.exitDialog(stage);
+				boolean isExit = mainMenu.getScreensSwitcher().exitDialog(stage);
 				e.consume(); // need e.consume() in order to call setFadeOutTransition() below
 				if (isExit) {
 					 borderAll.setOpacity(0);

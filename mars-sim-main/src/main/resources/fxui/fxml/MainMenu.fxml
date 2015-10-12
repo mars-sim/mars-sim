@@ -8,79 +8,21 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="640.0"
-xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"
-stylesheets="../css/mainmenu.css"
-fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="768.0" style="-fx-background-color: transparent;" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
   <children>
-      <BorderPane layoutX="-1.0" prefHeight="640.0" prefWidth="640.0">
+      <BorderPane layoutX="-1.0" prefHeight="768.0" prefWidth="768.0" style="-fx-background-color: transparent;">
          <left>
 			<VBox alignment="CENTER" prefHeight="567.0" prefWidth="25.0" spacing="0.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
 			<children>
 			</children>
 			</VBox>
          </left>
-         <center>
-          <VBox id="globe" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="640.0" prefWidth="300.0" spacing="20.0" BorderPane.alignment="CENTER">
-            <padding>
-              <Insets />
-            </padding>
-               <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="New Simulation" textFill="#FFB03B">
-                     <font>
-                        <Font name="Caladea Bold" size="20.0" />
-                     </font>
-                     <effect>
-                        <SepiaTone />
-                     </effect></Button>
-          	<Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Load Default" textFill="#FFB03B">
-                     <font>
-                        <Font name="Caladea Bold" size="20.0" />
-                     </font>
-                     <effect>
-                        <SepiaTone />
-                     </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Multiplayer" textFill="#FFB03B">
-                     <font>
-                        <Font name="Caladea Bold" size="20.0" />
-                     </font>
-                     <effect>
-                        <SepiaTone />
-                     </effect></Button>
-
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Config" textFill="#FFB03B">
-                     <font>
-                        <Font name="Caladea Bold" size="20.0" />
-                     </font>
-                     <effect>
-                        <SepiaTone />
-                     </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Credits" textFill="#FFB03B">
-                     <font>
-                        <Font name="Caladea Bold" size="20.0" />
-                     </font>
-                     <effect>
-                        <SepiaTone />
-                     </effect></Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Exit" textFill="#FFB03B">
-                     <font>
-                        <Font name="Caladea Bold" size="20.0" />
-                     </font>
-                     <effect>
-                        <SepiaTone />
-                     </effect></Button>
-               </children>
-               <BorderPane.margin>
-                  <Insets left="250.0" />
-               </BorderPane.margin>
-          </VBox>
-         </center>
          <bottom>
             <VBox prefHeight="62.0" prefWidth="640.0" BorderPane.alignment="CENTER">
                <children>
                   <HBox prefHeight="23.0" prefWidth="640.0">
                      <children>
-                        <Label text=" Rotational Speed :" textFill="#7f6106">
+                        <Label text=" Speed of Rotation :" textFill="#7f6106">
 							<font>
 								<Font name="Corbel Bold" size="18.0" />
 			                </font>
@@ -104,7 +46,7 @@ fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
                         </Label>
                      </children>
                   </HBox>
-                  <Button onAction="#setDefaultRotation" prefHeight="15.0" prefWidth="90.0" style="-fx-background-color: transparent;" text="Default : 500X" textFill="#976c0f">
+                  <Button onAction="#setDefaultRotation" prefHeight="22.0" prefWidth="122.0" style="-fx-background-color: transparent;" text="Set to default 500X" textFill="#976c0f">
 					<font>
 						<Font name="Constantia Italic" size="12.0" />
 	                </font>
@@ -122,7 +64,7 @@ fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
          <top>
             <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="53.0" prefWidth="650.0" text="MARS SIMULATION PROJECT" textAlignment="CENTER" textFill="#FFB03B">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="53.0" prefWidth="800.0" text="Mars Simulation Project" textAlignment="CENTER" textFill="#FFB03B">
                      <font>
                         <Font name="Aharoni Bold" size="36.0" />
                      </font>
@@ -137,9 +79,9 @@ fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
                         </Lighting>
                      </effect>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="650.0" text="V 3.08" textFill="#ffe53d">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="800.0" text="V 3.08" textAlignment="CENTER" textFill="#ffb03b">
                      <font>
-                        <Font name="Constantia" size="14.0" />
+                        <Font size="14.0" />
                      </font>
                      <effect>
                         <Glow level="0.09" />
@@ -148,6 +90,61 @@ fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
                </children>
             </VBox>
          </top>
+         <right>
+          <VBox id="globe" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="800.0" prefWidth="350.0" spacing="20.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER_LEFT">
+            <padding>
+              <Insets />
+            </padding>
+               <children>
+            <Button id="menu" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="NEW SIM" textFill="#FFB03B">
+                     <font>
+                        <Font name="Caladea" size="20.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+          	<Button id="menu" mnemonicParsing="false" onAction="#goToTwo" prefHeight="38.0" prefWidth="298.0" style="-fx-background-color: transparent;" text="LOAD DEFAULT" textFill="#FFB03B">
+                     <font>
+                        <Font name="Caladea" size="20.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+            <Button id="menu" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="NETWORK" textFill="#FFB03B">
+                     <font>
+                        <Font name="Caladea" size="20.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+
+            <Button id="menu" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="CONFIG" textFill="#FFB03B">
+                     <font>
+                        <Font name="Caladea" size="20.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+            <Button id="menu" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="CREDITS" textFill="#FFB03B">
+                     <font>
+                        <Font name="Caladea" size="20.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+            <Button id="menu" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="EXIT" textFill="#FFB03B">
+                     <font>
+                        <Font name="Caladea" size="20.0" />
+                     </font>
+                     <effect>
+                        <SepiaTone />
+                     </effect></Button>
+               </children>
+               <BorderPane.margin>
+                  <Insets left="250.0" />
+               </BorderPane.margin>
+          </VBox>
+         </right>
       </BorderPane>
   </children>
 </AnchorPane>

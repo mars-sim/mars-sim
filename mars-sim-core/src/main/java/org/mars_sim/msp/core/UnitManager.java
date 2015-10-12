@@ -758,6 +758,9 @@ public class UnitManager implements Serializable {
 					// 2015-06-18 Assign a job by calling getInitialJob
 					person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
 
+				    // 2015-10-05 added setupReportingAuthority()
+				    person.assignReportingAuthority();
+
 					ChainOfCommand cc = settlement.getChainOfCommand();
 
 					// 2015-04-30 Assign a role to everyone

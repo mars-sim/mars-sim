@@ -65,9 +65,6 @@ import javafx.stage.Stage;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ProgressIndicator;
-import org.pdfsam.ui.FillProgressIndicator;
-import org.pdfsam.ui.RingProgressIndicator;
-
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
@@ -82,6 +79,9 @@ public class MainMenu {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(MainMenu.class.getName());
+
+    private static final int WIDTH = 768;
+    private static final int HEIGHT = 768;
 
 	// Data members
     private double fileSize;
@@ -119,7 +119,7 @@ public class MainMenu {
 
 	public MainMenu mainMenu;
 	public MainScene mainScene;
-
+	public ScreensSwitcher screen;
 
 	private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
@@ -144,16 +144,17 @@ public class MainMenu {
     	Platform.setImplicitExit(false);
 
     	mainMenuStage.setOnCloseRequest(e -> {
-			boolean isExit = exitDialog(mainMenuStage);
+			boolean isExit = screen.exitDialog(mainMenuStage);
 			if (!isExit) {
 				e.consume();
 			}
 			else {
 				Platform.exit();
+	    		System.exit(0);
 			}
 		});
 
-       ScreensSwitcher screen = new ScreensSwitcher(this);
+       screen = new ScreensSwitcher(this);
        screen.loadScreen(MainMenu.screen1ID, MainMenu.screen1File);
        screen.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
        screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
@@ -161,20 +162,26 @@ public class MainMenu {
 
        root = new Group();
        Parent parent = createMarsGlobe();
+       parent.setStyle("-fx-border-style: none; -fx-background-color:transparent;");
        root.getChildren().addAll(parent, screen);
+       root.setStyle("-fx-border-style: none; -fx-background-color:transparent;");
        mainMenuScene = new Scene(root);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
-
 
        // 2015-09-26 Added adjustRotation()
        adjustRotation(mainMenuScene, parent);
 
-       //scene.setFill(Color.rgb(10, 10, 40));
-       mainMenuScene.setFill(Color.BLACK);
-       mainMenuScene.setCursor(Cursor.HAND);
-       mainMenuScene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
+       mainMenuScene.setFill(Color.BLACK); // a black border will remain
+      // mainMenuScene.setFill(Color.TRANSPARENT); // a white border will remain
 
-       mainMenuStage.initStyle (StageStyle.UTILITY); //or  (StageStyle.TRANSPARENT);;
+       //(ii) set the scene fill to transparent
+       mainMenuScene.setCursor(Cursor.HAND);
+
+
+       //(iii) set the stage background to transparent
+       //mainMenuStage.initStyle(StageStyle.UTILITY);
+       //mainMenuStage.initStyle(StageStyle.TRANSPARENT);
+       //mainMenuStage.initStyle(StageStyle.UNDECORATED);
        mainMenuStage.centerOnScreen();
        mainMenuStage.setResizable(false);
 	   mainMenuStage.setTitle(Simulation.WINDOW_TITLE);
@@ -225,7 +232,7 @@ public class MainMenu {
 	   try {
 		   mainScene = new MainScene(mainSceneStage);
 		   //isDone = true;
-		   Future future = setUpSimTasks.submit(new LoadSimulationTask());
+		   Future<?> future = setUpSimTasks.submit(new LoadSimulationTask());
 		   // TODO:
 		   //mainMenuScene.setCursor(Cursor.WAIT);
 		   //TimeUnit.SECONDS.sleep(4L);
@@ -261,7 +268,7 @@ public class MainMenu {
 			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
 			Simulation.instance().start();
-			fileSize = Simulation.instance().getFileSize();
+			//fileSize = Simulation.instance().getFileSize();
 			isDone = true;
 			//System.out.println("filesize is "+ fileSize);
 		}
@@ -378,11 +385,15 @@ public class MainMenu {
 
        // Build the Scene Graph
        Group globeComponents = new Group();
+       //globeComponents.setStyle("-fx-border-color: rgba(0, 0, 0, 0);");
+       //globeComponents.setScaleX(.75);
+       //globeComponents.setScaleY(.75);
        globeComponents.getChildren().add(camera);
        globeComponents.getChildren().add(mars);
        globeComponents.getChildren().add(sun);
        globeComponents.getChildren().add(ambient);
 
+       // Increased the speed of rotation 500 times as dictated by the value of time-ratio in simulation.xml
        rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), mars);
        //rt.setByAngle(360);
        rt.setInterpolator(Interpolator.LINEAR);
@@ -394,8 +405,8 @@ public class MainMenu {
        rt.play();
 
        // Use a SubScene
-       SubScene subScene = new SubScene(globeComponents, 640, 640, true, SceneAntialiasing.BALANCED);
-       subScene.setFill(Color.TRANSPARENT);
+       SubScene subScene = new SubScene(globeComponents, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+       subScene.setId("sub");
        subScene.setCamera(camera);
 
        return new Group(subScene);
@@ -454,29 +465,30 @@ public class MainMenu {
 	   rt.setRate(1.0);
    }
 
+/*
 	public boolean exitDialog(Stage stage) {
-	   Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Confirmation Dialog");
-		alert.setHeaderText("Exiting MSP");
-		//alert.initModality(Modality.APPLICATION_MODAL);
+		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.initOwner(stage);
-		alert.setContentText("Do you really want to do this?");
+		alert.setTitle("Exiting MSP");//("Confirmation Dialog");
+		alert.setHeaderText("Do you really want to exit MPS?");
+		//alert.initModality(Modality.APPLICATION_MODAL);
+		alert.setContentText("Warning: exiting the main menu will terminate any running simultion without saving it.");
 		ButtonType buttonTypeYes = new ButtonType("Yes");
 		ButtonType buttonTypeNo = new ButtonType("No");
-		   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-		   	Optional<ButtonType> result = alert.showAndWait();
-		   	if (result.get() == buttonTypeYes){
-		   		if (multiplayerMode != null)
-		   			if (multiplayerMode.getChoiceDialog() != null)
-		   				multiplayerMode.getChoiceDialog().close();
-		   		alert.close();
-		   		return true;
-		   	} else {
-		   		alert.close();
-		   	    return false;
-		   	}
+	   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+	   	Optional<ButtonType> result = alert.showAndWait();
+	   	if (result.get() == buttonTypeYes){
+	   		if (multiplayerMode != null)
+	   			if (multiplayerMode.getChoiceDialog() != null)
+	   				multiplayerMode.getChoiceDialog().close();
+	   		alert.close();
+	   		return true;
+	   	} else {
+	   		alert.close();
+	   	    return false;
+	   	}
    	}
-
+*/
 	public void createProgressCircle() {
 
 		StackPane stackPane = new StackPane();
@@ -573,6 +585,10 @@ public class MainMenu {
 		return circleStage;
 	}
 
+	public ScreensSwitcher getScreensSwitcher() {
+		return screen;
+	}
+
 	public void destroy() {
 
 		rt = null;
@@ -580,6 +596,7 @@ public class MainMenu {
 		material = null;
 		sun = null;
 		root = null;
+		screen = null;
 		mainSceneStage = null;
 		mainMenuStage = null;
 		circleStage = null;

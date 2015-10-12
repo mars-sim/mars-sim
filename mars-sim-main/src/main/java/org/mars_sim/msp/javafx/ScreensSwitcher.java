@@ -6,6 +6,7 @@ import java.util.Optional;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,7 +16,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
@@ -112,12 +115,42 @@ public class ScreensSwitcher extends StackPane {
         }
     }
 
+	public boolean exitDialog(Stage stage) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.initOwner(stage);
+		alert.setTitle("Exiting MSP");//("Confirmation Dialog");
+		alert.setHeaderText("Do you really want to exit MPS?");
+		//alert.initModality(Modality.APPLICATION_MODAL);
+		alert.setContentText("Warning: exiting the main menu will terminate any running simultion without saving it.");
+		ButtonType buttonTypeYes = new ButtonType("Yes");
+		ButtonType buttonTypeNo = new ButtonType("No");
+	   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+	   	Optional<ButtonType> result = alert.showAndWait();
+	   	if (result.get() == buttonTypeYes){
+	   		if (mainMenu.getMultiplayerMode() != null)
+	   			if (mainMenu.getMultiplayerMode().getChoiceDialog() != null)
+	   				mainMenu.getMultiplayerMode().getChoiceDialog().close();
+	   		alert.close();
+			Platform.exit();
+    		System.exit(0);
+	   		return true;
+	   	} else {
+	   		alert.close();
+	   	    return false;
+	   	}
+   	}
+
+/*
     public void exitDialog() {
     	Alert alert = new Alert(AlertType.CONFIRMATION);
-    	alert.setTitle("Mars Simulation Project");
-    	alert.setHeaderText("Confirmation Dialog");
+		alert.setTitle("Exiting MSP");//("Confirmation Dialog");
+		alert.setHeaderText("Do you really want to exit MPS?");
+		//alert.initModality(Modality.APPLICATION_MODAL);
+		alert.setContentText("Warning: exiting the main menu will terminate any running simultion without saving it.");
+    	//alert.setTitle("Mars Simulation Project");
+    	//alert.setHeaderText("Confirmation Dialog");
 		alert.initOwner(mainMenu.getStage());
-    	alert.setContentText("Are you sure about exiting MSP?");
+    	//alert.setContentText("Are you sure about exiting MSP?");
     	ButtonType buttonTypeYes = new ButtonType("Yes");
     	ButtonType buttonTypeNo = new ButtonType("No");
     	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
@@ -130,5 +163,6 @@ public class ScreensSwitcher extends StackPane {
     	} else {
     	}
     }
+*/
 }
 

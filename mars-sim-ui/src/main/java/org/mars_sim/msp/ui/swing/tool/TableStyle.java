@@ -24,8 +24,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.javafx.MainScene;
 
-public class TableStyle {
+public class TableStyle extends ZebraJTable{
 
+	private static final long serialVersionUID = 1L;
 	//private static JTable table;
 	private static JTableHeader theHeader;
 	private static TableHeaderRenderer theRenderer;
@@ -34,7 +35,7 @@ public class TableStyle {
 	private static Color hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
 
 	public TableStyle() {
-
+		super();
 	}
 
 	public static Color getBorderColor() {
@@ -49,15 +50,29 @@ public class TableStyle {
 		return hBack;
 	}
 
+/*
+	public static void setTableStyle(JTable table) {
+		//Object[][] rowData = table.getModel().get;
+		//Object[] columnNames = null;
+		//ZebraJTable t = new ZebraJTable( rowData, columnNames);
+		ZebraJTable t = new ZebraJTable( table.getModel());
+		t.setBackground( Color.darkGray );
+		t.setForeground( Color.white );
+		t.setSelectionBackground( Color.yellow );
+		t.setSelectionForeground( Color.black );
+		//JScrollPane scrollList = new JScrollPane( table );
 
-    public static void setTableStyle(JTable table) {
+	}
+
+*/
+    public static JTable setTableStyle(JTable table) {
+
+		JTableHeader header = table.getTableHeader();
+		header.setFont(new Font("Dialog", Font.BOLD, 12));
+		header.setBackground(new java.awt.Color(0, 167, 212));
+		header.setForeground(java.awt.Color.white);
 
     	int theme = MainScene.getTheme();
-
-    	//if (theme == 1)
-    	//	theme = 7;
-    	//else
-    	//	theme = theme - 1;
 
     	Color back = null;
     	Color fore = null;
@@ -71,18 +86,6 @@ public class TableStyle {
 
 		// 255 228 225	MistyRose1
 
-/*
-    		hBack = new Color(205, 133, 63); // 205, 133, 63 mud orange
-    		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
-    		back = new Color(255, 255, 255);
-    		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = Color.GRAY;
-    		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
-    		border = Color.orange;
-    		themeName = "Standard Nimrod";
-
-*/
 
     	if (theme == 1) { // LightTabaco + olive
     		hBack = new Color(82, 71, 39); // 82, 71, 39 Pantone Coated brownish-green // 33, 66, 0 dark green
@@ -91,8 +94,8 @@ public class TableStyle {
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4 dark brown orange
     		selBack = new Color(110,139,61); // 110,139,61	pale olive green
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-    		border = Color.GRAY;
+    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
+    		//border = Color.GRAY;
     		themeName = "LightTabaco";
     	}
     	else if (theme == 2) { // Burdeos
@@ -100,9 +103,9 @@ public class TableStyle {
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = new Color(139,26,26); // 139,26,26 firebrick
+    		selBack = new Color(167, 81, 84); // pale red // 139,26,26); // 139,26,26 firebrick
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
+    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.RED;
     		themeName = "Burdeos";
     	}
@@ -113,7 +116,7 @@ public class TableStyle {
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
     		selBack = new Color(139,87,66); // 139,87,66 lightsalmon 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
+    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.GRAY;
     		themeName = "DarkTabaco";
     	}
@@ -124,7 +127,7 @@ public class TableStyle {
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
     		selBack = new Color(139,119,101); // 139,119,101 peachpuff 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
+    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.GREEN;
     		themeName = "DarkGrey";
     	}
@@ -135,7 +138,7 @@ public class TableStyle {
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
     		selBack = new Color(22,55,139); // 22	55	139	mediumorchid 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
+    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.DARK_GRAY;
     		themeName = "Night";
     	}
@@ -146,7 +149,7 @@ public class TableStyle {
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
     		selBack = new Color(70,130,180); //70 130	180	 steelblue
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
+    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.LIGHT_GRAY;
     		themeName = "Snow";
     	}
@@ -158,7 +161,7 @@ public class TableStyle {
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
     		selBack = new Color(189,183,107); // 189,183,107 darkkhaki
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
-    		grid = new Color(222, 184, 135); // 222 184 135 burlywood
+    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.orange;
     		themeName = "Standard Nimrod";
     	}
@@ -172,12 +175,18 @@ public class TableStyle {
 
 		theHeader.setOpaque(false);
     	// TODO: why is it NOT working?
-		//theHeader.setBackground(hBack);
-		//theHeader.setForeground(hFore);
-		//theHeader.repaint();
+		theHeader.setBackground(hBack);
+		theHeader.setForeground(hFore);
+		theHeader.repaint();
 
 		theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
-
+/*
+		JTableHeader tableHeader = table.getTableHeader();
+	    if (tableHeader != null) {
+	    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
+	    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
+	    }
+*/
 		// 2015-09-24 Align the content to the center of the cell
 		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -196,18 +205,18 @@ public class TableStyle {
 
 		table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
 
-		table.setShowGrid(true);
-	    table.setShowVerticalLines(true);
+		//table.setShowGrid(true);
+	    //table.setShowVerticalLines(true);
 		table.setGridColor(grid);
 		table.setBorder(BorderFactory.createLineBorder(border, 1));
 
-		//MainScene.notifyThemeChange(themeName);
+	   	ZebraJTable z = new ZebraJTable(table.getModel());
 
+		return (JTable) z;
+    }
 
-	}
 
 }
-
 
 /**
  * This renderer uses a delegation software design pattern to delegate
@@ -219,6 +228,7 @@ class TableHeaderRenderer implements TableCellRenderer {
 	public TableHeaderRenderer(TableCellRenderer theRenderer) {
 		defaultRenderer = theRenderer;
 	}
+
 
 	/**
 	 * Renderer the specified Table Header cell
@@ -233,6 +243,8 @@ class TableHeaderRenderer implements TableCellRenderer {
 		Component theResult = defaultRenderer.getTableCellRendererComponent(
 				table, value, isSelected, hasFocus,
 				row, column);
+
+		// userful For JTables in person unit windows
 		if (theResult instanceof JLabel) {
 			// Must clear the icon if not sorted column. This is a renderer
 			// class used to render each column heading in turn.
@@ -250,10 +262,8 @@ class TableHeaderRenderer implements TableCellRenderer {
 			cell.setBorder(border);
 		}
 
-
 		JTableHeader tableHeader = table.getTableHeader();
 	    if (tableHeader != null) {
-	    	// TODO: why is it NOT working?
 	    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
 	    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
 	    }

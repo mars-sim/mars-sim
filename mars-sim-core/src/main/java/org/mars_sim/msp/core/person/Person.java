@@ -170,16 +170,18 @@ implements VehicleOperator, MissionMember, Serializable {
 
         support = getLifeSupportType();
 
-        setupMissionControl();
+        assignReportingAuthority();
     }
 
-    // 2015-10-05 added setupMissionControl()
-    public void setupMissionControl() {
+    // 2015-10-05 added setupReportingAuthority()
+    public void assignReportingAuthority() {
 
-    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
-        ra = new NASAMissionControl();
-        ra.setMissionAgenda(new FindingLife());
-        //ra.conductMissionObjective();
+    	if (ra == null) {
+	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
+	        ra = new NASAMissionControl();
+	        ra.setMissionAgenda(new FindingLife());
+	        //ra.conductMissionObjective();
+    	}
     }
 
     public ReportingAuthority getReportingAuthority() {

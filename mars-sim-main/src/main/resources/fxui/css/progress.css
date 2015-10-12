@@ -7,10 +7,6 @@
 
 .progress-indicator .indicator {
     -fx-background-color: transparent;
-        -fx-box-border,
-        -fx-outer-border,
-        -fx-inner-border,
-        -fx-body-color;
     -fx-background-insets: 1 0 -1 0, 0, 1, 2;
     -fx-padding: 0.083333em; /* 1 */
 }

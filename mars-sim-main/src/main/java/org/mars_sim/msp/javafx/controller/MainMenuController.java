@@ -57,7 +57,7 @@ public class MainMenuController implements Initializable, ControlledScreen {
 
     @FXML
     private void exit(ActionEvent event){
-    	switcher.exitDialog();
+    	switcher.exitDialog(switcher.getMainMenu().getStage());
     }
 
     @FXML
