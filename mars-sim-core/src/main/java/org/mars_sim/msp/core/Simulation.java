@@ -42,8 +42,8 @@ import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
 
 import javafx.application.Platform;
-import mikera.gui.Frames;
-import mikera.gui.JConsole;
+//import mikera.gui.Frames;
+//import mikera.gui.JConsole;
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
@@ -181,7 +181,7 @@ implements ClockListener, Serializable {
     /** Manages transportation of settlements and resupplies from Earth. */
     private TransportManager transportManager;
 
-	public JConsole jc;
+	//public JConsole jc;
 
     /** constructor. */
     public Simulation() {
@@ -781,6 +781,7 @@ implements ClockListener, Serializable {
     	return clockScheduler;
     }
 
+/*
     // 2015-10-08 Added testConsole() for outputting text messages to mars-simmers
     public void testConsole() {
     	if (jc == null) {
@@ -804,7 +805,7 @@ implements ClockListener, Serializable {
     public JConsole getJConsole() {
     	return jc;
     }
-
+*/
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */

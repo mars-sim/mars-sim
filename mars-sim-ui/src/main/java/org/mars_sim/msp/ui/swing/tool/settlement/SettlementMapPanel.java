@@ -141,10 +141,12 @@ implements ClockListener {
 		mapLayers.add(new BackgroundTileMapLayer(this));
 		mapLayers.add(new StructureMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
+
+		mapLayers.add(new DayNightMapLayer(this));
+
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
-		mapLayers.add(new DayNightMapLayer(this));
 
 	    new SettlementTransparentPanel(desktop, this);
 
@@ -606,7 +608,7 @@ implements ClockListener {
 			} else {
 				selectedPerson.put(settlement, person);
 			}
-			
+
 			// Repaint to refresh the label display.
 			repaint();
 		}
@@ -636,7 +638,7 @@ implements ClockListener {
 			} else {
 				selectedRobot.put(settlement, robot);
 			}
-			
+
 			// Repaint to refresh the label display.
 			repaint();
 		}

@@ -84,6 +84,11 @@ public class MarsProjectFX extends Application  {
 		   	new Simulation();
 			setLogging();
 			setDirectory();
+
+	        // general text antialiasing
+	        System.setProperty("swing.aatext", "true");
+	        System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
+
 	    	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
 			argList = Arrays.asList(args);

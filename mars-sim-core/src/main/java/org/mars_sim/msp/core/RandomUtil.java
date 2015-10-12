@@ -10,6 +10,8 @@ package org.mars_sim.msp.core;
 import java.util.Iterator;
 import java.util.Map;
 
+import it.unimi.dsi.util.XorShift1024StarRandom;
+
 /**
  * The RandomUtil class is a library of various random-related
  * methods.
@@ -17,15 +19,27 @@ import java.util.Map;
 public final class RandomUtil {
 
 	// Random generator.
-	//	private final static Random random = new Random();
+	//private final static Random random = new Random();
 	/**
 	 * MersenneTwisterFast provides a fast, much "more" random than the linear congruential
-	 * of the java.util.Random 
+	 * of the java.util.Random
 	 */
-	private final static MersenneTwisterFast random = new MersenneTwisterFast();
+	//private final static MersenneTwisterFast random = new MersenneTwisterFast();
+	// Note 1: it is compatible with standard java.util.Randrom's method and require no mapping
+	// See intro at https://cran.r-project.org/web/packages/randtoolbox/vignettes/fullpres.pdf
+
+	// Added 2015-10-12 XORSHIFT maven artifact
+	private final static XorShift1024StarRandom random = new XorShift1024StarRandom();
+
+	// Added 2015-10-12 two implementation of SIMD-oriented Fast Mersenne Twister PNRG in java.
+	// Note 1: they are not compatible with standard java.util.Randrom's methods, require seeding and re-mapping of methods
+	// Note 2: other PRNG in the MT family can be found at https://github.com/zwxadz/SFMT-for-Java
+
+	// private final static SFMT19937 random = new SFMT19937();
+	// private final static SFMT19937j random = new SFMT19937j();
 
 	/**
-	 * Returns true if given number is less than a random percentage. 
+	 * Returns true if given number is less than a random percentage.
 	 * @param randomLimit the random percentage limit
 	 * @return true if random percent is less than percentage limit
 	 */
@@ -35,7 +49,7 @@ public final class RandomUtil {
 	}
 
 	/**
-	 * Returns true if given number is less than a random percentage. 
+	 * Returns true if given number is less than a random percentage.
 	 * @param randomLimit the random percentage limit
 	 * @return true if random percent is less than percentage limit
 	 */
@@ -46,7 +60,7 @@ public final class RandomUtil {
 
 	/**
 	 * Returns a random int number from 0 to (and including) the
-	 * number given. 
+	 * number given.
 	 * @param ceiling the int limit for the random number
 	 * @return the random number
 	 */
@@ -57,8 +71,8 @@ public final class RandomUtil {
 
 	/**Returns a random int number from a given base number
 	 * to (and including) the ceiling number given.
-	 * @param base the minimum number result 
-	 * @param ceiling the maximum number result 
+	 * @param base the minimum number result
+	 * @param ceiling the maximum number result
 	 * @return the random number
 	 */
 	public static int getRandomInt(int base, int ceiling) {
@@ -66,16 +80,16 @@ public final class RandomUtil {
 		return random.nextInt(ceiling - base + 1) + base;
 	}
 
-	/**Returns a random double number from 0 
+	/**Returns a random double number from 0
 	 * to the ceiling number given.
-	 * @param ceiling the maximum number result 
+	 * @param ceiling the maximum number result
 	 * @return the random number
 	 */
 	public static double getRandomDouble(double ceiling) {
 		return random.nextDouble() * ceiling;
 	}
 
-	/** 
+	/**
 	 * Returns a random integer from 1 to the given integer.
 	 * -breakiterator
 	 * 1 has twice the chance of being chosen as 2 and so forth
@@ -97,7 +111,7 @@ public final class RandomUtil {
 
 		totalWeight = 0D;
 		weight = 1D;
-		int result = 0; 
+		int result = 0;
 		for (int x=0; x < ceiling; x++) {
 			totalWeight += weight;
 			weight /= 2D;

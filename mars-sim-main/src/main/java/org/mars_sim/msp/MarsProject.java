@@ -18,10 +18,6 @@ import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
 import com.jme3.app.SimpleApplication;
-
-import mikera.gui.Frames;
-import mikera.gui.JConsole;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;

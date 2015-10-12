@@ -48,6 +48,12 @@
 /*    -fx-border-color: rgb(49, 89, 23); */
 }
 
+.menu .label {
+    -fx-text-fill: yellow;
+}
+
+
+
 .tool-bar:horizontal {
 	-fx-background-color:
 	linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(-fx-base,-20%));

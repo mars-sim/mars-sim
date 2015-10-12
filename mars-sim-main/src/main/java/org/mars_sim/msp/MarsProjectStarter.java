@@ -33,6 +33,10 @@ public class MarsProjectStarter {
         }
         else command.append("java");
 
+        command.append(" -Dswing.aatext=true");
+        command.append(" -Dswing.plaf.metal.controlFont=Tahoma");
+        command.append(" -Dswing.plaf.metal.userFont=Tahoma");
+        
         command.append(" -Xms256m");
         //command.append(" -Xmx1024m");
         command.append(" -Xmx1536m");
@@ -42,7 +46,7 @@ public class MarsProjectStarter {
         command.append("*").append(File.pathSeparator);
         command.append("jars").append(File.separator).append("*");
         //command.append(" org.mars_sim.msp.MarsProject");
-        command.append(" org.mars_sim.msp.javafx.MarsProjectFX");
+        command.append(" org.mars_sim.msp.javafx.MarsProject");
 
         String commandStr = command.toString();
         System.out.println("Command: " + commandStr);

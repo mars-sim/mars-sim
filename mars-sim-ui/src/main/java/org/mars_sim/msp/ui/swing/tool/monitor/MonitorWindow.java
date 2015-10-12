@@ -259,21 +259,11 @@ implements TableModelListener, ActionListener {
 			}
 		);
 
-		// 2015-06-17 Added createSearchBar();
-		//setTable();
-		//createSearchableBar();
-		//statusPanel.add(_tableSearchableBar); // , BorderLayout.AFTER_LAST_LINE);
-		//statusPanel.invalidate();
-		//statusPanel.revalidate();
-
-
-		// Have to define a starting size
-		// 2014-10-10 mkung: changed the horizontal resolution from 600 to 800 to accommodate the addition
-		// of 3 columns (Grains, Fruits, Vegetables)
+		// Note: must define a starting size
 		setPreferredSize(new Dimension(1024, 512));
-		setMinimumSize(new Dimension(1024, 512));
+		setMinimumSize(new Dimension(512, 256));
 		setSize(new Dimension(1024, 512));
-
+		setResizable(true);
 		pack();
 	}
 
