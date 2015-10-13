@@ -15,36 +15,42 @@ import java.util.logging.LogRecord;
 
 
 public class SimuLoggingFormatter extends Formatter {
-    
+
     public final static String LINEFEED =
 	System.getProperty("line.separator");
-    
+
     private DateFormat df = DateFormat.getDateTimeInstance();
     private Date date = new Date();
     private StringBuffer sb = new StringBuffer();
-    
+
 
     public String format(LogRecord record)
 	{
 		sb.delete(0,sb.length());
 		date.setTime(record.getMillis());
-			
-		sb.append(df.format(date));
-		sb.append(" ");
-			
+
+		String log = df.format(date).replaceAll("AM", "").replaceAll("PM", "");
+		sb.append(log);
+		//sb.append(" ");
+
 		// Get the level name and add it to the buffer
+		sb.append("(");
 		sb.append(record.getLevel().getName());
+		sb.append(") ");
+
+		String source = (record.getSourceClassName()).replaceAll("org.mars_sim.msp.","");
+		// record.getLoggerName()
+		//sb.append(record.getSourceClassName());
+		//sb.append(record.getClass().getSimpleName());
+		sb.append(source);
 		sb.append(" ");
-			
-		sb.append(record.getLoggerName());
-		sb.append(" ");
-			 
-		// Get the formatted message (includes localization 
+
+		// Get the formatted message (includes localization
 		// and substitution of paramters) and add it to the buffer
 		sb.append(formatMessage(record));
 		sb.append(LINEFEED);
 
 		return sb.toString();
-		
+
 	}
 }

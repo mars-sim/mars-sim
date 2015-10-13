@@ -9,6 +9,7 @@ package org.mars_sim.msp.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,15 +82,10 @@ public class SimulationConfig implements Serializable {
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
 	/* ---------------------------------------------------------------------------------------------------- *
-	 * Static Members
-	 * ---------------------------------------------------------------------------------------------------- */
-
-	/** Singleton instance. */
-	private static SimulationConfig instance = new SimulationConfig();
-
-	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
 	 * ---------------------------------------------------------------------------------------------------- */
+
+	public static String build;
 
 	/** DOM documents. */
 	private Document simulationDoc;
@@ -118,13 +114,52 @@ public class SimulationConfig implements Serializable {
 	// 2015-01-21 Added robotConfig
 	private RobotConfig robotConfig;
 
+
+	/** hidden constructor. */
+	private SimulationConfig() {}
+
+    /**
+     * Gets a Bill Pugh Singleton instance of the simulation.
+     * @return Simulation instance
+     */
+    public static SimulationConfig instance() {
+        //logger.info("Simulation's instance() is on " + Thread.currentThread().getName() + " Thread");
+        //NOTE: Simulation.instance() is accessible on any threads or by any threads
+    	return SingletonHelper.INSTANCE;
+    }
+
+    /**
+     * Initializes an inner static helper class for Bill Pugh Singleton Pattern
+     * Note: as soon as the instance() method is called the first time, the class is loaded into memory and an instance gets created.
+     * Advantage: it supports multiple threads calling instance() simultaneously with no synchronized keyword needed (which slows down the VM)
+     * {@link SingletonHelper} is loaded on the first execution of
+     * {@link Singleton#instance()} or the first access to
+     * {@link SingletonHelper#INSTANCE}, not before.
+     */
+    private static class SingletonHelper{
+    	private static final SimulationConfig INSTANCE = new SimulationConfig();
+    }
+
+    /**
+     * Prevents the singleton pattern from being destroyed
+     * at the time of serialization
+     * @return Simulation instance
+     */
+    protected Object readResolve() throws ObjectStreamException {
+    	return instance();
+    }
+
+
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Static Members
+	 * ---------------------------------------------------------------------------------------------------- */
+
+	/** Singleton instance. */
+	private static SimulationConfig instance = instance();
+
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
 	 * ---------------------------------------------------------------------------------------------------- */
-
-	/** hidden constructor. */
-	private SimulationConfig() {
-	}
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Public Static Methods
@@ -134,9 +169,9 @@ public class SimulationConfig implements Serializable {
 	 * Gets a singleton instance of the simulation config.
 	 * @return SimulationConfig instance
 	 */
-	public static SimulationConfig instance() {
-		return instance;
-	}
+	//public static SimulationConfig instance() {
+	//	return instance;
+	//}
 
 	/**
 	 * Sets the singleton instance.
@@ -364,8 +399,14 @@ public class SimulationConfig implements Serializable {
 	 * Private Methods
 	 * ---------------------------------------------------------------------------------------------------- */
 
+	public String getBuildVersion() {
+		return build;
+	}
+
 	private void loadDefaultConfiguration() {
 		try {
+			// Set or reset the build version to Simulation.BUILD
+			build = Simulation.BUILD;
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 

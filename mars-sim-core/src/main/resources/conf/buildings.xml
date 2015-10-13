@@ -152,12 +152,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has a research laboratory. -->
 			<!-- tech-level: the technology level of the lab. (see tech_level.txt) -->
 			<!-- capacity: the number of researchers the lab has room for concurrently. -->
-			<research tech-level="1" capacity="1">
+			<research tech-level="1" capacity="2">
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-specialty name="AREOLOGY" />
-				<research-specialty name="MEDICINE" />
 				<research-specialty name="BIOLOGY" />
+				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
+				<research-specialty name="MEDICINE" />
 				<activity>
 					<activity-spot xloc="-.99" yloc="-2.89" />
 				</activity>
@@ -307,7 +308,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="3" power-required="6.0" />
 
-			<research tech-level="1" capacity="1">
+			<research tech-level="1" capacity="2">
 				<research-specialty name="BOTANY" />
 				<activity>
 					<activity-spot xloc="1.5" yloc="3.6" />
@@ -886,7 +887,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 			<life-support capacity="10" power-required="20.0" />
-			<research tech-level="2" capacity="2">
+			<research tech-level="2" capacity="4">
 				<research-specialty name="BOTANY" />
 				<activity>
 					<activity-spot xloc=".9" yloc="7.8" />
@@ -1015,6 +1016,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="2" capacity="4">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
+				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="PHYSICS" />
 				<research-specialty name="MATHEMATICS" />
@@ -1537,6 +1539,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="2" capacity="4">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
+				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="PHYSICS" />
 				<research-specialty name="MATHEMATICS" />
@@ -1995,7 +1998,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 			<life-support capacity="3" power-required="6.0" />
-			<research tech-level="1" capacity="1">
+			<research tech-level="1" capacity="2">
 				<research-specialty name="BOTANY" />
 				<activity>
 					<activity-spot xloc="-.5" yloc="4.0" />

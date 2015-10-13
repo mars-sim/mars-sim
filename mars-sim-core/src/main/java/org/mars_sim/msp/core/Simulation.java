@@ -107,43 +107,8 @@ implements ClockListener, Serializable {
 
     private boolean initialSimulationCreated = false;
 
-    /** Eager Initialization Singleton instance. */
-    // private static final Simulation instance = new Simulation();
-    /**
-     * Gets a Eager Initialization Singleton instance of the simulation.
-     * @return Simulation instance
-     */
-    //public static Simulation instance() {
-    //    return instance;
-    //}
-
-    /**
-     * Creates an inner static helper class for Bill Pugh Singleton Pattern
-     * Note: as soon as the instance() method is called the first time, the class
-     * is loaded into memory and an instance gets created.
-     * Advantage: it supports multiple threads calling instance() simultaneously with
-     * no synchronized keyword needed (which slows down the VM)
-     */
-    private static class SingletonHelper{
-    	private static final Simulation INSTANCE = new Simulation();
-    }
-
-    /**
-     * Gets a Bill Pugh Singleton instance of the simulation.
-     * @return Simulation instance
-     */
-    public static Simulation instance() {
-    	return SingletonHelper.INSTANCE;
-    }
-
-    /**
-     * Prevents the singleton pattern from being destroyed
-     * at the time of serialization
-     * @return Simulation instance
-     */
-    protected Object readResolve() throws ObjectStreamException {
-    	return instance();
-    }
+    /* The build version of the SimulationConfig of the loading .sim */
+    private String loadBuild = "unknown";
 
     // Transient data members (aren't stored in save file)
 
@@ -183,15 +148,61 @@ implements ClockListener, Serializable {
 
 	//public JConsole jc;
 
-    /** constructor. */
-    public Simulation() {
-    	// Simulation's constructor is on both JavaFX-Launcher Thread and pool-2-thread-1
+    /**
+     * Private constructor for the Singleton Simulation. This rrevents instantiation from other classes.
+     * */
+    private Simulation() {
         //logger.info("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
-    	initializeTransientData();
+    	// INFO Simulation's constructor is on both JavaFX-Launcher Thread
+        initializeTransientData();
+    }
+
+
+    /** (NOT USED) Eager Initialization Singleton instance. */
+    // private static final Simulation instance = new Simulation();
+    /**
+     * Gets a Eager Initialization Singleton instance of the simulation.
+     * @return Simulation instance
+     */
+    //public static Simulation instance() {
+    //    return instance;
+    //}
+
+    /**
+     * Initializes an inner static helper class for Bill Pugh Singleton Pattern
+     * Note: as soon as the instance() method is called the first time, the class is loaded into memory and an instance gets created.
+     * Advantage: it supports multiple threads calling instance() simultaneously with no synchronized keyword needed (which slows down the VM)
+     * {@link SingletonHelper} is loaded on the first execution of
+     * {@link Singleton#instance()} or the first access to
+     * {@link SingletonHelper#INSTANCE}, not before.
+     */
+    private static class SingletonHelper{
+    	private static final Simulation INSTANCE = new Simulation();
+    }
+
+    /**
+     * Gets a Bill Pugh Singleton instance of the simulation.
+     * @return Simulation instance
+     */
+    public static Simulation instance() {
+        //logger.info("Simulation's instance() is on " + Thread.currentThread().getName() + " Thread");
+        //NOTE: Simulation.instance() is accessible on any threads or by any threads
+    	return SingletonHelper.INSTANCE;
+    }
+
+    /**
+     * Prevents the singleton pattern from being destroyed
+     * at the time of serialization
+     * @return Simulation instance
+     */
+    protected Object readResolve() throws ObjectStreamException {
+    	return instance();
     }
 
     public void startSimExecutor() {
-    	simExecutor = Executors.newSingleThreadExecutor();
+        //logger.info("Simulation's startSimExecutor() is on " + Thread.currentThread().getName() + " Thread");
+    	// INFO: Simulation's startSimExecutor() is on JavaFX-Launcher Thread
+        simExecutor = Executors.newSingleThreadExecutor();
     }
 
     public ExecutorService getSimExecutor() {
@@ -299,22 +310,6 @@ implements ClockListener, Serializable {
 
         }
 
-        /*
-		try {
-			malfunctionFactory.join();
-			missionManager.join();
-			relationshipManager.join();
-			medicalManager.join();
-			creditManager.join();
-			scientificStudyManager.join();
-			transportManager.join();
-
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-         */
-
     }
 
 
@@ -324,7 +319,8 @@ implements ClockListener, Serializable {
      */
     public void start() {
         //logger.info("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
-
+        //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
+        //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
 		//SwingUtilities.invokeLater(() -> {
 	    //    testConsole();
 		//});
@@ -409,12 +405,16 @@ implements ClockListener, Serializable {
                 simulation.readFromFile(f);
 
             } catch (ClassNotFoundException ex) {
+            	logger.info("Encountering ClassNotFoundException when loading the simulation!");
                 throw new IllegalStateException(ex);
             } catch (IOException ex) {
-                throw new IllegalStateException(ex);
+            	logger.info("Encountering IOException when loading the simulation!");
+            	throw new IllegalStateException(ex);
             }
         }
         else{
+        	logger.info("Encountering an error when loading the simulation!");
+        	logger.info("Running on " + Simulation.BUILD + ". Loading a sim saved in " + loadBuild);
             throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
                     f.getPath() + " is not accessible");
         }
@@ -469,7 +469,12 @@ implements ClockListener, Serializable {
         }
 
         // Load intransient objects.
-        SimulationConfig.setInstance((SimulationConfig) ois.readObject());
+        SimulationConfig simulationConfig = (SimulationConfig) ois.readObject();
+        SimulationConfig.setInstance(simulationConfig);
+
+        loadBuild = SimulationConfig.build;
+    	logger.info("Running on " + Simulation.BUILD + ". Loading a sim saved in " + loadBuild);
+
         malfunctionFactory = (MalfunctionFactory) ois.readObject();
         mars = (Mars) ois.readObject();
         mars.initializeTransientData();
@@ -508,7 +513,7 @@ implements ClockListener, Serializable {
             if (isAutosave) {
                 String autosaveFilename = new SystemDateTime().getDateTimeStr() + "_Build_" + BUILD + DEFAULT_EXTENSION;
                 file = new File(AUTOSAVE_DIR, autosaveFilename);
-                logger.info("Autosaving into " + autosaveFilename);
+                logger.info("Autosaving " + autosaveFilename);
             }
 
             else

@@ -10,7 +10,7 @@ package org.mars_sim.msp.core;
 import java.util.Iterator;
 import java.util.Map;
 
-import it.unimi.dsi.util.XorShift1024StarRandom;
+//import it.unimi.dsi.util.XorShift1024StarRandom;
 
 /**
  * The RandomUtil class is a library of various random-related
@@ -24,12 +24,12 @@ public final class RandomUtil {
 	 * MersenneTwisterFast provides a fast, much "more" random than the linear congruential
 	 * of the java.util.Random
 	 */
-	//private final static MersenneTwisterFast random = new MersenneTwisterFast();
+	private final static MersenneTwisterFast random = new MersenneTwisterFast();
 	// Note 1: it is compatible with standard java.util.Randrom's method and require no mapping
 	// See intro at https://cran.r-project.org/web/packages/randtoolbox/vignettes/fullpres.pdf
 
 	// Added 2015-10-12 XORSHIFT maven artifact
-	private final static XorShift1024StarRandom random = new XorShift1024StarRandom();
+	// private final static XorShift1024StarRandom random = new XorShift1024StarRandom();
 
 	// Added 2015-10-12 two implementation of SIMD-oriented Fast Mersenne Twister PNRG in java.
 	// Note 1: they are not compatible with standard java.util.Randrom's methods, require seeding and re-mapping of methods

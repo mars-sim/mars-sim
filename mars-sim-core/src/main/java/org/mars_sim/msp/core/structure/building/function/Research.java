@@ -72,7 +72,7 @@ implements Lab, Serializable {
         for (ScienceType specialty : specialties) {
             double researchDemand = 0D;
             Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-            while (j.hasNext()) 
+            while (j.hasNext())
                 researchDemand += j.next().getMind().getSkillManager().getSkillLevel(specialty.getSkill());
 
             double researchSupply = 0D;
@@ -162,13 +162,26 @@ implements Lab, Serializable {
     }
 
     /**
+     * Checks if there is an available slot in the laboratory.
+     * @throws Exception if person cannot be added.
+     */
+    public Boolean checkAvailability() {
+        if (researcherNum < researcherCapacity) {
+            return true;
+        }
+        else
+        	return false;
+    }
+
+
+    /**
      * Removes a researcher from the laboratory.
      * @throws Exception if person cannot be removed.
      */
     public void removeResearcher() {
         researcherNum --;
         if (researcherNum < 0) {
-            researcherNum = 0; 
+            researcherNum = 0;
             throw new IllegalStateException("Lab is already empty of researchers.");
         }
     }

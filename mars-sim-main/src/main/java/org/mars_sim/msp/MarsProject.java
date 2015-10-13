@@ -74,7 +74,7 @@ public class MarsProject extends SimpleApplication {
 	public class SimulationTask implements Runnable {
 
 		public void run() {
-		   	new Simulation();
+		   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
 	    	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
 	        List<String> argList = Arrays.asList(args);
@@ -295,6 +295,17 @@ public class MarsProject extends SimpleApplication {
         // general text antialiasing
         System.setProperty("swing.aatext", "true");
         System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
+
+        // 2015-10-13  Added command prompt console
+        Console console = System.console();
+        if(console == null && !GraphicsEnvironment.isHeadless()){
+            String filename = MarsProject.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+            Runtime.getRuntime().exec(new String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
+        }else{
+        	MarsProject.main(new String[0]);
+            System.out.println("Program has ended, please type 'exit' to close the console");
+        }
+
 
         // starting the simulation
         MarsProject mp = new MarsProject(args);

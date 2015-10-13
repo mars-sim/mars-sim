@@ -19,7 +19,7 @@ import java.awt.*;
 
 
 /**
- * The ResearchBuildingPanel class is a building function panel representing 
+ * The ResearchBuildingPanel class is a building function panel representing
  * the research info of a settlement building.
  */
 public class BuildingPanelResearch
@@ -35,7 +35,7 @@ extends BuildingFunctionPanel {
 	// Data cache
 	/** The number of researchers cache. */
 	private int researchersCache;
-	
+
 	private JLabel researchersLabel;
 
 	/**
@@ -59,7 +59,7 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 		labelPanel.setOpaque(false);
 		labelPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Prepare research label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
@@ -85,31 +85,50 @@ extends BuildingFunctionPanel {
 
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
-
+		int size = specialties.length;
 		// Prepare specialtiesListPanel
-		JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 10, 3));
-		specialtiesListPanel.setBorder(new EmptyBorder(1, 20, 1, 20)); //(int top, int left, int bottom, int right)
-		specialtiesListPanel.setOpaque(false);
-		specialtiesListPanel.setBackground(new Color(0,0,0,128));
-		
+		//JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 10, 3));
+		//specialtiesListPanel.setBorder(new EmptyBorder(1, 20, 1, 20)); //(int top, int left, int bottom, int right)
+		//specialtiesListPanel.setOpaque(false);
+		//specialtiesListPanel.setBackground(new Color(0,0,0,128));
+
 		//add(specialtiesListPanel, BorderLayout.CENTER);
+
+		JTextArea specialtyTA = new JTextArea();
+		specialtyTA.setEditable(false);
+		specialtyTA.setOpaque(false);
+		specialtyTA.setBackground(new Color(0,0,0,128));
+		specialtyTA.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		//specialtyTA.setColumns();
+		//specialtyTA.setFont(new Font("Serif", Font.PLAIN, 12));
 
 		// For each specialty, add specialty name panel.
 		for (ScienceType specialty : specialties) {
-			JLabel specialtyLabel = new JLabel(specialty.getName(), JLabel.CENTER);
-			specialtyLabel.setFont(new Font("SansSerif", Font.ITALIC, 10));
+			//JLabel specialtyLabel = new JLabel(specialty.getName(), JLabel.CENTER);
+			//specialtyLabel.setFont(new Font("SansSerif", Font.ITALIC, 10));
 			//specialtyLabel.setForeground(Color.DARK_GRAY);
 			//specialtyLabel.setBackground(Color.WHITE);
-			specialtiesListPanel.add(specialtyLabel);
+			//specialtiesListPanel.add(specialtyLabel);
+
+			specialtyTA.append(" " + specialty.getName()+ " ");
+
+			if (!specialty.equals(specialties[size-1]))
+				//if it's NOT the last one
+				specialtyTA.append("\n");
 		}
-		
-		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));		
-		listPanel.add(specialtiesListPanel);
-		specialtiesListPanel.setBorder(new MarsPanelBorder());
+
+
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//listPanel.add(specialtiesListPanel);
+		//specialtiesListPanel.setBorder(new MarsPanelBorder());
+
+		listPanel.add(specialtyTA);
+		specialtyTA.setBorder(new MarsPanelBorder());
+
 		add(listPanel, BorderLayout.CENTER);
 		listPanel.setOpaque(false);
 		listPanel.setBackground(new Color(0,0,0,128));
-		
+
 	}
 
 	/**

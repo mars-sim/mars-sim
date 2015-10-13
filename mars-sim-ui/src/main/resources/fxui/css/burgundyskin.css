@@ -53,6 +53,10 @@
 }
 
 
+.context-menu {
+    -fx-background-color: rgb(140, 0, 26);
+}
+
 
 .tool-bar:horizontal {
 	-fx-background-color:

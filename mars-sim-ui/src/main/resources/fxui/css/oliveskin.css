@@ -51,6 +51,11 @@
 }
 
 
+.context-menu {
+    -fx-background-color: #88976d;
+}
+
+
 .button{
 	-fx-background-color:
 	    linear-gradient(from 0% 93% to 0% 100%, #556B2F 0%, #88976d 100%),

@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * The ResourceProcessingBuildingPanel class is a building function panel representing 
+ * The ResourceProcessingBuildingPanel class is a building function panel representing
  * the resource processes of a settlement building.
  */
 public class BuildingPanelResourceProcessing
@@ -71,14 +71,14 @@ extends BuildingFunctionPanel {
 		resourceProcessesListPanel.setBorder(new EmptyBorder(3, 20, 3, 20)); //(int top, int left, int bottom, int right)
 		resourceProcessesListPanel.setOpaque(false);
 		resourceProcessesListPanel.setBackground(new Color(0,0,0,128));
-		
-		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));		
+
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		resourceProcessesListPanel.setBorder(new MarsPanelBorder());
 		listPanel.add(resourceProcessesListPanel);
 		add(listPanel, BorderLayout.SOUTH);
 		listPanel.setOpaque(false);
 		listPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Load green and red dots.
 		greenDot = new ImageIcon("images/GreenDot.png", "Process is running.");
 		redDot = new ImageIcon("images/RedDot.png", "Process is not running");
@@ -91,7 +91,7 @@ extends BuildingFunctionPanel {
 			JLabel processLabel = new JLabel(process.getProcessName(), JLabel.LEFT);
 			//processLabel.setForeground(Color.DARK_GRAY);
 			//processLabel.setBackground(Color.WHITE);
-			processLabel.setFont(new Font("SansSerif", Font.ITALIC, 10));
+			processLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
 
 			if (process.isProcessRunning()) {
 				processLabel.setIcon(greenDot);

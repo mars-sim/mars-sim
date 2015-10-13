@@ -20,7 +20,9 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -428,8 +430,9 @@ implements Serializable {
 				phase = FINISHED;
 				generateCropWaste(lastHarvest);
 
-				//2015-08-26 Added harvestSeedlings();
-				computeHarvestedTissue();
+				// 2015-10-13 Check to see if a botany lab is available
+				checkBotanyLab();
+
 				//actualHarvest = 0;
 				//growingTimeCompleted = 0;
 
@@ -449,12 +452,73 @@ implements Serializable {
 		return remainingWorkTime;
 	}
 
+	/*
+	 * Checks to see if a botany lab with an open research slot is available and performs cell tissue extraction
+	 */
+	public void checkBotanyLab() {
+		// 2015-10-13 Check to see if a botany lab is available
+		boolean hasEmptySpace = false;
+		boolean full = false;
+		Building bldg = farm.getBuilding();
+		Research lab0 = (Research) bldg.getFunction(BuildingFunction.RESEARCH);
+		// Check to see if the local greenhouse has a research slot
+		if (lab0.hasSpecialty(ScienceType.BOTANY)) {
+			hasEmptySpace = lab0.checkAvailability();
+		}
+
+		if (hasEmptySpace) {
+			lab0.addResearcher();
+			preserveCropTissue(lab0, true);
+			lab0.removeResearcher();
+		}
+		else {
+			// Check available research slot in another lab located in another greenhouse
+			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
+			Iterator<Building> i = laboratoryBuildings.iterator();
+			while (i.hasNext() && !hasEmptySpace) {
+				Building building = i.next();
+				Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+				if (lab.hasSpecialty(ScienceType.BOTANY)) {
+					hasEmptySpace = lab.checkAvailability();
+					if (hasEmptySpace) {
+						lab.addResearcher();
+						preserveCropTissue(lab, true);
+						lab.removeResearcher();
+						// TODO: compute research ooints to determine if it can be carried out.
+						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
+					}
+				}
+			}
+		}
+
+		// check to see if a person can still "squeeze into" this busy lab to get lab time
+		if (!hasEmptySpace && (lab0.getLaboratorySize() == lab0.getResearcherNum())) {
+			preserveCropTissue(lab0, false);
+		}
+		else {
+
+			// Check available research slot in another lab located in another greenhouse
+			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
+			Iterator<Building> i = laboratoryBuildings.iterator();
+			while (i.hasNext() && !hasEmptySpace) {
+				Building building = i.next();
+				Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
+				if (lab.hasSpecialty(ScienceType.BOTANY)) {
+					hasEmptySpace = lab.checkAvailability();
+					if (lab.getLaboratorySize() == lab.getResearcherNum()) {
+						preserveCropTissue(lab, false);
+					}
+
+				}
+			}
+		}
+	}
+
     /**
      * Compute the amount of crop tissues extracted
      */
-	//2015-08-26 Added harvestSeedlings();
-	//2015-09-18 Changed to computeHarvestedTissue();
-	public void computeHarvestedTissue() {
+	//2015-10-13 Changed to preserveCropTissue();
+	public void preserveCropTissue(Research lab, boolean hasSpace) {
 		// Added the contributing factor based on the health condition
 		// TODO: re-tune the amount of tissue culture based on not just based on the edible biomass (actualHarvest)
 		// but also the inedible biomass and the crop category
@@ -462,12 +526,21 @@ implements Serializable {
 
 		// Added randomness
 		double rand = RandomUtil.getRandomDouble(1);
-		amount = Math.round((amount * .5 + amount * rand)*100000.0)/100000.0;
+		amount = Math.round((amount * .5 + amount * rand)*10000.0)/10000.0;
 
 		String tissue = cropName + " tissue culture";
 		Storage.storeAnResource(amount, tissue, inv);
 
-		logger.info("A botany lab successfully extracted and preserved " + amount + " kg " + tissue);
+		// 2015-10-13 if no dedicated research space is available, work can still be performed but productivity is cut half
+		if (hasSpace) {
+			logger.info(amount + " kg " + tissue + " extracted & cryo-preserved in " + lab.getBuilding().getNickName() + " at " + settlement.getName());
+		}
+		else {
+			amount = amount / 2D;
+			logger.info("Not enough botany research space. Only " + amount + " kg " + tissue + " extracted & cryo-preserved at reduced capacity in " + lab.getBuilding().getNickName() + " at " + settlement.getName());
+		}
+
+
 	}
 
 	public void generateCropWaste(double harvestMass) {
