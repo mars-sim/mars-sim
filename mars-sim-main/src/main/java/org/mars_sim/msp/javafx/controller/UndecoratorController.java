@@ -1,6 +1,9 @@
-package org.mars_sim.msp.javafx.insidefx.undecorator;
+package org.mars_sim.msp.javafx.controller;
 
 import java.util.logging.Level;
+
+import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
+
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -53,7 +56,7 @@ public class UndecoratorController {
     /*
      * Actions
      */
-    protected void maximizeOrRestore() {
+    public void maximizeOrRestore() {
 
         Stage stage = undecorator.getStage();
 
@@ -107,7 +110,7 @@ public class UndecoratorController {
         savedFullScreenBounds = null;
     }
 
-    protected void setFullScreen(boolean value) {
+    public void setFullScreen(boolean value) {
         Stage stage = undecorator.getStage();
         stage.setFullScreen(value);
     }
@@ -386,7 +389,7 @@ public class UndecoratorController {
                 if (maximized) {
                     // Remove Maximized state
                     undecorator.maximizeProperty.set(false);
-                    // Center 
+                    // Center
                     stage.setX(mouseEvent.getScreenX() - stage.getWidth() / 2);
                     stage.setY(mouseEvent.getScreenY() - SHADOW_WIDTH);
                 } // Docked then moved, so restore state

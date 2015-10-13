@@ -1038,6 +1038,7 @@ public class MainScene {
 					// Use default theme
 					try {
 						UIManager.setLookAndFeel(new NimRODLookAndFeel());
+						changed = true;
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -1089,8 +1090,8 @@ public class MainScene {
 		}
 
 		if (changed) {
-			SwingUtilities.updateComponentTreeUI(desktop);
 			if (desktop != null) {
+				SwingUtilities.updateComponentTreeUI(desktop);
 				desktop.updateToolWindowLF();
 				desktop.updateUnitWindowLF();
 				desktop.updateAnnouncementWindowLF();

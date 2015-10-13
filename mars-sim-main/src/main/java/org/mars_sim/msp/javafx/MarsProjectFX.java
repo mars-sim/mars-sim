@@ -86,8 +86,8 @@ public class MarsProjectFX extends Application  {
 			setDirectory();
 
 	        // general text antialiasing
-	        System.setProperty("swing.aatext", "true");
-	        System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
+	        //System.setProperty("swing.aatext", "true");
+	        //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
 	    	logger.info("Starting " + Simulation.WINDOW_TITLE);
 

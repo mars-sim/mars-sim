@@ -40,10 +40,10 @@ import javafx.stage.StageStyle;
  */
 public class UndecoratorScene extends Scene {
 
-    static public final String DEFAULT_STYLESHEET = "skin/undecorator.css";
-    static public final String DEFAULT_STYLESHEET_UTILITY = "skin/undecoratorUtilityStage.css";
-    static public final String DEFAULT_STAGEDECORATION = "stagedecoration.fxml";
-    static public final String DEFAULT_STAGEDECORATION_UTILITY = "stageUtilityDecoration.fxml";
+    static public final String DEFAULT_STYLESHEET = "/skin/undecorator.css";
+    static public final String DEFAULT_STYLESHEET_UTILITY = "/skin/undecoratorUtilityStage.css";
+    static public final String DEFAULT_STAGEDECORATION = "/fxui/fxml/stagedecoration.fxml";
+    static public final String DEFAULT_STAGEDECORATION_UTILITY = "/fxui/fxml/stageUtilityDecoration.fxml";
     Undecorator undecorator;
 
     /**

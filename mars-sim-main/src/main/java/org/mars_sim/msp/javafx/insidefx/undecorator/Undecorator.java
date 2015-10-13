@@ -34,6 +34,9 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.javafx.controller.UndecoratorController;
+
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -128,7 +131,7 @@ public class Undecorator extends StackPane {
     UndecoratorController undecoratorController;
     Stage stage;
     Rectangle backgroundRect;
-    SimpleBooleanProperty maximizeProperty;
+    public SimpleBooleanProperty maximizeProperty;
     SimpleBooleanProperty minimizeProperty;
     SimpleBooleanProperty closeProperty;
     SimpleBooleanProperty fullscreenProperty;
@@ -155,7 +158,7 @@ public class Undecorator extends StackPane {
     }
 
     public Undecorator(Stage stage, Region root) {
-        this(stage, root, "stagedecoration.fxml", StageStyle.UNDECORATED);
+        this(stage, root, "/fxui/fxml/stagedecoration.fxml", StageStyle.UNDECORATED);
     }
 
     public Undecorator(Stage stag, Region clientArea, String stageDecorationFxml, StageStyle st) {
@@ -732,7 +735,7 @@ public class Undecorator extends StackPane {
     /**
      * Switch the visibility of the window's drop shadow
      */
-    protected void setShadow(boolean shadow) {
+    public void setShadow(boolean shadow) {
         // Already removed?
         if (!shadow && shadowRectangle.getEffect() == null) {
             return;
