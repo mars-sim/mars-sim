@@ -29,6 +29,7 @@ import org.mars_sim.msp.MarsProject;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 
 /**

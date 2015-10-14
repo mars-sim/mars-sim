@@ -1,4 +1,4 @@
-package org.mars_sim.msp.javafx;
+package org.mars_sim.msp.javafx.configEditor;
 
 /**
  * A class representing a settlement configuration.

@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.javafx;
+package org.mars_sim.msp.javafx.configEditor;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
-import org.mars_sim.msp.javafx.SettlementTableModel;
+import org.mars_sim.msp.javafx.configEditor.SettlementTableModel;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;

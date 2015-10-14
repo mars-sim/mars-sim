@@ -48,6 +48,7 @@ import javafx.stage.Stage;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX;
 
 
 /**

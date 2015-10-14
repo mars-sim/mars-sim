@@ -4,10 +4,11 @@
  * @version 3.08 2015-04-17
  * @author Manny Kung
  */
-package org.mars_sim.msp.javafx;
+package org.mars_sim.msp.javafx.configEditor;
 
-import org.mars_sim.msp.javafx.SettlementTable;
-import org.mars_sim.msp.javafx.SettlementTableModel;
+import org.mars_sim.msp.javafx.CrewEditorFX;
+import org.mars_sim.msp.javafx.MainMenu;
+import org.mars_sim.msp.javafx.MarsProjectFX;
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
 import org.mars_sim.msp.networking.MultiplayerClient;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
@@ -52,6 +53,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import javafx.concurrent.Task;
+import javafx.scene.Cursor;
 
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -117,6 +120,7 @@ public class ScenarioConfigEditorFX {
 	private Parent parent;
 	private SwingNode swingNode;
 	private Stage stage;
+	private Scene scene;
 
 	private transient ThreadPoolExecutor executor;
 
@@ -212,7 +216,7 @@ public class ScenarioConfigEditorFX {
 		    AnchorPane.setRightAnchor(bp, 5.0);
 		    anchorpane.getChildren().add(bp);
 
-			Scene scene = new Scene(undecorator);
+			scene = new Scene(undecorator);
 			scene.getStylesheets().add("/fxui/css/configEditor.css");
 			//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
 
@@ -451,39 +455,63 @@ public class ScenarioConfigEditorFX {
 		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
 		startButton.setId("startButton");
 		startButton.setOnAction((event) -> {
+
 			// Make sure any editing cell is completed, then check if error.
 			if (tableCellEditor != null) {
 				tableCellEditor.stopCellEditing();
 			}
 
+
 			if (!hasError) {
-				isDone = true;
 				//2015-10-10 Added createProgressCircle()
 				Platform.runLater(() -> {
-					// TODO: the ring won't turn until a couple of seconds later
+		            scene.setCursor(Cursor.WAIT); //Change cursor to wait style
 					mainMenu.getCircleStage().show();
 					mainMenu.getCircleStage().requestFocus();
 				});
 
 			    //logger.info("ScenarioConfigEditorFX's createEditor() is on " + Thread.currentThread().getName() + " Thread");
-				stage.hide();
 				setConfiguration();
 				//System.out.println("calling Simulation.createNewSimulation()");
-				Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
-				closeWindow();
+				isDone = true;
 
-	           	try {
-					while(future.get() == null && isDone) {
-						Platform.runLater(() -> {
-							mainMenu.getCircleStage().close();
-						});
-						isDone = false;
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+				// 2015-10-13 Set up a Task Thread
+				Task task = new Task() {
+
+		            @Override
+		            protected Integer call() throws Exception {
+		                int iterations;
+						Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
+		                try {
+							while(future.get() == null && isDone) {
+								Platform.runLater(() -> {
+									stage.hide();
+									mainMenu.getCircleStage().close();
+									closeWindow();
+								});
+								isDone = false;
+							}
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+
+		                //for (iterations = 0; iterations > 100000; iterations++) {
+		                    //System.out.println("Iteration " + iterations);
+		                //}
+		                //return iterations;
+		                return 0;
+		            }
+		        };
+		        Thread th = new Thread(task);
+		        th.setDaemon(true);
+		        th.start();
+
+
+                scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
+
+			} //end of if (!hasError)
 
 		});
 
@@ -748,7 +776,7 @@ public class ScenarioConfigEditorFX {
 	 * @param templateName the settlement template name.
 	 * @return the new population number.
 	 */
-	String determineNewSettlementPopulation(String templateName) {
+	public String determineNewSettlementPopulation(String templateName) {
 
 		String result = "0"; //$NON-NLS-1$
 
@@ -772,7 +800,7 @@ public class ScenarioConfigEditorFX {
 	 * @param templateName the settlement template name.
 	 * @return number of robots.
 	 */
-	String determineNewSettlementNumOfRobots(String templateName) {
+	public String determineNewSettlementNumOfRobots(String templateName) {
 
 		String result = "0"; //$NON-NLS-1$
 

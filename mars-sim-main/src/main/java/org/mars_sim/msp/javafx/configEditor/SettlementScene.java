@@ -5,7 +5,7 @@
  * @author Lars Næsbye Christensen
  */
 
-package org.mars_sim.msp.javafx;
+package org.mars_sim.msp.javafx.configEditor;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

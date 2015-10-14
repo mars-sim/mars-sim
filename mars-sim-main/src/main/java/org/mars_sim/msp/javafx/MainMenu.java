@@ -61,7 +61,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ProgressIndicator;
@@ -177,11 +177,12 @@ public class MainMenu {
        //(ii) set the scene fill to transparent
        mainMenuScene.setCursor(Cursor.HAND);
 
+       EffectUtilities.makeDraggable(mainMenuStage, screen);
 
        //(iii) set the stage background to transparent
        //mainMenuStage.initStyle(StageStyle.UTILITY);
-       //mainMenuStage.initStyle(StageStyle.TRANSPARENT);
-       //mainMenuStage.initStyle(StageStyle.UNDECORATED);
+       mainMenuStage.initStyle(StageStyle.TRANSPARENT);
+       mainMenuStage.initStyle(StageStyle.UNDECORATED);
        mainMenuStage.centerOnScreen();
        mainMenuStage.setResizable(false);
 	   mainMenuStage.setTitle(Simulation.WINDOW_TITLE);
@@ -416,34 +417,40 @@ public class MainMenu {
     * Adjusts Mars Globe's rotation rate according to how much the user's drags his mouse across the globe
     */
    // 2015-09-26 Added adjustRotation()
+
    private void adjustRotation(Scene scene, Parent parent) {
 
 	   // 2015-09-26 Changes Mars Globe's rotation rate if a user drags his mouse across the globe
 	   scene.setOnMousePressed((event) -> {
-		   anchorX = event.getSceneX();
+		   // 2015-10-13 Detected right mouse button pressed
+           if (event.isSecondaryButtonDown())
+        	   anchorX = event.getSceneX();
 	   });
 
 	   scene.setOnMouseDragged((event) -> {
+		   // 2015-10-13 Detected right mouse button drag
+		   if (event.isSecondaryButtonDown()) {
 
-		   double a = anchorX - event.getSceneX();
-		   double rotationMultipler;
+			   double a = anchorX - event.getSceneX();
+			   double rotationMultipler;
 
-		   if (a < 0) { // left to right
-			   rate = Math.abs(a/100D);
-		   }
-		   else { // right to left
-			   rate = Math.abs(100D/a) ;
-		   }
+			   if (a < 0) { // left to right
+				   rate = Math.abs(a/100D);
+			   }
+			   else { // right to left
+				   rate = Math.abs(100D/a) ;
+			   }
 
-		   if (rate < 100) { // This prevents unrealistic and excessive rotation rate that creates spurious result (such as causing the direction of rotation to "flip"
-			   rt.setRate(rate);
-			   anchorX = 0;
-			   rotationMultipler = rate * 500D;
+			   if (rate < 100) { // This prevents unrealistic and excessive rotation rate that creates spurious result (such as causing the direction of rotation to "flip"
+				   rt.setRate(rate);
+				   anchorX = 0;
+				   rotationMultipler = rate * 500D;
 
-			   //System.out.println("rate is " + rate + "   rotationMultipler is "+ rotationMultipler);
+				   //System.out.println("rate is " + rate + "   rotationMultipler is "+ rotationMultipler);
 
-			   mainMenuController.setRotation((int)rotationMultipler);
-		   }
+				   mainMenuController.setRotation((int)rotationMultipler);
+			   }
+           }
 	   });
    }
 
@@ -489,6 +496,9 @@ public class MainMenu {
 	   	}
    	}
 */
+   /*
+    * Create the progress circle animation while waiting for loading the main scene
+    */
 	public void createProgressCircle() {
 
 		StackPane stackPane = new StackPane();
@@ -501,9 +511,8 @@ public class MainMenu {
 		ProgressIndicator indicator = new ProgressIndicator();
 		indicator.setMaxSize(120, 120);
 		//indicator.setProgress(50);
-		javafx.scene.effect.ColorAdjust adjust = new javafx.scene.effect.ColorAdjust();
-		//Green HUE value -0.4
-		adjust.setHue(17);
+		ColorAdjust adjust = new javafx.scene.effect.ColorAdjust();
+		adjust.setHue(-0.07); // -.07, -0.1 cyan; 3, 17 = red orange; -0.4 = bright green
 		indicator.setEffect(adjust);
 		stackPane.getChildren().add(indicator);
 		StackPane.setAlignment(indicator, Pos.CENTER);

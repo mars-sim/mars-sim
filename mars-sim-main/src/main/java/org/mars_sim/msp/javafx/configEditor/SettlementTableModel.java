@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.javafx;
+package org.mars_sim.msp.javafx.configEditor;
 
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +25,7 @@ import javafx.scene.paint.Color;
 /**
  * Inner class for the settlement table model.
  */
-class SettlementTableModel extends AbstractTableModel {
+public class SettlementTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ class SettlementTableModel extends AbstractTableModel {
 	/**
 	 * Hidden Constructor.
 	 */
-	SettlementTableModel(ScenarioConfigEditorFX configEditor) {
+	public SettlementTableModel(ScenarioConfigEditorFX configEditor) {
 		super();
 
 		this.configEditor = configEditor;
@@ -103,7 +103,7 @@ class SettlementTableModel extends AbstractTableModel {
 	/**
 	 * Load the default settlements from settlements.xml into the table.
 	 */
-	void loadDefaultSettlements() {
+	public void loadDefaultSettlements() {
 		//if (getRowCount() > 0 )
 			//saveCache();
 		SettlementConfig settlementConfig = config.getSettlementConfiguration();
@@ -131,7 +131,7 @@ class SettlementTableModel extends AbstractTableModel {
 	/**
 	 * Load the existing settlements from SettlementRegistry into the table.
 	 */
-	void loadExistingSettlements() {
+	public void loadExistingSettlements() {
 		//if (getRowCount() > 0)
 			//saveCache();
 		settlements.clear();
@@ -551,7 +551,7 @@ class SettlementTableModel extends AbstractTableModel {
 	 * Remove a set of settlements from the table.
 	 * @param rowIndexes an array of row indexes of the settlements to remove.
 	 */
-	void removeSettlements(int[] rowIndexes) {
+	public void removeSettlements(int[] rowIndexes) {
 		List<SettlementInfo> removedSettlements = new CopyOnWriteArrayList<>();
 
 		for (int x = 0; x < rowIndexes.length; x++) {
@@ -572,7 +572,7 @@ class SettlementTableModel extends AbstractTableModel {
 	 * Adds a new settlement to the table.
 	 * @param settlement the settlement configuration.
 	 */
-	void addSettlement(SettlementInfo settlement) {
+	public void addSettlement(SettlementInfo settlement) {
 		settlements.add(settlement);
 		fireTableDataChanged();
 	}
