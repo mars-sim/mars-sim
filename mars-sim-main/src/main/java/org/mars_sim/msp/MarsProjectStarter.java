@@ -34,8 +34,8 @@ public class MarsProjectStarter {
         else command.append("java");
 
         //command.append(" -Dswing.aatext=true");
-        //command.append(" -Dswing.plaf.metal.controlFont=Tahoma");
-        //command.append(" -Dswing.plaf.metal.userFont=Tahoma");
+        //command.append(" -Dswing.plaf.metal.controlFont=Tahoma"); // the compiled jar won't run
+        //command.append(" -Dswing.plaf.metal.userFont=Tahoma"); // the compiled jar won't run
 
         command.append(" -Xms256m");
         //command.append(" -Xmx1024m");

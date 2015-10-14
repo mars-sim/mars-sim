@@ -22,9 +22,25 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
+
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.embed.swing.SwingNode;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import javafx.stage.StageStyle;
+import javafx.stage.Popup;
+import javafx.scene.Node;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseButton;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -43,6 +59,8 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 
 
 // TODO: is extending to JInternalFrame better?
@@ -58,6 +76,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
 	private MainWindow mainWindow;
+
+	private double initialX, initialY;
 
     public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
     	//this.building = building;
@@ -290,7 +310,75 @@ public class PopUpUnitMenu extends JPopupMenu {
 
     }
 
+	/*
+	 * Creates a stage for displaying the status of a building
+	 */
+    public void createBuildingPanelFX(Building building) {
+    	Stage stage = new Stage();
 
+    	//Popup stage = new Popup();
+    	SwingNode swingNode  = new SwingNode();
+    	StackPane swingPane = new StackPane();
+
+		swingPane.getChildren().add(swingNode);
+		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+		//swingPane.setPrefWidth(primaryScreenBounds.getWidth());
+
+		final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
+
+		SwingUtilities.invokeLater(() -> {
+			swingNode.setContent(buildingPanel);
+	    });
+
+	   	Scene scene = new Scene(swingPane, 320, 350);
+	    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+
+	   	stage.requestFocus();
+
+	   	//addDraggableNode(stage);
+
+	   	stage.setTitle("Building Detail");
+	   	stage.initStyle(StageStyle.UTILITY);
+	   	//stage.initStyle(StageStyle.TRANSPARENT);
+		stage.setResizable(false);
+	   	stage.setScene(scene);
+        stage.show();
+
+
+	   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
+	   	{
+	   	  @Override
+	   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+	   	  {
+	   	    stage.close();
+	   	  }
+	   	});
+
+    }
+
+    private void addDraggableNode(final Node node) {
+
+        node.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent me) {
+                if (me.getButton() != MouseButton.MIDDLE) {
+                    initialX = me.getSceneX();
+                    initialY = me.getSceneY();
+              }
+            }
+        });
+
+        node.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent me) {
+                if (me.getButton() != MouseButton.MIDDLE) {
+                    node.getScene().getWindow().setX(me.getScreenX() - initialX);
+                    node.getScene().getWindow().setY(me.getScreenY() - initialY);
+                }
+            }
+        });
+    }
+/*
     public void createBuildingPanelFX(Building building) {
     	//System.out.println("PopUpUnitMenu.java : createBuildingPanelFX()");
       	@SuppressWarnings("restriction")
@@ -313,12 +401,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 		alert.show();
 
-
 		// move mouse focus to Alert. if off close, execute alert.close();
-
 	   	//System.out.println("PopUpUnitMenu.java : done createBuildingPanelFX()");
     }
-
+*/
     public void createBuildingPanel(Building building) {
 
     	JFrame f = new JFrame();
@@ -344,7 +430,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		f.setUndecorated(true);
         f.setBackground(new Color(51,25,0,128)); // java.awt.IllegalComponentStateException: The dialog is decorated
         f.add(buildingPanel);
-		f.setSize(300, 350);  // undecorated: 300, 335; decorated: 310, 370
+		f.setSize(320, 350);  // undecorated: 300, 335; decorated: 310, 370
 		f.setLayout(new FlowLayout());
 
 		f.setVisible(true);

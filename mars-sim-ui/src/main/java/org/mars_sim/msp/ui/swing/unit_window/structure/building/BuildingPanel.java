@@ -179,7 +179,7 @@ extends JPanel {
 
         buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));
         if (isTranslucent) {
-        	buildingNameLabel.setForeground(Color.YELLOW);
+        	//buildingNameLabel.setForeground(Color.YELLOW);
         } else
         	buildingNameLabel.setForeground(new Color(102, 51, 0)); // dark brown
 

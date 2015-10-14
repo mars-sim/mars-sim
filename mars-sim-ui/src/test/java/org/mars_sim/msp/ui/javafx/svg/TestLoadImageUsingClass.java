@@ -33,12 +33,13 @@ public class TestLoadImageUsingClass extends GuiTest {
 		return new AnchorPane(imageView);
 	}
 
+	// Note: if there is another instance of java running on the background, imageShouldBeVisible() will NOT be tested properly
 	@Test
 	public void imageShouldBeVisible() {
-		//ImageView imageView = find("#TestImage");
-		//Image image = imageView.getImage();
+		ImageView imageView = find("#TestImage");
+		Image image = imageView.getImage();
 
-		//assertNotNull(image);
-		//assertFalse(image.errorProperty().get());
+		assertNotNull(image);
+		assertFalse(image.errorProperty().get());
 	}
 }

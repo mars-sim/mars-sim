@@ -296,6 +296,7 @@ public class MarsProject extends SimpleApplication {
         System.setProperty("swing.aatext", "true");
         System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
+/*
         // 2015-10-13  Added command prompt console
         Console console = System.console();
         if(console == null && !GraphicsEnvironment.isHeadless()){
@@ -305,7 +306,7 @@ public class MarsProject extends SimpleApplication {
         	MarsProject.main(new String[0]);
             System.out.println("Program has ended, please type 'exit' to close the console");
         }
-
+*/
 
         // starting the simulation
         MarsProject mp = new MarsProject(args);

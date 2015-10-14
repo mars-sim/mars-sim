@@ -362,16 +362,17 @@ public class MarsProjectFX extends Application  {
         //app.setShowSettings(false);
         //app.start();
 
+    	/*
         // 2015-10-13  Added command prompt console
         Console console = System.console();
         if(console == null && !GraphicsEnvironment.isHeadless()){
             String filename = MarsProjectFX.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
             Runtime.getRuntime().exec(new String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
         }else{
-        	MarsProjectFX.main(new String[0]);
+        	//MarsProjectFX.main(new String[0]);
             System.out.println("Program has ended, please type 'exit' to close the console");
         }
-
+*/
         launch(args);
     }
 }
