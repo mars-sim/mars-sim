@@ -48,23 +48,23 @@ implements Serializable {
 		// Adjust certain attributes reflective of Martian settlers.
 		addAttributeModifier(NaturalAttribute.STRENGTH, 40);
 		addAttributeModifier(NaturalAttribute.ENDURANCE, 40);
-		addAttributeModifier(NaturalAttribute.AGILITY, 20);
+		addAttributeModifier(NaturalAttribute.AGILITY, 40);
 		addAttributeModifier(NaturalAttribute.STRESS_RESILIENCE, 80);
 		addAttributeModifier(NaturalAttribute.TEACHING, 40);
 		addAttributeModifier(NaturalAttribute.ACADEMIC_APTITUDE, 80);
 		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 60);
 		addAttributeModifier(NaturalAttribute.ARTISTRY, 60);
 		addAttributeModifier(NaturalAttribute.SPIRITUALITY, 60);
-		addAttributeModifier(NaturalAttribute.BRAVERY, 60);
+		addAttributeModifier(NaturalAttribute.COURAGE, 60);
 		addAttributeModifier(NaturalAttribute.EMOTIONAL_STABILITY, 60);
 
 		// Adjust certain attributes reflective of differences between the genders.
 		// TODO: Do more research on this and cite references if possible.
 		if (person.getGender() == PersonGender.MALE) {
-			addAttributeModifier(NaturalAttribute.STRENGTH, 40);
+			addAttributeModifier(NaturalAttribute.STRENGTH, 20);
 		}
 		else if (person.getGender() == PersonGender.FEMALE) {
-			addAttributeModifier(NaturalAttribute.STRENGTH, -40);
+			addAttributeModifier(NaturalAttribute.STRENGTH, -20);
 			addAttributeModifier(NaturalAttribute.ENDURANCE, 20);
 		}
 	}
@@ -87,7 +87,7 @@ implements Serializable {
 			attributeList.put(attributeKey, attributeValue);
 		}
 
-		// Adjust certain attributes reflective of bots.
+		// TODO: need to overhaul and define the use of attributes for bots.
 		addAttributeModifier(NaturalAttribute.STRENGTH, 95);
 		addAttributeModifier(NaturalAttribute.ENDURANCE, 95);
 		addAttributeModifier(NaturalAttribute.AGILITY, 20);
@@ -97,7 +97,7 @@ implements Serializable {
 		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 10);
 		addAttributeModifier(NaturalAttribute.ARTISTRY, 1);
 		addAttributeModifier(NaturalAttribute.SPIRITUALITY, 1);
-		addAttributeModifier(NaturalAttribute.BRAVERY, 1);
+		addAttributeModifier(NaturalAttribute.COURAGE, 1);
 		addAttributeModifier(NaturalAttribute.EMOTIONAL_STABILITY, 99);
 	}
 

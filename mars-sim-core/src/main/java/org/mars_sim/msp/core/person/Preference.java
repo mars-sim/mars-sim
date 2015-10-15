@@ -18,21 +18,46 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.meta.AreologyStudyFieldMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.BiologyStudyFieldMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.BuildingSalvageMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.CollectIceMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.CollectRegolithMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.EmergencySupplyMissionMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.ExplorationMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
+import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
+import org.mars_sim.msp.core.person.ai.mission.meta.MiningMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.RescueSalvageVehicleMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.TradeMeta;
+import org.mars_sim.msp.core.person.ai.mission.meta.TravelToSettlementMeta;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.meta.AssistScientificStudyResearcherMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.CompileScientificStudyResultsMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ConnectWithEarthMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConsolidateContainersMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ConstructBuildingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.CookMealMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.DigLocalIceMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.InviteStudyCollaboratorMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ManufactureConstructionMaterialsMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ManufactureGoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
+import org.mars_sim.msp.core.person.ai.task.meta.ObserveAstronomicalObjectsMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryExperimentMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryResearchMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformMathematicalModelingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PrepareDessertMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ProduceFoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ProposeScientificStudyMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.RelaxMeta;
@@ -44,11 +69,14 @@ import org.mars_sim.msp.core.person.ai.task.meta.ReviewJobReassignmentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SalvageBuildingMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SalvageGoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.SleepMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.StudyFieldSamplesMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TeachMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.TendGreenhouseMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TreatMedicalPatientMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.UnloadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.WorkoutMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 //import org.mars_sim.msp.core.person.ai.task.meta.WriteReportMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.YogaMeta;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -69,6 +97,8 @@ public class Preference implements Serializable {
 	private MarsClock clock;
 
 	private List<MetaTask> metaTaskList;
+	private List<MetaMission> metaMissionList;
+
 	private Map<MetaTask, Integer> scorekMap;
 	private Map<String, Integer> stringNameMap;
 	private List<String> metaTaskStringList;
@@ -84,6 +114,8 @@ public class Preference implements Serializable {
 
 		metaTaskList = MetaTaskUtil.getMetaTasks();
 		metaTaskStringList = new ArrayList<>();
+
+		metaMissionList = MetaMissionUtil.getMetaMissions();
 
 		scorekMap = new ConcurrentHashMap<>();
 		stringNameMap = new ConcurrentHashMap<>();
@@ -111,11 +143,13 @@ public class Preference implements Serializable {
 		int result = 0 ;
 
 		// Computes the adjustment from a person's natural attributes
-        double a =  naturalAttributeManager.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE)/50D * 1.5;
+        double aa =  naturalAttributeManager.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE)/50D * 1.5;
         double t =  naturalAttributeManager.getAttribute(NaturalAttribute.TEACHING)/50D * 1.5;
         double l =  naturalAttributeManager.getAttribute(NaturalAttribute.LEADERSHIP)/50D * 1.5;
-        double sa =  (naturalAttributeManager.getAttribute(NaturalAttribute.STRENGTH)
-        			+ naturalAttributeManager.getAttribute(NaturalAttribute.AGILITY))/100D * 1.5;
+        double es =  (naturalAttributeManager.getAttribute(NaturalAttribute.ENDURANCE)
+        			+ naturalAttributeManager.getAttribute(NaturalAttribute.STRENGTH))/100D * 1.5;
+        double ag =  naturalAttributeManager.getAttribute(NaturalAttribute.AGILITY)/500D * 1.5;
+
         double ss =  (naturalAttributeManager.getAttribute(NaturalAttribute.STRESS_RESILIENCE)
         			+ naturalAttributeManager.getAttribute(NaturalAttribute.SPIRITUALITY))/100D * 1.5;
         double se =  (naturalAttributeManager.getAttribute(NaturalAttribute.STRESS_RESILIENCE)
@@ -124,30 +158,53 @@ public class Preference implements Serializable {
         double ca = (naturalAttributeManager.getAttribute(NaturalAttribute.CONVERSATION)/50D
     			+ naturalAttributeManager.getAttribute(NaturalAttribute.ATTRACTIVENESS)/200D) * 1.5;
 
+        double art = naturalAttributeManager.getAttribute(NaturalAttribute.ARTISTRY)/50D * 1.5;
 
+        double cou = naturalAttributeManager.getAttribute(NaturalAttribute.COURAGE)/50D * 1.5;
+
+        //TODO: how to incorporate EXPERIENCE_APTITUDE ?
 
 		Iterator<MetaTask> i = metaTaskList.iterator();
 		while (i.hasNext()) {
 			MetaTask metaTask = i.next();
 
-			// add randomness
-			result = RandomUtil.getRandomInt(-3, 3);
+			// Set them up in random
+			result = RandomUtil.getRandomInt(-3, 2);
 
 			// Note: the preference score on a metaTask is modified by a person's natural attributes
+			// TODO: turn these hardcoded relationship between attributes and task preferences into a XML/JSON file
 
-			if (metaTask instanceof CompileScientificStudyResultsMeta
-				|| metaTask instanceof AssistScientificStudyResearcherMeta
+			// Academically driven
+			if (metaTask instanceof AssistScientificStudyResearcherMeta
+				|| metaTask instanceof CompileScientificStudyResultsMeta
+				|| metaTask instanceof MaintenanceEVAMeta
+				|| metaTask instanceof MaintenanceMeta
+				|| metaTask instanceof ObserveAstronomicalObjectsMeta
 				|| metaTask instanceof PeerReviewStudyPaperMeta
+				|| metaTask instanceof PerformLaboratoryExperimentMeta
+				|| metaTask instanceof PerformLaboratoryResearchMeta
 				|| metaTask instanceof PerformMathematicalModelingMeta
 				|| metaTask instanceof ProposeScientificStudyMeta
-				|| metaTask instanceof RespondToStudyInvitationMeta)
-				result += (int)a;
+				|| metaTask instanceof RespondToStudyInvitationMeta
+				|| metaTask instanceof RepairEVAMalfunctionMeta
+				|| metaTask instanceof RepairMalfunctionMeta
+				|| metaTask instanceof StudyFieldSamplesMeta)
+				result += (int)aa;
 
+			// Teaching excellence
 			if (metaTask instanceof TeachMeta
-				|| metaTask instanceof ReadMeta)
+				|| metaTask instanceof ReadMeta
+				|| metaTask instanceof PeerReviewStudyPaperMeta
+				|| metaTask instanceof WriteReportMeta)
 				result += (int)t;
 
-			if (metaTask instanceof LoadVehicleEVAMeta
+			// Endurance & strength related
+			if ( metaTask instanceof ConsolidateContainersMeta
+				|| metaTask instanceof ConstructBuildingMeta
+				|| metaTask instanceof DigLocalIceMeta
+				|| metaTask instanceof DigLocalRegolithMeta
+				|| metaTask instanceof EatMealMeta
+				|| metaTask instanceof LoadVehicleEVAMeta
 				|| metaTask instanceof LoadVehicleGarageMeta
 				|| metaTask instanceof UnloadVehicleEVAMeta
 				|| metaTask instanceof UnloadVehicleGarageMeta
@@ -156,24 +213,24 @@ public class Preference implements Serializable {
 				|| metaTask instanceof RepairEVAMalfunctionMeta
 				|| metaTask instanceof RepairMalfunctionMeta
 				|| metaTask instanceof MaintenanceEVAMeta
-				|| metaTask instanceof MaintenanceMeta
-				|| metaTask instanceof ConsolidateContainersMeta
-				|| metaTask instanceof ConstructBuildingMeta)
-				result += (int)sa;
+				|| metaTask instanceof MaintenanceMeta)
+				result += (int)es;
 
+			// leadership
 			if (metaTask instanceof ProposeScientificStudyMeta
 				|| metaTask instanceof InviteStudyCollaboratorMeta
-				|| metaTask instanceof ReviewJobReassignmentMeta)
+				|| metaTask instanceof ReviewJobReassignmentMeta
+				|| metaTask instanceof WriteReportMeta)
 				result += (int)l;
 
 			if (metaTask instanceof TreatMedicalPatientMeta)
-				result += (int)((se + se)/2D);
+				// need patience and stability to administer healing
+				result += (int)((se + ss)/2D);
 
 			if (metaTask instanceof RequestMedicalTreatmentMeta)
 				// if a person is stress-resilient and relatively emotional stable,
 				// he will more likely endure pain and less likely ask to be medicated.
 				result -= (int)se;
-
 
 			if (metaTask instanceof RelaxMeta
 				|| metaTask instanceof SleepMeta
@@ -184,11 +241,29 @@ public class Preference implements Serializable {
 				// he will less likely require extra time to relax/sleep/workout/do yoga.
 				result -= (int)ss;
 
-			if (metaTask instanceof HaveConversationMeta)
+			if (metaTask instanceof ConnectWithEarthMeta
+				||	metaTask instanceof HaveConversationMeta)
 				result += (int)ca;
 
-			if (result > 8)
-				result = 8;
+			if (metaTask instanceof WorkoutMeta
+				|| metaTask instanceof YogaMeta)
+				result +=(int)ag;
+
+			// Artistic quality
+			if (metaTask instanceof ConstructBuildingMeta
+				|| metaTask instanceof CookMealMeta
+				|| metaTask instanceof ManufactureConstructionMaterialsMeta
+				|| metaTask instanceof ManufactureGoodMeta
+				|| metaTask instanceof ObserveAstronomicalObjectsMeta
+				|| metaTask instanceof ProduceFoodMeta
+				|| metaTask instanceof PrepareDessertMeta
+				|| metaTask instanceof ProduceFoodMeta
+				|| metaTask instanceof SalvageGoodMeta
+				|| metaTask instanceof TendGreenhouseMeta)
+				result += (int)art;
+
+			if (result > 9)
+				result = 9;
 
 			String s = getStringName(metaTask);
 			if (!stringNameMap.containsKey(s)) {
@@ -206,6 +281,39 @@ public class Preference implements Serializable {
         }
 
         Collections.sort(metaTaskStringList);
+
+
+        // 2015-10-14 Added metaMissionList (NOT READY to publish metaMissionList as preferences)
+        Iterator<MetaMission> ii = metaMissionList.iterator();
+		while (ii.hasNext()) {
+			MetaMission metaMission = ii.next();
+
+			if (metaMission instanceof AreologyStudyFieldMissionMeta
+				|| metaMission instanceof BiologyStudyFieldMissionMeta
+				|| metaMission instanceof EmergencySupplyMissionMeta
+				|| metaMission instanceof ExplorationMeta
+				|| metaMission instanceof RescueSalvageVehicleMeta)
+
+				result +=(int)cou;
+
+			if (metaMission instanceof BuildingSalvageMissionMeta
+				|| metaMission instanceof MiningMeta
+				|| metaMission instanceof EmergencySupplyMissionMeta
+				|| metaMission instanceof RescueSalvageVehicleMeta)
+
+				result +=(int)ag;
+
+			if (metaMission instanceof CollectIceMeta
+				|| metaMission instanceof CollectRegolithMeta)
+
+				result +=(int)es;
+
+			if (metaMission instanceof TradeMeta
+				|| metaMission instanceof TravelToSettlementMeta)
+
+				result +=(int)l;
+		}
+
 	}
 
 	public int getPreferenceScore(MetaTask metaTask) {
