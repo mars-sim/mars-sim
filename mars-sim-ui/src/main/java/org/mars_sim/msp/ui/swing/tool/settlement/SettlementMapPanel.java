@@ -179,10 +179,10 @@ implements ClockListener {
 
 		// Set foreground and background colors.
 		setOpaque(true);
-		setBackground(Color.WHITE);
-		setForeground(Color.WHITE);
+		//setBackground(getContentPane().get);
+		//setForeground(Color.WHITE);
 
-		Simulation.instance().getMasterClock().addClockListener(this);
+		//Simulation.instance().getMasterClock().addClockListener(this);
 
 		//paintDoubleBuffer();
 		repaint();
@@ -211,17 +211,22 @@ implements ClockListener {
 		class PopClickListener extends MouseAdapter {
 		    public void mousePressed(MouseEvent evt){
 				 if (evt.isPopupTrigger()) {
+					 repaint();
 					 doPop(evt);
 				 }
 		    }
 
 		    public void mouseReleased(MouseEvent evt){
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				 if (evt.isPopupTrigger()) {
-					 doPop(evt);
-				 }
-					xLast = evt.getX();
-					yLast = evt.getY();
+				if (evt.isPopupTrigger()) {
+					doPop(evt);
+				}
+				
+				xLast = evt.getX();
+				yLast = evt.getY();
+				
+				repaint();	
+					
 		    }
 		    //2015-01-14 Added vehicle detection
 		    private void doPop(final MouseEvent evt){
@@ -250,7 +255,8 @@ implements ClockListener {
 		    	        //} });
 		        }
 		    }
-		}
+		} // end of class PopClickListener
+		
 		addMouseListener(new PopClickListener());
 
 

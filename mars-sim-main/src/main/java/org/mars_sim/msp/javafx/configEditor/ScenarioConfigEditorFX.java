@@ -485,7 +485,7 @@ public class ScenarioConfigEditorFX {
 		                try {
 							while(future.get() == null && isDone) {
 								Platform.runLater(() -> {
-									stage.hide();
+									//stage.hide();
 									mainMenu.getCircleStage().close();
 									closeWindow();
 								});
@@ -665,8 +665,8 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void closeWindow() {
 		stage.setIconified(true);
-		stage.hide();
-
+		//stage.hide();
+		stage.close();
 	}
 
 

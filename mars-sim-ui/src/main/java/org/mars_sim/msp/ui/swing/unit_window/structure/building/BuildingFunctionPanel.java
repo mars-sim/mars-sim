@@ -43,8 +43,8 @@ extends JPanel {
 		this.building = building;
 		this.desktop = desktop;
 
-        this.setOpaque(false);
-        this.setBackground(new Color(0,0,0,128));
+        //this.setOpaque(false);
+        //this.setBackground(new Color(0,0,0,128));
 
 		setBorder(new MarsPanelBorder());
 	}

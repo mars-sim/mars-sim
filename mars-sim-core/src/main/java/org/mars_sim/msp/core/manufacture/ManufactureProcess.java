@@ -91,6 +91,18 @@ public class ManufactureProcess implements Serializable {
 	}
 
 	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than,
+	 * equal to, or greater than the specified object.
+	 */
+	// 2015-10-15 Added compareTo()
+	public int compareTo(ManufactureProcess p) {
+		return info.getName().compareToIgnoreCase(p.info.getName());
+	}
+
+	
+	/**
 	 * Prepare object for garbage collection.
 	 */
     public void destroy() {
@@ -98,4 +110,5 @@ public class ManufactureProcess implements Serializable {
         info.destroy();
         info = null;
     }
+
 }

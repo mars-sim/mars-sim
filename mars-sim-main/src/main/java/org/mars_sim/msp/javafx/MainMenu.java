@@ -65,6 +65,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ProgressIndicator;
+import javafx.stage.Modality;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
@@ -181,6 +182,7 @@ public class MainMenu {
 
        //(iii) set the stage background to transparent
        //mainMenuStage.initStyle(StageStyle.UTILITY);
+ 
        mainMenuStage.initStyle(StageStyle.TRANSPARENT);
        mainMenuStage.initStyle(StageStyle.UNDECORATED);
        mainMenuStage.centerOnScreen();
@@ -196,6 +198,7 @@ public class MainMenu {
 
        // Starts a new stage for MainScene
 	   mainSceneStage = new Stage();
+	   //mainSceneStage.initModality(Modality.NONE);
 	   //mainSceneStage.setMinWidth(1024);
 	   //mainSceneStage.setMinHeight(400);
 	   mainSceneStage.setTitle(Simulation.WINDOW_TITLE);

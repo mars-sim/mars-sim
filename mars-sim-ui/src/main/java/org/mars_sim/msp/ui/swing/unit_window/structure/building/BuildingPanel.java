@@ -221,6 +221,7 @@ extends JPanel {
         scrollPanel.setViewportView(functionListPanel);
         //CustomScroll scrollPanel = new CustomScroll(functionListPanel);
         scrollPanel.setPreferredSize(new Dimension(290, 280));
+        scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPanel, BorderLayout.CENTER);
 
         setPanelStyle(functionListPanel);
@@ -247,7 +248,7 @@ extends JPanel {
 
 		JPanel borderPanel = new JPanel();
 		borderPanel.setBorder(new MarsPanelBorder());// BorderFactory.createLineBorder(Color.black, 2, true));//
-		borderPanel.setBackground(new Color(255,255,255,255));
+		//borderPanel.setBackground(new Color(255,255,255,255));
 		borderPanel.add(svgPanel);
 
 	    Box box = new Box(BoxLayout.Y_AXIS);

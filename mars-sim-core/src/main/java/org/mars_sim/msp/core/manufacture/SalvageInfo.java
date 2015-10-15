@@ -100,7 +100,7 @@ public class SalvageInfo implements Serializable {
     public Settlement getSettlement() {
         return settlement;
     }
-
+	
     /**
      * Prepare object for garbage collection.
      */

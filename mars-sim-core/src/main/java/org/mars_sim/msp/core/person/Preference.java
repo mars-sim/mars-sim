@@ -97,7 +97,7 @@ public class Preference implements Serializable {
 	private MarsClock clock;
 
 	private List<MetaTask> metaTaskList;
-	private List<MetaMission> metaMissionList;
+	//private List<MetaMission> metaMissionList;
 
 	private Map<MetaTask, Integer> scorekMap;
 	private Map<String, Integer> stringNameMap;
@@ -115,7 +115,7 @@ public class Preference implements Serializable {
 		metaTaskList = MetaTaskUtil.getMetaTasks();
 		metaTaskStringList = new ArrayList<>();
 
-		metaMissionList = MetaMissionUtil.getMetaMissions();
+		//metaMissionList = MetaMissionUtil.getMetaMissions();
 
 		scorekMap = new ConcurrentHashMap<>();
 		stringNameMap = new ConcurrentHashMap<>();
@@ -282,7 +282,7 @@ public class Preference implements Serializable {
 
         Collections.sort(metaTaskStringList);
 
-
+/*
         // 2015-10-14 Added metaMissionList (NOT READY to publish metaMissionList as preferences)
         Iterator<MetaMission> ii = metaMissionList.iterator();
 		while (ii.hasNext()) {
@@ -313,7 +313,7 @@ public class Preference implements Serializable {
 
 				result +=(int)l;
 		}
-
+*/
 	}
 
 	public int getPreferenceScore(MetaTask metaTask) {

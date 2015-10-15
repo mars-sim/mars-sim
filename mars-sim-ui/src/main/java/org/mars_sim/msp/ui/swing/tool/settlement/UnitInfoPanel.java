@@ -31,7 +31,7 @@ public class UnitInfoPanel extends JPanel {
     public UnitInfoPanel(MainDesktopPane desktop) {
 		super();
     	setOpaque(false);
-    	setBackground(new Color(51,25,0,150));
+    	setBackground(new Color(51,25,0,128));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class UnitInfoPanel extends JPanel {
         g2.setColor(new Color(51,25,0,128));
         g2.fillRoundRect(x, y, w, h, arc, arc);
         g2.setStroke(new BasicStroke(3f));
-        g2.setColor(Color.lightGray);
+        //g2.setColor(Color.lightGray);
         g2.drawRoundRect(x, y, w, h, arc, arc);
         g2.dispose();
     }

@@ -12,10 +12,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
+
 /**
  * Information about a type of manufacturing process.
  */
-public class ManufactureProcessInfo implements Serializable {
+public class ManufactureProcessInfo implements Serializable, Comparable<ManufactureProcessInfo> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -197,6 +199,23 @@ public class ManufactureProcessInfo implements Serializable {
 		this.outputList = outputList;
 	}
 
+
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than,
+	 * equal to, or greater than the specified object.
+	 */
+	// 2015-10-15 Added compareTo()
+	public int compareTo(ManufactureProcessInfo p) {
+		return name.compareToIgnoreCase(p.name);
+	}
+	
 	/**
 	 * Prepares object for garbage collection.
 	 */
@@ -207,8 +226,4 @@ public class ManufactureProcessInfo implements Serializable {
 	    outputList = null;
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
 }

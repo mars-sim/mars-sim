@@ -151,70 +151,161 @@ public class PopUpUnitMenu extends JPopupMenu {
         itemOne.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-            	setOpaque(false);
-            	JFrame f = new JFrame();
-            	f.setAlwaysOnTop (true);
-            	f.setFocusable(true);
-            	//JInternalFrame d = new JInternalFrame();
-            	//final JDialog d = new JDialog();
-                f.setForeground(Color.YELLOW); // orange font
-                f.setFont( new Font("Arial", Font.BOLD, 14 ) );
-
-                String description;
-                String type;
-                String name;
-
-                if (unit instanceof Vehicle) {
-                	Vehicle vehicle = (Vehicle) unit;
-                	description = vehicle.getDescription(vehicle.getVehicleType());
-                	type = Conversion.capitalize(vehicle.getVehicleType());
-                	name = Conversion.capitalize(vehicle.getName());
+  
+            	if (mainScene != null) {
+					Platform.runLater(() -> {
+                       	createDescriptionPanelFX(unit);
+					});
                 }
                 else {
-                	Building building = (Building) unit;
-                	description = building.getDescription();
-                	type = building.getBuildingType();
-                	name = building.getNickName();
-                }
-
-                double num = description.length() * 1.3D + 130D;
-			    if (num > 450)
-			    	num = 450;
-                int frameHeight = (int) num;
-
-			    f.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
-		        f.setResizable(false);
-		        f.setUndecorated(true);
-		        f.setBackground(new Color(0,0,0,0)); // not working for decorated jframe
-
-			    UnitInfoPanel b = new UnitInfoPanel(desktop);
-			    b.init(name, type, description);
-
-			    f.add(b);
-
-			    //2014-11-27 Added ComponentMover Class
-			    ComponentMover mover = new ComponentMover(f, b, f.getContentPane());
-			    mover.registerComponent(b);
-
-
-            	// Make the buildingPanel to appear at the mouse cursor
-                Point location = MouseInfo.getPointerInfo().getLocation();
-                f.setLocation(location);
-
-                f.setVisible(true);
-				f.addWindowFocusListener(new WindowFocusListener() {
-				    public void windowLostFocus(WindowEvent e) {
-				    	if (!mover.isMousePressed())
-				    		f.dispose();
-				    }
-				    public void windowGainedFocus(WindowEvent e) {
-				    	//f.setVisible(true);
-				    }
-				});
-
+                	createDescriptionPanel(unit);
+                }           	
              }
         });
     }
+    
+    
+    public void createDescriptionPanelFX(Unit unit) {
+		
+		String description;
+		String type;
+		String name;
+		
+		if (unit instanceof Vehicle) {
+			Vehicle vehicle = (Vehicle) unit;
+			description = vehicle.getDescription(vehicle.getVehicleType());
+			type = Conversion.capitalize(vehicle.getVehicleType());
+			name = Conversion.capitalize(vehicle.getName());
+		}
+		else {
+			Building building = (Building) unit;
+			description = building.getDescription();
+			type = building.getBuildingType();
+			name = building.getNickName();
+		}
+		
+			
+		double num = description.length() * 1.3D + 130D;
+		if (num > 450)
+			num = 450;
+		int frameHeight = (int) num;
+		
+
+		UnitInfoPanel unitInfoPanel = new UnitInfoPanel(desktop);
+		unitInfoPanel.init(name, type, description);
+		unitInfoPanel.setOpaque(false);
+		unitInfoPanel.setBackground(new Color(0,0,0,128));
+		
+	 	Stage stage = new Stage();
+
+    	//Popup stage = new Popup();
+    	SwingNode swingNode  = new SwingNode();
+    	StackPane swingPane = new StackPane();
+
+		swingPane.getChildren().add(swingNode);
+		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+		//swingPane.setPrefWidth(primaryScreenBounds.getWidth());
+
+		SwingUtilities.invokeLater(() -> {
+			swingNode.setContent(unitInfoPanel);
+	    });
+
+	   	Scene scene = new Scene(swingPane, 350, frameHeight);
+	   	scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
+	   	
+	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+
+	   	stage.requestFocus();
+
+	   	addDraggableNode(swingNode);
+
+	   	//stage.setTitle("Building Detail");
+	   	stage.initStyle(StageStyle.TRANSPARENT);
+	    stage.initStyle(StageStyle.UNDECORATED);
+		stage.setResizable(false);
+	   	stage.setScene(scene);
+        stage.show();
+
+
+	   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
+	   	{
+	   	  @Override
+	   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+	   	  {
+	   	    stage.close();
+	   	  }
+	   	});
+	
+		
+	}
+    
+    public void createDescriptionPanel(Unit unit) {
+		
+		String description;
+		String type;
+		String name;
+		
+		if (unit instanceof Vehicle) {
+			Vehicle vehicle = (Vehicle) unit;
+			description = vehicle.getDescription(vehicle.getVehicleType());
+			type = Conversion.capitalize(vehicle.getVehicleType());
+			name = Conversion.capitalize(vehicle.getName());
+		}
+		else {
+			Building building = (Building) unit;
+			description = building.getDescription();
+			type = building.getBuildingType();
+			name = building.getNickName();
+		}
+		
+		setOpaque(false);
+		
+		JFrame f = new JFrame();
+		f.setAlwaysOnTop(true);
+		f.setFocusable(true);
+		//JInternalFrame d = new JInternalFrame();
+		//final JDialog d = new JDialog();
+		f.setForeground(Color.YELLOW); // orange font
+		f.setFont( new Font("Arial", Font.BOLD, 14 ) );
+		
+		
+		double num = description.length() * 1.3D + 130D;
+		if (num > 450)
+			num = 450;
+		int frameHeight = (int) num;
+		
+		f.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
+		f.setResizable(false);
+		f.setUndecorated(true);
+		f.setBackground(new Color(0,0,0,0)); // not working for decorated jframe
+		
+		UnitInfoPanel b = new UnitInfoPanel(desktop);
+		b.init(name, type, description);
+		
+		f.add(b);
+		
+		//2014-11-27 Added ComponentMover Class
+		ComponentMover mover = new ComponentMover(f, b, f.getContentPane());
+		mover.registerComponent(b);
+		
+		
+		// Make the buildingPanel to appear at the mouse cursor
+		Point location = MouseInfo.getPointerInfo().getLocation();
+		f.setLocation(location);
+		
+		f.setVisible(true);
+		f.addWindowFocusListener(new WindowFocusListener() {
+		    public void windowLostFocus(WindowEvent e) {
+		    	if (!mover.isMousePressed())
+		    		f.dispose();
+		    }
+		    public void windowGainedFocus(WindowEvent e) {
+		    	//f.setVisible(true);
+		    }
+		});
+	}
+    
 /* BACKUP
    public void buildItemOne(final Unit unit) {
 
@@ -311,7 +402,7 @@ public class PopUpUnitMenu extends JPopupMenu {
     }
 
 	/*
-	 * Creates a stage for displaying the status of a building
+	 * Creates a stage for displaying the detail status of a building
 	 */
     public void createBuildingPanelFX(Building building) {
     	Stage stage = new Stage();
@@ -330,16 +421,16 @@ public class PopUpUnitMenu extends JPopupMenu {
 			swingNode.setContent(buildingPanel);
 	    });
 
-	   	Scene scene = new Scene(swingPane, 320, 350);
-	    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+	   	Scene scene = new Scene(swingPane, 400, 400);
+	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 
 	   	stage.requestFocus();
 
-	   	//addDraggableNode(stage);
+	   	addDraggableNode(swingNode);
 
-	   	stage.setTitle("Building Detail");
-	   	stage.initStyle(StageStyle.UTILITY);
-	   	//stage.initStyle(StageStyle.TRANSPARENT);
+	   	//stage.setTitle("Building Detail");
+	   	//stage.initStyle(StageStyle.UTILITY);
+	   	stage.initStyle(StageStyle.TRANSPARENT);
 		stage.setResizable(false);
 	   	stage.setScene(scene);
         stage.show();

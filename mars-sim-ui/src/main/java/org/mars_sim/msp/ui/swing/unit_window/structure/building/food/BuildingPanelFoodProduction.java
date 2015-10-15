@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -36,6 +37,7 @@ import javax.swing.JScrollPane;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcess;
 import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
 import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -54,6 +56,8 @@ extends BuildingFunctionPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	private static int processStringWidth = 40;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BuildingPanelFoodProduction.class.getName());
@@ -95,8 +99,8 @@ extends BuildingFunctionPanel {
         //JPanel labelPane = new JPanel(new GridLayout(3, 1, 0, 0));
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new GridLayout(3, 1, 0, 0));
-		labelPanel.setOpaque(false);
-		labelPanel.setBackground(new Color(0,0,0,128));
+		//labelPanel.setOpaque(false);
+		//labelPanel.setBackground(new Color(0,0,0,128));
 
         add(labelPanel, BorderLayout.NORTH);
 
@@ -128,38 +132,43 @@ extends BuildingFunctionPanel {
         // Create process list main panel
         JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
         scrollPanel.setViewportView(processListMainPane);
-        processListMainPane.setOpaque(false);
-        processListMainPane.setBackground(new Color(0,0,0,128));
+        //processListMainPane.setOpaque(false);
+        //processListMainPane.setBackground(new Color(0,0,0,128));
 
         // Create process list panel
         processListPane = new JPanel();
         processListPane.setLayout(new BoxLayout(processListPane, BoxLayout.Y_AXIS));
         processListMainPane.add(processListPane, BorderLayout.NORTH);
-        processListPane.setOpaque(false);
-        processListPane.setBackground(new Color(0,0,0,128));
+        //processListPane.setOpaque(false);
+        //processListPane.setBackground(new Color(0,0,0,128));
+
+        List<FoodProductionProcess> list = foodFactory.getProcesses();
+		//Collections.sort(list);
 
         // Create process panels
-        processCache = new ArrayList<FoodProductionProcess>(foodFactory.getProcesses());
+        processCache = new ArrayList<FoodProductionProcess>(list);
         Iterator<FoodProductionProcess> i = processCache.iterator();
-        while (i.hasNext()) processListPane.add(new FoodProductionPanel(i.next(), false, 23));
+        while (i.hasNext()) processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth));
 
         // Create salvage panels.
         //salvageCache = new ArrayList<SalvageProcess>(foodFactory.getSalvageProcesses());
         //Iterator<SalvageProcess> j = salvageCache.iterator();
-        //while (j.hasNext()) processListPane.add(new SalvagePanel(j.next(), false, 23));
+        //while (j.hasNext()) processListPane.add(new SalvagePanel(j.next(), false, processStringWidth));
 
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
         add(interactionPanel, BorderLayout.SOUTH);
-        interactionPanel.setOpaque(false);
-        interactionPanel.setBackground(new Color(0,0,0,128));
+        //interactionPanel.setOpaque(false);
+        //interactionPanel.setBackground(new Color(0,0,0,128));
 
         // Create new foodProduction process selection.
         processComboBoxCache = getAvailableProcesses();
+        //2015-10-15 Enabled Collections.sorts by implementing Comparable<>
+        Collections.sort(processComboBoxCache);
         processComboBox = new JComboBoxMW(processComboBoxCache);
-        processComboBox.setOpaque(false);
-        processComboBox.setBackground(new Color(51,25,0,128));
-        processComboBox.setForeground(Color.orange);
+        //processComboBox.setOpaque(false);
+        //processComboBox.setBackground(new Color(51,25,0,128));
+        //processComboBox.setForeground(Color.orange);
         //processComboBox.setBackground(Color.LIGHT_GRAY);
         processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
         processComboBox.setToolTipText("Select An Available Food Production Process");
@@ -171,12 +180,14 @@ extends BuildingFunctionPanel {
         //while (k.hasNext()) processComboBox.addItem(k.next());
 
         // Create new process button.
+        JPanel btnPanel = new JPanel(new FlowLayout()); 
         newProcessButton = new JButton("Create New Process");
-        newProcessButton.setOpaque(false);
-        newProcessButton.setBackground(new Color(51,25,0,128));
-        newProcessButton.setForeground(Color.ORANGE);
+        btnPanel.add(newProcessButton);
+        //newProcessButton.setOpaque(false);
+        //newProcessButton.setBackground(new Color(51,25,0,128));
+        //newProcessButton.setForeground(Color.ORANGE);
         newProcessButton.setEnabled(processComboBox.getItemCount() > 0);
-        newProcessButton.setToolTipText("Create a New Manufacturing Process or Salvage a Process");
+        newProcessButton.setToolTipText("Create a New Food Production Process or Salvage a Process");
         newProcessButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		try {
@@ -208,7 +219,7 @@ extends BuildingFunctionPanel {
         		}
         	}
         });
-        interactionPanel.add(newProcessButton);
+        interactionPanel.add(btnPanel);
 	}
 
 
@@ -226,9 +237,9 @@ extends BuildingFunctionPanel {
 			while (i.hasNext()) {
 				FoodProductionProcess process = i.next();
 				if (!processCache.contains(process))
-					processListPane.add(new FoodProductionPanel(process, false, 23));
-					processListPane.setOpaque(false);
-					processListPane.setBackground(new Color(0,0,0,128));
+					processListPane.add(new FoodProductionPanel(process, false, processStringWidth));
+					//processListPane.setOpaque(false);
+					//processListPane.setBackground(new Color(0,0,0,128));
 			}
 			/*
 			// Add salvage panels for new salvage processes.
@@ -236,7 +247,7 @@ extends BuildingFunctionPanel {
 			while (k.hasNext()) {
 			    SalvageProcess salvage = k.next();
 			    if (!salvageCache.contains(salvage))
-			        processListPane.add(new SalvagePanel(salvage, false, 23));
+			        processListPane.add(new SalvagePanel(salvage, false, processStringWidth));
 			}
 			*/
 			// Remove process panels for old processes.
@@ -298,6 +309,8 @@ extends BuildingFunctionPanel {
 			Object currentSelection = processComboBox.getSelectedItem();
 			processComboBox.removeAllItems();
 
+			Collections.sort(processComboBoxCache);
+			
 			Iterator<FoodProductionProcessInfo> k = processComboBoxCache.iterator();
 			while (k.hasNext()) processComboBox.addItem(k.next());
 			//processComboBoxCache.forEach(k -> processComboBox.addItem(k));
@@ -329,8 +342,8 @@ extends BuildingFunctionPanel {
 			if (component instanceof FoodProductionPanel) {
 				FoodProductionPanel panel = (FoodProductionPanel) component;
 				if (panel.getFoodProductionProcess().equals(process)) result = panel;
-				panel.setOpaque(false);
-				panel.setBackground(new Color(0,0,0,128));
+				//panel.setOpaque(false);
+				//panel.setBackground(new Color(0,0,0,128));
 			}
 		}
 
@@ -441,7 +454,7 @@ extends BuildingFunctionPanel {
 			    if (info != null) {
 			    	// 2014-11-21 Capitalized processName
 			        String processName = Conversion.capitalize(info.getName());
-			        if (processName.length() > 30) processName = processName.substring(0, 30) + "...";
+			        if (processName.length() > processStringWidth) processName = processName.substring(0, processStringWidth) + "...";
 			        ((JLabel) result).setText(processName);
 			        ((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
 			    }
@@ -451,7 +464,7 @@ extends BuildingFunctionPanel {
 			    if (info != null) {
 			    	// 2014-11-21 Capitalized processName
 			        String processName = WordUtils.capitalize(info.toString());
-			        if (processName.length() > 30) processName = processName.substring(0, 30) + "...";
+			        if (processName.length() > processStringWidth) processName = processName.substring(0, processStringWidth) + "...";
                     ((JLabel) result).setText(processName);
                     ((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
 			    }

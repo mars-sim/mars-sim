@@ -56,7 +56,7 @@
         #b0b0b0,
         radial-gradient(center 50% 50%, radius 100%, #b0b0b0, #0064c9);
 
-    -fx-text-fill: #FF8000;
+    -fx-text-fill: #0064c9;
     -fx-border-color: #663300;
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;

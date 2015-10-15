@@ -13,8 +13,7 @@ import java.util.List;
 /**
  * Information about a type of salvage.
  */
-public class SalvageProcessInfo
-implements Serializable {
+public class SalvageProcessInfo implements Serializable , Comparable<SalvageProcessInfo> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -123,6 +122,18 @@ implements Serializable {
 		this.partSalvageList = partSalvageList;
 	}
 
+	
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than,
+	 * equal to, or greater than the specified object.
+	 */
+	// 2015-10-15 Added compareTo()
+	public int compareTo(SalvageProcessInfo p) {
+		return itemName.compareToIgnoreCase(p.itemName);
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

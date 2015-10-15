@@ -6,8 +6,10 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 /**
  * A Combobox that is mousewheel-enabled.
@@ -32,6 +34,9 @@ implements MouseWheelListener {
 	public JComboBoxMW() {
 		super();
 		this.addMouseWheelListener(this);
+		((JTextField)this.getEditor().getEditorComponent())
+			.setBorder(BorderFactory.createCompoundBorder(
+				this.getBorder(),BorderFactory.createEmptyBorder(0,1,0,1)));
 	}
 
 	/**

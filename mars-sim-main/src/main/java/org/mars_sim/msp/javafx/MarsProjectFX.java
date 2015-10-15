@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -106,9 +107,12 @@ public class MarsProjectFX extends Application  {
 		setDirectory();
 
         // general text antialiasing
-        //System.setProperty("swing.aatext", "true");
+        System.setProperty("swing.aatext", "true");
         //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
 
+        //Properties props = System.getProperties();
+        //props.setProperty("swing.jlf.contentPaneTransparent", "true");
+        
     	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
 		argList = Arrays.asList(args);
