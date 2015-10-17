@@ -27,7 +27,7 @@ public class Story {
   private static final String START2 = "Mars needs no explanation of its richest for scientific discovery and human exploration. From all the plausible evidence, it has conditions suitable for life in its past. ";
 
   private static final String MID1 =  "Mars is a fascinating place. Its untouched landscape is a repository of geological knowledge will even "
-  		+ "uncover for us to understand our own planet’s history and future. ";
+  		+ "uncover for us to understand our own planet's history and future. ";
 
   private static final String MID2 = "'What would it be like to spend nearly two Earth years at the Martian north pole,' "
 	  		+ "we're asked, 'a place where darkness falls for nine months of the year, carbon dioxide snow flutters down in winter "

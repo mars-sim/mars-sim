@@ -155,7 +155,7 @@ extends TabPanel {
 		// Prepare personality name label
 		JLabel personalityNameLabel = new JLabel(Msg.getString("TabPanelGeneral.personalityMBTI"), JLabel.RIGHT); //$NON-NLS-1$
 		personalityNameLabel.setSize(5, 2);
-		personalityNameLabel.setToolTipText("<html>Myers–Briggs Type Indicator (MBTI) <br> as a metric for personality type</html>");
+		personalityNameLabel.setToolTipText("<html>Myers-Briggs Type Indicator (MBTI) <br> as a metric for personality type</html>");
 		infoPanel.add(personalityNameLabel);
 
 		// Prepare personality label
