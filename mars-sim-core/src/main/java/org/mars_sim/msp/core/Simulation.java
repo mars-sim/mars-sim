@@ -506,8 +506,11 @@ implements ClockListener, Serializable {
     public void saveSimulation(File file, boolean isAutosave) throws IOException {
         //logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
 
+    	// 2015-10-17 Save the current pause state
+		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+	
         Simulation simulation = instance();
-        simulation.pause();
+        simulation.halt();
 
         // Use default file path if file is null.
         /* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
@@ -569,10 +572,20 @@ implements ClockListener, Serializable {
             }
         }
 
-        simulation.unpause();
+        simulation.proceed();
+        
+        // 2015-10-17 Check if it was previously on pause 
+        if (isOnPauseMode) {
+        	masterClock.setPaused(true); // do NOT use simulation.halt() or it will 
+     		//System.out.println("Simulation.java: Yes it was on pause and so we pause again");
+     	}
+     		
     }
 
-    public void pause() {
+    /*
+     * Stops and removes the master clock and pauses the simulation
+     */	
+    public void halt() {
         if (masterClock != null) {
             masterClock.stop();
             masterClock.setPaused(true);
@@ -580,7 +593,10 @@ implements ClockListener, Serializable {
         }
     }
 
-    public void unpause() {
+    /*
+     * Adds and starts the master clock and unpauses the simulation
+     */	
+    public void proceed() {
         if (clockScheduler != null) {
             masterClock.addClockListener(this);
             masterClock.setPaused(false);

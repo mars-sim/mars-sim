@@ -223,6 +223,7 @@ implements ClockListener {
 		pulsespersecondPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		uptimePane.add(pulsespersecondPane, BorderLayout.SOUTH);
 
+		JPanel pausePane = new JPanel(new FlowLayout());
 		pauseButton = new JButton(Msg.getString("TimeWindow.button.pause")); //$NON-NLS-1$
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
@@ -231,7 +232,8 @@ implements ClockListener {
 
 			}
 		});
-
+		pausePane.add(pauseButton);
+		
 		// Create uptime header label
 		JLabel uptimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.simUptime"), JLabel.CENTER); //$NON-NLS-1$
 		uptimePane.add(uptimeHeaderLabel, BorderLayout.NORTH);
@@ -257,7 +259,7 @@ implements ClockListener {
 		final JLabel pulseHeaderLabel = new JLabel(Msg.getString("TimeWindow.pulseHeader"), JLabel.CENTER); //$NON-NLS-1$
 		pulsePane.add(pulseHeaderLabel, BorderLayout.NORTH);
 
-		pulsespersecondPane.add(pauseButton, BorderLayout.SOUTH);
+		pulsespersecondPane.add(pausePane, BorderLayout.SOUTH);
 
 		//String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
 		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
@@ -482,11 +484,11 @@ implements ClockListener {
 	public void pauseChange(boolean isPaused) {
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
-			pauseButton.setText(Msg.getString("TimeWindow.button.resume")); //$NON-NLS-1$
+			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim"));
 		}
 		else {
-			pauseButton.setText(Msg.getString("TimeWindow.button.pause")); //$NON-NLS-1$
+			pauseButton.setText("   " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.disposeAnnouncementWindow();
 		}
 	}

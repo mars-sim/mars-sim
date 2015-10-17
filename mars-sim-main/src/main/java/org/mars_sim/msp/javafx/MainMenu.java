@@ -331,8 +331,7 @@ public class MainMenu {
 					   TimeUnit.MILLISECONDS.sleep(2000L);
 					   Platform.runLater(() -> {
 						   prepareStage();
-						   circleStage.close();
-						});
+					   });
 					   
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -347,47 +346,6 @@ public class MainMenu {
 
         mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
-
-/*
-		
-	   // 2015-10-15 Set up a Task Thread
-	   isDone = true;
-	   Task task = new Task() {
-           @Override
-           protected Integer call() throws Exception {
-               
-        	   Future future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
-        	   
-      			System.out.println("future.get() is " + future.get());
-      			System.out.println("future.isDone() is " + future.isDone());
-
-      			try {
-					while (!future.isDone()) {
-						System.out.println("still inside the while loop");
-						System.out.println("fileSize is " + fileSize);
-						fileSize = Simulation.instance().getFileSize();
-						long delay_time = (long) (fileSize * 4000L);
-						TimeUnit.MILLISECONDS.sleep(delay_time);
-					}					
-	       			System.out.println("future.get() is " + future.get());
-	       			System.out.println("future.isDone() is " + future.isDone());
-
-					Platform.runLater(() -> {
-						prepareStage();						
-						circleStage.close();
-					});
-	
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-               return 0;
-           }
-       };
-       Thread th = new Thread(task);
-       th.setDaemon(true);
-       th.start();
-*/       
    }
 
 	public class LoadSimulationTask implements Runnable {
@@ -429,11 +387,24 @@ public class MainMenu {
 	   mainSceneStage.show();
 	   mainSceneStage.requestFocus();
 	   
-	   circleStage.hide();
+	   //circleStage.hide();
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);
 	   mainScene.initializeTheme();
 
+	   while (!mainScene.isMainSceneDone())
+	   {
+		   try {
+			TimeUnit.MILLISECONDS.sleep(500L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	   }
+	   
+	   Platform.runLater(() -> {
+		   circleStage.close();
+		});
+	   
 	   //return true;
 	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
 	}
@@ -664,68 +635,6 @@ public class MainMenu {
 		circleStage.initStyle (StageStyle.TRANSPARENT);
 		circleStage.setScene(scene);
         circleStage.show();
-/*
-
-		final Float[] values = new Float[] {-1.0f, 0f, 0.6f, 1.0f};
-		final Label [] labels = new Label[values.length];
-		final ProgressBar[] pbs = new ProgressBar[values.length];
-		final ProgressIndicator[] pins = new ProgressIndicator[values.length];
-		final HBox hbs [] = new HBox [values.length];
-
-
-		circleStage = new Stage();
-		Group root = new Group();
-		Scene scene = new Scene(root, 300, 250);
-		circleStage.setScene(scene);
-		circleStage.setTitle("Progress Controls");
-
-        for (int i = 0; i < values.length; i++) {
-            final Label label = labels[i] = new Label();
-            label.setText("progress:" + values[i]);
-
-            final ProgressBar pb = pbs[i] = new ProgressBar();
-            pb.setProgress(values[i]);
-
-            final ProgressIndicator pin = pins[i] = new ProgressIndicator();
-            pin.setProgress(values[i]);
-            final HBox hb = hbs[i] = new HBox();
-            hb.setSpacing(5);
-            hb.setAlignment(Pos.CENTER);
-            hb.getChildren().addAll(label, pb, pin);
-        }
-
-        final VBox vb = new VBox();
-        vb.setSpacing(5);
-        vb.getChildren().addAll(hbs);
-        scene.setRoot(vb);
-        circleStage.show();
-
-
-	    circleStage = new Stage();
-
-		RingProgressIndicator indicator = new RingProgressIndicator();
-		//Slider slider = new Slider(0, 100, 50);
-
-		final ProgressIndicator ring = new ProgressIndicator();
-
-		//slider.valueProperty().addListener((o, oldVal, newVal) -> indicator.setProgress(newVal.intValue()));
-		//VBox main = new VBox(1, indicator, slider);
-		VBox main = new VBox(ring); //2,inindicator, ring);
-		//indicator.setProgress(Double.valueOf(slider.getValue()).intValue());
-		Group root = new Group();
-		//root.getChildren().add(main);
-        Scene scene = new Scene(root);//, 200, 150);
-		//circleStage.initStyle(StageStyle.TRANSPARENT);
-        //scene.setFill(Color.BLACK);
-        //scene.setCursor(Cursor.WAIT);
-        //scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
-        //circleStage.initStyle (StageStyle.TRANSPARENT); //(StageStyle.UTILITY); //or
-        circleStage.initStyle (StageStyle.UTILITY);
-		circleStage.setScene(scene);
-		scene.setRoot(main);
-		circleStage.setTitle("Processing");
-		circleStage.show();
-*/
 
 	}
 

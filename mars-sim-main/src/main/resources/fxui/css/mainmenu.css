@@ -7,7 +7,7 @@
  */
 
 #option{
-    -fx-fill: white; /*#FFB03B; /*light mud color*/
+    -fx-text-fill: white; /*#FFB03B; /*light mud color*/
 }
 
 
@@ -15,6 +15,7 @@
 	-fx-font-size: 26.0px;
     -fx-stroke-width: 3;
     -fx-font-weight: bold;
+    -fx-text-fill: white;
 	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
 
 }

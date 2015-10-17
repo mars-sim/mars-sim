@@ -1102,8 +1102,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow.setAnnouncement(announcement);
 		announcementWindow.pack();
 		add(announcementWindow, 0);
-		int Xloc = (getWidth() - announcementWindow.getWidth()) * 3 / 5 ;
-		int Yloc = (getHeight() - announcementWindow.getHeight()) * 2 / 5;
+		int Xloc = (int)((getWidth() - announcementWindow.getWidth()) * .5D);
+		int Yloc = (int)((getHeight() - announcementWindow.getHeight()) * .15D);
 		announcementWindow.setLocation(Xloc, Yloc);
 		// Note: second window packing seems necessary to get window
 		// to display components correctly.

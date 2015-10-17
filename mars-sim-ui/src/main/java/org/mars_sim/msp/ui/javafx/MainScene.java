@@ -882,6 +882,10 @@ public class MainScene {
 	 */
 	public void saveSimulation(int type) {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		
+		// 2015-10-17 Save the current pause state
+		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+			
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
@@ -895,6 +899,19 @@ public class MainScene {
 		} else {
 			saveSimThread.interrupt();
 		}
+		
+
+		// 2015-10-17 Check if it was previously on pause 
+		if (isOnPauseMode) {
+			pauseSimulation(); 
+			// Simulation.instance().getMasterClock().setPaused(true) is NOT working
+			// TODO: Don't know why I need to add codes directly in saveSimulation() in Simulation.java.
+			// But it is still needed here for pausing the autosave timer and creating the announcement window
+			//System.out.println("MainScene.java: yes it was on pause and so we pause again and pause the autosave timer.");
+		}
+		//else 
+		//	mainScene.unpauseSimulation(); // Do NOT do this or it will take away any previous announcement window
+
 	}
 
 	/**
@@ -903,6 +920,7 @@ public class MainScene {
 	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
 		//logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+		
 		File fileLocn = null;
 		String dir = null;
 		String title = null;
@@ -953,7 +971,10 @@ public class MainScene {
 		}
 
 */
+		
+		
 		desktop.disposeAnnouncementWindow();
+	
 	}
 
 	/**

@@ -159,8 +159,7 @@ public class SimulationConfig implements Serializable {
 	 * Static Members
 	 * ---------------------------------------------------------------------------------------------------- */
 
-	/** Singleton instance. */
-	//private static SimulationConfig instance = instance();
+	/** Eager Instantiation of Singleton Instance. */
 	private static SimulationConfig instance = new SimulationConfig();
 
 

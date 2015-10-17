@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.JOptionPane;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
@@ -30,6 +31,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.Button;
+import javafx.stage.Modality;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -183,9 +185,7 @@ public class TransportWizard {
            // move vehicle one more time just in case
            //moveVehicle(correctedTemplate);
 	    } // end of while (buildingI.hasNext())
-
-        if (mainScene != null)
-        	mainScene.unpauseSimulation();
+        
     }
 
     public void moveVehicle(BuildingTemplate template){
@@ -237,6 +237,9 @@ public class TransportWizard {
      */
 	public synchronized void confirmBuildingLocation(BuildingTemplate template, boolean isAtPreDefinedLocation) {
 
+		// 2015-10-17 Save the current pause state
+		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+	
 		BuildingTemplate positionedTemplate ; // should NOT be null
 		Building newBuilding ;
 	    //final int TIME_OUT = 20;
@@ -280,10 +283,12 @@ public class TransportWizard {
         if (mainScene != null) {
 
 	    	mainScene.pauseSimulation();
+	    	
         	Alert alert = new Alert(AlertType.CONFIRMATION);
    			//alert.initModality(Modality.APPLICATION_MODAL);
    			//alert.initModality(Modality.WINDOW_MODAL);
-
+        	alert.initModality(Modality.NONE);
+        	
    			alert.initOwner(mainScene.getStage());
    			double x = mainScene.getStage().getWidth();
    			double y = mainScene.getStage().getHeight();
@@ -292,7 +297,7 @@ public class TransportWizard {
    			alert.setX((x - xx)/2);
    			alert.setY((y - yy)*3/4);
    			alert.setTitle(TITLE);
-			alert.setHeaderText("Confirm building location");
+			alert.setHeaderText("Confirm New Building's Location");
 			alert.setContentText(message);
 			//DialogPane dialogPane = alert.getDialogPane();
 
@@ -312,7 +317,7 @@ public class TransportWizard {
 */
 			alert.showAndWait().ifPresent(response -> {
 			     if (response == buttonTypeYes) {
-			    	 logger.info("Building in Placed : " + newBuilding.toString());
+			    	 logger.info(newBuilding.toString() + " is in-place");
 			    	 mainScene.unpauseSimulation();
 			     }
 			     else if (response == buttonTypeNo) {
@@ -341,10 +346,6 @@ public class TransportWizard {
 			                )
 			        );
 			
-	        if (mainScene != null)
-	        	mainScene.pauseSimulation();
-
-			//Simulation.instance().getMasterClock().setPaused(true);
 /*
         		      .filter(response -> response == buttonTypeYes)
         		      .ifPresent(response ->  {
@@ -356,13 +357,12 @@ public class TransportWizard {
           				confirmBuildingLocation(template, false);
       		      });
 */
-
-        	//mainScene.pauseSimulation();
+  
 		}
 
         else {
 
-	        desktop.openAnnouncementWindow("Pause for Building Transport");
+	        desktop.openAnnouncementWindow("Pause for Building Transport and Confirm Location");
 	        AnnouncementWindow aw = desktop.getAnnouncementWindow();
 	        Point location = MouseInfo.getPointerInfo().getLocation();
 	        double Xloc = location.getX() - aw.getWidth() * 2;
@@ -381,6 +381,14 @@ public class TransportWizard {
 			}
 
         }
+        
+		// 2015-10-17 Check if it was previously on pause mode
+		if (isOnPauseMode) {
+			mainScene.pauseSimulation();
+		}
+		//else 
+		//	mainScene.unpauseSimulation(); // Do NOT do this or it will take away any previous announcement window
+
 	}
 
 
