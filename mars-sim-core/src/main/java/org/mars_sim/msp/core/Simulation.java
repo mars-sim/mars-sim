@@ -402,6 +402,7 @@ implements ClockListener, Serializable {
         if (f.exists() && f.canRead()) {
             try {
     			fileSize = (f.length() / 1024D / 1024D);
+    			System.out.println("The saved sim has a file size of " + Math.round(fileSize*100.000)/100.000 + " MB" );    			
                 simulation.readFromFile(f);
 
             } catch (ClassNotFoundException ex) {
@@ -414,7 +415,7 @@ implements ClockListener, Serializable {
         }
         else{
         	logger.info("Encountering an error when loading the simulation!");
-        	logger.info("Running on " + Simulation.BUILD + ". Loading a sim saved in " + loadBuild);
+        	logger.info("Note : you are running MSP Build " + Simulation.BUILD + "but is loading a sim saved in MSP Build " + loadBuild);
             throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
                     f.getPath() + " is not accessible");
         }
@@ -469,12 +470,15 @@ implements ClockListener, Serializable {
         }
 
         // Load intransient objects.
-        SimulationConfig simulationConfig = (SimulationConfig) ois.readObject();
-        SimulationConfig.setInstance(simulationConfig);
-
-        loadBuild = SimulationConfig.build;
-    	logger.info("Running on " + Simulation.BUILD + ". Loading a sim saved in " + loadBuild);
-
+        SimulationConfig.setInstance((SimulationConfig) ois.readObject());
+        //SimulationConfig instance = (SimulationConfig) ois.readObject();
+    	//SimulationConfig.setInstance(instance);
+        
+        loadBuild = SimulationConfig.instance().getBuild();
+    	if (loadBuild == null)
+    		loadBuild = "unknown";
+    	logger.info("Running MSP Build " + Simulation.BUILD + ". Loading a sim saved in Build " + loadBuild);
+        
         malfunctionFactory = (MalfunctionFactory) ois.readObject();
         mars = (Mars) ois.readObject();
         mars.initializeTransientData();

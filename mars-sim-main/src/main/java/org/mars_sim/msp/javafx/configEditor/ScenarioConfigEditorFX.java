@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -206,7 +207,7 @@ public class ScenarioConfigEditorFX {
 			Undecorator undecorator = new Undecorator(stage, (Region) parent);
 			undecorator.getStylesheets().add("/skin/undecorator.css");
 			if ( parent.lookup("#anchorRoot") == null)
-				System.out.println("not found");
+				System.out.println("Warning: anchorRoot is not found");
 
 		    AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
 		    // List should stretch as anchorpane is resized
@@ -463,50 +464,43 @@ public class ScenarioConfigEditorFX {
 
 
 			if (!hasError) {
-				//2015-10-10 Added createProgressCircle()
-				Platform.runLater(() -> {
-		            scene.setCursor(Cursor.WAIT); //Change cursor to wait style
-					mainMenu.getCircleStage().show();
-					mainMenu.getCircleStage().requestFocus();
-				});
+				Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
 
-			    //logger.info("ScenarioConfigEditorFX's createEditor() is on " + Thread.currentThread().getName() + " Thread");
 				setConfiguration();
-				//System.out.println("calling Simulation.createNewSimulation()");
-				isDone = true;
+				Platform.runLater(() -> {
+					waitLoading();
+				});
 
 				// 2015-10-13 Set up a Task Thread
 				Task task = new Task() {
-
 		            @Override
 		            protected Integer call() throws Exception {
-		                int iterations;
-						Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
-		                try {
-							while(future.get() == null && isDone) {
-								Platform.runLater(() -> {
-									//stage.hide();
-									mainMenu.getCircleStage().close();
-									closeWindow();
-								});
-								isDone = false;
+						try {
+							//Platform.runLater(() -> {
+							//	waitLoading();
+							//});
+							while (!future.isDone() && !mainMenu.getMainScene().isMainSceneDone()) {
+								//System.out.println("Wait for 0.3 sec inside the while loop");
+				        		TimeUnit.MILLISECONDS.sleep(300L);
 							}
+			       			//System.out.println("future.get() is " + future.get());
+			       			//System.out.println("future.isDone() is " + future.isDone());
+			       				
+							Platform.runLater(() -> {
+								closeWindow();
+							});
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-
-
-		                //for (iterations = 0; iterations > 100000; iterations++) {
-		                    //System.out.println("Iteration " + iterations);
-		                //}
-		                //return iterations;
+	
 		                return 0;
 		            }
 		        };
 		        Thread th = new Thread(task);
 		        th.setDaemon(true);
 		        th.start();
+
+				//System.out.println("calling Simulation.createNewSimulation()");
 
 
                 scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
@@ -538,6 +532,29 @@ public class ScenarioConfigEditorFX {
 		//return borderAll;
 	}
 
+
+	public class SimulationTask implements Runnable {
+		public void run() {
+			boolean isDone = false;
+			Simulation.createNewSimulation();
+			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");
+			Simulation.instance().start();
+			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().start()");
+			Platform.runLater(() -> {
+				mainMenu.prepareScene();
+				mainMenu.prepareStage();
+				//System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
+			});
+			if (multiplayerClient != null)
+				multiplayerClient.prepareListeners();
+			//System.out.println("ScenarioConfigEditorFX : done calling SimulationTask");
+
+			//JmeCanvas jme = new JmeCanvas();
+	    	//jme.setupJME();
+		}
+	}
+
+	
 	@SuppressWarnings("serial")
 	private void createSwingNode(final SwingNode swingNode) {
 
@@ -654,18 +671,30 @@ public class ScenarioConfigEditorFX {
 
 		//Send the newly created settlement to host server
 		if (multiplayerClient != null) {
-			// create an instance of the
+			// create an instance of SettlementRegistry
 			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum, numOfRobots, lat, lo);
 			multiplayerClient.sendNew(newS);
 			//settlementConfig.setMultiplayerClient(multiplayerClient);
 		}
+
 	}
+	
+	/**
+	 * Close and dispose dialog window.
+	 */
+	public void waitLoading() {
+        scene.setCursor(Cursor.WAIT); //Change cursor to wait style
+		mainMenu.getCircleStage().show();
+		mainMenu.getCircleStage().requestFocus();
+		stage.hide();
+	}
+	
 	/**
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
-		stage.setIconified(true);
-		//stage.hide();
+		mainMenu.getCircleStage().hide();
+		mainMenu.getCircleStage().close();
 		stage.close();
 	}
 
@@ -855,26 +884,6 @@ public class ScenarioConfigEditorFX {
 			formattedLongitude.substring(0, degreeIndex) + " " +
 			formattedLongitude.substring(degreeIndex + 1, formattedLongitude.length())
 		;
-	}
-
-	public class SimulationTask implements Runnable {
-		public void run() {
-			boolean isDone = false;
-			Simulation.createNewSimulation();
-			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");
-			Simulation.instance().start();
-			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().start()");
-			Platform.runLater(() -> {
-				mainMenu.prepareStage();
-				//System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
-			});
-			if (multiplayerClient != null)
-				multiplayerClient.prepareListeners();
-			//System.out.println("ScenarioConfigEditorFX : done calling SimulationTask");
-
-			//JmeCanvas jme = new JmeCanvas();
-	    	//jme.setupJME();
-		}
 	}
 
 	public boolean confirmDeleteDialog(String header, String text) {

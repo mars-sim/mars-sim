@@ -1323,7 +1323,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			//	|| eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			isTransportingBuilding = true;
 			//disposeTransportWizard();
-			closeToolWindow(SettlementWindow.NAME);
+			//closeToolWindow(SettlementWindow.NAME); // TODO: is this really needed? If having 2 LCD screens, and if moving the MSP to the 2nd screen after the sim has been started. This line closes the settlement map tool and it could not be open again.
 			//System.out.println("MainDesktopPane : unitUpdate() START_BUILDING_PLACEMENT_EVENT is true");
 			//isTransportingBuilding = true; // does not get updated for the next building unless ADD_BUILDING_EVENT is used
 			building = (Building) target; // overwrite the dummy building object made by the constructor

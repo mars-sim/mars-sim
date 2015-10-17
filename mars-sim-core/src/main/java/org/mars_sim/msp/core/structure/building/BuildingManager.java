@@ -217,7 +217,7 @@ public class BuildingManager implements Serializable {
             oldBuilding.removeFunctionsFromSettlement();
 
             buildings.remove(oldBuilding);
-    		logger.info("removeBuilding() : a new building has just been removed");
+    		//logger.info("removeBuilding() : a new building has just been removed");
 
             settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
         }

@@ -69,7 +69,7 @@ public class EffectUtilities {
     });
     byNode.setOnMouseReleased(new EventHandler<MouseEvent>() {
       @Override public void handle(MouseEvent mouseEvent) {
-    	  if (mouseEvent.isPrimaryButtonDown())
+    	  //if (mouseEvent.isPrimaryButtonDown())
     		  byNode.setCursor(Cursor.HAND);
       }
     });
@@ -80,7 +80,7 @@ public class EffectUtilities {
     		  stage.setY(mouseEvent.getScreenY() + dragDelta.y);
     	  }
     	  else if (mouseEvent.isSecondaryButtonDown())
-              byNode.setCursor(Cursor.HAND);
+              byNode.setCursor(Cursor.OPEN_HAND);
     	 }
     });
     byNode.setOnMouseEntered(new EventHandler<MouseEvent>() {

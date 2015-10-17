@@ -16,6 +16,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import javafx.animation.FadeTransition;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
+import javafx.scene.shape.Rectangle;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -26,6 +31,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -69,6 +76,7 @@ import javafx.stage.Modality;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTask;
 import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -81,8 +89,8 @@ public class MainMenu {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MainMenu.class.getName());
 
-    private static final int WIDTH = 768;
-    private static final int HEIGHT = 768;
+    private static final int WIDTH = 768-20;
+    private static final int HEIGHT = 768-20;
 
 	// Data members
     private double fileSize;
@@ -114,9 +122,10 @@ public class MainMenu {
     private PhongMaterial material;
     private PointLight sun;
 
-    private Group root;
+    //private Group root;
+    private StackPane root;
 	private Stage mainSceneStage, mainMenuStage, circleStage;
-	public Scene mainMenuScene;
+	public Scene mainMenuScene, mainSceneScene;
 
 	public MainMenu mainMenu;
 	public MainScene mainScene;
@@ -138,7 +147,7 @@ public class MainMenu {
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
 	void initAndShowGUI(Stage mainMenuStage) {
-	   //Logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
 	   this.mainMenuStage = mainMenuStage;
 
@@ -160,29 +169,74 @@ public class MainMenu {
        screen.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
        screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        screen.setScreen(MainMenu.screen1ID);
+       
+       if ( screen.lookup("#menuOptionBox") == null)
+			System.out.println("Warning: menu option box is not found");
+       
+       VBox menuOptionBox = ((VBox) screen.lookup("#menuOptionBox"));
+/*       
+       if (mouseEvent.getSource().equals(menuOptionBox)){
+    	   System.out.println("hovering over menu option box");
+    	   mainMenuScene.setCursor(Cursor.HAND);
+       }
+*/       
+       Rectangle rect = new Rectangle(WIDTH, HEIGHT);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
+       rect.setArcWidth(30);
+       rect.setArcHeight(30);
+       rect.setEffect(new DropShadow(30,5,5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
-       root = new Group();
-       Parent parent = createMarsGlobe();
-       parent.setStyle("-fx-border-style: none; -fx-background-color:transparent;");
-       root.getChildren().addAll(parent, screen);
-       root.setStyle("-fx-border-style: none; -fx-background-color:transparent;");
-       mainMenuScene = new Scene(root);
+       root = new StackPane();
+       root.setPrefHeight(WIDTH);
+       root.setPrefWidth(HEIGHT);
+       root.setStyle(
+    		   //"-fx-border-style: none; "
+    		   //"-fx-background-color: #231d12; "
+       			"-fx-background-color: transparent; "
+       			//+ "-fx-background-radius: 1px;"
+    		   );
+       
+       Parent globe = createMarsGlobe();
+       
+       root.getChildren().addAll(rect, globe, screen);
+       
+       mainMenuScene = new Scene(root, Color.DARKGOLDENROD);//TRANSPARENT);//, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
-
-       // 2015-09-26 Added adjustRotation()
-       adjustRotation(mainMenuScene, parent);
-
-       mainMenuScene.setFill(Color.BLACK); // a black border will remain
-      // mainMenuScene.setFill(Color.TRANSPARENT); // a white border will remain
-
-       //(ii) set the scene fill to transparent
+       //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
+       //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
        mainMenuScene.setCursor(Cursor.HAND);
 
-       EffectUtilities.makeDraggable(mainMenuStage, screen);
+       mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){
+    	   
+           public void handle(MouseEvent mouseEvent){
+               FadeTransition fadeTransition 
+                       = new FadeTransition(Duration.millis(1000), menuOptionBox);
+               fadeTransition.setFromValue(0.0);
+               fadeTransition.setToValue(1.0);
+               fadeTransition.play();
 
-       //(iii) set the stage background to transparent
+           }
+       });
+        
+       mainMenuScene.setOnMouseExited(new EventHandler<MouseEvent>(){
+
+           public void handle(MouseEvent mouseEvent){
+               FadeTransition fadeTransition 
+                       = new FadeTransition(Duration.millis(1000), menuOptionBox);
+               fadeTransition.setFromValue(1.0);
+               fadeTransition.setToValue(0.0);
+               fadeTransition.play();
+
+           }
+       });
+       
+      
+       // 2015-09-26 Added adjustRotation()
+       adjustRotation(mainMenuScene, globe);
+
+       // Enable dragging on the undecorated stage
+       EffectUtilities.makeDraggable(mainMenuStage, screen);
+       
        //mainMenuStage.initStyle(StageStyle.UTILITY);
- 
        mainMenuStage.initStyle(StageStyle.TRANSPARENT);
        mainMenuStage.initStyle(StageStyle.UNDECORATED);
        mainMenuStage.centerOnScreen();
@@ -199,8 +253,12 @@ public class MainMenu {
        // Starts a new stage for MainScene
 	   mainSceneStage = new Stage();
 	   //mainSceneStage.initModality(Modality.NONE);
-	   //mainSceneStage.setMinWidth(1024);
-	   //mainSceneStage.setMinHeight(400);
+	   mainSceneStage.setMinWidth(1024);
+	   mainSceneStage.setMinHeight(600);
+	    
+	   //mainSceneStage.setMaxWidth(1920);
+	   //mainSceneStage.setMinHeight(1200);
+
 	   mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
 
    }
@@ -209,6 +267,10 @@ public class MainMenu {
 	   return mainMenuStage;
    }
 
+   public MainScene getMainScene() {
+	   return mainScene;
+   }
+   
    public MultiplayerMode getMultiplayerMode() {
 	   return multiplayerMode;
 	}
@@ -221,69 +283,141 @@ public class MainMenu {
    }
 
    public void runTwo() {
+		Future future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
+		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
+		
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
 		Platform.runLater(() -> {
+			mainMenuScene.setCursor(Cursor.WAIT);
 			// TODO: the ring won't turn until a couple of seconds later
 			circleStage.show();
 			circleStage.requestFocus();
+		});	
+		
+		mainMenuStage.setIconified(true);//hide();
+		mainScene = new MainScene(mainSceneStage);		   
 
-		});
+		// 2015-10-13 Set up a Task Thread
+		Task task = new Task() {
+            @Override
+            protected Integer call() throws Exception {
+				try {
+					   TimeUnit.MILLISECONDS.sleep(2000L);
+					   // Note 1: The delay time for launching the JavaFX UI should also be based on the file size of the default.sim
+					   long delay_time = (long) (fileSize * 4000L);
+					   TimeUnit.MILLISECONDS.sleep(delay_time);
+					
+					   //System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
+					   //System.out.println("isMainSceneDone is " + mainScene.isMainSceneDone());
+					   
+					   //while (!future.isDone() && !mainScene.isMainSceneDone()) {
+					   while ( !future.isDone() && mainMenu.getMainScene().getDesktop() == null) {						   
+			        		long delay = (long) (fileSize * 1000L);
+							//System.out.println("Wait for " + delay/1000D + " secs inside the while loop");
+							TimeUnit.MILLISECONDS.sleep(delay);
+			        		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
+			        		//System.out.println("desktop is " + mainScene.isMainSceneDone());
+			     		   // Note: java8u60 requires a longer time (than 8u45) such as 4 secs instead of 2 secs on some machines.
+			 			   // or else it will proceed to prepareStage() below prematurely and results in NullPointerException
+			 			   // as it tries to read people data before it was properly populated in UnitManager.
+			 			   //service.shutdownNow();
+			 			   //try {
+			 			   //   service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+			 			   //} catch (InterruptedException e) {}
+					   }
+					   //System.out.println("future.get() is " + future.get());
+					   //System.out.println("future.isDone() is " + future.isDone());
+	       				
+					   TimeUnit.MILLISECONDS.sleep(2000L);
+					   Platform.runLater(() -> {
+						   prepareStage();
+						   circleStage.close();
+						});
+					   
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-	   mainMenuStage.setIconified(true);//hide();
+                return 0;
+            }
+        };
+        Thread th = new Thread(task);
+        th.setDaemon(true);
+        th.start();
 
-	   ExecutorService setUpSimTasks = Simulation.instance().getSimExecutor();
+        mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
-	   try {
-		   mainScene = new MainScene(mainSceneStage);
-		   //isDone = true;
-		   Future<?> future = setUpSimTasks.submit(new LoadSimulationTask());
-		   // TODO:
-		   //mainMenuScene.setCursor(Cursor.WAIT);
-		   //TimeUnit.SECONDS.sleep(4L);
-		   // Note: java8u60 requires a longer time (than 8u45) such as 4 secs instead of 2 secs on some machines.
-		   // or else it will proceed to prepareStage() below prematurely and results in NullPointerException
-		   // as it tries to read people data before it was properly populated in UnitManager.
-		   //service.shutdownNow();
-		   //try {
-		   //   service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-		   //} catch (InterruptedException e) {}
 
-		   // Note 1: The delay time for launching the JavaFX UI should also be based on the file size of the default.sim
-		   //long delay_time = (long) (fileSize * 4000L);
-		   //TimeUnit.MILLISECONDS.sleep(delay_time);
+/*
+		
+	   // 2015-10-15 Set up a Task Thread
+	   isDone = true;
+	   Task task = new Task() {
+           @Override
+           protected Integer call() throws Exception {
+               
+        	   Future future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
+        	   
+      			System.out.println("future.get() is " + future.get());
+      			System.out.println("future.isDone() is " + future.isDone());
 
-		   // 2015-10-10 use future.get to check if setUpSimTasks are finished before moving onto setting up the main scene
-		   while(future.get() == null && isDone) {
-			   prepareStage();
-			   isDone = false;
-		   }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+      			try {
+					while (!future.isDone()) {
+						System.out.println("still inside the while loop");
+						System.out.println("fileSize is " + fileSize);
+						fileSize = Simulation.instance().getFileSize();
+						long delay_time = (long) (fileSize * 4000L);
+						TimeUnit.MILLISECONDS.sleep(delay_time);
+					}					
+	       			System.out.println("future.get() is " + future.get());
+	       			System.out.println("future.isDone() is " + future.isDone());
 
-		Platform.runLater(() -> {
-			circleStage.close();
-		});
+					Platform.runLater(() -> {
+						prepareStage();						
+						circleStage.close();
+					});
+	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+               return 0;
+           }
+       };
+       Thread th = new Thread(task);
+       th.setDaemon(true);
+       th.start();
+*/       
    }
 
 	public class LoadSimulationTask implements Runnable {
 		public void run() {
+			fileSize = 1;
 			logger.info("Loading settlement data from the default saved simulation...");
 			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
+			System.out.println("done with loadSimulation(null)");
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
 			Simulation.instance().start();
-			//fileSize = Simulation.instance().getFileSize();
-			isDone = true;
-			//System.out.println("filesize is "+ fileSize);
+			Simulation.instance().stop();
+			Simulation.instance().start();
+			Platform.runLater(() -> {
+				prepareScene();
+				System.out.println("done with prepareScene()");
+			});
 		}
 	}
 
-	public boolean prepareStage() {
+	public void prepareScene() {
 	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 
 	   // prepare main scene
 	   mainScene.prepareMainScene();
-	   Scene scene = mainScene.initializeScene();
+	   mainSceneScene = mainScene.initializeScene();
+	   
+	}
+	
+	public void prepareStage() {
+	
 	   mainScene.prepareOthers();
 
 	   // prepare stage
@@ -291,14 +425,16 @@ public class MainMenu {
        mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
 	   mainSceneStage.setResizable(true);
 	   //stage.setFullScreen(true);
-	   mainSceneStage.setScene(scene);
+	   mainSceneStage.setScene(mainSceneScene);
 	   mainSceneStage.show();
-
+	   mainSceneStage.requestFocus();
+	   
+	   circleStage.hide();
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);
 	   mainScene.initializeTheme();
 
-	   return true;
+	   //return true;
 	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
 	}
 

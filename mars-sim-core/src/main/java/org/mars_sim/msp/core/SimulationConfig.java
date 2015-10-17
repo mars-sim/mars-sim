@@ -85,7 +85,7 @@ public class SimulationConfig implements Serializable {
 	 * Members
 	 * ---------------------------------------------------------------------------------------------------- */
 
-	public static String build;
+	public String build;
 
 	/** DOM documents. */
 	private Document simulationDoc;
@@ -115,18 +115,23 @@ public class SimulationConfig implements Serializable {
 	private RobotConfig robotConfig;
 
 
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Constructors
+	 * ---------------------------------------------------------------------------------------------------- */
+
 	/** hidden constructor. */
-	private SimulationConfig() {}
+	private SimulationConfig() {
+	}
 
     /**
      * Gets a Bill Pugh Singleton instance of the simulation.
      * @return Simulation instance
      */
-    public static SimulationConfig instance() {
+    //public static SimulationConfig instance() {
         //logger.info("Simulation's instance() is on " + Thread.currentThread().getName() + " Thread");
         //NOTE: Simulation.instance() is accessible on any threads or by any threads
-    	return SingletonHelper.INSTANCE;
-    }
+    //	return SingletonHelper.INSTANCE;
+    //}
 
     /**
      * Initializes an inner static helper class for Bill Pugh Singleton Pattern
@@ -136,18 +141,18 @@ public class SimulationConfig implements Serializable {
      * {@link Singleton#instance()} or the first access to
      * {@link SingletonHelper#INSTANCE}, not before.
      */
-    private static class SingletonHelper{
-    	private static final SimulationConfig INSTANCE = new SimulationConfig();
-    }
+    //private static class SingletonHelper{
+    //	private static final SimulationConfig INSTANCE = new SimulationConfig();
+    //}
 
     /**
      * Prevents the singleton pattern from being destroyed
      * at the time of serialization
      * @return Simulation instance
      */
-    protected Object readResolve() throws ObjectStreamException {
-    	return instance();
-    }
+    //protected Object readResolve() throws ObjectStreamException {
+    //	return instance();
+    //}
 
 
 	/* ---------------------------------------------------------------------------------------------------- *
@@ -155,11 +160,9 @@ public class SimulationConfig implements Serializable {
 	 * ---------------------------------------------------------------------------------------------------- */
 
 	/** Singleton instance. */
-	private static SimulationConfig instance = instance();
+	//private static SimulationConfig instance = instance();
+	private static SimulationConfig instance = new SimulationConfig();
 
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Constructors
-	 * ---------------------------------------------------------------------------------------------------- */
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Public Static Methods
@@ -169,9 +172,9 @@ public class SimulationConfig implements Serializable {
 	 * Gets a singleton instance of the simulation config.
 	 * @return SimulationConfig instance
 	 */
-	//public static SimulationConfig instance() {
-	//	return instance;
-	//}
+	public static SimulationConfig instance() {
+		return instance;
+	}
 
 	/**
 	 * Sets the singleton instance.
@@ -181,6 +184,10 @@ public class SimulationConfig implements Serializable {
 		SimulationConfig.instance = instance;
 	}
 
+	public String getBuild(){
+		return build;
+	}
+	
 	/**
 	 * Reloads all of the configuration files.
 	 * @throws Exception if error loading or parsing configuration files.
@@ -406,7 +413,8 @@ public class SimulationConfig implements Serializable {
 	private void loadDefaultConfiguration() {
 		try {
 			// Set or reset the build version to Simulation.BUILD
-			build = Simulation.BUILD;
+			this.build = Simulation.BUILD;
+			//logger.info("Setting SimulationConfig.build to Build " + build);
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 

@@ -291,8 +291,8 @@ extends TabPanel {
 		scrollPanel.setViewportView(table);
 
 		// 2015-06-08 Added sorting
-		table.setAutoCreateRowSorter(true);
-		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//table.setAutoCreateRowSorter(true);
+		//table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(table);

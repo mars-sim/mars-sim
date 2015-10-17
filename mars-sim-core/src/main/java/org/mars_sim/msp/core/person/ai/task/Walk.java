@@ -599,6 +599,13 @@ implements Serializable {
             result = walkingStepPhaseMap.get(step.stepType);
         }
 
+        else { //if (result == null)
+        	System.out.println("Walk.java : " + person.getName() 
+        	+ " in " + person.getBuildingLocation().getNickName() 
+        	+ " at " + person.getAssociatedSettlement()
+        	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
+        }
+        
         return result;
     }
 

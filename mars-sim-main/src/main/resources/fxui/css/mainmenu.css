@@ -1,25 +1,19 @@
 /**
  * Mars Simulation Project
- * mainskin.css
+ * mainmenu.css
  * General CSS classes for MSP UI
- * @version 3.08 2015-01-27
- * @author Lars Næsbye Christensen
+ * @version 3.08 2015-10-15
+ * @author Manny Kung
  */
 
-
-.text{
-    -fx-fill: #FFB03B; /*light mud color*/
-    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+#option{
+    -fx-fill: white; /*#FFB03B; /*light mud color*/
 }
 
-.text:hover{
-    -fx-fill: #ffffff;   /*#90ff00 pure (or mostly pure) green.*/
-}
 
-#menu:hover {
+#option:hover {
 	-fx-font-size: 26.0px;
-	-fx-text-fill: white;
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 3;
     -fx-font-weight: bold;
 	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
 

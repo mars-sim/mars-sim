@@ -25,6 +25,11 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
+import javafx.scene.input.KeyEvent;
+import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
+import javafx.scene.control.Button;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -147,7 +152,7 @@ public class TransportWizard {
            if (resupply.checkBuildingTemplatePosition(template)) {
             	//System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
 
-                //confirmBuildingLocation(correctedTemplate, true);
+                confirmBuildingLocation(correctedTemplate, true);
 
            } // end of if (checkBuildingTemplatePosition(template)) {
 
@@ -155,11 +160,17 @@ public class TransportWizard {
             	   // or when the building's designated location has already been occupied
             	//System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is false");
                 moveVehicle(correctedTemplate);
+                
+                if (resupply.checkBuildingTemplatePosition(template))
+                	
+                	confirmBuildingLocation(correctedTemplate, true);
+                else 
+                	confirmBuildingLocation(correctedTemplate, false);
             	//confirmBuildingLocation(template, true);
             	//confirmBuildingLocation(correctedTemplate, true);
            } // end of else {
 
-           confirmBuildingLocation(correctedTemplate, true);
+           //confirmBuildingLocation(correctedTemplate, true);
    		   // Move the blocking vehicle elsewhere (if any)
 
            i++;
@@ -168,8 +179,9 @@ public class TransportWizard {
         	   Building aBuilding = mgr.getBuildings().get(0);
         	   settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);
 	        }
+           
            // move vehicle one more time just in case
-           moveVehicle(correctedTemplate);
+           //moveVehicle(correctedTemplate);
 	    } // end of while (buildingI.hasNext())
 
         if (mainScene != null)
@@ -285,6 +297,7 @@ public class TransportWizard {
 			//DialogPane dialogPane = alert.getDialogPane();
 
 			ButtonType buttonTypeYes = new ButtonType("Yes");
+			
 			ButtonType buttonTypeNo = new ButtonType("No");
 
 			alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
@@ -310,6 +323,24 @@ public class TransportWizard {
 
 			});
 
+			// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus
+			EventHandler<KeyEvent> fireOnEnter = event -> {
+			    if (KeyCode.ENTER.equals(event.getCode()) 
+			            && event.getTarget() instanceof Button) {
+			        ((Button) event.getTarget()).fire();
+			    }
+			};
+
+			DialogPane dialogPane = alert.getDialogPane();
+			dialogPane.getButtonTypes().stream()
+			        .map(dialogPane::lookupButton)
+			        .forEach(button ->
+			                button.addEventHandler(
+			                        KeyEvent.KEY_PRESSED,
+			                        fireOnEnter
+			                )
+			        );
+			
 	        if (mainScene != null)
 	        	mainScene.pauseSimulation();
 

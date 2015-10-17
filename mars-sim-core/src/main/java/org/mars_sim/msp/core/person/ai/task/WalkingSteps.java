@@ -39,12 +39,16 @@ implements Serializable {
 	// Data members.
 	private List<WalkStep> walkingSteps;
 	private boolean canWalkAllSteps;
+	
+	private Person person;
+	private Robot robot;
 
 	/**
 	 * constructor 1.
 	 */
 	public WalkingSteps(Person person, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
-        
+        this.person = person;
+		
         // Initialize data members.
         canWalkAllSteps = true;
         walkingSteps = new ArrayList<WalkStep>();
@@ -63,6 +67,7 @@ implements Serializable {
 	 * constructor 2.
 	 */
 	public WalkingSteps(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
+        this.robot = robot;
         
         // Initialize data members.
         canWalkAllSteps = true;
@@ -364,7 +369,15 @@ implements Serializable {
                     destinationWalkState.xLoc, destinationWalkState.yLoc);
             if (airlock == null) {
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from building interior to building interior.");
+                if (person != null)
+                	logger.severe(person.getName() 
+                		+ " in " + person.getBuildingLocation().getNickName() 
+                		+ " cannot find walkable airlock from building interior to building interior.");
+                else if (robot != null)
+                   	logger.severe(robot.getName() 
+                    		+ " in " + person.getBuildingLocation().getNickName() 
+                    		+ " cannot find walkable airlock from building interior to building interior.");
+
                 return;
             }
             
@@ -424,8 +437,15 @@ implements Serializable {
                     destinationWalkState.xLoc, destinationWalkState.yLoc);
             if (airlock == null) {
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from building interior to rover interior.");
-                return;
+                if (person != null)
+                	logger.severe(person.getName() 
+                		+ " in " + person.getBuildingLocation().getNickName() 
+                		+ " cannot find walkable airlock from building interior to building interior.");
+                else if (robot != null)
+                   	logger.severe(robot.getName() 
+                    		+ " in " + person.getBuildingLocation().getNickName() 
+                    		+ " cannot find walkable airlock from building interior to building interior.");
+               return;
             }
             
             Building airlockBuilding = (Building) airlock.getEntity();
@@ -462,8 +482,15 @@ implements Serializable {
                 destinationWalkState.xLoc, destinationWalkState.yLoc);
         if (airlock == null) {
             canWalkAllSteps = false;
-            logger.severe("Cannot find walkable airlock from building interior to outside.");
-            return;
+            if (person != null)
+            	logger.severe(person.getName() 
+            		+ " in " + person.getBuildingLocation().getNickName() 
+            		+ " cannot find walkable airlock from building interior to building interior.");
+            else if (robot != null)
+               	logger.severe(robot.getName() 
+                		+ " in " + person.getBuildingLocation().getNickName() 
+                		+ " cannot find walkable airlock from building interior to building interior.");
+           return;
         }
         
         Building airlockBuilding = (Building) airlock.getEntity();
@@ -955,7 +982,9 @@ implements Serializable {
                     
                     // Cannot walk to destination building.
                     canWalkAllSteps = false;
-                    logger.severe("Cannot find walkable airlock from building airlock exterior to building interior.");
+                    logger.severe(person.getName() 
+                    		+ " in " + person.getBuildingLocation().getNickName() 
+                    		+ " cannot find walkable airlock from building airlock exterior to building interior.");
                 }
             }
         }

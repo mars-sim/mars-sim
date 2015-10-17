@@ -72,25 +72,25 @@
 	</resupply>
 		
 	<resupply name="Mars Direct Base resupply 3">
-		<building type="Command and Control" x-location="0.0" y-location="37.5" facing="270.0" />
-		<building type="Lounge" x-location="-11.0" y-location="37.5" facing="270.0" />
-		<building type="Residential Quarters" x-location="-22.0" y-location="37.5" facing="270.0" />
-		<building type="Infirmary" x-location="-33.0" y-location="37.5" facing="270.0" />
-		<building type="Laboratory" x-location="-44.0" y-location="37.5" facing="270.0" />
-		<building type="Large Greenhouse" x-location="-44.0" y-location="20.0" facing="0.0" />
-		<building type="Garage" x-location="-55.0" y-location="54.0" facing="0.0" />
-		<building type="Workshop" x-location="-55.0" y-location="37.5" facing="270.0" />
 		<building type="MD4 Nuclear Reactor" x-location="25.0" y-location="-57.5" facing="0.0" />
 		<building type="MD4 Nuclear Reactor" x-location="40.0" y-location="-57.5" facing="0.0" />
 		<building type="Astronomy Observatory" x-location="-62.5" y-location="-17.5" facing="90.0" />
 		<building type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
-		<building type="Hallway" length="3.5" x-location="0.0" y-location="32.25" facing="0.0" />
-		<building type="Hallway" length="2.0" x-location="-5.5" y-location="37.5" facing="270.0" />
-		<building type="Hallway" length="2.0" x-location="-16.5" y-location="37.5" facing="270.0" />
-		<building type="Hallway" length="2.0" x-location="-27.5" y-location="37.5" facing="270.0" />
-		<building type="Hallway" length="2.0" x-location="-38.5" y-location="37.5" facing="270.0" />
-		<building type="Hallway" length="2.0" x-location="-49.5" y-location="37.5" facing="270.0" />
-		<building type="Hallway" length="5.0" x-location="-44.0" y-location="31.5" facing="0.0" />
+		<building type="Command and Control" x-location="0.0" y-location="38" facing="270.0" />
+		<building type="Lounge" x-location="-11.0" y-location="38" facing="270.0" />
+		<building type="Residential Quarters" x-location="-22.0" y-location="38" facing="270.0" />
+		<building type="Infirmary" x-location="-33.0" y-location="38" facing="270.0" />
+		<building type="Laboratory" x-location="-44.0" y-location="38" facing="270.0" />
+		<building type="Large Greenhouse" x-location="-44.0" y-location="21.0" facing="0.0" />
+		<building type="Garage" x-location="-55.0" y-location="54.0" facing="0.0" />
+		<building type="Workshop" x-location="-55.0" y-location="38" facing="270.0" />
+		<building type="Hallway" length="4.0" x-location="0.0" y-location="32.5" facing="0.0" />
+		<building type="Hallway" length="2.0" x-location="-5.5" y-location="38" facing="270.0" />
+		<building type="Hallway" length="2.0" x-location="-16.5" y-location="38" facing="270.0" />
+		<building type="Hallway" length="2.0" x-location="-27.5" y-location="38" facing="270.0" />
+		<building type="Hallway" length="2.0" x-location="-38.5" y-location="38" facing="270.0" />
+		<building type="Hallway" length="2.0" x-location="-49.5" y-location="38" facing="270.0" />
+		<building type="Hallway" length="4.0" x-location="-44.0" y-location="32.0" facing="0.0" />
 		<building type="Hallway" length="5.0" x-location="-55.0" y-location="43.5" facing="0.0" />
 		<vehicle type="Explorer Rover" number="2" />
 		<vehicle type="Transport Rover" number="2" />

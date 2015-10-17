@@ -114,7 +114,22 @@ public class ChainOfCommand implements Serializable {
 		// if a person has not been assigned a role, he/she will be mission specialist
             Job job = person.getMind().getJob();
             Role role = person.getRole();
-            int pop = person.getSettlement().getAllAssociatedPeople().size();
+            int pop = 0;
+            if (person.getSettlement() == null) 
+            	System.err.print("person.getSettlement() = null");
+            else if (person.getSettlement().getAllAssociatedPeople() == null)
+               	System.err.print("person.getSettlement().getAllAssociatedPeople() = null");	
+            else {
+            	pop = person.getSettlement().getAllAssociatedPeople().size();
+            	if (pop == 0) {
+            		System.err.print("person.getSettlement().getAllAssociatedPeople().size() = 0");	
+            		pop = person.getSettlement().getCurrentPopulationNum();
+            		if (pop == 0) 
+                		System.err.print("person.getSettlement().getCurrentPopulationNum() = 0");    
+            	}           	
+            }
+            //if (pop == 0)
+            //	pop = person.getSettlement().getCurrentPopulationNum();
             //int slot = (int) ((pop - 2 - 3 )/ 3);
 
             boolean allSlotsFilledOnce = areAllFilled(1);

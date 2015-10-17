@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -112,14 +113,15 @@ implements Serializable {
 
     	checkJob();
 
-        // Take action as necessary.
-        takeAction(time);
-
         // Update stress based on personality.
         personality.updateStress(time);
 
         // Update relationships.
         Simulation.instance().getRelationshipManager().timePassing(person, time);
+        
+        // Take action as necessary.
+        if (taskManager != null)
+        	takeAction(time);
 
     }
 
@@ -165,7 +167,7 @@ implements Serializable {
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
 
-        if (person != null) {
+        //if (person != null) {
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 overrideMission = person.getSettlement().getMissionCreationOverride();
             }
@@ -198,7 +200,7 @@ implements Serializable {
             }
 
 
-        }
+       // }
 
 
     }
@@ -379,9 +381,9 @@ implements Serializable {
     public void setInactive() {
         taskManager.clearTask();
         if (hasActiveMission()) {
-        	if (person != null) {
+        	//if (person != null) {
                 mission.removeMember(person);
-        	}
+        	//}
 
             mission = null;
         }
@@ -394,7 +396,7 @@ implements Serializable {
     public void setMission(Mission newMission) {
         if (newMission != mission) {
 
-        	if (person != null) {
+        	//if (person != null) {
         		if (mission != null) {
                     mission.removeMember(person);
                 }
@@ -406,7 +408,7 @@ implements Serializable {
                 }
 
                 person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
-        	}
+        	//}
 
         }
     }
@@ -420,12 +422,12 @@ implements Serializable {
 
         MissionManager missionManager = Simulation.instance().getMissionManager();
 
-        if (person != null) {
+        //if (person != null) {
             // If this Person is too weak then they can not do Missions
             if (person.getPerformanceRating() < 0.5D) {
                 missions = false;
             }
-        }
+        //}
 
 
         // Get probability weights from tasks, missions and active missions.
@@ -441,20 +443,25 @@ implements Serializable {
         }
 
         if (missions) {
-	        if (person != null) {
+	        //if (person != null) {
 	           missionWeights = missionManager.getTotalMissionProbability(person);
 	           weightSum += missionWeights;
-	        }
+	        //}
 
 		}
 
-        if (person != null) {
+        //if (person != null) {
 	        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
 	                (Double.isInfinite(weightSum))) {
+	        	try {
+					TimeUnit.MILLISECONDS.sleep(1000L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 	            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
 	                    + weightSum);
 	        }
-        }
+        //}
 
 
 
@@ -478,11 +485,11 @@ implements Serializable {
         if (missions) {
             if (rand < missionWeights) {
             	Mission newMission = null;
-            	if (person != null) {
+            	//if (person != null) {
                     logger.fine(person.getName() + " starting a new mission.");
                     newMission = missionManager.getNewMission(person);
 
-            	}
+            	//}
 
                 if (newMission != null) {
                     missionManager.addMission(newMission);
@@ -496,12 +503,12 @@ implements Serializable {
             }
         }
 
-        if (person != null) {
+        //if (person != null) {
             // If reached this point, no task or mission has been found.
             logger.severe(person.getName()
                     + " couldn't determine new action - taskWeights: "
                     + taskWeights + ", missionWeights: " + missionWeights);
-        }
+        //}
 
     }
 

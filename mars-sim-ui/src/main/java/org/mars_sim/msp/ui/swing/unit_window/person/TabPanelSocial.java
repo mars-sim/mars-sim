@@ -89,13 +89,13 @@ implements ListSelectionListener {
 		// 2015-09-24 Align the content to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		//relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		//relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		relationshipScrollPanel.setViewportView(relationshipTable);
 
 		// 2015-06-08 Added sorting
-		//relationshipTable.setAutoCreateRowSorter(true);
+		//relationshipTable.setAutoCreateRowSorter(true); // not working if clicking on a person
 		//relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
@@ -160,7 +160,8 @@ implements ListSelectionListener {
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return knownPeople.toArray()[row]; // why  java.lang.ArrayIndexOutOfBoundsException ?
+			if (column == 0) return knownPeople.toArray()[row]; 
+			// TODO: why on above line Exception in thread "pool-1924-thread-1" java.lang.ArrayIndexOutOfBoundsException: -1
 			else if (column == 1) {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
 				return getRelationshipString(opinion);

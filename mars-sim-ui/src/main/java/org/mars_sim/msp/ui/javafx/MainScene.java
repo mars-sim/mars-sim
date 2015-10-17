@@ -109,6 +109,7 @@ public class MainScene {
 	private int processCpuLoad;
 	private int systemCpuLoad;
 
+	private boolean isMainSceneDone = false;
 
 	private StringProperty timeStamp;
 
@@ -163,6 +164,8 @@ public class MainScene {
 	public MainScene(Stage stage) {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
+		this.desktop = null;
+		this.isMainSceneDone = false;
 	}
 
 	/**
@@ -262,7 +265,8 @@ public class MainScene {
 		swingPane.getChildren().add(swingNode);
 		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-
+		swingPane.setPrefHeight(primaryScreenBounds.getHeight());
+		
 		// Create ControlFX's StatusBar
 		statusBar = createStatusBar();
 		VBox bottomBox = new VBox();
@@ -340,7 +344,7 @@ public class MainScene {
 
 		rootStackPane = new StackPane(borderPane);
 
-		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth(), 640, Color.BROWN);
+		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth()-40, primaryScreenBounds.getHeight()-40, Color.BROWN);
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
@@ -406,6 +410,8 @@ public class MainScene {
 		});
 
 		//logger.info("done with MainScene's initializeTheme()");
+		
+		isMainSceneDone = true;
 	}
 
 	/*
@@ -696,6 +702,9 @@ public class MainScene {
 		return desktop;
 	}
 
+	public boolean isMainSceneDone() {
+		return isMainSceneDone;
+	}
 	/**
 	 * Load a previously saved simulation.
 	 * @param type
