@@ -600,10 +600,20 @@ implements Serializable {
         }
 
         else { //if (result == null)
-        	System.out.println("Walk.java : " + person.getName() 
-        	+ " in " + person.getBuildingLocation().getNickName() 
-        	+ " at " + person.getAssociatedSettlement()
-        	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
+        	
+        	if (person != null) {
+               	System.out.println("Walk.java : " + person.getName() 
+            	+ " in " + person.getBuildingLocation().getNickName() 
+            	+ " at " + person.getAssociatedSettlement()
+            	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
+
+        	}
+             else if (robot != null) {
+	        	System.out.println("Walk.java : " + robot.getName() 
+	        	+ " in " + robot.getBuildingLocation().getNickName() 
+	        	+ " at " + robot.getAssociatedSettlement()
+	        	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
+             }
         }
         
         return result;

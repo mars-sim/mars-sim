@@ -663,6 +663,29 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 		return malfunctionManager;
 	}
 
+
+	/**
+	  * Gets the building the robot is located at
+	  * Returns null if outside of a settlement
+	  * @return building
+	  */
+	// 2015-10-78 Added getBuildingLocation()
+    public Building getBuildingLocation() {
+        Building result = null;
+        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            BuildingManager manager = getSettlement().getBuildingManager();
+            result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+            //List<Building> buildings = manager.getBuildings();
+            //Iterator<Building> i = buildings.iterator();
+            // while (i.hasNext()) {
+            //	Building b = i.next();
+            //	String buildingType = b.getBuildingType();
+            //}
+        }
+
+        return result;
+    }
+    
 	@Override
     public String getTaskDescription() {
         return getBotMind().getTaskManager().getTaskDescription();

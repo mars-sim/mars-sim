@@ -36,6 +36,8 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private JTextField causeTF, timeTF, malTF;
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -63,22 +65,49 @@ implements ActionListener {
 		deathInfoLabelPanel.add(deathInfoLabel);
 
 		// Prepare death label panel
-		JPanel deathLabelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
+		JPanel deathLabelPanel = new JPanel(new GridLayout(3, 2, 0, 0));
 		deathLabelPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(deathLabelPanel, BorderLayout.NORTH);
 
 		// Prepare cause label
-		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause") + death.getIllness(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause"), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(causeLabel);
+		
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+        causeTF = new JTextField();
+        causeTF.setText(death.getIllness());
+        causeTF.setEditable(false);
+        causeTF.setColumns(8);
+        causeTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        wrapper1.add(causeTF);//, BorderLayout.CENTER);
+        deathLabelPanel.add(wrapper1);
 
 		// Prepare time label
-		JLabel timeLabel = new JLabel(Msg.getString("TabPanelDeath.time") + death.getTimeOfDeath(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel timeLabel = new JLabel(Msg.getString("TabPanelDeath.time"), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(timeLabel);
 
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+        timeTF = new JTextField();
+        timeTF.setText(death.getTimeOfDeath());
+        timeTF.setEditable(false);
+        timeTF.setColumns(8);
+        timeTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        wrapper2.add(timeTF);//, BorderLayout.CENTER);
+        deathLabelPanel.add(wrapper2);
+        
 		// Prepare malfunction label
-		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny") + death.getMalfunction(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny"), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(malfunctionLabel);
 
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+        malTF = new JTextField();
+        malTF.setText(death.getMalfunction());
+        malTF.setEditable(false);
+        malTF.setColumns(8);
+        malTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        wrapper3.add(malTF);//, BorderLayout.CENTER);
+        deathLabelPanel.add(wrapper3);
+        
 		// Prepare bottom content panel
 		JPanel bottomContentPanel = new JPanel(new BorderLayout(0, 0));
 		centerContentPanel.add(bottomContentPanel, BorderLayout.CENTER);
@@ -89,7 +118,7 @@ implements ActionListener {
 		bottomContentPanel.add(locationPanel, BorderLayout.NORTH);
 
 		// Prepare location label panel
-		JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
 
 		// Prepare center map button
@@ -127,11 +156,11 @@ implements ActionListener {
 		Coordinates deathLocation = death.getLocationOfDeath();
 
 		// Prepare latitude label
-		JLabel latitudeLabel = new JLabel(Msg.getString("TabPanelDeath.latitude") + deathLocation.getFormattedLatitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel latitudeLabel = new JLabel(Msg.getString("TabPanelDeath.latitude") + deathLocation.getFormattedLatitudeString(), JLabel.CENTER); //$NON-NLS-1$
 		locationCoordsPanel.add(latitudeLabel);
 
 		// Prepare longitude label
-		JLabel longitudeLabel = new JLabel(Msg.getString("TabPanelDeath.longitude") + deathLocation.getFormattedLongitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel longitudeLabel = new JLabel(Msg.getString("TabPanelDeath.longitude") + deathLocation.getFormattedLongitudeString(), JLabel.CENTER); //$NON-NLS-1$
 		locationCoordsPanel.add(longitudeLabel);
 
 		// Add empty panel

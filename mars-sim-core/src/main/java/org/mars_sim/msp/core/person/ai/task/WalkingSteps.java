@@ -375,7 +375,7 @@ implements Serializable {
                 		+ " cannot find walkable airlock from building interior to building interior.");
                 else if (robot != null)
                    	logger.severe(robot.getName() 
-                    		+ " in " + person.getBuildingLocation().getNickName() 
+                    		+ " in " + robot.getBuildingLocation().getNickName() 
                     		+ " cannot find walkable airlock from building interior to building interior.");
 
                 return;
@@ -443,7 +443,7 @@ implements Serializable {
                 		+ " cannot find walkable airlock from building interior to building interior.");
                 else if (robot != null)
                    	logger.severe(robot.getName() 
-                    		+ " in " + person.getBuildingLocation().getNickName() 
+                    		+ " in " + robot.getBuildingLocation().getNickName() 
                     		+ " cannot find walkable airlock from building interior to building interior.");
                return;
             }
@@ -488,7 +488,7 @@ implements Serializable {
             		+ " cannot find walkable airlock from building interior to building interior.");
             else if (robot != null)
                	logger.severe(robot.getName() 
-                		+ " in " + person.getBuildingLocation().getNickName() 
+                		+ " in " + robot.getBuildingLocation().getNickName() 
                 		+ " cannot find walkable airlock from building interior to building interior.");
            return;
         }

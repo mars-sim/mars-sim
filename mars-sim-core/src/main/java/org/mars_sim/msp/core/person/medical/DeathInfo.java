@@ -125,6 +125,9 @@ implements Serializable {
         }
         if (mostSerious != null) malfunction = mostSerious.getName();
         this.gender = person.getGender();
+        
+        
+        
     }
 
     public DeathInfo(Robot robot) {

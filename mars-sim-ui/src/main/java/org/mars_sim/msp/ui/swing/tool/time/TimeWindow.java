@@ -224,7 +224,7 @@ implements ClockListener {
 		uptimePane.add(pulsespersecondPane, BorderLayout.SOUTH);
 
 		JPanel pausePane = new JPanel(new FlowLayout());
-		pauseButton = new JButton(Msg.getString("TimeWindow.button.pause")); //$NON-NLS-1$
+		pauseButton = new JButton("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {

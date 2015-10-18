@@ -293,7 +293,8 @@ implements ActionListener {
 		BotMind botMind = null;
 		boolean dead = false;
 		DeathInfo deathInfo = null;  
-	    
+	    String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); //" (at the Moment of Death)" ;
+		
 	    if (unit instanceof Person) {
 	    	person = (Person) unit;    	
 			mind = person.getMind();
@@ -325,14 +326,14 @@ implements ActionListener {
 		}
 
 		// Update task text area if necessary.
-		if (dead) taskCache = deathInfo.getTask();
+		if (dead) taskCache = deathInfo.getTask() + DEAD_PHRASE ;
 		else taskCache = taskManager.getTaskDescription();
 		if (!taskCache.equals(taskTextArea.getText())) 
 			taskTextArea.setText(taskCache);
 
 		// Update task phase text area if necessary.
 		if (dead) {
-		    taskPhaseCache = deathInfo.getTaskPhase();
+		    taskPhaseCache = deathInfo.getTaskPhase() + DEAD_PHRASE;
 		}
 		else {
 		    TaskPhase phase = taskManager.getPhase();
@@ -347,14 +348,14 @@ implements ActionListener {
 			taskPhaseTextArea.setText(taskPhaseCache);
 
 		// Update mission text area if necessary.
-		if (dead) missionCache = deathInfo.getMission();
+		if (dead) missionCache = deathInfo.getMission() + DEAD_PHRASE;
 		else if (mission != null) missionCache = mission.getDescription();
 		else missionCache = ""; //$NON-NLS-1$
 		if ((missionCache != null) && !missionCache.equals(missionTextArea.getText())) 
 			missionTextArea.setText(missionCache);
 
 		// Update mission phase text area if necessary.
-		if (dead) missionPhaseCache = deathInfo.getMissionPhase();
+		if (dead) missionPhaseCache = deathInfo.getMissionPhase() + DEAD_PHRASE;
 		else if (mission != null) missionPhaseCache = mission.getPhaseDescription();
 		else missionPhaseCache = ""; //$NON-NLS-1$
 		if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText())) 
