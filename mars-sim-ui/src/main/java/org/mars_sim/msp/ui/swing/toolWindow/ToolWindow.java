@@ -5,7 +5,7 @@
 
  * @author Scott Davis
  */
-package org.mars_sim.msp.ui.swing.tool;
+package org.mars_sim.msp.ui.swing.toolWindow;
 
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;

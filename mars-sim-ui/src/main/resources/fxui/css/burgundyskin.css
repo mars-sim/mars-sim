@@ -31,7 +31,7 @@
         orange,
         brown,
         radial-gradient(center 50% 50%, radius 100%, brown, black);
-    -fx-text-fill: yellow;
+    -fx-text-fill: white;
     -fx-border-color: rgb(49, 89, 23);
 }
 
@@ -44,18 +44,20 @@
         orange,
         brown,
         radial-gradient(center 50% 50%, radius 100%, brown, black);
-    -fx-text-fill: yellow;
+    -fx-text-fill: white;
 /*    -fx-border-color: rgb(49, 89, 23); */
 }
 
 .menu .label {
-    -fx-text-fill: yellow;
+    -fx-text-fill: white;
+   	-fx-font-weight: bold;
 }
 
 
 .context-menu {
     -fx-background-color: rgb(140, 0, 26);
 }
+
 
 
 .tool-bar:horizontal {
@@ -75,9 +77,8 @@
     -fx-padding: 1 1 1 1;
 }
 
-.button:hover {
-	-fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
-	-fx-color: -fx-hover-base;
+.button:hover{
+    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
 }
 
 .table-view {

@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * The TimeWindow is a tool window that displays the current
@@ -488,7 +488,7 @@ implements ClockListener {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim"));
 		}
 		else {
-			pauseButton.setText("   " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
+			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.disposeAnnouncementWindow();
 		}
 	}

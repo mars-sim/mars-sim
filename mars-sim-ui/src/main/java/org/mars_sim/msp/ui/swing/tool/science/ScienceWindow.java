@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * Window for the science tool.

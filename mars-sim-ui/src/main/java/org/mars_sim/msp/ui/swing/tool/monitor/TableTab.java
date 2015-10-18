@@ -16,9 +16,11 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -37,9 +39,11 @@ import javax.swing.table.TableColumnModel;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -57,6 +61,8 @@ extends MonitorTab {
 	private TableHeaderRenderer theRenderer;
 
 	private TableCellRenderer tableCellRenderer;
+	
+	private TableProperties propsWindow;
 	/**
 	 * This internal class provides a fixed image icon that is drawn using a Graphics
 	 * object. It represents an arrow Icon that can be other ascending or
@@ -374,10 +380,37 @@ extends MonitorTab {
      * @param desktop Main desktop owing the properties dialog.
      */
     public void displayProps(MainDesktopPane desktop) {
-        TableProperties propsWindow = new TableProperties(getName(), table, desktop);
-        propsWindow.show();
-    }
-
+        if (propsWindow == null) {
+        	propsWindow = new TableProperties(getName(), table, desktop);
+        	propsWindow.show();
+        } else {
+			if (propsWindow.isClosed()) {
+				if (!propsWindow.wasOpened()) {				
+					propsWindow.setWasOpened(true);
+				}
+				add(propsWindow, 0);				
+				try {
+					propsWindow.setClosed(false);
+				}
+				catch (Exception e) {
+					//logger.log(Level.SEVERE,e.toString()); }
+				}
+			}
+			propsWindow.show();
+			// bring to front if it overlaps with other propsWindows
+			try {
+				propsWindow.setSelected(true);
+			} catch (PropertyVetoException e) {
+				// ignore if setSelected is vetoed
+			}
+		}
+		propsWindow.getContentPane().validate();
+		propsWindow.getContentPane().repaint();
+		validate();
+		repaint();
+        
+	}
+	
     /**
      * This return the selected rows in the model that are current
      * selected in this view.

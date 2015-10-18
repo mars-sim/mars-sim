@@ -45,7 +45,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * The SearchWindow is a tool window that allows the user to search

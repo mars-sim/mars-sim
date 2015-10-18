@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * Window for the resupply tool.

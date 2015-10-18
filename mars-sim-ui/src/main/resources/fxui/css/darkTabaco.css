@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * mainskin.css
+ * darkTabacp.css
  * General CSS classes for MSP UI
  * @version 3.08 2015-01-27
  * @author Lars Næsbye Christensen
@@ -25,6 +25,44 @@
 	-fx-accent: darkgoldenrod;
 	-fx-font-family: "Noto";
 }
+
+
+.menu-bar {
+	-fx-font-weight: bold;
+	-fx-font-family: "Segoe UI Light";
+	-fx-font-size: 10pt;
+	-fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, white 0%, #504313 100%),
+        white,
+        grey,
+        radial-gradient(center 50% 50%, radius 100%, grey, #504313);
+    -fx-text-fill: yellow;
+    -fx-border-color: rgb(49, 89, 23);
+}
+
+.menu-item {
+	-fx-font-weight: normal;
+	-fx-font-family: "Segoe UI Light";
+	-fx-font-size: 10pt;
+	-fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, white 0%, #504313 100%),
+        white,
+        grey,
+        radial-gradient(center 50% 50%, radius 100%, grey, #504313);
+    -fx-text-fill: white;
+/*    -fx-border-color: rgb(49, 89, 23); */
+}
+
+.menu .label {
+    -fx-text-fill: white;
+   	-fx-font-weight: bold;
+}
+
+
+.context-menu {
+    -fx-background-color: #504313;
+}
+
 
 .tab {
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));

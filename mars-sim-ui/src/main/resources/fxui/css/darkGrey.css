@@ -26,6 +26,43 @@
 	-fx-font-family: "Noto";
 }
 
+
+.menu-bar {
+	-fx-font-weight: bold;
+	-fx-font-family: "Segoe UI Light";
+	-fx-font-size: 10pt;
+	-fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, white 0%, black 100%),
+        white,
+        grey,
+        radial-gradient(center 50% 50%, radius 100%, grey, black);
+    -fx-text-fill: yellow;
+    -fx-border-color: grey;
+}
+
+.menu-item {
+	-fx-font-weight: normal;
+	-fx-font-family: "Segoe UI Light";
+	-fx-font-size: 10pt;
+	-fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, white 0%, black 100%),
+        white,
+        grey,
+        radial-gradient(center 50% 50%, radius 100%, grey, black);
+    -fx-text-fill: white;
+/*    -fx-border-color: grey; */
+}
+
+.menu .label {
+    -fx-text-fill: white;
+   	-fx-font-weight: bold;
+}
+
+
+.context-menu {
+    -fx-background-color: grey;
+}
+
 .tab {
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }

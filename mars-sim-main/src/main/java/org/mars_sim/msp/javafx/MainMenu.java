@@ -247,9 +247,6 @@ public class MainMenu {
        //mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        mainMenuStage.show();
 
-       createProgressCircle();
-       circleStage.hide();
-
        // Starts a new stage for MainScene
 	   mainSceneStage = new Stage();
 	   //mainSceneStage.initModality(Modality.NONE);
@@ -261,6 +258,8 @@ public class MainMenu {
 
 	   mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
 
+       createProgressCircle();
+       circleStage.hide();
    }
 
    public Stage getStage() {
@@ -275,21 +274,23 @@ public class MainMenu {
 	   return multiplayerMode;
 	}
 
-   public void runOne() {
+   public void runOne() {	  
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+
 	   mainMenuStage.setIconified(true); //hide();
 	   mainScene = new MainScene(mainSceneStage);
 	   marsProjectFX.handleNewSimulation();
    }
 
    public void runTwo() {
+	   
 		Future future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
 		
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
 		Platform.runLater(() -> {
-			mainMenuScene.setCursor(Cursor.WAIT);
-			// TODO: the ring won't turn until a couple of seconds later
+		//	mainMenuScene.setCursor(Cursor.WAIT);
+			// TODO: the ring won't turn after a couple of seconds 
 			circleStage.show();
 			circleStage.requestFocus();
 		});	
@@ -298,10 +299,11 @@ public class MainMenu {
 		mainScene = new MainScene(mainSceneStage);		   
 
 		// 2015-10-13 Set up a Task Thread
-		Task task = new Task() {
+		Task task = new Task<Void>() {
             @Override
-            protected Integer call() throws Exception {
+            protected Void call() {
 				try {
+					
 					   TimeUnit.MILLISECONDS.sleep(2000L);
 					   // Note 1: The delay time for launching the JavaFX UI should also be based on the file size of the default.sim
 					   long delay_time = (long) (fileSize * 4000L);
@@ -336,10 +338,13 @@ public class MainMenu {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-
-                return 0;
+				return null;
             }
         };
+        
+        //ProgressIndicator ind = createProgressCircle();
+        //ind.progressProperty().bind(task.progressProperty());       
+
         Thread th = new Thread(task);
         th.setDaemon(true);
         th.start();
@@ -353,14 +358,14 @@ public class MainMenu {
 			fileSize = 1;
 			logger.info("Loading settlement data from the default saved simulation...");
 			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
-			System.out.println("done with loadSimulation(null)");
+			//System.out.println("done with loadSimulation(null)");
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
 			Simulation.instance().start();
 			Simulation.instance().stop();
 			Simulation.instance().start();
 			Platform.runLater(() -> {
 				prepareScene();
-				System.out.println("done with prepareScene()");
+				//System.out.println("done with prepareScene()");
 			});
 		}
 	}
@@ -609,7 +614,7 @@ public class MainMenu {
    /*
     * Create the progress circle animation while waiting for loading the main scene
     */
-	public void createProgressCircle() {
+	public ProgressIndicator createProgressCircle() {
 
 		StackPane stackPane = new StackPane();
 
@@ -636,6 +641,7 @@ public class MainMenu {
 		circleStage.setScene(scene);
         circleStage.show();
 
+        return indicator;
 	}
 
 	public Stage getCircleStage() {

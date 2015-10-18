@@ -25,9 +25,9 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * Window for the mission tool.

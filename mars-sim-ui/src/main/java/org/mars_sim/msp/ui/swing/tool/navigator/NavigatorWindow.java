@@ -46,7 +46,6 @@ import org.mars_sim.msp.core.mars.Landmark;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.LandmarkMapLayer;
@@ -61,6 +60,7 @@ import org.mars_sim.msp.ui.swing.tool.map.TopoMarsMap;
 import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
 import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 

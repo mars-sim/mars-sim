@@ -88,10 +88,10 @@ public class TableStyle extends ZebraJTable{
 
 
     	if (theme == 1) { // LightTabaco + olive
-    		hBack = new Color(82, 71, 39); // 82, 71, 39 Pantone Coated brownish-green // 33, 66, 0 dark green
+    		hBack = new Color(148, 169, 80); // 82, 71, 39 Pantone Coated brownish-green // 33, 66, 0 dark green
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255); // white
-    		fore = new Color(139, 71, 38); // 139 71 38	sienna4 dark brown orange
+    		fore = new Color(148, 169, 80); // 139 71 38	sienna4 dark brown orange
     		selBack = new Color(110,139,61); // 110,139,61	pale olive green
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
@@ -99,43 +99,43 @@ public class TableStyle extends ZebraJTable{
     		themeName = "LightTabaco";
     	}
     	else if (theme == 2) { // Burdeos
-    		hBack = new Color(187, 79, 81); // 187, 79, 81 Pantone Metallic Red, //117, 0, 0 pale dark red
+    		hBack = new Color(119, 46, 47); // 187, 79, 81 Pantone Metallic Red, //117, 0, 0 pale dark red
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
-    		fore = new Color(139, 71, 38); // 139 71 38	sienna4
+    		fore = new Color(119, 46, 47); // 139 71 38	sienna4
     		selBack = new Color(167, 81, 84); // pale red // 139,26,26); // 139,26,26 firebrick
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-    		border = Color.RED;
+    		border = Color.black;
     		themeName = "Burdeos";
     	}
-    	else if (theme == 3) { // DarkTabaco
-    		hBack = new Color(49, 38, 29); // 49, 38, 29 Pantone Coated Black // 34, 23, 9 very very dark orange or use 9, 33, 34 very very dark cyan
+    	else if (theme == 3) { // DarkTabaco // grey brown
+    		hBack = new Color(153, 78, 37); // 49, 38, 29 Pantone Coated Black // 34, 23, 9 very very dark orange or use 9, 33, 34 very very dark cyan
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
-    		fore = new Color(139, 71, 38); // 139 71 38	sienna4
+    		fore = new Color(153, 78, 37); // 
     		selBack = new Color(139,87,66); // 139,87,66 lightsalmon 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-    		border = Color.GRAY;
+    		border = Color.WHITE;
     		themeName = "DarkTabaco";
     	}
     	else if (theme == 4) { // darkgrey + lime green
     		hBack = new Color(94, 106, 96); // 94, 106, 96 Very dark grayish lime green.
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
-    		fore = new Color(139, 71, 38); // 139 71 38	sienna4
+    		fore = new Color(94, 106, 96); // 139 71 38	sienna4
     		selBack = new Color(139,119,101); // 139,119,101 peachpuff 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-    		border = Color.GREEN;
+    		border = Color.GRAY;
     		themeName = "DarkGrey";
     	}
     	else if (theme == 5) { // night + purple
     		hBack = new Color(87, 87, 211); // 87, 87, 211 light purple
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
-    		fore = new Color(139, 71, 38); // 139 71 38	sienna4
+    		fore = new Color(87, 87, 211); // 139 71 38	sienna4
     		selBack = new Color(22,55,139); // 22	55	139	mediumorchid 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
@@ -143,10 +143,10 @@ public class TableStyle extends ZebraJTable{
     		themeName = "Night";
     	}
     	else if (theme == 6) { // snow + skyblue
-    		hBack = new Color(100, 149, 237); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
+    		hBack = new Color(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
-    		fore = new Color(139, 71, 38); // 139 71 38	sienna4
+    		fore = new Color(31, 151, 229); // 139 71 38	sienna4
     		selBack = new Color(70,130,180); //70 130	180	 steelblue
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange

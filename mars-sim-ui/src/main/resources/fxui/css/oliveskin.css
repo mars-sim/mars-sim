@@ -55,6 +55,10 @@
     -fx-background-color: #88976d;
 }
 
+.menu .label {
+    -fx-text-fill: black;
+}
+
 
 .button{
 	-fx-background-color:

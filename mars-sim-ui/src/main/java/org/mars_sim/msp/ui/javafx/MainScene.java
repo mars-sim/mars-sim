@@ -297,7 +297,7 @@ public class MainScene {
 		// 2015-05-26 Create the dndTabPane.
 		dndTabPane = new DndTabPane();
 		StackPane containerPane = new StackPane(dndTabPane);
-		containerPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
+		//containerPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
 
 		// We need to create the skin manually, could also be your custom skin.
 		DnDTabPaneSkin skin = new DnDTabPaneSkin(dndTabPane);
@@ -434,7 +434,7 @@ public class MainScene {
 
 		} else if (theme == 2) { // burgundy red
 			cssColor = "/fxui/css/burgundyskin.css";
-			updateThemeColor(Color.ORANGERED, Color.YELLOW, cssColor);
+			updateThemeColor(Color.rgb(140,0,26), Color.YELLOW, cssColor); // ORANGERED
 			//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
 			lookAndFeelTheme = "Burdeos";
@@ -452,17 +452,17 @@ public class MainScene {
 
 		} else if (theme == 5) { // + purple
 			cssColor = "/fxui/css/nightViolet.css";
-			updateThemeColor(Color.DARKMAGENTA, Color.SLATEBLUE, cssColor);
+			updateThemeColor(Color.rgb(73,55,125), Color.rgb(73,55,125), cssColor); // DARKMAGENTA, SLATEBLUE
 			lookAndFeelTheme = "Night";
 
 		} else if (theme == 6) { // + skyblue
 			cssColor = "/fxui/css/snowBlue.css";
-			updateThemeColor(Color.DARKCYAN, Color.CADETBLUE, cssColor);
+			updateThemeColor(Color.rgb(0,107,184), Color.rgb(0,107,184), cssColor); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
 
 		} else if (theme == 7) { // standard
-			cssColor = "/fxui/css/mainskin.css";
-			updateThemeColor(Color.CORAL, Color.ORANGE, cssColor);
+			cssColor = "/fxui/css/nimrodskin.css";
+			updateThemeColor(Color.rgb(156,77,0), Color.rgb(156,77,0), cssColor); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
 		}
 
@@ -473,7 +473,7 @@ public class MainScene {
 	 * Updates the theme colors of statusBar, swingPane and menuBar
 	 */
 	// 2015-08-29 Added updateThemeColor()
-	public void updateThemeColor(Color txtColor, Color btnColor, String cssColor) {
+	public void updateThemeColor(Color txtColor, Color btnTxtColor, String cssColor) {
 		swingPane.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 		menuBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 
@@ -485,9 +485,9 @@ public class MainScene {
 
 		statusBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 
-		memBtn.setTextFill(btnColor);
-		clkBtn.setTextFill(btnColor);
-		cpuBtn.setTextFill(btnColor);
+		memBtn.setTextFill(btnTxtColor);
+		clkBtn.setTextFill(btnTxtColor);
+		cpuBtn.setTextFill(btnTxtColor);
 	}
 	/**
 	 * Creates and starts the earth timer

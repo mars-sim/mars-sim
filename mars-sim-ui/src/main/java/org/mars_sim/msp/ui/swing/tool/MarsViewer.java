@@ -53,6 +53,7 @@ import javax.swing.event.InternalFrameListener;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 public class MarsViewer
 extends ToolWindow

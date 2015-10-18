@@ -19,6 +19,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.WindowConstants;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -36,6 +37,9 @@ class TableProperties extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 
     // Data members
+	/** True if window is open. */
+	protected boolean opened;
+
 	/** Table to change. */
     private TableColumnModel model;
     /** Checkboxes. */
@@ -93,9 +97,29 @@ class TableProperties extends JInternalFrame {
         }
 
         mainPane.add(columnPane, BorderLayout.CENTER);
+        
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        
         pack();
         main.add(this);
     }
+
+
+	/**
+	 * Checks if the tool window has previously been opened.
+	 * @return true if tool window has previously been opened.
+	 */
+	public boolean wasOpened() {
+		return opened;
+	}
+
+	/**
+	 * Sets if the window has previously been opened.
+	 * @param opened true if previously opened.
+	 */
+	public void setWasOpened(boolean opened) {
+		this.opened = opened;
+	}
 
     /**
      * The user has selected a column in the dialog.

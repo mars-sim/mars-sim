@@ -31,7 +31,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**

@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.HTMLContentPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
  * The GuideWindow is a tool window that displays the built-in User Guide,

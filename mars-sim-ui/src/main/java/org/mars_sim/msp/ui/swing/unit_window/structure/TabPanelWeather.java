@@ -374,7 +374,7 @@ extends TabPanel {
 	private void openStormTracking() {
 
 		MainWindow mw = desktop.getMainWindow();
-		if (mw !=null )  {
+		if (mw != null )  {
 			// Pause simulation.
 			mw.pauseSimulation();
 			// Create Storm Tracking Window.
@@ -385,7 +385,7 @@ extends TabPanel {
 		}
 
 		MainScene ms = desktop.getMainScene();
-		if (ms !=null )  {
+		if (ms != null )  {
 			// Pause simulation.
 			ms.pauseSimulation();
 			// Create Storm Tracking Window..

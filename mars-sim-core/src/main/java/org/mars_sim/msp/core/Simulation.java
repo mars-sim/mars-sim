@@ -402,7 +402,7 @@ implements ClockListener, Serializable {
         if (f.exists() && f.canRead()) {
             try {
     			fileSize = (f.length() / 1024D / 1024D);
-    			System.out.println("The saved sim has a file size of " + Math.round(fileSize*100.000)/100.000 + " MB" );    			
+    			logger.info("The saved sim has a file size of " + Math.round(fileSize*1000.00)/1000.00 + " MB" );    			
                 simulation.readFromFile(f);
 
             } catch (ClassNotFoundException ex) {
@@ -498,6 +498,7 @@ implements ClockListener, Serializable {
         instance().initialSimulationCreated = true;
     }
 
+    
     /**
      * Saves a simulation instance to a save file.
      * @param file the file to be saved to.

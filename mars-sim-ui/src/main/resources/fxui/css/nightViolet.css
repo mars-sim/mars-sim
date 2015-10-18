@@ -26,6 +26,47 @@
 	-fx-font-family: "Noto";
 }
 
+
+.menu-bar {
+	-fx-font-weight: bold;
+	-fx-font-family: "Segoe UI Light";
+	-fx-font-size: 10pt;
+	-fx-background-color:
+/*	    linear-gradient(from 0% 93% to 0% 100%, white 0%, #5a59c7 100%),
+        white,
+        white,
+        radial-gradient(center 50% 50%, radius 100%, white, #5a59c7); */
+       	linear-gradient(from 0% 93% to 0% 100%, white 0%, #5a59c7 100%),
+        #9392da,
+        white,
+        radial-gradient(center 50% 50%, radius 100%, #9392da, #5a59c7);
+    -fx-text-fill: black;
+    -fx-border-color: #5a59c7;
+}
+
+.menu-item {
+	-fx-font-weight: normal;
+	-fx-font-family: "Segoe UI Light";
+	-fx-font-size: 10pt;
+	-fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, white 0%, #5a59c7 100%),
+        #9392da,
+        white,
+        radial-gradient(center 50% 50%, radius 100%, #9392da, #5a59c7);
+    -fx-text-fill: white;
+    -fx-border-color: #9392da7; 
+}
+
+.menu .label {
+    -fx-text-fill: white;
+   	-fx-font-weight: bold;
+}
+
+
+.context-menu {
+    -fx-background-color: #5a59c7;
+}
+
 .tab {
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }
@@ -51,12 +92,12 @@
 
 .button{
 	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #202020 0%, #5b00b4 100%),
-        #202020,
+	    linear-gradient(from 0% 93% to 0% 100%, #9392da 0%, #49377d 100%),
+        #9392da,
         #3e3e3e,
-        radial-gradient(center 50% 50%, radius 100%, #3e3e3e, #5b00b4);
+        radial-gradient(center 50% 50%, radius 100%, #3e3e3e, #49377d);
 
-    -fx-text-fill: #FF8000;
+    -fx-text-fill: white;
     -fx-border-color: #663300;
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;

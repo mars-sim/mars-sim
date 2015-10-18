@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import javafx.application.Platform;
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.Modality;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -415,7 +416,7 @@ public class SettlementTransparentPanel extends JComponent {
 		renameBtn.setBorder(new LineBorder(Color.green, 1, true));
 		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.rename")); //$NON-NLS-1$
 		renameBtn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
+			public void actionPerformed(ActionEvent evt) {
 				renameSettlement();
 			}
 		});
@@ -669,6 +670,64 @@ public class SettlementTransparentPanel extends JComponent {
         } */
 	}
 
+	
+	/**
+	 * Change and validate the new name of the Settlement
+	 * @return call Dialog popup
+	 */
+	// 2014-10-26 Modified renameSettlement()
+	public void renameSettlement() {
+
+		String oldName = mapPanel.getSettlement().getName();
+
+		//logger.info("Old name was " + oldName);
+		//boolean isFX = Platform.isFxApplicationThread();
+
+		if (desktop.getMainScene() != null) {
+
+			Platform.runLater(() -> {
+				String newName = askNameFX(oldName);
+
+				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
+				if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
+					//System.out.println("newName is " + newName);
+					newName = askNameFX(oldName);
+
+					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
+						return;
+					else
+						mapPanel.getSettlement().changeName(newName);
+				}
+				else {
+					mapPanel.getSettlement().changeName(newName);
+					//logger.info("New name is now " + newName);
+				}
+			});
+				
+			//desktop.closeToolWindow(SettlementWindow.NAME);
+			//desktop.openToolWindow(SettlementWindow.NAME);
+		}
+
+		else {
+
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			//String nameCache = settlement.getType();
+			String settlementNewName = askNameDialog();
+
+			if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
+				settlementNewName = askNameDialog();
+			else {
+				mapPanel.getSettlement().changeName(settlementNewName);
+			}
+
+			desktop.closeToolWindow(SettlementWindow.NAME);
+			desktop.openToolWindow(SettlementWindow.NAME);
+
+		}
+
+	}
+
+
 	/**
 	 * Ask for a new Settlement name
 	 * @return pop up jDialog
@@ -689,6 +748,8 @@ public class SettlementTransparentPanel extends JComponent {
 	public String askNameFX(String oldName) {
 		String newName = null;
 		TextInputDialog dialog = new TextInputDialog(oldName);
+		dialog.initOwner(desktop.getMainScene().getStage());
+		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
 		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));
 		dialog.setContentText(Msg.getString("BuildingPanel.renameBuilding.dialog.content"));
@@ -700,68 +761,10 @@ public class SettlementTransparentPanel extends JComponent {
 		    //logger.info("The settlement name has been changed to : " + result.get());
 			newName = result.get();
 		}
-
+		
 		return newName;
 	}
-	/**
-	 * Change and validate the new name of the Settlement
-	 * @return call Dialog popup
-	 */
-	// 2014-10-26 Modified renameSettlement()
-	public void renameSettlement() {
-
-		String oldName = mapPanel.getSettlement().getName();
-
-		//logger.info("Old name was " + oldName);
-		//boolean isFX = Platform.isFxApplicationThread();
-
-		if (desktop.getMainScene() != null) {
-
-			Platform.runLater(() -> {
-
-				String newName = askNameFX(oldName);
-
-				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
-				if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
-					//System.out.println("newName is " + newName);
-					newName = askNameFX(oldName);
-
-					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
-						return;
-					else
-						mapPanel.getSettlement().changeName(newName);
-
-				}
-
-				else {
-
-					mapPanel.getSettlement().changeName(newName);
-					//logger.info("New name is now " + newName);
-				}
-
-			});
-
-		}
-
-		else {
-
-			JDialog.setDefaultLookAndFeelDecorated(true);
-			//String nameCache = settlement.getType();
-			String settlementNewName = askNameDialog();
-
-			if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
-				settlementNewName = askNameDialog();
-			else {
-				mapPanel.getSettlement().changeName(settlementNewName);
-			}
-
-		}
-
-		desktop.closeToolWindow(SettlementWindow.NAME);
-		desktop.openToolWindow(SettlementWindow.NAME);
-
-	}
-
+	
 	/**
 	 * Inner class combo box model for settlements.
 	 */
