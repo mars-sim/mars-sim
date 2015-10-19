@@ -46,6 +46,8 @@ public class SettlementTable extends JTable {
 
 	public static final long serialVersionUID = 1L;
 
+	public static final int NUM_DISPLAYING_COLUMNS = 7; // currently not displaying column 7 and 8
+	
 	public static final int COLUMN_PLAYER_NAME = 0;
 	public static final int COLUMN_SETTLEMENT_NAME = 1;
 	public static final int COLUMN_TEMPLATE = 2;
@@ -114,17 +116,17 @@ public class SettlementTable extends JTable {
 		    public void actionPerformed(ActionEvent e){
 		        JTable settlementTable = (JTable)e.getSource();
 		        int modelRow = Integer.valueOf( e.getActionCommand() );
-		        //((SettlementTableModel)settlementTable.getModel()).editMSD(modelRow);
+		        ((SettlementTableModel)settlementTable.getModel()).editMSD(modelRow);
 		        settlementTableModel.editMSD(modelRow);
 		    }};
-		ButtonColumn buttonColumn = new ButtonColumn(this, editAction, COLUMN_EDIT_MSD);
+		//ButtonColumn buttonColumn = new ButtonColumn(this, editAction, COLUMN_EDIT_MSD);
 		//buttonColumn.setMnemonic(KeyEvent.VK_E);
 
 		// 2015-10-03 Determines proper width for each column and center aligns each cell content
         adjustColumn();
 
-	    CheckBoxRenderer checkBoxRenderer = new CheckBoxRenderer();
-	    getColumnModel().getColumn(COLUMN_HAS_MSD).setCellRenderer(checkBoxRenderer);
+	    //CheckBoxRenderer checkBoxRenderer = new CheckBoxRenderer();
+	    //getColumnModel().getColumn(COLUMN_HAS_MSD).setCellRenderer(checkBoxRenderer);
 
 	}
 
@@ -143,15 +145,17 @@ public class SettlementTable extends JTable {
     private void adjustColumn() {//JTable table) {
     	// If all column heads are wider than the column's cells'
         // contents, then you can just use column.sizeWidthToFit().
-    	final Object[] longValues = {"Jane123",
+    	final Object[] longValues = {
+    			"Jane123",
     			"Schiaparelli Point",
                 "Mars Direct Base (phase 1)",
                 new Integer(18),
                 new Integer(16),
                 new Integer(22),
                 new Integer(22),
-                Boolean.TRUE,
-                "Edit " };
+                //Boolean.TRUE,
+                //"Edit " 
+                };
 
     	boolean DEBUG = false;
     	//SettlementTableModel model = settlementTableModel; //(SettlementTableModel)table.getModel();
@@ -165,7 +169,7 @@ public class SettlementTable extends JTable {
     	DefaultTableCellRenderer defaultTableCellRenderer = new DefaultTableCellRenderer();
     	defaultTableCellRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < NUM_DISPLAYING_COLUMNS; i++) {
 
             column = getColumnModel().getColumn(i);
 

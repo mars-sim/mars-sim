@@ -4,7 +4,7 @@
  * @version 3.08 2015-03-30
  * @author Manny Kung
  */
-package org.mars_sim.msp.javafx;
+package org.mars_sim.msp.javafx.configEditor;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -18,6 +18,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,6 +29,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -36,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -48,7 +51,6 @@ import javafx.stage.Stage;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
-import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX;
 
 
 /**
@@ -62,50 +64,68 @@ public class CrewEditorFX {
 	public static final int SIZE_OF_CREW = 4;
 
 	// Data members
-	private PersonConfig pc;// = SimulationConfig.instance().getPersonConfiguration();
+	private PersonConfig personConfig;// = SimulationConfig.instance().getPersonConfiguration();
 
 	private GridPane gridPane;
 
 	//private SimulationConfig config; // needed in the constructor
 
-	private List<TextField> nameTF  = new ArrayList<TextField>();
+	private List<TextField> nameTF;//  = new ArrayList<TextField>();
 
 	private ComboBox<String> personalityOListComboBox;
 	private ComboBox<String> jobsOListComboBox;
 	private ComboBox<String> genderOListComboBox;
 
-	private List<ComboBox<String>> genderList = new ArrayList<ComboBox<String>>();
-	private List<ComboBox<String>> jobsList = new ArrayList<ComboBox<String>>();
-	private List<ComboBox<String>> personalityList = new ArrayList<ComboBox<String>>();
+	private List<ComboBox<String>> genderList;// = new ArrayList<ComboBox<String>>();
+	private List<ComboBox<String>> jobsList;// = new ArrayList<ComboBox<String>>();
+	private List<ComboBox<String>> personalityList;// = new ArrayList<ComboBox<String>>();
 
 	private boolean[][] personalityArray;// = new boolean [4][SIZE_OF_CREW];
 
+	private boolean goodToGo = true;
+	
 	private Stage stage;
 	private ScenarioConfigEditorFX scenarioConfigEditorFX;
 
+	//private final SimpleStringProperty nameProp;
+	
 	/**
 	 * Constructor.
-	 * @param config SimulationConfig
+	 * @param simulationConfig SimulationConfig
 	 * @param scenarioConfigEditorFX ScenarioConfigEditorFX
 	 */
-	public CrewEditorFX(SimulationConfig config, ScenarioConfigEditorFX scenarioConfigEditorFX ) {
+	public CrewEditorFX(SimulationConfig simulationConfig, ScenarioConfigEditorFX scenarioConfigEditorFX ) {
 
-		//this.config = config;
-		pc = config.getPersonConfiguration();
+		this.personConfig = simulationConfig.getPersonConfiguration();
 		this.scenarioConfigEditorFX = scenarioConfigEditorFX;
 
 		personalityArray = new boolean [4][SIZE_OF_CREW];
 
+		nameTF  = new ArrayList<TextField>();
+		genderList = new ArrayList<ComboBox<String>>();
+		jobsList = new ArrayList<ComboBox<String>>();
+		personalityList = new ArrayList<ComboBox<String>>();
+		
 		createGUI();
+		
+		//nameProp = new SimpleStringProperty();
 	}
 
 	// 2015-10-07 Added and revised createGUI()
+	@SuppressWarnings("restriction")
 	public void createGUI() {
 
+/*		
+		if (!nameTF.isEmpty())
+			for (int i = 0; i< SIZE_OF_CREW; i++) {
+				System.out.println(" i is " + i);
+				String nameStr = nameTF.get(i).getText();
+				System.out.println(" name is " + nameStr);
+			}
+*/		
 		scenarioConfigEditorFX.setCrewEditorOpen(true);
-
+	
 		stage = new Stage();
-
 		Group root = new Group();
 
 		BorderPane borderAll = new BorderPane();
@@ -160,8 +180,8 @@ public class CrewEditorFX {
 
 		for (int col = 1 ; col < SIZE_OF_CREW + 1; col++) {
 			setUpCrewPersonality(col);
-		}
-
+		}		
+		
 		// Create button pane.
 		HBox hBottom = new HBox();
 		hBottom.setAlignment(Pos.CENTER);
@@ -169,43 +189,70 @@ public class CrewEditorFX {
 		// Create commit button.
 		Button commitButton = new Button("Commit Changes");
 		commitButton.setAlignment(Pos.CENTER);
-		commitButton.setOnAction((event) -> {
-
-				for (int i = 0; i< SIZE_OF_CREW; i++) {
-					String nameStr = nameTF.get(i).getText();
-					//System.out.println(" name is " + nameStr);
-					// update PersonConfig with the new name
-					pc.setPersonName(i, nameStr);
-					//System.out.println(" i is " + i);
-					String genderStr = genderList.get(i).getValue();
-					if ( genderStr.equals("M")  )
-						genderStr = "MALE";
-					else if ( genderStr.equals("F") )
-						genderStr = "FEMALE";
-					//System.out.println(" gender is " + genderStr);
-					// update PersonConfig with the new gender
-					pc.setPersonGender(i, genderStr);
-
-					String personalityStr = getPersonality(i); //(String) personalityList.get(i).getValue();
-					//System.out.println(" personality is " + personalityStr);
-					// update PersonConfig with the new personality
-					pc.setPersonPersonality(i, personalityStr);
-
-					//String jobStr = jobTF.get(i).getText();
-					String jobStr = (String) jobsList.get(i).getValue();
-					//System.out.println(" job is " + jobStr);
-					// update PersonConfig with the new job
-					pc.setPersonJob(i, jobStr);
-				}
-
-				scenarioConfigEditorFX.setCrewEditorOpen(false);
-				stage.close();
-
-
-		});
-
+		commitButton.requestFocus();
 		hBottom.getChildren().add(commitButton);
 		borderAll.setBottom(hBottom);
+		commitButton.setOnAction((event) -> {
+			
+			goodToGo = true;
+			
+			for (int i = 0; i< SIZE_OF_CREW; i++) {
+				//System.out.println(" i is " + i);
+				//String nameStr = nameTF.get(i).getText();
+				//System.out.println(" name is " + nameTF.get(i).getText());
+				//2015-10-19 Added isBlank() and checking against invalid names
+				if (!isBlank(nameTF.get(i).getText())) { 
+					// update PersonConfig with the new name
+					personConfig.setPersonName(i, nameTF.get(i).getText());
+					//System.out.println(" name is " + nameTF.get(i).getText());
+					goodToGo = true && goodToGo;
+					//System.out.println("goodToGo is "+ goodToGo);
+		        }
+				else {
+					Alert alert = new Alert(AlertType.ERROR, "A settler's name is invalid. Please double check again!");
+					alert.initOwner(stage);
+					alert.showAndWait();
+					goodToGo = false;
+					scenarioConfigEditorFX.disableStartButton();
+					//System.out.println("goodToGo is set to "+ goodToGo);
+					//event.consume();
+					//System.out.println("event is consumed");
+					nameTF.get(i).requestFocus();
+					//System.out.println("nameTF.get(i).getText() is " + nameTF.get(i).getText());
+					return;
+				}
+
+				//System.out.println("continue ");
+				
+				String genderStr = genderList.get(i).getValue();
+				if ( genderStr.equals("M")  )
+					genderStr = "MALE";
+				else if ( genderStr.equals("F") )
+					genderStr = "FEMALE";
+				//System.out.println(" gender is " + genderStr);
+				// update PersonConfig with the new gender
+				personConfig.setPersonGender(i, genderStr);
+		
+				String personalityStr = getPersonality(i); //(String) personalityList.get(i).getValue();
+				//System.out.println(" personality is " + personalityStr);
+				// update PersonConfig with the new personality
+				personConfig.setPersonPersonality(i, personalityStr);
+		
+				//String jobStr = jobTF.get(i).getText();
+				String jobStr = (String) jobsList.get(i).getValue();
+				//System.out.println(" job is " + jobStr);
+				// update PersonConfig with the new job
+				personConfig.setPersonJob(i, jobStr);
+				
+			}
+			
+			//System.out.println("goodToGo is "+ goodToGo);
+			if (goodToGo) {
+				scenarioConfigEditorFX.setCrewEditorOpen(false);
+				stage.hide();
+			}
+			
+		});
 
 		Scene scene = new Scene(root);
 
@@ -227,19 +274,61 @@ public class CrewEditorFX {
 			//stage.close(); already implied
 		} );
 	}
+	
+	/*
+	 * Validates and saves the current alpha crew configuration
+	 */
+	//2015-10-19 Added validateRecordChange
+	//public void validateRecordChange(ActionEvent event) {}
 
+ /**
+	 * <p>Checks if a String is whitespace, empty ("") or null.</p>
+	 *
+	 * <pre>
+	 * StringUtils.isBlank(null)      = true
+	 * StringUtils.isBlank("")        = true
+	 * StringUtils.isBlank(" ")       = true
+	 * StringUtils.isBlank("bob")     = false
+	 * StringUtils.isBlank("  bob  ") = false
+	 * </pre>
+	 *
+	 * @param str  the String to check, may be null
+	 * @return <code>true</code> if the String is null, empty or whitespace
+	 * @since 2.0
+	 * @author commons.apache.org
+	 */
+	// 2015-10-19 Added isBlank()
+	public static boolean isBlank(String str) {
+	    int strLen;
+	    if (str == null || (strLen = str.length()) == 0) {
+	        return true;
+	    }
+	    for (int i = 0; i < strLen; i++) {
+	        if ((Character.isWhitespace(str.charAt(i)) == false)) {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
+	
 	public Stage getStage() {
 		return stage;
 	}
 
 	public void setUpCrewName() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
-			String n = pc.getConfiguredPersonName(i);
+			String n = personConfig.getConfiguredPersonName(i);
+			SimpleStringProperty np = new SimpleStringProperty(n);
 			//System.out.println(" name is "+ n);
 				TextField tf = new TextField();
 				nameTF.add(tf);
 				gridPane.add(tf, i+1, 1);
 				tf.setText(n);
+				//np.bindBidirectional(tf.textProperty());
+				//tf.textProperty().addListener((observable, oldValue, newValue) -> {
+				//    System.out.println("textfield changed from " + oldValue + " to " + newValue);
+				 //   tf.setText(newValue);
+				//});
 		}
 	}
 
@@ -280,7 +369,7 @@ public class CrewEditorFX {
 
 		String s[] = new String[SIZE_OF_CREW];
 		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
-			PersonGender n = pc.getConfiguredPersonGender(j);
+			PersonGender n = personConfig.getConfiguredPersonGender(j);
 			// convert MALE to M, FEMAL to F
 			s[j] = n.toString();
 			if (s[j].equals("MALE")) s[j] = "M";
@@ -496,7 +585,7 @@ public class CrewEditorFX {
 	public void setUpCrewJob() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
 			String n[] = new String[15];
-			n[i] = pc.getConfiguredPersonJob(i);
+			n[i] = personConfig.getConfiguredPersonJob(i);
 			ComboBox<String> g = setUpCB(2);		// 2 = Job
 		    //g.setMaximumRowCount(8);
 		    gridPane.add(g, i+1, 3);			// row = 3
@@ -505,13 +594,21 @@ public class CrewEditorFX {
 		}
 	}
 
+	boolean isGoodToGo() {
+		//System.out.println("calling isGoodToGo(). goodToGo is "+ goodToGo );
+		return goodToGo; 
+	}
 
 	/**
 	 * Prepare this window for deletion.
 	 */
 	public void destroy() {
-		pc = null;
-		//config = null;
+		personConfig = null;
+		stage = null;
+		scenarioConfigEditorFX = null;
+		personConfig  = null;
+		gridPane  = null;
+
 	}
 
 

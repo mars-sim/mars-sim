@@ -33,6 +33,8 @@ import java.util.Optional;
 import javafx.application.Platform;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Modality;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -686,8 +688,17 @@ public class SettlementTransparentPanel extends JComponent {
 		if (desktop.getMainScene() != null) {
 
 			Platform.runLater(() -> {
+				
 				String newName = askNameFX(oldName);
-
+				if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
+					mapPanel.getSettlement().changeName(newName);
+	            }
+				else {
+					Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
+					alert.initOwner(desktop.getMainScene().getStage());
+					alert.showAndWait();
+				}
+/*
 				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
 				if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
 					//System.out.println("newName is " + newName);
@@ -702,8 +713,14 @@ public class SettlementTransparentPanel extends JComponent {
 					mapPanel.getSettlement().changeName(newName);
 					//logger.info("New name is now " + newName);
 				}
+*/				
+				
 			});
 				
+			
+			
+			
+			
 			//desktop.closeToolWindow(SettlementWindow.NAME);
 			//desktop.openToolWindow(SettlementWindow.NAME);
 		}
@@ -727,6 +744,35 @@ public class SettlementTransparentPanel extends JComponent {
 
 	}
 
+	 /**
+	 * <p>Checks if a String is whitespace, empty ("") or null.</p>
+	 *
+	 * <pre>
+	 * StringUtils.isBlank(null)      = true
+	 * StringUtils.isBlank("")        = true
+	 * StringUtils.isBlank(" ")       = true
+	 * StringUtils.isBlank("bob")     = false
+	 * StringUtils.isBlank("  bob  ") = false
+	 * </pre>
+	 *
+	 * @param str  the String to check, may be null
+	 * @return <code>true</code> if the String is null, empty or whitespace
+	 * @since 2.0
+	 * @author commons.apache.org
+	 */
+	// 2015-10-19 Added isBlank()
+	public static boolean isBlank(String str) {
+	    int strLen;
+	    if (str == null || (strLen = str.length()) == 0) {
+	        return true;
+	    }
+	    for (int i = 0; i < strLen; i++) {
+	        if ((Character.isWhitespace(str.charAt(i)) == false)) {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
 
 	/**
 	 * Ask for a new Settlement name

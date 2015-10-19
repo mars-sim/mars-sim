@@ -65,8 +65,8 @@ public class SettlementTableModel extends AbstractTableModel {
 			Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
 			Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
 			Msg.getString("SimulationConfigEditor.column.longitude"), //$NON-NLS-1$
-			Msg.getString("SimulationConfigEditor.column.hasMSD"), //$NON-NLS-1$
-			Msg.getString("SimulationConfigEditor.column.edit") //$NON-NLS-1$
+			//Msg.getString("SimulationConfigEditor.column.hasMSD"), //$NON-NLS-1$
+			//Msg.getString("SimulationConfigEditor.column.edit") //$NON-NLS-1$
 		};
 
 		// Load default settlements.

@@ -22,7 +22,9 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert.AlertType;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -533,6 +535,7 @@ extends JPanel {
 	 * @return call Dialog popup
 	 */
 	// 2014-11-27 Moved renameBuilding() from TabPanelBuilding.java to here
+	@SuppressWarnings("restriction")
 	private void renameBuilding() {
 
 		//boolean isRenamed;
@@ -547,13 +550,27 @@ extends JPanel {
 
 			Platform.runLater(() -> {
 
+				String newName = askNameFX(oldName);
+				if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
+					building.setNickName(newName);
+					logger.info("New name is now " + newName);
+					buildingNameLabel.setText(building.getNickName());
+	            }
+				else {
+					Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
+					alert.initOwner(desktop.getMainScene().getStage());
+					alert.showAndWait();
+				}
+				
+/*				
+ * 
 				String n = askNameFX(oldName);
 				//newName = name1;
 				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
-				if (n == null || n.trim() == "" || (n.trim().length() == 0)) {
+				if (isBlank(n)) { //n == null || n.trim() == "" || (n.trim().length() == 0)) {
 					//System.out.println("newName is " + newName);
 					n = askNameFX(oldName);
-					if (n == null || n.trim() == "" || (n.trim().length() == 0))
+					if (isBlank(n)) //n == null || n.trim() == "" || (n.trim().length() == 0))
 						return;
 					else {
 						building.setNickName(n);
@@ -566,6 +583,7 @@ extends JPanel {
 					logger.info("New name is now " + n);
 				}
 
+*/				
 			});
 
 		}
@@ -580,12 +598,43 @@ extends JPanel {
 			}
 			else {
 				building.setNickName(newName);
+				buildingNameLabel.setText(building.getNickName());
 				logger.info("New name is now " + newName);
 				//isRenamed = true;
 			}
 		}
 
 		//return isRenamed;
+	}
+
+ /**
+	 * <p>Checks if a String is whitespace, empty ("") or null.</p>
+	 *
+	 * <pre>
+	 * StringUtils.isBlank(null)      = true
+	 * StringUtils.isBlank("")        = true
+	 * StringUtils.isBlank(" ")       = true
+	 * StringUtils.isBlank("bob")     = false
+	 * StringUtils.isBlank("  bob  ") = false
+	 * </pre>
+	 *
+	 * @param str  the String to check, may be null
+	 * @return <code>true</code> if the String is null, empty or whitespace
+	 * @since 2.0
+	 * @author commons.apache.org
+	 */
+	// 2015-10-19 Added isBlank()
+	public static boolean isBlank(String str) {
+	    int strLen;
+	    if (str == null || (strLen = str.length()) == 0) {
+	        return true;
+	    }
+	    for (int i = 0; i < strLen; i++) {
+	        if ((Character.isWhitespace(str.charAt(i)) == false)) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
     /**

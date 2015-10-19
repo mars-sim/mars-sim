@@ -6,7 +6,6 @@
  */
 package org.mars_sim.msp.javafx.configEditor;
 
-import org.mars_sim.msp.javafx.CrewEditorFX;
 import org.mars_sim.msp.javafx.MainMenu;
 import org.mars_sim.msp.javafx.MarsProjectFX;
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
@@ -41,6 +40,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -171,6 +171,7 @@ public class ScenarioConfigEditorFX {
 		}
 
 	    createGUI();
+
 	}
 
 	public void createGUI() {
@@ -456,6 +457,21 @@ public class ScenarioConfigEditorFX {
 		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
 		startButton.setId("startButton");
 		startButton.setOnAction((event) -> {
+			
+			if (crewEditorFX != null) {
+				if (!crewEditorFX.isGoodToGo()) {
+					startButton.setDisable(true);
+					//System.out.println("start button is set to disable");
+					Alert alert = new Alert(AlertType.ERROR, "Please fix the invalid name(s) in the Crew Editor.");
+					alert.initOwner(stage);
+					alert.showAndWait();
+					event.consume();
+					return;
+				}
+				else{
+					
+				}
+			}
 
 			// Make sure any editing cell is completed, then check if error.
 			if (tableCellEditor != null) {
@@ -464,8 +480,7 @@ public class ScenarioConfigEditorFX {
 
 
 			if (!hasError) {
-				Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
-
+	
 				setConfiguration();
 				Platform.runLater(() -> {
 					waitLoading();
@@ -476,6 +491,8 @@ public class ScenarioConfigEditorFX {
 		            @Override
 		            protected Integer call() throws Exception {
 						try {
+							Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
+
 							//Platform.runLater(() -> {
 							//	waitLoading();
 							//});
@@ -509,6 +526,7 @@ public class ScenarioConfigEditorFX {
 
 		});
 
+				
 		// 2014-12-15 Added Edit Alpha Crew button.
 		crewButton = new Button(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
 		//alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
@@ -594,15 +612,18 @@ public class ScenarioConfigEditorFX {
 			crewEditorFX = new CrewEditorFX(config, this);
 			//System.out.println("new CrewEditorFX()");
 		} else if (!isCrewEditorOpen) {
-			crewEditorFX.createGUI();
-			//System.out.println("crewEditorFX.createGUI()");
+			//System.out.println("calling crewEditorFX.createGUI()");
+			//crewEditorFX.createGUI();
+			crewEditorFX.getStage().show();
 		}
 		else
 			crewEditorFX.getStage().requestFocus();
+		
 	}
 
 	public void setCrewEditorOpen(boolean value) {
 		isCrewEditorOpen = value;
+		startButton.setDisable(false);
 	}
 
 
@@ -659,6 +680,7 @@ public class ScenarioConfigEditorFX {
 		String longitude = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_LONGITUDE);
 		double lat = SettlementRegistry.convertLatLong2Double(latitude);
 		double lo = SettlementRegistry.convertLatLong2Double(longitude);
+/*
 		Boolean hasMSD = (Boolean) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_HAS_MSD);
 		String maxMSDStr = null;
 		int maxMSD = 0; // TODO: if hasMSD == 1, how do I load from settlementConfig
@@ -666,8 +688,8 @@ public class ScenarioConfigEditorFX {
 		//	maxMSDStr = Integer.toString(settlementConfig.getInitialSettlementMaxMSD(x));
 		//	maxMSD = Integer.parseInt(maxMSDStr);
 		//}
-
-		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude, maxMSD);
+*/
+		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude, 0);
 
 		//Send the newly created settlement to host server
 		if (multiplayerClient != null) {
@@ -926,6 +948,10 @@ public class ScenarioConfigEditorFX {
 
 	public Button getStartButton() {
 		return startButton;
+	}
+	
+	public void disableStartButton() {
+		startButton.setDisable(true);;
 	}
 
 	public Label getErrorLabel() {
