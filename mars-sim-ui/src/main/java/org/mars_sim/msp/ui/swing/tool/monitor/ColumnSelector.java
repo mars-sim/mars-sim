@@ -8,14 +8,18 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -25,14 +29,18 @@ import javax.swing.ListSelectionModel;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 
 /**
  * This window displays a list of columns from the specified model.
  * The columns displayed depends upon the final chart being rendered.
  */
+//2015-10-18 Switched from extending JDialog to JinternalFrame
 public class ColumnSelector
-extends JDialog {
-
+extends ModalInternalFrame {
+	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -43,18 +51,29 @@ extends JDialog {
 	/** Check boxes. */
 	private JList<?> columnList = null;
 	private int columnMappings[] = null;
-	private boolean okPressed = false;
+	private boolean okPressed = false;	
+	//private Frame owner;
+
 
 	/**
 	 * Constructs the dialog with a title and columns extracted from the
 	 * specified model.
-	 * @param owner the owner of the dialog.
+	 * @param desktop MainDesktopPane // owner the owner of the dialog.
 	 * @param model Model driving the columns.
 	 * @param bar Display selection for a Bar chart.
 	 */
-	public ColumnSelector(Frame owner, MonitorModel model, boolean bar) {
-		super(owner, model.getName(), true);
+	public ColumnSelector(MainDesktopPane desktop, MonitorModel model, boolean bar) {
+		//super(owner, model.getName(), true);
+		// Use ModalInternalFrame constructor
+        super(model.getName());    
 
+		// Create main panel
+        JPanel mainPane = new JPanel(new BorderLayout());
+        setContentPane(mainPane);
+	
+		// Set the border.
+		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
+		
 		// Add all valid columns into the list
 		Vector<String> items = new Vector<String>();
 		columnMappings = new int[model.getColumnCount()-1];
@@ -112,7 +131,22 @@ extends JDialog {
 		pane.add(buttonPanel, BorderLayout.SOUTH);
 		getContentPane().add(pane);
 
-		pack();
+		setSize(300, 400);
+		setPreferredSize(new Dimension (300, 400));
+		
+		Dimension desktopSize = desktop.getSize();
+	    Dimension size = this.getSize();
+	    int width = (desktopSize.width - size.width) / 2;
+	    int height = (desktopSize.height - size.height) / 2;
+	    setLocation(width, height);
+	    
+	    desktop.add(this);
+	    
+        setModal(true);  
+        
+	    //setVisible(true);
+		//pack();
+  
 	}
 
 	/**
@@ -121,9 +155,10 @@ extends JDialog {
 	 * @param model Model containing columns.
 	 * @return Array of column indexes to display.
 	 */
-	public static int[] createBarSelector(Frame window,
+	public static int[] createBarSelector(MainDesktopPane desktop,
 			MonitorModel model) {
-		ColumnSelector select = new ColumnSelector(window, model, true);
+        //System.out.println("ColumnSelector.java : start calling createBarSelector ");
+		ColumnSelector select = new ColumnSelector(desktop, model, true);
 		select.setVisible(true);
 		return select.getSelectedColumns();
 	}
@@ -134,9 +169,10 @@ extends JDialog {
 	 * @param model Model containign columns.
 	 * @return Column index to use as category.
 	 */
-	public static int createPieSelector(Frame window,
+	public static int createPieSelector(MainDesktopPane desktop,
 			MonitorModel model) {
-		ColumnSelector select = new ColumnSelector(window, model, false);
+        //System.out.println("ColumnSelector.java : start calling createPieSelector ");
+		ColumnSelector select = new ColumnSelector(desktop, model, false);
 		select.setVisible(true);
 		int [] columns = select.getSelectedColumns();
 		if (columns.length > 0) {

@@ -65,9 +65,14 @@ public class TableStyle extends ZebraJTable{
 	}
 
 */
+	/*
+	 * Sets theme color for JTable headers and rows and columns
+	 */
     public static JTable setTableStyle(JTable table) {
-
-		JTableHeader header = table.getTableHeader();
+    	JTableHeader header = null;
+    	if (table.getTableHeader() != null)
+    		header = table.getTableHeader();
+    	
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
 		header.setBackground(new java.awt.Color(0, 167, 212));
 		header.setForeground(java.awt.Color.white);

@@ -246,7 +246,7 @@ implements TableModelListener, ActionListener {
 
 		addTab(new UnitTab(this, new VehicleTableModel(unitManager), true, BUS_ICON));
 
-		// Open the people tab
+		// Open the people tab at the start of the sim
 		tabsSection.setSelectedIndex(6);
 		tabChanged(true);
 
@@ -317,14 +317,14 @@ implements TableModelListener, ActionListener {
 		MonitorModel model = getSelected().getModel();
 		int columns[] = null;
 
-		if (mainScene != null) {
-			this.mainScene = desktop.getMainScene();
-		}
+		//if (mainScene != null) {
+			columns = ColumnSelector.createBarSelector(desktop, model);
+		//}
 
-		else if (mainWindow != null) {
+		//else if (mainWindow != null) {
 			// Show modal column selector
-			columns = ColumnSelector.createBarSelector(mainWindow.getFrame(), model);
-		}
+			//columns = ColumnSelector.createBarSelector(desktop, model);
+		//}
 
 		if (columns.length > 0) {
 			addTab(new BarChartTab(model, columns));
@@ -335,14 +335,14 @@ implements TableModelListener, ActionListener {
 		MonitorModel model = getSelected().getModel();
 		int column = 0;
 
-		if (mainScene != null) {
-			this.mainScene = desktop.getMainScene();
-		}
+		//if (mainScene != null) {
+			column = ColumnSelector.createPieSelector(desktop, model);
+		//}
 
-		else if (mainWindow != null) {
+		//else if (mainWindow != null) {
 			// Show modal column selector
-			column = ColumnSelector.createPieSelector(mainWindow.getFrame(), model);
-		}
+			//column = ColumnSelector.createPieSelector(desktop, model);
+		//}
 
 		if (column >= 0) {
 			addTab(new PieChartTab(model, column));
@@ -415,13 +415,15 @@ implements TableModelListener, ActionListener {
 			this.table = table;
 
 			// 2015-09-25 Update skin theme using TableStyle's setTableStyle()
-            TableStyle.setTableStyle(table);
-            TableStyle.setTableStyle(new RowNumberTable(table));
-            //System.out.println("Starting createSearchableBar() for "+ table);
-
-			//statusPanel.remove(_tableSearchableBar);
-            if (reloadSearch)
-            	createSearchableBar(table);
+			if (table != null) { // for pie and bar chart, skip the codes below
+	            TableStyle.setTableStyle(table);
+	            TableStyle.setTableStyle(new RowNumberTable(table));
+	            //System.out.println("Starting createSearchableBar() for "+ table);
+	
+				//statusPanel.remove(_tableSearchableBar);
+	            if (reloadSearch)
+	            	createSearchableBar(table);
+			}
 		}
 
 		SwingUtilities.updateComponentTreeUI(this);
@@ -553,8 +555,10 @@ implements TableModelListener, ActionListener {
 	 * Refreshes the table column/row header
 	 */
 	public void refreshTable() {
-        TableStyle.setTableStyle(table);
-        TableStyle.setTableStyle(new RowNumberTable(table));
+		if (table != null) {
+	        TableStyle.setTableStyle(table);
+	        TableStyle.setTableStyle(new RowNumberTable(table));
+		}
 	}
 
 	/**

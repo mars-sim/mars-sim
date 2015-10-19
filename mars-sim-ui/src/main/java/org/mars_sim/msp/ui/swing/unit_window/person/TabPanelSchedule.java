@@ -385,24 +385,24 @@ extends TabPanel {
 		MainWindow mw = desktop.getMainWindow();
 		if (mw !=null )  {
 			// Pause simulation
-			mw.pauseSimulation();
+			//mw.pauseSimulation();
 			// Create PlannerWindow
 			if (plannerWindow == null)
 				plannerWindow = new PlannerWindow(unit, desktop, this);
 			// Unpause simulation
-			mw.unpauseSimulation();
+			//mw.unpauseSimulation();
 		}
 
 		MainScene ms = desktop.getMainScene();
 		if (ms !=null )  {
 			// Pause simulation
-			ms.pauseSimulation();
+			//ms.pauseSimulation();
 			// Create PlannerWindow
 			if (plannerWindow == null) {
 				plannerWindow = new PlannerWindow(unit, desktop, this);
 			}
 			// Unpause simulation
-			ms.unpauseSimulation();
+			//ms.unpauseSimulation();
 		}
 
 	}

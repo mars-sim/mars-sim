@@ -21,10 +21,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.ModalInternalFrame;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -158,17 +160,18 @@ extends ToolWindow {
 	 * Open wizard to create a new mission.
 	 */
 	private void createNewMission() {
-		
-		
+
 		MainWindow mw = desktop.getMainWindow();
 
-		if (mw !=null )  {
+		if (mw != null )  {
 			// Pause simulation.
-			mw.pauseSimulation();	
+			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
+			// Also one should check the whether the game was previous on pause in order to preserve that state.
+			//mw.pauseSimulation();	
 			// Create new mission wizard.
 			new CreateMissionWizard(desktop);	
 			// Unpause simulation.
-			mw.unpauseSimulation();
+			//mw.unpauseSimulation();
 		}
 		
 		MainScene ms = desktop.getMainScene();
@@ -176,11 +179,11 @@ extends ToolWindow {
 		
 		if (ms !=null )  {
 			// Pause simulation.
-			ms.pauseSimulation();
+			//ms.pauseSimulation();
 			// Create new mission wizard.
 			new CreateMissionWizard(desktop);
 			// Unpause simulation.
-			ms.unpauseSimulation();
+			//ms.unpauseSimulation();
 		}
 		
 	}
@@ -196,25 +199,27 @@ extends ToolWindow {
 
 		if (mw !=null )  {
 			// Pause simulation.
-		    mw.pauseSimulation();
-	
+		    //mw.pauseSimulation();
+			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
+			// Also one should check the whether the game was previous on pause in order to preserve that state.
+
 			// Create new mission wizard.
 			new EditMissionDialog(desktop, mission);
 			
 			// Unpause simulation.
-			mw.unpauseSimulation();
+			//mw.unpauseSimulation();
 		}
 		
 		MainScene ms = desktop.getMainScene();
 		
 		if (ms !=null )  {
 			// Pause simulation.
-			ms.pauseSimulation();
+			//ms.pauseSimulation();
 	
 			// Create new mission wizard.
 			new EditMissionDialog(desktop, mission);
 			// Unpause simulation.
-			ms.unpauseSimulation();
+			//ms.unpauseSimulation();
 		}
 		
 		

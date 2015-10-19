@@ -8,12 +8,20 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -23,12 +31,30 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPosition;
 import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.TickUnitSource;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.axis.ValueTick;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
+import org.jfree.chart.labels.CategoryToolTipGenerator;
+import org.jfree.chart.labels.ItemLabelAnchor;
+import org.jfree.chart.labels.ItemLabelPosition;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.IntervalMarker;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.BarRenderer3D;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractSeriesDataset;
+import org.jfree.ui.Layer;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -43,11 +69,11 @@ extends MonitorTab {
 	public final static Icon BARICON = ImageLoader.getNewIcon("bar_32"); //$NON-NLS-1$
 
 	/** Maximum label length. */
-	private final static int MAXLABEL = 12;
-	private final static int COLUMNWIDTH = 4;
-	private final static int LABELWIDTH = 8;
+	private final static int MAXLABEL = 20; //12;
+	private final static int COLUMNWIDTH = 25;//4;
+	private final static int LABELWIDTH = 15;//8;
 	/** Large non-scroll chart. */
-	private final static int SCROLLTHRESHOLD = 400;
+	private final static int SCROLLTHRESHOLD = 800; // 400
 
 	/**
 	 * Minimum time (milliseconds) between chart updates
@@ -271,6 +297,8 @@ extends MonitorTab {
 
 	private TableBarDataset barModel = null;
 	private JFreeChart chart = null;
+	
+	//private JComponent chartpanel;
 
 	/**
 	 * Create a PieChart view that displays the data in a particular column.
@@ -284,52 +312,159 @@ extends MonitorTab {
 		setName(title);
 
 		barModel = new TableBarDataset(model, columns);
-		chart = ChartFactory.createBarChart(null, null, null, barModel, PlotOrientation.VERTICAL, true, false, false);
+		chart = ChartFactory.createBarChart3D(null, null, null, barModel, PlotOrientation.VERTICAL, true, true, false);
+		
+		// 2015-10-18 Limits the size of the bar to 35% if there are only very few category
+		BarRenderer3D renderer = (BarRenderer3D) chart.getCategoryPlot().getRenderer();
+		renderer.setMaximumBarWidth(.1); // set maximum width to 10% of chart
+		//renderer.setItemMargin(-1);
+		
 		Plot plot = chart.getPlot();
 
-		// Set bottom labels to vertical.
-		//CategoryAxis hAxis = ((CategoryPlot) plot).getDomainAxis();
-		//CategoryLabelPositions defaultPos = new CategoryLabelPositions();
-		//CategoryLabelPositions verticalPosition = new CategoryLabelPositions(
-		//		 CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 6.0)        );
-		//hAxis.setCategoryLabelPositions(verticalPosition);
-		CategoryAxis hAxis = ((CategoryPlot) plot).getDomainAxis();
-		hAxis.setCategoryLabelPositions(CategoryLabelPositions
-            .createUpRotationLabelPositions(3D * Math.PI / 2D));
+		// 2015-10-18 Adds set the range axis 
+		final ValueAxis rangeAxis = ((CategoryPlot) plot).getRangeAxis();//.getRangeAxis();
+		rangeAxis.setAutoTickUnitSelection(true);//setStandardTickUnits//(CategoryAxis.DEFAULT_CATEGORY_MARGIN);//createIntegerTickUnits());
+		rangeAxis.setTickLabelFont(new Font("Arial",Font.BOLD, 12));
+		rangeAxis.setUpperMargin(0.1); // in percentage
+		rangeAxis.setLowerMargin(0.05); // in percentage
+		
+		CategoryAxis domainAxis = ((CategoryPlot) plot).getDomainAxis();
+	
+		// 2015-10-18 set the label position to go sideway at 45 deg downward
+		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45); // DOWN_90);
+		domainAxis.setTickLabelFont(new Font("Calibri", Font.BOLD, 12));
+		domainAxis.setMaximumCategoryLabelWidthRatio(1); 
+		//domainAxis.setMaximumCategoryLabelLines(2);
+		domainAxis.setLowerMargin(0.01);
+	    domainAxis.setUpperMargin(0.01);
+	    domainAxis.setCategoryMargin(.5);
+	    //domainAxis.setItemMargin(0.2);
+	    
+	
+		// 2015-10-18 Adds label on each bar
+		//renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator()); // only work for 2D bar chart
+		//renderer.setBaseItemLabelsVisible(true); // only work for 2D bar chart		
+		CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator();
+		renderer.setSeriesItemLabelGenerator(0, generator);
+		renderer.setSeriesItemLabelsVisible(0, true);
+		renderer.setSeriesPositiveItemLabelPosition(0, 
+				new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_CENTER,
+						TextAnchor.BASELINE_CENTER, 0.0));
+		renderer.setItemLabelAnchorOffset(10);
+/*		
+		
+  		TODO: implement interval marker for the ave high and ave low
+		IntervalMarker target = new IntervalMarker(average_low,average_high);
+		target.setLabelFont(new Font("SansSerif", Font.ITALIC, 11));
+		target.setLabelAnchor(RectangleAnchor.LEFT);
+		target.setLabelTextAnchor(TextAnchor.CENTER_LEFT);
+		((CategoryPlot) plot).addRangeMarker(target, Layer.BACKGROUND);
+*/
+		
+	
+		// 2015-10-18 Adds tooltip generator 
+		// this version only work for 2D bar chart, not 3D bar chart
+/*		renderer.setBaseToolTipGenerator(new CategoryToolTipGenerator() {
+		    public String generateToolTip(CategoryDataset dataset, int row, int column) {
+		        return "(1) Left click and drag a range to magnify (2) Rotate mouse wheel to zoom in/out (3) Right click to fully customize chart"
+		     // TODO: use tooltip to show the corresponding value of a category
+		    }
+		});
+*/		
+		renderer.setBaseToolTipGenerator(new MyToolTipGenerator());
+		
+/*		
+		class CustomToolTipGenerator implements CategoryToolTipGenerator  {
+		    public String generateToolTip(CategoryDataset dataset, int row, int column)   {
+		           return row + ": " + column;
+		    }
+		}
+		renderer.setSeriesToolTipGenerator(0,new CustomToolTipGenerator());
+*/
+		
+		// Create a panel for chart
+		JComponent chartpanel = new ChartPanel(chart);
+		chart.setBackgroundPaint(getBackground());
 
-		//CategoryLabelPosition verticalPosition = new CategoryLabelPosition(defaultPos.getCategoryAnchor(),
-		//		defaultPos.getLabelAnchor(), defaultPos.getRotationAnchor(), (3D * Math.PI / 2D));
-		//hAxis.setBottomCategoryLabelPosition(verticalPosition);
+		// 2015-10-18 Adds zooming
+		((ChartPanel)chartpanel).setFillZoomRectangle(true);
+		((ChartPanel)chartpanel).setMouseWheelEnabled(true);
+		
+		// 2015-10-18 Prevents label scaling
+		((ChartPanel)chartpanel).setMaximumDrawHeight(10000);
+		((ChartPanel)chartpanel).setMaximumDrawWidth(10000);
+		((ChartPanel)chartpanel).setMinimumDrawWidth(20);
+		((ChartPanel)chartpanel).setMinimumDrawHeight(20);
 
 		// Estimate the width of the chart by multiplying the categories by the
 		// number of series. First calculate the column width as this is
 		// dependent upon the categories, it can not be smaller than the
 		// label width.
 		int columnWidth = barModel.getSeriesCount() * COLUMNWIDTH;
+		//System.out.println("columnWidth is " + columnWidth );
+		
 		if (columnWidth < LABELWIDTH) {
 			columnWidth = LABELWIDTH;
-		}
-
-		// Create a panel for chart
-		JComponent panel = new ChartPanel(chart);
-		chart.setBackgroundPaint(getBackground());
-
+		}	
+		//System.out.println("columnWidth is " + columnWidth );
+		
 		// Check the width for possible scrolling
 		int chartwidth = columnWidth * barModel.getCategoryCount();
-
+		//System.out.println("chartwidth is " + chartwidth );
+		
+		//JComponent scrollPane = null;
+				
 		if (chartwidth > SCROLLTHRESHOLD) {
 			// Scrolling will kick in, then fix the height so that it
 			// automatically adjusts to Scroll Viewport height; the width
 			// fix so that label are not too compressed.
 			Dimension preferredSize = new Dimension(chartwidth, 0);
-			panel.setPreferredSize(preferredSize);
-			panel = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+			chartpanel.setPreferredSize(preferredSize);
+			chartpanel = new JScrollPane(chartpanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		}
 
-		add(panel, BorderLayout.CENTER);
+	
+	       
+/*		
+	       // 2015-10-18 Added setting below to keep the aspect ratio
+        // see http://www.jfree.org/forum/viewtopic.php?f=3&t=115763
+        // Chart will always be drawn to an off-screen buffer that is the same size as the ChartPanel, so no scaling will happen when the offscreen image is copied to the panel.
+        // chartpanel.setPreferredSize(new Dimension (700, 700));
+        //chartpanel.setMinimumDrawWidth(0);
+        //chartpanel.setMaximumDrawWidth(Integer.MAX_VALUE);
+        //chartpanel.setMinimumDrawHeight(0);
+        //chartpanel.setMaximumDrawHeight(Integer.MAX_VALUE);
+      	
+		JPanel fixedSizePane = new JPanel(new FlowLayout());
+		fixedSizePane.add(chartpanel);
+		fixedSizePane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+            	int w = fixedSizePane.getWidth();
+                int h = fixedSizePane.getHeight();
+                int size =  Math.min(w, h);
+                chartpanel.setPreferredSize(new Dimension(size, size));
+                fixedSizePane.revalidate();
+            }
+        });
+*/  		
+		chartpanel.setPreferredSize(new Dimension(800, 0));
+		add(chartpanel, BorderLayout.CENTER);
 	}
 
+
+    // 2015-10-18 adds custom tooltip generator
+    private class MyToolTipGenerator extends StandardCategoryToolTipGenerator {
+        @Override
+        public String generateToolTip(CategoryDataset dataset, int row, int column) {
+            return 	"(1) Left click and drag a range to magnify "
+            		+ "(2) Rotate mouse wheel to zoom in/out "
+            		+ "(3) Right click to fully customize chart"
+                + super.generateToolTip(dataset,row,column);
+        }
+    }
+ 
 
 	/**
 	 * Display the properties dialog that allows the data displayed to be
@@ -338,9 +473,9 @@ extends MonitorTab {
 	 * @param desktop main window of simulation.
 	 */
 	public void displayProps(MainDesktopPane desktop) {
-
+        //System.out.println("BarChartTab.java : start calling displayProp()");
 		// Show modal column selector
-		int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow().getFrame(), getModel());
+		int columns[] = ColumnSelector.createBarSelector(desktop, getModel());
 		if (columns.length > 0) {
 			barModel.setColumns(columns);
 		}

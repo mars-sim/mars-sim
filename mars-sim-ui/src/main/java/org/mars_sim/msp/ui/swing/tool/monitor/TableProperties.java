@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
- * MonitorPropsDialog.java
- * @version 3.07 2014-12-06
-
+ * TableProperties.java
+ * @version 3.08 2015-10-18
  * @author Barry Evans
  */
 
@@ -28,7 +27,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
- * The MonitorPropsDialog class display the columns of a specific table.
+ * The TableProperties class display the columns of a specific table.
  * The columns can be either display or hidden in the target table.
  */
 class TableProperties extends JInternalFrame {

@@ -9,6 +9,12 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -26,8 +34,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.PieDataset;
+import org.jfree.util.Rotation;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
@@ -270,19 +280,57 @@ class PieChartTab extends MonitorTab {
         setName(title);
 
         pieModel = new TablePieDataset(model, column);
-        chart = ChartFactory.createPieChart(null, pieModel, true, true, false);
+        
+        chart = ChartFactory.createPieChart3D(null, pieModel, true, true, false);
         chart.setBackgroundPaint(getBackground());
+        
         pieModel.calculate();
 
-        // then customise it a little...
-        PiePlot plot = (PiePlot)chart.getPlot();
-        plot.setCircular(false);
+        // 2015-10-18 Changed to 3D pie 
+        final PiePlot3D plot = (PiePlot3D)chart.getPlot();
+        
+        //plot.setCircular(false);
         //plot.setRadius(0.60);
         //plot.setSectionLabelType(PiePlot.PERCENT_LABELS);
+        
+        plot.setStartAngle(270);
+        plot.setDirection(Rotation.ANTICLOCKWISE);
+        plot.setForegroundAlpha(0.6f);
+        //plot.setInteriorGap(0.33);
+        
         pieModel.addChangeListener(plot);
 
         chartpanel = new ChartPanel(chart, true);
-        add(chartpanel, BorderLayout.CENTER);
+
+        // 2015-10-18 Added setting below to keep the aspect ratio of 8:5
+        // see http://www.jfree.org/forum/viewtopic.php?f=3&t=115763
+        // Chart will always be drawn to an off-screen buffer that is the same size as the ChartPanel, so no scaling will happen when the offscreen image is copied to the panel.
+        chartpanel.setPreferredSize(new Dimension (800, 300));
+        chartpanel.setMinimumDrawWidth(0);
+        chartpanel.setMaximumDrawWidth(Integer.MAX_VALUE);
+        chartpanel.setMinimumDrawHeight(0);
+        chartpanel.setMaximumDrawHeight(Integer.MAX_VALUE);
+        	
+		JPanel fixedSizePane = new JPanel(new FlowLayout());
+		fixedSizePane.add(chartpanel);
+		fixedSizePane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+            	int w = fixedSizePane.getWidth();
+                int h = fixedSizePane.getHeight();
+                int size =  Math.min(w, h);
+                int newWidth = (int) (size *8D/3D);
+                chartpanel.setPreferredSize(new Dimension(newWidth, size));
+                fixedSizePane.revalidate();
+            }
+        });
+		
+        add(fixedSizePane, BorderLayout.CENTER);
+        
+        // 2015-10-18 Added rotator code
+        final Rotator rotator = new Rotator(plot);
+        rotator.start();
+
     }
 
     /**
@@ -292,9 +340,10 @@ class PieChartTab extends MonitorTab {
      * @param desktop main window of simulation.
      */
     public void displayProps(MainDesktopPane desktop) {
+        //System.out.println("PieChartTab.java : start calling displayProp()");
 
         // Show modal column selector
-        int column = ColumnSelector.createPieSelector(desktop.getMainWindow().getFrame(), getModel());
+        int column = ColumnSelector.createPieSelector(desktop, getModel());
         if (column >= 0) {
             setColumn(column);
         }
@@ -327,4 +376,54 @@ class PieChartTab extends MonitorTab {
         pieModel.setModel(null);
         pieModel = null;
     }
+}
+
+
+//****************************************************************************
+//* JFREECHART DEVELOPER GUIDE                                               *
+//* The JFreeChart Developer Guide, written by David Gilbert, is available   *
+//* to purchase from Object Refinery Limited:                                *
+//*                                                                          *
+//* http://www.object-refinery.com/jfreechart/guide.html                     *
+//*                                                                          *
+//* Sales are used to provide funding for the JFreeChart project - please    * 
+//* support us so that we can continue developing free software.             *
+//****************************************************************************
+
+/**
+* The rotator.
+*
+*/
+class Rotator extends Timer implements ActionListener {
+	
+	 /** The plot. */
+	 private PiePlot3D plot;
+	
+	 /** The angle. */
+	 private int angle = 270;
+	
+	 /**
+	  * Constructor.
+	  *
+	  * @param plot  the plot.
+	  */
+	 Rotator(final PiePlot3D plot) {
+	     super(100, null);
+	     this.plot = plot;
+	     addActionListener(this);
+	 }
+	
+	 /**
+	  * Modifies the starting angle.
+	  *
+	  * @param event  the action event.
+	  */
+	 public void actionPerformed(final ActionEvent event) {
+	     this.plot.setStartAngle(this.angle);
+	     this.angle = this.angle + 1;
+	     if (this.angle == 360) {
+	         this.angle = 0;
+	     }
+	 }
+
 }

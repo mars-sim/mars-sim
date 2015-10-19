@@ -143,20 +143,22 @@ implements ListSelectionListener {
 
 		if (mw != null )  {
 			// Pause simulation.
-			mw.pauseSimulation();	
+			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
+			// Also one should check the whether the game was previous on pause in order to preserve that state.
+			//mw.pauseSimulation();	
 			// Create new transportItem dialog.
 			new NewTransportItemDialog(desktop);	
 			// Unpause simulation.
-			mw.unpauseSimulation();
+			//mw.unpauseSimulation();
 		}
 		
 		else if (ms != null )  {
 			// Pause simulation.
-			ms.pauseSimulation();	
+			//ms.pauseSimulation();	
 			// Create new transportItem dialog.
 			new NewTransportItemDialog(desktop);	
 			// Unpause simulation.
-			ms.unpauseSimulation();
+			//ms.unpauseSimulation();
 		}
 		
 	}
@@ -170,15 +172,17 @@ implements ListSelectionListener {
 		MainScene ms = desktop.getMainScene();
 		
 		if (mw != null )  {
-			mw.pauseSimulation();				
+			//mw.pauseSimulation();	
+			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
+			// Also one should check the whether the game was previous on pause in order to preserve that state.
 			modifyTransport();
-			mw.unpauseSimulation();
+			//mw.unpauseSimulation();
 		}
 		
 		else if (ms != null )  {
-			ms.pauseSimulation();				
+			//ms.pauseSimulation();				
 			modifyTransport();
-			ms.unpauseSimulation();
+			//ms.unpauseSimulation();
 		}
 	}
 
