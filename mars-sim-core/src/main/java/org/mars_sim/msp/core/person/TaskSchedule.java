@@ -24,6 +24,17 @@ public class TaskSchedule implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final int A_START = 0;
+	public static final int A_END = 499;
+	public static final int B_START = 500;
+	public static final int B_END = 999;
+	public static final int X_START = 0;
+	public static final int X_END = 333;
+	public static final int Y_START = 334;
+	public static final int Y_END = 665;
+	public static final int Z_START = 666;
+	public static final int Z_END = 999;
+	
 	// Data members
 	private int solCache;
 	private int startTime;
@@ -125,10 +136,36 @@ public class TaskSchedule implements Serializable {
 		return solCache;
 	}
 
-	//public Shift getShift() {
-	//	return shift;
-	//}
+	public int getShiftStart() {
+		int start = -1;
+		if (shiftType.equals("A"))
+			start = A_START;
+		else if (shiftType.equals("B"))
+			start = B_START;
+		if (shiftType.equals("X"))
+			start = X_START;
+		else if (shiftType.equals("Y"))
+			start = Y_START;
+		else if (shiftType.equals("Z"))
+			start = Z_START;
+		return start;
+	}
 
+	public int getShiftEnd() {
+		int start = -1;
+		if (shiftType.equals("A"))
+			start = A_END;
+		else if (shiftType.equals("B"))
+			start = B_END;
+		if (shiftType.equals("X"))
+			start = X_END;
+		else if (shiftType.equals("Y"))
+			start = Y_END;
+		else if (shiftType.equals("Z"))
+			start = Z_END;
+		return start;
+	}
+	
 	public String getShiftType() {
 		return shiftType;
 	}
@@ -141,27 +178,27 @@ public class TaskSchedule implements Serializable {
 	public boolean isShiftHour(int millisols){
 		boolean result = false;
 		if (shiftType.equals("A")) {
-			if (millisols == 1000 || (millisols >= 0 && millisols <= 499))
+			if (millisols == 1000 || (millisols >= A_START && millisols <= A_END))
 				result = true;
 		}
 
 		else if (shiftType.equals("B")) {
-			if (millisols >= 500 && millisols <= 999)
+			if (millisols >= B_START && millisols <= B_END)
 				result = true;
 		}
 
 		if (shiftType.equals("X")) {
-			if (millisols == 1000 || (millisols >= 0 && millisols <= 333))
+			if (millisols == 1000 || (millisols >= X_START && millisols <= X_END))
 				result = true;
 		}
 
 		else if (shiftType.equals("Y")) {
-			if (millisols >= 334 && millisols <= 665)
+			if (millisols >= Y_START && millisols <= Y_END)
 				result = true;
 		}
 
 		else if (shiftType.equals("Z")) {
-			if (millisols >= 666 && millisols <= 999)
+			if (millisols >= Z_START && millisols <= Z_END)
 				result = true;
 		}
 

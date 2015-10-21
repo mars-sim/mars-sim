@@ -329,6 +329,9 @@ public class TransportWizard {
 			});
 
 			// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus
+
+			//buttonTypeYes.defaultButtonProperty().bind(startButton.focusedProperty());
+			
 			EventHandler<KeyEvent> fireOnEnter = event -> {
 			    if (KeyCode.ENTER.equals(event.getCode()) 
 			            && event.getTarget() instanceof Button) {
@@ -336,9 +339,10 @@ public class TransportWizard {
 			    }
 			};
 
-			DialogPane dialogPane = alert.getDialogPane();
-			dialogPane.getButtonTypes().stream()
-			        .map(dialogPane::lookupButton)
+			//DialogPane dialogPane = alert.getDialogPane();
+			
+			alert.getButtonTypes().stream()
+			        .map(alert.getDialogPane()::lookupButton)
 			        .forEach(button ->
 			                button.addEventHandler(
 			                        KeyEvent.KEY_PRESSED,

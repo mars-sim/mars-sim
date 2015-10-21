@@ -46,7 +46,7 @@ extends JPanel {
         //this.setOpaque(false);
         //this.setBackground(new Color(0,0,0,128));
 
-		setBorder(new MarsPanelBorder());
+		//setBorder(new MarsPanelBorder());
 	}
 
 	/**

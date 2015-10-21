@@ -225,8 +225,8 @@ extends TabPanel {
 		// Create scroll panel for the outer table panel.
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setOpaque(false);
-		scrollPane.setBackground(new Color(0,0,0,128));
-		scrollPane.setForeground(Color.orange);
+		//scrollPane.setBackground(new Color(0,0,0,128));
+		//scrollPane.setForeground(Color.orange);
 		scrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);

@@ -128,8 +128,8 @@ extends JPanel {
 		this.isTranslucent = isTranslucent;
         if (isTranslucent) {
         	//JComponent c = getRootPane();
-        	setOpaque(false);
-        	setBackground(new Color(0,0,0,128));
+        	//setOpaque(false);
+        	//setBackground(new Color(0,0,0,128));
         }
 		init();
 	}
@@ -153,11 +153,11 @@ extends JPanel {
 			btnPanel.add(detailB);
 			namePanel.add(btnPanel);
 	        //if (isTranslucent) {
-	        	detailB.setOpaque(false);
-	        	detailB.setBackground(new Color(0,0,0,128));
-	        	detailB.setForeground(Color.ORANGE);
+	        	//detailB.setOpaque(false);
+	        	//detailB.setBackground(new Color(0,0,0,128));
+	        	//detailB.setForeground(Color.ORANGE);
 	        //}
-			setPanelStyle(btnPanel);
+			//setPanelStyle(btnPanel);
 
 	}
 	/**

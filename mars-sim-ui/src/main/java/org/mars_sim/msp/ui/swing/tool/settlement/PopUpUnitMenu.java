@@ -510,9 +510,9 @@ public class PopUpUnitMenu extends JPopupMenu {
 		mover.registerComponent(f);
 
 		final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
-		buildingPanel.setOpaque(false);
-        buildingPanel.setBackground(new Color(0,0,0,150));
-        buildingPanel.setTheme(true);
+		//buildingPanel.setOpaque(false);
+        //buildingPanel.setBackground(new Color(0,0,0,150));
+        //buildingPanel.setTheme(true);
 
 		// Make the buildingPanel to appear at the mouse cursor
         Point location = MouseInfo.getPointerInfo().getLocation();

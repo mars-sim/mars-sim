@@ -42,6 +42,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -456,6 +458,9 @@ public class ScenarioConfigEditorFX {
 		startButton = new Button("   " + Msg.getString("SimulationConfigEditor.button.newSim")+ "   "); //$NON-NLS-1$
 		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
 		startButton.setId("startButton");
+		// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus		
+		startButton.defaultButtonProperty().bind(startButton.focusedProperty());
+		startButton.requestFocus();
 		startButton.setOnAction((event) -> {
 			
 			if (crewEditorFX != null) {
@@ -525,7 +530,6 @@ public class ScenarioConfigEditorFX {
 			} //end of if (!hasError)
 
 		});
-
 				
 		// 2014-12-15 Added Edit Alpha Crew button.
 		crewButton = new Button(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$

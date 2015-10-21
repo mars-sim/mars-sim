@@ -56,6 +56,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import net.java.balloontip.BalloonToolTip;
+
 /**
  * The TabPanelCareer is a tab panel for viewing a person's career path and job history.
  */
@@ -89,6 +91,8 @@ implements ActionListener {
 	private StarRater starRater;
 	private MarsClock clock;
 
+	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	
 	/**
 	 * Constructor.
 	 * @param unit {@link Unit} the unit to display.
@@ -170,6 +174,7 @@ implements ActionListener {
 			// Prepare role label
 			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"));//, JLabel.RIGHT); //$NON-NLS-1$
 			roleLabel.setSize(10, 2);
+			balloonToolTip.createBalloonTip(roleLabel, "<html>The role in the settlement based <br> on one's skills and talents.</html>"); //$NON-NLS-1$
 			rolePanel.add(roleLabel);
 
 			roleCache = person.getRole().toString();
@@ -185,6 +190,7 @@ implements ActionListener {
 			ratingPanel.add(rLabel);
 			starRater = new StarRater(5, 0, 0);
 			//starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
+			balloonToolTip.createBalloonTip(starRater, "<html>Submit your rating of this person <br> (once every 7 sols only)</html>"); //$NON-NLS-1$
 
     		List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 

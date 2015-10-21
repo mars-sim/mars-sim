@@ -35,6 +35,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import net.java.balloontip.BalloonToolTip;
+
 /**
  * The TabPanelFavorite is a tab panel for general information about a person.
  */
@@ -46,7 +48,9 @@ extends TabPanel {
 
 	private JTable table;
 	private PreferenceTableModel tableModel;
-
+	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.

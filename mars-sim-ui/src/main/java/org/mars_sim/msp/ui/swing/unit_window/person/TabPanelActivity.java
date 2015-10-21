@@ -38,6 +38,8 @@ import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.tool.monitor.RobotTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import net.java.balloontip.BalloonToolTip;
+
 
 /** 
  * The TabPanelActivity is a tab panel for a person's current tasks and activities
@@ -65,6 +67,8 @@ implements ActionListener {
 	/** data cache */
 	private String missionPhaseCache = ""; //$NON-NLS-1$
 
+	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	
 	/**
 	 * Constructor.
 	 * @param unit {@link Unit} the unit to display.
@@ -253,7 +257,9 @@ implements ActionListener {
 		// Prepare mission tool button.
 		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
+		//missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
+		balloonToolTip.createBalloonTip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
+		
 		missionButton.addActionListener(this);
 		
 		if (person != null) {
@@ -268,7 +274,8 @@ implements ActionListener {
 		// Prepare mission monitor button
 		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
+		//monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
+		balloonToolTip.createBalloonTip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 		
 		if (person != null) {
