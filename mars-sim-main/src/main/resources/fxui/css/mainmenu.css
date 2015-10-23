@@ -19,3 +19,12 @@
 	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
 
 }
+
+/*
+.label {
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e5f3f6; /* #FFB03B; light mud color*/
+    -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
+}
+*/

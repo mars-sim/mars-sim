@@ -18,6 +18,22 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import javafx.animation.*;
+import javafx.application.*;
+import javafx.beans.property.*;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
+import javafx.scene.*;
+import javafx.scene.control.Label;
+import javafx.scene.effect.*;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.image.*;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -84,9 +100,17 @@ public class CrewEditorFX {
 
 	private boolean goodToGo = true;
 	
+	private static final double BLUR_AMOUNT = 10;
+
+	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
+
+	private static final ImageView background = new ImageView();
+	private static final StackPane layout = new StackPane();
+
 	private Stage stage;
 	private ScenarioConfigEditorFX scenarioConfigEditorFX;
 
+	
 	//private final SimpleStringProperty nameProp;
 	
 	/**
@@ -99,6 +123,7 @@ public class CrewEditorFX {
 		this.personConfig = simulationConfig.getPersonConfiguration();
 		this.scenarioConfigEditorFX = scenarioConfigEditorFX;
 
+		
 		personalityArray = new boolean [4][SIZE_OF_CREW];
 
 		nameTF  = new ArrayList<TextField>();
@@ -125,13 +150,11 @@ public class CrewEditorFX {
 */		
 		scenarioConfigEditorFX.setCrewEditorOpen(true);
 	
-		stage = new Stage();
-		Group root = new Group();
 
+		
 		BorderPane borderAll = new BorderPane();
 		borderAll.setPadding(new Insets(5, 5, 5, 5));
 
-		root.getChildren().add(borderAll);
 
 		Label titleLabel = new Label("Alpha Crew Manifest");
 		titleLabel.setAlignment(Pos.CENTER);
@@ -142,9 +165,9 @@ public class CrewEditorFX {
 
 		// Create list panel.
 		gridPane = new GridPane();
-		gridPane.setPadding(new Insets(5, 5, 5, 5));
-		gridPane.setHgap(3.0);
-		gridPane.setVgap(3.0);
+		gridPane.setPadding(new Insets(15, 15, 15, 15));
+		gridPane.setHgap(10.0);
+		gridPane.setVgap(10.0);
 		borderAll.setCenter(gridPane);
 
 		Label empty = new Label("");
@@ -184,10 +207,12 @@ public class CrewEditorFX {
 		
 		// Create button pane.
 		HBox hBottom = new HBox();
+		hBottom.setPadding(new Insets(10,10,25,10));
 		hBottom.setAlignment(Pos.CENTER);
 
 		// Create commit button.
 		Button commitButton = new Button("Commit Changes");
+		commitButton.setId("commitButton");
 		commitButton.setAlignment(Pos.CENTER);
 		commitButton.requestFocus();
 		hBottom.getChildren().add(commitButton);
@@ -198,12 +223,12 @@ public class CrewEditorFX {
 			
 			for (int i = 0; i< SIZE_OF_CREW; i++) {
 				//System.out.println(" i is " + i);
-				//String nameStr = nameTF.get(i).getText();
+				String nameStr = nameTF.get(i).getText().trim();
 				//System.out.println(" name is " + nameTF.get(i).getText());
 				//2015-10-19 Added isBlank() and checking against invalid names
-				if (!isBlank(nameTF.get(i).getText())) { 
+				if (!isBlank(nameStr)) { 
 					// update PersonConfig with the new name
-					personConfig.setPersonName(i, nameTF.get(i).getText());
+					personConfig.setPersonName(i, nameStr);
 					//System.out.println(" name is " + nameTF.get(i).getText());
 					goodToGo = true && goodToGo;
 					//System.out.println("goodToGo is "+ goodToGo);
@@ -253,13 +278,22 @@ public class CrewEditorFX {
 			}
 			
 		});
+        
 
-		Scene scene = new Scene(root);
-
+		layout.setStyle("-fx-background-radius:20; -fx-background-color: rgba(56, 176, 209, ");//"-fx-background-color: null");
+	    layout.setEffect(new DropShadow(10, Color.GREY));
+	    
+		layout.getChildren().addAll(background, borderAll);
+		Scene scene = new Scene(layout, Color.TRANSPARENT);
+		scene.getStylesheets().add("/fxui/css/crewEditorFX.css");
+		
 		//scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
 		//stage.initStyle(StageStyle.TRANSPARENT);
 
+		stage = new Stage();		    
 		stage.setScene(scene);
+		stage.initStyle(StageStyle.TRANSPARENT);
+		//stage.setOpacity(.9);
 		stage.sizeToScene();
 		stage.toFront();
 	    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
@@ -273,6 +307,14 @@ public class CrewEditorFX {
 			scenarioConfigEditorFX.setCrewEditorOpen(false);
 			//stage.close(); already implied
 		} );
+    	
+		makeSmoke(stage);
+	
+	    
+		background.setImage(copyBackground(stage));
+        background.setEffect(frostEffect);
+        
+        makeDraggable(stage, layout);
 	}
 	
 	/*
@@ -321,6 +363,7 @@ public class CrewEditorFX {
 			SimpleStringProperty np = new SimpleStringProperty(n);
 			//System.out.println(" name is "+ n);
 				TextField tf = new TextField();
+				tf.setId("textfield");
 				nameTF.add(tf);
 				gridPane.add(tf, i+1, 1);
 				tf.setText(n);
@@ -356,6 +399,8 @@ public class CrewEditorFX {
 			 m = setUpJobCB();
 
 		final ComboBox<String> g = m;
+		//g.setPadding(new Insets(10,10,10,10));
+		//g.setId("combobox");
 		g.setOnAction((event) -> {
 			String s = (String) g.getValue();
            	g.setValue(s);
@@ -497,9 +542,10 @@ public class CrewEditorFX {
 			});
 
 			options.getChildren().addAll(ra, rb);
-			TitledPane border = new TitledPane(c, options);
-		    border.setPrefSize(100, 50);
-			vbox.getChildren().add(border);
+			TitledPane titledPane = new TitledPane(c, options);
+			titledPane.setId("titledpane");
+		    titledPane.setPrefSize(100, 50);
+			vbox.getChildren().add(titledPane);
 		}
 
 		gridPane.add(vbox, col, 4);
@@ -599,6 +645,108 @@ public class CrewEditorFX {
 		return goodToGo; 
 	}
 
+
+    // copy a background node to be frozen over.
+    private Image copyBackground(Stage stage) {
+        final int X = (int) stage.getX();
+        final int Y = (int) stage.getY();
+        final int W = (int) stage.getWidth();
+        final int H = (int) stage.getHeight();
+
+        try {
+            java.awt.Robot robot = new java.awt.Robot();
+            java.awt.image.BufferedImage image = robot.createScreenCapture(new java.awt.Rectangle(X, Y, W, H));
+
+            return SwingFXUtils.toFXImage(image, null);
+        } catch (java.awt.AWTException e) {
+            System.out.println("The robot of doom strikes!");
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+    // create some content to be displayed on top of the frozen glass panel.
+    private Label createContent() {
+        Label label = new Label("Create a new question for drop shadow effects.\n\nDrag to move\n\nDouble click to close");
+        label.setPadding(new Insets(10));
+
+        label.setStyle("-fx-font-size: 15px; -fx-text-fill: green;");
+        label.setMaxWidth(250);
+        label.setWrapText(true);
+
+        return label;
+    }
+
+    // makes a stage draggable using a given node.
+    public void makeDraggable(final Stage stage, final Node byNode) {
+        final Delta dragDelta = new Delta();
+        byNode.setOnMousePressed(mouseEvent -> {
+            // record a delta distance for the drag and drop operation.
+            dragDelta.x = stage.getX() - mouseEvent.getScreenX();
+            dragDelta.y = stage.getY() - mouseEvent.getScreenY();
+            byNode.setCursor(Cursor.MOVE);
+        });
+        final BooleanProperty inDrag = new SimpleBooleanProperty(false);
+
+        byNode.setOnMouseReleased(mouseEvent -> {
+            byNode.setCursor(Cursor.HAND);
+
+            if (inDrag.get()) {
+                stage.hide();
+
+                Timeline pause = new Timeline(new KeyFrame(Duration.millis(50), event -> {
+                    background.setImage(copyBackground(stage));
+                    layout.getChildren().set(
+                            0,
+                            background
+                    );
+                    stage.show();
+                }));
+                pause.play();
+            }
+
+            inDrag.set(false);
+        });
+        byNode.setOnMouseDragged(mouseEvent -> {
+            stage.setX(mouseEvent.getScreenX() + dragDelta.x);
+            stage.setY(mouseEvent.getScreenY() + dragDelta.y);
+
+            layout.getChildren().set(
+                    0,
+                    makeSmoke(stage)
+            );
+
+            inDrag.set(true);
+        });
+        byNode.setOnMouseEntered(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
+                byNode.setCursor(Cursor.HAND);
+            }
+        });
+        byNode.setOnMouseExited(mouseEvent -> {
+            if (!mouseEvent.isPrimaryButtonDown()) {
+                byNode.setCursor(Cursor.DEFAULT);
+            }
+        });
+    }
+
+    private javafx.scene.shape.Rectangle makeSmoke(Stage stage) {
+    	
+        return new javafx.scene.shape.Rectangle(
+                stage.getWidth(),
+                stage.getHeight(),
+                Color.WHITESMOKE.deriveColor(
+                        0, 1, 1, 0.2 // 0.08
+                )
+        );
+    }
+
+    /** records relative x and y co-ordinates. */
+    private static class Delta {
+        double x, y;
+    }
+    
 	/**
 	 * Prepare this window for deletion.
 	 */

@@ -1226,6 +1226,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// Open user guide tool.
 			openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
+			//int Xloc = (int)((getWidth() - ourGuide.getWidth()) * .5D);
+			//int Yloc = (int)((getHeight() - ourGuide.getHeight()) * .5D);
+			//ourGuide.setLocation(Xloc, Yloc);			
 			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 
 		} else {

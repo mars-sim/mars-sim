@@ -186,6 +186,15 @@ public class MainMenu {
        rect.setEffect(new DropShadow(30,5,5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
        root = new StackPane();
+       
+       //root.setStyle(
+    	//        "-fx-background-color: rgba(255, 255, 255, 0.5);" +
+    	//        "-fx-effect: dropshadow(gaussian, red, 50, 0, 0, 0);" +
+    	//        "-fx-background-insets: 50;"
+    	//    );
+       //mainMenuScene.setFill(Color.TRANSPARENT);
+
+ 
        root.setPrefHeight(WIDTH);
        root.setPrefWidth(HEIGHT);
        root.setStyle(
@@ -204,6 +213,7 @@ public class MainMenu {
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
        mainMenuScene.setCursor(Cursor.HAND);
+       
 
        mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){
     	   
@@ -392,15 +402,15 @@ public class MainMenu {
 	   mainSceneStage.show();
 	   mainSceneStage.requestFocus();
 	   
-	   //circleStage.hide();
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);
+	   
 	   mainScene.initializeTheme();
 
 	   while (!mainScene.isMainSceneDone())
 	   {
 		   try {
-			TimeUnit.MILLISECONDS.sleep(500L);
+			TimeUnit.MILLISECONDS.sleep(200L);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -410,7 +420,8 @@ public class MainMenu {
 		   circleStage.close();
 		});
 	   
-	   //return true;
+	   mainScene.openInitialWindows();
+
 	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
 	}
 

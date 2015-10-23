@@ -25,6 +25,14 @@ Defines the rectangle responsible for the shadow
 }
 
 
+.label {
+	-fx-font-size: 15.0px;
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e5f3f6; /* #FFB03B; light mud color*/
+    -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
+}
+
 #startButton {
     -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
@@ -37,13 +45,15 @@ Defines the rectangle responsible for the shadow
     -fx-background-insets: -1.4, 0, 1, 2;
     -fx-color:#00a7d4;
 	-fx-background-radius: 5;
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+ /*   -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); */
+    
 }
 
 #startButton Text {
     -fx-fill: yellow;
     -fx-effect: dropshadow( gaussian , #a30000 , 0,0,0,2 );
 }
+
 #startButton:hover {
 	-fx-font-size: 16.0px;
 /*    -fx-background-color: linear-gradient(#1E90FF, #61a2b1); */
@@ -66,6 +76,11 @@ Defines the rectangle responsible for the shadow
 	-fx-alignment: CENTER;
 	-fx-content-display: LEFT;
 	-fx-background-radius: 5;
+	
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+/*	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0); */
+	
 }
 
 .button:focused {

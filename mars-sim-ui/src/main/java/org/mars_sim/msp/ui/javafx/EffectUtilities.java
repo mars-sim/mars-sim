@@ -1,3 +1,11 @@
+/**
+ * Mars Simulation Project
+ * EffectUtilities.java
+ * @version 3.08 2015-05-26
+ * @author Manny Kung
+ * see the original codes based on https://gist.github.com/jewelsea/3388637
+ */
+
 package org.mars_sim.msp.ui.javafx;
 
 import javafx.animation.FadeTransition;

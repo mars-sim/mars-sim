@@ -176,6 +176,7 @@ public class ScenarioConfigEditorFX {
 
 	}
 
+	@SuppressWarnings("restriction")
 	public void createGUI() {
 	   	Platform.setImplicitExit(false);
 /*
@@ -498,12 +499,9 @@ public class ScenarioConfigEditorFX {
 						try {
 							Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
 
-							//Platform.runLater(() -> {
-							//	waitLoading();
-							//});
 							while (!future.isDone() && !mainMenu.getMainScene().isMainSceneDone()) {
-								//System.out.println("Wait for 0.3 sec inside the while loop");
-				        		TimeUnit.MILLISECONDS.sleep(300L);
+								//System.out.println("Wait for 0.2 sec inside the while loop");
+				        		TimeUnit.MILLISECONDS.sleep(200L);
 							}
 			       			//System.out.println("future.get() is " + future.get());
 			       			//System.out.println("future.isDone() is " + future.isDone());
@@ -521,9 +519,6 @@ public class ScenarioConfigEditorFX {
 		        Thread th = new Thread(task);
 		        th.setDaemon(true);
 		        th.start();
-
-				//System.out.println("calling Simulation.createNewSimulation()");
-
 
                 scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 

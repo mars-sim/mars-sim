@@ -8,7 +8,6 @@
 	</parent>
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-main</artifactId>
-	<version>3.08-SNAPSHOT</version>
 	<name>mars-sim-main</name>
         <packaging>jar</packaging>
 	<build>

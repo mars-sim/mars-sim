@@ -38,7 +38,13 @@ public class SimuLoggingFormatter extends Formatter {
 		sb.append(record.getLevel().getName());
 		sb.append(") ");
 
-		String source = (record.getSourceClassName()).replaceAll("org.mars_sim.msp.","");
+		String source = (record.getSourceClassName())
+				.replaceAll("org.mars_sim.msp.ui.","ui.")
+				.replaceAll("org.mars_sim.msp.core.","core.")
+				.replaceAll("org.mars_sim.msp.mapdata.","mapdata.")
+				.replaceAll("org.mars_sim.msp.network.","network.")
+				.replaceAll("org.mars_sim.msp.","main.");
+		
 		// record.getLoggerName()
 		//sb.append(record.getSourceClassName());
 		//sb.append(record.getClass().getSimpleName());
