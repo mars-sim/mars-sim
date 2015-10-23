@@ -689,7 +689,7 @@ public class SettlementTransparentPanel extends JComponent {
 
 			Platform.runLater(() -> {
 				
-				String newName = askNameFX(oldName);
+				String newName = askNameFX(oldName).trim();
 				if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
 					mapPanel.getSettlement().changeName(newName);
 	            }
@@ -729,7 +729,7 @@ public class SettlementTransparentPanel extends JComponent {
 
 			JDialog.setDefaultLookAndFeelDecorated(true);
 			//String nameCache = settlement.getType();
-			String settlementNewName = askNameDialog();
+			String settlementNewName = askNameDialog().trim();
 
 			if ( settlementNewName.trim() == null || settlementNewName.trim().length() == 0)
 				settlementNewName = askNameDialog();

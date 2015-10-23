@@ -51,6 +51,7 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -132,6 +133,7 @@ extends TabPanel {
 		);
 
 		this.desktop = desktop;
+		isRealTimeUpdate = true;
 		
 		// Prepare combo box
         if (unit instanceof Person) {
@@ -320,8 +322,10 @@ extends TabPanel {
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		
+	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
 
-		scrollPanel.setViewportView(table);
+	    scrollPanel.setViewportView(table);
 
 		// 2015-06-08 Added sorting
 		//table.setAutoCreateRowSorter(true);
@@ -338,7 +342,7 @@ extends TabPanel {
 	 */
 	public void update() {
 			
-		TableStyle.setTableStyle(table);
+		//TableStyle.setTableStyle(table);
 
 		if (person != null) {
 			shiftType = person.getTaskSchedule().getShiftType();
@@ -348,7 +352,7 @@ extends TabPanel {
 				shiftCache = shiftType;
 				shiftTF.setText(shiftCache);
 			}
-
+/*
 			//System.out.println("fillColorCache is "+ fillColorCache);
 			if (fillColorCache != shiftTF.getBackground()) {
 				fillColorCache = shiftTF.getBackground();
@@ -360,6 +364,7 @@ extends TabPanel {
 	    		//SwingUtilities.updateComponentTreeUI(desktop);
 				desktop.updateToolWindowLF();
 			}
+*/			
 		}
 
     	today = taskSchedule.getSolCache();
@@ -379,7 +384,7 @@ extends TabPanel {
 	    	DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
 			solList.forEach(s -> newComboBoxModel.addElement(s));
 
-			// Update comboBox
+			// Update the solList comboBox
 			comboBox.setModel(newComboBoxModel);
 			comboBox.setRenderer(new PromptComboBoxRenderer());
 
@@ -544,7 +549,7 @@ extends TabPanel {
 
 		@Override
 		public int getColumnCount() {
-			return 2;
+			return 4;
 		}
 
 		@Override
@@ -552,23 +557,26 @@ extends TabPanel {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
 			if (columnIndex == 1) dataType = String.class;
-			//if (columnIndex == 2) dataType = String.class;
+			if (columnIndex == 2) dataType = String.class;
+			if (columnIndex == 3) dataType = String.class;
 			return dataType;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelSchedule.column.time"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelSchedule.column.activity"); //$NON-NLS-1$
-			//else if (columnIndex == 2) return Msg.getString("TabPanelSchedule.column.location"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelSchedule.column.description"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelSchedule.column.phase"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelSchedule.column.taskName"); //$NON-NLS-1$
 			else return null;
 		}
 
 		@Override
 		public Object getValueAt(int row, int column) {
 			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
-			else if (column == 1) return tasks.get(row).getDoAction();
-			//else if (column == 2) return tasks.get(row).getLocation();
+			else if (column == 1) return tasks.get(row).getDescription();
+			else if (column == 2) return tasks.get(row).getPhase();
+			else if (column == 3) return tasks.get(row).getTaskName();
 			else return null;
 		}
 
@@ -584,7 +592,6 @@ extends TabPanel {
 			if (todaySol == selectedSol) {
 				// Load today's schedule
 				tasks = new CopyOnWriteArrayList<OneTask>(taskSchedule.getTodaySchedule());
-
 			}
 			else {
 				tasks = new CopyOnWriteArrayList<OneTask>(schedules.get(selectedSol));
@@ -593,29 +600,40 @@ extends TabPanel {
 			// check if user selected hide repeated tasks checkbox
 			if (tasks != null && hideRepeatedTasks) {
 				// show only non-repeating consecutive tasks
-				List<OneTask> thisSchedule = new CopyOnWriteArrayList<OneTask>(tasks);
-		        int i = thisSchedule.size() - 1;
-		        // TODO: do I need "thisSchedule" ? or just use "tasks"
-		        while (i > 0 ) {
-
-		        	OneTask currentTask = thisSchedule.get(i);
-		        	OneTask lastTask = null;
-
-		        	if ( i - 1 > -1 )
-		        		lastTask = thisSchedule.get(i - 1);
-
-		        	String lastActivity = lastTask.getDoAction();
-		        	String currentActivity = currentTask.getDoAction();
-		        	// check if the last task is the same as the current task
-		        	if (lastActivity.equals(currentActivity)) {
-		        		// remove the current task if it's the same as the last task
-		        		thisSchedule.remove(i);
-		        	}
-
-		        	i--;
-		        }
-
-		        tasks = thisSchedule;
+				List<OneTask> displaySchedule = new CopyOnWriteArrayList<OneTask>(tasks);
+				
+				int size = displaySchedule.size();
+				
+				for (int i = size - 1; i >= 0; i--) {
+					OneTask currentTask = displaySchedule.get(i);
+					String currentName = currentTask.getTaskName();
+					String currentDes = currentTask.getDescription();
+					String currentPhase = currentTask.getPhase();					
+					OneTask lastTask = null;
+		        	String lastName = null;
+		        	String lastDes = null;
+		        	String lastPhase = null;
+		        	
+		        	// make sure this is NOT the very first task (i = 0) of the day
+		        	if (i != 0) {
+		        		lastTask = displaySchedule.get(i - 1);
+		        		lastName = lastTask.getTaskName();
+		        		lastDes = lastTask.getDescription();
+		        		lastPhase = lastTask.getPhase();
+		        		
+		        		// check if the last task is the same as the current task
+			        	if (lastDes.equals(currentDes)) {
+			        		//if (lastName.equals(currentName)) {	
+				        		//if (lastPhase.equals(currentPhase)) {	
+				        			// remove the current task if they are the same
+				        			displaySchedule.remove(i);
+				        		//}
+			        		//}
+			        	}
+		        	}        		
+				}
+				
+		        tasks = displaySchedule;
 			}
 
         	fireTableDataChanged();

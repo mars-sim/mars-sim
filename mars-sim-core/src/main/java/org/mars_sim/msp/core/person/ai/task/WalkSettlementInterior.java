@@ -72,7 +72,7 @@ implements Serializable {
 	 */
     public WalkSettlementInterior(Person person, Building destinationBuilding,
             double destinationXLocation, double destinationYLocation) {
-        super("Walking Settlement Interior", person, false, false, STRESS_MODIFIER, false, 0D);
+        super("Walking inside a settlement", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Check that the person is currently inside the settlement.
         LocationSituation location = person.getLocationSituation();

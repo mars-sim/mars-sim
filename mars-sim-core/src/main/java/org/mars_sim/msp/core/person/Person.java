@@ -397,6 +397,10 @@ implements VehicleOperator, MissionMember, Serializable {
      */
     public void timePassing(double time) {
     	//System.out.println("Container Unit : " + this.getContainerUnit());
+    	
+       	// 2015-06-29 Added calling taskSchedule
+    	//taskSchedule.timePassing(time);
+
         // If Person is dead, then skip
         if (health.getDeathDetails() == null) {
 
@@ -404,18 +408,16 @@ implements VehicleOperator, MissionMember, Serializable {
             // Pass the time in the physical condition first as this may
             // result in death.
             if (health.timePassing(time, support, config)) {
-
-            	// 2015-06-29 Added calling preference and taskSchedule's timePassing()
+           	
+            	// 2015-06-29 Added calling preference
             	preference.timePassing(time);
 
-            	taskSchedule.timePassing(time);
-
-            	//try {
+            	try {
 	                // Mental changes with time passing.
 	                mind.timePassing(time);
-            	//} catch(Exception ex)  {
-        		//	ex.printStackTrace();
-        		//}
+            	} catch(Exception ex)  {
+        			ex.printStackTrace();
+        		}
             }
             else {
                 // Person has died as a result of physical condition

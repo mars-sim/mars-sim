@@ -481,8 +481,7 @@ extends JPanel {
 	   	 	}
 		}
 */
-	    setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,
-                  false, true, true, true));
+	    setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16, false, true, true, true));
 
 	}
 

@@ -72,7 +72,7 @@ public abstract class TabPanel extends JScrollPane {
         centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 
-  		setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
+  		//setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
 
     }
 

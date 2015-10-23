@@ -78,6 +78,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
@@ -93,7 +94,7 @@ public class MainScene {
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
-	private static final int TIME_DELAY = 960;
+	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
 	// Categories of loading and saving simulation
 	public static final int DEFAULT = 1;
@@ -206,7 +207,6 @@ public class MainScene {
 	public void prepareOthers() {
 		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		transportWizard = new TransportWizard(this, desktop);
-		openInitialWindows();
 		startAutosaveTimer();
 		startEarthTimer();
 		//logger.info("done with MainScene's prepareOthers()");
@@ -820,9 +820,14 @@ public class MainScene {
 		UIConfig.INSTANCE.parseFile();
 
 		desktop.disposeAnnouncementWindow();
+		
 		// Open Guide tool after loading.
-		//desktop.openToolWindow(GuideWindow.NAME);
-
+        desktop.openToolWindow(GuideWindow.NAME);
+        GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+    	int Xloc = (int)((stage.getScene().getWidth() - ourGuide.getWidth()) * .5D);
+		int Yloc = (int)((stage.getScene().getHeight() - ourGuide.getHeight()) * .5D);
+		ourGuide.setLocation(Xloc, Yloc);
+        ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 	}
 
 
@@ -1216,17 +1221,6 @@ public class MainScene {
 		}
 	}
 
-	// public void setMainMenu(MainMenu mainMenu) {
-	// this.mainMenu = mainMenu;
-	// }
-
-	//public void openInitialWindows() {
-	//	logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
-	//	SwingUtilities.invokeLater(() -> {
-	//		desktop.openInitialWindows();
-	//	});
-	//}
-
 	public void openInitialWindows() {
 		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		String OS = System.getProperty("os.name").toLowerCase();
@@ -1234,11 +1228,27 @@ public class MainScene {
 		if (OS.equals("mac os x")) {
 		// SwingUtilities needed below for MacOSX
 			SwingUtilities.invokeLater(() -> {
-			desktop.openInitialWindows();
+				desktop.openInitialWindows();
 			});
 		}
-		else
+		else {
+					
 			desktop.openInitialWindows();
+			
+			GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+/*			System.out.println("ourGuide.getWidth() is " + ourGuide.getWidth());
+			System.out.println("ourGuide.getHeight() is " + ourGuide.getHeight());
+			System.out.println("swingPane.getWidth() is " + swingPane.getWidth());
+			System.out.println("swingPane.getHeight() is " + swingPane.getHeight());
+			System.out.println("stage.getScene().getWidth() is " + stage.getScene().getWidth());
+			System.out.println("stage.getScene().getHeight() is " + stage.getScene().getHeight());
+*/
+			int Xloc = (int)((stage.getScene().getWidth() - ourGuide.getWidth()) * .5D);
+			int Yloc = (int)((stage.getScene().getHeight() - ourGuide.getHeight()) * .5D);
+			//System.out.println("Xloc is " + Xloc + "  Yloc is " + Yloc);
+			ourGuide.setLocation(Xloc, Yloc);			
+			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+		}
 	}
 
 	public MarsNode getMarsNode() {

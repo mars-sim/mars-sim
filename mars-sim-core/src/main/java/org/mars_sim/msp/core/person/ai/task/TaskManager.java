@@ -45,8 +45,9 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
 	// Data members
-	/** The current task the person is doing. */
-	private Task currentTask;
+	private String taskNameCache, taskDescriptionCache, taskPhaseCache;
+	/** The current task the person/robot is doing. */
+	private Task currentTask;//, lastTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 	private BotMind botMind;
@@ -122,6 +123,19 @@ implements Serializable {
 	}
 
 	/**
+	 * Returns the name of the current task for UI purposes.
+	 * Returns a blank string if there is no current task.
+	 * @return name of the current task
+	 */
+	public String getTaskClassName() {
+		if (currentTask != null) {
+			return currentTask.getTaskName();
+		} else {
+			return "";
+		}
+	}
+	
+	/**
 	 * Returns a description of current task for UI purposes.
 	 * Returns a blank string if there is no current task.
 	 * @return a description of the current task
@@ -129,12 +143,7 @@ implements Serializable {
 	public String getTaskDescription() {
 		if (currentTask != null) {
 			String doAction = currentTask.getDescription();
-/*
-			if (person != null)
-				person.getTaskSchedule().recordTask(getTaskName(), doAction);
-			else if (robot != null)
-				robot.getTaskSchedule().recordTask(getTaskName(), doAction);
-*/
+
 			return doAction;
 		} else {
 			return "";
@@ -177,29 +186,64 @@ implements Serializable {
 			robot.fireUnitUpdate(UnitEventType.TASK_EVENT);
 	}
 
+	/*
+	 * Prepares the task for recording in the task schedule
+	 * @param newTask
+	 */
+	// 2015-10-22 Added recordTask()
+	@SuppressWarnings("null")
+	public void recordTask() {
+		String taskDescription = getTaskDescription();//currentTask.getDescription(); //  
+		String taskName = getTaskClassName();//currentTask.getTaskName(); //
+		String taskPhase = null;
+
+		if (!taskDescription.equals(taskDescriptionCache)) {				
+			
+			if (getPhase() != null)
+				taskPhase = getPhase().getName();
+			
+			if (person != null) {
+				if (!taskDescription.equals(""))
+					person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+			}
+			else if (robot != null) {
+				if (!taskDescription.equals(""))
+					robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+			}
+			
+			taskDescriptionCache = taskDescription;
+		}	
+	}
+	
 	/**
 	 * Adds a task to the stack of tasks.
 	 * @param newTask the task to be added
 	 */
-	public void addTask(Task newTask) {
-
-		if (currentTask != null) {
-			String doAction = currentTask.getDescription();
-			String name = currentTask.getName();
-			if (person != null) {
-				person.getTaskSchedule().recordTask(name, doAction);
-			}
-			else if (robot != null) {
-				robot.getTaskSchedule().recordTask(name, doAction);
-			}
-
-		}
+	public void addTask(Task newTask) {	
+		
+		// 2015-10-22 Added recordTask()
+		//recordTask();
+		
 		if (hasActiveTask()) {
-			currentTask.addSubTask(newTask);
+			currentTask.addSubTask(newTask);	
+			
 		} else {
-			currentTask = newTask;
+			currentTask = newTask;	
+			taskNameCache = currentTask.getTaskName();
+			taskDescriptionCache = currentTask.getDescription();
+			
+			if (currentTask.getPhase() != null)
+				if (currentTask.getPhase().getName() != null)
+					taskPhaseCache = currentTask.getPhase().getName();
+				else
+					taskPhaseCache = "";
+			else
+				taskPhaseCache = "";
+			// initialize lastTask at the start of sim
+			//if (lastTask == null)
+			//	lastTask = currentTask;
 		}
-
+		
 		if (person != null) {
 			person.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 		}
@@ -474,18 +518,19 @@ implements Serializable {
 					throw new IllegalStateException(botMind.getRobot() +
 							" could not determine a new task.");
 
+		} else {
+		
+			if (person != null) {
+				// Construct the task
+				result = selectedMetaTask.constructInstance(mind.getPerson());
+				//person.getTaskSchedule().recordTask(getTaskName(), getTaskDescription());
+			}
+			else if (robot != null) {
+				// Construct the task
+				result = selectedMetaTask.constructInstance(botMind.getRobot());
+				//robot.getTaskSchedule().recordTask(getTaskName(), getTaskDescription());
+			}
 		}
-		if (person != null) {
-			// Construct the task
-			result = selectedMetaTask.constructInstance(mind.getPerson());
-			//person.getTaskSchedule().recordTask(getTaskName(), getTaskDescription());
-		}
-		else if (robot != null) {
-			// Construct the task
-			result = selectedMetaTask.constructInstance(botMind.getRobot());
-			//robot.getTaskSchedule().recordTask(getTaskName(), getTaskDescription());
-		}
-
 		// Clear time cache.
 		timeCache = null;
 		return result;
@@ -511,11 +556,10 @@ implements Serializable {
 
 		    List<MetaTask> mtList = null;
 
-		    //String shiftType = person.getTaskSchedule().getShiftType();
-
 		    if (timeCache == null)
 		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
 		    int millisols =  (int) timeCache.getMillisol();
+		    
 		    boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 
 		    if (isShiftHour) {
@@ -557,7 +601,7 @@ implements Serializable {
 				else {
 					taskProbCache.put(metaTask, 0D);
 
-						logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() +
+					logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() +
 								" probability: " + probability);
 				}
 			}

@@ -54,7 +54,7 @@ implements Serializable {
 	 */
     public WalkRoverInterior(Person person, Rover rover, double destinationXLocation, 
             double destinationYLocation) {
-        super("Walking Rover Interior", person, false, false, STRESS_MODIFIER, false, 0D);
+        super("Walking inside a rover", person, false, false, STRESS_MODIFIER, false, 0D);
         
         // Check that the person is currently inside a rover.
         LocationSituation location = person.getLocationSituation();

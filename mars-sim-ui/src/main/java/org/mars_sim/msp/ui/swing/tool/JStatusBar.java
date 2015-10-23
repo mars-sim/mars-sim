@@ -13,6 +13,7 @@ import javax.swing.*;
 //import com.jgoodies.forms.layout.FormLayout;
 
 import java.awt.*;
+import java.awt.font.TextLayout;
 
 public class JStatusBar extends JPanel {
 
@@ -25,7 +26,9 @@ public class JStatusBar extends JPanel {
     protected JPanel rightPanel;
     	 
     public JStatusBar() {
-    	        createPartControl();
+    	createPartControl();
+    	//setOpaque(false);
+    	//setBackground(new Color(0,0,0,128));
     }
     	 
     protected void createPartControl() {    
@@ -35,12 +38,14 @@ public class JStatusBar extends JPanel {
  
         leftPanel = new JPanel(new FlowLayout(
                 FlowLayout.LEADING, 5, 3));
-        leftPanel.setOpaque(false);
+        //leftPanel.setOpaque(false);
+		//leftPanel.setBackground(new Color(0,0,0,128));
         add(leftPanel, BorderLayout.WEST);
         
         rightPanel = new JPanel(new FlowLayout(
                 FlowLayout.TRAILING, 5, 3));
-        rightPanel.setOpaque(false);
+        //rightPanel.setOpaque(false);
+		//rightPanel.setBackground(new Color(0,0,0,128));
         add(rightPanel, BorderLayout.EAST);
         
     }
@@ -59,6 +64,7 @@ public class JStatusBar extends JPanel {
         leftPanel.add(component);
     }
     
+    /*
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -78,13 +84,15 @@ public class JStatusBar extends JPanel {
         y = getHeight() - 3;
         g.setColor(new Color(233, 232, 218));
         g.drawLine(0, y, getWidth(), y);
+       
         y++;
         g.setColor(new Color(233, 231, 216));
         g.drawLine(0, y, getWidth(), y);
+       
         y = getHeight() - 1;
         g.setColor(new Color(221, 221, 220));
         g.drawLine(0, y, getWidth(), y);
 
     }
-
+*/
 }

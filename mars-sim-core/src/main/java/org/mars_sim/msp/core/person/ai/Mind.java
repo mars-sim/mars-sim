@@ -60,6 +60,7 @@ implements Serializable {
 
     private MasterClock masterClock;
 
+    private MissionManager missionManager;
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
 
@@ -81,6 +82,8 @@ implements Serializable {
 
         // Construct a task manager
         taskManager = new TaskManager(this);
+        
+        missionManager = Simulation.instance().getMissionManager();
 
         // Construct a skill manager.
         skillManager = new SkillManager(person);
@@ -95,19 +98,27 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-    	// For now, a Mayor/Manager cannot switch job, no need to unlock jobLock at the end of the day
-    	// The new job will be Locked in until the beginning of the next day
+        if (taskManager != null)
+        	// 2015-10-22 Added recordTask()
+    		taskManager.recordTask();        
+    
+        //if (missionManager != null)
+        	// 2015-10-22 Added recordMission()
+       // 	missionManager.recordMission();
+		
+		
+    	// Note: the new job will be locked in until the beginning of the next day
     	if (jobLock) {
 	        MarsClock clock = masterClock.getMarsClock();
 	        // check for the passing of each day
 	        int solElapsed = MarsClock.getSolOfYear(clock);
-	        if ( solElapsed != solCache) {
+	        if (solElapsed != solCache) {
 	        	solCache = solElapsed;
 	        	jobLock = false;
 	        }
     	}
 
-    	// For now, a Mayor/Manager cannot switch job
+    	// Note : for now a Mayor/Manager cannot switch job
     	if (job instanceof Manager)
     		jobLock = true;
 
@@ -188,6 +199,8 @@ implements Serializable {
                 if (!taskManager.hasActiveTask()) {
                     try {
                         getNewAction(true, (!activeMission && !overrideMission));
+                        // 2015-10-22 Added recordTask()            
+                        //taskManager.recordTask(); 
                     } catch (Exception e) {
                         logger.log(Level.WARNING, "Could not get new action", e);
                         e.printStackTrace(System.err);
@@ -420,8 +433,6 @@ implements Serializable {
      */
     public void getNewAction(boolean tasks, boolean missions) {
 
-        MissionManager missionManager = Simulation.instance().getMissionManager();
-
         //if (person != null) {
             // If this Person is too weak then they can not do Missions
             if (person.getPerformanceRating() < 0.5D) {
@@ -443,27 +454,20 @@ implements Serializable {
         }
 
         if (missions) {
-	        //if (person != null) {
 	           missionWeights = missionManager.getTotalMissionProbability(person);
 	           weightSum += missionWeights;
-	        //}
-
 		}
 
-        //if (person != null) {
-	        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
-	                (Double.isInfinite(weightSum))) {
-	        	try {
-					TimeUnit.MILLISECONDS.sleep(1000L);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-	            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
-	                    + weightSum);
-	        }
-        //}
-
-
+        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
+                (Double.isInfinite(weightSum))) {
+        	try {
+				TimeUnit.MILLISECONDS.sleep(1000L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
+                    + weightSum);
+        }
 
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);
@@ -485,11 +489,8 @@ implements Serializable {
         if (missions) {
             if (rand < missionWeights) {
             	Mission newMission = null;
-            	//if (person != null) {
-                    logger.fine(person.getName() + " starting a new mission.");
-                    newMission = missionManager.getNewMission(person);
-
-            	//}
+            	logger.fine(person.getName() + " starting a new mission.");
+            	newMission = missionManager.getNewMission(person);
 
                 if (newMission != null) {
                     missionManager.addMission(newMission);
@@ -503,13 +504,10 @@ implements Serializable {
             }
         }
 
-        //if (person != null) {
-            // If reached this point, no task or mission has been found.
-            logger.severe(person.getName()
+        // If reached this point, no task or mission has been found.
+        logger.severe(person.getName()
                     + " couldn't determine new action - taskWeights: "
-                    + taskWeights + ", missionWeights: " + missionWeights);
-        //}
-
+                    + taskWeights + ", missionWeights: " + missionWeights);   
     }
 
     /**

@@ -191,6 +191,32 @@ public class MarsClock implements Serializable {
      *  @return the total number of sol as an integer
      */
     // 2015-02-09 Added getTotalSol
+    public int getTotalSol() {
+
+    	int result = 0;
+
+        // Add sols up to current orbit
+        for (int x=1; x < orbit; x++) {
+            if (isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR;
+            else result += SOLS_IN_ORBIT_NON_LEAPYEAR;
+        }
+
+        // Add sols up to current month
+        for (int x=1; x < month; x++)
+            result += getSolsInMonth(x, orbit) ;
+
+        // Add sols up to current sol
+        result += sol  ;
+
+        result = result - THE_FIRST_SOL;
+
+        return result;
+    }
+    
+    /** Returns the total number of sols since the start of the simulation
+     *  @return the total number of sol as an integer
+     */
+    // 2015-02-09 Added getTotalSol
     public static int getTotalSol(MarsClock time) {
 
     	int result = 0;

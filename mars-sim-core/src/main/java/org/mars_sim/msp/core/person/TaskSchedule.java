@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -41,77 +42,109 @@ public class TaskSchedule implements Serializable {
 	private String actorName;
 	private String taskName;
 	private String doAction;
+	private String phase;
 	private String shiftType;
 
 	private Map <Integer, List<OneTask>> schedules;
 	private List<OneTask> todaySchedule;
 
-	private MarsClock time, clock;
-	//private Shift shift;
+	private MarsClock clock;
+	private Person person;
+	private Robot robot;
 
 	/**
 	 * Constructor.
 	 * @param person
 	 */
 	public TaskSchedule(Person person) {
-		//this.person = person;
+		this.person = person;
 		actorName = person.getName();
 		this.solCache = 1;
 		this.schedules = new ConcurrentHashMap <>();
 		this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
-		//shift = new Shift()
-
+	
+		clock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	public TaskSchedule(Robot robot) {
-		//this.robot = robot;
+		this.robot = robot;
 		actorName = robot.getName();
 		this.solCache = 1;
 		this.schedules = new ConcurrentHashMap <>();
 		this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
+		
+		clock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	/**
 	 * Records a task onto the schedule
 	 * @param taskName
-	 * @param doAction
+	 * @param description
 	 */
-	public void recordTask(String taskName, String doAction) {
+	public void recordTask(String taskName, String description, String phase) {
 		this.taskName = taskName;
-		this.doAction = doAction;
-		if (time == null)
-			time = Simulation.instance().getMasterClock().getMarsClock();
-		startTime = (int) time.getMillisol();
+		this.doAction = description;
+		this.phase = phase;
+	
+		int startTime = (int) clock.getMillisol();
+		int solElapsed = clock.getTotalSol();
+		if (solElapsed != solCache) {
+        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);		
+        	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
+        	schedules.put(solCache, todaySchedule);
+        	// create a new schedule for the new day
+    		todaySchedule = new CopyOnWriteArrayList<OneTask>();
 
-        //if (todaySchedule.isEmpty()) {
-        todaySchedule.add(new OneTask(startTime, taskName, doAction));
+        	solCache = solElapsed;    	
+    		// 2015-10-21 Added recordYestersolTask()
+        	recordYestersolLastTask();
+		}
+
+		// add this task
+		todaySchedule.add(new OneTask(startTime, taskName, description, phase));
 
 	}
 
-	  /**
+	/*
      * Performs the actions per frame
      * @param time amount of time passing (in millisols).
      */
 	// 2015-06-29 Added timePassing()
     public void timePassing(double time) {
-	    if (clock == null)
-	    	clock = Simulation.instance().getMasterClock().getMarsClock();
-
-		int solElapsed = MarsClock.getSolOfYear(clock);
-		if (solElapsed != solCache) {
-        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
-
-        	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
-        	schedules.put(solCache, todaySchedule);
-
-        	// create a new schedule for the new day
-    		todaySchedule = new CopyOnWriteArrayList<OneTask>();
-
-        	solCache = solElapsed;
-		}
-
     }
 
+    /*
+     *  Records the first task of the sol on today's schedule as the last task from yestersol
+     */
+    // 2015-10-21 Added recordYestersolLastTask()
+    public void recordYestersolLastTask() {
+ /*   	
+		Task currentTask = null;
+		
+		if (person != null) {
+			currentTask = person.getMind().getTaskManager().getTask();
+		}
+		else if (robot != null) {			
+			currentTask = robot.getBotMind().getTaskManager().getTask();	
+		}	
+		
+		if (currentTask != null) {
+			//String doAction = currentTask.getDescription();
+			//String name = currentTask.getName();				
+			//recordTask(name, doAction, 1);
+		}
+*/
+    	if (solCache > 1) {
+    		// Load the last task from yestersol's schedule
+    		List<OneTask> yesterSolschedule = schedules.get(solCache-1);
+    		OneTask lastTask = yesterSolschedule.get(yesterSolschedule.size()-1); 
+    		//String name = lastTask.getTaskName();
+    		//String des = lastTask.getDoAction();	
+    		// Save this yestersol task as the first task on today's schedule
+    		todaySchedule.add(new OneTask(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
+    	}
+    }
+    
 	/**
 	 * Gets all schedules of a person.
 	 * @return schedules
@@ -205,55 +238,22 @@ public class TaskSchedule implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets the task name.
-	 * @return task name
-
-	public String getTaskName() {
-		return taskName;
-	}
-*/
-
-	/**
-	 * Gets the actor's name.
-	 * @return actor's name
-
-	public String getActorName() {
-		return actorName;
-	}
-*/
-	/**
-	 * Gets what the actor is doing
-	 * @return what the actor is doin
-
-	public String getDoAction() {
-		return doAction;
-	}
-*/
-
-	/**
-	 * Gets the start time of the task.
-	 * @return start time
-
-	public int getStartTime() {
-		return startTime;
-	}
-*/
-
-	public class OneTask implements Serializable {
+	 public class OneTask implements Serializable {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		// Data members
 		private String taskName;
-		private String doAction;
+		private String description;
+		private String phase;
 		private int startTime;
 
-		public OneTask(int startTime, String taskName, String doAction) {
+		public OneTask(int startTime, String taskName, String description, String phase) {
 			this.taskName = taskName;
-			this.doAction = doAction;
+			this.description = description;
 			this.startTime = startTime;
+			this.phase = phase;
 		}
 
 		/**
@@ -273,13 +273,21 @@ public class TaskSchedule implements Serializable {
 		}
 
 		/**
-		 * Gets what the actor is doing
-		 * @return what the actor is doin
+		 * Gets the description what the actor is doing
+		 * @return what the actor is doing
 		 */
-		public String getDoAction() {
-			return doAction;
+		public String getDescription() {
+			return description;
 		}
 
+
+		/**
+		 * Gets the task phase.
+		 * @return task phase
+		 */
+		public String getPhase() {
+			return phase;
+		}
 	}
 
 /*

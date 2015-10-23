@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMission;
 import org.mars_sim.msp.core.person.ai.mission.meta.MetaMissionUtil;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -141,6 +142,35 @@ implements Serializable {
 		
 		return result;
 	}
+
+
+	/*
+	 * Prepares the task for recording in the task schedule
+	 * @param newTask
+	 */
+	// 2015-10-22 Added recordMission()
+	public void recordMission(Mission newMission) {
+		// Records the new mission
+/*
+		Mission newMission = null;
+		if (personCache != null) {
+			newMission = getMission(personCache);
+		}
+		else if (robotCache != null) {
+			newMission = getMission(robotCache);			
+		}
+*/		
+		if (newMission != null) {
+			String doAction = newMission.getDescription();
+			String name = newMission.getName();
+			if (personCache != null) {
+				personCache.getTaskSchedule().recordTask(name, doAction, "");
+			}
+			else if (robotCache != null) {
+				robotCache.getTaskSchedule().recordTask(name, doAction, "");
+			}
+		}		
+	}
 	
 	/** 
 	 * Adds a new mission to the mission list.
@@ -166,6 +196,9 @@ implements Serializable {
 				}
 			}
 
+			// 2015-10-22 Added recordMission()
+			recordMission(newMission);
+			
 			logger.finer("MissionManager: Added new mission - " + newMission.getName());
 		}
 	}

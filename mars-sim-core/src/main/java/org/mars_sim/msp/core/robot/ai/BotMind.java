@@ -83,15 +83,23 @@ implements Serializable {
      * @throws Exception if error.
      */
     public void timePassing(double time) {
-
+    	
+        if (taskManager != null) {
+        	// 2015-10-22 Added recordTask()
+    		taskManager.recordTask();  
+    	
+    		// Take action as necessary.
+	        takeAction(time);
+        }
+        
         // I don't think robots should be changing jobs on their own. - Scott
         	 // Check if this robot needs to get a new job or change jobs.
 //	        if (!jobLock) {
 //	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
 //	        }
 
-	        // Take action as necessary.
-	        takeAction(time);
+        // Take action as necessary.
+        //takeAction(time);
 
     }
 

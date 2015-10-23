@@ -375,7 +375,7 @@ implements InternalFrameListener, ActionListener {
 		public Object getValueAt(int row, int column) {
 			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
 			//else if (column == 1) return tasks.get(row).getTaskName();
-			else if (column == 1) return tasks.get(row).getDoAction();
+			else if (column == 1) return tasks.get(row).getDescription();
 			else return null;
 		}
 
@@ -412,8 +412,8 @@ implements InternalFrameListener, ActionListener {
 		        	if ( i - 1 > -1 )
 		        		lastTask = thisSchedule.get(i - 1);
 
-		        	String lastActivity = lastTask.getDoAction();
-		        	String currentActivity = currentTask.getDoAction();
+		        	String lastActivity = lastTask.getDescription();
+		        	String currentActivity = currentTask.getDescription();
 		        	// check if the last task is the same as the current task
 		        	if (lastActivity.equals(currentActivity)) {
 		        		// remove the current task if it's the same as the last task

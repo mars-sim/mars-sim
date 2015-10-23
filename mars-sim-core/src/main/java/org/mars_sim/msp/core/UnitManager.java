@@ -64,6 +64,8 @@ public class UnitManager implements Serializable {
 	public static final int POPULATION_WITH_SUB_COMMANDER = 12;
 	public static final int POPULATION_WITH_MAYOR = 48;
 	public static final int POPULATION_WITH_COMMANDER = 4;
+	
+	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
 	// Data members
 	private int solCache;
@@ -773,10 +775,10 @@ public class UnitManager implements Serializable {
 					}
 				}
 
-				// Establish system of governance at settlement.
+				// Establish a system of governance at settlement.
 				establishSettlementGovernance(settlement);
 
-				// 2015-07-02
+				// 2015-07-02 Added setupShift()
 				setupShift(settlement, initPop);
 
 			}
@@ -787,6 +789,12 @@ public class UnitManager implements Serializable {
 		}
 	}
 
+	/*
+	 * Determines how many shifts for a settlement and assigns a work shift for each person
+	 * @param settlement
+	 * @param pop population 
+	 *  
+	 */
 	// 2015-07-02 Added setupShift()
 	public void setupShift(Settlement settlement, int pop) {
 
@@ -797,13 +805,13 @@ public class UnitManager implements Serializable {
 		if (pop == 1) {
 			numShift = 1;
 		}
-		else if (pop <= 5) {
+		else if (pop < THREE_SHIFTS_MIN_POPULATION) { 
 			numShift = 2;
 		}
-		else {//if pop > 5
+		else {//if pop > 6
 			numShift = 3;
-
 		}
+		
 		settlement.setNumShift(numShift);
 
 		Collection<Person> people = settlement.getAllAssociatedPeople();
@@ -916,11 +924,7 @@ public class UnitManager implements Serializable {
 
 					else
 						shiftType = "Z";
-
 				}
-
-
-
 			}
 
 			p.getTaskSchedule().setShiftType(shiftType);

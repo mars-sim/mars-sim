@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -40,6 +42,8 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
+	public static final int TIME_DELAY = 960;
+	
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;
 
@@ -77,12 +81,7 @@ extends ToolWindow {
 		if (desktop.getMainWindow() != null)
 			this.isFX = true;
 
-		//SwingUtilities.invokeLater(new Runnable() {
-        //    @Override
-        //    public void run() {
-        		init();
-        //    }
-        //});
+        init();
 
 		showMarsTime();
 	}
@@ -110,12 +109,13 @@ extends ToolWindow {
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
         leftLabel = new JLabel();  //statusText + populationText;
-		statusBar.setLeftComponent(leftLabel);
+
+        statusBar.setLeftComponent(leftLabel);
 
         timeLabel = new JLabel();
         timeLabel.setHorizontalAlignment(JLabel.CENTER);
+
         statusBar.addRightComponent(timeLabel, false);
-        statusBar.setOpaque(true);
 
         //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
 
@@ -129,7 +129,6 @@ extends ToolWindow {
 	// 2015-02-05 Added showMarsTime()
 	public void showMarsTime() {
 		// 2015-01-07 Added Martian Time on status bar
-		int timeDelay = 900;
 		ActionListener timeListener = null;
 		if (timeListener == null) {
 			timeListener = new ActionListener() {
@@ -148,7 +147,7 @@ extends ToolWindow {
 			};
 		}
     	if (marsTimer == null) {
-    		marsTimer = new javax.swing.Timer(timeDelay, timeListener);
+    		marsTimer = new javax.swing.Timer(TIME_DELAY, timeListener);
     		marsTimer.start();
     	}
 	}
