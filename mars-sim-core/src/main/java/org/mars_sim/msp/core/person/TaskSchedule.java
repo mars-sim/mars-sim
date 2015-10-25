@@ -137,11 +137,14 @@ public class TaskSchedule implements Serializable {
     	if (solCache > 1) {
     		// Load the last task from yestersol's schedule
     		List<OneTask> yesterSolschedule = schedules.get(solCache-1);
-    		OneTask lastTask = yesterSolschedule.get(yesterSolschedule.size()-1); 
-    		//String name = lastTask.getTaskName();
-    		//String des = lastTask.getDoAction();	
-    		// Save this yestersol task as the first task on today's schedule
-    		todaySchedule.add(new OneTask(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
+    		if (yesterSolschedule != null) {
+    		int size = yesterSolschedule.size();
+	    		if (size != 0) {
+	    			OneTask lastTask = yesterSolschedule.get(yesterSolschedule.size()-1); 
+	    			// Save this yestersol task as the first task on today's schedule
+	    			todaySchedule.add(new OneTask(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
+	    		}
+    		}
     	}
     }
     

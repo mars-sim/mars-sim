@@ -194,7 +194,8 @@ implements TableModelListener, ActionListener {
 		toolbar.add(buttonFilter);
 
 		// Create tabbed pane for the table
-		tabsSection = new JideTabbedPane();
+		tabsSection = new JideTabbedPane(JideTabbedPane.BOTTOM);
+		tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
         LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
 		tabsSection.setBoldActiveTab(true);
 		tabsSection.setScrollSelectedTabOnWheel(true);
@@ -202,7 +203,6 @@ implements TableModelListener, ActionListener {
 		tabsSection.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
 		tabsSection.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
 		//tabsSection.setBackground(UIDefaultsLookup.getColor("control"));
-		tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
 		tabsSection.setForeground(Color.DARK_GRAY);
 		mainPane.add(tabsSection, BorderLayout.CENTER);
 

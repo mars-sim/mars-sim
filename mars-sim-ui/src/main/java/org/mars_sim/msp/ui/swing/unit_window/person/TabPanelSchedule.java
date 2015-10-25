@@ -426,30 +426,9 @@ extends TabPanel {
 	 */
     // 2015-05-21 Added openPlannerWindow()
 	private void openPlannerWindow() {
-
-		MainWindow mw = desktop.getMainWindow();
-		if (mw !=null )  {
-			// Pause simulation
-			//mw.pauseSimulation();
-			// Create PlannerWindow
-			if (plannerWindow == null)
-				plannerWindow = new PlannerWindow(unit, desktop, this);
-			// Unpause simulation
-			//mw.unpauseSimulation();
-		}
-
-		MainScene ms = desktop.getMainScene();
-		if (ms !=null )  {
-			// Pause simulation
-			//ms.pauseSimulation();
-			// Create PlannerWindow
-			if (plannerWindow == null) {
-				plannerWindow = new PlannerWindow(unit, desktop, this);
-			}
-			// Unpause simulation
-			//ms.unpauseSimulation();
-		}
-
+		// Create PlannerWindow
+		if (plannerWindow == null)
+			plannerWindow = new PlannerWindow(unit, desktop, this);
 	}
 
 	class PromptComboBoxRenderer extends BasicComboBoxRenderer {

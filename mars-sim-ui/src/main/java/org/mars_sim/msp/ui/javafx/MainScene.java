@@ -76,10 +76,14 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
+import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
+import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
+
+import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
@@ -209,6 +213,7 @@ public class MainScene {
 		transportWizard = new TransportWizard(this, desktop);
 		startAutosaveTimer();
 		startEarthTimer();
+							
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
@@ -283,6 +288,15 @@ public class MainScene {
 		borderPane.setBottom(bottomBox);
 		// borderPane.setStyle("-fx-background-color: palegorange");
 
+/*		
+		// 2015-10-23 Creates marqueeNode and marqueePane
+		SwingNode marqueeNode = null;
+		
+		SwingUtilities.invokeLater(() -> {
+			marqueePane = new MarqueePane();
+			marqueeNode.setContent(marqueePane);
+		} );
+*/		
 		// 2015-05-26 Create fxDesktopPane
 		fxDesktopPane = marsNode.createFXDesktopPane();
 		fxDesktopPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
@@ -333,15 +347,18 @@ public class MainScene {
 		swingTab.setText("Classic UI");
 		swingTab.setContent(swingPane);
 
+		//Tab noteTab = new Tab("");
+		
 		// Set to select the swing tab at the start of simulation
+		// Used dndTabPane instead of the regular TabPane
 		dndTabPane.getSelectionModel().select(swingTab);
 		dndTabPane.getTabs().addAll(swingTab, nodeTab);
+		//borderPane.setCenter(dndTabPane);
 
-		//Node notificationNode = createNotificationPane();
-		//borderPane.setCenter(notificationNode);
-
-		borderPane.setCenter(dndTabPane);
-
+		// wrap dndTabPane inside notificationNode
+		Node notificationNode = createNotificationPane();
+		borderPane.setCenter(notificationNode);
+		
 		rootStackPane = new StackPane(borderPane);
 
 		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth()-40, primaryScreenBounds.getHeight()-40, Color.BROWN);
@@ -590,7 +607,7 @@ public class MainScene {
 		return statusBar;
 	}
 
-	/*
+	
 
 	public NotificationPane getNotificationPane() {
 		return notificationPane;
@@ -598,7 +615,9 @@ public class MainScene {
 
 	public Node createNotificationPane() {
 
+		// wrap the dndTabPane inside notificationNode
 		notificationPane = new NotificationPane(dndTabPane);
+		
 		String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
 		ImageView image = new ImageView(imagePath);
 		notificationPane.setGraphic(image);
@@ -606,10 +625,10 @@ public class MainScene {
 			// do sync, then hide...
 			notificationPane.hide();
 		} ));
-
+		
 		notificationPane.setShowFromTop(false);
 		// notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-		// notificationPane.setText("Breaking news for mars-simmers !!");
+		 notificationPane.setText("Breaking news for mars-simmers !!");
 		// notificationPane.hide();
 
 		return notificationPane;
@@ -623,7 +642,7 @@ public class MainScene {
 	public String getControlStylesheetURL() {
 		return "/org/controlsfx/control/notificationpane.css";
 	}
-*/
+
 
 	/*
 	 * Updates the cpu loads, memory usage and time text in the status bar
@@ -1233,21 +1252,22 @@ public class MainScene {
 		}
 		else {
 					
-			desktop.openInitialWindows();
-			
+/*		
 			GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-/*			System.out.println("ourGuide.getWidth() is " + ourGuide.getWidth());
+			System.out.println("ourGuide.getWidth() is " + ourGuide.getWidth());
 			System.out.println("ourGuide.getHeight() is " + ourGuide.getHeight());
 			System.out.println("swingPane.getWidth() is " + swingPane.getWidth());
 			System.out.println("swingPane.getHeight() is " + swingPane.getHeight());
 			System.out.println("stage.getScene().getWidth() is " + stage.getScene().getWidth());
 			System.out.println("stage.getScene().getHeight() is " + stage.getScene().getHeight());
-*/
+
 			int Xloc = (int)((stage.getScene().getWidth() - ourGuide.getWidth()) * .5D);
 			int Yloc = (int)((stage.getScene().getHeight() - ourGuide.getHeight()) * .5D);
 			//System.out.println("Xloc is " + Xloc + "  Yloc is " + Yloc);
 			ourGuide.setLocation(Xloc, Yloc);			
 			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+*/			
+			desktop.openInitialWindows();
 		}
 	}
 

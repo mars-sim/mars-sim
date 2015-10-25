@@ -1221,14 +1221,20 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
-			// Open default windows on desktop.
-
+		
 			// Open user guide tool.
-			openToolWindow(GuideWindow.NAME);
+			//SwingUtilities.invokeLater(() -> {
+				openToolWindow(GuideWindow.NAME); // TODO: why SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC ?
+			//});
+	
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
 			//int Xloc = (int)((getWidth() - ourGuide.getWidth()) * .5D);
 			//int Yloc = (int)((getHeight() - ourGuide.getHeight()) * .5D);
-			//ourGuide.setLocation(Xloc, Yloc);			
+			if (mainScene != null) {
+				int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
+				int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
+				ourGuide.setLocation(Xloc, Yloc);		
+			}
 			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 
 		} else {
