@@ -117,10 +117,15 @@ implements LifeSupportType {
     private Inventory inv;
 
     private ChainOfCommand chainOfCommand;
+    
+    private MarsClock clock;
+    
     /** The settlement's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
     /** Amount of time (millisols) that the settlement has had zero population. */
 
+    private Map<Integer, Double> resourceMapCache = new HashMap<>();
+    
     /**
      * Constructor for subclass extension.
      * @param name the settlement's name
@@ -162,7 +167,8 @@ implements LifeSupportType {
 
         //count++;
         //logger.info("constructor 3 : count is " + count);
-        this.inv = getInventory();
+        this.inv = getInventory();     
+        
         // Set inventory total mass capacity.
         inv.addGeneralCapacity(Double.MAX_VALUE);
         // Initialize building manager
@@ -181,6 +187,8 @@ implements LifeSupportType {
         scientificAchievement = new HashMap<ScienceType, Double>(0);
 
         chainOfCommand = new ChainOfCommand(this);
+        
+        clock = Simulation.instance().getMasterClock().getMarsClock();
 
     }
 
@@ -609,7 +617,8 @@ implements LifeSupportType {
     // 2015-01-09  Added makeDailyReport()
     public synchronized void makeDailyReport() {
 
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+    	if (clock == null)
+    		clock = Simulation.instance().getMasterClock().getMarsClock();
 
         // check for the passing of each day
         int solElapsed = MarsClock.getSolOfYear(clock);
@@ -1173,6 +1182,15 @@ implements LifeSupportType {
     	this.numShift = numShift;
     }
 
+    public Map<Integer, Double> getResourceMapCache() {
+    	return resourceMapCache;
+    }
+
+    public void setOneResourceCache(int resourceType, double newAmount) {
+    	resourceMapCache.put(resourceType, newAmount);
+    	//System.out.println(" done with setOneResourceCache(). new amount is " + newAmount);
+    }
+    
     @Override
     public void destroy() {
         super.destroy();

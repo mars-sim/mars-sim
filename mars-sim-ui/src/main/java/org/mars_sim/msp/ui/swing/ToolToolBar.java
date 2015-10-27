@@ -7,11 +7,16 @@
  */
 package org.mars_sim.msp.ui.swing;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
@@ -70,7 +75,7 @@ implements ActionListener {
 		// Set border around toolbar
 		setBorder(new BevelBorder(BevelBorder.RAISED));
 	}
-
+          
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
 

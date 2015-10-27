@@ -48,8 +48,8 @@ implements Serializable {
 		cal.setTimeZone(zone);
 
 		// Initialize formatter
-		//formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss 'UT'");
-		formatter = new SimpleDateFormat("yyyy-MMM-dd  HH:mm:ss 'UT'");
+		//formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss '(UTC)'");
+		formatter = new SimpleDateFormat("yyyy-MMM-dd  HH:mm:ss '(UTC)'");
 
 		formatter.setTimeZone(zone);
 
@@ -67,12 +67,12 @@ implements Serializable {
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 UT"
+	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 (UTC)"
 	 */
 	// Kung: why do we want to deprecate this method with @deprecated tag?
 	//2015-01-08 Added if clause
 	public synchronized String getTimeStamp() {
-		String result = formatter.format(cal.getTime());// + " UT";
+		String result = formatter.format(cal.getTime());// + " (UTC)";
 		if (result == null) result = "0";
 		return result;
 	}

@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing;
 
 import org.mars_sim.msp.core.Unit;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
@@ -43,6 +47,9 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		// Use JToolBar constructor
 		super();
 
+		setOpaque(false);
+	    setBackground(new Color(0,0,0,128));
+	    
 		// Initialize data members
 		unitButtons = new ArrayList<UnitButton>();
 		this.parentMainWindow = parentMainWindow;
@@ -97,6 +104,10 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 		Iterator<UnitButton> i = unitButtons.iterator();
 		while (i.hasNext()) {
 			UnitButton unitButton = i.next();
+			
+			unitButton.setBorderPainted( false );
+			unitButton.setContentAreaFilled( false );
+			
 			if (unitButton.getUnit() == unit) {
 				remove(unitButton);
 				validate();
@@ -125,4 +136,20 @@ public class UnitToolBar extends JToolBar implements ActionListener {
 			result[x] = unitButtons.get(x).getUnit();
 		return result;
 	}
+	
+	@Override
+	protected void addImpl(Component comp, Object constraints, int index) {
+		super.addImpl(comp, constraints, index);
+		if (comp instanceof JButton) {
+			((JButton) comp).setContentAreaFilled(false);
+		}
+	}
+	
+    @Override
+    protected JButton createActionComponent(Action a) {
+        JButton jb = super.createActionComponent(a);
+        jb.setOpaque(false);
+        return jb;
+    }
+    
 }

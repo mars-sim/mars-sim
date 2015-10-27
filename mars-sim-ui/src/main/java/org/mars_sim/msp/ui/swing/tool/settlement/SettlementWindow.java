@@ -7,9 +7,13 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -24,7 +28,11 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
+import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
+import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+
+import net.java.balloontip.BalloonToolTip;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -34,7 +42,6 @@ extends ToolWindow {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 
 	// default logger.
 	//private static Logger logger = Logger.getLogger(SettlementWindow.class.getName());
@@ -47,7 +54,15 @@ extends ToolWindow {
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;
 
-
+    private String statusText;
+    private String populationText;
+	private String marsDateString, marsTimeString;
+	
+    private JStatusBar statusBar;
+    private JLabel solLabel, popLabel;
+    private JLabel timeLabel, dateLabel;
+    private JPanel subPanel;
+    
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 	/** Map panel. */
@@ -56,19 +71,9 @@ extends ToolWindow {
 	private MarsClock marsClock;
 	private javax.swing.Timer marsTimer = null;
 
-    private JStatusBar statusBar;
-    private JLabel leftLabel;
-    //private JLabel maxMemLabel;
-    //private JLabel memUsedLabel;
-    //private JLabel dateLabel;
-    private JLabel timeLabel;
-    //private int maxMem;
-    //private int memAV;
-    //private int memUsed;
-    private String statusText;
-    private String populationText;
-	private String marsTimeString;
-	private boolean isFX = false;
+	private BalloonToolTip balloonToolTip;
+	
+	private MarqueeTicker marqueeTicker;
 
 	/**
 	 * Constructor.
@@ -78,9 +83,9 @@ extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
-		if (desktop.getMainWindow() != null)
-			this.isFX = true;
 
+        balloonToolTip = new BalloonToolTip();
+        
         init();
 
 		showMarsTime();
@@ -100,25 +105,54 @@ extends ToolWindow {
 //		setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
 		setLocation(600,600);
 
+	    //getRootPane().setOpaque(false);
+	    //getRootPane().setBackground(new Color(0,0,0,128));
+
+		setBackground(Color.BLACK);
+	    //setOpaque(false);
+	    //setBackground(new Color(0,0,0,128));
+
 		JPanel mainPanel = new JPanel(new BorderLayout());
+	    //mainPanel.setOpaque(false);
+	    //mainPanel.setBackground(new Color(0,0,0,128));
+	    
 		setContentPane(mainPanel);
 
+		subPanel = new JPanel(new BorderLayout());
+	    //subPanel.setOpaque(false);
+	    //subPanel.setBackground(new Color(0,0,0,128));
+	    subPanel.setBackground(Color.BLACK);
+	    mainPanel.add(subPanel, BorderLayout.CENTER);
+		
 		mapPanel = new SettlementMapPanel(desktop, this);
-		mainPanel.add(mapPanel, BorderLayout.CENTER);
-
+		//mainPanel.add(mapPanel, BorderLayout.CENTER);
+		subPanel.add(mapPanel, BorderLayout.CENTER);
+		
+		// 2015-10-24 Create MarqueeTicker
+		marqueeTicker = new MarqueeTicker(this);
+		marqueeTicker.setBackground(Color.BLACK);
+		subPanel.add(marqueeTicker, BorderLayout.SOUTH);
+		
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
-        leftLabel = new JLabel();  //statusText + populationText;
+        solLabel = new JLabel(); 
+        popLabel = new JLabel();  //statusText + populationText;
+        
+        statusBar.setLeftComponent(solLabel, true);
+        statusBar.setLeftComponent(popLabel, false);
 
-        statusBar.setLeftComponent(leftLabel);
-
+        dateLabel = new JLabel();
         timeLabel = new JLabel();
-        timeLabel.setHorizontalAlignment(JLabel.CENTER);
+        balloonToolTip.createBalloonTip(timeLabel, Msg.getString("SettlementWindow.timeLabel.tooltip")); //$NON-NLS-1$
+        balloonToolTip.createBalloonTip(dateLabel, Msg.getString("SettlementWindow.dateLabel.tooltip")); //$NON-NLS-1$
+        //timeLabel.setHorizontalAlignment(JLabel.CENTER);
 
+        statusBar.addRightComponent(dateLabel, false);
         statusBar.addRightComponent(timeLabel, false);
 
         //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
 
+        //subPanel
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
 		pack();
@@ -126,6 +160,13 @@ extends ToolWindow {
 
 	}
 
+	public void paintComponent(Graphics g){
+	    super.paintComponent(g);
+	    g.setColor(Color.BLACK);
+	    g.fillRect(subPanel.getX(), subPanel.getY(), subPanel.getWidth(), subPanel.getHeight());
+	}
+	
+	
 	// 2015-02-05 Added showMarsTime()
 	public void showMarsTime() {
 		// 2015-01-07 Added Martian Time on status bar
@@ -135,14 +176,17 @@ extends ToolWindow {
 			    @Override
 			    public void actionPerformed(ActionEvent evt) {
 			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-			    	marsTimeString = marsClock.getDateTimeStamp();
+			    	marsDateString = marsClock.getDateString(); 
+			    	marsTimeString = marsClock.getTimeString(); //getMillisolString(marsClock); 
 			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0
 			    	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
-					timeLabel.setText("Martian Time : " + marsTimeString + " UMST");
-				    statusText = "" + MarsClock.getTotalSol(marsClock);
+					dateLabel.setText("Martian Date : " + marsDateString + " ");
+					timeLabel.setText("Time : " + marsTimeString + " millisols (UMST)");
+					statusText = "" + MarsClock.getTotalSol(marsClock);
 				    populationText = mapPanel.getSettlement().getAllAssociatedPeople().size() + " of " + mapPanel.getSettlement().getPopulationCapacity();
 				    // 2015-02-09 Added leftLabel
-				    leftLabel.setText("Sol : " + statusText + "      Population : " + populationText);
+				    solLabel.setText("Sol : " + statusText);
+				    popLabel.setText("Population : " + populationText);
 			    }
 			};
 		}
@@ -168,6 +212,10 @@ extends ToolWindow {
 		return desktop;
 	}
 
+	public MarqueeTicker getMarqueeTicker() {
+		return marqueeTicker;
+	}
+	
 	@Override
 	public void destroy() {
 		mapPanel.destroy();

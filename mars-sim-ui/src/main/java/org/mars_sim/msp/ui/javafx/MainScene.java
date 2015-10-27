@@ -597,7 +597,7 @@ public class MainScene {
 		clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		statusBar.getRightItems().add(clkBtn);
 
-		timeText = new Text(" Earth Time : " + timeStamp + "  ");
+		timeText = new Text(" Earth Date & Time : " + timeStamp + "  ");
 		// timeText.setStyle("-fx-text-inner-color: orange;");
 		timeText.setId("time-text");
 		//timeText.setFill(Color.GREY);
@@ -669,7 +669,7 @@ public class MainScene {
 		// catch (Exception ee) {
 		// ee.printStackTrace(System.err);
 		// }
-		timeText.setText(" Earth Time : " + t + "  ");
+		timeText.setText(" Earth Date & Time : " + t + "  ");
 		// timeText.setStyle("-fx-text-inner-color: orange;");
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;

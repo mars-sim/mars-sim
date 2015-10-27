@@ -205,8 +205,8 @@ public class MainWindow extends JComponent {
 			// 2015-01-07 Added statusBar
 	        statusBar = new JStatusBar();
 	        //statusText = "Mars-Sim 3.08 is running";
-	        leftLabel = new JLabel(statusText);
-			statusBar.setLeftComponent(leftLabel);
+	        //leftLabel = new JLabel(statusText);
+			//statusBar.setLeftComponent(leftLabel, true);
 
 	        memMaxLabel = new JLabel();
 	        memMaxLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -220,7 +220,7 @@ public class MainWindow extends JComponent {
 	        memUsedLabel.setHorizontalAlignment(JLabel.CENTER);
 	        memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	        memUsed = memTotal - memFree;
-	        memUsedLabel.setText("Current Used Memory : " + memUsed +  " MB");
+	        memUsedLabel.setText("Used Memory : " + memUsed +  " MB");
 	        statusBar.addRightComponent(memUsedLabel, false);
 
 	        timeLabel = new JLabel();
@@ -333,13 +333,13 @@ public class MainWindow extends JComponent {
 				    catch (Exception ee) {
 				        ee.printStackTrace(System.err);
 				    }
-					timeLabel.setText("Earth Time : " + t);
+					timeLabel.setText("Earth Date & Time : " + t);
 					memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 					memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 	                memUsed = memTotal - memFree;
 
 	                if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9)
-	                	memUsedLabel.setText("Current Used Memory : " + memUsed +  " MB");
+	                	memUsedLabel.setText("Used Memory : " + memUsed +  " MB");
 	                memUsedCache = memUsed;
 			    }
 			});

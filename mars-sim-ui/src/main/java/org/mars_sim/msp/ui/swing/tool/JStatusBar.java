@@ -60,8 +60,11 @@ public class JStatusBar extends JPanel {
         rightPanel.add(panel);
     }
     
-    public void setLeftComponent(JComponent component) {
+    public void setLeftComponent(JComponent component, boolean separator) {
         leftPanel.add(component);
+        if (separator) 
+        	leftPanel.add(new SeparatorPanel(Color.GRAY, Color.WHITE));
+        
     }
     
     /*

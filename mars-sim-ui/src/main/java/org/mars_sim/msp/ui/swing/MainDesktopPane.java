@@ -53,6 +53,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
+import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -129,6 +130,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/** The main window frame. */
 	private MainWindow mainWindow;
 	private MainScene mainScene;
+	private MarqueeTicker marqueeTicker;
 
 	/**
 	 * Constructor 1.
@@ -1323,6 +1325,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return isTransportingBuilding;
 	}
 
+	public void setMarqueeTicker(MarqueeTicker marqueeTicker) {
+		this.marqueeTicker = marqueeTicker;
+	}
+	
+	public MarqueeTicker getMarqueeTicker() {
+		return marqueeTicker;
+	}
+	
 	// 2014-12-19 Added unitUpdate()
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();

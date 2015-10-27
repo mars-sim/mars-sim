@@ -297,11 +297,13 @@ implements ClockListener {
 	 * Sets the settlement to display.
 	 * @param settlement the settlement.
 	 */
+	// Called by SettlementTransparentPanel to update settlement
 	public void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
-			// TODO : inform SettlementTransparentPanel to update settlement ?
+			
 			this.settlement = newSettlement;
-
+			if (settlementWindow != null && settlementWindow.getMarqueeTicker() != null)
+				settlementWindow.getMarqueeTicker().updateSettlement(newSettlement);
 			//paintDoubleBuffer();
 			repaint();
 		}
@@ -831,6 +833,19 @@ implements ClockListener {
 
 	}
 
+
+	@Override
+	public void clockPulse(double time) {
+		// Repaint map panel with each clock pulse.
+		//paintDoubleBuffer();
+		repaint();
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused) {
+		// Do nothing
+	}
+	
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
@@ -851,17 +866,5 @@ implements ClockListener {
 
 		dbg = null;
 		dbImage = null;
-	}
-
-	@Override
-	public void clockPulse(double time) {
-		// Repaint map panel with each clock pulse.
-		//paintDoubleBuffer();
-		repaint();
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused) {
-		// Do nothing
 	}
 }

@@ -7,6 +7,8 @@
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
 
+import java.awt.Color;
+
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
@@ -63,6 +65,11 @@ extends JInternalFrame {
 		this.name = name;
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
+
+	    //getRootPane().setOpaque(false);
+	    //getRootPane().setBackground(new Color(0,0,0,128));
+	    //setOpaque(false);
+	    //setBackground(new Color(0,0,0,128));
 
 		if (this instanceof MonitorWindow)
 			this.monitorWindow = (MonitorWindow)this;

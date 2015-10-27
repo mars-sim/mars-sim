@@ -229,7 +229,10 @@ implements ClockListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				master.setPaused(!master.isPaused());
-
+				if (master.isPaused())
+					desktop.getMarqueeTicker().pauseMarqueeTimer(true);
+				else
+					desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 			}
 		});
 		pausePane.add(pauseButton);
