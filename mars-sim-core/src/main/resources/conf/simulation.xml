@@ -7,10 +7,55 @@
 	<!-- Time related configuration -->
 	<time-configuration>
 
-		<!-- Simulation time ratio to real time -->
-		<!-- Value must be positive number and cannot be zero -->
-		<!-- Default: 1000.0 -->
+		<!-- time-ratio (TR) is the simulation time ratio : the ratio of real time to sim time -->
+		<!-- It denotes the speed of the simulation -->
+		<!-- Value must be positive number between 0.0001 and 500,000 and cannot be zero -->
+		<!-- Default: 500.0 -->
 		<time-ratio value="500.0" />
+		<!-- e.g. if TR = 500, 1 real second in your computer = 500 sim second in MSP  -->
+
+		<!-- time-between-updates (TBU) is the ideal time interval between two successive updates [in milliseconds] -->
+		<!-- It is essentially the maximum sleep time between two game iterations or updates.
+			 The smaller the TBU, the better the "resolution" of the simulation -->
+		<!-- Frames Per Second (FPS) or Ticks Per Seconds (TPS) [in hertz] is just the reciprocal of TBU  -->
+		<!-- Value must be positive number and cannot be zero -->
+		<!-- Default: 40.0 -->
+		<time-between-updates value="40.0" />
+		<!-- e.g. 40 ms is equal to 25 Hz  -->
+
+		<!-- NOTE: the product of time-ratio and time-between-updates is the default time elapsed -->
+		<!-- e.g. 40 ms * 25 Hz = 20,000 ms or 20 seconds -->
+		<!-- since 1 millisols = 88.78 seconds, 20 seconds is 0.2253 millisols -->
+		<!-- For each interval of real time (40 ms), a time period of 0.2253 millisols has just been elapsed in the simulation-->
+
+
+		<!-- no-delays-per-yield is the maximum number of counts allowed in waiting for other threads to execute -->
+		<!-- It avoids the use of an arbitrary sleep period in the MasterClock game loop -->
+		<!-- Value must be positive integer between 1 and 200 -->
+		<!-- Default: 16 -->
+		<no-delays-per-yield value="16" />
+		<!-- e.g. If the game update and rendering steps take longer than the iteration period, say, 42 ms,
+			 then at the next iteration, it will not resort to sleep for 40 ms as usual. This cause a counter
+			 to increment. If the counter exceeds the default value of 16, the game loop will be told to
+			 wait and yield for other threads to finish execution before it resumes -->
+
+
+		<!-- max-frame-skips is the number of skipped frames allowed -->
+		<!-- It is a measure of tolerance of the maximum number of lost frame. Sometimes, the simulation take
+			too long (say, more than the default 40 ms) to finish its execution in a frame.
+			Then by the time the next update is due, the simulation has yet finished the previous frame.
+			max_frame-skips should be fine-tuned with the TBU together -->
+		<!-- The large the max-frame-skips, the more sudden the game jump forward -->
+		<!-- Value must be positive integer between 1 and 200 -->
+		<!-- Default: 10 -->
+		<max-frame-skips value="10" />
+		<!-- e.g. Suppose a simulation takes a prolonged period of 400 ms to complete the execution. In 400 ms, it should
+			have call the MasterClock to update the game loop 10 times (if the default TBU is 40 ms).
+			If max-frame-skips is set to 10, then it would NOT try to immediately run 10 updates back-to-back
+			just to catch up with the lost frames. The normal behavior of the MasterClock is that it will dynamically
+			adjusts the value of TBU in order to recover as many lost frames as possible by running a update as soon as
+			it is due -->
+
 
 		<!-- Earth start date/time -->
 		<!-- "MM/dd/yyyy hh:mm:ss" format -->

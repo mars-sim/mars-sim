@@ -78,8 +78,14 @@ public class SimulationConfig implements Serializable {
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 	private static final String TIME_RATIO = "time-ratio";
+	private static final String TIME_BETWEEN_UPDATES = "time-between-updates";
+	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
+	private static final String MAX_FRAME_SKIPS = "max-frame-skips";
+
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
+
+
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
@@ -186,7 +192,7 @@ public class SimulationConfig implements Serializable {
 	public String getBuild(){
 		return build;
 	}
-	
+
 	/**
 	 * Reloads all of the configuration files.
 	 * @throws Exception if error loading or parsing configuration files.
@@ -215,8 +221,56 @@ public class SimulationConfig implements Serializable {
 		double ratio = Double.parseDouble(timeRatio.getAttributeValue(VALUE));
 		if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
 		else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
-
 		return ratio;
+	}
+
+	/**
+	 * Gets the time between updates in milliseconds in simulation.xml
+	 * Example: 100.0 mean 100 simulation seconds per 1 real second.
+	 * @return the time interval in milliseconds
+	 * @throws Exception if the value is not in configuration or is not valid.
+	 */
+	// 2015-10-31 getTimeBetweenUpdates()
+	public double getTimeBetweenUpdates() {
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element el = timeConfig.getChild(TIME_BETWEEN_UPDATES);
+		double result = Double.parseDouble(el.getAttributeValue(VALUE));
+		if (result < 0D) throw new IllegalStateException("time-between-updates in simulation.xml must be positive number.");
+		else if (result == 0D) throw new IllegalStateException("time-between-updates in simulation.xml cannot be zero.");
+		return result;
+	}
+
+	/**
+	 * Gets the parameter no-delays-per-yield in simulation.xml
+	 * @return the number
+	 * @throws Exception if the value is not in configuration or is not valid.
+	 */
+	// 2015-10-31 getNoDelayPerYield()
+	public int getNoDelaysPerYield() {
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element el = timeConfig.getChild(NO_DELAYS_PER_YIELD);
+		int result = Integer.parseInt(el.getAttributeValue(VALUE));
+		if (result < 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml must be positive number.");
+		else if (result == 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml cannot be zero.");
+		return result;
+	}
+
+	/**
+	 * Gets the parameter max-frame-skips in simulation.xml
+	 * @return the number of frames
+	 * @throws Exception if the value is not in configuration or is not valid.
+	 */
+	// 2015-10-31 Added getMaxFrameSkips()
+	public int getMaxFrameSkips() {
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element el = timeConfig.getChild(MAX_FRAME_SKIPS);
+		int result = Integer.parseInt(el.getAttributeValue(VALUE));
+		if (result < 0) throw new IllegalStateException("max-frame-skips in simulation.xml must be positive number.");
+		else if (result == 0) throw new IllegalStateException("max-frame-skips in simulation.xml cannot be zero.");
+		return result;
 	}
 
 	/**

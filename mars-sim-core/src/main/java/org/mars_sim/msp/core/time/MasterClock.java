@@ -53,9 +53,9 @@ public class MasterClock implements Serializable { // Runnable,
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
 	/** Clock thread sleep time (milliseconds) 40 milli secs --> 25Hz should be sufficient. */
-	private static final long PERIOD = 40_000_000L; //in nanoseconds (25 FPS)
-	private static final int NO_DELAYS_PER_YIELD = 16;
-	private static final int MAX_FRAME_SKIPS = 10;
+	//private static final long TIME_BETWEEN_UPDATES = 40_000_000L; //in nanoseconds (25 FPS)
+	//private static final int NO_DELAYS_PER_YIELD = 16;
+	//private static final int MAX_FRAME_SKIPS = 10;
 
 	// Data members
 	/** Runnable flag. */
@@ -64,6 +64,11 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient volatile boolean isPaused = false;
 	/** Simulation/real-time ratio. */
 	private volatile double timeRatio = 0D;
+
+	private long timeBetweenUpdates = 0L;
+	private int noDelaysPerYield = 0;
+	private int maxFrameSkips = 0;
+
 	/** Flag for loading a new simulation. */
 	private transient volatile boolean loadSimulation;
 	/** Flag for saving a simulation. */
@@ -128,6 +133,11 @@ public class MasterClock implements Serializable { // Runnable,
 
         // Setting the initial time ratio.
         setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
+
+        // 2015-10-31 Added loading the 3 values below from SimulationConfig
+        setTimeBetweenUpdates(SimulationConfig.instance().getTimeBetweenUpdates());
+        setNoDelaysPerYield(SimulationConfig.instance().getNoDelaysPerYield());
+        setMaxFrameSkips(SimulationConfig.instance().getMaxFrameSkips());
     }
 
     /**
@@ -346,6 +356,7 @@ public class MasterClock implements Serializable { // Runnable,
         else throw new IllegalArgumentException("Time ratio out of bounds ");
     }
 
+
     /**
      * Gets the real-time/simulation ratio.
      *
@@ -355,6 +366,64 @@ public class MasterClock implements Serializable { // Runnable,
         return timeRatio;
     }
 
+    /**
+     * Sets the sleep time between two successive game updates
+     * @param value in milliseconds
+     */
+    public void setTimeBetweenUpdates(double value) {
+        if (value >= 1D && value <= 1000D) {
+            timeBetweenUpdates = (long)value * 1_000_000L; // convert milli to nano
+        }
+        else throw new IllegalArgumentException("time between updates is out of bounds. Must be between 1 and 1000 ");
+    }
+
+    /**
+     * Gets the time between updates
+     * @return value in milliseconds
+     */
+    public double getTimeBetweenUpdates() {
+        return timeBetweenUpdates;
+    }
+
+
+    /**
+     * Sets the value of no-delay-per-yield
+     * @param value in number
+     */
+    public void setNoDelaysPerYield(int value) {
+        if (value >= 1D && value <= 200D) {
+        	noDelaysPerYield = value;
+        }
+        else throw new IllegalArgumentException("No-Delays-Per-Yield is out of bounds. Must be between 1 and 200");
+    }
+
+    /**
+     * Gets the number of no-delay-per-yield
+     * @return value in milliseconds
+     */
+    public int getNoDelaysPerYield() {
+        return noDelaysPerYield;
+    }
+
+
+    /**
+     * Sets the maximum number of skipped frames allowed
+     * @param number of frames
+     */
+    public void setMaxFrameSkips(int value) {
+        if (value >= 1 && value <= 200) {
+        	maxFrameSkips = value;
+        }
+        else throw new IllegalArgumentException("max-frame-skips is out of bounds. Must be between 1 and 200");
+    }
+
+    /**
+     * Gets the maximum number of skipped frames allowed
+     * @return number of frames
+     */
+    public int getMaxFrameSkips() {
+        return maxFrameSkips;
+    }
     /**
      * Returns the instance of ClockThreadTask
      * @return ClockThreadTask
@@ -392,7 +461,7 @@ public class MasterClock implements Serializable { // Runnable,
 		        // 2015-06-26 Refactored codes for variable sleepTime
 	            t2 = System.nanoTime();
 	            //dt = t2 - t1;
-	            sleepTime = PERIOD - t2 + t1 - overSleepTime;
+	            sleepTime = timeBetweenUpdates - t2 + t1 - overSleepTime;
 	            //System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
 
 	            if (sleepTime > 0 && keepRunning) {
@@ -417,7 +486,7 @@ public class MasterClock implements Serializable { // Runnable,
 	            	excess -= sleepTime;
 	            	overSleepTime = 0L;
 
-	            	if (++noDelays >= NO_DELAYS_PER_YIELD) {
+	            	if (++noDelays >= noDelaysPerYield) {
 	            		Thread.yield();
 	            		noDelays = 0;
 	            	}
@@ -427,8 +496,8 @@ public class MasterClock implements Serializable { // Runnable,
 
 	         // 2015-07-03 Added skipping the sleep time if the statusUpdate() or other processes take too long
 	            int skips = 0;
-	            while ((excess > PERIOD ) && (skips < MAX_FRAME_SKIPS)) {
-	            	excess -= PERIOD;
+	            while ((excess > timeBetweenUpdates ) && (skips < maxFrameSkips)) {
+	            	excess -= timeBetweenUpdates;
 	            	statusUpdate();
 	            	skips++;
 	            }

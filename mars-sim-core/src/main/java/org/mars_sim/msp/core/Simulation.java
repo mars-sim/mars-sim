@@ -402,7 +402,7 @@ implements ClockListener, Serializable {
         if (f.exists() && f.canRead()) {
             try {
     			fileSize = (f.length() / 1024D / 1024D);
-    			logger.info("The saved sim has a file size of " + Math.round(fileSize*1000.00)/1000.00 + " MB" );    			
+    			logger.info("The saved sim has a file size of " + Math.round(fileSize*1000.00)/1000.00 + " MB" );
                 simulation.readFromFile(f);
 
             } catch (ClassNotFoundException ex) {
@@ -473,12 +473,12 @@ implements ClockListener, Serializable {
         SimulationConfig.setInstance((SimulationConfig) ois.readObject());
         //SimulationConfig instance = (SimulationConfig) ois.readObject();
     	//SimulationConfig.setInstance(instance);
-        
+
         loadBuild = SimulationConfig.instance().getBuild();
     	if (loadBuild == null)
     		loadBuild = "unknown";
     	logger.info("Running MSP Build " + Simulation.BUILD + ". Loading a sim saved in Build " + loadBuild);
-        
+
         malfunctionFactory = (MalfunctionFactory) ois.readObject();
         mars = (Mars) ois.readObject();
         mars.initializeTransientData();
@@ -498,7 +498,7 @@ implements ClockListener, Serializable {
         instance().initialSimulationCreated = true;
     }
 
-    
+
     /**
      * Saves a simulation instance to a save file.
      * @param file the file to be saved to.
@@ -509,7 +509,7 @@ implements ClockListener, Serializable {
 
     	// 2015-10-17 Save the current pause state
 		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-	
+
         Simulation simulation = instance();
         simulation.halt();
 
@@ -519,7 +519,10 @@ implements ClockListener, Serializable {
         if (file == null) {
             // 2015-01-08 Added isAutosave
             if (isAutosave) {
-                String autosaveFilename = new SystemDateTime().getDateTimeStr() + "_Build_" + BUILD + DEFAULT_EXTENSION;
+                String autosaveFilename = new SystemDateTime().getDateTimeStr()
+                		+ "_build_" + BUILD
+                		+ "_sol_" + masterClock.getMarsClock().getTotalSol() + "_"
+                		+ DEFAULT_EXTENSION;
                 file = new File(AUTOSAVE_DIR, autosaveFilename);
                 logger.info("Autosaving " + autosaveFilename);
             }
@@ -574,18 +577,18 @@ implements ClockListener, Serializable {
         }
 
         simulation.proceed();
-        
-        // 2015-10-17 Check if it was previously on pause 
+
+        // 2015-10-17 Check if it was previously on pause
         if (isOnPauseMode) {
-        	masterClock.setPaused(true); // do NOT use simulation.halt() or it will 
+        	masterClock.setPaused(true); // do NOT use simulation.halt() or it will
      		//System.out.println("Simulation.java: Yes it was on pause and so we pause again");
      	}
-     		
+
     }
 
     /*
      * Stops and removes the master clock and pauses the simulation
-     */	
+     */
     public void halt() {
         if (masterClock != null) {
             masterClock.stop();
@@ -596,7 +599,7 @@ implements ClockListener, Serializable {
 
     /*
      * Adds and starts the master clock and unpauses the simulation
-     */	
+     */
     public void proceed() {
         if (clockScheduler != null) {
             masterClock.addClockListener(this);

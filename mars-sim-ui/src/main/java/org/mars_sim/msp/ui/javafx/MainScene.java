@@ -76,7 +76,6 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
-import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
@@ -213,7 +212,7 @@ public class MainScene {
 		transportWizard = new TransportWizard(this, desktop);
 		startAutosaveTimer();
 		startEarthTimer();
-							
+
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
@@ -271,7 +270,7 @@ public class MainScene {
 		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
 		swingPane.setPrefHeight(primaryScreenBounds.getHeight());
-		
+
 		// Create ControlFX's StatusBar
 		statusBar = createStatusBar();
 		VBox bottomBox = new VBox();
@@ -288,15 +287,15 @@ public class MainScene {
 		borderPane.setBottom(bottomBox);
 		// borderPane.setStyle("-fx-background-color: palegorange");
 
-/*		
+/*
 		// 2015-10-23 Creates marqueeNode and marqueePane
 		SwingNode marqueeNode = null;
-		
+
 		SwingUtilities.invokeLater(() -> {
 			marqueePane = new MarqueePane();
 			marqueeNode.setContent(marqueePane);
 		} );
-*/		
+*/
 		// 2015-05-26 Create fxDesktopPane
 		fxDesktopPane = marsNode.createFXDesktopPane();
 		fxDesktopPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
@@ -348,7 +347,7 @@ public class MainScene {
 		swingTab.setContent(swingPane);
 
 		//Tab noteTab = new Tab("");
-		
+
 		// Set to select the swing tab at the start of simulation
 		// Used dndTabPane instead of the regular TabPane
 		dndTabPane.getSelectionModel().select(swingTab);
@@ -358,7 +357,7 @@ public class MainScene {
 		// wrap dndTabPane inside notificationNode
 		Node notificationNode = createNotificationPane();
 		borderPane.setCenter(notificationNode);
-		
+
 		rootStackPane = new StackPane(borderPane);
 
 		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth()-40, primaryScreenBounds.getHeight()-40, Color.BROWN);
@@ -427,7 +426,7 @@ public class MainScene {
 		});
 
 		//logger.info("done with MainScene's initializeTheme()");
-		
+
 		isMainSceneDone = true;
 	}
 
@@ -607,7 +606,7 @@ public class MainScene {
 		return statusBar;
 	}
 
-	
+
 
 	public NotificationPane getNotificationPane() {
 		return notificationPane;
@@ -617,7 +616,7 @@ public class MainScene {
 
 		// wrap the dndTabPane inside notificationNode
 		notificationPane = new NotificationPane(dndTabPane);
-		
+
 		String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
 		ImageView image = new ImageView(imagePath);
 		notificationPane.setGraphic(image);
@@ -625,7 +624,7 @@ public class MainScene {
 			// do sync, then hide...
 			notificationPane.hide();
 		} ));
-		
+
 		notificationPane.setShowFromTop(false);
 		// notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 		 notificationPane.setText("Breaking news for mars-simmers !!");
@@ -839,7 +838,7 @@ public class MainScene {
 		UIConfig.INSTANCE.parseFile();
 
 		desktop.disposeAnnouncementWindow();
-		
+
 		// Open Guide tool after loading.
         desktop.openToolWindow(GuideWindow.NAME);
         GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
@@ -906,10 +905,10 @@ public class MainScene {
 	 */
 	public void saveSimulation(int type) {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
-		
+
 		// 2015-10-17 Save the current pause state
 		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-			
+
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
@@ -923,17 +922,17 @@ public class MainScene {
 		} else {
 			saveSimThread.interrupt();
 		}
-		
 
-		// 2015-10-17 Check if it was previously on pause 
+
+		// 2015-10-17 Check if it was previously on pause
 		if (isOnPauseMode) {
-			pauseSimulation(); 
+			pauseSimulation();
 			// Simulation.instance().getMasterClock().setPaused(true) is NOT working
 			// TODO: Don't know why I need to add codes directly in saveSimulation() in Simulation.java.
 			// But it is still needed here for pausing the autosave timer and creating the announcement window
 			//System.out.println("MainScene.java: yes it was on pause and so we pause again and pause the autosave timer.");
 		}
-		//else 
+		//else
 		//	mainScene.unpauseSimulation(); // Do NOT do this or it will take away any previous announcement window
 
 	}
@@ -944,7 +943,7 @@ public class MainScene {
 	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
 		//logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
-		
+
 		File fileLocn = null;
 		String dir = null;
 		String title = null;
@@ -995,10 +994,10 @@ public class MainScene {
 		}
 
 */
-		
-		
+
+
 		desktop.disposeAnnouncementWindow();
-	
+
 	}
 
 	/**
@@ -1251,8 +1250,8 @@ public class MainScene {
 			});
 		}
 		else {
-					
-/*		
+
+/*
 			GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 			System.out.println("ourGuide.getWidth() is " + ourGuide.getWidth());
 			System.out.println("ourGuide.getHeight() is " + ourGuide.getHeight());
@@ -1264,9 +1263,9 @@ public class MainScene {
 			int Xloc = (int)((stage.getScene().getWidth() - ourGuide.getWidth()) * .5D);
 			int Yloc = (int)((stage.getScene().getHeight() - ourGuide.getHeight()) * .5D);
 			//System.out.println("Xloc is " + Xloc + "  Yloc is " + Yloc);
-			ourGuide.setLocation(Xloc, Yloc);			
+			ourGuide.setLocation(Xloc, Yloc);
 			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-*/			
+*/
 			desktop.openInitialWindows();
 		}
 	}

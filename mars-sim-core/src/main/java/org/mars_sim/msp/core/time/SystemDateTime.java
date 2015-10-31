@@ -11,27 +11,32 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-
+/*
+ * The SystemDateTime class provides date and time formatting for constructing autosave filename
+ */
 public class SystemDateTime {
 
-       protected SimpleDateFormat dateFormat = 
+       protected SimpleDateFormat dateFormat =
                new SimpleDateFormat("MM-dd-yyyy");
-       
+
        protected SimpleDateFormat timeFormat =
                new SimpleDateFormat("hhmmssaa");
 
        private String dateStr;
        private String timeStr;
        private static String dateTimeStr;
-    
+
        public SystemDateTime() {
        }
 
+       /*
+        * Constructs the portion of the autosave filename string based on local date and time
+        */
        public String getDateTimeStr() {
 
-               Calendar currentCalendar = 
+               Calendar currentCalendar =
                    Calendar.getInstance();
-               Date currentTime = 
+               Date currentTime =
                    currentCalendar.getTime();
                dateStr = dateFormat
                    .format(currentTime);
