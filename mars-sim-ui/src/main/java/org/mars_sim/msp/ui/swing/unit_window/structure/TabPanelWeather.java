@@ -141,7 +141,7 @@ extends TabPanel {
 		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel titleLabel = new JLabel(Msg.getString("TabPanelWeather.title"), JLabel.CENTER); //$NON-NLS-1$);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        //titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         titlePanel.add(titleLabel);
         topContentPanel.add(titlePanel);//, BorderLayout.NORTH);
 

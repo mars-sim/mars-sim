@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +102,7 @@ extends TabPanel {
 
 		// Create skill label
 		JLabel skillLabel = new JLabel(Msg.getString("TabPanelSkill.label"), JLabel.CENTER); //$NON-NLS-1$
+		skillLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		skillLabelPanel.add(skillLabel);
 
 		// Create skill scroll panel

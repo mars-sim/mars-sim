@@ -53,7 +53,7 @@ extends BuildingFunctionPanel {
 		// 2014-11-21 Changed font type, size and color and label text
 		JLabel astronomyLabel = new JLabel(Msg.getString("BuildingPanelAstronomicalObservation.title"), JLabel.CENTER); //$NON-NLS-1$
 		astronomyLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		astronomyLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//astronomyLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(astronomyLabel);
 
 		// Observer number label

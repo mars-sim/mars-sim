@@ -70,7 +70,7 @@ extends TabPanel {
 		// Prepare credit label.
 		JLabel creditLabel = new JLabel(Msg.getString("TabPanelCredit.label"), JLabel.CENTER); //$NON-NLS-1$
 		creditLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		creditLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//creditLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		creditLabelPanel.add(creditLabel);
 
 		// Create scroll panel for the outer table panel.

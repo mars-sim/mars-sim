@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -85,6 +86,7 @@ extends TabPanel {
 
 		// Create the title label.
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelScience.label"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		titlePane.add(titleLabel);
 
 		// Create the main panel.
@@ -156,6 +158,7 @@ extends TabPanel {
 
 		// Create the achievement label.
 		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), JLabel.CENTER); //$NON-NLS-1$
+		achievementLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		achievementLabelPane.add(achievementLabel);
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelScience.decimalFormat")); //$NON-NLS-1$

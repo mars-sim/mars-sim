@@ -89,7 +89,7 @@ extends TabPanel {
 		// Create settlement missions label.
 		JLabel label = new JLabel(Msg.getString("TabPanelMissions.label"), JLabel.CENTER); //$NON-NLS-1$
 		label.setFont(new Font("Serif", Font.BOLD, 16));
-		label.setForeground(new Color(102, 51, 0)); // dark brown
+		//label.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(label);
 
 		// Create center panel.

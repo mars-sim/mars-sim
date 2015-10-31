@@ -67,7 +67,7 @@ extends BuildingFunctionPanel {
 		// 2014-11-21 Added internationalization for the three labels
 		JLabel maintenanceLabel = new JLabel(Msg.getString("BuildingPanelMaintenance.title"), JLabel.CENTER);
 		maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//maintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(maintenanceLabel);
 
 		// Create wear condition label.

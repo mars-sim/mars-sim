@@ -34,8 +34,9 @@ public class BalloonToolTip extends BalloonTip {
 	//}
 	public void createListItemBalloonTip(JList<?> list, String s, int index) {
 		fillColor = list.getBackground();
-		transparentFill = new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 180);
-		style = new ModernBalloonStyle(10, 10, transparentFill, transparentFill, Color.ORANGE);
+		transparentFill = new Color(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), 0);//180);
+		//style = new ModernBalloonStyle(10, 10, transparentFill, transparentFill, Color.ORANGE);
+		style = new ModernBalloonStyle(10, 10, fillColor, fillColor, Color.ORANGE);
 
 		style.setBorderThickness(3);
 		style.enableAntiAliasing(true);

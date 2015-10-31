@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -47,6 +48,11 @@ extends TabPanel {
 			desktop
 		);
 
+		// Create towing label.
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelTow.title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		topContentPanel.add(titleLabel);
+		
 		if (unit instanceof Towing) {
 
 			// Create towing label panel.
@@ -55,8 +61,9 @@ extends TabPanel {
 			topContentPanel.add(towingLabelPanel);
 
 			// Create towing label.
-			JLabel towingLabel = new JLabel(Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
-			towingLabelPanel.add(towingLabel);
+			JLabel towLabel = new JLabel(Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
+			towLabel.setFont(new Font("Serif", Font.BOLD, 16));
+			towingLabelPanel.add(towLabel);
 
 			// Create the towing button.
 			towingButton = new JButton();

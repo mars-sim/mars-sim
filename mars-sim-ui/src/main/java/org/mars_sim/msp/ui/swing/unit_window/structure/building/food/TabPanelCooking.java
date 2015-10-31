@@ -164,7 +164,7 @@ extends TabPanel {
 
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 
 		JPanel topPanel = new JPanel(new GridLayout(4,1,0,0));
 		topPanel.add(titleLabel);

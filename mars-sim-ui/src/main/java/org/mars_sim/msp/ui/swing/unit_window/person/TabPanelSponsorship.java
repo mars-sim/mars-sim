@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
@@ -51,12 +52,13 @@ extends TabPanel {
 		Person person = (Person) unit;
 
 		// Create general label panel.
-		JPanel generalLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(generalLabelPanel);
+		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(labelPanel);
 
 		// Prepare general label
-		JLabel generalLabel = new JLabel(Msg.getString("TabPanelSponsorship.label"), JLabel.CENTER); //$NON-NLS-1$
-		generalLabelPanel.add(generalLabel);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelSponsorship.label"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		labelPanel.add(titleLabel);
 
 		// Prepare info panel.
 		JPanel infoPanel = new JPanel(new GridLayout(2, 2, 0, 0));

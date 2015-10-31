@@ -982,9 +982,16 @@ implements Serializable {
                     
                     // Cannot walk to destination building.
                     canWalkAllSteps = false;
-                    logger.severe(person.getName() 
+                    
+                    if (person != null)
+                    	logger.severe(person.getName() 
                     		+ " in " + person.getBuildingLocation().getNickName() 
                     		+ " cannot find walkable airlock from building airlock exterior to building interior.");
+                    else if (robot != null)
+                       	logger.severe(robot.getName() 
+                        		+ " in " + robot.getBuildingLocation().getNickName() 
+                        		+ " cannot find walkable airlock from building airlock exterior to building interior.");
+
                 }
             }
         }

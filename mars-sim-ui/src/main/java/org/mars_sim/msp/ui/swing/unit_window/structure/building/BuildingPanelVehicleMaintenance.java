@@ -66,7 +66,7 @@ implements MouseListener {
 		// 2014-11-21 Added internationalization for labels
 		JLabel vehicleMaintenanceLabel = new JLabel(Msg.getString("BuildingPanelVehicleMaintenance.title"), JLabel.CENTER);
 		vehicleMaintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		vehicleMaintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//vehicleMaintenanceLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(vehicleMaintenanceLabel);
 
 		// Create vehicle number label

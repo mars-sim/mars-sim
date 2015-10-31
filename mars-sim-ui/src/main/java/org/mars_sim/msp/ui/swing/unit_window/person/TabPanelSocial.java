@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.Collection;
 
 import javax.swing.JLabel;
@@ -67,6 +68,7 @@ implements ListSelectionListener {
 
 		// Create relationship label
 		JLabel relationshipLabel = new JLabel(Msg.getString("TabPanelSocial.label"), JLabel.CENTER); //$NON-NLS-1$
+		relationshipLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		relationshipLabelPanel.add(relationshipLabel);
 
 		// Create relationship scroll panel

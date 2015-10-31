@@ -77,7 +77,7 @@ implements MouseListener, ActionListener {
 		// Create associated people label
 		JLabel heading = new JLabel(Msg.getString("TabPanelAssociatedPeople.heading"), JLabel.CENTER); //$NON-NLS-1$
 		heading.setFont(new Font("Serif", Font.BOLD, 16));
-		heading.setForeground(new Color(102, 51, 0)); // dark brown
+		//heading.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(heading);
 
 		// Create label

@@ -49,6 +49,7 @@ public class ConstructionSitesPanel extends JPanel {
         add(titlePanel, BorderLayout.NORTH);
         
         JLabel titleLabel = new JLabel("Construction Sites");
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
         titlePanel.add(titleLabel);
         
         // Create scroll panel for sites list pane.

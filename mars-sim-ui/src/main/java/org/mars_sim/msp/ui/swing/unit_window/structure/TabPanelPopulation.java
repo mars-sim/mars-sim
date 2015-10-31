@@ -76,7 +76,7 @@ implements MouseListener, ActionListener {
 
 		JLabel heading = new JLabel(Msg.getString("TabPanelPopulation.title"), JLabel.CENTER); //$NON-NLS-1$
 		heading.setFont(new Font("Serif", Font.BOLD, 16));
-		heading.setForeground(new Color(102, 51, 0)); // dark brown
+		//heading.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePane.add(heading);
 
 

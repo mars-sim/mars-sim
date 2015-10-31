@@ -68,7 +68,7 @@ extends BuildingFunctionPanel {
 		// 2014-11-21 Changed font type, size and color and label text
 		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelCooking.title"), JLabel.CENTER); //$NON-NLS-1$
 		cookingLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		cookingLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//cookingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(cookingLabel);
 
 		// Prepare cook number label

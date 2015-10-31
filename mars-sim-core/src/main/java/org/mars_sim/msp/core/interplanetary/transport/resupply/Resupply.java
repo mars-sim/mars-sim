@@ -70,10 +70,10 @@ implements Serializable, Transportable {
     //private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
     
     private static final int MAX_INHABITABLE_BUILDING_DISTANCE = 6;
-    private static final int MIN_INHABITABLE_BUILDING_DISTANCE = 1;
+    private static final int MIN_INHABITABLE_BUILDING_DISTANCE = 2;
 
     private static final int MAX_NONINHABITABLE_BUILDING_DISTANCE = 6;
-    private static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 1;
+    private static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 2;
 
     
     private static final int BUILDING_CENTER_SEPARATION = 9;
@@ -83,7 +83,7 @@ implements Serializable, Transportable {
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
 
     /** Minimum length of a building connector (meters). */
-    private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
+    private static final double MINIMUM_CONNECTOR_LENGTH = .5D;
 
 	// Data members
 	private Settlement settlement;
@@ -345,11 +345,12 @@ implements Serializable, Transportable {
             List<BuildingTemplate> orderedBuildings = orderNewBuildings();
             if (orderedBuildings.size() > 0) {
             	Building aBuilding = buildingManager.getBuildings().get(0);
-            	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
+            	// Fires the unit update below in order to use the version of deliverBuildings() in TransportWizard.java
+            	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);       	
             }
 
            	// Deliver buildings to the destination settlement.
-        } else {// if GUI is in use, use the version of deliverBuildings() here
+        } else {// if GUI is NOT in use, use the version of deliverBuildings() here in Resuppply.java
         	deliverBuildings();
         }
         // Deliver the rest of the supplies and add people.
@@ -610,7 +611,7 @@ implements Serializable, Transportable {
     }
 
     public BuildingTemplate positionSameType(String buildingType) {
-        System.out.println("Does it have buildings with the same building type?");
+        System.out.println("Checking if there are any building of the same type...");
         BuildingTemplate newPosition = null;
         
         // Put this non-habitable building next to the same building type.
@@ -645,8 +646,8 @@ implements Serializable, Transportable {
 
         if (isBuildingConnector) {
             // Try to find best location to connect two buildings.
-            newPosition = positionNewBuildingConnectorBuilding(buildingType);
-            System.out.println("Case 1 : building connector");
+            newPosition = positionNewConnector(buildingType);
+            System.out.println("Case 1 : Positing the building connector");
         }
         else if (hasLifeSupport) {
             System.out.println("Case 2 : building has life support");
@@ -656,7 +657,7 @@ implements Serializable, Transportable {
         	if (newPosition != null) 
                 System.out.println("has buildings with the same building type");
         	else {
-                System.out.println("No same building type");
+                System.out.println("No other same building type");
 	            // Put this habitable building next to another inhabitable building (e.g. greenhouse, lander hab, research hab...)
 	            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
 	            Collections.shuffle(inhabitableBuildings);
@@ -678,7 +679,7 @@ implements Serializable, Transportable {
             System.out.println("Case 3 : no life support ");
         	newPosition = positionSameType(buildingType);
         	if (newPosition != null)
-        		System.out.println("No same building type");
+        		System.out.println("Waiting for user's confirmation...");
         }
 
         if (newPosition == null) {
@@ -739,7 +740,7 @@ implements Serializable, Transportable {
      * @param newBuildingType the new building type.
      * @return new building template with position/length, or null if none found.
      */
-    private BuildingTemplate positionNewBuildingConnectorBuilding(String newBuildingType) {
+    private BuildingTemplate positionNewConnector(String newBuildingType) {
 
         BuildingTemplate newTemplate = null;
 
@@ -753,7 +754,7 @@ implements Serializable, Transportable {
         // Try to find a connection between an inhabitable building without access to airlock and
         // another inhabitable building with access to an airlock.
         if (settlement.getAirlockNum() > 0) {
-            System.out.println("Case 1");
+            System.out.println("positionNewConnector() : Case 1");
             Building closestStartingBuilding = null;
             Building closestEndingBuilding = null;
             double leastDistance = Double.MAX_VALUE;
@@ -762,29 +763,29 @@ implements Serializable, Transportable {
             while (i.hasNext()) {
                 Building startingBuilding = i.next();
                 if (!settlement.hasWalkableAvailableAirlock(startingBuilding)) {
-                    System.out.println("Case 1A");
+                    System.out.println("positionNewConnector() : Case 1A");
                     // Find a different inhabitable building that has walkable access to an airlock.
                     Iterator<Building> k = inhabitableBuildings.iterator();
                     while (k.hasNext()) {
                         Building building = k.next();
                         if (!building.equals(startingBuilding)) {
-                            System.out.println("Case 1Ai");
+                            System.out.println("positionNewConnector() : Case 1Ai");
 
                             // Check if connector base level matches either building.
                             boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) ||
                                     (baseLevel == building.getBaseLevel());
 
                             if (settlement.hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
-                                System.out.println("Case 1Aia");
+                                System.out.println("positionNewConnector() : Case 1Aia");
                                 double distance = Point2D.distance(startingBuilding.getXLocation(),
                                         startingBuilding.getYLocation(), building.getXLocation(),
                                         building.getYLocation());
                                 if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
-                                    System.out.println("Case 1Aia1");
+                                    System.out.println("positionNewConnector() : Case 1Aia1");
                                     // Check that new building can be placed between the two buildings.
                                     if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,
                                             building) != null) {
-                                        System.out.println("Case 1Aia1i");
+                                        System.out.println("positionNewConnector() : Case 1Aia1i");
                                         closestStartingBuilding = startingBuilding;
                                         closestEndingBuilding = building;
                                         leastDistance = distance;
@@ -796,7 +797,7 @@ implements Serializable, Transportable {
                 }
 
                 if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
-                    System.out.println("Case 2");
+                    System.out.println("positionNewConnector() : Case 2");
                     // Determine new location/length between the two buildings.
                     newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
                             closestEndingBuilding);
@@ -806,7 +807,7 @@ implements Serializable, Transportable {
 
         // Try to find valid connection location between two inhabitable buildings with no joining walking path.
         if (newTemplate == null) {
-            System.out.println("Case 3");
+            System.out.println("positionNewConnector() : Case 3");
             Building closestStartingBuilding = null;
             Building closestEndingBuilding = null;
             double leastDistance = Double.MAX_VALUE;
@@ -826,16 +827,16 @@ implements Serializable, Transportable {
                             (baseLevel == building.getBaseLevel());
 
                     if (!building.equals(startingBuilding) && !hasWalkingPath && matchingBaseLevel) {
-                        System.out.println("Case 3A");
+                        System.out.println("positionNewConnector() : Case 3A");
                         double distance = Point2D.distance(startingBuilding.getXLocation(),
                                 startingBuilding.getYLocation(), building.getXLocation(),
                                 building.getYLocation());
                         if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
-                            System.out.println("Case 3Ai");
+                            System.out.println("positionNewConnector() : Case 3Ai");
                             // Check that new building can be placed between the two buildings.
                             if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,
                                     building) != null) {
-                                System.out.println("Case 3Aia");
+                                System.out.println("positionNewConnector() : Case 3Aia");
                                 closestStartingBuilding = startingBuilding;
                                 closestEndingBuilding = building;
                                 leastDistance = distance;
@@ -846,7 +847,7 @@ implements Serializable, Transportable {
             }
 
             if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
-                System.out.println("Case 3B");
+                System.out.println("positionNewConnector() : Case 3B");
                 // Determine new location/length between the two buildings.
                 newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
                         closestEndingBuilding);
@@ -855,7 +856,7 @@ implements Serializable, Transportable {
 
         // Try to find valid connection location between two inhabitable buildings that are not directly connected.
         if (newTemplate == null) {
-            System.out.println("Case 4");
+            System.out.println("positionNewConnector() : Case 4");
             Building closestStartingBuilding = null;
             Building closestEndingBuilding = null;
             double leastDistance = Double.MAX_VALUE;
@@ -876,16 +877,16 @@ implements Serializable, Transportable {
                             (baseLevel == building.getBaseLevel());
 
                     if (!building.equals(startingBuilding) && !directlyConnected && matchingBaseLevel) {
-                        System.out.println("Case 4A");
+                        System.out.println("positionNewConnector() : Case 4A");
                         double distance = Point2D.distance(startingBuilding.getXLocation(),
                                 startingBuilding.getYLocation(), building.getXLocation(),
                                 building.getYLocation());
                         if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
-                            System.out.println("Case 4Ai");
+                            System.out.println("positionNewConnector() : Case 4Ai");
                             // Check that new building can be placed between the two buildings.
                             if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,
                                     building) != null) {
-                                System.out.println("Case 4Aia");
+                                System.out.println("positionNewConnector() : Case 4Aia");
                             	closestStartingBuilding = startingBuilding;
                                 closestEndingBuilding = building;
                                 leastDistance = distance;
@@ -896,7 +897,7 @@ implements Serializable, Transportable {
             }
 
             if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
-                System.out.println("Case 4B");
+                System.out.println("positionNewConnector() : Case 4B");
                 // Determine new location/length between the two buildings.
                 newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding,
                         closestEndingBuilding);
@@ -905,7 +906,7 @@ implements Serializable, Transportable {
 
         // Try to find connection to existing inhabitable building.
         if (newTemplate == null) {
-            System.out.println("Case 5");
+            System.out.println("positionNewConnector() : Case 5");
             Iterator<Building> l = inhabitableBuildings.iterator();
             while (l.hasNext()) {
                 Building building = l.next();
@@ -913,7 +914,7 @@ implements Serializable, Transportable {
                 newTemplate = positionNextToBuilding(newBuildingType, building, 0D, true);
 
                 if (newTemplate != null) {
-                    System.out.println("Case 5A");
+                    System.out.println("positionNewConnector() : Case 5A");
                     break;
                 }
             }

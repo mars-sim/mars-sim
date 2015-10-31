@@ -23,7 +23,7 @@ public class JobHistory implements Serializable  {
     private static final long serialVersionUID = 1L;
 
 	//private static transient Logger logger = Logger.getLogger(JobHistory.class.getName());
-
+    private int solCache;
 	private Person person;
 	private MarsClock clock;
 
@@ -153,5 +153,13 @@ public class JobHistory implements Serializable  {
     		}
 
     	}
+    }
+    
+    public int getSolCache() {
+    	return solCache;
+    }
+    
+    public void setSolCache(int value) {
+    	solCache = value;
     }
 }

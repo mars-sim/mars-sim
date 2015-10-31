@@ -8,6 +8,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -59,7 +60,8 @@ public class MaintenanceTabPanel extends TabPanel {
         topContentPanel.add(maintenancePanel);
 
         // Create maintenance label.
-        JLabel maintenanceLabel = new JLabel("Maintenance", JLabel.CENTER);
+        JLabel maintenanceLabel = new JLabel(Msg.getString("MaintenanceTabPanel.title", JLabel.CENTER));
+        maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
         maintenancePanel.add(maintenanceLabel);
 
         // Create wear condition label.

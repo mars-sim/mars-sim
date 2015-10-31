@@ -107,7 +107,7 @@ extends BuildingFunctionPanel {
         // Prepare manufacturing label
         JLabel foodProductionLabel = new JLabel("Food Production", JLabel.CENTER);
         foodProductionLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        foodProductionLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        //foodProductionLabel.setForeground(new Color(102, 51, 0)); // dark brown
         labelPanel.add(foodProductionLabel);
 
         // Prepare tech level label

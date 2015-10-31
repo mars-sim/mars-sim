@@ -113,7 +113,7 @@ extends TabPanel {
 		// Create manufacture label.
 		JLabel label = new JLabel(Msg.getString("TabPanelManufacture.label"), JLabel.CENTER); //$NON-NLS-1$
 		label.setFont(new Font("Serif", Font.BOLD, 16));
-		label.setForeground(new Color(102, 51, 0)); // dark brown
+		//label.setForeground(new Color(102, 51, 0)); // dark brown
 		topPane.add(label);
 
 		// Create scroll panel for manufacture list pane.

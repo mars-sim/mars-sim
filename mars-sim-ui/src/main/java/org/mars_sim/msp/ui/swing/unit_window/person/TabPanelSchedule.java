@@ -155,6 +155,7 @@ extends TabPanel {
 
 		// Prepare label
 		JLabel label = new JLabel(Msg.getString("TabPanelSchedule.label"), JLabel.CENTER); //$NON-NLS-1$
+		label.setFont(new Font("Serif", Font.BOLD, 16));
 		labelPanel.add(label);
 
 		// Prepare info panel.
@@ -313,26 +314,28 @@ extends TabPanel {
 		// Create schedule table
 		table = new ZebraJTable(scheduleTableModel);
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		table.getColumnModel().getColumn(0).setPreferredWidth(25);
-		table.getColumnModel().getColumn(1).setPreferredWidth(150);
+		table.getColumnModel().getColumn(0).setPreferredWidth(8);
+		table.getColumnModel().getColumn(1).setPreferredWidth(100);
+		table.getColumnModel().getColumn(2).setPreferredWidth(60);
+		table.getColumnModel().getColumn(3).setPreferredWidth(50);
 		table.setCellSelectionEnabled(false);
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
-		// 2015-09-24 Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		
-	    SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
-
 	    scrollPanel.setViewportView(table);
+	    
+		// 2015-09-24 Align the content to the center of the cell
+		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		
+	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
 
 		// 2015-06-08 Added sorting
 		//table.setAutoCreateRowSorter(true);
 		//table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(table);
+		TableStyle.setTableStyle(table);
 
 		update();
 	}
@@ -342,7 +345,7 @@ extends TabPanel {
 	 */
 	public void update() {
 			
-		//TableStyle.setTableStyle(table);
+		TableStyle.setTableStyle(table);
 
 		if (person != null) {
 			shiftType = person.getTaskSchedule().getShiftType();

@@ -93,7 +93,7 @@ extends TabPanel {
 		// Prepare label
 		JLabel tlabel = new JLabel(Msg.getString("TabPanelStructure.title"), JLabel.CENTER); //$NON-NLS-1$
 		tlabel.setFont(new Font("Serif", Font.BOLD, 16));
-		tlabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//tlabel.setForeground(new Color(102, 51, 0)); // dark brown
 		titlePanel.add(tlabel);
 
 		// Prepare info panel.

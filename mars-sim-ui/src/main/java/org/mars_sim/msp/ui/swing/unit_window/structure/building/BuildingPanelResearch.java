@@ -65,7 +65,7 @@ extends BuildingFunctionPanel {
 		// 2014-11-21 Added internationalization for the three labels
 		JLabel researchLabel = new JLabel(Msg.getString("BuildingPanelResearch.title"), JLabel.CENTER); //$NON-NLS-1$
 		researchLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		researchLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//researchLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(researchLabel);
 
 		// Prepare researcher number label

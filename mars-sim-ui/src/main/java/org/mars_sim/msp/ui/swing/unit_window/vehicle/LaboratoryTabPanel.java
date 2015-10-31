@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
@@ -58,6 +59,7 @@ public class LaboratoryTabPanel extends TabPanel {
 
 		// Prepare laboratory label
 		JLabel laboratoryLabel = new JLabel("Laboratory", JLabel.CENTER);
+		laboratoryLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		namePanel.add(laboratoryLabel);
 
 		// Prepare label panel

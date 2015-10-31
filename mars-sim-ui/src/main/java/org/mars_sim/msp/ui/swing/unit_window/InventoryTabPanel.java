@@ -80,7 +80,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Create inventory label
         JLabel titleLabel = new JLabel("Inventory", JLabel.CENTER);
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         inventoryLabelPanel.add(titleLabel);
 
         // Create inventory content panel

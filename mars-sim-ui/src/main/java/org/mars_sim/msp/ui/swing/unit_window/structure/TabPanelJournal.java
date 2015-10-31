@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -74,9 +75,10 @@ extends TabPanel {
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
 
-		// Create settlement missions label.
-		JLabel settlementMissionsLabel = new JLabel(Msg.getString("TabPanelJournal.label"), JLabel.CENTER); //$NON-NLS-1$
-		labelPanel.add(settlementMissionsLabel);
+		// Create title label.
+		JLabel label = new JLabel(Msg.getString("TabPanelJournal.label"), JLabel.CENTER); //$NON-NLS-1$
+		label.setFont(new Font("Serif", Font.BOLD, 16));
+		labelPanel.add(label);
 
 		
 		JPanel centerPanel = new JPanel(new BorderLayout());

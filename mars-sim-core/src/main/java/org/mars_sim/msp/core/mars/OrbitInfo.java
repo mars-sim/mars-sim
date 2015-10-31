@@ -61,8 +61,8 @@ implements Serializable {
 	//
 	// Note 2: Because of Mars's orbital eccentricity, L_s advances somewhat unevenly with time, but can be evaluated
 	// as a trigonometric power series for the orbital eccentricity and the orbital mean anomaly measured with respect to the perihelion.
-	// The areocentric longitude at perihelion, L_s = 251 + 0.00645 * (yr - 2000),
-	private double L_s_perihelion = 251D + 0.00645 * (2043- 2000);
+	// The areocentric longitude at perihelion, L_s = 251 + 0.0064891 * (yr - 2000),
+	private double L_s_perihelion = 251D + 0.0064891 * (2043- 2000);
 	private double L_s_aphelion = L_s_perihelion - 180D;
 	private double sineSolarDeclinationAngle;
 

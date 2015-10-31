@@ -133,7 +133,7 @@ extends TabPanel {
 		// Prepare heating System label.
 		JLabel thermalSystemLabel = new JLabel(Msg.getString("TabPanelThermalSystem.label"), JLabel.CENTER); //$NON-NLS-1$
 		thermalSystemLabel.setFont(new Font("Serif", Font.BOLD, 16));
-	    thermalSystemLabel.setForeground(new Color(102, 51, 0)); // dark brown
+	    //thermalSystemLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		thermalSystemLabelPanel.add(thermalSystemLabel);
 
 		// Prepare heat info panel.

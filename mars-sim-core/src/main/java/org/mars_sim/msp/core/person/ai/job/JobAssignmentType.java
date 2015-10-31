@@ -12,11 +12,11 @@ import org.mars_sim.msp.core.Msg;
 public enum JobAssignmentType {
 
 	PENDING				(Msg.getString("JobAssignmentType.pending")), //$NON-NLS-1$
-	APPROVED			(Msg.getString("JobAssignmentType.approved")), //$NON-NLS-1$
-	SETTLEMENT			(Msg.getString("JobAssignmentType.settlement")), //$NON-NLS-1$
-	MARSSIMMER			(Msg.getString("JobAssignmentType.marssimmer")), //$NON-NLS-1$
-	MISSION_CONTROL		(Msg.getString("JobAssignmentType.missionControl")), //$NON-NLS-1$
-	;
+	APPROVED			(Msg.getString("JobAssignmentType.approved")); //$NON-NLS-1$
+	//SETTLEMENT			(Msg.getString("JobAssignmentType.settlement")), //$NON-NLS-1$
+	//MARSSIMMER			(Msg.getString("JobAssignmentType.marssimmer")), //$NON-NLS-1$
+	//MISSION_CONTROL		(Msg.getString("JobAssignmentType.missionControl")), //$NON-NLS-1$
+	//;
 
 	private String name;
 

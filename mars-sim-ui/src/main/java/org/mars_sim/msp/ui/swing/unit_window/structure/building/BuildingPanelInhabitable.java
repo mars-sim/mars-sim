@@ -65,7 +65,7 @@ implements MouseListener {
 		// 2014-11-21 Changed font type, size and color of the title text
 		JLabel inhabitantLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.title"), JLabel.CENTER); //$NON-NLS-1$
 		inhabitantLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		inhabitantLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//inhabitantLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(inhabitantLabel);
 		inhabitantLabel.setOpaque(false);
 		inhabitantLabel.setBackground(new Color(0,0,0,128));

@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -108,8 +109,9 @@ implements ActionListener {
 		topContentPanel.add(activityLabelPanel);
 
 		// Prepare activity label
-		JLabel activityLabel = new JLabel(Msg.getString("TabPanelActivity.label"), JLabel.CENTER); //$NON-NLS-1$
-		activityLabelPanel.add(activityLabel);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelActivity.label"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		activityLabelPanel.add(titleLabel);
 
 		// Prepare activity panel
 		JPanel activityPanel = new JPanel(new GridLayout(2, 1, 0, 0));

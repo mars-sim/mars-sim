@@ -183,7 +183,7 @@ extends JPanel {
         if (isTranslucent) {
         	//buildingNameLabel.setForeground(Color.YELLOW);
         } else
-        	buildingNameLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        	//buildingNameLabel.setForeground(new Color(102, 51, 0)); // dark brown
 
         namePanel.add(buildingNameLabel);
         add(namePanel, BorderLayout.NORTH);

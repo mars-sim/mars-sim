@@ -23,9 +23,10 @@ public class JobAssignment implements Serializable {
     private String timeSubmitted;
     private String authorizedBy;
     private MarsClock timeAuthorized;
-    private JobAssignmentType status; // "Pending" or "Approved"
-    private int jobRating;
+    private JobAssignmentType status; // JobAssignmentType.PENDING or JobAssignmentType.APPROVED
+    private double jobRating = 5; // has a score of 5 if unrated 
     private int sol;
+	private int solRatingSubmitted = -1; //no rating has ever been submitted
 
 
 	public JobAssignment(String timeSubmitted, String jobType, String initiator, JobAssignmentType status, String authorizedBy) {
@@ -35,10 +36,6 @@ public class JobAssignment implements Serializable {
 		this.initiator = initiator;
 		this.status = status;
 		this.authorizedBy = authorizedBy;
-
-
-		//this.timeAuthorized = clock;
-
 	}
 
 	public String getTimeSubmitted() {
@@ -88,10 +85,18 @@ public class JobAssignment implements Serializable {
 	}
 
 	public void setJobRating(int value) {
-		this.jobRating = value;
+		jobRating = (int) (0.7 * jobRating + 0.3 * value);	
 	}
 
-	public int getJobRating() {
-		return jobRating;
+	public void setSolRatingSubmitted(int sol){
+		solRatingSubmitted = sol;
+	}
+
+	public int getSolRatingSubmitted(){
+		return solRatingSubmitted;
+	}
+	
+	public int getJobRating() {	
+		return (int)jobRating;
 	}
 }

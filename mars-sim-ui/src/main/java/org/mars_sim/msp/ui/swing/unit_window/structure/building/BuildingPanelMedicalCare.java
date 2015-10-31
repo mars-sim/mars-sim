@@ -73,7 +73,7 @@ extends BuildingFunctionPanel {
 		// 2014-11-21 Added internationalization for labels
 		JLabel medicalCareLabel = new JLabel(Msg.getString("BuildingPanelMedicalCare.title"), JLabel.CENTER);
 		medicalCareLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//medicalCareLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(medicalCareLabel);
 
 		// Create sick bed label

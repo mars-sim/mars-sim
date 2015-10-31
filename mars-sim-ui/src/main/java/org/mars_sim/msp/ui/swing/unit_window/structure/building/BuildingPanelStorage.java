@@ -45,7 +45,7 @@ extends BuildingFunctionPanel {
 		// 2014-11-21 Added internationalization for labels
 		JLabel storageLabel = new JLabel(Msg.getString("BuildingPanelStorage.title"), JLabel.CENTER);
 		storageLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		storageLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//storageLabel.setForeground(new Color(102, 51, 0)); // dark brown
 
 
 		JPanel titlePanel = new JPanel(new GridLayout(2,1,0,0));

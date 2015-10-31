@@ -127,7 +127,7 @@ extends TabPanel {
 		// Prepare power grid label.
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelPowerGrid.label"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		powerGridLabelPanel.add(titleLabel);
 
 		// Prepare power label.

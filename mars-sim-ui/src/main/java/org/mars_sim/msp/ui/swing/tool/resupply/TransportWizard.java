@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -65,6 +66,7 @@ public class TransportWizard {
 	private SettlementMapPanel mapPanel;
 	private Resupply resupply;
 	private MainScene mainScene;
+	private BuildingConfig buildingConfig;
 
 
 	/**
@@ -77,6 +79,7 @@ public class TransportWizard {
 		mainScene = desktop.getMainScene();
 		settlementWindow = desktop.getSettlementWindow();
 		mapPanel = settlementWindow.getMapPanel();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
 	/**
@@ -92,6 +95,7 @@ public class TransportWizard {
 		//if (settlementWindow == null) System.out.println("settlementWindow is null");
 		mapPanel = settlementWindow.getMapPanel();
 		//if (mapPanel == null) System.out.println("mapPanel is null");
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
 	public void createGUI(Building newBuilding) {
@@ -152,9 +156,23 @@ public class TransportWizard {
            //boolean hasObstacle = resupply.checkBuildingTemplatePosition(template);
 
            if (resupply.checkBuildingTemplatePosition(template)) {
-            	//System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
-
-                confirmBuildingLocation(correctedTemplate, true);
+        	   //System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
+        	   confirmBuildingLocation(correctedTemplate, true);
+        	   
+        	   // check if it's a building connector and if it's connecting the two buildings at their template position 
+/*        	   boolean isConnector = buildingConfig.hasBuildingConnection(template.getBuildingType());
+        	   
+               if (isConnector) {
+            	   // let 
+            	   confirmBuildingLocation(correctedTemplate, false);
+            	   
+               }
+               else {
+            	   
+            	   confirmBuildingLocation(correctedTemplate, true);
+               }
+*/     
+  
 
            } // end of if (checkBuildingTemplatePosition(template)) {
 
@@ -253,16 +271,16 @@ public class TransportWizard {
 
 			//System.out.println("TranportWizard : isAtDefinedLocation is true ");
 			//positionedTemplate = template;
-			newBuilding = settlement.getBuildingManager().addOneBuilding(template, resupply, true);
+			newBuilding = settlement.getBuildingManager().addOneBuilding(template, resupply, false);
 		}
 
 		else {
 			//System.out.println("TranportWizard : isAtDefinedLocation is false ");
-			// if it is not a vehicle, reposition the building elsewhere
+			// Reposition the building elsewhere
 			positionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
 			//buildingManager.setBuildingArrived(true);
 			// Define new position for this building
-			newBuilding = settlement.getBuildingManager().addOneBuilding(positionedTemplate, resupply, true);
+			newBuilding = settlement.getBuildingManager().addOneBuilding(positionedTemplate, resupply, false);
 		}
 
 		//createGUI(newBuilding);

@@ -9,6 +9,7 @@
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -82,6 +83,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     public NavigationTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
         super("Navigation", null, "Navigation", unit, desktop);
+        
+		// Create towing label.
+		JLabel titleLabel = new JLabel(Msg.getString("NavigationTabPanel.title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		topContentPanel.add(titleLabel);
         
         Vehicle vehicle = (Vehicle) unit;
         

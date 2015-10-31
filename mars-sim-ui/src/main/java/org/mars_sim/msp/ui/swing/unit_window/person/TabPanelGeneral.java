@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
@@ -54,6 +55,7 @@ extends TabPanel {
 
 		// Prepare general label
 		JLabel generalLabel = new JLabel(Msg.getString("TabPanelGeneral.label"), JLabel.CENTER); //$NON-NLS-1$
+		generalLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		generalLabelPanel.add(generalLabel);
 
 		// Prepare info panel.

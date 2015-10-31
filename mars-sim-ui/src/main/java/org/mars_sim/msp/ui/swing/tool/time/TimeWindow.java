@@ -40,6 +40,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import net.java.balloontip.BalloonToolTip;
+
 /**
  * The TimeWindow is a tool window that displays the current
  * Martian and Earth time.<br/>
@@ -81,6 +83,7 @@ implements ClockListener {
 	private static final double maxfracpos = minslider - 1d;
 
 	// Data members
+	private int solElapsedCache = 0;
 	/** Master Clock. */
 	private MasterClock master;
 	/** Martian Clock. */
@@ -110,7 +113,8 @@ implements ClockListener {
 
 	private JButton pauseButton;
 
-	private int solElapsedCache = 0;
+	private BalloonToolTip balloonToolTip;
+	
 
 	/**
 	 * Constructs a TimeWindow object
@@ -129,6 +133,7 @@ implements ClockListener {
 		marsTime = master.getMarsClock();
 		earthTime = master.getEarthClock();
 		uptimer = master.getUpTimer();
+		balloonToolTip = new BalloonToolTip();
 
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -182,6 +187,8 @@ implements ClockListener {
 		// Create Martian season label
 		JLabel marsSeasonLabel = new JLabel(Msg.getString("TimeWindow.martianSeasons"), JLabel.CENTER); //$NON-NLS-1$
 		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
+		balloonToolTip.createBalloonTip(marsSeasonLabel, Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+
 
 		// Create Northern season label
 		northernSeasonLabel = new JLabel(

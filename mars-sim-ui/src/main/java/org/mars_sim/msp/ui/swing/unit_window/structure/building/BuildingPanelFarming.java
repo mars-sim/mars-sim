@@ -153,7 +153,7 @@ implements Serializable, MouseListener {
 		// 2014-11-21 Added internationalization for the three labels
 		JLabel farmingLabel = new JLabel(Msg.getString("BuildingPanelFarming.title"), JLabel.CENTER);
 		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		labelPanel.add(farmingLabel);
 
 		// Prepare solar irradiance label

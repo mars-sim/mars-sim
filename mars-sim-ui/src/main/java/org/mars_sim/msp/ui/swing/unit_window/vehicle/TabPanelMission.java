@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -90,6 +91,7 @@ extends TabPanel {
 
 		// Prepare mission title label.
 		JLabel missionTitleLabel = new JLabel(Msg.getString("TabPanelMission.mission"), JLabel.CENTER); //$NON-NLS-1$
+		missionTitleLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		missionPanel.add(missionTitleLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area

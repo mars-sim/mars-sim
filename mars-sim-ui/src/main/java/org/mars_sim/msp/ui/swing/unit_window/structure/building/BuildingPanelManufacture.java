@@ -111,7 +111,7 @@ extends BuildingFunctionPanel {
         // Prepare manufacturing label
         JLabel manufactureLabel = new JLabel("Manufacturing", JLabel.CENTER);
         manufactureLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        manufactureLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        //manufactureLabel.setForeground(new Color(102, 51, 0)); // dark brown
         labelPane.add(manufactureLabel);
 
         // Prepare tech level label

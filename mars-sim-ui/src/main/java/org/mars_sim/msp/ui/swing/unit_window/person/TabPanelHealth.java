@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -88,6 +89,7 @@ extends TabPanel {
 
 		// Prepare health label
 		JLabel healthLabel = new JLabel(Msg.getString("TabPanelHealth.label"), JLabel.CENTER); //$NON-NLS-1$
+		healthLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		healthLabelPanel.add(healthLabel);
 
 		// Prepare condition panel

@@ -96,7 +96,7 @@ implements ActionListener {
 		
         JLabel titleLabel = new JLabel("Buildings", JLabel.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+        //titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
         buildingInfoPanel.add(titleLabel);
         titleLabel.setOpaque(false);
         titleLabel.setBackground(new Color(0,0,0,128));

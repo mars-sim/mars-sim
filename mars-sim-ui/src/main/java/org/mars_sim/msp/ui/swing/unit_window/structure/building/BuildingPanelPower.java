@@ -72,7 +72,7 @@ extends BuildingFunctionPanel {
 				Msg.getString("BuildingPanelPower.title"), //$NON-NLS-1$
 				JLabel.CENTER);		
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		add(titleLabel);
 		
 		

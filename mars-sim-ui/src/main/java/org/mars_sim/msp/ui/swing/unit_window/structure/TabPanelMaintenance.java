@@ -78,7 +78,7 @@ extends TabPanel {
 		// Create maintenance label.
 		JLabel titleLabel = new JLabel("Building Maintenance", JLabel.CENTER);
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//titleLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		maintenancePanel.add(titleLabel, BorderLayout.NORTH);
 
 		// Create scroll pane for maintenance list panel.

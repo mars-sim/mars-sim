@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -106,6 +107,7 @@ extends TabPanel {
 
 		// Create attribute label
 		JLabel attributeLabel = new JLabel(Msg.getString("TabPanelAttribute.label"), JLabel.CENTER); //$NON-NLS-1$
+		attributeLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		attributeLabelPanel.add(attributeLabel);
 
 		// Create attribute scroll panel

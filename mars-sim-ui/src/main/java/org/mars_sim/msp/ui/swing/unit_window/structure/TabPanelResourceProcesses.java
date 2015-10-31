@@ -81,7 +81,7 @@ extends TabPanel {
 		// Prepare esource processes label.
 		JLabel resourceProcessesLabel = new JLabel(Msg.getString("TabPanelResourceProcesses.label"), JLabel.CENTER); //$NON-NLS-1$
 		resourceProcessesLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		resourceProcessesLabel.setForeground(new Color(102, 51, 0)); // dark brown
+		//resourceProcessesLabel.setForeground(new Color(102, 51, 0)); // dark brown
 		resourceProcessesLabelPanel.add(resourceProcessesLabel);
 
 		// Create scroll panel for the outer table panel.

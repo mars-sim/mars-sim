@@ -67,7 +67,7 @@ implements MouseListener {
 		// Create vehicle label
 		JLabel label = new JLabel(Msg.getString("TabPanelVehicles.parkedVehicles"), JLabel.CENTER); //$NON-NLS-1$
 		label.setFont(new Font("Serif", Font.BOLD, 16));
-		label.setForeground(new Color(102, 51, 0)); // dark brown
+		//label.setForeground(new Color(102, 51, 0)); // dark brown
 		vehicleLabelPanel.add(label);
 
 		// Create vehicle display panel

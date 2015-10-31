@@ -7,9 +7,15 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.GridLayout;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JLabel;
@@ -18,8 +24,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -34,6 +43,8 @@ import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import com.vdurmont.emoji.EmojiParser;
 
 import net.java.balloontip.BalloonToolTip;
 
@@ -73,6 +84,7 @@ extends TabPanel {
 
 		// Prepare  Favorite label
 		JLabel favoriteLabel = new JLabel(Msg.getString("TabPanelFavorite.label"), JLabel.CENTER); //$NON-NLS-1$
+		favoriteLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		favoriteLabelPanel.add(favoriteLabel);
 
 		// Prepare info panel.
@@ -161,11 +173,65 @@ extends TabPanel {
 		table = new ZebraJTable(tableModel);
 
 		// 2015-09-24 Align the preference score to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		//table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
+		DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
+			//private Font font;
+					
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object
+                value, boolean isSelected, boolean hasFocus, int row, int column) {
+            	
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+ 
+                setHorizontalAlignment(JLabel.CENTER);
+                //String s = EmojiParser.parseToUnicode(value.toString());
+                String s = value.toString();
+                setText(s);
+                //setText("<html>"+s+"</html>");
+                return this;
+/*
+        		Component c = getTableCellRendererComponent(
+        				table, value, isSelected, hasFocus,
+        				row, column);
+
+        		if (c instanceof JLabel) {
+ 
+        			JLabel cell = (JLabel) c;
+        			cell.setText((String) value);
+        			
+        		}
+        		                return c;
+
+*/        		
+/*                
+    			InputStream is = getClass().getResourceAsStream("/fxui/fonts/fontawesome-webfont.ttf");
+    			
+				try {
+					font = Font.createFont(Font.TRUETYPE_FONT, is);
+		            font = font.deriveFont(Font.PLAIN, 12f);
+		            setFont(font);
+		            //setFont(font.deriveFont(10f));
+				} catch (FontFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+                setHorizontalAlignment(JLabel.CENTER);
+                //setIcon(value);
+				return this;
+*/                
+                        
+            }
+        };
+        table.getColumnModel().getColumn(1).setCellRenderer(r);
+        
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
 		table.getColumnModel().getColumn(1).setPreferredWidth(30);
@@ -205,8 +271,25 @@ extends TabPanel {
 		private Preference manager;
 		private List<String> metaTaskStringList;
 		private Map<String, Integer> metaTaskStringMap;
-
+		
+		//ImageIcon icon = new ImageIcon("image.gif");
+	      
+  
+		//String blush = ":blush:";
+		//String frown = ":frowning:";
+		//String ok = ":neutral_face:";//":expressionless";
+		//String smiley = "\uf118";
+		//String frowno = "\uf119";
+        byte[] smileyBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x84};
+        byte[] neutralBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x90};
+        byte[] cryBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0xA2};
+        
+        String smileyStr = new String(smileyBytes, Charset.forName("UTF-8"));
+        String neutralStr = new String(neutralBytes, Charset.forName("UTF-8"));
+        String cryStr = new String(cryBytes, Charset.forName("UTF-8"));
+		        
 		private PreferenceTableModel(Unit unit) {
+			
 			Person person = null;
 	        Robot robot = null;
 
@@ -234,7 +317,7 @@ extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = Integer.class;
+			if (columnIndex == 1) dataType = String.class;//Integer.class;
 			return dataType;
 		}
 
@@ -246,9 +329,12 @@ extends TabPanel {
 
 		public Object getValueAt(int row, int column) {
 			Object name = metaTaskStringList.get(row);
-			if (column == 0) return name;
-			else if (column == 1) return metaTaskStringMap.get(name);
-			else return null;
+			if (column == 0) 
+				return name;
+			else if (column == 1) 
+				return metaTaskStringMap.get(name);
+			else 
+				return null;
 		}
 
 		public void update() {
@@ -264,6 +350,47 @@ extends TabPanel {
 			}
 */
 
+		}
+	}
+	
+	/**
+	 * This renderer uses a delegation software design pattern to delegate
+	 * this rendering of the table cell header to the real default render
+	 **/
+	class TableHeaderRenderer implements TableCellRenderer {
+		private TableCellRenderer defaultRenderer;
+
+		public TableHeaderRenderer(TableCellRenderer theRenderer) {
+			defaultRenderer = theRenderer;
+		}
+
+
+		/**
+		 * Renderer the specified Table Header cell
+		 **/
+		public Component getTableCellRendererComponent(JTable table,
+				Object value,
+				boolean isSelected,
+				boolean hasFocus,
+				int row,
+				int column) {
+
+			Component theResult = defaultRenderer.getTableCellRendererComponent(
+					table, value, isSelected, hasFocus,
+					row, column);
+
+			if (theResult instanceof JLabel) {
+				JLabel cell = (JLabel) theResult;
+				cell.setText((String)value);
+			}
+
+			JTableHeader tableHeader = table.getTableHeader();
+		    if (tableHeader != null) {
+		    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
+		    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
+		    }
+
+			return theResult;
 		}
 	}
 }
