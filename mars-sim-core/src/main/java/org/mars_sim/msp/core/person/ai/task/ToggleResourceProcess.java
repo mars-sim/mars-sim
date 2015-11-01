@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
-/** 
+/**
  * The ToggleResourceProcess class is an EVA task for toggling a particular
  * automated resource process on or off.
  */
@@ -47,9 +47,9 @@ implements Serializable {
 
     /** Task name */
     private static final String NAME_ON = Msg.getString(
-            "Task.description.toggleFuelPowerSource.on"); //$NON-NLS-1$
+            "Task.description.toggleResourceProcess.on"); //$NON-NLS-1$
     private static final String NAME_OFF = Msg.getString(
-            "Task.description.toggleFuelPowerSource.off"); //$NON-NLS-1$
+            "Task.description.toggleResourceProcess.off"); //$NON-NLS-1$
 
     /** Task phases. */
     private static final TaskPhase TOGGLE_PROCESS = new TaskPhase(Msg.getString(
@@ -88,7 +88,7 @@ implements Serializable {
                 walkToActivitySpotInBuilding(building, false);
             }
             else {
-                // Determine location for toggling power source.
+                // Determine location for toggling resource source.
                 Point2D toggleLoc = determineToggleLocation();
                 setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
             }
@@ -110,7 +110,7 @@ implements Serializable {
     }
 
     /**
-     * Determine location to toggle power source.
+     * Determine location to toggle resource source.
      * @return location.
      */
     private Point2D determineToggleLocation() {
@@ -120,9 +120,9 @@ implements Serializable {
         boolean goodLocation = false;
         for (int x = 0; (x < 50) && !goodLocation; x++) {
             Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(),
                     boundedLocalPoint.getY(), building);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(),
                     person.getCoordinates());
         }
 
@@ -190,7 +190,7 @@ implements Serializable {
      * @param process the resource process.
      * @return the resource value diff (value points)
      */
-    public static double getResourcesValueDiff(Settlement settlement, 
+    public static double getResourcesValueDiff(Settlement settlement,
             ResourceProcess process) {
         double inputValue = getResourcesValue(settlement, process, true);
         double outputValue = getResourcesValue(settlement, process, false);
@@ -225,7 +225,7 @@ implements Serializable {
      * @param input is the resource value for the input?
      * @return the total value for the input or output.
      */
-    private static double getResourcesValue(Settlement settlement, ResourceProcess process, 
+    private static double getResourcesValue(Settlement settlement, ResourceProcess process,
             boolean input) {
 
         double result = 0D;
@@ -271,7 +271,7 @@ implements Serializable {
      * @param process the resource process.
      * @return true if any input resources are empty.
      */
-    private static boolean isEmptyInputResourceInProcess(Settlement settlement, 
+    private static boolean isEmptyInputResourceInProcess(Settlement settlement,
             ResourceProcess process) {
         boolean result = false;
 
@@ -421,7 +421,7 @@ implements Serializable {
             if (toggleOn) {
                 toggle = "on";
             }
-            logger.fine(person.getName() + " turning " + toggle + " " + process.getProcessName() + 
+            logger.fine(person.getName() + " turning " + toggle + " " + process.getProcessName() +
                     " at " + settlement.getName() + ": " + building.getName());
         }
 

@@ -82,7 +82,7 @@ implements Serializable {
 
         // Construct a task manager
         taskManager = new TaskManager(this);
-        
+
         missionManager = Simulation.instance().getMissionManager();
 
         // Construct a skill manager.
@@ -100,13 +100,13 @@ implements Serializable {
 
         if (taskManager != null)
         	// 2015-10-22 Added recordTask()
-    		taskManager.recordTask();        
-    
-        //if (missionManager != null)
-        	// 2015-10-22 Added recordMission()
-       // 	missionManager.recordMission();
-		
-		
+    		taskManager.recordTask();
+
+        if (missionManager != null)
+        	// 2015-10-31 Added recordMission()
+        	missionManager.recordMission();
+
+
     	// Note: the new job will be locked in until the beginning of the next day
     	if (jobLock) {
 	        MarsClock clock = masterClock.getMarsClock();
@@ -129,7 +129,7 @@ implements Serializable {
 
         // Update relationships.
         Simulation.instance().getRelationshipManager().timePassing(person, time);
-        
+
         // Take action as necessary.
         if (taskManager != null)
         	takeAction(time);
@@ -199,8 +199,8 @@ implements Serializable {
                 if (!taskManager.hasActiveTask()) {
                     try {
                         getNewAction(true, (!activeMission && !overrideMission));
-                        // 2015-10-22 Added recordTask()            
-                        //taskManager.recordTask(); 
+                        // 2015-10-22 Added recordTask()
+                        //taskManager.recordTask();
                     } catch (Exception e) {
                         logger.log(Level.WARNING, "Could not get new action", e);
                         e.printStackTrace(System.err);
@@ -507,7 +507,7 @@ implements Serializable {
         // If reached this point, no task or mission has been found.
         logger.severe(person.getName()
                     + " couldn't determine new action - taskWeights: "
-                    + taskWeights + ", missionWeights: " + missionWeights);   
+                    + taskWeights + ", missionWeights: " + missionWeights);
     }
 
     /**

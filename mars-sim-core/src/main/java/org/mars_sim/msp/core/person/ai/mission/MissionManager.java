@@ -27,11 +27,11 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/** 
+/**
  * This class keeps track of ongoing missions
- * in the simulation.<br> 
+ * in the simulation.<br>
  * <br>
- * The simulation has only one mission manager. 
+ * The simulation has only one mission manager.
  */
 public class MissionManager
 implements Serializable {
@@ -43,6 +43,7 @@ implements Serializable {
 	private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
 
 	// Data members
+	private String phaseDescriptionCache;
 	/** Current missions in the simulation. */
 	private List<Mission> missions;
 	/** Mission listeners. */
@@ -57,7 +58,7 @@ implements Serializable {
 	private transient Map<MetaMission, Double> robotMissionProbCache;
 	private transient double totalProbCache;
 
-	/** 
+	/**
 	 * Constructor.
 	 */
 	public MissionManager() {
@@ -74,7 +75,7 @@ implements Serializable {
 		missionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getMetaMissions().size());
 		robotMissionProbCache = new HashMap<MetaMission, Double>(MetaMissionUtil.getRobotMetaMissions().size());
 	}
-	
+
 
 	/**
 	 * Add a listener.
@@ -106,7 +107,7 @@ implements Serializable {
 		}
 	}
 
-	/** 
+	/**
 	 * Gets the number of currently active missions.
 	 * @return number of active missions
 	 */
@@ -126,7 +127,7 @@ implements Serializable {
 		return new ArrayList<Mission>(missions);
 	}
 
-	/** 
+	/**
 	 * Gets the mission a given person is a member of.
 	 * If member isn't a part of any mission, return null.
 	 * @param member the member.
@@ -139,7 +140,7 @@ implements Serializable {
 				result = tempMission;
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -149,30 +150,38 @@ implements Serializable {
 	 * @param newTask
 	 */
 	// 2015-10-22 Added recordMission()
-	public void recordMission(Mission newMission) {
+	public void recordMission() {//Mission newMission) {
 		// Records the new mission
-/*
+
 		Mission newMission = null;
 		if (personCache != null) {
 			newMission = getMission(personCache);
 		}
 		else if (robotCache != null) {
-			newMission = getMission(robotCache);			
+			newMission = getMission(robotCache);
 		}
-*/		
+
 		if (newMission != null) {
-			String doAction = newMission.getDescription();
-			String name = newMission.getName();
-			if (personCache != null) {
-				personCache.getTaskSchedule().recordTask(name, doAction, "");
+			String phaseDescription = newMission.getPhaseDescription();
+
+			if (!phaseDescription.equals(phaseDescriptionCache)) {
+
+				String desc = newMission.getDescription();
+				String name = newMission.getName();
+
+				if (personCache != null) {
+					personCache.getTaskSchedule().recordTask(name, desc, phaseDescription);
+				}
+				else if (robotCache != null) {
+					robotCache.getTaskSchedule().recordTask(name, desc, phaseDescription);
+				}
+
+				phaseDescriptionCache = phaseDescription;
 			}
-			else if (robotCache != null) {
-				robotCache.getTaskSchedule().recordTask(name, doAction, "");
-			}
-		}		
+		}
 	}
-	
-	/** 
+
+	/**
 	 * Adds a new mission to the mission list.
 	 * @param newMission new mission to be added
 	 */
@@ -197,13 +206,13 @@ implements Serializable {
 			}
 
 			// 2015-10-22 Added recordMission()
-			recordMission(newMission);
-			
+			//recordMission(newMission);
+
 			logger.finer("MissionManager: Added new mission - " + newMission.getName());
 		}
 	}
 
-	/** 
+	/**
 	 * Removes a mission from the mission list.
 	 * @param the mission to be removed
 	 */
@@ -226,14 +235,14 @@ implements Serializable {
 
 			logger.finer("MissionManager: Removed old mission - " + oldMission.getName());
 		}
-	} 
+	}
 
-	/** 
+	/**
 	 * Determines the total probability weight for available potential missions
 	 * for a given person.
 	 * @param person the given person
 	 * @return total probability weight
-	 */ 
+	 */
 	public double getTotalMissionProbability(Person person) {
 		// If cache is not current, calculate the probabilities.
 		if (!useCache(person)) {
@@ -241,7 +250,7 @@ implements Serializable {
 		}
 		return totalProbCache;
 	}
-	
+
 	public double getTotalMissionProbability(Robot robot) {
 		// If cache is not current, calculate the probabilities.
 		if (!useCache(robot)) {
@@ -250,9 +259,9 @@ implements Serializable {
 		return totalProbCache;
 	}
 
-	/** 
+	/**
 	 * Gets a new mission for a person based on potential missions available.
-	 * @param person person to find the mission for 
+	 * @param person person to find the mission for
 	 * @return new mission
 	 */
 	public Mission getNewMission(Person person) {
@@ -266,7 +275,7 @@ implements Serializable {
 		double totalProbability = getTotalMissionProbability(person);
 
 		if (totalProbability == 0D) {
-			throw new IllegalStateException(person + 
+			throw new IllegalStateException(person +
 					" has zero total mission probability weight.");
 		}
 
@@ -281,7 +290,7 @@ implements Serializable {
 			double probWeight = missionProbCache.get(metaMission);
 			if (r <= probWeight) {
 				selectedMetaMission = metaMission;
-			} 
+			}
 			else {
 				r -= probWeight;
 			}
@@ -310,7 +319,7 @@ implements Serializable {
 		double totalProbability = getTotalMissionProbability(robot);
 
 		if (totalProbability == 0D) {
-			throw new IllegalStateException(robot + 
+			throw new IllegalStateException(robot +
 					" has zero total mission probability weight.");
 		}
 
@@ -325,7 +334,7 @@ implements Serializable {
 			double probWeight = robotMissionProbCache.get(metaMission);
 			if (r <= probWeight) {
 				selectedMetaMission = metaMission;
-			} 
+			}
 			else {
 				r -= probWeight;
 			}
@@ -343,7 +352,7 @@ implements Serializable {
 
 		return result;
 	}
-	
+
 	/**
 	 * Gets all the active missions associated with a given settlement.
 	 * @param settlement the settlement to find missions.
@@ -422,7 +431,7 @@ implements Serializable {
 		return result;
 	}
 
-	/** 
+	/**
 	 * Remove missions that are already completed.
 	 */
 	private void cleanMissions() {
@@ -462,7 +471,7 @@ implements Serializable {
 			}
 			else {
 				missionProbCache.put(metaMission, 0D);
-				logger.severe(person.getName() + " bad mission probability: " +  metaMission.getName() + 
+				logger.severe(person.getName() + " bad mission probability: " +  metaMission.getName() +
 						" probability: " + probability);
 			}
 		}
@@ -491,7 +500,7 @@ implements Serializable {
 			}
 			else {
 				robotMissionProbCache.put(metaMission, 0D);
-				logger.severe(robot.getName() + " bad mission probability: " +  metaMission.getName() + 
+				logger.severe(robot.getName() + " bad mission probability: " +  metaMission.getName() +
 						" probability: " + probability);
 			}
 		}
@@ -550,6 +559,6 @@ implements Serializable {
 			robotMissionProbCache.clear();
 			robotMissionProbCache = null;
 		}
-		
+
 	}
 }

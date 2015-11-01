@@ -134,7 +134,7 @@ implements Serializable {
 			return "";
 		}
 	}
-	
+
 	/**
 	 * Returns a description of current task for UI purposes.
 	 * Returns a blank string if there is no current task.
@@ -193,15 +193,15 @@ implements Serializable {
 	// 2015-10-22 Added recordTask()
 	@SuppressWarnings("null")
 	public void recordTask() {
-		String taskDescription = getTaskDescription();//currentTask.getDescription(); //  
+		String taskDescription = getTaskDescription();//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
 
-		if (!taskDescription.equals(taskDescriptionCache)) {				
-			
+		if (!taskDescription.equals(taskDescriptionCache)) {
+
 			if (getPhase() != null)
 				taskPhase = getPhase().getName();
-			
+
 			if (person != null) {
 				if (!taskDescription.equals(""))
 					person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
@@ -210,28 +210,28 @@ implements Serializable {
 				if (!taskDescription.equals(""))
 					robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
 			}
-			
+
 			taskDescriptionCache = taskDescription;
-		}	
+		}
 	}
-	
+
 	/**
 	 * Adds a task to the stack of tasks.
 	 * @param newTask the task to be added
 	 */
-	public void addTask(Task newTask) {	
-		
+	public void addTask(Task newTask) {
+
 		// 2015-10-22 Added recordTask()
 		//recordTask();
-		
+
 		if (hasActiveTask()) {
-			currentTask.addSubTask(newTask);	
-			
+			currentTask.addSubTask(newTask);
+
 		} else {
-			currentTask = newTask;	
+			currentTask = newTask;
 			taskNameCache = currentTask.getTaskName();
 			taskDescriptionCache = currentTask.getDescription();
-			
+
 			if (currentTask.getPhase() != null)
 				if (currentTask.getPhase().getName() != null)
 					taskPhaseCache = currentTask.getPhase().getName();
@@ -243,7 +243,7 @@ implements Serializable {
 			//if (lastTask == null)
 			//	lastTask = currentTask;
 		}
-		
+
 		if (person != null) {
 			person.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 		}
@@ -519,7 +519,7 @@ implements Serializable {
 							" could not determine a new task.");
 
 		} else {
-		
+
 			if (person != null) {
 				// Construct the task
 				result = selectedMetaTask.constructInstance(mind.getPerson());
@@ -559,14 +559,22 @@ implements Serializable {
 		    if (timeCache == null)
 		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
 		    int millisols =  (int) timeCache.getMillisol();
-		    
-		    boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 
-		    if (isShiftHour) {
-		    	mtList = MetaTaskUtil.getWorkHourTasks();
+		    boolean isNotOnShift = person.getTaskSchedule().getShiftType().equals("NONE");
+		    boolean isShiftHour = true;
+
+		    if (isNotOnShift) {
+		    	mtList = MetaTaskUtil.getAllWorkHourTasks();
 		    }
 		    else {
-		    	mtList = MetaTaskUtil.getNonWorkHourTasks();
+		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+
+			    if (isShiftHour) {
+			    	mtList = MetaTaskUtil.getWorkHourTasks();
+			    }
+			    else {
+			    	mtList = MetaTaskUtil.getNonWorkHourTasks();
+			    }
 		    }
 
 			if (taskProbCache == null) {
@@ -637,7 +645,7 @@ implements Serializable {
 				}
 			}
 		}
-		
+
 		// Set the time cache to the current time.
 		timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 	}

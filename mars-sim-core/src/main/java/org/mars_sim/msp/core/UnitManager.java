@@ -64,14 +64,14 @@ public class UnitManager implements Serializable {
 	public static final int POPULATION_WITH_SUB_COMMANDER = 12;
 	public static final int POPULATION_WITH_MAYOR = 48;
 	public static final int POPULATION_WITH_COMMANDER = 4;
-	
+
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
 	// Data members
 	private int solCache;
-	private int safetySlot = 0;
-	private int engrSlot = 0;
-	private int resourceSlot = 0;
+	//private int safetySlot = 0;
+	//private int engrSlot = 0;
+	//private int resourceSlot = 0;
 	/** Collection of all units. */
 	private Collection<Unit> units;
 	/** List of possible settlement names. */
@@ -790,10 +790,9 @@ public class UnitManager implements Serializable {
 	}
 
 	/*
-	 * Determines how many shifts for a settlement and assigns a work shift for each person
+	 * Determines the number of shifts for a settlement and assigns a work shift for each person
 	 * @param settlement
-	 * @param pop population 
-	 *  
+	 * @param pop population
 	 */
 	// 2015-07-02 Added setupShift()
 	public void setupShift(Settlement settlement, int pop) {
@@ -805,93 +804,93 @@ public class UnitManager implements Serializable {
 		if (pop == 1) {
 			numShift = 1;
 		}
-		else if (pop < THREE_SHIFTS_MIN_POPULATION) { 
+		else if (pop < THREE_SHIFTS_MIN_POPULATION) {
 			numShift = 2;
 		}
 		else {//if pop > 6
 			numShift = 3;
 		}
-		
+
 		settlement.setNumShift(numShift);
 
 		Collection<Person> people = settlement.getAllAssociatedPeople();
+
 		for (Person p : people) {
 
-			if (numShift == 1)
-				shiftType = "N";
+		switch (numShift) {
 
-			else if (numShift == 2) {
+			case 1 : //(numShift == 1)
+				shiftType = "NONE";
+				break;
 
-				if (pop%numShift == 0) {
+			case 2 : //else if (numShift == 2) {
 
-					if (pop/numShift == 1) {
-						if (numA < 1) { // allow only 1 person with "A shift"
-							shiftType = "A";
-							numA++;
+				switch (pop%numShift) {
+
+					case 0 : //if (pop%numShift == 0) {
+						if (pop/numShift == 1) {
+							if (numA < 1) { // allow only 1 person with "A shift"
+								shiftType = "A";
+								numA++;
+							}
+							else
+								shiftType = "B";
 						}
-						else
-							shiftType = "B";
-					}
 
-					else { // if (pop/numShift == 2) {
-						if (numA < 2) { // allow 2 persons with "A shift"
-							shiftType = "A";
-							numA++;
+						else { // if (pop/numShift == 2) {
+							if (numA < 2) { // allow 2 persons with "A shift"
+								shiftType = "A";
+								numA++;
+							}
+							else
+								shiftType = "B";
 						}
-						else
-							shiftType = "B";
-					}
+						break;
 
-				}
-
-				else { //if (pop%numShift == 1) {
-
-					if (pop/numShift == 1) {
-						if (numA < 2) { // allow 2 persons with "A shift"
-							shiftType = "A";
-							numA++;
+					case 1 : //else { //if (pop%numShift == 1) {
+						if (pop/numShift == 1) {
+							if (numA < 2) { // allow 2 persons with "A shift"
+								shiftType = "A";
+								numA++;
+							}
+							else
+								shiftType = "B";
 						}
-						else
-							shiftType = "B";
-					}
+						break;
 
-					else { // if (pop/numShift == 2) {
+					case 2 : //else { // if (pop/numShift == 2) {
 						if (numA < 3) { // allow 3 persons with "A shift"
 							shiftType = "A";
 							numA++;
 						}
 						else
 							shiftType = "B";
-					}
+						break;
+				} // end of switch (pop%numShift)
 
-				}
+			case 3 : //else if (numShift == 3) {
 
-			}
+				switch (pop%numShift) {
 
-			else if (numShift == 3) {
-
-				if (pop%numShift == 0) {
-
+				case 0 : //if (pop%numShift == 0) {
 					int lim = pop/numShift;
 
 					if (numX < lim+1) { // allow up to lim person with "X shift"
 						shiftType = "X";
 						numX++;
 					}
-
 					else if (numY < lim+1) { // allow up to lim person with "Y shift"
 						shiftType = "Y";
 						numY++;
 					}
-
 					else
 						shiftType = "Z";
 
-				}
+					break;
 
-				else if (pop%numShift == 1) {
+				case 1 : //else if (pop%numShift == 1) {
 
-					int lim = pop/numShift;
+					lim = pop/numShift;
 
 					if (numX < lim+1) { // allow up to lim person with "X shift"
 						shiftType = "X";
@@ -906,11 +905,11 @@ public class UnitManager implements Serializable {
 					else
 						shiftType = "Z";
 
-				}
+					break;
 
-				else  {//if (pop%numShift == 2) {
+				case 2 : //else  {//if (pop%numShift == 2) {
 
-					int lim = pop/numShift;
+					lim = pop/numShift;
 
 					if (numX < lim+2) { // allow up to lim+1 person with "X shift"
 						shiftType = "X";
@@ -924,8 +923,12 @@ public class UnitManager implements Serializable {
 
 					else
 						shiftType = "Z";
+
+					break;
 				}
-			}
+
+				break;
+			} // end of switch (numShift)
 
 			p.getTaskSchedule().setShiftType(shiftType);
 		}

@@ -25,6 +25,8 @@ public class TaskSchedule implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final int NA_START = 0;
+	public static final int NA_END = 999;
 	public static final int A_START = 0;
 	public static final int A_END = 499;
 	public static final int B_START = 500;
@@ -35,7 +37,7 @@ public class TaskSchedule implements Serializable {
 	public static final int Y_END = 665;
 	public static final int Z_START = 666;
 	public static final int Z_END = 999;
-	
+
 	// Data members
 	private int solCache;
 	private int startTime;
@@ -62,7 +64,7 @@ public class TaskSchedule implements Serializable {
 		this.solCache = 1;
 		this.schedules = new ConcurrentHashMap <>();
 		this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
-	
+
 		clock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
@@ -72,7 +74,7 @@ public class TaskSchedule implements Serializable {
 		this.solCache = 1;
 		this.schedules = new ConcurrentHashMap <>();
 		this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
-		
+
 		clock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
@@ -85,17 +87,17 @@ public class TaskSchedule implements Serializable {
 		this.taskName = taskName;
 		this.doAction = description;
 		this.phase = phase;
-	
+
 		int startTime = (int) clock.getMillisol();
 		int solElapsed = clock.getTotalSol();
 		if (solElapsed != solCache) {
-        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);		
+        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
         	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
         	schedules.put(solCache, todaySchedule);
         	// create a new schedule for the new day
     		todaySchedule = new CopyOnWriteArrayList<OneTask>();
 
-        	solCache = solElapsed;    	
+        	solCache = solElapsed;
     		// 2015-10-21 Added recordYestersolTask()
         	recordYestersolLastTask();
 		}
@@ -118,19 +120,19 @@ public class TaskSchedule implements Serializable {
      */
     // 2015-10-21 Added recordYestersolLastTask()
     public void recordYestersolLastTask() {
- /*   	
+ /*
 		Task currentTask = null;
-		
+
 		if (person != null) {
 			currentTask = person.getMind().getTaskManager().getTask();
 		}
-		else if (robot != null) {			
-			currentTask = robot.getBotMind().getTaskManager().getTask();	
-		}	
-		
+		else if (robot != null) {
+			currentTask = robot.getBotMind().getTaskManager().getTask();
+		}
+
 		if (currentTask != null) {
 			//String doAction = currentTask.getDescription();
-			//String name = currentTask.getName();				
+			//String name = currentTask.getName();
 			//recordTask(name, doAction, 1);
 		}
 */
@@ -140,14 +142,14 @@ public class TaskSchedule implements Serializable {
     		if (yesterSolschedule != null) {
     		int size = yesterSolschedule.size();
 	    		if (size != 0) {
-	    			OneTask lastTask = yesterSolschedule.get(yesterSolschedule.size()-1); 
+	    			OneTask lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
 	    			// Save this yestersol task as the first task on today's schedule
 	    			todaySchedule.add(new OneTask(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
 	    		}
     		}
     	}
     }
-    
+
 	/**
 	 * Gets all schedules of a person.
 	 * @return schedules
@@ -184,24 +186,28 @@ public class TaskSchedule implements Serializable {
 			start = Y_START;
 		else if (shiftType.equals("Z"))
 			start = Z_START;
+		else if (shiftType.equals("NONE"))
+			start = NA_START;
 		return start;
 	}
 
 	public int getShiftEnd() {
-		int start = -1;
+		int end = -1;
 		if (shiftType.equals("A"))
-			start = A_END;
+			end = A_END;
 		else if (shiftType.equals("B"))
-			start = B_END;
+			end = B_END;
 		if (shiftType.equals("X"))
-			start = X_END;
+			end = X_END;
 		else if (shiftType.equals("Y"))
-			start = Y_END;
+			end = Y_END;
 		else if (shiftType.equals("Z"))
-			start = Z_END;
-		return start;
+			end = Z_END;
+		else if (shiftType.equals("NONE"))
+			end = NA_END;
+		return end;
 	}
-	
+
 	public String getShiftType() {
 		return shiftType;
 	}
@@ -213,7 +219,11 @@ public class TaskSchedule implements Serializable {
 
 	public boolean isShiftHour(int millisols){
 		boolean result = false;
-		if (shiftType.equals("A")) {
+		if (shiftType.equals("NONE")) {
+			result = true;
+		}
+
+		else if (shiftType.equals("A")) {
 			if (millisols == 1000 || (millisols >= A_START && millisols <= A_END))
 				result = true;
 		}

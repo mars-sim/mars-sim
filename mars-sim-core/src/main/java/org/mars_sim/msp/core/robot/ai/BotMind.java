@@ -37,6 +37,8 @@ implements Serializable {
     private static Logger logger = Logger.getLogger(BotMind.class.getName());
 
     // Data members
+    /** Is the job locked so another can't be chosen? */
+    private boolean jobLock;
     /** The person owning this mind. */
     private Robot robot = null;
     /** The person's task manager. */
@@ -50,9 +52,8 @@ implements Serializable {
     /** The person's skill manager. */
     private SkillManager skillManager;
 
+    private MissionManager missionManager;
 
-    /** Is the job locked so another can't be chosen? */
-    private boolean jobLock;
 
     /**
      * Constructor 1.
@@ -73,6 +74,8 @@ implements Serializable {
         // Construct a task manager
         taskManager = new TaskManager(this);
 
+        missionManager = Simulation.instance().getMissionManager();
+
         // Construct a skill manager.
         skillManager = new SkillManager(robot);
     }
@@ -83,15 +86,19 @@ implements Serializable {
      * @throws Exception if error.
      */
     public void timePassing(double time) {
-    	
+
         if (taskManager != null) {
         	// 2015-10-22 Added recordTask()
-    		taskManager.recordTask();  
-    	
+    		taskManager.recordTask();
+
+    	if (missionManager != null)
+            // 2015-10-31 Added recordMission()
+    		missionManager.recordMission();
+
     		// Take action as necessary.
 	        takeAction(time);
         }
-        
+
         // I don't think robots should be changing jobs on their own. - Scott
         	 // Check if this robot needs to get a new job or change jobs.
 //	        if (!jobLock) {
