@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
@@ -197,22 +198,46 @@ implements Serializable {
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
 
-		if (!taskDescription.equals(taskDescriptionCache)) {
+		if (!taskName.equals("WalkRoverInterior")
+				&& !taskName.equals("WalkSettlementInterior")
+				&& !taskName.equals("WalkSteps")
+				) // filter off Task phase "Walking" due to its excessive occurrences
+			if (!taskDescription.equals(taskDescriptionCache)) {
 
-			if (getPhase() != null)
-				taskPhase = getPhase().getName();
+				if (getPhase() != null) {
 
-			if (person != null) {
-				if (!taskDescription.equals(""))
-					person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+					taskPhase = getPhase().getName();
+
+					if (!taskPhase.equals(taskPhaseCache)) {
+
+						if (person != null) {
+							if (!taskDescription.equals(""))
+								person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+						}
+						else if (robot != null) {
+							if (!taskDescription.equals(""))
+								robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+						}
+
+						taskDescriptionCache = taskDescription;
+						taskPhaseCache = taskPhase;
+					}
+				}
+
+				else {
+
+					if (person != null) {
+						if (!taskDescription.equals(""))
+							person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+					}
+					else if (robot != null) {
+						if (!taskDescription.equals(""))
+							robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+					}
+
+					taskDescriptionCache = taskDescription;
+				}
 			}
-			else if (robot != null) {
-				if (!taskDescription.equals(""))
-					robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
-			}
-
-			taskDescriptionCache = taskDescription;
-		}
 	}
 
 	/**
@@ -560,11 +585,15 @@ implements Serializable {
 		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
 		    int millisols =  (int) timeCache.getMillisol();
 
-		    boolean isNotOnShift = person.getTaskSchedule().getShiftType().equals("NONE");
+		    boolean isOnCall = person.getTaskSchedule().getShiftType().equals(ShiftType.ON_CALL);
+		    boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
 		    boolean isShiftHour = true;
 
-		    if (isNotOnShift) {
+		    if (isOnCall) {
 		    	mtList = MetaTaskUtil.getAllWorkHourTasks();
+		    }
+		    else if (isOff) {
+		    	mtList = MetaTaskUtil.getNonWorkHourTasks();
 		    }
 		    else {
 		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);

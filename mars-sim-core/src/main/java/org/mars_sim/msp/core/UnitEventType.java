@@ -69,6 +69,8 @@ public enum UnitEventType {
 
 	ROLE_EVENT						("role event"),
 
+	SHIFT_EVENT						("shift event"),
+
 	// from Mind.java
 	JOB_EVENT						("job event"),
 	MISSION_EVENT					("mission event"),

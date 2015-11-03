@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -49,11 +50,11 @@ public class Sleep extends Task implements Serializable {
     private static final TaskPhase SLEEPING = new TaskPhase(Msg.getString(
             "Task.phase.sleeping")); //$NON-NLS-1$
 
-    /** Task name */
+    /** Task name for robot */
     private static final String SLEEP_MODE = Msg.getString(
             "Task.description.sleepMode"); //$NON-NLS-1$
 
-    /** Task phases. */
+    /** Task phases for robot. */
     private static final TaskPhase SLEEP_MODE_PHASE = new TaskPhase(Msg.getString(
             "Task.phase.sleepMode")); //$NON-NLS-1$
 
@@ -372,19 +373,19 @@ public class Sleep extends Task implements Serializable {
 		double modifiedAlarmTime = 0;
 		if (person != null) {
 
-			String shiftType = person.getTaskSchedule().getShiftType();
+			ShiftType shiftType = person.getTaskSchedule().getShiftType();
 			// Set to 50 millisols prior to the beginning of the duty shift hour
-			if (shiftType.equals("A"))
+			if (shiftType.equals(ShiftType.A))
 				modifiedAlarmTime = 950;
-			else if (shiftType.equals("B"))
+			else if (shiftType.equals(ShiftType.B))
 				modifiedAlarmTime = 450;
-			else if (shiftType.equals("X"))
+			else if (shiftType.equals(ShiftType.X))
 				modifiedAlarmTime = 950;
-			else if (shiftType.equals("Y"))
+			else if (shiftType.equals(ShiftType.Y))
 				modifiedAlarmTime = 283;
-			else if (shiftType.equals("Z"))
+			else if (shiftType.equals(ShiftType.Z))
 				modifiedAlarmTime = 616;
-			else if (shiftType.equals("N")) { // if only one person is at the settlement, go with this schedule
+			else if (shiftType.equals(ShiftType.ON_CALL)) { // if only one person is at the settlement, go with this schedule
 				timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
 				modifiedAlarmTime = BASE_ALARM_TIME - timeDiff;
 			}

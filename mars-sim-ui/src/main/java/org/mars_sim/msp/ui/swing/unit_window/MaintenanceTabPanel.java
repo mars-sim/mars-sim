@@ -54,15 +54,17 @@ public class MaintenanceTabPanel extends TabPanel {
         Malfunctionable malfunctionable = (Malfunctionable) unit;
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 
+        // Create maintenance label.
+  		JPanel mpanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel maintenanceLabel = new JLabel(Msg.getString("MaintenanceTabPanel.title", JLabel.CENTER));
+        maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
+  		mpanel.add(maintenanceLabel);
+        topContentPanel.add(mpanel);
+
         // Create maintenance panel
         JPanel maintenancePanel = new JPanel(new GridLayout(6, 1, 0, 0));
         maintenancePanel.setBorder(new MarsPanelBorder());
         topContentPanel.add(maintenancePanel);
-
-        // Create maintenance label.
-        JLabel maintenanceLabel = new JLabel(Msg.getString("MaintenanceTabPanel.title", JLabel.CENTER));
-        maintenanceLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        maintenancePanel.add(maintenanceLabel);
 
         // Create wear condition label.
         wearConditionCache = (int) Math.round(manager.getWearCondition());

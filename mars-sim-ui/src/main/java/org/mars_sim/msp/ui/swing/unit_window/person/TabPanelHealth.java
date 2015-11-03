@@ -36,6 +36,8 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
+import net.java.balloontip.BalloonToolTip;
+
 /**
  * The HealthTabPanel is a tab panel for a person's health.
  */
@@ -45,26 +47,27 @@ extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private DecimalFormat formatter = new DecimalFormat(
-	        Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
-
-	private JLabel fatigueLabel;
-	private JLabel hungerLabel;
-	private JLabel energyLabel;
-	private JLabel stressLabel;
-	private JLabel performanceLabel;
-	private MedicationTableModel medicationTableModel;
-	private HealthProblemTableModel healthProblemTableModel;
-	private RadiationTableModel radiationTableModel;
-
-	private JTable radiationTable, medicationTable, healthProblemTable;
-
 	// Data cache
 	private double fatigueCache;
 	private double hungerCache;
 	private double energyCache;
 	private double stressCache;
 	private double performanceCache;
+
+	private JLabel fatigueLabel;
+	private JLabel hungerLabel;
+	private JLabel energyLabel;
+	private JLabel stressLabel;
+	private JLabel performanceLabel;
+
+	private MedicationTableModel medicationTableModel;
+	private HealthProblemTableModel healthProblemTableModel;
+	private RadiationTableModel radiationTableModel;
+	private JTable radiationTable, medicationTable, healthProblemTable;
+	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+
+	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
+
 
 	/**
 	 * Constructor.
@@ -172,7 +175,9 @@ extends TabPanel {
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
-		radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+		//radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+		balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+
 
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(radiationTable);
@@ -348,7 +353,10 @@ extends TabPanel {
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 1) {
+			if (columnIndex == 0) {
+			    return Msg.getString("TabPanelRadiation.column.interval"); //$NON-NLS-1$
+			}
+			else if (columnIndex == 1) {
 			    return Msg.getString("TabPanelRadiation.column.BFO"); //$NON-NLS-1$
 			}
 			else if (columnIndex == 2) {

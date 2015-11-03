@@ -105,7 +105,7 @@ public class MainScene {
 	public static final int OTHER = 3; // load other file
 	public static final int SAVE_AS = 3; // save as other file
 
-	private static int theme = 1; // 7 is the standard nimrod theme
+	private static int theme = 7; // 7 is the standard nimrod theme
 	private int memMax;
 	private int memTotal;
 	private int memUsed, memUsedCache;
@@ -409,7 +409,7 @@ public class MainScene {
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
 		//rootStackPane.getStylesheets().clear();
 
-		changeTheme(1);
+		changeTheme(theme);
 /*
 		theme = 1;
 		//rootStackPane
@@ -421,7 +421,7 @@ public class MainScene {
 */
 		// SwingUtilities is needed for MacOSX compatibility
 		SwingUtilities.invokeLater(() -> {
-			setLookAndFeel(1);
+			setLookAndFeel(theme);
 			//swingNode.setContent(desktop);
 		});
 
@@ -479,6 +479,7 @@ public class MainScene {
 		} else if (theme == 7) { // standard
 			cssColor = "/fxui/css/nimrodskin.css";
 			updateThemeColor(Color.rgb(156,77,0), Color.rgb(156,77,0), cssColor); //DARKORANGE, CORAL
+			//updateThemeColor(Color.rgb(0,0,0,128), Color.rgb(0,0,0,128), cssColor); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
 		}
 

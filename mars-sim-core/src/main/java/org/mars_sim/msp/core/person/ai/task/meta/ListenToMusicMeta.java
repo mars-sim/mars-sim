@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * RelaxMeta.java
- * @version 3.08 2015-06-08
- * @author Scott Davis
+ * ListenToMusicMeta.java
+ * @version 3.08 2015-11-02
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
@@ -11,31 +11,34 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
 import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
- * Meta task for the Relax task.
+ * Meta task for the ListenToMusic task.
  */
-public class RelaxMeta implements MetaTask, Serializable {
+public class ListenToMusicMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.relax"); //$NON-NLS-1$
+            "Task.description.listenToMusic"); //$NON-NLS-1$
 
     /** Modifier if during person's work shift. */
-    private static final double WORK_SHIFT_MODIFIER = .1D;
+    private static final double WORK_SHIFT_MODIFIER = .2D;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
+    private static Logger logger = Logger.getLogger(ListenToMusicMeta.class.getName());
 
     @Override
     public String getName() {
@@ -44,28 +47,46 @@ public class RelaxMeta implements MetaTask, Serializable {
 
     @Override
     public Task constructInstance(Person person) {
-        return new Relax(person);
+        return new ListenToMusic(person);
     }
 
     @Override
     public double getProbability(Person person) {
-        double result = 10D;
+        double result = 0D;
 
         // Stress modifier
         result += person.getPhysicalCondition().getStress();
 
         // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+            // Fatigue modifier.
+            double fatigue = person.getPhysicalCondition().getFatigue();
+        	result = fatigue;
+
+            if (fatigue > 800D) {
+                result += (fatigue - 800D) / 4D;
+            }
+
             try {
-                Building recBuilding = Relax.getAvailableRecreationBuilding(person);
-                if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-                }
+            	Building building = Sleep.getAvailableLivingQuartersBuilding(person);
+
+            	if (building == null) {
+	                Building recBuilding = ListenToMusic.getAvailableRecreationBuilding(person);
+		                if (recBuilding != null) {
+		                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+		                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+		                }
+            	}
+            	else
+            		result *= RandomUtil.getRandomDouble(2);
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }
+        }
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        	result *= RandomUtil.getRandomDouble(3); // more likely to listen to music than not if on a vehicle
         }
 
         // 2015-06-07 Added Preference modifier
@@ -85,33 +106,12 @@ public class RelaxMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new Relax(robot);
+        return null;
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
         double result = 0D;
-
-        // TODO: in what case should a bot "relax" or slow down its pace?
-        // result += robot.getPhysicalCondition().getStress();
-
-        /*
-
-
-        // Crowding modifier
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            try {
-                Building recBuilding = Relax.getAvailableRecreationBuilding(robot);
-                if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(robot, recBuilding);
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
-            }
-        }
-*/
         return result;
 	}
 }

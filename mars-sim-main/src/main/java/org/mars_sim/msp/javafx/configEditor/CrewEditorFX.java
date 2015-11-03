@@ -99,7 +99,7 @@ public class CrewEditorFX {
 	private boolean[][] personalityArray;// = new boolean [4][SIZE_OF_CREW];
 
 	private boolean goodToGo = true;
-	
+
 	private static final double BLUR_AMOUNT = 10;
 
 	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
@@ -110,9 +110,9 @@ public class CrewEditorFX {
 	private Stage stage;
 	private ScenarioConfigEditorFX scenarioConfigEditorFX;
 
-	
+
 	//private final SimpleStringProperty nameProp;
-	
+
 	/**
 	 * Constructor.
 	 * @param simulationConfig SimulationConfig
@@ -123,40 +123,41 @@ public class CrewEditorFX {
 		this.personConfig = simulationConfig.getPersonConfiguration();
 		this.scenarioConfigEditorFX = scenarioConfigEditorFX;
 
-		
+
 		personalityArray = new boolean [4][SIZE_OF_CREW];
 
 		nameTF  = new ArrayList<TextField>();
 		genderList = new ArrayList<ComboBox<String>>();
 		jobsList = new ArrayList<ComboBox<String>>();
 		personalityList = new ArrayList<ComboBox<String>>();
-		
+
 		createGUI();
-		
+
 		//nameProp = new SimpleStringProperty();
+	}
+
+	public void setID(Label l) {
+		l.setId("#textLabel");
 	}
 
 	// 2015-10-07 Added and revised createGUI()
 	@SuppressWarnings("restriction")
 	public void createGUI() {
 
-/*		
+/*
 		if (!nameTF.isEmpty())
 			for (int i = 0; i< SIZE_OF_CREW; i++) {
 				System.out.println(" i is " + i);
 				String nameStr = nameTF.get(i).getText();
 				System.out.println(" name is " + nameStr);
 			}
-*/		
+*/
 		scenarioConfigEditorFX.setCrewEditorOpen(true);
-	
 
-		
 		BorderPane borderAll = new BorderPane();
 		borderAll.setPadding(new Insets(5, 5, 5, 5));
 
-
-		Label titleLabel = new Label("Alpha Crew Manifest");
+		Label titleLabel = new Label("Alpha Crew Manifest - Destination : Schiaparelli Point");
 		titleLabel.setAlignment(Pos.CENTER);
 		HBox hTop = new HBox();
 		hTop.setAlignment(Pos.CENTER);
@@ -175,6 +176,10 @@ public class CrewEditorFX {
 		Label slotTwo = new Label("Slot 2");
 		Label slotThree = new Label("Slot 3");
 		Label slotFour = new Label("Slot 4");
+		setID(slotOne);
+		setID(slotTwo);
+		setID(slotThree);
+		setID(slotFour);
 
 	    GridPane.setConstraints(empty, 0, 0); // column=2 row=0
 	    GridPane.setConstraints(slotOne, 1, 0);
@@ -189,6 +194,11 @@ public class CrewEditorFX {
 		Label gender = new Label("Gender :");
 		Label job = new Label("Job :");
 		Label personality = new Label("MBTI :");
+		setID(name);
+		setID(gender);
+		setID(job);
+		setID(personality);
+
 
 	    GridPane.setConstraints(name, 0, 1);
 	    GridPane.setConstraints(gender, 0, 2);
@@ -203,8 +213,8 @@ public class CrewEditorFX {
 
 		for (int col = 1 ; col < SIZE_OF_CREW + 1; col++) {
 			setUpCrewPersonality(col);
-		}		
-		
+		}
+
 		// Create button pane.
 		HBox hBottom = new HBox();
 		hBottom.setPadding(new Insets(10,10,25,10));
@@ -218,15 +228,15 @@ public class CrewEditorFX {
 		hBottom.getChildren().add(commitButton);
 		borderAll.setBottom(hBottom);
 		commitButton.setOnAction((event) -> {
-			
+
 			goodToGo = true;
-			
+
 			for (int i = 0; i< SIZE_OF_CREW; i++) {
 				//System.out.println(" i is " + i);
 				String nameStr = nameTF.get(i).getText().trim();
 				//System.out.println(" name is " + nameTF.get(i).getText());
 				//2015-10-19 Added isBlank() and checking against invalid names
-				if (!isBlank(nameStr)) { 
+				if (!isBlank(nameStr)) {
 					// update PersonConfig with the new name
 					personConfig.setPersonName(i, nameStr);
 					//System.out.println(" name is " + nameTF.get(i).getText());
@@ -248,7 +258,7 @@ public class CrewEditorFX {
 				}
 
 				//System.out.println("continue ");
-				
+
 				String genderStr = genderList.get(i).getValue();
 				if ( genderStr.equals("M")  )
 					genderStr = "MALE";
@@ -257,43 +267,45 @@ public class CrewEditorFX {
 				//System.out.println(" gender is " + genderStr);
 				// update PersonConfig with the new gender
 				personConfig.setPersonGender(i, genderStr);
-		
+
 				String personalityStr = getPersonality(i); //(String) personalityList.get(i).getValue();
 				//System.out.println(" personality is " + personalityStr);
 				// update PersonConfig with the new personality
 				personConfig.setPersonPersonality(i, personalityStr);
-		
+
 				//String jobStr = jobTF.get(i).getText();
 				String jobStr = (String) jobsList.get(i).getValue();
 				//System.out.println(" job is " + jobStr);
 				// update PersonConfig with the new job
 				personConfig.setPersonJob(i, jobStr);
-				
+
 			}
-			
+
 			//System.out.println("goodToGo is "+ goodToGo);
 			if (goodToGo) {
 				scenarioConfigEditorFX.setCrewEditorOpen(false);
 				stage.hide();
 			}
-			
+
 		});
-        
 
-		layout.setStyle("-fx-background-radius:20; -fx-background-color: rgba(56, 176, 209, ");//"-fx-background-color: null");
+
+		layout.setStyle("-fx-background-radius:20; -fx-background-color: null;");// -fx-background-color: rgba(209,89,56,)");
+				// cyan blue: rgba(56, 176, 209, ");
+				//"-fx-background-color: null");
 	    layout.setEffect(new DropShadow(10, Color.GREY));
-	    
-		layout.getChildren().addAll(background, borderAll);
-		Scene scene = new Scene(layout, Color.TRANSPARENT);
-		scene.getStylesheets().add("/fxui/css/crewEditorFX.css");
-		
-		//scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
-		//stage.initStyle(StageStyle.TRANSPARENT);
 
-		stage = new Stage();		    
+		layout.getChildren().addAll(borderAll);//background, borderAll);
+		Scene scene = new Scene(layout, Color.TRANSPARENT);
+		scene.getStylesheets().add("/fxui/css/crewEditorFXOrange.css");// configEditorFXOrange.css");//
+		scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");//
+
+		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
+
+		stage = new Stage();
 		stage.setScene(scene);
-		stage.initStyle(StageStyle.TRANSPARENT);
-		//stage.setOpacity(.9);
+		//stage.initStyle(StageStyle.TRANSPARENT);
+		stage.setOpacity(.9);
 		stage.sizeToScene();
 		stage.toFront();
 	    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
@@ -307,16 +319,15 @@ public class CrewEditorFX {
 			scenarioConfigEditorFX.setCrewEditorOpen(false);
 			//stage.close(); already implied
 		} );
-    	
-		makeSmoke(stage);
-	
-	    
-		background.setImage(copyBackground(stage));
-        background.setEffect(frostEffect);
-        
-        makeDraggable(stage, layout);
+
+		//makeSmoke(stage);
+
+		//background.setImage(copyBackground(stage));
+        //background.setEffect(frostEffect);
+
+        //makeDraggable(stage, layout);
 	}
-	
+
 	/*
 	 * Validates and saves the current alpha crew configuration
 	 */
@@ -352,7 +363,7 @@ public class CrewEditorFX {
 	    }
 	    return true;
 	}
-	
+
 	public Stage getStage() {
 		return stage;
 	}
@@ -642,7 +653,7 @@ public class CrewEditorFX {
 
 	boolean isGoodToGo() {
 		//System.out.println("calling isGoodToGo(). goodToGo is "+ goodToGo );
-		return goodToGo; 
+		return goodToGo;
 	}
 
 
@@ -732,7 +743,7 @@ public class CrewEditorFX {
     }
 
     private javafx.scene.shape.Rectangle makeSmoke(Stage stage) {
-    	
+
         return new javafx.scene.shape.Rectangle(
                 stage.getWidth(),
                 stage.getHeight(),
@@ -746,7 +757,7 @@ public class CrewEditorFX {
     private static class Delta {
         double x, y;
     }
-    
+
 	/**
 	 * Prepare this window for deletion.
 	 */

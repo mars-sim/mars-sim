@@ -75,6 +75,7 @@ public class MetaTaskUtil {
 	        anyHourTasks = new ArrayList<MetaTask>();
 
 	        anyHourTasks.add(new EatMealMeta());
+	        anyHourTasks.add(new ListenToMusicMeta());
 	        anyHourTasks.add(new LoadVehicleEVAMeta());
 	        anyHourTasks.add(new LoadVehicleGarageMeta());
 	        anyHourTasks.add(new ObserveAstronomicalObjectsMeta());
@@ -85,6 +86,7 @@ public class MetaTaskUtil {
 	        anyHourTasks.add(new RestingMedicalRecoveryMeta());
 	        anyHourTasks.add(new ReturnLightUtilityVehicleMeta());
 	        anyHourTasks.add(new SelfTreatHealthProblemMeta());
+	        anyHourTasks.add(new SleepMeta()); // if a person is having high fatigue, he/she may fall asleep at work
 	        anyHourTasks.add(new WalkMeta());
 
 	        //System.out.println("size of anyHourTasks : " + anyHourTasks.size());
@@ -170,8 +172,10 @@ public class MetaTaskUtil {
 
 	    	tasks.add(new ConnectWithEarthMeta());
 	    	tasks.add(new HaveConversationMeta());
+	    	tasks.add(new PlayHoloGameMeta());
 	    	tasks.add(new ReadMeta());
-	        tasks.add(new SleepMeta());
+
+	        //tasks.add(new SleepMeta());
 	        tasks.add(new WorkoutMeta());
 	        tasks.add(new YogaMeta());
 

@@ -397,7 +397,7 @@ implements VehicleOperator, MissionMember, Serializable {
      */
     public void timePassing(double time) {
     	//System.out.println("Container Unit : " + this.getContainerUnit());
-    	
+
        	// 2015-06-29 Added calling taskSchedule
     	//taskSchedule.timePassing(time);
 
@@ -408,7 +408,7 @@ implements VehicleOperator, MissionMember, Serializable {
             // Pass the time in the physical condition first as this may
             // result in death.
             if (health.timePassing(time, support, config)) {
-           	
+
             	// 2015-06-29 Added calling preference
             	preference.timePassing(time);
 
@@ -810,6 +810,11 @@ implements VehicleOperator, MissionMember, Serializable {
     public void setMission(Mission newMission) {
         getMind().setMission(newMission);
     }
+
+	@Override
+	public void setShiftType(ShiftType shiftType) {
+		taskSchedule.setShiftType(shiftType);
+	}
 
     @Override
     public void destroy() {

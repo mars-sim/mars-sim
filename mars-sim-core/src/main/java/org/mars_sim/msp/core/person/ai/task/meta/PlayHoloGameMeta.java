@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * RelaxMeta.java
- * @version 3.08 2015-06-08
- * @author Scott Davis
+ * PlayHoloGameMeta.java
+ * @version 3.08 2015-11-02
+ * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
@@ -11,31 +11,33 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.Relax;
+import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
+import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
- * Meta task for the Relax task.
+ * Meta task for the PlayHoloGame task.
  */
-public class RelaxMeta implements MetaTask, Serializable {
+public class PlayHoloGameMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.relax"); //$NON-NLS-1$
+            "Task.description.playHoloGame"); //$NON-NLS-1$
 
     /** Modifier if during person's work shift. */
     private static final double WORK_SHIFT_MODIFIER = .1D;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
+    private static Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
 
     @Override
     public String getName() {
@@ -44,28 +46,45 @@ public class RelaxMeta implements MetaTask, Serializable {
 
     @Override
     public Task constructInstance(Person person) {
-        return new Relax(person);
+        return new PlayHoloGame(person);
     }
 
     @Override
     public double getProbability(Person person) {
-        double result = 10D;
+        double result = 5D;
 
         // Stress modifier
-        result += person.getPhysicalCondition().getStress();
+    	double stress = person.getPhysicalCondition().getStress();
+
+        if (stress > 1000D) {
+            result += (stress - 1000D) / 4D;
+        }
 
         // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             try {
-                Building recBuilding = Relax.getAvailableRecreationBuilding(person);
-                if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-                }
-            }
+
+            	Building building = Sleep.getAvailableLivingQuartersBuilding(person);
+
+            	if (building == null) {
+	                Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
+		                if (recBuilding != null) {
+		                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+		                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+		                    result *= RandomUtil.getRandomDouble(3);
+		                    // TODO: find other players using 0-3 makes it more likely to do multiplayer
+		                }
+            	}
+            	else
+            		result *= RandomUtil.getRandomDouble(2);
+            	}
+
             catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }
+        }
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        	result *= RandomUtil.getRandomDouble(1.5);
         }
 
         // 2015-06-07 Added Preference modifier
@@ -85,33 +104,12 @@ public class RelaxMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new Relax(robot);
+        return null;
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
         double result = 0D;
-
-        // TODO: in what case should a bot "relax" or slow down its pace?
-        // result += robot.getPhysicalCondition().getStress();
-
-        /*
-
-
-        // Crowding modifier
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            try {
-                Building recBuilding = Relax.getAvailableRecreationBuilding(robot);
-                if (recBuilding != null) {
-                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, recBuilding);
-                    result *= TaskProbabilityUtil.getRelationshipModifier(robot, recBuilding);
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
-            }
-        }
-*/
         return result;
 	}
 }

@@ -79,13 +79,11 @@ public abstract class UnitWindow extends JInternalFrame {
         this.unit = unit;
         tabPanels = new ArrayList<TabPanel>();
 
-
         // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
         // mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
         //getContentPane().setBackground(THEME_COLOR);
-
 
         // Create name panel
         namePanel = new JPanel(new BorderLayout(0, 0));
@@ -108,7 +106,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Create description label if necessary.
         if (displayDescription) {
-            JLabel descriptionLabel = new JLabel(unit.getDescription(), JLabel.CENTER);
+            JLabel descriptionLabel = new JLabel(Conversion.capitalize(unit.getDescription()), JLabel.CENTER);
             namePanel.add(descriptionLabel, BorderLayout.SOUTH);
         }
 

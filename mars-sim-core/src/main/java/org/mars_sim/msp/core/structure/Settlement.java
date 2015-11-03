@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -88,6 +89,12 @@ implements LifeSupportType {
     private int scenarioID;
 	private int solCache = 1;
 	private int numShift;
+	private int numA; // number of people with work shift A
+	private int numB; // number of people with work shift B
+	private int numX; // number of people with work shift X
+	private int numY; // number of people with work shift Y
+	private int numZ; // number of people with work shift Z
+	private int numOnCall;
 
     //2014-11-23 Added foodProductionOverride
     private boolean foodProductionOverride = false;
@@ -117,15 +124,15 @@ implements LifeSupportType {
     private Inventory inv;
 
     private ChainOfCommand chainOfCommand;
-    
+
     private MarsClock clock;
-    
+
     /** The settlement's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
     /** Amount of time (millisols) that the settlement has had zero population. */
 
     private Map<Integer, Double> resourceMapCache = new HashMap<>();
-    
+
     /**
      * Constructor for subclass extension.
      * @param name the settlement's name
@@ -167,8 +174,8 @@ implements LifeSupportType {
 
         //count++;
         //logger.info("constructor 3 : count is " + count);
-        this.inv = getInventory();     
-        
+        this.inv = getInventory();
+
         // Set inventory total mass capacity.
         inv.addGeneralCapacity(Double.MAX_VALUE);
         // Initialize building manager
@@ -187,7 +194,7 @@ implements LifeSupportType {
         scientificAchievement = new HashMap<ScienceType, Double>(0);
 
         chainOfCommand = new ChainOfCommand(this);
-        
+
         clock = Simulation.instance().getMasterClock().getMarsClock();
 
     }
@@ -1178,8 +1185,249 @@ implements LifeSupportType {
     	return chainOfCommand;
     }
 
+
+	/*
+	 * Assigns a work shift for a person
+	 */
+	public ShiftType assignShift(int pop) {
+		if (pop == -1)
+			pop = getCurrentPopulationNum();
+
+		ShiftType shiftType = ShiftType.OFF;
+		int quotient = pop/numShift;
+		int remainder = pop%numShift;
+
+		switch (numShift) {
+
+			case 1 : //(numShift == 1)
+
+				shiftType = ShiftType.ON_CALL;
+
+				break;
+
+			case 2 : //else if (numShift == 2) {
+
+				switch (remainder) {
+
+					case 0 : //if (remainder == 0) {
+
+						if (quotient == 1) {
+							if (numA < 1) { // allow only 1 person with "A shift"
+								shiftType = ShiftType.A;
+								numA++;
+							}
+							else {
+								shiftType = ShiftType.B;
+								numB++;
+							}
+						}
+
+						else { // if (quotient == 2) {
+							if (numA < 2) { // allow 2 persons with "A shift"
+								shiftType = ShiftType.A;
+								numA++;
+							}
+							else {
+								shiftType = ShiftType.B;
+								numB++;
+							}
+						}
+
+						break;
+
+					case 1 : //else { //if (remainder == 1) {
+
+						if (quotient == 1) {
+							if (numA < 2) { // allow 2 persons with "A shift"
+								shiftType = ShiftType.A;
+								numA++;
+							}
+							else {
+								shiftType = ShiftType.B;
+								numB++;
+							}
+						}
+
+						else { // if (quotient == 2) {
+							if (numA < 3) { // allow 3 persons with "A shift"
+								shiftType = ShiftType.A;
+								numA++;
+							}
+							else {
+								shiftType = ShiftType.B;
+								numB++;
+							}
+						}
+
+						break;
+				} // end of switch (remainder)
+
+				break;
+
+		case 3 : //else if (numShift == 3) {
+
+			switch (remainder) {
+
+				case 0 : //if (remainder == 0) {
+
+					if (numX < quotient+1) { // allow up to lim person with "X shift"
+						shiftType = ShiftType.X;
+						numX++;
+					}
+					else if (numY < quotient+1) { // allow up to lim person with "Y shift"
+						shiftType = ShiftType.Y;
+						numY++;
+					}
+					else {
+						shiftType = ShiftType.Z;;
+						numZ++;
+					}
+
+					break;
+
+				case 1 : //else if (remainder == 1) {
+
+					if (numX < quotient+1) { // allow up to lim person with "X shift"
+						shiftType = ShiftType.X;
+						numX++;
+					}
+
+					else if (numY < quotient+2) { // allow up to lim + 1 person with "Y shift"
+						shiftType = ShiftType.Y;
+						numY++;
+					}
+
+					else {
+						shiftType = ShiftType.Z;;
+						numZ++;
+					}
+
+					break;
+
+				case 2 : //else  {//if (remainder == 2) {
+
+					if (numX < quotient+2) { // allow up to lim+1 person with "X shift"
+						shiftType = ShiftType.X;
+						numX++;
+					}
+
+					else if (numY < quotient+2) { // allow up to lim+1 person with "Y shift"
+						shiftType = ShiftType.Y;
+						numY++;
+					}
+
+					else {
+						shiftType = ShiftType.Z;;
+						numZ++;
+					}
+
+					break;
+				} // end of switch for case 3
+
+				break;
+
+			} // end of switch
+
+		return shiftType;
+	}
+
+	/*
+	 * Sets the number of shift of a settlement
+	 */
     public void setNumShift(int numShift) {
     	this.numShift = numShift;
+    }
+
+    /*
+     * Gets the current number of work shifts in a settlement
+     * @return a number, either 2 or 3
+     */
+    public int getNumShift() {
+    	return numShift;
+    }
+
+	/*
+	 * Restores the previous shift type
+
+	public String reassignShiftType() {
+		String shiftType = "None";
+		int rand = -1;
+		int pop = getCurrentPopulationNum();
+
+		if (numShift == 1) {
+			; // do nothing
+		}
+		else if (numShift == 2) {
+			// examine numA and numB
+			if (numA > ..pop.)
+
+
+			rand = RandomUtil.getRandomInt(1);
+			if (rand != -1) {
+				if (rand == 0)
+					shiftType = ShiftType.A;
+				else if (rand == 1)
+					shiftType = ShiftType.B;
+
+			}
+		}
+		else if (numShift == 3) {
+			// examine numX , numY and numZ
+
+			rand = RandomUtil.getRandomInt(2);
+			if (rand != -1) {
+				if (rand == 0)
+					shiftType = ShiftType.X;
+				else if (rand == 1)
+					shiftType = ShiftType.Y;
+				else if (rand == 2)
+					shiftType = ShiftType.Z;;
+			}
+		}
+		return shiftType;
+	}
+ */
+
+    /*
+     * Increments the number of people in a particular work shift
+     * @param shiftType
+     */
+    public void incrementAShift(ShiftType shiftType) {
+    	if (shiftType != null) {
+	    	if (shiftType.equals(ShiftType.A))
+	    		numA++;
+	    	else if (shiftType.equals(ShiftType.B))
+	    		numB++;
+	    	else if (shiftType.equals(ShiftType.X))
+	    		numX++;
+	    	else if (shiftType.equals(ShiftType.Y))
+	    		numY++;
+	    	else if (shiftType.equals(ShiftType.Z))
+	    		numZ++;
+	    	else if (shiftType.equals(ShiftType.ON_CALL))
+	    		numOnCall++;
+    	}
+    }
+
+    /*
+     * Decrements the number of people in a particular work shift
+     * @param shiftType
+     */
+    public void decrementAShift(ShiftType shiftType) {
+    	if (shiftType != null) {
+	    	if (shiftType.equals(ShiftType.A))
+	    		numA--;
+	    	else if (shiftType.equals(ShiftType.B))
+	    		numB--;
+	    	else if (shiftType.equals(ShiftType.X))
+	    		numX--;
+	    	else if (shiftType.equals(ShiftType.Y))
+	    		numY--;
+	    	else if (shiftType.equals(ShiftType.Z))
+	    		numZ--;
+	    	else if (shiftType.equals(ShiftType.ON_CALL))
+	    		numOnCall--;
+    	}
     }
 
     public Map<Integer, Double> getResourceMapCache() {
@@ -1190,7 +1438,7 @@ implements LifeSupportType {
     	resourceMapCache.put(resourceType, newAmount);
     	//System.out.println(" done with setOneResourceCache(). new amount is " + newAmount);
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();

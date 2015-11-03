@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -685,17 +686,22 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
         return result;
     }
-    
+
 	@Override
     public String getTaskDescription() {
         return getBotMind().getTaskManager().getTaskDescription();
     }
-	
+
 	@Override
 	public void setMission(Mission newMission) {
 	    getBotMind().setMission(newMission);
 	}
-	
+
+	@Override
+	public void setShiftType(ShiftType shiftType) {
+		taskSchedule.setShiftType(shiftType);
+	}
+
     @Override
     public void destroy() {
         super.destroy();

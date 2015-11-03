@@ -44,6 +44,10 @@ public class ChainOfCommand implements Serializable {
 
     private Settlement settlement;
 
+    /*
+     * This class creates a chain of command structure for a settlement. A settlement can have either 3 divisions
+     * or 7 divisions organizational structure
+     */
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
 		roleType = new ConcurrentHashMap<>();
@@ -55,7 +59,9 @@ public class ChainOfCommand implements Serializable {
 
 	}
 
-
+	/*
+	 * Assigns a person with one of the three specialist role types
+	 */
     public void assignRole(Job job, Person person, int num) {
     	int safety = getNumFilled(RoleType.SAFETY_SPECIALIST);
     	int resource = getNumFilled(RoleType.RESOURCE_SPECIALIST);
@@ -110,23 +116,26 @@ public class ChainOfCommand implements Serializable {
 */
     }
 
+	/*
+	 * Assigns a person with a specialist roleType in 3-division settlement
+	 */
 	public void assignSpecialiststo3Divisions(Person person) {
 		// if a person has not been assigned a role, he/she will be mission specialist
             Job job = person.getMind().getJob();
             Role role = person.getRole();
             int pop = 0;
-            if (person.getSettlement() == null) 
+            if (person.getSettlement() == null)
             	System.err.print("person.getSettlement() = null");
             else if (person.getSettlement().getAllAssociatedPeople() == null)
-               	System.err.print("person.getSettlement().getAllAssociatedPeople() = null");	
+               	System.err.print("person.getSettlement().getAllAssociatedPeople() = null");
             else {
             	pop = person.getSettlement().getAllAssociatedPeople().size();
             	if (pop == 0) {
-            		System.err.print("person.getSettlement().getAllAssociatedPeople().size() = 0");	
+            		System.err.print("person.getSettlement().getAllAssociatedPeople().size() = 0");
             		pop = person.getSettlement().getCurrentPopulationNum();
-            		if (pop == 0) 
-                		System.err.print("person.getSettlement().getCurrentPopulationNum() = 0");    
-            	}           	
+            		if (pop == 0)
+                		System.err.print("person.getSettlement().getCurrentPopulationNum() = 0");
+            	}
             }
             //if (pop == 0)
             //	pop = person.getSettlement().getCurrentPopulationNum();
@@ -142,14 +151,15 @@ public class ChainOfCommand implements Serializable {
             if (pop > 8)
             	allSlotsFilledTriple = areAllFilled(3);
 
+/*
             //boolean allSlotsFilledQuad = true;
             //if (pop > 12)
             //	allSlotsFilledQuad = areAllFilled(4);
 
             //boolean allSlotsFilledPenta = true;
-           // if (pop > 24)
+			// if (pop > 24)
             //	allSlotsFilledPenta = areAllFilled(5);
-
+*/
 
             if (!allSlotsFilledOnce) {
             	//System.out.println("inside if (!allSlotsFilledOnce)");
@@ -162,12 +172,15 @@ public class ChainOfCommand implements Serializable {
             else if (!allSlotsFilledTriple) {
             	assignRole(job, person, 3);
             }
+
+/*
             //else if (!allSlotsFilledQuad) {
             //	assignRole(job, person, 4);
             //}
             //else if (!allSlotsFilledPenta) {
             //	assignRole(job, person, 5);
             //}
+*/
             else {
             	//System.out.println("inside else");
 	            //System.out.println("job is " + job.toString());
@@ -234,7 +247,9 @@ public class ChainOfCommand implements Serializable {
             }
 	}
 
-
+	/*
+	 * Assigns a person with a specialist roleType in 7-division settlement
+	 */
 	public void assignSpecialiststo7Divisions(Person person) {
 		// if a person has not been assigned a role, he/she will be mission specialist
 /*
@@ -383,25 +398,31 @@ public class ChainOfCommand implements Serializable {
     public int getSafetySlot() {
     	return safetySlot;
     }
-
     public int getEngrSlot() {
     	return engrSlot;
     }
-
     public int getResourceSlot() {
     	return resourceSlot;
     }
-
     public void addSafety() {
     	safetySlot++;
        	//System.out.println("safetySlot : "+ safetySlot);
     }
 */
+
+	/*
+	 * Increments the number of the target role type in the map
+     * @param a RoleType
+	 */
     public void addRoleTypeMap(RoleType key) {
     	int value = getNumFilled(key);
     	roleType.put(key, value + 1);
     }
 
+    /*
+     * Decrements the number of the target role type from the map
+     * @param a RoleType
+     */
     public void releaseRoleTypeMap(RoleType key) {
     	int value = getNumFilled(key);
     	if (value != 0)
@@ -410,9 +431,12 @@ public class ChainOfCommand implements Serializable {
     	reelect(key);
     }
 
+    /*
+     * Elects a new person for leadership in a settlement if a manager, commander (or sub-commander),
+     * or chief vacates his/her position.
+     */
     public void reelect(RoleType key) {
-       	// if the job Role released is manager/commander/chief,
-    	// need to elect someone else to fill his place.
+
     	if (key == RoleType.CHIEF_OF_SUPPLY
     		|| key == RoleType.CHIEF_OF_ENGINEERING
     		|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
@@ -428,70 +452,77 @@ public class ChainOfCommand implements Serializable {
     	}
     }
 
-
+	/*
+	 * Finds out the number of people already fill this roleType
+	 */
     public int getNumFilled(RoleType key) {
     	int value = 0;
     	if (roleType.containsKey(key))
     		value = roleType.get(key);
-    	 return value;
+    	return value;
     }
+
 /*
     public void decrementSafety() {
     	safetySlot--;
     }
-
     public void setSafetySlot(int value) {
     	safetySlot = value;
     }
-
     public void addEngr() {
     	engrSlot++;
     }
-
     public void decrementEngr() {
     	engrSlot--;
        	//System.out.println("engrSlot : "+ engrSlot);
     }
-
     public void setEngrSlot(int value) {
     	engrSlot = value;
     }
-
     public void addResource() {
     	resourceSlot++;
        	//System.out.println("resourceSlot : "+ resourceSlot);
     }
-
     public void decrementResource() {
     	resourceSlot--;
        	//System.out.println("resourceSlot : "+ resourceSlot);
     }
-
     public void setResourceSlot(int value) {
     	resourceSlot = value;
     }
-
     public void addScience() {
     	scienceSlot++;
     }
-
     public void addLogistic() {
     	logSlot++;
     }
-
     public void addAgri() {
     	agriSlot++;
     }
-
     public void addMission() {
     	missionSlot++;
     }
 */
+
+    /*
+     * Sets this settlement to have 3 divisions
+     */
+    public void set3Divisions(boolean value) {
+    	has3Divisions = value;
+       	//System.out.println("has3Divisions = " + has3Divisions);
+    }
+
+    /*
+     * Sets this settlement to have 7 divisions
+     */
     public void set7Divisions(boolean value) {
     	has7Divisions = value;
        	//System.out.println("has7Divisions = " + has7Divisions);
     }
 
+    /*
+     * Checks if all the roleTypes in a settlement have been filled
+     */
     public boolean areAllFilled(int value) {
     	boolean result = false;
 	    if (has3Divisions) {
@@ -516,10 +547,11 @@ public class ChainOfCommand implements Serializable {
 		return result;
     }
 
-    public void set3Divisions(boolean value) {
-    	has3Divisions = value;
-       	//System.out.println("has3Divisions = " + has3Divisions);
-    }
 
+    public void destroy() {
+        roleType.clear();
+        roleType = null;
+        settlement = null;
+    }
 
 }

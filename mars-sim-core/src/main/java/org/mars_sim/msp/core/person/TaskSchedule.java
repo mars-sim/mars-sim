@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person;
 
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -25,8 +26,8 @@ public class TaskSchedule implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final int NA_START = 0;
-	public static final int NA_END = 999;
+	public static final int ON_CALL_START = 0;
+	public static final int ON_CALL_END = 999;
 	public static final int A_START = 0;
 	public static final int A_END = 499;
 	public static final int B_START = 500;
@@ -45,7 +46,7 @@ public class TaskSchedule implements Serializable {
 	private String taskName;
 	private String doAction;
 	private String phase;
-	private String shiftType;
+	private ShiftType shiftType, shiftTypeCache;
 
 	private Map <Integer, List<OneTask>> schedules;
 	private List<OneTask> todaySchedule;
@@ -176,82 +177,112 @@ public class TaskSchedule implements Serializable {
 
 	public int getShiftStart() {
 		int start = -1;
-		if (shiftType.equals("A"))
+		if (shiftType.equals(ShiftType.A))
 			start = A_START;
-		else if (shiftType.equals("B"))
+		else if (shiftType.equals(ShiftType.B))
 			start = B_START;
-		if (shiftType.equals("X"))
+		if (shiftType.equals(ShiftType.X))
 			start = X_START;
-		else if (shiftType.equals("Y"))
+		else if (shiftType.equals(ShiftType.Y))
 			start = Y_START;
-		else if (shiftType.equals("Z"))
+		else if (shiftType.equals(ShiftType.Z))
 			start = Z_START;
-		else if (shiftType.equals("NONE"))
-			start = NA_START;
+		else if (shiftType.equals(ShiftType.ON_CALL))
+			start = ON_CALL_START;
 		return start;
 	}
 
 	public int getShiftEnd() {
 		int end = -1;
-		if (shiftType.equals("A"))
+		if (shiftType.equals(ShiftType.A))
 			end = A_END;
-		else if (shiftType.equals("B"))
+		else if (shiftType.equals(ShiftType.B))
 			end = B_END;
-		if (shiftType.equals("X"))
+		if (shiftType.equals(ShiftType.X))
 			end = X_END;
-		else if (shiftType.equals("Y"))
+		else if (shiftType.equals(ShiftType.Y))
 			end = Y_END;
-		else if (shiftType.equals("Z"))
+		else if (shiftType.equals(ShiftType.Z))
 			end = Z_END;
-		else if (shiftType.equals("NONE"))
-			end = NA_END;
+		else if (shiftType.equals(ShiftType.ON_CALL))
+			end = ON_CALL_END;
 		return end;
 	}
 
-	public String getShiftType() {
+	public ShiftType getShiftType() {
 		return shiftType;
 	}
 
+	/*
+	 * Sets up the shift type
+	 * @param shiftType
+	 */
+	public void setShiftType(ShiftType shiftType){
+		// back up the previous shift type
+		shiftTypeCache = this.shiftType;
 
-	public void setShiftType(String shiftType){
-		this.shiftType = shiftType;
+		if (shiftType != null) {
+			if (person != null) {
+				if (shiftTypeCache != null)
+					person.getSettlement().decrementAShift(shiftTypeCache);
+				person.getSettlement().incrementAShift(shiftType);
+			}
+			else if (robot != null) {
+				if (shiftTypeCache != null)
+					robot.getSettlement().decrementAShift(shiftTypeCache);
+				robot.getSettlement().incrementAShift(shiftType);
+			}
+
+			this.shiftType = shiftType;
+		}
+		else
+			System.err.println("TaskSchedule: setShiftType() : shiftType is null");
 	}
 
+	/*
+	 * Checks if a person is on shift
+	 * @param time in millisols
+	 * @return true or false
+	 */
 	public boolean isShiftHour(int millisols){
 		boolean result = false;
-		if (shiftType.equals("NONE")) {
-			result = true;
-		}
 
-		else if (shiftType.equals("A")) {
+		if (shiftType.equals(ShiftType.A)) {
 			if (millisols == 1000 || (millisols >= A_START && millisols <= A_END))
 				result = true;
 		}
 
-		else if (shiftType.equals("B")) {
+		else if (shiftType.equals(ShiftType.B)) {
 			if (millisols >= B_START && millisols <= B_END)
 				result = true;
 		}
 
-		if (shiftType.equals("X")) {
+		if (shiftType.equals(ShiftType.X)) {
 			if (millisols == 1000 || (millisols >= X_START && millisols <= X_END))
 				result = true;
 		}
 
-		else if (shiftType.equals("Y")) {
+		else if (shiftType.equals(ShiftType.Y)) {
 			if (millisols >= Y_START && millisols <= Y_END)
 				result = true;
 		}
 
-		else if (shiftType.equals("Z")) {
+		else if (shiftType.equals(ShiftType.Z)) {
 			if (millisols >= Z_START && millisols <= Z_END)
 				result = true;
+		}
+		else if (shiftType.equals(ShiftType.ON_CALL)) {
+			result = true;
 		}
 
 		return result;
 	}
 
-	 public class OneTask implements Serializable {
+
+	/*
+	 * This class represents a record of a given activity (task or mission) undertaken by a person
+	 */
+	public class OneTask implements Serializable {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;

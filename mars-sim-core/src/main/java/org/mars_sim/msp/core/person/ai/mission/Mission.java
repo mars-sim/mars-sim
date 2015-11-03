@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -32,7 +33,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
 
-/** 
+/**
  * The Mission class represents a large multi-person task
  * There is at most one instance of a mission per person.
  * A Mission may have one or more people associated with it.
@@ -74,12 +75,12 @@ implements Serializable {
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
 
-	/** 
+	/**
 	 * Constructor.
 	 * @param name the name of the mission
 	 * @param startingPerson the person starting the mission.
 	 * @param minPeople the minimum number of people required for mission.
-	 
+
 	public Mission(String name, Person startingPerson, int minPeople) {
 
 		// Initialize data members
@@ -153,36 +154,43 @@ implements Serializable {
 
 //		Person person = null;
 //		Robot robot = null;
-//		        
+//
 //		if (unit instanceof Person) {
-//			person = (Person) unit;    	
+//			person = (Person) unit;
 //		}
 //		else if (unit instanceof Robot) {
 //			robot = (Robot) unit;
 //		}
-		
+
 		// Created mission starting event.
 		HistoricalEvent newEvent = null;
-		
+
 		newEvent = new MissionHistoricalEvent(startingMember, this, EventType.MISSION_START);
-        
+
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
         // Log mission starting.
         logger.info(description + " started by " + startingMember.getName() + " at "  + startingMember.getSettlement());
 
         // Add starting member to mission.
+        // 2015-11-01 Temporarily set the shift type to none during the mission
+        startingMember.setMission(this);
+        startingMember.setShiftType(ShiftType.ON_CALL);
+
+/*
         if (startingMember instanceof Person) {
             ((Person) startingMember).getMind().setMission(this);
+            ((Person) startingMember).getTaskSchedule().setShiftType("None");
         }
         else if (startingMember instanceof Robot) {
             ((Robot) startingMember).getBotMind().setMission(this);
+            ((Robot) startingMember).getTaskSchedule().setShiftType("None");
         }
-		
+*/
 //		if (unit instanceof Person) {
-//			person = (Person) unit;    	
+//			person = (Person) unit;
 //			newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_START);
-//			
+//
 //			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 //
 //			// Log mission starting.
@@ -194,7 +202,7 @@ implements Serializable {
 //		else if (unit instanceof Robot) {
 //			robot = (Robot) unit;
 //			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_START);
-//			
+//
 //			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 //
 //			// Log mission starting.
@@ -204,8 +212,8 @@ implements Serializable {
 //			robot.getBotMind().setMission(this);
 //		}
 
-	}	
-	
+	}
+
 	/**
 	 * Adds a listener.
 	 * @param newListener the listener to add.
@@ -261,7 +269,7 @@ implements Serializable {
 		return description;
 	}
 
-//	/** 
+//	/**
 //	 * Adds a person to the mission.
 //	 * @param person to be added
 //	 */
@@ -278,8 +286,8 @@ implements Serializable {
 //			logger.finer(person.getName() + " added to mission: " + name);
 //		}
 //	}
-//	
-//	/** 
+//
+//	/**
 //	 * Adds a robot to the mission.
 //	 * @param robot to be added
 //	 */
@@ -296,11 +304,11 @@ implements Serializable {
 //			logger.finer(robot.getName() + " added to mission: " + name);
 //		}
 //	}
-	
+
 	public final void addMember(MissionMember member) {
 	    if (!members.contains(member)) {
 	        members.add(member);
-	        
+
 	        // Creating mission joining event.
             HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_JOINING);
             Simulation.instance().getEventManager().registerNewEvent(newEvent);
@@ -310,8 +318,8 @@ implements Serializable {
             logger.finer(member.getName() + " added to mission: " + name);
 	    }
 	}
-	
-//	/** 
+
+//	/**
 //	 * Removes a person from the mission.
 //	 * @param person to be removed
 //	 */
@@ -334,7 +342,7 @@ implements Serializable {
 //	}
 //
 //
-//	/** 
+//	/**
 //	 * Removes a person from the mission.
 //	 * @param person to be removed
 //	 */
@@ -355,8 +363,8 @@ implements Serializable {
 //			logger.finer(robot.getName() + " removed from mission: " + name);
 //		}
 //	}
-	
-	/** 
+
+	/**
      * Removes a member from the mission.
      * @param member to be removed
      */
@@ -377,8 +385,8 @@ implements Serializable {
             logger.finer(member.getName() + " removed from mission: " + name);
         }
     }
-	
-    /** 
+
+    /**
      * Determines if a mission includes the given member.
      * @param member member to be checked
      * @return true if member is a part of the mission.
@@ -386,8 +394,8 @@ implements Serializable {
     public final boolean hasMember(MissionMember member) {
         return members.contains(member);
     }
-    
-//	/** 
+
+//	/**
 //	 * Determines if a mission includes the given person.
 //	 * @param person person to be checked
 //	 * @return true if person is member of mission
@@ -396,28 +404,28 @@ implements Serializable {
 //		return people.contains(person);
 //	}
 
-    /** 
+    /**
      * Gets the number of members in the mission.
      * @return number of members.
      */
     public final int getMembersNumber() {
         return members.size();
     }
-    
-	/** 
+
+	/**
 	 * Gets the number of people in the mission.
 	 * @return number of people
 	 */
 	public final int getPeopleNumber() {
 	    int result = 0;
-	    
+
 	    Iterator<MissionMember> i = members.iterator();
 	    while (i.hasNext()) {
 	        if (i.next() instanceof Person) {
 	            result++;
 	        }
 	    }
-	    
+
 		return result;
 	}
 
@@ -428,7 +436,7 @@ implements Serializable {
     public final int getMinMembers() {
         return minMembers;
     }
-    
+
 //	/**
 //	 * Gets the minimum number of people required for mission.
 //	 * @return minimum number of people
@@ -445,7 +453,7 @@ implements Serializable {
         this.minMembers = minMembers;
         fireMissionUpdate(MissionEventType.MIN_MEMBERS_EVENT, minMembers);
     }
-    
+
 //	/**
 //	 * Sets the minimum number of people required for a mission.
 //	 * @param minPeople minimum number of people
@@ -462,7 +470,7 @@ implements Serializable {
     public final Collection<MissionMember> getMembers() {
         return new ConcurrentLinkedQueue<MissionMember>(members);
     }
-    
+
 //	/**
 //	 * Gets a collection of the people in the mission.
 //	 * @return collection of people
@@ -470,7 +478,7 @@ implements Serializable {
 //	public final Collection<Person> getPeople() {
 //		return new ConcurrentLinkedQueue<Person>(people);
 //	}
-//	/** 
+//	/**
 //	 * Determines if a mission includes the given robot.
 //	 * @param robot to be checked
 //	 * @return true if robot is member of mission
@@ -479,7 +487,7 @@ implements Serializable {
 //		return robots.contains(robot);
 //	}
 
-//	/** 
+//	/**
 //	 * Gets the number of robots in the mission.
 //	 * @return number of robots
 //	 */
@@ -512,7 +520,7 @@ implements Serializable {
 //		return new ConcurrentLinkedQueue<Robot>(robots);
 //	}
 
-	/** 
+	/**
 	 * Determines if mission is completed.
 	 * @return true if mission is completed
 	 */
@@ -520,7 +528,7 @@ implements Serializable {
 		return done;
 	}
 
-	/** 
+	/**
 	 * Gets the name of the mission.
 	 * @return name of mission
 	 */
@@ -537,7 +545,7 @@ implements Serializable {
 		fireMissionUpdate(MissionEventType.NAME_EVENT, name);
 	}
 
-	/** 
+	/**
 	 * Gets the mission's description.
 	 * @return mission description
 	 */
@@ -556,7 +564,7 @@ implements Serializable {
 		}
 	}
 
-	/** 
+	/**
 	 * Gets the current phase of the mission.
 	 * @return phase
 	 */
@@ -619,8 +627,8 @@ implements Serializable {
 		fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, description);
 	}
 
-	/** 
-     * Performs the mission. 
+	/**
+     * Performs the mission.
      * @param member the member performing the mission.
      */
     public void performMission(MissionMember member) {
@@ -635,9 +643,9 @@ implements Serializable {
             performPhase(member);
         }
     }
-	
-//	/** 
-//	 * Performs the mission. 
+
+//	/**
+//	 * Performs the mission.
 //	 * @param person the person performing the mission.
 //	 * @throws MissionException if problem performing the mission.
 //	 */
@@ -655,8 +663,8 @@ implements Serializable {
 //	}
 
 
-//	/** 
-//	 * Performs the mission. 
+//	/**
+//	 * Performs the mission.
 //	 * @param robot the robot performing the mission.
 //	 * @throws MissionException if problem performing the mission.
 //	 */
@@ -672,7 +680,7 @@ implements Serializable {
 //			performPhase(robot);
 //		}
 //	}
-	
+
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
 	 * @throws MissionException if problem setting a new phase.
@@ -688,7 +696,7 @@ implements Serializable {
             endMission("Current mission phase is null.");
         }
     }
-	
+
 //	/**
 //	 * The person performs the current phase of the mission.
 //	 * @param person the person performing the phase.
@@ -699,7 +707,7 @@ implements Serializable {
 //			endMission("Current mission phase is null.");
 //		}
 //	}
-//	
+//
 //	/**
 //	 * The robot performs the current phase of the mission.
 //	 * @param robot the robot performing the phase.
@@ -710,7 +718,7 @@ implements Serializable {
 //			endMission("Current mission phase is null.");
 //		}
 //	}
-	
+
 	/**
 	 * Gets the mission capacity for participating people.
 	 * @return mission capacity
@@ -728,7 +736,7 @@ implements Serializable {
 		fireMissionUpdate(MissionEventType.CAPACITY_EVENT, newCapacity);
 	}
 
-	/** 
+	/**
 	 * Finalizes the mission.
 	 * String reason Reason for ending mission.
 	 * Mission can override this to perform necessary finalizing operations.
@@ -737,14 +745,28 @@ implements Serializable {
 		if (!done) {
 			done = true;
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
-			
+
 			if (members != null) {
 			    Object[] p = members.toArray();
                 for (Object aP : p) {
+
                     removeMember((MissionMember) aP);
+
+                    // 2015-11-01 Added codes in reassigning a work shift
+                    if (aP instanceof Person) {
+                    	ShiftType shift = ((Person) aP).getSettlement().assignShift(-1);
+                        ((Person) aP).getSettlement().decrementAShift(ShiftType.ON_CALL);
+                        ((Person) aP).getTaskSchedule().setShiftType(shift);
+                    }
+                    else if (aP instanceof Robot) {
+                    	ShiftType shift = ((Robot) aP).getSettlement().assignShift(-1);
+                        ((Robot) aP).getSettlement().decrementAShift(ShiftType.ON_CALL);
+                        ((Robot) aP).getTaskSchedule().setShiftType(shift);
+                    }
+
                 }
 			}
-			
+
 //			if (people != null) {
 //				Object p[] = people.toArray();
 //				for (Object aP : p) {
@@ -760,7 +782,7 @@ implements Serializable {
 			logger.info(description + " ending at " + phase + " due to " + reason);
 		}
 	}
-	
+
 	/**
 	 * Adds a new task for a person in the mission.
 	 * Task may be not assigned if it is effort-driven and person is too ill
@@ -780,10 +802,10 @@ implements Serializable {
 		if (canPerformTask) {
 			person.getMind().getTaskManager().addTask(task);
 		}
-		
+
 		return canPerformTask;
 	}
-	
+
 	/**
      * Adds a new task for a robot in the mission.
      * Task may be not assigned if the robot has a malfunction.
@@ -799,17 +821,17 @@ implements Serializable {
 		if (hasMalfunction) {
 		    canPerformTask = false;
 		}
-		
+
 		if (canPerformTask) {
 			robot.getBotMind().getTaskManager().addTask(task);
 		}
-		
+
 		return canPerformTask;
 	}
-	
+
 	/**
-	 * Checks to see if any of the people in the mission have any dangerous medical 
-	 * problems that require treatment at a settlement. 
+	 * Checks to see if any of the people in the mission have any dangerous medical
+	 * problems that require treatment at a settlement.
 	 * Also any environmental problems, such as suffocation.
 	 * @return true if dangerous medical problems
 	 */
@@ -825,13 +847,13 @@ implements Serializable {
 	            }
 		    }
 		}
-		
+
 		return result;
 	}
 
 	/**
-	 * Checks to see if all of the people in the mission have any dangerous medical 
-	 * problems that require treatment at a settlement. 
+	 * Checks to see if all of the people in the mission have any dangerous medical
+	 * problems that require treatment at a settlement.
 	 * Also any environmental problems, such as suffocation.
 	 * @return true if all have dangerous medical problems
 	 */
@@ -930,7 +952,7 @@ implements Serializable {
             endMission("Not enough members");
         }
     }
-	
+
 //	/**
 //	 * Recruits new people into the mission.
 //	 * @param startingPerson the person starting the mission.
@@ -989,7 +1011,7 @@ implements Serializable {
 //
 //		if (getPeopleNumber() < minPeople) endMission("Not enough members");
 //	}
-	
+
 //	protected void recruitRobotsForMission(Robot startingRobot) {
 //
 //		int count = 0;
@@ -1044,7 +1066,7 @@ implements Serializable {
 //
 //		if (getRobotsNumber() < minRobots) endMission("Not enough members");
 //	}
-	
+
 	/**
 	 * Attempt to recruit a new person into the mission.
 	 * @param recruiter the mission member doing the recruiting.
@@ -1084,6 +1106,14 @@ implements Serializable {
 
 			if (RandomUtil.lessThanRandPercent(recruitmentChance)) {
 				recruitee.setMission(this);
+
+				if (recruitee instanceof Person) {
+		            ((Person) recruitee).getTaskSchedule().setShiftType(ShiftType.ON_CALL);
+		        }
+				// robot cannot be a recruitee
+		        //else if (recruitee instanceof Robot) {
+		        //    ((Robot) recruitee).getTaskSchedule().setShiftType("None");
+		        //}
 			}
 		}
 	}
@@ -1113,7 +1143,7 @@ implements Serializable {
 //			}
 //		}
 //	}
-	
+
 	/**
      * Checks to see if a member is capable of joining a mission.
      * @param member the member to check.
@@ -1121,39 +1151,39 @@ implements Serializable {
      */
     protected boolean isCapableOfMission(MissionMember member) {
         boolean result = false;
-        
+
         if (member == null) {
             throw new IllegalArgumentException("member is null");
         }
 
         if (member instanceof Person) {
             Person person = (Person) member;
-            
+
             // Make sure person isn't already on a mission.
             boolean onMission = (person.getMind().getMission() != null);
-            
+
             // Make sure person doesn't have any serious health problems.
             boolean healthProblem = person.getPhysicalCondition().hasSeriousMedicalProblems();
-            
+
             // Check if person is qualified to join the mission.
             boolean isQualified = (getMissionQualification(person) > 0D);
-            
+
             if (!onMission && !healthProblem && isQualified) {
                 result = true;
             }
         }
         else if (member instanceof Robot) {
             Robot robot = (Robot) member;
-            
+
             // Make sure robot isn't already on a mission.
             boolean onMission = (robot.getBotMind().getMission() != null);
-            
+
             // Make sure robot doesn't have a malfunction.
             boolean hasMalfunction = robot.getMalfunctionManager().hasMalfunction();
-            
+
             // Check if robot is qualified to join the mission.
             boolean isQualified = (getMissionQualification(robot) > 0D);
-            
+
             if (!onMission && !hasMalfunction && isQualified) {
                 result = true;
             }
@@ -1161,7 +1191,7 @@ implements Serializable {
 
         return result;
     }
-	
+
 //	/**
 //	 * Checks to see if a person is capable of joining a mission.
 //	 * @param person the person to check.
@@ -1187,11 +1217,11 @@ implements Serializable {
 //		if (robot.getBotMind().getMission() == null) {
 //			// Make sure robot doesn't have any serious health problems.
 //			if (!robot.getPhysicalCondition().hasSeriousMedicalProblems())
-//				return true;			
+//				return true;
 //		}
 //		return false;
 //	}
-	
+
     /**
      * Gets the mission qualification value for the member.
      * Member is qualified in joining the mission if the value is larger than 0.
@@ -1204,10 +1234,10 @@ implements Serializable {
         double result = 0D;
 
 //        if (isCapableOfMission(member)) {
-            
+
             if (member instanceof Person) {
                 Person person = (Person) member;
-                
+
                 // Get base result for job modifier.
                 Job job = person.getMind().getJob();
                 if (job != null) {
@@ -1216,7 +1246,7 @@ implements Serializable {
             }
             else if (member instanceof Robot) {
                 Robot robot = (Robot) member;
-                
+
                 // Get base result for job modifier.
                 RobotJob job = robot.getBotMind().getRobotJob();
                 if (job != null) {
@@ -1227,7 +1257,7 @@ implements Serializable {
 
         return result;
     }
-    
+
 //	/**
 //	 * Gets the mission qualification value for the person.
 //	 * Person is qualified and interested in joining the mission if the value is larger than 0.
@@ -1250,7 +1280,7 @@ implements Serializable {
 //
 //		return result;
 //	}
-//	
+//
 //	protected double getMissionQualification(Robot robot) {
 //
 //		double result = 0D;
@@ -1265,7 +1295,7 @@ implements Serializable {
 //
 //		return result;
 //	}
-	
+
 	/**
 	 * Checks if the current phase has ended or not.
 	 * @return true if phase has ended
@@ -1302,7 +1332,7 @@ implements Serializable {
 	 */
 	public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
 
-	/** 
+	/**
 	 * Time passing for mission.
 	 * @param time the amount of time passing (in millisols)
 	 * @throws Exception if error during time passing.
@@ -1328,9 +1358,9 @@ implements Serializable {
 	 * @throws MissionException if error determining location.
 	 */
 	public final Coordinates getCurrentMissionLocation() {
-		
+
 	    Coordinates result = null;
-	    
+
 	    if (getMembersNumber() > 0) {
 	        MissionMember member = (MissionMember) members.toArray()[0];
 	        result = member.getCoordinates();
@@ -1338,7 +1368,7 @@ implements Serializable {
 		else {
 		    throw new IllegalStateException(phase + " : No people or robots in the mission.");
 		}
-	
+
 	    return result;
 	}
 

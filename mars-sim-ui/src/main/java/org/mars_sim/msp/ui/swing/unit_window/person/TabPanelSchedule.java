@@ -43,6 +43,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
 import org.mars_sim.msp.core.robot.Robot;
@@ -82,14 +83,14 @@ extends TabPanel {
 	private int todayCache;
 	private int today;
 	private int start;
-	private int end; 
+	private int end;
 
 	private boolean hideRepeated, hideRepeatedCache, isRealTimeUpdate;
 
 	private Integer selectedSol;
 	private Integer todayInteger;
 
-	private String shiftType, shiftCache = null;
+	private ShiftType shiftType, shiftCache = null;
 
 	private JTable table ;
 
@@ -105,7 +106,7 @@ extends TabPanel {
 	private Color fillColorCache;
 	//private Color transparentFill;
 	//private ModernBalloonStyle style;
-	
+
 	private List<OneTask> tasks;
 	private List<Object> solList;
 	private Map <Integer, List<OneTask>> schedules;
@@ -116,7 +117,7 @@ extends TabPanel {
 	private PlannerWindow plannerWindow;
 	private MainDesktopPane desktop;
 	private BalloonToolTip balloonToolTip;
-	
+
 
 	/**
 	 * Constructor.
@@ -134,7 +135,7 @@ extends TabPanel {
 
 		this.desktop = desktop;
 		isRealTimeUpdate = true;
-		
+
 		// Prepare combo box
         if (unit instanceof Person) {
          	person = (Person) unit;
@@ -148,7 +149,7 @@ extends TabPanel {
         schedules = taskSchedule.getSchedules();
 
         balloonToolTip = new BalloonToolTip();
-        
+
 		// Create label panel.
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(labelPanel);
@@ -167,23 +168,26 @@ extends TabPanel {
 		topContentPanel.add(buttonPane);//, BorderLayout.NORTH);
 
         if (unit instanceof Person) {
-       	
-    		shiftType = taskSchedule.getShiftType();   		
+
+    		shiftType = taskSchedule.getShiftType();
     		shiftCache = shiftType;
     		shiftLabel = new JLabel(Msg.getString("TabPanelSchedule.shift.label"), JLabel.CENTER); //$NON-NLS-1$
-    
+
     		balloonToolTip.createBalloonTip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
     		buttonPane.add(shiftLabel);
-    		
+
     		fillColorCache = shiftLabel.getBackground();
 
-    		shiftTF = new JTextField(shiftCache);
+    		shiftTF = new JTextField(shiftCache.toString());
     		start = taskSchedule.getShiftStart();
     		end = taskSchedule.getShiftEnd();
     		shiftTF.setEditable(false);
     		shiftTF.setColumns(2);
 
-    		balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
+    		if (!shiftCache.equals(ShiftType.OFF))
+    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
+    		else
+    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
     		shiftTF.setHorizontalAlignment(JTextField.CENTER);
     		buttonPane.add(shiftTF);
     		//buttonPane.add(new JLabel("           "));
@@ -322,12 +326,12 @@ extends TabPanel {
 		// table.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 	    scrollPanel.setViewportView(table);
-	    
+
 		// 2015-09-24 Align the content to the center of the cell
 		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		
+
 	    //SwingUtilities.invokeLater(() -> ColumnResizer.adjustColumnPreferredWidths(table));
 
 		// 2015-06-08 Added sorting
@@ -344,7 +348,7 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-			
+
 		TableStyle.setTableStyle(table);
 
 		if (person != null) {
@@ -353,21 +357,27 @@ extends TabPanel {
 			//if (shiftCache != null)
 			if (!shiftCache.equals(shiftType)) {
 				shiftCache = shiftType;
-				shiftTF.setText(shiftCache);
+				shiftTF.setText(shiftCache.toString());
 			}
+
+    		if (!shiftCache.equals(ShiftType.OFF))
+    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$
+    		else
+    			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip.off")); //$NON-NLS-1$
+
 /*
 			//System.out.println("fillColorCache is "+ fillColorCache);
 			if (fillColorCache != shiftTF.getBackground()) {
 				fillColorCache = shiftTF.getBackground();
 			//	System.out.println("Set fillColorCache to "+ fillColorCache);
 	    		balloonToolTip.createBalloonTip(shiftLabel, Msg.getString("TabPanelSchedule.shift.toolTip")); //$NON-NLS-1$
-	      		balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end));  //$NON-NLS-1$    	  
+	      		balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end));  //$NON-NLS-1$
 	    		balloonToolTip.createBalloonTip(hideBox, Msg.getString("TabPanelSchedule.tooltip.showRepeatedTask")); //$NON-NLS-1$);
 	    		balloonToolTip.createBalloonTip(realTimeBox, Msg.getString("TabPanelSchedule.tooltip.realTimeUpdate")); //$NON-NLS-1$
 	    		//SwingUtilities.updateComponentTreeUI(desktop);
 				desktop.updateToolWindowLF();
 			}
-*/			
+*/
 		}
 
     	today = taskSchedule.getSolCache();
@@ -583,38 +593,38 @@ extends TabPanel {
 			if (tasks != null && hideRepeatedTasks) {
 				// show only non-repeating consecutive tasks
 				List<OneTask> displaySchedule = new CopyOnWriteArrayList<OneTask>(tasks);
-				
+
 				int size = displaySchedule.size();
-				
+
 				for (int i = size - 1; i >= 0; i--) {
 					OneTask currentTask = displaySchedule.get(i);
 					String currentName = currentTask.getTaskName();
 					String currentDes = currentTask.getDescription();
-					String currentPhase = currentTask.getPhase();					
+					String currentPhase = currentTask.getPhase();
 					OneTask lastTask = null;
 		        	String lastName = null;
 		        	String lastDes = null;
 		        	String lastPhase = null;
-		        	
+
 		        	// make sure this is NOT the very first task (i = 0) of the day
 		        	if (i != 0) {
 		        		lastTask = displaySchedule.get(i - 1);
 		        		lastName = lastTask.getTaskName();
 		        		lastDes = lastTask.getDescription();
 		        		lastPhase = lastTask.getPhase();
-		        		
+
 		        		// check if the last task is the same as the current task
 			        	if (lastDes.equals(currentDes)) {
-			        		//if (lastName.equals(currentName)) {	
-				        		//if (lastPhase.equals(currentPhase)) {	
+			        		//if (lastName.equals(currentName)) {
+				        		//if (lastPhase.equals(currentPhase)) {
 				        			// remove the current task if they are the same
 				        			displaySchedule.remove(i);
 				        		//}
 			        		//}
 			        	}
-		        	}        		
+		        	}
 				}
-				
+
 		        tasks = displaySchedule;
 			}
 

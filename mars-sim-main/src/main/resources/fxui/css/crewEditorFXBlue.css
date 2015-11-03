@@ -1,0 +1,84 @@
+/**
+ * Mars Simulation Project
+ * mainmenu.css
+ * General CSS classes for MSP UI
+ * @version 3.08 2015-10-15
+ * @author Manny Kung
+ */
+
+.combo-box .text-field {
+	-fx-font-size: 14.0px;
+    -fx-stroke-width: 2;
+    -fx-font-weight: italic;
+    -fx-prompt-text-fill: rgba(255, 0, 0, 0.5) ;
+}
+.combo-box .text-field:focused {
+    -fx-prompt-text-fill: transparent ;
+}
+
+.titled-pane  {
+
+	-fx-font-size: 14.0px;
+    -fx-stroke-width: 2;
+    -fx-font-weight: italic;
+	-fx-text-fill: #004C99;
+
+	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0);
+}
+
+.titled-pane:focused {
+	-fx-text-fill: white;
+}
+
+.titled-pane > .title {
+    -fx-font-weight: italic;
+    -fx-font-weight: bold;
+    -fx-stroke-width: 2;
+	-fx-background-color: -fx-box-border, -fx-inner-border, -fx-body-color;
+	-fx-background-insets: 0, 1, 2;
+	-fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
+	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
+}
+
+.titled-pane:focused > .title {
+	-fx-color: -fx-focus-color;
+}
+
+.titled-pane > *.content {
+	-fx-background-color:
+	-fx-box-border,
+		linear-gradient(to bottom, derive(-fx-color,-02%), derive(-fx-color,65%) 12%,
+	      derive(-fx-color,23%) 88%, derive(-fx-color,50%) 99%, -fx-box-border);
+	-fx-background-insets: 0, 0 1 1 1;
+	-fx-padding: 0.167em;
+ }
+
+.label {
+	-fx-font-size: 15.0px;
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e5f3f6; /* #FFB03B; light mud color*/
+/*    -fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0); */
+}
+
+
+#commitButton {
+    -fx-padding: 2 15 2 15;
+	-fx-font-size: 15.0px;
+	-fx-base: #00a7d4;
+	-fx-background: #e5f3f6;
+	-fx-focus-color: #0093FF;
+	-fx-control-inner-background: #FFFFFF;
+	-fx-text-base-color: #FFFFFF;
+	-fx-background-color:#00a7d4;
+    -fx-background-insets: -1.4, 0, 1, 2;
+    -fx-color:#00a7d4;
+	-fx-background-radius: 5;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}
+
+
+#commitButton:hover {
+	-fx-font-size: 16.0px;
+/*    -fx-background-color: linear-gradient(#1E90FF, #61a2b1); */
+}

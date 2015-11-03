@@ -32,11 +32,10 @@
   	-fx-font-family: 'Thierry Font';
     -fx-font-size: 12px;
 	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #97916d 0%, #b7b39a 100%),
-        #97916d,
-        #bbc3ab,
-        radial-gradient(center 50% 50%, radius 100%, #bbc3ab, #b7b39a);
-
+	 	linear-gradient(from 0% 93% to 0% 100%, #e79d1b 0%, #ff8861 100%),
+        #e79d1b,
+        #9c4d00,
+        radial-gradient(center 50% 50%, radius 100%, #9c4d00, #ff8861);
     -fx-text-fill: rgb(49, 89, 23);
     -fx-border-color: rgb(49, 89, 23);
 }
@@ -46,11 +45,10 @@
   	-fx-font-family: 'Thierry Font';
     -fx-font-size: 12px;
 	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #97916d 0%, #b7b39a 100%),
-        #97916d,
-        #bbc3ab,
-        radial-gradient(center 50% 50%, radius 100%, #bbc3ab, #b7b39a);
-
+	 	linear-gradient(from 0% 93% to 0% 100%, #e79d1b 0%, #ff8861 100%),
+        #e79d1b,
+        #9c4d00,
+        radial-gradient(center 50% 50%, radius 100%, #9c4d00, #ff8861);
      -fx-text-fill: rgb(49, 89, 23);
  /*   -fx-border-color: rgb(49, 89, 23); */
 }
@@ -60,7 +58,7 @@
 }
 
 .context-menu {
-    -fx-background-color: #b7b39a;
+    -fx-background-color: #d16700;
 }
 
 .tab {
@@ -78,7 +76,7 @@
 }
 
 .button:hover{
-    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
+/*    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent; */
 }
 
 .button:armed {
@@ -88,12 +86,11 @@
 
 .button{
 	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #ffd7b0 0%, #9c4d00 100%),
+	 	linear-gradient(from 0% 93% to 0% 100%, #e79d1b 0%, #ff8861 100%),
+        #e79d1b,
         #9c4d00,
-        #ffd7b0,
-        radial-gradient(center 50% 50%, radius 100%, #ffa500, #9c4d00);
-
-    -fx-text-fill: #e9e700; /* text color inside the button */
+        radial-gradient(center 50% 50%, radius 100%, #9c4d00, #ff8861);
+    -fx-text-fill: #eae800; /* text color inside the button */
     -fx-border-color: #663300;
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;

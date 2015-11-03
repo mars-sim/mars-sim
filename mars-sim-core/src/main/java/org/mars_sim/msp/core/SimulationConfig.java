@@ -537,7 +537,8 @@ public class SimulationConfig implements Serializable {
 		foodProductionConfig = null;
 		mealConfig.destroy();
 		mealConfig = null;
-		//robotConfig.destroy();
+		robotConfig.destroy();
+		robotConfig = null;
 	}
 
 	/**

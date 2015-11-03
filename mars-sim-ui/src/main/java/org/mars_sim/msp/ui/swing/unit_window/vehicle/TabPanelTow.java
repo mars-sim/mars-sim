@@ -49,10 +49,12 @@ extends TabPanel {
 		);
 
 		// Create towing label.
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JLabel titleLabel = new JLabel(Msg.getString("TabPanelTow.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		topContentPanel.add(titleLabel);
-		
+		panel.add(titleLabel);
+		topContentPanel.add(panel);
+
 		if (unit instanceof Towing) {
 
 			// Create towing label panel.
@@ -62,7 +64,6 @@ extends TabPanel {
 
 			// Create towing label.
 			JLabel towLabel = new JLabel(Msg.getString("TabPanelTow.towing"), JLabel.CENTER); //$NON-NLS-1$
-			towLabel.setFont(new Font("Serif", Font.BOLD, 16));
 			towingLabelPanel.add(towLabel);
 
 			// Create the towing button.
@@ -136,7 +137,7 @@ extends TabPanel {
 	 */
 	private void addTowingTextLabel() {
 		try {
-			Component lastComponent = towingLabelPanel.getComponent(1); 
+			Component lastComponent = towingLabelPanel.getComponent(1);
 			if (lastComponent == towingButton) {
 				towingLabelPanel.remove(towingButton);
 				towingLabelPanel.add(towingTextLabel);
@@ -168,7 +169,7 @@ extends TabPanel {
 	 */
 	private void addTowedTextLabel() {
 		try {
-			Component lastComponent = towedLabelPanel.getComponent(1); 
+			Component lastComponent = towedLabelPanel.getComponent(1);
 			if (lastComponent == towedButton) {
 				towedLabelPanel.remove(towedButton);
 				towedLabelPanel.add(towedTextLabel);

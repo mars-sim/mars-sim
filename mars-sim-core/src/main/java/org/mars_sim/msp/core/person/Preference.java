@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.DigLocalRegolithMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.EatMealMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.InviteStudyCollaboratorMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.ListenToMusicMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleEVAMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.LoadVehicleGarageMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.MaintenanceEVAMeta;
@@ -56,6 +57,7 @@ import org.mars_sim.msp.core.person.ai.task.meta.PeerReviewStudyPaperMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryExperimentMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformLaboratoryResearchMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PerformMathematicalModelingMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.PlayHoloGameMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.PrepareDessertMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ProduceFoodMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.ProposeScientificStudyMeta;
@@ -233,7 +235,9 @@ public class Preference implements Serializable {
 				result -= (int)se;
 
 			if (metaTask instanceof RelaxMeta
+				|| metaTask instanceof PlayHoloGameMeta
 				|| metaTask instanceof SleepMeta
+				|| metaTask instanceof ListenToMusicMeta
 				|| metaTask instanceof WorkoutMeta
 				|| metaTask instanceof YogaMeta
 				|| metaTask instanceof HaveConversationMeta)
@@ -246,6 +250,7 @@ public class Preference implements Serializable {
 				result += (int)ca;
 
 			if (metaTask instanceof WorkoutMeta
+				|| metaTask instanceof PlayHoloGameMeta
 				|| metaTask instanceof YogaMeta)
 				result +=(int)ag;
 

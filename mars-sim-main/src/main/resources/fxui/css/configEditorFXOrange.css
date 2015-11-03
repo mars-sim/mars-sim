@@ -1,0 +1,150 @@
+/**
+ * Mars Simulation Project
+ * configEditorFXOrange.css
+ * @version 3.08 2015-11-02
+ * @author Manny Kung
+ */
+
+/* The Stage background. */
+.decoration-background{
+	-fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 25% 25%, radius 50%, reflect, #eeeeee88, #aaaaaa88 75%, gray);
+	-fx-stroke-width: 0;
+	-fx-arc-width:20px;
+	-fx-arc-height:20px;
+}
+
+/* Defines the rectangle responsible for the shadow */
+.decoration-shadow{
+	-fx-fill: black;
+	-fx-stroke-width: 0;
+	-fx-arc-width:20px;
+	-fx-arc-height:20px;
+}
+
+#startButton {
+	-fx-background-color:
+	 	linear-gradient(from 0% 93% to 0% 100%, #d16700 0%, #ff8861 100%),
+        #d16700,
+        #9c4d00,
+        radial-gradient(center 50% 50%, radius 100%, #9c4d00, #ff8861);
+	-fx-font-size: 15.0px;
+	-fx-base: #D42D00;
+	-fx-background: #ff5108;
+	-fx-control-inner-background: #FFFFFF;
+	-fx-text-base-color: #FFFFFF;
+	-fx-inner-border: linear-gradient(to bottom, derive(-fx-color,73.6%) 0%, derive(-fx-color,29.200000000000003%) 100%);
+	-fx-body-color: linear-gradient( to bottom, derive(-fx-color, 34.0%) 0%, derive(-fx-color, -18.0%) 100%);
+	-fx-background-insets: 0px;
+	-fx-background-radius: 0px;
+	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
+	-fx-text-fill: -fx-text-base-color;
+	-fx-alignment: CENTER;
+	-fx-content-display: LEFT;
+	-fx-background-radius: 5;
+    -fx-stroke-width: 2;
+    -fx-font-weight: bold;
+
+  /*
+    -fx-padding: 5 15 5 15;
+	-fx-font-size: 15.0px;
+	-fx-base: #D42D00;
+	-fx-background: #EFA447
+	-fx-focus-color: #ff6c00;
+	-fx-control-inner-background: #FFFFFF;
+	-fx-text-base-color: #FFFFFF;
+	-fx-background-color: #EFA447
+    -fx-background-insets: -1.4, 0, 1, 2;
+    -fx-color:#D42D00;
+	-fx-background-radius: 5;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); */
+
+}
+
+#startButton Text {
+    -fx-fill: orange;
+    -fx-effect: dropshadow( gaussian , #a30000 , 0,0,0,2 );
+}
+
+#startButton:hover {
+	-fx-color:#D42D00;
+	-fx-background-color: #ff3c08; /* #D42D00 red orange, #EFA447 mud orange */
+/*	-fx-font-size: 16.0px;
+	-fx-focus-color: #ff3c08;
+	-fx-stroke-width: 5;
+	-fx-background-color: #ff8000; */
+}
+
+#startButton:focused {
+	-fx-color:#D42D00;
+	-fx-background-color: #ff3c08; /* #D42D00 red orange, #EFA447 mud orange */
+}
+
+.button {
+	-fx-background-color:
+	 	linear-gradient(from 0% 93% to 0% 100%, #d16700 0%, #ff8861 100%),
+        #d16700,
+        #9c4d00,
+        radial-gradient(center 50% 50%, radius 100%, #9c4d00, #ff8861);
+	-fx-font-size: 15.0px;
+	-fx-base: #D42D00;
+	-fx-background: #ff5108;
+	-fx-control-inner-background: #FFFFFF;
+	-fx-text-base-color: #FFFFFF;
+	-fx-inner-border: linear-gradient(to bottom, derive(-fx-color,73.6%) 0%, derive(-fx-color,29.200000000000003%) 100%);
+	-fx-body-color: linear-gradient( to bottom, derive(-fx-color, 34.0%) 0%, derive(-fx-color, -18.0%) 100%);
+	-fx-background-insets: 0px;
+	-fx-background-radius: 0px;
+	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
+	-fx-text-fill: -fx-text-base-color;
+	-fx-alignment: CENTER;
+	-fx-content-display: LEFT;
+	-fx-background-radius: 5;
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+/*	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0); */
+
+}
+
+.button:focused {
+	-fx-focus-color: #ff3c08;
+	-fx-stroke-width: 5;
+	-fx-background-color: #ff8000;
+}
+
+.button:hover {
+	-fx-focus-color: #ff3c08;
+	-fx-stroke-width: 5;
+	-fx-background-color: #ff8000;
+}
+
+.button:pressed {
+/*
+    -fx-padding: 15 5 15 5;
+    -fx-background-insets: 2 0 0 0,2 0 1 0, 2 0 2 0, 2 0 3 0;
+*/
+}
+
+#clientIDLabel {
+	-fx-text-fill: #d16700;
+	-fx-text-base-color: #d16700;
+		-fx-font-size: 15.0px;
+}
+
+#playerLabel{
+	-fx-text-fill: #d16700;
+	-fx-stroke-width: 3;
+	-fx-font-size: 15.0px;
+}
+
+#gameModeLabel {
+	-fx-text-fill: #d16700;
+	-fx-stroke-width: 3;
+	-fx-font-size: 15.0px;
+}
+
+#titleLabel {
+	-fx-text-fill: #d16700;
+	-fx-stroke-width: 3;
+	-fx-font-size: 15.0px;
+}
+

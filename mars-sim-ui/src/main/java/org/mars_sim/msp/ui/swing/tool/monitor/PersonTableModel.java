@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.Role;
 import org.mars_sim.msp.core.person.RoleType;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
@@ -66,27 +67,29 @@ extends UnitTableModel {
 	private final static int ROLE = 2;
 	/** Job column. */
 	private final static int JOB = 3;
+	/** Shift column. */
+	private final static int SHIFT = 4;
 	/** Task column. */
-	private final static int TASK = 4;
+	private final static int TASK = 5;
 	/** Mission column. */
-	private final static int MISSION = 5;
+	private final static int MISSION = 6;
 	/** Gender column. */
-	private final static int GENDER = 6;
+	private final static int GENDER = 7;
 	/** Personality column. */
-	private final static int PERSONALITY = 7;
+	private final static int PERSONALITY = 8;
 	/** Health column. */
-	private final static int HEALTH = 8;
+	private final static int HEALTH = 9;
 	/** Hunger column. */
-	private final static int HUNGER = 9;
+	private final static int HUNGER = 10;
 	/** Fatigue column. */
-	private final static int FATIGUE = 10;
+	private final static int FATIGUE = 11;
 	/** Stress column. */
-	private final static int STRESS = 11;
+	private final static int STRESS = 12;
 	/** Performance column. */
-	private final static int PERFORMANCE = 12;
+	private final static int PERFORMANCE = 13;
 
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 13;
+	private final static int COLUMNCOUNT = 14;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of Columns. */
@@ -120,6 +123,8 @@ extends UnitTableModel {
 		columnTypes[ROLE] = String.class;
 		columnNames[JOB] = Msg.getString("PersonTableModel.column.job"); //$NON-NLS-1$
 		columnTypes[JOB] = String.class;
+		columnNames[SHIFT] = Msg.getString("PersonTableModel.column.shift"); //$NON-NLS-1$
+		columnTypes[SHIFT] = String.class;
 		columnNames[MISSION] = Msg.getString("PersonTableModel.column.mission"); //$NON-NLS-1$
 		columnTypes[MISSION] = String.class;
 		columnNames[TASK] = Msg.getString("PersonTableModel.column.task"); //$NON-NLS-1$
@@ -482,6 +487,17 @@ extends UnitTableModel {
 				}
 			} break;
 
+			case SHIFT : {
+				// If person is dead, disable it.
+				if (person.getPhysicalCondition().isDead())
+					result = ShiftType.OFF; //person.getPhysicalCondition().getDeathDetails().getJob();
+				else {
+					ShiftType shift = person.getTaskSchedule().getShiftType();
+					if (shift != null) result = shift;
+					else result = null;
+				}
+			} break;
+
 			case TASK : {
 				// If the Person is dead, there is no Task Manager
 				TaskManager mgr = person.getMind().getTaskManager();
@@ -629,6 +645,7 @@ extends UnitTableModel {
 			m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
 			m.put(UnitEventType.JOB_EVENT, JOB);
 			m.put(UnitEventType.ROLE_EVENT, ROLE);
+			m.put(UnitEventType.SHIFT_EVENT, SHIFT);
 			m.put(UnitEventType.TASK_EVENT, TASK);
 			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
 			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
@@ -680,9 +697,35 @@ extends UnitTableModel {
 				if (event.getTarget() instanceof Person) {
 					Unit unit = (Unit) event.getTarget();
 					String personName  = unit.getName();
-					String announcement = personName + " got sick. ";
+					String announcement = personName + " got sick.";
 					//desktop.disposeMarqueeBanner();
 					//desktop.openMarqueeBanner(announcement);
+					System.out.println(announcement);
+				}
+			}
+			else if (eventType == UnitEventType.JOB_EVENT) {
+				if (event.getTarget() instanceof Person) {
+					Unit unit = (Unit) event.getTarget();
+					String personName  = unit.getName();
+					String announcement = personName + " just got a new job.";
+					//desktop.disposeMarqueeBanner();
+					//desktop.openMarqueeBanner(announcement);
+					System.out.println(announcement);
+				}
+			}
+			else if (eventType == UnitEventType.ROLE_EVENT) {
+				if (event.getTarget() instanceof Person) {
+					Unit unit = (Unit) event.getTarget();
+					String personName  = unit.getName();
+					String announcement = personName + " just got a new role type.";
+					System.out.println(announcement);
+				}
+			}
+			else if (eventType == UnitEventType.SHIFT_EVENT) {
+				if (event.getTarget() instanceof Person) {
+					Unit unit = (Unit) event.getTarget();
+					String personName  = unit.getName();
+					String announcement = personName + " was just assigned a new work shift.";
 					System.out.println(announcement);
 				}
 			}

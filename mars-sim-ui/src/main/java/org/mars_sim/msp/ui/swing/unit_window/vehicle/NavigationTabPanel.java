@@ -35,16 +35,16 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** 
+/**
  * The NavigationTabPanel is a tab panel for a vehicle's navigation information.
  */
 public class NavigationTabPanel extends TabPanel implements ActionListener {
-    
-    private static String CLASS_NAME = 
+
+    private static String CLASS_NAME =
 	"org.mars_sim.msp.ui.standard.unit_window.vehicle.NavigationTabPanel";
-	
+
     private static Logger logger = Logger.getLogger(CLASS_NAME);
-    
+
     private DecimalFormat formatter = new DecimalFormat("0.0");
     private JButton driverButton;
     private JLabel statusLabel;
@@ -61,7 +61,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private JLabel etaLabel;
     private DirectionDisplayPanel directionDisplay;
     private TerrainDisplayPanel terrainDisplay;
-    
+
     // Data cache
     private VehicleOperator driverCache;
     private String statusCache;
@@ -73,42 +73,44 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
     private Coordinates destinationLocationCache;
     private String etaCache;
     private double distanceCache;
-    
+
     /**
      * Constructor
      *
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public NavigationTabPanel(Unit unit, MainDesktopPane desktop) { 
+    public NavigationTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
         super("Navigation", null, "Navigation", unit, desktop);
-        
+
 		// Create towing label.
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JLabel titleLabel = new JLabel(Msg.getString("NavigationTabPanel.title"), JLabel.CENTER); //$NON-NLS-1$
 		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
-		topContentPanel.add(titleLabel);
-        
+		panel.add(titleLabel);
+		topContentPanel.add(panel);
+
         Vehicle vehicle = (Vehicle) unit;
-        
+
         // Prepare main panel
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
         topContentPanel.add(mainPanel);
-        
+
         // Prepare top info panel
         JPanel topInfoPanel = new JPanel(new BorderLayout(0, 0));
         topInfoPanel.setBorder(new MarsPanelBorder());
         mainPanel.add(topInfoPanel, BorderLayout.NORTH);
-        
+
         // Prepare driver panel
         JPanel driverPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         topInfoPanel.add(driverPanel, BorderLayout.NORTH);
-            
+
         // Prepare driver label
         JLabel driverLabel = new JLabel("Driver: ", JLabel.LEFT);
         driverLabel.setBorder(new EmptyBorder(5, 0, 5, 0));
         driverPanel.add(driverLabel);
-            
+
         // Prepare driver button and add it if vehicle has driver.
         driverCache = vehicle.getOperator();
         driverButton = new JButton();
@@ -119,16 +121,16 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             driverButton.setVisible(true);
         }
         driverPanel.add(driverButton);
-        
+
         // Prepare info label panel
         JPanel infoLabelPanel = new JPanel(new GridLayout(3, 1, 0, 0));
         topInfoPanel.add(infoLabelPanel, BorderLayout.CENTER);
-        
+
         // Prepare status label
         statusCache = vehicle.getStatus();
         statusLabel = new JLabel("Status: " + statusCache, JLabel.LEFT);
         infoLabelPanel.add(statusLabel);
-        
+
         // Prepare beacon label
         beaconCache = vehicle.isEmergencyBeacon();
         String beaconString;
@@ -136,52 +138,52 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         else beaconString = "off";
         beaconLabel = new JLabel("Emergency Beacon: " + beaconString, JLabel.LEFT);
         infoLabelPanel.add(beaconLabel);
-        
+
         // Prepare speed label
         speedCache = vehicle.getSpeed();
         speedLabel = new JLabel("Speed: " + formatter.format(speedCache) + " km/h", JLabel.LEFT);
         infoLabelPanel.add(speedLabel);
-        
+
         // Prepare elevation label if ground vehicle
         if (vehicle instanceof GroundVehicle) {
             GroundVehicle gVehicle = (GroundVehicle) vehicle;
             elevationCache = gVehicle.getElevation();
-            elevationLabel = new JLabel("Elevation: " + formatter.format(elevationCache) + 
+            elevationLabel = new JLabel("Elevation: " + formatter.format(elevationCache) +
                 " km.", JLabel.LEFT);
             topInfoPanel.add(elevationLabel, BorderLayout.SOUTH);
         }
-        
+
         // Prepare destination info panel
         JPanel destinationInfoPanel = new JPanel(new BorderLayout(0, 0));
         destinationInfoPanel.setBorder(new MarsPanelBorder());
         mainPanel.add(destinationInfoPanel, BorderLayout.CENTER);
-        
+
         // Prepare destination label panel
         destinationLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         destinationInfoPanel.add(destinationLabelPanel, BorderLayout.NORTH);
-        
+
         // Prepare center map button
         centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
         centerMapButton.setToolTipText("Locate in Mars Navigator");
         destinationLabelPanel.add(centerMapButton);
-        
+
         // Prepare destination label
         JLabel destinationLabel = new JLabel("Destination: ", JLabel.LEFT);
         destinationLabelPanel.add(destinationLabel);
-        
+
         // Prepare destination button
         destinationButton = new JButton();
         destinationButton.addActionListener(this);
-        
+
         // Prepare destination text label
         destinationTextLabel = new JLabel("", JLabel.LEFT);
-        
+
         boolean hasDestination = false;
         Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
         if ((mission != null) && (mission instanceof VehicleMission)) {
-            
+
             VehicleMission vehicleMission = (VehicleMission) mission;
             if (vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
                 hasDestination = true;
@@ -207,27 +209,27 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             destinationTextLabel.setText(destinationTextCache);
             destinationLabelPanel.add(destinationTextLabel);
         }
-        
+
         // Prepare destination info label panel.
         JPanel destinationInfoLabelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
         destinationInfoPanel.add(destinationInfoLabelPanel, BorderLayout.CENTER);
-        
+
         // Prepare destination latitude label.
         String latitudeString = "";
-        if (destinationLocationCache != null) latitudeString = 
+        if (destinationLocationCache != null) latitudeString =
             destinationLocationCache.getFormattedLatitudeString();
         destinationLatitudeLabel = new JLabel("Latitude: " + latitudeString, JLabel.LEFT);
         destinationInfoLabelPanel.add(destinationLatitudeLabel);
 
         // Prepare destination longitude label.
         String longitudeString = "";
-        if (destinationLocationCache != null) longitudeString = 
+        if (destinationLocationCache != null) longitudeString =
             destinationLocationCache.getFormattedLongitudeString();
         destinationLongitudeLabel = new JLabel("Longitude: " + longitudeString, JLabel.LEFT);
         destinationInfoLabelPanel.add(destinationLongitudeLabel);
-        
+
         // Prepare distance label.
-        if ((mission != null) && (mission instanceof VehicleMission) && 
+        if ((mission != null) && (mission instanceof VehicleMission) &&
                 ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
         	try {
         		distanceCache = ((VehicleMission) mission).getCurrentLegRemainingDistance();
@@ -243,30 +245,30 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	distanceLabel = new JLabel("Distance: ", JLabel.LEFT);
         }
         destinationInfoLabelPanel.add(distanceLabel);
-        
+
         // Prepare ETA label.
-        if ((mission != null) && (mission instanceof VehicleMission) && 
+        if ((mission != null) && (mission instanceof VehicleMission) &&
                 (((VehicleMission) mission).getLegETA() != null)) {
             etaCache = ((VehicleMission) mission).getLegETA().toString();
         }
         else etaCache = "";
         etaLabel = new JLabel("ETA: " + etaCache, JLabel.LEFT);
         destinationInfoLabelPanel.add(etaLabel);
-        
+
         // Prepare graphic display panel
         JPanel graphicDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         graphicDisplayPanel.setBorder(new MarsPanelBorder());
         mainPanel.add(graphicDisplayPanel, BorderLayout.SOUTH);
-        
+
         // Prepare direction display panel
         JPanel directionDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         directionDisplayPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
         graphicDisplayPanel.add(directionDisplayPanel);
-        
+
         // Prepare direction display
-        directionDisplay = new DirectionDisplayPanel(vehicle); 
+        directionDisplay = new DirectionDisplayPanel(vehicle);
         directionDisplayPanel.add(directionDisplay);
-        
+
         // If vehicle is a ground vehicle, prepare terrain display.
         if (vehicle instanceof GroundVehicle) {
             JPanel terrainDisplayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -276,14 +278,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             terrainDisplayPanel.add(terrainDisplay);
         }
     }
-    
+
     /**
      * Updates the info on this panel.
      */
     public void update() {
-        
+
         Vehicle vehicle = (Vehicle) unit;
-        
+
         // Update driver button if necessary.
         boolean driverChange = false;
         if (driverCache == null) {
@@ -300,26 +302,26 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 driverButton.setText(driverCache.getOperatorName());
             }
         }
-        
+
         // Update status label
         if (!statusCache.equals(vehicle.getStatus())) {
             statusCache = vehicle.getStatus();
             statusLabel.setText("Status: " + statusCache);
         }
-        
+
         // Update beacon label
         if (beaconCache != vehicle.isEmergencyBeacon()) {
         	beaconCache = vehicle.isEmergencyBeacon();
         	if (beaconCache) beaconLabel.setText("Emergency Beacon: on");
         	else beaconLabel.setText("Emergency Beacon: off");
         }
-        
+
         // Update speed label
         if (speedCache != vehicle.getSpeed()) {
             speedCache = vehicle.getSpeed();
             speedLabel.setText("Speed: " + formatter.format(speedCache) + " km/h");
         }
-        
+
         // Update elevation label if ground vehicle.
         if (vehicle instanceof GroundVehicle) {
             GroundVehicle gVehicle = (GroundVehicle) vehicle;
@@ -329,9 +331,9 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 elevationLabel.setText("Elevation: " + formatter.format(elevationCache) + " km.");
             }
         }
-        
+
         Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-        if ((mission != null) && (mission instanceof VehicleMission) 
+        if ((mission != null) && (mission instanceof VehicleMission)
                 && ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
         	NavPoint destinationPoint = ((VehicleMission) mission).getNextNavpoint();
         	if (destinationPoint.isSettlementAtNavpoint()) {
@@ -362,17 +364,17 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         		destinationSettlementCache = null;
         	}
         }
-        
+
         // Update latitude and longitude panels if necessary.
-        if ((mission != null) && (mission instanceof VehicleMission) 
+        if ((mission != null) && (mission instanceof VehicleMission)
                 && ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
-        	if (destinationLocationCache == null) 
+        	if (destinationLocationCache == null)
         		destinationLocationCache = new Coordinates(vehicleMission.getNextNavpoint().getLocation());
         	else destinationLocationCache.setCoords(vehicleMission.getNextNavpoint().getLocation());
-            destinationLatitudeLabel.setText("Latitude: " + 
+            destinationLatitudeLabel.setText("Latitude: " +
                     destinationLocationCache.getFormattedLatitudeString());
-            destinationLongitudeLabel.setText("Longitude: " + 
+            destinationLongitudeLabel.setText("Longitude: " +
                     destinationLocationCache.getFormattedLongitudeString());
         }
         else {
@@ -382,7 +384,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
                 destinationLongitudeLabel.setText("Longitude: ");
         	}
         }
-        
+
         // Update distance to destination if necessary.
         if ((mission != null) && (mission instanceof VehicleMission)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
@@ -401,7 +403,7 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	distanceCache = 0D;
         	distanceLabel.setText("Distance:");
         }
-        
+
         // Update ETA if necessary
         if ((mission != null) && (mission instanceof VehicleMission)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
@@ -416,14 +418,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         	etaCache = "";
         	etaLabel.setText("ETA: ");
         }
-        
+
         // Update direction display
         directionDisplay.update();
-        
+
         // Update terrain display
         terrainDisplay.update();
     }
-    
+
     /**
      * Adds a destination button if it isn't there and removes the destination text label.
      */
@@ -439,13 +441,13 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             destinationLabelPanel.add(destinationButton);
         }
     }
-    
+
     /**
      * Adds a destination text label if it isn't there and removes the destination button.
      */
     private void addDestinationTextLabel() {
         try {
-            Component lastComponent = destinationLabelPanel.getComponent(2); 
+            Component lastComponent = destinationLabelPanel.getComponent(2);
             if (lastComponent == destinationButton) {
                 destinationLabelPanel.remove(destinationButton);
                 destinationLabelPanel.add(destinationTextLabel);
@@ -455,25 +457,25 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             destinationLabelPanel.add(destinationTextLabel);
         }
     }
-    
-    /** 
+
+    /**
      * Action event occurs.
      *
      * @param event the action event
      */
     public void actionPerformed(ActionEvent event) {
         JComponent source = (JComponent) event.getSource();
-        
+
         // If center map button is pressed, center navigator tool
         // at destination location.
         if (source == centerMapButton) {
-        	if (destinationLocationCache != null) 
+        	if (destinationLocationCache != null)
         		desktop.centerMapGlobe(destinationLocationCache);
         }
-        
+
         // If destination settlement button is pressed, open window for settlement.
         if (source == destinationButton) desktop.openUnitWindow(destinationSettlementCache, false);
-        
+
         // If driver button is pressed, open window for driver.
         if (source == driverButton) desktop.openUnitWindow((Unit) driverCache, false);
     }

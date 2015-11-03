@@ -67,7 +67,7 @@ extends TabPanel
 implements ActionListener {
 
 	private static Logger logger = Logger.getLogger(TabPanelCareer.class.getName());
-	
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	private static final int RATING_DAYS = 7;
@@ -95,7 +95,7 @@ implements ActionListener {
 	private MarsClock clock;
 
 	private BalloonToolTip balloonToolTip = new BalloonToolTip();
-	
+
 	/**
 	 * Constructor.
 	 * @param unit {@link Unit} the unit to display.
@@ -113,7 +113,7 @@ implements ActionListener {
 		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 		clock = Simulation.instance().getMasterClock().getMarsClock();
 		//int solElapsed = MarsClock.getSolOfYear(clock);
-		
+
 	    Person person = null;
 	    Robot robot = null;
 		Mind mind = null;
@@ -147,23 +147,23 @@ implements ActionListener {
 	    	person = (Person) unit;
 
     		solCache = person.getJobHistory().getSolCache();
-    		
+
     		JPanel firstPanel = new JPanel(new GridLayout(2, 1, 5, 0));
 			topContentPanel.add(firstPanel, BorderLayout.NORTH);
-			
+
 			// Prepare job panel
 			JPanel topPanel = new JPanel(new GridLayout(2, 2, 0, 0));
 			topPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			topPanel.setBorder(new MarsPanelBorder());
 			firstPanel.add(topPanel);
-			
+
 			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new GridLayout(3, 1, 0, 0)); //
 			topPanel.add(jobPanel);
 
 			// Prepare job label
 			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.CENTER); //$NON-NLS-1$
 			jobPanel.add(jobLabel);
-			balloonToolTip.createBalloonTip(jobLabel, "<html>A person's current job type</html>"); //$NON-NLS-1$
+			balloonToolTip.createBalloonTip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
 
 
 			// Prepare job combo box
@@ -178,11 +178,13 @@ implements ActionListener {
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
 			jobPanel.add(jobComboBox);
-  
+			balloonToolTip.createBalloonTip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip")); //$NON-NLS-1$
+
+
 			// check if a job reassignment is still pending for review
 			// if true, disable the combobox
-			
-					
+
+
 			// Prepare role panel
 			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //GridLayout(1, 2));
 			//rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -191,7 +193,6 @@ implements ActionListener {
 			// Prepare role label
 			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"));//, JLabel.RIGHT); //$NON-NLS-1$
 			roleLabel.setSize(10, 2);
-			balloonToolTip.createBalloonTip(roleLabel, "<html>A person's role type is automatically determined <br> by comparing  one's skills and talents against one another</html>"); //$NON-NLS-1$
 			rolePanel.add(roleLabel);//, JLabel.BOTTOM);
 
 			roleCache = person.getRole().toString();
@@ -201,31 +202,35 @@ implements ActionListener {
 			roleTF.setColumns(13);
 			rolePanel.add(roleTF);
 
+			String roleTip = Msg.getString("TabPanelCareer.roleType.tooltip"); //$NON-NLS-1$
+			balloonToolTip.createBalloonTip(roleLabel, roleTip);
+			balloonToolTip.createBalloonTip(roleTF, roleTip);
+
 			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 			int size = list.size();
-			
+
 			JPanel ratingPanel = new JPanel(new GridLayout(2,1,5,5));// GridLayout(1, 2, 0, 0));
 			ratingPanel.setBorder(new MarsPanelBorder());
-			
+
 			JPanel aveRatingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));// GridLayout(1, 2, 0, 0));
 			aveRatingPanel.setAlignmentY(BOTTOM_ALIGNMENT);
 			//aveRatingPanel.setBorder(new MarsPanelBorder());
 			//JPanel rPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			JLabel aveRatingLabel = new JLabel("Overall Performance : ");//, JLabel.CENTER);
 			aveRatingPanel.add(aveRatingLabel);
-				
+
 			aveRater = new StarRater(5, calculateAveRating(list));
 			aveRater.setEnabled(false);
 
-			String tip = "<html>The overall performance rating on a person's <br> job/role since the landing</html>";
+			String tip = Msg.getString("TabPanelCareer.aveRater.tooltip");
 			balloonToolTip.createBalloonTip(aveRatingLabel, tip); //$NON-NLS-1$
 			balloonToolTip.createBalloonTip(aveRater, tip); //$NON-NLS-1$
-	        
+
 			aveRatingPanel.add(aveRater);
 			ratingPanel.add(aveRatingPanel);
 			firstPanel.add(ratingPanel);
 
-			
+
 			JPanel raterPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));// GridLayout(1, 2, 0, 0));
 			raterPanel.setAlignmentY(TOP_ALIGNMENT);
 			//raterPanel.setBorder(new MarsPanelBorder());
@@ -233,12 +238,11 @@ implements ActionListener {
 			raterPanel.add(raterLabel);
 			starRater = new StarRater(5, 0, 0);
 			//starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
-			balloonToolTip.createBalloonTip(raterLabel, "<html>A person's rating affects <br> one's career promotion and recognition</html>"); //$NON-NLS-1$
-			balloonToolTip.createBalloonTip(starRater, "<html>Click to submit one rating for each 7 sols <br> except when starting a new job</html>"); //$NON-NLS-1$
-    		
+			balloonToolTip.createBalloonTip(raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip")); //$NON-NLS-1$
+			balloonToolTip.createBalloonTip(starRater, Msg.getString("TabPanelCareer.starRater.tooltip")); //$NON-NLS-1$
+
 	        starRater.addStarListener(
 	            new StarRater.StarListener()   {
-	                @SuppressWarnings("deprecation")
 					public void handleSelection(int selection) {
 	                	if (starRater.isEnabled()) {
 		                    //System.out.println(selection);
@@ -248,12 +252,12 @@ implements ActionListener {
 		                	ratingLabel.setText("Job rating submitted on " + dateTimeRatingSubmitted);
 		                	ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			        		starRater.setRating(selection);
-			        		
+
 			        		int size = list.size();
-			        		// check if a new job reassignment has just been submitted 
+			        		// check if a new job reassignment has just been submitted
 			        		if (list.get(size-1).getStatus().equals(JobAssignmentType.PENDING)) {
 			        			list.get(size-2).setJobRating(selection);
-			        			list.get(size-2).setSolRatingSubmitted(sol);		        			
+			        			list.get(size-2).setSolRatingSubmitted(sol);
 			        		}
 			        		else {
 			        			list.get(size-1).setJobRating(selection);
@@ -262,7 +266,7 @@ implements ActionListener {
 			        		solRatingSubmitted = sol;
 			    			//starRater.setSelection(0);
 			        		starRater.setEnabled(false);//disable();
-				   
+
 			        		aveRater.setRating(calculateAveRating(list));
 	                	}
 	                }
@@ -270,7 +274,7 @@ implements ActionListener {
 
 	        raterPanel.add(starRater);
 			ratingPanel.add(raterPanel);
-			
+
 			JPanel midPanel = new JPanel(new GridLayout(2, 1, 0, 0));
 			topContentPanel.add(midPanel, BorderLayout.CENTER);
 
@@ -288,10 +292,10 @@ implements ActionListener {
 
 			// 2015-10-30 Added checking if user already submitted rating or submitted a job reassignment that's still not being reviewed
 			checkingJobRating(list);
-			// 2015-10-30 Added checking for the status of Job Reassignment	
+			// 2015-10-30 Added checking for the status of Job Reassignment
 			checkingJobReassignment(person, list);
 		}
-		
+
 
 		else if (unit instanceof Robot) {
 			/*
@@ -366,14 +370,14 @@ implements ActionListener {
 
     	if (solRatingSubmitted == -1) {
     		// the TabPanelCareer was closed and retrieve the saved value of solRatingSubmitted from JobAssignment
-        	if (list.get(size-1).getStatus().equals(JobAssignmentType.PENDING)) {	
+        	if (list.get(size-1).getStatus().equals(JobAssignmentType.PENDING)) {
         		solRatingSubmitted = list.get(size-2).getSolRatingSubmitted();
             	//System.out.println("Yes Pending, solRatingSubmitted is "+ solRatingSubmitted);
         	}
     		else {
-    			solRatingSubmitted = list.get(size-1).getSolRatingSubmitted();	    	
+    			solRatingSubmitted = list.get(size-1).getSolRatingSubmitted();
     	    	//System.out.println("Nothing Pending. solRatingSubmitted is "+ solRatingSubmitted);
-    		}		        		
+    		}
     	}
 
     	if (solRatingSubmitted == -1) {
@@ -392,13 +396,13 @@ implements ActionListener {
         		starRater.setSelection(0);
             	starRater.setEnabled(false);
             	if (dateTimeRatingSubmitted != null)
-                	ratingLabel.setText("Job rating last submitted on " + dateTimeRatingSubmitted);        	
+                	ratingLabel.setText("Job rating last submitted on " + dateTimeRatingSubmitted);
             	else
             		ratingLabel.setText("Job rating last submitted on Sol " + solRatingSubmitted);
         	}
     	}
 	}
-	
+
 	/*
 	 * Calculate the cumulative career performance score of a person
 	 */
@@ -411,14 +415,14 @@ implements ActionListener {
 		score = score/size; // divided by 2 because job rating in JobAssignment is from 0 to 10
 		return (int)score;
 	}
-	
-	/* 
-	 * Checks for the status of Job Reassignment	
+
+	/*
+	 * Checks for the status of Job Reassignment
 	 */
 	public void checkingJobReassignment(Person person, List<JobAssignment> list) {
 
         int pop = 0;
-        
+
         Settlement settlement = null;
         if (person.getAssociatedSettlement() != null)
         	settlement = person.getAssociatedSettlement();
@@ -446,7 +450,7 @@ implements ActionListener {
 	        	jobComboBox.setEnabled(false);
 	        	//jobComboBox.setSelectedItem(jobCache);
 				jobChangeLabel.setForeground(Color.blue);
-	        	jobChangeLabel.setText("Job reassignment submitted on " + list.get(last).getTimeSubmitted());        	
+	        	jobChangeLabel.setText("Job reassignment submitted on " + list.get(last).getTimeSubmitted());
         	}
 
         	// detects a change of status from pending to approved
@@ -455,7 +459,7 @@ implements ActionListener {
 			    	//System.out.println("\n< " + person.getName() + " > ");
 	        		statusCache = JobAssignmentType.APPROVED;
 		        	logger.info(person.getName() + "'s job reassignment has been reviewed and approved. Set status from 'Pending' to 'Approved'");
-	        	
+
 		        	String selectedJobStr = list.get(last).getJobType();
 		        	jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job reassignment will be submitted in
 				    jobComboBox.setSelectedItem(selectedJobStr);
@@ -466,10 +470,10 @@ implements ActionListener {
 
 			        	//solCache = solElapsed;
 			    		//person.getJobHistory().setSolCache(solCache);
-			    		
+
 			        	jobComboBox.setEnabled(true);
 			        	jobChangeLabel.setText("");
-			        	
+
 			        	// TODO: determine if new rating submission should be allowed immediately at the beginning of a new assignment
 			        	solRatingSubmitted = -1;
 			        	starRater.setSelection(0);
@@ -538,21 +542,21 @@ implements ActionListener {
 		        int solElapsed = MarsClock.getSolOfYear(clock);
 
 	        	List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
-	        	
-		        //System.out.println("solCache is " + solCache);		      
-		        
+
+		        //System.out.println("solCache is " + solCache);
+
 				// 2015-10-30 Added checking if user already submitted rating or submitted a job reassignment that's still not being reviewed
 				checkingJobRating(list);
-				
-				// 2015-10-30 Added checking for the status of Job Reassignment	
+
+				// 2015-10-30 Added checking for the status of Job Reassignment
 				checkingJobReassignment(person, list);
-		        
+
 	        	// If the rating or job reassignment request is at least one day ago
 		        if (solElapsed != solCache) {
 
 		        	solCache = solElapsed;
 		    		person.getJobHistory().setSolCache(solCache);
-		    			        	
+
 
 
 		        } // end of if (solElapsed != solCache)
@@ -627,7 +631,7 @@ implements ActionListener {
 			        	jobChangeLabel.setText("Job reassignment submitted on " + MarsClock.getDateTimeStamp(clock));
 
 			        	JobHistory jh = person.getJobHistory();
-			        	
+
 			        	statusCache = JobAssignmentType.PENDING;
 			        	//System.out.println("TabPanelCareer : actionPerformed() : calling savePendingJob()");
 			        	jh.savePendingJob(selectedJobStr, JobManager.USER, statusCache, null, true);
@@ -646,7 +650,7 @@ implements ActionListener {
 					    jobComboBox.setSelectedItem(selectedJobStr);
 					    statusCache = JobAssignmentType.APPROVED;
 						person.getMind().reassignJob(selectedJobStr, true, JobManager.USER, statusCache, JobManager.USER);
-						
+
 						// updates the jobHistoryList in jobHistoryTableModel
 						jobHistoryTableModel.update();
 						//System.out.println("Yes they are diff");
@@ -768,8 +772,8 @@ implements ActionListener {
 		}
 
 	}
-	
-	
+
+
 	public void destroy() {
 		table =  null;
 		jobLabel = null;

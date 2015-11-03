@@ -15,7 +15,7 @@
 
 <VBox maxHeight="400" maxWidth="1024" minHeight="400.0" minWidth="1024.0" pickOnBounds="true" prefHeight="400.0" prefWidth="1024.0"
 styleClass="clientarea-background"
-stylesheets="../css/configEditor.css"
+stylesheets="../css/configEditorFXOrange.css"
 xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
   <children>
    <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="20.0" prefWidth="1024.0" style="-fx-background-color: transparent;" visible="false">

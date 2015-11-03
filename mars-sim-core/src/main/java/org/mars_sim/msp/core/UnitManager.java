@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.RoleType;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -789,152 +790,6 @@ public class UnitManager implements Serializable {
 		}
 	}
 
-	/*
-	 * Determines the number of shifts for a settlement and assigns a work shift for each person
-	 * @param settlement
-	 * @param pop population
-	 */
-	// 2015-07-02 Added setupShift()
-	public void setupShift(Settlement settlement, int pop) {
-
-		int numShift = 0;
-		String shiftType = null;
-		int numA = 0, numX = 0, numY = 0;
-
-		if (pop == 1) {
-			numShift = 1;
-		}
-		else if (pop < THREE_SHIFTS_MIN_POPULATION) {
-			numShift = 2;
-		}
-		else {//if pop > 6
-			numShift = 3;
-		}
-
-		settlement.setNumShift(numShift);
-
-		Collection<Person> people = settlement.getAllAssociatedPeople();
-
-		for (Person p : people) {
-
-		switch (numShift) {
-
-			case 1 : //(numShift == 1)
-				shiftType = "NONE";
-				break;
-
-			case 2 : //else if (numShift == 2) {
-
-				switch (pop%numShift) {
-
-					case 0 : //if (pop%numShift == 0) {
-						if (pop/numShift == 1) {
-							if (numA < 1) { // allow only 1 person with "A shift"
-								shiftType = "A";
-								numA++;
-							}
-							else
-								shiftType = "B";
-						}
-
-						else { // if (pop/numShift == 2) {
-							if (numA < 2) { // allow 2 persons with "A shift"
-								shiftType = "A";
-								numA++;
-							}
-							else
-								shiftType = "B";
-						}
-						break;
-
-					case 1 : //else { //if (pop%numShift == 1) {
-						if (pop/numShift == 1) {
-							if (numA < 2) { // allow 2 persons with "A shift"
-								shiftType = "A";
-								numA++;
-							}
-							else
-								shiftType = "B";
-						}
-						break;
-
-					case 2 : //else { // if (pop/numShift == 2) {
-						if (numA < 3) { // allow 3 persons with "A shift"
-							shiftType = "A";
-							numA++;
-						}
-						else
-							shiftType = "B";
-						break;
-				} // end of switch (pop%numShift)
-
-			case 3 : //else if (numShift == 3) {
-
-				switch (pop%numShift) {
-
-				case 0 : //if (pop%numShift == 0) {
-					int lim = pop/numShift;
-
-					if (numX < lim+1) { // allow up to lim person with "X shift"
-						shiftType = "X";
-						numX++;
-					}
-					else if (numY < lim+1) { // allow up to lim person with "Y shift"
-						shiftType = "Y";
-						numY++;
-					}
-					else
-						shiftType = "Z";
-
-					break;
-
-				case 1 : //else if (pop%numShift == 1) {
-
-					lim = pop/numShift;
-
-					if (numX < lim+1) { // allow up to lim person with "X shift"
-						shiftType = "X";
-						numX++;
-					}
-
-					else if (numY < lim+2) { // allow up to lim + 1 person with "Y shift"
-						shiftType = "Y";
-						numY++;
-					}
-
-					else
-						shiftType = "Z";
-
-					break;
-
-				case 2 : //else  {//if (pop%numShift == 2) {
-
-					lim = pop/numShift;
-
-					if (numX < lim+2) { // allow up to lim+1 person with "X shift"
-						shiftType = "X";
-						numX++;
-					}
-
-					else if (numY < lim+2) { // allow up to lim+1 person with "Y shift"
-						shiftType = "Y";
-						numY++;
-					}
-
-					else
-						shiftType = "Z";
-
-					break;
-				}
-
-				break;
-			} // end of switch (numShift)
-
-			p.getTaskSchedule().setShiftType(shiftType);
-		}
-
-	}
-
 	// 2015-04-28 Added establishCommand()
 	private void establishCommand(Settlement settlement, int pop) {
 
@@ -1045,6 +900,44 @@ public class UnitManager implements Serializable {
             establishCommand(settlement, popSize);
         }
 	}
+
+
+	/*
+	 * Determines the number of shifts for a settlement and assigns a work shift for each person
+	 * @param settlement
+	 * @param pop population
+	 */
+	// 2015-07-02 Added setupShift()
+	public void setupShift(Settlement settlement, int pop) {
+
+		int numShift = 0;
+		ShiftType shiftType = ShiftType.OFF;
+		//int numA = 0, numX = 0, numY = 0;
+
+		if (pop == 1) {
+			numShift = 1;
+		}
+		else if (pop < THREE_SHIFTS_MIN_POPULATION) {
+			numShift = 2;
+		}
+		else {//if pop > 6
+			numShift = 3;
+		}
+
+		settlement.setNumShift(numShift);
+
+		//System.out.println(" # shift is " + numShift);
+
+		Collection<Person> people = settlement.getAllAssociatedPeople();
+
+		for (Person p : people) {
+			shiftType = settlement.assignShift(pop); // keep pop as a param just to speed up processing
+			p.getTaskSchedule().setShiftType(shiftType);
+			//System.out.println("shiftType is " + shiftType);
+		}
+
+	}
+
 
 	// 2015-04-30 Added establishGovernment()
 	private void establishGovernment(Settlement settlement) {

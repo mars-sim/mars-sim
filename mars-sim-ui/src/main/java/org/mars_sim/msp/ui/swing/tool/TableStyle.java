@@ -72,7 +72,7 @@ public class TableStyle extends ZebraJTable{
     	JTableHeader header = null;
     	if (table.getTableHeader() != null)
     		header = table.getTableHeader();
-    	
+
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
 		header.setBackground(new java.awt.Color(0, 167, 212));
 		header.setForeground(java.awt.Color.white);
@@ -118,7 +118,7 @@ public class TableStyle extends ZebraJTable{
     		hBack = new Color(153, 78, 37); // 49, 38, 29 Pantone Coated Black // 34, 23, 9 very very dark orange or use 9, 33, 34 very very dark cyan
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
-    		fore = new Color(153, 78, 37); // 
+    		fore = new Color(153, 78, 37); //
     		selBack = new Color(139,87,66); // 139,87,66 lightsalmon 4
     		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange

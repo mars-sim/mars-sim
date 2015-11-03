@@ -47,7 +47,7 @@ public class SettlementTable extends JTable {
 	public static final long serialVersionUID = 1L;
 
 	public static final int NUM_DISPLAYING_COLUMNS = 7; // currently not displaying column 7 and 8
-	
+
 	public static final int COLUMN_PLAYER_NAME = 0;
 	public static final int COLUMN_SETTLEMENT_NAME = 1;
 	public static final int COLUMN_TEMPLATE = 2;
@@ -88,12 +88,11 @@ public class SettlementTable extends JTable {
 
 		t.setRowSelectionAllowed(true);
 		setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		setGridColor(java.awt.Color.WHITE); // 0,128,0 is green
-		//setBackground(java.awt.Color.WHITE);
+		setGridColor(java.awt.Color.WHITE);
 
 		header = getTableHeader();
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
-		header.setBackground(new java.awt.Color(0, 167, 212));
+		header.setBackground(new java.awt.Color(209,103,0));//.orange);//(0, 167, 212));
 		header.setForeground(java.awt.Color.white);
 
 		configEditor.getSettlementScrollPane().setViewportView(this);
@@ -154,7 +153,7 @@ public class SettlementTable extends JTable {
                 new Integer(22),
                 new Integer(22),
                 //Boolean.TRUE,
-                //"Edit " 
+                //"Edit "
                 };
 
     	boolean DEBUG = false;
@@ -205,9 +204,9 @@ public class SettlementTable extends JTable {
     	java.awt.Component c = super.prepareRenderer(renderer, row, column);
     	// if this is an existing settlement registered by another client machine,
     	if (configEditor.getHasSettlement() && row < configEditor.getSettlementList().size())
-    		c.setForeground(java.awt.Color.BLUE);
+    		c.setForeground(new java.awt.Color(209,103,0));//255,60,8));//java.awt.Color.ORANGE); //BLUE);
     	else
-    		c.setForeground(new java.awt.Color(6,79,64)); // dark green
+    		c.setForeground(new java.awt.Color(255,143,8)); // pale orange
         return c;
     }
 
@@ -221,16 +220,23 @@ public class SettlementTable extends JTable {
 
         public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
-          if (isSelected) {
-            setForeground(table.getSelectionForeground());
-            //super.setBackground(table.getSelectionBackground());
-            setBackground(table.getSelectionBackground());
-          } else {
-            setForeground(table.getForeground());
-            setBackground(table.getBackground());
-          }
-          setSelected((value != null && ((Boolean) value).booleanValue()));
-          return this;
+
+        	SettlementTableModel model = (SettlementTableModel) table.getModel();
+
+	          if (isSelected) {
+	              //super.setBackground(table.getSelectionBackground());
+	        	  //table.setSelectionForeground(java.awt.Color.orange);
+	        	  //table.setSelectionBackground(new java.awt.Color(255,226,197));
+	        	  setForeground(new java.awt.Color(209,103,0));//table.getSelectionForeground());
+	        	  setBackground(new java.awt.Color(255,226,197));//table.getSelectionBackground());
+
+	          } else {
+	            setForeground(table.getForeground());
+	            setBackground(table.getBackground());
+	          }
+	          setSelected((value != null && ((Boolean) value).booleanValue()));
+
+	          return this;
         }
 	}
 

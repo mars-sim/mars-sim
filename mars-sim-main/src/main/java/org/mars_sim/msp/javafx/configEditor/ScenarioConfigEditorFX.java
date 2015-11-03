@@ -222,7 +222,7 @@ public class ScenarioConfigEditorFX {
 		    anchorpane.getChildren().add(bp);
 
 			scene = new Scene(undecorator);
-			scene.getStylesheets().add("/fxui/css/configEditor.css");
+			scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");
 			//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
 
 			// Transparent scene and stage
@@ -308,6 +308,7 @@ public class ScenarioConfigEditorFX {
 		topVB.setAlignment(Pos.CENTER);
 		gameModeLabel = new Label(gameMode);
 		gameModeLabel.setId("gameModeLabel");
+		
 		// Create the title label.
 		if (multiplayerClient != null) {
 			clientIDLabel = new Label("Client ID : " + clientID);
@@ -317,9 +318,9 @@ public class ScenarioConfigEditorFX {
 			clientIDLabel = new Label();
 			playerLabel = new Label();
 		}
-
 		clientIDLabel.setId("clientIDLabel");
 		playerLabel.setId("playerLabel");
+
 		titleLabel = new Label(Msg.getString("SimulationConfigEditor.chooseSettlements")); //$NON-NLS-1$
 		titleLabel.setId("titleLabel");
 		//titleLabel.setPadding(new Insets(5, 10, 5, 10));
@@ -459,11 +460,11 @@ public class ScenarioConfigEditorFX {
 		startButton = new Button("   " + Msg.getString("SimulationConfigEditor.button.newSim")+ "   "); //$NON-NLS-1$
 		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
 		startButton.setId("startButton");
-		// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus		
+		// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus
 		startButton.defaultButtonProperty().bind(startButton.focusedProperty());
 		startButton.requestFocus();
 		startButton.setOnAction((event) -> {
-			
+
 			if (crewEditorFX != null) {
 				if (!crewEditorFX.isGoodToGo()) {
 					startButton.setDisable(true);
@@ -475,7 +476,7 @@ public class ScenarioConfigEditorFX {
 					return;
 				}
 				else{
-					
+
 				}
 			}
 
@@ -486,7 +487,7 @@ public class ScenarioConfigEditorFX {
 
 
 			if (!hasError) {
-	
+
 				setConfiguration();
 				Platform.runLater(() -> {
 					waitLoading();
@@ -505,14 +506,14 @@ public class ScenarioConfigEditorFX {
 							}
 			       			//System.out.println("future.get() is " + future.get());
 			       			//System.out.println("future.isDone() is " + future.isDone());
-			       				
+
 							Platform.runLater(() -> {
 								closeWindow();
 							});
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-	
+
 		                return 0;
 		            }
 		        };
@@ -525,7 +526,7 @@ public class ScenarioConfigEditorFX {
 			} //end of if (!hasError)
 
 		});
-				
+
 		// 2014-12-15 Added Edit Alpha Crew button.
 		crewButton = new Button(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
 		//alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
@@ -571,7 +572,7 @@ public class ScenarioConfigEditorFX {
 		}
 	}
 
-	
+
 	@SuppressWarnings("serial")
 	private void createSwingNode(final SwingNode swingNode) {
 
@@ -617,7 +618,7 @@ public class ScenarioConfigEditorFX {
 		}
 		else
 			crewEditorFX.getStage().requestFocus();
-		
+
 	}
 
 	public void setCrewEditorOpen(boolean value) {
@@ -699,7 +700,7 @@ public class ScenarioConfigEditorFX {
 		}
 
 	}
-	
+
 	/**
 	 * Close and dispose dialog window.
 	 */
@@ -709,7 +710,7 @@ public class ScenarioConfigEditorFX {
 		mainMenu.getCircleStage().requestFocus();
 		stage.hide();
 	}
-	
+
 	/**
 	 * Close and dispose dialog window.
 	 */
@@ -948,7 +949,7 @@ public class ScenarioConfigEditorFX {
 	public Button getStartButton() {
 		return startButton;
 	}
-	
+
 	public void disableStartButton() {
 		startButton.setDisable(true);;
 	}
