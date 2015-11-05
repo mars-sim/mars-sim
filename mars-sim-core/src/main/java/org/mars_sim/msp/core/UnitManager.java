@@ -912,7 +912,6 @@ public class UnitManager implements Serializable {
 
 		int numShift = 0;
 		ShiftType shiftType = ShiftType.OFF;
-		//int numA = 0, numX = 0, numY = 0;
 
 		if (pop == 1) {
 			numShift = 1;
@@ -925,17 +924,17 @@ public class UnitManager implements Serializable {
 		}
 
 		settlement.setNumShift(numShift);
-
 		//System.out.println(" # shift is " + numShift);
 
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
+			//System.out.println(p.getName());
 			shiftType = settlement.getAEmptyWorkShift(pop); // keep pop as a param just to speed up processing
-			p.getTaskSchedule().setShiftType(shiftType);
-			//System.out.println("shiftType is " + shiftType);
+			p.setShiftType(shiftType);
 		}
 
+		settlement.printWorkShift("NOW");
 	}
 
 

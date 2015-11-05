@@ -14,6 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Logger;
 
 import javafx.animation.FadeTransition;
@@ -80,17 +83,34 @@ import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTas
 import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.javafx.MapjfxDemoApp;
+import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
  */
 public class MainMenu {
+	
+	// ------------------------------ FIELDS ------------------------------
 
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(MainMenu.class.getName());
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(MainMenu.class.getName());
+	
+	/** Logger for the class */
+	//private static final Logger logger;
 
+
+    // -------------------------- STATIC METHODS --------------------------
+    //static {
+    //    SLF4JBridgeHandler.removeHandlersForRootLogger();
+   //     SLF4JBridgeHandler.install();
+    //    logger = LoggerFactory.getLogger(MainMenu.class);
+    //}
+    
     private static final int WIDTH = 768-20;
     private static final int HEIGHT = 768-20;
+
 
 	// Data members
     private double fileSize;

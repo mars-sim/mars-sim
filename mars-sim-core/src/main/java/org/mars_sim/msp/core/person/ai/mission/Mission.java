@@ -387,17 +387,15 @@ implements Serializable {
             if (member instanceof Person) {
             	Person person = (Person) member;
             	ShiftType shift = null;
-            	System.out.println("person : " + person + "   name : " + person.getName() + "   Settlement : " + person.getSettlement());
+            	System.out.println("a mission is ended. Calling removeMember() in Mission.java. Name : " + person.getName() + "   Settlement : " + person.getSettlement());
             	if (person.getSettlement() != null) {
             		shift = person.getSettlement().getAEmptyWorkShift(-1);
-            		//person.getSettlement().decrementAShift(ShiftType.ON_CALL);
-            		person.getTaskSchedule().setShiftType(shift);
+            		person.setShiftType(shift);
             	}
             	else if (person.getVehicle() != null) 
             		if (person.getVehicle().getSettlement() != null){
             		shift = person.getVehicle().getSettlement().getAEmptyWorkShift(-1);
-            		//person.getVehicle().getSettlement().decrementAShift(ShiftType.ON_CALL);
-            		person.getTaskSchedule().setShiftType(shift);
+            		person.setShiftType(shift);
             	}
                 
             }
@@ -1131,7 +1129,7 @@ implements Serializable {
 				recruitee.setMission(this);
 
 				if (recruitee instanceof Person) {
-		            ((Person) recruitee).getTaskSchedule().setShiftType(ShiftType.ON_CALL);
+		            ((Person) recruitee).setShiftType(ShiftType.ON_CALL);
 		        }
 				// robot cannot be a recruitee
 		        //else if (recruitee instanceof Robot) {

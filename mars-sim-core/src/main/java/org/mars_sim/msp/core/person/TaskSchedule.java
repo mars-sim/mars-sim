@@ -236,7 +236,7 @@ public class TaskSchedule implements Serializable {
 			this.shiftType = shiftType;
 		}
 		else
-			System.err.println("TaskSchedule: setShiftType() : shiftType is null");
+			System.err.println("TaskSchedule: setShiftType() : the new shiftType is null");
 	}
 
 	/*

@@ -664,20 +664,24 @@ public class Settlement extends Structure implements LifeSupportType {
 		int solElapsed = MarsClock.getSolOfYear(clock);
 
 		if (solElapsed != solCache) {
-			// reportSample = true;
-			solCache = solElapsed;
 
 			// getFoodEnergyIntakeReport();
 			// getSupplyDemandReport(solElapsed);
 			refreshMapDaily(solElapsed);
-
-			System.out.println(getName() + "'s shifts ==> A : " + numA + "   B : " + numB + "   X : " + numX + "   Y : " + numY + "   Z : " + numZ + "   On Call : " + numOnCall);// + "   Off : " + numOff);
+			
+			printWorkShift("Sol "+ solCache);
 			reassignWorkShift();
-			System.out.println( getName() + "'s shifts ==> A : " + numA + "   B : " + numB + "   X : " + numX + "   Y : " + numY + "   Z : " + numZ + "   On Call : " + numOnCall);// + "   Off : " + numOff);
+			printWorkShift("Sol "+ solElapsed);
+
+			solCache = solElapsed;
 
 		}
 	}
 
+	public void printWorkShift(String text) {
+		logger.info(text + " : " + getName() + "'s shifts ==> A : " + numA + "  B : " + numB + "  X : " + numX + "  Y : " + numY + "  Z : " + numZ + "  OnCall : " + numOnCall);// + "   Off : " + numOff);
+	}
+	
 	/*
 	 * Reassigns the work shift for all
 	 */
@@ -702,20 +706,17 @@ public class Settlement extends Structure implements LifeSupportType {
 		setNumShift(numShift);
 
 		for (Person p : people) {
-			if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			if (p.getMind().getMission() == null && p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 				ShiftType oldShift = p.getTaskSchedule().getShiftType();
-				//p.getSettlement().decrementAShift(oldShift);
 				ShiftType newShift = getAEmptyWorkShift(pop);
-				p.getTaskSchedule().setShiftType(newShift);
+				p.setShiftType(newShift);
 				//System.out.println(p.getName() + " is changing from shift " + oldShift + " to " + newShift);
 			}
 			// TODO: it shouldn't be done this way but currently, when currently when starting a trade mission, 
 			// the code fails to change a person's work shift to On-call.
-			else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) { 
+			else if (p.getMind().getMission() != null || p.getLocationSituation() == LocationSituation.IN_VEHICLE) { 
 				ShiftType oldShift = p.getTaskSchedule().getShiftType();
-				//p.getSettlement().decrementAShift(oldShift);
-				//ShiftType newShift = getAEmptyWorkShift(pop);
-				p.getTaskSchedule().setShiftType(ShiftType.ON_CALL);
+				p.setShiftType(ShiftType.ON_CALL);
 				//System.out.println(p.getName() + " is changing from shift " + oldShift + " to On-Call");
 			}
 		}
@@ -1356,11 +1357,11 @@ public class Settlement extends Structure implements LifeSupportType {
 
 					if (rand == 0) {
 						shiftType = ShiftType.A;
-						numA++;
+						//numA++;
 						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.B;
-						numB++;
+						//numB++;
 						break;
 					}
 				}
@@ -1368,11 +1369,11 @@ public class Settlement extends Structure implements LifeSupportType {
 				if (quotient == 1) {
 					if (numA < 1) { // allow only 1 person with "A shift"
 						shiftType = ShiftType.A;
-						numA++;
+						//numA++;
 						break;
 					} else {
 						shiftType = ShiftType.B;
-						numB++;
+						//numB++;
 						break;
 					}
 				}
@@ -1380,11 +1381,11 @@ public class Settlement extends Structure implements LifeSupportType {
 				else { // if (quotient == 2) {
 					if (numA < 2) { // allow 2 persons with "A shift"
 						shiftType = ShiftType.A;
-						numA++;
+						//numA++;
 						break;
 					} else {
 						shiftType = ShiftType.B;
-						numB++;
+						//numB++;
 						break;
 					}
 				}
@@ -1398,11 +1399,11 @@ public class Settlement extends Structure implements LifeSupportType {
 
 					if (rand == 0) {
 						shiftType = ShiftType.A;
-						numA++;
+						//numA++;
 						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.B;
-						numB++;
+						//numB++;
 						break;
 					}
 				}
@@ -1410,11 +1411,11 @@ public class Settlement extends Structure implements LifeSupportType {
 				if (quotient == 1) {
 					if (numA < 2) { // allow 1 person with "A shift"
 						shiftType = ShiftType.A;
-						numA++;
+						//numA++;
 						break;
 					} else {
 						shiftType = ShiftType.B;
-						numB++;
+						//numB++;
 						break;
 					}
 				}
@@ -1422,11 +1423,11 @@ public class Settlement extends Structure implements LifeSupportType {
 				else { // if (quotient == 2) {
 					if (numA < 3) { // allow 2 persons with "A shift"
 						shiftType = ShiftType.A;
-						numA++;
+						//numA++;
 						break;
 					} else {
 						shiftType = ShiftType.B;
-						numB++;
+						//numB++;
 						break;
 					}
 				}
@@ -1447,30 +1448,30 @@ public class Settlement extends Structure implements LifeSupportType {
 
 					if (rand == 0) {
 						shiftType = ShiftType.X;
-						numX++;
+						//numX++;
 						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.Y;
-						numY++;
+						//numY++;
 						break;
 					} else if (rand == 2) {
 						shiftType = ShiftType.Z;
-						numZ++;
+						//numZ++;
 						break;
 					}
 				}
 
 				if (numX < quotient + 1) { // allow up to q persons with "X shift"
 					shiftType = ShiftType.X;
-					numX++;
+					//numX++;
 					break;
 				} else if (numY < quotient + 1) { // allow up to q persons with  "Y shift"
 					shiftType = ShiftType.Y;
-					numY++;
+					//numY++;
 					break;
 				} else {
 					shiftType = ShiftType.Z;
-					numZ++;
+					//numZ++;
 					break;
 				}
 
@@ -1483,34 +1484,34 @@ public class Settlement extends Structure implements LifeSupportType {
 
 					if (rand == 0) {
 						shiftType = ShiftType.X;
-						numX++;
+						//numX++;
 						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.Y;
-						numY++;
+						//numY++;
 						break;
 					} else if (rand == 2) {
 						shiftType = ShiftType.Z;
-						numZ++;
+						//numZ++;
 						break;
 					}
 				}
 
 				if (numX < quotient + 1) { // allow up to q persons with "X shift"
 					shiftType = ShiftType.X;
-					numX++;
+					//numX++;
 					break;
 				}
 
 				else if (numY < quotient + 2) { // allow up to q + 1 persons  with "Y shift"
 					shiftType = ShiftType.Y;
-					numY++;
+					//numY++;
 					break;
 				}
 
 				else {
 					shiftType = ShiftType.Z;
-					numZ++;
+					//numZ++;
 					break;
 				}
 
@@ -1523,15 +1524,15 @@ public class Settlement extends Structure implements LifeSupportType {
 
 					if (rand == 0) {
 						shiftType = ShiftType.X;
-						numX++;
+						//numX++;
 						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.Y;
-						numY++;
+						//numY++;
 						break;
 					} else if (rand == 2) {
 						shiftType = ShiftType.Z;
-						numZ++;
+						//numZ++;
 						break;
 					}
 				}
@@ -1539,19 +1540,19 @@ public class Settlement extends Structure implements LifeSupportType {
 				if (numX < quotient + 2) { // allow up to q+1 persons with "X
 											// shift"
 					shiftType = ShiftType.X;
-					numX++;
+					//numX++;
 				}
 
 				else if (numY < quotient + 2) { // allow up to q+1 persons with
 												// "Y shift"
 					shiftType = ShiftType.Y;
-					numY++;
+					//numY++;
 				}
 
 				else {
 					shiftType = ShiftType.Z;
 					;
-					numZ++;
+					//numZ++;
 				}
 
 				break;
