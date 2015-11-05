@@ -27,7 +27,7 @@ public class MarsClock implements Serializable {
 	private static Logger logger = Logger.getLogger(MarsClock.class.getName());
 
 	// The Mars tropical year is 686.9726 day or 668.5921 sol.
-	//  A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds, and is customarily referred to as a "sol" in order to distinguish this from the roughly 3% shorter solar day on Earth.
+	//  A Mars solar day has a mean period of 24 hours 39 minutes 35.244 seconds, customarily referred to as a "sol" in order to distinguish this from the roughly 3% shorter solar day on Earth.
 	// The Mars sidereal day, as measured with respect to the fixed stars, is 24h 37m 22.663s, as compared with 23h 56m 04.0905s for Earth.
 
 	// Martian calendar static members

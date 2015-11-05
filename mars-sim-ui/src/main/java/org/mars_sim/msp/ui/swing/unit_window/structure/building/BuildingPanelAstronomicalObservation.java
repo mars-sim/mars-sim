@@ -8,11 +8,20 @@ package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.unit_window.structure.StormTrackingWindow;
+
+import com.astroarts.OrbitViewer;
+
+import net.java.balloontip.BalloonToolTip;
 
 import javax.swing.*;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * A panel for the astronomical observation building function.
@@ -25,8 +34,13 @@ extends BuildingFunctionPanel {
 
 	// Data members
 	private int currentObserversAmount;
-	private AstronomicalObservation function;
+
 	private JLabel observersLabel;
+	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	
+	private AstronomicalObservation function;
+	private OrbitViewer orbitViewer;
+	
 
 	/**
 	 * Constructor.
@@ -38,15 +52,14 @@ extends BuildingFunctionPanel {
 		// User BuildingFunctionPanel constructor.
 		super(observatory.getBuilding(), desktop);
 
-		// Set panel layout
-		setLayout(new BorderLayout());
-
 		function = observatory;
-
 		currentObserversAmount = function.getObserverNum();
 
+		// Set panel layout
+		setLayout(new BorderLayout());
+		
 		// Prepare label panelAstronomicalObservation
-		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		JPanel labelPanel = new JPanel(new GridLayout(5, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Astronomy top label
@@ -78,6 +91,23 @@ extends BuildingFunctionPanel {
 		astronomyLabel.setBackground(new Color(0,0,0,128));
 		observersLabel.setOpaque(false);
 		observersLabel.setBackground(new Color(0,0,0,128));
+		
+      	// Create the button panel.
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		// Create the orbit viewer button.
+		JButton button = new JButton("Orbit Viewer");
+		
+		balloonToolTip.createBalloonTip(button, "Click to open the solar system orbit viewer"); 
+		//button.setToolTipText("Click to open the solar system orbit viewer");
+		button.addActionListener(
+			new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					openOrbitViewer();
+				}
+			});
+		buttonPane.add(button);
+		labelPanel.add(buttonPane);
 	}
 
 	@Override
@@ -92,4 +122,29 @@ extends BuildingFunctionPanel {
 			);
 		}
 	}
+	
+    public void setViewer(OrbitViewer orbitViewer) {
+    	this.orbitViewer = orbitViewer;
+    }
+    
+	/**
+	 * Open orbit viewer
+	 */
+    // 2015-11-04 Added openOrbitViewer()
+	private void openOrbitViewer() {
+
+		MainWindow mw = desktop.getMainWindow();
+		if (mw != null )  {
+			if (orbitViewer == null)
+				orbitViewer = new OrbitViewer(desktop, this);
+		}
+
+		MainScene ms = desktop.getMainScene();
+		if (ms != null )  {
+			if (orbitViewer == null) {
+				orbitViewer = new OrbitViewer(desktop, this);
+			}
+		}
+	}
+
 }
