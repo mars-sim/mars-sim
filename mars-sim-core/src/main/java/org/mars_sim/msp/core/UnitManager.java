@@ -776,11 +776,11 @@ public class UnitManager implements Serializable {
 					}
 				}
 
-				// Establish a system of governance at settlement.
-				establishSettlementGovernance(settlement);
-
 				// 2015-07-02 Added setupShift()
 				setupShift(settlement, initPop);
+
+				// Establish a system of governance at settlement.
+				establishSettlementGovernance(settlement);
 
 			}
 
@@ -920,7 +920,7 @@ public class UnitManager implements Serializable {
 		else if (pop < THREE_SHIFTS_MIN_POPULATION) {
 			numShift = 2;
 		}
-		else {//if pop > 6
+		else {//if pop >= 6
 			numShift = 3;
 		}
 
@@ -931,7 +931,7 @@ public class UnitManager implements Serializable {
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 
 		for (Person p : people) {
-			shiftType = settlement.assignShift(pop); // keep pop as a param just to speed up processing
+			shiftType = settlement.getAEmptyWorkShift(pop); // keep pop as a param just to speed up processing
 			p.getTaskSchedule().setShiftType(shiftType);
 			//System.out.println("shiftType is " + shiftType);
 		}

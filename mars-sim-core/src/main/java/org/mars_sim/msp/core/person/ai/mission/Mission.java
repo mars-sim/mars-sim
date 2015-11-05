@@ -175,7 +175,8 @@ implements Serializable {
         // Add starting member to mission.
         // 2015-11-01 Temporarily set the shift type to none during the mission
         startingMember.setMission(this);
-        startingMember.setShiftType(ShiftType.ON_CALL);
+        if (startingMember instanceof Person)
+        	startingMember.setShiftType(ShiftType.ON_CALL);
 
 /*
         if (startingMember instanceof Person) {
@@ -382,6 +383,25 @@ implements Serializable {
                 endMission("Not enough members.");
             }
 
+            // 2015-11-01 Added codes in reassigning a work shift
+            if (member instanceof Person) {
+            	Person person = (Person) member;
+            	ShiftType shift = null;
+            	System.out.println("person : " + person + "   name : " + person.getName() + "   Settlement : " + person.getSettlement());
+            	if (person.getSettlement() != null) {
+            		shift = person.getSettlement().getAEmptyWorkShift(-1);
+            		//person.getSettlement().decrementAShift(ShiftType.ON_CALL);
+            		person.getTaskSchedule().setShiftType(shift);
+            	}
+            	else if (person.getVehicle() != null) 
+            		if (person.getVehicle().getSettlement() != null){
+            		shift = person.getVehicle().getSettlement().getAEmptyWorkShift(-1);
+            		//person.getVehicle().getSettlement().decrementAShift(ShiftType.ON_CALL);
+            		person.getTaskSchedule().setShiftType(shift);
+            	}
+                
+            }
+ 
             logger.finer(member.getName() + " removed from mission: " + name);
         }
     }
@@ -749,20 +769,23 @@ implements Serializable {
 			if (members != null) {
 			    Object[] p = members.toArray();
                 for (Object aP : p) {
-
-                    removeMember((MissionMember) aP);
-
+/*
                     // 2015-11-01 Added codes in reassigning a work shift
                     if (aP instanceof Person) {
-                    	ShiftType shift = ((Person) aP).getSettlement().assignShift(-1);
-                        ((Person) aP).getSettlement().decrementAShift(ShiftType.ON_CALL);
-                        ((Person) aP).getTaskSchedule().setShiftType(shift);
+                    	Person person = (Person) aP;
+                    	System.out.println("person : " + person + "   name : " + person.getName() + "   Settlement : " + person.getSettlement());
+                    	ShiftType shift = person.getSettlement().assignShift(-1);
+                        person.getSettlement().decrementAShift(ShiftType.ON_CALL);
+                        person.getTaskSchedule().setShiftType(shift);
                     }
                     else if (aP instanceof Robot) {
-                    	ShiftType shift = ((Robot) aP).getSettlement().assignShift(-1);
+                    	Robot robot = (Robot) aP;
+                    	ShiftType shift = robot.getSettlement().assignShift(-1);
                         ((Robot) aP).getSettlement().decrementAShift(ShiftType.ON_CALL);
                         ((Robot) aP).getTaskSchedule().setShiftType(shift);
                     }
+*/
+                    removeMember((MissionMember) aP);
 
                 }
 			}

@@ -328,6 +328,9 @@ public class MainWindow extends JComponent {
 				                throw new IllegalStateException("earthclock is null");
 				            }
 				            t = earthclock.getTimeStamp();
+				            
+				            //System.out.println("millis is " + EarthClock.getMillis(earthclock));
+				            //System.out.println("Julian Date (UT) is " + EarthClock.getJulianDateUT(earthclock));
 				        }
 				    }
 				    catch (Exception ee) {

@@ -227,12 +227,12 @@ public class TaskSchedule implements Serializable {
 					person.getSettlement().decrementAShift(shiftTypeCache);
 				person.getSettlement().incrementAShift(shiftType);
 			}
-			else if (robot != null) {
+/*			else if (robot != null) {
 				if (shiftTypeCache != null)
 					robot.getSettlement().decrementAShift(shiftTypeCache);
 				robot.getSettlement().incrementAShift(shiftType);
 			}
-
+*/
 			this.shiftType = shiftType;
 		}
 		else

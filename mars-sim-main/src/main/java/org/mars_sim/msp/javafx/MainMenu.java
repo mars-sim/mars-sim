@@ -201,7 +201,7 @@ public class MainMenu {
     		   //"-fx-border-style: none; "
     		   //"-fx-background-color: #231d12; "
        			"-fx-background-color: transparent; "
-       			//+ "-fx-background-radius: 1px;"
+       			+ "-fx-background-radius: 1px;"
     		   );
        
        Parent globe = createMarsGlobe();

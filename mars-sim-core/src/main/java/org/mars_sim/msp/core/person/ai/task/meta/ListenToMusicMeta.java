@@ -55,7 +55,7 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
         double result = 0D;
 
         // Stress modifier
-        result += person.getPhysicalCondition().getStress();
+        result += person.getPhysicalCondition().getStress()/2D;
 
         // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

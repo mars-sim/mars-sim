@@ -1132,7 +1132,7 @@ implements Serializable {
         }
 
         if (retrieved) {
-            unit.setContainerUnit(null);
+            unit.setContainerUnit(null); // this can cause person.getSettlement() = null
         } else {
             throw new IllegalStateException("Unit: " + unit + " could not be retrived.");
         }

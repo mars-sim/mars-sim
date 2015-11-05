@@ -182,7 +182,7 @@ extends TabPanel {
     		start = taskSchedule.getShiftStart();
     		end = taskSchedule.getShiftEnd();
     		shiftTF.setEditable(false);
-    		shiftTF.setColumns(2);
+    		shiftTF.setColumns(4);
 
     		if (!shiftCache.equals(ShiftType.OFF))
     			balloonToolTip.createBalloonTip(shiftTF, Msg.getString("TabPanelSchedule.shiftTF.toolTip", shiftCache, start, end)); //$NON-NLS-1$

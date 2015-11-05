@@ -332,19 +332,36 @@ implements VehicleOperator, MissionMember, Serializable {
      * @return the person's settlement
      */
     public Settlement getSettlement() {
-        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT)
-            return (Settlement) getContainerUnit();
+        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        	Settlement settlement = (Settlement) getContainerUnit();
+        	if (settlement != null)
+        		return settlement;
+        	else {
+	        	settlement = (Settlement) getTopContainerUnit();
+	        	return settlement;
+        	}
+        }
         else if (getLocationSituation() == LocationSituation.OUTSIDE)
         // 2015-09-03 Changed getContainerUnit() below to getTopContainerUnit()
             return (Settlement) getTopContainerUnit();
         else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        	//Unit container
-        	//return container.getTopContainerUnit()
         	Vehicle vehicle = (Vehicle) getContainerUnit();
-        	return (Settlement) vehicle.getSettlement();
+        	Settlement settlement = (Settlement) vehicle.getSettlement();
+        	if (settlement != null)
+        		return settlement;
+        	else {
+        		settlement = (Settlement) vehicle.getContainerUnit();
+        		return settlement;
+        	}
         }
-        else
+        else if (getLocationSituation() == LocationSituation.BURIED) {
+            return (Settlement) getContainerUnit();
+        }
+        else {
+        	System.err.println("Person's getSettlement() : " + getName() + " does NOT belong to any settlements.");
         	return null;
+        }
+        	
     }
 
     /**
@@ -379,7 +396,7 @@ implements VehicleOperator, MissionMember, Serializable {
             containerUnit.getInventory().retrieveUnit(this);
         }
         isBuried = true;
-        setAssociatedSettlement(null);
+        setAssociatedSettlement(null); 
     }
 
     /**

@@ -375,27 +375,17 @@ extends TabPanel {
 
 		MainWindow mw = desktop.getMainWindow();
 		if (mw != null )  {
-			// Pause simulation.
-			//mw.pauseSimulation();
-			// Create Storm Tracking Window.
 			if (stormWin == null)
 				stormWin = new StormTrackingWindow(desktop, this);
-			// Unpause simulation.
-			//mw.unpauseSimulation();
 		}
 
 		MainScene ms = desktop.getMainScene();
 		if (ms != null )  {
-			// Pause simulation.
-			//ms.pauseSimulation();
-			// Create Storm Tracking Window..
+
 			if (stormWin == null) {
 				stormWin = new StormTrackingWindow(desktop, this);
 			}
-			// Unpause simulation.
-			//ms.unpauseSimulation();
 		}
-
 	}
 
 	/**

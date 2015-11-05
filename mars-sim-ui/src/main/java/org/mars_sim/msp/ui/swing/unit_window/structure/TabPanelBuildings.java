@@ -313,4 +313,32 @@ implements ActionListener {
 
 		return result;
 	}
+	
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+		if (panelList != null) {
+			panelList.clear();
+			panelList = null;
+		}
+		if (buildingsCache != null) {
+			buildingsCache.clear();
+			buildingsCache = null;
+		}
+
+		if (buildingPanels != null) {
+			buildingPanels.clear();
+			buildingPanels = null;
+		}
+		
+		comboBoxModel = null;
+		comboBox = null;
+		buildingDisplayPanel = null;
+		buildingLayout = null;
+		building = null;
+		
+	}
 }

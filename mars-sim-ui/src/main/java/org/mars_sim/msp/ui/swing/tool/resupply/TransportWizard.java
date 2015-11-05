@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * The TransportWizard class is an internal frame for building transport event.
+ * The TransportWizard class is a class for hosting building transport event manually.
  *
  */
 public class TransportWizard {

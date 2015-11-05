@@ -188,14 +188,15 @@ implements Serializable {
 
         return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
     }
+    
+    
     public static boolean canConstruct(Robot robot, ConstructionSite site) {
 
         // Check if robot can exit the settlement airlock.
         boolean exitable = false;
-        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(),
-                site.getYLocation());
+        Airlock airlock = getClosestWalkableAvailableAirlock(robot, site.getXLocation(), site.getYLocation());
         if (airlock != null) {
-            exitable = ExitAirlock.canExitAirlock(robot, airlock);
+            exitable = ExitAirlock.canExitAirlock(robot, airlock); // if robot is not in a building or in the settlement, exitable will be false
         }
 
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();

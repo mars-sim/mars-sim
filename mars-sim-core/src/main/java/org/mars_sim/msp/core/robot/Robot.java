@@ -699,7 +699,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 	@Override
 	public void setShiftType(ShiftType shiftType) {
-		taskSchedule.setShiftType(shiftType);
+		//taskSchedule.setShiftType(shiftType);
 	}
 
     @Override

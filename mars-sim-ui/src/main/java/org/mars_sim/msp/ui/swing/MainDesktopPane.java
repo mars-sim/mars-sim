@@ -1334,6 +1334,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 	
 	// 2014-12-19 Added unitUpdate()
+	@SuppressWarnings("restriction")
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
 		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
@@ -1375,6 +1376,18 @@ implements ComponentListener, UnitListener, UnitManagerListener {
             disposeAnnouncementWindow();
 
 		}
+		
+		else if (eventType == UnitEventType.START_CONSTRUCTION_SITE_EVENT) {
+			
+			
+		}
+		
+		else if (eventType == UnitEventType.FINISH_BUILDING_EVENT) {
+			
+			
+		}
+		
+		
 		// repaint(); // raise cpu util% way too much for putting it here
 	}
 

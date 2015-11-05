@@ -128,10 +128,10 @@ implements Serializable {
 			throw new IllegalArgumentException("ListenToMusic. Task phase is null");
 		}
 		else if (FINDING_A_SONG.equals(getPhase())) {
-			return findingPhase(time*.1);
+			return findingPhase(time);
 		}
 		else if (LISTENING_TO_MUSIC.equals(getPhase())) {
-			return listeningPhase(time*.9);
+			return listeningPhase(time);
 		}
 		else {
 			return time;
@@ -160,8 +160,9 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double findingPhase(double time) {
-		// Do nothing
-		return 0D;
+		// TODO: add codes for selecting a particular type of music		
+		setPhase(LISTENING_TO_MUSIC);
+		return time*.9D;
 	}
 
 	@Override

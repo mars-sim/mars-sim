@@ -520,8 +520,8 @@ implements ClockListener, Serializable {
             // 2015-01-08 Added isAutosave
             if (isAutosave) {
                 String autosaveFilename = new SystemDateTime().getDateTimeStr()
-                		+ "_build_" + BUILD
-                		+ "_sol_" + masterClock.getMarsClock().getTotalSol() + "_"
+                		+ "_sol" + masterClock.getMarsClock().getTotalSol() + "_"
+                		+ "_build" + BUILD
                 		+ DEFAULT_EXTENSION;
                 file = new File(AUTOSAVE_DIR, autosaveFilename);
                 logger.info("Autosaving " + autosaveFilename);

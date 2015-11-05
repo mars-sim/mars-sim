@@ -128,10 +128,10 @@ implements Serializable {
 			throw new IllegalArgumentException("PlayHoloGame. Task phase is null");
 		}
 		else if (SETTING_UP_SCENES.equals(getPhase())) {
-			return settingUpPhase(time*.1);
+			return settingUpPhase(time);
 		}
 		else if (PLAYING_A_HOLO_GAME.equals(getPhase())) {
-			return playingPhase(time*.9);
+			return playingPhase(time);
 		}
 		else {
 			return time;
@@ -165,8 +165,9 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double settingUpPhase(double time) {
-		// Do nothing
-		return 0D;
+		// TODO: add codes for selecting a particular type of game		
+		setPhase(PLAYING_A_HOLO_GAME);
+		return time*.9D;
 	}
 
 	@Override

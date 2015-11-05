@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -82,22 +83,32 @@ public class SleepMeta implements MetaTask, Serializable {
             // 2015-06-07 Added Preference modifier
 	        if (result > 0)
 	        	result += person.getPreference().getPreferenceScore(this);
-            if (result < 0) result = 0;
             
-            // Check if person's work shift will begin in the next 50 millisols.
-            int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
-            millisols += 50;
-            if (millisols > 1000) {
-                millisols -= 1000;
-            }
-            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-            if (willBeShiftHour) {
-                result = 0D;
-            }
+		    boolean isOnCall = person.getTaskSchedule().getShiftType().equals(ShiftType.ON_CALL);
+
+		    if (!isOnCall) {
+	            // Check if person's work shift will begin in the next 50 millisols.
+	            int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+	            millisols += 50;
+	            if (millisols > 1000) {
+	                millisols -= 1000;
+	            }
+	            
+	            boolean willBeShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+	            if (willBeShiftHour) {
+	            	//if work shift is slated to begin in the next 50 millisols, probability of sleep reduces to one quarter of its value
+	                result = result/4D; 
+	            }
+		    }
+		    else {
+		    	; // allows sleep during "on-call" work shift type
+		    }
+
+		    if (result < 0) result = 0;
         }
 
         // No sleeping outside.
-        //if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+        //else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
         //   result = 0D;
         //}
 
