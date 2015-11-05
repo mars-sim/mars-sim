@@ -83,8 +83,7 @@ implements Serializable, MouseListener {
 	//private static final int CENTER = 0;
 	private static Logger logger = Logger.getLogger(BuildingPanelFarming.class.getName());
 	// Data members
-	/** The farming building. */
-	private Farming farm;
+
 	/** The number of farmers label. */
 	private JLabel farmersLabel;
 	/** The number of crops label. */
@@ -104,7 +103,7 @@ implements Serializable, MouseListener {
 
 	//private String[] tooltipArray;
 	private ArrayList tooltipArray;
-	
+	private BalloonToolTip balloonToolTip = new BalloonToolTip();
 	//private String deletingCrop = "";
 
 	// 2014-12-09 Added comboBox for crop queue
@@ -120,10 +119,12 @@ implements Serializable, MouseListener {
 	private CropTableModel cropTableModel;
 
 	private JScrollPane listScrollPanel;
+	
+	/** The farming building. */
+	private Farming farm;
 	private CropType cropType;
 	private CropType deletingCropType;
-	private BalloonToolTip balloonToolTip = new BalloonToolTip();
-	//private ArrayList tooltips;
+
 	
 	/**
 	 * Constructor.
@@ -140,10 +141,10 @@ implements Serializable, MouseListener {
 		this.farm = farm;
 
 		// Set panel layout
-		setLayout(new BorderLayout());
+		setLayout(new BorderLayout()); //new GridLayout(6, 1, 0, 0));//
 
 		// Create label panel
-		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+		JPanel labelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		add(labelPanel, BorderLayout.NORTH);
 		//labelPanel.setOpaque(false);
 		//labelPanel.setBackground(new Color(0,0,0,128));
@@ -152,27 +153,35 @@ implements Serializable, MouseListener {
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
 		JLabel farmingLabel = new JLabel(Msg.getString("BuildingPanelFarming.title"), JLabel.CENTER);
+		JPanel farmingPanel = new JPanel(new FlowLayout());
+	    farmingPanel.add(farmingLabel);
 		farmingLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		//farmingLabel.setForeground(new Color(102, 51, 0)); // dark brown
-		labelPanel.add(farmingLabel);
+		labelPanel.add(farmingPanel);
 
 		// Prepare solar irradiance label
 		radCache = farm.getFarmerNum();
+		JPanel radPanel = new JPanel(new FlowLayout());
 		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache),  JLabel.CENTER);
-	    balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
-		labelPanel.add(radLabel);
+	    radPanel.add(radLabel);
+		balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
+		labelPanel.add(radPanel);
 		
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
+		JPanel farmersPanel = new JPanel(new FlowLayout());
 		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", farmersCache), JLabel.CENTER);
-	    balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
-		labelPanel.add(farmersLabel);
+	    farmersPanel.add(farmersLabel);
+		balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
+		labelPanel.add(farmersPanel);
 
 		// Prepare crops label
 		cropsCache = farm.getCrops().size();
+		JPanel cropsPanel = new JPanel(new FlowLayout());
 		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops", cropsCache), JLabel.CENTER);
-	    balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
-		labelPanel.add(cropsLabel);
+	    cropsPanel.add(cropsLabel);
+		balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
+		labelPanel.add(cropsPanel);
 
 
 /*
@@ -869,4 +878,27 @@ implements Serializable, MouseListener {
 		}
 	}
 
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		// take care to avoid null exceptions
+		if (cropCache != null) {
+			cropCache.clear();
+			cropCache = null;
+		}
+		
+		farm = null;
+		tooltipArray = null;
+		balloonToolTip = null;
+		comboBoxModel= null;
+		comboBox= null;
+		list= null;
+		opsButton= null;
+		listModel= null;
+		cropTableModel= null;
+		listScrollPanel= null;
+		cropType= null;
+		deletingCropType= null;
+	}
 }

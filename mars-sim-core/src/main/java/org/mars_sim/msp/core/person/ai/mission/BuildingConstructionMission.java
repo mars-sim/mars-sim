@@ -239,7 +239,15 @@ implements Serializable {
 		            constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 		        }
 		        
-		        positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+		        if (Simulation.getUseGUI())  {
+		        	// if GUI is in use          
+					settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT); 
+		 
+		        } else {
+		        	// if not, use the classic way of automatically selecting a constructino location 
+			        positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+		        }
+		        
 		           
 		        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
 		    }

@@ -59,8 +59,10 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 
 
 // TODO: is extending to JInternalFrame better?
@@ -193,14 +195,20 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 		UnitInfoPanel unitInfoPanel = new UnitInfoPanel(desktop);
 		unitInfoPanel.init(name, type, description);
+		unitInfoPanel.setBackground(null);
 		unitInfoPanel.setOpaque(false);
 		unitInfoPanel.setBackground(new Color(0,0,0,128));
 		
-	 	Stage stage = new Stage();
+		Rectangle rect = new Rectangle(350+20, frameHeight+20);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
+		rect.setArcWidth(10);
+		rect.setArcHeight(10);
+		rect.setEffect(new javafx.scene.effect.DropShadow(10,5,5, javafx.scene.paint.Color.TAN)); // rgb(27,8,0)));// for bottom right edge
 
-    	//Popup stage = new Popup();
     	SwingNode swingNode  = new SwingNode();
-    	StackPane swingPane = new StackPane();
+    	swingNode.setStyle("-fx-background-color: transparent;");
+
+		StackPane swingPane = new StackPane();
+    	swingPane.setStyle("-fx-background-radius:5px; -fx-background-color: transparent;");
 
 		swingPane.getChildren().add(swingNode);
 		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
@@ -210,10 +218,12 @@ public class PopUpUnitMenu extends JPopupMenu {
 			swingNode.setContent(unitInfoPanel);
 	    });
 
-	   	Scene scene = new Scene(swingPane, 350, frameHeight);
+	   	Scene scene = new Scene(swingPane, 350, frameHeight, javafx.scene.paint.Color.TRANSPARENT);
 	   	scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
 	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
 	   	
+    	//Popup stage = new Popup();
+	 	Stage stage = new Stage();
 	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 
 	   	stage.requestFocus();
@@ -221,6 +231,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	   	addDraggableNode(swingNode);
 
 	   	//stage.setTitle("Building Detail");
+		stage.setOpacity(.9);
 	   	stage.initStyle(StageStyle.TRANSPARENT);
 	    stage.initStyle(StageStyle.UNDECORATED);
 		stage.setResizable(false);
@@ -409,7 +420,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 
     	//Popup stage = new Popup();
     	SwingNode swingNode  = new SwingNode();
+
     	StackPane swingPane = new StackPane();
+    	swingPane.setStyle("-fx-background-radius:5; -fx-background-color: transparent;");
+
 
 		swingPane.getChildren().add(swingNode);
 		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
@@ -419,9 +433,11 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 		SwingUtilities.invokeLater(() -> {
 			swingNode.setContent(buildingPanel);
+	    	swingNode.setStyle("-fx-background-color: transparent;");
 	    });
 
-	   	Scene scene = new Scene(swingPane, 400, 400);
+	   	Scene scene = new Scene(swingPane, 400, 400, javafx.scene.paint.Color.TRANSPARENT);
+	   	
 	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 
 	   	stage.requestFocus();
@@ -431,6 +447,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	   	//stage.setTitle("Building Detail");
 	   	//stage.initStyle(StageStyle.UTILITY);
 	   	stage.initStyle(StageStyle.TRANSPARENT);
+		stage.setOpacity(.9);
 		stage.setResizable(false);
 	   	stage.setScene(scene);
         stage.show();

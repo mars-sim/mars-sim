@@ -127,39 +127,12 @@ extends JPanel {
         this.desktop = desktop;
 		this.isTranslucent = isTranslucent;
         if (isTranslucent) {
-        	//JComponent c = getRootPane();
-        	//setOpaque(false);
-        	//setBackground(new Color(0,0,0,128));
+        	setOpaque(false);
+        	setBackground(new Color(0,0,0,128));
         }
 		init();
 	}
 
-
-	//2015-05-01 Added setupDetailButton
-	public void setupDetailButton() {
-
-			JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			JButton detailB = new JButton(Msg.getString(
-					"BuildingPanel.detailButton")); //$NON-NLS-1$
-			detailB.setPreferredSize(new Dimension(60, 20));
-			detailB.setFont(new Font("Serif", Font.PLAIN, 9));
-			detailB.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					if (building != null) {
-						desktop.openUnitWindow(building, false);
-					}
-				}
-			});
-			btnPanel.add(detailB);
-			namePanel.add(btnPanel);
-	        //if (isTranslucent) {
-	        	//detailB.setOpaque(false);
-	        	//detailB.setBackground(new Color(0,0,0,128));
-	        	//detailB.setForeground(Color.ORANGE);
-	        //}
-			//setPanelStyle(btnPanel);
-
-	}
 	/**
 	 * Initializes the BuildingPanel
 	 */
@@ -167,29 +140,16 @@ extends JPanel {
 	public void init() {
 
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
-        // Set style and layout
-        setPanelStyle(this);
-        setLayout(new BorderLayout(0, 0));
+   
+        setLayout(new BorderLayout(0, 5));
 
         // 2014-11-27 Added namePanel and buildingNameLabel
         namePanel = new JPanel(new GridLayout(2,1,0,0));
-		//setupDetailButton();
-
-        //scrollPanel.setPreferredSize(new Dimension(200, 220));
         buildingNameLabel = new JLabel(building.getNickName(), JLabel.CENTER);
-        //final ShadowLabel buildingNameLabel = new ShadowLabel(building.getNickName());
-
         buildingNameLabel.setFont(new Font("Serif", Font.BOLD, 16));
-        if (isTranslucent) {
-        	//buildingNameLabel.setForeground(Color.YELLOW);
-        } else
-        	//buildingNameLabel.setForeground(new Color(102, 51, 0)); // dark brown
-
         namePanel.add(buildingNameLabel);
         add(namePanel, BorderLayout.NORTH);
-		setPanelStyle(namePanel);
-
-
+	
 		//2014-11-27  Added renameBtn for renaming a building
 		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JButton renameBtn = new JButton(Msg.getString(
@@ -200,19 +160,12 @@ extends JPanel {
 	    renameBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// if rename is done successfully, then update the building name
-				//boolean isRenamed =
 				renameBuilding();
-				//if (isRenamed)
-				//if (newName != null)
 				buildingNameLabel.setText(newName);
 			}
 		});
 		btnPanel.add(renameBtn);
 		namePanel.add(btnPanel);
-        if (isTranslucent) {
-    	    renameBtn.setBackground(Color.GRAY);
-        }
-		setPanelStyle(btnPanel);
 
 	    // Prepare function list panel.
         JPanel functionListPanel = new JPanel();
@@ -225,9 +178,7 @@ extends JPanel {
         scrollPanel.setPreferredSize(new Dimension(290, 280));
         scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
         add(scrollPanel, BorderLayout.CENTER);
-
-        setPanelStyle(functionListPanel);
-
+/*
 		if (isTranslucent) {
 			scrollPanel.setOpaque(false);
 			//scrollPanel.getViewport().setOpaque(false);
@@ -235,7 +186,7 @@ extends JPanel {
 			//scrollPanel.setViewportBorder(BorderFactory.createLineBorder(Color.orange));
 			scrollPanel.setBackground(new Color(0,0,0,128));
 		}
-
+*/
 		// 2014-11-04 Added SVG Image loading for the building
   	    Dimension expectedDimension = new Dimension(100, 100);
 	        //GraphicsNode node = SVGMapUtil.getSVGGraphicsNode("building", buildingType);
@@ -246,7 +197,7 @@ extends JPanel {
 	    svgPanel.setPreferredSize(expectedDimension);
 	    svgPanel.setMaximumSize(expectedDimension);
 	    svgPanel.setMinimumSize(expectedDimension);
-		setPanelStyle(svgPanel);
+		//setPanelStyle(svgPanel);
 
 		JPanel borderPanel = new JPanel();
 		borderPanel.setBorder(new MarsPanelBorder());// BorderFactory.createLineBorder(Color.black, 2, true));//
@@ -485,14 +436,14 @@ extends JPanel {
 
 	}
 
-	public void setPanelStyle(JPanel p) {
+	//public void setPanelStyle(JPanel p) {
 		//System.out.println("BuildingPanel.java : isTranslucent is "+ isTranslucent);
 		//if (isTranslucent) {
 			//p.setOpaque(false);
 			//p.setBackground(new Color(0,0,0,128));
 
 		//}
-	}
+	//}
 
 	/**
 	 * Ask for a new building name using JOptionPane
@@ -671,5 +622,32 @@ extends JPanel {
 		//System.out.println("BuildingPanel.java : setTheme() : isTranslucent is " + isTranslucent);
     }
 
+    /*
+	//2015-05-01 Added setupDetailButton
+	public void setupDetailButton() {
 
+			JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			JButton detailB = new JButton(Msg.getString(
+					"BuildingPanel.detailButton")); //$NON-NLS-1$
+			detailB.setPreferredSize(new Dimension(60, 20));
+			detailB.setFont(new Font("Serif", Font.PLAIN, 9));
+			detailB.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					if (building != null) {
+						desktop.openUnitWindow(building, false);
+					}
+				}
+			});
+			btnPanel.add(detailB);
+			namePanel.add(btnPanel);
+	        //if (isTranslucent) {
+	        	//detailB.setOpaque(false);
+	        	//detailB.setBackground(new Color(0,0,0,128));
+	        	//detailB.setForeground(Color.ORANGE);
+	        //}
+			//setPanelStyle(btnPanel);
+
+	}
+*/	
+    
 }

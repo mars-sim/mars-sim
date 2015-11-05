@@ -144,6 +144,11 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>

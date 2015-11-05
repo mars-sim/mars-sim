@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -73,6 +74,13 @@ implements MouseListener, ActionListener {
 
 		Crewable crewable = (Crewable) vehicle;
 
+		// Prepare title label.
+		JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelBots.title"), JLabel.CENTER); //$NON-NLS-1$
+		titleLabel.setFont(new Font("Serif", Font.BOLD, 16));
+		titlePanel.add(titleLabel);
+		topContentPanel.add(titlePanel);
+		
 		// Create crew count panel
 		JPanel crewCountPanel = new JPanel(new GridLayout(2, 1, 0, 0));
 		crewCountPanel.setBorder(new MarsPanelBorder());

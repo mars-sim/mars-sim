@@ -683,13 +683,13 @@ public class BuildingManager implements Serializable {
         	robot = (Robot) unit;
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            Settlement settlement = robot.getSettlement();
-	            Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION).iterator();
+	            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 	            while (i.hasNext()) {
 	                Building building = i.next();
 	                try {
-	                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
-
-	                    if (roboticStation.containsRobotOccupant(robot)) {
+	                	//RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+	                	//if (roboticStation.containsRobotOccupant(robot)) {                	                
+	                    if (building.equals(robot.getBuildingLocation())) {
 	                        if (result == null) {
 	                            result = building;
 	                        }
