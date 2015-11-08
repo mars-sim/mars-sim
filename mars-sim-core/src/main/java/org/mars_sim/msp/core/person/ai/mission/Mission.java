@@ -387,7 +387,7 @@ implements Serializable {
             if (member instanceof Person) {
             	Person person = (Person) member;
             	ShiftType shift = null;
-            	System.out.println("a mission is ended. Calling removeMember() in Mission.java. Name : " + person.getName() + "   Settlement : " + person.getSettlement());
+            	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
             	if (person.getSettlement() != null) {
             		shift = person.getSettlement().getAEmptyWorkShift(-1);
             		person.setShiftType(shift);

@@ -1,4 +1,4 @@
-package net.java.balloontip;
+package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.Color;
 
@@ -8,6 +8,9 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+import net.java.balloontip.BalloonTip;
+import net.java.balloontip.ListItemBalloonTip;
+import net.java.balloontip.TableCellBalloonTip;
 import net.java.balloontip.BalloonTip.AttachLocation;
 import net.java.balloontip.BalloonTip.Orientation;
 import net.java.balloontip.styles.BalloonTipStyle;

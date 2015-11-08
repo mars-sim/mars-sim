@@ -11,11 +11,10 @@ import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.unit_window.structure.StormTrackingWindow;
 
 import com.astroarts.OrbitViewer;
-
-import net.java.balloontip.BalloonToolTip;
 
 import javax.swing.*;
 

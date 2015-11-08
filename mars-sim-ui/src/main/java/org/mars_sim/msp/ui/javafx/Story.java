@@ -40,7 +40,7 @@ public class Story {
   private static final String MID4 = "Besides paying for the trip, yet the biggest challenge remains, namely, how do we keep ourselves healthy for the next two years ? "
 	  		+ "We would have to grow crops to sustain us. We would have to manufacture parts if things break. We would have to ensure we don't get depressed and do stupid things. ";
 
-  private static final String DATE    = "September 30, 2043.\nEarth.";
+  private static final String DATE    = "September 30, 2043.\nSchiaparelli Point, Mars.";
   private static final String ICON    = "/images/paper/scroll.png";
   private static final String PAPER   = "/images/paper/crumpled_paper_273118.JPG";
 

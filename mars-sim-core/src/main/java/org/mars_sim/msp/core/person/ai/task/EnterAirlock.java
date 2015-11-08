@@ -229,7 +229,7 @@ implements Serializable {
                     }
                 }
                 else {
-                    // If person is not airlock operator, just wait.
+                    // If robot is not airlock operator, just wait.
                     remainingTime = 0D;
                 }
             }
@@ -535,8 +535,9 @@ implements Serializable {
 
                 logger.finer(robot + " has exited airlock inside.");
 
-                // EVA SUIT NOT NEEDED 
+                // EVA SUIT NOT NEEDED for robot but may still call that so as to endTask() properly
                 setPhase(STORING_EVA_SUIT);
+                
             }
             else {
 

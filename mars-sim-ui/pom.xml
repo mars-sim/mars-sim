@@ -88,7 +88,7 @@
 			<groupId>com.sibvisions.jvx</groupId>
 			<artifactId>jfxtensions</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>com.jme3</groupId>
 			<artifactId>jme3-core</artifactId>
@@ -203,7 +203,17 @@
 			<groupId>com.vdurmont</groupId>
 			<artifactId>emoji-java</artifactId>
 			<version>2.2.0</version>
+		</dependency>		
+		<dependency>
+			<groupId>com.sothawo</groupId>
+			<artifactId>mapjfx-demo</artifactId>
+			<version>1.4.9</version>
 		</dependency>
+		<dependency>
+			<groupId>com.sothawo</groupId>
+			<artifactId>mapjfx</artifactId>
+			<version>1.4.9</version>
+		</dependency>	
 	</dependencies>
 	<repositories>
 		<repository>

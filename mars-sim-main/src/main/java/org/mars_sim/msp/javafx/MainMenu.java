@@ -83,9 +83,7 @@ import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTas
 import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
-//import org.mars_sim.msp.ui.javafx.MapjfxDemoApp;
-//import org.slf4j.LoggerFactory;
-//import org.slf4j.bridge.SLF4JBridgeHandler;
+
 
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
@@ -383,6 +381,9 @@ public class MainMenu {
 
    }
 
+   /*
+    * Loads settlement data from a default saved sim
+    */
 	public class LoadSimulationTask implements Runnable {
 		public void run() {
 			fileSize = 1;
@@ -400,6 +401,9 @@ public class MainMenu {
 		}
 	}
 
+	/*
+	 * Prepares the scene in the main scene
+	 */
 	public void prepareScene() {
 	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 
@@ -409,6 +413,9 @@ public class MainMenu {
 
 	}
 
+	/*
+	 * Sets up the stage for the main scene
+	 */
 	public void prepareStage() {
 
 	   mainScene.prepareOthers();
@@ -416,11 +423,11 @@ public class MainMenu {
 	   // prepare stage
 	   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
-	   mainSceneStage.setResizable(true);
 	   //stage.setFullScreen(true);
-	   mainSceneStage.setScene(mainSceneScene);
-	   mainSceneStage.show();
+	   mainSceneStage.setScene(mainSceneScene);   
+	   mainSceneStage.setResizable(true);
 	   mainSceneStage.requestFocus();
+	   mainSceneStage.show();
 
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);

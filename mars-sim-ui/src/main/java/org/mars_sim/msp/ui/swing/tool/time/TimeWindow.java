@@ -38,9 +38,8 @@ import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
-
-import net.java.balloontip.BalloonToolTip;
 
 /**
  * The TimeWindow is a tool window that displays the current

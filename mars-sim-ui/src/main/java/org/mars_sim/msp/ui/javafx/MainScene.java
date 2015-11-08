@@ -136,6 +136,7 @@ public class MainScene {
 	private StackPane swingPane;
 	private Tab swingTab;
 	private Tab nodeTab;
+	private BorderPane borderPane;
 
 	private DndTabPane dndTabPane;
 	private FXDesktopPane fxDesktopPane;
@@ -281,7 +282,7 @@ public class MainScene {
 		//menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");
 
 		// Create BorderPane
-		BorderPane borderPane = new BorderPane();
+		borderPane = new BorderPane();
 		borderPane.setTop(menuBar);
 		// borderPane.setTop(toolbar);
 		borderPane.setBottom(bottomBox);
@@ -298,14 +299,7 @@ public class MainScene {
 */
 		// 2015-05-26 Create fxDesktopPane
 		fxDesktopPane = marsNode.createFXDesktopPane();
-		fxDesktopPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
-
-
-		//2015-09-27 for testing the use of fxml
-		marsNode.createMaterialDesignWindow();
-		marsNode.createSettlementWindow();
-		marsNode.createStory();
-		marsNode.createDragDrop();
+		//fxDesktopPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
 
 		// 2015-05-26 Create the dndTabPane.
 		dndTabPane = new DndTabPane();
@@ -361,6 +355,8 @@ public class MainScene {
 		rootStackPane = new StackPane(borderPane);
 
 		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth()-40, primaryScreenBounds.getHeight()-40, Color.BROWN);
+		
+		//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
@@ -1251,7 +1247,6 @@ public class MainScene {
 			});
 		}
 		else {
-
 /*
 			GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 			System.out.println("ourGuide.getWidth() is " + ourGuide.getWidth());
@@ -1269,6 +1264,14 @@ public class MainScene {
 */
 			desktop.openInitialWindows();
 		}
+		
+		//2015-09-27 for testing the use of fxml
+		marsNode.createMaterialDesignWindow();
+		//marsNode.createSettlementWindow();
+		marsNode.createStory();
+		marsNode.createDragDrop();
+		marsNode.createEarthMap();
+		marsNode.createMarsMap();
 	}
 
 	public MarsNode getMarsNode() {
@@ -1287,6 +1290,10 @@ public class MainScene {
 		return rootStackPane;
 	}
 
+	public BorderPane getBorderPane() {
+		return borderPane;
+	}
+	
 	public void destroy() {
 		newSimThread = null;
 		loadSimThread = null;

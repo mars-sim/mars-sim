@@ -35,7 +35,7 @@ extends UnitWindow {
 
 		// Add tab panels
 		addTabPanel(new TabPanelActivity(robot, desktop));
-		addTabPanel(new TabPanelAttribute(robot, desktop));
+		//addTabPanel(new TabPanelAttribute(robot, desktop));
 
 		// Add death tab panel if robot is dead.
 		if (robot.getPhysicalCondition().isDead()) {
@@ -48,7 +48,7 @@ extends UnitWindow {
 		addTopPanel(new LocationTabPanel(robot, desktop));
 		// 2015-03-20  Added TabPanelSchedule
 		addTabPanel(new TabPanelSchedule(robot, desktop));
-		addTabPanel(new TabPanelSkill(robot, desktop));
+		//addTabPanel(new TabPanelSkill(robot, desktop));
 		//addTabPanel(new TabPanelHealth(robot, desktop));
 		//addTabPanel(new TabPanelGeneral(robot, desktop));
 

@@ -27,12 +27,11 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
+import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
-
-import net.java.balloontip.BalloonToolTip;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -49,7 +48,7 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	public static final int TIME_DELAY = 960;
+	public static final int TIME_DELAY = 1000;
 	
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;

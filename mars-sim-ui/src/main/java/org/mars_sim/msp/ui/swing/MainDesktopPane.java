@@ -11,10 +11,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyVetoException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -29,6 +33,10 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -53,6 +61,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
+import org.mars_sim.msp.ui.swing.tool.FXInSwing;
+import org.mars_sim.msp.ui.swing.tool.JFXPannableView;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -215,6 +225,52 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	   	//logger.info("MainDesktopPane's init() is done ");
 	}
 
+	public BufferedImage loadPartBufferedImage() {
+		
+		//Read Image from File
+		//File myJPegFile=new File("ImageAsJPeg.j2k");
+		//BufferedImage image = ImageIO.read(myJPegFile);
+		
+		Rectangle sourceRegion = new Rectangle(0, 0, 512, 512); // The region you want to extract 
+		BufferedImage image = null;
+		ImageInputStream stream = null;
+		try {
+			stream = ImageIO.createImageInputStream(new File("..."));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} // File or input stream 
+		final Iterator<ImageReader> readers = ImageIO.getImageReaders(stream); 
+
+		if (readers.hasNext()) { 
+			ImageReader reader = (ImageReader)readers.next(); 
+	
+			reader.setInput(stream, true, true); 
+	
+			try {
+				if ( reader.isImageTiled(0) == false) 
+					System.out.println("is not tiled"); 
+				else 
+					System.out.println("is tiled");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+	
+	
+			ImageReadParam param = reader.getDefaultReadParam(); 
+			param.setSourceRegion(sourceRegion); // Set region 
+	
+	
+			try {
+				image = reader.read(0, param);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} // Will read only the region specified
+		}
+		return image;
+	}
 	/**
 	 * Opens a popup announcement window on the desktop.
 	 * @param announcement the announcement text to display.
@@ -1220,7 +1276,22 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	public void openInitialWindows() {
 	   	//logger.info("MainDesktopPane's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
-
+		JFXPannableView v = new JFXPannableView(this);	
+		if (mainScene != null ) {
+			SwingUtilities.invokeLater(new Runnable(){
+		            @Override
+		            public void run() {
+		        		v.createJFX();
+		        		//try {
+		        			//v.setMaximum(true);
+		        		//} catch (PropertyVetoException e) {
+		        		//	e.printStackTrace();
+		        		//}
+			    		//v.toBack();
+		            }
+			});
+		}
+		
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
 		
@@ -1235,8 +1306,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			if (mainScene != null) {
 				int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
 				int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
-				ourGuide.setLocation(Xloc, Yloc);		
+				ourGuide.setLocation(Xloc, Yloc);	
+				ourGuide.toFront();
 			}
+			
 			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 
 		} else {
