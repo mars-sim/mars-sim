@@ -989,14 +989,15 @@ implements Serializable, Comparable<Task> {
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 	            Building currentBuilding = BuildingManager.getBuilding(robot);
-	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 	                Building building = buildingList.get(buildingIndex);
-	                String b = building.getBuildingType();
-	                if (b.equals("Hallway"))
-	                	walkToRandomLocation(true);
-	                else
+	                // do not stay blocking the hallway
+	                //if (currentBuilding.getBuildingType().equals("Hallway"))
+	                	//walkToRandomLocInBuilding(building, allowFail);
+	                	//walkToRandomLocation(allowFail);
+	                //else
 	                	walkToRandomLocInBuilding(building, allowFail);
 	            }
 	        }

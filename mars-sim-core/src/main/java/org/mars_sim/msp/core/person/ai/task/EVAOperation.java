@@ -498,8 +498,8 @@ implements Serializable {
 	    	    	exposure = Math.round(exposure*10000.0)/10000.0;
 	    	    	rad.addDose(i, exposure);
 	    	    	//System.out.println("rand is "+ rand);
-	    	    	//System.out.println(person.getName() + " just received a radiation exposure of "
-	    	    	//+ exposure + " mSv in body region " + i);
+	    	    	logger.info(person.getName() + " was just exposed to a fresh dose of radiation in an EVA operation ("
+	    	    	+ exposure + " mSv in body region " + i + ")");
         	    }
     	    }
 

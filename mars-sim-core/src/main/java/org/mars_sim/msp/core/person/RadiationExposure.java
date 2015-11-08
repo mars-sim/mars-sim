@@ -43,11 +43,9 @@ public class RadiationExposure implements Serializable {
 	// Career whole-body effective dose limits, per NCRP guidelines
 	private static final int WHOLE_BODY_DOSE = 1000; // TODO: it varies with age and differs in male and female
 
-	private int solCache = 1;
+	private int solCache = 1, counter30 = 1, counter360 = 1;
 
 	private boolean isExposureChecked = false;
-
-	private RadiationEvent event;
 
 	// dose equivalent limits in mSv (milliSieverts)
 	private int [][] DOSE_LIMITS = {
@@ -60,6 +58,7 @@ public class RadiationExposure implements Serializable {
 
 	private MarsClock clock;
 	private MasterClock masterClock;
+	private RadiationEvent event;
 
 	//private List<RadiationEvent> eventList = new CopyOnWriteArrayList<>();
 	private Map<RadiationEvent, Integer> eventMap = new ConcurrentHashMap<>();
@@ -82,6 +81,7 @@ public class RadiationExposure implements Serializable {
 		return eventMap;
 	}
 
+	// Called by checkForRadiation() in EVAOperation and WalkOutside
 	public void addDose(int bodyRegion, double amount) {
 
 		// amount is cumulative
@@ -144,6 +144,8 @@ public class RadiationExposure implements Serializable {
         int solElapsed = MarsClock.getSolOfYear(clock);
         if (solElapsed != solCache) {
         	solCache = solElapsed;
+        	counter30++;
+        	counter360++;
         	// set the boolean
         	isExposureChecked = false;
         }
@@ -160,22 +162,10 @@ public class RadiationExposure implements Serializable {
 
 	}
 
+	/*
+	 * Checks if the exposure yesterday exceeds the limit and reset counters
+	 */
 	public void checkExposure() {
-
-		if (solCache > 30)
-			carryOverDosage(THIRTY_DAY);
-
-		// use 360 days instead of 365 days for simplicity and synchronization with the 30-day carryover
-		if (solCache > 360)
-			carryOverDosage(ANNUAL);
-
-		// clear the annual counter
-		//if (solCache%365 == 0) {
-		//}
-
-		// clear the 30-day counter
-		//if (solCache%30 == 0) {
-		//}
 
 		// Compare if any element in a person's dose matrix exceeds the limit
 		boolean sick = false;
@@ -199,8 +189,25 @@ public class RadiationExposure implements Serializable {
         	//condition.addMedicalComplaint(complaint);
             //condition.getPerson().fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
         }
+
+
+		if (counter30 == 30) {
+			carryOverDosage(THIRTY_DAY);
+			counter30 = 0;
+		}
+
+		// TODO: convert to martian system. For now, use 360 sol for simplicity and synchronization with the 30-day carryover
+		if (counter360 == 360) {
+			carryOverDosage(ANNUAL);
+			counter360 = 0;
+		}
+
 	}
 
+	/*
+	 * Recomputes the values in the radiation dosage chart
+	 * @param type of interval
+	 */
 	public void carryOverDosage(int interval) {
 
 		double dosage = 0;
@@ -227,10 +234,12 @@ public class RadiationExposure implements Serializable {
 					type = 2;
 
 				if (interval == 0) {
+					// remove the recorded dosage from 31 sols ago
 					dose[type][THIRTY_DAY] = dose[type][THIRTY_DAY] - dosage;
 					//dose[type][ANNUAL] = dose[type][ANNUAL] + dosage;
 				}
 				else if (interval == 1) {
+					// remove the recorded dosage from 361 sols ago
 					dose[type][ANNUAL] = dose[type][ANNUAL] - dosage;
 					//dose[type][CAREER] = dose[type][CAREER] + dosage;
 				}

@@ -682,13 +682,15 @@ public class BuildingManager implements Serializable {
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            Settlement settlement = robot.getSettlement();
-	            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+	            //Settlement settlement = robot.getSettlement();
+	            result = robot.getBuildingLocation();
+
+/*	            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 	            while (i.hasNext()) {
 	                Building building = i.next();
 	                try {
 	                	//RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
-	                	//if (roboticStation.containsRobotOccupant(robot)) {                	                
+	                	//if (roboticStation.containsRobotOccupant(robot)) {
 	                    if (building.equals(robot.getBuildingLocation())) {
 	                        if (result == null) {
 	                            result = building;
@@ -703,6 +705,7 @@ public class BuildingManager implements Serializable {
 	                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
 	                }
 	            }
+*/
         	}
         }
         return result;

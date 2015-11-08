@@ -50,10 +50,11 @@ implements Serializable {
 	private static final int AIR_DENSITY = 2;
 	private static final int WIND_SPEED = 3;
 
-	//private double MILLISOLS_ON_FIRST_SOL = MarsClock.THE_FIRST_SOL;
-
-	//2015-02-19 Added MILLISOLS_PER_UPDATE
 	private static final int MILLISOLS_PER_UPDATE = 5 ; // one update per x millisols
+
+	private static final int RECORDING_FREQUENCY = 50; // in millisols
+
+	private int quotientCache;
 
 	private int millisols;
 
@@ -531,28 +532,28 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 
-		//computeTemperature();
-		//computeAirPressure();
-		//computeAirDensity();
-		//comuteSolarIrradiance();
-
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
-	    // Sample a data point every 50 millisols, (compute the average) and store the data
+
+		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 	    millisols =  (int) marsClock.getMillisol();
 
-	    if (millisols % 50 == 0) {
-	    	//List<DailyWeather> todayWeather = new CopyOnWriteArrayList<>();
-	    	//Iterator<Coordinates> list = coordinateList.iterator();
+	    int quotient = millisols / RECORDING_FREQUENCY;
+
+	    if (quotientCache != quotient) {
+
 	    	coordinateList.forEach(location -> {
 	    		DailyWeather weather = new DailyWeather(marsClock, getTemperature(location), getAirPressure(location),
 	    				getAirDensity(location), getWindSpeed(location),
 	    				surfaceFeatures.getSolarIrradiance(location), surfaceFeatures.getOpticalDepth(location));
 		    	todayWeather.add(weather);
 	    	});
+
+	    	quotientCache = quotient;
+
 	    }
 
 	    // check for the passing of each day

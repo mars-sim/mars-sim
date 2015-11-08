@@ -8,9 +8,11 @@
 package org.mars_sim.msp.core.structure;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
@@ -23,6 +25,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.mars.DailyWeather;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -70,8 +73,11 @@ public class Settlement extends Structure implements LifeSupportType {
 	private static final double MIN_TEMP = 0.0D;
 	private static final double MAX_TEMP = 48.0D;
 
-	// private static int count;
 	public static final int SOL_PER_REFRESH = 5;
+
+	private static final int RECORDING_FREQUENCY = 250; // in millisols
+
+	public static final int NUM_CRITICAL_RESOURCES = 9;
 
 	/*
 	 * Amount of time (millisols) required for periodic maintenance. private
@@ -87,9 +93,12 @@ public class Settlement extends Structure implements LifeSupportType {
 	/** The initial population of the settlement. */
 	private int initialPopulation;
 	private int initialNumOfRobots;
+	/**
+	 * Amount of time (millisols) that the settlement has had zero population.
+	 */
 	private double zeroPopulationTime;
 	private int scenarioID;
-	private int solCache = 1;
+	private int solCache = 1, counter30 = 1;
 	private int numShift;
 	private int numA; // number of people with work shift A
 	private int numB; // number of people with work shift B
@@ -97,6 +106,7 @@ public class Settlement extends Structure implements LifeSupportType {
 	private int numY; // number of people with work shift Y
 	private int numZ; // number of people with work shift Z
 	private int numOnCall;
+	private int quotientCache;
 
 	// 2014-11-23 Added foodProductionOverride
 	private boolean foodProductionOverride = false;
@@ -112,6 +122,12 @@ public class Settlement extends Structure implements LifeSupportType {
 	 */
 	private boolean constructionOverride = false;
 	/** The settlement's building manager. */
+
+	//private int[] resourceArray = new int[9];
+	//private int[] solArray = new int[30];
+	//private double[] samplePointArray = new double[(int)1000/RECORDING_FREQUENCY];
+	//private Object[][][] resourceObject = new Object[][][]{resourceArray, samplePointArray, solArray};
+
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
 	protected BuildingConnectorManager buildingConnectorManager;
@@ -133,15 +149,13 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
-	/**
-	 * Amount of time (millisols) that the settlement has had zero population.
-	 */
 
-	private Map<Integer, Double> resourceMapCache = new HashMap<>();
+	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
+	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
 
 	/**
 	 * Constructor for subclass extension.
-	 * 
+	 *
 	 * @param name
 	 *            the settlement's name
 	 * @param location
@@ -208,11 +222,12 @@ public class Settlement extends Structure implements LifeSupportType {
 
 		clock = Simulation.instance().getMasterClock().getMarsClock();
 
+
 	}
 
 	/**
 	 * Gets the settlement's meals replenishment rate.
-	 * 
+	 *
 	 * @return mealsReplenishmentRate
 	 */
 	// 2015-01-12 Added getMealsReplenishmentRate
@@ -222,7 +237,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Sets the settlement's meals replenishment rate.
-	 * 
+	 *
 	 * @param rate
 	 */
 	// 2015-01-12 Added setMealsReplenishmentRate
@@ -232,7 +247,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's desserts replenishment rate.
-	 * 
+	 *
 	 * @return DessertsReplenishmentRate
 	 */
 	// 2015-01-12 Added getDessertsReplenishmentRate
@@ -242,7 +257,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Sets the settlement's desserts replenishment rate.
-	 * 
+	 *
 	 * @param rate
 	 */
 	// 2015-01-12 Added setDessertsReplenishmentRate
@@ -252,7 +267,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement template's unique ID.
-	 * 
+	 *
 	 * @return ID number.
 	 */
 	// 2014-10-29 Added settlement id
@@ -262,7 +277,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the population capacity of the settlement
-	 * 
+	 *
 	 * @return the population capacity
 	 */
 	public int getPopulationCapacity() {
@@ -280,7 +295,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the current population number of the settlement
-	 * 
+	 *
 	 * @return the number of inhabitants
 	 */
 	public int getCurrentPopulationNum() {
@@ -289,7 +304,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets a collection of the inhabitants of the settlement.
-	 * 
+	 *
 	 * @return Collection of inhabitants
 	 */
 	public Collection<Person> getInhabitants() {
@@ -298,7 +313,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the current available population capacity of the settlement
-	 * 
+	 *
 	 * @return the available population capacity
 	 */
 	public int getAvailablePopulationCapacity() {
@@ -307,7 +322,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets an array of current inhabitants of the settlement
-	 * 
+	 *
 	 * @return array of inhabitants
 	 */
 	public Person[] getInhabitantArray() {
@@ -324,7 +339,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the robot capacity of the settlement
-	 * 
+	 *
 	 * @return the robot capacity
 	 */
 	public int getRobotCapacity() {
@@ -351,7 +366,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the current number of robots in the settlement
-	 * 
+	 *
 	 * @return the number of robots
 	 */
 	public int getCurrentNumOfRobots() {
@@ -360,7 +375,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets a collection of the number of robots of the settlement.
-	 * 
+	 *
 	 * @return Collection of robots
 	 */
 	public Collection<Robot> getRobots() {
@@ -369,7 +384,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the current available robot capacity of the settlement
-	 * 
+	 *
 	 * @return the available robots capacity
 	 */
 	public int getAvailableRobotCapacity() {
@@ -378,7 +393,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets an array of current robots of the settlement
-	 * 
+	 *
 	 * @return array of robots
 	 */
 	public Robot[] getRobotArray() {
@@ -395,7 +410,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets a collection of vehicles parked at the settlement.
-	 * 
+	 *
 	 * @return Collection of parked vehicles
 	 */
 	public Collection<Vehicle> getParkedVehicles() {
@@ -404,7 +419,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the number of vehicles parked at the settlement.
-	 * 
+	 *
 	 * @return parked vehicles number
 	 */
 	public int getParkedVehicleNum() {
@@ -414,7 +429,7 @@ public class Settlement extends Structure implements LifeSupportType {
 	/**
 	 * Returns true if life support is working properly and is not out of oxygen
 	 * or water.
-	 * 
+	 *
 	 * @return true if life support is OK
 	 * @throws Exception
 	 *             if error checking life support.
@@ -440,23 +455,10 @@ public class Settlement extends Structure implements LifeSupportType {
 		return result;
 	}
 
-	/*
-	 * public boolean lifeSupportCheckRobot() { boolean result = true;
-	 * 
-	 * AmountResource oxygen =
-	 * AmountResource.findAmountResource(LifeSupport.OXYGEN); if
-	 * (getInventory().getAmountResourceStored(oxygen, false) <= 0D) result =
-	 * false; AmountResource water =
-	 * AmountResource.findAmountResource(LifeSupport.WATER); if
-	 * (getInventory().getAmountResourceStored(water, false) <= 0D) result =
-	 * false; } // TODO: check against indoor air pressure if (getAirPressure()
-	 * != NORMAL_AIR_PRESSURE) result = false; // TODO: check if this is working
-	 * // 2014-11-28 Added MAX_TEMP if (getTemperature() < MIN_TEMP ||
-	 * getTemperature() > MAX_TEMP) result = false; return result; }
-	 */
+
 	/**
 	 * Gets the number of people the life support can provide for.
-	 * 
+	 *
 	 * @return the capacity of the life support system
 	 */
 	public int getLifeSupportCapacity() {
@@ -465,7 +467,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets oxygen from system.
-	 * 
+	 *
 	 * @param amountRequested
 	 *            the amount of oxygen requested from system (kg)
 	 * @return the amount of oxygen actually received from system (kg)
@@ -498,7 +500,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets water from system.
-	 * 
+	 *
 	 * @param amountRequested
 	 *            the amount of water requested from system (kg)
 	 * @return the amount of water actually received from system (kg)
@@ -523,7 +525,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the air pressure of the life support system.
-	 * 
+	 *
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
@@ -538,7 +540,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the temperature of the life support system.
-	 * 
+	 *
 	 * @return temperature (degrees C)
 	 */
 	public double getTemperature() {
@@ -556,7 +558,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Perform time-related processes
-	 * 
+	 *
 	 * @param time
 	 *            the amount of time passing (in millisols)
 	 * @throws Exception
@@ -600,34 +602,175 @@ public class Settlement extends Structure implements LifeSupportType {
 		buildingManager.timePassing(time);
 
 		// 2015-01-09 Added makeDailyReport()
-		makeDailyReport();
+		makeDailyReport(); // NOTE: also update solCache in makeDailyReport()
 
-		updateGoodsManager(time);
+		// Sample a data point every RECORDING_FREQUENCY (in millisols)
+	    int millisols =  (int) clock.getMillisol();
+	    int quotient = millisols / RECORDING_FREQUENCY ;
+
+	    if (quotientCache != quotient && quotient != 4) {
+		    //System.out.println("Yes sampling at millisols : " + millisols + " quotient : " + quotient);
+	    	// take a sample for each critical resource
+	    	sampleAllResources();
+	    	quotientCache = quotient;
+
+	    }
+
+	    // Updates the goodsManager once per sol at random time.
+	    // Why random time?
+	    updateGoodsManager(time);
 
 		// 2015-04-18 Added updateRegistry();
 		// updateRegistry();
 	}
 
+	public void sampleAllResources() {
+
+        for (int i= 0; i < NUM_CRITICAL_RESOURCES; i++) {
+        	sampleOneResource(i);
+        }
+	}
+
+	public void sampleOneResource(int resourceType) {
+	     String resource = null;
+
+			if (resourceType == 0) {
+				resource = LifeSupportType.OXYGEN;
+			}
+			else if (resourceType == 1) {
+				resource = "hydrogen";
+			}
+			else if (resourceType == 2) {
+				resource = "carbon dioxide";
+				}
+			else if (resourceType == 3) {
+				resource = "methane";
+				}
+			else if (resourceType == 4) {
+				resource = LifeSupportType.WATER;
+			}
+			else if (resourceType == 5) {
+				resource = "grey water";
+			}
+			else if (resourceType == 6) {
+				resource = "black water";
+			}
+			else if (resourceType == 7) {
+				resource = "rock samples";
+			}
+			else if (resourceType == 8) {
+				resource = "ice";
+			}
+
+			AmountResource ar = AmountResource.findAmountResource(resource);
+			//double newAmount = inv.getAmountResourceStored(ar, false);
+			//setOneResource(resourceType, newAmount);
+	//}
+	/*
+	 * Saves the amount of a resource onto the resourceStat map
+	 */
+	//public void setOneResource(int resourceType, double newAmount) {
+
+		if (resourceStat.containsKey(solCache)) {
+			Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
+
+			if (todayMap.containsKey(resourceType)) {
+				List<Double> list = todayMap.get(resourceType);
+				double newAmount = inv.getAmountResourceStored(ar, false);
+				list.add(newAmount);
+				//todayMap.put(resourceType, list); // is it needed?
+				//resourceStat.put(solCache, todayMap); // is it needed?
+				//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
+			}
+
+			else {
+				List<Double> list = new ArrayList<>();
+				double newAmount = inv.getAmountResourceStored(ar, false);
+				list.add(newAmount);
+				//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
+				todayMap.put(resourceType, list);
+				//resourceStat.put(solCache, todayMap); // is it needed?
+				//System.out.println("add a new amount and a new resource map");
+			}
+
+		} else {
+			List<Double> list = new ArrayList<>();
+			Map<Integer, List<Double>> todayMap = new HashMap<>();
+			double newAmount = inv.getAmountResourceStored(ar, false);
+			list.add(newAmount);
+			//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
+			todayMap.put(resourceType, list);
+			resourceStat.put(solCache, todayMap);
+			//System.out.println("add a new amount, a new resource map and a new sol");
+		}
+	}
+
+
+	/*
+	 * Gets the average amount of a resource on a particular sol
+	 */
+	// Called by getOneResource() in MarqueeTicker.java
+	public double getAverage(int solType, int resourceType) {
+		int sol = 0;
+		if (solType == 0) // today's average
+			sol = solCache;
+		else if (solType == -1) // yesterday's average
+			sol = solCache - 1;
+
+		int size = 0;
+		double average = 0;
+
+		if (resourceStat.containsKey(sol)) {
+			Map<Integer, List<Double>> map = resourceStat.get(sol);
+			//System.out.println("Sol " + solCache + " : yes to resourceStat.containsKey(" + sol + ")");
+			//System.out.println("map.containsKey(resourceType) is " + map.containsKey(resourceType));
+			if (map.containsKey(resourceType)) {
+				List<Double> list = map.get(resourceType);
+				//System.out.println("sol : " + solCache + "   solType : "  + solType + "   list is " + list);
+				size = list.size();
+				for (int i = 0; i < size; i++) {
+					average += list.get(i);
+					//System.out.println("list.get(i) is " + list.get(i));
+				}
+
+				//System.out.println("size is " + size + "   average is " + average);
+				average = average/size;
+
+			}
+			else {
+				average = 0; // how long will it be filled ? ?
+			}
+
+		}
+		else
+			average = 0;
+
+		//if (size != 0)
+		//	average = average/size;
+
+		return average;
+	}
+
 	/*
 	 * // 2015-04-18 updateRegistry() public void updateRegistry() {
-	 * 
+	 *
 	 * List<SettlementRegistry> settlementList =
 	 * MultiplayerClient.getInstance().getSettlementRegistryList();
-	 * 
+	 *
 	 * int clientID = Integer.parseInt( st.nextToken().trim() );
-	 * 
+	 *
 	 * String template = st.nextToken().trim(); int pop = Integer.parseInt(
 	 * st.nextToken().trim() ); int bots = Integer.parseInt(
 	 * st.nextToken().trim() ); double lat = Double.parseDouble(
 	 * st.nextToken().trim() ); double lo = Double.parseDouble(
 	 * st.nextToken().trim() );
-	 * 
-	 * 
+	 *
+	 *
 	 * settlementList.forEach( s -> { String pn = s.getPlayerName(); String sn =
 	 * s.getName(); if (pn.equals(playerName) && sn.equals(name))
 	 * s.updateRegistry(playerName, clientID, name, template, pop, bots, lat,
 	 * lo); });
-	 * 
+	 *
 	 * }
 	 */
 	/**
@@ -666,22 +809,35 @@ public class Settlement extends Structure implements LifeSupportType {
 		if (solElapsed != solCache) {
 
 			// getFoodEnergyIntakeReport();
-			// getSupplyDemandReport(solElapsed);
-			refreshMapDaily(solElapsed);
-			
-			printWorkShift("Sol "+ solCache);
+
+			//printWorkShift("Sol "+ solCache);
 			reassignWorkShift();
 			printWorkShift("Sol "+ solElapsed);
 
+			if (resourceStat.size() > 30)
+				resourceStat.remove(0);
+
+			//if (counter30 == 31) {
+			//	resourceStat.remove(0);
+				//resourceStat.clear();
+				//resourceStat = new HashMap<>();
+				//counter30--;
+			//}
+			//else
+			//	counter30++;
+
+
 			solCache = solElapsed;
 
+			// getSupplyDemandReport(solElapsed);
+			refreshMapDaily(solElapsed);
 		}
 	}
 
 	public void printWorkShift(String text) {
 		logger.info(text + " : " + getName() + "'s shifts ==> A : " + numA + "  B : " + numB + "  X : " + numX + "  Y : " + numY + "  Z : " + numZ + "  OnCall : " + numOnCall);// + "   Off : " + numOff);
 	}
-	
+
 	/*
 	 * Reassigns the work shift for all
 	 */
@@ -712,9 +868,9 @@ public class Settlement extends Structure implements LifeSupportType {
 				p.setShiftType(newShift);
 				//System.out.println(p.getName() + " is changing from shift " + oldShift + " to " + newShift);
 			}
-			// TODO: it shouldn't be done this way but currently, when currently when starting a trade mission, 
+			// TODO: it shouldn't be done this way but currently, when currently when starting a trade mission,
 			// the code fails to change a person's work shift to On-call.
-			else if (p.getMind().getMission() != null || p.getLocationSituation() == LocationSituation.IN_VEHICLE) { 
+			else if (p.getMind().getMission() != null || p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 				ShiftType oldShift = p.getTaskSchedule().getShiftType();
 				p.setShiftType(ShiftType.ON_CALL);
 				//System.out.println(p.getName() + " is changing from shift " + oldShift + " to On-Call");
@@ -781,9 +937,9 @@ public class Settlement extends Structure implements LifeSupportType {
 	}
 
 	/**
-	 * refreshes the supply and demand map data
+	 * Refreshes the supply and demand data and weather data
 	 */
-	// 2015-02-13 Added refreshSupplyDemandMap()
+	// 2015-02-13 Added refreshMapDaily()
 	public void refreshMapDaily(int solElapsed) {
 
 		boolean clearNow;
@@ -815,7 +971,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Updates the GoodsManager
-	 * 
+	 *
 	 * @param time
 	 */
 	private void updateGoodsManager(double time) {
@@ -828,7 +984,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets a collection of people affected by this entity.
-	 * 
+	 *
 	 * @return person collection
 	 */
 	// TODO: will this method be called by robots?
@@ -863,7 +1019,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's building manager.
-	 * 
+	 *
 	 * @return building manager
 	 */
 	public BuildingManager getBuildingManager() {
@@ -872,7 +1028,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's building connector manager.
-	 * 
+	 *
 	 * @return building connector manager.
 	 */
 	public BuildingConnectorManager getBuildingConnectorManager() {
@@ -881,7 +1037,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's goods manager.
-	 * 
+	 *
 	 * @return goods manager
 	 */
 	public GoodsManager getGoodsManager() {
@@ -890,7 +1046,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the closest available airlock to a person.
-	 * 
+	 *
 	 * @param person
 	 *            the person.
 	 * @return airlock or null if none available.
@@ -941,7 +1097,7 @@ public class Settlement extends Structure implements LifeSupportType {
 	 * Gets the closest available airlock at the settlement to the given
 	 * location. The airlock must have a valid walkable interior path from the
 	 * person's current location.
-	 * 
+	 *
 	 * @param person
 	 *            the person.
 	 * @param xLocation
@@ -955,7 +1111,7 @@ public class Settlement extends Structure implements LifeSupportType {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 
 		if (currentBuilding == null) {
-			//throw new IllegalStateException(person.getName() + " is not currently in a building.");	//throw new IllegalStateException(robot.getName() + " is not currently in a building."); 
+			//throw new IllegalStateException(person.getName() + " is not currently in a building.");	//throw new IllegalStateException(robot.getName() + " is not currently in a building.");
 			// this major bug is due to getBuilding(robot) above in BuildingManager
 			// what if a person is out there in ERV building for maintenance. ERV building has no LifeSupport function. currentBuilding will be null
 			System.err.println(person.getName() + " is not currently in a building.");
@@ -972,9 +1128,9 @@ public class Settlement extends Structure implements LifeSupportType {
 		Building currentBuilding = BuildingManager.getBuilding(robot);
 
 		if (currentBuilding == null) {
-			//throw new IllegalStateException(robot.getName() + " is not currently in a building."); 
+			//throw new IllegalStateException(robot.getName() + " is not currently in a building.");
 			// this major bug is due to getBuilding(robot) above in BuildingManager
-			// need to refine the concept of where a robot can go. They are thought to need RoboticStation function to "survive", 
+			// need to refine the concept of where a robot can go. They are thought to need RoboticStation function to "survive",
 			// much like a person who needs LifeSupport function
 			System.err.println(robot.getName() + " is not currently in a building.");
 			return null;
@@ -1012,7 +1168,7 @@ public class Settlement extends Structure implements LifeSupportType {
 	 * Gets the closest available airlock at the settlement to the given
 	 * location. The airlock must have a valid walkable interior path from the
 	 * given building's current location.
-	 * 
+	 *
 	 * @param building
 	 *            the building in the walkable interior path.
 	 * @param xLocation
@@ -1047,7 +1203,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Checks if a building has a walkable path from it to an airlock.
-	 * 
+	 *
 	 * @param building
 	 *            the building.
 	 * @return true if an airlock is walkable from the building.
@@ -1058,7 +1214,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the number of airlocks at the settlement.
-	 * 
+	 *
 	 * @return number of airlocks.
 	 */
 	public int getAirlockNum() {
@@ -1067,7 +1223,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's power grid.
-	 * 
+	 *
 	 * @return the power grid.
 	 */
 	public PowerGrid getPowerGrid() {
@@ -1076,7 +1232,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's heating system.
-	 * 
+	 *
 	 * @return thermalSystem.
 	 */
 	public ThermalSystem getThermalSystem() {
@@ -1085,7 +1241,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement template.
-	 * 
+	 *
 	 * @return template as string.
 	 */
 	public String getTemplate() {
@@ -1095,7 +1251,7 @@ public class Settlement extends Structure implements LifeSupportType {
 	/**
 	 * Gets all people associated with this settlement, even if they are out on
 	 * missions.
-	 * 
+	 *
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
@@ -1114,7 +1270,7 @@ public class Settlement extends Structure implements LifeSupportType {
 	/**
 	 * Gets all Robots associated with this settlement, even if they are out on
 	 * missions.
-	 * 
+	 *
 	 * @return collection of associated Robots.
 	 */
 	public Collection<Robot> getAllAssociatedRobots() {
@@ -1133,7 +1289,7 @@ public class Settlement extends Structure implements LifeSupportType {
 	/**
 	 * Gets all vehicles associated with this settlement, even if they are out
 	 * on missions.
-	 * 
+	 *
 	 * @return collection of associated vehicles.
 	 */
 	public Collection<Vehicle> getAllAssociatedVehicles() {
@@ -1155,7 +1311,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Sets the mission creation override flag.
-	 * 
+	 *
 	 * @param missionCreationOverride
 	 *            override for settlement mission creation.
 	 */
@@ -1165,7 +1321,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the mission creation override flag.
-	 * 
+	 *
 	 * @return override for settlement mission creation.
 	 */
 	public boolean getMissionCreationOverride() {
@@ -1174,7 +1330,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Sets the construction override flag.
-	 * 
+	 *
 	 * @param constructionOverride
 	 *            override for settlement construction/salvage mission creation.
 	 */
@@ -1184,7 +1340,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the construction override flag.
-	 * 
+	 *
 	 * @return override for settlement construction mission creation.
 	 */
 	public boolean getConstructionOverride() {
@@ -1193,7 +1349,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Sets the FoodProduction override flag.
-	 * 
+	 *
 	 * @param FoodProduction
 	 *            override for FoodProduction.
 	 */
@@ -1203,7 +1359,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the FoodProduction override flag.
-	 * 
+	 *
 	 * @return override for settlement FoodProduction.
 	 */
 	public boolean getFoodProductionOverride() {
@@ -1212,7 +1368,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Sets the manufacture override flag.
-	 * 
+	 *
 	 * @param manufactureOverride
 	 *            override for manufacture.
 	 */
@@ -1222,7 +1378,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the manufacture override flag.
-	 * 
+	 *
 	 * @return override for settlement manufacture.
 	 */
 	public boolean getManufactureOverride() {
@@ -1231,7 +1387,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Sets the resource process override flag.
-	 * 
+	 *
 	 * @param resourceProcessOverride
 	 *            override for resource processes.
 	 */
@@ -1241,7 +1397,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the resource process override flag.
-	 * 
+	 *
 	 * @return override for settlement resource processes.
 	 */
 	public boolean getResourceProcessOverride() {
@@ -1250,7 +1406,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's construction manager.
-	 * 
+	 *
 	 * @return construction manager.
 	 */
 	public ConstructionManager getConstructionManager() {
@@ -1259,7 +1415,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's achievement credit for a given scientific field.
-	 * 
+	 *
 	 * @param science
 	 *            the scientific field.
 	 * @return achievement credit.
@@ -1275,7 +1431,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the settlement's total scientific achievement credit.
-	 * 
+	 *
 	 * @return achievement credit.
 	 */
 	public double getTotalScientificAchievement() {
@@ -1290,7 +1446,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Add achievement credit to the settlement in a scientific field.
-	 * 
+	 *
 	 * @param achievementCredit
 	 *            the achievement credit.
 	 * @param science
@@ -1305,7 +1461,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the initial population of the settlement.
-	 * 
+	 *
 	 * @return initial population number.
 	 */
 	public int getInitialPopulation() {
@@ -1314,7 +1470,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/**
 	 * Gets the initial number of robots the settlement.
-	 * 
+	 *
 	 * @return initial number of robots.
 	 */
 	public int getInitialNumOfRobots() {
@@ -1574,7 +1730,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/*
 	 * Gets the current number of work shifts in a settlement
-	 * 
+	 *
 	 * @return a number, either 2 or 3
 	 */
 	public int getNumShift() {
@@ -1583,19 +1739,19 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/*
 	 * Restores the previous shift type
-	 * 
+	 *
 	 * public String reassignShiftType() { String shiftType = "None"; int rand =
 	 * -1; int pop = getCurrentPopulationNum();
-	 * 
+	 *
 	 * if (numShift == 1) { ; // do nothing } else if (numShift == 2) { //
 	 * examine numA and numB if (numA > ..pop.)
-	 * 
-	 * 
+	 *
+	 *
 	 * rand = RandomUtil.getRandomInt(1); if (rand != -1) { if (rand == 0)
 	 * shiftType = ShiftType.A; else if (rand == 1) shiftType = ShiftType.B;
-	 * 
+	 *
 	 * } } else if (numShift == 3) { // examine numX , numY and numZ
-	 * 
+	 *
 	 * rand = RandomUtil.getRandomInt(2); if (rand != -1) { if (rand == 0)
 	 * shiftType = ShiftType.X; else if (rand == 1) shiftType = ShiftType.Y;
 	 * else if (rand == 2) shiftType = ShiftType.Z;; } } return shiftType; }
@@ -1603,7 +1759,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/*
 	 * Increments the number of people in a particular work shift
-	 * 
+	 *
 	 * @param shiftType
 	 */
 	public void incrementAShift(ShiftType shiftType) {
@@ -1625,7 +1781,7 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	/*
 	 * Decrements the number of people in a particular work shift
-	 * 
+	 *
 	 * @param shiftType
 	 */
 	public void decrementAShift(ShiftType shiftType) {
@@ -1645,6 +1801,7 @@ public class Settlement extends Structure implements LifeSupportType {
 		}
 	}
 
+	/*
 	public Map<Integer, Double> getResourceMapCache() {
 		return resourceMapCache;
 	}
@@ -1653,6 +1810,15 @@ public class Settlement extends Structure implements LifeSupportType {
 		resourceMapCache.put(resourceType, newAmount);
 		// System.out.println(" done with setOneResourceCache(). new amount is "
 		// + newAmount);
+	}
+*/
+
+	public Map<Integer, Map<Integer, List<Double>>> getResourceStat() {
+		return resourceStat;
+	}
+
+	public int getSolCache() {
+		return solCache;
 	}
 
 	@Override

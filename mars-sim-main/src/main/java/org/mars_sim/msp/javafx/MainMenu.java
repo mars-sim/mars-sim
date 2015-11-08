@@ -83,20 +83,20 @@ import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTas
 import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
-import org.mars_sim.msp.ui.javafx.MapjfxDemoApp;
-import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+//import org.mars_sim.msp.ui.javafx.MapjfxDemoApp;
+//import org.slf4j.LoggerFactory;
+//import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /*
  * The MainMenu class creates the Main Menu and the spinning Mars Globe for MSP
  */
 public class MainMenu {
-	
+
 	// ------------------------------ FIELDS ------------------------------
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainMenu.class.getName());
-	
+
 	/** Logger for the class */
 	//private static final Logger logger;
 
@@ -107,7 +107,7 @@ public class MainMenu {
    //     SLF4JBridgeHandler.install();
     //    logger = LoggerFactory.getLogger(MainMenu.class);
     //}
-    
+
     private static final int WIDTH = 768-20;
     private static final int HEIGHT = 768-20;
 
@@ -189,24 +189,24 @@ public class MainMenu {
        screen.loadScreen(MainMenu.screen2ID, MainMenu.screen2File);
        screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        screen.setScreen(MainMenu.screen1ID);
-       
+
        if ( screen.lookup("#menuOptionBox") == null)
 			System.out.println("Warning: menu option box is not found");
-       
+
        VBox menuOptionBox = ((VBox) screen.lookup("#menuOptionBox"));
-/*       
+/*
        if (mouseEvent.getSource().equals(menuOptionBox)){
     	   System.out.println("hovering over menu option box");
     	   mainMenuScene.setCursor(Cursor.HAND);
        }
-*/       
+*/
        Rectangle rect = new Rectangle(WIDTH, HEIGHT);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
        rect.setArcWidth(30);
        rect.setArcHeight(30);
        rect.setEffect(new DropShadow(30,5,5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
        root = new StackPane();
-       
+
        //root.setStyle(
     	//        "-fx-background-color: rgba(255, 255, 255, 0.5);" +
     	//        "-fx-effect: dropshadow(gaussian, red, 50, 0, 0, 0);" +
@@ -214,7 +214,7 @@ public class MainMenu {
     	//    );
        //mainMenuScene.setFill(Color.TRANSPARENT);
 
- 
+
        root.setPrefHeight(WIDTH);
        root.setPrefWidth(HEIGHT);
        root.setStyle(
@@ -223,22 +223,22 @@ public class MainMenu {
        			"-fx-background-color: transparent; "
        			+ "-fx-background-radius: 1px;"
     		   );
-       
+
        Parent globe = createMarsGlobe();
-       
+
        root.getChildren().addAll(rect, globe, screen);
-       
+
        mainMenuScene = new Scene(root, Color.DARKGOLDENROD);//TRANSPARENT);//, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
        mainMenuScene.setCursor(Cursor.HAND);
-       
+
 
        mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){
-    	   
+
            public void handle(MouseEvent mouseEvent){
-               FadeTransition fadeTransition 
+               FadeTransition fadeTransition
                        = new FadeTransition(Duration.millis(1000), menuOptionBox);
                fadeTransition.setFromValue(0.0);
                fadeTransition.setToValue(1.0);
@@ -246,11 +246,11 @@ public class MainMenu {
 
            }
        });
-        
+
        mainMenuScene.setOnMouseExited(new EventHandler<MouseEvent>(){
 
            public void handle(MouseEvent mouseEvent){
-               FadeTransition fadeTransition 
+               FadeTransition fadeTransition
                        = new FadeTransition(Duration.millis(1000), menuOptionBox);
                fadeTransition.setFromValue(1.0);
                fadeTransition.setToValue(0.0);
@@ -258,14 +258,14 @@ public class MainMenu {
 
            }
        });
-       
-      
+
+
        // 2015-09-26 Added adjustRotation()
        adjustRotation(mainMenuScene, globe);
 
        // Enable dragging on the undecorated stage
        EffectUtilities.makeDraggable(mainMenuStage, screen);
-       
+
        //mainMenuStage.initStyle(StageStyle.UTILITY);
        mainMenuStage.initStyle(StageStyle.TRANSPARENT);
        mainMenuStage.initStyle(StageStyle.UNDECORATED);
@@ -282,7 +282,7 @@ public class MainMenu {
 	   //mainSceneStage.initModality(Modality.NONE);
 	   mainSceneStage.setMinWidth(1024);
 	   mainSceneStage.setMinHeight(600);
-	    
+
 	   //mainSceneStage.setMaxWidth(1920);
 	   //mainSceneStage.setMinHeight(1200);
 
@@ -299,12 +299,12 @@ public class MainMenu {
    public MainScene getMainScene() {
 	   return mainScene;
    }
-   
+
    public MultiplayerMode getMultiplayerMode() {
 	   return multiplayerMode;
 	}
 
-   public void runOne() {	  
+   public void runOne() {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 
 	   mainMenuStage.setIconified(true); //hide();
@@ -313,37 +313,37 @@ public class MainMenu {
    }
 
    public void runTwo() {
-	   
+
 		Future future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
-		
+
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
 		Platform.runLater(() -> {
 		//	mainMenuScene.setCursor(Cursor.WAIT);
-			// TODO: the ring won't turn after a couple of seconds 
+			// TODO: the ring won't turn after a couple of seconds
 			circleStage.show();
 			circleStage.requestFocus();
-		});	
-		
+		});
+
 		mainMenuStage.setIconified(true);//hide();
-		mainScene = new MainScene(mainSceneStage);		   
+		mainScene = new MainScene(mainSceneStage);
 
 		// 2015-10-13 Set up a Task Thread
 		Task task = new Task<Void>() {
             @Override
             protected Void call() {
 				try {
-					
+
 					   TimeUnit.MILLISECONDS.sleep(2000L);
 					   // Note 1: The delay time for launching the JavaFX UI should also be based on the file size of the default.sim
 					   long delay_time = (long) (fileSize * 4000L);
 					   TimeUnit.MILLISECONDS.sleep(delay_time);
-					
+
 					   //System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
 					   //System.out.println("isMainSceneDone is " + mainScene.isMainSceneDone());
-					   
+
 					   //while (!future.isDone() && !mainScene.isMainSceneDone()) {
-					   while ( !future.isDone() && mainMenu.getMainScene().getDesktop() == null) {						   
+					   while ( !future.isDone() && mainMenu.getMainScene().getDesktop() == null) {
 			        		long delay = (long) (fileSize * 1000L);
 							//System.out.println("Wait for " + delay/1000D + " secs inside the while loop");
 							TimeUnit.MILLISECONDS.sleep(delay);
@@ -359,21 +359,21 @@ public class MainMenu {
 					   }
 					   //System.out.println("future.get() is " + future.get());
 					   //System.out.println("future.isDone() is " + future.isDone());
-	       				
+
 					   TimeUnit.MILLISECONDS.sleep(2000L);
 					   Platform.runLater(() -> {
 						   prepareStage();
 					   });
-					   
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				return null;
             }
         };
-        
+
         //ProgressIndicator ind = createProgressCircle();
-        //ind.progressProperty().bind(task.progressProperty());       
+        //ind.progressProperty().bind(task.progressProperty());
 
         Thread th = new Thread(task);
         th.setDaemon(true);
@@ -406,11 +406,11 @@ public class MainMenu {
 	   // prepare main scene
 	   mainScene.prepareMainScene();
 	   mainSceneScene = mainScene.initializeScene();
-	   
+
 	}
-	
+
 	public void prepareStage() {
-	
+
 	   mainScene.prepareOthers();
 
 	   // prepare stage
@@ -421,10 +421,10 @@ public class MainMenu {
 	   mainSceneStage.setScene(mainSceneScene);
 	   mainSceneStage.show();
 	   mainSceneStage.requestFocus();
-	   
+
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);
-	   
+
 	   mainScene.initializeTheme();
 
 	   while (!mainScene.isMainSceneDone())
@@ -435,11 +435,11 @@ public class MainMenu {
 			e.printStackTrace();
 		}
 	   }
-	   
+
 	   Platform.runLater(() -> {
 		   circleStage.close();
 		});
-	   
+
 	   mainScene.openInitialWindows();
 
 	   //logger.info("done with stage.show() in MainMenu's prepareStage()");

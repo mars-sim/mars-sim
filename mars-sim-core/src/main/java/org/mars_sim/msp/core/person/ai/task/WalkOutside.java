@@ -815,8 +815,8 @@ implements Serializable {
 	    	    	double base = RadiationExposure.RAD_PER_SOL/2;
 	    	    	exposure = base + RandomUtil.getRandomDouble(base);
 	    	    	rad.addDose(i, exposure);
-	    	    	System.out.println(person.getName() + "just received a radiation exposure of "
-	    	    	+ exposure + " mSv in body region " + i);
+	    	    	logger.info(person.getName() + " was just exposed to a fresh dose of radiation walking outside ("
+	    	    	+ exposure + " mSv in body region " + i + ")");
         	    }
     	    }
 
