@@ -49,19 +49,19 @@ extends ToolWindow {
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
 	public static final int TIME_DELAY = 1000;
-	
+
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;
 
     private String statusText;
     private String populationText;
 	private String marsDateString, marsTimeString;
-	
+
     private JStatusBar statusBar;
     private JLabel solLabel, popLabel;
     private JLabel timeLabel, dateLabel;
     private JPanel subPanel;
-    
+
 	/** The main desktop. */
 	private MainDesktopPane desktop;
 	/** Map panel. */
@@ -71,7 +71,7 @@ extends ToolWindow {
 	private javax.swing.Timer marsTimer = null;
 
 	private BalloonToolTip balloonToolTip;
-	
+
 	private MarqueeTicker marqueeTicker;
 
 	/**
@@ -84,7 +84,7 @@ extends ToolWindow {
 		this.desktop = desktop;
 
         balloonToolTip = new BalloonToolTip();
-        
+
         init();
 
 		showMarsTime();
@@ -114,7 +114,7 @@ extends ToolWindow {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 	    //mainPanel.setOpaque(false);
 	    //mainPanel.setBackground(new Color(0,0,0,128));
-	    
+
 		setContentPane(mainPanel);
 
 		subPanel = new JPanel(new BorderLayout());
@@ -122,21 +122,21 @@ extends ToolWindow {
 	    //subPanel.setBackground(new Color(0,0,0,128));
 	    subPanel.setBackground(Color.BLACK);
 	    mainPanel.add(subPanel, BorderLayout.CENTER);
-		
+
 		mapPanel = new SettlementMapPanel(desktop, this);
 		//mainPanel.add(mapPanel, BorderLayout.CENTER);
 		subPanel.add(mapPanel, BorderLayout.CENTER);
-		
+
 		// 2015-10-24 Create MarqueeTicker
 		marqueeTicker = new MarqueeTicker(this);
 		marqueeTicker.setBackground(Color.BLACK);
 		subPanel.add(marqueeTicker, BorderLayout.SOUTH);
-		
+
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
-        solLabel = new JLabel(); 
+        solLabel = new JLabel();
         popLabel = new JLabel();  //statusText + populationText;
-        
+
         statusBar.setLeftComponent(solLabel, true);
         statusBar.setLeftComponent(popLabel, false);
 
@@ -159,13 +159,6 @@ extends ToolWindow {
 
 	}
 
-	public void paintComponent(Graphics g){
-	    super.paintComponent(g);
-	    g.setColor(Color.BLACK);
-	    g.fillRect(subPanel.getX(), subPanel.getY(), subPanel.getWidth(), subPanel.getHeight());
-	}
-	
-	
 	// 2015-02-05 Added showMarsTime()
 	public void showMarsTime() {
 		// 2015-01-07 Added Martian Time on status bar
@@ -175,8 +168,8 @@ extends ToolWindow {
 			    @Override
 			    public void actionPerformed(ActionEvent evt) {
 			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
-			    	marsDateString = marsClock.getDateString(); 
-			    	marsTimeString = marsClock.getTimeString(); //getMillisolString(marsClock); 
+			    	marsDateString = marsClock.getDateString();
+			    	marsTimeString = marsClock.getTimeString(); //getMillisolString(marsClock);
 			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0
 			    	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
 					dateLabel.setText("Martian Date : " + marsDateString + " ");
@@ -214,7 +207,16 @@ extends ToolWindow {
 	public MarqueeTicker getMarqueeTicker() {
 		return marqueeTicker;
 	}
-	
+
+/*
+	public void paintComponent(Graphics g){
+	    super.paintComponent(g);
+	    g.setColor(Color.BLACK);
+	    g.fillRect(subPanel.getX(), subPanel.getY(), subPanel.getWidth(), subPanel.getHeight());
+	    subPanel.draw(g);
+	}
+*/
+
 	@Override
 	public void destroy() {
 		mapPanel.destroy();

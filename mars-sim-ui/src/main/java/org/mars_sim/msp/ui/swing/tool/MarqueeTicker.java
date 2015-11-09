@@ -90,6 +90,8 @@ public class MarqueeTicker extends JPanel {
 	private boolean firstTime = true;
 
 	private String sp3 = "   ",	sp10 = "          ";
+	private String label_1sol = " (1 sol)";
+	private String label_3sols = " (3 sols)";
 
 	private MarqueePane _horizonMarqueeLeft;
 	private StyledLabel _styledLabel;
@@ -263,37 +265,38 @@ public class MarqueeTicker extends JPanel {
 		double todayAverage = thisSettlement.getAverage(0, resourceType);
 		//System.out.println("todayAverage is " + todayAverage);
 
-		String na = formatter.format(todayAverage);
-		int size_na = na.length();
+		String ave = formatter.format(todayAverage);
+		int size_ave = ave.length();
 
-		num1 = size_na;
-		s.append(na).append(sp3);
+		num1 = size_ave;
+		s.append(ave).append(sp3);
 
 		// Subtract yesterday's average from today's average to obtain the delta
-		double delta1sol = 0;
+		double delta_1sol = 0;
 
 		if (thisSettlement.getSolCache() != 1) {
-			delta1sol = todayAverage - thisSettlement.getAverage(-1, resourceType);
+			delta_1sol = todayAverage - thisSettlement.getAverage(-1, resourceType);
 		}
 
 		//System.out.println(settlement + " : " + resource + "  todayAverage : " + todayAverage + "  delta1sol : " + delta1sol);
 
-		String ch = formatter.format(delta1sol);
-		int size_ch = ch.length();
-		num2 = size_ch;
+		String delta1 = formatter.format(delta_1sol);
+		int size_delta1 = delta1.length();
 
-		if (delta1sol > 0){
-			s.append("+").append(ch);
-			size_ch++;
+		if (delta_1sol > 0){
+			s.append("+");
+			size_delta1++;
 		}
-		else if (delta1sol == 0){
-			s.append("+").append(ch);
-			size_ch++;
+		else if (delta_1sol == 0){
+			s.append("+");
+			size_delta1++;
 		}
-		else if (delta1sol < 0) {
-			s.append(ch);
+		else if (delta_1sol < 0) {
+			;
 		}
-		num2 = size_ch;
+		num2 = size_delta1;
+
+		s.append(delta1).append(label_1sol);
 
 		if (resourceType != NUM_OF_RESOURCES - 1)
 			s.append(sp10);
@@ -339,14 +342,8 @@ public class MarqueeTicker extends JPanel {
         	steps[4 * i + 3] = num2;
         }
 
-        //System.out.println("getResourceString(): resources = "+ resources);
-        //remove the extra null created at the beginning of the Stringbuffer string
+        //Remove the extra null created at the beginning of the Stringbuffer string
         s = s.replace("null", "");
-
-        //System.out.println("steps.length = " + size);
-        //System.out.println("s = " + s);
-       	//StyledLabel styledLabel = null;
-        //styledLabel =  StyledLabelBuilder.createStyledLabel(s);
 
         setStyledLabel(s);
     }
@@ -358,12 +355,9 @@ public class MarqueeTicker extends JPanel {
     public void setStyledLabel(String s) {
        	//StyledLabel styledLabel = new StyledLabel();
         _styledLabel.setText(s);
-        //_styledLabel = styledLabel;
 
         _styledLabel.setOpaque(false);
         _styledLabel.setBackground(new Color(0,0,0,128));
-        //styledLabel.setBackground(Color.BLACK);
-
 
 /*        System.out.print("steps[");
         for (int i = 0; i < size; i++) {
@@ -374,32 +368,36 @@ public class MarqueeTicker extends JPanel {
         }
  */
         int index = 0;
-       	int spaces3 = sp3.length();
+       	int sp_1sol = label_1sol.length();
+        int spaces3 = sp3.length();
     	int spaces10 = sp10.length();
         int size = steps.length;
         for (int i = 0; i < size; i++) {
            	//System.out.println("i = " + i);
         	//System.out.println("i % 4 = " + i%4);
-        	if (i % 4 == 0) {
+        	if (i % 4 == 0) { // create the style for the resource name
                	//System.out.println("index = " + index);
             	//System.out.println("length = " + steps[i]);
                 if (steps[i+1] != -1) {
 	            	//System.out.println("subscript is at index " + (index + steps[i+1]));
-                    StyleRange styleRange0 = new StyleRange(index, steps[i+1], Font.BOLD, Color.WHITE, Color.BLACK, 0, Color.WHITE);
+                	// create the style for the first part of the resource name
+                	StyleRange styleRange0 = new StyleRange(index, steps[i+1], Font.BOLD, Color.WHITE, Color.BLACK, 0, Color.WHITE);
+                    // create the style for the subscript font in the resource name
                 	StyleRange styleRange1 = new StyleRange(index + steps[i+1], 1, Font.BOLD, Color.WHITE, Color.BLACK, StyleRange.STYLE_SUBSCRIPT);
-                    StyleRange styleRange2 = new StyleRange(index + steps[i+1] + 1, steps[i] - 1 - steps[i+1] + spaces3, Font.BOLD, Color.WHITE, Color.BLACK, 0, Color.WHITE);
+                	// create the style for the second part of the resource name                    //
+                	StyleRange styleRange2 = new StyleRange(index + steps[i+1] + 1, steps[i] - 1 - steps[i+1] + spaces3, Font.BOLD, Color.WHITE, Color.BLACK, 0, Color.WHITE);
                 	_styledLabel.addStyleRange(styleRange0);
                 	_styledLabel.addStyleRange(styleRange1);
                 	_styledLabel.addStyleRange(styleRange2);
                 }
-                else {
+                else { // create the style for a resource's current average, num0
                     StyleRange styleRange3 = new StyleRange(index, steps[i]  + spaces3, Font.BOLD, Color.WHITE, Color.BLACK, 0, Color.WHITE);
                     _styledLabel.addStyleRange(styleRange3);
                 }
 
                 index += steps[i] + spaces3;
         	}
-        	else if (i % 4 == 1) {
+        	else if (i % 4 == 1) { // create the style for the subscript was done in the previous if (i % 4 == 0)
 /*        		if (steps[i] != -1) {
         			int sub_index = (index - steps[i-1] - spaces3 + steps[i]);
         			StyleRange styleRange2 = new StyleRange(sub_index, 1, StyleRange.STYLE_SUBSCRIPT);
@@ -414,33 +412,32 @@ public class MarqueeTicker extends JPanel {
 	        		//index += steps[i];
 	        	}
 */        	}
-        	else if (i % 4 == 2) {
+        	else if (i % 4 == 2) { // create the style for num1
             	//System.out.println("index = " + index );
             	//System.out.println("length = " + steps[i]);
         		_styledLabel.addStyleRange(new StyleRange(index, steps[i]  + spaces3, Font.ITALIC, Color.WHITE, Color.BLACK, 0, Color.WHITE));
                 index += steps[i] + spaces3;
         	}
-            else {
+            else if (i % 4 == 3) { //create the style for the first delta, num2
             	//System.out.println("index = " + index);
             	//System.out.println("length = " + steps[i]);
             	//System.out.println("styledLabel.getText() is " + styledLabel.getText());
                 if (_styledLabel.getText().charAt(index) == '-') {
-                    _styledLabel.addStyleRange(new StyleRange(index, steps[i] + spaces10, Font.PLAIN, Color.RED, Color.BLACK, 0, Color.WHITE));
+                    _styledLabel.addStyleRange(new StyleRange(index, steps[i] + sp_1sol + spaces10, Font.PLAIN, Color.RED, Color.BLACK, 0, Color.WHITE));
                 }
                 else {
-                    _styledLabel.addStyleRange(new StyleRange(index, steps[i] + spaces10, Font.PLAIN, Color.GREEN, Color.BLACK, 0, Color.WHITE));
+                    _styledLabel.addStyleRange(new StyleRange(index, steps[i] + sp_1sol + spaces10, Font.PLAIN, Color.GREEN, Color.BLACK, 0, Color.WHITE));
                 }
-                index += steps[i] + spaces10;
+                index += steps[i] + sp_1sol + spaces10;
             }
 
         }
 
-        //return styledLabel;
     }
 
 
     /*
-	 * Updates the diplay values to the latest one from resourcesCache when the ticker reaches the end of the display
+	 * Updates the display values to the latest one from resourcesCache when the ticker reaches the end of the display
 	 */
     public Component getUpdate() {
         JPanel panel = new JPanel();//new FlowLayout(FlowLayout.CENTER,0,0));
@@ -493,21 +490,14 @@ public class MarqueeTicker extends JPanel {
      * Assembles the marguee ticker
      */
     public void createMarqueePanel() { //Component getMarqueePanel() {
-        //JPanel panel = new JPanel();
-        //StyledLabel styledLabel = new StyledLabel();
     	_styledLabel = new StyledLabel();
     	createResourceTicker();//new StyledLabel();
-        //customizeStyledLabel(styledLabel);
-        //_styledLabel = styledLabel;
-
-        //styledLabel.setBackground(Color.BLACK);
 
         MarqueePane horizonMarqueeLeft = new MarqueePane(_styledLabel);
 
         //horizonMarqueeLeft.setOpaque(false);
         //horizonMarqueeLeft.setBackground(new Color(0,0,0,128));
         //horizonMarqueeLeft.setBackground(Color.BLACK);
-
         //horizonMarqueeLeft.setPreferredSize(new Dimension(WIDTH, 40));
 
         //int width = (int) horizonMarqueeLeft.getPreferredSize().getWidth(); //600;//settlementWindow.getWidth();
@@ -519,16 +509,6 @@ public class MarqueeTicker extends JPanel {
         //		new PartialEtchedBorder(PartialEtchedBorder.LOWERED, PartialSide.NORTH), "Scroll Left", JideTitledBorder.LEADING, JideTitledBorder.ABOVE_TOP),
         //        BorderFactory.createEmptyBorder(0, 0, 0, 0)));
 
- /*
-        JPanel demoPanel = new JPanel(new GridLayout(1,3,0,0));//new BorderLayout(0, 0));
-        demoPanel.setBackground(Color.BLACK);
-        demoPanel.add(horizonMarqueeLeft, BorderLayout.CENTER);//BEFORE_FIRST_LINE);
-        JPanel miscPanel = new JPanel(new GridLayout(1,2,0,0));
-        demoPanel.add(miscPanel, BorderLayout.EAST);
-        miscPanel.add(getFreeze());//, BorderLayout.EAST);
-        miscPanel.add(getUpdate());//, BorderLayout.CENTER);
-	    //System.out.println("done with setting up getDemoPanel()");
- */
         _horizonMarqueeLeft = horizonMarqueeLeft;
 
     }
@@ -539,7 +519,7 @@ public class MarqueeTicker extends JPanel {
 	    g.setColor(Color.BLACK);
 	    g.fillRect(0, 0, horizonMarqueeLeft.getWidth(), horizonMarqueeLeft.getHeight());  //getX(), getY()
 	}
-*/
+
 
 	@Override
     protected void paintComponent(Graphics g) {
@@ -556,8 +536,8 @@ public class MarqueeTicker extends JPanel {
         g2d.fill(getBounds());
 
         g2d.dispose();
-
     }
+*/
 
 	public void addItem(JPanel p, Component c, int x, int y, int w, int h, int align, int fill) {
 
@@ -621,7 +601,6 @@ public class MarqueeTicker extends JPanel {
 			_horizonMarqueeLeft.startAutoScrolling();
 		}
 	}
-
 
 	public void destroy() {
 		settlement = null;

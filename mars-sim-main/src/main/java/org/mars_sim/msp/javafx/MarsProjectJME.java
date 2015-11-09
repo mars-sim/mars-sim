@@ -6,15 +6,6 @@
  */
 package org.mars_sim.msp.javafx;
 
-import org.mars_sim.msp.Utility;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.helpGenerator.HelpGenerator;
-import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
-import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.SplashWindow;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
-
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -22,33 +13,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.*;
-
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.io.Console;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 /**
- * The MarsProjectJME class creates an JME app and calls on MarsProjectUtility to create an JavaFX thread
+ * The MarsProjectJME class starts a JME's thread and calls on a static method in MarsProjectUtility to create a JavaFX thread
  */
 public class MarsProjectJME extends SimpleApplication {
 
@@ -57,30 +23,32 @@ public class MarsProjectJME extends SimpleApplication {
      * @param args command line arguments.
      */
     public MarsProjectJME() {
-
     }
-
 
     public static void main(String[] arArgs) {
 
+    	// NOTE: hit ESC to quit the 3D demo cube
+    	MarsProjectJME mpj = new MarsProjectJME();
+    	//mpj.start();
+
+    	// Bypassing jME app config screen with the following settings
+    	mpj.setShowSettings(false);
+    	AppSettings settings = new AppSettings(true);
+    	settings.put("Width", 1280);
+    	settings.put("Height", 720);
+    	settings.put("Title", "My awesome Game");
+    	settings.put("VSync", true);
+    	//Anti-Aliasing
+    	settings.put("Samples", 4);
+    	mpj.setSettings(settings);
+
+    	mpj.start();
+
+
     	MarsProjectUtility.launchApp((app, stage) -> {
-
-            	MarsProjectJME mpj = new MarsProjectJME();
-
-            	// Bypassing jME app launch screen with the following settings
-            	mpj.setShowSettings(false);
-            	AppSettings settings = new AppSettings(true);
-            	settings.put("Width", 1280);
-            	settings.put("Height", 720);
-            	settings.put("Title", "My awesome Game");
-            	settings.put("VSync", true);
-            	//Anti-Aliasing
-            	settings.put("Samples", 4);
-            	mpj.setSettings(settings);
-
-            	mpj.start();
 /*
-                Button but = testing.button;
+ 				MarsProjectJME mpj = new MarsProjectJME();
+                Button but = mpj.button;
                 stage.setWidth(300);
                 stage.setHeight(300);
                 Scene scene = new Scene(but);
@@ -89,7 +57,6 @@ public class MarsProjectJME extends SimpleApplication {
                 stage.show();
 */
             }, arArgs);
-
     }
 
     @Override
