@@ -30,6 +30,7 @@ import org.mars_sim.msp.MarsProject;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.helpGenerator.HelpGenerator;
+import org.mars_sim.msp.javafx.MarsProjectUtility.AppLaunch;
 import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 
@@ -62,7 +63,7 @@ public class MarsProjectFX extends Application  {
     public MarsProjectFX() {
 	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName() + " Thread");
     	marsProjectFX = this;
-		/*
+/*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
         System.out.println(javaCompiler.toString());
 
@@ -74,19 +75,7 @@ public class MarsProjectFX extends Application  {
         }
 
         System.out.print("availableProcessors = " + Runtime.getRuntime().availableProcessors() + "\n");
-        */
-    }
-
-    /*
-     * Initiates any tasks or methods on a JavaFX-Launcher Thread
-     * @see javafx.application.Application#init()
-     */
-    public void init() {
-	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() + " Thread");
-	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
-	   	Simulation.instance().startSimExecutor();
-	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
-	   	//prepare();
+*/
     }
 
 
@@ -109,10 +98,9 @@ public class MarsProjectFX extends Application  {
         // general text antialiasing
         System.setProperty("swing.aatext", "true");
         //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
-
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
-        
+
     	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
 		argList = Arrays.asList(args);
@@ -142,17 +130,11 @@ public class MarsProjectFX extends Application  {
 
 	public void start(Stage primaryStage) {
 	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
-
 		if (useGUI) {
 		    mainMenu = new MainMenu(this); //, args, true);
 		    mainMenu.initAndShowGUI(primaryStage);
 		}
 	}
-
-    public void stop() {
-	   	//System.out.println("MarsProjectFX's stop is on " + Thread.currentThread().getName() + " Thread");
-
-    }
 
 	public List<String> getArgList() {
 		return argList;
@@ -358,16 +340,36 @@ public class MarsProjectFX extends Application  {
 		  }
 	}
 
+/*
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        if (appLaunch != null) {
+            appLaunch.start(this, primaryStage);
+        }
+    }
+*/
+	/*
+     * Initiates any tasks or methods on a JavaFX-Launcher Thread
+     * @see javafx.application.Application#init()
+     */
+    @Override
+    public void init() throws Exception {
+	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() + " Thread");
+	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
+
+	   	Simulation.instance().startSimExecutor();
+	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
+    }
+
+    @Override
+    public void stop() throws Exception {
+	   	//logger.info("MarsProjectFX's stop is on " + Thread.currentThread().getName() + " Thread");
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException{
     	//logger.info("MarsProjectFX's main() is in " + Thread.currentThread().getName() + " Thread");
     	MarsProjectFX.args = args;
-
-        //HelloNode app = new HelloNode();
-        //app.setShowSettings(false);
-        //app.start();
-
-    	/*
+/*
         // 2015-10-13  Added command prompt console
         Console console = System.console();
         if(console == null && !GraphicsEnvironment.isHeadless()){
@@ -380,4 +382,5 @@ public class MarsProjectFX extends Application  {
 */
         launch(args);
     }
+
 }
