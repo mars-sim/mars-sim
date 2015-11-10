@@ -103,11 +103,10 @@ implements Serializable {
         	//at org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior.<init>(WalkSettlementInterior.java:145)
         	//at org.mars_sim.msp.core.person.ai.task.EnterAirlock.exitingAirlockPhase(EnterAirlock.java:549)
         	//at org.mars_sim.msp.core.person.ai.task.EnterAirlock.performMappedPhase(EnterAirlock.java:129)
- 
+
         	// Question: can we use a gentler approach as follows until it's clearly understood and resolved.
-            logger.warning(person.getName() + " is not currently in a building.");        	
-        	return;
-        	
+            logger.severe(person.getName() + " is not currently in a building.");
+        	endTask();
         }
 
         // Determine the walking path to the destination.
@@ -154,17 +153,16 @@ implements Serializable {
         startBuilding = BuildingManager.getBuilding(robot);
         if (startBuilding == null) {
             //throw new IllegalStateException(robot.getName() + " is not currently in a building.");
-           
+
             // Note: the above will trigger exception below and halt the sim
         	// Exception in thread "pool-4-thread-3024" java.lang.IllegalStateException: RepairBot 003 is not currently in a building.
         	//at org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior.<init>(WalkSettlementInterior.java:145)
         	//at org.mars_sim.msp.core.person.ai.task.EnterAirlock.exitingAirlockPhase(EnterAirlock.java:549)
         	//at org.mars_sim.msp.core.person.ai.task.EnterAirlock.performMappedPhase(EnterAirlock.java:129)
- 
+
         	// Question: can we use a gentler approach as follows until it's clearly understood and resolved.
-        	logger.warning(robot.getName() + " is not currently in a building.");
-        	
-        	return;
+        	logger.severe(robot.getName() + " is not currently in a building.");
+        	endTask();
         }
 
         // Determine the walking path to the destination.
@@ -188,14 +186,15 @@ implements Serializable {
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            //throw new IllegalArgumentException("Task phase is null");        	
+            //throw new IllegalArgumentException("Task phase is null");
         	if (person != null) {
-                logger.warning(person.getName() + " at " + person.getBuildingLocation() + " : Task phase is null");
+                logger.severe(person.getName() + " at " + person.getBuildingLocation() + " : Task phase is null");
         	}
         	else if (robot != null) {
-                logger.warning(robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null");                      
+                logger.severe(robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null");
         	}
-            return time;
+        	endTask();
+            return 0;
         }
         if (WALKING.equals(getPhase())) {
             return walkingPhase(time);

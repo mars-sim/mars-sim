@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 //import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Logger;
 
+import javafx.scene.layout.Background;
 import javafx.animation.FadeTransition;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.effect.DropShadow;
@@ -77,6 +78,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Modality;
 
+import org.controlsfx.control.MaskerPane;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTask;
@@ -127,19 +129,6 @@ public class MainMenu {
 
     //private boolean cleanUI = true;
 
-    private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
-    private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
-    private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
-    //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
-
-
-    private RotateTransition rt;
-    private Sphere mars;
-    private PhongMaterial material;
-    private PointLight sun;
-
     //private Group root;
     private StackPane root;
 	private Stage mainSceneStage, mainMenuStage, circleStage;
@@ -152,8 +141,9 @@ public class MainMenu {
 	private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
 	private MultiplayerMode multiplayerMode;
-
 	public MainMenuController mainMenuController;
+
+	public SpinningGlobe spinningGlobe;
 
     public MainMenu(MarsProjectFX marsProjectFX) {
     	this.marsProjectFX = marsProjectFX;
@@ -164,6 +154,7 @@ public class MainMenu {
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
+	@SuppressWarnings("restriction")
 	void initAndShowGUI(Stage mainMenuStage) {
 	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
@@ -222,7 +213,8 @@ public class MainMenu {
        			+ "-fx-background-radius: 1px;"
     		   );
 
-       Parent globe = createMarsGlobe();
+       spinningGlobe = new SpinningGlobe(this);
+       Parent globe = spinningGlobe.createMarsGlobe();
 
        root.getChildren().addAll(rect, globe, screen);
 
@@ -259,7 +251,7 @@ public class MainMenu {
 
 
        // 2015-09-26 Added adjustRotation()
-       adjustRotation(mainMenuScene, globe);
+       spinningGlobe.adjustRotation(mainMenuScene, globe);
 
        // Enable dragging on the undecorated stage
        EffectUtilities.makeDraggable(mainMenuStage, screen);
@@ -424,7 +416,7 @@ public class MainMenu {
 	   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
 	   //stage.setFullScreen(true);
-	   mainSceneStage.setScene(mainSceneScene);   
+	   mainSceneStage.setScene(mainSceneScene);
 	   mainSceneStage.setResizable(true);
 	   mainSceneStage.requestFocus();
 	   mainSceneStage.show();
@@ -501,112 +493,6 @@ public class MainMenu {
 	   //}
    //}
 
-
-   public Parent createMarsGlobe() {
-	   logger.info("Is ConditionalFeature.SCENE3D supported on this platform? " + Platform.isSupported(ConditionalFeature.SCENE3D));
-
-	   Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
-       Image dImage = new Image(this.getClass().getResource("/maps/MarsV3Shaded1k.jpg").toExternalForm());
-       Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
-       //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.jpg").toExternalForm()); //.toString());
-
-       material = new PhongMaterial();
-       material.setDiffuseColor(Color.WHITE);
-       material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
-       material.setSpecularColor(Color.TRANSPARENT);
-       material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
-       material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
-       //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
-
-       mars = new Sphere(4);
-       mars.setMaterial(material);
-       mars.setRotationAxis(Rotate.Y_AXIS);
-
-       // Create and position camera
-       PerspectiveCamera camera = new PerspectiveCamera(true);
-       camera.getTransforms().addAll(
-               new Rotate(-10, Rotate.Y_AXIS),
-               new Rotate(-10, Rotate.X_AXIS),
-               new Translate(0, 0, -10));
-
-       sun = new PointLight(Color.rgb(255, 243, 234));
-       sun.translateXProperty().bind(sunDistance.multiply(-0.82));
-       sun.translateYProperty().bind(sunDistance.multiply(-0.41));
-       sun.translateZProperty().bind(sunDistance.multiply(-0.41));
-       sun.lightOnProperty().bind(sunLight);
-
-       AmbientLight ambient = new AmbientLight(Color.rgb(1, 1, 1));
-
-       // Build the Scene Graph
-       Group globeComponents = new Group();
-       //globeComponents.setStyle("-fx-border-color: rgba(0, 0, 0, 0);");
-       //globeComponents.setScaleX(.75);
-       //globeComponents.setScaleY(.75);
-       globeComponents.getChildren().add(camera);
-       globeComponents.getChildren().add(mars);
-       globeComponents.getChildren().add(sun);
-       globeComponents.getChildren().add(ambient);
-
-       // Increased the speed of rotation 500 times as dictated by the value of time-ratio in simulation.xml
-       rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), mars);
-       //rt.setByAngle(360);
-       rt.setInterpolator(Interpolator.LINEAR);
-       rt.setCycleCount(Animation.INDEFINITE);
-       rt.setAxis(Rotate.Y_AXIS);
-       rt.setFromAngle(360);
-       rt.setToAngle(0);
-       //rt.setCycleCount(RotateTransition.INDEFINITE);
-       rt.play();
-
-       // Use a SubScene
-       SubScene subScene = new SubScene(globeComponents, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
-       subScene.setId("sub");
-       subScene.setCamera(camera);
-
-       return new Group(subScene);
-   }
-
-   /*
-    * Adjusts Mars Globe's rotation rate according to how much the user's drags his mouse across the globe
-    */
-   // 2015-09-26 Added adjustRotation()
-
-   private void adjustRotation(Scene scene, Parent parent) {
-
-	   // 2015-09-26 Changes Mars Globe's rotation rate if a user drags his mouse across the globe
-	   scene.setOnMousePressed((event) -> {
-		   // 2015-10-13 Detected right mouse button pressed
-           if (event.isSecondaryButtonDown())
-        	   anchorX = event.getSceneX();
-	   });
-
-	   scene.setOnMouseDragged((event) -> {
-		   // 2015-10-13 Detected right mouse button drag
-		   if (event.isSecondaryButtonDown()) {
-
-			   double a = anchorX - event.getSceneX();
-			   double rotationMultipler;
-
-			   if (a < 0) { // left to right
-				   rate = Math.abs(a/100D);
-			   }
-			   else { // right to left
-				   rate = Math.abs(100D/a) ;
-			   }
-
-			   if (rate < 100) { // This prevents unrealistic and excessive rotation rate that creates spurious result (such as causing the direction of rotation to "flip"
-				   rt.setRate(rate);
-				   anchorX = 0;
-				   rotationMultipler = rate * 500D;
-
-				   //System.out.println("rate is " + rate + "   rotationMultipler is "+ rotationMultipler);
-
-				   mainMenuController.setRotation((int)rotationMultipler);
-			   }
-           }
-	   });
-   }
-
    /*
     * Sets the main menu controller at the start of the sim.
     */
@@ -618,41 +504,9 @@ public class MainMenu {
    }
 
    /*
-    * Resets the rotational rate back to 500X
-    */
-   // 2015-09-27 Added setDefaultRotation()
-   public void setDefaultRotation() {
-	   rt.setRate(1.0);
-   }
-
-/*
-	public boolean exitDialog(Stage stage) {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.initOwner(stage);
-		alert.setTitle("Exiting MSP");//("Confirmation Dialog");
-		alert.setHeaderText("Do you really want to exit MPS?");
-		//alert.initModality(Modality.APPLICATION_MODAL);
-		alert.setContentText("Warning: exiting the main menu will terminate any running simultion without saving it.");
-		ButtonType buttonTypeYes = new ButtonType("Yes");
-		ButtonType buttonTypeNo = new ButtonType("No");
-	   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-	   	Optional<ButtonType> result = alert.showAndWait();
-	   	if (result.get() == buttonTypeYes){
-	   		if (multiplayerMode != null)
-	   			if (multiplayerMode.getChoiceDialog() != null)
-	   				multiplayerMode.getChoiceDialog().close();
-	   		alert.close();
-	   		return true;
-	   	} else {
-	   		alert.close();
-	   	    return false;
-	   	}
-   	}
-*/
-   /*
     * Create the progress circle animation while waiting for loading the main scene
     */
-	public ProgressIndicator createProgressCircle() {
+	public void createProgressCircle() {
 
 		StackPane stackPane = new StackPane();
 
@@ -661,25 +515,34 @@ public class MainMenu {
 		//stackPane.getChildren().add(controlsPane);
 		//controlsPane.setCenter(new TableView<Void>());
 
+		MaskerPane indicator = new MaskerPane();
+		indicator.setScaleX(1.2);
+		indicator.setScaleY(1.2);
+
+		//indicator.setMaxSize(200, 200);
+/*
 		ProgressIndicator indicator = new ProgressIndicator();
 		indicator.setMaxSize(120, 120);
 		//indicator.setProgress(50);
 		ColorAdjust adjust = new javafx.scene.effect.ColorAdjust();
 		adjust.setHue(-0.07); // -.07, -0.1 cyan; 3, 17 = red orange; -0.4 = bright green
 		indicator.setEffect(adjust);
+*/
 		stackPane.getChildren().add(indicator);
 		StackPane.setAlignment(indicator, Pos.CENTER);
-		StackPane.setMargin(indicator, new Insets(20));
-		stackPane.setBackground(javafx.scene.layout.Background.EMPTY);
+		//StackPane.setMargin(indicator, new Insets(5));
+		stackPane.setBackground(Background.EMPTY);
+		//stackPane.setScaleX(1.2);
+		//stackPane.setScaleY(1.2);
 
 		circleStage = new Stage();
-		Scene scene = new Scene(stackPane, 120, 120);
+		Scene scene = new Scene(stackPane);//, 200, 200);
 		scene.setFill(Color.TRANSPARENT);
 		circleStage.initStyle (StageStyle.TRANSPARENT);
 		circleStage.setScene(scene);
         circleStage.show();
 
-        return indicator;
+        //return indicator;
 	}
 
 	public Stage getCircleStage() {
@@ -690,12 +553,16 @@ public class MainMenu {
 		return screen;
 	}
 
+	public MainMenuController getMainMenuController() {
+		return mainMenuController;
+	}
+
+	public SpinningGlobe getSpinningGlobe() {
+		return spinningGlobe;
+	}
+
 	public void destroy() {
 
-		rt = null;
-		mars = null;
-		material = null;
-		sun = null;
 		root = null;
 		screen = null;
 		mainSceneStage = null;

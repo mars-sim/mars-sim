@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project
+That's how much Koreans inspire * Mars Simulation Project
  * MarsProject.java
  * @version 3.08 2015-04-14
 

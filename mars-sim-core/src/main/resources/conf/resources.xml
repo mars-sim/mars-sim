@@ -216,6 +216,8 @@
 	<resource name="Olivine" phase="solid" />
 	<resource name="Taenite" phase="solid" />
 	<resource name="Sylvite" phase="solid" >Potassium Chloride </resource>
+<!-- Compare with NASA MGS/TES Mineral Maps at http://www.mars.asu.edu/data/
+May add Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz, Amphibole, Silicates, etc. -->
 
 <!-- Mineral Elements -->
 	<resource name="Copper" phase="solid" />

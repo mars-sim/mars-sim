@@ -679,10 +679,10 @@ implements Serializable {
         // Check for accident.
         checkForAccident(time);
 
-        // 2015-05-29 Check for radiation exposure during the EVA operation.
-        checkForRadiation(time);
-
 		if (person != null) {
+
+		    // 2015-05-29 Check for radiation exposure during the EVA operation.
+	        checkForRadiation(time);
 	        // If there are any EVA problems, end walking outside task.
 	        if (!ignoreEndEVA && EVAOperation.checkEVAProblem(person)) {
 	            endTask();
@@ -798,27 +798,8 @@ implements Serializable {
 
     	if (person != null) {
 
-    		RadiationExposure rad = person.getPhysicalCondition().getRadiationExposure();
-
-    	    double chance = RadiationExposure.CHANCE_PER_100MSOL_DURING_EVA;
-
-    	    boolean exposed = false;
-
-    	    if (RandomUtil.lessThanRandPercent(chance * time/1000D))
-    	    	exposed = true;
-
-    	    double exposure = 0; // in milli-Sievert [mSv]
-
-    	    if (exposed) {
-    	    	// each body region receive a random max dosage
-        	    for (int i = 0; i < 3 ; i++) {
-	    	    	double base = RadiationExposure.RAD_PER_SOL/2;
-	    	    	exposure = base + RandomUtil.getRandomDouble(base);
-	    	    	rad.addDose(i, exposure);
-	    	    	logger.info(person.getName() + " was just exposed to a fresh dose of radiation walking outside ("
-	    	    	+ exposure + " mSv in body region " + i + ")");
-        	    }
-    	    }
+    		RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
+    		re.checkForRadiation(time);
 
     	} else if (robot != null) {
 

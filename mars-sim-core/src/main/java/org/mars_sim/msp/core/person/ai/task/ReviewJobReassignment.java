@@ -106,7 +106,7 @@ implements Serializable {
                 while (i.hasNext()) {
                     Person tempPerson = i.next();
                     List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
-                    int last = list.size() -1 ;
+                    int last = list.size()-1 ;
                     JobAssignmentType status = list.get(last).getStatus();
 
                     if (status != null)
@@ -114,23 +114,45 @@ implements Serializable {
 	                        //System.out.println("ReviewJobReassignment : start reviewing job reassignment request from "
 	                        //		+ tempPerson.getName() + "\n");
 
+		                	String pendingJobStr = list.get(last).getJobType();
+		                	String lastJobStr = null;
+		                	if (last == 0)
+		                		lastJobStr = pendingJobStr;
+	                		else
+	                			lastJobStr = list.get(last-1).getJobType();
+		                	String approvedBy =  person.getName() + "(" + person.getRole().getType() + ")";
+
 		                	// TODO in future
 	                        // 1. Reviews user's rating
-		                	int rating = list.get(last).getJobRating();
-		                	//if (rating <=1) disapproved !
-	                    	// 2. Reviews this person's preference
-		                	// 3. May go to him/her to have a chat
-		                	// 4. modified by the affinity between them
-		                	// 5. Approve/disapprove the job change
+		                	double rating = list.get(last).getJobRating();
+		                	double cumulative_rating = 0;
+		                	int size = list.size();
+		                	for (int j = 0; j < size; j++) {
+		                		cumulative_rating += list.get(j).getJobRating();
+		                	}
+		                	cumulative_rating = cumulative_rating/size;
 
-		                	String pendingJobStr = list.get(last).getJobType();
+		                	if (rating < 2.5 || cumulative_rating < 2.5) {
+		                		// not approved
+			                	// TODO: if disapproved !
+		                    	// 2. Reviews this person's preference
+			                	// 3. May go to him/her to have a chat
+			                	// 4. modified by the affinity between them
+			                	// 5. Approve/disapprove the job change
+			                	tempPerson.getMind().reassignJob(lastJobStr, true, JobManager.USER, JobAssignmentType.NOT_APPROVED, approvedBy);
+
+		                		logger.info("ReviewJobReassignment : " + approvedBy + " did NOT approve "
+			                			+ tempPerson + "'s job reassignment as "
+		                        		+ pendingJobStr + "Try again when the performance rating is higher.");// + "\n");
+		                	}
+		                	else {
 
 		                	// Updates the job
-		                	String approvedBy =  person.getName() + "(" + person.getRole().getType() + ")";
 		                	tempPerson.getMind().reassignJob(pendingJobStr, true, JobManager.USER, JobAssignmentType.APPROVED, approvedBy);
 		                	logger.info("ReviewJobReassignment : " + approvedBy + " just approved "
 		                			+ tempPerson + "'s job reassignment as "
 	                        		+ pendingJobStr);// + "\n");
+		                	}
 	                    }
 	                } // end of while
 	            } // end of roleType

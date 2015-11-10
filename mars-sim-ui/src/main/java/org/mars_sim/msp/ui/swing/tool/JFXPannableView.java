@@ -23,6 +23,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
+import org.controlsfx.control.InfoOverlay;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
@@ -31,52 +32,63 @@ public class JFXPannableView extends JInternalFrame
 implements InternalFrameListener {
 //JFrame{
 
-    JFXPanel panel;
-    Scene scene;
-    StackPane stack;
-    Text hello;
+    //boolean wait = true;
+
+	private String imageUrl;
+	private JFXPanel panel;
+	private Scene scene;
+	//private StackPane stack;
+	//private Text hello;
 
     private Image backgroundImage;
+    private ImageView backgroundImageView;
     private ScrollPane scroll;
-    MainDesktopPane desktop;
-    boolean wait = true;
+    private MainDesktopPane desktop;
+
 
     @SuppressWarnings("restriction")
 	public JFXPannableView(MainDesktopPane desktop){
         super("MarsScape", true, false, true, true);
         this.desktop = desktop;
 
+        imageUrl = getClass().getResource("/maps/Mars_Viking_MDIM21_ClrMosaic_global_2500m(compressed).jpg").toExternalForm();
+        backgroundImage = new Image(imageUrl);
+       	backgroundImageView = new ImageView(imageUrl);
     }
 
     @SuppressWarnings("restriction")
 	public void createJFX() {
-    	backgroundImage = new Image(this.getClass().getResource("/maps/Mars_Viking_MDIM21_ClrMosaic_global_2500m(compressed).jpg").toExternalForm());
-       	// In non-java mode, Why "Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Internal graphics not initialized yet" ?
+      	// In non-java mode, Why "Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Internal graphics not initialized yet" ?
        	double width = desktop.getMainScene().getBorderPane().getWidth();
 		double height = desktop.getMainScene().getBorderPane().getHeight();
 
         panel = new JFXPanel();
+        	//StackPane layout = new StackPane(infoOverlay);
 
         Platform.runLater(new Runnable(){
             @Override
             public void run() {
 
             	ScrollPane scrollPane = createMap();
-                stack = new StackPane();
-                scene = new Scene(stack, width, height);
-        		stack.prefHeightProperty().bind(desktop.getMainScene().getBorderPane().heightProperty());
-        		stack.prefWidthProperty().bind(desktop.getMainScene().getBorderPane().widthProperty());
+                //StackPane stack = new StackPane();
+				//stack.getChildren().add(scrollPane);//hello);
+
+		      	//String info = "This is a pannable Mars map with pixel size 8536 x 4268. Drag mouse cursor to the left/right/top/bottom to see more.";
+		       	//InfoOverlay infoOverlay = new InfoOverlay(stack, info);
+
+
+                scene = new Scene(scrollPane, width, height);
+        		//stack.prefHeightProperty().bind(desktop.getMainScene().getBorderPane().heightProperty());
+        		//stack.prefWidthProperty().bind(desktop.getMainScene().getBorderPane().widthProperty());
 
                 //hello = new Text("Hello");
-
                 //scene.setFill(Color.BLACK);
                 //hello.setFill(Color.WHEAT);
                 //hello.setEffect(new Reflection());
 
                 panel.setScene(scene);
-                stack.getChildren().add(scrollPane);//hello);
 
-                wait = false;
+                //wait = false;
             }
         });
 
@@ -122,29 +134,31 @@ implements InternalFrameListener {
     }
 */
 
-    public void centerMap(BorderPane pane) {
+    public void centerMap(ScrollPane scrollPane, BorderPane pane) {
   	    // bind the preferred size of the scroll area to the size of the scene.
-  	    scroll.prefWidthProperty().bind(pane.widthProperty());
-  	    scroll.prefHeightProperty().bind(pane.widthProperty());
+  	    scrollPane.prefWidthProperty().bind(pane.widthProperty());
+  	    scrollPane.prefHeightProperty().bind(pane.widthProperty());
 
   	    // center the scroll contents.
-  	    scroll.setHvalue(scroll.getHmin() + (scroll.getHmax() - scroll.getHmin()) / 2);
-  	    scroll.setVvalue(scroll.getVmin() + (scroll.getVmax() - scroll.getVmin()) / 2);
+  	    scrollPane.setHvalue(scrollPane.getHmin() + (scrollPane.getHmax() - scrollPane.getHmin()) / 2);
+  	    scrollPane.setVvalue(scrollPane.getVmin() + (scrollPane.getVmax() - scrollPane.getVmin()) / 2);
 
     }
 
     public ScrollPane createMap() {
 
   	    // construct the scene contents over a stacked background.
+
+       	//StackPane layout = new StackPane(backgroundImageView);
   	    StackPane layout = new StackPane();
   	    layout.getChildren().setAll(
-  	      new ImageView(backgroundImage)
+  	    		backgroundImageView
   	      //, createKillButton()
   	    );
 
   	    // wrap the scene contents in a pannable scroll pane.
   	    scroll = createScrollPane(layout);
-  	    centerMap(desktop.getMainScene().getBorderPane());
+  	    centerMap(scroll, desktop.getMainScene().getBorderPane());
   	    return scroll;
   	  }
 

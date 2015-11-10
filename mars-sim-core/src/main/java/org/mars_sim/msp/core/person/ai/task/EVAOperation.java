@@ -474,34 +474,8 @@ implements Serializable {
 
     	if (person != null) {
 
-    		RadiationExposure rad = person.getPhysicalCondition().getRadiationExposure();
-    	    //double chance = Math.round(RadiationExposure.CHANCE_PER_100MSOL_DURING_EVA
-    	    //		* 100D * time/1000D * 1000D/100D* 100.0)/100.0;
-    	    double chance = Math.round(RadiationExposure.CHANCE_PER_100MSOL_DURING_EVA
-    	    		* 100D * time)/100.0;
-
-    	    boolean exposed = false;
-
-    	    double rand = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
-
-    	    if (rand < chance)
-    	    	exposed = true;
-    	    //if (RandomUtil.lessThanRandPercent(chance));
-    	    //	exposed = true;
-    	    double exposure = 0; // in milli-Sievert [mSv]
-       	    //System.out.println("chance is " + chance + " rand is "+ rand);
-    	    if (exposed) {
-    	    	// each body region receive a random max dosage
-        	    for (int i = 0; i < 3 ; i++) {
-	    	    	double baselevel = RadiationExposure.RAD_PER_SOL * time/1000D/2D;
-	    	    	exposure = baselevel + RandomUtil.getRandomDouble(baselevel);
-	    	    	exposure = Math.round(exposure*10000.0)/10000.0;
-	    	    	rad.addDose(i, exposure);
-	    	    	//System.out.println("rand is "+ rand);
-	    	    	logger.info(person.getName() + " was just exposed to a fresh dose of radiation in an EVA operation ("
-	    	    	+ exposure + " mSv in body region " + i + ")");
-        	    }
-    	    }
+    		RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
+    		re.checkForRadiation(time);
 
     	} else if (robot != null) {
 

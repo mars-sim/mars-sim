@@ -16,7 +16,7 @@ public class MainMenuController implements Initializable, ControlledScreen {
 
 	@FXML
 	Label rotationRate;
-	
+
 
 
     ScreensSwitcher switcher;
@@ -36,7 +36,7 @@ public class MainMenuController implements Initializable, ControlledScreen {
     //private void onMouseExited(ActionEvent event) {
     //	menu.setFont("-fx-text-fill: #FFB03B;");
     //}
-    
+
     @FXML
     private void goToOne(ActionEvent event){
     	switcher.getMainMenu().runOne();
@@ -70,7 +70,7 @@ public class MainMenuController implements Initializable, ControlledScreen {
     @FXML
     private void setDefaultRotation(ActionEvent event) {
     	rotationRate.setText("500X");
-    	switcher.getMainMenu().setDefaultRotation();
+    	switcher.getMainMenu().getSpinningGlobe().setDefaultRotation();
     }
 
     public void setRotation(int rate) {

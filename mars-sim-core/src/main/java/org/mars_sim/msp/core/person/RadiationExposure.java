@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -24,10 +25,50 @@ public class RadiationExposure implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
-    // probability of getting hit by GCG/SPE radiation in an interval of 100 milliSol during an EVA
-    public static final double CHANCE_PER_100MSOL_DURING_EVA = .5; // (arbitrary for now)
+	/** default serial id. */
+	private static Logger logger = Logger.getLogger(RadiationExposure.class.getName());
 
-    public static final double RAD_PER_SOL = .4087; // = 150 mSv / 365 days
+    /* Curiosity's Radiation Assessment Detector (RAD). see http://www.boulder.swri.edu/~hassler/rad/
+     * http://www.swri.org/3pubs/ttoday/Winter13/pdfs/MarsRadiation.pdf
+     * Note: Mars rover Curiosity received an average dose of 300 mSv over the 180-day journey.
+     * 300 milli-sieverts is equivalent to 24 CAT scans, or more than 15x
+     * the annual radiation limit for a worker in a nuclear power plant.
+     */
+
+    /* Probability of getting hit by GCG/SPE radiation within an interval of 100 milliSol
+     * during an EVA  [in % per earth hour roughly]
+     * RAD surface radiation data show an average GCR dose equivalent rate of
+     * 0.67 millisieverts per day from August 2012 to June 2013 on the Martian surface.
+     * .67 mSv per day * 180 sols = 120.6 mSv
+     *
+     * In comparison, RAD data show an average GCR dose equivalent rate of
+     * 1.8 millisieverts per day on the journey to Mars
+     * see Ref_A at http://www.michaeleisen.org/blog/wp-content/uploads/2013/12/Science-2013-Hassler-science.1244797.pdf
+     */
+
+    // Compute once for each time interval (e.g. every 100 millisols) in Settlement.java.
+
+    // Baseline radiation, assuming 50% of chance
+    public static final double BASELINE_CHANCE_PER_100MSOL_DURING_EVA = 47.5; //[in %] arbitrary
+    // Galactic cosmic rays (GCRs) events
+    public static final double GCR_CHANCE_PER_100MSOL_DURING_EVA = 50; //[in %] arbitrary
+    // Solar energetic particles (SEPs) events
+    // TODO: vary according to the solar cycle and other factors
+    // On MSL, SEPs is only 5% of GCRs
+    public static final double SEP_CHANCE_PER_100MSOL_DURING_EVA = 2.5; //[in %] arbitrary
+
+    public static final double BASELINE_RAD_PER_SOL = .1; //  [in mSv] arbitrary
+    // Based on Ref_A's DAT data, the average GCR dose equivalent rate on the Mars surface
+    // is 0.64 ± 0.12 mSv/day
+    public static final double GCR_RAD_PER_SOL = .64; //  [in mSv] arbitrary
+    public static final double GCR_RAD_SWING = .12; //  [in mSv] arbitrary
+    // Based on Ref_A's DAT data, the dose equivalent is 50 μSv, ~ 25% of the GCR for the one day duration of the event.
+    // Note : frequency and intensity of SEP events is sporadic and difficult to predict.
+    // Its flux varies by several orders of magnitude and are typically dominated by protons,
+    public static final double SEP_RAD_PER_SOL = .21; //  [in mSv] arbitrary
+    // SPE onset times on the order of minutes to hours and durations of hours to days.
+
+
 
 	// ROWS of the 2-D dose array
 	private static final int THIRTY_DAY = 0;
@@ -65,10 +106,10 @@ public class RadiationExposure implements Serializable {
 
 	@SuppressWarnings("unused")
 	private PhysicalCondition condition;
-	//private Person person;
+	private Person person;
 
 	public RadiationExposure(PhysicalCondition condition) {
-		//this.person = person;
+		this.person = condition.getPerson();
 		this.condition = condition;
 		dose = new double[3][3];
 	}
@@ -159,7 +200,6 @@ public class RadiationExposure implements Serializable {
         	isExposureChecked = true;
         }
 
-
 	}
 
 	/*
@@ -183,6 +223,7 @@ public class RadiationExposure implements Serializable {
             }
         }
 
+        // Note: exposure to a dose of 1 Sv is associated with a five percent increase in fatal cancer risk.
         // TODO if sick is true, call methods in HealthProblem...
         if (sick) {
         	//Complaint nausea = new Complaint();
@@ -250,5 +291,64 @@ public class RadiationExposure implements Serializable {
 	public double[][] getDose() {
 		return dose;
 	}
+
+
+    /**
+     * Check for radiation exposure of the person performing this EVA.
+     * @param time the amount of time on EVA (in millisols)
+     */
+    public void checkForRadiation(double time) {
+
+    	if (person != null) {
+
+    		double exposure = 0;
+       	    double shield_factor = 0;
+
+      	    // TODO: account for the effect of atmosphere pressure on radiation dosage as shown by RAD data
+    		//RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
+
+    		boolean[] exposed = person.getSettlement().getExposed();
+
+    		if (exposed[1])
+	    		shield_factor = RandomUtil.getRandomDouble(1) ; // arbitrary
+	    	// NOTE: SPE may shield off GCR as shown in Curiosity's RAD data
+	    	// since GCR flux is modulated by solar activity. It decreases during solar activity maximum
+	    	// and increases during solar activity minimum
+	    	else
+	    		shield_factor = 1 ; // arbitrary
+
+       	    //System.out.println("chance is " + chance + " rand is "+ rand);
+    	    for (int i = 0; i < 3 ; i++) {
+    	    	if (exposed[i]) {
+    	    	// each body region receive a random max dosage
+	        	    for (int j = 0; j < 3 ; j++) {
+		    	    	double baselevel = 0;
+		    	    	if (exposed[0]) {
+		    	    		baselevel = BASELINE_RAD_PER_SOL * time/100D;
+			    	    	exposure = baselevel + RandomUtil.getRandomInt(-1,1)
+			    	    		* RandomUtil.getRandomDouble(baselevel/3D); // arbitrary
+		    	    	}
+		    	    	else if (exposed[1]) {
+		    	    		baselevel = .05; // somewhat arbitrary
+			    	    	exposure = baselevel + RandomUtil.getRandomDouble(SEP_RAD_PER_SOL * time/100D); // highly unpredictable, somewhat arbitrary
+		    	    	}
+		    	    	else if (exposed[2]) {
+		    	    		baselevel = GCR_RAD_PER_SOL * time/100D;
+			    	    	exposure = baselevel + RandomUtil.getRandomInt(-1,1)
+			    	    			* RandomUtil.getRandomDouble(shield_factor * GCR_RAD_SWING * time/100D); // according to Curiosity RAD's data
+		    	    	}
+
+		    	    	exposure = Math.round(exposure*10000.0)/10000.0;
+
+		    	    	addDose(j, exposure);
+		    	    	//System.out.println("rand is "+ rand);
+		    	    	if (i != 0) // show logger.info for the GCR or SEP event only
+			    	    	logger.info(person.getName() + " was exposed to a fresh dose of radiation in an EVA operation ("
+			    	    	+ exposure + " mSv in body region " + i + ")");
+	        	    }
+    	    	}
+    	    }
+    	}
+    }
 
 }

@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
@@ -58,8 +59,6 @@ public class MarqueeTicker extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private static final int NUM_OF_RESOURCES = Settlement.NUM_CRITICAL_RESOURCES;
-
-	public static final int TIME_DELAY = 5000; // update the values every 5 real secs
 
 	//private static final String TEXT1 = "GOOG   429.11   -6.51          DIA   87.64   -0.1          FXI   39.19   +1.12          GLD   93.62   -0.21          USO   39   +0.81          MSFT   22.25   +0.17";
 /*	private static final String TEXT1 =
@@ -80,7 +79,11 @@ public class MarqueeTicker extends JPanel {
 */
 	private static final int WIDTH = 250;
 
-	//private double O2Cache = 0, H2Cache = 0, CO2Cache = 0, CH4Cache = 0, H2OCache = 0, GreyCache = 0, BlackCache = 0, RockCache = 0, IceCache = 0;
+	/*
+	 * Updates the resource amounts every 10 real secs at the start of sim, minimal is 1 secs
+	 * When the time ratio changes, updateInterval will change accordingly
+	 */
+	public int updateIntervalCache = 10, updateInterval = 10;
 
 	//private int init = 0;
 	private int subscript = -1, num0 = 0, num1 = 0, num2 = 0;
@@ -95,13 +98,10 @@ public class MarqueeTicker extends JPanel {
 
 	private MarqueePane _horizonMarqueeLeft;
 	private StyledLabel _styledLabel;
-
 	private SettlementWindow settlementWindow;
-
 	private Settlement settlement;
-
 	private MarsClock marsClock;
-
+	private MasterClock masterClock;
 	private MainDesktopPane desktop;
 
 	private DecimalFormat formatter = new DecimalFormat("##,###,##0.0");
@@ -122,7 +122,12 @@ public class MarqueeTicker extends JPanel {
 		this.desktop = settlementWindow.getDesktop();
 		//this.solCache = 1;
 
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		masterClock = Simulation.instance().getMasterClock();
+		marsClock = masterClock.getMarsClock();
+
+		updateInterval = renewUpdateInterval();
+
+		//System.out.println("updateInterval is "+ updateInterval);
 
 		setLayout(new BorderLayout());
 	    setOpaque(false);
@@ -156,12 +161,13 @@ public class MarqueeTicker extends JPanel {
 			    @Override
 			    public void actionPerformed(ActionEvent evt) {
 			    	updateStyledlabel();
+			    	//System.out.println("inside ActionListener");
 			    }
 			};
 		}
 
 		if (updateTimer == null) {
-			updateTimer = new javax.swing.Timer(TIME_DELAY, timeListener);
+			updateTimer = new javax.swing.Timer(updateInterval, timeListener);
 			updateTimer.start();
     	}
 
@@ -456,14 +462,28 @@ public class MarqueeTicker extends JPanel {
         return panel;
     }
 
+    /*
+     * Updates the Styledlabel and the updateInterval
+     */
     public void updateStyledlabel() {
-    	_styledLabel.clearStyleRanges();
-		_horizonMarqueeLeft.stopAutoScrolling();
-		updateTimer.stop();
-		createResourceTicker();
-		_horizonMarqueeLeft.updateUI();
-		updateTimer.start();
-		_horizonMarqueeLeft.startAutoScrolling();
+		updateInterval = renewUpdateInterval();
+		//System.out.println("updateStyledlabel is called");
+    	if (updateIntervalCache != updateInterval) {
+    		updateTimer.stop();
+    		updateTimer = new javax.swing.Timer(updateInterval, timeListener);
+			updateTimer.start();
+			updateIntervalCache = updateInterval;
+    	}
+    	//else {
+
+	    	_styledLabel.clearStyleRanges();
+			//_horizonMarqueeLeft.stopAutoScrolling();
+			updateTimer.stop();
+			createResourceTicker();
+			_horizonMarqueeLeft.updateUI();
+			updateTimer.start();
+			//_horizonMarqueeLeft.startAutoScrolling();
+    	//}
     }
 
     public Component getFreeze() {
@@ -558,17 +578,15 @@ public class MarqueeTicker extends JPanel {
 	public void updateSettlement(Settlement newSettlement) {
 		settlement = newSettlement;
 
-    	//System.out.println("updateSettlement() : just called _styledLabel = getResourceString()");
-        //_styledLabel.setOpaque(false);
-        //_styledLabel.setBackground(new Color(0,0,0,128));
+		updateStyledlabel();
 
 		if (updateTimer != null) {
-			updateStyledlabel();
+			;
 		}
 		else {
 			//_horizonMarqueeLeft.stopAutoScrolling();
-			updateTimer = new javax.swing.Timer(TIME_DELAY, timeListener);
-			updateStyledlabel();
+			updateTimer = new javax.swing.Timer(updateInterval, timeListener);
+
 		}
 	}
 /*
@@ -600,6 +618,23 @@ public class MarqueeTicker extends JPanel {
 			updateTimer.start();
 			_horizonMarqueeLeft.startAutoScrolling();
 		}
+	}
+
+	/*
+	 * Recomputes the new updateInterval for the news ticker
+	 */
+	public int renewUpdateInterval() {
+		double result = 0;
+		double timeRatio = (int) (masterClock.getTimeRatio());
+
+		if (timeRatio == 500)
+			result = 10_000;
+		else if (timeRatio > 500)
+			result = timeRatio * .8738 + 9563.1058;
+		else if (timeRatio < 500)
+			result = timeRatio * 100.2004 + 59900D;
+
+		return (int) result;
 	}
 
 	public void destroy() {

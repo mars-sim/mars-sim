@@ -412,6 +412,8 @@ implements ActionListener {
 			score += list.get(i).getJobRating();
 		}
 		score = score/size; // divided by 2 because job rating in JobAssignment is from 0 to 10
+		if (score > 5)
+			score = 5;
 		return (int)score;
 	}
 
@@ -453,55 +455,62 @@ implements ActionListener {
         	}
 
         	// detects a change of status from pending to approved
-        	else if (status.equals(JobAssignmentType.APPROVED)) {
-        		if (statusCache.equals(JobAssignmentType.PENDING)) {
-			    	//System.out.println("\n< " + person.getName() + " > ");
-	        		statusCache = JobAssignmentType.APPROVED;
-		        	logger.info(person.getName() + "'s job reassignment has been reviewed and approved. Set status from 'Pending' to 'Approved'");
+        	else if (statusCache.equals(JobAssignmentType.PENDING)) {
+        		if (status.equals(JobAssignmentType.APPROVED)) {
+               		statusCache = JobAssignmentType.APPROVED;
+		        	logger.info(person.getName() + "'s job reassignment had been reviewed and approved.");
 
 		        	String selectedJobStr = list.get(last).getJobType();
 		        	jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job reassignment will be submitted in
 				    jobComboBox.setSelectedItem(selectedJobStr);
-				    //System.out.println("TabPanelCareer : selectedJobStr is " + selectedJobStr);
 
-			        int solElapsed = MarsClock.getSolOfYear(clock);
-				    //if (solElapsed != solCache) {
+        		}
+        		else if (status.equals(JobAssignmentType.NOT_APPROVED))	{
+               		statusCache = JobAssignmentType.NOT_APPROVED;
+		        	logger.info(person.getName() + "'s job reassignment had been reviewed and was NOT approved.");
 
-			        	//solCache = solElapsed;
-			    		//person.getJobHistory().setSolCache(solCache);
+		        	String selectedJobStr = list.get(last-1).getJobType();
+		        	jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job reassignment will be submitted in
+				    jobComboBox.setSelectedItem(selectedJobStr);
 
-			        	jobComboBox.setEnabled(true);
-			        	jobChangeLabel.setText("");
+        		}
 
-			        	// TODO: determine if new rating submission should be allowed immediately at the beginning of a new assignment
-			        	solRatingSubmitted = -1;
-			        	starRater.setSelection(0);
-			        	starRater.setEnabled(true);
-			        	ratingLabel.setText("");
+        		//int solElapsed = MarsClock.getSolOfYear(clock);
+				//if (solElapsed != solCache) {
+	        	//solCache = solElapsed;
+	    		//person.getJobHistory().setSolCache(solCache);
 
-						// updates the jobHistoryList in jobHistoryTableModel
-						jobHistoryTableModel.update();
+	        	jobComboBox.setEnabled(true);
+	        	jobChangeLabel.setText("");
 
-						String roleNew = person.getRole().toString();
-						if (!roleCache.equals(roleNew)) {
-							//System.out.println("TabPanelCareer : Old Role : " + roleCache + "   New Role : " + roleNew);
-							roleCache = roleNew;
-							roleTF.setText(roleCache);
-							//System.out.println("TabPanelCareer : just set New Role in TextField");
-						}
+	        	// TODO: determine if new rating submission should be allowed immediately at the beginning of a new assignment
+	        	solRatingSubmitted = -1;
+	        	starRater.setSelection(0);
+	        	starRater.setEnabled(true);
+	        	ratingLabel.setText("");
 
-			        //} // end of if (solElapsed != solCache)
+				// updates the jobHistoryList in jobHistoryTableModel
+				jobHistoryTableModel.update();
+
+				String roleNew = person.getRole().toString();
+				if (!roleCache.equals(roleNew)) {
+					//System.out.println("TabPanelCareer : Old Role : " + roleCache + "   New Role : " + roleNew);
+					roleCache = roleNew;
+					roleTF.setText(roleCache);
+					//System.out.println("TabPanelCareer : just set New Role in TextField");
+				}
+			    //} // end of if (solElapsed != solCache)
 				    //else {
 						//jobChangeLabel.setForeground(Color.blue);
 				    	//jobChangeLabel.setText("The new job " + selectedJobStr + " will be effective at the start of next sol");
 				    //}
-        		}
+        		} //  if (statusCache.equals(JobAssignmentType.PENDING))
         		else {
     				; // do nothing. at the start of sim
-    		    }
-	        }
+    		    } //if (statusCache.equals(JobAssignmentType.PENDING))
+
+	        } // if (pop > UnitManager.POPULATION_WITH_COMMANDER)
         }
-	}
 	/**
 	 * Updates the info on this panel.
 	 */
@@ -647,6 +656,7 @@ implements ActionListener {
 						jobChangeLabel.setForeground(Color.RED);
 						jobChangeLabel.setText("");
 					    jobComboBox.setSelectedItem(selectedJobStr);
+					    // pop is small, things need to be flexible. Thus automatic approval
 					    statusCache = JobAssignmentType.APPROVED;
 						person.getMind().reassignJob(selectedJobStr, true, JobManager.USER, statusCache, JobManager.USER);
 

@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.structure;
 
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import org.mars_sim.msp.core.mars.DailyWeather;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -57,7 +59,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * f The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements LifeSupportType {
+public class Settlement extends Structure implements Serializable, LifeSupportType {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -77,6 +79,8 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	private static final int RECORDING_FREQUENCY = 250; // in millisols
 
+	private static final int RADIATION_CHECK_FREQ = 100; // in millisols
+
 	public static final int NUM_CRITICAL_RESOURCES = 9;
 
 	/*
@@ -87,16 +91,9 @@ public class Settlement extends Structure implements LifeSupportType {
 	private String template;
 	private String name;
 
-	public double mealsReplenishmentRate = 0.6;
-	public double dessertsReplenishmentRate = 0.7;
-
 	/** The initial population of the settlement. */
 	private int initialPopulation;
 	private int initialNumOfRobots;
-	/**
-	 * Amount of time (millisols) that the settlement has had zero population.
-	 */
-	private double zeroPopulationTime;
 	private int scenarioID;
 	private int solCache = 1, counter30 = 1;
 	private int numShift;
@@ -107,6 +104,14 @@ public class Settlement extends Structure implements LifeSupportType {
 	private int numZ; // number of people with work shift Z
 	private int numOnCall;
 	private int quotientCache;
+	private int quotient1Cache;
+
+	/**
+	 * Amount of time (millisols) that the settlement has had zero population.
+	 */
+	private double zeroPopulationTime;
+	public double mealsReplenishmentRate = 0.6;
+	public double dessertsReplenishmentRate = 0.7;
 
 	// 2014-11-23 Added foodProductionOverride
 	private boolean foodProductionOverride = false;
@@ -121,13 +126,16 @@ public class Settlement extends Structure implements LifeSupportType {
 	 * Override flag for construction/salvage mission creation at settlement.
 	 */
 	private boolean constructionOverride = false;
-	/** The settlement's building manager. */
+
+	private boolean[] exposed = {false, false, false};
+
 
 	//private int[] resourceArray = new int[9];
 	//private int[] solArray = new int[30];
 	//private double[] samplePointArray = new double[(int)1000/RECORDING_FREQUENCY];
 	//private Object[][][] resourceObject = new Object[][][]{resourceArray, samplePointArray, solArray};
 
+	/** The settlement's building manager. */
 	protected BuildingManager buildingManager;
 	/** The settlement's building connector manager. */
 	protected BuildingConnectorManager buildingConnectorManager;
@@ -200,6 +208,8 @@ public class Settlement extends Structure implements LifeSupportType {
 		// count++;
 		// logger.info("constructor 3 : count is " + count);
 		this.inv = getInventory();
+
+		//resourceStat = new HashMap<>();
 
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(Double.MAX_VALUE);
@@ -613,7 +623,15 @@ public class Settlement extends Structure implements LifeSupportType {
 	    	// take a sample for each critical resource
 	    	sampleAllResources();
 	    	quotientCache = quotient;
+	    }
 
+		// Check every RECORDING_FREQUENCY (in millisols)
+	    int quotient1 = millisols / RECORDING_FREQUENCY ;
+
+	    if (quotient1Cache != quotient1 && quotient1 != 10) {
+	    	// Compute whether a baseline, GCR, or SEP event has occurred
+	    	checkRadiationProbability(time);
+	    	quotient1Cache = quotient1;
 	    }
 
 	    // Updates the goodsManager once per sol at random time.
@@ -671,38 +689,43 @@ public class Settlement extends Structure implements LifeSupportType {
 	 */
 	//public void setOneResource(int resourceType, double newAmount) {
 
-		if (resourceStat.containsKey(solCache)) {
-			Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
+		//if (resourceStat.get(solCache) != null) {
+			if (resourceStat.containsKey(solCache)) {
+				Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
+			//Map<Integer, List<Double>> todayMap = resourceStat.get(solCache);
+			//if (todayMap != null) {
+				//List<Double> list = todayMap.get(resourceType);
+				//if (list != null) {
+				if (todayMap.containsKey(resourceType)) {
+					List<Double> list = todayMap.get(resourceType);
+					double newAmount = inv.getAmountResourceStored(ar, false);
+					list.add(newAmount);
+					//todayMap.put(resourceType, list); // is it needed?
+					//resourceStat.put(solCache, todayMap); // is it needed?
+					//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
+				}
 
-			if (todayMap.containsKey(resourceType)) {
-				List<Double> list = todayMap.get(resourceType);
-				double newAmount = inv.getAmountResourceStored(ar, false);
-				list.add(newAmount);
-				//todayMap.put(resourceType, list); // is it needed?
-				//resourceStat.put(solCache, todayMap); // is it needed?
-				//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
-			}
+				else {
+					List<Double> list = new ArrayList<>();
+					double newAmount = inv.getAmountResourceStored(ar, false);
+					list.add(newAmount);
+					//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
+					todayMap.put(resourceType, list);
+					//resourceStat.put(solCache, todayMap); // is it needed?
+					//System.out.println("add a new amount and a new resource map");
+				}
 
-			else {
+			} else {
 				List<Double> list = new ArrayList<>();
+				Map<Integer, List<Double>> todayMap = new HashMap<>();
 				double newAmount = inv.getAmountResourceStored(ar, false);
 				list.add(newAmount);
 				//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
 				todayMap.put(resourceType, list);
-				//resourceStat.put(solCache, todayMap); // is it needed?
-				//System.out.println("add a new amount and a new resource map");
+				resourceStat.put(solCache, todayMap);
+				//System.out.println("add a new amount, a new resource map and a new sol");
 			}
-
-		} else {
-			List<Double> list = new ArrayList<>();
-			Map<Integer, List<Double>> todayMap = new HashMap<>();
-			double newAmount = inv.getAmountResourceStored(ar, false);
-			list.add(newAmount);
-			//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
-			todayMap.put(resourceType, list);
-			resourceStat.put(solCache, todayMap);
-			//System.out.println("add a new amount, a new resource map and a new sol");
-		}
+		//}
 	}
 
 
@@ -1819,6 +1842,57 @@ public class Settlement extends Structure implements LifeSupportType {
 
 	public int getSolCache() {
 		return solCache;
+	}
+
+	public boolean[] getExposed() {
+		return exposed;
+	}
+
+	/*
+	 * Compute the probability of radiation exposure during EVA/outside walk
+	 */
+	public void checkRadiationProbability(double time) {
+   	    //boolean[] exposed = {false, false, false};
+   	    double exposure = 0;
+ 		// chance is in %
+		double chance0 = Math.round(RadiationExposure.BASELINE_CHANCE_PER_100MSOL_DURING_EVA
+	    		* time/100D * 100.0)/100.0;
+   	    //double rand0 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
+
+	    //if (rand0 < chance0) {
+	    if (RandomUtil.lessThanRandPercent(chance0)) {
+	    	exposed[0] = true;
+	    }
+		//System.out.print(chance + " ");
+
+	    // ~ 300 milli Sieverts for a 500-day mission
+	    // Solar energetic particles (SEPs) event
+		// chance is in %
+		double chance1 = Math.round(RadiationExposure.SEP_CHANCE_PER_100MSOL_DURING_EVA
+	    		* time/100D * 100.0)/100.0;
+
+	    // rand is in %
+	    //double rand1 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
+
+	    if (RandomUtil.lessThanRandPercent(chance1)) {
+	    //if (rand1 < chance1) {
+	    	exposed[1] = true;
+	    	logger.info("An SEP event is detected by the sensor grid on " + getName());
+	    }
+	    // Galactic cosmic rays (GCRs) event
+  		double chance2 = Math.round(RadiationExposure.SEP_CHANCE_PER_100MSOL_DURING_EVA
+	    		* time/100D * 100.0)/100.0;
+
+	    // rand is in %
+	    //double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
+
+	    if (RandomUtil.lessThanRandPercent(chance2)) {
+	    //if (rand2 < chance2) {
+	    	exposed[2] = true;
+	    	logger.info("An GCR event is detected by the sensor grid on " + getName());
+	    }
+
+	    //return exposed;
 	}
 
 	@Override
