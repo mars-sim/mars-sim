@@ -434,6 +434,8 @@ public class MainScene {
 		swingPane.getStylesheets().clear();
 		menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();
+		marsNode.getFXDesktopPane().getStylesheets().clear();
+		
 		String cssColor;
 
 		//logger.info("MainScene's changeTheme()");
@@ -489,7 +491,8 @@ public class MainScene {
 	public void updateThemeColor(Color txtColor, Color btnTxtColor, String cssColor) {
 		swingPane.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 		menuBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
-
+		marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
+		
 		memUsedText.setFill(txtColor);
 		memMaxText.setFill(txtColor);
 		timeText.setFill(txtColor);
@@ -1272,6 +1275,7 @@ public class MainScene {
 		marsNode.createDragDrop();
 		marsNode.createEarthMap();
 		marsNode.createMarsMap();
+		marsNode.createChatBox();
 	}
 
 	public MarsNode getMarsNode() {

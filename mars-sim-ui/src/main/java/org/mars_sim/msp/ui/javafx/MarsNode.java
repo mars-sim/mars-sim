@@ -41,7 +41,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -128,6 +131,29 @@ public class MarsNode {
 	
 	public void removeFXInternalWindow(FXInternalWindow fxInternalWindow ) {
 		windowManager.removeWindow(fxInternalWindow);
+	}
+	
+	//2015-11-10 Added createChatBox()
+	public void createChatBox() {
+		ChatBox cb = new ChatBox();
+    	
+		TextArea ta = cb.getTextArea();
+		ta.setTooltip(new Tooltip ("Voice chatters from settlement's Comm Nets"));
+		
+		TextField tf = cb.getTextField();
+		tf.setTooltip(new Tooltip ("Broadcast your message to the global channel on Mars"));
+		tf.setPromptText("Type here");
+				
+		ta.appendText("Safe Net : a small dust storm is being built up within 20 km of Alpha Base"
+    		  + System.lineSeparator());
+		
+		StackPane pane = new StackPane(cb);
+
+		FXInternalWindow window = createFXInternalWindow("Comm Radio", pane, 350, 200, false);
+		window.setMinWidth(350);
+		window.setMinHeight(200);
+		//window.setMaxSize(scene.getWidth(), scene.getHeight());
+	
 	}
 	
 	public void createMarsMap() {

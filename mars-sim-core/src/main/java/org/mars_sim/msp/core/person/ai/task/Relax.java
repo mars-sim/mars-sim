@@ -104,10 +104,10 @@ implements Serializable {
 	public Relax(Robot robot) {
 		super(NAME, robot, false, false, STRESS_MODIFIER, true, 10D +
 				RandomUtil.getRandomDouble(40D));
-
+/*
 		// If robot is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
-		/*
+
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			try {
 				Building recBuilding = getAvailableRecreationBuilding(robot);
@@ -122,7 +122,7 @@ implements Serializable {
 				endTask();
 			}
 		}
-		*/
+		
 		if (!walkSite) {
 		    if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 // If robot is in rover, walk to passenger activity spot.
@@ -139,6 +139,7 @@ implements Serializable {
 		// Initialize phase
 		addPhase(RELAXING);
 		setPhase(RELAXING);
+*/
 	}
 
     @Override
