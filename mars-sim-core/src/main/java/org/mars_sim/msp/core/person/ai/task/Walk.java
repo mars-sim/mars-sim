@@ -81,10 +81,8 @@ implements Serializable {
      */
     public Walk(Person person) {
         super(NAME, person, false, false, 0D, false, 0D);
-
         //this.person = person;
-
-
+        
         // Initialize data members.
         walkingStepIndex = 0;
 
@@ -212,9 +210,7 @@ implements Serializable {
      */
     public Walk(Robot robot) {
         super(NAME, robot, false, false, 0D, false, 0D);
-
         //this.robot = robot;
-
         logger.finer(robot + " starting new walk task.");
 
         // Initialize data members.
@@ -235,7 +231,7 @@ implements Serializable {
         }
         else if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()){
 
-            // Walk to random inhabitable building at settlement.
+            // Walk to random building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(robot);
             List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
             if (buildingList.size() > 0) {
@@ -602,14 +598,13 @@ implements Serializable {
         else { //if (result == null)
         	
         	if (person != null) {
-               	System.out.println("Walk.java : " + person.getName() 
+               	logger.info(person.getName() 
             	+ " in " + person.getBuildingLocation().getNickName() 
             	+ " at " + person.getAssociatedSettlement()
             	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
 
-        	}
-             else if (robot != null) {
-	        	System.out.println("Walk.java : " + robot.getName() 
+        	} else if (robot != null) {
+        		logger.info(robot.getName() 
 	        	+ " in " + robot.getBuildingLocation().getNickName() 
 	        	+ " at " + robot.getAssociatedSettlement()
 	        	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
@@ -715,13 +710,19 @@ implements Serializable {
 		        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
 		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 		                walkingStepIndex++;
+	    	        	// 2015-11-11 setDescription()
+	    	        	setDescription("Almost arriving at " + stepLocation + " in " + building.getNickName());
 		                setPhase(getWalkingStepPhase());
 		            }
 		            else {
+	    	        	// 2015-11-11 setDescription()
+	    	        	setDescription("Arrived at " + stepLocation);
 		                endTask();
 		            }
 		        }
 		        else {
+		        	// Going from building to step.building
+		        	setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
 		            addSubTask(new WalkSettlementInterior(person, step.building, step.xLoc, step.yLoc));
 		        }
 
@@ -737,13 +738,19 @@ implements Serializable {
 		        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
 		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 		                walkingStepIndex++;
+	    	        	// 2015-11-11 setDescription()
+	    	        	setDescription("Almost arriving at " + stepLocation + " in " + building.getNickName());
 		                setPhase(getWalkingStepPhase());
 		            }
 		            else {
+	    	        	// 2015-11-11 setDescription()
+	    	        	setDescription("Arrived at " + stepLocation);
 		                endTask();
 		            }
 		        }
 		        else {
+		        	// Going from building to step.building
+		        	setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
 		            addSubTask(new WalkSettlementInterior(robot, step.building, step.xLoc, step.yLoc));
 		        }
 
@@ -785,9 +792,13 @@ implements Serializable {
             if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking back to the rover at " + stepLocation);
                     setPhase(getWalkingStepPhase());
                 }
                 else {
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Arrived at " + stepLocation);
                     endTask();
                 }
             }
@@ -821,9 +832,13 @@ implements Serializable {
             if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking back to the rover at " + stepLocation);
                     setPhase(getWalkingStepPhase());
                 }
                 else {
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Arrived at " + stepLocation);
                     endTask();
                 }
             }
@@ -858,14 +873,20 @@ implements Serializable {
             if (LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking to " + stepLocation);
                     setPhase(getWalkingStepPhase());
                 }
                 else {
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Arriving at " + stepLocation);
                     endTask();
                 }
             }
             else {
                 logger.finer(person + " starting walk outside task.");
+	        	// 2015-11-11 setDescription()
+	        	setDescription("Walking Outside from " + personLocation + " to " + stepLocation);
                 addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(),
                         step.xLoc, step.yLoc, true));
             }
@@ -882,14 +903,20 @@ implements Serializable {
             if (LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking to " + stepLocation);
                     setPhase(getWalkingStepPhase());
                 }
                 else {
+    	        	// 2015-11-11 setDescription()
+    	        	setDescription("Arriving at " + stepLocation);
                     endTask();
                 }
             }
             else {
                 logger.finer(robot + " starting walk outside task.");
+	        	// 2015-11-11 setDescription() 
+	        	setDescription("Walking Outside from " + robotLocation + " to " + stepLocation);
                 addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(),
                         step.xLoc, step.yLoc, true));
             }
@@ -914,12 +941,17 @@ implements Serializable {
             // Check if person has reached the outside of the airlock.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Airlock airlock = step.airlock;
+            // TODO: what does it mean to be outside in exitingAirlockPhase() ?            
             if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+       	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking outside to an airlock to exit");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
+                	//2015-11-11 setDescription()
+    	        	setDescription("Arriving at an airlock outside a building");
                     endTask();
                 }
             }
@@ -945,9 +977,13 @@ implements Serializable {
             if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+       	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking outside to an airlock");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
+                	//2015-11-11 setDescription()
+    	        	setDescription("Arriving at an airlock outside a building");
                     endTask();
                 }
             }
@@ -985,6 +1021,8 @@ implements Serializable {
             if (person.getLocationSituation() != LocationSituation.OUTSIDE) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+       	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking outside to an airlock to enter");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
@@ -1012,6 +1050,8 @@ implements Serializable {
             if (robot.getLocationSituation() != LocationSituation.OUTSIDE) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
+       	        	// 2015-11-11 setDescription()
+    	        	setDescription("Walking outside to an airlock to enter");
                     setPhase(getWalkingStepPhase());
                 }
                 else {

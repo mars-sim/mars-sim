@@ -209,10 +209,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			</resource-processing>
 
-			<robotic-station slots="2">
+			<robotic-station slots="4">
 				<activity>
-					<activity-spot xloc="-0.3" yloc="-3.2" />
-					<activity-spot xloc="-0.2" yloc="-3.1" />
+					<activity-spot xloc="1.0" yloc="0.55" />
+					<activity-spot xloc="-0.15" yloc="1.2" />
+					<activity-spot xloc="-0.5" yloc="0.55" />
+					<activity-spot xloc="-0.5" yloc="-1.06" />
 				</activity>
 			</robotic-station>
 
@@ -300,9 +302,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- growing-area: the max growing area (square meters) of all crops. -->
 			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".025" growing-area="50.0" >
 				<activity>
-					<activity-spot xloc="0.0" yloc="2.0" />
-					<activity-spot xloc="0.0" yloc="0.0" />
-					<activity-spot xloc="0.0" yloc="-2.0" />
+					<activity-spot xloc="1.5" yloc="2.25" />
+					<activity-spot xloc="-1.5" yloc="2.25" />
+					<activity-spot xloc="-1.5" yloc="1.25" />
+					<activity-spot xloc="1.5" yloc="-2.25" />
+					<activity-spot xloc="1.5" yloc="2.25" />
+					<activity-spot xloc="-1.5" yloc="-3.5" />
 				</activity>
 			</farming>
 
@@ -311,7 +316,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<research tech-level="1" capacity="2">
 				<research-specialty name="BOTANY" />
 				<activity>
-					<activity-spot xloc="1.5" yloc="3.6" />
+					<activity-spot xloc="-1.0" yloc="1.3" />
+					<activity-spot xloc="-2.0" yloc="1.3" />
 				</activity>
 			</research>
 
@@ -327,8 +333,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<robotic-station slots="2">
 				<activity>
-					<activity-spot xloc="0" yloc=".2" />
-					<activity-spot xloc="0" yloc=".4" />
+					<activity-spot xloc="2.6" yloc="4.2" />
+					<activity-spot xloc="-2.6" yloc="4.2" />
 				</activity>
 			</robotic-station>
 
@@ -853,7 +859,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-.46" yloc="-2.08" />
 				</activity>
 			</management>
-			<robotic-station slots="4"/>
+			<robotic-station slots="6"/>
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
@@ -904,10 +910,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</resource-processing>
 
-			<robotic-station slots="2">
+			<robotic-station slots="6">
 				<activity>
 					<activity-spot xloc="1.6" yloc="0.0" />
 					<activity-spot xloc="-1.6" yloc="0.0" />
+					<activity-spot xloc="1.6" yloc="-2.45" />
+					<activity-spot xloc="1.6" yloc="-4.9" />
+					<activity-spot xloc="-1.6" yloc="4.9" />
+					<activity-spot xloc="-1.6" yloc="2.45" />					
 				</activity>
 			</robotic-station>
 

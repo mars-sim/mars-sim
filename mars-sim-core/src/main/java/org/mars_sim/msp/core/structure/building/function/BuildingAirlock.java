@@ -71,9 +71,10 @@ public class BuildingAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) {
                 if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
                     // Exit person to inside building.
-                    logger.fine(person + " entering " + building + " via airlock.");
+                    //logger.fine(person + " entering " + building + " via airlock.");
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
                     inv.storeUnit(person);
+                    logger.fine(person + " is about to exit airlock and officially belongs into " + building);
                 }
                 else if (LocationSituation.BURIED != person.getLocationSituation()) {
                     throw new IllegalStateException(person + " is entering " + getEntityName() + 
@@ -83,8 +84,9 @@ public class BuildingAirlock extends Airlock {
             else if (DEPRESSURIZED.equals(getState())) {
                 if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
                     // Exit person to outside building.
-                    logger.fine(person + " exiting " + building + " via airlock.");
+                    //logger.fine(person + " exiting " + building + " via airlock.");
                     BuildingManager.removePersonOrRobotFromBuilding(person, building);
+                    logger.fine(person + " is about to exit the airlock and leave " + building + " and going outside");
                     inv.retrieveUnit(person);
                 }
                 else if (LocationSituation.BURIED != person.getLocationSituation()) {
@@ -109,8 +111,9 @@ public class BuildingAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) {
                 if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
                     // Exit robot to inside building.
-                    logger.fine(robot + " entering " + building + " via airlock.");
+                    //logger.fine(robot + " exiting " + building + " via airlock.");
                     BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, building);
+                    logger.info(robot + " is about to exit the airlock door and officially belongs into " + building);         
                     inv.storeUnit(robot);
                 }
                 else if (LocationSituation.BURIED != robot.getLocationSituation()) {
@@ -121,8 +124,9 @@ public class BuildingAirlock extends Airlock {
             else if (DEPRESSURIZED.equals(getState())) {
                 if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
                     // Exit robot to outside building.
-                    logger.fine(robot + " exiting " + building + " via airlock.");
+                    //logger.fine(robot + " exiting " + building + " via airlock.");
                     BuildingManager.removePersonOrRobotFromBuilding(robot, building);
+                    logger.info(robot + " is about to exit the airlock door and leave " + building + " and going outside");
                     inv.retrieveUnit(robot);
                 }
                 else if (LocationSituation.BURIED != robot.getLocationSituation()) {
@@ -141,7 +145,9 @@ public class BuildingAirlock extends Airlock {
     @Override
     public String getEntityName() {
         Settlement settlement = building.getBuildingManager().getSettlement();
-        return settlement.getName() + ": " + building.getName();
+        //return settlement.getName() + ": " + building.getNickName();
+        return building.getNickName() + " in " + settlement.getName();
+
     }
 
     @Override

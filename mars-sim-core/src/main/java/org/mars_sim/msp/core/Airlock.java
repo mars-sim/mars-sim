@@ -107,7 +107,7 @@ public abstract class Airlock implements Serializable {
                         throw new IllegalStateException(person + " still awaiting inner door!");
                     }
                 }
-                logger.finer(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
+                logger.finer(person.getName() + " enters through the inner door of the airlock at " + getEntityName());
                 result = true;
             }
             else if (!inside && !outerDoorLocked) {
@@ -117,7 +117,7 @@ public abstract class Airlock implements Serializable {
                         throw new IllegalStateException(person + " still awaiting outer door!");
                     }
                 }
-                logger.finer(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
+                logger.finer(person.getName() + " enters through the outer door of the airlock at " + getEntityName());
                 result = true;
             }
 
@@ -141,7 +141,7 @@ public abstract class Airlock implements Serializable {
                         throw new IllegalStateException(robot + " still awaiting inner door!");
                     }
                 }
-                logger.finer(robot.getName() + " enters inner door of " + getEntityName() + " airlock.");
+                logger.info(robot.getName() + " enters through the inner door of the airlock at "+ getEntityName());
                 result = true;
             }
             else if (!inside && !outerDoorLocked) {
@@ -151,7 +151,7 @@ public abstract class Airlock implements Serializable {
                         throw new IllegalStateException(robot + " still awaiting outer door!");
                     }
                 }
-                logger.finer(robot.getName() + " enters outer door of " + getEntityName() + " airlock.");
+                logger.info(robot.getName() + " enters through the outer door of the airlock at " + getEntityName());
                 result = true;
             }
 
@@ -185,7 +185,7 @@ public abstract class Airlock implements Serializable {
 		                        throw new IllegalStateException(person + " still awaiting inner door!");
 		                    }
 		                    if (!occupants.contains(person)) {
-		                        logger.finer(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
+		                        logger.finer(person.getName() + " enters through the inner door of the airlock at " + getEntityName());
 		                        occupants.add(person);
 		                    }
 
@@ -198,7 +198,7 @@ public abstract class Airlock implements Serializable {
 		                        throw new IllegalStateException(robot + " still awaiting inner door!");
 		                    }
 		                    if (!occupants.contains(robot)) {
-		                        logger.finer(robot.getName() + " enters inner door of " + getEntityName() + " airlock.");
+		                        logger.info(robot.getName() + " enters through the inner door of the airlock at " + getEntityName());
 		                        occupants.add(robot);
 		                    }
 					}
@@ -217,20 +217,20 @@ public abstract class Airlock implements Serializable {
 	                        throw new IllegalStateException(person + " still awaiting outer door!");
 	                    }
 	                    if (!occupants.contains(person)) {
-	                        logger.finer(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
+	                        logger.finer(person.getName() + " enters through the outer door of the airlock at " + getEntityName());
 	                        occupants.add(person);
 	                    }
 
     				}
 					else if (awaitingOuterDoor.get(0) instanceof Robot) {
+						
 						Robot robot = (Robot) awaitingOuterDoor.get(0);
-
 	                    awaitingOuterDoor.remove(robot);
 	                    if (awaitingOuterDoor.contains(robot)) {
 	                        throw new IllegalStateException(robot + " still awaiting outer door!");
 	                    }
 	                    if (!occupants.contains(robot)) {
-	                        logger.finer(robot.getName() + " enters outer door of " + getEntityName() + " airlock.");
+	                        logger.info(robot.getName() + " enters through the outer door of the airlock at " + getEntityName());
 	                        occupants.add(robot);
 	                    }
 
@@ -376,9 +376,9 @@ public abstract class Airlock implements Serializable {
             Iterator<Unit> i = occupants.iterator();
                 while (i.hasNext()) {
                      Unit occupant = i.next();
-                     logger.finest(occupant.getName() + " exiting airlock at " + getEntity() + " state: " + getState());
                      exitAirlock(occupant);
- 				}
+                     logger.info("Airlock has been " + getState() + ". " + occupant.getName() + " can exit the airlock now to " + getEntity());
+                }
 
             occupants.clear();
 
@@ -396,6 +396,7 @@ public abstract class Airlock implements Serializable {
      */
     protected abstract void exitAirlock(Unit occupant);
     //protected abstract void exitAirlock(Robot robot);
+    
     /**
      * Checks if the airlock's outer door is locked.
      * @return true if outer door is locked
@@ -466,11 +467,16 @@ public abstract class Airlock implements Serializable {
      */
     public void addAwaitingAirlockInnerDoor(Unit unit) {
         if (!awaitingInnerDoor.contains(unit)) {
-            logger.finer(unit.getName() + " awaiting inner door of " + getEntityName() + " airlock.");
+        	if (unit instanceof Robot) {
+        		logger.info(((Robot)unit).getName() + " awaiting inner door of " + getEntityName() + " airlock.");
+        	}
+        	else
+        		logger.info(((Person)unit).getName() + " awaiting inner door of " + getEntityName() + " airlock.");
             awaitingInnerDoor.add(unit);
         }
     }
 
+    
     /**
      * Adds person to queue awaiting airlock by outer door.
      * @param person the person to add to the awaiting queue.
@@ -484,7 +490,7 @@ public abstract class Airlock implements Serializable {
 
     public void addAwaitingAirlockOuterDoor(Robot robot) {
         if (!awaitingOuterDoor.contains(robot)) {
-            logger.finer(robot.getName() + " awaiting outer door of " + getEntityName() + " airlock.");
+            logger.info(robot.getName() + " awaiting outer door of " + getEntityName() + " airlock.");
             awaitingOuterDoor.add(robot);
         }
     }

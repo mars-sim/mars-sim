@@ -199,10 +199,10 @@ implements Serializable {
 		String taskPhase = null;
 
 		if (!taskName.equals("WalkRoverInterior")
-				&& !taskName.equals("WalkSettlementInterior")
+				//&& !taskName.equals("WalkSettlementInterior")
 				&& !taskName.equals("WalkSteps")
 				) // filter off Task phase "Walking" due to its excessive occurrences
-			if (!taskDescription.equals(taskDescriptionCache)) {
+			if (!taskDescription.equals(taskDescriptionCache) && !taskDescription.equals("Walking inside a settlement")) {
 
 				if (getPhase() != null) {
 

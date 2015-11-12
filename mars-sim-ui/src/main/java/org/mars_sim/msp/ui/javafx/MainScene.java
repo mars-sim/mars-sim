@@ -1274,7 +1274,7 @@ public class MainScene {
 		marsNode.createStory();
 		marsNode.createDragDrop();
 		marsNode.createEarthMap();
-		marsNode.createMarsMap();
+		//marsNode.createMarsMap();
 		marsNode.createChatBox();
 	}
 

@@ -649,6 +649,10 @@ public class BuildingManager implements Serializable {
         return result;
     }
 
+    /**
+     * Gets the building a person or robot is in.
+     * @return building or null if none.
+     */
     public static Building getBuilding(Unit unit) {
         Building result = null;
         Person person = null;
@@ -664,13 +668,13 @@ public class BuildingManager implements Serializable {
 	                try {
 	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 	                    if (lifeSupport.containsOccupant(person)) {
-	                        if (result == null) {
+	                        //if (result == null) {
 	                            result = building;
-	                        }
-	                        else {
-	                            throw new IllegalStateException(person + " is located in more than one building: " + result +
-	                                    " and " + building);
-	                        }
+	                        //}
+	                        //else {
+	                        //    throw new IllegalStateException(person + " is located in more than one building: " + result +
+	                        //           " and " + building);
+	                        //}
 	                    }
 	                }
 	                catch (Exception e) {
@@ -682,23 +686,23 @@ public class BuildingManager implements Serializable {
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            //Settlement settlement = robot.getSettlement();
-	            result = robot.getBuildingLocation();
-
-/*	            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+	            result = robot.getBuildingLocation();	            
+/*	           
+				Settlement settlement = robot.getSettlement();
+ 	            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 	            while (i.hasNext()) {
 	                Building building = i.next();
 	                try {
-	                	//RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
-	                	//if (roboticStation.containsRobotOccupant(robot)) {
-	                    if (building.equals(robot.getBuildingLocation())) {
-	                        if (result == null) {
+	                	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
+	                	if (roboticStation.containsRobotOccupant(robot)) {
+	                    //if (building.equals(robot.getBuildingLocation())) {
+	                        //if (result == null) {
 	                            result = building;
-	                        }
-	                        else {
-	                            throw new IllegalStateException(robot + " is located in more than one building: " + result +
-	                                    " and " + building);
-	                        }
+	                        //}
+	                        //else {
+	                        //    throw new IllegalStateException(robot + " is located in more than one building: " + result.getNickName() +
+	                        //            " and " + building.getNickName());
+	                        //}
 	                    }
 	                }
 	                catch (Exception e) {

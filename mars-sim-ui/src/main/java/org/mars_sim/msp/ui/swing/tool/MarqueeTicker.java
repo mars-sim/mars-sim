@@ -285,7 +285,6 @@ public class MarqueeTicker extends JPanel {
 		}
 
 		//System.out.println(settlement + " : " + resource + "  todayAverage : " + todayAverage + "  delta1sol : " + delta1sol);
-
 		String delta1 = formatter.format(delta_1sol);
 		int size_delta1 = delta1.length();
 

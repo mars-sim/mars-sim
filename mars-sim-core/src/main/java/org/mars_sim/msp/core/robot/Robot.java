@@ -297,7 +297,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      *            the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
-
         super.setContainerUnit(containerUnit);
     }
 

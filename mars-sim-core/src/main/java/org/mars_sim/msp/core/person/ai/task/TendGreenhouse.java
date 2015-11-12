@@ -51,6 +51,18 @@ implements Serializable {
     private static final TaskPhase TENDING = new TaskPhase(Msg.getString(
             "Task.phase.tending")); //$NON-NLS-1$
 
+    /** Task phases. */
+    private static final TaskPhase INSPECTING_CROP = new TaskPhase(Msg.getString(
+            "Task.phase.inspecting")); //$NON-NLS-1$
+
+    /** Task phases. */
+    private static final TaskPhase CLEANING = new TaskPhase(Msg.getString(
+            "Task.phase.cleaning")); //$NON-NLS-1$
+
+    /** Task phases. */
+    private static final TaskPhase CHECKING_ON_EQUIPMENT = new TaskPhase(Msg.getString(
+            "Task.phase.checkingOnEquipment")); //$NON-NLS-1$
+
     // Static members
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.1D;
@@ -91,6 +103,9 @@ implements Serializable {
 
         // Initialize phase
         addPhase(TENDING);
+        addPhase(INSPECTING_CROP);
+        addPhase(CLEANING);
+        addPhase(CHECKING_ON_EQUIPMENT);
         setPhase(TENDING);
     }
 
@@ -126,6 +141,9 @@ implements Serializable {
 
         // Initialize phase
         addPhase(TENDING);
+        addPhase(INSPECTING_CROP);
+        addPhase(CLEANING);
+        addPhase(CHECKING_ON_EQUIPMENT);
         setPhase(TENDING);
     }
     
@@ -142,9 +160,18 @@ implements Serializable {
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
-        }
+        }     
         else if (TENDING.equals(getPhase())) {
             return tendingPhase(time);
+        }
+        else if (INSPECTING_CROP.equals(getPhase())) {
+            return inspectingPhase(time);
+        }
+        else if (CLEANING.equals(getPhase())) {
+            return cleaningPhase(time);
+        }
+        else if (CHECKING_ON_EQUIPMENT.equals(getPhase())) {
+            return checkingPhase(time);
         }
         else {
             return time;
@@ -164,8 +191,74 @@ implements Serializable {
             return time;
         }
 
+    	int rand = RandomUtil.getRandomInt(3);
+    	
+    	if (rand == 0) { 		
+       		//System.out.println("0: setPhase(INSPECTING_CROP)");
+    		setPhase(INSPECTING_CROP);
+    		return time;
+    	}
+    	else if (rand == 1) {
+       		//System.out.println("1: setPhase(CLEANING)");
+    		setPhase(CLEANING);
+    		return time;
+    	}
+    	else if (rand == 2) {
+       		//System.out.println("2: setPhase(CHECKING_ON_EQUIPMENT)");
+    		setPhase(CHECKING_ON_EQUIPMENT);
+    		return time;
+    	}
+    	else  { //if (rand == 3) {
+    		//System.out.println("3: continue to tend");
+  
+	        double workTime = 0;
+	        double factor = 2D;
+	        
+			if (person != null) {			
+		        workTime = time * factor;
+			}
+			else if (robot != null) {
+			     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+				// should it incurs penalty on workTime?
+				workTime = time * factor;
+			}
+	
+	        // Determine amount of effective work time based on "Botany" skill
+	        int greenhouseSkill = getEffectiveSkillLevel();
+	        if (greenhouseSkill == 0) {
+	            workTime /= 2;
+	        }
+	        else {
+	            workTime += workTime * (double) greenhouseSkill;
+	        }
+	
+	        // Add this work to the greenhouse.
+	        greenhouse.addWork(workTime);
+	        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
+	        
+	        // Add experience
+	        addExperience(time);
+	
+	        // Check for accident in greenhouse.
+	        checkForAccident(time);
+	    	
+	        return 0D;
+    	}
+    
+    }
+
+    /**
+     * Performs the inspecting phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     */
+    private double inspectingPhase(double time) {
+    	double remaingTime = 0;
+    	
+   		//System.out.println("inspectingPhase");
+   		
         double workTime = 0;
-        double factor = 2D;
+        double factor = 1.4;//2D;
         
 		if (person != null) {			
 	        workTime = time * factor;
@@ -194,10 +287,99 @@ implements Serializable {
 
         // Check for accident in greenhouse.
         checkForAccident(time);
-
-        return 0D;
+    	
+    	
+    	return remaingTime;
     }
+    
+    /**
+     * Performs the cleaning phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     */
+    private double cleaningPhase(double time) {
+    	double remaingTime = 0;
+  
+  		//System.out.println("cleaningPhase");
+  		 
+        double workTime = 0;
+        double factor = 1.5;//2D;
+        
+		if (person != null) {			
+	        workTime = time * factor;
+		}
+		else if (robot != null) {
+		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+			// should it incurs penalty on workTime?
+			workTime = time * factor;
+		}
 
+        // Determine amount of effective work time based on "Botany" skill
+        int greenhouseSkill = getEffectiveSkillLevel();
+        if (greenhouseSkill == 0) {
+            workTime /= 2;
+        }
+        else {
+            workTime += workTime * (double) greenhouseSkill;
+        }
+
+        // Add this work to the greenhouse.
+        greenhouse.addWork(workTime);
+        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
+        
+        // Add experience
+        addExperience(time);
+
+        // Check for accident in greenhouse.
+        checkForAccident(time);
+    	
+    	return remaingTime;
+    }
+    
+    /**
+     * Performs the checking phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     */
+    private double checkingPhase(double time) {
+      	double remaingTime = 0;
+  
+  		//System.out.println("checkingPhase");
+  		 
+        double workTime = 0;
+        double factor = 1.3;//2D;
+        
+		if (person != null) {			
+	        workTime = time * factor;
+		}
+		else if (robot != null) {
+		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+			// should it incurs penalty on workTime?
+			workTime = time * factor;
+		}
+
+        // Determine amount of effective work time based on "Botany" skill
+        int greenhouseSkill = getEffectiveSkillLevel();
+        if (greenhouseSkill == 0) {
+            workTime /= 2;
+        }
+        else {
+            workTime += workTime * (double) greenhouseSkill;
+        }
+
+        // Add this work to the greenhouse.
+        greenhouse.addWork(workTime);
+        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
+        
+        // Add experience
+        addExperience(time);
+
+        // Check for accident in greenhouse.
+        checkForAccident(time);
+    	
+    	return remaingTime;
+    }
+    
     @Override
     protected void addExperience(double time) {
         // Add experience to "Botany" skill

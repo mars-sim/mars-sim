@@ -82,7 +82,7 @@ implements ClockListener {
 	private static final double maxfracpos = minslider - 1d;
 
 	// Data members
-	private int solElapsedCache = 0;
+	private int solElapsedCache = 1;
 	/** Master Clock. */
 	private MasterClock master;
 	/** Martian Clock. */
@@ -437,11 +437,14 @@ implements ClockListener {
 	}
 
 	public void setSeason() {
-		northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere",  //$NON-NLS-1$
-					marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)));
-
-		southernSeasonLabel.setText(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
-					marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)));
+		if (marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE) != null) {
+			northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere",  //$NON-NLS-1$
+						marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)));
+		}
+		if (marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE) != null ) {
+			southernSeasonLabel.setText(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
+						marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)));
+		}
 	}
 
 	@Override
@@ -461,7 +464,9 @@ implements ClockListener {
 						martianTimeLabel.setText(marsTime.getDateTimeStamp());
 						// 2015-02-24 Added solElapsedCache
 						if (solElapsed != solElapsedCache) {
-							martianMonthLabel.setText(marsTime.getMonthName());
+							
+							if (marsTime.getMonthName() != null)
+								martianMonthLabel.setText(marsTime.getMonthName());
 
 							setSeason();
 
@@ -470,7 +475,8 @@ implements ClockListener {
 					}
 
 					if (earthTime != null) {
-						earthTimeLabel.setText(earthTime.getTimeStamp());
+						if (earthTime.getTimeStamp() != null)
+							earthTimeLabel.setText(earthTime.getTimeStamp());
 					}
 
 					if (master != null) {

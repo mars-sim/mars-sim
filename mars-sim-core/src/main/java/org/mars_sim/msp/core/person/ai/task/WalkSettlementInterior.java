@@ -44,6 +44,10 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
 
+	  /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.walkSettlementInterior"); //$NON-NLS-1$
+    
 	/** Task phases. */
     private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
             "Task.phase.walking")); //$NON-NLS-1$
@@ -57,7 +61,7 @@ implements Serializable {
 
 	// Data members
 	private Settlement settlement;
-	private Building startBuilding;
+	//private Building startBuilding;
 	private Building destBuilding;
 	private double destXLoc;
 	private double destYLoc;
@@ -72,7 +76,7 @@ implements Serializable {
 	 */
     public WalkSettlementInterior(Person person, Building destinationBuilding,
             double destinationXLocation, double destinationYLocation) {
-        super("Walking inside a settlement", person, false, false, STRESS_MODIFIER, false, 0D);
+        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Check that the person is currently inside the settlement.
         LocationSituation location = person.getLocationSituation();
@@ -94,10 +98,8 @@ implements Serializable {
         }
 
         // Check that the person is currently inside a building.
-        startBuilding = BuildingManager.getBuilding(person);
+        Building startBuilding = BuildingManager.getBuilding(person);
         if (startBuilding == null) {
-            //throw new IllegalStateException(person.getName() + " is not currently in a building.");
-
             // Note: the above will trigger exception below and halt the sim
         	// Exception in thread "pool-4-thread-3024" java.lang.IllegalStateException: RepairBot 003 is not currently in a building.
         	//at org.mars_sim.msp.core.person.ai.task.WalkSettlementInterior.<init>(WalkSettlementInterior.java:145)
@@ -105,8 +107,10 @@ implements Serializable {
         	//at org.mars_sim.msp.core.person.ai.task.EnterAirlock.performMappedPhase(EnterAirlock.java:129)
 
         	// Question: can we use a gentler approach as follows until it's clearly understood and resolved.
-            logger.severe(person.getName() + " is not currently in a building.");
-        	endTask();
+            //logger.severe(person.getName() + " is not currently in a building.");
+        	//endTask();
+            throw new IllegalStateException(person.getName() + " is not currently in a building.");
+
         }
 
         // Determine the walking path to the destination.
@@ -150,7 +154,7 @@ implements Serializable {
         }
 
         // Check that the robot is currently inside a building.
-        startBuilding = BuildingManager.getBuilding(robot);
+        Building startBuilding = BuildingManager.getBuilding(robot);
         if (startBuilding == null) {
             //throw new IllegalStateException(robot.getName() + " is not currently in a building.");
 
@@ -161,8 +165,9 @@ implements Serializable {
         	//at org.mars_sim.msp.core.person.ai.task.EnterAirlock.performMappedPhase(EnterAirlock.java:129)
 
         	// Question: can we use a gentler approach as follows until it's clearly understood and resolved.
-        	logger.severe(robot.getName() + " is not currently in a building.");
-        	endTask();
+        	//logger.severe(robot.getName() + " is not currently in a building.");
+        	//endTask();
+            throw new IllegalStateException(robot.getName() + " is not currently in a building.");
         }
 
         // Determine the walking path to the destination.
@@ -186,15 +191,16 @@ implements Serializable {
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
-            //throw new IllegalArgumentException("Task phase is null");
+
         	if (person != null) {
                 logger.severe(person.getName() + " at " + person.getBuildingLocation() + " : Task phase is null");
         	}
         	else if (robot != null) {
                 logger.severe(robot.getName() + " at " + robot.getBuildingLocation() + " : Task phase is null");
         	}
-        	endTask();
-            return 0;
+        	//endTask();
+            throw new IllegalArgumentException("Task phase is null");
+            //return 0;
         }
         if (WALKING.equals(getPhase())) {
             return walkingPhase(time);
@@ -299,6 +305,7 @@ implements Serializable {
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
 
         	if (person != null) {
+        		Building startBuilding = BuildingManager.getBuilding(person);
                 logger.finer(person.getName() + " walked from " + startBuilding.getNickName() + " to " +
                         destBuilding.getNickName());
                 InsidePathLocation location = walkingPath.getNextPathLocation();
@@ -306,6 +313,7 @@ implements Serializable {
                 person.setYLocation(location.getYLocation());
         	}
         	else if (robot != null) {
+        		Building startBuilding = BuildingManager.getBuilding(robot);
                 logger.finer(robot.getName() + " walked from " + startBuilding.getNickName() + " to " +
                         destBuilding.getNickName());
                 InsidePathLocation location = walkingPath.getNextPathLocation();

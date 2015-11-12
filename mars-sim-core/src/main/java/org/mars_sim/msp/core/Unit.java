@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
+
 /**
  * The Unit class is the abstract parent class to all units in the
  * Simulation.  Units include people, vehicles and settlements.
@@ -170,6 +173,17 @@ implements Serializable, Comparable<Unit> {
 			while (topUnit.containerUnit != null) {
 				topUnit = topUnit.containerUnit;
 			}
+		}
+		else {
+			if (this instanceof Person) {
+				Person person = (Person) this;
+				person.getAssociatedSettlement();
+			}
+			else if (this instanceof Robot) {
+				Robot robot = (Robot) this;
+				robot.getAssociatedSettlement();
+			}
+			
 		}
 		return topUnit;
 	}
