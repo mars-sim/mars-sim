@@ -380,7 +380,7 @@ public class Preference implements Serializable {
 		return metaTaskStringList;
 	}
 
-	public String getStringName(MetaTask metaTask) {
+	public static String getStringName(MetaTask metaTask) {
 		String s = metaTask.getClass().getSimpleName();
 
 /*
@@ -397,6 +397,14 @@ public class Preference implements Serializable {
 		return ss;
 	}
 
+	public static String getStringName(Task task) {
+		String s = task.getClass().getSimpleName();
+
+		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA");
+		//System.out.println(ss + " <-- " + s);
+		return ss;
+	}
+	
 
 	public void scheduleTask(String s, int t1, int t2, boolean onceOnly, int priority) {
 

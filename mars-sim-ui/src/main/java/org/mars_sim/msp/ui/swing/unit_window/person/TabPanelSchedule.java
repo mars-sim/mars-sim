@@ -43,9 +43,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -568,10 +570,16 @@ extends TabPanel {
 			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
 			else if (column == 1) return tasks.get(row).getDescription();
 			else if (column == 2) return tasks.get(row).getPhase();
-			else if (column == 3) return tasks.get(row).getTaskName();
+			else if (column == 3) return getClassName(tasks.get(row).getTaskName());
 			else return null;
 		}
 
+		public String getClassName(String s) {
+			String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA").replace("To", "to");
+			//System.out.println(ss + " <-- " + s);
+			return ss;
+		}
+		
 		/**
 		 * Prepares a list of activities done on the selected day
 		 * @param hideRepeatedTasks

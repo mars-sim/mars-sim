@@ -196,8 +196,8 @@ public class ConstructionWizard {
            i++;
            if (i == size) {
         	   // TODO: do we need to place each placed building into the fireUnitUpdate() ?
-        	   Building aBuilding = mgr.getBuildings().get(0);
-        	   settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);
+        	   Building randomBuilding = mgr.getBuildings().get(0);
+        	   settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, randomBuilding);
 	        }
            
            // move vehicle one more time just in case

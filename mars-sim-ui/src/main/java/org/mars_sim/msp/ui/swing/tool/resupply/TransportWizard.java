@@ -36,6 +36,7 @@ import javafx.stage.Modality;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
@@ -113,16 +114,22 @@ public class TransportWizard {
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings() {
+    	
+		// 2015-10-17 Save the current pause state
+		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+
+    	mainScene.pauseSimulation();
+    	
         List<BuildingTemplate> orderedBuildings = resupply.orderNewBuildings();
         // 2014-12-23 Added sorting orderedBuildings according to its building id
         //Collections.sort(orderedBuildings);
+        //Collections.shuffle(orderedBuildings);
         Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
         int size = orderedBuildings.size();
         int i = 0;
 
         while (buildingI.hasNext()) {
            BuildingTemplate template = buildingI.next();
-
 
            // Correct length and width in building template.
            int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
@@ -196,14 +203,27 @@ public class TransportWizard {
            i++;
            if (i == size) {
         	   // TODO: do we need to place each placed building into the fireUnitUpdate() ?
-        	   Building aBuilding = mgr.getBuildings().get(0);
-        	   settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);
+        	   Building randomBuilding = mgr.getBuildings().get(0);
+        	   settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, randomBuilding);
 	        }
            
            // move vehicle one more time just in case
            //moveVehicle(correctedTemplate);
 	    } // end of while (buildingI.hasNext())
         
+        
+		// 2015-10-17 Check if it was previously on pause mode
+		//if (isOnPauseMode) {
+		//	mainScene.pauseSimulation();
+		//}
+		//else 
+		//	mainScene.unpauseSimulation(); // Do NOT do this or it will take away any previous announcement window
+
+        mainScene.unpauseSimulation();
+        
+        // 2015-11-12 Deliver the rest of the supplies and add people.
+        resupply.deliverOthers();
+		
     }
 
     public void moveVehicle(BuildingTemplate template){
@@ -254,9 +274,6 @@ public class TransportWizard {
      * @param isAtPreDefinedLocation
      */
 	public synchronized void confirmBuildingLocation(BuildingTemplate template, boolean isAtPreDefinedLocation) {
-
-		// 2015-10-17 Save the current pause state
-		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
 	
 		BuildingTemplate positionedTemplate ; // should NOT be null
 		Building newBuilding ;
@@ -271,7 +288,7 @@ public class TransportWizard {
 
 			//System.out.println("TranportWizard : isAtDefinedLocation is true ");
 			//positionedTemplate = template;
-			newBuilding = settlement.getBuildingManager().addOneBuilding(template, resupply, false);
+			newBuilding = settlement.getBuildingManager().addOneBuilding(template, resupply, true);
 		}
 
 		else {
@@ -280,7 +297,7 @@ public class TransportWizard {
 			positionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
 			//buildingManager.setBuildingArrived(true);
 			// Define new position for this building
-			newBuilding = settlement.getBuildingManager().addOneBuilding(positionedTemplate, resupply, false);
+			newBuilding = settlement.getBuildingManager().addOneBuilding(positionedTemplate, resupply, true);
 		}
 
 		//createGUI(newBuilding);
@@ -300,12 +317,12 @@ public class TransportWizard {
 
         if (mainScene != null) {
 
-	    	mainScene.pauseSimulation();
+	    	//mainScene.pauseSimulation();
 	    	
         	Alert alert = new Alert(AlertType.CONFIRMATION);
    			//alert.initModality(Modality.APPLICATION_MODAL);
    			//alert.initModality(Modality.WINDOW_MODAL);
-        	alert.initModality(Modality.NONE);
+        	alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
         	
    			alert.initOwner(mainScene.getStage());
    			double x = mainScene.getStage().getWidth();
@@ -336,12 +353,12 @@ public class TransportWizard {
 			alert.showAndWait().ifPresent(response -> {
 			     if (response == buttonTypeYes) {
 			    	 logger.info(newBuilding.toString() + " is in-place");
-			    	 mainScene.unpauseSimulation();
+			    	 //mainScene.unpauseSimulation();
 			     }
 			     else if (response == buttonTypeNo) {
 			    	 settlement.getBuildingManager().removeBuilding(newBuilding);
 			    	 confirmBuildingLocation(template, false);
-			    	 mainScene.unpauseSimulation();
+			    	 //mainScene.unpauseSimulation();
 			     }
 
 			});
@@ -403,14 +420,6 @@ public class TransportWizard {
 			}
 
         }
-        
-		// 2015-10-17 Check if it was previously on pause mode
-		if (isOnPauseMode) {
-			mainScene.pauseSimulation();
-		}
-		//else 
-		//	mainScene.unpauseSimulation(); // Do NOT do this or it will take away any previous announcement window
-
 	}
 
 

@@ -376,8 +376,11 @@ public abstract class Airlock implements Serializable {
             Iterator<Unit> i = occupants.iterator();
                 while (i.hasNext()) {
                      Unit occupant = i.next();
+                     if (occupant instanceof Robot) {
+                    	 Robot robot = (Robot) occupant;          
+                    	 logger.info("Airlock has been " + getState() + ". " + robot.getName() + " at " + getEntity() + " is about to call exitAirlock()");                  	 
+                     }
                      exitAirlock(occupant);
-                     logger.info("Airlock has been " + getState() + ". " + occupant.getName() + " can exit the airlock now to " + getEntity());
                 }
 
             occupants.clear();

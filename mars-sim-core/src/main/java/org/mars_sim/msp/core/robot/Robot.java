@@ -273,10 +273,42 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @return the robot's settlement
      */
     public Settlement getSettlement() {
-        if (LocationSituation.IN_SETTLEMENT == getLocationSituation())
+/*
+    	if (LocationSituation.IN_SETTLEMENT == getLocationSituation())
             return (Settlement) getContainerUnit();
         else
             return null;
+*/        
+            if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            	Settlement settlement = (Settlement) getContainerUnit();
+            	if (settlement != null)
+            		return settlement;
+            	else {
+    	        	settlement = (Settlement) getTopContainerUnit();
+    	        	return settlement;
+            	}
+            }
+            else if (getLocationSituation() == LocationSituation.OUTSIDE)
+            // 2015-09-03 Changed getContainerUnit() below to getTopContainerUnit()
+                return (Settlement) getTopContainerUnit();
+            else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            	Vehicle vehicle = (Vehicle) getContainerUnit();
+            	Settlement settlement = (Settlement) vehicle.getSettlement();
+            	if (settlement != null)
+            		return settlement;
+            	else {
+            		settlement = (Settlement) vehicle.getContainerUnit();
+            		return settlement;
+            	}
+            }
+            else if (getLocationSituation() == LocationSituation.BURIED) {
+                return (Settlement) getContainerUnit();
+            }
+            else {
+            	System.err.println("robot's getSettlement() : " + getName() + " does NOT belong to any settlements.");
+            	return null;
+            }
+            	
     }
 
     /**

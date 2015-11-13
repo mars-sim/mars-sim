@@ -76,14 +76,14 @@ implements Serializable, Transportable {
     private static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 2;
 
     
-    private static final int BUILDING_CENTER_SEPARATION = 9;
+    private static final int BUILDING_CENTER_SEPARATION = 10; //9;
     
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
 
     /** Minimum length of a building connector (meters). */
-    private static final double MINIMUM_CONNECTOR_LENGTH = .5D;
+    private static final double MINIMUM_CONNECTOR_LENGTH = 1D;//.5D;
 
 	// Data members
 	private Settlement settlement;
@@ -351,10 +351,11 @@ implements Serializable, Transportable {
 
            	// Deliver buildings to the destination settlement.
         } else {// if GUI is NOT in use, use the version of deliverBuildings() here in Resuppply.java
+        	
         	deliverBuildings();
+            // Deliver the rest of the supplies and add people.
+            deliverOthers();
         }
-        // Deliver the rest of the supplies and add people.
-        deliverOthers();
 
     }
 
@@ -610,6 +611,7 @@ implements Serializable, Transportable {
         return result;
     }
 
+/*    
     public BuildingTemplate positionSameType(String buildingType) {
         System.out.println("Checking if there are any building of the same type...");
         BuildingTemplate newPosition = null;
@@ -631,6 +633,8 @@ implements Serializable, Transportable {
         }
         return newPosition;
     }
+*/
+    
     /**
      * Determines and sets the position of a new resupply building.
      * @param building type the new building type.
@@ -649,13 +653,17 @@ implements Serializable, Transportable {
             newPosition = positionNewConnector(buildingType);
             System.out.println("Case 1 : Positing the building connector");
         }
+
+        
+/*        
         else if (hasLifeSupport) {
             System.out.println("Case 2 : building has life support");
             
         	newPosition = positionSameType(buildingType);
         	
-        	if (newPosition != null) 
-                System.out.println("has buildings with the same building type");
+        	if (newPosition != null) {
+                System.out.println("has building(s) with the same building type");
+        	}
         	else {
                 System.out.println("No other same building type");
 	            // Put this habitable building next to another inhabitable building (e.g. greenhouse, lander hab, research hab...)
@@ -681,14 +689,44 @@ implements Serializable, Transportable {
         	if (newPosition != null)
         		System.out.println("Waiting for user's confirmation...");
         }
-
+*/
+        
+        else if (hasLifeSupport) {
+            // Try to put building next to another inhabitable building.
+            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+            Collections.shuffle(inhabitableBuildings);
+            Iterator<Building> i = inhabitableBuildings.iterator();
+            while (i.hasNext()) {
+                Building building = i.next();
+                int rand = RandomUtil.getRandomInt(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
+                newPosition = positionNextToBuilding(buildingType, building, rand, false);
+                if (newPosition != null) {
+                    break;
+                }
+            }
+        }
+        else {
+            // Try to put building next to the same building type.
+            List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfSameType(buildingType);
+            Collections.shuffle(sameBuildings);
+            Iterator<Building> j = sameBuildings.iterator();
+            while (j.hasNext()) {
+                Building building = j.next();
+                int rand1 = RandomUtil.getRandomInt(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
+                newPosition = positionNextToBuilding(buildingType, building, rand1, false);
+                if (newPosition != null) {
+                    break;
+                }
+            }
+        }
+        
         if (newPosition == null) {
             // Put this non-habitable building next to a different type building.
             // If not successful, try again 10m from each building and continue out at 10m increments
             // until a location is found.
             BuildingManager buildingManager = settlement.getBuildingManager();
             if (buildingManager.getBuildingNum() > 0) {
-                for (int x = BUILDING_CENTER_SEPARATION; newPosition == null; x+= 1) {
+                for (int x = BUILDING_CENTER_SEPARATION; newPosition == null; x+= BUILDING_CENTER_SEPARATION) {
                     List<Building> allBuildings = buildingManager.getBuildings();
                     System.out.println("allBuildings.size() is "+ allBuildings.size());
                     System.out.println("Building type is "+ buildingType);
@@ -881,7 +919,7 @@ implements Serializable, Transportable {
                         double distance = Point2D.distance(startingBuilding.getXLocation(),
                                 startingBuilding.getYLocation(), building.getXLocation(),
                                 building.getYLocation());
-                        if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
+                        if ((distance < leastDistance) && (distance >= 5D)) { //MINIMUM_CONNECTOR_LENGTH)) {
                             System.out.println("positionNewConnector() : Case 4Ai");
                             // Check that new building can be placed between the two buildings.
                             if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding,

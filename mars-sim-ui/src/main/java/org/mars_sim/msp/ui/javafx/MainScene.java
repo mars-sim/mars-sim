@@ -47,8 +47,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -56,6 +62,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -86,6 +93,7 @@ import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 
 /**
@@ -151,7 +159,10 @@ public class MainScene {
 	private StackPane rootStackPane;
 	private SwingNode swingNode;
 	private StatusBar statusBar;
-
+	private Flyout flyout;
+	private ToggleButton commNetButton;
+	    
+	
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 
 	@SuppressWarnings("restriction")
@@ -520,6 +531,54 @@ public class MainScene {
 
 	}
 
+
+    /**
+     * Creates and returns a {@link Flyout}
+     * @return  a new {@link Flyout}
+     */
+    //2015-11-11 Added createFlyout()
+    public Flyout createFlyout() {
+        commNetButton = new ToggleButton("Open CommNet");
+        commNetButton.setOnAction(e -> {
+            if (commNetButton.isSelected()) {
+                flyout.flyout();
+                commNetButton.setText("Close CommNet");
+            } else {
+                flyout.dismiss();
+                commNetButton.setText("Open CommNet");                
+            }
+        });
+        
+        Flyout retVal = new Flyout(commNetButton, createChatBox());
+        
+        return retVal;
+    }
+    
+    /*
+     * Creates a chat box 
+     * @return StackPane
+     */
+    //2015-11-11 Added createChatBox()
+  	public StackPane createChatBox() {
+  		ChatBox cb = new ChatBox();
+  		StackPane pane = new StackPane(cb);
+  		pane.setPadding(new Insets(5, 5, 5, 5));
+        //pane.setHgap(5);
+        
+  		TextArea ta = cb.getTextArea();
+  		ta.setTooltip(new Tooltip ("Chatters on global settlement's CommNet"));
+  		
+  		TextField tf = cb.getTextField();
+  		tf.setTooltip(new Tooltip ("Broadcast your message to the global channel on Mars"));
+  		tf.setPromptText("Type here");
+  				
+  		ta.appendText("SafeNet's warning : a small dust storm 20 km away NNW is heading toward the Alpha Base"
+      		  + System.lineSeparator());
+  	
+  		return pane;
+  		
+  	}
+  	
 	/*
 	 * Creates the status bar for MainScene
 	 */
@@ -540,6 +599,13 @@ public class MainScene {
 		// statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth() +
 		// 10);
 
+	    //2015-11-11 Added createFlyout()
+		flyout = createFlyout();
+		statusBar.getLeftItems().add(new Separator(VERTICAL));
+		statusBar.getLeftItems().add(flyout);
+		statusBar.getLeftItems().add(new Separator(VERTICAL));
+		
+		
 		osBean = ManagementFactory.getPlatformMXBean(
 				com.sun.management.OperatingSystemMXBean.class);
 
@@ -1269,11 +1335,11 @@ public class MainScene {
 		}
 		
 		//2015-09-27 for testing the use of fxml
-		marsNode.createMaterialDesignWindow();
+		//marsNode.createMaterialDesignWindow();
 		//marsNode.createSettlementWindow();
 		marsNode.createStory();
 		marsNode.createDragDrop();
-		marsNode.createEarthMap();
+		//marsNode.createEarthMap();
 		//marsNode.createMarsMap();
 		marsNode.createChatBox();
 	}

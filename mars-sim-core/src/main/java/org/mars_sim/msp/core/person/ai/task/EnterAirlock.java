@@ -502,7 +502,7 @@ implements Serializable {
 
         if (person != null) {
             //logger.info(person + " exiting airlock inside.");
-            logger.finer(person + " is trying to exit an airlock.");
+            logger.finer(person + " is in exitingAirlockPhase() trying to exit an airlock.");
 
             Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
             if (LocalAreaUtil.areLocationsClose(personLocation, interiorAirlockPos)) {
@@ -523,11 +523,14 @@ implements Serializable {
                     	                 
 	                    Building startBuilding = BuildingManager.getBuilding(person);
 	                    if (startBuilding != null) {
-	                        logger.info(person + " walking from " + startBuilding + " to an airlock at " + airlockBuilding);
+	                        logger.finer(person + " walking from " + startBuilding + " to an airlock at " + airlockBuilding);
 	                    	addSubTask(new WalkSettlementInterior(person, airlockBuilding,
 	                        interiorAirlockPos.getX(), interiorAirlockPos.getY()));
 	                    }
-                    
+                        else {
+                        	logger.finer(person + " is not inside a building");
+                        	endTask();
+                        }
                     }
                     else {
                         logger.finer(airlockBuilding + " is null");
@@ -549,7 +552,7 @@ implements Serializable {
         }
         else if (robot != null) {
             //logger.info(robot + " exiting airlock inside.");
-            logger.info(robot + " is trying to exit an airlock.");
+            logger.info(robot + " is in exitingAirlockPhase() trying to exit an airlock.");
             
             Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
             if (LocalAreaUtil.areLocationsClose(robotLocation, interiorAirlockPos)) {
@@ -576,7 +579,10 @@ implements Serializable {
                         	addSubTask(new WalkSettlementInterior(robot, airlockBuilding,
                             interiorAirlockPos.getX(), interiorAirlockPos.getY()));
                         }
-                        
+                        else {
+                        	logger.info(robot + " is not inside a building");
+                        	endTask();
+                        }
                     }
                     else {
                         logger.info(airlockBuilding + " is null");
@@ -585,7 +591,7 @@ implements Serializable {
                 else if (airlock.getEntity() instanceof Rover) {
 
                     Rover airlockRover = (Rover) airlock.getEntity();
-                    logger.finest(robot + " is walking to an airlock of " + airlockRover);
+                    logger.info(robot + " is walking to an airlock of " + airlockRover);
                     addSubTask(new WalkRoverInterior(robot, airlockRover,
                             interiorAirlockPos.getX(), interiorAirlockPos.getY()));
                 }

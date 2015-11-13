@@ -1195,15 +1195,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//transportWizard.setAnnouncement(announcement);
 		transportWizard.initialize(buildingManager);//, settlementWindow);//, building);
 		transportWizard.deliverBuildings();
-		//transportWizard.pack();
-		//add(transportWizard, 0);
-		//int Xloc = (getWidth() - transportWizard.getWidth()) / 4;
-		//int Yloc = (getHeight() - transportWizard.getHeight()) / 4;
-		//transportWizard.setLocation(Xloc, Yloc);
-		// Note: second window packing seems necessary to get window
-		// to display components correctly.
-		//transportWizard.pack();
-		//transportWizard.setVisible(true);
+
 	}
 
 	/**
