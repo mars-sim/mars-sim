@@ -403,6 +403,7 @@ public class ScenarioConfigEditorFX {
 			boolean isYes = confirmDeleteDialog("Removing settlement", "Are you sure you want to do this?");
 			if (isYes) {
 				removeSelectedSettlements();
+				//mainMenu.getStage().setIconified(true);
 			}
 		});
 		vbTopLeft.getChildren().add(removeButton);
@@ -448,13 +449,18 @@ public class ScenarioConfigEditorFX {
 		refreshDefaultButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.default"))); //$NON-NLS-1$
 		refreshDefaultButton.setOnAction((event) -> {
 			if (multiplayerClient != null && hasSettlement) {
-				setExistingSettlements();
+				boolean isYes = confirmDeleteDialog("Delete settlements settings, reset back to default and refresh other players' settlements", "Are you sure you want to do this?");
+				if (isYes)
+					setExistingSettlements();
 			}
-			else
-				setDefaultSettlements();
+			else {
+				boolean isYes = confirmDeleteDialog("Delete settlement settings and reset back to default", "Are you sure you want to do this?");
+				if (isYes)
+					setDefaultSettlements();
+			}
+			//mainMenu.getStage().setIconified(true);
 		});
 		//vbCenter.getChildren().add(defaultButton);
-
 
 		// Create the start button.
 		startButton = new Button("   " + Msg.getString("SimulationConfigEditor.button.newSim")+ "   "); //$NON-NLS-1$
@@ -974,7 +980,10 @@ public class ScenarioConfigEditorFX {
 		return settlementList;
 	}
 
-
+	public SettlementTableModel getSettlementTableModel() {
+		return settlementTableModel;
+	}
+	
 	public void destroy() {
 
 		config  = null;

@@ -87,6 +87,10 @@ public class SettlementTableModel extends AbstractTableModel {
 
 	}
 
+	public List<SettlementInfo> getSettlements() {
+		return settlements;
+	}
+	
 	public void setConfigEditor(ScenarioConfigEditorFX configEditor) {
 		this.configEditor = configEditor;
 	}
@@ -592,7 +596,7 @@ public class SettlementTableModel extends AbstractTableModel {
 					//setExistingSettlements();
 					Platform.runLater(() -> {
 						// show the label text
-						configEditor.getErrorLabel().setText("Settlement list was just refreshed");
+						configEditor.getErrorLabel().setText("The Settlement list has just been refreshed");
 		    			configEditor.getErrorLabel().setTextFill(Color.GREEN);
 					});
 				}

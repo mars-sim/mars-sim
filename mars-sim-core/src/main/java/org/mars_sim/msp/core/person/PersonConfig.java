@@ -25,14 +25,18 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final int SIZE_OF_CREW = 4;
+
 	private List<String> alphaCrewName; // = new ArrayList<String>();
 	private List<String> alphaCrewGender; // = new ArrayList<String>();
 	private List<String> alphaCrewPersonality; //  = new ArrayList<String>();
 	private List<String> alphaCrewJob; //  = new ArrayList<String>();
+	private List<String> alphaCrewDestination;
 	private List<String> alphaCrewFavoriteMainDish;
 	private List<String> alphaCrewFavoriteSideDish;
 	private List<String> alphaCrewFavoriteDessert;
 	private List<String> alphaCrewFavoriteActivity;
+
 	
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";
@@ -348,16 +352,6 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the configured person's starting settlement.
-	 * @param index the person's index.
-	 * @return the settlement name or null if none.
-	 * @throws Exception if error in XML parsing.
-	 */
-	public String getConfiguredPersonSettlement(int index) {
-		return getValueAsString(index,SETTLEMENT);
-	}
-
-	/**
 	 * Gets the configured person's job.
 	 * @param index the person's index.
 	 * @return the job name or null if none.
@@ -370,40 +364,87 @@ implements Serializable {
 			return getValueAsString(index,JOB);
 	}
 
+	/**
+	 * Gets the configured person's starting settlement.
+	 * @param index the person's index.
+	 * @return the settlement name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonDestination(int index) {
+		if (alphaCrewDestination != null)
+			return alphaCrewDestination.get(index);
+		else 
+			return getValueAsString(index,SETTLEMENT);
+	}
+
+	/*
+	 * Sets the name of a member of the alpha crew
+	 * @param index
+	 * @param name
+	 */
 	public void setPersonName(int index, String value) {
 		if (alphaCrewName == null) 
-			alphaCrewName = new ArrayList<String>(4);
-		if (alphaCrewName.size() == 4) {
+			alphaCrewName = new ArrayList<String>(SIZE_OF_CREW);
+		if (alphaCrewName.size() == SIZE_OF_CREW) {
 			alphaCrewName.set(index, value);
 		} else
 			alphaCrewName.add(value);
 	}
 
+	/*
+	 * Sets the personality of a member of the alpha crew
+	 * @param index
+	 * @param personality 
+	 */
 	public void setPersonPersonality(int index, String value) {
 		if (alphaCrewPersonality == null)  
-			alphaCrewPersonality = new ArrayList<String>(4);
-		if (alphaCrewPersonality.size() == 4) {
+			alphaCrewPersonality = new ArrayList<String>(SIZE_OF_CREW);
+		if (alphaCrewPersonality.size() == SIZE_OF_CREW) {
 			alphaCrewPersonality.set(index, value);
 		} else
 			alphaCrewPersonality.add(value);
 	}
 
+	/*
+	 * Sets the gender of a member of the alpha crew
+	 * @param index
+	 * @param gender 
+	 */
 	public void setPersonGender(int index, String value) {
 		if (alphaCrewGender == null)  
-			alphaCrewGender = new ArrayList<String>(4);
-		if (alphaCrewGender.size() == 4) {
+			alphaCrewGender = new ArrayList<String>(SIZE_OF_CREW);
+		if (alphaCrewGender.size() == SIZE_OF_CREW) {
 			alphaCrewGender.set(index, value);
 		} else
 			alphaCrewGender.add(value);
 	}
 
+	/*
+	 * Sets the job of a member of the alpha crew
+	 * @param index
+	 * @param job 
+	 */
 	public void setPersonJob(int index,String value) {
 		if (alphaCrewJob == null)  
-			alphaCrewJob = new ArrayList<String>(4);
-		if (alphaCrewJob.size() == 4) {
+			alphaCrewJob = new ArrayList<String>(SIZE_OF_CREW);
+		if (alphaCrewJob.size() == SIZE_OF_CREW) {
 			alphaCrewJob.set(index, value);
 		} else
 			alphaCrewJob.add(value);
+	}
+	
+	/*
+	 * Sets the destination of a member of the alpha crew
+	 * @param index
+	 * @param destination 
+	 */
+	public void setPersonDestination(int index,String value) {
+		if (alphaCrewDestination == null)  
+			alphaCrewDestination = new ArrayList<String>(SIZE_OF_CREW);
+		if (alphaCrewDestination.size() == SIZE_OF_CREW) {
+			alphaCrewDestination.set(index, value);
+		} else
+			alphaCrewDestination.add(value);
 	}
 	
 	/**

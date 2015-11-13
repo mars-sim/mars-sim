@@ -14,4 +14,8 @@ public class SettlementInfo {
 	boolean hasMaxMSD;
 	String maxMSD;
 	String editMSD = "Edit";
+	
+	public String getName() {
+		return name;
+	}
 }

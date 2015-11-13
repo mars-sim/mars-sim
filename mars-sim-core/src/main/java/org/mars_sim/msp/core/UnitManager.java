@@ -582,7 +582,7 @@ public class UnitManager implements Serializable {
 
 			// Get person's settlement or randomly determine it if not
 			// configured.
-			String settlementName = personConfig.getConfiguredPersonSettlement(x);
+			String settlementName = personConfig.getConfiguredPersonDestination(x);
 			Settlement settlement = null;
 			if (settlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
