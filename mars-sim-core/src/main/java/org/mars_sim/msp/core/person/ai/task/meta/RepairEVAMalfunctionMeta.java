@@ -141,7 +141,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
 
         double result = 0D;
-
+/*
         if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
 
             // Add probability for all malfunctionable entities in person's local.
@@ -200,7 +200,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
             // Effort-driven task modifier.
             result *= robot.getPerformanceRating();
         }
-
+*/
         return result;
 	}
 }

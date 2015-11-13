@@ -835,7 +835,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 			//printWorkShift("Sol "+ solCache);
 			reassignWorkShift();
-			printWorkShift("Sol "+ solElapsed);
+			//printWorkShift("Sol "+ solElapsed);
 
 			if (resourceStat.size() > 30)
 				resourceStat.remove(0);

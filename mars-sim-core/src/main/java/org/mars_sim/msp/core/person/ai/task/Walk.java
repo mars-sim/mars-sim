@@ -602,13 +602,13 @@ implements Serializable {
         else { //if (result == null)
         	
         	if (person != null) {
-               	logger.info(person.getName() 
+               	logger.fine(person.getName() 
             	+ " in " + person.getBuildingLocation().getNickName() 
             	+ " at " + person.getAssociatedSettlement()
-            	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
+            	+ " : setting TaskPhase to null ");
 
         	} else if (robot != null) {
-        		logger.info(robot.getName() 
+        		logger.fine(robot.getName() 
 	        	+ " in " + robot.getBuildingLocation().getNickName() 
 	        	+ " at " + robot.getAssociatedSettlement()
 	        	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
@@ -733,8 +733,8 @@ implements Serializable {
 			            addSubTask(new WalkSettlementInterior(person, step.building, step.xLoc, step.yLoc));
 		        	}
 		            else if (building == null) {
-		    			logger.severe(person + " is not in a building.");
-		            	//endTask();	            	
+		    			logger.info(person + " is not in a building.");
+		            	endTask();	            	
 			        	// do this for now so as to debug why this happen and how often
 			        	//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"
 		    			//logger.severe(person + " set phase to WALKING_EXTERIOR.");
@@ -770,14 +770,15 @@ implements Serializable {
 			            addSubTask(new WalkSettlementInterior(robot, step.building, step.xLoc, step.yLoc));
 		        	}
 		        	else if (building == null) {
-		        		logger.severe(robot + " is not in a building");
-		        		logger.severe(robot + " is " + robot.getLocationSituation());
-		        		logger.severe(robot + " is " + robot.getSettlement());
-		        		logger.severe(robot + " is " + robot.getAssociatedSettlement());
-		        		logger.severe(robot + " is " + robot.getContainerUnit());
-		        		logger.severe(robot + " is " + robot.getTopContainerUnit());
+		        		logger.info(robot + " is not in a building");
+		        		logger.info(robot + " may be at " + robot.getBuildingLocation());
+		        		logger.info(robot + "'s location is " + robot.getLocationSituation());
+		        		logger.info(robot + " is in " + robot.getSettlement());
+		        		logger.info(robot + " is associated to " + robot.getAssociatedSettlement());
+		        		logger.info(robot + " has the container unit of " + robot.getContainerUnit());
+		        		logger.info(robot + " has the top container unit of " + robot.getTopContainerUnit());
 
-		        		//endTask();
+		        		endTask();
 		        		
 			        	// do this for now so as to debug why this happen and how often
 		        		//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"

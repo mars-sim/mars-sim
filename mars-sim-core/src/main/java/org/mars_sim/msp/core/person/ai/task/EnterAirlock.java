@@ -325,16 +325,16 @@ implements Serializable {
 
         else if (robot != null) {
             //logger.finer(robot + " entering airlock from outside.");
-            logger.info(robot + " is trying to enter an airlock from outside.");
+            logger.finer(robot + " is trying to enter an airlock from outside.");
             
             Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
 
             if (airlock.inAirlock(robot)) {
-                logger.info(robot + " is entering airlock, but is already in airlock.");
+                logger.finer(robot + " is entering airlock, but is already in airlock.");
                 setPhase(WAITING_INSIDE_AIRLOCK);
             }
             else if (robot.getLocationSituation() != LocationSituation.OUTSIDE) {
-                logger.info(robot + " is entering airlock, but is already inside.");
+                logger.finer(robot + " is entering airlock, but is already inside.");
                 endTask();
             }
             else if (LocalAreaUtil.areLocationsClose(robotLocation, insideAirlockPos)) {
@@ -347,7 +347,7 @@ implements Serializable {
                         airlock.activateAirlock(robot);
                     }
 
-                    logger.info(robot + " has entered airlock and begun waiting countdown");
+                    logger.finer(robot + " has entered airlock and begun waiting countdown");
 
                     setPhase(WAITING_INSIDE_AIRLOCK);
                 }
@@ -501,7 +501,7 @@ implements Serializable {
         }
 
         if (person != null) {
-            //logger.info(person + " exiting airlock inside.");
+            //logger.finer(person + " exiting airlock inside.");
             logger.finer(person + " is in exitingAirlockPhase() trying to exit an airlock.");
 
             Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
@@ -551,14 +551,14 @@ implements Serializable {
 
         }
         else if (robot != null) {
-            //logger.info(robot + " exiting airlock inside.");
-            logger.info(robot + " is in exitingAirlockPhase() trying to exit an airlock.");
+            //logger.finer(robot + " exiting airlock inside.");
+            logger.finer(robot + " is in exitingAirlockPhase() trying to exit an airlock.");
             
             Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
             if (LocalAreaUtil.areLocationsClose(robotLocation, interiorAirlockPos)) {
 
-                //logger.info(robot + " has exited airlock inside.");
-              	logger.info(robot + " is bypassing the need of storing the EVA suit");
+                //logger.finer(robot + " has exited airlock inside.");
+              	logger.finer(robot + " is bypassing the need of storing the EVA suit");
               	 
                 // EVA SUIT NOT NEEDED for robot but may still call that so as to endTask() properly
                 setPhase(STORING_EVA_SUIT);
@@ -575,23 +575,23 @@ implements Serializable {
                          
                         Building startBuilding = BuildingManager.getBuilding(robot);
                         if (startBuilding != null) {
-                            logger.info(robot + " walking from " + startBuilding + " to an airlock at " + airlockBuilding);
+                            logger.finer(robot + " walking from " + startBuilding + " to an airlock at " + airlockBuilding);
                         	addSubTask(new WalkSettlementInterior(robot, airlockBuilding,
                             interiorAirlockPos.getX(), interiorAirlockPos.getY()));
                         }
                         else {
-                        	logger.info(robot + " is not inside a building");
+                        	logger.finer(robot + " is not inside a building");
                         	endTask();
                         }
                     }
                     else {
-                        logger.info(airlockBuilding + " is null");
+                        logger.finer(airlockBuilding + " is null");
                     }
                 }
                 else if (airlock.getEntity() instanceof Rover) {
 
                     Rover airlockRover = (Rover) airlock.getEntity();
-                    logger.info(robot + " is walking to an airlock of " + airlockRover);
+                    logger.finer(robot + " is walking to an airlock of " + airlockRover);
                     addSubTask(new WalkRoverInterior(robot, airlockRover,
                             interiorAirlockPos.getX(), interiorAirlockPos.getY()));
                 }
@@ -652,7 +652,7 @@ implements Serializable {
                 catch (Exception e) {}
 
                 // Return suit to entity's inventory.
-                // logger.info(person.getName() + " putting away EVA suit into " + entity.getName());
+                // logger.finer(person.getName() + " putting away EVA suit into " + entity.getName());
                 personInv.retrieveUnit(suit);
                 entityInv.storeUnit(suit);
             }
@@ -663,7 +663,7 @@ implements Serializable {
         }
         else if (robot != null) {
         	// no need of stowing away the EVA suit
-            //logger.info(robot + " has no EVA suit to stow away.");
+            //logger.finer(robot + " has no EVA suit to stow away.");
         }
 
         endTask();

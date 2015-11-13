@@ -66,7 +66,7 @@ implements Serializable {
 	 */
 	public double getCapability(Robot robot) {
 
-		double result = 10D;
+		double result = 0D; // robot should be less capable than the person counterpart
 
 		int mechanicSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
 		result += mechanicSkill;

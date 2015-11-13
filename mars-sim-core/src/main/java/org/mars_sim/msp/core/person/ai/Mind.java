@@ -436,12 +436,10 @@ implements Serializable {
      */
     public void getNewAction(boolean tasks, boolean missions) {
 
-        //if (person != null) {
-            // If this Person is too weak then they can not do Missions
-            if (person.getPerformanceRating() < 0.5D) {
-                missions = false;
-            }
-        //}
+    	// If this Person is too weak then they can not do Missions
+    	if (person.getPerformanceRating() < 0.5D) {
+    		missions = false;
+    	}
 
 
         // Get probability weights from tasks, missions and active missions.

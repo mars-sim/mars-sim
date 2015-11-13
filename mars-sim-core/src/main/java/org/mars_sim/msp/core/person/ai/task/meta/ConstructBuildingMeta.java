@@ -122,9 +122,9 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 	}
 
 	public double getProbability(Robot robot) {
-
-        double result = 0D;
-
+		 double result = 0D;
+/*
+       
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
 
             if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -154,6 +154,7 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
 
         // Effort-driven task modifier.
         result *= robot.getPerformanceRating();
+*/        
         return result;
     }
 }

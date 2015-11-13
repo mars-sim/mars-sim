@@ -141,7 +141,7 @@ public abstract class Airlock implements Serializable {
                         throw new IllegalStateException(robot + " still awaiting inner door!");
                     }
                 }
-                logger.info(robot.getName() + " enters through the inner door of the airlock at "+ getEntityName());
+                logger.finer(robot.getName() + " enters through the inner door of the airlock at "+ getEntityName());
                 result = true;
             }
             else if (!inside && !outerDoorLocked) {
@@ -151,7 +151,7 @@ public abstract class Airlock implements Serializable {
                         throw new IllegalStateException(robot + " still awaiting outer door!");
                     }
                 }
-                logger.info(robot.getName() + " enters through the outer door of the airlock at " + getEntityName());
+                logger.finer(robot.getName() + " enters through the outer door of the airlock at " + getEntityName());
                 result = true;
             }
 
@@ -198,7 +198,7 @@ public abstract class Airlock implements Serializable {
 		                        throw new IllegalStateException(robot + " still awaiting inner door!");
 		                    }
 		                    if (!occupants.contains(robot)) {
-		                        logger.info(robot.getName() + " enters through the inner door of the airlock at " + getEntityName());
+		                        logger.finer(robot.getName() + " enters through the inner door of the airlock at " + getEntityName());
 		                        occupants.add(robot);
 		                    }
 					}
@@ -230,7 +230,7 @@ public abstract class Airlock implements Serializable {
 	                        throw new IllegalStateException(robot + " still awaiting outer door!");
 	                    }
 	                    if (!occupants.contains(robot)) {
-	                        logger.info(robot.getName() + " enters through the outer door of the airlock at " + getEntityName());
+	                        logger.finer(robot.getName() + " enters through the outer door of the airlock at " + getEntityName());
 	                        occupants.add(robot);
 	                    }
 
@@ -378,7 +378,7 @@ public abstract class Airlock implements Serializable {
                      Unit occupant = i.next();
                      if (occupant instanceof Robot) {
                     	 Robot robot = (Robot) occupant;          
-                    	 logger.info("Airlock has been " + getState() + ". " + robot.getName() + " at " + getEntity() + " is about to call exitAirlock()");                  	 
+                    	 logger.finer("Airlock has been " + getState() + ". " + robot.getName() + " at " + getEntity() + " is about to call exitAirlock()");                  	 
                      }
                      exitAirlock(occupant);
                 }
@@ -471,10 +471,10 @@ public abstract class Airlock implements Serializable {
     public void addAwaitingAirlockInnerDoor(Unit unit) {
         if (!awaitingInnerDoor.contains(unit)) {
         	if (unit instanceof Robot) {
-        		logger.info(((Robot)unit).getName() + " awaiting inner door of " + getEntityName() + " airlock.");
+        		logger.finer(((Robot)unit).getName() + " awaiting inner door of " + getEntityName() + " airlock.");
         	}
         	else
-        		logger.info(((Person)unit).getName() + " awaiting inner door of " + getEntityName() + " airlock.");
+        		logger.finer(((Person)unit).getName() + " awaiting inner door of " + getEntityName() + " airlock.");
             awaitingInnerDoor.add(unit);
         }
     }
@@ -493,7 +493,7 @@ public abstract class Airlock implements Serializable {
 
     public void addAwaitingAirlockOuterDoor(Robot robot) {
         if (!awaitingOuterDoor.contains(robot)) {
-            logger.info(robot.getName() + " awaiting outer door of " + getEntityName() + " airlock.");
+            logger.finer(robot.getName() + " awaiting outer door of " + getEntityName() + " airlock.");
             awaitingOuterDoor.add(robot);
         }
     }

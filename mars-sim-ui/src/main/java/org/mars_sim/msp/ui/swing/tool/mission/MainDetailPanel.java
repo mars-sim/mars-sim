@@ -39,6 +39,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -61,6 +62,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -179,8 +181,22 @@ implements ListSelectionListener, MissionListener, UnitListener {
 						if (e.getValueIsAdjusting()) {
 							// Open window for selected person.
 							int index = memberTable.getSelectedRow();
-							Person selectedPerson = memberTableModel.getMemberAtIndex(index);
-							if (selectedPerson != null) getDesktop().openUnitWindow(selectedPerson, false);
+							
+							MissionMember member = memberTableModel.getMemberAtIndex(index);
+							Person person = null;
+							Robot robot = null;
+							if (member instanceof Person) {
+								person = (Person) memberTableModel.getMemberAtIndex(index);
+								if (person != null) 
+									getDesktop().openUnitWindow(person, false);
+
+							}
+							else if (member instanceof Robot) {
+								robot = (Robot) memberTableModel.getMemberAtIndex(index);
+								if (robot != null) 
+									getDesktop().openUnitWindow(robot, false);
+							}
+							
 						}
 					}
 				});
@@ -820,9 +836,11 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		 * @param index the index.
 		 * @return the mission member.
 		 */
-		Person getMemberAtIndex(int index) {
+		MissionMember getMemberAtIndex(int index) {
 			if ((index >= 0) && (index < members.size())) {
-				return (Person) members.toArray()[index];
+				
+				
+				return (MissionMember) members.toArray()[index];
 			} 
 			else {
 				return null;

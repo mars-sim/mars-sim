@@ -112,8 +112,10 @@ public class BuildingAirlock extends Airlock {
                 if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
                     // Exit robot to inside building.
                     //logger.fine(robot + " exiting " + building + " via airlock.");
-                    BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, building);
-                    logger.info(robot + " is about to exit the airlock door and officially belongs into " + building);         
+                    logger.fine(robot + " is currently OUTSIDE. About to be added to " + building);         
+                	BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, building);
+                    //logger.fine(robot + " is about to exit airlock and officially belongs into " + building);                 
+                    logger.fine(robot + " is currently OUTSIDE. About to call storeUnit() to be added to " + building.getBuildingManager().getSettlement());         
                     inv.storeUnit(robot);
                 }
                 else if (LocationSituation.BURIED != robot.getLocationSituation()) {
@@ -125,8 +127,10 @@ public class BuildingAirlock extends Airlock {
                 if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
                     // Exit robot to outside building.
                     //logger.fine(robot + " exiting " + building + " via airlock.");
-                    BuildingManager.removePersonOrRobotFromBuilding(robot, building);
-                    logger.info(robot + " is about to exit the airlock door and leave " + building + " and going outside");
+                    logger.fine(robot + " is currently IN_SETTLEMENT. About to be removed from " + building);                           
+                	BuildingManager.removePersonOrRobotFromBuilding(robot, building);
+                    logger.fine(robot + " is currently IN_SETTLEMENT. About to call retrieveUnit() to be removed from " + building.getBuildingManager().getSettlement());         
+                	//logger.fine(robot + " is about to exit the airlock door and leave " + building + " and going outside");
                     inv.retrieveUnit(robot);
                 }
                 else if (LocationSituation.BURIED != robot.getLocationSituation()) {

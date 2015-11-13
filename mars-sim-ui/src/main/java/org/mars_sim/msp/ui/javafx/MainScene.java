@@ -446,6 +446,7 @@ public class MainScene {
 		menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();
 		marsNode.getFXDesktopPane().getStylesheets().clear();
+		commNetButton.getStylesheets().clear();
 		
 		String cssColor;
 
@@ -515,6 +516,7 @@ public class MainScene {
 		memBtn.setTextFill(btnTxtColor);
 		clkBtn.setTextFill(btnTxtColor);
 		cpuBtn.setTextFill(btnTxtColor);
+		commNetButton.setTextFill(btnTxtColor);
 	}
 	/**
 	 * Creates and starts the earth timer
@@ -539,6 +541,7 @@ public class MainScene {
     //2015-11-11 Added createFlyout()
     public Flyout createFlyout() {
         commNetButton = new ToggleButton("Open CommNet");
+        commNetButton.setPadding(new Insets(5, 5, 5, 5));
         commNetButton.setOnAction(e -> {
             if (commNetButton.isSelected()) {
                 flyout.flyout();

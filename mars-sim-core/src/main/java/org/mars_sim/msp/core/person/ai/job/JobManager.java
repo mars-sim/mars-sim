@@ -166,7 +166,8 @@ public final class JobManager implements Serializable {
 			Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
 			while (j.hasNext()) {
 				Robot robot = j.next();
-				if (robot.getBotMind().getRobotJob() == robotJob) result-= robotJob.getCapability(robot);
+				if (robot.getBotMind().getRobotJob() == robotJob) 
+					result-= robotJob.getCapability(robot);
 			}
 
 			result = result/2D;

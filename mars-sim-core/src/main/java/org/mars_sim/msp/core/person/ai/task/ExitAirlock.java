@@ -340,7 +340,7 @@ implements Serializable {
 		        }
 		        else if (LocalAreaUtil.areLocationsClose(personLocation,  insideAirlockPos)) {
 
-		            //logger.info(person + " is at inside airlock location.");
+		            //logger.finer(person + " is at inside airlock location.");
 		            logger.finer(person + " has arrived at an airlock and ready to enter.");
 
 		            // Enter airlock.
@@ -411,16 +411,16 @@ implements Serializable {
 		        Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
 
 		        if (airlock.inAirlock(robot)) {
-		            logger.info(robot + " is entering airlock, but is already in airlock.");
+		            logger.finer(robot + " is entering airlock, but is already in airlock.");
 		            setPhase(WAITING_INSIDE_AIRLOCK);
 		        }
 		        else if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
-		            logger.info(robot + " is entering airlock, but is already outside.");
+		            logger.finer(robot + " is entering airlock, but is already outside.");
 		            endTask();
 		        }
 		        else if (LocalAreaUtil.areLocationsClose(robotLocation,  insideAirlockPos)) {
 
-		            //logger.info(robot + " is at inside airlock location.");
+		            //logger.finer(robot + " is at inside airlock location.");
 		            logger.finer(robot + " has arrived at an airlock and ready to enter.");
 
 		            // Enter airlock.
@@ -431,7 +431,7 @@ implements Serializable {
 		                    airlock.activateAirlock(robot);
 		                }
 
-		                logger.info(robot + " has just entered airlock");
+		                logger.finer(robot + " has just entered airlock");
 
 		                setPhase(WAITING_INSIDE_AIRLOCK);
 		            }
@@ -470,7 +470,7 @@ implements Serializable {
 		                    double distance = Point2D.distance(robot.getXLocation(), robot.getYLocation(),
 		                            insideAirlockPos.getX(), insideAirlockPos.getY());
 		                    //logger.finer(robot + " walking to inside airlock position, distance: " + distance);
-		                    logger.info(robot + " is walking toward an airlock within a distance of " + distance);
+		                    logger.finer(robot + " is walking toward an airlock within a distance of " + distance);
 		                    Building airlockBuilding = (Building) airlock.getEntity();
 		                    addSubTask(new WalkSettlementInterior(robot, airlockBuilding,
 		                            insideAirlockPos.getX(), insideAirlockPos.getY()));
@@ -551,7 +551,7 @@ implements Serializable {
 
                     // If airlock has not been activated, activate it.
                     if (!airlock.isActivated()) {
-                        logger.info(robot + " is the operator activating the airlock.");
+                        logger.finer(robot + " is the operator activating the airlock.");
                         airlock.activateAirlock(robot);
                     }
 
@@ -570,13 +570,13 @@ implements Serializable {
                 }
                 else {
                     // If robot is not airlock operator, just wait.
-                    logger.info(robot + " is not the operator and is waiting inside an airlock for the completion of the air cycle."); 
+                    logger.finer(robot + " is not the operator and is waiting inside an airlock for the completion of the air cycle."); 
                 	remainingTime = 0D;
                 }
             }
             else {
-                //logger.info(robot + " is already outside during waiting inside airlock phase.");
-                logger.info(robot + " is no longer inside the airlock.");
+                //logger.finer(robot + " is already outside during waiting inside airlock phase.");
+                logger.finer(robot + " is no longer inside the airlock.");
                 setPhase(EXITING_AIRLOCK);
             }
 
@@ -624,7 +624,7 @@ implements Serializable {
 
         }
         else if (robot != null) {
-            logger.info(robot + " is exiting airlock going outside.");
+            logger.finer(robot + " is exiting airlock going outside.");
 
             if (LocationSituation.OUTSIDE != robot.getLocationSituation()) {
                 throw new IllegalStateException(robot + " has exited airlock of " + airlock.getEntityName() +

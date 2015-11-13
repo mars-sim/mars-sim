@@ -570,12 +570,12 @@ extends TabPanel {
 			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
 			else if (column == 1) return tasks.get(row).getDescription();
 			else if (column == 2) return tasks.get(row).getPhase();
-			else if (column == 3) return getClassName(tasks.get(row).getTaskName());
+			else if (column == 3) return formatClassName(tasks.get(row).getTaskName());
 			else return null;
 		}
 
-		public String getClassName(String s) {
-			String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA").replace("To", "to");
+		public String formatClassName(String s) {
+			String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA ").replace("To ", "to ");
 			//System.out.println(ss + " <-- " + s);
 			return ss;
 		}

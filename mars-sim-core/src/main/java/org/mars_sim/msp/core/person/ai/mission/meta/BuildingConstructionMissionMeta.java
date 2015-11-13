@@ -132,7 +132,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 	public double getProbability(Robot robot) {
         
         double result = 0D;
-        
+/*        
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot)
 	        // Check if robot is in a settlement.
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -142,17 +142,17 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 	            boolean reservableLUV = BuildingConstructionMission.isLUVAvailable(settlement);
 	            
 	            // Check if enough available people at settlement for mission.
-	/*
-	            int availablePeopleNum = 0;
-	            Iterator<Robot> i = settlement.getRobots().iterator();
-	            while (i.hasNext()) {
-	                Robot member = i.next();
-	                boolean noMission = !member.getBotMind().hasActiveMission();
-	                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
-	                if (noMission && isFit) availablePeopleNum++;
-	            }
-	            boolean enoughPeople = (availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE);
-	*/            
+	
+	//            int availablePeopleNum = 0;
+	 //           Iterator<Robot> i = settlement.getRobots().iterator();
+	//            while (i.hasNext()) {
+	//                Robot member = i.next();
+	 //               boolean noMission = !member.getBotMind().hasActiveMission();
+	//                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
+	//                if (noMission && isFit) availablePeopleNum++;
+	//            }
+	//            boolean enoughPeople = (availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE);
+	            
 	            // Check if settlement has construction override flag set.
 	            boolean constructionOverride = settlement.getConstructionOverride();
 	            
@@ -191,13 +191,13 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 	            }       
 	            
 	            // Check if min number of EVA suits at settlement.
-	            if (Mission.getNumberAvailableEVASuitsAtSettlement(robot.getSettlement()) < 
-	                    BuildingConstructionMission.MIN_PEOPLE) {
-	                result = 0D;
-	            }
+	            //if (Mission.getNumberAvailableEVASuitsAtSettlement(robot.getSettlement()) < 
+	            //        BuildingConstructionMission.MIN_PEOPLE) {
+	            //    result = 0D;
+	            //}
 	            
 	        }
-        
+*/        
         return result;
     }
 }

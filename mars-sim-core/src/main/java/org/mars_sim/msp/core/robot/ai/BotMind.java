@@ -273,12 +273,10 @@ implements Serializable {
      */
     public void getNewAction(boolean tasks, boolean missions) {
 
-        MissionManager missionManager = Simulation.instance().getMissionManager();
+        //MissionManager missionManager = Simulation.instance().getMissionManager();
 
-        if (robot != null) {
-            if (robot.getPerformanceRating() < 0.5D) {
-                missions = false;
-            }
+    	if (robot.getPerformanceRating() < 0.5D) {
+        	missions = false;
         }
 
         // Get probability weights from tasks, missions and active missions.
@@ -294,19 +292,14 @@ implements Serializable {
         }
 
         if (missions) {
-	        if (robot != null) {
-	           missionWeights = missionManager.getTotalMissionProbability(robot);
-	           weightSum += missionWeights;
-	        }
-		}
+        	missionWeights = missionManager.getTotalMissionProbability(robot);
+        	weightSum += missionWeights;
+	   }
 
-        if (robot != null) {
-        	if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
+        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
 	                (Double.isInfinite(weightSum))) {
-        		throw new IllegalStateException("Mind.getNewAction(): weight sum: "
-	                    + weightSum);
-	        }
-	    }
+        	throw new IllegalStateException("Mind.getNewAction(): weight sum: "
+        			+ weightSum);}
 
 
         // Select randomly across the total weight sum.
@@ -330,10 +323,8 @@ implements Serializable {
             if (rand < missionWeights) {
             	Mission newMission = null;
 
-            	if (robot != null) {
-                    logger.fine(robot.getName() + " starting a new mission.");
-                    newMission = missionManager.getNewMission(robot);
-            	}
+            	logger.fine(robot.getName() + " starting a new mission.");
+            	newMission = missionManager.getNewMission(robot);
 
 
                 if (newMission != null) {
@@ -348,12 +339,10 @@ implements Serializable {
             }
         }
 
-       if (robot != null) {
-            // If reached this point, no task or mission has been found.
-            logger.severe(robot.getName()
+        // If reached this point, no task or mission has been found.
+        logger.severe(robot.getName()
                     + " couldn't determine new action - taskWeights: "
                     + taskWeights + ", missionWeights: " + missionWeights);
-        }
 
     }
 

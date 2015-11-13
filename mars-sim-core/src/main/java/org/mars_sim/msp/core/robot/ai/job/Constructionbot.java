@@ -35,12 +35,12 @@ implements Serializable {
 
 		// Add architect-related tasks.
 		//jobTasks.add(ManufactureConstructionMaterials.class);
-		jobTasks.add(ConstructBuilding.class);
-		jobTasks.add(SalvageBuilding.class);
+		//jobTasks.add(ConstructBuilding.class);
+		//jobTasks.add(SalvageBuilding.class);
 
 		// Add architect-related missions.
 		//jobMissionStarts.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
+		//jobMissionJoins.add(BuildingConstructionMission.class);
 		//jobMissionStarts.add(BuildingSalvageMission.class);
 		//jobMissionJoins.add(BuildingSalvageMission.class);
 

@@ -392,7 +392,7 @@ public class Preference implements Serializable {
 		  }
 */
 
-		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA").replace("Meta", "");
+		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("Meta", "").replace("E V A ", "EVA ").replace("To ", "to ");
 		//System.out.println(ss + " <-- " + s);
 		return ss;
 	}
@@ -400,7 +400,7 @@ public class Preference implements Serializable {
 	public static String getStringName(Task task) {
 		String s = task.getClass().getSimpleName();
 
-		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA");
+		String ss = s.replaceAll("(?!^)([A-Z])", " $1").replace("E V A ", "EVA ").replace("To ", "to ");
 		//System.out.println(ss + " <-- " + s);
 		return ss;
 	}

@@ -112,9 +112,6 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
                 }
             }
 
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
@@ -129,6 +126,10 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
             // 2015-06-07 Added Preference modifier
             if (result > 0)
                 result += person.getPreference().getPreferenceScore(this);
+            
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
             if (result < 0) result = 0;
         }
 
@@ -144,7 +145,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
 
         double result = 0D;
-
+/*
         if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
 
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -194,7 +195,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 		        }
 	        }
         }
-
+*/
         return result;
 	}
 }
