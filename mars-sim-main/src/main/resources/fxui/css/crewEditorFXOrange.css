@@ -70,10 +70,12 @@
 	-fx-padding: 0.167em;
  }
 
-.label {
+#textLabel {
 	-fx-text-fill: #d16700;
 	-fx-stroke-width: 3;
-	-fx-font-size: 15.0px;
+	-fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
 

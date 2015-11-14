@@ -79,38 +79,47 @@ public class CrewEditorFX {
 
 	public static final int SIZE_OF_CREW = PersonConfig.SIZE_OF_CREW;
 
+	private static final double BLUR_AMOUNT = 10;
+
+	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
+
+	private static final ImageView background = new ImageView();
+	
+	private static final StackPane layout = new StackPane();
+	
 	// Data members
-	private PersonConfig personConfig;// = SimulationConfig.instance().getPersonConfiguration();
 
+	private boolean[][] personalityArray;// = new boolean [4][SIZE_OF_CREW];
+	private boolean goodToGo = true;
+	
+	private String destinationStr;
+	
+	
 	private GridPane gridPane;
-
-	//private SimulationConfig config; // needed in the constructor
 
 	private List<TextField> nameTF;//  = new ArrayList<TextField>();
 
 	//private ComboBox<String> personalityOListComboBox;
 	private ComboBox<String> jobsOListComboBox;
 	private ComboBox<String> genderOListComboBox;
-	private ComboBox<String> destinationsOListComboBox;
+	private ComboBox<String> destinationsOListComboBox = new ComboBox<String>();
+	private ComboBox<String> destinationCB;
 	
 	private List<ComboBox<String>> genderList;// = new ArrayList<ComboBox<String>>();
 	private List<ComboBox<String>> jobsList;// = new ArrayList<ComboBox<String>>();
 	//private List<ComboBox<String>> personalityList;// = new ArrayList<ComboBox<String>>();
-	private List<ComboBox<String>> destinationsList;
+	//private List<ComboBox<String>> destinationsList;
 	
-	private boolean[][] personalityArray;// = new boolean [4][SIZE_OF_CREW];
+	private List<SettlementInfo> settlements;
+	private List<String> settlementNames = new ArrayList<String>();
+	
+	private ObservableList<String> destinationsOList ;
 
-	private boolean goodToGo = true;
-
-	private static final double BLUR_AMOUNT = 10;
-
-	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
-
-	private static final ImageView background = new ImageView();
-	private static final StackPane layout = new StackPane();
 
 	private Stage stage;
+	//private SimulationConfig config; // needed in the constructor
 	private ScenarioConfigEditorFX scenarioConfigEditorFX;
+	private PersonConfig personConfig;// = SimulationConfig.instance().getPersonConfiguration();
 
 
 	//private final SimpleStringProperty nameProp;
@@ -125,14 +134,13 @@ public class CrewEditorFX {
 		this.personConfig = simulationConfig.getPersonConfiguration();
 		this.scenarioConfigEditorFX = scenarioConfigEditorFX;
 
-
 		personalityArray = new boolean [4][SIZE_OF_CREW];
 
 		nameTF  = new ArrayList<TextField>();
 		genderList = new ArrayList<ComboBox<String>>();
 		jobsList = new ArrayList<ComboBox<String>>();
 		//personalityList = new ArrayList<ComboBox<String>>();
-		destinationsList = new ArrayList<ComboBox<String>>();
+		//destinationsList = new ArrayList<ComboBox<String>>();
 		
 		createGUI();
 
@@ -201,22 +209,21 @@ public class CrewEditorFX {
 		Label gender = new Label("Gender :");
 		Label job = new Label("Job :");
 		Label personality = new Label("MBTI :");
-		Label destination = new Label("Destination :");
-
+		//Label destination = new Label("Destination :");
 
 		setID(name);
 		setID(gender);
 		setID(job);
 		setID(personality);
-		setID(destination);
+		//setID(destination);
 
 
 	    GridPane.setConstraints(name, 0, 1);
 	    GridPane.setConstraints(gender, 0, 2);
 	    GridPane.setConstraints(job, 0, 3);
 	    GridPane.setConstraints(personality, 0, 4);
-	    GridPane.setConstraints(destination, 0, 5);  
-	    gridPane.getChildren().addAll(name, gender, job, personality, destination);
+	    //GridPane.setConstraints(destination, 0, 5);  
+	    gridPane.getChildren().addAll(name, gender, job, personality);//, destination);
 
 
 		setUpCrewName();
@@ -225,20 +232,13 @@ public class CrewEditorFX {
 		for (int col = 1 ; col < SIZE_OF_CREW + 1; col++) {
 			setUpCrewPersonality(col);
 		}		
-		setUpCrewDestination();
+		//setUpCrewDestination();
 		
-		// Create button pane.
-		HBox hBottom = new HBox();
-		hBottom.setPadding(new Insets(10,10,25,10));
-		hBottom.setAlignment(Pos.CENTER);
-
 		// Create commit button.
 		Button commitButton = new Button("Commit Changes");
 		commitButton.setId("commitButton");
 		commitButton.setAlignment(Pos.CENTER);
 		commitButton.requestFocus();
-		hBottom.getChildren().add(commitButton);
-		borderAll.setBottom(hBottom);
 		commitButton.setOnAction((event) -> {
 
 			goodToGo = true;
@@ -292,30 +292,60 @@ public class CrewEditorFX {
 				personConfig.setPersonJob(i, jobStr);
 
 				//2015-11-13 Added setPersonDestination()
-				String destinationStr = (String) destinationsList.get(i).getValue();
-				// update PersonConfig with the new destination
-				personConfig.setPersonDestination(i, destinationStr);
+				//String destinationStr = (String) destinationsList.get(i).getValue();				
+				String destinationStr = (String) destinationCB.getValue();		
+				
+				if (!isBlank(destinationStr))
+					// update PersonConfig with the new destination
+					personConfig.setPersonDestination(i, destinationStr);
+				else {
+					goodToGo = false;
+				}
 			}
 
+			
 			//System.out.println("goodToGo is "+ goodToGo);
 			if (goodToGo) {
 				scenarioConfigEditorFX.setCrewEditorOpen(false);
 				stage.hide();
 			}
-
+	
 		});
 
+		// Create button pane.
+		HBox commitBox = new HBox();
+		commitBox.setPadding(new Insets(10,10,25,10));
+		commitBox.setAlignment(Pos.CENTER);	
+		commitBox.getChildren().add(commitButton);
+		
+		Label destLabel = new Label("Settlement Destination :  ");
+		String dest = personConfig.getConfiguredPersonDestination(0);
+		destinationCB = setUpCB(5);		// 5 = Destination 
+		destinationCB.setValue(dest);		
+		//destinationsList.add(destinationCB);
+	
+		// Create button pane.
+		HBox destBox = new HBox();
+		destBox.setPadding(new Insets(10,10,10,10));
+		destBox.setAlignment(Pos.CENTER);	
+		destBox.getChildren().addAll(destLabel, destinationCB);
+				
+		VBox vBottom = new VBox();
+		vBottom.setPadding(new Insets(10,10,25,10));
+		vBottom.setAlignment(Pos.CENTER);
+		vBottom.getChildren().addAll(destBox, commitBox);
+						
+		borderAll.setBottom(vBottom);
 
 		layout.setStyle("-fx-background-radius:20; -fx-background-color: null;");// -fx-background-color: rgba(209,89,56,)");
 				// cyan blue: rgba(56, 176, 209, ");
 				//"-fx-background-color: null");
 	    layout.setEffect(new DropShadow(10, Color.GREY));
-
 		layout.getChildren().addAll(borderAll);//background, borderAll);
+		
 		Scene scene = new Scene(layout, Color.TRANSPARENT);
-		scene.getStylesheets().add("/fxui/css/crewEditorFXOrange.css");// configEditorFXOrange.css");//
 		scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");//
-
+		scene.getStylesheets().add("/fxui/css/crewEditorFXOrange.css");// configEditorFXOrange.css");//
 		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
 
 		stage = new Stage();
@@ -459,51 +489,6 @@ public class CrewEditorFX {
 		}
 	}
 
-/*
-	public ComboBox<String> setUpPersonalityCB() {
-
-		List<String> personalityTypes = new ArrayList<String>(16);
-		personalityTypes.add("ISTP");
-		personalityTypes.add("ISTJ");
-		personalityTypes.add("ISFP");
-		personalityTypes.add("ISFJ");
-		personalityTypes.add("INTP");
-		personalityTypes.add("INTJ");
-		personalityTypes.add("INFP");
-		personalityTypes.add("INFJ");
-		personalityTypes.add("ESTP");
-		personalityTypes.add("ESTJ");
-		personalityTypes.add("ESFP");
-		personalityTypes.add("ESFJ");
-		personalityTypes.add("ENTP");
-		personalityTypes.add("ENTJ");
-		personalityTypes.add("ENFP");
-		personalityTypes.add("ENFJ");
-		Collections.sort(personalityTypes);
-
-		ObservableList<String> personalityOList = FXCollections.observableArrayList(personalityTypes);
-		personalityOListComboBox = new ComboBox<String>(personalityOList);
-
-		return personalityOListComboBox;
-
-	}
-
-	public void setUpCrewPersonality() {
-		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
-			String n[] = new String[16];
-			n[j] = pc.getConfiguredPersonPersonalityType(j);
-
-			ComboBox<String> g = setUpCB(1);		 // 1 = Personality
-			//g.setMaximumRowCount(8);
-		    gridPane.add(g, j+1, 3);
-			//g.getModel().setSelectedItem(n[j]);
-			g.setValue(n[j]);
-			//g.setSelectedItem(n[j]);
-			personalityList.add(g);
-		}
-
-	}
-*/
 
 	// 2015-10-07 Revised setUpCrewPersonality()
 	public void setUpCrewPersonality(int col) {
@@ -675,25 +660,37 @@ public class CrewEditorFX {
 
 	public ComboBox<String> setUpDestinationCB() {
 		
-		List<SettlementInfo> settlements = scenarioConfigEditorFX.getSettlementTableModel().getSettlements();
-		int size = settlements.size();
-		//System.out.println("size is " + size);
+		setupSettlementNames();
 		
-		List<String> names = new ArrayList<String>();
+		//destinationsOListComboBox = new ComboBox<String>(destinationsOList);
+		destinationsOListComboBox.setItems(destinationsOList);
 		
-		for (int i=0; i < size; i++) {
-			names.add(settlements.get(i).getName());
-		}
-		
-		//Collections.sort(names);
-
-		ObservableList<String> destinationsOList = FXCollections.observableArrayList(names);
-		destinationsOListComboBox = new ComboBox<String>(destinationsOList);
-
 		return destinationsOListComboBox;
 	}
 
+	public void setupSettlementNames() {
+		// TODO: how to properly sense the change and rebuild the combobox real-time?
+		settlements = scenarioConfigEditorFX.getSettlementTableModel().getSettlements();
+		
+		settlementNames.clear();
+		
+		for (int i=0; i < settlements.size(); i++) {
+			settlementNames.add(settlements.get(i).getName());
+		}
+		
+		destinationsOList = FXCollections.observableArrayList(settlementNames);
+	}
 
+	public void updateSettlementNames() {
+		
+		setupSettlementNames();
+		
+		destinationsOListComboBox.getItems().clear();
+		destinationsOListComboBox.setItems(destinationsOList);
+	}
+	
+	
+/*	
 	public void setUpCrewDestination() {
 		
 		//List<SettlementInfo> settlements = scenarioConfigEditorFX.getSettlementTableModel().getSettlements();
@@ -704,14 +701,14 @@ public class CrewEditorFX {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
 			n[i] = personConfig.getConfiguredPersonDestination(i);
 			//System.out.println("n[i] is "+ n[i]);
-			ComboBox<String> g = setUpCB(5);		// 5 = Destination 
+			ComboBox<String> destinationCB = setUpCB(5);		// 5 = Destination 
 		    //g.setMaximumRowCount(8);
-		    gridPane.add(g, i+1, 5);			// destination's row = 5
-			g.setValue(n[i]);
-			destinationsList.add(g);
+		    gridPane.add(destinationCB, i+1, 5);			// destination's row = 5
+			destinationCB.setValue(n[i]);
+			destinationsList.add(destinationCB);
 		}
 	}
-
+*/
 	
 	boolean isGoodToGo() {
 		//System.out.println("calling isGoodToGo(). goodToGo is "+ goodToGo );

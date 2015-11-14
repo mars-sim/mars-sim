@@ -45,7 +45,7 @@ public class ChatBox extends BorderPane {
         case ENTER:
             String text = textField.getText();
             textArea.appendText("You : " + text + System.lineSeparator());
-            if (text != null && !text.trim().isEmpty()) {	
+            if (text != "" && text != null && !text.trim().isEmpty()) {	
             	history.add(text);
             	historyPointer++;      
 	            if (onMessageReceivedHandler != null) {

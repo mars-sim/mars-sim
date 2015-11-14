@@ -586,8 +586,6 @@ public class ScenarioConfigEditorFX {
     		settlementTableModel = new SettlementTableModel(this);
     		settlementTable = new SettlementTable(this, settlementTableModel);
         });
-
-
         swingNode.setContent(settlementScrollPane);
 
     }
@@ -599,6 +597,7 @@ public class ScenarioConfigEditorFX {
 	private void addNewSettlement() {
 		SettlementInfo settlement = determineNewSettlementConfiguration();
 		settlementTableModel.addSettlement(settlement);
+		updateSettlementNames();
 	}
 
 
@@ -607,8 +606,16 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void removeSelectedSettlements() {
 		settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
+		updateSettlementNames();
 	}
 
+	public void updateSettlementNames() {
+		if (crewEditorFX != null) {
+			crewEditorFX.updateSettlementNames();
+		//} else if (!isCrewEditorOpen) {
+		//	crewEditorFX.updateSettlementNames();
+		}
+	}
 
 	/**
 	 * Edits team profile.
@@ -638,6 +645,7 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void setDefaultSettlements() {
 		settlementTableModel.loadDefaultSettlements();
+		updateSettlementNames();
 	}
 
 	/**
@@ -645,6 +653,7 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void setExistingSettlements() {
 		settlementTableModel.loadExistingSettlements();
+		updateSettlementNames();
 	}
 
 	/**
