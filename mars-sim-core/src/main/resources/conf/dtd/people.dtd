@@ -42,7 +42,7 @@ gender-male-percentage, personality-types, person-name-list, person-list)>
 <!ATTLIST person-name value CDATA #REQUIRED>
 <!ATTLIST person-name gender (male|female) #REQUIRED>
 <!ELEMENT person-list (person*)>
-<!ELEMENT person (natural-attribute-list?, skill-list?, relationship-list?)>
+<!ELEMENT person (personality-trait-list?, natural-attribute-list?, skill-list?, relationship-list?)>
 <!ATTLIST person name CDATA #REQUIRED>
 <!ATTLIST person gender (male|female) #IMPLIED>
 <!ATTLIST person personality-type CDATA #IMPLIED>
@@ -52,6 +52,10 @@ gender-male-percentage, personality-types, person-name-list, person-list)>
 <!ATTLIST person favorite-side-dish CDATA #IMPLIED>
 <!ATTLIST person favorite-dessert CDATA #IMPLIED>
 <!ATTLIST person favorite-activity CDATA #IMPLIED>
+<!ELEMENT personality-trait-list (personality-trait*)>
+<!ELEMENT personality-trait EMPTY>
+<!ATTLIST personality-trait name CDATA #REQUIRED>
+<!ATTLIST personality-trait value CDATA #REQUIRED>
 <!ELEMENT natural-attribute-list (natural-attribute*)>
 <!ELEMENT natural-attribute EMPTY>
 <!ATTLIST natural-attribute name CDATA #REQUIRED>

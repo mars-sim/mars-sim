@@ -498,7 +498,7 @@ public class CrewEditorFX {
 		String quadrant2A = "Intuition", quadrant2B = "Sensing";
 		String quadrant3A = "Feeling", quadrant3B = "Thinking";
 		String quadrant4A = "Judging", quadrant4B = "Perceiving";
-		String cat1 = "World", cat2 = "Information", cat3 = "Decision", cat4 = "Structure";
+		String cat1 = "Focus", cat2 = "Information", cat3 = "Decision", cat4 = "Structure";
 		String a = null, b = null, c = null;
 
 		VBox vbox = new VBox();

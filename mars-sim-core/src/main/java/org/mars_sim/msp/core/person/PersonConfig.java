@@ -59,12 +59,15 @@ implements Serializable {
 	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
-	// 2014-10-14 mkung: changed element from "alpha-team" to "person-list" , from alphaTeam to personList
+	private static final String PERSONALITY_TYPE = "personality-type";
+	//2015-11-22 Added PERSONALITY_TRAIT_LIST and PERSONALITY_TRAIT
+	private static final String PERSONALITY_TRAIT_LIST = "personality-trait-list";
+	private static final String PERSONALITY_TRAIT = "personality-trait";
+	// 2014-10-14 Changed element from "alpha-team" to "person-list" , from alphaTeam to personList
 	//private static final String ALPHA_TEAM = "alpha-team";
 	private static final String PERSON_LIST = "person-list";
 	private static final String PERSON = "person";
 	private static final String NAME = "name";
-	private static final String PERSONALITY_TYPE = "personality-type";
 	private static final String SETTLEMENT = "settlement";
 	private static final String JOB = "job";
 	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
@@ -351,6 +354,7 @@ implements Serializable {
 			return getValueAsString(index,PERSONALITY_TYPE);
 	}
 
+	
 	/**
 	 * Gets the configured person's job.
 	 * @param index the person's index.
@@ -475,6 +479,35 @@ implements Serializable {
 		return result;
 	}
 
+	
+	/**
+	 * Gets a map of the configured person's traits according to the Big Five Model.
+	 * @param index the person's index.
+	 * @return map of Big Five Model (empty map if not found).
+	 * @throws Exception if error in XML parsing.
+	 */
+    @SuppressWarnings("unchecked")
+	public Map<String, Integer> getBigFiveMap(int index) {
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		Element root = personDoc.getRootElement();
+		Element personList = root.getChild(PERSON_LIST);
+		Element personElement = (Element) personList.getChildren(PERSON).get(index);
+		List<Element> listNodes = personElement.getChildren(PERSONALITY_TRAIT_LIST);
+
+		if ((listNodes != null) && (listNodes.size() > 0)) {
+			Element list = listNodes.get(0);
+			int attributeNum = list.getChildren(PERSONALITY_TRAIT_LIST).size();
+
+			for (int x=0; x < attributeNum; x++) {
+				Element naturalAttributeElement = (Element) list.getChildren(PERSONALITY_TRAIT).get(x);
+				String name = naturalAttributeElement.getAttributeValue(NAME);
+				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
+				result.put(name, value);
+			}
+		}
+		return result;
+	}
+    
 	private String getValueAsString(int index, String param){
 		Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);

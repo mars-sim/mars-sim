@@ -380,6 +380,19 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 			favorite-dessert="strawberry"
 			favorite-activity="Field Work">
 
+			<!-- A list of predefined personality traits (optional) -->
+			<personality-trait-list>
+				<!-- the personality trait for a person using 
+					The Big Five Personality Traits, aka the Five Factor Model (FFM)-->
+				<!-- name: the dimension (required) -->
+				<!-- value: 0 (the absence of this trait) to 1 (the max presence of this trait) (required) -->
+				<personality-trait name = "openness" value = "0.25"/>
+				<personality-trait name = "conscientiousness" value = "0.6"/>
+				<personality-trait name = "extraversion" value = "0.2"/>
+				<personality-trait name = "agreeableness" value = "0.85"/>
+				<personality-trait name = "neuroticism" value = "0.85"/>
+			</personality-trait-list>
+			
 			<!-- List of configured natural attributes. (optional) -->
 			<natural-attribute-list>
 				<!-- A natural attribute for the person. -->
@@ -426,6 +439,13 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<person name="Rik Declercq" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef"
 			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
 			favorite-activity="Workout">
+			<personality-trait-list>
+				<personality-trait name = "openness" value = "0.35"/>
+				<personality-trait name = "conscientiousness" value = "0.6"/>
+				<personality-trait name = "extraversion" value = "0.8"/>
+				<personality-trait name = "agreeableness" value = "0.55"/>
+				<personality-trait name = "neuroticism" value = "0.45"/>
+			</personality-trait-list>					
 			<skill-list>
                 <skill name="Driving" level="1"/>
                 <skill name="Physics" level="1"/>
@@ -439,6 +459,13 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
         <person name="Leonardo DaVinci" gender="male" personality-type="INFJ" settlement="Schiaparelli Point" job="Engineer"
 			favorite-main-dish="Roasted Carrot Soup and Brown Rice" favorite-side-dish="Baby Carrots" favorite-dessert="craneberry juice"
 			favorite-activity="Research">
+			<personality-trait-list>
+				<personality-trait name = "openness" value = "0.65"/>
+				<personality-trait name = "conscientiousness" value = "0.8"/>
+				<personality-trait name = "extraversion" value = "0.15"/>
+				<personality-trait name = "agreeableness" value = "0.75"/>
+				<personality-trait name = "neuroticism" value = "0.75"/>
+			</personality-trait-list>	
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->
@@ -455,6 +482,13 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
         <person name="Lena LaGranda" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
 			favorite-activity="Lab Experimentation">
+			<personality-trait-list>
+				<personality-trait name = "openness" value = "0.7"/>
+				<personality-trait name = "conscientiousness" value = "0.6"/>
+				<personality-trait name = "extraversion" value = "0.85"/>
+				<personality-trait name = "agreeableness" value = "0.8"/>
+				<personality-trait name = "neuroticism" value = "0.35"/>
+			</personality-trait-list>	
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->

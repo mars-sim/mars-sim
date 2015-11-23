@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project
+f * Mars Simulation Project
  * MainScene.java
  * @version 3.08 2015-05-26
  * @author Lars Næsbye Christensen
@@ -1344,7 +1344,7 @@ public class MainScene {
 		marsNode.createDragDrop();
 		//marsNode.createEarthMap();
 		//marsNode.createMarsMap();
-		marsNode.createChatBox();
+		//marsNode.createChatBox();
 	}
 
 	public MarsNode getMarsNode() {

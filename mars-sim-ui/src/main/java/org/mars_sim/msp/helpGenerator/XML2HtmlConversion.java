@@ -4,9 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-public class Conversion {
+public class XML2HtmlConversion {
 
-	public Conversion() throws FileNotFoundException {
+	public XML2HtmlConversion() throws FileNotFoundException {
 	    String xmlFile = this.getClass().getResource("/docs/buildings.xml").toExternalForm();
 	    Scanner scanner = new Scanner(new File(xmlFile)).useDelimiter("\\Z");
 	    String xmlContent = scanner.next();
@@ -18,7 +18,7 @@ public class Conversion {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new Conversion();
+		new XML2HtmlConversion();
 	}
 
 }

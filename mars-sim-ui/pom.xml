@@ -141,7 +141,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.jfxtras</groupId>
 			<artifactId>jfxtras-labs</artifactId>
-			<version>8.0-r4</version>
+			<version>8.0-r5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.controlsfx</groupId>
@@ -200,6 +200,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>mapjfx</artifactId>
 			<version>1.4.9</version>
 		</dependency>
+		<dependency>
+			<groupId>net.java.balloontip</groupId>
+			<artifactId>balloontip-examples</artifactId>
+			<version>1.2.4.1</version>
+		</dependency>	
 	</dependencies>
 	<repositories>
 		<repository>
