@@ -7,13 +7,20 @@
 
 package org.mars_sim.msp.javafx;
 
+import java.util.logging.Logger;
 import java.util.concurrent.ThreadPoolExecutor;
-
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.slf4j.bridge.SLF4JBridgeHandler;
-import java.util.logging.Logger;
-
+import javafx.scene.shape.Shape;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Circle;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.transform.Scale;
 import javafx.animation.FadeTransition;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.effect.DropShadow;
@@ -99,10 +106,14 @@ public class SpinningGlobe {
     private static final int WIDTH = 768-20;
     private static final int HEIGHT = 768-20;
 
+    private static final double MIN_SCALE = .5;
+    private static final double MAX_SCALE = 4;
+    private static final double DEFAULT_SCALE = 2;
+
 	// Data members
 
-    private double anchorX;
-    private double rate;
+    private double anchorX, anchorY;
+    private double rate, total_scale = DEFAULT_SCALE;
 
     //private boolean cleanUI = true;
 
@@ -116,6 +127,7 @@ public class SpinningGlobe {
 
     private RotateTransition rt;
     private Sphere marsSphere;
+    private Circle glowSphere;
     private PhongMaterial material;
     private PointLight sun;
 
@@ -149,9 +161,28 @@ public class SpinningGlobe {
        material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
        //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
-       marsSphere = new Sphere(4);
+       marsSphere = new Sphere();
        marsSphere.setMaterial(material);
        marsSphere.setRotationAxis(Rotate.Y_AXIS);
+       
+/*
+       int depth = 20;//Setting the uniform variable for the glow width and height
+       DropShadow borderGlow = new DropShadow();
+       borderGlow.setOffsetY(0f);
+       borderGlow.setOffsetX(0f);
+       borderGlow.setColor(Color.ORANGE);
+       borderGlow.setWidth(depth);
+       borderGlow.setHeight(depth);
+       marsSphere.setEffect(borderGlow);
+      
+      
+       marsSphere = new Sphere(4);
+       marsSphere.setEffect(new GaussianBlur(1));
+    
+ */
+       
+       Scale scale = new Scale(DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE);
+       marsSphere.getTransforms().add(scale);
 
        // Create and position camera
        PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -168,15 +199,39 @@ public class SpinningGlobe {
 
        AmbientLight ambient = new AmbientLight(Color.rgb(1, 1, 1));
 
+       //glowSphere = new Sphere(4.5);
+       
+       glowSphere = new Circle(1);
+             RadialGradient gradient1 = new RadialGradient(0,
+               .1,
+               0,
+               0,
+               marsSphere.getRadius()*2,
+               true,
+               CycleMethod.NO_CYCLE,
+               new Stop(0, Color.WHITE),//ORANGE),
+               new Stop(1, Color.ORANGE) //BLACK)
+               );
+
+       glowSphere.setFill(gradient1);
+       
+       GaussianBlur blur = new GaussianBlur(marsSphere.getRadius()*7);
+       glowSphere.setEffect(blur);
+       glowSphere.getTransforms().add(scale);
+      	
        // Build the Scene Graph
        Group globeComponents = new Group();
        //globeComponents.setStyle("-fx-border-color: rgba(0, 0, 0, 0);");
        //globeComponents.setScaleX(.75);
        //globeComponents.setScaleY(.75);
+       globeComponents.getChildren().add(glowSphere);
        globeComponents.getChildren().add(camera);
        globeComponents.getChildren().add(marsSphere);
        globeComponents.getChildren().add(sun);
        globeComponents.getChildren().add(ambient);
+
+       //globeComponents.setEffect(new GaussianBlur(.01));
+       //globeComponents.setFill(gradient1);
 
        // Increased the speed of rotation 500 times as dictated by the value of time-ratio in simulation.xml
        rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), marsSphere);
@@ -203,17 +258,64 @@ public class SpinningGlobe {
    // 2015-09-26 Added adjustRotation()
    void adjustRotation(Scene scene, Parent parent) {
 
+	   scene.setOnScroll((event) -> {
+
+		   double x = event.getDeltaX();
+		   double y = event.getDeltaY();
+
+		   //System.out.print(String.format("b4 x: %.2f y: %.2f", x, y));	
+		   
+		   if (y > 0)
+			   y = .9 ;
+		   else if (y == 0)
+			   y = 0;
+		   else if (y < 0)
+			   y = 1.1;
+
+		   if (y != 0) {
+		       Scale scale = new Scale(y, y, y);
+		       double radius = marsSphere.getRadius();
+		       //double xscale = marsSphere.getScaleX();
+	    	   //double size = marsSphere.getTransforms().size();	    	   
+
+			   total_scale = total_scale * y;
+			   if (total_scale < MIN_SCALE)
+				   total_scale = MIN_SCALE;
+			   else if (total_scale > MAX_SCALE)
+				   total_scale = MAX_SCALE;
+
+		       if (total_scale > MIN_SCALE && total_scale < MAX_SCALE ) {
+		    	   marsSphere.getTransforms().add(scale);
+		    	   glowSphere.getTransforms().add(scale);
+		       }
+		    	   
+			   //System.out.println(String.format("\t now total_scale: %.2f radius: %.2f x: %.2f y: %.2f", total_scale, radius, x, y));		
+			   
+		   }
+	   });
+	   
+       
+       
 	   // 2015-09-26 Changes Mars Globe's rotation rate if a user drags his mouse across the globe
 	   scene.setOnMousePressed((event) -> {
 		   // 2015-10-13 Detected right mouse button pressed
-           if (event.isSecondaryButtonDown())
+           if (event.isSecondaryButtonDown()) {
         	   anchorX = event.getSceneX();
+        	   anchorY = event.getSceneY();
+           }
+           
 	   });
 
 	   scene.setOnMouseDragged((event) -> {
 		   // 2015-10-13 Detected right mouse button drag
 		   if (event.isSecondaryButtonDown()) {
-
+			   
+			   //double b = anchorY - event.getSceneY();	      
+		       //Rotate rotate = new Rotate(b);
+		       //rotate.setPivotZ(marsSphere.getRadius());
+		       //marsSphere.getTransforms().add(rotate);
+		       	   
+			   
 			   double a = anchorX - event.getSceneX();
 			   double rotationMultipler;
 
@@ -283,6 +385,7 @@ public class SpinningGlobe {
 
 		rt = null;
 		marsSphere = null;
+		glowSphere = null;
 		material = null;
 		sun = null;
 		mainMenu = null;

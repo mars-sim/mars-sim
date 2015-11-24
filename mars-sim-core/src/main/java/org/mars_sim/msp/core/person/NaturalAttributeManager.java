@@ -71,7 +71,7 @@ implements Serializable {
 
 	/**
 	 * Constructor.
-	 * @param person the person with the attributes.
+	 * @param robot the robot with the attributes.
 	 */
 	public NaturalAttributeManager(Robot robot) {
 
@@ -87,14 +87,14 @@ implements Serializable {
 			attributeList.put(attributeKey, attributeValue);
 		}
 
-		// TODO: need to overhaul and define the use of attributes for bots.
+		// TODO: need to overhaul and define the use of attributes for robots.
 		addAttributeModifier(NaturalAttribute.STRENGTH, 95);
 		addAttributeModifier(NaturalAttribute.ENDURANCE, 95);
-		addAttributeModifier(NaturalAttribute.AGILITY, 20);
+		addAttributeModifier(NaturalAttribute.AGILITY, 50);
 		addAttributeModifier(NaturalAttribute.STRESS_RESILIENCE, 95);
 		addAttributeModifier(NaturalAttribute.TEACHING, 1);
 		addAttributeModifier(NaturalAttribute.ACADEMIC_APTITUDE, 80);
-		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 10);
+		addAttributeModifier(NaturalAttribute.EXPERIENCE_APTITUDE, 50);
 		addAttributeModifier(NaturalAttribute.ARTISTRY, 1);
 		addAttributeModifier(NaturalAttribute.SPIRITUALITY, 1);
 		addAttributeModifier(NaturalAttribute.COURAGE, 1);

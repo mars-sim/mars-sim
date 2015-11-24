@@ -660,6 +660,17 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteDessert(dessert);
 			person.getFavorite().setFavoriteActivity(activity);
 
+			// Set person's configured Big Five Personality traits (if any).
+			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
+			if (bigFiveMap != null) {
+				Iterator<String> i = bigFiveMap.keySet().iterator();
+				while (i.hasNext()) {
+					String attributeName = i.next();
+					int value = (Integer) bigFiveMap.get(attributeName);
+					//person.getBigFiveManager().setAttribute(NaturalAttribute.valueOfIgnoreCase(attributeName), value);
+				}
+			}
+			
 			// Set person's configured natural attributes (if any).
 			Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
 			if (naturalAttributeMap != null) {

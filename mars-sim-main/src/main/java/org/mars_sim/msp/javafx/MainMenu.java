@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 //import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Logger;
 
+import javafx.scene.layout.Region;
 import javafx.scene.layout.Background;
 import javafx.animation.FadeTransition;
 import javafx.scene.input.MouseEvent;
@@ -190,9 +191,9 @@ public class MainMenu {
        }
 */
        Rectangle rect = new Rectangle(WIDTH, HEIGHT);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
-       rect.setArcWidth(30);
-       rect.setArcHeight(30);
-       rect.setEffect(new DropShadow(30,5,5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
+       rect.setArcWidth(40);
+       rect.setArcHeight(40);
+       rect.setEffect(new DropShadow(40,5,5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
        root = new StackPane();
 
@@ -216,9 +217,16 @@ public class MainMenu {
        spinningGlobe = new SpinningGlobe(this);
        Parent globe = spinningGlobe.createMarsGlobe();
 
-       root.getChildren().addAll(rect, globe, screen);
-
-       mainMenuScene = new Scene(root, Color.DARKGOLDENROD);//TRANSPARENT);//, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+       // 2015-11-23 Added StarfieldFX
+       StarfieldFX sf = new StarfieldFX();
+       Group starfield = sf.createStars(WIDTH, HEIGHT);
+       //Group starfield = sf.createStars((int)rect.getWidth(), (int)rect.getHeight());
+ 	
+       root.getChildren().addAll(rect, starfield, globe, screen);
+       //root.getChildren().addAll(rect, globe, screen);
+       //root.getChildren().addAll(rect, screen, starfield);
+   
+       mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20, Color.DARKGOLDENROD);//TRANSPARENT);//, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain

@@ -71,7 +71,7 @@
                         <Insets top="20.0" />
                      </padding>
                      <effect>
-                        <Reflection fraction="0.61" topOffset="0.5" topOpacity="0.17" />
+                        <Reflection bottomOpacity="0.18" fraction="1.0" topOffset="4.0" topOpacity="0.17" />
                      </effect>
                   </Label>
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="105.0" prefWidth="768.0" text="Version 3.08" textAlignment="CENTER" textFill="#945f16">
@@ -81,6 +81,9 @@
                      <effect>
                         <Glow level="0.09" />
                      </effect>
+                     <VBox.margin>
+                        <Insets top="-50.0" />
+                     </VBox.margin>
                   </Label>
                </children>
             </VBox>
