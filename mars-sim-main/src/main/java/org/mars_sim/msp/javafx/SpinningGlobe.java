@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.slf4j.bridge.SLF4JBridgeHandler;
+import javafx.geometry.Point3D;
 import javafx.scene.shape.Shape;
 import javafx.scene.paint.RadialGradient;
 import javafx.scene.paint.Stop;
@@ -131,9 +132,12 @@ public class SpinningGlobe {
     private PhongMaterial material;
     private PointLight sun;
 
+    private Group globeComponents;
+    private SubScene subScene;
 	public MainMenuController mainMenuController;
 	public MainMenu mainMenu;
 
+	public Mars3DGlobe globe;
 	/*
 	 * Constructor for SpinningGlobe
 	 */
@@ -146,8 +150,10 @@ public class SpinningGlobe {
 	 * Creates a spinning Mars Globe
 	 */
    public Parent createMarsGlobe() {
-	   logger.info("Is ConditionalFeature.SCENE3D supported on this platform? " + Platform.isSupported(ConditionalFeature.SCENE3D));
+   //public Group createMarsGlobe() {
 
+	   logger.info("Is ConditionalFeature.SCENE3D supported? " + Platform.isSupported(ConditionalFeature.SCENE3D));
+/*
 	   Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
        Image dImage = new Image(this.getClass().getResource("/maps/MarsV3Shaded1k.jpg").toExternalForm());
        Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
@@ -164,7 +170,7 @@ public class SpinningGlobe {
        marsSphere = new Sphere();
        marsSphere.setMaterial(material);
        marsSphere.setRotationAxis(Rotate.Y_AXIS);
-       
+*/       
 /*
        int depth = 20;//Setting the uniform variable for the glow width and height
        DropShadow borderGlow = new DropShadow();
@@ -180,7 +186,7 @@ public class SpinningGlobe {
        marsSphere.setEffect(new GaussianBlur(1));
     
  */
-       
+ /*      
        Scale scale = new Scale(DEFAULT_SCALE, DEFAULT_SCALE, DEFAULT_SCALE);
        marsSphere.getTransforms().add(scale);
 
@@ -218,43 +224,97 @@ public class SpinningGlobe {
        GaussianBlur blur = new GaussianBlur(marsSphere.getRadius()*7);
        glowSphere.setEffect(blur);
        glowSphere.getTransforms().add(scale);
-      	
+*/      	
+       //Xform glowXform = new Xform();
+       //Xform marsXform = new Xform();
+       //marsXform.getChildren().add(marsSphere);
+       //Xform sunXform = new Xform();
+       //Xform ambientXform = new Xform();
+    
+/*
        // Build the Scene Graph
        Group globeComponents = new Group();
        //globeComponents.setStyle("-fx-border-color: rgba(0, 0, 0, 0);");
        //globeComponents.setScaleX(.75);
        //globeComponents.setScaleY(.75);
+       
+       //globeComponents.getChildren().addAll(marsXform);
+       
+
        globeComponents.getChildren().add(glowSphere);
        globeComponents.getChildren().add(camera);
        globeComponents.getChildren().add(marsSphere);
        globeComponents.getChildren().add(sun);
        globeComponents.getChildren().add(ambient);
-
+       
        //globeComponents.setEffect(new GaussianBlur(.01));
        //globeComponents.setFill(gradient1);
 
-       // Increased the speed of rotation 500 times as dictated by the value of time-ratio in simulation.xml
-       rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), marsSphere);
+       setMotion(null);
+
+       // Use a SubScene
+       subScene = new SubScene(globeComponents, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+       subScene.setId("sub");
+       subScene.setCamera(camera);
+
+       return new Group(subScene);
+*/       
+	   
+       //setMotion(null);
+       
+       globe = new Mars3DGlobe();
+       rotateGlobe();
+       
+	   // Use a SubScene
+       subScene = new SubScene(globe.buildMars(), WIDTH, HEIGHT);//, true, SceneAntialiasing.BALANCED);
+       subScene.setId("sub");
+       subScene.setCamera(globe.getCamera());//subScene));
+       
+       return new Group(subScene);
+   }
+
+   public void rotateGlobe() {
+	   rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), globe.getWorld());
        //rt.setByAngle(360);
        rt.setInterpolator(Interpolator.LINEAR);
        rt.setCycleCount(Animation.INDEFINITE);
        rt.setAxis(Rotate.Y_AXIS);
        rt.setFromAngle(360);
        rt.setToAngle(0);
-       //rt.setCycleCount(RotateTransition.INDEFINITE);
        rt.play();
-
-       // Use a SubScene
-       SubScene subScene = new SubScene(globeComponents, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
-       subScene.setId("sub");
-       subScene.setCamera(camera);
-
-       return new Group(subScene);
    }
-
+/*   
+   public void setMotion(Point3D axis) {
+	   
+	   if (rt == null) {
+		   // Increased the speed of rotation 500 times as dictated by the value of time-ratio in simulation.xml
+	       rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), marsSphere);
+	       //rt.setByAngle(360);
+	       rt.setInterpolator(Interpolator.LINEAR);
+	       rt.setCycleCount(Animation.INDEFINITE);
+	       rt.setAxis(Rotate.Y_AXIS);
+	       rt.setFromAngle(360);
+	       rt.setToAngle(0);
+	       //rt.setCycleCount(RotateTransition.INDEFINITE);
+	   }
+	   else {
+		   rt.stop();
+		   // Increased the speed of rotation 500 times as dictated by the value of time-ratio in simulation.xml
+	       //rt = new RotateTransition(Duration.seconds(OrbitInfo.SOLAR_DAY/500D), marsSphere);
+	       //rt.setByAngle(360);
+	       //rt.setInterpolator(Interpolator.LINEAR);
+	       //rt.setCycleCount(Animation.INDEFINITE);
+	       rt.setAxis(axis);
+	       //rt.setFromAngle(360);
+	       //rt.setToAngle(0);
+	       //rt.setCycleCount(RotateTransition.INDEFINITE);
+	   }
+       rt.play();
+   }
+*/   
    /*
     * Adjusts Mars Globe's rotation rate according to how much the user's drags his mouse across the globe
-    */
+    
    // 2015-09-26 Added adjustRotation()
    void adjustRotation(Scene scene, Parent parent) {
 
@@ -266,11 +326,11 @@ public class SpinningGlobe {
 		   //System.out.print(String.format("b4 x: %.2f y: %.2f", x, y));	
 		   
 		   if (y > 0)
-			   y = .9 ;
+			   y = .95 ;
 		   else if (y == 0)
 			   y = 0;
 		   else if (y < 0)
-			   y = 1.1;
+			   y = 1.05;
 
 		   if (y != 0) {
 		       Scale scale = new Scale(y, y, y);
@@ -309,15 +369,33 @@ public class SpinningGlobe {
 	   scene.setOnMouseDragged((event) -> {
 		   // 2015-10-13 Detected right mouse button drag
 		   if (event.isSecondaryButtonDown()) {
-			   
-			   //double b = anchorY - event.getSceneY();	      
-		       //Rotate rotate = new Rotate(b);
-		       //rotate.setPivotZ(marsSphere.getRadius());
-		       //marsSphere.getTransforms().add(rotate);
-		       	   
-			   
+/*			   
+			   double b = anchorY - event.getSceneY();	 
+			   if (b != 0) {
+					   
+				   if (b > 10)
+					   b = 10;
+				   else if (b < -10)
+					   b= -10;
+				   
+				   b = b/30;
+			       Rotate rotate = new Rotate(b);//;, 0, 0, 0);
+			       //rotate.setPivotZ(0);//subScene.getHeight());
+			       rotate.setPivotX(0);//marsSphere.getRadius());	    
+			       marsSphere.getTransforms().add(rotate);
+			       
+			       //final Rotate rotationTransform = new Rotate(0, b, b);
+			       //marsSphere.getTransforms().add(rotationTransform);
+			       
+			       //Point3D pt = new Point3D(0, Math.sin(b), Math.cos(b));
+			       Point3D pt = new Point3D(0, Math.cos(b), Math.sin(b));
+
+			       setMotion(pt);       
+			   }
+*/
+   
+/*   
 			   double a = anchorX - event.getSceneX();
-			   double rotationMultipler;
 
 			   if (a < 0) { // left to right
 				   rate = Math.abs(a/100D);
@@ -327,17 +405,21 @@ public class SpinningGlobe {
 			   }
 
 			   if (rate < 100) { // This prevents unrealistic and excessive rotation rate that creates spurious result (such as causing the direction of rotation to "flip"
+
 				   rt.setRate(rate);
 				   anchorX = 0;
-				   rotationMultipler = rate * 500D;
+				   
+				   int rotationMultipler = (int) (rate * 500D);
+				   // round this multipler to become divisible by 10 for simplicity
+				   rotationMultipler = (rotationMultipler / 10 ) * 10;
 				   //System.out.println("rate is " + rate + "   rotationMultipler is "+ rotationMultipler);
-
-				   mainMenuController.setRotation((int)rotationMultipler);
+				   mainMenuController.setRotation(rotationMultipler);
 			   }
            }
 	   });
    }
-
+*/
+   
    /*
     * Sets the main menu controller at the start of the sim.
     */
@@ -381,6 +463,10 @@ public class SpinningGlobe {
    	}
 */
 
+   public Mars3DGlobe getMarsGlobe() {
+	   return globe;
+   }
+   
 	public void destroy() {
 
 		rt = null;

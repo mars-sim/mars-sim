@@ -18,7 +18,8 @@ import java.util.concurrent.TimeUnit;
 //import org.slf4j.LoggerFactory;
 //import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Logger;
-
+import javafx.scene.layout.StackPane;
+import javafx.scene.CacheHint;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.Background;
 import javafx.animation.FadeTransition;
@@ -195,7 +196,12 @@ public class MainMenu {
        rect.setArcHeight(40);
        rect.setEffect(new DropShadow(40,5,5, Color.BLACK));//TAN)); // rgb(27,8,0)));// for bottom right edge
 
-       root = new StackPane();
+       // 2015-11-23 Added StarfieldFX
+       StarfieldFX sf = new StarfieldFX();
+       Parent starfield = sf.createStars(WIDTH-20, HEIGHT-20);
+       //Group starfield = sf.createStars((int)rect.getWidth(), (int)rect.getHeight());
+       
+       root = new StackPane();//starfield);
 
        //root.setStyle(
     	//        "-fx-background-color: rgba(255, 255, 255, 0.5);" +
@@ -215,24 +221,29 @@ public class MainMenu {
     		   );
 
        spinningGlobe = new SpinningGlobe(this);
-       Parent globe = spinningGlobe.createMarsGlobe();
-
-       // 2015-11-23 Added StarfieldFX
-       StarfieldFX sf = new StarfieldFX();
-       Group starfield = sf.createStars(WIDTH, HEIGHT);
-       //Group starfield = sf.createStars((int)rect.getWidth(), (int)rect.getHeight());
- 	
+       Parent globe = spinningGlobe.createMarsGlobe();      
+       //Group globe = spinningGlobe.createMarsGlobe();
+       
+       screen.setCache(true);
+       starfield.setCache(true);
+       screen.setCacheHint(CacheHint.SCALE_AND_ROTATE);
+       starfield.setCacheHint(CacheHint.SCALE_AND_ROTATE);
+       
+       //root.getChildren().addAll(rect, globe);//, screen);
+       //root.getChildren().addAll(globe);
        root.getChildren().addAll(rect, starfield, globe, screen);
-       //root.getChildren().addAll(rect, globe, screen);
-       //root.getChildren().addAll(rect, screen, starfield);
    
-       mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20, Color.DARKGOLDENROD);//TRANSPARENT);//, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+       mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20);//, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+       mainMenuScene.setFill(Color.DARKGOLDENROD);//Color.BLACK);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
        mainMenuScene.setCursor(Cursor.HAND);
-
-
+       
+       //mainMenuScene.setCamera(spinningGlobe.getMarsGlobe().getCamera(root));
+       spinningGlobe.getMarsGlobe().handleMouse(mainMenuScene);
+       spinningGlobe.getMarsGlobe().handleKeyboard(mainMenuScene);
+       
        mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){
 
            public void handle(MouseEvent mouseEvent){
@@ -259,14 +270,14 @@ public class MainMenu {
 
 
        // 2015-09-26 Added adjustRotation()
-       spinningGlobe.adjustRotation(mainMenuScene, globe);
+       //spinningGlobe.adjustRotation(mainMenuScene, globe);
 
        // Enable dragging on the undecorated stage
-       EffectUtilities.makeDraggable(mainMenuStage, screen);
+       //EffectUtilities.makeDraggable(mainMenuStage, screen);
 
        //mainMenuStage.initStyle(StageStyle.UTILITY);
-       mainMenuStage.initStyle(StageStyle.TRANSPARENT);
-       mainMenuStage.initStyle(StageStyle.UNDECORATED);
+       //mainMenuStage.initStyle(StageStyle.TRANSPARENT);
+       //mainMenuStage.initStyle(StageStyle.UNDECORATED);
        mainMenuStage.centerOnScreen();
        mainMenuStage.setResizable(false);
 	   mainMenuStage.setTitle(Simulation.WINDOW_TITLE);

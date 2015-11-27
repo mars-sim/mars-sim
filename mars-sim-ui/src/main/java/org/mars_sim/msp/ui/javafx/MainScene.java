@@ -1,5 +1,5 @@
 /**
-f * Mars Simulation Project
+ * Mars Simulation Project
  * MainScene.java
  * @version 3.08 2015-05-26
  * @author Lars Næsbye Christensen

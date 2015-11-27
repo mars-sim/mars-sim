@@ -21,7 +21,7 @@
                <children>
                   <HBox prefHeight="23.0" prefWidth="640.0">
                      <children>
-                        <Label text=" Speed of Rotation :" textFill="#7f6106">
+                        <Label text="Simulation Time Ratio  1 : " textFill="#7f6106">
 							<font>
 								<Font name="Corbel Bold" size="18.0" />
 			                </font>
@@ -32,20 +32,21 @@
                               <Insets left="20.0" />
                            </HBox.margin>
                         </Label>
-                        <Label fx:id="rotationRate" text="500X" textFill="#7f6106">
+                        <Label fx:id="rotationRate" text="500" textFill="#7f6106">
                         	<font>
-								<Font name="Constantia" size="18.0" />
+								<Font name="Corbel Bold" size="18.0" />
 			                </font>
 		                     <effect>
 		                        <SepiaTone />
 		                     </effect>
                            <padding>
-                              <Insets left="10.0" />
+                              <Insets left="0.0" />
                            </padding>
                         </Label>
                      </children>
                   </HBox>
-                  <Button onAction="#setDefaultRotation" prefHeight="22.0" prefWidth="122.0" style="-fx-background-color: transparent;" text="Default 500X" textFill="#976c0f">
+                  <Button onAction="#setDefaultRotation" prefHeight="22.0" prefWidth="122.0" 
+                  	style="-fx-background-color: transparent;" text="Reset to default" textFill="#976c0f">
 					<font>
 						<Font name="Constantia Italic" size="12.0" />
 	                </font>

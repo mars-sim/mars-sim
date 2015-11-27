@@ -1,4 +1,4 @@
-package org.mars_sim.msp.javafx;
+package demo;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;

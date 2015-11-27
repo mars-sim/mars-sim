@@ -69,11 +69,11 @@ public class MainMenuController implements Initializable, ControlledScreen {
 
     @FXML
     private void setDefaultRotation(ActionEvent event) {
-    	rotationRate.setText("500X");
+    	rotationRate.setText("500");
     	switcher.getMainMenu().getSpinningGlobe().setDefaultRotation();
     }
 
     public void setRotation(int rate) {
-    	rotationRate.setText(rate + "X");
+    	rotationRate.setText(rate+"");
     }
 }
