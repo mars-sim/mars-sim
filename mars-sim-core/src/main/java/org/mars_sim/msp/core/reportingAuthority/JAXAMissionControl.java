@@ -17,21 +17,28 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "JAXA";
+	//private final String name = "JAXA";
 
+	private final ReportingAuthorityType org = ReportingAuthorityType.JAXA;
+	
 	private final String toolTipStr = "Japan Aerospace Exploration Agency";
 
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
 
-	public String getName() {
-		return name;
-	}
+	//public String getName() {
+	//	return name;
+	//}
 
 	public JAXAMissionControl() {
 		missionAgenda = new ResearchingSpaceApplication();
 
+	}
+
+	@Override
+	public ReportingAuthorityType getOrg() {
+		return org;
 	}
 
 }

@@ -35,26 +35,60 @@ import javafx.scene.Node;
 
 
 public class Mars3DGlobe { 
-    private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
     
-    final Group root = new Group();
-    final Group axisGroup = new Group();
-    final Xform world = new Xform();
-    final PerspectiveCamera camera = new PerspectiveCamera(true);
-    final Xform cameraXform = new Xform();
-    final Xform cameraXform2 = new Xform();
-    final Xform cameraXform3 = new Xform();
-    final double cameraDistance = 1450;//450;
-    final Xform sphereGroup = new Xform();
-    private Timeline timeline;
-    boolean timelinePlaying = false;
     double ONE_FRAME = 1.0 / 24.0;
     double DELTA_MULTIPLIER = 200.0;
     double CONTROL_MULTIPLIER = 0.1;
     double SHIFT_MULTIPLIER = 0.1;
     double ALT_MULTIPLIER = 0.5;
+    
+	//Image sImage = new Image(this.getClass().getResource("/maps/Mars_Clouds.jpg").toExternalForm());
+    //Image dImage = new Image(this.getClass().getResource("/maps/Mars_Map.jpg").toExternalForm());
+    //Image nImage = new Image(this.getClass().getResource("/maps/Mars_Normal.jpg").toExternalForm()); //.toString());
+    //Image siImage = new Image(this.getClass().getResource("/maps/Mars_Clouds.jpg").toExternalForm()); //.toString());
+
+    // 2k maps
+    Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
+    Image dImage = new Image(this.getClass().getResource("/maps/rgbmars-2k.jpg").toExternalForm());
+    //Image dImage = new Image(this.getClass().getResource("/maps/MarsV3-Shaded-2k.jpg").toExternalForm());
+    Image nImage = new Image(this.getClass().getResource("/maps/MarsNormalMap-2K.png").toExternalForm()); //.toString());
+    Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.png").toExternalForm()); //.toString());
+
+    // 1k maps
+    //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
+    //Image dImage = new Image(this.getClass().getResource("/maps/MarsV3Shaded1k.jpg").toExternalForm());
+    //Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
+    //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-1k.png").toExternalForm()); //.toString());
+	
+    // 1k maps
+	//Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
+    //Image dImage = new Image(this.getClass().getResource("/maps/mars_1k_color.jpg").toExternalForm());
+    //Image nImage = new Image(this.getClass().getResource("/maps/mars_1k_normal.jpg").toExternalForm()); //.toString());
+    //Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
+    //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-1k.png").toExternalForm()); //.toString());
+
+	private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
+    private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
+    private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
+    private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
+
+    
+    final Group root = new Group();
+    final Group axisGroup = new Group();
+    
+    final PerspectiveCamera camera = new PerspectiveCamera(true);  
+    final double cameraDistance = 1450;//450;
+    
+    final Xform world = new Xform();
+    final Xform cameraXform = new Xform();
+    final Xform cameraXform2 = new Xform();
+    final Xform cameraXform3 = new Xform();
+    final Xform sphereGroup = new Xform();
+    
+    private Timeline timeline;
+    
+    boolean timelinePlaying = false;
+
     double mousePosX;
     double mousePosY;
     double mouseOldX;
@@ -97,16 +131,17 @@ public class Mars3DGlobe {
 
     private void buildSphereGroup() {
 
-    	Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
-        Image dImage = new Image(this.getClass().getResource("/maps/MarsV3Shaded1k.jpg").toExternalForm());
-        Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
-      
         final PhongMaterial material = new PhongMaterial();
+        
         material.setDiffuseColor(Color.WHITE);
         material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
+        
         material.setSpecularColor(Color.TRANSPARENT);
         material.specularMapProperty().bind(Bindings.when(specularMap).then(sImage).otherwise((Image) null));
+        
         material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
+        
+        material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
         Xform marsXform = new Xform();
         Sphere mars = new Sphere(340.0);

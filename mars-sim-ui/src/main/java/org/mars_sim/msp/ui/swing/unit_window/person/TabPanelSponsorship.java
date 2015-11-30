@@ -18,13 +18,14 @@ import javax.swing.JTextField;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
- * The TabPanelTabPanel is a tab panel for showing the Reporting Authority and mission objective of a settler.
+ * The TabPanelSponsorship is a tab panel for showing the Reporting Authority and mission objective of a settler.
  */
 public class TabPanelSponsorship
 extends TabPanel {
@@ -71,8 +72,8 @@ extends TabPanel {
 		infoPanel.add(sponsorNameLabel);
 
 		// Prepare sponsor label
-		String sponsor = person.getReportingAuthority().getName();
-		JTextField sponsorTF = new JTextField(sponsor); // Conversion.capitalize(sponsor)
+		ReportingAuthorityType sponsor = person.getReportingAuthority().getOrg();
+		JTextField sponsorTF = new JTextField(sponsor+""); // Conversion.capitalize(sponsor)
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(20);
 		sponsorTF.setCaretPosition(0);

@@ -174,9 +174,12 @@ public class MainSceneMenu extends MenuBar  {
         Menu skinThemeItem = new Menu("Skin Theme");
         ToggleGroup skinThemeToggleGroup = new ToggleGroup();
 
+        RadioMenuItem sevenItem = new RadioMenuItem("Standard");
+        sevenItem.setToggleGroup(skinThemeToggleGroup);
+        sevenItem.setSelected(true);
         RadioMenuItem oneItem = new RadioMenuItem("Olive");
         oneItem.setToggleGroup(skinThemeToggleGroup);
-        oneItem.setSelected(true);
+        //oneItem.setSelected(true);
         RadioMenuItem twoItem = new RadioMenuItem("Burgundy");
         twoItem.setToggleGroup(skinThemeToggleGroup);
         RadioMenuItem threeItem = new RadioMenuItem("DarkTabaco");
@@ -187,10 +190,9 @@ public class MainSceneMenu extends MenuBar  {
         fiveItem.setToggleGroup(skinThemeToggleGroup);
         RadioMenuItem sixItem = new RadioMenuItem("Snow");
         sixItem.setToggleGroup(skinThemeToggleGroup);
-        RadioMenuItem sevenItem = new RadioMenuItem("Standard");
-        sevenItem.setToggleGroup(skinThemeToggleGroup);
-
-        skinThemeItem.getItems().addAll(oneItem, twoItem, threeItem, fourItem, fiveItem, sixItem, sevenItem);
+  
+        
+        skinThemeItem.getItems().addAll(sevenItem, oneItem, twoItem, threeItem, fourItem, fiveItem, sixItem);
 
 
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");

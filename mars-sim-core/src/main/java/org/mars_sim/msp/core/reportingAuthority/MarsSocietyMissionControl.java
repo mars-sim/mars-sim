@@ -18,13 +18,15 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "MS";
+	//private final String name = "MS";
 
+	private final ReportingAuthorityType org = ReportingAuthorityType.MARS_SOCIETY;
+	
 	private final String toolTipStr = "Mars Society";
 
-	public String getName() {
-		return name;
-	}
+	//public String getName() {
+	//	return name;
+	//}
 
 	public String getToolTipStr() {
 		return toolTipStr;
@@ -33,6 +35,11 @@ implements Serializable {
 	public MarsSocietyMissionControl() {
 		missionAgenda = new DeterminingHabitability();
 
+	}
+
+	@Override
+	public ReportingAuthorityType getOrg() {
+		return org;
 	}
 
 }

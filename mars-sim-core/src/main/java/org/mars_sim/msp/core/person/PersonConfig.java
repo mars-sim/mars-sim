@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 
 /**
  * Provides configuration information about people units.
@@ -42,6 +43,7 @@ implements Serializable {
 	private static final String PERSON_NAME_LIST = "person-name-list";
 	private static final String PERSON_NAME = "person-name";
 	private static final String GENDER = "gender";
+	private static final String SPONSOR = "sponsor";
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
@@ -121,6 +123,54 @@ implements Serializable {
 		return nameList;
 	}
 
+	/**
+	 * Gets the sponsor of a given person name.
+	 * @param name the name of the person
+	 * @return the sponsor of the person 
+	 */
+	//2015-11-29 Added getPersonSponsor
+    @SuppressWarnings("unchecked")
+	public ReportingAuthorityType getPersonSponsor(String name) {
+    	ReportingAuthorityType type = null;
+    	
+    	Element root = personDoc.getRootElement();
+		Element personNameList = root.getChild(PERSON_NAME_LIST);
+		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
+		for (Element nameElement : personNames ) {
+			String personName = nameElement.getAttributeValue(VALUE);
+			String sponsor = null;
+			if (personName.equals(name))  {
+				sponsor = nameElement.getAttributeValue(SPONSOR);
+
+				if (sponsor.equals("CNSA"))
+					type = ReportingAuthorityType.CNSA;
+	
+				else if (sponsor.equals("CSA"))
+					type = ReportingAuthorityType.CSA;
+	
+				else if (sponsor.equals("ESA"))				
+					type = ReportingAuthorityType.ESA;
+				
+				else if (sponsor.equals("ISRO"))
+					type = ReportingAuthorityType.ISRO;
+	
+				else if (sponsor.equals("JAXA"))				
+					type = ReportingAuthorityType.JAXA;
+				
+				else if (sponsor.equals("Mars Society"))				
+					type = ReportingAuthorityType.MARS_SOCIETY;
+				
+				else if (sponsor.equals("NASA"))
+					type = ReportingAuthorityType.NASA;
+	
+				else if (sponsor.equals("RKA"))				
+					type = ReportingAuthorityType.RKA;
+			}
+				
+		}
+		return type;
+	}
+    
 	/**
 	 * Gets the gender of a given person name.
 	 * @param name the name of the person

@@ -37,7 +37,9 @@ implements Serializable {
 		return missionAgenda;
 	}
 
-	public abstract String getName();
+	//public abstract String getName();
 
+	public abstract ReportingAuthorityType getOrg();
+	
 	public abstract String getToolTipStr();
 }

@@ -2,7 +2,7 @@
 dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, water-deprivation-time,
 food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time,
 min-temperature, max-temperature, freezing-time, stress-breakdown-chance,
-gender-male-percentage, personality-types, person-name-list, person-list)>
+gender-male-percentage, personality-types, person-name-list, first-name-list, last-name-list,person-list)>
 <!ELEMENT oxygen-consumption-rate EMPTY>
 <!ATTLIST oxygen-consumption-rate value CDATA #REQUIRED>
 <!ELEMENT water-consumption-rate EMPTY>
@@ -41,6 +41,20 @@ gender-male-percentage, personality-types, person-name-list, person-list)>
 <!ELEMENT person-name EMPTY>
 <!ATTLIST person-name value CDATA #REQUIRED>
 <!ATTLIST person-name gender (male|female) #REQUIRED>
+<!ATTLIST person-name sponsor CDATA #REQUIRED>
+
+<!ELEMENT first-name-list (first-name*)>
+<!ELEMENT first-name EMPTY>
+<!ATTLIST first-name value CDATA #REQUIRED>
+<!ATTLIST first-name gender (male|female) #REQUIRED>
+<!ATTLIST first-name sponsor CDATA #REQUIRED>
+
+<!ELEMENT last-name-list (last-name*)>
+<!ELEMENT last-name EMPTY>
+<!ATTLIST last-name value CDATA #REQUIRED>
+<!ATTLIST last-name sponsor CDATA #REQUIRED>
+
+
 <!ELEMENT person-list (person*)>
 <!ELEMENT person (personality-trait-list?, natural-attribute-list?, skill-list?, relationship-list?)>
 <!ATTLIST person name CDATA #REQUIRED>

@@ -17,21 +17,28 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "ISRO";
+	//private final String name = "ISRO";
 
+	private final ReportingAuthorityType org = ReportingAuthorityType.ISRO;
+	
 	private final String toolTipStr = "The Indian Space Research Organisation";
 
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
 
-	public String getName() {
-		return name;
-	}
+	//public String getName() {
+	//	return name;
+	//}
 
 	public ISROMissionControl() {
 		missionAgenda = new DevelopingAdvancedTechnology();
 
+	}
+
+	@Override
+	public ReportingAuthorityType getOrg() {
+		return org;
 	}
 
 }

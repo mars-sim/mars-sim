@@ -20,21 +20,29 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "NASA";
+	//private final String name = "NASA";
 
+	private final ReportingAuthorityType org = ReportingAuthorityType.NASA;
+			
 	private final String toolTipStr = "National Aeronautics and Space Administration";
 
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
 
-	public String getName() {
-		return name;
+	//public String getName() {
+	//	return name;
+	//}
+	
+	public ReportingAuthorityType getOrg() {
+		return org;
 	}
+	
 
 	public NASAMissionControl() {
 		missionAgenda = new FindingLife();
 
 	}
+
 
 }

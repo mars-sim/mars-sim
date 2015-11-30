@@ -17,21 +17,28 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "CNSA";
+	//private final String name = "CNSA";
 
+	private final ReportingAuthorityType org = ReportingAuthorityType.CNSA;
+	
 	private final String toolTipStr = "China National Space Administration";
 
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
 
-	public String getName() {
-		return name;
-	}
+	//public String getName() {
+	//	return name;
+	//}
 
 	public CNSAMissionControl() {
 		missionAgenda = new FindingMineral();
 
+	}
+
+	@Override
+	public ReportingAuthorityType getOrg() {
+		return org;
 	}
 
 }

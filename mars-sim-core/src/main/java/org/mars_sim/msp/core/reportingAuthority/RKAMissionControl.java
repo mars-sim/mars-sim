@@ -16,21 +16,28 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "RKA";
+	//private final String name = "RKA";
 
+	private final ReportingAuthorityType org = ReportingAuthorityType.RKA;
+	
 	private final String toolTipStr = "Roscosmos";
 
 	public String getToolTipStr() {
 		return toolTipStr;
 	}
 
-	public String getName() {
-		return name;
-	}
+	//public String getName() {
+	//	return name;
+	//}
 
 	public RKAMissionControl() {
 		missionAgenda = new ResearchingHealthHazard();
 
+	}
+
+	@Override
+	public ReportingAuthorityType getOrg() {
+		return org;
 	}
 
 }

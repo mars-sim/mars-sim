@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -84,6 +85,16 @@ public class UnitManager implements Serializable {
 	/** List of possible female person names. */
 	private List<String> personFemaleNames;
 
+	//2015-11-29 Added the following 8 sponsor lists
+	private List<String> CSAList;
+	private List<String> CNSAList;
+	private List<String> ESAList;
+	private List<String> ISROList;
+	private List<String> JAXAList;
+	private List<String> MarsSocietyList;
+	private List<String> NASAList;
+	private List<String> RKAList;
+	
 	private List<String> robotNameList;
 
 	/** List of unit manager listeners. */
@@ -147,8 +158,19 @@ public class UnitManager implements Serializable {
 		try {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 			List<String> personNames = personConfig.getPersonNameList();
+			
 			personMaleNames = new ArrayList<String>();
 			personFemaleNames = new ArrayList<String>();
+
+			CNSAList = new ArrayList<String>();
+			CSAList = new ArrayList<String>();
+			ESAList = new ArrayList<String>();
+			ISROList = new ArrayList<String>();
+			JAXAList = new ArrayList<String>();
+			MarsSocietyList = new ArrayList<String>();
+			NASAList = new ArrayList<String>();
+			RKAList = new ArrayList<String>();
+			
 			Iterator<String> i = personNames.iterator();
 			while (i.hasNext()) {
 				String name = i.next();
@@ -158,7 +180,26 @@ public class UnitManager implements Serializable {
 				} else if (gender == PersonGender.FEMALE) {
 					personFemaleNames.add(name);
 				}
+				
+				ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);
+				if (sponsorType.equals(ReportingAuthorityType.CNSA))
+					CNSAList.add(name);
+				else if (sponsorType.equals(ReportingAuthorityType.CSA))
+					CSAList.add(name);
+				else if (sponsorType.equals(ReportingAuthorityType.ESA))
+					ESAList.add(name);
+				else if (sponsorType.equals(ReportingAuthorityType.ISRO))
+					ISROList.add(name);
+				else if (sponsorType.equals(ReportingAuthorityType.JAXA))
+					JAXAList.add(name);
+				else if (sponsorType.equals(ReportingAuthorityType.MARS_SOCIETY))
+					MarsSocietyList.add(name);
+				else if (sponsorType.equals(ReportingAuthorityType.NASA))
+					NASAList.add(name);
+				else if (sponsorType.equals(ReportingAuthorityType.RKA))
+					RKAList.add(name);
 			}
+			
 		} catch (Exception e) {
 			throw new IllegalStateException("person names could not be loaded: " + e.getMessage(), e);
 		}
