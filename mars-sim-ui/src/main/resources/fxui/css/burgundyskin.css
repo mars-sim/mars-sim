@@ -65,6 +65,24 @@
 	linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(-fx-base,-20%));
 }
 
+
+
+.toggle-button,
+.toggle-button:focused,
+.toggle-button:selected,
+.toggle-button:selected:focused {
+	-fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, orange 0%, black 100%),
+        orange,
+        brown,
+        radial-gradient(center 50% 50%, radius 100%, brown, black);
+    -fx-text-fill: yellow;
+    -fx-border-color: rgb(49, 89, 23);
+    -fx-border-radius: 2;
+    -fx-padding: 1 1 1 1;
+    -fx-font-weight: bold;
+}
+
 .button {
 	-fx-background-color:
 	    linear-gradient(from 0% 93% to 0% 100%, orange 0%, black 100%),
@@ -75,6 +93,7 @@
     -fx-border-color: rgb(49, 89, 23);
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;
+   	-fx-font-weight: bold;
 }
 
 .button:hover{

@@ -87,6 +87,23 @@
 }
 
 
+.toggle-button,
+.toggle-button:focused,
+.toggle-button:selected,
+.toggle-button:selected:focused {
+    -fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, #d8ffff 0%,#0064c9 100%),
+        #d8ffff,
+        #add8e6,
+        radial-gradient(center 50% 50%, radius 100%, #add8e6, #0064c9);
+
+    -fx-text-fill: #178aff; /* text color inside the button */
+    -fx-border-color: #663300;
+    -fx-border-radius: 2;
+    -fx-padding: 1 1 1 1;
+   	-fx-font-weight: bold;
+}
+
 .button{
 	-fx-background-color:
 	    linear-gradient(from 0% 93% to 0% 100%, #d8ffff 0%,#0064c9 100%),
@@ -98,6 +115,7 @@
     -fx-border-color: #663300;
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;
+   	-fx-font-weight: bold;
 }
 
 .table-view {

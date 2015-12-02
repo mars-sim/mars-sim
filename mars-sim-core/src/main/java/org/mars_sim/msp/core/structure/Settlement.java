@@ -1290,6 +1290,139 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return result;
 	}
 
+
+	/*
+	 * Checks if the settlement has a particular person
+	 * @param a person
+	 * @return boolean
+	 */
+	//2015-12-01 Added hasPerson()
+	public boolean hasPerson(Person aPerson) {
+		boolean result = false;
+		Collection<Person> list = getAllAssociatedPeople();
+		
+		Iterator<Person> i = list.iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			if (person.equals(aPerson))
+				result = true;
+		}
+
+		return result;
+	}
+
+	/*
+	 * Checks if the settlement contains a particular person with a given name (first or last)
+	 * @param a person's first/last name
+	 * @return 0 if none found, 1 if uniquely found, -1 if dead, 2 to n if not uniquely found
+	 * 
+	 */
+	//2015-12-01 Added hasPersonName()
+	public int hasPersonName(String aName) {
+		aName = aName.trim();
+		String initial = null;
+		boolean hasASpace = aName.contains(" ");
+		//int count = 0;
+		int found = 0;
+		int s_Index = 0;
+		int dead = 0;
+		
+		int len = aName.length();
+		
+		
+		if (len > 3 && hasASpace) {
+			for (int i = 0 ; i < len ; i++) {
+		        if (aName.charAt(i) == ' ')
+		        	s_Index = i;
+			}
+			
+			if (s_Index == len-2) {
+				// e.g. Cory_S
+				initial = aName.substring(len-1, len);
+				aName = aName.substring(0, len-2);
+		    	//System.out.println("initial is " + initial);
+		    	//System.out.println("aName is " + aName);
+			}
+			else if (s_Index == 1) {
+				// e.g. S_Cory
+				initial = aName.substring(0);
+				aName = aName.substring(2, len);
+		    	//System.out.println("initial is " + initial);
+		    	//System.out.println("aName is " + aName);
+			}
+		}
+		
+		Collection<Person> list = getAllAssociatedPeople();
+		
+		Iterator<Person> i = list.iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			// Case 1: if aName is a full name
+			if (hasASpace && person.getName().equalsIgnoreCase(aName)){	
+				found++;
+				if (person.getPhysicalCondition().isDead())
+					dead--;
+			}
+			else if (len > 3 && hasASpace) {
+				// Case 2: if aName is a first name + space + last initial
+				if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {	
+					found++;
+				}
+				// Case 3: if aName is a first initial + space + last name
+				else if (person.getName().toLowerCase().contains((initial + " " + aName).toLowerCase())) {	
+					found++;
+				}
+			}
+			else {
+				// Case 4: if aName is a last name
+				if (person.getName().toLowerCase().contains((" " + aName).toLowerCase())) {	
+					found++;
+				}
+				// Case 5: if aName is a first name
+				else if (person.getName().toLowerCase().contains((aName + " ").toLowerCase())) {	
+					found++;
+				}
+			}
+		}
+
+		if (dead == -1)
+			return -1;
+		else 
+			return found;
+	}
+
+	/*
+	 * Checks if the settlement contains a bot 
+	 * @param a bot's name
+	 * @return 0 if none found, 1 if uniquely found, 2 if uniquely found but dead, -1...-n if not uniquely found
+	 * 
+	 */
+	//2015-12-01 Added hasRobotName()
+	public int hasRobotName(String aName) {
+		aName = aName.trim();
+		//boolean isFullName = aName.trim().contains(" ");
+		aName = aName.replace(" ", "");
+		int found = 0;
+		int dead = 0;
+		
+		Collection<Robot> list = getAllAssociatedRobots();
+		
+		Iterator<Robot> i = list.iterator();
+		while (i.hasNext()) {
+			Robot robot = i.next();
+			if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){	
+				found++;
+				if (robot.getPhysicalCondition().isDead())
+					dead--;
+			}
+		}
+		if (dead < 0)
+			return -1;
+		else 
+			return found;
+	}
+
+	
 	/**
 	 * Gets all Robots associated with this settlement, even if they are out on
 	 * missions.

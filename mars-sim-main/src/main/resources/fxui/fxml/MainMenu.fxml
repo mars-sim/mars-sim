@@ -21,7 +21,7 @@
                <children>
                   <HBox prefHeight="23.0" prefWidth="640.0">
                      <children>
-                        <Label text="Simulation Time Ratio  1 : " textFill="#7f6106">
+                        <Label text="Simulation Time Ratio  1 : " textFill="#945f16">
 							<font>
 								<Font name="Corbel Bold" size="18.0" />
 			                </font>
@@ -32,7 +32,7 @@
                               <Insets left="20.0" />
                            </HBox.margin>
                         </Label>
-                        <Label fx:id="rotationRate" text="500" textFill="#7f6106">
+                        <Label fx:id="rotationRate" text="500" textFill="#945f16">
                         	<font>
 								<Font name="Corbel Bold" size="18.0" />
 			                </font>
@@ -45,8 +45,7 @@
                         </Label>
                      </children>
                   </HBox>
-                  <Button onAction="#setDefaultRotation" prefHeight="22.0" prefWidth="122.0" 
-                  	style="-fx-background-color: transparent;" text="Reset to default" textFill="#976c0f">
+                  <Button onAction="#setDefaultRotation" prefHeight="22.0" prefWidth="122.0" style="-fx-background-color: transparent;" text="Reset to default" textFill="#976c0f">
 					<font>
 						<Font name="Constantia Italic" size="12.0" />
 	                </font>
@@ -95,47 +94,48 @@
               <Insets />
             </padding>
                <children>
-            <Button id="option" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="NEW SIM" textFill="#7f6106">
+            <Button id="option" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="New Sim" textFill="#945f16">
                      <font>
-                        <Font name="Caladea" size="20.0" />
+                        <Font name="Corbel" size="20.0" />
                      </font>
                      <effect>
-                        <SepiaTone />
+                        <Bloom />
+                     </effect>
+   			</Button>
+          	<Button id="option" mnemonicParsing="false" onAction="#goToTwo" prefHeight="38.0" prefWidth="298.0" style="-fx-background-color: transparent;" text="Load Default Saved" textFill="#945f16">
+                     <font>
+                        <Font name="Corbel" size="20.0" />
+                     </font>
+                     <effect>
+                        <Bloom />
                      </effect></Button>
-          	<Button id="option" mnemonicParsing="false" onAction="#goToTwo" prefHeight="38.0" prefWidth="298.0" style="-fx-background-color: transparent;" text="LOAD DEFAULT" textFill="#7f6106">
+            <Button id="option" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Network" textFill="#945f16">
                      <font>
-                        <Font name="Caladea" size="20.0" />
+                        <Font name="Corbel" size="20.0" />
                      </font>
                      <effect>
-                        <SepiaTone />
+                        <Bloom />
                      </effect></Button>
-            <Button id="option" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="NETWORK" textFill="#7f6106">
+            <Button id="option" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Config" textFill="#945f16">
                      <font>
-                        <Font name="Caladea" size="20.0" />
+                        <Font name="Corbel" size="20.0" />
                      </font>
                      <effect>
-                        <SepiaTone />
+                        <Bloom />
                      </effect></Button>
-            <Button id="option" mnemonicParsing="false" onAction="#goToScreen2" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="CONFIG" textFill="#7f6106">
+            <Button id="option" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Credits" textFill="#945f16">
                      <font>
-                        <Font name="Caladea" size="20.0" />
+                        <Font name="Corbel" size="20.0" />
                      </font>
                      <effect>
-                        <SepiaTone />
+                        <Bloom />
                      </effect></Button>
-            <Button id="option" mnemonicParsing="false" onAction="#goToScreen3" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="CREDITS" textFill="#7f6106">
+            <Button id="option" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Exit" textFill="#945f16">
                      <font>
-                        <Font name="Caladea" size="20.0" />
+                        <Font name="Corbel" size="20.0" />
                      </font>
                      <effect>
-                        <SepiaTone />
-                     </effect></Button>
-            <Button id="option" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="EXIT" textFill="#7f6106">
-                     <font>
-                        <Font name="Caladea" size="20.0" />
-                     </font>
-                     <effect>
-                        <SepiaTone />
+                        <Bloom />
                      </effect></Button>
                </children>
                <BorderPane.margin>

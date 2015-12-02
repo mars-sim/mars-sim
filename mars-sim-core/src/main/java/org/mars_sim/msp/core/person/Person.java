@@ -833,6 +833,7 @@ implements VehicleOperator, MissionMember, Serializable {
 		taskSchedule.setShiftType(shiftType);
 	}
 
+	
     @Override
     public void destroy() {
         super.destroy();

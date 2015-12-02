@@ -86,6 +86,23 @@
     -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), rgba(0,0,0,.2);
 }
 
+.toggle-button,
+.toggle-button:focused,
+.toggle-button:selected,
+.toggle-button:selected:focused {
+    -fx-background-color:
+	    linear-gradient(from 0% 93% to 0% 100%, #202020 0%, #673400 100%),
+        #202020,
+        #3e3e3e,
+        radial-gradient(center 50% 50%, radius 100%, #3e3e3e, #673400);
+
+    -fx-text-fill: #FF8000;
+    -fx-border-color: #663300;
+    -fx-border-radius: 2;
+    -fx-padding: 1 1 1 1;
+   	-fx-font-weight: bold;
+   	}
+
 
 .button{
 	-fx-background-color:
@@ -98,6 +115,7 @@
     -fx-border-color: #663300;
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;
+   	-fx-font-weight: bold;
 }
 
 .table-view {

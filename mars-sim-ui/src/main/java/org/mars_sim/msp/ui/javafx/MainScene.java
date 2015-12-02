@@ -540,21 +540,21 @@ public class MainScene {
      */
     //2015-11-11 Added createFlyout()
     public Flyout createFlyout() {
-        commNetButton = new ToggleButton("Open CommNet");
+        commNetButton = new ToggleButton(" CommNet ");
         commNetButton.setPadding(new Insets(5, 5, 5, 5));
         commNetButton.setOnAction(e -> {
             if (commNetButton.isSelected()) {
                 flyout.flyout();
-                commNetButton.setText("Close CommNet");
+                //commNetButton.setText(" Close CommNet ");
             } else {
                 flyout.dismiss();
-                commNetButton.setText("Open CommNet");                
+                //commNetButton.setText(" Open CommNet ");                
             }
         });
         
-        Flyout retVal = new Flyout(commNetButton, createChatBox());
+        Flyout f = new Flyout(commNetButton, createChatBox());
         
-        return retVal;
+        return f;
     }
     
     /*
@@ -575,9 +575,11 @@ public class MainScene {
   		tf.setTooltip(new Tooltip ("Broadcast your message to the global channel on Mars"));
   		tf.setPromptText("Type here");
   				
-  		ta.appendText("SafeNet's warning : a small dust storm 20 km away NNW is heading toward the Alpha Base"
+  		ta.appendText("SafeNet : WARNING! A small dust storm 20 km away NNW is building up and heading toward the Alpha Base"
       		  + System.lineSeparator());
   	
+        EffectUtilities.makeDraggable(stage, pane);
+
   		return pane;
   		
   	}
@@ -604,15 +606,17 @@ public class MainScene {
 
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
+
 		statusBar.getLeftItems().add(new Separator(VERTICAL));
 		statusBar.getLeftItems().add(flyout);
 		statusBar.getLeftItems().add(new Separator(VERTICAL));
+		//EffectUtilities.makeDraggable(stage, flyout);
 		
 		
 		osBean = ManagementFactory.getPlatformMXBean(
 				com.sun.management.OperatingSystemMXBean.class);
 
-		cpuBtn = new Button(" [CPU Load] ");
+		cpuBtn = new Button(" CPU Load ");
 		cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//cpuBtn.setTextFill(Color.ORANGE);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
@@ -630,7 +634,7 @@ public class MainScene {
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(systemCpuLoadText);
 
-		memBtn = new Button(" [Memory] ");
+		memBtn = new Button(" Memory ");
 		memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//memBtn.setTextFill(Color.ORANGE);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
@@ -660,7 +664,7 @@ public class MainScene {
 			throw new IllegalStateException("earthclock is null");
 		}
 
-		clkBtn = new Button(" [Clock] ");
+		clkBtn = new Button(" Clock ");
 		//clkBtn.setTextFill(Color.ORANGE);
 		clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		statusBar.getRightItems().add(clkBtn);
