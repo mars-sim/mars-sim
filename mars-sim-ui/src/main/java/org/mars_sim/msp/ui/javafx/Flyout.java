@@ -186,6 +186,10 @@ public class Flyout extends Region {
         doFlyOut(false);
     }
     
+    public Stage getStage() {
+    	return popup;
+    }
+    
     /**
      * Sets the style of the flyout's background container
      * @param s

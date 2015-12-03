@@ -1,3 +1,9 @@
+/* Mars Simulation Project
+ * ChatBox.java
+ * @version 3.08 2015-12-02
+ * @author Manny Kung
+ */
+ 
 package org.mars_sim.msp.ui.javafx;
 
 import java.util.ArrayList;
@@ -33,57 +39,95 @@ public class ChatBox extends BorderPane {
     private Consumer<String> onMessageReceivedHandler;
 
     public ChatBox() {
+        Label titleLabel = new Label("MarsNet Chat Box");
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );");
+      
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        
-        setCenter(textArea);
-        setBottom(textField);
-         
+        textArea.setStyle("-fx-font: 11pt 'Corbel';");
+          
+        textField.setStyle("-fx-font: 11pt 'Corbel';");
         textField.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
         	keyHandler(keyEvent);
         });
 
+        setTop(titleLabel);
+        setCenter(textArea);
+        setBottom(textField);
+
     }
 
+    public String checkGreetings(String text) {
+    	String result = null;	
+    	//
+    	return result; 	
+    }
+    
+    /*
+     * Parses the text and interprets the contents
+     * @param text
+     */
     //2015-12-01 Added parseText()
     public void parseText(String text) {   
     	String responseText = null;
     	String name = "System";
     	boolean available = true;
     	int nameCase = 0;
-    	//System.out.println("text is " + text + ". Running parseText()");
+    	boolean proceed = true;
+    	//System.out.println("A: text is " + text + ". Running parseText()");
     	text = text.trim();
     	int len = text.length();
 
     	if (len >= 2 && text.substring(0,2).equalsIgnoreCase("hi")) {
-    		//text.replace("hi", "").replace("Hi", "").replace("HI", "").replace("hI", "");
+  
     		if (len > 2) {
     			text = text.substring(2, len);
     		   	text = text.trim();
+    		   	proceed = true;
     		}
-    		else 
+    		else {
     			text = null;
-
-        	//System.out.println("1: text is " + text);
-
+    	   		proceed = false;
+     	   		responseText = name + " : Hi Earth Control, how can I help?";
+    		}
     	}
     	
-    	responseText = name + " : I'm afraid I don't understand. Could you repeat that?";
-    	//System.out.println("System : I'm afraid I don't understand. Could you repeat that?");    	
-    		
-    	if (len == 2 && text == null) {
-	    	//System.out.println("2: text is " + text);
-
-	   		responseText = name + " : Hi Earth Control!";
-	    	//System.out.println("System : Hi Earth Control!");
-
-    		//responseText = name + " : I'm afraid I don't understand. Could you repeat that?";
-        	//System.out.println("System : I'm afraid I don't understand. Could you repeat that?");
-        	
-    	//}
-    	// Earth control is asking for a specific person
-    	} else if (text.length() > 1) {
-	    	//System.out.println("3: text is " + text);
+    	else if (len >= 5 && text.substring(0,5).equalsIgnoreCase("hello")) {
+    		  
+    		if (len > 5) {
+    			text = text.substring(5, len);
+    		   	text = text.trim();
+    		   	proceed = true;
+    		}
+    		else {
+    			text = null;
+    	   		proceed = false;
+     	   		responseText = name + " : Hello Earth Control, how can I help?";
+    		}
+    	}
+    	
+    	else if (len >= 3 && text.substring(0,3).equalsIgnoreCase("hey")) {
+  		  
+    		if (len > 3) {
+    			text = text.substring(3, len);
+    		   	text = text.trim();
+    		   	proceed = true;
+    		}
+    		else {
+    			text = null;
+    	   		proceed = false;
+     	   		responseText = name + " : Hey Earth Control, how can I help?";
+    		}
+    	}
+    	
+    	if (text == null) {
+    		//nothing
+    	}
+    	else if (text.length() == 1) {
+		   	responseText = name + " : I'm afraid I don't understand. Could you repeat that?";
+    	}
+    	else if (proceed) { // && text.length() > 1) {
+	    	//System.out.println("B: text is " + text);
     		Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();		
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
@@ -136,8 +180,7 @@ public class ChatBox extends BorderPane {
 	    		}
 				
 			} else if (nameCase == 0) {
-	    		responseText = name + " : I'm sorry. No one is called by the name of \"" + text + "\". Would you be more specific?";
-	        	//System.out.println("System : I'm sorry. No one is called by the name of \"" + text + "\" Would you be more specific?");
+	    		responseText = name + " : I do not recognize anyone by the name of \"" + text + "\". Would you be more specific?";
 				
 			} else if (nameCase == -1) {   
 	    		responseText = name + " : I'm sorry. " + text + " has passed away.";
@@ -151,44 +194,61 @@ public class ChatBox extends BorderPane {
     
     public void keyHandler(final KeyEvent keyEvent){
         switch (keyEvent.getCode()) {
-        case ENTER:
-            String text = textField.getText();
-            if (text != "" && text != null && !text.trim().isEmpty()) {	
-                textArea.appendText("You : " + text + System.lineSeparator());
-            	history.add(text);
-            	parseText(text);
-            	historyPointer++;      
-	            if (onMessageReceivedHandler != null) {
-	                onMessageReceivedHandler.accept(text);
+	        case ENTER:
+	            String text = textField.getText();
+	            if (text != "" && text != null && !text.trim().isEmpty()) {	
+	                textArea.appendText("You : " + text + System.lineSeparator());
+	            	parseText(text);
+	            	
+	            	// Checks if the text already exists
+	            	if (history.contains(text)) {
+	            		history.remove(text);
+	            		history.add(text);            			     
+	            	}
+	            	else {
+	            		history.add(text);
+	            		historyPointer++;
+	            	}
+	 
+		            if (onMessageReceivedHandler != null) {
+		                onMessageReceivedHandler.accept(text);
+		            }
+		            textField.clear();
 	            }
-	            //textField.clear();
-            }
-            textField.clear();
-        	//System.out.println("clear()");
-            break;
-        case UP:
-            if (historyPointer == 0) {
-                break;
-            }
-            historyPointer--;
-            ChatUtil.runSafe(() -> {
-                textField.setText(history.get(historyPointer));
-                textField.selectAll();
-            });
-            break;
-        case DOWN:
-            if (historyPointer == history.size() - 1) {
-                break;
-            }
-            historyPointer++;
-            ChatUtil.runSafe(() -> {
-                textField.setText(history.get(historyPointer));
-                textField.selectAll();
-            });
-            break;
-        default:
-            break;
-    }
+	            break;
+	            
+	        case UP:
+	            if (historyPointer == 0) { 
+	                break;
+	            }
+
+	            historyPointer--;      
+                System.out.println("historyPointer is " + historyPointer);
+	            ChatUtil.runSafe(() -> {
+	            	textField.setText(history.get(historyPointer));
+	                textField.selectAll();
+	            });
+
+	            break;
+	            
+	        case DOWN:
+	            if (historyPointer >= history.size() - 1) {
+	                break;
+	            }
+
+                historyPointer++;
+                System.out.println("historyPointer is " + historyPointer);
+	            ChatUtil.runSafe(() -> {
+	           		textField.setText(history.get(historyPointer));
+	                textField.selectAll();
+	            });
+
+	            break;
+	            
+	        default:
+	            break;
+	    }
+        
     }
 
     @Override

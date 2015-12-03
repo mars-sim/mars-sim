@@ -160,7 +160,8 @@ public class MainScene {
 	private SwingNode swingNode;
 	private StatusBar statusBar;
 	private Flyout flyout;
-	private ToggleButton commNetButton;
+	private ToggleButton marsNetButton;
+	private ChatBox cb;
 	    
 	
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
@@ -446,7 +447,7 @@ public class MainScene {
 		menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();
 		marsNode.getFXDesktopPane().getStylesheets().clear();
-		commNetButton.getStylesheets().clear();
+		marsNetButton.getStylesheets().clear();
 		
 		String cssColor;
 
@@ -516,7 +517,7 @@ public class MainScene {
 		memBtn.setTextFill(btnTxtColor);
 		clkBtn.setTextFill(btnTxtColor);
 		cpuBtn.setTextFill(btnTxtColor);
-		commNetButton.setTextFill(btnTxtColor);
+		marsNetButton.setTextFill(btnTxtColor);
 	}
 	/**
 	 * Creates and starts the earth timer
@@ -540,20 +541,19 @@ public class MainScene {
      */
     //2015-11-11 Added createFlyout()
     public Flyout createFlyout() {
-        commNetButton = new ToggleButton(" CommNet ");
-        commNetButton.setPadding(new Insets(5, 5, 5, 5));
-        commNetButton.setOnAction(e -> {
-            if (commNetButton.isSelected()) {
+        marsNetButton = new ToggleButton(" MarsNet ");
+        marsNetButton.setTooltip(new Tooltip ("Open/close MarsNet chat box"));
+        marsNetButton.setPadding(new Insets(5, 5, 5, 5));
+        marsNetButton.setOnAction(e -> {
+            if (marsNetButton.isSelected()) {
                 flyout.flyout();
-                //commNetButton.setText(" Close CommNet ");
             } else {
-                flyout.dismiss();
-                //commNetButton.setText(" Open CommNet ");                
+                flyout.dismiss();              
             }
         });
         
-        Flyout f = new Flyout(commNetButton, createChatBox());
-        
+        Flyout f = new Flyout(marsNetButton, createChatBox());
+    	 
         return f;
     }
     
@@ -563,22 +563,20 @@ public class MainScene {
      */
     //2015-11-11 Added createChatBox()
   	public StackPane createChatBox() {
-  		ChatBox cb = new ChatBox();
+  		cb = new ChatBox();
   		StackPane pane = new StackPane(cb);
   		pane.setPadding(new Insets(5, 5, 5, 5));
         //pane.setHgap(5);
         
   		TextArea ta = cb.getTextArea();
-  		ta.setTooltip(new Tooltip ("Chatters on global settlement's CommNet"));
+  		ta.setTooltip(new Tooltip ("Chatters on MarsNet"));
   		
   		TextField tf = cb.getTextField();
-  		tf.setTooltip(new Tooltip ("Broadcast your message to the global channel on Mars"));
-  		tf.setPromptText("Type here");
+  		tf.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
+  		tf.setPromptText("Type your msg here to broadcast to a channel");
   				
-  		ta.appendText("SafeNet : WARNING! A small dust storm 20 km away NNW is building up and heading toward the Alpha Base"
-      		  + System.lineSeparator());
-  	
-        EffectUtilities.makeDraggable(stage, pane);
+  		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
+  		ta.appendText("System : Welcome to MarsNet, the best global network for all settlements on Mars." + System.lineSeparator());
 
   		return pane;
   		
@@ -606,17 +604,16 @@ public class MainScene {
 
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
-
+        EffectUtilities.makeDraggable(flyout.getStage(), cb);
+		
 		statusBar.getLeftItems().add(new Separator(VERTICAL));
 		statusBar.getLeftItems().add(flyout);
-		statusBar.getLeftItems().add(new Separator(VERTICAL));
-		//EffectUtilities.makeDraggable(stage, flyout);
-		
+		//statusBar.getLeftItems().add(new Separator(VERTICAL));      
 		
 		osBean = ManagementFactory.getPlatformMXBean(
 				com.sun.management.OperatingSystemMXBean.class);
 
-		cpuBtn = new Button(" CPU Load ");
+		cpuBtn = new Button(" CPU ");
 		cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//cpuBtn.setTextFill(Color.ORANGE);
 		statusBar.getRightItems().add(new Separator(VERTICAL));

@@ -1328,9 +1328,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		int dead = 0;
 		
 		int len = aName.length();
+		boolean hasInitial = len > 3 && hasASpace;
 		
-		
-		if (len > 3 && hasASpace) {
+		if (hasInitial) {
 			for (int i = 0 ; i < len ; i++) {
 		        if (aName.charAt(i) == ' ')
 		        	s_Index = i;
@@ -1363,7 +1363,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				if (person.getPhysicalCondition().isDead())
 					dead--;
 			}
-			else if (len > 3 && hasASpace) {
+			else if (hasInitial) {
 				// Case 2: if aName is a first name + space + last initial
 				if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {	
 					found++;
@@ -1374,6 +1374,31 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				}
 			}
 			else {
+				String first = null;
+				String last = null;
+				String full = person.getName();
+				int len1 = full.length();
+				//int index1 = 0;
+				
+				for (int j = 0 ; j < len1 ; j++) {
+			        if (full.charAt(j) == ' ') {
+			        	//index1 = j;
+				        first = full.substring(0, j);
+				        last = full.substring(j+1, len1);
+				        break;
+			        }
+				}
+				
+				
+				// Case 4: if aName is a last name
+				if (first.equalsIgnoreCase(aName)) {	
+					found++;
+				}
+				// Case 5: if aName is a first name
+				else if (last.equalsIgnoreCase(aName)) {	
+					found++;
+				}
+/*				
 				// Case 4: if aName is a last name
 				if (person.getName().toLowerCase().contains((" " + aName).toLowerCase())) {	
 					found++;
@@ -1382,6 +1407,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				else if (person.getName().toLowerCase().contains((aName + " ").toLowerCase())) {	
 					found++;
 				}
+*/				
 			}
 		}
 
