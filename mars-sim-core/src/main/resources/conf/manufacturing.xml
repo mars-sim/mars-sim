@@ -134,7 +134,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			process-time="200"
 			power-required="0.5">
 		<inputs>
-			<resource name="Crop Waste" amount="1.0" />
+			<resource name="crop waste" amount="1.0" />
 			<resource name="Black Water" amount="10.0" />
 			<resource name="sodium hypochlorite" amount="0.002" />
 			<resource name="Nitrospira spp" amount="0.02" />
@@ -156,7 +156,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			process-time="800"
 			power-required="2.0">
 		<inputs>
-			<resource name="Crop Waste" amount="10" />
+			<resource name="crop waste" amount="10" />
 			<resource name="Black Water" amount="100" />
 			<resource name="sodium hypochlorite" amount="0.02" />
 			<!-- TODO: chemist can isolate these bacteria and grow them in the lab -->
@@ -178,7 +178,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			process-time="1000"
 			power-required="2">
 		<inputs>
-			<resource name="Compost" amount="10" />
+			<resource name="compost" amount="10" />
 		</inputs>
 		<outputs>
 			<resource name="Soil" amount="10" />
@@ -191,7 +191,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 			process-time="3000"
 			power-required="5">
 		<inputs>
-			<resource name="Compost" amount="100" />
+			<resource name="compost" amount="100" />
 		</inputs>
 		<outputs>
 			<resource name="Soil" amount="100" />
@@ -348,11 +348,11 @@ Note: 1 kg of H2 is 14.13 liter
 			process-time="100"
 			power-required=".5">
 		<inputs>
-			<resource name="Crop Waste" amount="7.0" />
-			<resource name="Food Waste" amount="3.0" />
+			<resource name="crop waste" amount="7.0" />
+			<resource name="food waste" amount="3.0" />
 		</inputs>
 		<outputs>
-			<resource name="Compost" amount="10" />
+			<resource name="compost" amount="10" />
 		</outputs>
 	</process>
 
@@ -362,11 +362,11 @@ Note: 1 kg of H2 is 14.13 liter
 			process-time="500"
 			power-required=".5">
 		<inputs>
-			<resource name="Crop Waste" amount="70.0" />
-			<resource name="Food Waste" amount="30.0" />
+			<resource name="crop waste" amount="70.0" />
+			<resource name="food waste" amount="30.0" />
 		</inputs>
 		<outputs>
-			<resource name="Compost" amount="100" />
+			<resource name="compost" amount="100" />
 		</outputs>
 	</process>
 

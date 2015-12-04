@@ -12,15 +12,26 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default: 1.0 -->
 	<oxygen-consumption-rate value="1.0" />
 
-	<!-- The average amount of water (kg) drank by a person each Martian Sol -->
+	<!-- The normal average amount of water (kg) drank by a person each Martian Sol -->
 	<!-- Default: 4.0 -->
 	<water-consumption-rate value="4.0" />
 
-	<!-- The average amount of dessert (kg) in dry weight eaten by a person each Martian Sol -->
+	<!-- The normal average amount (kg) of water usage (cleaning, shower, toilet, etc.) by a person each Martian Sol -->
+	<!-- This compares with ~288 kg water usage per person per day in US-->
+	<!-- Note : 1 US gallon = 3.79 kg or liter (water)-->
+	<!-- Instead of consuming an average of 50 liters to take a shower (typical on Earth), denizens of the ISS uses < 4 liters to bathe. -->
+	<!-- Default: 26.0 -->
+	<water-usage-rate value="26.0" />
+
+	<!-- The fictitious ratio denoting the amount of grey water and black water generated per unit water usage-->
+	<!-- Default: 4.0. This translates to 80% grey water and 20% black water (OR 4 to 1) -->
+	<grey-to-black-water-ratio value="4.0" />
+
+	<!-- The normal average amount of dessert (kg) in dry weight eaten by a person each Martian Sol -->
 	<!-- Default: 0.3 dry Weight (arbitrary), note that beverage has arbitrary predefined weight-->
 	<dessert-consumption-rate value="0.3" />
 
-	<!-- The average amount of food (kg) in dry weight eaten by a person each Martian Sol -->
+	<!-- The normal average amount of food (kg) in dry weight eaten by a person each Martian Sol -->
 	<!-- Default: 0.62 dry Weight -->
 	<food-consumption-rate value="0.62" />
 

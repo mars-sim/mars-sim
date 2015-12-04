@@ -272,44 +272,32 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * Get settlement robot is at, null if robot is not at a settlement
      * @return the robot's settlement
      */
-    public Settlement getSettlement() {
-/*
-    	if (LocationSituation.IN_SETTLEMENT == getLocationSituation())
-            return (Settlement) getContainerUnit();
-        else
-            return null;
-*/        
-            if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            	Settlement settlement = (Settlement) getContainerUnit();
-            	if (settlement != null)
-            		return settlement;
-            	else {
-    	        	settlement = (Settlement) getTopContainerUnit();
-    	        	return settlement;
-            	}
-            }
-            else if (getLocationSituation() == LocationSituation.OUTSIDE)
-            // 2015-09-03 Changed getContainerUnit() below to getTopContainerUnit()
-                return (Settlement) getTopContainerUnit();
-            else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            	Vehicle vehicle = (Vehicle) getContainerUnit();
-            	Settlement settlement = (Settlement) vehicle.getSettlement();
-            	if (settlement != null)
-            		return settlement;
-            	else {
-            		settlement = (Settlement) vehicle.getContainerUnit();
-            		return settlement;
-            	}
-            }
-            else if (getLocationSituation() == LocationSituation.BURIED) {
-                return (Settlement) getContainerUnit();
-            }
-            else {
-            	System.err.println("robot's getSettlement() : " + getName() + " does NOT belong to any settlements.");
-            	return null;
-            }
-            	
-    }
+   // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
+   public Settlement getSettlement() {
+       if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    	   Settlement settlement = (Settlement) getContainerUnit();  	
+    	   return settlement;
+       }
+       
+       else if (getLocationSituation() == LocationSituation.OUTSIDE)
+    	   return null;
+       
+       else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
+    	   Vehicle vehicle = (Vehicle) getContainerUnit();	
+    	   Settlement settlement = (Settlement) vehicle.getContainerUnit();
+    	   return settlement;
+       }
+       
+       else if (getLocationSituation() == LocationSituation.BURIED) {
+    	   return null;
+       }
+       
+       else {
+    	   System.err.println("Error in determining " + getName() + "'s getSettlement() ");
+    	   return null;
+       }
+   }
+    
 
     /**
      * Get vehicle robot is in, null if robot is not in vehicle
@@ -325,8 +313,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
     /**
      * Sets the unit's container unit. Overridden from Unit class.
-     * @param containerUnit
-     *            the unit to contain this unit.
+     * @param containerUnit the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
         super.setContainerUnit(containerUnit);

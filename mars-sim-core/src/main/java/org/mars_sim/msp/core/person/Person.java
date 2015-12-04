@@ -331,38 +331,32 @@ implements VehicleOperator, MissionMember, Serializable {
      * Get settlement person is at, null if person is not at a settlement
      * @return the person's settlement
      */
+    // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
     public Settlement getSettlement() {
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        	Settlement settlement = (Settlement) getContainerUnit();
-        	if (settlement != null)
-        		return settlement;
-        	else {
-	        	settlement = (Settlement) getTopContainerUnit();
-	        	return settlement;
-        	}
+     	   Settlement settlement = (Settlement) getContainerUnit();  	
+     	   return settlement;
         }
+        
         else if (getLocationSituation() == LocationSituation.OUTSIDE)
-        // 2015-09-03 Changed getContainerUnit() below to getTopContainerUnit()
-            return (Settlement) getTopContainerUnit();
+     	   return null;
+        
         else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        	Vehicle vehicle = (Vehicle) getContainerUnit();
-        	Settlement settlement = (Settlement) vehicle.getSettlement();
-        	if (settlement != null)
-        		return settlement;
-        	else {
-        		settlement = (Settlement) vehicle.getContainerUnit();
-        		return settlement;
-        	}
+     	   Vehicle vehicle = (Vehicle) getContainerUnit();	
+     	   Settlement settlement = (Settlement) vehicle.getContainerUnit();
+     	   return settlement;
         }
+        
         else if (getLocationSituation() == LocationSituation.BURIED) {
-            return (Settlement) getContainerUnit();
+     	   return null;
         }
+        
         else {
-        	System.err.println("Person's getSettlement() : " + getName() + " does NOT belong to any settlements.");
-        	return null;
+     	   System.err.println("Error in determining " + getName() + "'s getSettlement() ");
+     	   return null;
         }
-        	
     }
+     
 
     /**
      * Get vehicle person is in, null if person is not in vehicle
@@ -370,7 +364,7 @@ implements VehicleOperator, MissionMember, Serializable {
      * @return the person's vehicle
      */
     public Vehicle getVehicle() {
-        if (LocationSituation.IN_VEHICLE == getLocationSituation())
+        if (getLocationSituation() == LocationSituation.IN_VEHICLE)
             return (Vehicle) getContainerUnit();
         else
             return null;
@@ -378,8 +372,7 @@ implements VehicleOperator, MissionMember, Serializable {
 
     /**
      * Sets the unit's container unit. Overridden from Unit class.
-     * @param containerUnit
-     *            the unit to contain this unit.
+     * @param containerUnit the unit to contain this unit.
      */
     public void setContainerUnit(Unit containerUnit) {
         super.setContainerUnit(containerUnit);

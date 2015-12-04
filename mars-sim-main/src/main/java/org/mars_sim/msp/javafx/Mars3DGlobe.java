@@ -144,7 +144,7 @@ public class Mars3DGlobe {
         material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
         Xform marsXform = new Xform();
-        Sphere mars = new Sphere(340.0);
+        Sphere mars = new Sphere(300.0);
         mars.setMaterial(material);
         marsXform.getChildren().add(mars);
         sphereGroup.getChildren().add(marsXform);

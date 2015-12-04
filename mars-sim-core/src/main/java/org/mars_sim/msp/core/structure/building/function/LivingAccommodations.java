@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -32,19 +33,20 @@ public class LivingAccommodations extends Function implements Serializable {
  	private static Logger logger = Logger.getLogger(LivingAccommodations.class.getName());   
 
     /** Amount of water in kg used per person per Sol for cleaning, bathing, etc. */
-    public final static double WASH_WATER_USAGE_PERSON_SOL = 26D;
+    //public final static double WASH_WATER_USAGE_PERSON_SOL = 26D;
     public final static double TOILET_WASTE_PERSON_SOL = .02D;
-    public final static double GREY_WATER_RATIO = .8;
-    public final static double BLACK_WATER_RATIO = .2;
+    //public final static double GREY_WATER_RATIO = .8;
+    //public final static double BLACK_WATER_RATIO = .2;
 
     private static final BuildingFunction FUNCTION = BuildingFunction.LIVING_ACCOMODATIONS;
 
     private int beds;
     private int sleepers;
-	private int solCache = 1;
+	//private int solCache = 1;
     
-    private double washWaterUsagePerPersonPerTime;
-
+    private double wasteWaterUsage; // wasteWaterUsage per person per millisol
+    private double greyWaterFraction; // percent portion of grey water generated
+    
     private Settlement settlement;
     private Inventory inv;
 
@@ -58,19 +60,20 @@ public class LivingAccommodations extends Function implements Serializable {
         // Call Function constructor.
         super(FUNCTION, building);
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
+        
+        PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
+        wasteWaterUsage = personconfig.getWaterUsageRate() / 1000D;
+        double grey2BlackWaterRatio = personconfig.getGrey2BlackWaterRatio();
+        greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
 
-        beds = config.getLivingAccommodationBeds(building.getBuildingType());
-
+        
         // Load activity spots
-        loadActivitySpots(config.getLivingAccommodationsActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getLivingAccommodationsActivitySpots(building.getBuildingType()));
         
-        settlement = building.getBuildingManager()
-                .getSettlement();
- 
+        settlement = building.getBuildingManager().getSettlement();
         inv = building.getInventory();
-        
-        washWaterUsagePerPersonPerTime = WASH_WATER_USAGE_PERSON_SOL / 1000D;
 
     }
 
@@ -153,23 +156,6 @@ public class LivingAccommodations extends Function implements Serializable {
         }
     }
 
-    /**
-     * Utilizes water for bathing, washing, etc based on population.
-     * @param time amount of time passing (millisols)
-     * @throws Exception if error in water usage.
-     */
-    //2015-02-27 Modified and renamed to useWater()
-    public void useWater(double time) {
-
-        double waterUsageSettlement = washWaterUsagePerPersonPerTime  * time * settlement.getCurrentPopulationNum();
-        double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
-        double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
-        double waterUsed = waterUsageBuilding;        
-        
-        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed);
-
-        produceWasteWater(waterUsed);
-    }
 
     /**
      * Retrieves an resource
@@ -227,45 +213,51 @@ public class LivingAccommodations extends Function implements Serializable {
 
 
     /**
-     * Creates and stores black and grey water
-     */  
-    //2015-02-27 Added produceWasteWater()
-    public void produceWasteWater(double waterUsed) {
-        
-        double greyWaterProduced = waterUsed * GREY_WATER_RATIO;
-        double blackWaterProduced = waterUsed * BLACK_WATER_RATIO;             
-        //System.out.println("blackWaterProduced "+ blackWaterProduced);      
-        storeAnResource(greyWaterProduced, "grey water");
-        storeAnResource(blackWaterProduced, "black water");    
-    }	   
-    
-    /**
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
     public void timePassing(double time) {
-        useWater(time);
-        produceToiletWaste();
+        generateWaste(time);
     }
 
-
     /**
-     * Calculates the amount of toilet waste on average for each building having living Accommodation function.
-     */  
-    public void produceToiletWaste() {
-        // calculate toilet waste only once per day
-        MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();       
-        int solElapsed = MarsClock.getSolOfYear(clock);  
-        if (solElapsed != solCache) {
-        	solCache = solElapsed;
-            double amountPerSettlement = TOILET_WASTE_PERSON_SOL * settlement.getCurrentPopulationNum();
-            double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
-            double amountPerBuilding = Math.round(amountPerSettlement * buildingProportionCap*1000.0)/1000.0;
-            retrieveAnResource("toilet tissue", amountPerBuilding);
-            storeAnResource(amountPerBuilding, "toxic waste");
-            //System.out.println("Toilet Toxic Waste "+ amountPerBuilding);    
-        }   
+     * Utilizes water for bathing, washing, etc based on population.
+     * @param time amount of time passing (millisols)
+     * @throws Exception if error in water usage.
+     */
+    //2015-12-04 Modified and renamed to generateWaste()
+    public void generateWaste(double time) {
+
+/*    	
+        double waterUsageSettlement = washWaterUsagePerPersonPerTime  * time * settlement.getCurrentPopulationNum();
+        double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
+        double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
+        double waterUsed = waterUsageBuilding;        
+*/        
+        
+    	// Note: the ratio of non-sleepers to sleepers is about 3 to 1 
+    	// Thus, 2/3 of population are awake and active while 1/3 are sleeping.
+    	// Assume a 5% of chance that this 2/3 population will use rest room at a given instant of time
+    	// factor = 2 * .05 * # of sleepers * usage per person per sol /1000 * millisols 
+    	double toiletUsagefactor = .1; 
+    	
+    	// computes water waste -- grey water and black water
+    	double waterUsed = toiletUsagefactor * sleepers * wasteWaterUsage  * time;
+        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed);
+       
+        
+        double greyWaterProduced = waterUsed * greyWaterFraction;
+        double blackWaterProduced = waterUsed * (1 - greyWaterFraction);             
+        //System.out.println("blackWaterProduced "+ blackWaterProduced);      
+        storeAnResource(greyWaterProduced, "grey water");
+        storeAnResource(blackWaterProduced, "black water");
+    	
+    	// computes toxic waste        
+        double toiletTissueUsed = toiletUsagefactor * (1 - greyWaterFraction) * sleepers * TOILET_WASTE_PERSON_SOL * time;
+        retrieveAnResource("toilet tissue", toiletTissueUsed);
+        storeAnResource(toiletTissueUsed, "toxic waste");
+
     }
     
     /**

@@ -110,7 +110,7 @@ public class MainMenu {
     //    logger = LoggerFactory.getLogger(MainMenu.class);
     //}
 
-    private static final int WIDTH = 768-20;
+    private static final int WIDTH = 1024;//768-20;
     private static final int HEIGHT = 768-20;
 
 

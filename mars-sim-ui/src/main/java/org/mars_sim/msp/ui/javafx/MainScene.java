@@ -950,9 +950,9 @@ public class MainScene {
 		alert.setTitle("Starting new sim");
 		alert.setHeaderText(Msg.getString("MainScene.new.header"));
 		alert.setContentText(Msg.getString("MainScene.new.content"));
-		ButtonType buttonTypeOne = new ButtonType("Save and End");
+		ButtonType buttonTypeOne = new ButtonType("Save & End");
 		ButtonType buttonTypeTwo = new ButtonType("End Sim");
-		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		ButtonType buttonTypeCancel = new ButtonType("Back to Sim", ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();
 
@@ -1268,10 +1268,10 @@ public class MainScene {
 		alert.initOwner(stage);
 		alert.setHeaderText(Msg.getString("MainScene.exit.header"));
 		alert.setContentText(Msg.getString("MainScene.exit.content"));
-		ButtonType buttonTypeOne = new ButtonType("Save and End");
+		ButtonType buttonTypeOne = new ButtonType("Save & End");
 		ButtonType buttonTypeTwo = new ButtonType("End Sim");
-		ButtonType buttonTypeThree = new ButtonType("Exit MSP");
-		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+		ButtonType buttonTypeThree = new ButtonType("Exit Sim");
+		ButtonType buttonTypeCancel = new ButtonType("Back to Sim", ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeThree, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();
 

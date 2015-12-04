@@ -449,12 +449,12 @@ public class ScenarioConfigEditorFX {
 		refreshDefaultButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.default"))); //$NON-NLS-1$
 		refreshDefaultButton.setOnAction((event) -> {
 			if (multiplayerClient != null && hasSettlement) {
-				boolean isYes = confirmDeleteDialog("Delete settlements settings, reset back to default and refresh other players' settlements", "Are you sure you want to do this?");
+				boolean isYes = confirmDeleteDialog("Delete current settlement settings, reload the default templates and refresh other players' settlements", "Are you sure you want to do this?");
 				if (isYes)
 					setExistingSettlements();
 			}
 			else {
-				boolean isYes = confirmDeleteDialog("Delete settlement settings and reset back to default", "Are you sure you want to do this?");
+				boolean isYes = confirmDeleteDialog("Delete current settlement settings and reload the default templates", "Are you sure you want to do this?");
 				if (isYes)
 					setDefaultSettlements();
 			}
@@ -463,7 +463,7 @@ public class ScenarioConfigEditorFX {
 		//vbCenter.getChildren().add(defaultButton);
 
 		// Create the start button.
-		startButton = new Button("   " + Msg.getString("SimulationConfigEditor.button.newSim")+ "   "); //$NON-NLS-1$
+		startButton = new Button("  " + Msg.getString("SimulationConfigEditor.button.newSim")+ "  "); //$NON-NLS-1$
 		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
 		startButton.setId("startButton");
 		// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus

@@ -164,7 +164,7 @@ implements Serializable, Comparable<Unit> {
 
 	/**
 	 * Gets the topmost container unit that owns this unit.
-	 * Returns null if unit has no container unit.
+	 * Returns null if unit has no container unit (meaning that he's outside)
 	 * @return the unit's topmost container unit
 	 */
 	public Unit getTopContainerUnit() {

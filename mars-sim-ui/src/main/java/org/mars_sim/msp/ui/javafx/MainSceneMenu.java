@@ -51,6 +51,7 @@ import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 
+@SuppressWarnings("restriction")
 public class MainSceneMenu extends MenuBar  {
 
 	private static Logger logger = Logger.getLogger(MainSceneMenu.class.getName());

@@ -27,7 +27,7 @@
         #d16700,
         #9c4d00,
         radial-gradient(center 50% 50%, radius 100%, #9c4d00, #ff8861);
-	-fx-font-size: 15.0px;
+	-fx-font-size: 18.0px;
 	-fx-base: #D42D00;
 	-fx-background: #ff5108;
 	-fx-control-inner-background: #FFFFFF;
@@ -36,7 +36,7 @@
 	-fx-body-color: linear-gradient( to bottom, derive(-fx-color, 34.0%) 0%, derive(-fx-color, -18.0%) 100%);
 	-fx-background-insets: 0px;
 	-fx-background-radius: 0px;
-	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
+	-fx-padding: 0.2em 0.4em 0.2em 0.4em; /* 2 10 3 10 */
 	-fx-text-fill: -fx-text-base-color;
 	-fx-alignment: CENTER;
 	-fx-content-display: LEFT;

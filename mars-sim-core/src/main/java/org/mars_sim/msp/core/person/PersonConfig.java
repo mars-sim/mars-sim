@@ -45,7 +45,11 @@ implements Serializable {
 	private static final String GENDER = "gender";
 	private static final String SPONSOR = "sponsor";
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
+	
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
+	private static final String WATER_USAGE_RATE = "water-usage-rate";
+	private static final String	GREY_TO_BLACK_WATER_RATIO = "grey-to-black-water-ratio";
+
 	private static final String FOOD_CONSUMPTION_RATE = "food-consumption-rate";
 	private static final String DESSERT_CONSUMPTION_RATE = "dessert-consumption-rate";
 	private static final String OXYGEN_DEPRIVATION_TIME = "oxygen-deprivation-time";
@@ -210,6 +214,27 @@ implements Serializable {
 		return getValueAsDouble(WATER_CONSUMPTION_RATE);
 	}
 
+	/**
+	 * Gets the water usage rate.
+	 * @return water rate (kg/sol)
+	 * @throws Exception if usage rate could not be found.
+	 */
+	// 2015-12-04 Added getWaterUsageRate()
+	public double getWaterUsageRate() {
+		return getValueAsDouble(WATER_USAGE_RATE);
+	}
+
+	/**
+	 * Gets the grey to black water ratio.
+	 * @return ratio 
+	 * @throws Exception if the ratio could not be found.
+	 */
+	// 2015-12-04 Added getGrey2BlackWaterRatio()
+	public double getGrey2BlackWaterRatio() {
+		return getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
+	}
+
+	
 	/**
 	 * Gets the food consumption rate.
 	 * @return food rate (kg/sol)

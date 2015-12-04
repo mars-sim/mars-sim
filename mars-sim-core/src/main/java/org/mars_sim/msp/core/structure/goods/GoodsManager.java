@@ -533,7 +533,8 @@ public class GoodsManager implements Serializable {
     private double getPotableWaterUsageDemand(AmountResource resource) {
         AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         if (resource.equals(water)) {
-            double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
+            //double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
+        	double amountNeededSol = SimulationConfig.instance().getPersonConfiguration().getWaterUsageRate();
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getCurrentPopulationNum();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
