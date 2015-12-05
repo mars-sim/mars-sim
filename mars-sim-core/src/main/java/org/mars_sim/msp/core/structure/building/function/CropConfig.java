@@ -25,6 +25,13 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Element names
+	// 2015-12-04 Added a number of elements below
+	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
+	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
+	private static final String CARBON_DIOXIDE_CONSUMPTION_RATE = "carbon-dioxide-consumption-rate";
+	private static final String VALUE= "value";
+	
+	private static final String CROP_LIST = "crop-list";
 	private static final String CROP = "crop";
 	private static final String NAME = "name";
 	private static final String GROWING_TIME = "growing-time";
@@ -60,7 +67,8 @@ implements Serializable {
 			cropList = new ArrayList<CropType>();
 
 			Element root = cropDoc.getRootElement();
-			List<Element> crops = root.getChildren(CROP);
+			Element cropElement = root.getChild(CROP_LIST);
+			List<Element> crops = cropElement.getChildren(CROP);
 
 			for (Element crop : crops) {
 				String name = "";
@@ -117,7 +125,49 @@ implements Serializable {
 		return cropList;
 	}
 
+	/**
+	 * Gets the carbon doxide consumption rate.
+	 * @return carbon doxide rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	// 2015-12-04 Added getCarbonDioxideConsumptionRate()
+	public double getCarbonDioxideConsumptionRate() {
+		return getValueAsDouble(CARBON_DIOXIDE_CONSUMPTION_RATE);
+	}
 
+	/**
+	 * Gets the oxygen consumption rate.
+	 * @return oxygen rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	// 2015-12-04 Added getOxygenConsumptionRate()
+	public double getOxygenConsumptionRate() {
+		return getValueAsDouble(OXYGEN_CONSUMPTION_RATE);
+	}
+
+	/**
+	 * Gets the water consumption rate.
+	 * @return water rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	// 2015-12-04 Added getWaterConsumptionRate()
+	public double getWaterConsumptionRate() {
+		return getValueAsDouble(WATER_CONSUMPTION_RATE);
+	}
+	
+	/*
+	 * Gets the value of an element as a double
+	 * @param an element
+	 * @return a double 
+	 */
+	// 2015-12-04 Added getValueAsDouble()
+	private double getValueAsDouble(String child) {
+		Element root = cropDoc.getRootElement();
+		Element element = root.getChild(child);
+		String str = element.getAttributeValue(VALUE);
+		return Double.parseDouble(str);
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

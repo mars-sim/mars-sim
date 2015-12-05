@@ -381,7 +381,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>The MD1 Nuclear Reactor is the first generation, small and self-contained
-		 	80kW nuclear reactor that is built for Martian environment and requires minimal maintenance.
+		 	150kW nuclear reactor that is built for Martian environment and requires 
+		 	relatively minimal maintenance.
 		</description>
 
 		<power-required base-power="0.0" base-power-down-power="0.0" />
@@ -396,7 +397,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The starting ERV base was sent ahead of the arrival
-			of the human crew and stores full tanks of hydrogen for settlement's use.
+			of the human crew. It supplies the settlement with tanks of hydrogen that can be 
+			converted into CH4 and H2O via Sabatier Process. It can perform Water Electrolysis 
+			to turn water into H2 and O2. It can also carry out Carbon Dioxide Reduction that 
+			reduces CO2 into O2 and CO. 
 		</description>
 		<power-required base-power="2.0" base-power-down-power="1.0"/>
 
@@ -423,22 +427,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
 				</process>
 			</resource-processing>
-			<storage stock-capacity="10000">
-				<resource-storage resource="Hydrogen" capacity="6300.0" />
+			<storage stock-capacity="11000">
+				<resource-storage resource="Hydrogen" capacity="6000.0" />
 				<resource-storage resource="Methane" capacity="21000.0" />
 				<resource-storage resource="Oxygen" capacity="74000.0" />
 				<resource-storage resource="water" capacity="9000.0" />
 
-				<resource-initial resource="Hydrogen" amount="6300.0" />
+				<resource-initial resource="Hydrogen" amount="6000.0" />
 			</storage>
 		</functions>
 	</building>
 
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
-		<description> The Earth Return Vehicle (ERV) is a spacecraft structure
-			with built-in Sabatier chemical reactor. The ERV base has already
-			converted its initial load of hydrogen into carbon dioxide, water and oxygen.
+		<description> The Earth Return Vehicle (ERV) is a flight ready space vehicle. If not used
+			for the return trip, it can be retrofitted for critical resource processing functions as 
+			it carried similar equipment package as those found in Starting ERV Base. 
 		</description>
 		<power-required base-power="8.0" base-power-down-power="1.0"/>
 
@@ -465,14 +469,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
 				</process>
 			</resource-processing>
-			<storage stock-capacity="200000">
-				<resource-storage resource="Hydrogen" capacity="6300.0" />
+			<storage stock-capacity="11000">
+				<resource-storage resource="Hydrogen" capacity="6000.0" />
 				<resource-storage resource="Methane" capacity="21000.0" />
 				<resource-storage resource="Oxygen" capacity="74000.0" />
 				<resource-storage resource="water" capacity="9000.0" />
 
-				<resource-initial resource="Methane" amount="21000.0" />
-				<resource-initial resource="Oxygen" amount="74000.0" />
+				<resource-initial resource="Methane" amount="10000.0" />
+				<resource-initial resource="Oxygen" amount="10000.0" />
 				<resource-initial resource="water" amount="9000.0" />
 			</storage>
 		</functions>
@@ -481,8 +485,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" >
 		<description>
-			The MD4 Nuclear Reactor is a medium-sized, self-contained 200kW Martian-reated
-			nuclear reactor that requires minimal maintenance.
+			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 600kW 
+			nuclear reactor that requires relatively minimal maintenance.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0"/>
 
@@ -495,8 +499,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
-		<description> The Atmospheric Processor is an uninhabitable specialized building providing
-			automatic water and air processing and recycling for the settlement
+		<description> The Atmospheric Processor is an uninhabitable, resource-processing 
+		building providing water recyling, air processing and waste incineration functions
+		for the settlement.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="1.0"/>
 
@@ -544,14 +549,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="Oxygen" rate=".5" ambient="false" />
 				</process>
 			</resource-processing>
-			<storage stock-capacity="50000">
+			
+			<storage stock-capacity="80000">
 				<resource-storage resource="Hydrogen" capacity="10000.0" />
 				<resource-storage resource="Methane" capacity="10000.0" />
 				<resource-storage resource="Oxygen" capacity="10000.0" />
 				<resource-storage resource="water" capacity="40000.0" />
-				<resource-storage resource="grey water" capacity="4000.0" />
-				<resource-storage resource="black water" capacity="4000.0" />
-				<resource-storage resource="Ice" capacity="4000.0" />
+				<resource-storage resource="grey water" capacity="2000.0" />
+				<resource-storage resource="black water" capacity="2000.0" />
+				<resource-storage resource="Ice" capacity="2000.0" />
 				
 				<resource-storage resource="solid waste" capacity="2000.0" />
 				<resource-storage resource="toxic waste" capacity="2000.0" />
@@ -563,8 +569,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Residential Quarters" width="7.0" length="9.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
-		<description> The Residential Quarters is the first specialized living accommodation building
-			that is configurable with enough space to house as many as 12 beds.
+		<description> The Residential Quarters is the first full living accommodation building
+			that is configured to house as many as twelve beds. It also provides storage space
+			for critical amount resources. It is furnised with a solar panel rooftop.
 		</description>
 		<power-required base-power="20.0" base-power-down-power="0.0" />
 

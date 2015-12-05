@@ -249,10 +249,11 @@ implements Serializable {
 				// 2015-01-09 Added addDemandTotalRequest()
 				inventory.addAmountDemandTotalRequest(resource);
 				
-				if (resourceAmount > remainingAmount) resourceAmount = remainingAmount;
+				if (resourceAmount > remainingAmount) 
+					resourceAmount = remainingAmount;
+
 				try {
 					inventory.retrieveAmountResource(resource, resourceAmount);
-
 					// 2015-01-09 addAmountDemand
 					inventory.addAmountDemand(resource,resourceAmount);
 				}

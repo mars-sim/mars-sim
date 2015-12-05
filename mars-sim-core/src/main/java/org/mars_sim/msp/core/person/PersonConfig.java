@@ -583,6 +583,12 @@ implements Serializable {
 		return result;
 	}
     
+	/*
+	 * Gets the value of an element as a String
+	 * @param an element
+	 * @param an index
+	 * @return a String
+	 */
 	private String getValueAsString(int index, String param){
 		Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
@@ -590,13 +596,18 @@ implements Serializable {
 		return personElement.getAttributeValue(param);
 	}
 
-
+	/*
+	 * Gets the value of an element as a double
+	 * @param an element
+	 * @return a double 
+	 */
 	private double getValueAsDouble(String child) {
 		Element root = personDoc.getRootElement();
 		Element element = root.getChild(child);
 		String str = element.getAttributeValue(VALUE);
 		return Double.parseDouble(str);
 	}
+	
 	/**
 	 * Gets a map of the configured person's skills.
 	 * @param index the person's index.

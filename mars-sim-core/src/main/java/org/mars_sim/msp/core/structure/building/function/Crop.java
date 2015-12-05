@@ -40,12 +40,9 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
 
 	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
-	/** Amount of grey water needed per harvest mass. */
-	public static final double WASTE_WATER_NEEDED = 5D;
+		
 	/** Amount of carbon dioxide needed per harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
-	/** Amount of oxygen needed per harvest mass. */
-	public static final double OXYGEN_NEEDED = 2D;
 
 	public static final double SOIL_NEEDED_PER_SQM = 1D;
 
@@ -54,7 +51,7 @@ implements Serializable {
 
 	public static final double FERTILIZER_NEEDED_PER_SQM = 1D; // amount needed when planting a new crop
 
-	public static final double WATER_RECLAMATION_RATE = .8D;
+	public static final double MOISTURE_RECLAMATION_FRACTION = .1D;
 	public static final double OXYGEN_GENERATION_RATE = .9D;
 	public static final double CO2_GENERATION_RATE = .9D;
 
@@ -122,6 +119,11 @@ implements Serializable {
 	private double lightingPower = 0; // in kW
 
 	private double healthCondition = 0;
+	
+    private double averageWaterNeeded;
+    private double averageOxygenNeeded;
+    private double averageCarbonDioxideNeeded;
+
 
 	/** Current phase of crop. */
 	private String phase;
@@ -136,7 +138,8 @@ implements Serializable {
 	private SurfaceFeatures surface;
 	private MarsClock marsClock;
 	private MasterClock masterClock;
-
+	private CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+	   
 	DecimalFormat fmt = new DecimalFormat("0.000");
 
 	/**
@@ -158,6 +161,10 @@ implements Serializable {
 		this.settlement = settlement;
 		this.growingArea = growingArea;
 		this.maxHarvestinKgPerDay = maxHarvestinKgPerDay;
+
+	    averageWaterNeeded = cropConfig.getWaterConsumptionRate();
+	    averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
+	    averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
 
 		init(newCrop, percentGrowth);//, maxHarvestinKgPerDay);
 	}
@@ -697,16 +704,22 @@ implements Serializable {
 		//return lightingPower;
 	}
 
+	/*
+	 * Computes each input and output constituent for a crop for the specified period of time and return the overall harvest modifier
+	 * @param the maximum possible growth/harvest
+	 * @param a period of time in millisols
+	 * @return the havest modifier
+	 */
 	// 2015-02-16 Added calculateHarvestModifier()
-	// TODO: use theoretical model for crop growth, instead of empirical model below.
-	// TODO: the calculation should be uniquely tuned to each crop
 	public double calculateHarvestModifier(double maxPeriodHarvest, double time) {
+		// TODO: use theoretical model for crop growth, instead of empirical model below.
+		// TODO: the calculation should be uniquely tuned to each crop
+
 		double harvestModifier = 1D;
 		//timeCache = timeCache + time;
 
 		// TODO: Modify harvest modifier according to the moisture level
-		// TODO: Modify harvest modifier according to the pollination by the  number of bees in the greenhouse
-
+		// TODO: Modify harvest modifier according to the pollination by the number of bees in the greenhouse
 
 		// Determine harvest modifier according to amount of light.
 		// TODO: Modify harvest modifier by amount of artificial light available to the whole greenhouse
@@ -820,53 +833,50 @@ implements Serializable {
 
 		// Determine harvest modifier according to amount of grey water available.
 
-		double factor = 0;
+		double needFactor = 0;
 		// amount of wastewater/water needed is also based on % of growth
 		if (phase.equals(GERMINATION))
-			factor = .1;
+			needFactor = .1;
 		else if (fractionalGrowthCompleted < .1 )
-			factor = .2;
+			needFactor = .2;
 		else if (fractionalGrowthCompleted < .2 )
-			factor = .25;
+			needFactor = .25;
 		else if (fractionalGrowthCompleted < .3 )
-			factor = .3;
+			needFactor = .3;
 		else if (phase.equals(GROWING))
-			factor = fractionalGrowthCompleted;
+			needFactor = fractionalGrowthCompleted;
 
-		double waterUsed = 0;
-		double wasteWaterRequired = factor * maxPeriodHarvest * WASTE_WATER_NEEDED;
-		AmountResource wasteWater = AmountResource.findAmountResource("grey water");
-		double wasteWaterAvailable = inv.getAmountResourceStored(wasteWater, false);
-		double wasteWaterUsed = wasteWaterRequired;
-		if (wasteWaterUsed > wasteWaterAvailable) {
+		// Calculate water usage
+		double waterRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageWaterNeeded;
+		AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+		double waterAvailable = inv.getAmountResourceStored(waterAR, false);		
+
+		double waterUsed = waterRequired;
+		if (waterRequired > waterAvailable) {
 			// 2015-01-25 Added diff, waterUsed and consumeWater() when grey water is not available
-			double diff = wasteWaterUsed - wasteWaterAvailable;
-			waterUsed = consumeWater(diff);
-			Storage.retrieveAnResource(FERTILIZER_NEEDED, "fertilizer", inv, true);
-			wasteWaterUsed = wasteWaterAvailable;
-		}
-		Storage.retrieveAnResource(wasteWaterUsed, "grey water", inv, true);
-		//retrieveAnResource(wasteWater, wasteWaterUsed);
+			double diff = waterUsed - waterAvailable;
+			waterUsed = waterAvailable;
+		}	
+			
+		Storage.retrieveAnResource(FERTILIZER_NEEDED, "fertilizer", inv, true);
+		Storage.retrieveAnResource(waterRequired, LifeSupportType.WATER, inv, true);
+	
+		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
+		// TODO: need more work
+		double waterReclaimed = waterRequired * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
+		Storage.storeAnResource(waterReclaimed, LifeSupportType.WATER, inv);
 
-		// 2015-01-25 Added waterUsed and combinedWaterUsed
-		double combinedWaterUsed = wasteWaterUsed + waterUsed;
-		double fractionUsed = combinedWaterUsed / wasteWaterRequired;
-
-		double waterModifier = fractionUsed * .5D + .5D;
+		double waterModifier = waterUsed / waterRequired * .5D + .5D;
 		if (waterModifier > 1.1)
 			waterModifier = 1.1;
-
-		//System.out.println("Farming.java: waterModifier is " + waterModifier);
-
-		// Amount of water generated through recycling
-		double waterAmount = wasteWaterUsed * WATER_RECLAMATION_RATE;
-		Storage.storeAnResource(waterAmount, LifeSupportType.WATER, inv);
-
+			
+			
+		// Calculate O2 and CO2 usage
 		double o2Modifier = 0, co2Modifier = 0;
 
 		if (sunlightModifier <= .5) {
 			AmountResource o2ar = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-			double o2Required = factor * maxPeriodHarvest * OXYGEN_NEEDED;
+			double o2Required = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageOxygenNeeded;
 			double o2Available = inv.getAmountResourceStored(o2ar, false);
 			double o2Used = o2Required;
 
@@ -883,7 +893,7 @@ implements Serializable {
 
 
 			// Determine the amount of co2 generated via gas exchange.
-			double co2Amount = o2Used * CO2_GENERATION_RATE;
+			double co2Amount = o2Used * growingArea * time / 1000D * CO2_GENERATION_RATE;
 			Storage.storeAnResource(co2Amount, "carbon dioxide", inv);
 		}
 
@@ -891,7 +901,7 @@ implements Serializable {
 			// TODO: gives a better modeling of how the amount of light available will trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
 			AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-			double carbonDioxideRequired = factor * maxPeriodHarvest * CARBON_DIOXIDE_NEEDED;
+			double carbonDioxideRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageCarbonDioxideNeeded;
 			double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxide, false);
 			double carbonDioxideUsed = carbonDioxideRequired;
 
@@ -908,7 +918,7 @@ implements Serializable {
 			//System.out.println("Farming.java: co2Modifier is " + co2Modifier);
 
 			// Determine the amount of oxygen generated via gas exchange.
-			double oxygenAmount = carbonDioxideUsed * OXYGEN_GENERATION_RATE;
+			double oxygenAmount = carbonDioxideUsed * growingArea * time / 1000D * OXYGEN_GENERATION_RATE;
 			Storage.storeAnResource(oxygenAmount, LifeSupportType.OXYGEN, inv);
 
 		}
@@ -944,40 +954,6 @@ implements Serializable {
 		return harvestModifier;
 	}
 
-	/**
-	 * Retrieves an amount from water.
-	 * @param waterRequired
-	 */
-	// 2015-01-25 consumeWater()
-	public double consumeWater(double waterRequired) {
-
-		/*
-		AmountResource water = AmountResource.findAmountResource("water");
-		double waterAvailable = inv.getAmountResourceStored(water, false);
-		double waterUsed = waterRequired;
-
-		AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
-		double fertilizerAvailable = inv.getAmountResourceStored(fertilizer, false);
-		double fertilizerUsed = FERTILIZER_NEEDED;
-
-		if (waterUsed > waterAvailable)
-			waterUsed = waterAvailable;
-
-		retrieveAnResource(water, waterUsed);
-
-		if (fertilizerUsed >= fertilizerAvailable)
-			fertilizerUsed = fertilizerAvailable;
-
-		retrieveAnResource(fertilizer, fertilizerUsed);
-
-		*/
-
-		//double amountFertilizer = retrieveAnResource("fertilizer", FERTILIZER_NEEDED);
-		//System.out.println("fertilizer used when grey water is not available: " + amountFertilizer);
-		double amountWater = retrieveAnResource("water", waterRequired);
-
-	    return amountWater;
-	}
 
 	/**
 	 * Retrieves an amount from an Amount Resource.

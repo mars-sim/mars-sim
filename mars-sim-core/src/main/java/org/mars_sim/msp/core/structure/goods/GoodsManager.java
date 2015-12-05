@@ -62,6 +62,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Crop;
+import org.mars_sim.msp.core.structure.building.function.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -151,8 +152,9 @@ public class GoodsManager implements Serializable {
     private boolean initialized = false;
 
     private Inventory inv;
-	//private static int count = 0;
 
+    private CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+	
     /**
      * Constructor.
      * @param settlement the settlement this manager is for.
@@ -682,15 +684,14 @@ public class GoodsManager implements Serializable {
                 Building building = i.next();
                 Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 
+                
                 double amountNeeded = 0D;
                 if (resource.equals(water))
-                    amountNeeded = Crop.WASTE_WATER_NEEDED/2;
-                if (resource.equals(wasteWater))
-                    amountNeeded = Crop.WASTE_WATER_NEEDED/2;
+                    amountNeeded = cropConfig.getWaterConsumptionRate(); //Crop.WATER_NEEDED/2;
                 else if (resource.equals(carbonDioxide))
-                    amountNeeded = Crop.CARBON_DIOXIDE_NEEDED;
+                    amountNeeded = cropConfig.getCarbonDioxideConsumptionRate();//Crop.CARBON_DIOXIDE_NEEDED;
                 else if (resource.equals(oxygen))
-                    amountNeeded = Crop.OXYGEN_NEEDED;
+                    amountNeeded = cropConfig.getOxygenConsumptionRate();//Crop.OXYGEN_NEEDED;
                 // TODO: soil and fertilizer needs to be estimated differently
                 else if (resource.equals(soil))
                     amountNeeded = Crop.SOIL_NEEDED_PER_SQM * 10;

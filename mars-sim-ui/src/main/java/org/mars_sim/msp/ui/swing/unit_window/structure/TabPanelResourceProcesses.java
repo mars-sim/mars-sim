@@ -245,7 +245,7 @@ extends TabPanel {
 				//result.append("&nbsp;&nbsp;&emsp;");
 				if (process.isAmbientInputResource(resource)) ambientStr = "*";
 				// 2014-11-20 Capitalized resource.getName()
-				result.append(Conversion.capitalize(resource.getName())).append(ambientStr).append(" @ ").append(rateString).append(" kg/sol<br>");
+				result.append(Conversion.capitalize(resource.getName())).append(ambientStr).append(" @ ").append(rateString).append(" kg/millisol<br>");
 				ii++;
 			}
 			result.append("&emsp;&nbsp;&nbsp;Outputs:&emsp;");
@@ -258,7 +258,7 @@ extends TabPanel {
 				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
 				// 2014-11-20 Capitalized resource.getName()
-				result.append(Conversion.capitalize(resource.getName())).append(" @ ").append(rateString).append(" kg/sol<br>");
+				result.append(Conversion.capitalize(resource.getName())).append(" @ ").append(rateString).append(" kg/millisol<br>");
 				jj++;
 			}
 			// 2014-11-20 Moved * from front to back of the text

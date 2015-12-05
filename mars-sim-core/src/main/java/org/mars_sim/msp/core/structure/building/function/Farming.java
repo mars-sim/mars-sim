@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -66,11 +67,11 @@ implements Serializable {
     private double maxGrowingArea;
     private double remainingGrowingArea;
     private double totalHarvestinKgPerDay;
-
+    
     private String cropInQueue;
 
     private List<Crop> crops = new ArrayList<Crop>();
-
+  
   	// 2014-12-09 Added cropInQueue, cropListInQueue
     private List<CropType> cropListInQueue = new ArrayList<CropType>();
     private List<CropType> cropTypeList = new ArrayList<CropType>();
@@ -109,6 +110,7 @@ implements Serializable {
 		cropTypeList = cropConfig.getCropList();
         cropNum = buildingConfig.getCropNum(building.getBuildingType());
 
+        
         // Load activity spots
         loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
 

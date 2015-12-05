@@ -253,7 +253,9 @@ public class MainScene {
 		// and the Main Menu
 		// Exit not just the stage but the simulation entirely
 		stage.setOnCloseRequest(e -> {
-			alertOnExit();
+			boolean exit = alertOnExit();
+			if (!exit)
+				e.consume();
 		} );
 
 		// Detect if a user hits ESC
@@ -952,7 +954,7 @@ public class MainScene {
 		alert.setContentText(Msg.getString("MainScene.new.content"));
 		ButtonType buttonTypeOne = new ButtonType("Save & End");
 		ButtonType buttonTypeTwo = new ButtonType("End Sim");
-		ButtonType buttonTypeCancel = new ButtonType("Back to Sim", ButtonData.CANCEL_CLOSE);
+		ButtonType buttonTypeCancel = new ButtonType("Back to Sim");//, ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo, buttonTypeCancel);
 		Optional<ButtonType> result = alert.showAndWait();
 
@@ -963,6 +965,8 @@ public class MainScene {
 		} else if (result.get() == buttonTypeTwo) {
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
+		} else if (result.get() == buttonTypeCancel) {//!result.isPresent())
+			return;
 		}
 	}
 
@@ -1261,7 +1265,7 @@ public class MainScene {
 	 * Creates an Alert Dialog to confirm ending or exiting the simulation or
 	 * MSP
 	 */
-	public void alertOnExit() {
+	public boolean alertOnExit() {
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Leaving the sim");
@@ -1279,14 +1283,17 @@ public class MainScene {
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			saveOnExit();
 			endSim();
+			return true;
 		} else if (result.get() == buttonTypeTwo) {
 			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
-		} else if (result.get() == buttonTypeThree)
+			return true;
+		} else if (result.get() == buttonTypeThree) {
 			exitSimulation();
-		else
-			return;
-
+			return true;
+		} else { //if (result.get() == buttonTypeCancel) {
+			return false;
+		}
 	}
 
 	/**

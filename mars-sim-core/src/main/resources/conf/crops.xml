@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE crop-list SYSTEM "conf/dtd/crops.dtd">
+<!DOCTYPE crop-configuration SYSTEM "conf/dtd/crops.dtd">
 
-<crop-list>
+<crop-configuration>
+
+	<!-- The average amount of carbon dioxide (kg) needed by a crop per square meter area in each Martian Sol -->
+	<!-- Default: 2.0 -->
+	<carbon-dioxide-consumption-rate value ="2.0" />
+	
+	<!-- The average amount of oxygen (kg) needed by a crop per square meter area in each Martian Sol -->
+	<!-- Default: 2.0 -->
+	<oxygen-consumption-rate value="2.0" />
+
+	<!-- The average amount of water (kg) consumed by a crop per square meter area in each Martian Sol -->
+	<!-- Default: 5.0 -->
+	<water-consumption-rate value="5.0" />
+
 
 <!-- References :
 
@@ -76,6 +89,7 @@
 	http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/Publications/fleisher/modelingcontrol2001.pdf
 -->
 
+<crop-list>
 
 	<crop name="cabbage"
  	  	growing-time="85.0"
@@ -406,3 +420,5 @@ Beetroot conservative: 14; likely: 18 target yield: 25
 -->
 
 </crop-list>
+
+</crop-configuration>
