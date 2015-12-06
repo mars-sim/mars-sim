@@ -181,7 +181,7 @@ public class TaskSchedule implements Serializable {
 			start = A_START;
 		else if (shiftType.equals(ShiftType.B))
 			start = B_START;
-		if (shiftType.equals(ShiftType.X))
+		else if (shiftType.equals(ShiftType.X))
 			start = X_START;
 		else if (shiftType.equals(ShiftType.Y))
 			start = Y_START;
@@ -198,7 +198,7 @@ public class TaskSchedule implements Serializable {
 			end = A_END;
 		else if (shiftType.equals(ShiftType.B))
 			end = B_END;
-		if (shiftType.equals(ShiftType.X))
+		else if (shiftType.equals(ShiftType.X))
 			end = X_END;
 		else if (shiftType.equals(ShiftType.Y))
 			end = Y_END;

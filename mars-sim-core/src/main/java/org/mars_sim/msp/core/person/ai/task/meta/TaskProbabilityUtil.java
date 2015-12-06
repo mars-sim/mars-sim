@@ -16,17 +16,18 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 
 /**
  * Utility class for calculating task probabilities.
  */
 public class TaskProbabilityUtil {
-    
+
     /**
      * Private constructor for utility class.
      */
     private TaskProbabilityUtil() {};
-    
+
     /**
      * Gets the probability modifier for a task if person needs to go to a new building.
      * @param person the person to perform the task.
@@ -56,7 +57,8 @@ public class TaskProbabilityUtil {
 
         return modifier;
     }
-    
+
+
     protected static double getCrowdingProbabilityModifier(Robot robot, Building newBuilding) {
         double modifier = 1D;
 
@@ -64,15 +66,17 @@ public class TaskProbabilityUtil {
         if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
             // Increase probability if current building is overcrowded.
-            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
-            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
+        	RoboticStation currentRS = (RoboticStation) currentBuilding.getFunction(BuildingFunction.ROBOTIC_STATION);
+
+            int currentOverCrowding = currentRS.getRobotOccupantNumber() - currentRS.getOccupantCapacity();
             if (currentOverCrowding > 0) {
                 modifier *= ((double) currentOverCrowding + 2);
             }
 
             // Decrease probability if new building is overcrowded.
-            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
-            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
+           	RoboticStation newRS = (RoboticStation) newBuilding.getFunction(BuildingFunction.ROBOTIC_STATION);
+
+            int newOverCrowding = newRS.getRobotOccupantNumber() - newRS.getOccupantCapacity();
             if (newOverCrowding > 0) {
                 modifier /= ((double) newOverCrowding + 2);
             }
@@ -80,9 +84,9 @@ public class TaskProbabilityUtil {
 
         return modifier;
     }
-    
+
     /**
-     * Gets the probability modifier for a person performing a task based on his/her 
+     * Gets the probability modifier for a person performing a task based on his/her
      * relationships with the people in the room the task is to be performed in.
      * @param person the person to check for.
      * @param building the building the person will need to be in for the task.
@@ -112,7 +116,7 @@ public class TaskProbabilityUtil {
                     result*= (1D + totalOpinion);
                 }
                 else {
-                    result/= (1D - totalOpinion); 
+                    result/= (1D - totalOpinion);
                 }
             }
         }

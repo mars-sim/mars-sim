@@ -69,6 +69,8 @@ public class Sleep extends Task implements Serializable {
     /** The previous time (millisols). */
     private double previousTime;
 
+    private double timeFactor;
+
     /** The living accommodations if any. */
     private LivingAccommodations accommodations;
 
@@ -85,6 +87,8 @@ public class Sleep extends Task implements Serializable {
                 (250D + RandomUtil.getRandomDouble(80D)));
 
         boolean walkSite = false;
+
+        timeFactor = 3D; // TODO: should vary this factor by person
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -209,7 +213,7 @@ public class Sleep extends Task implements Serializable {
 
 		if (person != null) {
 	        // Reduce person's fatigue
-	        double newFatigue = person.getPhysicalCondition().getFatigue() - (5D * time);
+	        double newFatigue = person.getPhysicalCondition().getFatigue() - (timeFactor * time);
 	        if (newFatigue < 0D) {
 	            newFatigue = 0D;
 	        }

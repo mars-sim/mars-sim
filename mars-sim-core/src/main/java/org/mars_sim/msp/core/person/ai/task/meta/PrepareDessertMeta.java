@@ -28,7 +28,7 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prepareDessertMeta"); //$NON-NLS-1$

@@ -54,12 +54,19 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
 
-        // Stress modifier
-        result += person.getPhysicalCondition().getStress()/2D;
-
         // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+            	result += person.getPreference().getPreferenceScore(this);
+            if (result < 0) result = 0;
+
+            // Stress modifier
+            result += person.getPhysicalCondition().getStress()/2D;
+
+/*
+            // TODO: listening to music is driven by boredom, not so much fatigue
             // Fatigue modifier.
             double fatigue = person.getPhysicalCondition().getFatigue();
         	result = fatigue;
@@ -67,7 +74,7 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             if (fatigue > 800D) {
                 result += (fatigue - 800D) / 4D;
             }
-
+*/
             try {
             	Building building = Sleep.getAvailableLivingQuartersBuilding(person);
 
@@ -86,13 +93,17 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             }
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        	result *= RandomUtil.getRandomDouble(3); // more likely to listen to music than not if on a vehicle
+
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+            	result += person.getPreference().getPreferenceScore(this);
+            if (result < 0) result = 0;
+
+            if (result > 0)
+            	result *= RandomUtil.getRandomDouble(2); // more likely to listen to music than not if on a vehicle
+
         }
 
-        // 2015-06-07 Added Preference modifier
-        if (result > 0)
-        	result += person.getPreference().getPreferenceScore(this);
-        if (result < 0) result = 0;
 
         // Modify probability if during person's work shift.
         int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();

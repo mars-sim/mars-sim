@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,10 +33,12 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
- * This class represents the Physical Condition of a Person. It models the
- * Persons health and physical characteristics.
+ * This class represents the Physical Condition of a Person.
+ * It models a person's health and physical characteristics.
  */
 public class PhysicalCondition
 implements Serializable {
@@ -45,6 +48,15 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
+
+    /** Sleep Habit maximum value. */
+    private static int MAX_WEIGHT = 30;
+    /** Sleep Habit Map resolution. */
+    private static int SLEEP_MAP_RESOLUTION = 20;
+
+    private static double INFLATION = 1.15;
+
+	private int solCache = 0;
 
     /** Life support minimum value. */
     private static int MIN_VALUE = 0;
@@ -79,6 +91,9 @@ implements Serializable {
 
 
     // Data members
+	private int numSleep = 0;
+	private int suppressHabit = 0;
+	private int spaceOut = 0;
 
     /** Person's fatigue level. */
     private double fatigue;
@@ -112,6 +127,7 @@ implements Serializable {
 
     /** Person owning this physical. */
     private Person person;
+
     private Robot robot;
     /** Details of persons death. */
     private DeathInfo deathDetails;
@@ -121,6 +137,10 @@ implements Serializable {
     // 2015-04-29 Added RadiationExposure
     private RadiationExposure radiation;
 
+	private MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+
+    // 2015-12-05 Added sleepHabitMap
+    private Map<Integer, Integer> sleepHabitMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
 
 
     /**
@@ -137,16 +157,13 @@ implements Serializable {
 
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
-        fatigue = RandomUtil.getRandomDouble(1000D);
 
+        fatigue = RandomUtil.getRandomDouble(300D);
         stress = RandomUtil.getRandomDouble(100D);
-
         hunger = RandomUtil.getRandomDouble(400D);
         kJoules = 500D + RandomUtil.getRandomDouble(7500D);
-
         // 2015-02-23 Added hygiene
         hygiene = RandomUtil.getRandomDouble(100D);
-
 
         alive = true;
         medicationList = new ArrayList<Medication>();
@@ -219,6 +236,15 @@ implements Serializable {
      */
     boolean timePassing(double time, LifeSupportType support,
             PersonConfig config) {
+
+      	// 2015-12-05 check for the passing of each day
+    	int solElapsed = MarsClock.getSolOfYear(clock);
+    	if (solCache != solElapsed) {
+    		// 2015-12-05 reset numSleep back to zero at the beginning of each sol
+    		numSleep = 0;
+    		suppressHabit = 0;
+    		solCache = solElapsed;
+    	}
 
         boolean illnessEvent = false;
 
@@ -1103,6 +1129,156 @@ implements Serializable {
             throw new IllegalArgumentException("medication is null");
         medicationList.add(medication);
     }
+
+    /**
+     * Gets the key of the Sleep Habit Map with the highest weight
+     * @return int[] the two best times in integer
+     */
+    public int[] getBestKeySleepHabit() {
+    	int largest[] = {0,0};
+
+    	Iterator<Integer> i = sleepHabitMap.keySet().iterator();
+    	while (i.hasNext()) {
+            int key = i.next();
+    		int value = sleepHabitMap.get(key);
+            if (value > largest[0]) {
+            	largest[1] = largest[0];
+            	largest[0] = key;
+            }
+            else if (value > largest[1])
+            	largest[1] = key;
+
+        }
+
+    	return largest;
+    }
+
+    /**
+     * Updates the weight of the Sleep Habit Map
+     * @param millisols the time
+     * @param updateType increase or reduce
+     */
+    public void updateValueSleepHabit(int millisols, boolean updateType) {
+    	// set HEAT_MAP_RESOLUTION of discrete sleep periods
+    	millisols = (millisols / SLEEP_MAP_RESOLUTION )* SLEEP_MAP_RESOLUTION;
+    	int currentValue = 0;
+
+		int d = millisols-SLEEP_MAP_RESOLUTION;
+		int d2 = millisols - 2*SLEEP_MAP_RESOLUTION;
+
+		if (d <= 0)
+			d = 1000 + millisols - SLEEP_MAP_RESOLUTION;
+
+		if (d2 <= 0)
+			d2 = 1000 + millisols - 2*SLEEP_MAP_RESOLUTION;
+
+
+		int a = millisols + SLEEP_MAP_RESOLUTION;
+		int a2 = millisols + 2*SLEEP_MAP_RESOLUTION;
+
+		if (a > 1000)
+			a = millisols + SLEEP_MAP_RESOLUTION - 1000;
+
+		if (a2 > 1000)
+			a2 = millisols + 2*SLEEP_MAP_RESOLUTION - 1000;
+
+    	if (sleepHabitMap.containsKey(millisols)) {
+    		currentValue = sleepHabitMap.get(millisols);
+
+    		if (updateType) {
+        		// Increase the central weight value by 30%
+    			sleepHabitMap.put(millisols, (int) (currentValue *.7 + MAX_WEIGHT * .3));
+
+    			int c2 = (int) (currentValue *.95 + MAX_WEIGHT * .075);
+    			int c = (int) (currentValue *.85 + MAX_WEIGHT * .15);
+
+   				sleepHabitMap.put(d2, c2);
+    			sleepHabitMap.put(d, c);
+    			sleepHabitMap.put(a, c);
+       			sleepHabitMap.put(a2, c2);
+
+    		}
+    		else {
+
+        		// Reduce the central weight value by 10%
+    			sleepHabitMap.put(millisols, (int) (currentValue/1.1));
+
+    			int b = (int) (currentValue/1.05);
+    			int b2 = (int) (currentValue/1.025);
+
+    			sleepHabitMap.put(d2, b2);
+    			sleepHabitMap.put(d, b);
+    			sleepHabitMap.put(a, b);
+    			sleepHabitMap.put(a2, b2);
+
+    		}
+    	}
+    	else {
+    		// For the first time, create the central weight value with 10% of MAX_WEIGHT
+			sleepHabitMap.put(millisols, (int) (MAX_WEIGHT * .1));
+
+			int e = (int) (MAX_WEIGHT * .05);
+			int e2 = (int) (MAX_WEIGHT * .025);
+
+    		sleepHabitMap.put(d2, e2);
+    		sleepHabitMap.put(d, e);
+			sleepHabitMap.put(a, e);
+			sleepHabitMap.put(a2, e2);
+    	}
+
+		//System.out.println(person + "'s sleepHabitMap : " + sleepHabitMap);
+    }
+
+    /**
+     * Scales down the weight of the Sleep Habit Map
+     */
+    // 2015-12-05 Added inflateSleepHabit()
+    public void inflateSleepHabit() {
+    	Iterator<Integer> i = sleepHabitMap.keySet().iterator();
+    	while (i.hasNext()) {
+            int key = i.next();
+    		int value = sleepHabitMap.get(key);
+
+    		if (value > MAX_WEIGHT) {
+    			value = MAX_WEIGHT;
+    			// need to scale down all values, just in case
+    			Iterator<Integer> j = sleepHabitMap.keySet().iterator();
+    	    	while (j.hasNext()) {
+    	            int key1 = j.next();
+    	    		int value1 = sleepHabitMap.get(key1);
+    	    		value1 = (int) (value1/INFLATION/INFLATION);
+    	            sleepHabitMap.put(key1, value1);
+    	        }
+    		}
+
+    		value = (int) (value/INFLATION);
+            sleepHabitMap.put(key, value);
+        }
+    }
+
+	public int getNumSleep() {
+		return numSleep;
+	}
+
+	public int getSuppressHabit() {
+		return suppressHabit;
+	}
+
+	public int getSpaceOut() {
+		return spaceOut;
+	}
+
+	public void setNumSleep(int value) {
+		numSleep = value;
+	}
+
+	public void setSuppressHabit(int value) {
+		suppressHabit = value;
+	}
+
+	public void setSpaceOut(int value) {
+		spaceOut = value;
+	}
 
     /**
      * Prepare object for garbage collection.

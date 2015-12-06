@@ -334,29 +334,29 @@ implements VehicleOperator, MissionMember, Serializable {
     // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
     public Settlement getSettlement() {
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-     	   Settlement settlement = (Settlement) getContainerUnit();  	
+     	   Settlement settlement = (Settlement) getContainerUnit();
      	   return settlement;
         }
-        
+
         else if (getLocationSituation() == LocationSituation.OUTSIDE)
      	   return null;
-        
+
         else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-     	   Vehicle vehicle = (Vehicle) getContainerUnit();	
+     	   Vehicle vehicle = (Vehicle) getContainerUnit();
      	   Settlement settlement = (Settlement) vehicle.getContainerUnit();
      	   return settlement;
         }
-        
+
         else if (getLocationSituation() == LocationSituation.BURIED) {
      	   return null;
         }
-        
+
         else {
      	   System.err.println("Error in determining " + getName() + "'s getSettlement() ");
      	   return null;
         }
     }
-     
+
 
     /**
      * Get vehicle person is in, null if person is not in vehicle
@@ -389,7 +389,7 @@ implements VehicleOperator, MissionMember, Serializable {
             containerUnit.getInventory().retrieveUnit(this);
         }
         isBuried = true;
-        setAssociatedSettlement(null); 
+        setAssociatedSettlement(null);
     }
 
     /**
@@ -811,6 +811,8 @@ implements VehicleOperator, MissionMember, Serializable {
         return result;
     }
 
+
+
     @Override
     public String getTaskDescription() {
         return getMind().getTaskManager().getTaskDescription();
@@ -826,7 +828,22 @@ implements VehicleOperator, MissionMember, Serializable {
 		taskSchedule.setShiftType(shiftType);
 	}
 
-	
+	public double getFatigue() {
+		return health.getFatigue();
+	}
+
+	public double getStress() {
+		return health.getStress();
+	}
+
+	public int[] getBestKeySleepHabit() {
+		return health.getBestKeySleepHabit();
+	}
+
+	public void updateValueSleepHabit(int millisols, boolean updateType) {
+		health.updateValueSleepHabit(millisols, updateType);
+	}
+
     @Override
     public void destroy() {
         super.destroy();

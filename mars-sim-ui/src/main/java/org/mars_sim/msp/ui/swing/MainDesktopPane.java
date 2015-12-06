@@ -226,12 +226,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 	public BufferedImage loadPartBufferedImage() {
-		
+
 		//Read Image from File
 		//File myJPegFile=new File("ImageAsJPeg.j2k");
 		//BufferedImage image = ImageIO.read(myJPegFile);
-		
-		Rectangle sourceRegion = new Rectangle(0, 0, 512, 512); // The region you want to extract 
+
+		Rectangle sourceRegion = new Rectangle(0, 0, 512, 512); // The region you want to extract
 		BufferedImage image = null;
 		ImageInputStream stream = null;
 		try {
@@ -239,29 +239,29 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} // File or input stream 
-		final Iterator<ImageReader> readers = ImageIO.getImageReaders(stream); 
+		} // File or input stream
+		final Iterator<ImageReader> readers = ImageIO.getImageReaders(stream);
 
-		if (readers.hasNext()) { 
-			ImageReader reader = (ImageReader)readers.next(); 
-	
-			reader.setInput(stream, true, true); 
-	
+		if (readers.hasNext()) {
+			ImageReader reader = (ImageReader)readers.next();
+
+			reader.setInput(stream, true, true);
+
 			try {
-				if ( reader.isImageTiled(0) == false) 
-					System.out.println("is not tiled"); 
-				else 
+				if ( reader.isImageTiled(0) == false)
+					System.out.println("is not tiled");
+				else
 					System.out.println("is tiled");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
-	
-	
-			ImageReadParam param = reader.getDefaultReadParam(); 
-			param.setSourceRegion(sourceRegion); // Set region 
-	
-	
+			}
+
+
+			ImageReadParam param = reader.getDefaultReadParam();
+			param.setSourceRegion(sourceRegion); // Set region
+
+
 			try {
 				image = reader.read(0, param);
 			} catch (IOException e) {
@@ -1268,7 +1268,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	public void openInitialWindows() {
 	   	//logger.info("MainDesktopPane's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
-		JFXPannableView v = new JFXPannableView(this);	
+/*
+		JFXPannableView v = new JFXPannableView(this);
 		if (mainScene != null ) {
 			SwingUtilities.invokeLater(new Runnable(){
 		            @Override
@@ -1283,25 +1284,25 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		            }
 			});
 		}
-		
+*/
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
-		
+
 			// Open user guide tool.
 			//SwingUtilities.invokeLater(() -> {
 				openToolWindow(GuideWindow.NAME); // TODO: why SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC ?
 			//});
-	
+
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
 			//int Xloc = (int)((getWidth() - ourGuide.getWidth()) * .5D);
 			//int Yloc = (int)((getHeight() - ourGuide.getHeight()) * .5D);
 			if (mainScene != null) {
 				int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
 				int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
-				ourGuide.setLocation(Xloc, Yloc);	
+				ourGuide.setLocation(Xloc, Yloc);
 				ourGuide.toFront();
 			}
-			
+
 			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 
 		} else {
@@ -1393,11 +1394,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public void setMarqueeTicker(MarqueeTicker marqueeTicker) {
 		this.marqueeTicker = marqueeTicker;
 	}
-	
+
 	public MarqueeTicker getMarqueeTicker() {
 		return marqueeTicker;
 	}
-	
+
 	// 2014-12-19 Added unitUpdate()
 	@SuppressWarnings("restriction")
 	public void unitUpdate(UnitEvent event) {
@@ -1441,18 +1442,18 @@ implements ComponentListener, UnitListener, UnitManagerListener {
             disposeAnnouncementWindow();
 
 		}
-		
+
 		else if (eventType == UnitEventType.START_CONSTRUCTION_SITE_EVENT) {
-			
-			
+
+
 		}
-		
+
 		else if (eventType == UnitEventType.FINISH_BUILDING_EVENT) {
-			
-			
+
+
 		}
-		
-		
+
+
 		// repaint(); // raise cpu util% way too much for putting it here
 	}
 

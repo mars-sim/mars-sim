@@ -21,14 +21,14 @@ public class MetaMissionUtil {
      * Private constructor for utility class.
      */
     private MetaMissionUtil() {};
-    
+
     /**
      * Lazy initialization of metaMissions list.
      */
     private static void initializeMetaMissions() {
-        
+
         metaMissions = new ArrayList<MetaMission>(12);
-        
+
         // Populate metaMissions list with all meta missions.
         metaMissions.add(new AreologyStudyFieldMissionMeta());
         metaMissions.add(new BiologyStudyFieldMissionMeta());
@@ -44,37 +44,37 @@ public class MetaMissionUtil {
         metaMissions.add(new TravelToSettlementMeta());
     }
     private static void initializeRobotMetaMissions() {
-        
+
         robotMetaMissions = new ArrayList<MetaMission>();
-        
+
         // Populate robotMetaMissions list with all meta missions.
         //robotMetaMissions.add(new TradeMeta());
         //robotMetaMissions.add(new TravelToSettlementMeta());
-        robotMetaMissions.add(new BuildingConstructionMissionMeta());
-        robotMetaMissions.add(new BuildingSalvageMissionMeta());
-    }    
-    
+        //robotMetaMissions.add(new BuildingConstructionMissionMeta());
+        //robotMetaMissions.add(new BuildingSalvageMissionMeta());
+    }
+
     /**
      * Gets a list of all meta missions.
      * @return list of meta missions.
      */
     public static List<MetaMission> getMetaMissions() {
-        
+
         // Lazy initialize meta missions list if necessary.
         if (metaMissions == null) {
             initializeMetaMissions();
         }
-        
+
         // Return copy of meta mission list.
         return new ArrayList<MetaMission>(metaMissions);
     }
     public static List<MetaMission> getRobotMetaMissions() {
-        
+
         // Lazy initialize meta missions list if necessary.
         if (robotMetaMissions == null) {
             initializeRobotMetaMissions();
         }
-        
+
         // Return copy of meta mission list.
         return new ArrayList<MetaMission>(robotMetaMissions);
     }

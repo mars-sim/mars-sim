@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -612,7 +613,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		buildingManager.timePassing(time);
 
 		// 2015-01-09 Added makeDailyReport()
-		makeDailyReport(); // NOTE: also update solCache in makeDailyReport()
+		performEndOfDayTasks(); // NOTE: also update solCache in makeDailyReport()
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
 	    int millisols =  (int) clock.getMillisol();
@@ -821,7 +822,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Provides the daily reports for the settlement
 	 */
 	// 2015-01-09 Added makeDailyReport()
-	public synchronized void makeDailyReport() {
+	public synchronized void performEndOfDayTasks() {
 
 		if (clock == null)
 			clock = Simulation.instance().getMasterClock().getMarsClock();
@@ -849,6 +850,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			//else
 			//	counter30++;
 
+			// 2015-12-05 Called inflateSleepHabit()
+			Collection<Person> people = getInhabitants();
+			for (Person p : people) {
+				p.getPhysicalCondition().inflateSleepHabit();
+			}
 
 			solCache = solElapsed;
 
@@ -865,8 +871,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Reassigns the work shift for all
 	 */
 	// 2015-11-04 Added reassignWorkShift()
-	// TODO: should call this method at, say, 800 millisols, not right at 1000
-	// millisols
+	// TODO: should call this method at, say, 800 millisols, not right at 1000 millisols
 	public void reassignWorkShift() {
 
 		Collection<Person> people = getInhabitants();
@@ -885,18 +890,92 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		setNumShift(numShift);
 
 		for (Person p : people) {
-			if (p.getMind().getMission() == null && p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-				ShiftType oldShift = p.getTaskSchedule().getShiftType();
-				ShiftType newShift = getAEmptyWorkShift(pop);
-				p.setShiftType(newShift);
-				//System.out.println(p.getName() + " is changing from shift " + oldShift + " to " + newShift);
+
+			if (p.getMind().getMission() == null
+					&& p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+				// 2015-12-05 Check if person is an astronomer.
+	            boolean isAstronomer = (p.getMind().getJob() instanceof Astronomer);
+
+	            if (isAstronomer) {
+	            	// TODO: find the darkest time of the day
+	            	// and set work shift to cover time period
+
+	            	// For now, we may assume it will usually be X or Z, but Y
+	            	// since Y is usually where midday is at unless a person is at polar region.
+	            	ShiftType oldShift = p.getTaskSchedule().getShiftType();
+	            	if (oldShift == ShiftType.Y) {
+
+	            		boolean x_ok = isWorkShiftSaturated(ShiftType.X, false);
+	            		boolean z_ok = isWorkShiftSaturated(ShiftType.Z, false);
+
+		            	// TODO: Instead of throwing a dice,
+	            		// take the shift that has less sunlight
+	            		int rand;
+	                	ShiftType newShift = null;
+
+	            		if (x_ok && z_ok) {
+	            			rand = RandomUtil.getRandomInt(1);
+		            		if (rand == 0)
+		            			newShift = ShiftType.X;
+		            		else
+		            			newShift = ShiftType.Z;
+	            		}
+	            		else if (x_ok)
+	            			newShift = ShiftType.X;
+	            		else if (z_ok)
+	            			newShift = ShiftType.Z;
+
+	            		p.setShiftType(newShift);
+						//System.out.println(p + " old shift : " + oldShift + " new shift : " + newShift);
+
+	            	}
+
+	            } // end of if (isAstronomer)
+
+	            else {
+
+	            	// 2015-12-05 check if the current shift is still open and keep it if possible
+					ShiftType oldShift = p.getTaskSchedule().getShiftType();
+
+					if (oldShift == ShiftType.ON_CALL) {
+
+						// TODO: check a person's sleep habit map and request changing his work shift
+						// to avoid taking a work shift that overlaps his sleep hour
+						ShiftType newShift = getAEmptyWorkShift(pop);
+						if (newShift != oldShift) { // sanity check
+							//System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift + ",  new shift : " + newShift);
+							p.setShiftType(newShift);
+						}
+					}
+
+					else {
+						// Note: if a person's shift is NOT saturated, he doesn't need to change shift
+						boolean oldShift_ok = isWorkShiftSaturated(oldShift, true);
+
+						// TODO: check a person's sleep habit map and request changing his work shift
+						// to avoid taking a work shift that overlaps his sleep hour
+
+						if (!oldShift_ok) {
+							// if a person's shift is saturated, he will need to change shift
+							ShiftType newShift = getAEmptyWorkShift(pop);
+							if (newShift != oldShift) { // sanity check
+								//System.out.println(this.getName() + "-- " + p + "'s old shift : " + oldShift + ",  new shift : " + newShift);
+								p.setShiftType(newShift);
+							}
+						}
+					}
+	            } // end of if (isAstronomer)
 			}
-			// TODO: it shouldn't be done this way but currently, when currently when starting a trade mission,
+			// Just for sanity check for those on a vehicle mission
+			// Note: shouldn't be needed this way but currently, when currently when starting a trade mission,
 			// the code fails to change a person's work shift to On-call.
 			else if (p.getMind().getMission() != null || p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 				ShiftType oldShift = p.getTaskSchedule().getShiftType();
-				p.setShiftType(ShiftType.ON_CALL);
-				//System.out.println(p.getName() + " is changing from shift " + oldShift + " to On-Call");
+				if (oldShift != ShiftType.ON_CALL) {
+					System.out.println(p + " old shift : " + oldShift + " new shift : " + ShiftType.ON_CALL);
+					p.setShiftType(ShiftType.ON_CALL);
+				}
 			}
 		}
 	}
@@ -1291,7 +1370,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 
-	/*
+	/**
 	 * Checks if the settlement has a particular person
 	 * @param a person
 	 * @return boolean
@@ -1300,7 +1379,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public boolean hasPerson(Person aPerson) {
 		boolean result = false;
 		Collection<Person> list = getAllAssociatedPeople();
-		
+
 		Iterator<Person> i = list.iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
@@ -1311,31 +1390,29 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return result;
 	}
 
-	/*
+	/**
 	 * Checks if the settlement contains a particular person with a given name (first or last)
 	 * @param a person's first/last name
 	 * @return 0 if none found, 1 if uniquely found, -1 if dead, 2 to n if not uniquely found
-	 * 
 	 */
 	//2015-12-01 Added hasPersonName()
 	public int hasPersonName(String aName) {
 		aName = aName.trim();
 		String initial = null;
 		boolean hasASpace = aName.contains(" ");
-		//int count = 0;
 		int found = 0;
 		int s_Index = 0;
 		int dead = 0;
-		
+
 		int len = aName.length();
 		boolean hasInitial = len > 3 && hasASpace;
-		
+
 		if (hasInitial) {
 			for (int i = 0 ; i < len ; i++) {
 		        if (aName.charAt(i) == ' ')
 		        	s_Index = i;
 			}
-			
+
 			if (s_Index == len-2) {
 				// e.g. Cory_S
 				initial = aName.substring(len-1, len);
@@ -1351,25 +1428,25 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		    	//System.out.println("aName is " + aName);
 			}
 		}
-		
+
 		Collection<Person> list = getAllAssociatedPeople();
-		
+
 		Iterator<Person> i = list.iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			// Case 1: if aName is a full name
-			if (hasASpace && person.getName().equalsIgnoreCase(aName)){	
+			if (hasASpace && person.getName().equalsIgnoreCase(aName)){
 				found++;
 				if (person.getPhysicalCondition().isDead())
 					dead--;
 			}
 			else if (hasInitial) {
 				// Case 2: if aName is a first name + space + last initial
-				if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {	
+				if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {
 					found++;
 				}
 				// Case 3: if aName is a first initial + space + last name
-				else if (person.getName().toLowerCase().contains((initial + " " + aName).toLowerCase())) {	
+				else if (person.getName().toLowerCase().contains((initial + " " + aName).toLowerCase())) {
 					found++;
 				}
 			}
@@ -1379,7 +1456,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				String full = person.getName();
 				int len1 = full.length();
 				//int index1 = 0;
-				
+
 				for (int j = 0 ; j < len1 ; j++) {
 			        if (full.charAt(j) == ' ') {
 			        	//index1 = j;
@@ -1388,40 +1465,40 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				        break;
 			        }
 				}
-				
-				
+
+
 				// Case 4: if aName is a last name
-				if (first.equalsIgnoreCase(aName)) {	
+				if (first.equalsIgnoreCase(aName)) {
 					found++;
 				}
 				// Case 5: if aName is a first name
-				else if (last.equalsIgnoreCase(aName)) {	
+				else if (last.equalsIgnoreCase(aName)) {
 					found++;
 				}
-/*				
+/*
 				// Case 4: if aName is a last name
-				if (person.getName().toLowerCase().contains((" " + aName).toLowerCase())) {	
+				if (person.getName().toLowerCase().contains((" " + aName).toLowerCase())) {
 					found++;
 				}
 				// Case 5: if aName is a first name
-				else if (person.getName().toLowerCase().contains((aName + " ").toLowerCase())) {	
+				else if (person.getName().toLowerCase().contains((aName + " ").toLowerCase())) {
 					found++;
 				}
-*/				
+*/
 			}
 		}
 
 		if (dead == -1)
 			return -1;
-		else 
+		else
 			return found;
 	}
 
-	/*
-	 * Checks if the settlement contains a bot 
+	/**
+	 * Checks if the settlement contains a bot
 	 * @param a bot's name
 	 * @return 0 if none found, 1 if uniquely found, 2 if uniquely found but dead, -1...-n if not uniquely found
-	 * 
+	 *
 	 */
 	//2015-12-01 Added hasRobotName()
 	public int hasRobotName(String aName) {
@@ -1430,13 +1507,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		aName = aName.replace(" ", "");
 		int found = 0;
 		int dead = 0;
-		
+
 		Collection<Robot> list = getAllAssociatedRobots();
-		
+
 		Iterator<Robot> i = list.iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
-			if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){	
+			if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){
 				found++;
 				if (robot.getPhysicalCondition().isDead())
 					dead--;
@@ -1444,15 +1521,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 		if (dead < 0)
 			return -1;
-		else 
+		else
 			return found;
 	}
 
-	
+
 	/**
-	 * Gets all Robots associated with this settlement, even if they are out on
-	 * missions.
-	 *
+	 * Gets all Robots associated with this settlement, even if they are out on missions.
 	 * @return collection of associated Robots.
 	 */
 	public Collection<Robot> getAllAssociatedRobots() {
@@ -1628,11 +1703,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	/**
 	 * Add achievement credit to the settlement in a scientific field.
-	 *
-	 * @param achievementCredit
-	 *            the achievement credit.
-	 * @param science
-	 *            the scientific field.
+	 * @param achievementCredit  the achievement credit.
+	 * @param science the scientific field.
 	 */
 	public void addScientificAchievement(double achievementCredit, ScienceType science) {
 		if (scientificAchievement.containsKey(science))
@@ -1643,7 +1715,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	/**
 	 * Gets the initial population of the settlement.
-	 *
 	 * @return initial population number.
 	 */
 	public int getInitialPopulation() {
@@ -1652,19 +1723,228 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	/**
 	 * Gets the initial number of robots the settlement.
-	 *
 	 * @return initial number of robots.
 	 */
 	public int getInitialNumOfRobots() {
 		return initialNumOfRobots;
 	}
 
+
+	/**
+	 * Returns the chain of command
+	 * @return chainOfCommand
+	 */
 	public ChainOfCommand getChainOfCommand() {
 		return chainOfCommand;
 	}
 
-	/*
-	 * Assigns a work shift for a person
+	/**
+	 * Decrements a particular shift type
+	 * @param shiftType
+	 */
+	public void decrementShiftType(ShiftType shiftType) {
+
+		if (shiftType.equals(ShiftType.A)) {
+			numA--;
+		}
+
+		else if (shiftType.equals(ShiftType.B)) {
+			numB--;
+		}
+
+		else if (shiftType.equals(ShiftType.X)) {
+			numX--;
+		}
+
+		else if (shiftType.equals(ShiftType.Y)) {
+			numY--;
+		}
+
+		else if (shiftType.equals(ShiftType.Z)) {
+			numZ--;
+		}
+		else if (shiftType.equals(ShiftType.ON_CALL)) {
+			numOnCall--;
+		}
+	}
+
+
+	/**
+	 * Increments a particular shift type
+	 * @param shiftType
+	 */
+	public void incrementShiftType(ShiftType shiftType) {
+
+		if (shiftType.equals(ShiftType.A)) {
+			numA++;
+		}
+
+		else if (shiftType.equals(ShiftType.B)) {
+			numB++;
+		}
+
+		else if (shiftType.equals(ShiftType.X)) {
+			numX++;
+		}
+
+		else if (shiftType.equals(ShiftType.Y)) {
+			numY++;
+		}
+
+		else if (shiftType.equals(ShiftType.Z)) {
+			numZ++;
+		}
+		else if (shiftType.equals(ShiftType.ON_CALL)) {
+			numOnCall++;
+		}
+	}
+
+
+	/**
+	 * Checks if a particular work shift has been saturated
+	 * @param ShiftType
+	 * @param inclusiveChecking
+	 * @return true/false
+	 */
+	// 2015-12-05 isWorkShiftSaturated
+	public boolean isWorkShiftSaturated(ShiftType st, boolean inclusiveChecking) {
+		boolean result = false;
+
+		// Reduce the shiftType of interest to find out if it's saturated
+		if (inclusiveChecking)
+			decrementShiftType(st);
+
+		int pop = getCurrentPopulationNum();
+		int quotient = pop / numShift;
+		int remainder = pop % numShift;
+
+		switch (numShift) {
+			case 1: // (numShift == 1)
+				if (st != ShiftType.ON_CALL)
+					result = false;
+				break;
+			case 2: // else if (numShift == 2) {
+
+				switch (remainder) {
+					case 0: // if (remainder == 0) {
+						if (numA < quotient && numB < quotient) {
+							result = true;
+							break;
+						}
+						if (quotient == 1) {
+							if (numA < 1) { // allow only 1 person with "A shift"
+								if (st == ShiftType.A)
+									result = true;
+							} else {
+								if (st == ShiftType.B)
+									result = true;
+							}
+						}
+						else if (quotient == 2) {
+							if (numA < 2) { // allow 2 persons with "A shift"
+								if (st == ShiftType.A)
+									result = true;
+							} else {
+								if (st == ShiftType.B)
+									result = true;
+							}
+						}
+						break;
+					case 1: // else { //if (remainder == 1) {
+						if (numA < quotient && numB < quotient) {
+							result = true;
+							break;
+						}
+						if (quotient == 1) {
+							if (numA < 2) { // allow 1 person with "A shift"
+								if (st == ShiftType.A)
+									result = true;
+							} else {
+								if (st == ShiftType.B)
+									result = true;
+							}
+						}
+						else if (quotient == 2) {
+							if (numA < 3) { // allow 2 persons with "A shift"
+								if (st == ShiftType.A)
+									result = true;
+							} else {
+								if (st == ShiftType.B)
+									result = true;
+							}
+						}
+						break;
+					} // end of switch (remainder)
+					break;
+			case 3: // else if (numShift == 3) {
+				switch (remainder) {
+					case 0: // if (remainder == 0) {
+						if (numX < quotient && numY < quotient && numZ < quotient) {
+							result = true;
+							break;
+						}
+						if (numX < quotient + 1) { // allow up to q persons with "X shift"
+							if (st == ShiftType.X)
+								result = true;
+						} else if (numY < quotient + 1) { // allow up to q persons with  "Y shift"
+							if (st == ShiftType.Y)
+								result = true;
+						} else {
+							if (st == ShiftType.Z)
+								result = true;
+						}
+						break;
+					case 1: // else if (remainder == 1) {
+						if (numX < quotient && numY < quotient && numZ < quotient) {
+							result = true;
+							break;
+						}
+						if (numX < quotient + 1) { // allow up to q persons with "X shift"
+							if (st == ShiftType.X)
+								result = true;
+						}
+						else if (numY < quotient + 2) { // allow up to q + 1 persons  with "Y shift"
+							if (st == ShiftType.Y)
+								result = true;
+						}
+						else {
+							if (st == ShiftType.Z)
+								result = true;
+						}
+						break;
+					case 2: // else {//if (remainder == 2) {
+						if (numX < quotient && numY < quotient && numZ < quotient) {
+							result = true;
+							break;
+						}
+						if (numX < quotient + 2) { // allow up to q+1 persons with "X										// shift"
+							if (st == ShiftType.X)
+								result = true;
+						}
+						else if (numY < quotient + 2) { // allow up to q+1 persons with "Y shift"
+							if (st == ShiftType.Y)
+								result = true;
+						}
+						else {
+							if (st == ShiftType.Z)
+								result = true;
+						}
+						break;
+					} // end of switch for case 3
+				break;
+			} // end of switch
+
+		// fill back the shiftType of interest
+		if (inclusiveChecking)
+			incrementShiftType(st);
+
+		return result;
+	}
+
+	/**
+	 * Finds an empty work shift in a settlement
+	 * @param population. If it wasn't known, use -1 to obtain the latest figure
+	 * @return shiftype
 	 */
 	// 2015-11-01 Edited getAEmptyWorkShift
 	public ShiftType getAEmptyWorkShift(int pop) {
@@ -1679,240 +1959,148 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		switch (numShift) {
 
 		case 1: // (numShift == 1)
-
 			shiftType = ShiftType.ON_CALL;
-
 			break;
-
 		case 2: // else if (numShift == 2) {
-
 			switch (remainder) {
-
 			case 0: // if (remainder == 0) {
-
 				if (numA < quotient && numB < quotient) {
 					rand = RandomUtil.getRandomInt(1);
-
 					if (rand == 0) {
 						shiftType = ShiftType.A;
-						//numA++;
-						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.B;
-						//numB++;
-						break;
 					}
+					break;
 				}
-
 				if (quotient == 1) {
 					if (numA < 1) { // allow only 1 person with "A shift"
 						shiftType = ShiftType.A;
-						//numA++;
-						break;
 					} else {
 						shiftType = ShiftType.B;
-						//numB++;
-						break;
 					}
+					break;
 				}
-
-				else { // if (quotient == 2) {
+				else if (quotient == 2) {
 					if (numA < 2) { // allow 2 persons with "A shift"
 						shiftType = ShiftType.A;
-						//numA++;
-						break;
 					} else {
 						shiftType = ShiftType.B;
-						//numB++;
-						break;
 					}
+					break;
 				}
-
-				//break;
-
 			case 1: // else { //if (remainder == 1) {
-
 				if (numA < quotient && numB < quotient) {
 					rand = RandomUtil.getRandomInt(1);
-
 					if (rand == 0) {
 						shiftType = ShiftType.A;
-						//numA++;
-						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.B;
-						//numB++;
-						break;
 					}
+					break;
 				}
-
 				if (quotient == 1) {
 					if (numA < 2) { // allow 1 person with "A shift"
 						shiftType = ShiftType.A;
-						//numA++;
-						break;
 					} else {
 						shiftType = ShiftType.B;
-						//numB++;
-						break;
 					}
+					break;
 				}
-
-				else { // if (quotient == 2) {
+				else if (quotient == 2) {
 					if (numA < 3) { // allow 2 persons with "A shift"
 						shiftType = ShiftType.A;
-						//numA++;
-						break;
 					} else {
 						shiftType = ShiftType.B;
-						//numB++;
-						break;
 					}
+					break;
 				}
-
-				//break;
+				break;
 			} // end of switch (remainder)
-
 			break;
-
 		case 3: // else if (numShift == 3) {
-
 			switch (remainder) {
-
 			case 0: // if (remainder == 0) {
-
 				if (numX < quotient && numY < quotient && numZ < quotient) {
 					rand = RandomUtil.getRandomInt(2);
-
 					if (rand == 0) {
 						shiftType = ShiftType.X;
-						//numX++;
-						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.Y;
-						//numY++;
-						break;
 					} else if (rand == 2) {
 						shiftType = ShiftType.Z;
-						//numZ++;
-						break;
 					}
+					break;
 				}
-
 				if (numX < quotient + 1) { // allow up to q persons with "X shift"
 					shiftType = ShiftType.X;
-					//numX++;
-					break;
 				} else if (numY < quotient + 1) { // allow up to q persons with  "Y shift"
 					shiftType = ShiftType.Y;
-					//numY++;
-					break;
 				} else {
 					shiftType = ShiftType.Z;
-					//numZ++;
-					break;
 				}
-
-				//break;
-
+				break;
 			case 1: // else if (remainder == 1) {
-
 				if (numX < quotient && numY < quotient && numZ < quotient) {
 					rand = RandomUtil.getRandomInt(2);
-
 					if (rand == 0) {
 						shiftType = ShiftType.X;
-						//numX++;
-						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.Y;
-						//numY++;
-						break;
 					} else if (rand == 2) {
 						shiftType = ShiftType.Z;
-						//numZ++;
-						break;
 					}
+					break;
 				}
-
 				if (numX < quotient + 1) { // allow up to q persons with "X shift"
 					shiftType = ShiftType.X;
-					//numX++;
-					break;
 				}
-
 				else if (numY < quotient + 2) { // allow up to q + 1 persons  with "Y shift"
 					shiftType = ShiftType.Y;
-					//numY++;
-					break;
 				}
-
 				else {
 					shiftType = ShiftType.Z;
-					//numZ++;
-					break;
 				}
-
-				//break;
-
+				break;
 			case 2: // else {//if (remainder == 2) {
-
 				if (numX < quotient && numY < quotient && numZ < quotient) {
 					rand = RandomUtil.getRandomInt(2);
-
 					if (rand == 0) {
 						shiftType = ShiftType.X;
-						//numX++;
-						break;
 					} else if (rand == 1) {
 						shiftType = ShiftType.Y;
-						//numY++;
-						break;
 					} else if (rand == 2) {
 						shiftType = ShiftType.Z;
-						//numZ++;
-						break;
 					}
+					break;
 				}
-
-				if (numX < quotient + 2) { // allow up to q+1 persons with "X
-											// shift"
+				if (numX < quotient + 2) { // allow up to q+1 persons with "X										// shift"
 					shiftType = ShiftType.X;
-					//numX++;
 				}
-
-				else if (numY < quotient + 2) { // allow up to q+1 persons with
-												// "Y shift"
+				else if (numY < quotient + 2) { // allow up to q+1 persons with "Y shift"
 					shiftType = ShiftType.Y;
-					//numY++;
 				}
-
 				else {
 					shiftType = ShiftType.Z;
-					;
-					//numZ++;
 				}
-
 				break;
 			} // end of switch for case 3
-
 			break;
-
 		} // end of switch
 
 		return shiftType;
 	}
 
-	/*
+	/**
 	 * Sets the number of shift of a settlement
+	 * @param numShift
 	 */
 	public void setNumShift(int numShift) {
 		this.numShift = numShift;
 	}
 
-	/*
+	/**
 	 * Gets the current number of work shifts in a settlement
-	 *
 	 * @return a number, either 2 or 3
 	 */
 	public int getNumShift() {
