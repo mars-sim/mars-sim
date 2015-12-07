@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -68,16 +69,16 @@ implements Serializable, Transportable {
 	// Default distance between buildings for resupply placement.
     //private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 4D;
     //private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
-    
+
     private static final int MAX_INHABITABLE_BUILDING_DISTANCE = 6;
     private static final int MIN_INHABITABLE_BUILDING_DISTANCE = 2;
 
     private static final int MAX_NONINHABITABLE_BUILDING_DISTANCE = 6;
     private static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 2;
 
-    
+
     private static final int BUILDING_CENTER_SEPARATION = 10; //9;
-    
+
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
@@ -346,12 +347,12 @@ implements Serializable, Transportable {
             if (orderedBuildings.size() > 0) {
             	Building aBuilding = buildingManager.getBuildings().get(0);
             	// Fires the unit update below in order to use the version of deliverBuildings() in TransportWizard.java
-            	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);       	
+            	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
             }
 
            	// Deliver buildings to the destination settlement.
         } else {// if GUI is NOT in use, use the version of deliverBuildings() here in Resuppply.java
-        	
+
         	deliverBuildings();
             // Deliver the rest of the supplies and add people.
             deliverOthers();
@@ -415,7 +416,7 @@ implements Serializable, Transportable {
 		                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,
 		                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
-		                buildingManager.addBuilding(correctedTemplate,  true);
+		                buildingManager.addBuilding(correctedTemplate, true);
 
 		            } // end of if (checkBuildingTemplatePosition(template)) {
 
@@ -495,10 +496,11 @@ implements Serializable, Transportable {
             if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
                 gender = PersonGender.MALE;
             }
+
             String birthplace = "Earth"; //TODO: randomize from list of countries/federations.
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
             Person immigrant = new Person(immigrantName, gender, birthplace, settlement); //TODO: read from file
-            
+
             // Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();
             favorites.setFavoriteMainDish(favorites.getRandomMainDish());
@@ -506,24 +508,33 @@ implements Serializable, Transportable {
             favorites.setFavoriteDessert(favorites.getRandomDessert());
             favorites.setFavoriteActivity(favorites.getRandomActivity());
             immigrant.getPreference().initializePreference();
-            
+
             // Assign a job by calling getInitialJob
             immigrant.getMind().getInitialJob(JobManager.MISSION_CONTROL);
-            
+
+            // 2015-12-06 Called setShiftType(ShiftType.ON_CALL)
+            immigrant.getTaskSchedule().setShiftType(ShiftType.ON_CALL);
+
+            // 2015-12-06 Added Preference
+            immigrant.getPreference().initializePreference();
+
+		    // 2015-12-06 Added setupReportingAuthority()
+            immigrant.assignReportingAuthority();
+
             unitManager.addUnit(immigrant);
             relationshipManager.addNewImmigrant(immigrant, immigrants);
             immigrants.add(immigrant);
-            
+
             logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
             // 2015-04-22 Added fireUnitUpdate()
             settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, immigrant);
         }
-        
+
         // Update command/governance and work shift schedules at settlement with new immigrants.
         if (immigrants.size() > 0) {
-            
+
             int popSize = settlement.getAllAssociatedPeople().size();
-            
+
             // Reset specialist positions at settlement.
             ChainOfCommand cc = settlement.getChainOfCommand();
             Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -532,19 +543,23 @@ implements Serializable, Transportable {
                 if (popSize >= UnitManager.POPULATION_WITH_MAYOR) {
                     cc.set7Divisions(true);
                     cc.assignSpecialiststo7Divisions(person);
-                } 
+                }
                 else {
                     cc.set3Divisions(true);
                     cc.assignSpecialiststo3Divisions(person);
                 }
             }
-            
+
             // Reset command/government system at settlement.
             unitManager.establishSettlementGovernance(settlement);
-            
+
             // Reset work shift schedules at settlement.
-            unitManager.setupShift(settlement, popSize);
+            //unitManager.setupShift(settlement, popSize);
+
+            // 2015-12-06 Added reassignWorkShift()
+            settlement.reassignWorkShift();
         }
+
     }
 
     public void setBuildingManager(BuildingManager buildingManager) {
@@ -611,11 +626,11 @@ implements Serializable, Transportable {
         return result;
     }
 
-/*    
+/*
     public BuildingTemplate positionSameType(String buildingType) {
         System.out.println("Checking if there are any building of the same type...");
         BuildingTemplate newPosition = null;
-        
+
         // Put this non-habitable building next to the same building type.
         List<Building> sameTypeBuildings = settlement.getBuildingManager().getBuildingsOfSameType(buildingType);
         System.out.println("sameBuildings.size() is "+ sameTypeBuildings.size());
@@ -634,7 +649,7 @@ implements Serializable, Transportable {
         return newPosition;
     }
 */
-    
+
     /**
      * Determines and sets the position of a new resupply building.
      * @param building type the new building type.
@@ -654,13 +669,13 @@ implements Serializable, Transportable {
             System.out.println("Case 1 : Positing the building connector");
         }
 
-        
-/*        
+
+/*
         else if (hasLifeSupport) {
             System.out.println("Case 2 : building has life support");
-            
+
         	newPosition = positionSameType(buildingType);
-        	
+
         	if (newPosition != null) {
                 System.out.println("has building(s) with the same building type");
         	}
@@ -690,7 +705,7 @@ implements Serializable, Transportable {
         		System.out.println("Waiting for user's confirmation...");
         }
 */
-        
+
         else if (hasLifeSupport) {
             // Try to put building next to another inhabitable building.
             List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
@@ -719,7 +734,7 @@ implements Serializable, Transportable {
                 }
             }
         }
-        
+
         if (newPosition == null) {
             // Put this non-habitable building next to a different type building.
             // If not successful, try again 10m from each building and continue out at 10m increments
@@ -756,7 +771,7 @@ implements Serializable, Transportable {
 
                 // If no buildings at settlement, position new building at 0,0 with random facing.
                 // TODO: check to make sure it does not overlap another building.
-                
+
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
                 // 2015-01-16 Added scenario
                 String scenario = getCharForNumber(settlement.getID()+1);
@@ -765,7 +780,7 @@ implements Serializable, Transportable {
                 //System.out.println("Resupply.java Line 632: buildingNickName is " + buildingNickName);
 
                 // TODO : ask for user to define the location for the new building as well
-                newPosition = new BuildingTemplate(buildingID, scenario, buildingType, buildingNickName, width, length, 0D, 0D,
+                newPosition = new BuildingTemplate(buildingID, scenario, buildingType, buildingNickName, width, length, 0, 0,
                         RandomUtil.getRandomDouble(360D));
             }
         }

@@ -113,7 +113,7 @@ implements ClockListener {
 	private JButton pauseButton;
 
 	private BalloonToolTip balloonToolTip;
-	
+
 
 	/**
 	 * Constructs a TimeWindow object
@@ -242,7 +242,7 @@ implements ClockListener {
 			}
 		});
 		pausePane.add(pauseButton);
-		
+
 		// Create uptime header label
 		JLabel uptimeHeaderLabel = new JLabel(Msg.getString("TimeWindow.simUptime"), JLabel.CENTER); //$NON-NLS-1$
 		uptimePane.add(uptimeHeaderLabel, BorderLayout.NORTH);
@@ -282,7 +282,7 @@ implements ClockListener {
 				super.mouseClicked(e);
 				if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
 					pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio())); //$NON-NLS-1$
-				} 
+				}
 				else {
 					pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));
 				}
@@ -304,7 +304,7 @@ implements ClockListener {
 					}
 					else {
 					    pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio())); //$NON-NLS-1$
-					} 
+					}
 				}
 				catch (Exception e2) {
 					logger.log(Level.SEVERE,e2.getMessage());
@@ -327,19 +327,19 @@ implements ClockListener {
 	 * @param sliderValue the slider value (1 to 100).
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
-		
+
 	    double timeRatio = calculateTimeRatioFromSlider(sliderValue);
 
 		master.setTimeRatio(timeRatio);
 	}
-	
+
 	/**
 	 * Calculates a time ratio given a slider value.
 	 * @param sliderValue the slider value from 1 to 100.
 	 * @return time ratio value (simulation time / real time).
 	 */
 	public static double calculateTimeRatioFromSlider(int sliderValue) {
-	    
+
 	    double slope;
         double offset;
         double timeRatio;
@@ -376,7 +376,7 @@ implements ClockListener {
             timeRatio = 15D;
             throw new IllegalArgumentException(Msg.getString("TimeWindow.log.ratioError")); //$NON-NLS-1$
         }
-        
+
         return timeRatio;
 	}
 
@@ -385,12 +385,12 @@ implements ClockListener {
 	 * @param timeRatio the time ratio (simulation time / real time).
 	 */
 	public void setTimeRatioSlider(double timeRatio) {
-		
+
 	    int sliderValue = calculateSliderValue(timeRatio);
-	    
+
 	    pulseSlider.setValue(sliderValue);
 	}
-	
+
 	/**
 	 * Calculates a slider value based on a time ratio.
 	 * Note: This method is the inverse of calculateTimeRatioFromSlider.
@@ -398,9 +398,9 @@ implements ClockListener {
 	 * @return slider value (1 to 100).
 	 */
 	public static int calculateSliderValue(double timeRatio) {
-	    
+
 	    int sliderValue = 1;
-        
+
         // Moves the slider bar appropriately given the time ratio.
         if (timeRatio < minfracratio) {
             sliderValue = 1;
@@ -429,10 +429,10 @@ implements ClockListener {
         else {
             double offset = minfracratio;
             double slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
-            double temp1 = ((timeRatio - offset) / slope) + minfracpos; 
+            double temp1 = ((timeRatio - offset) / slope) + minfracpos;
             sliderValue = (int) Math.round(temp1);
         }
-        
+
         return sliderValue;
 	}
 
@@ -449,9 +449,10 @@ implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		SwingUtilities.invokeLater(
-			new Runnable() {
-				public void run() {
+		SwingUtilities.invokeLater(() -> {
+		//SwingUtilities.invokeLater(
+			//new Runnable() {
+				//public void run() {
 					// TODO: resolve the null below
 					if (master == null)  {
 						//System.out.println("TimeWindow : master is null");
@@ -464,7 +465,7 @@ implements ClockListener {
 						martianTimeLabel.setText(marsTime.getDateTimeStamp());
 						// 2015-02-24 Added solElapsedCache
 						if (solElapsed != solElapsedCache) {
-							
+
 							if (marsTime.getMonthName() != null)
 								martianMonthLabel.setText(marsTime.getMonthName());
 
@@ -490,7 +491,8 @@ implements ClockListener {
 					}
 
 					calendarDisplay.update();
-				}
+				//}
+
 			}
 		);
 	}

@@ -25,7 +25,7 @@ public class ResupplyConfig implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     // Element names
     private static final String RESUPPLY = "resupply";
     private static final String NAME = "name";
@@ -50,7 +50,7 @@ public class ResupplyConfig implements Serializable {
 
     /**
      * Constructor
-     * 
+     *
      * @param resupplyDoc DOM document for resupply configuration.
      * @param partPackageConfig the part package configuration.
      */
@@ -103,8 +103,13 @@ public class ResupplyConfig implements Serializable {
                 double facing = Double.parseDouble(buildingElement
                         .getAttributeValue(FACING));
 
+                String scenario = "A";
+                if (NAME.equals("Mars Direct Base resupply 3"))
+                		scenario = "A";
+                // TODO: need to rework how "scenario" and "scenarioID" are applied
+
                 // 2014-10-28 Added buildingType (at the buildingNickName position)
-                template.buildings.add(new BuildingTemplate(0, "A", buildingType,
+                template.buildings.add(new BuildingTemplate(0, scenario, buildingType,
                         buildingType, width, length, xLoc, yLoc, facing));
 
             }
@@ -317,10 +322,10 @@ public class ResupplyConfig implements Serializable {
      * Private inner class for resupply template.
      */
     private static class ResupplyTemplate implements Serializable {
-        
+
         /** default serial id. */
         private static final long serialVersionUID = 1L;
-        
+
         private String name;
         private List<BuildingTemplate> buildings;
         private Map<String, Integer> vehicles;

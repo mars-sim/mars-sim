@@ -578,13 +578,13 @@
 					<connection id="23" x-location="0.0" y-location="9.0" />
 				</connection-list>
 			</building>
-			<building id="25" type="Hallway" length="5.0" x-location="-55.0" y-location="43.5" facing="0.0">
+			<building id="25" type="Hallway" length="4.0" x-location="-55.0" y-location="43.5" facing="0.0">
 				<connection-list>
-					<connection id="22" x-location="0.0" y-location="-2.5" />
-					<connection id="26" x-location="0.0" y-location="2.5" />
+					<connection id="22" x-location="0.0" y-location="-2.0" />
+					<connection id="26" x-location="0.0" y-location="2.0" />
 				</connection-list>
 			</building>
-			<building id="26" type="Garage" x-location="-55.0" y-location="54.0" facing="0.0">
+			<building id="26" type="Garage" x-location="-55.0" y-location="53.5" facing="0.0">
 				<connection-list>
 					<connection id="25" x-location="0.0" y-location="-8.0" />
 				</connection-list>

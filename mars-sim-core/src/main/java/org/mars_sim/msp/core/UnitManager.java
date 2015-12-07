@@ -94,7 +94,7 @@ public class UnitManager implements Serializable {
 	private List<String> MarsSocietyList;
 	private List<String> NASAList;
 	private List<String> RKAList;
-	
+
 	private List<String> robotNameList;
 
 	/** List of unit manager listeners. */
@@ -158,7 +158,7 @@ public class UnitManager implements Serializable {
 		try {
 			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 			List<String> personNames = personConfig.getPersonNameList();
-			
+
 			personMaleNames = new ArrayList<String>();
 			personFemaleNames = new ArrayList<String>();
 
@@ -170,7 +170,7 @@ public class UnitManager implements Serializable {
 			MarsSocietyList = new ArrayList<String>();
 			NASAList = new ArrayList<String>();
 			RKAList = new ArrayList<String>();
-			
+
 			Iterator<String> i = personNames.iterator();
 			while (i.hasNext()) {
 				String name = i.next();
@@ -180,7 +180,7 @@ public class UnitManager implements Serializable {
 				} else if (gender == PersonGender.FEMALE) {
 					personFemaleNames.add(name);
 				}
-				
+
 				ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);
 				if (sponsorType.equals(ReportingAuthorityType.CNSA))
 					CNSAList.add(name);
@@ -199,7 +199,7 @@ public class UnitManager implements Serializable {
 				else if (sponsorType.equals(ReportingAuthorityType.RKA))
 					RKAList.add(name);
 			}
-			
+
 		} catch (Exception e) {
 			throw new IllegalStateException("person names could not be loaded: " + e.getMessage(), e);
 		}
@@ -711,7 +711,7 @@ public class UnitManager implements Serializable {
 					//person.getBigFiveManager().setAttribute(NaturalAttribute.valueOfIgnoreCase(attributeName), value);
 				}
 			}
-			
+
 			// Set person's configured natural attributes (if any).
 			Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
 			if (naturalAttributeMap != null) {
