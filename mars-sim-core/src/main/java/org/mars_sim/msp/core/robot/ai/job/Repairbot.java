@@ -35,8 +35,8 @@ implements Serializable {
 
 		// Add technician-related tasks.
 		jobTasks.add(Maintenance.class);
-		jobTasks.add(MaintenanceEVA.class);
-		jobTasks.add(RepairEVAMalfunction.class);
+		//jobTasks.add(MaintenanceEVA.class); //check to what extend the walking bug is affecting the outdoor portion of this task
+		//jobTasks.add(RepairEVAMalfunction.class); //check to what extend the walking bug is affecting the outdoor portion of this task
 		jobTasks.add(RepairMalfunction.class);
 
 	}
@@ -56,7 +56,7 @@ implements Serializable {
 		// Add number of vehicles parked at settlement.
 		result+= settlement.getParkedVehicleNum() / 3D;
 
-		return result;	
+		return result;
 	}
 
 	/**

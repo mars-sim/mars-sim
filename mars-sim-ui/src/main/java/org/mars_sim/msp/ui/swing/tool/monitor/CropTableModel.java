@@ -600,8 +600,8 @@ extends UnitTableModel {
 			 UnitManagerEventType eventType = event.getEventType();
 			 if (unit instanceof Settlement) {
 				 if (eventType == UnitManagerEventType.ADD_UNIT) {
-						logger.info("unitManagerUpdate(): Just entered");
 					 if (!containsUnit(unit)) addUnit(unit);
+						logger.info(unit + " has just entered");
 				 }
 				 else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
 					 if (containsUnit(unit)) removeUnit(unit);

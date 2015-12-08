@@ -37,11 +37,12 @@ implements Serializable {
 		// Use Job constructor.
 		super(Deliverybot.class);
 
-		jobTasks.add(LoadVehicleEVA.class);
+		//jobTasks.add(LoadVehicleEVA.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
         jobTasks.add(LoadVehicleGarage.class);
-        //jobTasks.add(UnloadVehicleEVA.class);
-        //jobTasks.add(UnloadVehicleGarage.class);
-        jobTasks.add(ConsolidateContainers.class);
+        //jobTasks.add(UnloadVehicleEVA.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
+        jobTasks.add(UnloadVehicleGarage.class);
+        // jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
+
 		//jobMissionStarts.add(Trade.class);
 		//jobMissionJoins.add(Trade.class);
         //jobMissionStarts.add(TravelToSettlement.class);

@@ -175,7 +175,7 @@ extends ToolWindow {
 					dateLabel.setText("Martian Date : " + marsDateString + " ");
 					timeLabel.setText("Time : " + marsTimeString + " millisols (UMST)");
 					statusText = "" + MarsClock.getTotalSol(marsClock);
-				    populationText = mapPanel.getSettlement().getAllAssociatedPeople().size() + " of " + mapPanel.getSettlement().getPopulationCapacity();
+				    populationText = mapPanel.getSettlement().getAllAssociatedPeople().size() + "   Cap : " + mapPanel.getSettlement().getPopulationCapacity();
 				    // 2015-02-09 Added leftLabel
 				    solLabel.setText("Sol : " + statusText);
 				    popLabel.setText("Population : " + populationText);

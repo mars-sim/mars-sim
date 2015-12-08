@@ -549,9 +549,8 @@ extends TransportItemEditingPanel {
 			            //System.out.println("ResupplyMissionEditingPanel.java Line 548: scenario is " + scenario);
 			            //System.out.println("ResupplyMissionEditingPanel.java Line 549: buildingNickName is " + buildingNickName);
 
-						//BuildingTemplate template = new BuildingTemplate(0, scenario, type, type, -1D, -1D, -0D, 0D, 0D);
-
-						BuildingTemplate template = new BuildingTemplate(scenarioID, scenario, type, type, 7D, 9D, 0D, 38D, 270D);
+						BuildingTemplate template = new BuildingTemplate(0, scenario, type, type, -1D, -1D, -0D, 0D, 0D);
+						//BuildingTemplate template = new BuildingTemplate(scenarioID, scenario, type, type, 7D, 9D, 0D, 38D, 270D);
 
 						newBuildings.add(template);
 					}
@@ -681,7 +680,11 @@ extends TransportItemEditingPanel {
 			                // TODO: currently building id = 0
 							// May need to assemble the buildingNickName
 							//by obtaining the next building id and settlement id
+
 						//newBuildings.add(new BuildingTemplate(0, null, type, type, -1D, -1D, -0D, 0D, 0D));
+
+						// TODO: determine why specifying the coordinate below is needed for
+						// the Command and Control building to be placed properly
 						newBuildings.add(new BuildingTemplate(0, null, type, type, 7D, 9D, 0D, 38D, 270D));
 
 					}

@@ -162,8 +162,8 @@ public class MainScene {
 	private Flyout flyout;
 	private ToggleButton marsNetButton;
 	private ChatBox cb;
-	    
-	
+
+
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 
 	@SuppressWarnings("restriction")
@@ -229,7 +229,7 @@ public class MainScene {
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
-	public void openTransportWizard(BuildingManager buildingManager) {
+	public synchronized void openTransportWizard(BuildingManager buildingManager) {
 		transportWizard.initialize(buildingManager);
 		transportWizard.deliverBuildings();
 	}
@@ -369,7 +369,7 @@ public class MainScene {
 		rootStackPane = new StackPane(borderPane);
 
 		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth()-40, primaryScreenBounds.getHeight()-40, Color.BROWN);
-		
+
 		//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
@@ -450,7 +450,7 @@ public class MainScene {
 		statusBar.getStylesheets().clear();
 		marsNode.getFXDesktopPane().getStylesheets().clear();
 		marsNetButton.getStylesheets().clear();
-		
+
 		String cssColor;
 
 		//logger.info("MainScene's changeTheme()");
@@ -507,7 +507,7 @@ public class MainScene {
 		swingPane.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 		menuBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 		marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
-		
+
 		memUsedText.setFill(txtColor);
 		memMaxText.setFill(txtColor);
 		timeText.setFill(txtColor);
@@ -550,17 +550,17 @@ public class MainScene {
             if (marsNetButton.isSelected()) {
                 flyout.flyout();
             } else {
-                flyout.dismiss();              
+                flyout.dismiss();
             }
         });
-        
+
         Flyout f = new Flyout(marsNetButton, createChatBox());
-    	 
+
         return f;
     }
-    
+
     /*
-     * Creates a chat box 
+     * Creates a chat box
      * @return StackPane
      */
     //2015-11-11 Added createChatBox()
@@ -569,21 +569,21 @@ public class MainScene {
   		StackPane pane = new StackPane(cb);
   		pane.setPadding(new Insets(5, 5, 5, 5));
         //pane.setHgap(5);
-        
+
   		TextArea ta = cb.getTextArea();
   		ta.setTooltip(new Tooltip ("Chatters on MarsNet"));
-  		
+
   		TextField tf = cb.getTextField();
   		tf.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
   		tf.setPromptText("Type your msg here to broadcast to a channel");
-  				
+
   		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
   		ta.appendText("System : Welcome to MarsNet, the best global network for all settlements on Mars." + System.lineSeparator());
 
   		return pane;
-  		
+
   	}
-  	
+
 	/*
 	 * Creates the status bar for MainScene
 	 */
@@ -607,11 +607,11 @@ public class MainScene {
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
         EffectUtilities.makeDraggable(flyout.getStage(), cb);
-		
+
 		statusBar.getLeftItems().add(new Separator(VERTICAL));
 		statusBar.getLeftItems().add(flyout);
-		//statusBar.getLeftItems().add(new Separator(VERTICAL));      
-		
+		//statusBar.getLeftItems().add(new Separator(VERTICAL));
+
 		osBean = ManagementFactory.getPlatformMXBean(
 				com.sun.management.OperatingSystemMXBean.class);
 
@@ -1081,6 +1081,7 @@ public class MainScene {
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
 		autosaveTimeline.pause();
 		Simulation.instance().getMasterClock().setPaused(true);
+		desktop.getTimeWindow().enablePauseButton(false);
 	}
 
 	/**
@@ -1090,6 +1091,7 @@ public class MainScene {
 		autosaveTimeline.play();
 		Simulation.instance().getMasterClock().setPaused(false);
 		desktop.disposeAnnouncementWindow();
+		desktop.getTimeWindow().enablePauseButton(true);
 	}
 
 
@@ -1344,7 +1346,7 @@ public class MainScene {
 */
 			desktop.openInitialWindows();
 		}
-		
+
 		//2015-09-27 for testing the use of fxml
 		//marsNode.createMaterialDesignWindow();
 		//marsNode.createSettlementWindow();
@@ -1374,7 +1376,7 @@ public class MainScene {
 	public BorderPane getBorderPane() {
 		return borderPane;
 	}
-	
+
 	public void destroy() {
 		newSimThread = null;
 		loadSimThread = null;

@@ -511,6 +511,15 @@ implements ClockListener {
 	}
 
 	/**
+	 * Enables/disables the pause button
+	 * @param value true or false
+	 */
+	// 2015-12-07 Added enablePauseButton()
+	public void enablePauseButton(boolean value) {
+		pauseButton.setEnabled(value);
+	}
+
+	/**
 	 * Prepare tool window for deletion.
 	 */
 	@Override

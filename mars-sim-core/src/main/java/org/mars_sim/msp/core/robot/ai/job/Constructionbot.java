@@ -11,7 +11,10 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
+import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
+import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
+import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -34,9 +37,10 @@ implements Serializable {
 		super(Constructionbot.class);
 
 		// Add architect-related tasks.
-		//jobTasks.add(ManufactureConstructionMaterials.class);
-		//jobTasks.add(ConstructBuilding.class);
-		//jobTasks.add(SalvageBuilding.class);
+		jobTasks.add(ManufactureConstructionMaterials.class);
+		//jobTasks.add(ConstructBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
+		//jobTasks.add(SalvageBuilding.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
+
 
 		// Add architect-related missions.
 		//jobMissionStarts.add(BuildingConstructionMission.class);

@@ -26,35 +26,35 @@ public class ConstructionStageTest extends TestCase {
 
     // Data members
     private ConstructionStageInfo foundationInfo;
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
+
         Map<Part, Integer> parts = new HashMap<Part, Integer>(1);
         parts.put(new Part("test part","test resource description", 1D), 1);
-        
+
         Map<AmountResource, Double> resources = new HashMap<AmountResource, Double>(1);
         resources.put(new AmountResource("test resource","test resource description", Phase.SOLID, false, false), 1D);
-        
-        List<ConstructionVehicleType> vehicles = 
+
+        List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Part> attachments = new ArrayList<Part>(1);
         attachments.add(new Part("attachment part","test resource description", 1D));
-        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 
+        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
-        
-        foundationInfo = new ConstructionStageInfo("test foundation info", 
-                ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 0, false, false, 10000D, 0, null, 
+
+        foundationInfo = new ConstructionStageInfo("test foundation info",
+                ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 0, false, false, 10000D, 0, null,
                 parts, resources, vehicles);
     }
-    
+
     /*
      * Test method for 'org.mars_sim.msp.simulation.structure
      * .construction.ConstructionStage.ConstructionStage(ConstructionStageInfo)'
      */
     public void testConstructionStage() {
-        ConstructionSite site = new ConstructionSite();
+        ConstructionSite site = new ConstructionSite(null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertNotNull(stage);
     }
@@ -64,7 +64,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.getInfo()'
      */
     public void testGetInfo() {
-        ConstructionSite site = new ConstructionSite();
+        ConstructionSite site = new ConstructionSite(null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertEquals(foundationInfo, stage.getInfo());
     }
@@ -74,7 +74,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.getCompletedWorkTime()'
      */
     public void testGetCompletedWorkTime() {
-        ConstructionSite site = new ConstructionSite();
+        ConstructionSite site = new ConstructionSite(null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertEquals(0D, stage.getCompletedWorkTime());
     }
@@ -84,7 +84,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.addWorkTime(double)'
      */
     public void testAddWorkTime() {
-        ConstructionSite site = new ConstructionSite();
+        ConstructionSite site = new ConstructionSite(null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         stage.addWorkTime(5000D);
         assertEquals(5000D, stage.getCompletedWorkTime());
@@ -99,7 +99,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.isComplete()'
      */
     public void testIsComplete() {
-        ConstructionSite site = new ConstructionSite();
+        ConstructionSite site = new ConstructionSite(null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         stage.addWorkTime(5000D);
         assertFalse(stage.isComplete());

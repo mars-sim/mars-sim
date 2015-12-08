@@ -127,16 +127,20 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	/** The sound player. */
 	private AudioPlayer soundPlayer;
+
 	/** The desktop popup announcement window. */
 	private AnnouncementWindow announcementWindow;
-	// 2014-12-19 Added settlementWindow
+
 	private SettlementWindow settlementWindow;
+	private TimeWindow timeWindow;
+
 	private Building building;
 	private Settlement settlement;
+
 	// 2014-12-23 Added transportWizard
 	private TransportWizard transportWizard;
-	private BuildingManager mgr = null; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
-	//private MarqueeBanner marqueeBanner;
+	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
+
 	/** The main window frame. */
 	private MainWindow mainWindow;
 	private MainScene mainScene;
@@ -427,7 +431,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	   	//logger.info("toolWindows.add(searchWindow)");
 
 		// Prepare time tool window
-		TimeWindow timeWindow = new TimeWindow(this);
+		timeWindow = new TimeWindow(this);
 		try { timeWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(timeWindow);
@@ -611,6 +615,41 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		window.getContentPane().repaint();
 		validate();
 		repaint();
+
+	    // 2015-12-07 Added below to check the corresponding menu item
+		if (mainScene != null) {
+			//System.out.println(toolName + " is running openToolWindow().");
+			Platform.runLater(() -> {
+				if (toolName.equals(NavigatorWindow.NAME)) {
+					//System.out.println("closing nav");
+					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
+				}
+
+				else if (toolName.equals(SearchWindow.NAME)) {
+					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
+				}
+
+				else if (toolName.equals(MonitorWindow.NAME)) {
+					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
+				}
+
+				else if (toolName.equals(MissionWindow.NAME)) {
+					mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
+				}
+
+				else if (toolName.equals(ScienceWindow.NAME)) {
+					mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
+				}
+
+				else if (toolName.equals(SettlementWindow.NAME)) {
+					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+				}
+
+				else if (toolName.equals(ResupplyWindow.NAME)) {
+					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
+				}
+			});
+		}
 	}
 
 	/**
@@ -1190,8 +1229,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Opens a transport wizard on the desktop.
 	 * @param announcement the announcement text to display.
 	 */
-	// 2014-12-23 Added openTransportWizard()
-	public void openTransportWizard(BuildingManager buildingManager) { //, Building building) {
+	// 2014-12-23 Added openTransportWizard().
+	// To be called in case of non-javaFX mode. Use the version in MainScene in javaFX mode
+	public synchronized void openTransportWizard(BuildingManager buildingManager) { //, Building building) {
 		//transportWizard.setAnnouncement(announcement);
 		transportWizard.initialize(buildingManager);//, settlementWindow);//, building);
 		transportWizard.deliverBuildings();
@@ -1495,6 +1535,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 	}
 
+	public TimeWindow getTimeWindow() {
+		return timeWindow;
+	}
 
 	public void destroy() {
 		updateThread = null;

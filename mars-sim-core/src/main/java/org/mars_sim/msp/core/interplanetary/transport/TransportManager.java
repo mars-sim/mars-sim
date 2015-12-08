@@ -25,8 +25,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A manager for interplanetary transportation.
  */
-public class TransportManager 
-extends Thread 
+public class TransportManager
+extends Thread
 implements Serializable {
 
 	/** default serial id. */
@@ -44,17 +44,17 @@ implements Serializable {
 	public TransportManager() {
 
 	}
-	
+
 	// 2015-02-04 Added run()
-	public void run() {		
+	public void run() {
 		//Initialize data
-		transportItems = new ConcurrentLinkedQueue<Transportable>();		
+		transportItems = new ConcurrentLinkedQueue<Transportable>();
 		// Create initial arriving settlements.
-		transportItems.addAll(ArrivingSettlementUtil.createInitialArrivingSettlements());		
+		transportItems.addAll(ArrivingSettlementUtil.createInitialArrivingSettlements());
 		// Create initial resupply missions.
 		transportItems.addAll(ResupplyUtil.createInitialResupplyMissions());
 	}
-	
+
 	/**
 	 * Adds a new transport item.
 	 * @param transportItem the new transport item.
@@ -64,9 +64,9 @@ implements Serializable {
 	    HistoricalEvent newEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED,
             "Transport item created: " + transportItem.getName());
 	    Simulation.instance().getEventManager().registerNewEvent(newEvent);
-	    logger.info("New transport item created: " + transportItem.toString());
+	    logger.info("A new transport item was created ");// + transportItem.toString());
 	}
-	
+
 	/**
 	 * Gets all of the transport items.
 	 * @return list of all transport items.
@@ -74,14 +74,14 @@ implements Serializable {
 	public List<Transportable> getAllTransportItems() {
 		return new ArrayList<Transportable>(transportItems);
 	}
-	
+
 	/**
 	 * Gets the transport items that are planned or in transit.
 	 * @return transportables.
 	 */
 	public List<Transportable> getIncomingTransportItems() {
 	    List<Transportable> incoming = new ArrayList<Transportable>(transportItems.size());
-	    
+
 	    Iterator<Transportable> i = transportItems.iterator();
 	    while (i.hasNext()) {
 	    	Transportable transportItem = i.next();
@@ -90,17 +90,17 @@ implements Serializable {
 	            incoming.add(transportItem);
 	        }
 	    }
-	    
+
 	    return incoming;
 	}
-	
+
 	/**
 	 * Gets the transport items that have already arrived.
 	 * @return transportables.
 	 */
 	public List<Transportable> getArrivedTransportItems() {
 	    List<Transportable> arrived = new ArrayList<Transportable>(transportItems.size());
-        
+
 	    Iterator<Transportable> i = transportItems.iterator();
         while (i.hasNext()) {
         	Transportable transportItem = i.next();
@@ -109,23 +109,23 @@ implements Serializable {
                 arrived.add(transportItem);
             }
         }
-        
+
         return arrived;
 	}
-	
+
 	/**
 	 * Cancels a transport item.
 	 * @param transportItem the transport item.
 	 */
 	public void cancelTransportItem(Transportable transportItem) {
-		// 2014-10-04 by mkung -- confirmation dialog box--an UI element-- is relocated to ResupplyWindows.java 
+		// 2014-10-04 by mkung -- confirmation dialog box--an UI element-- is relocated to ResupplyWindows.java
 		  transportItem.setTransitState(TransitState.CANCELED);
           HistoricalEvent cancelEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CANCELLED,
                   "Transport item cancelled");
           Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
-          logger.info("Transport item cancelled: " + transportItem.toString());          
+          logger.info("A transport item was cancelled: ");// + transportItem.toString());
 	}
-	
+
 	/**
 	 * Time passing.
 	 *
@@ -141,7 +141,7 @@ implements Serializable {
 			    if (MarsClock.getTimeDiff(currentTime, transportItem.getLaunchDate()) >= 0D) {
 			        // Transport item is launched.
 			        transportItem.setTransitState(TransitState.IN_TRANSIT);
-			        HistoricalEvent deliverEvent = new TransportEvent(transportItem, 
+			        HistoricalEvent deliverEvent = new TransportEvent(transportItem,
 			        		EventType.TRANSPORT_ITEM_LAUNCHED, "Transport item launched");
 			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);
 			        logger.info("Transport item launched: " + transportItem.toString());
@@ -153,15 +153,15 @@ implements Serializable {
                     // Transport item has arrived on Mars.
                     transportItem.setTransitState(TransitState.ARRIVED);
                     transportItem.performArrival();
-                    HistoricalEvent arrivalEvent = new TransportEvent(transportItem, 
+                    HistoricalEvent arrivalEvent = new TransportEvent(transportItem,
                     		EventType.TRANSPORT_ITEM_ARRIVED, "Transport item arrived on Mars");
                     Simulation.instance().getEventManager().registerNewEvent(arrivalEvent);
-                    logger.info("Transport item arrived: " + transportItem.toString());
+                    logger.info("Transport item arrived at " + transportItem.toString());
                 }
 			}
 		}
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -170,5 +170,5 @@ implements Serializable {
         while (i.hasNext()) i.next().destroy();
         transportItems.clear();
         transportItems = null;
-    }   
+    }
 }

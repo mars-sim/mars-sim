@@ -269,6 +269,7 @@ public class Sleep extends Task implements Serializable {
 	        // Remove robot from stations so other robots can use it.
 	        if (station != null && station.getSleepers() > 0) {
 	        	station.removeSleeper();
+	        	// TODO: assess how well this work
 	        	walkToAssignedDutyLocation(robot, true);
 	        }
 		}

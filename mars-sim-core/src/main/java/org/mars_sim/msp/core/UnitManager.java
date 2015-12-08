@@ -621,24 +621,24 @@ public class UnitManager implements Serializable {
 				}
 			}
 
-			// Get person's settlement or randomly determine it if not
-			// configured.
+			// Get person's settlement or randomly determine it if not configured.
 			String settlementName = personConfig.getConfiguredPersonDestination(x);
 			Settlement settlement = null;
 			if (settlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, settlementName);
 				if (settlement == null) {
-					// If settlement cannot be found that matches the settlement
-					// name,
-					// put person in a randomly selected settlement.
-					logger.log(Level.WARNING, "Person " + name + " could not be located" + " at " + settlementName
-							+ " because the settlement doesn't exist.");
+					// TODO: If settlement cannot be found that matches the settlement name,
+					// should we put the person in a randomly selected settlement?
 					settlement = CollectionUtils.getRandomSettlement(col);
+					logger.log(Level.INFO, name + " ends up going to " + settlement
+							+ " since " + settlementName + " doesn't exist.");
 				}
 			} else {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getRandomSettlement(col);
+				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
+						+ settlementName + " by random.");
 			}
 
 			// If settlement is still null (no settlements available),
@@ -1176,16 +1176,17 @@ public class UnitManager implements Serializable {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, settlementName);
 				if (settlement == null) {
-					logger.log(Level.WARNING, "Robot " + name + " could not be located" + " at " + settlementName
-							+ " because the settlement doesn't exist.");
+					// TODO: If settlement cannot be found that matches the settlement name,
+					// should we put the robot in a randomly selected settlement?
 					settlement = CollectionUtils.getRandomSettlement(col);
+					logger.log(Level.INFO, name + " ends up going to " + settlement
+							+ " since " + settlementName + " doesn't exist.");
 				}
 			} else {
-				// If settlement cannot be found that matches the settlement
-				// name,
-				// put robot in a randomly selected settlement.
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getRandomSettlement(col);
+				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
+						+ settlementName + " by random.");
 			}
 
 			// If settlement is still null (no settlements available),

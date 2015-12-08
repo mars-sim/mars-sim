@@ -82,7 +82,7 @@ implements Serializable {
     public Walk(Person person) {
         super(NAME, person, false, false, 0D, false, 0D);
         //this.person = person;
-        
+
         // Initialize data members.
         walkingStepIndex = 0;
 
@@ -323,12 +323,13 @@ implements Serializable {
         }
 
         // Initialize task phase.
+        //2015-12-07 Temporarily disabled the possibility of exiting airlock/garage for bots
         addPhase(WALKING_SETTLEMENT_INTERIOR);
         addPhase(WALKING_ROVER_INTERIOR);
         addPhase(WALKING_EXTERIOR);
-        addPhase(EXITING_AIRLOCK);
+        //addPhase(EXITING_AIRLOCK);
         addPhase(ENTERING_AIRLOCK);
-        addPhase(EXITING_ROVER_GARAGE);
+        //addPhase(EXITING_ROVER_GARAGE);
         addPhase(ENTERING_ROVER_GARAGE);
 
         setPhase(getWalkingStepPhase());
@@ -395,7 +396,7 @@ implements Serializable {
 
         setPhase(getWalkingStepPhase());
     }
-    
+
     /**
      * Find an emergency airlock at a person's location.
      * @param person the person.
@@ -502,7 +503,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Check if person can walk to a local destination.
      * @param person the person.
@@ -524,7 +525,7 @@ implements Serializable {
 
         return canWalkAllSteps(robot, walkingSteps);
     }
-    
+
     /**
      * Check if person can walk to a local destination.
      * @param person the person.
@@ -547,7 +548,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     private static boolean canWalkAllSteps(Robot robot, WalkingSteps walkingSteps) {
 
         boolean result = true;
@@ -564,7 +565,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Populates the walking step phase map.
      */
@@ -600,21 +601,21 @@ implements Serializable {
         }
 
         else { //if (result == null)
-        	
+
         	if (person != null) {
-               	logger.fine(person.getName() 
-            	+ " in " + person.getBuildingLocation().getNickName() 
+               	logger.fine(person.getName()
+            	+ " in " + person.getBuildingLocation().getNickName()
             	+ " at " + person.getAssociatedSettlement()
             	+ " : setting TaskPhase to null ");
 
         	} else if (robot != null) {
-        		logger.fine(robot.getName() 
-	        	+ " in " + robot.getBuildingLocation().getNickName() 
+        		logger.fine(robot.getName()
+	        	+ " in " + robot.getBuildingLocation().getNickName()
 	        	+ " at " + robot.getAssociatedSettlement()
 	        	+ " : walkingStepIndex >= walkingSteps.getWalkingStepsNumber()");
              }
         }
-        
+
         return result;
     }
 
@@ -643,7 +644,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     private static boolean canExitAllAirlocks(Robot robot, WalkingSteps walkingSteps) {
 
         boolean result = true;
@@ -665,7 +666,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -734,7 +735,7 @@ implements Serializable {
 		        	}
 		            else if (building == null) {
 		    			logger.info(person + " is not in a building.");
-		            	endTask();	            	
+		            	endTask();
 			        	// do this for now so as to debug why this happen and how often
 			        	//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"
 		    			//logger.severe(person + " set phase to WALKING_EXTERIOR.");
@@ -779,7 +780,7 @@ implements Serializable {
 		        		logger.info(robot + " has the top container unit of " + robot.getTopContainerUnit());
 
 		        		endTask();
-		        		
+
 			        	// do this for now so as to debug why this happen and how often
 		        		//setPhase(WALKING_EXTERIOR); // TODO: this certainly violate the logic and is considered "cheating"
 	    				//logger.severe(robot + "set phase to WALKING_EXTERIOR.");
@@ -952,8 +953,8 @@ implements Serializable {
             else {
             	if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
 	                logger.finer(robot + " starting walk outside task.");
-		        	// 2015-11-11 setDescription() 
-		        	setDescription("Walking Outside from " + robotLocation + " to " + stepLocation);            
+		        	// 2015-11-11 setDescription()
+		        	setDescription("Walking Outside from " + robotLocation + " to " + stepLocation);
 		        	addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(),
 	                        step.xLoc, step.yLoc, true));
             	}
@@ -982,7 +983,7 @@ implements Serializable {
             // Check if person has reached the outside of the airlock.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Airlock airlock = step.airlock;
-            // TODO: what does it mean to be outside in exitingAirlockPhase() ?            
+            // TODO: what does it mean to be outside in exitingAirlockPhase() ?
             if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
@@ -1211,7 +1212,7 @@ implements Serializable {
 
         return timeLeft;
     }
-    
+
     /**
      * Checks if the person or robot is walking through a given building.
      * @param building the building.
@@ -1219,7 +1220,7 @@ implements Serializable {
      */
     public boolean isWalkingThroughBuilding(Building building) {
         boolean result = false;
-        
+
         // Check if any walk steps are in building.
         Iterator<WalkStep> i = walkingSteps.getWalkingStepsList().iterator();
         while (i.hasNext() && !result) {
@@ -1228,19 +1229,19 @@ implements Serializable {
                 result = true;
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Checks if the person or robot is walking through a given vehicle.
      * @param vehicle the vehicle.
      * @return true if walking through vehicle.
      */
     public boolean isWalkingThroughVehicle(Vehicle vehicle) {
-        
+
         boolean result = false;
-        
+
         // Check if any walk steps are in vehicle.
         Iterator<WalkStep> i = walkingSteps.getWalkingStepsList().iterator();
         while (i.hasNext() && !result) {
@@ -1249,7 +1250,7 @@ implements Serializable {
                 result = true;
             }
         }
-        
+
         return result;
     }
 

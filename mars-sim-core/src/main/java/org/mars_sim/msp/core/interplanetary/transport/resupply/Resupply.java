@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,11 +19,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.BoundedObject;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
@@ -49,6 +54,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -77,11 +83,11 @@ implements Serializable, Transportable {
     private static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 2;
 
 
-    private static final int BUILDING_CENTER_SEPARATION = 10; //9;
+    private static final int BUILDING_CENTER_SEPARATION = 11;;
 
     // Default width and length for variable size buildings if not otherwise determined.
-    private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
-    private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+    private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 9D;
+    private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
 
     /** Minimum length of a building connector (meters). */
     private static final double MINIMUM_CONNECTOR_LENGTH = 1D;//.5D;
@@ -350,10 +356,11 @@ implements Serializable, Transportable {
             	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
             }
 
-           	// Deliver buildings to the destination settlement.
-        } else {// if GUI is NOT in use, use the version of deliverBuildings() here in Resuppply.java
-
+        } else {
+        	// if GUI is NOT in use, use the version of deliverBuildings() here in Resuppply.java
+        	// Deliver buildings to the destination settlement.
         	deliverBuildings();
+
             // Deliver the rest of the supplies and add people.
             deliverOthers();
         }
@@ -381,58 +388,236 @@ implements Serializable, Transportable {
 	        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
 	        //System.out.println("Resupply : Simulation.getUseGUI() is false");
 
-		        while (buildingI.hasNext()) {
-			        BuildingTemplate template = buildingI.next();
-		            // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
-		            if (checkBuildingTemplatePosition(template)) {
-		                // Correct length and width in building template.
-		                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-		                // Replace width and length defaults to deal with variable width and length buildings.
-		                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
+	        while (buildingI.hasNext()) {
+		        BuildingTemplate template = buildingI.next();
 
-		                if (template.getWidth() > 0D) {
-		                    width = template.getWidth();
-		                }
-		                if (width <= 0D) {
-		                    width = DEFAULT_VARIABLE_BUILDING_WIDTH;
-		                }
+                // Correct length and width in building template.
+                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                // Replace width and length defaults to deal with variable width and length buildings.
+                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
 
-		                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
-		                if (template.getLength() > 0D) {
-		                    length = template.getLength();
-		                }
-		                if (length <= 0D) {
-		                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
-		                }
+                if (template.getWidth() > 0D) {
+                    width = template.getWidth();
+                }
+                if (width <= 0D) {
+                    width = DEFAULT_VARIABLE_BUILDING_WIDTH;
+                }
 
-		                // 2015-01-16 Added scenario
-		                int scenarioID = settlement.getID();
-		                String scenario = getCharForNumber(scenarioID + 1);
-		                //String scenario = template.getScenario();  // Note: scenario is null since template does NOT have a scenario string yet
-		                String buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
-		                //System.out.println("Resupply.java Line 394: scenario is " + scenario);
-		                //System.out.println("Resupply.java Line 394: buildingNickName is " + buildingNickName);
+                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getBuildingType());
+                if (template.getLength() > 0D) {
+                    length = template.getLength();
+                }
+                if (length <= 0D) {
+                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
+                }
 
-		                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,
-		                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
+                // 2015-01-16 Added scenario
+                int scenarioID = settlement.getID();
+                String scenario = getCharForNumber(scenarioID + 1);
+                //String scenario = template.getScenario();  // Note: scenario is null since template does NOT have a scenario string yet
+                String buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
+                //System.out.println("Resupply.java Line 394: scenario is " + scenario);
+                //System.out.println("Resupply.java Line 394: buildingNickName is " + buildingNickName);
 
-		                buildingManager.addBuilding(correctedTemplate, true);
+                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,
+                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
-		            } // end of if (checkBuildingTemplatePosition(template)) {
-
-		            else { // when the building is not from the default MD Phase 1 Resupply Mission (NO pre-made template is available)
-		            		buildingManager.addBuilding(template, false);
-		            } // end of else {
-
-		        //i++;
-			    //if (i == size)
-		            //settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);
-		    } // end of while (buildingI.hasNext())
-        }
-        //Building aBuilding = buildingManager.getBuildings().get(0);
-        //settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, aBuilding);
+	            // 2015-12-07 Added checkTemplateAddBuilding()
+                checkTemplateAddBuilding(correctedTemplate);
+	        }
+	    }
     }
 
+    /**
+     * Checks for collision with existing buildings/vehicles/construction sites
+     * and creates the building based on the template to the settlement
+     * @param correctedTemplate
+     */
+    // 2015-12-07 Added checkTemplateAddBuilding()
+    public void checkTemplateAddBuilding(BuildingTemplate correctedTemplate) {
+
+        // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
+        if (checkBuildingTemplatePosition(correctedTemplate)) {
+        	//
+
+        } else {
+
+        	correctedTemplate = clearCollision(correctedTemplate);
+        }
+
+        buildingManager.addBuilding(correctedTemplate, true);
+    }
+
+    /**
+     * Identifies the type of collision and gets new template if the collision is immovable
+     * @param correctedTemplate
+     * @return BuildingTemplate
+     */
+    // 2015-12-07 Added clearCollision()
+    public BuildingTemplate clearCollision(BuildingTemplate correctedTemplate) {
+
+    	boolean noVehicle = true;
+    	// check if a vehicle is the obstacle and move it
+    	noVehicle = checkCollisionMoveVehicle(correctedTemplate);
+		//System.out.println("noVehicle is now " + noVehicle);
+
+	  	boolean noImmovable = true;
+		noImmovable = checkCollisionImmovable(correctedTemplate);
+		//System.out.println("noImmovable is now " + noImmovable);
+
+		if (!noImmovable) {
+			BuildingTemplate repositionedTemplate = positionNewResupplyBuilding(correctedTemplate.getBuildingType());
+			// Call again recursively to check for any collision
+			correctedTemplate = clearCollision(repositionedTemplate);
+		}
+
+		return correctedTemplate;
+    }
+
+    /**
+     * Checks for collision and relocate any vehicles if found
+     * @param xLoc
+     * @param yLoc
+     * @param coordinates
+     * @return true if the location is clear of collision
+     */
+    // 2015-12-07 Added checkCollisionMoveVehicle()
+    public boolean checkCollisionMoveVehicle(BuildingTemplate t) {
+
+    	double xLoc = t.getXLoc();
+    	double yLoc = t.getYLoc();
+    	double w = t.getWidth();
+		double l = t.getLength();
+		double f = t.getFacing();
+
+		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+
+        boolean collison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, settlement.getCoordinates(), true);
+        return !collison;
+
+    }
+
+
+    // 2015-12-07 Added checkCollisionImmovable()
+    public boolean checkCollisionImmovable(BuildingTemplate t) {
+
+    	double xLoc = t.getXLoc();
+    	double yLoc = t.getYLoc();
+    	double w = t.getWidth();
+		double l = t.getLength();
+		double f = t.getFacing();
+
+		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+
+		boolean collison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, settlement.getCoordinates(), true);
+        //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
+
+        return !collison;
+    }
+
+
+/*
+  public boolean checkCollisionMoveVehicle(BuildingTemplate t) {
+
+
+    	double xLoc = correctedTemplate.getXLoc();
+    	double yLoc = correctedTemplate.getYLoc();
+    	double w = correctedTemplate.getWidth();
+		double l = correctedTemplate.getLength();
+		double f = correctedTemplate.getFacing();
+		BoundedObject bo = new BoundedObject(xLoc, yLoc, w, l, f);
+
+		...
+
+        Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+		while (i.hasNext()) {
+			Settlement s = i.next();
+			if (s.equals(settlement)) {
+
+
+				// Check for buildings
+				Collection<Building> bb = s.getBuildingManager().getBuildings();
+				Iterator<Building> k = bb.iterator();
+     			while (k.hasNext()) {
+     				Building b = k.next();
+
+     				// True if new location and facing for bounded object doesn't collide with anything.
+     				boolean noCollision = LocalAreaUtil.checkObjectCollision(bo, w, w,
+     						b.getXLocation(), b.getYLocation(),
+     						f, settlement.getCoordinates());
+
+     				if (!noCollision) {
+     					result = false;
+     					System.out.println("Collided with building : " + b.getNickName());
+     					break;
+     				}
+
+     			}
+
+				// Check for construction sites
+				Collection<ConstructionSite> cc = s.getConstructionManager().getConstructionSites();
+				Iterator<ConstructionSite> ii = cc.iterator();
+     			while (ii.hasNext()) {
+     				ConstructionSite c = ii.next();
+     				// True if new location and facing for bounded object doesn't collide with anything.
+     				//boolean noCollision = LocalAreaUtil.checkObjectCollision(bo, c.getWidth(), c.getLength(),
+     				//		c.getXLocation(), c.getYLocation(), c.getFacing(), settlement.getCoordinates());
+     				boolean noCollision = LocalAreaUtil.checkObjectCollision(bo, w, l,
+     						c.getXLocation(), c.getYLocation(),
+     						f, settlement.getCoordinates());
+
+     				if (!noCollision) {
+     					result = false;
+     					System.out.println("Collided with construction site : " + c.getBuildingName());
+     					break;
+     				}
+
+     			}
+
+     			// checks for vehicles
+				Collection<Vehicle> vs = s.getParkedVehicles();
+				Iterator<Vehicle> j = vs.iterator();
+     			while (j.hasNext()) {
+     				Vehicle v = j.next();
+     			   	double x = v.getXLocation();
+     		    	double y = v.getYLocation();
+     		    	double w = v.getWidth();
+     				double l = v.getLength();
+     				double f = v.getFacing();
+
+     				BoundedObject bv = new BoundedObject(x, y, w, l, f);
+
+     				System.out.println(v + " x : " + v.getXLocation());
+     				System.out.println(v + " y : " + v.getYLocation());
+
+    				// True if new location and facing for bounded object doesn't collide with anything.
+     				//boolean noCollision = LocalAreaUtil.checkObjectCollision(bo, v.getWidth(), v.getLength(),
+     				//		v.getXLocation(), v.getYLocation(), v.getFacing(), settlement.getCoordinates());
+     				boolean noCollision = LocalAreaUtil.checkObjectCollision(bv, w, l,
+     						x, yt.getYLoc(),
+     						f, settlement.getCoordinates());
+
+     				if (!noCollision) {
+     					System.out.println("Collided with vehicle :" + v.getName());
+     					v.determinedSettlementParkedLocationAndFacing();
+                    	// check again if the vehicle has already been moved
+                    	//boolean isCleared = checkCollisionMoveVehicle(xLoc, yLoc, coordinates);
+                    	//if (!isCleared)
+                    	//	result = false;
+     				}
+     			}
+
+			}
+		}
+		return result;
+    }
+*/
+
+
+
+    /**
+     * Delivers vehicles, resources and immigrants to a settlement on a resupply mission
+     */
     public void deliverOthers() {
 
         // Deliver vehicles.
@@ -666,7 +851,7 @@ implements Serializable, Transportable {
         if (isBuildingConnector) {
             // Try to find best location to connect two buildings.
             newPosition = positionNewConnector(buildingType);
-            System.out.println("Case 1 : Positing the building connector");
+            System.out.println("is a building connector");
         }
 
 
@@ -707,6 +892,7 @@ implements Serializable, Transportable {
 */
 
         else if (hasLifeSupport) {
+            System.out.println("has life support");
             // Try to put building next to another inhabitable building.
             List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
             Collections.shuffle(inhabitableBuildings);
@@ -716,11 +902,13 @@ implements Serializable, Transportable {
                 int rand = RandomUtil.getRandomInt(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
                 newPosition = positionNextToBuilding(buildingType, building, rand, false);
                 if (newPosition != null) {
+                    System.out.println("next to another inhabitable building");
                     break;
                 }
             }
         }
         else {
+            System.out.println("no life support");
             // Try to put building next to the same building type.
             List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfSameType(buildingType);
             Collections.shuffle(sameBuildings);
@@ -730,12 +918,14 @@ implements Serializable, Transportable {
                 int rand1 = RandomUtil.getRandomInt(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
                 newPosition = positionNextToBuilding(buildingType, building, rand1, false);
                 if (newPosition != null) {
+                    System.out.println("next to building of the same type");
                     break;
                 }
             }
         }
 
         if (newPosition == null) {
+            System.out.println("no life support, no same type of building");
             // Put this non-habitable building next to a different type building.
             // If not successful, try again 10m from each building and continue out at 10m increments
             // until a location is found.
@@ -743,22 +933,22 @@ implements Serializable, Transportable {
             if (buildingManager.getBuildingNum() > 0) {
                 for (int x = BUILDING_CENTER_SEPARATION; newPosition == null; x+= BUILDING_CENTER_SEPARATION) {
                     List<Building> allBuildings = buildingManager.getBuildings();
-                    System.out.println("allBuildings.size() is "+ allBuildings.size());
-                    System.out.println("Building type is "+ buildingType);
+                    //System.out.println("allBuildings.size() is "+ allBuildings.size());
+                    //System.out.println("Building type is "+ buildingType);
                     Collections.shuffle(allBuildings);
                     Iterator<Building> i = allBuildings.iterator();
                     while (i.hasNext()) {
                         Building building = i.next();
                         newPosition = positionNextToBuilding(buildingType, building, (double) x, false);
                         if (newPosition != null) {
-                        	System.out.println("Case 4 : no life support, has different building type(s)");
+                        	System.out.println("next to a building with no life support and different building type");
                             break;
                         }
                     }
                 }
             }
             else {
-                System.out.println("Case 5 : no life support, no other building(s)");
+                System.out.println("This first building in this settlement. Place it at (0,0)");
                 // Replace width and length defaults to deal with variable width and length buildings.
                 double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(buildingType);
                 if (width <= 0D) {

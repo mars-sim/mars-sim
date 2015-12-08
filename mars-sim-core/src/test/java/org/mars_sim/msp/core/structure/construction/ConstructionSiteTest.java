@@ -32,61 +32,61 @@ public class ConstructionSiteTest extends TestCase {
     ConstructionStage foundationStage = null;
     ConstructionStage frameStage = null;
     ConstructionStage buildingStage = null;
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        
-        site = new ConstructionSite();
-        
+
+        site = new ConstructionSite(null);
+
         Map<Part, Integer> parts = new HashMap<Part, Integer>(1);
         parts.put(new Part("test part","test resource description", 1D), 1);
-        
+
         Map<AmountResource, Double> resources = new HashMap<AmountResource, Double>(1);
         resources.put(new AmountResource("test resource","test resource description", Phase.SOLID, false, false), 1D);
-        
-        List<ConstructionVehicleType> vehicles = 
+
+        List<ConstructionVehicleType> vehicles =
             new ArrayList<ConstructionVehicleType>(1);
         List<Part> attachments = new ArrayList<Part>(1);
         attachments.add(new Part("attachment part","test resource description", 1D));
-        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 
+        vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class,
                 attachments));
-        
-        ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info", 
-                ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 0, false, false, 10000D, 0, null, parts, 
+
+        ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info",
+                ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 0, false, false, 10000D, 0, null, parts,
                 resources, vehicles);
         foundationStage = new ConstructionStage(foundationInfo, site);
-        
-        ConstructionStageInfo frameInfo = new ConstructionStageInfo("test frame info", 
-                ConstructionStageInfo.FRAME, 10D, 10D, false, 0, false, false, 10000D, 0, null, parts, 
+
+        ConstructionStageInfo frameInfo = new ConstructionStageInfo("test frame info",
+                ConstructionStageInfo.FRAME, 10D, 10D, false, 0, false, false, 10000D, 0, null, parts,
                 resources, vehicles);
         frameStage = new ConstructionStage(frameInfo, site);
-        
-        ConstructionStageInfo buildingInfo = new ConstructionStageInfo("Workshop", 
-                ConstructionStageInfo.BUILDING, 10D, 10D, false, 0, false, false, 10000D, 0, null, parts, 
+
+        ConstructionStageInfo buildingInfo = new ConstructionStageInfo("Workshop",
+                ConstructionStageInfo.BUILDING, 10D, 10D, false, 0, false, false, 10000D, 0, null, parts,
                 resources, vehicles);
         buildingStage = new ConstructionStage(buildingInfo, site);
     }
-    
+
     /*
      * Test method for 'org.mars_sim.msp.simulation.structure.construction.
      * ConstructionSite.isAllConstructionComplete()'
      */
     public void testIsAllConstructionComplete() {
-        
+
         try {
             site.addNewStage(foundationStage);
             foundationStage.addWorkTime(10000D);
             assertTrue(foundationStage.isComplete());
-            
+
             site.addNewStage(frameStage);
             frameStage.addWorkTime(10000D);
             assertTrue(frameStage.isComplete());
-            
+
             site.addNewStage(buildingStage);
             buildingStage.addWorkTime(10000D);
             assertTrue(buildingStage.isComplete());
-            
+
             assertTrue(site.isAllConstructionComplete());
         }
         catch (Exception e) {
@@ -100,10 +100,10 @@ public class ConstructionSiteTest extends TestCase {
      */
     public void testSetUndergoingConstruction() {
         assertFalse(site.isUndergoingConstruction());
-        
+
         site.setUndergoingConstruction(true);
         assertTrue(site.isUndergoingConstruction());
-        
+
         site.setUndergoingConstruction(false);
         assertFalse(site.isUndergoingConstruction());
     }
@@ -114,14 +114,14 @@ public class ConstructionSiteTest extends TestCase {
      */
     public void testGetCurrentConstructionStage() {
         assertNull(site.getCurrentConstructionStage());
-        
+
         try {
             site.addNewStage(foundationStage);
             assertEquals(foundationStage, site.getCurrentConstructionStage());
-            
+
             site.addNewStage(frameStage);
             assertEquals(frameStage, site.getCurrentConstructionStage());
-            
+
             site.addNewStage(buildingStage);
             assertEquals(buildingStage, site.getCurrentConstructionStage());
         }
@@ -136,14 +136,14 @@ public class ConstructionSiteTest extends TestCase {
      */
     public void testGetNextStageType() {
         assertEquals(ConstructionStageInfo.FOUNDATION, site.getNextStageType());
-        
+
         try {
             site.addNewStage(foundationStage);
             assertEquals(ConstructionStageInfo.FRAME, site.getNextStageType());
-            
+
             site.addNewStage(frameStage);
             assertEquals(ConstructionStageInfo.BUILDING, site.getNextStageType());
-            
+
             site.addNewStage(buildingStage);
             assertNull(site.getNextStageType());
         }
@@ -160,10 +160,10 @@ public class ConstructionSiteTest extends TestCase {
         try {
             site.addNewStage(foundationStage);
             assertEquals(foundationStage, site.getCurrentConstructionStage());
-            
+
             site.addNewStage(frameStage);
             assertEquals(frameStage, site.getCurrentConstructionStage());
-            
+
             site.addNewStage(buildingStage);
             assertEquals(buildingStage, site.getCurrentConstructionStage());
         }

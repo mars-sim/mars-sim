@@ -15,13 +15,14 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.ProduceFood;
+import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
-/** 
+/**
  * The Makerbot class represents an engineer job focusing on manufacturing goods
  */
 public class Makerbot
@@ -39,7 +40,7 @@ implements Serializable {
 		super(Makerbot.class);
 
 		jobTasks.add(ManufactureGood.class);
-		//jobTasks.add(SalvageGood.class);
+		jobTasks.add(SalvageGood.class);
 		jobTasks.add(ProduceFood.class);
 
 	}
@@ -83,7 +84,7 @@ implements Serializable {
 			result += workshop.getTechLevel() * workshop.getConcurrentProcesses() / 2D;
 		}
 
-		return result;	
+		return result;
 	}
 
 }

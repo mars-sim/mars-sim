@@ -38,7 +38,7 @@ implements Serializable {
 	private List<ConstructionSite> sites;
 	private ConstructionValues values;
 	private SalvageValues salvageValues;
-	private List<ConstructedBuildingLogEntry> constructedBuildingLog; 
+	private List<ConstructedBuildingLogEntry> constructedBuildingLog;
 
 	/**
 	 * Constructor.
@@ -69,7 +69,7 @@ implements Serializable {
 		Iterator<ConstructionSite> i = sites.iterator();
 		while (i.hasNext()) {
 			ConstructionSite site = i.next();
-			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() && 
+			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() &&
 					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
 				if (currentStage != null) {
@@ -77,7 +77,7 @@ implements Serializable {
 					    result.add(site);
 					}
 					else if (!currentStage.isSalvaging()) {
-					    boolean workNeeded = currentStage.getCompletableWorkTime() > 
+					    boolean workNeeded = currentStage.getCompletableWorkTime() >
 					            currentStage.getCompletedWorkTime();
 					    boolean hasConstructionMaterials = hasRemainingConstructionMaterials(currentStage);
 					    if (workNeeded || hasConstructionMaterials) {
@@ -92,16 +92,16 @@ implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Checks if the settlement has any construction materials needed for the stage.
 	 * @param stage the construction stage.
 	 * @return true if remaining materials available.
 	 */
 	public boolean hasRemainingConstructionMaterials(ConstructionStage stage) {
-	    
+
 	    boolean result = false;
-	    
+
 	    Iterator<AmountResource> i = stage.getRemainingResources().keySet().iterator();
 	    while (i.hasNext() && !result) {
 	        AmountResource resource = i.next();
@@ -113,7 +113,7 @@ implements Serializable {
 	            }
 	        }
 	    }
-	    
+
 	    Iterator<Part> j = stage.getRemainingParts().keySet().iterator();
 	    while (j.hasNext() && !result) {
 	        Part part = j.next();
@@ -125,7 +125,7 @@ implements Serializable {
 	            }
 	        }
 	    }
-	    
+
 	    return result;
 	}
 
@@ -138,7 +138,7 @@ implements Serializable {
 		Iterator<ConstructionSite> i = sites.iterator();
 		while (i.hasNext()) {
 			ConstructionSite site = i.next();
-			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() && 
+			if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() &&
 					!site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
 				if (currentStage != null) {
@@ -155,7 +155,7 @@ implements Serializable {
 	 * @return newly created construction site.
 	 */
 	public ConstructionSite createNewConstructionSite() {
-		ConstructionSite result = new ConstructionSite();
+		ConstructionSite result = new ConstructionSite(settlement);
 		sites.add(result);
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, result);
 		return result;
@@ -198,7 +198,7 @@ implements Serializable {
 		if (buildingName == null) throw new IllegalArgumentException("buildingName is null");
 		else if (builtTime == null) throw new IllegalArgumentException("builtTime is null");
 		else {
-			ConstructedBuildingLogEntry logEntry = 
+			ConstructedBuildingLogEntry logEntry =
 					new ConstructedBuildingLogEntry(buildingName, builtTime);
 			constructedBuildingLog.add(logEntry);
 		}

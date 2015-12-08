@@ -989,7 +989,10 @@ implements Serializable, Comparable<Task> {
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 	            Building currentBuilding = BuildingManager.getBuilding(robot);
+
+	            //TODO: determine why the below results in java.lang.NullPointerException
 	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 	                Building building = buildingList.get(buildingIndex);

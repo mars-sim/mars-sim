@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ComponentMover;
@@ -130,6 +131,10 @@ public class PopUpUnitMenu extends JPopupMenu {
         	//buildItemOne(unit);
             buildItemTwo(unit);
         }
+        else if (unit instanceof ConstructionSite) {
+            add(itemOne);
+        	buildItemOne(unit);
+        }
      /*
      // Determine what the GraphicsDevice can support.
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -153,7 +158,7 @@ public class PopUpUnitMenu extends JPopupMenu {
         itemOne.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-  
+
             	if (mainScene != null) {
 					Platform.runLater(() -> {
                        	createDescriptionPanelFX(unit);
@@ -161,44 +166,51 @@ public class PopUpUnitMenu extends JPopupMenu {
                 }
                 else {
                 	createDescriptionPanel(unit);
-                }           	
+                }
              }
         });
     }
-    
-    
+
+
     public void createDescriptionPanelFX(Unit unit) {
-		
-		String description;
-		String type;
-		String name;
-		
+
+		String description = null;
+		String type = null;
+		String name = null;
+
 		if (unit instanceof Vehicle) {
 			Vehicle vehicle = (Vehicle) unit;
 			description = vehicle.getDescription(vehicle.getVehicleType());
 			type = Conversion.capitalize(vehicle.getVehicleType());
 			name = Conversion.capitalize(vehicle.getName());
 		}
-		else {
+
+		else if (unit instanceof Building) {
 			Building building = (Building) unit;
 			description = building.getDescription();
 			type = building.getBuildingType();
 			name = building.getNickName();
 		}
-		
-			
+
+		else if (unit instanceof ConstructionSite) {
+			ConstructionSite site = (ConstructionSite) unit;
+			description = site.getDescription();
+			type = site.getCurrentConstructionStage().getInfo().getName();
+			name = "The future site of " + site.getBuildingName();
+	    }
+
 		double num = description.length() * 1.3D + 130D;
 		if (num > 450)
 			num = 450;
 		int frameHeight = (int) num;
-		
+
 
 		UnitInfoPanel unitInfoPanel = new UnitInfoPanel(desktop);
 		unitInfoPanel.init(name, type, description);
 		unitInfoPanel.setBackground(null);
 		unitInfoPanel.setOpaque(false);
 		unitInfoPanel.setBackground(new Color(0,0,0,128));
-		
+
 		Rectangle rect = new Rectangle(350+20, frameHeight+20);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
 		rect.setArcWidth(10);
 		rect.setArcHeight(10);
@@ -221,7 +233,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	   	Scene scene = new Scene(swingPane, 350, frameHeight, javafx.scene.paint.Color.TRANSPARENT);
 	   	scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
 	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
-	   	
+
     	//Popup stage = new Popup();
 	 	Stage stage = new Stage();
 	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
@@ -247,16 +259,16 @@ public class PopUpUnitMenu extends JPopupMenu {
 	   	    stage.close();
 	   	  }
 	   	});
-	
-		
+
+
 	}
-    
+
     public void createDescriptionPanel(Unit unit) {
-		
+
 		String description;
 		String type;
 		String name;
-		
+
 		if (unit instanceof Vehicle) {
 			Vehicle vehicle = (Vehicle) unit;
 			description = vehicle.getDescription(vehicle.getVehicleType());
@@ -269,9 +281,9 @@ public class PopUpUnitMenu extends JPopupMenu {
 			type = building.getBuildingType();
 			name = building.getNickName();
 		}
-		
+
 		setOpaque(false);
-		
+
 		JFrame f = new JFrame();
 		f.setAlwaysOnTop(true);
 		f.setFocusable(true);
@@ -279,32 +291,32 @@ public class PopUpUnitMenu extends JPopupMenu {
 		//final JDialog d = new JDialog();
 		f.setForeground(Color.YELLOW); // orange font
 		f.setFont( new Font("Arial", Font.BOLD, 14 ) );
-		
-		
+
+
 		double num = description.length() * 1.3D + 130D;
 		if (num > 450)
 			num = 450;
 		int frameHeight = (int) num;
-		
+
 		f.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
 		f.setResizable(false);
 		f.setUndecorated(true);
 		f.setBackground(new Color(0,0,0,0)); // not working for decorated jframe
-		
+
 		UnitInfoPanel b = new UnitInfoPanel(desktop);
 		b.init(name, type, description);
-		
+
 		f.add(b);
-		
+
 		//2014-11-27 Added ComponentMover Class
 		ComponentMover mover = new ComponentMover(f, b, f.getContentPane());
 		mover.registerComponent(b);
-		
-		
+
+
 		// Make the buildingPanel to appear at the mouse cursor
 		Point location = MouseInfo.getPointerInfo().getLocation();
 		f.setLocation(location);
-		
+
 		f.setVisible(true);
 		f.addWindowFocusListener(new WindowFocusListener() {
 		    public void windowLostFocus(WindowEvent e) {
@@ -316,7 +328,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		    }
 		});
 	}
-    
+
 /* BACKUP
    public void buildItemOne(final Unit unit) {
 
@@ -437,7 +449,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	    });
 
 	   	Scene scene = new Scene(swingPane, 400, 400, javafx.scene.paint.Color.TRANSPARENT);
-	   	
+
 	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 
 	   	stage.requestFocus();
