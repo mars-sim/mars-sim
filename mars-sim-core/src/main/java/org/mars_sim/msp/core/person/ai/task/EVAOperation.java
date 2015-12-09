@@ -118,7 +118,7 @@ implements Serializable {
         this.siteDuration = siteDuration;
         timeOnSite = 0D;
 
-        // Check if person is in a settlement or a rover.
+        // Check if robot is in a settlement or a rover.
         if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
             interiorObject = BuildingManager.getBuilding(robot);
             if (interiorObject == null) {

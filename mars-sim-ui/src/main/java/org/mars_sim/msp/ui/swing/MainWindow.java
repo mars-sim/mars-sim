@@ -40,12 +40,14 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 
@@ -77,6 +79,10 @@ public class MainWindow extends JComponent {
 
 	// 2014-12-05 Added mainWindowMenu;
 	private MainWindowMenu mainWindowMenu;
+
+	// 2014-12-23 Added transportWizard
+	private TransportWizard transportWizard;
+	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 
 	private Thread newSimThread;
 	private Thread loadSimThread;
@@ -143,6 +149,8 @@ public class MainWindow extends JComponent {
 		// Open all initial windows.
 		desktop.openInitialWindows();
 
+		// 2014-12-23 Added transportWizard
+		transportWizard = new TransportWizard(this, desktop);
 	}
 
 	// 2015-02-04 Added init()
@@ -747,4 +755,21 @@ public class MainWindow extends JComponent {
 		return lookAndFeelTheme;
 	}
 
+
+	/**
+	 * Opens a transport wizard on the desktop.
+	 * @param announcement the announcement text to display.
+	 */
+	// 2014-12-23 Added openTransportWizard().
+	// To be called in case of non-javaFX mode. Use the version in MainScene in javaFX mode
+	public synchronized void openTransportWizard(BuildingManager buildingManager) { //, Building building) {
+		//transportWizard.setAnnouncement(announcement);
+		//transportWizard.initialize(buildingManager);//, settlementWindow);//, building);
+		transportWizard.deliverBuildings(buildingManager);
+
+	}
+	
+	public TransportWizard getTransportWizard() {
+		return transportWizard;
+	}
 }

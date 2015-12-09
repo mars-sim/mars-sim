@@ -864,7 +864,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	public void printWorkShift(String text) {
-		logger.info(text + " : " + getName() + "'s shifts ==> A : " + numA + "  B : " + numB + "  X : " + numX + "  Y : " + numY + "  Z : " + numZ + "  OnCall : " + numOnCall);// + "   Off : " + numOff);
+		logger.info(text + " " + getName() + "work shift status => A:" + numA + " B:" + numB 
+				+ " X:" + numX + " Y:" + numY + " Z:" + numZ + " OnCall:" + numOnCall);
+				// + " Off:" + numOff);
 	}
 
 	/*

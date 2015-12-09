@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import javafx.scene.control.Alert;
@@ -61,11 +62,12 @@ public class TransportWizard {
 
 	private BuildingManager mgr;
 	private MainDesktopPane desktop;
-	private Settlement settlement;
+	//private Settlement settlement;
 	private SettlementWindow settlementWindow;
 	private SettlementMapPanel mapPanel;
-	private Resupply resupply;
+	//private Resupply resupply;
 	private MainScene mainScene;
+	private MainWindow mainWindow;
 	private BuildingConfig buildingConfig;
 
 
@@ -74,9 +76,9 @@ public class TransportWizard {
 	 * For non-javaFX UI
 	 * @param desktop the main desktop pane.
 	 */
-	public TransportWizard(final MainDesktopPane desktop) {
+	public TransportWizard(final MainWindow mainWindow, final MainDesktopPane desktop) {
 		this.desktop = desktop;
-		mainScene = desktop.getMainScene();
+		this.mainWindow = mainWindow;
 		settlementWindow = desktop.getSettlementWindow();
 		mapPanel = settlementWindow.getMapPanel();
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
@@ -90,7 +92,6 @@ public class TransportWizard {
 	public TransportWizard(final MainScene mainScene, MainDesktopPane desktop) {
 		this.desktop = desktop;
 		this.mainScene = mainScene;
-		//if (desktop == null) 	System.out.println("desktop is null");
 		settlementWindow = desktop.getSettlementWindow();
 		//if (settlementWindow == null) System.out.println("settlementWindow is null");
 		mapPanel = settlementWindow.getMapPanel();
@@ -98,27 +99,12 @@ public class TransportWizard {
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
-	//public void createGUI(Building newBuilding) {
-	//	settlement = newBuilding.getBuildingManager().getSettlement();
-	//}
-
-	/**
-	 *  Sets in the settlement based on where this building is located
-	 * @param mgr
-	 */
-	public synchronized void initialize(BuildingManager mgr) { //, SettlementWindow settlementWindow) {
-		this.mgr = mgr;
-		// note: important for MainDesktopPane to switch the settlement variable when placing/transporting building
-		this.settlement = mgr.getSettlement();
-		this.resupply = mgr.getResupply();
-		//System.out.println("Just called TransportWizard's initialize()");
-	}
 
 	/**
      * Delivers buildings to the destination settlement.
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
-    public synchronized void deliverBuildings() {
+    public synchronized void deliverBuildings(BuildingManager mgr) {
 		//System.out.println("Just called TransportWizard's deliverBuildings()");
 
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
@@ -127,25 +113,26 @@ public class TransportWizard {
         if (mainScene != null) {
         	// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
            	mainScene.pauseSimulation();
-           	askDefaultPosition();
+           	askDefaultPosition(mgr);
     	   	//mainScene.unpauseSimulation();
 		}
         else {
         	// non-javaFX mode
-        	determineEachBuildingPosition();
+        	determineEachBuildingPosition(mgr);
         }
 
        	// 2015-11-12 Deliver the rest of the supplies and add people.
-       	resupply.deliverOthers();
+        mgr.getResupply().deliverOthers();
     }
 
     /**
      * Asks user if all arrival buildings use the default template positions
      */
 	// 2015-12-07 Added askDefaultPosition()
-    public synchronized void askDefaultPosition() {
-    	String message = "Use default positions for all arrival buildings in " + settlement + "?";
-    	Alert alert = new Alert(AlertType.CONFIRMATION);
+    @SuppressWarnings("restriction")
+	public synchronized void askDefaultPosition(BuildingManager mgr) {
+    	String message = "Use default positions for all arriving buildings in " + mgr.getSettlement() + "?";
+		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle(TITLE);
     	alert.initOwner(mainScene.getStage());
 		alert.initModality(Modality.NONE); // Modality.NONE is by default if initModality() is NOT specified.
@@ -162,13 +149,13 @@ public class TransportWizard {
 
 		alert.showAndWait().ifPresent(response -> {
 		     if (response == buttonTypeYes) {
-		    	 mainScene.unpauseSimulation();
-		    	 resupply.deliverBuildings();
-		    	 logger.info("All buildings are put in place using default positions");
+		 		if (mainScene != null) mainScene.unpauseSimulation();
+		    	 mgr.getResupply().deliverBuildings();
+		    	 logger.info("All buildings are put in place at default positions at " + mgr.getSettlement());
 		     }
 		     else if (response == buttonTypeNo) {
-		    	 mainScene.unpauseSimulation();
-		    	 determineEachBuildingPosition();
+		 		if (mainScene != null) mainScene.unpauseSimulation();
+		    	 determineEachBuildingPosition(mgr);
 		     }
 
 		});
@@ -195,12 +182,13 @@ public class TransportWizard {
 	 * Determines the placement of each building manually, instead of using the template positions
 	 */
     // 2015-12-07 Added determineEachBuildingPosition()
-	public synchronized void determineEachBuildingPosition() {
+	public synchronized void determineEachBuildingPosition(BuildingManager mgr) {
 
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
-    	mainScene.pauseSimulation();
+		if (mainScene != null)
+			mainScene.pauseSimulation();
 
-        List<BuildingTemplate> orderedBuildings = resupply.orderNewBuildings();
+        List<BuildingTemplate> orderedBuildings = mgr.getResupply().orderNewBuildings();
         // 2014-12-23 Added sorting orderedBuildings according to its building id
         //Collections.sort(orderedBuildings);
         //Collections.shuffle(orderedBuildings);
@@ -211,10 +199,9 @@ public class TransportWizard {
         while (buildingI.hasNext()) {
 
            BuildingTemplate template = buildingI.next();
+           //System.out.println("TransportWizard : BuildingTemplate for " + template.getNickName());
 
-           System.out.println("TransportWizard : BuildingTemplate for " + template.getNickName());
-
-   	   		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
+           // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
 
 
 /*    	   // check if it's a building connector and if it's connecting the two buildings at their template position
@@ -227,20 +214,12 @@ public class TransportWizard {
 
            // 2015-12-06 Added this recursive method checkTemplatePosition()
            // to handle the creation of a new building template in case of an obstacle.
-           checkTemplatePosition(template, true);
-
-           //i++;
-           // if it's the very last one on the list,...
-           //if (i == size) {
-        	   // TODO: do we need to place each placed building into the fireUnitUpdate() ?
-        	//   Building lastBuilding = mgr.getBuildings().get(size-1);
-        	//   settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, lastBuilding);
-	        //}
+           checkTemplatePosition(mgr, template, true);
 
 	    } // end of while (buildingI.hasNext())
 
         Building building = mgr.getBuildings().get(0);
-        settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, building);
+        mgr.getSettlement().fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, building);
 
 		// 2015-10-17 Check if it was previously on pause mode
 		//if (isOnPauseMode) {
@@ -249,7 +228,8 @@ public class TransportWizard {
 		//else
 		//	mainScene.unpauseSimulation(); // Note: this can take away any previous announcement window
 
-        mainScene.unpauseSimulation();
+		if (mainScene != null)
+			mainScene.unpauseSimulation();
 
 	}
 
@@ -260,10 +240,10 @@ public class TransportWizard {
      * @param checkVehicle if it has checked/moved the vehicle already
      */
     // 2015-12-06 Added checkTemplatePosition()
-    public synchronized void checkTemplatePosition(BuildingTemplate template, boolean defaultPosition) {
+    public synchronized void checkTemplatePosition(BuildingManager mgr, BuildingTemplate template, boolean defaultPosition) {
 
-        int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-        int scenarioID = settlement.getID();
+        int buildingID = mgr.getUniqueBuildingIDNumber();
+        int scenarioID = mgr.getSettlement().getID();
         String scenario = getCharForNumber(scenarioID + 1);
         buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
 
@@ -291,62 +271,62 @@ public class TransportWizard {
      	BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,
                  length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
+     	// 2015-12-08 Added checkTemplateAddBuilding()
+        checkTemplateAddBuilding(mgr, correctedTemplate);
+
+/*        
         // True if the template position is clear of obstacles (existing buildings/vehicles/construction sites)
-        if (resupply.checkBuildingTemplatePosition(correctedTemplate)) {
+        if (mgr.getResupply().checkBuildingTemplatePosition(correctedTemplate)) {
      	   //System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
-     	   confirmBuildingLocation(correctedTemplate, defaultPosition);
+     	   confirmBuildingLocation(mgr, correctedTemplate, defaultPosition);
 
-        }
-
-        else {
-
+        } else {
      	    // check if a vehicle is the obstacle and move it
-
             boolean somethingStillBlocking = checkObstacleMoveVehicle(correctedTemplate);
 
             if (somethingStillBlocking) {
               	System.out.println("TransportWizard : somethingStillBlocking is true");
 
-            	BuildingTemplate repositionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
+            	BuildingTemplate repositionedTemplate = mgr.getResupply().positionNewResupplyBuilding(template.getBuildingType());
 
-             	checkTemplatePosition(repositionedTemplate, false);
+             	checkTemplatePosition(mgr, repositionedTemplate, false);
 
 
             } else {
              	System.out.println("TransportWizard : somethingStillBlocking is false");
 
-            	confirmBuildingLocation(correctedTemplate, defaultPosition);
-/*
-            	if (resupply.checkBuildingTemplatePosition(correctedTemplate)) {
-              	   //System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
-              	   confirmBuildingLocation(correctedTemplate, defaultPosition);
-
-                }
-
-            	else {
-            		logger.warning(template.getNickName() + " has an collison with an unknown object at ("
-            				+ template.getXLoc() + ", " + template.getYLoc() + ")");
-            	}
-*/
-
+            	confirmBuildingLocation(mgr, correctedTemplate, defaultPosition);
             }
-
-
         } // end of else {
-
+*/        
     }
 
+
+    /**
+     * Checks for collision with existing buildings/vehicles/construction sites
+     * and creates the building based on the template to the settlement
+     * @param correctedTemplate
+     */
+    // 2015-12-07 Added checkTemplateAddBuilding()
+    public synchronized void checkTemplateAddBuilding(BuildingManager mgr, BuildingTemplate correctedTemplate) {
+        // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
+        if (mgr.getResupply().checkBuildingTemplatePosition(correctedTemplate)) {     	
+        	confirmBuildingLocation(mgr, correctedTemplate, true);
+        } else {
+        	correctedTemplate = mgr.getResupply().clearCollision(correctedTemplate);      	
+        	confirmBuildingLocation(mgr, correctedTemplate, false);
+        }     
+    }
+    
     /**
      * Check if the obstacle is a vehicle, if it is a vehicle, move it elsewhere
      * @param template the position of the proposed building
      * @return true if something else is still blocking
      */
+    // 2015-12-08 Replaced with using LocalAreaUtil.checkVehicleBoundedOjectIntersected() 
+    // and checkImmovableBoundedOjectIntersected() for better accuracy and less buggy collision checking
     public synchronized boolean checkObstacleMoveVehicle(BuildingTemplate template){
-       	// Find the pre-defined location of the building
-    	//Building newBuilding = new Building(template, settlement.getBuildingManager());
-		//double xLoc = newBuilding.getXLocation();
-		//double yLoc = newBuilding.getYLocation();
-		//double scale = mapPanel.getScale();
+    	
 		boolean isSomethingElseBlocking = false;
 		boolean quit = false;
 
@@ -396,9 +376,8 @@ public class TransportWizard {
      * @param buildingManager
      * @param isAtPreDefinedLocation
      */
-	public synchronized void confirmBuildingLocation(BuildingTemplate template, boolean isAtPreDefinedLocation) {
+	public synchronized void confirmBuildingLocation(BuildingManager mgr, BuildingTemplate template, boolean isAtPreDefinedLocation) {
 
-		//BuildingTemplate repositionedTemplate ; // should NOT be null
 		Building newBuilding ;
 	    //final int TIME_OUT = 20;
 	    //int count = TIME_OUT;
@@ -406,24 +385,7 @@ public class TransportWizard {
 		// Hold off 10 seconds
 		//int seconds = 10;
 
-   		//settlement = newBuilding.getBuildingManager().getSettlement();
-
-		newBuilding = settlement.getBuildingManager().addOneBuilding(template, resupply, true);
-
-/*
-		if (isAtPreDefinedLocation) {
-			System.out.println("TranportWizard : isAtDefinedLocation is true ");
-			newBuilding = settlement.getBuildingManager().addOneBuilding(template, resupply, true);
-		}
-
-		else {
-			System.out.println("TranportWizard : isAtDefinedLocation is false ");
-			// Reposition the building elsewhere
-			repositionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
-
-			newBuilding = settlement.getBuildingManager().addOneBuilding(repositionedTemplate, resupply, true);
-		}
-*/
+		newBuilding = mgr.getSettlement().getBuildingManager().addOneBuilding(template, mgr.getResupply(), true);
 
         // Determine location and facing for the new building.
   		// set up the Settlement Map Tool to display the suggested location of the building
@@ -441,9 +403,7 @@ public class TransportWizard {
 			message = "Would you like to place " + buildingNickName + " at this new position?";
 
         if (mainScene != null) {
-
 	    	//mainScene.pauseSimulation();
-
         	Alert alert = new Alert(AlertType.CONFIRMATION);
    			alert.initOwner(mainScene.getStage());
         	alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
@@ -461,25 +421,16 @@ public class TransportWizard {
 			ButtonType buttonTypeYes = new ButtonType("Yes");
 			ButtonType buttonTypeNo = new ButtonType("No");
 			alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
-/*
-        			Optional<ButtonType> result = alert.showAndWait(); // not show()
-        			if (result.get() == buttonTypeYes){
-        	            logger.info("Building in Placed : " + newBuilding.toString());
-        			} else if (result.get() == buttonTypeNo) {
-        				settlement.getBuildingManager().removeBuilding(newBuilding);
-        				confirmBuildingLocation(template, false);
-        			}
-*/
+
 			alert.showAndWait().ifPresent(response -> {
 			     if (response == buttonTypeYes) {
 			    	 logger.info(newBuilding.toString() + " is put in place");
 			    	 //mainScene.unpauseSimulation();
 			     }
 			     else if (response == buttonTypeNo) {
-			    	 settlement.getBuildingManager().removeBuilding(newBuilding);
-			    	 BuildingTemplate repositionedTemplate = resupply.positionNewResupplyBuilding(template.getBuildingType());
-			    	 checkTemplatePosition(repositionedTemplate, false);
-			    	 //confirmBuildingLocation(template, false);
+			    	 mgr.removeBuilding(newBuilding);
+			    	 BuildingTemplate repositionedTemplate = mgr.getResupply().positionNewResupplyBuilding(template.getBuildingType());
+			    	 checkTemplatePosition(mgr, repositionedTemplate, false);
 			    	 //mainScene.unpauseSimulation();
 			     }
 
@@ -487,16 +438,13 @@ public class TransportWizard {
 
 			// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus
 			//buttonTypeYes.defaultButtonProperty().bind(startButton.focusedProperty());
-
 			EventHandler<KeyEvent> fireOnEnter = event -> {
 			    if (KeyCode.ENTER.equals(event.getCode())
 			            && event.getTarget() instanceof Button) {
 			        ((Button) event.getTarget()).fire();
 			    }
 			};
-
 			//DialogPane dialogPane = alert.getDialogPane();
-
 			alert.getButtonTypes().stream()
 			        .map(alert.getDialogPane()::lookupButton)
 			        .forEach(button ->
@@ -517,10 +465,7 @@ public class TransportWizard {
           				confirmBuildingLocation(template, false);
       		      });
 */
-
-		}
-
-        else {
+		} else {
 
 	        desktop.openAnnouncementWindow("Pause for Building Transport and Confirm Location");
 	        AnnouncementWindow aw = desktop.getAnnouncementWindow();
@@ -536,17 +481,11 @@ public class TransportWizard {
 	            logger.info("Building in Place : " + newBuilding.toString());
 			}
 			else {
-				settlement.getBuildingManager().removeBuilding(newBuilding);
-				confirmBuildingLocation(template, false);
+				mgr.removeBuilding(newBuilding);
+				confirmBuildingLocation(mgr, template, false);
 			}
 
         }
-	}
-
-
-
-	public Settlement getSettlement() {
-		return settlement;
 	}
 
 	/**
@@ -555,10 +494,8 @@ public class TransportWizard {
 	public void destroy() {
 		mgr = null;
 		desktop = null;
-		settlement = null;
 		settlementWindow = null;
 		mapPanel = null;
-		resupply = null;
 	}
 
 }

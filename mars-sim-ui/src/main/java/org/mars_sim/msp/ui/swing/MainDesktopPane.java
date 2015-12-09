@@ -138,7 +138,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private Settlement settlement;
 
 	// 2014-12-23 Added transportWizard
-	private TransportWizard transportWizard;
+	//private TransportWizard transportWizard;
 	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 
 	/** The main window frame. */
@@ -512,7 +512,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		catch (java.beans.PropertyVetoException e) { }
 
 		// 2014-12-23 Added transportWizard
-		transportWizard = new TransportWizard(this);
+		//transportWizard = new TransportWizard(this);
 		//try { transportWizard.setClosed(true); }
 		//catch (java.beans.PropertyVetoException e) { }
 
@@ -1226,19 +1226,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	}
 
 	/**
-	 * Opens a transport wizard on the desktop.
-	 * @param announcement the announcement text to display.
-	 */
-	// 2014-12-23 Added openTransportWizard().
-	// To be called in case of non-javaFX mode. Use the version in MainScene in javaFX mode
-	public synchronized void openTransportWizard(BuildingManager buildingManager) { //, Building building) {
-		//transportWizard.setAnnouncement(announcement);
-		transportWizard.initialize(buildingManager);//, settlementWindow);//, building);
-		transportWizard.deliverBuildings();
-
-	}
-
-	/**
 	 * Removes the transport wizard from the desktop.
 	 */
 	// 2014-12-23 Added disposeTransportWizard()
@@ -1300,7 +1287,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			remove(toolWindow);
 		}
 		disposeAnnouncementWindow();
-		//disposing transportWizard
 	}
 
 	/**
@@ -1411,9 +1397,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		this.settlementWindow = settlementWindow;
 	}
 
-	public TransportWizard getTransportWizard() {
-		return transportWizard;
-	}
+	//public TransportWizard getTransportWizard() {
+	//	return transportWizard;
+	//}
 
 	public AnnouncementWindow getAnnouncementWindow() {
 		return announcementWindow;
@@ -1460,7 +1446,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// Open Settlement Map Tool
 			openToolWindow(SettlementWindow.NAME);
 			if (mainWindow != null)  {//mainWindow.pauseSimulation();
-				openTransportWizard(mgr);
+				mainWindow.openTransportWizard(mgr);
 			}
 			else if (mainScene != null) {//mainScene.pauseSimulation();
 				Platform.runLater(new Runnable() {
@@ -1552,7 +1538,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		settlementWindow = null;
 		building = null;
 		settlement = null;
-		transportWizard = null;
+		//transportWizard = null;
 		mgr = null;
 		mainWindow = null;
 		mainScene = null;

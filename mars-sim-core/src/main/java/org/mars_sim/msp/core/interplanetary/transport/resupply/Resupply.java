@@ -113,7 +113,6 @@ implements Serializable, Transportable {
 	 * @param settlement the settlement receiving the supplies.
 	 */
 	public Resupply(MarsClock arrivalDate, Settlement settlement) {
-
 		// Initialize data members.
 		this.arrivalDate = arrivalDate;
 		this.settlement = settlement;

@@ -230,8 +230,8 @@ public class MainScene {
 	}
 
 	public synchronized void openTransportWizard(BuildingManager buildingManager) {
-		transportWizard.initialize(buildingManager);
-		transportWizard.deliverBuildings();
+		//transportWizard.initialize(buildingManager);
+		transportWizard.deliverBuildings(buildingManager);
 	}
 
 	public TransportWizard getTransportWizard() {
