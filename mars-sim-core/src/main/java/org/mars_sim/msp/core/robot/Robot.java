@@ -173,8 +173,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
         getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
-        // Put robot in proper building.
+        // Put robot into the settlement.
         settlement.getInventory().storeUnit(this);
+        // Put robot in proper building.
         BuildingManager.addToRandomBuilding(this, settlement);
     }
 
@@ -275,29 +276,29 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
    // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
    public Settlement getSettlement() {
        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-    	   Settlement settlement = (Settlement) getContainerUnit();  	
+    	   Settlement settlement = (Settlement) getContainerUnit();
     	   return settlement;
        }
-       
+
        else if (getLocationSituation() == LocationSituation.OUTSIDE)
     	   return null;
-       
+
        else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
-    	   Vehicle vehicle = (Vehicle) getContainerUnit();	
+    	   Vehicle vehicle = (Vehicle) getContainerUnit();
     	   Settlement settlement = (Settlement) vehicle.getContainerUnit();
     	   return settlement;
        }
-       
+
        else if (getLocationSituation() == LocationSituation.BURIED) {
     	   return null;
        }
-       
+
        else {
     	   System.err.println("Error in determining " + getName() + "'s getSettlement() ");
     	   return null;
        }
    }
-    
+
 
     /**
      * Get vehicle robot is in, null if robot is not in vehicle

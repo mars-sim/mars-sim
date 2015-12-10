@@ -42,10 +42,10 @@ implements Serializable {
 
         // Populate data members.
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        capacity = config.getDiningCapacity(building.getName());
+        capacity = config.getDiningCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getDiningActivitySpots(building.getName()));
+        loadActivitySpots(config.getDiningActivitySpots(building.getBuildingType()));
     }
 
     /**

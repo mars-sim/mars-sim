@@ -186,9 +186,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<!-- See resources.xml -->
 					<!-- rate: the rate (kg/millisol) the resource is being produced by the process. -->
 					<!-- ambient: true if resource is being released into the external environment, -->
-					<!-- false if resource is stored in the settlement's inventory. -->				
+					<!-- false if resource is stored in the settlement's inventory. -->
 					<output resource="water" rate="9.0" ambient="false" />
-					<output resource="solid waste" rate="0.01" ambient="false" />	
+					<output resource="solid waste" rate="0.01" ambient="false" />
 				</process>
 
 				<process name="Black Water Recycling" power-required="1.0" default="off">
@@ -196,18 +196,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="oxygen" rate="0.5" ambient="false" />
 					<input resource="chlorine" rate="0.01" ambient="false" />
 					<output resource="water" rate="9.0" ambient="false" />
-					<output resource="toxic waste" rate="0.01" ambient="false" />				
+					<output resource="toxic waste" rate="0.01" ambient="false" />
 				</process>
 
-				<!-- The precursor technology is based on an experimental device being 
-				researched in by NASA called Vortical Oxidative Reactor Technology Experiment (VORTEX). 
+				<!-- The precursor technology is based on an experimental device being
+				researched in by NASA called Vortical Oxidative Reactor Technology Experiment (VORTEX).
 				http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html -->
 				<process name="Waste Incineration" power-required="2.0" default="off">
 					<input resource="toxic waste" rate="0.2" ambient="false" />
 					<input resource="solid waste" rate="0.2" ambient="false" />
-					<output resource="fertilizer" rate="0.05" ambient="false" />				
+					<output resource="fertilizer" rate="0.05" ambient="false" />
 				</process>
-				
+
 				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
 				<process name="Carbon Scrubbing" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".067" ambient="false" />
@@ -238,7 +238,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- resource: the resource that the building can store. -->
 				<!-- See resources.txt -->
 				<!-- capacity: the building's capacity (kg) for a particular resource. -->
-				
+
 				<resource-storage resource="toxic waste" capacity="500.0" />
 				<resource-storage resource="solid waste" capacity="500.0" />
 				<resource-storage resource="food waste" capacity="500.0" />
@@ -381,7 +381,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>The MD1 Nuclear Reactor is the first generation, small and self-contained
-		 	150kW nuclear reactor that is built for Martian environment and requires 
+		 	150kW nuclear reactor that is built for Martian environment and requires
 		 	relatively minimal maintenance.
 		</description>
 
@@ -397,10 +397,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Starting ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The starting ERV base was sent ahead of the arrival
-			of the human crew. It supplies the settlement with tanks of hydrogen that can be 
-			converted into CH4 and H2O via Sabatier Process. It can perform Water Electrolysis 
-			to turn water into H2 and O2. It can also carry out Carbon Dioxide Reduction that 
-			reduces CO2 into O2 and CO. 
+			of the human crew. It supplies the settlement with tanks of hydrogen that can be
+			converted into CH4 and H2O via Sabatier Process. It can perform Water Electrolysis
+			to turn water into H2 and O2. It can also carry out Carbon Dioxide Reduction that
+			reduces CO2 into O2 and CO.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="1.0"/>
 
@@ -441,8 +441,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="ERV Base" width="10.0" length="10.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The Earth Return Vehicle (ERV) is a flight ready space vehicle. If not used
-			for the return trip, it can be retrofitted for critical resource processing functions as 
-			it carried similar equipment package as those found in Starting ERV Base. 
+			for the return trip, it can be retrofitted for critical resource processing functions as
+			it carried similar equipment package as those found in Starting ERV Base.
 		</description>
 		<power-required base-power="8.0" base-power-down-power="1.0"/>
 
@@ -485,7 +485,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" >
 		<description>
-			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 600kW 
+			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 600kW
 			nuclear reactor that requires relatively minimal maintenance.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0"/>
@@ -499,7 +499,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Atmospheric Processor" width="8.0" length="11.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
-		<description> The Atmospheric Processor is an uninhabitable, resource-processing 
+		<description> The Atmospheric Processor is an uninhabitable, resource-processing
 		building providing water recyling, air processing and waste incineration functions
 		for the settlement.
 		</description>
@@ -528,7 +528,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<input resource="oxygen" rate="2.0" ambient="false" />
 					<input resource="chlorine" rate="0.02" ambient="false" />
 					<output resource="water" rate="27.0" ambient="false" />
-					<output resource="solid waste" rate="0.03" ambient="false" />					
+					<output resource="solid waste" rate="0.03" ambient="false" />
 				</process>
 				<process name="Black Water Recycling" power-required="3.0" default="off">
 					<input resource="black water" rate="30.0" ambient="false" />
@@ -537,19 +537,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<output resource="water" rate="27.0" ambient="false" />
 					<output resource="toxic waste" rate="0.03" ambient="false" />
 				</process>
-				
+
 				<process name="Waste Incineration" power-required="4.0" default="off">
 					<input resource="toxic waste" rate="0.4" ambient="false" />
 					<input resource="solid waste" rate="0.4" ambient="false" />
-					<output resource="fertilizer" rate="0.1" ambient="false" />				
+					<output resource="fertilizer" rate="0.1" ambient="false" />
 				</process>
-				
+
 				<process name="Carbon Scrubbing" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".67" ambient="false" />
 					<output resource="Oxygen" rate=".5" ambient="false" />
 				</process>
 			</resource-processing>
-			
+
 			<storage stock-capacity="80000">
 				<resource-storage resource="Hydrogen" capacity="10000.0" />
 				<resource-storage resource="Methane" capacity="10000.0" />
@@ -558,7 +558,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-storage resource="grey water" capacity="2000.0" />
 				<resource-storage resource="black water" capacity="2000.0" />
 				<resource-storage resource="Ice" capacity="2000.0" />
-				
+
 				<resource-storage resource="solid waste" capacity="2000.0" />
 				<resource-storage resource="toxic waste" capacity="2000.0" />
 
@@ -874,7 +874,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 <!--
   			<EVA airlock-capacity="8" xloc="-3.0" yloc="2.3" interior-xloc="-2.5" interior-yloc="2.3"
 			exterior-xloc="-4.5" exterior-yloc="2.3" />
--->			
+-->
 			<life-support capacity="10" power-required="20.0" />
 			<management population-support="25">
 				<activity>
@@ -893,13 +893,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</management>
 			<robotic-station slots="4">
-				<activity>			
+				<activity>
 					<activity-spot xloc="2.6" yloc="2.5" />
 					<activity-spot xloc="2.6" yloc="-2.5" />
 					<activity-spot xloc="-2.6" yloc="-2.5" />
 					<activity-spot xloc="-2.6" yloc="2.5" />
-				</activity>		
-			</robotic-station>		
+				</activity>
+			</robotic-station>
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="5.0" />
 				<heat-source type="Electric Heat Source" capacity="20.0" />
@@ -957,7 +957,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.6" yloc="-2.45" />
 					<activity-spot xloc="1.6" yloc="-4.9" />
 					<activity-spot xloc="-1.6" yloc="4.9" />
-					<activity-spot xloc="-1.6" yloc="2.45" />					
+					<activity-spot xloc="-1.6" yloc="2.45" />
 				</activity>
 			</robotic-station>
 
@@ -1526,7 +1526,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.35" yloc="-1.4" />
 				</activity>
 			</research>
-			<robotic-station slots="4"/>
+<!-- 			<robotic-station slots="4"/> -->
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="10.0" />

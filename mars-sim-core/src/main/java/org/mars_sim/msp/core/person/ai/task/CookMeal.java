@@ -97,20 +97,25 @@ implements Serializable {
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);
 
-		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
+		    //int size = kitchen.getMealRecipesWithAvailableIngredients().size();
+	    	// 2015-12-10 Used getNumCookableMeal()
+		    int size = kitchen.getNumCookableMeal();
+
+        	// Need to reset numGoodRecipes periodically since it's a cache value
+        	// and won't get updated unless a meal is cooked.
+        	// Note: it's reset at least once a day at the end of a sol
+        	if (RandomUtil.getRandomInt(5) == 0)
+        		// check again to reset the value once in a while
+        		size = kitchen.getMealRecipesWithAvailableIngredients().size();
+
 	        if (size == 0) {
 	        	counter++;
-	        	boolean display = false;
 
-	        	// display the msg when no ingredients are detected at first and after 15 warnings
-	        	if (counter > 30 || counter == 0)
-	        		display = true;
-
-	        	if (display) {
+	        	// display the msg when no ingredients are detected at first and after n warnings
+	        	if (counter % 30 == 0 && counter < 150) {
 	        		logger.severe("Warning: cannot cook meals in "
-	            		+ kitchenBuilding.getBuildingManager().getSettlement().getName()
+	            		+ person.getSettlement().getName()
 	            		+ " because none of the ingredients of a meal are available ");
-		            //counter = 0;
 	        	}
 
 	            // 2015-01-15 Added solElapsed
@@ -120,8 +125,8 @@ implements Serializable {
 	            if (solElapsed != solElapsedCache) {
 	            	counter = 0;
 	            	solElapsedCache = solElapsed;
-
 	            }
+
 	            endTask();
 		    }
 	        else {
@@ -164,13 +169,33 @@ implements Serializable {
 	        // Walk to kitchen building.
 	    	walkToActivitySpotInBuilding(kitchenBuilding, false);
 
-		    double size = kitchen.getMealRecipesWithAvailableIngredients().size();
-	        if (size == 0) {
+		    //int size = kitchen.getMealRecipesWithAvailableIngredients().size();
+	    	// 2015-12-10 Used getNumCookableMeal()
+		    int size = kitchen.getNumCookableMeal();
+
+        	// Need to reset numGoodRecipes periodically since it's a cache value
+        	// and won't get updated unless a meal is cooked.
+        	// Note: it's reset at least once a day at the end of a sol
+        	if (RandomUtil.getRandomInt(5) == 0)
+        		// check again to reset the value once in a while
+        		size = kitchen.getMealRecipesWithAvailableIngredients().size();
+
+
+	    	if (size == 0) {
 	        	counter++;
-	        	if (counter < 2)
+	        	if (counter % 30 == 0 && counter < 150)
 	        		logger.severe("Warning: cannot cook meals in "
-	            		+ kitchenBuilding.getBuildingManager().getSettlement().getName()
-	            		+ " because none of the ingredients of a meal are available ");
+	            		+ robot.getSettlement().getName()
+	            		+ " because none of the ingredients of any meals are available ");
+
+	            // 2015-01-15 Added solElapsed
+	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	            int solElapsed = MarsClock.getSolOfYear(marsClock);
+
+	            if (solElapsed != solElapsedCache) {
+	            	counter = 0;
+	            	solElapsedCache = solElapsed;
+	            }
 
 	            endTask();
 

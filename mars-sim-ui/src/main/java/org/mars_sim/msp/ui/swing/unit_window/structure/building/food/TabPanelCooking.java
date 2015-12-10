@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelCooking.java
- * @version 3.07 2015-01-11
+ * @version 3.08 2015-12-10
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building.food;
@@ -43,6 +43,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -264,6 +265,8 @@ extends TabPanel {
 
 		};
 
+		// 2015-12-10 Added ZebraJTable()
+		table = new ZebraJTable(table);
 
 		scrollPane.setViewportView(table);
 		table.setCellSelectionEnabled(false);

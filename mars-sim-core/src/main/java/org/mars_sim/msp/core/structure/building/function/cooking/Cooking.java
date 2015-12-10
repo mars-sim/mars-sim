@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -35,6 +37,7 @@ import org.mars_sim.msp.core.structure.building.function.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.CropType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -69,8 +72,8 @@ implements Serializable {
     public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
     public static final double CLEANING_AGENT_PER_SOL = 0.1D;
 
-    // amount of water in kg per cooked meal during meal preparation and clean-up
-    public static final double WATER_USAGE_PER_MEAL = 1.0D;
+    // the average amount of water in kg per cooked meal during meal preparation and clean-up
+    public static final double WATER_USAGE_PER_MEAL = 0.8D;
 
     private boolean cookNoMore = false;
 
@@ -83,6 +86,8 @@ implements Serializable {
     private int cookCapacity;
 	private int mealCounterPerSol = 0;
 	private int solCache = 1;
+	private int numCookableMeal;
+
     private double cookingWorkTime;
     private double dryMassPerServing;
 
@@ -302,6 +307,17 @@ implements Serializable {
                         result++;
                     }
                 }
+
+                //2015-12-10 Officiated Chefbot's contribution as cook
+                RoboticStation rs = (RoboticStation) getBuilding().getFunction(BuildingFunction.ROBOTIC_STATION);
+                Iterator<Robot> j = rs.getRobotOccupants().iterator();
+                while (j.hasNext()) {
+                    Task task = j.next().getBotMind().getTaskManager().getTask();
+                    if (task instanceof CookMeal) {
+                        result++;
+                    }
+                }
+
             }
             catch (Exception e) {}
         }
@@ -376,28 +392,29 @@ implements Serializable {
         Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
-
-            // TODO: currently a person will eat either a main dish or side dish but NOT both.
-            if (meal.getName().equals(mainDish) || meal.getName().equals(sideDish) ) {
-	            if (meal.getQuality() > bestQuality) {
-	                bestQuality = meal.getQuality();
+            // TODO: define how a person will choose to eat a main dish and/or side dish
+            String mealN = meal.getName();
+            int mealQ = meal.getQuality();
+            if (mealN.equals(mainDish) || mealN.equals(sideDish) ) {
+                // currently a person will eat either a main dish or side dish but NOT both.
+            	if (mealQ > bestQuality) {
+	            	// save the one with the best quality
+	                bestQuality = mealQ;
 	                bestFavDish = meal;
 	            }
-	        }
-
-            else if (meal.getQuality() > bestQuality) {
-                bestQuality = meal.getQuality();
+	        } else if (mealQ > bestQuality) {
+	            // not his/her fav but still save the one with the best quality
+                bestQuality = mealQ;
                 bestMeal = meal;
             }
-
         }
 
         if (bestFavDish != null) {
+            // a person will eat his/her fav dish
         	cookedMeals.remove(bestFavDish);
         	result = bestFavDish;
-        }
-        // if a peron's favorite dish is not found
-        else if (bestMeal != null) {
+        } else if (bestMeal != null) {
+            // a person will eat the best quality meal
         	cookedMeals.remove(bestMeal);
         	result = bestMeal;
         }
@@ -410,7 +427,7 @@ implements Serializable {
      * @return quality
      */
     public int getBestMealQuality() {
-        int bestQuality = 0;
+        int bestQuality = -1;
         Iterator<CookedMeal> i = cookedMeals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
@@ -453,17 +470,22 @@ implements Serializable {
 
     	if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
 
-            double population = getBuilding().getBuildingManager().getSettlement().getCurrentPopulationNum();
+            double population = getPopulation();
             double maxServings = population * settlement.getMealsReplenishmentRate();
 
             int numSettlementCookedMeals = getTotalAvailableCookedMealsAtSettlement(settlement);
-            
+
+            //System.out.println("numSettlementCookedMeals : " + numSettlementCookedMeals + "  maxServings " + maxServings);
             if (numSettlementCookedMeals >= maxServings) {
             	cookNoMore = true;
             }
+
             else {
-	    		aMeal = pickAMeal();
+	    		//aMeal = pickAMeal();
+            	// Randomly pick a meal which ingredients are available
+	    		aMeal = getACookableMeal();
 	    		if (aMeal != null) {
+	            	//System.out.println("aMeal is " + aMeal);
 	    			cookAHotMeal(aMeal);
 	    		}
 	    	}
@@ -477,16 +499,16 @@ implements Serializable {
      * @return number of cooked meals.
      */
     private int getTotalAvailableCookedMealsAtSettlement(Settlement settlement) {
-        
+
         int result = 0;
-        
+
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
         while (i.hasNext()) {
             Building building = i.next();
             Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
             result += kitchen.getNumberOfAvailableCookedMeals();
         }
-        
+
         return result;
     }
 
@@ -508,18 +530,21 @@ implements Serializable {
  	    return result;
 	}
 
- 	/**
- 	 * Gets a list of hot meal recipes that have available ingredients.
- 	 * @return list of hot meal recipes.
- 	 */
- 	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
- 		List<HotMeal> result = new CopyOnWriteArrayList<>();
-
+    /**
+     * Randomly picks a hot meal with its ingredients fully available.
+     * @return a hot meal or null if none available.
+     */
+ 	// 2015-12-10 Added getACookableMeal()
+ 	public HotMeal getACookableMeal() {
+ 		HotMeal result = null;
+ 		List<HotMeal> meals = mealConfigMealList;
+ 		Collections.shuffle(meals);
  	    Iterator<HotMeal> i = mealConfigMealList.iterator();
  	    while (i.hasNext()) {
  	        HotMeal meal = i.next();
- 	        if (isMealAvailable(meal)) {
- 	            result.add(meal);
+ 	        if (areAllIngredientsAvailable(meal)) {
+ 	            result = meal;
+ 	            break;
  	        }
  	    }
 
@@ -527,7 +552,48 @@ implements Serializable {
  	}
 
 
-    public boolean isMealAvailable(HotMeal aMeal) {
+ 	/**
+ 	 * Gets a list of cookable meal with available ingredients.
+ 	 * @return list of hot meal.
+ 	 */
+ 	public List<HotMeal> getMealRecipesWithAvailableIngredients() {
+ 		List<HotMeal> result = new CopyOnWriteArrayList<>();
+
+ 	    Iterator<HotMeal> i = mealConfigMealList.iterator();
+ 	    while (i.hasNext()) {
+ 	        HotMeal meal = i.next();
+ 	        if (areAllIngredientsAvailable(meal)) {
+ 	            result.add(meal);
+ 	        }
+ 	    }
+
+ 	    setNumCookableMeal(result.size());
+
+ 	    return result;
+ 	}
+
+ 	/**
+ 	 * Caches the number of cookable meals (i.e. meals with all the ingredients available)
+ 	 * @param size
+ 	 */
+ 	public void setNumCookableMeal(int size) {
+ 		numCookableMeal = size;
+ 	}
+
+ 	/**
+ 	 * Returns the last known number of cookable meals (i.e. a meal with all the ingredients available)
+ 	 * @return number of meals
+ 	 */
+ 	public int getNumCookableMeal() {
+ 		return numCookableMeal;
+ 	}
+
+	/**
+	 * Checks if all ingredients are available for a particular meal
+	 * @param aMeal a hot meal
+	 * @return true or false
+	 */
+    public boolean areAllIngredientsAvailable(HotMeal aMeal) {
     	boolean result = true;
 
        	List<Ingredient> ingredientList = aMeal.getIngredientList();
@@ -540,32 +606,14 @@ implements Serializable {
 	        String ingredientName = oneIngredient.getName();
 	        double dryMass = oneIngredient.getDryMass();
 
+	        // checks if a particular ingredient is available
 	        result = retrieveAnIngredientFromMap(dryMass, ingredientName, false);
         	if (!result) break;
         }
- 		
+
 		return result;
     }
 
-    /*
-    public boolean checkOneIngredient(String ingredientName, double dryMass) {
-    	boolean result = true;
-
-        AmountResource ingredientAR = getFreshFoodAR(ingredientName);
-        double ingredientAvailable = getFreshFood(ingredientAR);
-
-        // set the safe threshold as dryMass
-        if (ingredientAvailable >= dryMass )  {
-        	//oneIngredient.setIsItAvailable(true);
-        	//result = result && true; // not needed since there is no change to the value of result
-        }
-        else {
-        	//oneIngredient.setIsItAvailable(false);
-            result = false;
-        }
-        return result;
-    }
-    */
 
     /**
      * Gets the amount of the food item in the whole settlement.
@@ -632,7 +680,7 @@ implements Serializable {
 	    }
 
 	    retrieveOil();
-	    retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true);
+	    retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "table salt", true);
 
 	    useWater();
 
@@ -654,6 +702,7 @@ implements Serializable {
 
 	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
     }
+
 
     public boolean retrieveAnIngredientFromMap(double amount, String name, boolean isRetrieving) {
         boolean result = true;
@@ -705,11 +754,21 @@ implements Serializable {
         return result;
     }
 
+    /**
+     * Consumes a certain amount of water for each meal
+     */
     // 2015-01-28 Added useWater()
     public void useWater() {
     	//TODO: need to move the hardcoded amount to a xml file
-	    retrieveAnIngredientFromMap(WATER_USAGE_PER_MEAL, org.mars_sim.msp.core.LifeSupportType.WATER, true);
-		double wasteWaterAmount = WATER_USAGE_PER_MEAL * .95;
+    	int sign = RandomUtil.getRandomInt(0, 1);
+    	double rand = RandomUtil.getRandomDouble(0.2);
+    	double usage = WATER_USAGE_PER_MEAL;
+    	if (sign == 0)
+    		usage = 1 + rand;
+    	else
+    		usage = 1 - rand;
+	    retrieveAnIngredientFromMap(usage, org.mars_sim.msp.core.LifeSupportType.WATER, true);
+		double wasteWaterAmount = usage * .95;
 		Storage.storeAnResource(wasteWaterAmount, "grey water", inv);
     }
 
@@ -781,25 +840,25 @@ implements Serializable {
      * @param time amount of time passing (in millisols)
      */
     public void timePassing(double time) {
-        
+
         if (hasCookedMeal()) {
             double rate = settlement.getMealsReplenishmentRate();
-            
+
             // Handle expired cooked meals.
             Iterator<CookedMeal> i = cookedMeals.iterator();
             while (i.hasNext()) {
                 CookedMeal meal = i.next();
                 MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
                 if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
-                    
+
                     try {
                         cookedMeals.remove(meal);
-                        
+
                         // Check if cooked meal has gone bad and has to be thrown out.
                         double quality = meal.getQuality() / 2D + 1D;
                         double num = RandomUtil.getRandomDouble(8 * quality);
                         if (num < 1) {
-                            Storage.storeAnResource(dryMassPerServing, "Food Waste", inv);
+                            Storage.storeAnResource(dryMassPerServing, "food waste", inv);
                             logger.fine(dryMassPerServing  + " kg " + meal.getName()
                                     + " expired, turned bad and discarded at " + getBuilding().getNickName()
                                     + " in " + settlement.getName() );
@@ -814,13 +873,13 @@ implements Serializable {
                                     + getBuilding().getNickName()
                                     + " in " + settlement.getName() );
                         }
-                        
+
                         // Adjust the rate to go down for each meal that wasn't eaten.
                         if (rate > 0) {
                             rate -= DOWN;
                         }
                         settlement.setMealsReplenishmentRate(rate);
-                    } 
+                    }
                     catch (Exception e) {}
                 }
             }
@@ -831,7 +890,7 @@ implements Serializable {
         if (!CookMeal.isMealTime(location)) {
             cleanUp();
         }
-        
+
         // 2015-01-12 Added checkEndOfDay()
         checkEndOfDay();
     }
@@ -853,19 +912,22 @@ implements Serializable {
 	        if (!timeMap.isEmpty()) timeMap.clear();
 	 		if (!qualityMap.isEmpty()) qualityMap.clear();
 
+	 		// 2015-12-10 Reset the cache value for numCookableMeal
+	 		getMealRecipesWithAvailableIngredients();
+
 	 		cleanUpKitchen();
 	    }
 	}
 
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL, "Sodium Hypochlorite", inv, true);
+		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL, "sodium hypochlorite", inv, true);
 		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 	}
 
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "Table Salt", true);
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "table salt", true);
 		Storage.storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupportType.FOOD, inv);
  	}
 

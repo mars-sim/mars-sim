@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopUpUnitMenu.java
- * @version 3.08 2015-04-03
+ * @version 3.08 2015-12-10
  * @author Manny Kung
  */
 
@@ -192,11 +192,13 @@ public class PopUpUnitMenu extends JPopupMenu {
 			name = building.getNickName();
 		}
 
+		// 2015-12-08 Added ConstructionSite
 		else if (unit instanceof ConstructionSite) {
-			ConstructionSite site = (ConstructionSite) unit;
-			description = site.getDescription();
-			type = site.getCurrentConstructionStage().getInfo().getName();
-			name = "The future site of " + site.getBuildingName();
+ 			ConstructionSite site = (ConstructionSite) unit;
+			description = "Next phase of construction : "
+					+ Conversion.capitalize(site.getNextStageType()) + " Stage";
+			type = Conversion.capitalize(site.getCurrentConstructionStage().getInfo().getName());
+			name = Conversion.capitalize(site.getDescription());
 	    }
 
 		double num = description.length() * 1.3D + 130D;
@@ -265,9 +267,9 @@ public class PopUpUnitMenu extends JPopupMenu {
 
     public void createDescriptionPanel(Unit unit) {
 
-		String description;
-		String type;
-		String name;
+		String description = null;
+		String type = null;
+		String name = null;
 
 		if (unit instanceof Vehicle) {
 			Vehicle vehicle = (Vehicle) unit;
@@ -275,12 +277,23 @@ public class PopUpUnitMenu extends JPopupMenu {
 			type = Conversion.capitalize(vehicle.getVehicleType());
 			name = Conversion.capitalize(vehicle.getName());
 		}
-		else {
+
+		else if (unit instanceof Building) {
 			Building building = (Building) unit;
 			description = building.getDescription();
 			type = building.getBuildingType();
 			name = building.getNickName();
 		}
+
+		// 2015-12-08 Added ConstructionSite
+		else if (unit instanceof ConstructionSite) {
+ 			ConstructionSite site = (ConstructionSite) unit;
+			description = "Next phase of construction : "
+					+ Conversion.capitalize(site.getNextStageType()) + " Stage";
+			type = Conversion.capitalize(site.getCurrentConstructionStage().getInfo().getName());
+			name = Conversion.capitalize(site.getDescription());
+	    }
+
 
 		setOpaque(false);
 
@@ -407,7 +420,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            	Robot robot =(Robot) unit;
 	            	desktop.openUnitWindow(robot, false);
 	            }
-	            else {
+	            else if (unit instanceof Building){
 	            	Building building = (Building) unit;
 
                     if (mainScene != null) {

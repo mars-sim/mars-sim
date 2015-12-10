@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.07 2015-02-10
+ * @version 3.08 2015-12-10
  * @author Scott Davis
  */
 
@@ -864,7 +864,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	}
 
 	public void printWorkShift(String text) {
-		logger.info(text + " " + getName() + "work shift status => A:" + numA + " B:" + numB 
+		logger.info(text + " " + getName() + " work shift status => A:" + numA + " B:" + numB
 				+ " X:" + numX + " Y:" + numY + " Z:" + numZ + " OnCall:" + numOnCall);
 				// + " Off:" + numOff);
 	}

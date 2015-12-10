@@ -11,6 +11,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -28,7 +29,7 @@ public class CookMealMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.cookMeal"); //$NON-NLS-1$
@@ -59,12 +60,24 @@ public class CookMealMeta implements MetaTask, Serializable {
 
             // See if there is an available kitchen.
             Building kitchenBuilding = CookMeal.getAvailableKitchen(person);
-            if (kitchenBuilding != null) {
 
+            if (kitchenBuilding != null) {
                 Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
                 // Check if there are enough ingredients to cook a meal.
-                int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+                //int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+                // 2015-12-10 Used getNumCookableMeal()
+                int numGoodRecipes = kitchen.getNumCookableMeal();
+                //System.out.println("numGoodRecipes : " + numGoodRecipes);
+                if (numGoodRecipes == 0) {
+                	// Need to reset numGoodRecipes periodically since it's a cache value
+                	// and won't get updated unless a meal is cooked.
+                	// Note: it's reset at least once a day at the end of a sol
+                	if (RandomUtil.getRandomInt(5) == 0)
+                		// check again to reset the value once in a while
+                		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+                		//System.out.println("numGoodRecipes : " + numGoodRecipes);
+                }
 
                 // Check if enough meals have been cooked at kitchen for this meal time.
                 boolean enoughMeals = kitchen.getCookNoMore();
@@ -100,6 +113,7 @@ public class CookMealMeta implements MetaTask, Serializable {
             }
         }
 
+        //System.out.println("cook meal : " + result);
         return result;
     }
 
@@ -124,7 +138,19 @@ public class CookMealMeta implements MetaTask, Serializable {
                     Cooking kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
                     // Check if there are enough ingredients to cook a meal.
-                    int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+                    //int numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+                    // 2015-12-10 Used getNumCookableMeal()
+                    int numGoodRecipes = kitchen.getNumCookableMeal();
+
+                    if (numGoodRecipes == 0) {
+                    	// Need to reset numGoodRecipes periodically since it's a cache value
+                    	// and won't get updated unless a meal is cooked.
+                    	// Note: it's reset at least once a day at the end of a sol
+                    	if (RandomUtil.getRandomInt(5) == 0)
+                    		// check again to reset the value once in a while
+                    		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
+                    }
+
 
                     // Check if enough meals have been cooked at kitchen for this meal time.
                     boolean enoughMeals = kitchen.getCookNoMore();
@@ -143,6 +169,7 @@ public class CookMealMeta implements MetaTask, Serializable {
             }
         }
 
+        //System.out.println("cook meal : " + result);
         return result;
 	}
 }

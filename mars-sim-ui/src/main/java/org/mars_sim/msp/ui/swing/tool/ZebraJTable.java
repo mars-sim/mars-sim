@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.swing.tool;
 
 import java.awt.event.MouseEvent;
 
+import javax.swing.JTable;
+
 /**
  * A JTable that draws a zebra striped background.
  */
@@ -20,7 +22,9 @@ public class ZebraJTable extends javax.swing.JTable {
 
     public ZebraJTable(){
     }
-
+    public ZebraJTable(JTable table) {// javax.swing.table.TableModel dataModel ) {
+        super(table.getModel());
+    }
     public ZebraJTable( int numRows, int numColumns )
     {
         super( numRows, numColumns );

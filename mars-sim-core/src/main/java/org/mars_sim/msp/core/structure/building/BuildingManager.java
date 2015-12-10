@@ -495,27 +495,15 @@ public class BuildingManager implements Serializable {
             List<Building> goodHabs = getLeastCrowdedBuildings(habs);
 
             Building building = null;
+            // Randomly pick one of the buildings
             if (goodHabs.size() >= 1) {
                 int rand = RandomUtil.getRandomInt(goodHabs.size() - 1);
-
-                int count = 0;
-                Iterator<Building> i = goodHabs.iterator();
-                while (i.hasNext()) {
-                    Building tempBuilding = i.next();
-                    if (count == rand) {
-                        building = tempBuilding;
-                        //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
-                    }
-                    count++;
-                }
+                building = goodHabs.get(rand);
+                //System.out.println("BuildingManager : " + unit.getName() + " is being added to " + building.getNickName());
             }
 
             if (building != null) {
         		addPersonOrRobotToBuildingRandomLocation(person, building);
-            	//if (unit instanceof Person)
-            		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
-                //else if (unit instanceof Robot)
-              		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);
             }
             else {
                 throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
@@ -528,69 +516,60 @@ public class BuildingManager implements Serializable {
         	// find robot type
         	RobotType robotType = robot.getRobotType();
         	RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
-        	List<BuildingFunction> functionLists = new ArrayList<>();
-        	functionLists.add(BuildingFunction.ROBOTIC_STATION);
+        	BuildingFunction function = null;
+        	//List<BuildingFunction> functionLists = new ArrayList<>();
+        	//functionLists.add(BuildingFunction.ROBOTIC_STATION);
 
     		if (robotJob.equals(RobotType.CHEFBOT)){
-            	functionLists.add(BuildingFunction.COOKING);
+    			function = BuildingFunction.COOKING;
             	//functionLists.add(BuildingFunction.FOOD_PRODUCTION);
     		}
 			else if (robotJob.equals(RobotType.CONSTRUCTIONBOT)){
-				functionLists.add(BuildingFunction.MANUFACTURE);
+				function = BuildingFunction.MANUFACTURE;
       		}
 			else if (robotJob.equals(RobotType.DELIVERYBOT)){
-				functionLists.add(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+				function =BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
     		}
 			else if (robotJob.equals(RobotType.GARDENBOT)){
-				functionLists.add(BuildingFunction.FARMING);
+				function = BuildingFunction.FARMING;
     		}
 			else if (robotJob.equals(RobotType.MAKERBOT)){
 				//functionLists.add(BuildingFunction.RESOURCE_PROCESSING);
-            	functionLists.add(BuildingFunction.MANUFACTURE);
+				function = BuildingFunction.MANUFACTURE;
     		}
 			else if (robotJob.equals(RobotType.MEDICBOT)){
-				functionLists.add(BuildingFunction.MEDICAL_CARE);
+				function = BuildingFunction.MEDICAL_CARE;
     		}
 			else if (robotJob.equals(RobotType.REPAIRBOT)){
-				functionLists.add(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+				function = BuildingFunction.ROBOTIC_STATION;
     		}
 
-    		//BuildingFunction[] functionArray = new BuildingFunction[functionLists.size()];
-        	//functionLists.toArray(functionArray);
-        	BuildingFunction[] functionArray = functionLists.toArray(new BuildingFunction[functionLists.size()]);
-
-        	// match robotType with related buildings
-            List<Building> b = settlement.getBuildingManager().getBuildings(functionArray);
-
-           	// Get a list of building having least number of robots
-            List<Building> bb = getEvenNumOfBotsForBuildings(b);
+        	List<Building> functionBuildings = settlement.getBuildingManager().getBuildings(function);
 
             Building building = null;
             // Randomly pick one of the buildings
-            if (bb.size() >= 1) {
-                int rand = RandomUtil.getRandomInt(bb.size() - 1);
-                int count = 0;
-                Iterator<Building> i = bb.iterator();
-                while (i.hasNext()) {
-                    Building tempBuilding = i.next();
-                    if (count == rand) {
-                        building = tempBuilding;
-                        //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
-                    }
-                    count++;
-                }
+            if (functionBuildings.size() >= 1) {
+                int rand = RandomUtil.getRandomInt(functionBuildings.size() - 1);
+                building = functionBuildings.get(rand);
+                System.out.println("BuildingManager : " + unit.getName() + " is being added to " + building.getNickName());
+                addPersonOrRobotToBuildingRandomLocation(robot, building);
             }
 
-            if (building != null) {
-        		addPersonOrRobotToBuildingRandomLocation(unit, building);
-            	//if (unit instanceof Person)
-            		//addPersonOrRobotToBuildingRandomLocation((Person) unit, building);
-                //else if (unit instanceof Robot)
-              		//addPersonOrRobotToBuildingRandomLocation((Robot) unit, building);
-            }
             else {
-                throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
+
+            	List<Building> list1 = settlement.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+
+                // Randomly pick one of the buildings
+                if (list1.size() >= 1) {
+                    int rand = RandomUtil.getRandomInt(list1.size() - 1);
+                    building = list1.get(rand);
+                    //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
+                }
+
+                addPersonOrRobotToBuildingRandomLocation(robot, building);
+                //throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
             }
+
 		}
 
     }
@@ -686,8 +665,8 @@ public class BuildingManager implements Serializable {
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            result = robot.getBuildingLocation();	            
-/*	           
+	            result = robot.getBuildingLocation();
+/*
 				Settlement settlement = robot.getSettlement();
  	            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 	            while (i.hasNext()) {

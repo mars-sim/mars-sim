@@ -152,11 +152,7 @@ implements ActionListener {
 		gpsPane.add(locatorPane);
 
         // 2015-12-09 Prepare loc label
-		String loc = unit.getContainerUnit().getName();
-		if (loc.equals(null))
-			loc = unit.getContainerUnit().getName();
-
-        locLabel = new JLabel("At : " + loc);
+        locLabel = new JLabel();
         //locLabel.setOpaque(false);
         locLabel.setFont(new Font("Serif", Font.PLAIN, 13));
         locLabel.setHorizontalAlignment(SwingConstants.CENTER);

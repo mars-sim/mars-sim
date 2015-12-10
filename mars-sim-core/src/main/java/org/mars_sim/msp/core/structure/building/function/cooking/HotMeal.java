@@ -18,30 +18,20 @@ public class HotMeal implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private boolean isItAvailable;
 
-	private List<Ingredient> ingredientList = new CopyOnWriteArrayList<>(); // <Ingredient>();
-	private String mealName;
 	private int mealID;
+
 	private double oil;
 	private double salt;
+
+	private String mealName;
 	private String mealCategory;
 
-	//private int ingredientID;
-	//private String ingredientName;
-	//private double proportion;
+	private List<Ingredient> ingredientList = new CopyOnWriteArrayList<>(); // <Ingredient>();
 
-	//private Cooking kitchen;
-	//2014-12-12 Added isItAvailable, ingredientDryWeight
-	private boolean isItAvailable;
-	//private double ingredientDryMass;
 
-	//public HotMeal(Cooking kitchen) {
-		//this.kitchen = kitchen;
-		//setUpMeal();
-	//}
-
-	public HotMeal(int mealID, String nameOfMeal, double oil, double salt,
-			String mealCategory) { //, boolean isItAvailable) {
+	public HotMeal(int mealID, String nameOfMeal, double oil, double salt, String mealCategory) {
 
 		this.mealID = mealID;
 		this.mealName = nameOfMeal;
@@ -52,9 +42,8 @@ public class HotMeal implements Serializable {
 
 
 	// called by constructor in Cooking.java
-	public void addIngredient(int ingredientID, String name, double proportion) {//, boolean isItAvailable) {
-		ingredientList.add(new Ingredient(ingredientID, name, proportion));//, isItAvailable));
-		//System.out.println("ingredientList is " +	ingredientList);
+	public void addIngredient(int ingredientID, String name, double proportion) {
+		ingredientList.add(new Ingredient(ingredientID, name, proportion));
 	}
 
 	//2014-12-11 Added setIngredient
@@ -118,8 +107,6 @@ public class HotMeal implements Serializable {
     public void destroy() {
     	ingredientList.clear();
         ingredientList = null;
-        //kitchen = null;
-
     }
 
 }

@@ -453,7 +453,7 @@ implements ClockListener {
 		//SwingUtilities.invokeLater(
 			//new Runnable() {
 				//public void run() {
-					// TODO: resolve the null below
+					// TODO: need to resolve mysterious NullPointerException at the start of sim
 					if (master == null)  {
 						//System.out.println("TimeWindow : master is null");
 						master = Simulation.instance().getMasterClock();

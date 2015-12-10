@@ -1,11 +1,10 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.08 2015-07-22
+ * @version 3.08 2015-12-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
-
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,6 +31,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -222,22 +222,23 @@ implements ClockListener {
 				if (evt.isPopupTrigger()) {
 					doPop(evt);
 				}
-				
+
 				xLast = evt.getX();
 				yLast = evt.getY();
-				
-				repaint();	
-					
+
+				repaint();
+
 		    }
 		    //2015-01-14 Added vehicle detection
 		    private void doPop(final MouseEvent evt){
+		    	final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
 		    	final Building building = selectBuildingAt(evt.getX(), evt.getY());
 		    	final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
 		    	final Person person = selectPersonAt(evt.getX(), evt.getY());
 		    	final Robot robot = selectRobotAt(evt.getX(), evt.getY());
 
 		    	// if NO building is selected, do NOT call popup menu
-		    	if (building != null || vehicle != null || person != null) {
+		    	if (site != null || building != null || vehicle != null || person != null) {
 
 		    	    //SwingUtilities.invokeLater(new Runnable(){
 		    	        //public void run()  {
@@ -251,13 +252,15 @@ implements ClockListener {
 		    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
 		    	        	else if (building != null)
 		    	        		menu = new PopUpUnitMenu(settlementWindow, building);
+		    	        	else if (site != null)
+		    	        		menu = new PopUpUnitMenu(settlementWindow, site);
 
 		    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		    	        //} });
 		        }
 		    }
 		} // end of class PopClickListener
-		
+
 		addMouseListener(new PopClickListener());
 
 
@@ -300,7 +303,7 @@ implements ClockListener {
 	// Called by SettlementTransparentPanel to update settlement
 	public void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
-			
+
 			this.settlement = newSettlement;
 			if (settlementWindow != null && settlementWindow.getMarqueeTicker() != null)
 				settlementWindow.getMarqueeTicker().updateSettlement(newSettlement);
@@ -456,44 +459,141 @@ implements ClockListener {
 	 */
 	// 2014-11-22 Added building selection
 	public Building selectBuildingAt(int xPixel, int yPixel) {
-		Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-		// Note: 20D is an arbitrary number (by experiment) that
-		// gives an reasonable click detection area
-		//double range2 = 3D / scale;
-
+		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 		Building selectedBuilding = null;
 
-		//int i = 0;
-		Iterator<Building> j = returnBuildingList(settlement).iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			// NOTE: Since without knowledge of the rotation orientation
-			// of the building, we take the smaller value of width and length
-			double width =building.getWidth(); // width is on y-axis ?
-			double length = building.getLength(); // length is on x-axis ?
-			double newRange;
-			if (width < length)
-				newRange =  width/2.0;
-			else newRange = length/2.0;
 
+			double width = building.getWidth();
+			double length = building.getLength();
+			int facing = (int) building.getFacing();
 			double x = building.getXLocation();
 			double y = building.getYLocation();
+			double xx = 0;
+			double yy = 0;
 
-			double distanceX = x - settlementPosition.getX();
-			double distanceY = y - settlementPosition.getY();
-			double distance = Math.hypot(distanceX, distanceY);
-			if (distance <= newRange) {
-				selectedBuilding = building;
-
-				////paintDoubleBuffer();
-				//repaint();
+			if (facing == 0) {
+				xx = width/2D;
+				yy = length/2D;
 			}
-			//i++;
+			else if (facing == 90){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			// Loading Dock Garage
+			if (facing == 180) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 270){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+			// Fortunately, they both have the same width and length
+			else if (facing == 45){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			else if (facing == 135){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			double distanceX = Math.abs(x - clickPosition.getX());
+			double distanceY = Math.abs(y - clickPosition.getY());
+
+			if (distanceX <= xx && distanceY <= yy)
+				selectedBuilding = building;
 		}
+
 		return selectedBuilding;
 	}
 
-	// 2014-11-22 Added returnBuildingList
+
+
+	/**
+	 * Selects a construction site
+	 * @param xPixel the x pixel position on the displayed map.
+	 * @param yPixel the y pixel position on the displayed map.
+	 * @return selected construction site
+	 */
+	// 2015-12-10 Added Construction Site selection
+	public ConstructionSite selectConstructionSiteAt(int xPixel, int yPixel) {
+		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
+		ConstructionSite site = null;
+
+		Iterator<ConstructionSite> j = settlement.getConstructionManager().getConstructionSites().iterator();
+		while (j.hasNext()) {
+			ConstructionSite s = j.next();
+
+			double width = s.getWidth();
+			double length = s.getLength();
+			int facing = (int) s.getFacing();
+			double x = s.getXLocation();
+			double y = s.getYLocation();
+			double xx = 0;
+			double yy = 0;
+
+			if (facing == 0) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 90){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			// Loading Dock Garage
+			if (facing == 180) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 270){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+			// Fortunately, they both have the same width and length
+			else if (facing == 45){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			else if (facing == 135){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			double distanceX = Math.abs(x - clickPosition.getX());
+			double distanceY = Math.abs(y - clickPosition.getY());
+
+			if (distanceX <= xx && distanceY <= yy)
+				site = s;
+		}
+
+		return site;
+
+	}
+
+/*
+	// 2015-12-10 Added returnConstructionSiteList
+	public static List<ConstructionSite> returnConstructionSiteList(Settlement settlement) {
+
+		List<ConstructionSite> result = new ArrayList<ConstructionSite>();
+		if (settlement != null) {
+		    Iterator<ConstructionSite> i = settlement.getBuildingManager().getBuildings().iterator();
+			while (i.hasNext()) {
+				ConstructionSite site = i.next();
+						result.add(site);
+			}
+		}
+		return result;
+	}
+
+	// 2015-12-10 Added returnBuildingList
 	public static List<Building> returnBuildingList(Settlement settlement) {
 
 		List<Building> result = new ArrayList<Building>();
@@ -506,7 +606,7 @@ implements ClockListener {
 		}
 		return result;
 	}
-
+*/
 
 	/**
 	 * Selects a vehicle
@@ -845,7 +945,7 @@ implements ClockListener {
 	public void pauseChange(boolean isPaused) {
 		// Do nothing
 	}
-	
+
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
