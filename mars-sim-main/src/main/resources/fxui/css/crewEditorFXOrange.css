@@ -6,22 +6,54 @@
  * @author Manny Kung
  */
 
+
+.label {
+	-fx-font-size: 16.0px;
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
+
+}
+
 .combo-box .text-field {
 	-fx-font-size: 14.0px;
     -fx-stroke-width: 2;
     -fx-font-weight: italic;
-    -fx-prompt-text-fill:  #ff9937;
+    -fx-text-fill: #e79d1b; /*-fx-text-inner-color;*/
+    -fx-prompt-text-fill:  #E5AB00;
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 
 .combo-box .text-field:focused {
-    -fx-prompt-text-fill:  #ff9937;
-    -fx-background-color: #d16700, #ff9937, #e79d1b;
+    -fx-prompt-text-fill:  #E5AB00;
+    -fx-background-color: #E5AB00;
+}
+
+.combo-box .cell{
+    -fx-text-fill: #e79d1b;
+    -fx-font: 16px "Arial";
+    -fx-background-color: transparent;
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+}
+
+.combo-box >.list-cell {
+    -fx-text-fill: #e79d1b;
+    -fx-font: 16px "Arial";
+    -fx-background-color: transparent;
+
+}
+
+
+.combo-box >.list-view {
+    -fx-text-fill: #e79d1b;
+    -fx-font: 16px "Arial";
+    -fx-background-color: transparent;
+
 }
 
 .text-field {
     -fx-stroke-width: 2;
     -fx-font-weight: bold;
-    -fx-background-color: #d16700, #ff9937, #ffca96;
+    -fx-background-color: #e79d1b, #E5AB00, white;
  /*   -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background; */
     -fx-background-insets: 0, 1, 2;
     -fx-background-radius: 3, 2, 2;
@@ -32,7 +64,7 @@
 }
 
 .titled-pane  {
-	-fx-font-size: 14.0px;
+    -fx-font: 16px "Arial";
     -fx-stroke-width: 2;
     -fx-font-weight: italic;
 	-fx-text-fill: #FFFFFF;
@@ -44,13 +76,14 @@
 }
 
 .titled-pane > .title {
+    -fx-font: 16px "Arial";
     -fx-font-weight: italic;
     -fx-font-weight: bold;
     -fx-stroke-width: 2;
-	-fx-background-color: #EFA447;
-	-fx-box-border : #EFA447;
-	-fx-inner-border :  #EFA447;
-	-fx-body-color :#EFA447;
+	-fx-background-color: #E5AB00;
+	-fx-box-border : #E5AB00;
+	-fx-inner-border :  #E5AB00;
+	-fx-body-color : #E5AB00;
 	-fx-background-insets: 0, 1, 2;
 	-fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
 	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
@@ -58,20 +91,38 @@
 
 .titled-pane:focused > .title {
 	-fx-color: #FFFFFF;
-	-fx-focus-color: #EFA447; /* ff3c08; */
+	-fx-focus-color: #E5AB00;
+	-fx-text-fill: #E5AB00;
+}
+
+.titled-pane > .title > .arrow-button .arrow {
+/*	-fx-shape: ""; */
+}
+
+.titled-pane > .title > .text {
+ 	-fx-color: #FFFFFF;
+	-fx-text-fill: #E5AB00;
 }
 
 .titled-pane > *.content {
-	-fx-background-color: #EFA447;
-	-fx-box-border: #EFA447;
-		linear-gradient(to bottom, derive(-fx-color,-02%), derive(-fx-color,65%) 12%,
-	      derive(-fx-color,23%) 88%, derive(-fx-color,50%) 99%, -fx-box-border);
-	-fx-background-insets: 0, 0 1 1 1;
+	-fx-background-color: white;
+  	-fx-background-insets: 0, 0 1 1 1;
 	-fx-padding: 0.167em;
+	-fx-box-border: #E5AB00;
+	-fx-text-fill: #E5AB00;
  }
 
+.radio-button > .radio {
+	-fx-padding: 3px;
+	-fx-color: #E5AB00;
+}
+
+.radio-button > .label {
+	-fx-text-fill: #E5AB00;
+}
+
 #textLabel {
-	-fx-text-fill: #d16700;
+	-fx-text-fill: #E5AB00;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15px;
     -fx-font-weight: bold;
@@ -82,25 +133,26 @@
 #commitButton {
     -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
-	-fx-base: #00a7d4;
-	-fx-background: #d16700;
-	-fx-focus-color: #0093FF;
+	-fx-base: #E5AB00;
+	-fx-background: #E5AB00;
+	-fx-focus-color: #E5AB00;
 	-fx-control-inner-background: #FFFFFF;
 	-fx-text-base-color: #FFFFFF;
     -fx-background-insets: -1.4, 0, 1, 2;
-    -fx-color:#00a7d4;
-	-fx-background-radius: 5;
+    -fx-color: #E5AB00;
+    -fx-background-radius: 5;
 
 }
 
 #commitButton:focused {
 	-fx-focus-color: #ff3c08;
 	-fx-stroke-width: 5;
-	-fx-background-color: #ff8000;
+	-fx-background-color: #E5AB00;
 }
 
 #commitButton:hover {
-	-fx-font-size: 16.0px;
+	-fx-padding: 2 15 2 15;
+	-fx-font-size: 15.0px;
 	-fx-focus-color: #ff3c08;
 }
 

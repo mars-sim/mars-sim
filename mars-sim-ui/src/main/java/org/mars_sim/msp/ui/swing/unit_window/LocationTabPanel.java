@@ -28,6 +28,11 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -52,10 +57,11 @@ implements ActionListener {
 	//private JLabel temperatureLabel;
 	//private JLabel airPressureLabel;
 	private JLabel locationLabel;
+	private JLabel locLabel;
 	//private Color THEME_COLOR = Color.ORANGE;
 	//private double airPressureCache;
 	//private int temperatureCache;
-	private Unit containerCache;
+	private Unit containerCache, topContainerCache;
 
 	private JPanel locationCoordsPanel;
 	private JLabel latitudeLabel;
@@ -98,7 +104,7 @@ implements ActionListener {
         //locationPanel.setBackground(THEME_COLOR);
 
         // Create location label panel
-        locationLabelPanel = new JPanel(new GridLayout(3,1,0,0)); // new JPanel(new FlowLayout(FlowLayout.CENTER));
+        locationLabelPanel = new JPanel(new GridLayout(4,1,0,0)); // new JPanel(new FlowLayout(FlowLayout.CENTER));
         //locationLabelPanel.setBackground(THEME_COLOR);
         locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
 
@@ -139,12 +145,22 @@ implements ActionListener {
         centerMapButton.addActionListener(this);
         centerMapButton.setOpaque(false);
         //centerMapButton.setBackground(THEME_COLOR);
-        centerMapButton.setToolTipText("Locate the person or bot in a settlement or vehicle in Mars Navigator");
+        centerMapButton.setToolTipText("Locate a person/bot/object in a settlement/vehicle on Mars Navigator");
 
 		JPanel locatorPane = new JPanel(new FlowLayout());
 		locatorPane.add(centerMapButton);
 		gpsPane.add(locatorPane);
 
+        // 2015-12-09 Prepare loc label
+		String loc = unit.getContainerUnit().getName();
+		if (loc.equals(null))
+			loc = unit.getContainerUnit().getName();
+
+        locLabel = new JLabel("At : " + loc);
+        //locLabel.setOpaque(false);
+        locLabel.setFont(new Font("Serif", Font.PLAIN, 13));
+        locLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		locationLabelPanel.add(locLabel);
 
 /*
 
@@ -336,22 +352,29 @@ implements ActionListener {
         }
 
 
+        // 2015-12-09 Prepare loc label
         // Update location button or location text label as necessary.
         Unit container = unit.getContainerUnit();
-        //if (!containerCache.equals(container)) {
-        if (containerCache != container) {
-        	containerCache = container;
-        	// the unit's container has changed
-            //if (container != null) {
-            	//locationButton.setText(container.getName());
-            	//addContainerPanel();
-            //}
-            //else {
-         	// 2014-10-22 mkung: Called new method checkOutsideReading()
-        	//checkOutsideReading();
-        	//addOutsideReadingPanel();
-            //}
-        }
+        //if (container == null && containerCache != null)
+        //	containerCache = null;
+        //else if (container != null) {
+	        if (containerCache != container) {
+	        	containerCache = container;
+	        	updateLocation();
+	        }
+        //}
+
+        Unit topContainer = unit.getTopContainerUnit();
+        //if (topContainer == null && topContainerCache != null)
+        //	topContainerCache = null;
+        //else if (topContainer != null) {
+	        if (topContainerCache != topContainer) {
+	        	topContainerCache = topContainer;
+	        	updateLocation();
+	        }
+        //}
+
+
         //else; // the unit's container has NOT changed
 
 /*
@@ -409,4 +432,95 @@ implements ActionListener {
         }
     }
     */
+
+    /**
+     * Tracks the location of a person/bot/vehicle/object
+     */
+    // 2015-12-09 Added updateLocation()
+    public void updateLocation() {
+
+    	String loc = null;
+
+        // Case F or case G
+        if (containerCache == null && topContainerCache == null) {
+        	if (unit instanceof Person) {
+        		Person p = (Person) unit;
+        		if (p.getLocationSituation() == LocationSituation.OUTSIDE)
+        			loc = " on a mission, stepped outside a vehicle at prescribed coordinates";
+        		else if (p.getLocationSituation() == LocationSituation.BURIED)
+    			loc = " buried outside " + p.getBuriedSettlement().getName();
+        	}
+        	else if (unit instanceof Robot) {
+        		Robot r = (Robot) unit;
+        		if (r.getLocationSituation() == LocationSituation.OUTSIDE)
+        			loc = " on a mission, stepped outside a vehicle at prescribed coordinates";
+        		else if (r.getLocationSituation() == LocationSituation.BURIED)
+        			loc = " decommmissed ";// + r.getBuriedSettlement().getName();
+        	}
+        }
+
+        // case B
+        else if (containerCache == null && topContainerCache != null) {
+        	loc = " near the premise of " + topContainerCache;
+        }
+
+        // case D
+        //else if (topContainerCache == null && containerCache != null) {
+        //	loc = " inside a vehicle on a mission outside";
+        //}
+
+        // Case A, Case C, Case D, or Case E
+        else if (topContainerCache != null && containerCache != null) {
+        	if (unit instanceof Person) {
+        		Person p = (Person) unit;
+        		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+        			// case A
+        			loc = " at " + p.getBuildingLocation().getNickName() + " in " + topContainerCache;
+        		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+         			if (p.getSettlement() != null)
+        				// case C
+               			loc = " in " + containerCache + " inside a garage";
+        			else {
+             			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
+            	     	// Note: a vehicle's container unit may be null if it's outside a settlement
+            			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+
+        				if (settlement == null)
+            				// case E
+            				loc = " in " + containerCache + " on a mission outside";
+        				else
+        					// case D
+        					//loc = " in a vehicle parked within the premise of a settlement";
+        					loc = " in " + containerCache + " parked within the premise of " + settlement;
+        			}
+        		}
+        	}
+        	else if (unit instanceof Robot) {
+        		Robot r = (Robot) unit;
+        		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+        			// case A
+        			loc = " at " + r.getBuildingLocation().getNickName() + " in " + topContainerCache;
+        		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+         			if (r.getSettlement() != null)
+        				// case C
+               			loc = " in " + containerCache + " inside a garage";
+        			else {
+             			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
+            	     	// Note: a vehicle's container unit may be null if it's outside a settlement
+            			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+
+        				if (settlement == null)
+            				// case E
+               				loc = " in " + containerCache + " on a mission outside";
+        				else
+        					// case D
+        					//loc = " in a vehicle parked within the premise of a settlement";
+        					loc = " in " + containerCache + " parked within the premise of " + settlement;
+        			}
+        		}
+        	}
+        }
+
+        locLabel.setText("Last known :" + loc);
+    }
 }

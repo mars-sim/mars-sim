@@ -42,80 +42,67 @@
 
 
 .menu-bar {
-	-fx-font-weight: bold;
-	-fx-font-family: "Segoe UI Light";
+	-fx-font-weight: normal;
+/*	-fx-font-family: "Segoe UI Light"; */
 	-fx-font-size: 10pt;
-	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #1fa2ff 0%, #006bb8 100%),
-        #1fa2ff,
-        #1fdaff,
-        radial-gradient(center 50% 50%, radius 100%, #1fdaff, #006bb8);
-    -fx-text-fill: white;
-    -fx-border-color: #006bb8;
+	-fx-background-color: #3291D2;
+	-fx-text-fill: white;
+/*    -fx-border-color: #006bb8; */
+	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 
 .menu-item {
 	-fx-font-weight: normal;
-	-fx-font-family: "Segoe UI Light";
+/*	-fx-font-family: "Segoe UI Light"; */
 	-fx-font-size: 10pt;
-	-fx-background-color:
-		linear-gradient(from 0% 93% to 0% 100%, #1fa2ff 0%, #006bb8 100%),
-        #1fa2ff,
-        #1fdaff,
-        radial-gradient(center 50% 50%, radius 100%, #1fdaff, #006bb8);
-    -fx-text-fill: white;
+	-fx-background-color: #3291D2;
+	-fx-text-fill: white;
 /*    -fx-border-color: #006bb8; */
 }
 
 .menu .label {
     -fx-text-fill: white;
-   	-fx-font-weight: bold;
+   	-fx-font-weight: normal;
+   	-fx-font-size: 10pt;
+	-fx-background-color: #3291D2;
+/* 	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 ); */
 }
 
 
 .context-menu {
-    -fx-background-color: #6bc2ff;
-}
-
-
-.button:hover{
-    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), transparent;
-}
-
-.button:armed {
-    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), rgba(0,0,0,.2);
+    -fx-background-color: #3291D2;
 }
 
 
 .toggle-button,
 .toggle-button:focused,
-.toggle-button:selected,
 .toggle-button:selected:focused {
-    -fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #d8ffff 0%,#0064c9 100%),
-        #d8ffff,
-        #add8e6,
-        radial-gradient(center 50% 50%, radius 100%, #add8e6, #0064c9);
-
-    -fx-text-fill: #178aff; /* text color inside the button */
-    -fx-border-color: #663300;
+    -fx-background-color: #3291D2;
+	-fx-text-fill: white; /* #178aff; text color inside the button */
+    -fx-border-color: transparent; /* #663300; */
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;
-   	-fx-font-weight: bold;
+	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+}
+
+.toggle-button:selected{
+    -fx-background-color: white;
+    -fx-text-fill: #3291D2;
 }
 
 .button{
-	-fx-background-color:
-	    linear-gradient(from 0% 93% to 0% 100%, #d8ffff 0%,#0064c9 100%),
-        #d8ffff,
-        #add8e6,
-        radial-gradient(center 50% 50%, radius 100%, #add8e6, #0064c9);
-
-    -fx-text-fill: #178aff; /* text color inside the button */
-    -fx-border-color: #663300;
+	-fx-background-color: #3291D2;
+	-fx-text-fill: white; /* #178aff; text color inside the button */
+    -fx-border-color: transparent; /* #663300; */
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;
-   	-fx-font-weight: bold;
+   	-fx-font-weight: normal;
+   	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+}
+
+.button:selected{
+    -fx-background-color: white;
+    -fx-text-fill: #3291D2;
 }
 
 .table-view {

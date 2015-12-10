@@ -1446,14 +1446,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// Open Settlement Map Tool
 			openToolWindow(SettlementWindow.NAME);
 			if (mainWindow != null)  {//mainWindow.pauseSimulation();
-				mainWindow.openTransportWizard(mgr);
+				SwingUtilities.invokeLater(() -> {
+					mainWindow.openTransportWizard(mgr);
+				});
 			}
 			else if (mainScene != null) {//mainScene.pauseSimulation();
-				Platform.runLater(new Runnable() {
-	                @Override
-	                public void run() {
-	                	mainScene.openTransportWizard(mgr);
-	                }
+				Platform.runLater(() -> {
+	                mainScene.openTransportWizard(mgr);
 				});
 			}
 

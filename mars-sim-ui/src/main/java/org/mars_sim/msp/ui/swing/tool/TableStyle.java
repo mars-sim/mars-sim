@@ -69,6 +69,9 @@ public class TableStyle extends ZebraJTable{
 	 * Sets theme color for JTable headers and rows and columns
 	 */
     public static JTable setTableStyle(JTable table) {
+
+	   	ZebraJTable z = null;
+
     	JTableHeader header = null;
     	if (table.getTableHeader() != null)
     		header = table.getTableHeader();
@@ -148,7 +151,7 @@ public class TableStyle extends ZebraJTable{
     		themeName = "Night";
     	}
     	else if (theme == 6) { // snow + skyblue
-    		hBack = new Color(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
+    		hBack = new Color(50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(31, 151, 229); // 139 71 38	sienna4
@@ -160,7 +163,7 @@ public class TableStyle extends ZebraJTable{
     	}
 
     	else if (theme == 7) { // standard nimrod
-    		hBack = new Color(205, 133, 63); // 205, 133, 63 mud orange
+    		hBack = new Color(229, 171, 0); // 205, 133, 63 mud orange
     		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
@@ -215,7 +218,7 @@ public class TableStyle extends ZebraJTable{
 		table.setGridColor(grid);
 		table.setBorder(BorderFactory.createLineBorder(border, 1));
 
-	   	ZebraJTable z = new ZebraJTable(table.getModel());
+		z = new ZebraJTable(table.getModel());
 
 		return (JTable) z;
     }

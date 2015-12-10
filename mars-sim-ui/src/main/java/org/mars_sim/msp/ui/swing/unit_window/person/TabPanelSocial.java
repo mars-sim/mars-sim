@@ -101,7 +101,7 @@ implements ListSelectionListener {
 		//relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(relationshipTable);
+		TableStyle.setTableStyle(relationshipTable);
 	}
 
 	/**
@@ -118,8 +118,10 @@ implements ListSelectionListener {
 	 */
 	public void valueChanged(ListSelectionEvent e) {
 		int index = relationshipTable.getSelectedRow();
-		Person selectedPerson = (Person) relationshipTable.getValueAt(index, 0);
-		if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
+        if (index > 0) {
+			Person selectedPerson = (Person) relationshipTable.getValueAt(index, 0);
+			if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
+	    }
 	}
 
 	/**
@@ -162,7 +164,7 @@ implements ListSelectionListener {
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return knownPeople.toArray()[row]; 
+			if (column == 0) return knownPeople.toArray()[row];
 			// TODO: why on above line Exception in thread "pool-1924-thread-1" java.lang.ArrayIndexOutOfBoundsException: -1
 			else if (column == 1) {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);

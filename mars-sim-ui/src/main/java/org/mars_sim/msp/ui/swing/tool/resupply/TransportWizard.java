@@ -104,7 +104,7 @@ public class TransportWizard {
      * Delivers buildings to the destination settlement.
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
-    public synchronized void deliverBuildings(BuildingManager mgr) {
+    public void deliverBuildings(BuildingManager mgr) {
 		//System.out.println("Just called TransportWizard's deliverBuildings()");
 
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
@@ -137,8 +137,8 @@ public class TransportWizard {
     	alert.initOwner(mainScene.getStage());
 		alert.initModality(Modality.NONE); // Modality.NONE is by default if initModality() is NOT specified.
     	//Note: with Modality.NONE, users can zoom in/out, move around the settlement map and move a vehicle elsewhere
-		//alert.initModality(Modality.APPLICATION_MODAL); // the use of this seems buggy
-		//alert.initModality(Modality.WINDOW_MODAL); // the use of this seems buggy
+		alert.initModality(Modality.APPLICATION_MODAL); // not working. the use of this will block the first alert dialog
+		//alert.initModality(Modality.WINDOW_MODAL); // the use of this will not block the second aler dialog from appearing
 		alert.setHeaderText("Building Delivery for a Resuply Mission");
 		alert.setContentText(message);
 		//DialogPane dialogPane = alert.getDialogPane();
@@ -182,7 +182,7 @@ public class TransportWizard {
 	 * Determines the placement of each building manually, instead of using the template positions
 	 */
     // 2015-12-07 Added determineEachBuildingPosition()
-	public synchronized void determineEachBuildingPosition(BuildingManager mgr) {
+	public void determineEachBuildingPosition(BuildingManager mgr) {
 
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		if (mainScene != null)
@@ -240,7 +240,7 @@ public class TransportWizard {
      * @param checkVehicle if it has checked/moved the vehicle already
      */
     // 2015-12-06 Added checkTemplatePosition()
-    public synchronized void checkTemplatePosition(BuildingManager mgr, BuildingTemplate template, boolean defaultPosition) {
+    public void checkTemplatePosition(BuildingManager mgr, BuildingTemplate template, boolean defaultPosition) {
 
         int buildingID = mgr.getUniqueBuildingIDNumber();
         int scenarioID = mgr.getSettlement().getID();
@@ -274,7 +274,7 @@ public class TransportWizard {
      	// 2015-12-08 Added checkTemplateAddBuilding()
         checkTemplateAddBuilding(mgr, correctedTemplate);
 
-/*        
+/*
         // True if the template position is clear of obstacles (existing buildings/vehicles/construction sites)
         if (mgr.getResupply().checkBuildingTemplatePosition(correctedTemplate)) {
      	   //System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
@@ -298,7 +298,7 @@ public class TransportWizard {
             	confirmBuildingLocation(mgr, correctedTemplate, defaultPosition);
             }
         } // end of else {
-*/        
+*/
     }
 
 
@@ -308,25 +308,25 @@ public class TransportWizard {
      * @param correctedTemplate
      */
     // 2015-12-07 Added checkTemplateAddBuilding()
-    public synchronized void checkTemplateAddBuilding(BuildingManager mgr, BuildingTemplate correctedTemplate) {
+    public void checkTemplateAddBuilding(BuildingManager mgr, BuildingTemplate correctedTemplate) {
         // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
-        if (mgr.getResupply().checkBuildingTemplatePosition(correctedTemplate)) {     	
+        if (mgr.getResupply().checkBuildingTemplatePosition(correctedTemplate)) {
         	confirmBuildingLocation(mgr, correctedTemplate, true);
         } else {
-        	correctedTemplate = mgr.getResupply().clearCollision(correctedTemplate);      	
+        	correctedTemplate = mgr.getResupply().clearCollision(correctedTemplate);
         	confirmBuildingLocation(mgr, correctedTemplate, false);
-        }     
+        }
     }
-    
+
     /**
      * Check if the obstacle is a vehicle, if it is a vehicle, move it elsewhere
      * @param template the position of the proposed building
      * @return true if something else is still blocking
      */
-    // 2015-12-08 Replaced with using LocalAreaUtil.checkVehicleBoundedOjectIntersected() 
+    // 2015-12-08 Replaced with using LocalAreaUtil.checkVehicleBoundedOjectIntersected()
     // and checkImmovableBoundedOjectIntersected() for better accuracy and less buggy collision checking
-    public synchronized boolean checkObstacleMoveVehicle(BuildingTemplate template){
-    	
+    public boolean checkObstacleMoveVehicle(BuildingTemplate template){
+
 		boolean isSomethingElseBlocking = false;
 		boolean quit = false;
 

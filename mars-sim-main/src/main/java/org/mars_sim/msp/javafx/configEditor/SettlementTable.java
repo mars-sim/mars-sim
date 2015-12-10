@@ -11,18 +11,12 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -80,8 +74,8 @@ public class SettlementTable extends JTable {
 
 		// 2015-10-06 Added setTableStyle()
         JTable table = new ZebraJTable(settlementTableModel);
-
         init(table);
+
 	}
 
 	public void init(JTable t) {
@@ -92,7 +86,7 @@ public class SettlementTable extends JTable {
 
 		header = getTableHeader();
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
-		header.setBackground(new java.awt.Color(209,103,0));//.orange);//(0, 167, 212));
+		header.setBackground(new java.awt.Color(229,171,0));//.orange);//(0, 167, 212));
 		header.setForeground(java.awt.Color.white);
 
 		configEditor.getSettlementScrollPane().setViewportView(this);
@@ -210,6 +204,7 @@ public class SettlementTable extends JTable {
         return c;
     }
 
+/*
 	public class CheckBoxRenderer extends JCheckBox implements TableCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -221,7 +216,7 @@ public class SettlementTable extends JTable {
         public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
 
-        	SettlementTableModel model = (SettlementTableModel) table.getModel();
+        	//SettlementTableModel model = (SettlementTableModel) table.getModel();
 
 	          if (isSelected) {
 	              //super.setBackground(table.getSelectionBackground());
@@ -239,5 +234,5 @@ public class SettlementTable extends JTable {
 	          return this;
         }
 	}
-
+*/
 }

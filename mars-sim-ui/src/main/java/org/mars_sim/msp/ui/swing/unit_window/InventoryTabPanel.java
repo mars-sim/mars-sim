@@ -46,6 +46,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 import com.jidesoft.swing.SearchableUtils;
 import com.jidesoft.swing.TableSearchable;
@@ -96,7 +97,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         resourceTableModel = new ResourceTableModel(inv);
 
         // Create resources table
-        resourcesTable = new JTable(resourceTableModel);
+        //resourcesTable = new JTable(resourceTableModel);
+        resourcesTable = new ZebraJTable(resourceTableModel);
         resourcesTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
         resourcesTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         resourcesTable.getColumnModel().getColumn(0).setPreferredWidth(120);
@@ -131,7 +133,8 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         equipmentTableModel = new EquipmentTableModel(inv);
 
         // Create equipment table
-        equipmentTable = new JTable(equipmentTableModel);
+        //equipmentTable = new JTable(equipmentTableModel);
+        equipmentTable = new ZebraJTable(equipmentTableModel);
         equipmentTable.setPreferredScrollableViewportSize(new Dimension(200, 75));
         equipmentTable.setCellSelectionEnabled(true);
         equipmentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -172,9 +175,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      */
     public void valueChanged(ListSelectionEvent e) {
         int index = equipmentTable.getSelectedRow();
-        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
-        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
-            desktop.openUnitWindow((Equipment) selectedEquipment, false);
+        if (index > 0) {
+	        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
+	        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment))
+	            desktop.openUnitWindow((Equipment) selectedEquipment, false);
+        }
     }
 
 	/**

@@ -229,7 +229,7 @@ public class MainScene {
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
-	public synchronized void openTransportWizard(BuildingManager buildingManager) {
+	public void openTransportWizard(BuildingManager buildingManager) {
 		//transportWizard.initialize(buildingManager);
 		transportWizard.deliverBuildings(buildingManager);
 	}
@@ -516,10 +516,15 @@ public class MainScene {
 
 		statusBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 
-		memBtn.setTextFill(btnTxtColor);
-		clkBtn.setTextFill(btnTxtColor);
-		cpuBtn.setTextFill(btnTxtColor);
-		marsNetButton.setTextFill(btnTxtColor);
+		//memBtn.setTextFill(btnTxtColor);
+		//clkBtn.setTextFill(btnTxtColor);
+		//cpuBtn.setTextFill(btnTxtColor);
+		//marsNetButton.setTextFill(btnTxtColor);
+
+		//memBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
+		//clkBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
+		//cpuBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
+		//marsNetButton.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
 	}
 	/**
 	 * Creates and starts the earth timer
@@ -616,7 +621,7 @@ public class MainScene {
 				com.sun.management.OperatingSystemMXBean.class);
 
 		cpuBtn = new Button(" CPU ");
-		cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
+		//cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//cpuBtn.setTextFill(Color.ORANGE);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(cpuBtn);
@@ -634,7 +639,7 @@ public class MainScene {
 		statusBar.getRightItems().add(systemCpuLoadText);
 
 		memBtn = new Button(" Memory ");
-		memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
+		//memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//memBtn.setTextFill(Color.ORANGE);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(memBtn);
@@ -665,7 +670,7 @@ public class MainScene {
 
 		clkBtn = new Button(" Clock ");
 		//clkBtn.setTextFill(Color.ORANGE);
-		clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
+		//clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		statusBar.getRightItems().add(clkBtn);
 
 		timeText = new Text(" Earth Date & Time : " + timeStamp + "  ");

@@ -18,7 +18,8 @@ public class ZebraJTable extends javax.swing.JTable {
     private java.awt.Color rowColors[] = new java.awt.Color[2];
     private boolean drawStripes = false;
 
-    public ZebraJTable(){}
+    public ZebraJTable(){
+    }
 
     public ZebraJTable( int numRows, int numColumns )
     {
@@ -36,7 +37,6 @@ public class ZebraJTable extends javax.swing.JTable {
         javax.swing.table.TableColumnModel columnModel )
     {
         super( dataModel, columnModel );
-        TableStyle.setTableStyle(this);
     }
     public ZebraJTable( javax.swing.table.TableModel dataModel,
         javax.swing.table.TableColumnModel columnModel,

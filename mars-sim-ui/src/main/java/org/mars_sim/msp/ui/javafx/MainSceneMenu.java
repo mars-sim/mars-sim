@@ -178,6 +178,7 @@ public class MainSceneMenu extends MenuBar  {
         RadioMenuItem sevenItem = new RadioMenuItem("Standard");
         sevenItem.setToggleGroup(skinThemeToggleGroup);
         sevenItem.setSelected(true);
+/*
         RadioMenuItem oneItem = new RadioMenuItem("Olive");
         oneItem.setToggleGroup(skinThemeToggleGroup);
         //oneItem.setSelected(true);
@@ -189,11 +190,11 @@ public class MainSceneMenu extends MenuBar  {
         fourItem.setToggleGroup(skinThemeToggleGroup);
         RadioMenuItem fiveItem = new RadioMenuItem("Violet");
         fiveItem.setToggleGroup(skinThemeToggleGroup);
+*/
         RadioMenuItem sixItem = new RadioMenuItem("Snow");
         sixItem.setToggleGroup(skinThemeToggleGroup);
-  
-        
-        skinThemeItem.getItems().addAll(sevenItem, oneItem, twoItem, threeItem, fourItem, fiveItem, sixItem);
+
+        skinThemeItem.getItems().addAll(sevenItem, sixItem);//, oneItem, twoItem, threeItem, fourItem, fiveItem);
 
 
         CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
@@ -470,6 +471,7 @@ public class MainSceneMenu extends MenuBar  {
         });
 */
 
+/*
         oneItem.setOnAction(e -> {
         	mainScene.changeTheme(1);
             SwingUtilities.invokeLater(() -> {
@@ -509,6 +511,8 @@ public class MainSceneMenu extends MenuBar  {
             	mainScene.getSwingNode().setContent(desktop);
             });
         });
+
+*/
 
         sixItem.setOnAction(e -> {
         	mainScene.changeTheme(6);

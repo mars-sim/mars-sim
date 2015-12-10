@@ -343,6 +343,7 @@ implements VehicleOperator, MissionMember, Serializable {
 
         else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
      	   Vehicle vehicle = (Vehicle) getContainerUnit();
+     	   // Note: a vehicle's container unit may be null if it's outside a settlement
      	   Settlement settlement = (Settlement) vehicle.getContainerUnit();
      	   return settlement;
         }
