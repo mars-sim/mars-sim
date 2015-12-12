@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -27,15 +28,27 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import eu.hansolo.steelseries.gauges.DisplaySingle;
+import eu.hansolo.steelseries.gauges.DigitialRadial;
+import eu.hansolo.steelseries.gauges.DisplayCircular;
+import eu.hansolo.steelseries.tools.BackgroundColor;
+import eu.hansolo.steelseries.tools.FrameDesign;
+import eu.hansolo.steelseries.tools.LcdColor;
+import eu.hansolo.steelseries.tools.Orientation;
+import eu.hansolo.steelseries.tools.PointerType;
 
 /**
  * The LocationTabPanel is a tab panel for location information.
@@ -50,6 +63,12 @@ implements ActionListener {
 	 /** default logger.   */
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
+	private int themeCache;
+	
+	private double elevationCache; 
+
+	private String locationText;
+	
 	// 2014-11-11 Added new panels and labels
 	private JPanel tpPanel =  new JPanel();
 	private JPanel outsideReadingPanel = new JPanel();
@@ -63,15 +82,21 @@ implements ActionListener {
 	//private int temperatureCache;
 	private Unit containerCache, topContainerCache;
 
-	private JPanel locationCoordsPanel;
+	private JPanel coordsPanel;
 	private JLabel latitudeLabel;
 	private JLabel longitudeLabel;
-	private JPanel locationLabelPanel;
+	private JPanel centerPanel;
 	private JButton locationButton;
 
+	private TerrainElevation terrainElevation;
 	private Coordinates locationCache;
-	private JButton centerMapButton;
+	private MainScene mainScene;
+	
+	private JButton locatorButton;
 
+	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
+	private DisplayCircular gauge;//RadialQuarterN gauge;
+	
 	DecimalFormat fmt = new DecimalFormat("##0");
 	DecimalFormat fmt2 = new DecimalFormat("#0.00");
     /**
@@ -85,6 +110,11 @@ implements ActionListener {
         		null,
         		Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
+    	if (terrainElevation == null)
+			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getSurfaceTerrain();
+	
+    	mainScene = desktop.getMainScene();
+    	
         // Initialize location header.
 		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
@@ -95,149 +125,240 @@ implements ActionListener {
 		titlePane.add(titleLabel);
 
         // Create location panel
-        JPanel locationPanel = new JPanel(new BorderLayout(0,0));
+        JPanel locationPanel = new JPanel(new BorderLayout( 5, 5));//new GridLayout(2,1,0,0));//new FlowLayout(FlowLayout.CENTER));// new BorderLayout(0,0));
         locationPanel.setBorder(new MarsPanelBorder());
-       //locationPanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
-
+        locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         topContentPanel.add(locationPanel);
-        //topContentPanel.setBackground(THEME_COLOR);
-        //locationPanel.setBackground(THEME_COLOR);
-
-        // Create location label panel
-        locationLabelPanel = new JPanel(new GridLayout(4,1,0,0)); // new JPanel(new FlowLayout(FlowLayout.CENTER));
-        //locationLabelPanel.setBackground(THEME_COLOR);
-        locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
-
-        // Prepare location coordinates panel
-        locationCoordsPanel = new JPanel();
-        //locationCoordsPanel.setBackground(THEME_COLOR);
-        locationLabelPanel.add(locationCoordsPanel);
-        //locationLabelPanel.setBackground(THEME_COLOR);
-        locationCoordsPanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
-        locationCoordsPanel.setLayout(new BorderLayout(0, 0));
+        
 
         // Initialize location cache
-        locationCache = new Coordinates(unit.getCoordinates());
+        locationCache = new Coordinates(unit.getCoordinates());      
+        themeCache = mainScene.getTheme();
+  
+        String dir_N_S = null;
+        String dir_E_W = null;
+        if (locationCache.getLatitudeDouble() >= 0)
+        	dir_N_S = Msg.getString("direction.degreeSign")+"N";
+        else
+        	dir_N_S = Msg.getString("direction.degreeSign")+"S";
+        
+        if (locationCache.getLongitudeDouble() >= 0)
+        	dir_E_W = Msg.getString("direction.degreeSign")+"E";
+        else
+        	dir_E_W = Msg.getString("direction.degreeSign")+"W";
+        
 
-        // Prepare latitude label
-        latitudeLabel = new JLabel("Latitude : " + getLatitudeString());
-        latitudeLabel.setOpaque(false);
-        latitudeLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-        latitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        locationCoordsPanel.add(latitudeLabel, BorderLayout.NORTH);
+        JPanel northPanel = new JPanel(new FlowLayout());
+        locationPanel.add(northPanel, BorderLayout.NORTH);
+        
+        lcdLat = new DisplaySingle();
+        lcdLat.setLcdUnitString(dir_N_S);
+        lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
+        lcdLat.setLcdInfoString("Latitude");
+        //lcd1.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
+        lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
+        //lcdLat.setBackground(BackgroundColor.NOISY_PLASTIC);
+        lcdLat.setGlowColor(Color.orange);
 
-        // Prepare longitude label
-        longitudeLabel = new JLabel("Longitude : " + getLongitudeString());
-        longitudeLabel.setOpaque(false);
-        longitudeLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-        longitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
-
-        JPanel gpsPane = new JPanel(new FlowLayout());
-        locationLabelPanel.add(gpsPane);
-
-        JLabel gpsLabel = new JLabel(Msg.getString("LocationTabPanel.gpslocator"), JLabel.CENTER); //$NON-NLS-1$
-        gpsPane.add(gpsLabel);
-
+        //lcd1.setBorder(new EmptyBorder(5, 5, 5, 5));
+        lcdLat.setDigitalFont(true);
+        lcdLat.setLcdDecimals(2);
+        lcdLat.setSize(new Dimension(150, 45));
+        lcdLat.setMaximumSize(new Dimension(150, 45));
+        lcdLat.setPreferredSize(new Dimension(150, 45));
+        lcdLat.setVisible(true);
+        //locationPanel.add(lcdLat, BorderLayout.WEST);
+        northPanel.add(lcdLat);
+        
+        
+        elevationCache = terrainElevation.getElevation(unit.getCoordinates());
+ /*
+        //System.out.println("elevation is "+ elevation);
+        lcdElev = new DisplaySingle();
+        lcdElev.setLcdValueFont(new Font("Serif", Font.ITALIC, 12));
+        lcdElev.setLcdUnitString("km");
+        lcdElev.setLcdValueAnimated(elevationCache);
+        lcdElev.setLcdDecimals(3);
+        lcdElev.setLcdInfoString("Elevation");
+        //lcd0.setLcdColor(LcdColor.DARKBLUE_LCD);
+        lcdElev.setLcdColor(LcdColor.YELLOW_LCD);//REDDARKRED_LCD);
+        lcdElev.setDigitalFont(true);
+        //lcd0.setBorder(new EmptyBorder(5, 5, 5, 5));
+        lcdElev.setSize(new Dimension(150, 60));
+        lcdElev.setMaximumSize(new Dimension(150, 60));
+        lcdElev.setPreferredSize(new Dimension(150, 60));
+        lcdElev.setVisible(true);
+        locationPanel.add(lcdElev, BorderLayout.NORTH);
+ */    
+        
         // Create center map button
-        centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
-        centerMapButton.setMargin(new Insets(1, 1, 1, 1));
-        centerMapButton.addActionListener(this);
-        centerMapButton.setOpaque(false);
-        //centerMapButton.setBackground(THEME_COLOR);
-        centerMapButton.setToolTipText("Locate a person/bot/object in a settlement/vehicle on Mars Navigator");
+        locatorButton = new JButton(ImageLoader.getIcon("locator48_orange"));
+        //centerMapButton = new JButton(ImageLoader.getIcon("locator_blue"));
+        locatorButton.setBorder(new EmptyBorder(1, 1, 1, 1) );
+        locatorButton.addActionListener(this);
+        locatorButton.setOpaque(false);
+        locatorButton.setToolTipText("Locate the unit on Mars Navigator");
 
 		JPanel locatorPane = new JPanel(new FlowLayout());
-		locatorPane.add(centerMapButton);
-		gpsPane.add(locatorPane);
-
-        // 2015-12-09 Prepare loc label
+		locatorPane.add(locatorButton);
+		//locationPanel.add(locatorPane, BorderLayout.NORTH);
+	    northPanel.add(locatorPane);
+	    
+        lcdLong = new DisplaySingle();
+        //lcdLong.setCustomLcdForeground(getForeground());
+        lcdLong.setLcdUnitString(dir_E_W);
+        lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
+        lcdLong.setLcdInfoString("Longitude");
+        //lcd2.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
+        lcdLong.setLcdColor(LcdColor.BEIGE_LCD);
+        //setBackgroundColor(BackgroundColor.LINEN);
+        lcdLong.setGlowColor(Color.yellow);
+        lcdLong.setDigitalFont(true);
+        lcdLong.setLcdDecimals(2);
+        lcdLong.setSize(new Dimension(150, 45));
+        lcdLong.setMaximumSize(new Dimension(150, 45));
+        lcdLong.setPreferredSize(new Dimension(150,45));
+        lcdLong.setVisible(true);
+       //locationPanel.add(lcdLong, BorderLayout.EAST);
+        northPanel.add(lcdLong);
+        
+        
+        int max = -1;
+        int min = 2;
+        // Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L"). 
+        // The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid. 
+        if (elevationCache < -8) {
+        	max = -8;
+        	min = -9;
+        }
+        else if (elevationCache < -5) {
+        	max = -5;
+        	min = -9;
+        }
+        else if (elevationCache < -3) {
+        	max = -3;
+        	min = -5;
+        }
+        else if (elevationCache < 0) {
+        	max = 1;
+        	min = -1;
+        }
+        else if (elevationCache < 1) {
+        	max = 2;
+        	min = 0;
+        }
+        else if (elevationCache < 3) {
+        	max = 5;
+        	min = 0;
+        }
+        else if (elevationCache < 10){
+        	max = 10;
+        	min = 5;
+        }
+        else if (elevationCache < 20){
+        	max = 20;
+        	min = 10;
+        }
+        else if (elevationCache < 30){
+        	max = 30;
+        	min = 20;
+        }
+         
+        gauge = new DisplayCircular();
+        setGauge(gauge, min, max);
+        locationPanel.add(gauge, BorderLayout.CENTER);
+        
+ 
+		
+		//centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
+/*
+		// 2015-12-09 Prepare loc label
         locLabel = new JLabel();
+        locLabel.setFont(font);
         //locLabel.setOpaque(false);
         locLabel.setFont(new Font("Serif", Font.PLAIN, 13));
         locLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		locationLabelPanel.add(locLabel);
+ */       
+		
+		lcdText = new DisplaySingle();
+        lcdText.setLcdInfoString("Last Unknown Position");
+        //lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
+        lcdText.setGlowColor(Color.ORANGE);
+        //lcdText.setBackground(Background.SATIN_GRAY);
+        lcdText.setDigitalFont(true);
+        lcdText.setSize(new Dimension(150, 30));
+        lcdText.setMaximumSize(new Dimension(150, 30));
+        lcdText.setPreferredSize(new Dimension(150,30));
+        lcdText.setVisible(true);
+        lcdText.setLcdNumericValues(false);
+        lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
+        lcdText.setLcdText(locationText);	
+        lcdText.setLcdTextScrolling(true);
+        //centerPanel.add(lcdText);
+		//locationPanel.add(centerPanel, BorderLayout.SOUTH);
+		locationPanel.add(lcdText, BorderLayout.SOUTH);
+		
+		checkTheme(true);
+    }
 
-/*
-
-        // Create location button
-        locationButton = new JButton();
-        locationButton.setOpaque(false);
-        //locationButton.setBackground(THEME_COLOR);
-        locationButton.addActionListener(this);
-
-        containerPanel.add(locationButton);
-
-
-
-        // 2014-11-11 Set up tpPanel for outside temperature and pressure
-        //tpPanel.setOpaque(false);
-        //BorderLayout tpLayout = new BorderLayout(0, 0);
-        //tpPanel.setLayout(tpLayout);
-        //tpPanel.setBackground(THEME_COLOR);
-
-        //TitledBorder tpTitle;
-        //tpTitle = BorderFactory.createTitledBorder("Outside");
-        //tpTitle.setTitleFont(new Font("Serif", Font.ITALIC, 9));
-        //tpPanel.setBorder(tpTitle);
-        //tpPanel.setBorder(BorderFactory.createEtchedBorder());
-
-        // Prepare air pressure label
-        airPressureLabel = new JLabel(getAirPressureString(getAirPressure()));
-        airPressureLabel.setOpaque(false);
-        airPressureLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-        airPressureLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        tpPanel.add(airPressureLabel, BorderLayout.CENTER);
-
-        // Prepare temperature label
-        temperatureLabel = new JLabel(getTemperatureString(getTemperature()));
-        temperatureLabel.setOpaque(false);
-        temperatureLabel.setFont(new Font("Serif", Font.PLAIN, 13));
-        temperatureLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        tpPanel.add(temperatureLabel, BorderLayout.NORTH);
-
-        locationLabelPanel.add(outsideReadingPanel);
-
-        // Add the location button or outsideReadingPanel depending on the situation.
-        Unit container = unit.getContainerUnit();
-        if (container != null) {
-            locationButton.setText(container.getName());
-            //addContainerPanel();
+    public void checkTheme(boolean firstRun) {
+        if (mainScene != null) {       	
+            int theme = mainScene.getTheme();
+            
+            if (themeCache != theme || firstRun) {
+            	themeCache = theme;      	       	
+	        
+	        	if (theme == 7) {
+	                lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
+	                gauge.setFrameDesign(FrameDesign.GOLD);
+	                locatorButton.setIcon(ImageLoader.getIcon("locator48_orange"));
+	        	}
+	        	else if (theme == 6) {
+	        		lcdText.setLcdColor(LcdColor.DARKBLUE_LCD);
+	        		gauge.setFrameDesign(FrameDesign.STEEL);
+	        		locatorButton.setIcon(ImageLoader.getIcon("locator48_blue"));
+	        	}
+            }
         }
-        else {
-         	// 2014-10-22 Called new method checkOutsideReading()
-        	//checkOutsideReading();
-        	//addOutsideReadingPanel();
-        }
-
-        // initialize containerCache
-        containerCache = unit.getContainerUnit();
-
-*/
     }
-/*
-    // 2014-11-11 Modified temperature and pressure panel
-    public String getTemperatureString(double value) {
-    	// 2015-01-16 Used Msg.getString for the degree sign
-    	// 2014-11-20 Changed from " °C" to " �C" for English Locale
-    	return fmt.format(value) + " " + Msg.getString("temperature.sign.degreeCelsius"); //$NON-NLS-1$
-    }
+    
+    public void setGauge(DisplayCircular gauge, int min, int max) {
+        gauge.setDisplayMulti(false);
+    	gauge.setDigitalFont(true);
+        //gauge.setFrameDesign(FrameDesign.GOLD);
+        //gauge.setOrientation(Orientation.EAST);//.NORTH);//.VERTICAL);
+        //gauge.setPointerType(PointerType.TYPE5);
+        //gauge.setTextureColor(Color.yellow);//, Texture_Color BRUSHED_METAL and PUNCHED_SHEET);
+        gauge.setUnitString("km");
+        gauge.setTitle("Elevation");
+        //gauge.setMinValue(min);
+        //gauge.setMaxValue(max);
+        //gauge.setTicklabelsVisible(true);
+        //gauge.setMaxNoOfMajorTicks(10);
+        //gauge.setMaxNoOfMinorTicks(10);
+        gauge.setBackgroundColor(BackgroundColor.NOISY_PLASTIC);//.BRUSHED_METAL);
+        //alt.setGlowColor(Color.yellow);
+        //gauge.setLcdColor(LcdColor.BEIGE_LCD);//.BLACK_LCD);
+        //gauge.setLcdInfoString("Elevation");
+        //gauge.setLcdUnitString("km");
+        gauge.setLcdValueAnimated(elevationCache);
+        gauge.setValueAnimated(elevationCache);
+        //gauge.setValue(elevationCache);
+        gauge.setLcdDecimals(3);
 
-    public int getTemperature() {
-		return (int) Simulation.instance().getMars().getWeather()
-    			.getTemperature(unit.getCoordinates());
-    }
+        //alt.setMajorTickmarkType(TICKMARK_TYPE);
+        //gauge.setSize(new Dimension(250, 250));
+        //gauge.setMaximumSize(new Dimension(250, 250));
+        //gauge.setPreferredSize(new Dimension(250, 250));
 
-    // 2014-11-07 Added temperature and pressure panel
-    public String getAirPressureString(double value) {
-    	return fmt2.format(value) + " " + Msg.getString("pressure.unit.kPa"); //$NON-NLS-1$
-    }
+        gauge.setSize(new Dimension(250, 250));
+        gauge.setMaximumSize(new Dimension(250, 250));
+        gauge.setPreferredSize(new Dimension(250, 250));
 
-    public double getAirPressure() {
-    	return Math.round(Simulation.instance().getMars().getWeather()
-	            .getAirPressure(unit.getCoordinates()) *100.0) / 100.0;
+        gauge.setVisible(true);	
+        
     }
-*/
+    
 	private String getLatitudeString() {
 		return locationCache.getFormattedLatitudeString();
 	}
@@ -245,74 +366,6 @@ implements ActionListener {
 	private String getLongitudeString() {
 		return locationCache.getFormattedLongitudeString();
 	}
-
-
-    /**
-     * Check the type of unit and its location
-     * Obtain temperature and pressure reading if the unit is outside the settlement
-     *
-     * @param calling setText to update the locationTextLabel
-
-    // 2014-11-11 Overhauled checkOutsideReading()
-	public void checkOutsideReading() {
-
-	    // 2014-11-11 Added temperature and pressure panel
-		double p = getAirPressure();
-        if (airPressureCache != p) {
-        	airPressureCache = p;
-            airPressureLabel.setText(getAirPressureString(airPressureCache));
-        }
-
-        int t = getTemperature();
-        if (temperatureCache != t) {
-        	temperatureCache = t;
-        	temperatureLabel.setText(getTemperatureString(temperatureCache));
-        }
-
-		//outsideReadingPanel.add(tpPanel);
-
-		if (unit instanceof Settlement) {
-			//Settlement settlement = (Settlement) unit;
-			outsideReadingPanel.remove(tpPanel);
-			outsideReadingPanel.add(tpPanel);
-		}
-	    if (unit instanceof Person) {
-
-	        Person person = (Person) unit;
-	        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-				outsideReadingPanel.remove(tpPanel);
-	        	outsideReadingPanel.add(tpPanel);
-	        }
-	        else if (person.getLocationSituation() == LocationSituation.BURIED) {
-				outsideReadingPanel.remove(tpPanel);
-				// 2014-11-29 Commented out remove(locationLabel) to avoid Exception
-				//outsideReadingPanel.remove(locationLabel);
-				outsideReadingPanel.add(locationLabel);
-				// 2014-11-17 Fixed NullPointer Exception. setText after adding locationLabel;
-				locationLabel.setText("Buried Outside");
-			}
-	        else { // the person is inside a settlement/vehicle
-	        	outsideReadingPanel.remove(tpPanel);
-	        	outsideReadingPanel.add(locationLabel);
-	        }
-	    }
-	    if (unit instanceof Vehicle) {
-        	Vehicle vehicle = (Vehicle) unit;
-        	if (vehicle.getStatus() == "Moving" ||
-        		vehicle.getStatus() == "Towed" ||
-   	      		// TODO: what if vehicle is malfunction in the settlement, NOT during an excursion
-        		vehicle.getStatus() == "Malfunction") {
-    			outsideReadingPanel.remove(tpPanel);
-				outsideReadingPanel.add(tpPanel);
-        	}
-        	else { // the vehicle should be in the settlement
-            	outsideReadingPanel.remove(tpPanel);
-	        	outsideReadingPanel.add(locationLabel);
-        	}
-	    }
-	}
-*/
-
 
 
     /**
@@ -324,7 +377,7 @@ implements ActionListener {
         JComponent source = (JComponent) event.getSource();
 
         // If the center map button was pressed, update navigator tool.
-        if (source == centerMapButton)
+        if (source == locatorButton)
             desktop.centerMapGlobe(unit.getCoordinates());
 
         // If the location button was pressed, open the unit window.
@@ -341,93 +394,95 @@ implements ActionListener {
         // If unit's location has changed, update location display.
     	// TODO: if a person goes outside the settlement for servicing an equipment
     	// does the coordinate (down to how many decimal) change?
-        if (!locationCache.equals(unit.getCoordinates())) {
-            locationCache.setCoords(unit.getCoordinates());
-            latitudeLabel.setText("Latitude : " + getLatitudeString());
-            longitudeLabel.setText("Longitude : " + getLongitudeString());
+    	Coordinates location = unit.getCoordinates();
+        if (!locationCache.equals(location)) {
+            locationCache.setCoords(location);
+ 
+            String dir_N_S = null;
+            String dir_E_W = null;
+            
+            if (locationCache.getLatitudeDouble() >= 0)
+            	dir_N_S = Msg.getString("direction.degreeSign")+"N";
+            else
+            	dir_N_S = Msg.getString("direction.degreeSign")+"S";
+            
+            if (locationCache.getLongitudeDouble() >= 0)
+            	dir_E_W = Msg.getString("direction.degreeSign")+"E";
+            else
+            	dir_E_W = Msg.getString("direction.degreeSign")+"W";
+            
+            lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
+            lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));          
+            
+            lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
+            lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
+            
+            double elevation = terrainElevation.getElevation(location);
+            
+            if (elevationCache != elevation) {
+            	elevationCache = elevation;
+            	
+                int max = 0;
+                int min = 0;
+                if (elevationCache < -8) {
+                	max = -8;
+                	min = -9;
+                }
+                else if (elevationCache < -5) {
+                	max = -5;
+                	min = -9;
+                }
+                else if (elevationCache < -3) {
+                	max = -3;
+                	min = -5;
+                }
+                else if (elevationCache < 0) {
+                	max = 1;
+                	min = -1;
+                }
+                else if (elevationCache < 1) {
+                	max = 2;
+                	min = 0;
+                }
+                else if (elevationCache < 3) {
+                	max = 5;
+                	min = 0;
+                }
+                else if (elevationCache < 10){
+                	max = 10;
+                	min = 5;
+                }
+                else if (elevationCache < 20){
+                	max = 20;
+                	min = 10;
+                }
+                else if (elevationCache < 30){
+                	max = 30;
+                	min = 20;
+                }
+                
+                setGauge(gauge, min, max);
+
+            }
         }
-
-
+        
         // 2015-12-09 Prepare loc label
         // Update location button or location text label as necessary.
         Unit container = unit.getContainerUnit();
-        //if (container == null && containerCache != null)
-        //	containerCache = null;
-        //else if (container != null) {
-	        if (containerCache != container) {
-	        	containerCache = container;
-	        	updateLocation();
-	        }
-        //}
+        if (containerCache != container) {
+        	containerCache = container;
+        	updateLocation();
+        }
 
         Unit topContainer = unit.getTopContainerUnit();
-        //if (topContainer == null && topContainerCache != null)
-        //	topContainerCache = null;
-        //else if (topContainer != null) {
-	        if (topContainerCache != topContainer) {
-	        	topContainerCache = topContainer;
-	        	updateLocation();
-	        }
-        //}
-
-
-        //else; // the unit's container has NOT changed
-
-/*
-		double p = getAirPressure();
-        if (airPressureCache != p) {
-        	airPressureCache = p;
-            airPressureLabel.setText(getAirPressureString(airPressureCache));
+        if (topContainerCache != topContainer) {
+        	topContainerCache = topContainer;
+        	updateLocation();
         }
 
-        int t = getTemperature();
-        if (temperatureCache != t) {
-        	temperatureCache = t;
-        	temperatureLabel.setText(getTemperatureString(temperatureCache));
-        }
-
-   */
-
+        checkTheme(false);
+        
     }
-
-    /**
-     * Adds the location button to the location label panel if it isn't already on
-     * there and removes the location text label if it's there.
-
-    // 2014-11-11 Modified addContainerPanel()
-    private void addContainerPanel() {
-        try {
-            Component lastComponent = locationLabelPanel.getComponent(3);
-            if (lastComponent == outsideReadingPanel) {
-                locationLabelPanel.remove(outsideReadingPanel);
-                locationLabelPanel.add(containerPanel);
-            }
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            locationLabelPanel.remove(outsideReadingPanel);
-            locationLabelPanel.add(containerPanel);
-        }
-    }
-*/
-    /**
-     * Adds the outsideReadingPanel if it isn't already on
-     * there and removes the location button if it's there.
-
-    // 2014-11-11 Modified addOutsideReadingPanel()
-    private void addOutsideReadingPanel() {
-        try {
-            Component lastComponent = locationLabelPanel.getComponent(3);
-            if (lastComponent == locationButton) {
-                locationLabelPanel.remove(containerPanel);
-                locationLabelPanel.add(outsideReadingPanel);
-            }
-        }
-        catch (ArrayIndexOutOfBoundsException e) {
-            locationLabelPanel.remove(containerPanel);
-            locationLabelPanel.add(outsideReadingPanel);
-        }
-    }
-    */
 
     /**
      * Tracks the location of a person/bot/vehicle/object
@@ -516,7 +571,8 @@ implements ActionListener {
         		}
         	}
         }
-
-        locLabel.setText("Last known :" + loc);
+      
+        lcdText.setLcdText(loc);
+      
     }
 }

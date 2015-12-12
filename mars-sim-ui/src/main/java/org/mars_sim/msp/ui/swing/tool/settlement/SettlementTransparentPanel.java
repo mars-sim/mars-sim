@@ -75,6 +75,9 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
+import eu.hansolo.steelseries.gauges.DisplaySingle;
+import eu.hansolo.steelseries.tools.LcdColor;
+
 public class SettlementTransparentPanel extends JComponent {
 
 	private static final long serialVersionUID = 1L;
@@ -141,7 +144,25 @@ public class SettlementTransparentPanel extends JComponent {
 		box.setBackground(new Color(0,0,0,0));
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);
-
+/*
+	    JPanel lcdPanel = new JPanel();
+	    DisplaySingle lcd1 = new DisplaySingle();
+        lcd1.setLcdUnitString("S");//dir_N_S);
+        lcd1.setLcdValueAnimated(5);//locationCache.getLatitudeDouble());
+        lcd1.setLcdInfoString("Latitude");
+        lcd1.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
+        //lcd1.init(150, 100);
+        lcd1.setMaximumSize(new Dimension(200, 100));
+        lcd1.setPreferredSize(new Dimension(150,50));
+        lcd1.setVisible(true);
+        lcdPanel.add(lcd1);
+        lcdPanel.setOpaque(false);
+        lcdPanel.setBackground(new Color(0,0,0,125));
+		mapPanel.add(lcdPanel, BorderLayout.WEST);
+        //box.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+        //box.add(Box.createHorizontalGlue());
+	    //box.add(lcd1);
+ */      
         // Make panel drag-able
 //    	ComponentMover cmName = new ComponentMover();
 //    	cmName.registerComponent(box);

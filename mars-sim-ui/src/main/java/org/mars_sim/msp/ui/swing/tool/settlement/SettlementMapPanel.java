@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -115,12 +116,9 @@ implements ClockListener {
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 
-		//SwingUtilities.invokeLater(new Runnable() {
-        //    @Override
-         //   public void run() {
-        		init(desktop);
-        //    }
-        //});
+		//SwingUtilities.invokeLater(() -> {
+			init(desktop);
+		//});
 
 		// Set foreground and background colors.
 		setOpaque(false);
@@ -149,8 +147,10 @@ implements ClockListener {
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 
-	    new SettlementTransparentPanel(desktop, this);
-
+		//SwingUtilities.invokeLater(() -> {
+			new SettlementTransparentPanel(desktop, this);
+		//});
+	    
 		////paintDoubleBuffer();
 		repaint();
 	}

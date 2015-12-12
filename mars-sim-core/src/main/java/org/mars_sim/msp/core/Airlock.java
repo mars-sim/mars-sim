@@ -380,6 +380,11 @@ public abstract class Airlock implements Serializable {
                     	 Robot robot = (Robot) occupant;          
                     	 logger.finer("Airlock has been " + getState() + ". " + robot.getName() + " at " + getEntity() + " is about to call exitAirlock()");                  	 
                      }
+                     else if (occupant instanceof Person) {
+                    	 Person person = (Person) operator;
+                     	 logger.finer("Airlock has been " + getState() + ". " + person.getName() + " at " + getEntity() + " is about to call exitAirlock()");                  	                     
+                     }
+                     
                      exitAirlock(occupant);
                 }
 

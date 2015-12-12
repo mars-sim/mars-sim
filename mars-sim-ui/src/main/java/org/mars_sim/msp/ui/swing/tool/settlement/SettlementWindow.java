@@ -114,46 +114,40 @@ extends ToolWindow {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 	    //mainPanel.setOpaque(false);
 	    //mainPanel.setBackground(new Color(0,0,0,128));
-
 		setContentPane(mainPanel);
 
 		subPanel = new JPanel(new BorderLayout());
+	    mainPanel.add(subPanel, BorderLayout.CENTER);
 	    //subPanel.setOpaque(false);
 	    //subPanel.setBackground(new Color(0,0,0,128));
 	    subPanel.setBackground(Color.BLACK);
-	    mainPanel.add(subPanel, BorderLayout.CENTER);
-
+	
 		mapPanel = new SettlementMapPanel(desktop, this);
+    	subPanel.add(mapPanel, BorderLayout.CENTER);
 		//mainPanel.add(mapPanel, BorderLayout.CENTER);
-		subPanel.add(mapPanel, BorderLayout.CENTER);
-
-		// 2015-10-24 Create MarqueeTicker
-		marqueeTicker = new MarqueeTicker(this);
-		marqueeTicker.setBackground(Color.BLACK);
-		subPanel.add(marqueeTicker, BorderLayout.SOUTH);
-
+	
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
+        mainPanel.add(statusBar, BorderLayout.SOUTH);
+        
         solLabel = new JLabel();
         popLabel = new JLabel();  //statusText + populationText;
-
         statusBar.setLeftComponent(solLabel, true);
         statusBar.setLeftComponent(popLabel, false);
-
         dateLabel = new JLabel();
         timeLabel = new JLabel();
         balloonToolTip.createBalloonTip(timeLabel, Msg.getString("SettlementWindow.timeLabel.tooltip")); //$NON-NLS-1$
         balloonToolTip.createBalloonTip(dateLabel, Msg.getString("SettlementWindow.dateLabel.tooltip")); //$NON-NLS-1$
         //timeLabel.setHorizontalAlignment(JLabel.CENTER);
-
         statusBar.addRightComponent(dateLabel, false);
         statusBar.addRightComponent(timeLabel, false);
-
         //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
 
-        //subPanel
-        mainPanel.add(statusBar, BorderLayout.SOUTH);
-
+    	// 2015-10-24 Create MarqueeTicker
+		marqueeTicker = new MarqueeTicker(this);
+		//marqueeTicker.setBackground(Color.BLACK);
+    	subPanel.add(marqueeTicker, BorderLayout.SOUTH);
+    	
 		pack();
 		setVisible(true);
 
