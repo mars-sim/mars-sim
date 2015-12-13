@@ -209,7 +209,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>net.java.balloontip</groupId>
 			<artifactId>balloontip-examples</artifactId>
 			<version>1.2.4.1</version>
-		</dependency>	
+		</dependency>
+
 	</dependencies>
 	<repositories>
 		<repository>
@@ -231,5 +232,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	            <enabled>true</enabled>
 	       </snapshots>
 	    </repository>
+  
 	</repositories>
 </project>

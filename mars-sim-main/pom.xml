@@ -147,12 +147,7 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.json</artifactId>
-			<version>1.0.4</version>
-		</dependency>		
+		</dependency>	
 		<dependency>
 			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>

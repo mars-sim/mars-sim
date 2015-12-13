@@ -24,8 +24,10 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
+import org.mars_sim.msp.core.person.PersonalityTrait;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.ai.EmotionJSONConfig;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -602,7 +604,8 @@ public class UnitManager implements Serializable {
 	private void createConfiguredPeople() {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-
+		EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
+		
 		int size = personConfig.getNumberOfConfiguredPeople();
 		// Create all configured people.
 		for (int x = 0; x < size; x++) {
@@ -701,14 +704,15 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteDessert(dessert);
 			person.getFavorite().setFavoriteActivity(activity);
 
-			// Set person's configured Big Five Personality traits (if any).
+			// 2015-11-23 Set the person's configured Big Five Personality traits (if any).
 			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
 			if (bigFiveMap != null) {
 				Iterator<String> i = bigFiveMap.keySet().iterator();
 				while (i.hasNext()) {
-					String attributeName = i.next();
-					int value = (Integer) bigFiveMap.get(attributeName);
-					//person.getBigFiveManager().setAttribute(NaturalAttribute.valueOfIgnoreCase(attributeName), value);
+					String personalityTypeName = i.next();
+					int value = (Integer) bigFiveMap.get(personalityTypeName);
+					person.getPersonalityManager().setPersonalityTrait(PersonalityTrait
+							.valueOfIgnoreCase(personalityTypeName), value);
 				}
 			}
 
@@ -719,8 +723,8 @@ public class UnitManager implements Serializable {
 				while (i.hasNext()) {
 					String attributeName = i.next();
 					int value = (Integer) naturalAttributeMap.get(attributeName);
-					person.getNaturalAttributeManager().setAttribute(NaturalAttribute.valueOfIgnoreCase(attributeName),
-							value);
+					person.getNaturalAttributeManager().setAttribute(NaturalAttribute
+							.valueOfIgnoreCase(attributeName), value);
 				}
 			}
 
@@ -731,30 +735,17 @@ public class UnitManager implements Serializable {
 				while (i.hasNext()) {
 					String skillName = i.next();
 					int level = (Integer) skillMap.get(skillName);
-					person.getMind().getSkillManager().addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), // due
-																														// to
-																														// i18n,
-																														// the
-																														// keys
-																														// from
-																														// xml
-																														// must
-																														// equal
-																														// the
-																														// enum
-																														// values,
-																														// which
-																														// are
-																														// all
-																														// upper
-																														// case
-							level));
+					person.getMind().getSkillManager()
+					.addNewSkill(new Skill(SkillType.valueOfIgnoreCase(skillName), level));
 				}
 			}
 
 			// 2015-06-07 Added Preference
 			person.getPreference().initializePreference();
 
+			// 2015-12-12 Added setEmotionalStates()
+			person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
+			
 		}
 
 		// Create all configured relationships.

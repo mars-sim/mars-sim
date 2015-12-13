@@ -30,19 +30,6 @@ public enum NaturalAttribute {
 	SPIRITUALITY (Msg.getString("NaturalAttribute.spirituality")), //$NON-NLS-1$
 	TEACHING (Msg.getString("NaturalAttribute.teaching")); //$NON-NLS-1$
 
-	/*
-	 * Personality Trait Model:
-	 * 
-  		Openness is appreciation for a variety of experience.
-
-		Conscientiousness is planning ahead rather than being spontaneous.
-
-		Extraversion involves going out with friends and being energetic.
-
-		Agreeableness is, as it says, being agreeable.
-
-		Neuroticism refers to worrying or being vulnerable.
-	 */
 
 	private String name;
 

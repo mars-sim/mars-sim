@@ -103,7 +103,7 @@ implements Serializable {
         addPhase(ENTERING_AIRLOCK);
         addPhase(WAITING_INSIDE_AIRLOCK);
         addPhase(EXITING_AIRLOCK);
-        addPhase(STORING_EVA_SUIT);
+        //addPhase(STORING_EVA_SUIT);
 
         setPhase(WAITING_TO_ENTER_AIRLOCK);
     }
@@ -561,7 +561,7 @@ implements Serializable {
               	logger.finer(robot + " is bypassing the need of storing the EVA suit");
               	 
                 // EVA SUIT NOT NEEDED for robot but may still call that so as to endTask() properly
-                setPhase(STORING_EVA_SUIT);
+                //setPhase(STORING_EVA_SUIT);
 
             }
             else {

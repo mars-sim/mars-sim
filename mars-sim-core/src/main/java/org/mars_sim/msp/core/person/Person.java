@@ -32,8 +32,10 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.FindingLife;
+import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.SettlingMars;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -79,6 +81,8 @@ implements VehicleOperator, MissionMember, Serializable {
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
 
+    private int[] emotional_states;
+
     private LifeSupportType support;
 
     /** The gender of the person (male or female). */
@@ -89,6 +93,9 @@ implements VehicleOperator, MissionMember, Serializable {
     private Settlement associatedSettlement;
     /** Manager for Person's natural attributes. */
     private NaturalAttributeManager attributes;
+    
+    private PersonalityManager personalityManager;
+    
     /** Person's mind. */
     private Mind mind;
     /** Person's physical condition. */
@@ -177,10 +184,11 @@ implements VehicleOperator, MissionMember, Serializable {
     public void assignReportingAuthority() {
 
     	if (ra == null) {
-	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
-	        ra = new NASAMissionControl();
-	        ra.setMissionAgenda(new FindingLife());
-	        //ra.conductMissionObjective();
+	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:   		
+	        //ra = new NASAMissionControl();
+	        //ra.setMissionAgenda(new FindingLife());
+    		ra = new MarsSocietyMissionControl();
+    		ra.setMissionAgenda(new SettlingMars());
     	}
     }
 
@@ -445,7 +453,20 @@ implements VehicleOperator, MissionMember, Serializable {
     public NaturalAttributeManager getNaturalAttributeManager() {
         return attributes;
     }
+    
 
+    /**
+     * Returns a reference to the Person's Personality manager
+     * @return the person's Personality manager
+     */
+    //2015-12-12 Added
+    public PersonalityManager getPersonalityManager() {
+        return personalityManager;
+    }
+    
+    
+    
+    
     /**
      * Get the performance factor that effect Person with the complaint.
      * @return The value is between 0 -> 1.
@@ -845,6 +866,11 @@ implements VehicleOperator, MissionMember, Serializable {
 		health.updateValueSleepHabit(millisols, updateType);
 	}
 
+	//2015-12-12 Added setEmotionalStates()
+	public void setEmotionalStates(int[] states) {
+		emotional_states = states;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();

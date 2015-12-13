@@ -1526,7 +1526,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.35" yloc="-1.4" />
 				</activity>
 			</research>
-<!-- 			<robotic-station slots="4"/> -->
+ 			<robotic-station slots="4"/> 
 			<storage stock-capacity="5000"/>
 			<thermal-generation>
 				<heat-source type="Solar Heat Source" capacity="10.0" />

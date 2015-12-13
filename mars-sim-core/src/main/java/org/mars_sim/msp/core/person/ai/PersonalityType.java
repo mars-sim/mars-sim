@@ -47,6 +47,7 @@ implements Serializable {
 	private static final String ENFP = "ENFP";
 	private static final String ENFJ = "ENFJ";
 
+	
 	// The solitude stress modifier per millisol.
 	private static final double BASE_SOLITUDE_STRESS_MODIFIER = .1D;
 
