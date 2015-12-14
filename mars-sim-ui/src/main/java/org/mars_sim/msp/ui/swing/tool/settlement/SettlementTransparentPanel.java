@@ -699,6 +699,7 @@ public class SettlementTransparentPanel extends JComponent {
 	 * @return call Dialog popup
 	 */
 	// 2014-10-26 Modified renameSettlement()
+	@SuppressWarnings("restriction")
 	public void renameSettlement() {
 
 		String oldName = mapPanel.getSettlement().getName();

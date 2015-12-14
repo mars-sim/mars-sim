@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The Unit class is the abstract parent class to all units in the
@@ -71,8 +72,15 @@ implements Serializable, Comparable<Unit> {
 	 * Change the unit's name
 	 * @param name new name
 	 */
-	public final void changeName(String name) {
-		this.name = name;
+	//2015-12-13 Modified changeName() to call changeSettlementName()
+	public final void changeName(String newName) {
+		String oldName = this.name;
+		Unit unit = this;
+		if (unit instanceof Settlement) {
+			//Settlement settlement = (Settlement) unit;
+			SimulationConfig.instance().getSettlementConfiguration().changeSettlementName(oldName, newName);
+		}
+		this.name = newName;
 	}
 
 	/**

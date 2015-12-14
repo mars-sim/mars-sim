@@ -100,6 +100,10 @@ public class BuildingManager implements Serializable {
     private List<Building> buildingsNickNames;
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
+    
+    //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
+    
+    
     private Settlement settlement; // The manager's settlement.
     private MarsClock lastBuildingValuesUpdateTime;
 
@@ -118,7 +122,7 @@ public class BuildingManager implements Serializable {
         this(settlement, SimulationConfig.instance().getSettlementConfiguration().
                 getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
 
-        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration(); 
     }
 
     /**
@@ -1307,7 +1311,27 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets a unique ID number for a new building.
+     * Gets an available building type ID for a new building.
+     * @param buildingType
+     * @return type ID
+     */
+    // 2015-12-13 Added getNextBuildingTypeID()
+    public int getNextBuildingTypeID(String buildingType) {
+
+        int largestTypeID = 0;
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            String type = building.getBuildingType();
+            if (buildingType.equals(type))
+            	largestTypeID++;         
+        }
+
+        return largestTypeID + 1;
+    }
+    
+    /**
+     * Gets a unique ID number for a new building in a settlement (but not unique in a simulation)
      * @return ID integer.
      */
     public int getUniqueBuildingIDNumber() {
@@ -1324,18 +1348,19 @@ public class BuildingManager implements Serializable {
 
         return largestID + 1;
     }
+    
     /**
      * Gets a unique nick name for a new building
      * @return a unique nick name
      */
     // 2014-10-29 Added getBuildingNickName()
     public String getBuildingNickName(String buildingType) {
-      	int bid = getUniqueBuildingIDNumber();
-    	int sid = getSettlement().getID();
-    	String settlementID = getCharForNumber(sid + 1);
-		String buildingID = bid + "";
-		String buildingNickName = buildingType + " " + settlementID + buildingID;
-    	return buildingNickName;
+      	int id = getNextBuildingTypeID(buildingType);
+        // 2015-12-13 Added buildingTypeID
+		String buildingTypeID = id + "";
+  		String buildingNickName = buildingType + " " + buildingTypeID;
+
+		return buildingNickName;
     }
 
 	// 2014-10-29 Added getCharForNumber()

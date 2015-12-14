@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -65,18 +66,22 @@ public abstract class UnitWindow extends JInternalFrame {
      * @param displayDescription true if unit description is to be displayed.
      */
     public UnitWindow(MainDesktopPane desktop, Unit unit, boolean displayDescription) {
-
         // Use JInternalFrame constructor
         super(unit.getName(), false, true, false, true);
 
+        // Initialize data members
+        this.desktop = desktop;
+        this.unit = unit;
+        
+	    this.setMaximumSize(new Dimension(460, 580));
+	    this.setPreferredSize(new Dimension(460, 580));
+	    
         // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
         BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
         titlePane.setOpaque(true);
         titlePane.setBackground(new Color(250, 213, 174)); // light pale orange
 
-        // Initialize data members
-        this.desktop = desktop;
-        this.unit = unit;
+
         tabPanels = new ArrayList<TabPanel>();
 
         // Create main panel

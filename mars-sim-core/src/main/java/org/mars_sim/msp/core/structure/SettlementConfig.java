@@ -82,7 +82,9 @@ implements Serializable {
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	//private List<ExistingSettlement> existingSettlements;
 	private List<String> settlementNames;
-	private Map<String, Integer> scenarioMap = new HashMap<String, Integer>();
+	//private Map<String, Integer> scenarioMap = new HashMap<>();
+	private Map<Integer, String> scenarioMap = new HashMap<>();
+	private Map<Integer, String> settlementMap = new HashMap<>();
 
 	//private MultiplayerClient multiplayerClient;
 	/**
@@ -98,10 +100,11 @@ implements Serializable {
 		settlementNames = new ArrayList<String>();
 		//existingSettlements = new ArrayList<ExistingSettlement>();
 
+		loadSettlementNames(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
 		loadInitialSettlements(settlementDoc);
 		loadNewArrivingSettlements(settlementDoc);
-		loadSettlementNames(settlementDoc);
+
 	}
 
 	//public void setMultiplayerClient(MultiplayerClient multiplayerClient) {
@@ -142,36 +145,25 @@ implements Serializable {
 		    int scenarioID = Integer.parseInt(templateElement.getAttributeValue(ID));
 			String name = templateElement.getAttributeValue(NAME);
 
-		    if (scenarioMap.containsValue(scenarioID) ) {
-		        throw new IllegalStateException("Error in xml file: scenarioID in settlement template " + name + " not unique.");
+		    if (scenarioMap.containsKey(scenarioID) ) {
+		        throw new IllegalStateException("Error in SettlementConfig.xml: scenarioID in settlement template " + name + " is not unique.");
 		    }
-
-		    scenarioMap.put(name, scenarioID);
-
+		    else 
+		    	scenarioMap.put(scenarioID, name);
+		    		
 		    int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
 		    int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 		    // 2014-10-29 Added scenarioID
 			SettlementTemplate template = new SettlementTemplate(name, scenarioID, defaultPopulation, defaultNumOfRobots);
 			settlementTemplates.add(template);
-
-			// Load buildings
+					
 			Set<Integer> existingIDs = new HashSet<Integer>();
+			// 2015-12-13 Added buildingTypeIDMap
+			Map<String, Integer> buildingTypeIDMap = new HashMap<>();
+				   
 			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
-			    // 2014-10-28  Changed id to bid
-			    int bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
-			    if (existingIDs.contains(bid)) {
-			        throw new IllegalStateException("Error in xml file: building ID in settlement template " + name + " not unique.");
-			    }
-			    existingIDs.add(bid);
-				String buildingType = buildingElement.getAttributeValue(TYPE);
-				// 2014-10-28  Created a building nickname for every building
-				// by appending the settlement id and building id to that building's type.
-				String scenario = getCharForNumber(scenarioID + 1);
-				// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
-				String buildingID = bid + "";
-				String buildingNickName = buildingType + " " + scenario + buildingID;
 
 				double width = -1D;
 				if (buildingElement.getAttribute(WIDTH) != null) {
@@ -187,6 +179,34 @@ implements Serializable {
 				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
+				
+			    // 2014-10-28  Changed id to bid
+			    int bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
+			    if (existingIDs.contains(bid)) {
+			        throw new IllegalStateException("Error in SettlementConfig.xml : building ID in settlement template " + name + " is not unique.");
+			    }
+			    else
+			    	existingIDs.add(bid);
+			    			    
+				String buildingType = buildingElement.getAttributeValue(TYPE);
+			
+				if (buildingTypeIDMap.containsKey(buildingType)) {
+					int last = buildingTypeIDMap.get(buildingType);
+					buildingTypeIDMap.put(buildingType, last + 1);
+				}
+				else
+					buildingTypeIDMap.put(buildingType, 1);
+
+				// 2014-10-28  Created a building nickname for every building
+				// by appending the settlement id and building id to that building's type.
+				String scenario = getCharForNumber(scenarioID + 1);
+				// NOTE: i = sid + 1 since i must be > 1, if i = 0, s = null
+				//String buildingID = bid + "";
+	            // 2015-12-13 Added buildingTypeID
+				int buildingTypeID = buildingTypeIDMap.get(buildingType);
+				//String buildingNickName = buildingType + " " + scenario + buildingID;
+				String buildingNickName = buildingType + " " + buildingTypeID;
+
 				 // 2014-10-28  Added buildingNickName, Changed id to bid
 				BuildingTemplate buildingTemplate = new BuildingTemplate(bid, scenario, buildingType, buildingNickName, width, length,
 				        xLoc, yLoc, facing);
@@ -449,9 +469,53 @@ implements Serializable {
 		Element settlementNameList = root.getChild(SETTLEMENT_NAME_LIST);
 		List<Element> settlementNameNodes = settlementNameList.getChildren(SETTLEMENT_NAME);
 		for (Element settlementNameElement : settlementNameNodes) {
-			settlementNames.add(settlementNameElement.getAttributeValue(VALUE));
+			String name = settlementNameElement.getAttributeValue(VALUE);
+			settlementNames.add(name);
+			int newID = settlementMap.size() + 1;
+			settlementMap.put(newID, name);
 		}
 	}
+    
+	/**
+	 * Obtains the key of a value in a particular map
+	 * @param map
+	 * @param name
+	 * @return
+	 */
+    // 2015-12-13 Added getMapKey()
+    public int getMapKey(Map<Integer, String> map,  String name) {
+    	int result = -1;
+    	if (map.containsValue(name)) {
+            for (Map.Entry<Integer, String> e : map.entrySet()) {
+                Integer key = e.getKey();
+                Object value2 = e.getValue();
+                if ((value2.toString()).equalsIgnoreCase(name)) {
+                	result = key;
+                }
+            }
+        }
+    	
+    	return result;    	
+    }
+
+    /**
+     * Changes a settlement's name in settlementMap
+     * @param oldName
+     * @param newName
+     */
+    // 2015-12-13 Added changeSettlementName()
+    public void changeSettlementName(String oldName, String newName) {
+    	if (settlementMap.containsValue(oldName)) {
+            for (Map.Entry<Integer,String> e : settlementMap.entrySet()) {
+                Integer key = e.getKey();
+                Object value = e.getValue();
+                if ((value.toString()).equalsIgnoreCase(oldName)) {
+                	settlementMap.remove(key, oldName);
+            		settlementMap.put(key, newName);
+                }
+            }
+        }  		   	
+    }
 
 	/**
 	 * Gets the settlement template that matches a template name.
@@ -525,7 +589,8 @@ implements Serializable {
 	// 2015-01-17 Added getNewArrivingSettlementScenarioID()
 	public int getNewArrivingSettlementScenarioID(int index) {
 		if ((index >= 0) && (index < newArrivingSettlements.size()))
-			return scenarioMap.get((newArrivingSettlements.get(index).template));
+			//return scenarioMap.get(newArrivingSettlements.get(index).template);
+			return getMapKey(scenarioMap, newArrivingSettlements.get(index).template);
 		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 
@@ -628,7 +693,8 @@ implements Serializable {
 	// 2015-01-17 Added getInitialSettlementScenarioID()
 	public int getInitialSettlementScenarioID(int index) {
 		if ((index >= 0) && (index < initialSettlements.size()))
-			return scenarioMap.get((initialSettlements.get(index).template));
+			//return scenarioMap.get((initialSettlements.get(index).template));
+			return getMapKey(scenarioMap, initialSettlements.get(index).template);
 		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 
@@ -744,8 +810,9 @@ implements Serializable {
 	    settlement.populationNumber = populationNum;
 	    settlement.numOfRobots = numOfRobots;
 	    //System.out.println("SettmaxMSDg : numOfRobots is " + numOfRobots);
-	    settlement.scenarioID = scenarioMap.get(template);
-
+	    //settlement.scenarioID = scenarioMap.get(template);
+	    settlement.scenarioID = getMapKey(scenarioMap, template);
+	    
 		// take care to internationalize the coordinates
 		latitude = latitude.replace("N",Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 		latitude = latitude.replace("S",Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$

@@ -6,7 +6,9 @@
  */
 package org.mars_sim.msp.core.reportingAuthority;
 
-public class DeterminingHabitability implements MissionAgenda {
+import java.io.Serializable;
+
+public class DeterminingHabitability implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 

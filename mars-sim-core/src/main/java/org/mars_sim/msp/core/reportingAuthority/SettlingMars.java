@@ -6,7 +6,9 @@
  */
 package org.mars_sim.msp.core.reportingAuthority;
 
-public class SettlingMars implements MissionAgenda {
+import java.io.Serializable;
+
+public class SettlingMars implements MissionAgenda, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 

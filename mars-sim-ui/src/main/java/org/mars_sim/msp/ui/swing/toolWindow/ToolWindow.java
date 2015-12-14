@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.toolWindow;
 
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
@@ -65,7 +66,7 @@ extends JInternalFrame {
 		this.name = name;
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
-
+	      
 	    //getRootPane().setOpaque(false);
 	    //getRootPane().setBackground(new Color(0,0,0,128));
 	    //setOpaque(false);

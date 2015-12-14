@@ -26,19 +26,31 @@ implements Serializable , Comparable<BuildingTemplate>{
 	//private static Logger logger = Logger.getLogger(BuildingTemplate.class.getName());
 
 	// Data members
+	
+	/**
+	 * an unique id for this building in a settlement
+	 */
 	private int id;
-	private String buildingType;	
+	/**
+	 * an id for this building in a particular building type. e.g. ERV Base 1, ERV Base 2. 
+	 */
+	private int typeID;
+	
 	private double width;
 	private double length;
 	private double xLoc;
 	private double yLoc;
 	private double facing;
-	private List<BuildingConnectionTemplate> connectionList;
-
+	
+	private String buildingType;
     // 2014-10-28 Added nickName
 	private String nickName;
 	private String scenario;
 		
+
+	private List<BuildingConnectionTemplate> connectionList;
+
+	
 	/*
 	 * * BuildingTemplate Constructor. 
 	 */

@@ -242,12 +242,6 @@ public class TransportWizard {
     // 2015-12-06 Added checkTemplatePosition()
     public void checkTemplatePosition(BuildingManager mgr, BuildingTemplate template, boolean defaultPosition) {
 
-        int buildingID = mgr.getUniqueBuildingIDNumber();
-        int scenarioID = mgr.getSettlement().getID();
-        String scenario = getCharForNumber(scenarioID + 1);
-        buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
-
-
         // Replace width and length defaults to deal with variable width and length buildings.
         double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
         if (template.getWidth() > 0D) {
@@ -266,6 +260,15 @@ public class TransportWizard {
             length = DEFAULT_VARIABLE_BUILDING_LENGTH;
             System.out.println("TransportWizard : set length to " + DEFAULT_VARIABLE_BUILDING_LENGTH);
         }
+
+        int buildingID = mgr.getUniqueBuildingIDNumber();
+        // 2015-12-13 Added buildingTypeID
+        int buildingTypeID = mgr.getNextBuildingTypeID(template.getBuildingType());
+        
+        int scenarioID = mgr.getSettlement().getID();
+        String scenario = getCharForNumber(scenarioID + 1);
+        //buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
+        buildingNickName = template.getBuildingType() + " " + buildingID;
 
     	// obtain the same template with a new nickname for the building
      	BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,

@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
@@ -108,6 +110,40 @@ public class ConstructionWizard {
 		this.resupply = mgr.getResupply();
 	}
 
+
+    /**
+     * Creates a new building from the construction site.
+     * @param manager the settlement's building manager.
+     * @return newly constructed building.
+     * @throws Exception if error constructing building.
+     
+    public Building createBuilding(BuildingManager manager) {
+        if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
+
+        // 2014-10-27 Added uniqueName
+        int id = manager.getUniqueBuildingIDNumber();
+        String buildingType = buildingStage.getInfo().getName();
+        String uniqueName = manager.getBuildingNickName(buildingType);
+        
+        Building newBuilding = new Building(id, buildingType, uniqueName, width, length,
+                xLocation, yLocation, facing, manager);
+        manager.addBuilding(newBuilding, true);
+
+        // Record completed building name.
+        ConstructionManager constructionManager = manager.getSettlement().getConstructionManager();
+        MarsClock timeStamp = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName(), timeStamp);
+
+        // Clear construction value cache.
+        constructionManager.getConstructionValues().clearCache();
+
+        // Fire construction event.
+        fireConstructionUpdate(CREATE_BUILDING_EVENT, newBuilding);
+
+        return newBuilding;
+    }
+    */
+	
 	/**
      * Delivers supplies to the destination settlement.
      */
@@ -123,10 +159,8 @@ public class ConstructionWizard {
         while (buildingI.hasNext()) {
            BuildingTemplate template = buildingI.next();
 
-
            // Correct length and width in building template.
-           int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-
+ 
            // Replace width and length defaults to deal with variable width and length buildings.
            double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
            if (template.getWidth() > 0D) {
@@ -144,11 +178,17 @@ public class ConstructionWizard {
                length = DEFAULT_VARIABLE_BUILDING_LENGTH;
            }
 
+           int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+           // 2015-12-13 Added buildingTypeID          
+           int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(template.getBuildingType());
+ 
            // 2015-01-16 Added getScenario()
            int scenarioID = settlement.getID();
            String scenario = getCharForNumber(scenarioID + 1);
-           buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
+           //buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
+           buildingNickName = template.getBuildingType() + " " + buildingTypeID;
 
+           
            BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,
                    length, template.getXLoc(), template.getYLoc(), template.getFacing());
 

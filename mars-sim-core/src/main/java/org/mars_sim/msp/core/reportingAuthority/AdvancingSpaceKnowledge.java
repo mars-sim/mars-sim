@@ -7,7 +7,9 @@
 
 package org.mars_sim.msp.core.reportingAuthority;
 
-public class AdvancingSpaceKnowledge implements MissionAgenda {
+import java.io.Serializable;
+
+public class AdvancingSpaceKnowledge implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 

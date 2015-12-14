@@ -335,6 +335,7 @@ implements Serializable, LocalBoundedObject {
         int id = manager.getUniqueBuildingIDNumber();
         String buildingType = buildingStage.getInfo().getName();
         String uniqueName = manager.getBuildingNickName(buildingType);
+        
         Building newBuilding = new Building(id, buildingType, uniqueName, width, length,
                 xLocation, yLocation, facing, manager);
         manager.addBuilding(newBuilding, true);
