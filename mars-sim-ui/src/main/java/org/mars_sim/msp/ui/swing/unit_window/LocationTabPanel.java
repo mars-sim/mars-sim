@@ -67,7 +67,7 @@ implements ActionListener {
 	
 	private double elevationCache; 
 
-	private String locationText;
+	//private String locationText = "Mars";
 	
 	// 2014-11-11 Added new panels and labels
 	private JPanel tpPanel =  new JPanel();
@@ -280,6 +280,7 @@ implements ActionListener {
         locLabel.setHorizontalAlignment(SwingConstants.CENTER);
  */       
 		
+        String loc = "On Mars";
 		lcdText = new DisplaySingle();
         lcdText.setLcdInfoString("Last Unknown Position");
         //lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
@@ -292,7 +293,8 @@ implements ActionListener {
         lcdText.setVisible(true);
         lcdText.setLcdNumericValues(false);
         lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-        lcdText.setLcdText(locationText);	
+        //lcdText.setLcdText(locationText);	
+        lcdText.setLcdText(loc);      
         lcdText.setLcdTextScrolling(true);
         //centerPanel.add(lcdText);
 		//locationPanel.add(centerPanel, BorderLayout.SOUTH);

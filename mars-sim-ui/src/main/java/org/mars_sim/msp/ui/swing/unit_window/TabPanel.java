@@ -29,6 +29,7 @@ public abstract class TabPanel extends JScrollPane {
 	protected String tabTitle;
 	protected Icon tabIcon;
 	protected String tabToolTip;
+	protected JPanel viewPanel;
 	protected JPanel topContentPanel;
 	protected JPanel centerContentPanel;
 	protected Unit unit;
@@ -57,7 +58,7 @@ public abstract class TabPanel extends JScrollPane {
         this.desktop = desktop;
        
         // Create the view panel
-        JPanel viewPanel = new JPanel(new BorderLayout(0, 0));
+        viewPanel = new JPanel(new BorderLayout(0, 0));
         //viewPanel.setBackground(THEME_COLOR);
         setViewportView(viewPanel);
 

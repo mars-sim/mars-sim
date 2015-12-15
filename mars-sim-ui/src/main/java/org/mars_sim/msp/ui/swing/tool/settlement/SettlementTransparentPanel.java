@@ -132,7 +132,8 @@ public class SettlementTransparentPanel extends JComponent {
        	nameBtnPane.add(new JLabel(""));
 
 		settlementPanel = new JPanel();//new BorderLayout());
-		settlementPanel.setBackground(new Color(0,0,0,0));
+		settlementPanel.setBackground(new Color(0,0,0));//,0));
+		settlementPanel.setOpaque(false);
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
 
 		Box box = new Box(BoxLayout.Y_AXIS);
@@ -140,8 +141,8 @@ public class SettlementTransparentPanel extends JComponent {
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 	    box.add(Box.createVerticalGlue());
+		box.setBackground(new Color(0,0,0));//,0));
 		box.setOpaque(false);
-		box.setBackground(new Color(0,0,0,0));
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);
 /*
@@ -168,16 +169,20 @@ public class SettlementTransparentPanel extends JComponent {
 //    	cmName.registerComponent(box);
 
 	    borderPane = new JPanel(new BorderLayout());//new GridLayout(2,1,2,2));
-	    borderPane.setBackground(new Color(0,0,0,0));
+	    borderPane.setBackground(new Color(0,0,0));//,0));
+		borderPane.setOpaque(false);
 	    controlPane = new JPanel(new GridLayout(2,1,2,2));
-	    controlPane.setBackground(new Color(0,0,0,0));
+	    controlPane.setBackground(new Color(0,0,0));//,0));
+		controlPane.setOpaque(false);
 	    zoomPane = new JPanel(new GridLayout(3,1,2,2));
 		zoomPane.setBackground(new Color(0,0,0,15));
-		zoomPane.setBackground(new Color(0,0,0,0));
+		zoomPane.setBackground(new Color(0,0,0));//,0));
+		zoomPane.setOpaque(false);
 	    rightPane = new JPanel(new BorderLayout());
 //		rightPane.setBackground(new Color(0,0,0,15));
-	    rightPane.setBackground(new Color(0,0,0,0));
-
+	    rightPane.setBackground(new Color(0,0,0));//,0));
+		rightPane.setOpaque(false);
+		
 	    controlPane.add(buttonPane);
 	    controlPane.add(zoomLabel);
 	    borderPane.add(controlPane, BorderLayout.SOUTH);
@@ -205,10 +210,11 @@ public class SettlementTransparentPanel extends JComponent {
 		settlementCBModel = new SettlementComboBoxModel();
 		settlementListBox = new JComboBoxMW(settlementCBModel);
 		//settlementListBox.setBorder(null);
-		settlementListBox.setOpaque(false);//setBackground(new Color(139,69,19));
+		//setBackground(new Color(139,69,19));
 		//settlementListBox.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 		//((JLabel)settlementListBox.getRenderer()).setBackground(Color.darkGray);;//SwingConstants.CENTER);
-		settlementListBox.setBackground(new Color(51,25,0,40)); // dull gold color
+		settlementListBox.setBackground(new Color(51,25,0));//,40)); // dull gold color
+		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 18));
 		settlementListBox.setForeground(Color.GREEN);
 		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
@@ -229,6 +235,7 @@ public class SettlementTransparentPanel extends JComponent {
 				}
 				//System.out.println(" settlement is " + settlement.getName());
 				mapPanel.setSettlement(s);
+				settlementListBox.setOpaque(false);
 			}
 		});
 
@@ -247,6 +254,7 @@ public class SettlementTransparentPanel extends JComponent {
 			}
 			//System.out.println(" settlement is " + settlement.getName());
 			mapPanel.setSettlement(s);
+			settlementListBox.setOpaque(false);
 		}
 
 	}
@@ -399,7 +407,8 @@ public class SettlementTransparentPanel extends JComponent {
     public void buildInfoP() {
 
 		infoP = new JPanel(new FlowLayout());
-		infoP.setBackground(new Color(0,0,0,0));
+		infoP.setBackground(new Color(0,0,0));//,0));
+		infoP.setOpaque(false);
 		infoP.setAlignmentX(FlowLayout.CENTER);
 
 		infoButton = new JButton(Msg.getString("SettlementTransparentPanel.button.info")); //$NON-NLS-1$
@@ -407,6 +416,7 @@ public class SettlementTransparentPanel extends JComponent {
 		infoButton.setFont(new Font("Dialog", Font.PLAIN, 12));
 		infoButton.setForeground(Color.GREEN);
 		infoButton.setContentAreaFilled(false);
+		infoButton.setOpaque(false);
 		//infoButton.setOpaque(false); // text disappeared if setOpaque(false)
 		infoButton.setBorder(new LineBorder(Color.green, 1, true));
 		//infoButton.setBorderPainted(true);
@@ -427,7 +437,8 @@ public class SettlementTransparentPanel extends JComponent {
     public void buildrenameBtn() {
 
 		renameP  = new JPanel(new FlowLayout());
-		renameP.setBackground(new Color(0,0,0,0));
+		renameP.setBackground(new Color(0,0,0));//,0));
+		renameP.setOpaque(false);
 		renameP.setAlignmentX(FlowLayout.CENTER);
 
 		renameBtn = new JButton(Msg.getString("SettlementTransparentPanel.button.rename")); //$NON-NLS-1$
@@ -435,6 +446,7 @@ public class SettlementTransparentPanel extends JComponent {
 		renameBtn.setFont(new Font("Dialog", Font.PLAIN, 12));
 		renameBtn.setForeground(Color.GREEN);
 		renameBtn.setContentAreaFilled(false);
+		renameBtn.setOpaque(false);
 		//renameBtn.setOpaque(false); // text disappeared if setOpaque(false)
 		renameBtn.setBorder(new LineBorder(Color.green, 1, true));
 		infoButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.rename")); //$NON-NLS-1$
@@ -450,7 +462,8 @@ public class SettlementTransparentPanel extends JComponent {
     public void buildButtonPane() {
 
         buttonPane = new JPanel();
-        buttonPane.setBackground(new Color(0,0,0,0));
+        buttonPane.setBackground(new Color(0,0,0));//,0));
+        buttonPane.setOpaque(false);
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise"))); //$NON-NLS-1$
 		rotateClockwiseButton.setPreferredSize(new Dimension(20, 20));
 		rotateClockwiseButton.setOpaque(false);
@@ -503,17 +516,18 @@ public class SettlementTransparentPanel extends JComponent {
     public void buildLabelPane() {
 
         labelPane = new JPanel();
-        labelPane.setBackground(new Color(0,0,0,0));
+        labelPane.setBackground(new Color(0,0,0));//,0));
+		labelPane.setOpaque(false);
 
 		JButton labelsButton = new JButton(Msg.getString("SettlementTransparentPanel.button.labels")); //$NON-NLS-1$
-		labelsButton.setOpaque(false);
 		//labelsButton.setFont(new Font("Dialog", Font.BOLD, 16));
 		//labelsButton.setBackground(new Color(139,69,19)); // (139,69,19) is brown
 		//labelsButton.setBackground(new Color(139,69,19,40));
 		//labelsButton.setBackground(new Color(51,25,0,5)); // dull gold color
-		labelsButton.setBackground(new Color(0,0,0,0));
+		labelsButton.setBackground(new Color(0,0,0));//,0));
 		labelsButton.setPreferredSize(new Dimension(80, 20));
 		labelsButton.setForeground(Color.green);
+		labelsButton.setOpaque(false);
 		//labelsButton.setVerticalAlignment(JLabel.TOP);
 		labelsButton.setHorizontalAlignment(JLabel.CENTER);
 		//labelsButton.setContentAreaFilled(false); more artifact when enabled

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonMapLayer.java
- * @version 3.07 2014-12-06
-
+ * @version 3.07 2015-12-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -26,10 +25,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 public class PersonMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private static final Color PERSON_COLOR = new Color(0, 255, 255); // cyan
-	private static final Color PERSON_OUTLINE_COLOR = new Color(0, 0, 0, 190);
-	private static final Color SELECTED_COLOR = Color.ORANGE; // white is (255, 255, 255);
-	private static final Color SELECTED_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	private static final Color PERSON_COLOR = LabelMapLayer.PERSON_LABEL_COLOR; //new Color(0, 255, 255); // cyan
+	private static final Color PERSON_OUTLINE_COLOR = LabelMapLayer.PERSON_LABEL_OUTLINE_COLOR; //new Color(0, 0, 0, 190);
+	private static final Color SELECTED_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_COLOR ;//Color.ORANGE; // white is (255, 255, 255);
+	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_PERSON_LABEL_OUTLINE_COLOR ;//new Color(0, 0, 0, 190);
 
 	// Data members
 	private SettlementMapPanel mapPanel;

@@ -195,9 +195,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 		// 2015-12-08 Added ConstructionSite
 		else if (unit instanceof ConstructionSite) {
  			ConstructionSite site = (ConstructionSite) unit;
-			description = "Next phase of construction : "
+			description = Conversion.capitalize(LabelMapLayer.getConstructionLabel(site)) 
+					+ ".\nNext phase is "
 					+ Conversion.capitalize(site.getNextStageType()) + " Stage";
-			type = Conversion.capitalize(site.getCurrentConstructionStage().getInfo().getName());
+			type = Conversion.capitalize(site.getCurrentConstructionStage().getInfo().getName());	
 			name = Conversion.capitalize(site.getDescription());
 	    }
 
@@ -288,7 +289,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 		// 2015-12-08 Added ConstructionSite
 		else if (unit instanceof ConstructionSite) {
  			ConstructionSite site = (ConstructionSite) unit;
-			description = "Next phase of construction : "
+			description = Conversion.capitalize(LabelMapLayer.getConstructionLabel(site)) 
+					+ ".\nNext phase is "
 					+ Conversion.capitalize(site.getNextStageType()) + " Stage";
 			type = Conversion.capitalize(site.getCurrentConstructionStage().getInfo().getName());
 			name = Conversion.capitalize(site.getDescription());

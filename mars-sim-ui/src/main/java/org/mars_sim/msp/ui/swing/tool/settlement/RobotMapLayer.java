@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotMapLayer.java
- * @version 3.07 2015-01-21
+ * @version 3.07 2015-12-15
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -25,10 +25,10 @@ import org.mars_sim.msp.core.structure.building.Building;
 public class RobotMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private static final Color ROBOT_COLOR = Color.green; 
-	private static final Color ROBOT_OUTLINE_COLOR = new Color(0, 0, 0, 190);
-	private static final Color SELECTED_COLOR = Color.red; 
-	private static final Color SELECTED_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	private static final Color ROBOT_COLOR = LabelMapLayer.ROBOT_LABEL_COLOR;//Color.green; 
+	private static final Color ROBOT_OUTLINE_COLOR = LabelMapLayer.ROBOT_LABEL_OUTLINE_COLOR;//new Color(0, 0, 0, 190);
+	private static final Color SELECTED_COLOR = LabelMapLayer.SELECTED_ROBOT_LABEL_COLOR;//Color.red; 
+	private static final Color SELECTED_OUTLINE_COLOR = LabelMapLayer.SELECTED_ROBOT_LABEL_OUTLINE_COLOR;//.new Color(0, 0, 0, 190);
 
 	// Data members
 	private SettlementMapPanel mapPanel;

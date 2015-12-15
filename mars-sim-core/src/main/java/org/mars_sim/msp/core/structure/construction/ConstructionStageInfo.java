@@ -21,7 +21,7 @@ public class ConstructionStageInfo implements Serializable {
     
     // Stage types
     public static final String FOUNDATION = "foundation";
-    public static final String FRAME = "frame";
+    public static final String FRAME = "framing";
     public static final String BUILDING = "building";
     
     // Data members

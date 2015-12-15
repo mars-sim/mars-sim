@@ -60,7 +60,7 @@ implements Repair, Serializable {
     /** Problem being fixed. */
     private Malfunction malfunction;
     private Person person = null;
-    private Robot robot = null;
+    //private Robot robot = null;
 
     /**
      * Constructs a RepairEmergencyMalfunction object.
@@ -73,7 +73,7 @@ implements Repair, Serializable {
          	this.person = (Person) unit;
         }
         else if (unit instanceof Robot) {
-        	this.robot = (Robot) unit;
+        	//this.robot = (Robot) unit;
         }
         
         claimMalfunction();
@@ -106,8 +106,8 @@ implements Repair, Serializable {
                         malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
         	}
         	else if (robot != null) {
-                logger.fine(robot.getName() + " starting work on emergency malfunction: " + 
-                        malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+                //logger.fine(robot.getName() + " starting work on emergency malfunction: " + 
+                        //malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
         	}
         }
     }
@@ -150,7 +150,7 @@ implements Repair, Serializable {
 		}
 		else if (robot != null) {
 		     // A robot moves slower than a person and incurs penalty on workTime
-	        workTime = time/2;
+	        //workTime = time/2;
 		}
  
 		// Determine effective work time based on "Mechanic" skill.
@@ -185,11 +185,11 @@ implements Repair, Serializable {
             person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
         }
         else if (robot != null) {
-            int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
-                    NaturalAttribute.EXPERIENCE_APTITUDE);
-            newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-            newPoints *= getTeachingExperienceModifier();
-            robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
+            //int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
+            //        NaturalAttribute.EXPERIENCE_APTITUDE);
+            //newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+            //newPoints *= getTeachingExperienceModifier();
+            //robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
         }
        
      }
@@ -217,7 +217,7 @@ implements Repair, Serializable {
     public static boolean hasEmergencyMalfunction(Robot robot) {
 
         boolean result = false;
-
+/*
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
         while (i.hasNext()) {
             Malfunctionable entity = i.next();
@@ -226,7 +226,7 @@ implements Repair, Serializable {
                 result = true;
             }
         }
-
+*/
         return result;
     }
     /**
@@ -248,6 +248,7 @@ implements Repair, Serializable {
             }
         }
         else if (robot != null) {
+/*        	
             Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
             while (i.hasNext() && (malfunction == null)) {
                 Malfunctionable e = i.next();
@@ -259,6 +260,7 @@ implements Repair, Serializable {
                             malfunction.getName(), entity.getName())); //$NON-NLS-1$
                 }
             }
+*/            
         }
 
     }
@@ -305,8 +307,9 @@ implements Repair, Serializable {
     	if (person != null) 
             manager = person.getMind().getSkillManager();        
     	else if (robot != null)
-    	    manager = robot.getBotMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
+    	    ;//manager = robot.getBotMind().getSkillManager();
+        return 
+        		manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }  
 
     @Override

@@ -84,7 +84,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
     public RepairEmergencyMalfunctionEVA(Robot robot) {
         super(NAME, robot, false, 0D);
-
+/*
         init();
 
         // Create starting task event if needed.
@@ -96,6 +96,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         init2();
 
         logger.fine(robot.getName() + " has started the RepairEmergencyMalfunctionEVA task.");
+ */       
     }
 
     public void init() {
@@ -166,7 +167,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     public static boolean requiresEVARepair(Robot robot) {
 
         boolean result = false;
-
+/*
         Malfunction malfunction = null;
         Malfunctionable entity = null;
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
@@ -197,7 +198,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 }
             }
         }
-
+*/
         return result;
     }
 
@@ -245,7 +246,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     public static boolean canPerformEVA(Robot robot) {
 
         boolean result = true;
-
+/*
         // Check if an airlock is available
         Airlock airlock = EVAOperation.getWalkableAvailableAirlock(robot);
         if (airlock == null) {
@@ -274,7 +275,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         if (robot.getPerformanceRating() == 0D) {
             result = false;
         }
-
+*/
         return result;
     }
 
@@ -298,6 +299,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             }
         }
         else if (robot != null) {
+/*        	
             Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
             while (i.hasNext() && (malfunction == null)) {
                 Malfunctionable e = i.next();
@@ -309,6 +311,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                             malfunction.getName(), entity.getName())); //$NON-NLS-1$
                 }
             }
+*/            
         }
 
     }
@@ -335,8 +338,8 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                              newLocation.getY(), person.getCoordinates());
                 }
                 else if (robot != null) {
-                	 goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(),
-                             newLocation.getY(), robot.getCoordinates());
+                	 //goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(),
+                     //        newLocation.getY(), robot.getCoordinates());
                 }
             }
         }
@@ -388,7 +391,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 		}
 		else if (robot != null) {
 		     // A robot moves slower than a person and incurs penalty on workTime
-	        workTime = time/2;
+	        //workTime = time/2;
 		}
 
         // Determine effective work time based on "Mechanic" skill.
@@ -396,7 +399,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
         if (person != null)
             mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         else if (robot != null)
-            mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+            ;//mechanicSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 
         if (mechanicSkill == 0) {
             workTime /= 2;
@@ -474,7 +477,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
             }
         }
         else if (robot != null) {
-
+/*
             // Experience points adjusted by robot's "Experience Aptitude" attribute.
             NaturalAttributeManager nManager = robot.getNaturalAttributeManager();
             int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
@@ -491,6 +494,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
                 robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
             }
+*/            
         }
 
     }
