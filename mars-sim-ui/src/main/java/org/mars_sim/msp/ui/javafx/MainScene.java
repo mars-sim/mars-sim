@@ -656,10 +656,10 @@ public class MainScene {
 
   		TextField tf = cb.getTextField();
   		tf.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
-  		tf.setPromptText("Type your msg here to broadcast to a channel");
+  		tf.setPromptText("Type your msg here");// to broadcast to a channel");
 
   		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
-  		ta.appendText("System : Welcome to MarsNet, the best global network for all settlements on Mars." + System.lineSeparator());
+  		ta.appendText("System : Welcome to MarsNet, the globalnet for the settlements on Mars." + System.lineSeparator());
 
   		return pane;
 

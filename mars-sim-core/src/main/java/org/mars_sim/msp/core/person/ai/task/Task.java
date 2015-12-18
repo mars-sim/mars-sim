@@ -735,9 +735,11 @@ implements Serializable, Comparable<Task> {
     protected BuildingFunction getRelatedBuildingFunction() {
         return null;
     }
+    
     protected BuildingFunction getRelatedBuildingRoboticFunction() {
         return null;
     }
+    
     /**
      * Walk to an available activity spot in a building.
      * @param building the destination building.
@@ -750,7 +752,6 @@ implements Serializable, Comparable<Task> {
 	        functionType = getRelatedBuildingFunction();
 		else if (robot != null)
 			functionType = getRelatedBuildingRoboticFunction();
-
 
         if ((functionType != null) && (building.hasFunction(functionType))) {
             walkToActivitySpotInBuilding(building, functionType, allowFail);

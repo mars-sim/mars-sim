@@ -1509,16 +1509,73 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		aName = aName.replace(" ", "");
 		int found = 0;
 		int dead = 0;
+		int size = aName.length();
 
 		Collection<Robot> list = getAllAssociatedRobots();
 
 		Iterator<Robot> i = list.iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
+			// Case 1: exact match e.g. chefbot001
 			if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){
 				found++;
 				if (robot.getPhysicalCondition().isDead())
 					dead--;
+			}
+			// Case 2: some parts are matched
+			else {	
+				// Case 2 e.g. chefbot, chefbot0_, chefbot0__, chefbot1_, chefbot00_, chefbot01_
+				// need more information !
+				if (robot.getName().replace(" ", "").contains(aName)) {
+					found++; 						
+				}
+				
+				else { // Case 3 e.g. filter out semi-good names such as chefbot01, chefbot1,  chefbot10 from bad/invalid name
+
+					String last4digits = aName.substring(size-4, size-1);
+					char first = last4digits.charAt(0);
+					char second = last4digits.charAt(1);
+					char third = last4digits.charAt(2);
+					char fourth = last4digits.charAt(3);
+					
+					boolean firstIsDigit = (first >= '0' && first <= '9');
+					boolean secondIsDigit = (second >= '0' && second <= '9');
+					boolean thirdIsDigit = (third >= '0' && third <= '9');
+					boolean fourthIsDigit = (fourth >= '0' && fourth <= '9');
+
+					// Case 3A : e.g. chefbot0003 -- a typo having an extra zero
+					if (size >= 11 && !firstIsDigit && secondIsDigit && thirdIsDigit && fourthIsDigit) {
+						if (first == '0' && second == '0') {
+							aName = aName.substring(0, size-4) + aName.substring(size-3, size-1);
+							int result = checkRobotName(robot, aName);
+							if (result < 0)
+								dead = -1;
+							else
+								found = result;
+						}
+					}
+					
+					// Case 3B : e.g. chefbot01 -- a typo missing a zero
+					else if (size >= 10 && !firstIsDigit && !secondIsDigit && thirdIsDigit && fourthIsDigit) {
+						aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
+						int result = checkRobotName(robot, aName);
+						if (result < 0)
+							dead = -1;
+						else
+							found = result;
+					}
+					
+					// Case 3C : e.g. chefbot1 -- a typo missing two zeroes
+					else if (size >= 9 && !firstIsDigit && !secondIsDigit && !thirdIsDigit && fourthIsDigit) {
+						aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
+						int result = checkRobotName(robot, aName);
+						if (result < 0)
+							dead = -1;
+						else
+							found = result;
+					}
+				}
+				
 			}
 		}
 		if (dead < 0)
@@ -1527,7 +1584,31 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			return found;
 	}
 
-
+	/**
+	 * Checks against the input name with the robot name
+	 * @param robot
+	 * @param aName
+	 * @return
+	 */
+	// 2015-12-16 Added checkRobotName()
+	public int checkRobotName(Robot robot, String aName) {	
+		int found = 0;
+		int dead = 0;
+		int size = aName.length();
+		
+		aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
+		if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){
+			found++;
+			if (robot.getPhysicalCondition().isDead())
+				dead--;
+		}
+		
+		if (dead < 0)
+			return -1;
+		else
+			return found;
+	}
+	
 	/**
 	 * Gets all Robots associated with this settlement, even if they are out on missions.
 	 * @return collection of associated Robots.

@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -25,7 +26,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 	
 @SuppressWarnings("restriction")
@@ -47,13 +49,29 @@ public class ChatBox extends BorderPane {
         textArea.setStyle("-fx-font: 11pt 'Corbel';");
           
         textField.setStyle("-fx-font: 11pt 'Corbel';");
+        textField.setPrefWidth(500);
         textField.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
         	keyHandler(keyEvent);
         });
 
+        //Button button = new Button("Submit");
+        MaterialDesignButton button = new MaterialDesignButton("Broadcast");
+        //button.setAlignment(Pos.CENTER_RIGHT);
+        button.setTooltip(new Tooltip ("Click to broadcast"));
+        button.setStyle("-fx-font: bold 10pt 'Corbel';");
+        button.setOnAction(e -> {
+        	hitEnter();
+        });
+        
+        HBox hbox = new HBox();
+        hbox.setSpacing(2);
+        textField.setPadding(new Insets(5, 5, 5, 5));
+        hbox.getChildren().addAll(button,textField);
+        
         setTop(titleLabel);
         setCenter(textArea);
-        setBottom(textField);
+        
+        setBottom(hbox);
 
     }
 
@@ -63,9 +81,10 @@ public class ChatBox extends BorderPane {
     	return result; 	
     }
     
+    
     /*
-     * Parses the text and interprets the contents
-     * @param text
+     * Parses the text and interprets the contents in the chat box
+     * @param input text
      */
     //2015-12-01 Added parseText()
     public void parseText(String text) {   
@@ -73,12 +92,23 @@ public class ChatBox extends BorderPane {
     	String name = "System";
     	boolean available = true;
     	int nameCase = 0;
-    	boolean proceed = true;
+    	boolean proceed = false;
     	//System.out.println("A: text is " + text + ". Running parseText()");
     	text = text.trim();
     	int len = text.length();
 
-    	if (len >= 2 && text.substring(0,2).equalsIgnoreCase("hi")) {
+    	// Part 1 //
+    	
+    	// 2015-12-17 detect "\" backslash and the name that follows
+    	if (len >= 3 && text.substring(0,1).equalsIgnoreCase("\\")) { 
+    		
+    		text = text.substring(1, len).trim();
+    		proceed = true;
+    		//responseText = name + " : what would you like to know about ";
+    		
+    	}
+    	
+    	else if (len >= 2 && text.substring(0,2).equalsIgnoreCase("hi")) {
   
     		if (len > 2) {
     			text = text.substring(2, len);
@@ -86,8 +116,8 @@ public class ChatBox extends BorderPane {
     		   	proceed = true;
     		}
     		else {
-    			text = null;
-    	   		proceed = false;
+    			//text = null;
+    	   		//proceed = false;
      	   		responseText = name + " : Hi Earth Control, how can I help?";
     		}
     	}
@@ -100,8 +130,8 @@ public class ChatBox extends BorderPane {
     		   	proceed = true;
     		}
     		else {
-    			text = null;
-    	   		proceed = false;
+    			//text = null;
+    	   		//proceed = false;
      	   		responseText = name + " : Hello Earth Control, how can I help?";
     		}
     	}
@@ -114,18 +144,27 @@ public class ChatBox extends BorderPane {
     		   	proceed = true;
     		}
     		else {
-    			text = null;
-    	   		proceed = false;
+    			//text = null;
+    	   		//proceed = false;
      	   		responseText = name + " : Hey Earth Control, how can I help?";
     		}
     	}
     	
-    	if (text == null) {
-    		//nothing
+    	else if (len >= 2) {
+    		proceed = true;
     	}
+
+    		  	
+    	// Part 2 //
+    	
+    	if (text == null) {
+    		responseText = name + " : I'm afraid I don't understand. Could you repeat that?";
+    	}
+    	
     	else if (text.length() == 1) {
 		   	responseText = name + " : I'm afraid I don't understand. Could you repeat that?";
     	}
+    	
     	else if (proceed) { // && text.length() > 1) {
 	    	//System.out.println("B: text is " + text);
     		Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();		
@@ -145,14 +184,20 @@ public class ChatBox extends BorderPane {
 
 			//System.out.println("total nameCase is " + nameCase);
 
+			// capitalize the first initial of a name
+    		text = Conversion.capitalize(text);
+    		
+    		// Case 1: more than one person with that name
 			if (nameCase >= 2) {
-	    		name = "System";
+	    		//name = "System";
+
 				responseText = name + " : there are more than one \"" + text + "\". Would you be more specific?";
 	        	//System.out.println(responseText);		
 						
+			// Case 2: there is one person 
 			} else if (nameCase == 1) {
 				if (!available){
-		    		name = "System";
+		    		//name = "System";
 	    			responseText = name + " : I'm sorry. " + text + " is unavailable at this moment";
 	    			
 	    		} else {		
@@ -179,42 +224,86 @@ public class ChatBox extends BorderPane {
 		        	//System.out.println(responseText);
 	    		}
 				
-			} else if (nameCase == 0) {
-	    		responseText = name + " : I do not recognize anyone by the name of \"" + text + "\". Would you be more specific?";
-				
+		    // Case 4: passed away
 			} else if (nameCase == -1) {   
-	    		responseText = name + " : I'm sorry. " + text + " has passed away.";
+		    	responseText = name + " : I'm sorry. " + text + " has passed away.";
+			
+				
+			// Case 3: doesn't exist, check settlement's name
+			} else if (nameCase == 0) {
+	    						
+				//System.out.println("nameCase is 0");
+		      	// 2015-12-17 match a settlement's name
+		    	if (text.length() >= 2) {
+		    		Iterator<Settlement> j = Simulation.instance().getUnitManager().getSettlements().iterator();		
+					while (j.hasNext()) {
+						Settlement settlement = j.next();
+						String s_name = settlement.getName();
+						
+						if (s_name.equalsIgnoreCase(text)) {
+							//name = "System";
+							responseText = name + " : yes, what would like to know about \"" + s_name + "\" ?";
+							//System.out.println("matching settlement name " + s_name);
+							break;
+						}				
+						
+						else if (s_name.toLowerCase().contains(text.toLowerCase()) || text.toLowerCase().contains(s_name.toLowerCase())) {
+							//name = "System";
+							responseText = name + " : do you mean \"" + s_name + "\" ?";
+							//System.out.println("partially matching settlement name " + s_name);
+							break;
+						}
+						
+					}
+		    	}
+		    	else		    		
+		    		responseText = name + " : I do not recognize anyone or settlements by \"" + text + "\"." ;
+		    	
 			}
 			
+			else
+				responseText = name + " : I do not recognize anyone or settlements by \"" + text + "\"." ;
+				
     	}
     	
 		textArea.appendText(responseText + System.lineSeparator());
 	
     }
     
+    /**
+     * Processes the textfield input
+     */
+    public void hitEnter() {
+    	String text = textField.getText();
+        if (text != "" && text != null && !text.trim().isEmpty()) {	
+            textArea.appendText("You : " + text + System.lineSeparator());
+        	parseText(text);
+        	
+        	// Checks if the text already exists
+        	if (history.contains(text)) {
+        		history.remove(text);
+        		history.add(text);            			     
+        	}
+        	else {
+        		history.add(text);
+        		historyPointer++;
+        	}
+
+            if (onMessageReceivedHandler != null) {
+                onMessageReceivedHandler.accept(text);
+            }
+            textField.clear();
+        }
+    }
+    
+    /**
+     * Processes the textfield in the chat box and saves a history of input
+     * @param keyEvent
+     */
     public void keyHandler(final KeyEvent keyEvent){
         switch (keyEvent.getCode()) {
 	        case ENTER:
-	            String text = textField.getText();
-	            if (text != "" && text != null && !text.trim().isEmpty()) {	
-	                textArea.appendText("You : " + text + System.lineSeparator());
-	            	parseText(text);
-	            	
-	            	// Checks if the text already exists
-	            	if (history.contains(text)) {
-	            		history.remove(text);
-	            		history.add(text);            			     
-	            	}
-	            	else {
-	            		history.add(text);
-	            		historyPointer++;
-	            	}
-	 
-		            if (onMessageReceivedHandler != null) {
-		                onMessageReceivedHandler.accept(text);
-		            }
-		            textField.clear();
-	            }
+	        	hitEnter();
 	            break;
 	            
 	        case UP:

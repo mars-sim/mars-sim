@@ -321,7 +321,7 @@ public class Sleep extends Task implements Serializable {
             int selected = 0;
             if (size == 0)
             	result = null;
-            if (size >= 1) {
+            else if (size >= 1) {
             	selected = RandomUtil.getRandomInt(size-1);
             	result = buildings.get(selected);
             }
