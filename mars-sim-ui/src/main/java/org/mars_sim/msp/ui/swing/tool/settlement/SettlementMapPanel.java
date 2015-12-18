@@ -84,7 +84,8 @@ implements ClockListener {
 	private SettlementWindow settlementWindow;
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
-
+	private SettlementTransparentPanel settlementTransparentPanel;
+	
 	private Graphics dbg;
 	//private Graphics2D g2d;
 	private Image dbImage = null;
@@ -148,7 +149,7 @@ implements ClockListener {
 		mapLayers.add(new LabelMapLayer(this));
 
 		//SwingUtilities.invokeLater(() -> {
-			new SettlementTransparentPanel(desktop, this);
+		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
 	    
 		////paintDoubleBuffer();
@@ -946,6 +947,10 @@ implements ClockListener {
 		// Do nothing
 	}
 
+	public SettlementTransparentPanel getSettlementTransparentPanel() {
+		return settlementTransparentPanel;
+	}
+	
 	/**
 	 * Cleans up the map panel for disposal.
 	 */

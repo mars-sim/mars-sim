@@ -33,6 +33,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	// Data members.
 	private Transportable transportItem;
 	private TransportItemEditingPanel editingPanel;
+	private ResupplyWindow resupplyWindow;
 
 	/**
 	 * Constructor.
@@ -41,13 +42,14 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	 * @param transportItem the transport item to modify.
 	 */
 	//2015-03-21 Switched from using JFrame to using desktop in param
-	public ModifyTransportItemDialog(MainDesktopPane desktop, String title, Transportable transportItem) {// , boolean isFX) {
+	public ModifyTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow, String title, Transportable transportItem) {// , boolean isFX) {
 
 		// Use ModalInternalFrame constructor
         super("Modify Mission");
 
 		// Initialize data members.
 		this.transportItem = transportItem;
+		this.resupplyWindow = resupplyWindow;
 
 		this.setSize(560,500);
 
@@ -107,7 +109,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 			editingPanel = new ArrivingSettlementEditingPanel((ArrivingSettlement) transportItem);
 		}
 		else if (transportItem instanceof Resupply) {
-			editingPanel = new ResupplyMissionEditingPanel((Resupply) transportItem);
+			editingPanel = new ResupplyMissionEditingPanel((Resupply) transportItem, resupplyWindow);
 		}
 		else {
 			throw new IllegalStateException("Transport item: " + transportItem + " is not valid.");

@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -114,6 +115,7 @@ implements ClockListener {
 
 	private BalloonToolTip balloonToolTip;
 
+	private MainScene mainScene;
 
 	/**
 	 * Constructs a TimeWindow object
@@ -122,7 +124,8 @@ implements ClockListener {
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
 		super(NAME, desktop);
-
+		mainScene = desktop.getMainScene();
+		
 		// Set window resizable to false.
 		setResizable(false);
 
@@ -234,11 +237,7 @@ implements ClockListener {
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				master.setPaused(!master.isPaused());
-				if (master.isPaused())
-					desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-				else
-					desktop.getMarqueeTicker().pauseMarqueeTimer(false);
+				master.setPaused(!master.isPaused());			
 			}
 		});
 		pausePane.add(pauseButton);
@@ -498,15 +497,26 @@ implements ClockListener {
 	}
 
 	@Override
+	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or .play()
 	public void pauseChange(boolean isPaused) {
+		//System.out.println("TimeWindow : calling pauseChange()");
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim"));
-		}
-		else {
+			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
+			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
+
+			if (mainScene != null)		
+				mainScene.getAutosaveTimeline().pause();
+	
+		} else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.disposeAnnouncementWindow();
+			desktop.getMarqueeTicker().pauseMarqueeTimer(false);
+
+			if (mainScene != null)		
+				mainScene.getAutosaveTimeline().play();
+
 		}
 	}
 

@@ -189,7 +189,7 @@ public class ConstructionWizard {
            buildingNickName = template.getBuildingType() + " " + buildingTypeID;
 
            
-           BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,
+           BuildingTemplate correctedTemplate = new BuildingTemplate(null, buildingID, scenario, template.getBuildingType(), buildingNickName, width,
                    length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
             // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.

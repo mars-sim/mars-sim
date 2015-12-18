@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.07 2014-12-26
+ * @version 3.08 2015-12-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -47,6 +47,7 @@ implements Serializable , Comparable<BuildingTemplate>{
 	private String nickName;
 	private String scenario;
 		
+	private String missionName;
 
 	private List<BuildingConnectionTemplate> connectionList;
 
@@ -56,10 +57,11 @@ implements Serializable , Comparable<BuildingTemplate>{
 	 */
 	// May also be called by ResupplyConfig.java when buildings arrived
 	// 2014-10-27 Added nickName
-	public BuildingTemplate(int id, String scenario, String buildingType, String nickName,
+	public BuildingTemplate(String missionName, int id, String scenario, String buildingType, String nickName,
 		double width, double length, double xLoc, 
 		double yLoc, double facing) {
 		    
+		this.missionName = missionName;
 		this.id = id;
 		this.scenario = scenario;
 		this.buildingType = buildingType;
@@ -70,6 +72,15 @@ implements Serializable , Comparable<BuildingTemplate>{
 		this.yLoc = yLoc;
 		this.facing = facing;
 		connectionList = new ArrayList<BuildingConnectionTemplate>(0);
+	}
+	
+	// 2015-12-16 Added missionName
+	public String getMissionName() {
+		return missionName;
+	}
+
+	public void setMissionName(String name) {
+		this.missionName = name;
 	}
 	
 	public String getScenario() {

@@ -371,6 +371,7 @@ implements Serializable, Transportable {
      */
 	// 2014-12-26 Added deliverBuildings()
     public void deliverBuildings() {
+		logger.info("deliverBuildings() is in " + Thread.currentThread().getName() + " Thread");
 
         List<BuildingTemplate> orderedBuildings = orderNewBuildings();
 
@@ -420,7 +421,7 @@ implements Serializable, Transportable {
                 //String buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
                 String buildingNickName = template.getBuildingType() + " " + buildingTypeID;
                 
-                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, scenario, template.getBuildingType(), buildingNickName, width,
+                BuildingTemplate correctedTemplate = new BuildingTemplate(template.getMissionName(), buildingID, scenario, template.getBuildingType(), buildingNickName, width,
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
 	            // 2015-12-07 Added checkTemplateAddBuilding()
@@ -468,7 +469,10 @@ implements Serializable, Transportable {
 
 		if (!noImmovable) {
 			BuildingTemplate repositionedTemplate = positionNewResupplyBuilding(correctedTemplate.getBuildingType());
-			// Call again recursively to check for any collision
+			
+			// 2015-12-16 Added setMissionName()
+			repositionedTemplate.setMissionName(correctedTemplate.getMissionName());
+			// Call again recursively to check for any collision						
 			correctedTemplate = clearCollision(repositionedTemplate);
 		}
 
@@ -620,6 +624,7 @@ implements Serializable, Transportable {
      * Delivers vehicles, resources and immigrants to a settlement on a resupply mission
      */
     public void deliverOthers() {
+		logger.info("deliverOthers() is in " + Thread.currentThread().getName() + " Thread");
 
         // Deliver vehicles.
         UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -852,9 +857,8 @@ implements Serializable, Transportable {
         if (isBuildingConnector) {
             // Try to find best location to connect two buildings.
             newPosition = positionNewConnector(buildingType);
-            System.out.println("is a building connector");
+            System.out.println("Resupply: a new position has been determined for this building connector");
         }
-
 
 /*
         else if (hasLifeSupport) {
@@ -976,7 +980,7 @@ implements Serializable, Transportable {
                 //System.out.println("Resupply.java Line 632: buildingNickName is " + buildingNickName);
 
                 // TODO : ask for user to define the location for the new building as well
-                newPosition = new BuildingTemplate(buildingID, scenario, buildingType, buildingNickName, width, length, 0, 0,
+                newPosition = new BuildingTemplate("A Resupply Mission", buildingID, scenario, buildingType, buildingNickName, width, length, 0, 0,
                         RandomUtil.getRandomDouble(360D));
             }
         }
@@ -1262,7 +1266,7 @@ implements Serializable, Transportable {
                 //System.out.println("Resupply.java Line 907: scenario is " + scenario);
                 //System.out.println("Resupply.java Line 908: buildingNickName is " + buildingNickName);
 
-				newPosition = new BuildingTemplate(buildingID, scenario, newBuildingType, buildingNickName, width, length, rectCenterX,
+				newPosition = new BuildingTemplate("A Resupply Mission", buildingID, scenario, newBuildingType, buildingNickName, width, length, rectCenterX,
                         rectCenterY, rectRotation);
                 break;
             }
@@ -1358,7 +1362,7 @@ implements Serializable, Transportable {
             
             //System.out.println("Resupply.java Line 1001: scenario is " + scenario);
             //System.out.println("Resupply.java Line 1002: buildingNickName is " + buildingNickName);
-            newPosition = new BuildingTemplate(buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX,
+            newPosition = new BuildingTemplate("A Resupply Mission", buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX,
                     centerY, facingDegrees);
 
         }

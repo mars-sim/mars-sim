@@ -17,6 +17,7 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -24,10 +25,17 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Modality;
 
 /**
  * Window for the resupply tool.
@@ -51,17 +59,19 @@ implements ListSelectionListener {
 	private JButton cancelButton;
 	
 	private MainDesktopPane desktop;
+	private MainScene mainScene;
 
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
 	 */
 	public ResupplyWindow(MainDesktopPane desktop) {
-
 		// Use the ToolWindow constructor.
 		super(NAME, desktop);
 
 		this.desktop = desktop;
+		//MainWindow mw = desktop.getMainWindow();	
+		mainScene = desktop.getMainScene();
 		
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -136,61 +146,80 @@ implements ListSelectionListener {
 	/**
 	 * Opens a create dialog.
 	 */
-	private void createNewTransportItem() {
+	private void createNewTransportItem() {		
 		
-		MainWindow mw = desktop.getMainWindow();	
-		MainScene ms = desktop.getMainScene();
+		// 2015-12-16 Track the current pause state
+		boolean previous2 = Simulation.instance().getMasterClock().isPaused();
+		
+		// Pause simulation.
+		if (mainScene != null) {
+			if (!previous2) {
+				mainScene.pauseSimulation();
+				//System.out.println("previous2 is false. Paused sim");
+			}	
+			desktop.getTimeWindow().enablePauseButton(false);
+		}	
 
-		if (mw != null )  {
-			// Pause simulation.
-			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
-			// Also one should check the whether the game was previous on pause in order to preserve that state.
-			//mw.pauseSimulation();	
-			// Create new transportItem dialog.
-			new NewTransportItemDialog(desktop);	
-			// Unpause simulation.
-			//mw.unpauseSimulation();
-		}
+		new NewTransportItemDialog(desktop, this);	
 		
-		else if (ms != null )  {
-			// Pause simulation.
-			//ms.pauseSimulation();	
-			// Create new transportItem dialog.
-			new NewTransportItemDialog(desktop);	
-			// Unpause simulation.
-			//ms.unpauseSimulation();
-		}
-		
+		// Unpause simulation.
+		if (mainScene != null) {
+			boolean now2 = Simulation.instance().getMasterClock().isPaused();
+    		if (!previous2) {
+    			if (now2) {
+    				mainScene.unpauseSimulation();
+    	    		//System.out.println("previous2 is false. now2 is true. Unpaused sim");
+    			}
+    		} else {
+    			if (!now2) {
+    				mainScene.unpauseSimulation();
+    	    		//System.out.println("previous2 is true. now2 is false. Unpaused sim");
+    			}				
+    		}    
+			desktop.getTimeWindow().enablePauseButton(true);
+		}	
 	}
 
 	/**
 	 * Determines if swing or javaFX is in used when loading the modify dialog
 	 */
 	private void modifyTransportItem() {
-		
-		MainWindow mw = desktop.getMainWindow();
-		MainScene ms = desktop.getMainScene();
-		
-		if (mw != null )  {
-			//mw.pauseSimulation();	
-			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
-			// Also one should check the whether the game was previous on pause in order to preserve that state.
-			modifyTransport();
-			//mw.unpauseSimulation();
+		// 2015-12-16 Track the current pause state
+		boolean previous3 = Simulation.instance().getMasterClock().isPaused();
+
+		if (mainScene != null) {
+			if (!previous3) {
+				mainScene.pauseSimulation();
+				//System.out.println("previous3 is false. Paused sim");
+			}	
+			desktop.getTimeWindow().enablePauseButton(false);
 		}
 		
-		else if (ms != null )  {
-			//ms.pauseSimulation();				
-			modifyTransport();
-			//ms.unpauseSimulation();
+		modifyTransport();
+			
+		if (mainScene != null) {
+    		boolean now3 = Simulation.instance().getMasterClock().isPaused();
+    		if (!previous3) {
+    			if (now3) {
+    				mainScene.unpauseSimulation();
+    	    		//System.out.println("previous3 is false. now3 is true. Unpaused sim");
+    			}
+    		} else {
+    			if (!now3) {
+    				mainScene.unpauseSimulation();
+    	    		//System.out.println("previous3 is true. now3 is false. Unpaused sim");
+    			}				
+    		}            
+			desktop.getTimeWindow().enablePauseButton(true);
 		}
+			
 	}
 
 	/**
 	 * Loads modify dialog for the currently selected transport item.
 	 */
 	// 2015-03-23 Added modifyTransport()
-	private void modifyTransport() {		
+	private void modifyTransport() {	
 		// Get currently selected incoming transport item.
 		Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
 
@@ -200,14 +229,14 @@ implements ListSelectionListener {
 				Resupply resupply = (Resupply) transportItem;
 				String title = "Modify Resupply Mission";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, resupply);
-				new ModifyTransportItemDialog(desktop, title, resupply);
+				new ModifyTransportItemDialog(desktop, this, title, resupply);
 			}
 			else if (transportItem instanceof ArrivingSettlement) {
 				// Create modify arriving settlement dialog.
 				ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
 				String title = "Modify Arriving Settlement";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, settlement);
-				new ModifyTransportItemDialog(desktop, title, settlement);
+				new ModifyTransportItemDialog(desktop, this, title, settlement);
 			}
 		}
 	}
@@ -216,25 +245,65 @@ implements ListSelectionListener {
 	 * Cancels the currently selected transport item.
 	 */
 	private void cancelTransportItem() {     
-		// 2014-10-04 Added a dialog box asking the user to confirm "discarding" the mission
-		// 2015-01-07 Modified to pause the EDT until the dialog box is dismissed
+		String msg = "Are you sure you want to discard the highlighted mission?";
 		
-		JDialog.setDefaultLookAndFeelDecorated(true);
-		final int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to discard the highlighted mission?", "Confirm",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-		if (response == JOptionPane.NO_OPTION) {
-			// "No" button click, do nothing
-		} else if (response == JOptionPane.YES_OPTION) {
-			// "Yes" button clicked and go ahead with discarding this mission 
-			Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
-			if (transportItem != null) {
-				// call cancelTransportItem() in TransportManager Class to cancel the selected transport item.
-				Simulation.instance().getTransportManager().cancelTransportItem(transportItem);
-			}
-		} else if (response == JOptionPane.CLOSED_OPTION) {
-			// Close the dialogbox, do nothing
-		}	  
+		if (mainScene != null) {
+			// 2015-12-16 Added askFX()
+			Platform.runLater(() -> {
+				askFX(msg);
+			}); 
+		}
+		else {
+			// 2014-10-04 Added a dialog box asking the user to confirm "discarding" the mission
+			JDialog.setDefaultLookAndFeelDecorated(true);
+			final int response = JOptionPane.showConfirmDialog(null, msg, "Confirm",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (response == JOptionPane.NO_OPTION) {
+				// "No" button click, do nothing
+			} else if (response == JOptionPane.YES_OPTION) {
+				// "Yes" button clicked and go ahead with discarding this mission 
+				Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
+				if (transportItem != null) {
+					// call cancelTransportItem() in TransportManager Class to cancel the selected transport item.
+					Simulation.instance().getTransportManager().cancelTransportItem(transportItem);
+				}
+			} else if (response == JOptionPane.CLOSED_OPTION) {
+				// Close the dialogbox, do nothing
+			}	  
+		}
 	}
+
+	/**
+	 * Asks users for the confirmation of discarding a transport mission in an alert dialog
+	 * @param msg
+	 */
+	@SuppressWarnings("restriction")
+	// 2015-12-16 Added askFX()
+	public synchronized void askFX(String msg) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setTitle("Resupply Tool");
+    	alert.initOwner(mainScene.getStage());
+		alert.initModality(Modality.NONE); 
+		//alert.initModality(Modality.APPLICATION_MODAL);  f
+		//alert.initModality(Modality.WINDOW_MODAL); 
+		alert.setHeaderText("Confirmation for discarding this transport/ressuply mission");
+		alert.setContentText(msg);
+
+		ButtonType buttonTypeYes = new ButtonType("Yes");
+		ButtonType buttonTypeNo = new ButtonType("No");
+		alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+		alert.showAndWait().ifPresent(response -> {
+		     if (response == buttonTypeYes) {
+				Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
+				if (transportItem != null) {
+					// call cancelTransportItem() in TransportManager Class to cancel the selected transport item.
+					Simulation.instance().getTransportManager().cancelTransportItem(transportItem);
+				}
+		     }
+
+		});
+   }
 
 	@Override
 	public void valueChanged(ListSelectionEvent evt) {

@@ -245,9 +245,10 @@ public class BuildingManager implements Serializable {
      */
     // 2014-12-19 Added addOneBuilding(). Called by confirmBuildingLocation() in Resupply.java
     public Building addOneBuilding(BuildingTemplate template, Resupply resupply, boolean createBuildingConnections) {
-        this.resupply = resupply;
+		logger.info("BuildingManager's addOneBuilding() is on " + Thread.currentThread().getName() + " Thread");
+    	this.resupply = resupply;
     	Building newBuilding = new Building(template, this);
-		//System.out.println("BuildingManager.java : addBuilding() : isBuildingArrived is " + isBuildingArrived);
+		//System.out.println("BuildingManager.java : addBuilding() : newBuilding is " + newBuilding.getBuildingType());
         //settlement.fireUnitUpdate(UnitEventType.PLACE_BUILDING_EVENT, newBuilding);
     	//logger.info("addBuilding() : just fired PLACE_BUILDING_EVENT");
         addBuilding(newBuilding, createBuildingConnections);
@@ -548,9 +549,25 @@ public class BuildingManager implements Serializable {
 				function = BuildingFunction.ROBOTIC_STATION;
     		}
 
-        	List<Building> functionBuildings = settlement.getBuildingManager().getBuildings(function);
+        	List<Building> buildings = settlement.getBuildingManager().getBuildings(function);
 
             Building building = null;
+            
+            // Note: if the function is robotic-station, go through the list and remove hallways
+            // since we don't want robots to stay in a hallway
+            List<Building> functionBuildings = new ArrayList<Building>();
+            Iterator<Building> i = buildings.iterator();
+            while (i.hasNext()) {
+                Building bldg = i.next();
+            	RoboticStation roboticStation = (RoboticStation) bldg.getFunction(BuildingFunction.ROBOTIC_STATION);
+            	if (roboticStation != null) {
+            		if (bldg.getBuildingType().equals("Hallway")
+            				|| bldg.getBuildingType().equals("Tunnel"))
+            			// remove all hallways
+            			i.remove();
+            	}
+            }
+            
             // Randomly pick one of the buildings
             if (functionBuildings.size() >= 1) {
                 int rand = RandomUtil.getRandomInt(functionBuildings.size() - 1);

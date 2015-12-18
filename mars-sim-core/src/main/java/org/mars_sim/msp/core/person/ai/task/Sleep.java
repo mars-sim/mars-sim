@@ -158,7 +158,9 @@ public class Sleep extends Task implements Serializable {
                 Building building = getAvailableRoboticStationBuilding(robot);
                 if (building != null) {
                     //System.out.println("building.toString() is " + building.toString() );
-                    walkToActivitySpotInBuilding(building, false);
+                    walkToActivitySpotInBuilding(building, true);
+                    // TODO: need to add activity spots in every building or walkToActivitySpotInBuilding(building, false) will fail
+                    // and create java.lang.NullPointerException
                     station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
                     station.addSleeper();
                 }

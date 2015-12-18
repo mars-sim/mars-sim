@@ -284,6 +284,7 @@ public class LocalAreaUtil {
         return result;
     }
 
+    
 /*
     public static boolean checkCollisionMoveVehicle(double xLoc, double yLoc, Coordinates coordinates) {
 

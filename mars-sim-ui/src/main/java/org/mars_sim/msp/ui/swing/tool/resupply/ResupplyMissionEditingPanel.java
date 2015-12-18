@@ -61,7 +61,6 @@ extends TransportItemEditingPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private Resupply resupply;
 	private JComboBoxMW<Settlement> destinationCB;
 	private JRadioButton arrivalDateRB;
 	private JLabel arrivalDateTitleLabel;
@@ -81,13 +80,18 @@ extends TransportItemEditingPanel {
 	private JTable supplyTable;
 	private JButton removeSupplyButton;
 
+	private Resupply resupply;
+	private ResupplyWindow resupplyWindow;
+	
 	/** constructor. */
-	public ResupplyMissionEditingPanel(Resupply resupply) {
+	public ResupplyMissionEditingPanel(Resupply resupply, ResupplyWindow resupplyWindow) {
 		// User TransportItemEditingPanel constructor.
 		super(resupply);
 
 		// Initialize data members.
 		this.resupply = resupply;
+		this.resupplyWindow = resupplyWindow; 
+		
 
 		setBorder(new MarsPanelBorder());
 		setLayout(new BorderLayout(0, 0));
@@ -544,15 +548,17 @@ extends TransportItemEditingPanel {
 					for (int x = 0; x < num; x++) {
 						String type = item.type.trim();
 
-						int scenarioID = destination.getID();
-						String scenario = getCharForNumber(scenarioID + 1);
+						//int scenarioID = destination.getID();
+						//String scenario = getCharForNumber(scenarioID + 1);
 			            //System.out.println("ResupplyMissionEditingPanel.java Line 548: scenario is " + scenario);
 			            //System.out.println("ResupplyMissionEditingPanel.java Line 549: buildingNickName is " + buildingNickName);
 
-						BuildingTemplate template = new BuildingTemplate(0, scenario, type, type, -1D, -1D, -0D, 0D, 0D);
+						//BuildingTemplate template = new BuildingTemplate(0, scenario, type, type, -1D, -1D, 0D, 0D, 0D);
 						//BuildingTemplate template = new BuildingTemplate(scenarioID, scenario, type, type, 7D, 9D, 0D, 38D, 270D);
 
-						newBuildings.add(template);
+						// NOTE: The parameters does NOT mater right now. When a building arrive,
+						// the parameters for each building's template will be re-assembled 
+						newBuildings.add(new BuildingTemplate(null, 0, null, type, type, -1D, -1D, 0D, 0D, 0D));
 					}
 				}
 			}
@@ -685,7 +691,13 @@ extends TransportItemEditingPanel {
 
 						// TODO: determine why specifying the coordinate below is needed for
 						// the Command and Control building to be placed properly
-						newBuildings.add(new BuildingTemplate(0, null, type, type, 7D, 9D, 0D, 38D, 270D));
+						
+
+						// NOTE: The parameters does NOT mater right now. When a building arrive,
+						// the parameters for each building's template will be re-assembled 
+						
+						
+						newBuildings.add(new BuildingTemplate(null, 0, null, type, type, 7D, 9D, 0D, 38D, 270D));
 
 					}
 				}
@@ -767,8 +779,10 @@ extends TransportItemEditingPanel {
 			try {
 				int solsDiff = Integer.parseInt(solsTF.getText());
 				if (solsDiff > 0) {
-					result.addTime(solsDiff * 1000D);
+					result.addTime(solsDiff * 1000D);					
 				}
+				// load 
+				
 				else {
 					result.addTime(currentTime.getMillisol());
 				}

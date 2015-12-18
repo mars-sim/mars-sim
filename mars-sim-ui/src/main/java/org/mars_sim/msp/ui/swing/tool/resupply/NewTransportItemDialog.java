@@ -47,16 +47,18 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	private TransportItemEditingPanel arrivingSettlementPanel;
 	private JButton createButton;
 
+	private ResupplyWindow resupplyWindow;
 	/**
 	 * Constructor.
 	 * @param MainDesktopPane desktop
 	 * @param transportItem the transport item to modify.
 	 */
 	//2015-03-21 Switched from using JFrame to using desktop in param
-	public NewTransportItemDialog(MainDesktopPane desktop) {
+	public NewTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow) {
 	
 		// Use ModalInternalFrame constructor
         super("New Transport Item");
+        this.resupplyWindow = resupplyWindow;
 
 		setSize(500, 500);
 		
@@ -96,7 +98,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		mainEditingPanel.add(emptyPanel, DEFAULT_MESSAGE);
 
 		// Create resupply mission editing panel.
-		resupplyMissionPanel = new ResupplyMissionEditingPanel(null);
+		resupplyMissionPanel = new ResupplyMissionEditingPanel(null, resupplyWindow);
 		mainEditingPanel.add(resupplyMissionPanel, RESUPPLY_MISSION);
 
 		// Create arriving settlement editing panel.

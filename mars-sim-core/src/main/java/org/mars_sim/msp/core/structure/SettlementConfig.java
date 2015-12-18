@@ -143,19 +143,19 @@ implements Serializable {
 		List<Element> templateNodes = templateList.getChildren(TEMPLATE);
 		for (Element templateElement : templateNodes) {
 		    int scenarioID = Integer.parseInt(templateElement.getAttributeValue(ID));
-			String name = templateElement.getAttributeValue(NAME);
+			String settlementTemplateName = templateElement.getAttributeValue(NAME);
 
 		    if (scenarioMap.containsKey(scenarioID) ) {
-		        throw new IllegalStateException("Error in SettlementConfig.xml: scenarioID in settlement template " + name + " is not unique.");
+		        throw new IllegalStateException("Error in SettlementConfig.xml: scenarioID in settlement template " + settlementTemplateName + " is not unique.");
 		    }
 		    else 
-		    	scenarioMap.put(scenarioID, name);
+		    	scenarioMap.put(scenarioID, settlementTemplateName);
 		    		
 		    int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
 		    int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 		    // 2014-10-29 Added scenarioID
-			SettlementTemplate template = new SettlementTemplate(name, scenarioID, defaultPopulation, defaultNumOfRobots);
+			SettlementTemplate template = new SettlementTemplate(settlementTemplateName, scenarioID, defaultPopulation, defaultNumOfRobots);
 			settlementTemplates.add(template);
 					
 			Set<Integer> existingIDs = new HashSet<Integer>();
@@ -183,7 +183,7 @@ implements Serializable {
 			    // 2014-10-28  Changed id to bid
 			    int bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
 			    if (existingIDs.contains(bid)) {
-			        throw new IllegalStateException("Error in SettlementConfig.xml : building ID in settlement template " + name + " is not unique.");
+			        throw new IllegalStateException("Error in SettlementConfig.xml : building ID in settlement template " + settlementTemplateName + " is not unique.");
 			    }
 			    else
 			    	existingIDs.add(bid);
@@ -208,7 +208,7 @@ implements Serializable {
 				String buildingNickName = buildingType + " " + buildingTypeID;
 
 				 // 2014-10-28  Added buildingNickName, Changed id to bid
-				BuildingTemplate buildingTemplate = new BuildingTemplate(bid, scenario, buildingType, buildingNickName, width, length,
+				BuildingTemplate buildingTemplate = new BuildingTemplate(settlementTemplateName, bid, scenario, buildingType, buildingNickName, width, length,
 				        xLoc, yLoc, facing);
 
 				template.addBuildingTemplate(buildingTemplate);
@@ -223,7 +223,7 @@ implements Serializable {
 				        // Check that connection ID is not the same as the building ID.
 				        if (connectionID == bid) {
 				            throw new IllegalStateException("Connection ID cannot be the same as building ID for building: " +
-				                    buildingType + " in settlement template: " + name);
+				                    buildingType + " in settlement template: " + settlementTemplateName);
 				        }
 
 				        double connectionXLoc = Double.parseDouble(connectionElement.getAttributeValue(X_LOCATION));
@@ -242,7 +242,7 @@ implements Serializable {
 			        if (!existingIDs.contains(connectionTemplate.getID())) {
 			        	//2014-10-28  Modified getName() to getNickName()
 			            throw new IllegalStateException("Connection ID: " + connectionTemplate.getID() +
-			                    " invalid for building: " + buildingTemplate.getNickName() + " in settlement template: " + name);
+			                    " invalid for building: " + buildingTemplate.getNickName() + " in settlement template: " + settlementTemplateName);
 			        }
 			    }
 			}

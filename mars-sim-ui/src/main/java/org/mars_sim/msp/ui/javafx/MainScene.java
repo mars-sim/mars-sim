@@ -17,15 +17,19 @@ import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory;
 import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory.FeedbackType;
 import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
+import jfxtras.scene.menu.CornerMenu;
+
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 
 import com.sun.management.OperatingSystemMXBean;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.scene.control.MenuItem;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -56,6 +60,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
@@ -84,6 +89,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
@@ -114,6 +120,14 @@ public class MainScene {
 	public static final int SAVE_AS = 3; // save as other file
 
 	private static int theme = 7; // 7 is the standard nimrod theme
+	
+    final private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
+    final private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
+    final private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
+    final private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
+    final private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
+    final private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
+
 	private int memMax;
 	private int memTotal;
 	private int memUsed, memUsedCache;
@@ -140,28 +154,29 @@ public class MainScene {
 
 	private Stage stage;
 	private Scene scene;
-
-	private StackPane swingPane;
-	private Tab swingTab;
-	private Tab nodeTab;
-	private BorderPane borderPane;
-
-	private DndTabPane dndTabPane;
-	private FXDesktopPane fxDesktopPane;
-
-	private Timeline timeline, autosaveTimeline;
-	private static NotificationPane notificationPane;
-
-	private static MainDesktopPane desktop;
-	private MainSceneMenu menuBar;
-	private MarsNode marsNode;
-	private TransportWizard transportWizard;
 	private StackPane rootStackPane;
 	private SwingNode swingNode;
 	private StatusBar statusBar;
 	private Flyout flyout;
 	private ToggleButton marsNetButton;
 	private ChatBox cb;
+	private CornerMenu cornerMenu;
+	private StackPane swingPane;
+	private Tab swingTab;
+	private Tab nodeTab;
+	private BorderPane borderPane;
+	private DndTabPane dndTabPane;
+	private FXDesktopPane fxDesktopPane;
+
+	private Timeline timeline, autosaveTimeline;
+	private static NotificationPane notificationPane;
+
+	
+	private static MainDesktopPane desktop;
+	private MainSceneMenu menuBar;
+	private MarsNode marsNode;
+	private TransportWizard transportWizard;
+	private ConstructionWizard constructionWizard;
 
 
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
@@ -229,15 +244,64 @@ public class MainScene {
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
-	public void openTransportWizard(BuildingManager buildingManager) {
-		//transportWizard.initialize(buildingManager);
-		transportWizard.deliverBuildings(buildingManager);
+	public synchronized void openTransportWizard(BuildingManager buildingManager) {
+		logger.info("MainScene's openTransportWizard() is in " + Thread.currentThread().getName() + " Thread");
+
+		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
+		// 2015-12-16 Track the current pause state
+		boolean previous = Simulation.instance().getMasterClock().isPaused();
+		if (!previous) {
+			pauseSimulation();
+	    	//System.out.println("previous is false. Paused sim");
+		}	
+		desktop.getTimeWindow().enablePauseButton(false);
+		
+		//try {
+		//	FXUtilities.runAndWait(() -> {
+		
+		Platform.runLater(() -> { 
+			//System.out.println("calling transportWizard.deliverBuildings() ");
+			transportWizard.deliverBuildings(buildingManager);
+			//System.out.println("ended transportWizard.deliverBuildings() ");
+		});
+		//} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//} 
+		
+		boolean now = Simulation.instance().getMasterClock().isPaused();
+		if (!previous) {
+			if (now) {
+				unpauseSimulation();
+   	    		//System.out.println("previous is false. now is true. Unpaused sim");
+			}
+		} else {
+			if (!now) {
+				unpauseSimulation();
+   	    		//System.out.println("previous is true. now is false. Unpaused sim");
+			}				
+		}	
+		desktop.getTimeWindow().enablePauseButton(true);
+    		
 	}
 
 	public TransportWizard getTransportWizard() {
 		return transportWizard;
 	}
 
+	// 2015-12-16 Added openConstructionWizard()
+	public void openConstructionWizard(BuildingManager buildingManager) {
+		//constructionWizard.deliverBuildings(buildingManager);
+	}
+
+	// 2015-12-16 Added getConstructionWizard()
+	public ConstructionWizard getConstructionWizard() {
+		return constructionWizard;
+	}
+	
 	/**
 	 * initializes the scene
 	 *
@@ -395,15 +459,27 @@ public class MainScene {
 
 		// System.out.println("done running initializeScene()");
 
+		//createCornerMenu();
+		
 		return scene;
 	}
-/*
-	public static void notifyThemeChange(String text) {
-		if (desktop != null) {
-			notificationPane.show("Skin is set to " + text);
-		}
-	}
-*/
+	
+	private void createCornerMenu() {
+        // uninstall the current cornerMenu
+        //if (cornerMenu != null) {
+        //    cornerMenu.autoShowAndHideProperty().unbind();
+        //    cornerMenu.removeFromPane();
+         //   cornerMenu = null;
+        //}
+        // create a new one
+        cornerMenu = new CornerMenu(CornerMenu.Location.BOTTOM_RIGHT, borderPane, true);
+        //if (CornerMenu.Location.TOP_LEFT.equals(cornerMenu.getLocation())) {
+        cornerMenu.getItems().addAll(navMenuItem, mapMenuItem, missionMenuItem, monitorMenuItem, searchMenuItem, eventsMenuItem);
+        //cornerMenu.autoShowAndHideProperty().bind(autoShowAndHideCheckBox.selectedProperty());
+        //cornerMenu.show();
+        cornerMenu.setAutoShowAndHide(false);
+    }
+	
 
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
@@ -986,8 +1062,11 @@ public class MainScene {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		// 2015-10-17 Save the current pause state
-		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-
+		//boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();	
+		//if (!isOnPauseMode) {
+		//	pauseSimulation();
+		//}	
+		
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
@@ -1003,17 +1082,10 @@ public class MainScene {
 		}
 
 
-		// 2015-10-17 Check if it was previously on pause
-		if (isOnPauseMode) {
-			pauseSimulation();
-			// Simulation.instance().getMasterClock().setPaused(true) is NOT working
-			// TODO: Don't know why I need to add codes directly in saveSimulation() in Simulation.java.
-			// But it is still needed here for pausing the autosave timer and creating the announcement window
-			//System.out.println("MainScene.java: yes it was on pause and so we pause again and pause the autosave timer.");
-		}
-		//else
-		//	mainScene.unpauseSimulation(); // Do NOT do this or it will take away any previous announcement window
-
+		// 2015-12-16 Check if it was previously on pause
+		//if (!isOnPauseMode) {
+		//	unpauseSimulation();			
+		//}
 	}
 
 	/**
@@ -1073,8 +1145,6 @@ public class MainScene {
 		}
 
 */
-
-
 		desktop.disposeAnnouncementWindow();
 
 	}
@@ -1085,18 +1155,20 @@ public class MainScene {
 	public void pauseSimulation() {
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
 		autosaveTimeline.pause();
+		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		Simulation.instance().getMasterClock().setPaused(true);
-		desktop.getTimeWindow().enablePauseButton(false);
+		//desktop.getTimeWindow().enablePauseButton(false);
 	}
 
 	/**
 	 * Closes the announcement window and unpauses the simulation.
 	 */
 	public void unpauseSimulation() {
+		Simulation.instance().getMasterClock().setPaused(false);	
+		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 		autosaveTimeline.play();
-		Simulation.instance().getMasterClock().setPaused(false);
 		desktop.disposeAnnouncementWindow();
-		desktop.getTimeWindow().enablePauseButton(true);
+		//desktop.getTimeWindow().enablePauseButton(true);
 	}
 
 
@@ -1381,6 +1453,20 @@ public class MainScene {
 	public BorderPane getBorderPane() {
 		return borderPane;
 	}
+	
+    private MenuItem registerAction(MenuItem menuItem) {
+
+        menuItem.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent t) {
+                //showPopup(borderPane, "You clicked the " + menuItem.getText() + " icon");
+            	System.out.println("You clicked the " + menuItem.getText() + " icon");
+            }
+
+        });
+
+        return menuItem;
+
+    }
 
 	public void destroy() {
 		newSimThread = null;

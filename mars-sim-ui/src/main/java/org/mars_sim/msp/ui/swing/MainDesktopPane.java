@@ -137,10 +137,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private Building building;
 	private Settlement settlement;
 
-	// 2014-12-23 Added transportWizard
-	//private TransportWizard transportWizard;
-	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
-
 	/** The main window frame. */
 	private MainWindow mainWindow;
 	private MainScene mainScene;
@@ -202,15 +198,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Initialize firstDisplay to true
 		firstDisplay = true;
-/*
-		if (mainWindow != null) {
-		}
-		else if (mainScene !=null ) {
-		}
-*/
 
 		// Create update thread.
-
 		setupToolWindowTasks();
 		updateThread = new UpdateThread(this);
 		updateThread.setRun(true);
@@ -225,7 +214,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		prepareListeners();
 		// 2014-12-27 Added prepareWindows
 		prepareWindows();
-		//openMarqueeBanner("");
 	   	//logger.info("MainDesktopPane's init() is done ");
 	}
 
@@ -275,42 +263,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 		return image;
 	}
-	/**
-	 * Opens a popup announcement window on the desktop.
-	 * @param announcement the announcement text to display.
-
-	// 2014-12-30 Added openMarqueeBanner()
-	public void openMarqueeBanner(String announcement) {
-
-		final MainDesktopPane d = this;
-		final String text = announcement;
-		EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-            	marqueeBanner = new MarqueeBanner(d);
-            	marqueeBanner.setAnnouncement(text);
-        		int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
-          		int Yloc = 0;
-        		setLocation(Xloc, Yloc);
-        		marqueeBanner.display();
-            }
-        });
-
-  	  	//marqueeBanner.display();
-  	  	//marqueeBanner.pack();
-		//add(announcementWindow, 0);
-		//int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
-		//int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
-		// 2014-12-26 Modified Yloc = 0 to avoid overlapping other images at the center of desktop
-		//int Yloc = 0;
-		//marqueeBanner.setLocation(Xloc, Yloc);
-		// Note: second window packing seems necessary to get window
-		// to display components correctly.
-		//marqueeBanner.pack();
-		//marqueeBanner.setVisible(true);
-	}
-	*/
 
 	/**
 	 * sets up this class with two listeners
@@ -447,15 +399,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	   	//logger.info("toolWindows.add(monitorWindow)");
 
 		// Prepare settlement tool window
-		//SettlementWindow
 		settlementWindow = new SettlementWindow(this);
-		//Thread sw = new Thread(settlementWindow);
-		//sw.start();
 		try { settlementWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(settlementWindow);
-		//openToolWindow(SettlementWindow.NAME);
-		//closeToolWindow(SettlementWindow.NAME);
 		setSettlementWindow(settlementWindow);
 
 	   	//logger.info("toolWindows.add(settlementWindow)");
@@ -510,16 +457,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow = new AnnouncementWindow(this);
 		try { announcementWindow.setClosed(true); }
 		catch (java.beans.PropertyVetoException e) { }
-
-		// 2014-12-23 Added transportWizard
-		//transportWizard = new TransportWizard(this);
-		//try { transportWizard.setClosed(true); }
-		//catch (java.beans.PropertyVetoException e) { }
-
-		// 2014-12-30 Added marqueeBanner
-		//marqueeBanner = new MarqueeBanner(this);
-      	//try { marqueeBanner.setClosed(true); }
-      	//catch (java.beans.PropertyVetoException e) { }
 
 	}
 
@@ -577,7 +514,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Opens a tool window if necessary.
 	 * @param toolName the name of the tool window
 	 */
+	@SuppressWarnings("restriction")
 	public void openToolWindow(String toolName) {
+		//System.out.println("starting openToolWindow()");
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
 			if (window.isClosed()) {
@@ -650,6 +589,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				}
 			});
 		}
+		//System.out.println("openToolWindow() ended");
+
 	}
 
 	/**
@@ -1225,36 +1166,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	    }
 	}
 
-	/**
-	 * Removes the transport wizard from the desktop.
-	 */
-	// 2014-12-23 Added disposeTransportWizard()
-	//public void disposeTransportWizard() {
-		//System.out.println("MainDesktopPane : running disposeTransportWizard()");
-		//transportWizard.setVisible(false);
-	//	try { transportWizard.setClosed(true); }
-	//	catch (java.beans.PropertyVetoException e) { }
-	//	transportWizard.dispose();
-	//}
-	/**
-	 * Removes the marquee banner from the desktop.
-
-	// 2014-12-30 Added disposeMarqueeBanner()
-	public void disposeMarqueeBanner() {
-		try { marqueeBanner.setClosed(true); }
-		catch (java.beans.PropertyVetoException e) { }
-		marqueeBanner.dispose();
-	}
-	*/
-	/**
-	 * Updates the look & feel of the Transport Wizard.
-	 */
-	// 2014-12-23 Added updateTransportWizardLF()
-	//public void updateTransportWizardLF() {
-	//    if (transportWizard != null) {
-	//        SwingUtilities.updateComponentTreeUI(transportWizard);
-	//    }
-	//}
 
 	/**
 	 * Updates the look & feel for all tool windows.
@@ -1315,13 +1226,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (config.useUIDefault()) {
 
 			// Open user guide tool.
-			//SwingUtilities.invokeLater(() -> {
-				openToolWindow(GuideWindow.NAME); // TODO: why SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC ?
-			//});
+			openToolWindow(GuideWindow.NAME); 
+			// SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC (but not in other platform)
+
 
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-			//int Xloc = (int)((getWidth() - ourGuide.getWidth()) * .5D);
-			//int Yloc = (int)((getHeight() - ourGuide.getHeight()) * .5D);
 			if (mainScene != null) {
 				int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
 				int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
@@ -1432,52 +1341,48 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
 		Object target = event.getTarget();
 		if (eventType == UnitEventType.START_BUILDING_PLACEMENT_EVENT) {
-			//	|| eventType == UnitEventType.ADD_BUILDING_EVENT) {
 			isTransportingBuilding = true;
-			//disposeTransportWizard();
-			//closeToolWindow(SettlementWindow.NAME); // TODO: is this really needed? If having 2 LCD screens, and if moving the MSP to the 2nd screen after the sim has been started. This line closes the settlement map tool and it could not be open again.
-			//System.out.println("MainDesktopPane : unitUpdate() START_BUILDING_PLACEMENT_EVENT is true");
-			//isTransportingBuilding = true; // does not get updated for the next building unless ADD_BUILDING_EVENT is used
 			building = (Building) target; // overwrite the dummy building object made by the constructor
-			mgr = building.getBuildingManager();
+			BuildingManager mgr = building.getBuildingManager();
 			settlement = mgr.getSettlement();
-			// Select the relevant settlement
-			settlementWindow.getMapPanel().setSettlement(settlement);
-			// Open Settlement Map Tool
-			openToolWindow(SettlementWindow.NAME);
+			
 			if (mainWindow != null)  {//mainWindow.pauseSimulation();
-				SwingUtilities.invokeLater(() -> {
+				//SwingUtilities.invokeLater(() -> {
 					mainWindow.openTransportWizard(mgr);
-				});
+				//});
 			}
 			else if (mainScene != null) {//mainScene.pauseSimulation();
-				Platform.runLater(() -> {
+				//Platform.runLater(() -> {
 	                mainScene.openTransportWizard(mgr);
-				});
+				//});
 			}
 
 			isTransportingBuilding = false;
-		}
-		else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
-			//if (mainWindow != null) mainWindow.unpauseSimulation();
-			//else if (mainScene != null) mainScene.unpauseSimulation();
-			//disposeTransportWizard();
+			
+		} else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
+			
 			isTransportingBuilding = false;
-            //mgr.getResupply().deliverOthers();
             disposeAnnouncementWindow();
 
 		}
 
 		else if (eventType == UnitEventType.START_CONSTRUCTION_SITE_EVENT) {
+			building = (Building) target; // overwrite the dummy building object made by the constructor
+			BuildingManager mgr = building.getBuildingManager();
+			settlement = mgr.getSettlement();
 
-
+			if (mainWindow != null)  {
+				//mainWindow.openConstructionWizard(mgr);
+			}
+			else if (mainScene != null) {
+				//mainScene.openConstructionWizard(mgr);
+			}
 		}
 
 		else if (eventType == UnitEventType.FINISH_BUILDING_EVENT) {
 
 
 		}
-
 
 		// repaint(); // raise cpu util% way too much for putting it here
 	}
@@ -1537,8 +1442,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		settlementWindow = null;
 		building = null;
 		settlement = null;
-		//transportWizard = null;
-		mgr = null;
 		mainWindow = null;
 		mainScene = null;
 	}

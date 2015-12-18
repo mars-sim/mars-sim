@@ -724,6 +724,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @param isPaused true if simulation is paused.
      */
     public void setPaused(boolean isPaused) {
+    	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
 
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
@@ -738,6 +739,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @return true if paused.
      */
     public boolean isPaused() {
+    	//System.out.println("MasterClock : isPause is " + isPaused);
         return isPaused;
     }
 

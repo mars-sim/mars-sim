@@ -124,7 +124,7 @@ public class SettlementTransparentPanel extends JComponent {
         buildLabelPane();
 
 		nameBtnPane = new JPanel(new FlowLayout());
-		nameBtnPane.setBackground(new Color(0,0,0,0));
+		nameBtnPane.setBackground(new Color(0,0,0));
         nameBtnPane.setOpaque(false);
 
       	nameBtnPane.add(infoP);
@@ -132,7 +132,7 @@ public class SettlementTransparentPanel extends JComponent {
        	nameBtnPane.add(new JLabel(""));
 
 		settlementPanel = new JPanel();//new BorderLayout());
-		settlementPanel.setBackground(new Color(0,0,0));//,0));
+		settlementPanel.setBackground(new Color(0,0,0));
 		settlementPanel.setOpaque(false);
 		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
 
@@ -141,7 +141,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 	    box.add(Box.createVerticalGlue());
-		box.setBackground(new Color(0,0,0));//,0));
+		box.setBackground(new Color(0,0,0));
 		box.setOpaque(false);
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);
@@ -213,7 +213,7 @@ public class SettlementTransparentPanel extends JComponent {
 		//setBackground(new Color(139,69,19));
 		//settlementListBox.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
 		//((JLabel)settlementListBox.getRenderer()).setBackground(Color.darkGray);;//SwingConstants.CENTER);
-		settlementListBox.setBackground(new Color(51,25,0));//,40)); // dull gold color
+		settlementListBox.setBackground(new Color(51,25,0,128)); // dull gold color
 		settlementListBox.setOpaque(false);
 		settlementListBox.setFont(new Font("Dialog", Font.BOLD, 18));
 		settlementListBox.setForeground(Color.GREEN);
@@ -225,14 +225,14 @@ public class SettlementTransparentPanel extends JComponent {
 			public void itemStateChanged(ItemEvent event) {
 				Settlement s;
 				// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving
-				if (desktop.getIsTransportingBuilding()) {
-					s = desktop.getSettlement();
-					settlementListBox.setSelectedItem(s);
+				//if (desktop.getIsTransportingBuilding()) {
+				//	s = mapPanel.getSettlement();
+				//	settlementListBox.setSelectedItem(s);
 					//settlementListBox.setForeground(Color.green);
-				}
-				else {
+				//}
+				//else {
 					s = (Settlement) event.getItem();
-				}
+				//}
 				//System.out.println(" settlement is " + settlement.getName());
 				mapPanel.setSettlement(s);
 				settlementListBox.setOpaque(false);
@@ -939,6 +939,10 @@ public class SettlementTransparentPanel extends JComponent {
 		}
 	}
 
+	public JComboBoxMW<?> getSettlementListBox() {
+		return settlementListBox;
+	}
+
 	/**
 	 * Prepare class for deletion.
 	 */
@@ -946,7 +950,6 @@ public class SettlementTransparentPanel extends JComponent {
 		mapPanel = null;
 		settlementCBModel.destroy();
 		desktop = null;
-		//settlementListBox.destroy();
 		settlementListBox = null;
 		settlementCBModel = null;
 	}
