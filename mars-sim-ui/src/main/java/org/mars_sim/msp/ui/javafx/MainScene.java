@@ -1,13 +1,19 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.08 2015-05-26
+ * @version 3.08 2015-12-18
  * @author Lars Næsbye Christensen
  */
 
 package org.mars_sim.msp.ui.javafx;
 
 import static javafx.geometry.Orientation.VERTICAL;
+
+import com.jidesoft.swing.MarqueePane;
+import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+import com.nilo.plaf.nimrod.NimRODTheme;
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
@@ -19,15 +25,7 @@ import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
 import jfxtras.scene.menu.CornerMenu;
 
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.text.DecimalFormat;
-
 import com.sun.management.OperatingSystemMXBean;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javafx.scene.control.MenuItem;
 import javafx.scene.Node;
@@ -40,6 +38,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -62,6 +61,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -74,6 +75,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.text.DecimalFormat;
+
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
@@ -94,12 +105,6 @@ import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
-
-import com.jidesoft.swing.MarqueePane;
-import com.nilo.plaf.nimrod.NimRODLookAndFeel;
-import com.nilo.plaf.nimrod.NimRODTheme;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 
 /**
@@ -137,6 +142,9 @@ public class MainScene {
 
 	private boolean isMainSceneDone = false;
 
+	private double width;
+	private double height;
+	
 	private StringProperty timeStamp;
 
 	private String lookAndFeelTheme = "nimrod";
@@ -198,6 +206,21 @@ public class MainScene {
 		this.stage = stage;
 		this.desktop = null;
 		this.isMainSceneDone = false;
+		
+		//stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+		//stage.setFullScreen(true);
+		//stage.setScene(mainSceneScene);
+		stage.setResizable(true);
+		
+		//stage.initModality(Modality.NONE);//APPLICATION_MODAL);
+		//stage.setMinWidth(1024);
+		//stage.setMinHeight(600);
+		//stage.setMaxWidth(1920);
+		//stage.setMinHeight(1200);
+
+		//stage.setTitle(Simulation.WINDOW_TITLE);	   
+		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in Mac) to toggle full screen mode");
+		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 	}
 
 	/**
@@ -327,11 +350,18 @@ public class MainScene {
 			@Override
 			public void handle(KeyEvent t) {
 				if (t.getCode() == KeyCode.ESCAPE) {
+					boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+					
+					if (isOnPauseMode)
+						unpauseSimulation();
+					else
+						pauseSimulation();
+					
 					// Toggle the full screen mode to OFF in the pull-down menu
 					// under setting
-					menuBar.exitFullScreen();
+					//menuBar.exitFullScreen();
 					// close the MarsNet side panel
-					openSwingTab();
+					//openSwingTab();
 				}
 			}
 		});
@@ -341,14 +371,21 @@ public class MainScene {
 		// interactive Mars map
 		// root.getChildren().add(bg1);
 
+	
+		// Obtain screens
+		ObservableList<Screen> screens = Screen.getScreens();
+		Screen primaryScreen = Screen.getPrimary();
+		Rectangle2D primaryScreenBounds = primaryScreen.getVisualBounds();
+		width = primaryScreenBounds.getWidth();
+		height = primaryScreenBounds.getHeight();
+		
 		// Create group to hold swingNode1 which holds the swing desktop
 		swingPane = new StackPane();
 		swingNode = new SwingNode();
 		createSwingNode();
 		swingPane.getChildren().add(swingNode);
-		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-		swingPane.setPrefHeight(primaryScreenBounds.getHeight());
+		swingPane.setPrefWidth(width);
+		swingPane.setPrefHeight(height);
 
 		// Create ControlFX's StatusBar
 		statusBar = createStatusBar();
@@ -432,7 +469,7 @@ public class MainScene {
 
 		rootStackPane = new StackPane(borderPane);
 
-		Scene scene = new Scene(rootStackPane, primaryScreenBounds.getWidth()-40, primaryScreenBounds.getHeight()-40, Color.BROWN);
+		Scene scene = new Scene(rootStackPane, width-40, height-40, Color.BROWN);
 
 		//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
@@ -1061,11 +1098,15 @@ public class MainScene {
 	public void saveSimulation(int type) {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
-		// 2015-10-17 Save the current pause state
-		//boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();	
-		//if (!isOnPauseMode) {
-		//	pauseSimulation();
-		//}	
+		// 2015-12-18 Check if it was previously on pause
+		boolean previous = Simulation.instance().getMasterClock().isPaused();		
+		// Pause simulation.
+		if (!previous) {
+			pauseSimulation();
+			//System.out.println("previous2 is false. Paused sim");
+		}	
+		desktop.getTimeWindow().enablePauseButton(false);
+		
 		
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
@@ -1082,10 +1123,21 @@ public class MainScene {
 		}
 
 
-		// 2015-12-16 Check if it was previously on pause
-		//if (!isOnPauseMode) {
-		//	unpauseSimulation();			
-		//}
+		// 2015-12-18 Check if it was previously on pause
+		boolean now = Simulation.instance().getMasterClock().isPaused();
+		if (!previous) {
+			if (now) {
+				unpauseSimulation();
+	    		//System.out.println("previous is false. now is true. Unpaused sim");
+			}
+		} else {
+			if (!now) {
+				unpauseSimulation();
+	    		//System.out.println("previous is true. now is false. Unpaused sim");
+			}				
+		}    
+		desktop.getTimeWindow().enablePauseButton(true);
+		
 	}
 
 	/**
@@ -1094,6 +1146,7 @@ public class MainScene {
 	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
 		//logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+
 
 		File fileLocn = null;
 		String dir = null;
@@ -1145,7 +1198,8 @@ public class MainScene {
 		}
 
 */
-		desktop.disposeAnnouncementWindow();
+		
+		//desktop.disposeAnnouncementWindow();
 
 	}
 
@@ -1444,6 +1498,14 @@ public class MainScene {
 
 	public Scene getScene() {
 		return scene;
+	}
+	
+	public double getWidth() {
+		return width;
+	}
+	
+	public double getHeight() {
+		return height;
 	}
 
 	public StackPane getRootStackPane() {

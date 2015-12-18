@@ -625,7 +625,7 @@ public class MainSceneMenu extends MenuBar  {
 
 
 	// Toggle the full screen mode off
-	public void exitFullScreen() {
+	public void updateFullScreenMode() {
 		showFullScreenItem.setSelected(false);
 	}
 

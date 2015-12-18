@@ -18,6 +18,10 @@ import java.util.concurrent.TimeUnit;
 //import org.slf4j.LoggerFactory;
 //import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Logger;
+
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
 import javafx.scene.CacheHint;
 import javafx.scene.layout.Region;
@@ -133,7 +137,7 @@ public class MainMenu {
 
     //private Group root;
     private StackPane root;
-	private Stage mainSceneStage, mainMenuStage, circleStage;
+	private Stage stage, mainSceneStage, circleStage;
 	public Scene mainMenuScene, mainSceneScene;
 
 	public MainMenu mainMenu;
@@ -157,15 +161,15 @@ public class MainMenu {
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
 	@SuppressWarnings("restriction")
-	void initAndShowGUI(Stage mainMenuStage) {
+	void initAndShowGUI(Stage stage) {
 	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
 
-	   this.mainMenuStage = mainMenuStage;
+		this.stage = stage;
 
     	Platform.setImplicitExit(false);
 
-    	mainMenuStage.setOnCloseRequest(e -> {
-			boolean isExit = screen.exitDialog(mainMenuStage);
+    	stage.setOnCloseRequest(e -> {
+			boolean isExit = screen.exitDialog(stage);
 			if (!isExit) {
 				e.consume();
 			}
@@ -199,17 +203,8 @@ public class MainMenu {
        // 2015-11-23 Added StarfieldFX
        StarfieldFX sf = new StarfieldFX();
        Parent starfield = sf.createStars(WIDTH-20, HEIGHT-20);
-       //Group starfield = sf.createStars((int)rect.getWidth(), (int)rect.getHeight());
-       
+   
        root = new StackPane();//starfield);
-
-       //root.setStyle(
-    	//        "-fx-background-color: rgba(255, 255, 255, 0.5);" +
-    	//        "-fx-effect: dropshadow(gaussian, red, 50, 0, 0, 0);" +
-    	//        "-fx-background-insets: 50;"
-    	//    );
-       //mainMenuScene.setFill(Color.TRANSPARENT);
-
 
        root.setPrefHeight(WIDTH);
        root.setPrefWidth(HEIGHT);
@@ -222,15 +217,12 @@ public class MainMenu {
 
        spinningGlobe = new SpinningGlobe(this);
        Parent globe = spinningGlobe.createMarsGlobe();      
-       //Group globe = spinningGlobe.createMarsGlobe();
-       
+
        screen.setCache(true);
        starfield.setCache(true);
        screen.setCacheHint(CacheHint.SCALE_AND_ROTATE);
        starfield.setCacheHint(CacheHint.SCALE_AND_ROTATE);
        
-       //root.getChildren().addAll(rect, globe);//, screen);
-       //root.getChildren().addAll(globe);
        root.getChildren().addAll(rect, starfield, globe, screen);
    
        mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20);//, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
@@ -244,66 +236,63 @@ public class MainMenu {
        spinningGlobe.getMarsGlobe().handleMouse(mainMenuScene);
        spinningGlobe.getMarsGlobe().handleKeyboard(mainMenuScene);
        
+       // Makes the menu option box fades in
        mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){
-
            public void handle(MouseEvent mouseEvent){
                FadeTransition fadeTransition
                        = new FadeTransition(Duration.millis(1000), menuOptionBox);
                fadeTransition.setFromValue(0.0);
                fadeTransition.setToValue(1.0);
                fadeTransition.play();
-
            }
        });
-
+       
+       // Makes the menu option box fades out
        mainMenuScene.setOnMouseExited(new EventHandler<MouseEvent>(){
-
            public void handle(MouseEvent mouseEvent){
                FadeTransition fadeTransition
                        = new FadeTransition(Duration.millis(1000), menuOptionBox);
                fadeTransition.setFromValue(1.0);
                fadeTransition.setToValue(0.0);
                fadeTransition.play();
-
            }
        });
-
-
-       // 2015-09-26 Added adjustRotation()
-       //spinningGlobe.adjustRotation(mainMenuScene, globe);
 
        // Enable dragging on the undecorated stage
        //EffectUtilities.makeDraggable(mainMenuStage, screen);
 
-       //mainMenuStage.initStyle(StageStyle.UTILITY);
-       //mainMenuStage.initStyle(StageStyle.TRANSPARENT);
-       //mainMenuStage.initStyle(StageStyle.UNDECORATED);
-       mainMenuStage.centerOnScreen();
-       mainMenuStage.setResizable(false);
-	   mainMenuStage.setTitle(Simulation.WINDOW_TITLE);
-       mainMenuStage.setScene(mainMenuScene);
-       mainMenuStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-       //mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       mainMenuStage.show();
-
-       // Starts a new stage for MainScene
-	   mainSceneStage = new Stage();
-	   //mainSceneStage.initModality(Modality.NONE);
-	   mainSceneStage.setMinWidth(1024);
-	   mainSceneStage.setMinHeight(600);
-
-	   //mainSceneStage.setMaxWidth(1920);
-	   //mainSceneStage.setMinHeight(1200);
-
-	   mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+       //mstage.initStyle(StageStyle.UTILITY);
+       //stage.initStyle(StageStyle.TRANSPARENT);
+       //stage.initStyle(StageStyle.UNDECORATED);
+       stage.centerOnScreen();
+       stage.setResizable(false);
+	   stage.setTitle(Simulation.WINDOW_TITLE);     
+       stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+       //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));   
+       stage.setScene(mainMenuScene);       
+       stage.show();
 
        createProgressCircle();
        circleStage.hide();
    }
 
-   public Stage getStage() {
-	   return mainMenuStage;
-   }
+/*
+	public void switchScene(Scene scene) {
+		// Starts a new stage for MainScene
+		//mainSceneStage = new Stage();
+		stage.setIconified(true);
+		stage.hide();	
+		stage.setScene(scene);
+	}
+	
+	public void switchStage(Scene scene) {
+		stage.setScene(scene);
+		stage.show();
+	}
+*/	
+	public Stage getStage() {
+		return stage;
+	}
 
    public MainScene getMainScene() {
 	   return mainScene;
@@ -315,9 +304,11 @@ public class MainMenu {
 
    public void runOne() {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
-
-	   mainMenuStage.setIconified(true); //hide();
-	   mainScene = new MainScene(mainSceneStage);
+	   stage.setIconified(true);
+	   stage.hide();
+	   // creates a mainScene instance
+	   mainScene = new MainScene(stage);	
+	   // goes to scenario config editor
 	   marsProjectFX.handleNewSimulation();
    }
 
@@ -334,7 +325,7 @@ public class MainMenu {
 			circleStage.requestFocus();
 		});
 
-		mainMenuStage.setIconified(true);//hide();
+		stage.setIconified(true);//hide();
 		mainScene = new MainScene(mainSceneStage);
 
 		// 2015-10-13 Set up a Task Thread
@@ -417,11 +408,13 @@ public class MainMenu {
 	 */
 	public void prepareScene() {
 	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
-
 	   // prepare main scene
-	   mainScene.prepareMainScene();
-	   mainSceneScene = mainScene.initializeScene();
-
+	   mainScene.prepareMainScene();	   
+	   // creates and initialize scene
+	   mainSceneScene = mainScene.initializeScene();	   
+	   // switch from the main menu's scene to the main scene's scene
+	   stage.setScene(mainSceneScene);
+	   
 	}
 
 	/*
@@ -429,17 +422,8 @@ public class MainMenu {
 	 */
 	public void prepareStage() {
 
-	   mainScene.prepareOthers();
-
-	   // prepare stage
-	   //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//.toString()));
-	   //stage.setFullScreen(true);
-	   mainSceneStage.setScene(mainSceneScene);
-	   mainSceneStage.setResizable(true);
-	   mainSceneStage.requestFocus();
-	   mainSceneStage.show();
-
+	   mainScene.prepareOthers();   
+	   
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);
 
@@ -454,19 +438,24 @@ public class MainMenu {
 		}
 	   }
 
+	   mainScene.openInitialWindows();
+
+	   stage.setIconified(false);
+	   stage.show();
+	   
 	   Platform.runLater(() -> {
 		   circleStage.close();
 		});
 
-	   mainScene.openInitialWindows();
-
+	   //stage.requestFocus();
+	   
 	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
 	}
 
    public void runThree() {
 	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
 	   Simulation.instance().getSimExecutor().submit(new MultiplayerTask());
-	   mainMenuStage.setIconified(true);//hide();
+	   stage.setIconified(true);//hide();
 /*
 	   try {
 			multiplayerMode = new MultiplayerMode(this);
@@ -585,7 +574,7 @@ public class MainMenu {
 		root = null;
 		screen = null;
 		mainSceneStage = null;
-		mainMenuStage = null;
+		stage = null;
 		circleStage = null;
 		mainMenuScene = null;
 		mainMenu = null;

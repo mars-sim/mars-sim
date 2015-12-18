@@ -1147,6 +1147,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// to display components correctly.
 		announcementWindow.pack();
 		announcementWindow.setVisible(true);
+		validate();
+		repaint();
 	}
 
 	/**
@@ -1232,8 +1234,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
 			if (mainScene != null) {
-				int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
-				int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
+				//int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
+				//int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
+				int Xloc = (int)((mainScene.getWidth() - ourGuide.getWidth()) * .5D);
+				int Yloc = (int)((mainScene.getHeight() - ourGuide.getHeight()) * .5D);
+
 				ourGuide.setLocation(Xloc, Yloc);
 				ourGuide.toFront();
 			}

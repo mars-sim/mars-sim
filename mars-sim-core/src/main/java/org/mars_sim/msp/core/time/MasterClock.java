@@ -454,6 +454,9 @@ public class MasterClock implements Serializable { // Runnable,
 	        // Keep running until told not to by calling stop()
 	        keepRunning = true;
 
+	        if (!keepRunning) 
+	        	System.out.println("keepRunning is false");
+	        
 	        while (keepRunning) {
 
 	        	statusUpdate();

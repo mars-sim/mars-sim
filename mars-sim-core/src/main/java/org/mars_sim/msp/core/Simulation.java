@@ -508,8 +508,16 @@ implements ClockListener, Serializable {
         //logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
 
     	// 2015-10-17 Save the current pause state
-		boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-
+		//boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+    	
+		// 2015-12-18 Check if it was previously on pause
+		boolean previous = Simulation.instance().getMasterClock().isPaused();		
+		// Pause simulation.
+		if (!previous) {
+			masterClock.setPaused(true);
+			//System.out.println("previous2 is false. Paused sim");
+		}	
+		
         Simulation simulation = instance();
         simulation.halt();
 
@@ -539,8 +547,6 @@ implements ClockListener, Serializable {
 
         //else if file != null
             // file should already have the correct dir, name and extension, no need to change it
-
-
 
         //ObjectOutputStream p = null;
         ObjectOutputStream oos = null;
@@ -579,11 +585,25 @@ implements ClockListener, Serializable {
         simulation.proceed();
 
         // 2015-10-17 Check if it was previously on pause
-        if (isOnPauseMode) {
-        	masterClock.setPaused(true); // do NOT use simulation.halt() or it will
+        //if (isOnPauseMode) {
+        //	masterClock.setPaused(true); // do NOT use simulation.halt() or it will
      		//System.out.println("Simulation.java: Yes it was on pause and so we pause again");
-     	}
+     	//}
 
+		// 2015-12-18 Check if it was previously on pause
+		boolean now = Simulation.instance().getMasterClock().isPaused();
+		if (!previous) {
+			if (now) {
+				masterClock.setPaused(false);
+	    		//System.out.println("previous is false. now is true. Unpaused sim");
+			}
+		} else {
+			if (!now) {
+				masterClock.setPaused(false);
+	    		//System.out.println("previous is true. now is false. Unpaused sim");
+			}				
+		}  
+		
     }
 
     /*
