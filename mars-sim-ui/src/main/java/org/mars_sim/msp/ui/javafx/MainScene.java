@@ -125,7 +125,7 @@ public class MainScene {
 	public static final int SAVE_AS = 3; // save as other file
 
 	private static int theme = 7; // 7 is the standard nimrod theme
-	
+
     final private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
     final private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
     final private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
@@ -144,7 +144,7 @@ public class MainScene {
 
 	private double width;
 	private double height;
-	
+
 	private StringProperty timeStamp;
 
 	private String lookAndFeelTheme = "nimrod";
@@ -179,7 +179,7 @@ public class MainScene {
 	private Timeline timeline, autosaveTimeline;
 	private static NotificationPane notificationPane;
 
-	
+
 	private static MainDesktopPane desktop;
 	private MainSceneMenu menuBar;
 	private MarsNode marsNode;
@@ -206,19 +206,19 @@ public class MainScene {
 		this.stage = stage;
 		this.desktop = null;
 		this.isMainSceneDone = false;
-		
+
 		//stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 		//stage.setFullScreen(true);
 		//stage.setScene(mainSceneScene);
 		stage.setResizable(true);
-		
+
 		//stage.initModality(Modality.NONE);//APPLICATION_MODAL);
-		//stage.setMinWidth(1024);
-		//stage.setMinHeight(600);
+		stage.setMinWidth(1280);
+		stage.setMinHeight(600);
 		//stage.setMaxWidth(1920);
 		//stage.setMinHeight(1200);
 
-		//stage.setTitle(Simulation.WINDOW_TITLE);	   
+		//stage.setTitle(Simulation.WINDOW_TITLE);
 		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in Mac) to toggle full screen mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
 	}
@@ -276,13 +276,13 @@ public class MainScene {
 		if (!previous) {
 			pauseSimulation();
 	    	//System.out.println("previous is false. Paused sim");
-		}	
+		}
 		desktop.getTimeWindow().enablePauseButton(false);
-		
+
 		//try {
 		//	FXUtilities.runAndWait(() -> {
-		
-		Platform.runLater(() -> { 
+
+		Platform.runLater(() -> {
 			//System.out.println("calling transportWizard.deliverBuildings() ");
 			transportWizard.deliverBuildings(buildingManager);
 			//System.out.println("ended transportWizard.deliverBuildings() ");
@@ -293,8 +293,8 @@ public class MainScene {
 		//} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 		//	e.printStackTrace();
-		//} 
-		
+		//}
+
 		boolean now = Simulation.instance().getMasterClock().isPaused();
 		if (!previous) {
 			if (now) {
@@ -305,10 +305,10 @@ public class MainScene {
 			if (!now) {
 				unpauseSimulation();
    	    		//System.out.println("previous is true. now is false. Unpaused sim");
-			}				
-		}	
+			}
+		}
 		desktop.getTimeWindow().enablePauseButton(true);
-    		
+
 	}
 
 	public TransportWizard getTransportWizard() {
@@ -324,7 +324,7 @@ public class MainScene {
 	public ConstructionWizard getConstructionWizard() {
 		return constructionWizard;
 	}
-	
+
 	/**
 	 * initializes the scene
 	 *
@@ -351,12 +351,12 @@ public class MainScene {
 			public void handle(KeyEvent t) {
 				if (t.getCode() == KeyCode.ESCAPE) {
 					boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-					
+
 					if (isOnPauseMode)
 						unpauseSimulation();
 					else
 						pauseSimulation();
-					
+
 					// Toggle the full screen mode to OFF in the pull-down menu
 					// under setting
 					//menuBar.exitFullScreen();
@@ -371,14 +371,14 @@ public class MainScene {
 		// interactive Mars map
 		// root.getChildren().add(bg1);
 
-	
+
 		// Obtain screens
 		ObservableList<Screen> screens = Screen.getScreens();
 		Screen primaryScreen = Screen.getPrimary();
 		Rectangle2D primaryScreenBounds = primaryScreen.getVisualBounds();
 		width = primaryScreenBounds.getWidth();
 		height = primaryScreenBounds.getHeight();
-		
+
 		// Create group to hold swingNode1 which holds the swing desktop
 		swingPane = new StackPane();
 		swingNode = new SwingNode();
@@ -497,10 +497,10 @@ public class MainScene {
 		// System.out.println("done running initializeScene()");
 
 		//createCornerMenu();
-		
+
 		return scene;
 	}
-	
+
 	private void createCornerMenu() {
         // uninstall the current cornerMenu
         //if (cornerMenu != null) {
@@ -516,7 +516,7 @@ public class MainScene {
         //cornerMenu.show();
         cornerMenu.setAutoShowAndHide(false);
     }
-	
+
 
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
@@ -1099,15 +1099,15 @@ public class MainScene {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		// 2015-12-18 Check if it was previously on pause
-		boolean previous = Simulation.instance().getMasterClock().isPaused();		
+		boolean previous = Simulation.instance().getMasterClock().isPaused();
 		// Pause simulation.
 		if (!previous) {
 			pauseSimulation();
 			//System.out.println("previous2 is false. Paused sim");
-		}	
+		}
 		desktop.getTimeWindow().enablePauseButton(false);
-		
-		
+
+
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
 				@Override
@@ -1134,10 +1134,10 @@ public class MainScene {
 			if (!now) {
 				unpauseSimulation();
 	    		//System.out.println("previous is true. now is false. Unpaused sim");
-			}				
-		}    
+			}
+		}
 		desktop.getTimeWindow().enablePauseButton(true);
-		
+
 	}
 
 	/**
@@ -1198,7 +1198,7 @@ public class MainScene {
 		}
 
 */
-		
+
 		//desktop.disposeAnnouncementWindow();
 
 	}
@@ -1218,7 +1218,7 @@ public class MainScene {
 	 * Closes the announcement window and unpauses the simulation.
 	 */
 	public void unpauseSimulation() {
-		Simulation.instance().getMasterClock().setPaused(false);	
+		Simulation.instance().getMasterClock().setPaused(false);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 		autosaveTimeline.play();
 		desktop.disposeAnnouncementWindow();
@@ -1499,11 +1499,11 @@ public class MainScene {
 	public Scene getScene() {
 		return scene;
 	}
-	
+
 	public double getWidth() {
 		return width;
 	}
-	
+
 	public double getHeight() {
 		return height;
 	}
@@ -1515,7 +1515,7 @@ public class MainScene {
 	public BorderPane getBorderPane() {
 		return borderPane;
 	}
-	
+
     private MenuItem registerAction(MenuItem menuItem) {
 
         menuItem.setOnAction(new EventHandler<ActionEvent>() {

@@ -58,6 +58,8 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
@@ -1228,7 +1230,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (config.useUIDefault()) {
 
 			// Open user guide tool.
-			openToolWindow(GuideWindow.NAME); 
+			openToolWindow(GuideWindow.NAME);
 			// SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC (but not in other platform)
 
 
@@ -1350,7 +1352,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
 			settlement = mgr.getSettlement();
-			
+
 			if (mainWindow != null)  {//mainWindow.pauseSimulation();
 				//SwingUtilities.invokeLater(() -> {
 					mainWindow.openTransportWizard(mgr);
@@ -1363,18 +1365,22 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			}
 
 			isTransportingBuilding = false;
-			
+
 		} else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
-			
+
 			isTransportingBuilding = false;
             disposeAnnouncementWindow();
 
 		}
 
 		else if (eventType == UnitEventType.START_CONSTRUCTION_SITE_EVENT) {
-			building = (Building) target; // overwrite the dummy building object made by the constructor
-			BuildingManager mgr = building.getBuildingManager();
-			settlement = mgr.getSettlement();
+
+			ConstructionSite site = (ConstructionSite) target; // overwrite the dummy building object made by the constructor
+			ConstructionManager constructionManager = site.getConstructionManager();
+			Settlement settlement = site.getSettlement();
+
+			//BuildingManager mgr = building.getBuildingManager();
+			//settlement = mgr.getSettlement();
 
 			if (mainWindow != null)  {
 				//mainWindow.openConstructionWizard(mgr);

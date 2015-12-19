@@ -47,19 +47,30 @@ implements Serializable, LocalBoundedObject {
     private double xLocation;
     private double yLocation;
     private double facing;
+
+    private boolean undergoingConstruction;
+    private boolean undergoingSalvage;
+
+    private transient List<ConstructionListener> listeners;
+
     private ConstructionStage foundationStage;
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
-    private boolean undergoingConstruction;
-    private boolean undergoingSalvage;
-    private transient List<ConstructionListener> listeners;
+    private ConstructionManager constructionManager;
+    private Settlement settlement;
+
+
 
     /**
      * Constructor
      */
-    public ConstructionSite(Settlement settlement) {
+    public ConstructionSite(Settlement settlement, ConstructionManager constructionManager) {
     	super("A construction site", settlement.getCoordinates());
-        width = 0D;
+
+    	this.constructionManager = constructionManager;
+    	this.settlement = settlement;
+
+    	width = 0D;
         length = 0D;
         xLocation = 0D;
         yLocation = 0D;
@@ -335,7 +346,7 @@ implements Serializable, LocalBoundedObject {
         int id = manager.getUniqueBuildingIDNumber();
         String buildingType = buildingStage.getInfo().getName();
         String uniqueName = manager.getBuildingNickName(buildingType);
-        
+
         Building newBuilding = new Building(id, buildingType, uniqueName, width, length,
                 xLocation, yLocation, facing, manager);
         manager.addBuilding(newBuilding, true);
@@ -448,4 +459,15 @@ implements Serializable, LocalBoundedObject {
 
         return result.toString();
     }
+
+    // 2015-12-18 Created getConstructionManager()
+    public ConstructionManager getConstructionManager() {
+    	return constructionManager;
+    }
+
+    // 2015-12-18 Created getSettlement()
+    public Settlement getSettlement() {
+    	return settlement;
+    }
+
 }

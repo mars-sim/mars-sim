@@ -327,9 +327,9 @@ implements Serializable {
         addPhase(WALKING_SETTLEMENT_INTERIOR);
         addPhase(WALKING_ROVER_INTERIOR);
         addPhase(WALKING_EXTERIOR);
-        //addPhase(EXITING_AIRLOCK);
+        addPhase(EXITING_AIRLOCK);
         addPhase(ENTERING_AIRLOCK);
-        //addPhase(EXITING_ROVER_GARAGE);
+        addPhase(EXITING_ROVER_GARAGE);
         addPhase(ENTERING_ROVER_GARAGE);
 
         setPhase(getWalkingStepPhase());

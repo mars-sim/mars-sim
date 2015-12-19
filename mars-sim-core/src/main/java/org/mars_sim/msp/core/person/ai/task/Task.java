@@ -735,11 +735,11 @@ implements Serializable, Comparable<Task> {
     protected BuildingFunction getRelatedBuildingFunction() {
         return null;
     }
-    
+
     protected BuildingFunction getRelatedBuildingRoboticFunction() {
         return null;
     }
-    
+
     /**
      * Walk to an available activity spot in a building.
      * @param building the destination building.
@@ -967,8 +967,10 @@ implements Serializable, Comparable<Task> {
 		       // If person is in a settlement, walk to random building.
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-	            Building currentBuilding = BuildingManager.getBuilding(person);
-	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            //Building currentBuilding = BuildingManager.getBuilding(person);
+	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
 	                Building building = buildingList.get(buildingIndex);
@@ -989,10 +991,10 @@ implements Serializable, Comparable<Task> {
 		       // If robot is in a settlement, walk to random building.
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-	            Building currentBuilding = BuildingManager.getBuilding(robot);
-
+	            //Building currentBuilding = BuildingManager.getBuilding(robot);
 	            //TODO: determine why the below results in java.lang.NullPointerException
-	            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+	        	List<Building> buildingList = robot.getSettlement().getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
 
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);

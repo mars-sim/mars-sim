@@ -197,6 +197,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     // 2015-04-02 Modified removeClockListener()
     public final void removeClockListener(ClockListener oldListener) {
+    	//System.out.println("calling removeClockListener()");
         if (listeners == null) listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
         if (listeners.contains(oldListener)) listeners.remove(oldListener);
        	// Check if clockListenerTaskList contain the newListener's task, if it does, delete it
@@ -454,9 +455,9 @@ public class MasterClock implements Serializable { // Runnable,
 	        // Keep running until told not to by calling stop()
 	        keepRunning = true;
 
-	        if (!keepRunning) 
+	        if (!keepRunning)
 	        	System.out.println("keepRunning is false");
-	        
+
 	        while (keepRunning) {
 
 	        	statusUpdate();

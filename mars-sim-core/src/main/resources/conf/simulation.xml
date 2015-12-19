@@ -48,7 +48,7 @@
 		<!-- The large the max-frame-skips, the more sudden the game jump forward -->
 		<!-- Value must be positive integer between 1 and 200 -->
 		<!-- Default: 10 -->
-		<max-frame-skips value="10" />
+		<max-frame-skips value="20" />
 		<!-- e.g. Suppose a simulation takes a prolonged period of 400 ms to complete the execution. In 400 ms, it should
 			have call the MasterClock to update the game loop 10 times (if the default TBU is 40 ms).
 			If max-frame-skips is set to 10, then it would NOT try to immediately run 10 updates back-to-back

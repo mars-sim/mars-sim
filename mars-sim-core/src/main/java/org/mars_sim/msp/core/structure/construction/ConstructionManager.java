@@ -155,7 +155,7 @@ implements Serializable {
 	 * @return newly created construction site.
 	 */
 	public ConstructionSite createNewConstructionSite() {
-		ConstructionSite result = new ConstructionSite(settlement);
+		ConstructionSite result = new ConstructionSite(settlement, this);
 		sites.add(result);
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, result);
 		return result;

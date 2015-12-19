@@ -18,12 +18,12 @@ import java.util.Map;
  * Information about a construction stage.
  */
 public class ConstructionStageInfo implements Serializable {
-    
+
     // Stage types
     public static final String FOUNDATION = "foundation";
     public static final String FRAME = "frame";
     public static final String BUILDING = "building";
-    
+
     // Data members
     private String name;
     private String type;
@@ -39,7 +39,7 @@ public class ConstructionStageInfo implements Serializable {
     private Map<Part, Integer> parts;
     private Map<AmountResource, Double> resources;
     private List<ConstructionVehicleType> vehicles;
-    
+
     /**
      * Constructor
      * @param name the name of the stage.
@@ -57,12 +57,12 @@ public class ConstructionStageInfo implements Serializable {
      * @param resources map of resources required and their amount.
      * @param vehicles list of construction vehicles required.
      */
-    ConstructionStageInfo(String name, String type, double width, double length, 
-    		boolean unsetDimensions, int baseLevel, boolean constructable, 
-    		boolean salvagable, double workTime, int architectConstructionSkill, 
-    		String prerequisiteStage, Map<Part, Integer> parts, Map<AmountResource, 
+    ConstructionStageInfo(String name, String type, double width, double length,
+    		boolean unsetDimensions, int baseLevel, boolean constructable,
+    		boolean salvagable, double workTime, int architectConstructionSkill,
+    		String prerequisiteStage, Map<Part, Integer> parts, Map<AmountResource,
     		Double> resources, List<ConstructionVehicleType> vehicles) {
-        
+
         this.name = name;
         this.type = type;
         this.width = width;
@@ -93,7 +93,7 @@ public class ConstructionStageInfo implements Serializable {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Gets the width of the stage.
      * @return the stage width (meters).
@@ -101,7 +101,7 @@ public class ConstructionStageInfo implements Serializable {
     public double getWidth() {
         return width;
     }
-    
+
     /**
      * Gets the length of the stage.
      * @return the stage length (meters).
@@ -109,7 +109,7 @@ public class ConstructionStageInfo implements Serializable {
     public double getLength() {
         return length;
     }
-    
+
     /**
      * Checks if the stage dimensions are initially unset.
      * @return true if dimensions unset.
@@ -117,7 +117,7 @@ public class ConstructionStageInfo implements Serializable {
     public boolean isUnsetDimensions() {
         return unsetDimensions;
     }
-    
+
     /**
      * Gets the base level of the building.
      * @return -1 for in-ground, 0 for above-ground.
@@ -125,7 +125,7 @@ public class ConstructionStageInfo implements Serializable {
     public int getBaseLevel() {
         return baseLevel;
     }
-    
+
     /**
      * Check if the stage can be constructed.
      * @return true if stage can be constructed.
@@ -133,7 +133,7 @@ public class ConstructionStageInfo implements Serializable {
     public boolean isConstructable() {
         return constructable;
     }
-    
+
     /**
      * Checks if the stage can be salvaged.
      * @return true if stage can be salvaged.
@@ -189,7 +189,7 @@ public class ConstructionStageInfo implements Serializable {
     public double getWorkTime() {
         return workTime;
     }
-    
+
     /**
      * Prepare for garbage collection.
      */
@@ -204,7 +204,7 @@ public class ConstructionStageInfo implements Serializable {
        vehicles.clear();
        vehicles = null;
     }
-    
+
     @Override
     public String toString() {
         return name;

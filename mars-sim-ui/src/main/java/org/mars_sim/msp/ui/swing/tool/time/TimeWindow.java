@@ -188,8 +188,8 @@ implements ClockListener {
 
 		// Create Martian season label
 		JLabel marsSeasonLabel = new JLabel(Msg.getString("TimeWindow.martianSeasons"), JLabel.CENTER); //$NON-NLS-1$
-		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
 		balloonToolTip.createBalloonTip(marsSeasonLabel, Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
 
 
 		// Create Northern season label

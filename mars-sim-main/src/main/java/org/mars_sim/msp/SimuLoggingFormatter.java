@@ -9,6 +9,8 @@ package org.mars_sim.msp;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
@@ -23,13 +25,32 @@ public class SimuLoggingFormatter extends Formatter {
     private Date date = new Date();
     private StringBuffer sb = new StringBuffer();
 
+    private LogRecord record;
+    private Map<Integer, String> recordMap = new HashMap<>();
 
-    public String format(LogRecord record)
-	{
+    private int startNum = 0;
+    private int endNum = 4; // size of the buffer is 5
+    private int current = 0;
+
+    public String format(LogRecord record) {
+
+		String msg = formatMessage(record);
+/*
+		if (!recordMap.isEmpty()) {
+			if (current < endNum) {
+				current++;
+			}
+			else {
+				current = 0;
+			}
+			recordMap.put(current, msg);
+		}
+*/
+
 		sb.delete(0,sb.length());
 		date.setTime(record.getMillis());
 
-		String log = df.format(date).replaceAll("AM", "").replaceAll("PM", "");
+		String log = df.format(date);//.replaceAll("AM", "").replaceAll("PM", "");
 		sb.append(log);
 		//sb.append(" ");
 
@@ -44,7 +65,7 @@ public class SimuLoggingFormatter extends Formatter {
 				.replaceAll("org.mars_sim.msp.mapdata.","mapdata.")
 				.replaceAll("org.mars_sim.msp.network.","network.")
 				.replaceAll("org.mars_sim.msp.","main.");
-		
+
 		// record.getLoggerName()
 		//sb.append(record.getSourceClassName());
 		//sb.append(record.getClass().getSimpleName());
@@ -53,7 +74,10 @@ public class SimuLoggingFormatter extends Formatter {
 
 		// Get the formatted message (includes localization
 		// and substitution of paramters) and add it to the buffer
-		sb.append(formatMessage(record));
+		sb.append(msg);
+
+    	//System.out.println();
+
 		sb.append(LINEFEED);
 
 		return sb.toString();

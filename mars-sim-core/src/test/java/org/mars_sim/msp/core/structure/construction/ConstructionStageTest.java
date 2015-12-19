@@ -54,7 +54,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.ConstructionStage(ConstructionStageInfo)'
      */
     public void testConstructionStage() {
-        ConstructionSite site = new ConstructionSite(null);
+        ConstructionSite site = new ConstructionSite(null, null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertNotNull(stage);
     }
@@ -64,7 +64,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.getInfo()'
      */
     public void testGetInfo() {
-        ConstructionSite site = new ConstructionSite(null);
+        ConstructionSite site = new ConstructionSite(null, null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertEquals(foundationInfo, stage.getInfo());
     }
@@ -74,7 +74,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.getCompletedWorkTime()'
      */
     public void testGetCompletedWorkTime() {
-        ConstructionSite site = new ConstructionSite(null);
+        ConstructionSite site = new ConstructionSite(null, null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertEquals(0D, stage.getCompletedWorkTime());
     }
@@ -84,7 +84,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.addWorkTime(double)'
      */
     public void testAddWorkTime() {
-        ConstructionSite site = new ConstructionSite(null);
+        ConstructionSite site = new ConstructionSite(null, null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         stage.addWorkTime(5000D);
         assertEquals(5000D, stage.getCompletedWorkTime());
@@ -99,7 +99,7 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.isComplete()'
      */
     public void testIsComplete() {
-        ConstructionSite site = new ConstructionSite(null);
+        ConstructionSite site = new ConstructionSite(null, null);
         ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         stage.addWorkTime(5000D);
         assertFalse(stage.isComplete());
