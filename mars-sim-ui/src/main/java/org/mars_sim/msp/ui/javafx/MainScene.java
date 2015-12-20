@@ -138,7 +138,7 @@ public class MainScene {
 	private int memUsed, memUsedCache;
 	private int memFree;
 	private int processCpuLoad;
-	private int systemCpuLoad;
+	//private int systemCpuLoad;
 
 	private boolean isMainSceneDone = false;
 
@@ -155,18 +155,19 @@ public class MainScene {
 
 	private Text timeText;
 	private Text memUsedText;
-	private Text memMaxText;
+	//private Text memMaxText;
 	private Text processCpuLoadText;
-	private Text systemCpuLoadText;
+	//private Text systemCpuLoadText;
 	private Button memBtn, clkBtn, cpuBtn;
 
 	private Stage stage;
-	private Scene scene;
+	//private Scene scene;
 	private StackPane rootStackPane;
 	private SwingNode swingNode;
 	private StatusBar statusBar;
 	private Flyout flyout;
-	private ToggleButton marsNetButton;
+	//private ToggleButton marsNetButton;
+	private MaterialDesignToggleButton marsNetButton;
 	private ChatBox cb;
 	private CornerMenu cornerMenu;
 	private StackPane swingPane;
@@ -204,23 +205,47 @@ public class MainScene {
 	public MainScene(Stage stage) {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
-		this.desktop = null;
 		this.isMainSceneDone = false;
 
-		//stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-		//stage.setFullScreen(true);
-		//stage.setScene(mainSceneScene);
 		stage.setResizable(true);
 
-		//stage.initModality(Modality.NONE);//APPLICATION_MODAL);
-		stage.setMinWidth(1280);
-		stage.setMinHeight(600);
-		//stage.setMaxWidth(1920);
-		//stage.setMinHeight(1200);
+		//stage.setMinWidth(1280);
+		//stage.setMinHeight(600);
 
-		//stage.setTitle(Simulation.WINDOW_TITLE);
+		//stage.setWidth(1280);
+		//stage.setHeight(600);
+
+		//stage.setMaxWidth(1920);
+		//stage.setMaxHeight(1200);
+
 		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in Mac) to toggle full screen mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
+
+		// Detect if a user hits the top-right close button
+		stage.setOnCloseRequest(e -> {
+			boolean exit = alertOnExit();
+			if (!exit)
+				e.consume();
+		} );
+
+		// Detect if a user hits ESC
+		stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent t) {
+				if (t.getCode() == KeyCode.ESCAPE) {
+					boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+					if (isOnPauseMode)
+						unpauseSimulation();
+					else
+						pauseSimulation();
+					// Toggle the full screen mode to OFF in the pull-down menu
+					// under setting
+					//menuBar.exitFullScreen();
+					// close the MarsNet side panel
+					//openSwingTab();
+				}
+			}
+		});
 	}
 
 	/**
@@ -238,22 +263,11 @@ public class MainScene {
 	public class MainSceneTask implements Runnable {
 		public void run() {
 			//logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
-			// Load UI configuration.
-			// if (!cleanUI) {
-			// UIConfig.INSTANCE.parseFile();
-			// }
-
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
-
 			SwingUtilities.invokeLater(() -> {
 				setLookAndFeel(1);
-			} );
-
-			//startAutosaveTimer();
-			// desktop.openInitialWindows(); // doesn't work here
-			//startEarthTimer();
-			// System.out.println("done running the two timers");
+			});
 			// System.out.println("done running createMainScene()");
 		}
 	}
@@ -263,13 +277,11 @@ public class MainScene {
 		transportWizard = new TransportWizard(this, desktop);
 		startAutosaveTimer();
 		startEarthTimer();
-
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
 	public synchronized void openTransportWizard(BuildingManager buildingManager) {
 		logger.info("MainScene's openTransportWizard() is in " + Thread.currentThread().getName() + " Thread");
-
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
 		boolean previous = Simulation.instance().getMasterClock().isPaused();
@@ -279,21 +291,11 @@ public class MainScene {
 		}
 		desktop.getTimeWindow().enablePauseButton(false);
 
-		//try {
-		//	FXUtilities.runAndWait(() -> {
-
 		Platform.runLater(() -> {
 			//System.out.println("calling transportWizard.deliverBuildings() ");
 			transportWizard.deliverBuildings(buildingManager);
 			//System.out.println("ended transportWizard.deliverBuildings() ");
 		});
-		//} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
 
 		boolean now = Simulation.instance().getMasterClock().isPaused();
 		if (!previous) {
@@ -335,42 +337,10 @@ public class MainScene {
 		//logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
 		marsNode = new MarsNode(this, stage);
 
-		// Detect if a user hits the top-right close button
-		// TODO: determine if it is necessary to exit both the simulation stage
-		// and the Main Menu
-		// Exit not just the stage but the simulation entirely
-		stage.setOnCloseRequest(e -> {
-			boolean exit = alertOnExit();
-			if (!exit)
-				e.consume();
-		} );
-
-		// Detect if a user hits ESC
-		stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent t) {
-				if (t.getCode() == KeyCode.ESCAPE) {
-					boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-
-					if (isOnPauseMode)
-						unpauseSimulation();
-					else
-						pauseSimulation();
-
-					// Toggle the full screen mode to OFF in the pull-down menu
-					// under setting
-					//menuBar.exitFullScreen();
-					// close the MarsNet side panel
-					//openSwingTab();
-				}
-			}
-		});
-
 		// ImageView bg1 = new ImageView();
 		// bg1.setImage(new Image("/images/splash.png")); // in lieu of the
 		// interactive Mars map
 		// root.getChildren().add(bg1);
-
 
 		// Obtain screens
 		ObservableList<Screen> screens = Screen.getScreens();
@@ -454,7 +424,6 @@ public class MainScene {
 		swingTab.setClosable(false);
 		swingTab.setText("Classic UI");
 		swingTab.setContent(swingPane);
-
 		//Tab noteTab = new Tab("");
 
 		// Set to select the swing tab at the start of simulation
@@ -468,33 +437,15 @@ public class MainScene {
 		borderPane.setCenter(notificationNode);
 
 		rootStackPane = new StackPane(borderPane);
+		borderPane.setMinWidth(1024);
+		borderPane.setMinHeight(600);
 
 		Scene scene = new Scene(rootStackPane, width-40, height-40, Color.BROWN);
+
 
 		//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
-
-		//rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
-		/*
-		rootStackPane.getStylesheets().add("/fxui/css/mainskin.css");
-		rootStackPane.getStylesheets().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
-		rootStackPane.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent keyEvent) {
-				if (keyEvent.getCode() == KeyCode.T && keyEvent.isControlDown()) {
-					changeTheme();
-					// SwingUtilities is needed for MacOSX compatibility
-					SwingUtilities.invokeLater(() -> {
-						setLookAndFeel(1);
-						swingNode.setContent(desktop);
-					} );
-				}
-			}
-		});
-		*/
-
-		// System.out.println("done running initializeScene()");
 
 		//createCornerMenu();
 
@@ -523,7 +474,6 @@ public class MainScene {
 	 */
 	public void initializeTheme() {
 		//logger.info("MainScene's initializeTheme()");
-
 		// NOTE: it is mandatory to change the theme from 1 to 2 below at the start of the sim
 		// This avoids two display issues:
 		// (1). the crash of Mars Navigator Tool when it was first loaded
@@ -622,9 +572,9 @@ public class MainScene {
 		marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 
 		memUsedText.setFill(txtColor);
-		memMaxText.setFill(txtColor);
+		//memMaxText.setFill(txtColor);
 		timeText.setFill(txtColor);
-		systemCpuLoadText.setFill(txtColor);
+		//systemCpuLoadText.setFill(txtColor);
 		processCpuLoadText.setFill(txtColor);
 
 		statusBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
@@ -641,8 +591,6 @@ public class MainScene {
 	}
 	/**
 	 * Creates and starts the earth timer
-	 *
-	 * @return Scene
 	 */
 	public void startEarthTimer() {
 		// Set up earth time text update
@@ -661,7 +609,9 @@ public class MainScene {
      */
     //2015-11-11 Added createFlyout()
     public Flyout createFlyout() {
-        marsNetButton = new ToggleButton(" MarsNet ");
+        //marsNetButton = new ToggleButton(" MarsNet ");
+        marsNetButton = new MaterialDesignToggleButton(" MarsNet ");
+        marsNetButton.setId("marsNetButton");
         marsNetButton.setTooltip(new Tooltip ("Open/close MarsNet chat box"));
         marsNetButton.setPadding(new Insets(5, 5, 5, 5));
         marsNetButton.setOnAction(e -> {
@@ -733,39 +683,43 @@ public class MainScene {
 		osBean = ManagementFactory.getPlatformMXBean(
 				com.sun.management.OperatingSystemMXBean.class);
 
+		statusBar.getRightItems().add(new Separator(VERTICAL));
 		cpuBtn = new Button(" CPU ");
+		cpuBtn.setTooltip(new Tooltip(" % CPU Usage"));
 		//cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//cpuBtn.setTextFill(Color.ORANGE);
-		statusBar.getRightItems().add(new Separator(VERTICAL));
+		//statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(cpuBtn);
+		statusBar.getRightItems().add(new Separator(VERTICAL));
 
 		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		processCpuLoadText = new Text(" Process : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		processCpuLoadText = new Text(" " + twoDigitFormat.format(processCpuLoad) + " % ");
 		//processCpuLoadText.setFill(Color.GREY);
-		statusBar.getRightItems().add(new Separator(VERTICAL));
 		statusBar.getRightItems().add(processCpuLoadText);
-
-		systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
-		systemCpuLoadText = new Text(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
-		//systemCpuLoadText.setFill(Color.GREY);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
-		statusBar.getRightItems().add(systemCpuLoadText);
 
+		//systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
+		//systemCpuLoadText = new Text(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
+		//systemCpuLoadText.setFill(Color.GREY);
+		//statusBar.getRightItems().add(new Separator(VERTICAL));
+		//statusBar.getRightItems().add(systemCpuLoadText);
+
+
+		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 		memBtn = new Button(" Memory ");
 		//memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//memBtn.setTextFill(Color.ORANGE);
-		statusBar.getRightItems().add(new Separator(VERTICAL));
+		memBtn.setTooltip(new Tooltip(" Memory used out of " + memMax + " MB designated"));
 		statusBar.getRightItems().add(memBtn);
 
-		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-		memMaxText = new Text(" Designated : " + memMax + " MB ");
+		//memMaxText = new Text(" Designated : " + memMax + " MB ");
 		//memMaxText.setFill(Color.GREY);
-		statusBar.getRightItems().add(memMaxText);
+		//statusBar.getRightItems().add(memMaxText);
 
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
-		memUsedText = new Text(" Used : " + memUsed + " MB ");
+		memUsedText = new Text(" " + memUsed + " MB ");
 		memUsedText.setId("mem-text");
 		// memUsedText.setStyle("-fx-text-inner-color: orange;");
 		//memUsedText.setFill(Color.GREY);
@@ -781,12 +735,13 @@ public class MainScene {
 			throw new IllegalStateException("earthclock is null");
 		}
 
-		clkBtn = new Button(" Clock ");
+		clkBtn = new Button(" Earth Time ");
+		clkBtn.setTooltip(new Tooltip("Simulation begins at 2043-Sep-30 00:00:00 (UT)"));
 		//clkBtn.setTextFill(Color.ORANGE);
 		//clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		statusBar.getRightItems().add(clkBtn);
 
-		timeText = new Text(" Earth Date & Time : " + timeStamp + "  ");
+		timeText = new Text(" " + timeStamp + "  ");
 		// timeText.setStyle("-fx-text-inner-color: orange;");
 		timeText.setId("time-text");
 		//timeText.setFill(Color.GREY);
@@ -803,7 +758,6 @@ public class MainScene {
 	}
 
 	public Node createNotificationPane() {
-
 		// wrap the dndTabPane inside notificationNode
 		notificationPane = new NotificationPane(dndTabPane);
 
@@ -819,7 +773,6 @@ public class MainScene {
 		// notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 		 notificationPane.setText("Breaking news for mars-simmers !!");
 		// notificationPane.hide();
-
 		return notificationPane;
 	}
 
@@ -858,24 +811,24 @@ public class MainScene {
 		// catch (Exception ee) {
 		// ee.printStackTrace(System.err);
 		// }
-		timeText.setText(" Earth Date & Time : " + t + "  ");
+		timeText.setText(" " + t + "  ");
 		// timeText.setStyle("-fx-text-inner-color: orange;");
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
 		// int mem = ( memUsedCache + memUsed ) /2;
 		if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
-			memUsedText.setText(" Used : " + memUsed + " MB ");
+			memUsedText.setText(" " + memUsed + " MB ");
 			// memUsedText.setStyle("-fx-text-inner-color: orange;");
 		}
 		memUsedCache = memUsed;
 
 		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		processCpuLoadText.setText(" Process : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		processCpuLoadText.setText(" " + twoDigitFormat.format(processCpuLoad) + " % ");
 		//processCpuLoadText.setFill(Color.GREY);
 
-		systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
-		systemCpuLoadText.setText(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
+		//systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
+		//systemCpuLoadText.setText(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
 		//systemCpuLoadText.setFill(Color.GREY);
 
 	}
@@ -1496,9 +1449,9 @@ public class MainScene {
 		return theme;
 	}
 
-	public Scene getScene() {
-		return scene;
-	}
+	//public Scene getScene() {
+	//	return scene;
+	//}
 
 	public double getWidth() {
 		return width;

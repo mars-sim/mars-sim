@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -35,11 +36,14 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.gauges.DigitialRadial;
@@ -64,11 +68,11 @@ implements ActionListener {
 	//private static Logger logger = Logger.getLogger(LocationTabPanel.class.getName());
 
 	private int themeCache;
-	
-	private double elevationCache; 
+
+	private double elevationCache;
 
 	//private String locationText = "Mars";
-	
+
 	// 2014-11-11 Added new panels and labels
 	private JPanel tpPanel =  new JPanel();
 	private JPanel outsideReadingPanel = new JPanel();
@@ -86,17 +90,17 @@ implements ActionListener {
 	private JLabel latitudeLabel;
 	private JLabel longitudeLabel;
 	private JPanel centerPanel;
-	private JButton locationButton;
+	//private JButton locationButton;
 
 	private TerrainElevation terrainElevation;
 	private Coordinates locationCache;
 	private MainScene mainScene;
-	
+
 	private JButton locatorButton;
 
 	private DisplaySingle lcdLong, lcdLat, lcdText; // lcdElev,
 	private DisplayCircular gauge;//RadialQuarterN gauge;
-	
+
 	DecimalFormat fmt = new DecimalFormat("##0");
 	DecimalFormat fmt2 = new DecimalFormat("#0.00");
     /**
@@ -112,9 +116,9 @@ implements ActionListener {
 
     	if (terrainElevation == null)
 			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getSurfaceTerrain();
-	
+
     	mainScene = desktop.getMainScene();
-    	
+
         // Initialize location header.
 		JPanel titlePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(titlePane);
@@ -129,28 +133,28 @@ implements ActionListener {
         locationPanel.setBorder(new MarsPanelBorder());
         locationPanel.setBorder(new EmptyBorder(1, 1, 1, 1) );
         topContentPanel.add(locationPanel);
-        
+
 
         // Initialize location cache
-        locationCache = new Coordinates(unit.getCoordinates());      
+        locationCache = new Coordinates(unit.getCoordinates());
         themeCache = mainScene.getTheme();
-  
+
         String dir_N_S = null;
         String dir_E_W = null;
         if (locationCache.getLatitudeDouble() >= 0)
         	dir_N_S = Msg.getString("direction.degreeSign")+"N";
         else
         	dir_N_S = Msg.getString("direction.degreeSign")+"S";
-        
+
         if (locationCache.getLongitudeDouble() >= 0)
         	dir_E_W = Msg.getString("direction.degreeSign")+"E";
         else
         	dir_E_W = Msg.getString("direction.degreeSign")+"W";
-        
+
 
         JPanel northPanel = new JPanel(new FlowLayout());
         locationPanel.add(northPanel, BorderLayout.NORTH);
-        
+
         lcdLat = new DisplaySingle();
         lcdLat.setLcdUnitString(dir_N_S);
         lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
@@ -169,8 +173,8 @@ implements ActionListener {
         lcdLat.setVisible(true);
         //locationPanel.add(lcdLat, BorderLayout.WEST);
         northPanel.add(lcdLat);
-        
-        
+
+
         elevationCache = terrainElevation.getElevation(unit.getCoordinates());
  /*
         //System.out.println("elevation is "+ elevation);
@@ -189,8 +193,8 @@ implements ActionListener {
         lcdElev.setPreferredSize(new Dimension(150, 60));
         lcdElev.setVisible(true);
         locationPanel.add(lcdElev, BorderLayout.NORTH);
- */    
-        
+ */
+
         // Create center map button
         locatorButton = new JButton(ImageLoader.getIcon("locator48_orange"));
         //centerMapButton = new JButton(ImageLoader.getIcon("locator_blue"));
@@ -198,12 +202,13 @@ implements ActionListener {
         locatorButton.addActionListener(this);
         locatorButton.setOpaque(false);
         locatorButton.setToolTipText("Locate the unit on Mars Navigator");
+        locatorButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));//new Cursor(Cursor.HAND_CURSOR));
 
 		JPanel locatorPane = new JPanel(new FlowLayout());
 		locatorPane.add(locatorButton);
 		//locationPanel.add(locatorPane, BorderLayout.NORTH);
 	    northPanel.add(locatorPane);
-	    
+
         lcdLong = new DisplaySingle();
         //lcdLong.setCustomLcdForeground(getForeground());
         lcdLong.setLcdUnitString(dir_E_W);
@@ -221,12 +226,12 @@ implements ActionListener {
         lcdLong.setVisible(true);
        //locationPanel.add(lcdLong, BorderLayout.EAST);
         northPanel.add(lcdLong);
-        
-        
+
+
         int max = -1;
         int min = 2;
-        // Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L"). 
-        // The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid. 
+        // Note: The peak of Olympus Mons is 21,229 meters (69,649 feet) above the Mars areoid (a reference datum similar to Earth's sea level). The lowest point is within the Hellas Impact Crater (marked by a flag with the letter "L").
+        // The lowest point in the Hellas Impact Crater is 8,200 meters (26,902 feet) below the Mars areoid.
         if (elevationCache < -8) {
         	max = -8;
         	min = -9;
@@ -263,13 +268,13 @@ implements ActionListener {
         	max = 30;
         	min = 20;
         }
-         
+
         gauge = new DisplayCircular();
         setGauge(gauge, min, max);
         locationPanel.add(gauge, BorderLayout.CENTER);
-        
- 
-		
+
+
+
 		//centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
 /*
 		// 2015-12-09 Prepare loc label
@@ -278,8 +283,8 @@ implements ActionListener {
         //locLabel.setOpaque(false);
         locLabel.setFont(new Font("Serif", Font.PLAIN, 13));
         locLabel.setHorizontalAlignment(SwingConstants.CENTER);
- */       
-		
+ */
+
         String loc = "On Mars";
 		lcdText = new DisplaySingle();
         lcdText.setLcdInfoString("Last Unknown Position");
@@ -293,23 +298,23 @@ implements ActionListener {
         lcdText.setVisible(true);
         lcdText.setLcdNumericValues(false);
         lcdText.setLcdValueFont(new Font("Serif", Font.ITALIC, 8));
-        //lcdText.setLcdText(locationText);	
-        lcdText.setLcdText(loc);      
+        //lcdText.setLcdText(locationText);
+        lcdText.setLcdText(loc);
         lcdText.setLcdTextScrolling(true);
         //centerPanel.add(lcdText);
 		//locationPanel.add(centerPanel, BorderLayout.SOUTH);
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
-		
+
 		checkTheme(true);
     }
 
     public void checkTheme(boolean firstRun) {
-        if (mainScene != null) {       	
+        if (mainScene != null) {
             int theme = mainScene.getTheme();
-            
+
             if (themeCache != theme || firstRun) {
-            	themeCache = theme;      	       	
-	        
+            	themeCache = theme;
+
 	        	if (theme == 7) {
 	                lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
 	                gauge.setFrameDesign(FrameDesign.GOLD);
@@ -323,7 +328,7 @@ implements ActionListener {
             }
         }
     }
-    
+
     public void setGauge(DisplayCircular gauge, int min, int max) {
         gauge.setDisplayMulti(false);
     	gauge.setDigitalFont(true);
@@ -357,10 +362,10 @@ implements ActionListener {
         gauge.setMaximumSize(new Dimension(250, 250));
         gauge.setPreferredSize(new Dimension(250, 250));
 
-        gauge.setVisible(true);	
-        
+        gauge.setVisible(true);
+
     }
-    
+
 	private String getLatitudeString() {
 		return locationCache.getFormattedLatitudeString();
 	}
@@ -379,12 +384,73 @@ implements ActionListener {
         JComponent source = (JComponent) event.getSource();
 
         // If the center map button was pressed, update navigator tool.
-        if (source == locatorButton)
-            desktop.centerMapGlobe(unit.getCoordinates());
+        if (source == locatorButton) {
+        	// 2015-12-19 Added codes to open the settlement map tool and center the map to
+        	// show the exact/building location inside a settlement if possible
+        	Person p = null;
+        	Robot r = null;
+        	Vehicle v = null;
+        	if (unit instanceof Person) {
+        		p = (Person) unit;
+        		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        			desktop.openToolWindow(SettlementWindow.NAME);
+        			//System.out.println("Just open Settlement Map Tool");
+        		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+
+        			Building b = p.getBuildingLocation();
+        			double xLoc = b.getXLocation();
+        			double yLoc = b.getYLocation();
+        			double scale = mapPanel.getScale();
+        			mapPanel.reCenter();
+        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+        			mapPanel.setShowBuildingLabels(true);
+            	}
+        		else
+        			desktop.centerMapGlobe(unit.getCoordinates());
+
+        	} else if (unit instanceof Robot) {
+        		r = (Robot) unit;
+            		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            			desktop.openToolWindow(SettlementWindow.NAME);
+            			//System.out.println("Just open Settlement Map Tool");
+            		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+            			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+
+            			Building b = r.getBuildingLocation();
+            			double xLoc = b.getXLocation();
+            			double yLoc = b.getYLocation();
+            			double scale = mapPanel.getScale();
+            			mapPanel.reCenter();
+            			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+            			mapPanel.setShowBuildingLabels(true);
+                	}
+            		else
+            			desktop.centerMapGlobe(unit.getCoordinates());
+
+        	} else if (unit instanceof Vehicle) {
+        		v = (Vehicle) unit;
+          		if (v.getSettlement() != null) {
+        			desktop.openToolWindow(SettlementWindow.NAME);
+        			//System.out.println("Just open Settlement Map Tool");
+        		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getSettlement());
+
+        			double xLoc = v.getXLocation();
+        			double yLoc = v.getYLocation();
+        			double scale = mapPanel.getScale();
+        			mapPanel.reCenter();
+        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+        			mapPanel.setShowBuildingLabels(true);
+            	}
+        		else
+        			desktop.centerMapGlobe(unit.getCoordinates());
+        	}
+        }
 
         // If the location button was pressed, open the unit window.
-        if (source == locationButton)
-            desktop.openUnitWindow(unit.getContainerUnit(), false);
+        //if (source == locationButton)
+        //    desktop.openUnitWindow(unit.getContainerUnit(), false);
     }
 
     /**
@@ -399,31 +465,31 @@ implements ActionListener {
     	Coordinates location = unit.getCoordinates();
         if (!locationCache.equals(location)) {
             locationCache.setCoords(location);
- 
+
             String dir_N_S = null;
             String dir_E_W = null;
-            
+
             if (locationCache.getLatitudeDouble() >= 0)
             	dir_N_S = Msg.getString("direction.degreeSign")+"N";
             else
             	dir_N_S = Msg.getString("direction.degreeSign")+"S";
-            
+
             if (locationCache.getLongitudeDouble() >= 0)
             	dir_E_W = Msg.getString("direction.degreeSign")+"E";
             else
             	dir_E_W = Msg.getString("direction.degreeSign")+"W";
-            
-            lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
-            lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));          
-            
+
             lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
             lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
-            
+
+            lcdLat.setLcdValueAnimated(Math.abs(locationCache.getLatitudeDouble()));
+            lcdLong.setLcdValueAnimated(Math.abs(locationCache.getLongitudeDouble()));
+
             double elevation = terrainElevation.getElevation(location);
-            
+
             if (elevationCache != elevation) {
             	elevationCache = elevation;
-            	
+
                 int max = 0;
                 int min = 0;
                 if (elevationCache < -8) {
@@ -462,12 +528,12 @@ implements ActionListener {
                 	max = 30;
                 	min = 20;
                 }
-                
+
                 setGauge(gauge, min, max);
 
             }
         }
-        
+
         // 2015-12-09 Prepare loc label
         // Update location button or location text label as necessary.
         Unit container = unit.getContainerUnit();
@@ -483,7 +549,7 @@ implements ActionListener {
         }
 
         checkTheme(false);
-        
+
     }
 
     /**
@@ -573,8 +639,8 @@ implements ActionListener {
         		}
         	}
         }
-      
+
         lcdText.setLcdText(loc);
-      
+
     }
 }

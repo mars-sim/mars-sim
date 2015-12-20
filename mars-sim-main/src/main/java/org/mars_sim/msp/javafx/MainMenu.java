@@ -203,7 +203,7 @@ public class MainMenu {
        // 2015-11-23 Added StarfieldFX
        StarfieldFX sf = new StarfieldFX();
        Parent starfield = sf.createStars(WIDTH-20, HEIGHT-20);
-   
+
        root = new StackPane();//starfield);
 
        root.setPrefHeight(WIDTH);
@@ -216,26 +216,26 @@ public class MainMenu {
     		   );
 
        spinningGlobe = new SpinningGlobe(this);
-       Parent globe = spinningGlobe.createMarsGlobe();      
+       Parent globe = spinningGlobe.createMarsGlobe();
 
        screen.setCache(true);
        starfield.setCache(true);
        screen.setCacheHint(CacheHint.SCALE_AND_ROTATE);
        starfield.setCacheHint(CacheHint.SCALE_AND_ROTATE);
-       
+
        root.getChildren().addAll(rect, starfield, globe, screen);
-   
+
        mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20);//, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
        mainMenuScene.setFill(Color.DARKGOLDENROD);//Color.BLACK);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
        mainMenuScene.setCursor(Cursor.HAND);
-       
+
        //mainMenuScene.setCamera(spinningGlobe.getMarsGlobe().getCamera(root));
        spinningGlobe.getMarsGlobe().handleMouse(mainMenuScene);
        spinningGlobe.getMarsGlobe().handleKeyboard(mainMenuScene);
-       
+
        // Makes the menu option box fades in
        mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
@@ -246,7 +246,7 @@ public class MainMenu {
                fadeTransition.play();
            }
        });
-       
+
        // Makes the menu option box fades out
        mainMenuScene.setOnMouseExited(new EventHandler<MouseEvent>(){
            public void handle(MouseEvent mouseEvent){
@@ -266,10 +266,10 @@ public class MainMenu {
        //stage.initStyle(StageStyle.UNDECORATED);
        stage.centerOnScreen();
        stage.setResizable(false);
-	   stage.setTitle(Simulation.WINDOW_TITLE);     
+	   stage.setTitle(Simulation.WINDOW_TITLE);
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-       //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));   
-       stage.setScene(mainMenuScene);       
+       //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
+       stage.setScene(mainMenuScene);
        stage.show();
 
        createProgressCircle();
@@ -281,15 +281,15 @@ public class MainMenu {
 		// Starts a new stage for MainScene
 		//mainSceneStage = new Stage();
 		stage.setIconified(true);
-		stage.hide();	
+		stage.hide();
 		stage.setScene(scene);
 	}
-	
+
 	public void switchStage(Scene scene) {
 		stage.setScene(scene);
 		stage.show();
 	}
-*/	
+*/
 	public Stage getStage() {
 		return stage;
 	}
@@ -307,7 +307,7 @@ public class MainMenu {
 	   stage.setIconified(true);
 	   stage.hide();
 	   // creates a mainScene instance
-	   mainScene = new MainScene(stage);	
+	   mainScene = new MainScene(stage);
 	   // goes to scenario config editor
 	   marsProjectFX.handleNewSimulation();
    }
@@ -409,12 +409,12 @@ public class MainMenu {
 	public void prepareScene() {
 	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 	   // prepare main scene
-	   mainScene.prepareMainScene();	   
+	   mainScene.prepareMainScene();
 	   // creates and initialize scene
-	   mainSceneScene = mainScene.initializeScene();	   
+	   mainSceneScene = mainScene.initializeScene();
 	   // switch from the main menu's scene to the main scene's scene
 	   stage.setScene(mainSceneScene);
-	   
+
 	}
 
 	/*
@@ -422,8 +422,8 @@ public class MainMenu {
 	 */
 	public void prepareStage() {
 
-	   mainScene.prepareOthers();   
-	   
+	   mainScene.prepareOthers();
+
 	   //mainScene.getMarsNode().createSettlementWindow();
 	   //mainScene.getMarsNode().createJMEWindow(stage);
 
@@ -442,13 +442,13 @@ public class MainMenu {
 
 	   stage.setIconified(false);
 	   stage.show();
-	   
+
 	   Platform.runLater(() -> {
 		   circleStage.close();
 		});
 
 	   //stage.requestFocus();
-	   
+
 	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
 	}
 

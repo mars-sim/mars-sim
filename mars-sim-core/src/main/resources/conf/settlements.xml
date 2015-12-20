@@ -12,7 +12,7 @@
 		<!-- default-population: the default population capacity for the template. -->
 		<!-- number-of-robots: the default number of bots for the template. -->
 		<!-- max-MSD: the maximum number of Mars Society delegate for the template. -->
-		<template id="0" name="Mars Direct Base (phase 1)" default-population="4" number-of-robots="3"
+		<template id="0" name="Mars Direct Base (Phase 1)" default-population="4" number-of-robots="3"
 		    max-MSD="1">
 
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
@@ -111,13 +111,13 @@
 			    <!-- name: the resupply mission's name  -->
 				<!-- arrival-time: arrival time (in Sols) since the settlement is founded.  -->
 				<!-- (668 Sols = 1 Martian orbit) -->
-				<resupply-mission name="Mars Direct Base resupply 1" arrival-time="668.0" />
-				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="1336.0" />
-				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="2004.0" />
+				<resupply-mission name="Mars Direct Base Resupply 1" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="2004.0" />
 			</resupply>
 		</template>
 
-		<template id="1" name="Mars Direct Base (phase 2)" default-population="8" number-of-robots="4" max-MSD="2">
+		<template id="1" name="Mars Direct Base (Phase 2)" default-population="8" number-of-robots="4" max-MSD="2">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -254,12 +254,12 @@
 
 			<part-package name="package 2" number="1" />
 			<resupply>
-				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
-				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="1336.0" />
+				<resupply-mission name="Mars Direct Base Resupply 2" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="1336.0" />
 			</resupply>
 		</template>
 
-		<template id="2" name="Mars Direct Base (phase 3)" default-population="12" number-of-robots="6"  max-MSD="3">
+		<template id="2" name="Mars Direct Base (Phase 3)" default-population="12" number-of-robots="6"  max-MSD="3">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -423,11 +423,11 @@
 
 			<part-package name="package 3" number="1" />
 			<resupply>
-				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
+				<resupply-mission name="Mars Direct Base Resupply 3" arrival-time="668.0" />
 			</resupply>
 		</template>
 
-		<template id="3" name="Alpha Base (MD phase 4)" default-population="24" number-of-robots="9"  max-MSD="4">
+		<template id="3" name="Alpha Base (MD Phase 4)" default-population="24" number-of-robots="9"  max-MSD="4">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -975,14 +975,14 @@
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
 
-		<settlement name="Alpha Base" template="Alpha Base (MD phase 4)">
+		<settlement name="Alpha Base" template="Alpha Base (MD Phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="9" />
 			<max-MSD number="1" />
 		</settlement>
 
-		<settlement name="Schiaparelli Point" template="Mars Direct Base (phase 1)">
+		<settlement name="Schiaparelli Point" template="Mars Direct Base (Phase 1)">
 			<location longitude="16.0 E" latitude="3.0 S" />
 			<population number="4" />
 			<number-of-robots number="3" />
@@ -994,7 +994,7 @@
 	<!--  List of settlements that will arrive on Mars at a later time -->
 	<new-arriving-settlement-list>
 		<!-- Example of new arriving settlement.
-		<arriving-settlement name="Red Hill" template="Mars Direct Base (phase 1)" arrival-time="1.0" >
+		<arriving-settlement name="Red Hill" template="Mars Direct Base (Phase 1)" arrival-time="1.0" >
 			<location longitude="10.3 W" latitude="4.6 S" />
 			<population number="4" />
 			<number-of-robots number="3" />

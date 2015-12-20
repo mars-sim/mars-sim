@@ -7,7 +7,7 @@
 
 	<!-- Resupply mission from Earth. -->
 	<!-- name: the unique name of the resupply mission. -->
-	<resupply name="Mars Direct Base resupply 1">
+	<resupply name="Mars Direct Base Resupply 1">
 
 		<!-- A new building for the settlement. -->
 		<!-- type: the type of building (see buildings.xml) -->
@@ -49,7 +49,7 @@
 
 	</resupply>
 
-	<resupply name="Mars Direct Base resupply 2">
+	<resupply name="Mars Direct Base Resupply 2">
 		<building type="Lander Hab" x-location="0.0" y-location="26.0" facing="0.0" />
 		<building type="Inflatable Greenhouse" x-location="-12.0" y-location="26.0" facing="270.0" />
 		<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
@@ -71,7 +71,7 @@
 		<part-package name="package 3" number="1" />
 	</resupply>
 
-	<resupply name="Mars Direct Base resupply 3">
+	<resupply name="Mars Direct Base Resupply 3">
 		<building type="MD4 Nuclear Reactor" x-location="25.0" y-location="-57.5" facing="0.0" />
 		<building type="MD4 Nuclear Reactor" x-location="40.0" y-location="-57.5" facing="0.0" />
 		<building type="Astronomy Observatory" x-location="-62.5" y-location="-17.5" facing="90.0" />

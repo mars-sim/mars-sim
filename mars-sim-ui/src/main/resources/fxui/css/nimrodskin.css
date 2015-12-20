@@ -27,7 +27,9 @@
 }
 
 
-.menu-bar {
+.menu-bar,
+.menu-bar:focused,
+.menu-bar:selected:focused {
 	-fx-font-size: 10pt;
 	-fx-font-weight: normal;
 	-fx-background-color:
@@ -39,7 +41,9 @@
 	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 
-.menu-item {
+.menu-item,
+.menu-item:focused,
+.menu-item:selected:focused {
 	-fx-font-size: 10pt;
 	-fx-font-weight: normal;
 	-fx-background-color:
@@ -86,7 +90,7 @@
 }
 
 .toggle-button:selected{
-    -fx-background-color: white;
+    -fx-background-color: grey;
     -fx-text-fill: #E5AB00;
 }
 

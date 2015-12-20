@@ -44,6 +44,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -58,6 +59,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.concurrent.Task;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
@@ -308,7 +310,7 @@ public class ScenarioConfigEditorFX {
 		topVB.setAlignment(Pos.CENTER);
 		gameModeLabel = new Label(gameMode);
 		gameModeLabel.setId("gameModeLabel");
-		
+
 		// Create the title label.
 		if (multiplayerClient != null) {
 			clientIDLabel = new Label("Client ID : " + clientID);
@@ -389,6 +391,7 @@ public class ScenarioConfigEditorFX {
 
 		// Create add settlement button.
 		addButton = new Button(Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
+		setMouseCursor(addButton);
 		addButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.add"))); //$NON-NLS-1$
 		addButton.setOnAction((event) -> {
 			addNewSettlement();
@@ -397,6 +400,7 @@ public class ScenarioConfigEditorFX {
 
 		// Create remove settlement button.
 		removeButton = new Button(Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
+		setMouseCursor(removeButton);
 		removeButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.remove"))); //$NON-NLS-1$
 		removeButton.setId("removeButton");
 		removeButton.setOnAction((event) -> {
@@ -446,6 +450,7 @@ public class ScenarioConfigEditorFX {
 
 		// Create refresh/defaultButton button.
 		refreshDefaultButton = new Button(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
+		setMouseCursor(refreshDefaultButton);
 		refreshDefaultButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.default"))); //$NON-NLS-1$
 		refreshDefaultButton.setOnAction((event) -> {
 			if (multiplayerClient != null && hasSettlement) {
@@ -464,6 +469,7 @@ public class ScenarioConfigEditorFX {
 
 		// Create the start button.
 		startButton = new Button("  " + Msg.getString("SimulationConfigEditor.button.newSim")+ "  "); //$NON-NLS-1$
+		setMouseCursor(startButton);
 		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
 		startButton.setId("startButton");
 		// 2015-10-15 Made "Enter" key to work like the space bar for firing the button on focus
@@ -535,6 +541,7 @@ public class ScenarioConfigEditorFX {
 
 		// 2014-12-15 Added Edit Alpha Crew button.
 		crewButton = new Button(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
+		setMouseCursor(crewButton);
 		//alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
 		crewButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")));
 		//alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
@@ -556,6 +563,19 @@ public class ScenarioConfigEditorFX {
 		//return borderAll;
 	}
 
+	/**
+	 * Swaps the mouse cursor type between DEFAULT and HAND
+	 * @param node
+	 */
+	public void setMouseCursor(Node node) {
+		node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+			node.setCursor(Cursor.DEFAULT);
+        });
+
+		node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+			node.setCursor(Cursor.HAND);
+        });
+	}
 
 	public class SimulationTask implements Runnable {
 		public void run() {
@@ -992,7 +1012,7 @@ public class ScenarioConfigEditorFX {
 	public SettlementTableModel getSettlementTableModel() {
 		return settlementTableModel;
 	}
-	
+
 	public void destroy() {
 
 		config  = null;

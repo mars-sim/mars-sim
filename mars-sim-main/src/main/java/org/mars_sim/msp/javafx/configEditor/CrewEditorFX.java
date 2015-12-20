@@ -56,6 +56,7 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -236,6 +237,7 @@ public class CrewEditorFX {
 
 		// Create commit button.
 		Button commitButton = new Button("Commit Changes");
+		setMouseCursor(commitButton);
 		commitButton.setId("commitButton");
 		commitButton.setAlignment(Pos.CENTER);
 		commitButton.requestFocus();
@@ -372,6 +374,21 @@ public class CrewEditorFX {
         //background.setEffect(frostEffect);
 
         //makeDraggable(stage, layout);
+	}
+
+
+	/**
+	 * Swaps the mouse cursor type between DEFAULT and HAND
+	 * @param node
+	 */
+	public void setMouseCursor(Node node) {
+		node.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+			node.setCursor(Cursor.DEFAULT);
+        });
+
+		node.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+			node.setCursor(Cursor.HAND);
+        });
 	}
 
 	/*

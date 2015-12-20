@@ -147,7 +147,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>org.jfxtras</groupId>
 			<artifactId>jfxtras-menu</artifactId>
 			<version>8.0-r4</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
@@ -215,6 +215,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>balloontip-examples</artifactId>
 			<version>1.2.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.reactfx</groupId>
+			<artifactId>reactfx</artifactId>
+			<version>2.0-M4u1</version>
+		</dependency>
 
 	</dependencies>
 	<repositories>
@@ -237,6 +242,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	            <enabled>true</enabled>
 	       </snapshots>
 	    </repository>
-  
+
 	</repositories>
 </project>
