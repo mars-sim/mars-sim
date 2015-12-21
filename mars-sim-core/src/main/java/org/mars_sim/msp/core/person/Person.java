@@ -93,9 +93,9 @@ implements VehicleOperator, MissionMember, Serializable {
     private Settlement associatedSettlement;
     /** Manager for Person's natural attributes. */
     private NaturalAttributeManager attributes;
-    
+
     private PersonalityManager personalityManager;
-    
+
     /** Person's mind. */
     private Mind mind;
     /** Person's physical condition. */
@@ -184,7 +184,7 @@ implements VehicleOperator, MissionMember, Serializable {
     public void assignReportingAuthority() {
 
     	if (ra == null) {
-	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:   		
+	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
 	        //ra = new NASAMissionControl();
 	        //ra.setMissionAgenda(new FindingLife());
     		ra = new MarsSocietyMissionControl();
@@ -453,7 +453,7 @@ implements VehicleOperator, MissionMember, Serializable {
     public NaturalAttributeManager getNaturalAttributeManager() {
         return attributes;
     }
-    
+
 
     /**
      * Returns a reference to the Person's Personality manager
@@ -463,10 +463,10 @@ implements VehicleOperator, MissionMember, Serializable {
     public PersonalityManager getPersonalityManager() {
         return personalityManager;
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * Get the performance factor that effect Person with the complaint.
      * @return The value is between 0 -> 1.
@@ -870,7 +870,7 @@ implements VehicleOperator, MissionMember, Serializable {
 	public void setEmotionalStates(int[] states) {
 		emotional_states = states;
 	}
-	
+
     @Override
     public void destroy() {
         super.destroy();

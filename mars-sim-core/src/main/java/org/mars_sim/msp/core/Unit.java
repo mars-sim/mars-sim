@@ -14,9 +14,18 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.InsideBuilding;
+import org.mars_sim.msp.core.location.InsideSettlement;
+import org.mars_sim.msp.core.location.InsideVehicle;
+import org.mars_sim.msp.core.location.LocationState;
+import org.mars_sim.msp.core.location.OutsideOnMars;
+import org.mars_sim.msp.core.location.SettlementVicinity;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Unit class is the abstract parent class to all units in the
@@ -33,20 +42,35 @@ implements Serializable, Comparable<Unit> {
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
 	// Data members
-	/** Unit location coordinates. */
-	private Coordinates location;
+
 	/** TODO Unit name needs to be internationalized. */
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
 	private String description;
 	/** The mass of the unit without inventory. */
 	private double baseMass;
+
+
+
 	/** The unit's inventory. */
 	private Inventory inventory;
 	/** The unit containing this unit. */
 	private Unit containerUnit;
+	/** Unit location coordinates. */
+	private Coordinates location;
+
+	private LocationState insideBuilding;
+	private LocationState insideVehicle;
+	private LocationState insideSettlement;
+	private LocationState outsideOnMars;
+	private LocationState settlementVicinity;
+
+	private LocationState currentState;
+
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
+
+
 
 	/**
 	 * Constructor.
@@ -58,14 +82,34 @@ implements Serializable, Comparable<Unit> {
 
 		// Initialize data members from parameters
 		this.name = name;
-		description = name;
-		baseMass = Double.MAX_VALUE;
+		this.description = name;
+		this.baseMass = Double.MAX_VALUE;
 
-		inventory = new Inventory(this);
+		this.inventory = new Inventory(this);
 
 		this.location = new Coordinates(0D, 0D);
 		this.location.setCoords(location);
+
 		this.inventory.setCoordinates(location);
+
+		insideBuilding = new InsideBuilding(this);
+		insideVehicle = new InsideVehicle(this);
+		outsideOnMars = new OutsideOnMars(this);
+		settlementVicinity = new SettlementVicinity(this);
+		insideSettlement =  new InsideSettlement(this);
+
+		if (this instanceof Settlement)
+			currentState = outsideOnMars;
+		else if (this instanceof Person)
+			currentState = insideBuilding;
+		else if (this instanceof Robot)
+			currentState = insideBuilding;
+		else if (this instanceof Equipment)
+			;//currentState = insideBuilding;
+		else if (this instanceof Building)
+			currentState = insideSettlement;
+		else if (this instanceof Vehicle)
+			currentState = settlementVicinity;
 	}
 
 	/**
@@ -182,27 +226,308 @@ implements Serializable, Comparable<Unit> {
 				topUnit = topUnit.containerUnit;
 			}
 		}
-		else {
+/*		else {
 			if (this instanceof Person) {
 				Person person = (Person) this;
-				person.getAssociatedSettlement();
+				topUnit = person.getAssociatedSettlement();
 			}
 			else if (this instanceof Robot) {
 				Robot robot = (Robot) this;
-				robot.getAssociatedSettlement();
+				topUnit = robot.getAssociatedSettlement();
 			}
-			
 		}
+*/
 		return topUnit;
 	}
 
 	/**
 	 * Sets the unit's container unit.
-	 * @param containerUnit the unit to contain this unit.
+	 * @param newContainer the unit to contain this unit.
 	 */
-	public void setContainerUnit(Unit containerUnit) {
-		this.containerUnit = containerUnit;
-		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, containerUnit);
+	public void setContainerUnit(Unit newContainer) {
+		//Unit oldContainer = this.containerUnit;
+		//LocationState oldState = this.currentState;
+
+
+			if (this instanceof Person)
+				updateState(newContainer);
+			else if (this instanceof Robot)
+				updateState(newContainer);
+			else if (this instanceof Equipment)
+				;//updateEquipmentState(newContainer);
+				//currentState = insideBuilding;
+			else if (this instanceof Vehicle)
+				;//updateVehicleState(newContainer);
+			else if (this instanceof Building)
+				currentState = insideSettlement;
+			else if (this instanceof Settlement)
+				currentState = outsideOnMars;
+
+
+		this.containerUnit = newContainer;
+
+		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
+	}
+
+	/**
+	 * Switches from an old location state to a new location state
+	 * @param newContainer
+	 */
+	public void updateState(Unit newContainer) {
+		Unit oldContainer = this.containerUnit;
+		LocationState oldState = this.currentState;
+		LocationState newState = null;
+
+		// Case P1
+		if (oldState.equals(insideBuilding) && newContainer == null)
+			// the person was inside a building and is going outside
+			// oldContainer instanceof Settlement
+			// oldState.equals(insideBuilding)
+			newState = settlementVicinity;
+
+		// Case P2
+		else if (oldState.equals(insideBuilding) && newContainer instanceof Vehicle)
+			// the person was inside a building and is getting into a vehicle inside a garage
+			// oldContainer instanceof Settlement
+			// oldState.equals(insideBuilding)
+			newState = insideVehicle;
+
+		// Case P3
+		else if (oldState.equals(settlementVicinity) && newContainer instanceof Settlement)
+			// the person was outside in a settlement's vicinity and is getting inside a building in a settlement
+			// oldContainer == null
+			// oldState.equals(settlementVicinity)
+			newState = insideBuilding;
+
+		// Case P4
+		else if (oldState.equals(settlementVicinity) && newContainer instanceof Vehicle)
+			// the person was outside in a settlement's vicinity and is getting into a vehicle
+			// oldContainer == null
+			// oldState.equals(settlementVicinity)
+			newState = insideVehicle;
+
+		// Case P5
+		else if (oldState.equals(outsideOnMars) && newContainer instanceof Vehicle)
+			// the person was on a mission outside on Mars and is getting into a vehicle
+			// oldContainer == null
+			// oldState.equals(outsideOnMars)
+			newState = insideVehicle;
+
+		else if (oldState.equals(insideVehicle) && newContainer.equals(null)){// == null) {
+			// oldContainer instanceof Vehicle
+			Vehicle vv = null;
+			if (oldContainer instanceof Vehicle)
+				vv = (Vehicle) oldContainer;
+			else {
+				System.err.println("oldContainer is not a vehicle");
+			}
+
+			// Case P6
+			if (vv.getLocationState().equals(settlementVicinity)) {
+				// the person was inside a vehicle parked near a settlement's vicinity
+				// and he is going outside of the vehicle
+				newState = settlementVicinity;
+			}
+
+			// Case P7
+			else if (vv.getLocationState().equals(outsideOnMars)) {
+				// the person was inside a vehicle on a mission outside somewhere on Mars
+				// and he is going outside of the vehicle
+				newState = outsideOnMars;
+			}
+			else {
+				newState = null;
+				System.err.println("invalid state");
+			}
+
+		}
+		// Case P8
+		else if (oldState.equals(insideVehicle) && newContainer instanceof Building) {
+			// the person was inside a vehicle parked inside a garage
+			// and he is going outside of the vehicle
+			newState = insideBuilding;
+		}
+
+		// Case P9 (for vehicle only)
+		else if (oldState.equals(settlementVicinity) && newContainer.equals(null))// == null)
+			// the person was outside in a settlement's vicinity and is getting into a vehicle
+			// oldContainer is a settlement
+			// oldState.equals(settlementVicinity)
+			newState = outsideOnMars;
+
+		// Case P10 (for vehicle only)
+		else if (oldState.equals(outsideOnMars) && newContainer instanceof Settlement)
+			// the person was outside in a settlement's vicinity and is getting into a vehicle
+			// oldContainer == null
+			// oldState.equals(outsideOnMars)
+			newState = settlementVicinity;
+
+		// Case P11 (a person/robot has just arrived at a settlement)
+		else if (oldContainer == null && newContainer instanceof Settlement) {
+			//oldContainer.equals(null)
+			if (this instanceof Settlement)
+				newState = outsideOnMars;
+			else if (this instanceof Person)
+				newState = insideBuilding;
+			else if (this instanceof Robot)
+				newState = insideBuilding;
+			else if (this instanceof Equipment)
+				;//newState = insideBuilding;
+			else if (this instanceof Building)
+				newState = insideSettlement;
+			else if (this instanceof Vehicle)
+				;//newState = settlementVicinity;
+
+			//System.out.print("Case 11. unit : " + this.getName() + "  oldState = " + oldState.getName() + "  newState = " + newState.getName());
+			//System.out.println("  oldContainer = " + oldContainer + "  newContainer = " + newContainer);
+		}
+
+		else if (oldContainer == null) {// && newContainer.equals(null)) {
+			System.err.print("Case 12. unit : " + this.getName() + "  oldState = " + oldState.getName() + "  newState = " + newState.getName());
+			System.err.println("  oldContainer = " + oldContainer + "  newContainer = " + newContainer);
+		}
+
+		else {
+			newState = currentState;
+			//currentState = null;
+			System.err.print("Beyond 12 cases. This unit is " + this.getName() + "  oldState = " + oldState.getName() + "  newState = " + newState.getName());
+			System.err.println("  oldContainer = " + oldContainer + "  newContainer = " + newContainer);
+
+		}
+
+		// set currentState to newState
+		currentState = newState;
+	}
+
+
+	/**
+	 * Switches from an old location state to a new location state
+	 * @param newContainer
+	 */
+	public void updateEquipmentState(Unit newContainer) {
+		Unit oldContainer = this.containerUnit;
+		LocationState oldState = this.currentState;
+		LocationState newState = null;
+
+		// Case E1
+		if (oldState.equals(insideBuilding) && newContainer == null)
+			// the unit was inside a building and is going outside
+			// oldContainer instanceof Settlement
+			// oldState.equals(insideBuilding)
+			newState = settlementVicinity;
+
+		// Case E2
+		else if (oldState.equals(insideBuilding) && newContainer instanceof Vehicle)
+			// the unit was inside a building and is getting into a vehicle inside a garage
+			// oldContainer instanceof Settlement
+			// oldState.equals(insideBuilding)
+			newState = insideVehicle;
+
+		// Case E3
+		else if (oldState.equals(settlementVicinity) && newContainer instanceof Settlement)
+			// the unit was outside in a settlement's vicinity and is getting inside a building in a settlement
+			// oldContainer == null
+			// oldState.equals(settlementVicinity)
+			newState = insideBuilding;
+
+		// Case E4
+		else if (oldState.equals(settlementVicinity) && newContainer instanceof Vehicle)
+			// the unit was outside in a settlement's vicinity and is getting into a vehicle
+			// oldContainer == null
+			// oldState.equals(settlementVicinity)
+			newState = insideVehicle;
+
+		// Case E5
+		else if (oldState.equals(outsideOnMars) && newContainer instanceof Vehicle)
+			// the unit was on a mission outside on Mars and is getting into a vehicle
+			// oldContainer == null
+			// oldState.equals(outsideOnMars)
+			newState = insideVehicle;
+
+		else if (oldState.equals(insideVehicle) && newContainer.equals(null)){// == null) {
+			// oldContainer instanceof Vehicle
+			Vehicle vv = null;
+			if (oldContainer instanceof Vehicle)
+				vv = (Vehicle) oldContainer;
+			else {
+				System.err.println("oldContainer is not a vehicle");
+			}
+
+			// Case E6
+			if (vv.getLocationState().equals(settlementVicinity)) {
+				// the unit was inside a vehicle parked near a settlement's vicinity
+				// and is going outside of the vehicle
+				newState = settlementVicinity;
+			}
+
+			// Case E7
+			else if (vv.getLocationState().equals(outsideOnMars)) {
+				// the unit was inside a vehicle on a mission outside somewhere on Mars
+				// and is going outside of the vehicle
+				newState = outsideOnMars;
+			}
+			else {
+				newState = null;
+				System.err.println("invalid state");
+			}
+
+		}
+		// Case E8
+		else if (oldState.equals(insideVehicle) && newContainer instanceof Building) {
+			// the person was inside a vehicle parked inside a garage
+			// and he is going outside of the vehicle
+			newState = insideBuilding;
+		}
+
+		// Case E9 (for vehicle only)
+		else if (oldState.equals(settlementVicinity) && newContainer.equals(null))// == null)
+			// the person was outside in a settlement's vicinity and is getting into a vehicle
+			// oldContainer is a settlement
+			// oldState.equals(settlementVicinity)
+			newState = outsideOnMars;
+
+		// Case E10 (for vehicle only)
+		else if (oldState.equals(outsideOnMars) && newContainer instanceof Settlement)
+			// the person was outside in a settlement's vicinity and is getting into a vehicle
+			// oldContainer == null
+			// oldState.equals(outsideOnMars)
+			newState = settlementVicinity;
+
+		// Case E11 (a person/robot has just arrived at a settlement)
+		else if (oldContainer == null && newContainer instanceof Settlement) {
+			//oldContainer.equals(null)
+			if (this instanceof Settlement)
+				newState = outsideOnMars;
+			else if (this instanceof Person)
+				newState = insideBuilding;
+			else if (this instanceof Robot)
+				newState = insideBuilding;
+			else if (this instanceof Equipment)
+				newState = insideBuilding;
+			else if (this instanceof Building)
+				newState = insideSettlement;
+			else if (this instanceof Vehicle)
+				newState = settlementVicinity;
+
+			//System.out.print("Case 11. unit : " + this.getName() + "  oldState = " + oldState.getName() + "  newState = " + newState.getName());
+			//System.out.println("  oldContainer = " + oldContainer + "  newContainer = " + newContainer);
+		}
+
+		else if (oldContainer == null) {// && newContainer.equals(null)) {
+			System.err.print("Case 12. unit : " + this.getName() + "  oldState = " + oldState.getName() + "  newState = " + newState.getName());
+			System.err.println("  oldContainer = " + oldContainer + "  newContainer = " + newContainer);
+		}
+
+		else {
+			newState = currentState;
+			//currentState = null;
+			System.err.print("Beyond 12 cases. This unit is " + this.getName() + "  oldState = " + oldState.getName() + "  newState = " + newState.getName());
+			System.err.println("  oldContainer = " + oldContainer + "  newContainer = " + newContainer);
+
+		}
+
+		// set currentState to newState
+		currentState = newState;
 	}
 
 	/**
@@ -324,6 +649,11 @@ implements Serializable, Comparable<Unit> {
 	@Override
 	public int compareTo(Unit o) {
 		return name.compareToIgnoreCase(o.name);
+	}
+
+	// 2015-12-20 Added getLocationState()
+	public LocationState getLocationState() {
+		return currentState;
 	}
 
 	/**
