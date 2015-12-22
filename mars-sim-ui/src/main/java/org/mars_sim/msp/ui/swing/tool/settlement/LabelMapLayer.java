@@ -44,22 +44,22 @@ implements SettlementMapLayer {
 	// Static members
 	private static final Color BUILDING_LABEL_COLOR = new Color(0, 0, 255); //Color.blue;//new Color (79, 108, 44); // dull sage green
 	private static final Color BUILDING_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190); //new Color(0, 0, 0, 150);
-	private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange 
+	private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
 	private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
 	private static final Color VEHICLE_LABEL_COLOR = new Color(127, 0, 127); // magenta-purple
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
-	
-	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan 
+
+	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan
 	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
-	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan; 
+	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan;
 	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
-	
-	static final Color ROBOT_LABEL_COLOR = new Color(116, 107, 10);// dull yellow 
+
+	static final Color ROBOT_LABEL_COLOR = new Color(255, 153, 11);// dull yellow
 	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
 	static final Color SELECTED_ROBOT_LABEL_COLOR = Color.orange;
 	static final Color SELECTED_ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
 
-	
+
 	// Data members
 	private SettlementMapPanel mapPanel;
 	private Map<String, BufferedImage> labelImageCache;
@@ -76,7 +76,7 @@ implements SettlementMapLayer {
 
 	@Override
 	// 2014-11-04 Added building parameter
-	public void displayLayer(		
+	public void displayLayer(
 		Graphics2D g2d, Settlement settlement, Building building,
 		double xPos, double yPos, int mapWidth, int mapHeight,
 		double rotation, double scale
@@ -134,8 +134,8 @@ implements SettlementMapLayer {
 				// 2015-12-15 Splitted up the name into multiple lines
 				String words[] = name.split(" ");
 				int size = words.length;
-				for (int j = 0; j < size; j++) {		
-					drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(), 
+				for (int j = 0; j < size; j++) {
+					drawLabel(g2d, words[j], building.getXLocation(), building.getYLocation(),
 							BUILDING_LABEL_COLOR, BUILDING_LABEL_OUTLINE_COLOR, j * 12);
 				}
 			}
@@ -159,10 +159,10 @@ implements SettlementMapLayer {
 				// 2015-12-15 Splitted up the name into multiple lines
 				String words[] = siteLabel.split(" ");
 				int size = words.length;
-				for (int j = 0; j < size; j++) {		
-					drawLabel(g2d, words[j], site.getXLocation(), site.getYLocation(), 
+				for (int j = 0; j < size; j++) {
+					drawLabel(g2d, words[j], site.getXLocation(), site.getYLocation(),
 							CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR, j * 12);
-				}			
+				}
 			}
 		}
 	}
@@ -213,8 +213,8 @@ implements SettlementMapLayer {
 					// 2015-12-15 Splitted up the name into multiple lines
 					String words[] = vehicle.getName().split(" ");
 					int size = words.length;
-					for (int j = 0; j < size; j++) {		
-						drawLabel(g2d, words[j], vehicle.getXLocation(), vehicle.getYLocation(), 
+					for (int j = 0; j < size; j++) {
+						drawLabel(g2d, words[j], vehicle.getXLocation(), vehicle.getYLocation(),
 							VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR, j * 12);
 					}
 				}
@@ -229,7 +229,7 @@ implements SettlementMapLayer {
 	 * @param showNonSelectedPeople true if showing non-selected person labels.
 	 */
 	private void drawPersonLabels(
-		Graphics2D g2d, Settlement settlement, 
+		Graphics2D g2d, Settlement settlement,
 		boolean showNonSelectedPeople
 	) {
 
@@ -246,8 +246,8 @@ implements SettlementMapLayer {
 					// 2015-12-15 Splitted up the name into 2 lines
 					String words[] = person.getName().split(" ");
 					int size = words.length;
-					for (int j = 0; j < size; j++) 		
-						drawLabelRight(g2d, words[j], person.getXLocation(), person.getYLocation(), 
+					for (int j = 0; j < size; j++)
+						drawLabelRight(g2d, words[j], person.getXLocation(), person.getYLocation(),
 						PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset, j * 12);
 				}
 			}
@@ -256,34 +256,34 @@ implements SettlementMapLayer {
 		// Draw selected person.
 		if (people.contains(selectedPerson)) {
 			// Draw person name.
-			drawLabelRight(g2d, selectedPerson.getName(), selectedPerson.getXLocation(), 
-				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR, 
+			drawLabelRight(g2d, selectedPerson.getName(), selectedPerson.getXLocation(),
+				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
 				offset, 0);
-/*			
+/*
 			String words[] = selectedPerson.getName().split(" ");
 			int size = words.length;
-			for (int j = 0; j < size; j++) 		
-				drawLabelRight(g2d, words[j], selectedPerson.getXLocation(), 
-						selectedPerson.getYLocation(), SELECTED_LABEL_COLOR, SELECTED_LABEL_OUTLINE_COLOR, 
+			for (int j = 0; j < size; j++)
+				drawLabelRight(g2d, words[j], selectedPerson.getXLocation(),
+						selectedPerson.getYLocation(), SELECTED_LABEL_COLOR, SELECTED_LABEL_OUTLINE_COLOR,
 						offset, j * 12);
-*/			
-			//int yOffset = 12 * size; 
+*/
+			//int yOffset = 12 * size;
 			// Draw task.
 			String taskString = Msg.getString("LabelMapLayer.activity", selectedPerson.getMind().getTaskManager().getTaskDescription()); //$NON-NLS-1$
 			drawLabelRight(
-				g2d, taskString, selectedPerson.getXLocation(), 
-				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR, 
+				g2d, taskString, selectedPerson.getXLocation(),
+				selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
 				offset, 12);
 				//yOffset);
 
-			//yOffset = yOffset + 12;			
+			//yOffset = yOffset + 12;
 			// Draw mission.
 			Mission mission = selectedPerson.getMind().getMission();
 			if (mission != null) {
 				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
 				drawLabelRight(
-					g2d, missionString, selectedPerson.getXLocation(), 
-					selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR, 
+					g2d, missionString, selectedPerson.getXLocation(),
+					selectedPerson.getYLocation(), SELECTED_PERSON_LABEL_COLOR, SELECTED_PERSON_LABEL_OUTLINE_COLOR,
 					offset, 24);
 					//yOffset);
 			}
@@ -298,7 +298,7 @@ implements SettlementMapLayer {
 	 * @param showNonSelectedRobots true if showing non-selected robot labels.
 	 */
 	private void drawRobotLabels(
-		Graphics2D g2d, Settlement settlement, 
+		Graphics2D g2d, Settlement settlement,
 		boolean showNonSelectedRobots
 	) {
 
@@ -315,9 +315,9 @@ implements SettlementMapLayer {
 				if (!robot.equals(selectedRobot)) {
 					String words[] = robot.getName().split(" ");
 					int size = words.length;
-					for (int j = 0; j < size; j++) 		
-						drawLabelRight(g2d, words[j], robot.getXLocation(), robot.getYLocation(), 
-								ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, offset, j * 12);				
+					for (int j = 0; j < size; j++)
+						drawLabelRight(g2d, words[j], robot.getXLocation(), robot.getYLocation(),
+								ROBOT_LABEL_COLOR, ROBOT_LABEL_OUTLINE_COLOR, offset, j * 12);
 				}
 			}
 		}
@@ -326,16 +326,16 @@ implements SettlementMapLayer {
 		if (robots.contains(selectedRobot)) {
 			// Draw robot name.
 			drawLabelRight(
-				g2d, selectedRobot.getName(), selectedRobot.getXLocation(), 
-				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR, 
+				g2d, selectedRobot.getName(), selectedRobot.getXLocation(),
+				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
 				offset, 0
 			);
 
 			// Draw task.
 			String taskString = Msg.getString("LabelMapLayer.activity", selectedRobot.getBotMind().getTaskManager().getTaskDescription()); //$NON-NLS-1$
 			drawLabelRight(
-				g2d, taskString, selectedRobot.getXLocation(), 
-				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR, 
+				g2d, taskString, selectedRobot.getXLocation(),
+				selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
 				offset, 12
 			);
 
@@ -344,8 +344,8 @@ implements SettlementMapLayer {
 			if (mission != null) {
 				String missionString = Msg.getString("LabelMapLayer.mission", mission.getDescription(), mission.getPhaseDescription()); //$NON-NLS-1$
 				drawLabelRight(
-					g2d, missionString, selectedRobot.getXLocation(), 
-					selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR, 
+					g2d, missionString, selectedRobot.getXLocation(),
+					selectedRobot.getYLocation(), SELECTED_ROBOT_LABEL_COLOR, SELECTED_ROBOT_LABEL_OUTLINE_COLOR,
 					offset, 24
 				);
 			}
@@ -362,7 +362,7 @@ implements SettlementMapLayer {
 	 */
 	// 2015-12-15 Added yOffset
 	private void drawLabel(
-		Graphics2D g2d, String label, double xLoc, double yLoc, 
+		Graphics2D g2d, String label, double xLoc, double yLoc,
 		Color labelColor, Color labelOutlineColor, int yOffset
 	) {
 		// Save original graphics transforms.
@@ -373,7 +373,7 @@ implements SettlementMapLayer {
 		Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
 		g2d.setFont(font);
 		BufferedImage labelImage = getLabelImage(
-			label, font, g2d.getFontRenderContext(), 
+			label, font, g2d.getFontRenderContext(),
 			labelColor, labelOutlineColor
 		);
 
@@ -394,7 +394,7 @@ implements SettlementMapLayer {
 		// 2015-12-15 Added yOffset-12
 		g2d.drawImage(labelImage, 0, yOffset-12, mapPanel);
 
-		
+
 		// Restore original graphic transforms.
 		g2d.setTransform(saveTransform);
 		g2d.setFont(saveFont);
@@ -412,7 +412,7 @@ implements SettlementMapLayer {
 	 * @param yOffset the Y pixel offset from the center point.
 	 */
 	private void drawLabelRight(
-		Graphics2D g2d, String label, double xLoc, double yLoc, 
+		Graphics2D g2d, String label, double xLoc, double yLoc,
 		Color labelColor, Color labelOutlineColor, int xOffset, int yOffset
 	) {
 
@@ -424,7 +424,7 @@ implements SettlementMapLayer {
 		Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
 		g2d.setFont(font);
 		BufferedImage labelImage = getLabelImage(
-			label, font, g2d.getFontRenderContext(), 
+			label, font, g2d.getFontRenderContext(),
 			labelColor, labelOutlineColor
 		);
 
@@ -459,7 +459,7 @@ implements SettlementMapLayer {
 	 * @return buffered image of label.
 	 */
 	private BufferedImage getLabelImage(
-		String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
+		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
 		Color labelOutlineColor
 	) {
 		BufferedImage labelImage = null;
@@ -481,9 +481,9 @@ implements SettlementMapLayer {
 	 * @param labelColor the color of the label.
 	 * @param labelOutlineColor the color of the outline of the label.
 	 * @return buffered image of label.
-	 
+
 	private BufferedImage createLabelImage(
-		String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
+		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
 		Color labelOutlineColor) {
 
 		// Determine bounds.
@@ -531,7 +531,7 @@ implements SettlementMapLayer {
 	 * @return buffered image of label.
 	 */
 	private BufferedImage createLabelImage(
-		String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
+		String label, Font font, FontRenderContext fontRenderContext, Color labelColor,
 		Color labelOutlineColor) {
 
 		// Determine bounds.
@@ -555,11 +555,11 @@ implements SettlementMapLayer {
 		Stroke saveStroke = g2d.getStroke();
 		g2d.setColor(labelOutlineColor);
 		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-		
-		
+
+
 		g2d.draw(labelShape);
-		
-		
+
+
 		g2d.setStroke(saveStroke);
 
 		// Fill label
@@ -571,8 +571,8 @@ implements SettlementMapLayer {
 
 		return bufferedImage;
 	}
-	
-	
+
+
 	@Override
 	public void destroy() {
 		// Clear label image cache.

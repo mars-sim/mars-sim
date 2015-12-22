@@ -740,6 +740,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			sol = solCache;
 		else if (solType == -1) // yesterday's average
 			sol = solCache - 1;
+		else if (solType == -3) // average from 3 sols ago
+			sol = solCache - 3;
+		else if (solType == -10) // average from 10 sols ago
+			sol = solCache - 10;
 
 		int size = 0;
 		double average = 0;
@@ -838,7 +842,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 			reassignWorkShift();
 			//printWorkShift("Sol "+ solElapsed);
 
-			if (resourceStat.size() > 30)
+			// Remove the resourceStat map data from 12 days ago
+			if (resourceStat.size() > 11)
 				resourceStat.remove(0);
 
 			//if (counter30 == 31) {
