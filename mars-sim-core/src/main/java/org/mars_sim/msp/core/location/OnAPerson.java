@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * InsideBuilding.java
+ * OnAPerson.java
  * @version 3.08 2015-12-20
  * @author Manny Kung
  */
@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Unit;
 
-public class InsideBuilding implements LocationState, Serializable {
+public class OnAPerson implements LocationState, Serializable {
 
 	/**
 	 *
@@ -23,7 +23,7 @@ public class InsideBuilding implements LocationState, Serializable {
 		return name;
 	}
 
-	public InsideBuilding(Unit unit) {
+	public OnAPerson(Unit unit) {
 		this.unit = unit;
 	}
 
@@ -59,6 +59,7 @@ public class InsideBuilding implements LocationState, Serializable {
 	public void disembarkVehicleInGarage() {
 		unit.setLocationState(unit.getInsideBuilding());
 	}
+
 
 
 	public void transferFromSettlementToPerson() {

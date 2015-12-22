@@ -1396,7 +1396,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * Checks if the settlement contains a particular person with a given name (first or last)
 	 * @param a person's first/last name
 	 * @return 0 if none found, 1 if uniquely found, -1 if dead, 2 to n if not uniquely found
-	 */
+
 	//2015-12-01 Added hasPersonName()
 	public int hasPersonName(String aName) {
 		aName = aName.trim();
@@ -1477,16 +1477,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 				else if (last.equalsIgnoreCase(aName)) {
 					found++;
 				}
-/*
-				// Case 4: if aName is a last name
-				if (person.getName().toLowerCase().contains((" " + aName).toLowerCase())) {
-					found++;
-				}
-				// Case 5: if aName is a first name
-				else if (person.getName().toLowerCase().contains((aName + " ").toLowerCase())) {
-					found++;
-				}
-*/
 			}
 		}
 
@@ -1495,13 +1485,113 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		else
 			return found;
 	}
+*/
+
+	/**
+	 * Returns a list of persons with a given name (first or last)
+	 * @param a person's first/last name
+	 * @return a list of persons
+	 */
+	//2015-12-21 Added returnPersonList()
+	public List<Person> returnPersonList(String aName) {
+		List<Person> personList = new ArrayList<>();
+		aName = aName.trim();
+		String initial = null;
+		boolean hasASpace = aName.contains(" ");
+		int found = 0;
+		int s_Index = 0;
+		int dead = 0;
+
+		int len = aName.length();
+		boolean hasInitial = len > 3 && hasASpace;
+
+		if (hasInitial) {
+			for (int i = 0 ; i < len ; i++) {
+		        if (aName.charAt(i) == ' ')
+		        	s_Index = i;
+			}
+
+			if (s_Index == len-2) {
+				// e.g. Cory_S
+				initial = aName.substring(len-1, len);
+				aName = aName.substring(0, len-2);
+		    	//System.out.println("initial is " + initial);
+		    	//System.out.println("aName is " + aName);
+			}
+			else if (s_Index == 1) {
+				// e.g. S_Cory
+				initial = aName.substring(0);
+				aName = aName.substring(2, len);
+		    	//System.out.println("initial is " + initial);
+		    	//System.out.println("aName is " + aName);
+			}
+		}
+
+		Collection<Person> list = getAllAssociatedPeople();
+
+		Iterator<Person> i = list.iterator();
+		while (i.hasNext()) {
+			Person person = i.next();
+			// Case 1: if aName is a full name
+			if (hasASpace && person.getName().equalsIgnoreCase(aName)){
+				//found++;
+				personList.add(person);
+				//if (person.getPhysicalCondition().isDead())
+					//dead--;
+				//	personList.add(person);
+			}
+			else if (hasInitial) {
+				// Case 2: if aName is a first name + space + last initial
+				if (person.getName().toLowerCase().contains((aName + " " + initial).toLowerCase())) {
+					//found++;
+					personList.add(person);
+				}
+				// Case 3: if aName is a first initial + space + last name
+				else if (person.getName().toLowerCase().contains((initial + " " + aName).toLowerCase())) {
+					//found++;
+					personList.add(person);
+				}
+			}
+			else {
+				String first = null;
+				String last = null;
+				String full = person.getName();
+				int len1 = full.length();
+				//int index1 = 0;
+
+				for (int j = 0 ; j < len1 ; j++) {
+			        if (full.charAt(j) == ' ') {
+			        	//index1 = j;
+				        first = full.substring(0, j);
+				        last = full.substring(j+1, len1);
+				        break;
+			        }
+				}
+
+
+				// Case 4: if aName is a last name
+				if (first.equalsIgnoreCase(aName)) {
+					//found++;
+					personList.add(person);
+				}
+				// Case 5: if aName is a first name
+				else if (last.equalsIgnoreCase(aName)) {
+					//found++;
+					personList.add(person);
+				}
+			}
+		}
+
+
+		return personList;
+	}
 
 	/**
 	 * Checks if the settlement contains a bot
 	 * @param a bot's name
 	 * @return 0 if none found, 1 if uniquely found, 2 if uniquely found but dead, -1...-n if not uniquely found
 	 *
-	 */
+
 	//2015-12-01 Added hasRobotName()
 	public int hasRobotName(String aName) {
 		aName = aName.trim();
@@ -1523,13 +1613,13 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					dead--;
 			}
 			// Case 2: some parts are matched
-			else {	
+			else {
 				// Case 2 e.g. chefbot, chefbot0_, chefbot0__, chefbot1_, chefbot00_, chefbot01_
 				// need more information !
 				if (robot.getName().replace(" ", "").contains(aName)) {
-					found++; 						
+					found++;
 				}
-				
+
 				else { // Case 3 e.g. filter out semi-good names such as chefbot01, chefbot1,  chefbot10 from bad/invalid name
 
 					String last4digits = aName.substring(size-4, size-1);
@@ -1537,7 +1627,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 					char second = last4digits.charAt(1);
 					char third = last4digits.charAt(2);
 					char fourth = last4digits.charAt(3);
-					
+
 					boolean firstIsDigit = (first >= '0' && first <= '9');
 					boolean secondIsDigit = (second >= '0' && second <= '9');
 					boolean thirdIsDigit = (third >= '0' && third <= '9');
@@ -1554,7 +1644,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 								found = result;
 						}
 					}
-					
+
 					// Case 3B : e.g. chefbot01 -- a typo missing a zero
 					else if (size >= 10 && !firstIsDigit && !secondIsDigit && thirdIsDigit && fourthIsDigit) {
 						aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
@@ -1564,7 +1654,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 						else
 							found = result;
 					}
-					
+
 					// Case 3C : e.g. chefbot1 -- a typo missing two zeroes
 					else if (size >= 9 && !firstIsDigit && !secondIsDigit && !thirdIsDigit && fourthIsDigit) {
 						aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
@@ -1575,13 +1665,110 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 							found = result;
 					}
 				}
-				
+
 			}
 		}
 		if (dead < 0)
 			return -1;
 		else
 			return found;
+	}
+*/
+	/**
+	 * Returns a list of robots containing a particular name
+	 * @param a bot's name
+	 * @return a list of robots
+	 *
+	 */
+	//2015-12-21 Added returnRobotList()
+	public List<Robot> returnRobotList(String aName) {
+		List<Robot> robotList = new ArrayList<>();
+		aName = aName.trim();
+		aName = aName.replace(" ", "");
+
+		String last4digits = null;
+		char first = '?';
+		char second = '?';
+		char third = '?';
+		char fourth = '?';
+
+		boolean firstIsDigit = false;
+		boolean secondIsDigit = false;
+		boolean thirdIsDigit = false;
+		boolean fourthIsDigit = false;
+
+		int size = aName.length();
+
+		if (size >= 8) {
+			last4digits = aName.substring(size-4, size);
+			first = last4digits.charAt(0);
+			second = last4digits.charAt(1);
+			third = last4digits.charAt(2);
+			fourth = last4digits.charAt(3);
+
+			//System.out.println("The last 4 are : " + first + second + third + fourth);
+
+			firstIsDigit = (first >= '0' && first <= '9');
+			secondIsDigit = (second >= '0' && second <= '9');
+			thirdIsDigit = (third >= '0' && third <= '9');
+			fourthIsDigit = (fourth >= '0' && fourth <= '9');
+		}
+
+		Collection<Robot> list = getAllAssociatedRobots();
+
+		Iterator<Robot> i = list.iterator();
+		while (i.hasNext()) {
+			Robot robot = i.next();
+			// Case 1: exact match e.g. chefbot001
+			if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){
+				robotList.add(robot);
+			}
+			// Case 2: some parts are matched
+			else {
+				// Case 2 e.g. chefbot, chefbot0_, chefbot0__, chefbot1_, chefbot00_, chefbot01_
+				// need more information !
+				if (robot.getName().replace(" ", "").toLowerCase().contains(aName.toLowerCase())) {
+					//System.out.println("aName is a part of " + robot.getName().replace(" ", ""));
+					robotList.add(robot);
+				}
+
+				else if (size >= 8) { // Case 3 e.g. filter out semi-good names such as chefbot01, chefbot1,  chefbot10 from bad/invalid name
+
+					// Case 3A : e.g. chefbot0003 -- a typo having an extra zero before the digit
+					if (size >= 11 && !firstIsDigit && secondIsDigit && thirdIsDigit && fourthIsDigit) {
+						if (first == '0' && second == '0') {
+							String newName = aName.substring(0, size-4) + aName.substring(size-3, size);
+							//System.out.println("Case 3A: newName is : " + newName);
+							boolean result = checkRobotName(robot, newName);
+							if (result)
+								robotList.add(robot);
+						}
+					}
+
+					// Case 3B : e.g. chefbot01 or chefbot11 -- a typo missing a zero before the digit
+					else if (size >= 9 && !firstIsDigit && !secondIsDigit && thirdIsDigit && fourthIsDigit) {
+						String newName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size);
+						//System.out.println("Case 3B: newName is : " + newName);
+						boolean result = checkRobotName(robot, newName);
+						if (result)
+							robotList.add(robot);
+					}
+
+					// Case 3C : e.g. chefbot1 -- a typo missing two zeroes before the digit
+					else if (size >= 8 && !firstIsDigit && !secondIsDigit && !thirdIsDigit && fourthIsDigit) {
+						String newName = aName.substring(0, size-1) + "00" + aName.substring(size-1, size);
+						//System.out.println("Case 3C: newName is : " + newName);
+						boolean result = checkRobotName(robot, newName);
+						if (result)
+							robotList.add(robot);
+					}
+				}
+
+			}
+		}
+
+		//System.out.println("robotList's size is " + robotList.size());
+		return robotList;
 	}
 
 	/**
@@ -1591,24 +1778,17 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	 * @return
 	 */
 	// 2015-12-16 Added checkRobotName()
-	public int checkRobotName(Robot robot, String aName) {	
-		int found = 0;
-		int dead = 0;
-		int size = aName.length();
-		
-		aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
+	public boolean checkRobotName(Robot robot, String aName) {
+
+		//System.out.println("modified aName is " + aName);
+		//aName = aName.substring(0, size-2) + "0" + aName.substring(size-2, size-1);
 		if (robot.getName().replace(" ", "").equalsIgnoreCase(aName)){
-			found++;
-			if (robot.getPhysicalCondition().isDead())
-				dead--;
+			return true;
 		}
-		
-		if (dead < 0)
-			return -1;
 		else
-			return found;
+			return false;
 	}
-	
+
 	/**
 	 * Gets all Robots associated with this settlement, even if they are out on missions.
 	 * @return collection of associated Robots.

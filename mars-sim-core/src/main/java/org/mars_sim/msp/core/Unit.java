@@ -19,12 +19,15 @@ import org.mars_sim.msp.core.location.InsideBuilding;
 import org.mars_sim.msp.core.location.InsideSettlement;
 import org.mars_sim.msp.core.location.InsideVehicle;
 import org.mars_sim.msp.core.location.LocationState;
+import org.mars_sim.msp.core.location.OnAPerson;
 import org.mars_sim.msp.core.location.OutsideOnMars;
 import org.mars_sim.msp.core.location.SettlementVicinity;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.connection.BuildingLocation;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -64,6 +67,7 @@ implements Serializable, Comparable<Unit> {
 	private LocationState insideSettlement;
 	private LocationState outsideOnMars;
 	private LocationState settlementVicinity;
+	private LocationState onAPerson;
 
 	private LocationState currentState;
 
@@ -97,6 +101,7 @@ implements Serializable, Comparable<Unit> {
 		outsideOnMars = new OutsideOnMars(this);
 		settlementVicinity = new SettlementVicinity(this);
 		insideSettlement =  new InsideSettlement(this);
+		onAPerson = new OnAPerson(this);
 
 		if (this instanceof Settlement)
 			currentState = outsideOnMars;
@@ -105,7 +110,7 @@ implements Serializable, Comparable<Unit> {
 		else if (this instanceof Robot)
 			currentState = insideBuilding;
 		else if (this instanceof Equipment)
-			;//currentState = insideBuilding;
+			currentState = insideBuilding;
 		else if (this instanceof Building)
 			currentState = insideSettlement;
 		else if (this instanceof Vehicle)
@@ -245,34 +250,29 @@ implements Serializable, Comparable<Unit> {
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {
-		//Unit oldContainer = this.containerUnit;
-		//LocationState oldState = this.currentState;
-
-
 			if (this instanceof Person)
-				updateState(newContainer);
+				updatePersonState(newContainer);
 			else if (this instanceof Robot)
-				updateState(newContainer);
+				updateEquipmentState(newContainer);
 			else if (this instanceof Equipment)
-				;//updateEquipmentState(newContainer);
-				//currentState = insideBuilding;
+				updateEquipmentState(newContainer);
 			else if (this instanceof Vehicle)
-				;//updateVehicleState(newContainer);
+				updateVehicleState(newContainer);
 			else if (this instanceof Building)
 				currentState = insideSettlement;
 			else if (this instanceof Settlement)
 				currentState = outsideOnMars;
-
 
 		this.containerUnit = newContainer;
 
 		fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, newContainer);
 	}
 
+
 	/**
 	 * Switches from an old location state to a new location state
 	 * @param newContainer
-	 */
+
 	public void updateState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 		LocationState oldState = this.currentState;
@@ -313,7 +313,7 @@ implements Serializable, Comparable<Unit> {
 			// oldState.equals(outsideOnMars)
 			newState = insideVehicle;
 
-		else if (oldState.equals(insideVehicle) && newContainer.equals(null)){// == null) {
+		else if (oldState.equals(insideVehicle) && newContainer == null){
 			// oldContainer instanceof Vehicle
 			Vehicle vv = null;
 			if (oldContainer instanceof Vehicle)
@@ -349,7 +349,7 @@ implements Serializable, Comparable<Unit> {
 		}
 
 		// Case P9 (for vehicle only)
-		else if (oldState.equals(settlementVicinity) && newContainer.equals(null))// == null)
+		else if (oldState.equals(settlementVicinity) && newContainer == null)
 			// the person was outside in a settlement's vicinity and is getting into a vehicle
 			// oldContainer is a settlement
 			// oldState.equals(settlementVicinity)
@@ -398,12 +398,12 @@ implements Serializable, Comparable<Unit> {
 		// set currentState to newState
 		currentState = newState;
 	}
-
+*/
 
 	/**
 	 * Switches from an old location state to a new location state
 	 * @param newContainer
-	 */
+
 	public void updateEquipmentState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 		LocationState oldState = this.currentState;
@@ -444,7 +444,7 @@ implements Serializable, Comparable<Unit> {
 			// oldState.equals(outsideOnMars)
 			newState = insideVehicle;
 
-		else if (oldState.equals(insideVehicle) && newContainer.equals(null)){// == null) {
+		else if (oldState.equals(insideVehicle) && newContainer == null) {
 			// oldContainer instanceof Vehicle
 			Vehicle vv = null;
 			if (oldContainer instanceof Vehicle)
@@ -480,7 +480,7 @@ implements Serializable, Comparable<Unit> {
 		}
 
 		// Case E9 (for vehicle only)
-		else if (oldState.equals(settlementVicinity) && newContainer.equals(null))// == null)
+		else if (oldState.equals(settlementVicinity) && newContainer == null)
 			// the person was outside in a settlement's vicinity and is getting into a vehicle
 			// oldContainer is a settlement
 			// oldState.equals(settlementVicinity)
@@ -529,6 +529,120 @@ implements Serializable, Comparable<Unit> {
 		// set currentState to newState
 		currentState = newState;
 	}
+*/
+
+	/**
+	 * Updates the location state of a person
+	 * @param newContainer
+	 */
+	public void updatePersonState(Unit newContainer) {
+		Unit oldContainer = this.containerUnit;
+
+		if (oldContainer instanceof Settlement && newContainer == null)
+			leaveBuilding();
+
+		else if (oldContainer == null && newContainer instanceof Settlement)
+			enterBuilding();
+
+		else if (oldContainer == null && newContainer instanceof Vehicle)
+			embarkVehicleInVicinity();
+
+		else if (oldContainer instanceof Vehicle && newContainer  == null)
+			disembarkVehicleInVicinity();
+
+		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
+			embarkVehicleInGarage();
+
+		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
+			disembarkVehicleInGarage();
+
+		else if (oldContainer == null && newContainer == null) {
+			// resolve how to tell which direction a vehicle is going
+			if (currentState.equals(settlementVicinity))
+				departFromVicinity();
+			else
+				returnToVicinity();
+		}
+
+	}
+
+	/**
+	 * Updates the location state of an equipment
+	 * @param newContainer
+	 */
+	public void updateEquipmentState(Unit newContainer) {
+		Unit oldContainer = this.containerUnit;
+
+		if (oldContainer instanceof Settlement && newContainer == null)
+			leaveBuilding();
+
+		else if (oldContainer == null && newContainer instanceof Settlement)
+			enterBuilding();
+
+
+		else if (oldContainer == null && newContainer instanceof Vehicle)
+			embarkVehicleInVicinity();
+
+		else if (oldContainer instanceof Vehicle && newContainer  == null)
+			disembarkVehicleInVicinity();
+
+		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
+			embarkVehicleInGarage();
+
+		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
+			disembarkVehicleInGarage();
+
+
+
+		else if (oldContainer instanceof Settlement && newContainer instanceof Person)
+			transferFromSettlementToPerson();
+
+		else if (oldContainer instanceof Person && newContainer instanceof Settlement)
+			transferFromPersonToSettlement();
+
+		else if (oldContainer instanceof Person && newContainer instanceof Vehicle)
+			transferFromPersonToVehicle();
+
+		else if (oldContainer instanceof Vehicle && newContainer instanceof Person)
+			transferFromVehicleToPerson();
+
+
+
+		else if (oldContainer == null && newContainer == null) {
+			// resolve how to tell which direction a vehicle is going
+			if (currentState.equals(settlementVicinity))
+				departFromVicinity();
+			else
+				returnToVicinity();
+		}
+
+	}
+
+
+	/**
+	 * Updates the location state of a vehicle
+	 * @param newContainer
+	 */
+	public void updateVehicleState(Unit newContainer) {
+		Unit oldContainer = this.containerUnit;
+
+		if (oldContainer instanceof Settlement && newContainer == null)
+			leaveBuilding();
+
+		else if (oldContainer == null && newContainer instanceof Settlement)
+			enterBuilding();
+
+		else if (oldContainer == null && newContainer == null) {
+			//Vehicle v = (Vehicle) this;
+			// resolve how to tell which direction a vehicle is going
+			if (currentState.equals(settlementVicinity))
+				departFromVicinity();
+			else
+				returnToVicinity();
+		}
+
+	}
+
 
 	/**
 	 * Gets the unit's mass including inventory mass.
@@ -656,6 +770,108 @@ implements Serializable, Comparable<Unit> {
 		return currentState;
 	}
 
+
+	/**
+	 * Sets the current location state
+	 * @param state
+	 */
+	// 2015-12-21 Added setLocationState()
+	public void setLocationState(LocationState state) {
+		this.currentState = state;
+	}
+
+	public LocationState getInsideVehicle() {
+		return insideVehicle;
+	}
+
+	public LocationState getInsideBuilding() {
+		return insideBuilding;
+	}
+
+	public LocationState getSettlementVicinity() {
+		return settlementVicinity;
+	}
+
+	public LocationState getOutsideOnMars() {
+		return outsideOnMars;
+	}
+
+	public LocationState getOnAPerson() {
+		return onAPerson;
+	}
+
+
+	public void leaveBuilding() {
+		currentState.leaveBuilding();
+	}
+
+	public void enterBuilding() {
+		currentState.enterBuilding();
+	}
+
+	public void departFromVicinity() {
+		currentState.departFromVicinity();
+	}
+
+	public void returnToVicinity() {
+		currentState.returnToVicinity();
+	}
+
+	public void embarkVehicleInVicinity() {
+		currentState.embarkVehicleInVicinity();
+	}
+
+	public void disembarkVehicleInVicinity() {
+		currentState.disembarkVehicleInVicinity();
+	}
+
+	public void embarkVehicleInGarage() {
+		currentState.embarkVehicleInGarage();
+	}
+
+	public void disembarkVehicleInGarage() {
+		currentState.disembarkVehicleInGarage();
+	}
+
+	public void transferFromSettlementToPerson() {
+		currentState.transferFromSettlementToPerson();
+	}
+
+	public void transferFromPersonToSettlement() {
+		currentState.transferFromPersonToSettlement();
+	}
+
+	public void transferFromPersonToVehicle() {
+		currentState.transferFromPersonToVehicle();
+	}
+
+	public void transferFromVehicleToPerson() {
+		currentState.transferFromVehicleToPerson();
+	}
+
+	public LocationSituation getLocationSituation() {
+		return null;
+	}
+
+	public Vehicle getVehicle(){
+		return null;
+	}
+
+	public Building getBuildingLocation(){
+		return null;
+	}
+
+	public Settlement getSettlement(){
+		return null;
+	}
+
+	public Settlement getAssociatedSettlement(){
+		return null;
+	}
+
+	public Settlement getBuriedSettlement(){
+		return null;
+	}
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -669,4 +885,5 @@ implements Serializable, Comparable<Unit> {
 		if (listeners != null) listeners.clear();
 		listeners = null;
 	}
+
 }

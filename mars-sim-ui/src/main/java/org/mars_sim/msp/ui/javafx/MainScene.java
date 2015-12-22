@@ -646,7 +646,7 @@ public class MainScene {
   		tf.setPromptText("Type your msg here");// to broadcast to a channel");
 
   		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
-  		ta.appendText("System : Welcome to MarsNet, the globalnet for the settlements on Mars." + System.lineSeparator());
+  		ta.appendText("System : you are connected to MarsNet, the global network on Mars." + System.lineSeparator());
 
   		return pane;
 

@@ -7,14 +7,35 @@
 package org.mars_sim.msp.core.location;
 
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public interface LocationState {
 
 	String getName();
 
-	/**
-	 * Catch unit update event.
-	 * @param event the unit event.
-	 */
-	//public void unitUpdate(UnitEvent event);
+	public void leaveBuilding();
+
+	public void enterBuilding();
+
+	public void departFromVicinity();
+
+	public void returnToVicinity();
+
+	public void embarkVehicleInVicinity();
+
+	public void disembarkVehicleInVicinity();
+
+	public void embarkVehicleInGarage();
+
+	public void disembarkVehicleInGarage();
+
+	public void transferFromSettlementToPerson();
+
+	public void transferFromPersonToSettlement();
+
+	public void transferFromPersonToVehicle();
+
+	public void transferFromVehicleToPerson();
+
 }
