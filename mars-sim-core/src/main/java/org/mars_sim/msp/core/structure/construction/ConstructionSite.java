@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.07 2014-12-06
+ * @version 3.08 2015-12-23
  * @author Scott Davis
  */
 
@@ -9,14 +9,17 @@ package org.mars_sim.msp.core.structure.construction;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +45,9 @@ implements Serializable, LocalBoundedObject {
     public static final String REMOVE_BUILDING_EVENT = "removing old building";
 
     // Data members
+
+    private int constructionSkill;
+
     private double width;
     private double length;
     private double xLocation;
@@ -50,24 +56,28 @@ implements Serializable, LocalBoundedObject {
 
     private boolean undergoingConstruction;
     private boolean undergoingSalvage;
+    private boolean manual, empty;
 
     private transient List<ConstructionListener> listeners;
+
+    private Collection<MissionMember> members;
+    private List<GroundVehicle> vehicles;
 
     private ConstructionStage foundationStage;
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
     private ConstructionManager constructionManager;
     private Settlement settlement;
-
+    private ConstructionStageInfo stageInfo;
 
 
     /**
      * Constructor
      */
-    public ConstructionSite(Settlement settlement, ConstructionManager constructionManager) {
+    public ConstructionSite(Settlement settlement) {// , ConstructionManager constructionManager) {
     	super("A construction site", settlement.getCoordinates());
 
-    	this.constructionManager = constructionManager;
+    	this.constructionManager = settlement.getConstructionManager();
     	this.settlement = settlement;
 
     	width = 0D;
@@ -352,7 +362,7 @@ implements Serializable, LocalBoundedObject {
         manager.addBuilding(newBuilding, true);
 
         // Record completed building name.
-        ConstructionManager constructionManager = manager.getSettlement().getConstructionManager();
+        constructionManager = manager.getSettlement().getConstructionManager();
         MarsClock timeStamp = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
         constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName(), timeStamp);
 
@@ -469,5 +479,53 @@ implements Serializable, LocalBoundedObject {
     public Settlement getSettlement() {
     	return settlement;
     }
+
+    public void setSkill(int constructionSkill) {
+    	this.constructionSkill = constructionSkill;
+    }
+
+    public int getSkill() {
+    	return constructionSkill;
+    }
+
+	public void setMembers(Collection<MissionMember> members) {
+		this.members = members;
+	}
+
+	public void setVehicles(List<GroundVehicle> vehicles) {
+		this.vehicles = vehicles;
+	}
+
+	public Collection<MissionMember> getMembers() {
+		return members;
+	}
+
+	public List<GroundVehicle> getVehicles() {
+		return vehicles;
+	}
+
+	public ConstructionStageInfo getStageInfo() {
+		return stageInfo;
+	}
+
+	public void setStageInfo(ConstructionStageInfo stageInfo) {
+		this.stageInfo = stageInfo;
+	}
+
+	public boolean getManual() {
+		return manual;
+	}
+
+	public void setManual(boolean manual) {
+		this.manual = manual;
+	}
+
+	public boolean getEmpty() {
+		return empty;
+	}
+
+	public void setEmpty(boolean value) {
+		this.empty = value;
+	}
 
 }

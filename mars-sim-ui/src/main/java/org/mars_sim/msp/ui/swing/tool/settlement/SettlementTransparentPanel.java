@@ -163,7 +163,7 @@ public class SettlementTransparentPanel extends JComponent {
         //box.setAlignmentX(JComponent.LEFT_ALIGNMENT);
         //box.add(Box.createHorizontalGlue());
 	    //box.add(lcd1);
- */      
+ */
         // Make panel drag-able
 //    	ComponentMover cmName = new ComponentMover();
 //    	cmName.registerComponent(box);
@@ -182,7 +182,7 @@ public class SettlementTransparentPanel extends JComponent {
 //		rightPane.setBackground(new Color(0,0,0,15));
 	    rightPane.setBackground(new Color(0,0,0));//,0));
 		rightPane.setOpaque(false);
-		
+
 	    controlPane.add(buttonPane);
 	    controlPane.add(zoomLabel);
 	    borderPane.add(controlPane, BorderLayout.SOUTH);
@@ -244,14 +244,14 @@ public class SettlementTransparentPanel extends JComponent {
 			settlementListBox.setSelectedIndex(0);
 			Settlement s;
 			// 2014-12-19 Added if else clause for selecting the settlement that the new building is arriving
-			if (desktop.getIsTransportingBuilding()) {
-				s = desktop.getSettlement();
-				settlementListBox.setSelectedItem(s);
+			//if (desktop.getIsTransportingBuilding()) {
+				//s = desktop.getSettlement();
+				//settlementListBox.setSelectedItem(s);
 				//settlementListBox.setForeground(Color.green);
-			}
-			else {
+			//}
+			//else {
 				s = (Settlement) settlementListBox.getSelectedItem();
-			}
+			//}
 			//System.out.println(" settlement is " + settlement.getName());
 			mapPanel.setSettlement(s);
 			settlementListBox.setOpaque(false);
@@ -707,7 +707,7 @@ public class SettlementTransparentPanel extends JComponent {
         } */
 	}
 
-	
+
 	/**
 	 * Change and validate the new name of the Settlement
 	 * @return call Dialog popup
@@ -724,7 +724,7 @@ public class SettlementTransparentPanel extends JComponent {
 		if (desktop.getMainScene() != null) {
 
 			Platform.runLater(() -> {
-				
+
 				String newName = askNameFX(oldName).trim();
 				if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
 					mapPanel.getSettlement().changeName(newName);
@@ -749,14 +749,14 @@ public class SettlementTransparentPanel extends JComponent {
 					mapPanel.getSettlement().changeName(newName);
 					//logger.info("New name is now " + newName);
 				}
-*/				
-				
+*/
+
 			});
-				
-			
-			
-			
-			
+
+
+
+
+
 			//desktop.closeToolWindow(SettlementWindow.NAME);
 			//desktop.openToolWindow(SettlementWindow.NAME);
 		}
@@ -843,10 +843,10 @@ public class SettlementTransparentPanel extends JComponent {
 		    //logger.info("The settlement name has been changed to : " + result.get());
 			newName = result.get();
 		}
-		
+
 		return newName;
 	}
-	
+
 	/**
 	 * Inner class combo box model for settlements.
 	 */

@@ -55,13 +55,21 @@ public enum UnitEventType {
 
 	// from ConstructionManager.java
 	START_CONSTRUCTION_SITE_EVENT	("start construction site"),
-	FINISH_BUILDING_EVENT			("finish building"),
-	FINISH_SALVAGE_EVENT			("salvage building"),
+	START_CONSTRUCTION_WIZARD_EVENT	("start construction wizard"),
+	//START_MANUAL_CONSTRUCTION_WIZARD_EVENT	("start construction event manually"),
+
+
+	FINISH_CONSTRUCTION_BUILDING_EVENT	("finish building construction"),
+	FINISH_CONSTRUCTION_SALVAGE_EVENT	("salvage building construction "),
 
 	// from BuildingManager.java
 	ADD_BUILDING_EVENT				("add building"),
 	REMOVE_BUILDING_EVENT			("remove building"),
+
+
 	START_BUILDING_PLACEMENT_EVENT	("start building placement"),
+	START_TRANSPORT_WIZARD_EVENT	("start transport wizard"),
+
 	FINISH_BUILDING_PLACEMENT_EVENT	("finish building placement"),
 
 	// from Farming.java

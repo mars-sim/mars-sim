@@ -85,12 +85,9 @@ public class TransportWizard {
 
 	private String buildingNickName;
 
-	//private BuildingManager mgr;
 	private MainDesktopPane desktop;
-	//private Settlement settlement;
 	private SettlementWindow settlementWindow;
 	private SettlementMapPanel mapPanel;
-	//private Resupply resupply;
 	private MainScene mainScene;
 	private MainWindow mainWindow;
 	private BuildingConfig buildingConfig;
@@ -104,9 +101,9 @@ public class TransportWizard {
 	public TransportWizard(final MainWindow mainWindow, final MainDesktopPane desktop) {
 		this.desktop = desktop;
 		this.mainWindow = mainWindow;
-		settlementWindow = desktop.getSettlementWindow();
-		mapPanel = settlementWindow.getMapPanel();
-		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		this.settlementWindow = desktop.getSettlementWindow();
+		this.mapPanel = settlementWindow.getMapPanel();
+		this.buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
 	/**
@@ -596,25 +593,21 @@ public class TransportWizard {
 	public synchronized void confirmBuildingLocation(BuildingManager mgr, BuildingTemplate template, boolean isAtPreDefinedLocation) {
 		//System.out.println("inside confirmBuildingLocation");
 
-		Building newBuilding ;
-	    //final int TIME_OUT = 20;
-	    //int count = TIME_OUT;
-	    //pauseTimer = new Timer();
-		// Hold off 10 seconds
-		//int seconds = 10;
-
-		//newBuilding = mgr.getSettlement().getBuildingManager().addOneBuilding(template, mgr.getResupply(), true);
-		newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
+		Building newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
 
         // Determine location and facing for the new building.
-  		// set up the Settlement Map Tool to display the suggested location of the building
 		double xLoc = newBuilding.getXLocation();
 		double yLoc = newBuilding.getYLocation();
 		double scale = mapPanel.getScale();
+
+		Settlement currentS = settlementWindow.getMapPanel().getSettlement();
+		if (currentS != mgr.getSettlement()) {
+			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(mgr.getSettlement());
+		}
+  		// set up the Settlement Map Tool to display the suggested location of the building
 		mapPanel.reCenter();
 		mapPanel.moveCenter(xLoc*scale, yLoc*scale);
 		mapPanel.setShowBuildingLabels(true);
-
 
 		String header = null;
 		String title = null;
@@ -633,10 +626,9 @@ public class TransportWizard {
 
         if (missionName != null)
 		//if (missionName.equals("null"))
-			title = template.getMissionName();
+			title = template.getMissionName() + " at " + mgr.getSettlement();
         else
-        	title = "A Resupply Transport";
-
+        	title = "A Resupply Transport" + " at " + mgr.getSettlement();
 
 		StringProperty msg = new SimpleStringProperty(message);
 		//Timer timer = null;

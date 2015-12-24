@@ -55,6 +55,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -137,7 +138,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private TimeWindow timeWindow;
 
 	private Building building;
-	private Settlement settlement;
+	//private Settlement settlement;
 
 	/** The main window frame. */
 	private MainWindow mainWindow;
@@ -280,7 +281,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-		settlement = settlementList.get(0);
+		Settlement settlement = settlementList.get(0);
 		List<Building> buildings = settlement.getBuildingManager().getBuildings();
 		building = buildings.get(0);
 		//building.addUnitListener(this); // not working
@@ -1321,9 +1322,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return announcementWindow;
 	}
 
-	public Settlement getSettlement() {
-		return settlement;
-	}
+	//public Settlement getSettlement() {
+	//	return settlement;
+	//}
 
 	public SettlementWindow getSettlementWindow() {
 		return settlementWindow;
@@ -1347,11 +1348,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		UnitEventType eventType = event.getType();
 		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
 		Object target = event.getTarget();
-		if (eventType == UnitEventType.START_BUILDING_PLACEMENT_EVENT) {
+		if (eventType == UnitEventType.START_TRANSPORT_WIZARD_EVENT) {
 			isTransportingBuilding = true;
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
-			settlement = mgr.getSettlement();
+			//settlement = mgr.getSettlement();
 
 			if (mainWindow != null)  {//mainWindow.pauseSimulation();
 				//SwingUtilities.invokeLater(() -> {
@@ -1373,24 +1374,21 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		}
 
-		else if (eventType == UnitEventType.START_CONSTRUCTION_SITE_EVENT) {
-
-			ConstructionSite site = (ConstructionSite) target; // overwrite the dummy building object made by the constructor
-			ConstructionManager constructionManager = site.getConstructionManager();
-			Settlement settlement = site.getSettlement();
-
-			//BuildingManager mgr = building.getBuildingManager();
-			//settlement = mgr.getSettlement();
+		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
+			BuildingConstructionMission mission = (BuildingConstructionMission) target;
+			//ConstructionSite site = (ConstructionSite) mission.getConstructionSite();
+			//ConstructionManager constructionManager = site.getConstructionManager();
+			//Settlement settlement = site.getSettlement();
 
 			if (mainWindow != null)  {
 				//mainWindow.openConstructionWizard(mgr);
 			}
 			else if (mainScene != null) {
-				//mainScene.openConstructionWizard(mgr);
+				mainScene.openConstructionWizard(mission);
 			}
 		}
 
-		else if (eventType == UnitEventType.FINISH_BUILDING_EVENT) {
+		else if (eventType == UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT) {
 
 
 		}
@@ -1452,7 +1450,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		announcementWindow = null;
 		settlementWindow = null;
 		building = null;
-		settlement = null;
+		//settlement = null;
 		mainWindow = null;
 		mainScene = null;
 	}

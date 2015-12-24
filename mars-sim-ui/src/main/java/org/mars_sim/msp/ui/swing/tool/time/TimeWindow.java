@@ -125,7 +125,7 @@ implements ClockListener {
 		// Use TimeWindow constructor
 		super(NAME, desktop);
 		mainScene = desktop.getMainScene();
-		
+
 		// Set window resizable to false.
 		setResizable(false);
 
@@ -237,7 +237,7 @@ implements ClockListener {
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				master.setPaused(!master.isPaused());			
+				master.setPaused(!master.isPaused());
 			}
 		});
 		pausePane.add(pauseButton);
@@ -448,7 +448,7 @@ implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		SwingUtilities.invokeLater(() -> {
+		//SwingUtilities.invokeLater(() -> {
 		//SwingUtilities.invokeLater(
 			//new Runnable() {
 				//public void run() {
@@ -461,7 +461,9 @@ implements ClockListener {
 			    	int solElapsed = MarsClock.getSolOfYear(master.getMarsClock());
 
 					if (marsTime != null) {
-						martianTimeLabel.setText(marsTime.getDateTimeStamp());
+						SwingUtilities.invokeLater(() -> {
+							martianTimeLabel.setText(marsTime.getDateTimeStamp());
+						});
 						// 2015-02-24 Added solElapsedCache
 						if (solElapsed != solElapsedCache) {
 
@@ -476,7 +478,9 @@ implements ClockListener {
 
 					if (earthTime != null) {
 						if (earthTime.getTimeStamp() != null)
-							earthTimeLabel.setText(earthTime.getTimeStamp());
+							SwingUtilities.invokeLater(() -> {
+								earthTimeLabel.setText(earthTime.getTimeStamp());
+							});
 					}
 
 					if (master != null) {
@@ -492,8 +496,7 @@ implements ClockListener {
 					calendarDisplay.update();
 				//}
 
-			}
-		);
+			//});
 	}
 
 	@Override
@@ -506,15 +509,15 @@ implements ClockListener {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 
-			if (mainScene != null)		
+			if (mainScene != null)
 				mainScene.getAutosaveTimeline().pause();
-	
+
 		} else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.disposeAnnouncementWindow();
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 
-			if (mainScene != null)		
+			if (mainScene != null)
 				mainScene.getAutosaveTimeline().play();
 
 		}

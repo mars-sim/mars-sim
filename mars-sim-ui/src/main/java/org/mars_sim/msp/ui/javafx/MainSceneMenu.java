@@ -108,7 +108,7 @@ public class MainSceneMenu extends MenuBar  {
         MenuItem openItem = new MenuItem("Open...");
         openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         MenuItem openAutoSaveItem = new MenuItem("Open autosave");
-        openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN));
+        openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));//, KeyCombination.SHIFT_DOWN));
         MenuItem saveItem = new MenuItem("Save");
         saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         MenuItem saveAsItem = new MenuItem("Save As...");
@@ -197,10 +197,10 @@ public class MainSceneMenu extends MenuBar  {
         skinThemeItem.getItems().addAll(sevenItem, sixItem);//, oneItem, twoItem, threeItem, fourItem, fiveItem);
 
 
-        CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
-        showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
-        CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
-        showToolBarItem.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
+        //CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
+        //showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
+        //CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
+        //showToolBarItem.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
 
         SeparatorMenuItem SeparatorMenuItem4 = new SeparatorMenuItem();
 
@@ -211,7 +211,7 @@ public class MainSceneMenu extends MenuBar  {
         CheckMenuItem muteItem = new CheckMenuItem("Mute");
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
-        menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, showUnitBarItem,showToolBarItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem);
+        menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem); // showUnitBarItem,showToolBarItem,
 
         // --- Menu Notification
 /*

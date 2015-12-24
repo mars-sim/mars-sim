@@ -32,7 +32,7 @@ public class MaintenanceMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.maintenance"); //$NON-NLS-1$
@@ -114,8 +114,6 @@ public class MaintenanceMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
-
-	        //if (result != 0 )  { // if task penalty is not zero
 
 		        try {
 		            // Total probabilities for all malfunctionable entities in robot's local.

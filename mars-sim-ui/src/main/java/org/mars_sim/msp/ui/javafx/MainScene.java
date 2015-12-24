@@ -94,7 +94,10 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -126,12 +129,12 @@ public class MainScene {
 
 	private static int theme = 7; // 7 is the standard nimrod theme
 
-    final private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
-    final private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
-    final private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
-    final private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
-    final private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
-    final private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
+    private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
+    private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
+    private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
+    private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
+    private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
+    private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
 
 	private int memMax;
 	private int memTotal;
@@ -249,8 +252,7 @@ public class MainScene {
 	}
 
 	/**
-	 * Prepares the Main Scene, sets up LookAndFeel UI, starts two timers,
-	 * prepares Transport Wizard
+	 * Calls an thread executor to submit MainSceneTask
 	 */
 	public void prepareMainScene() {
 		//logger.info("MainScene's prepareMainScene() is in " + Thread.currentThread().getName() + " Thread");
@@ -272,14 +274,22 @@ public class MainScene {
 		}
 	}
 
+	/**
+	 * Prepares the transport wizard, construction wizard, autosave timer and earth timer
+	 */
 	public void prepareOthers() {
 		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		transportWizard = new TransportWizard(this, desktop);
+		constructionWizard = new ConstructionWizard(this, desktop);
 		startAutosaveTimer();
 		startEarthTimer();
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
+	/**
+	 * Pauses sim and opens the transport wizard
+	 * @param buildingManager
+	 */
 	public synchronized void openTransportWizard(BuildingManager buildingManager) {
 		logger.info("MainScene's openTransportWizard() is in " + Thread.currentThread().getName() + " Thread");
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
@@ -317,9 +327,45 @@ public class MainScene {
 		return transportWizard;
 	}
 
+	/**
+ 	 * Pauses sim and opens the construction wizard
+	 * @param constructionManager
+	 */
 	// 2015-12-16 Added openConstructionWizard()
-	public void openConstructionWizard(BuildingManager buildingManager) {
-		//constructionWizard.deliverBuildings(buildingManager);
+	public void openConstructionWizard(BuildingConstructionMission mission) { // ConstructionManager constructionManager,
+		logger.info("MainScene's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
+		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
+		// 2015-12-16 Track the current pause state
+		boolean previous = Simulation.instance().getMasterClock().isPaused();
+		if (!previous) {
+			pauseSimulation();
+	    	//System.out.println("previous is false. Paused sim");
+		}
+		desktop.getTimeWindow().enablePauseButton(false);
+
+		//try {
+			//FXUtilities.runAndWait(() -> {
+			Platform.runLater(() -> {
+				constructionWizard.selectSite(mission);
+			});
+		//catch (InterruptedException | ExecutionException e) {
+		//	e.printStackTrace();
+		//}
+
+		boolean now = Simulation.instance().getMasterClock().isPaused();
+		if (!previous) {
+			if (now) {
+				unpauseSimulation();
+   	    		//System.out.println("previous is false. now is true. Unpaused sim");
+			}
+		} else {
+			if (!now) {
+				unpauseSimulation();
+   	    		//System.out.println("previous is true. now is false. Unpaused sim");
+			}
+		}
+		desktop.getTimeWindow().enablePauseButton(true);
+
 	}
 
 	// 2015-12-16 Added getConstructionWizard()
@@ -1484,21 +1530,49 @@ public class MainScene {
     }
 
 	public void destroy() {
+
+	    navMenuItem = null;
+	    mapMenuItem = null;
+	    missionMenuItem = null;
+	    monitorMenuItem = null;
+	    searchMenuItem = null;
+	    eventsMenuItem = null;
+	    timeStamp = null;
+	    memUsedText = null;
+		processCpuLoadText = null;
+		memBtn = null;
+		clkBtn = null;
+		cpuBtn = null;
+		rootStackPane = null;
+		statusBar = null;
+		flyout = null;
+		marsNetButton = null;
+		cb = null;
+		cornerMenu = null;
+		swingPane = null;
+		borderPane = null;
+		fxDesktopPane = null;
+		autosaveTimeline = null;
+
 		newSimThread = null;
 		loadSimThread = null;
 		saveSimThread = null;
-		timeText = null;
-		memUsedText = null;
+
 		stage = null;
+
 		swingTab = null;
 		nodeTab = null;
 		dndTabPane = null;
 		timeline = null;
 		notificationPane = null;
+
 		desktop.destroy();
 		desktop = null;
 		menuBar = null;
 		marsNode = null;
+		transportWizard = null;
+		constructionWizard = null;
+
 	}
 
 }

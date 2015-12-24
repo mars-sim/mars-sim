@@ -352,7 +352,7 @@ implements Serializable, Transportable {
             if (orderedBuildings.size() > 0) {
             	Building aBuilding = buildingManager.getBuildings().get(0);
             	// Fires the unit update below in order to use the version of deliverBuildings() in TransportWizard.java
-            	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
+               	settlement.fireUnitUpdate(UnitEventType.START_TRANSPORT_WIZARD_EVENT, aBuilding);
             }
 
         } else {
@@ -377,22 +377,16 @@ implements Serializable, Transportable {
 
         if (orderedBuildings.size() > 0) {
 
-        	//Building aBuilding = buildingManager.getBuildings().get(0);
-        	//settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
+        	Building aBuilding = buildingManager.getBuildings().get(0);
+          	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
 
-        	// TODO: the first building to be placed should start from the center of map and radial out
-	        // 2014-12-23 Added sorting orderedBuildings according to its building id
-	        // Collections.sort(orderedBuildings);
-	        //int size = orderedBuildings.size();
-	        //int i = 0;
 	        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
-	        //System.out.println("Resupply : Simulation.getUseGUI() is false");
 
 	        while (buildingI.hasNext()) {
 		        BuildingTemplate template = buildingI.next();
 
                 // Correct length and width in building template.
-               
+
                 // Replace width and length defaults to deal with variable width and length buildings.
                 double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getBuildingType());
 
@@ -420,7 +414,7 @@ implements Serializable, Transportable {
                 //String scenario = template.getScenario();  // Note: scenario is null since template does NOT have a scenario string yet
                 //String buildingNickName = template.getBuildingType() + " " + scenario + buildingID;
                 String buildingNickName = template.getBuildingType() + " " + buildingTypeID;
-                
+
                 BuildingTemplate correctedTemplate = new BuildingTemplate(template.getMissionName(), buildingID, scenario, template.getBuildingType(), buildingNickName, width,
                         length, template.getXLoc(), template.getYLoc(), template.getFacing());
 
@@ -469,10 +463,10 @@ implements Serializable, Transportable {
 
 		if (!noImmovable) {
 			BuildingTemplate repositionedTemplate = positionNewResupplyBuilding(correctedTemplate.getBuildingType());
-			
+
 			// 2015-12-16 Added setMissionName()
 			repositionedTemplate.setMissionName(correctedTemplate.getMissionName());
-			// Call again recursively to check for any collision						
+			// Call again recursively to check for any collision
 			correctedTemplate = clearCollision(repositionedTemplate);
 		}
 
@@ -968,9 +962,9 @@ implements Serializable, Transportable {
                 // TODO: check to make sure it does not overlap another building.
 
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-                // 2015-12-13 Added buildingTypeID          
+                // 2015-12-13 Added buildingTypeID
                 int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(buildingType);
-                     
+
                 // 2015-01-16 Added scenario
                 String scenario = getCharForNumber(settlement.getID()+1);
                 //String buildingNickName = buildingType + " " + scenario + buildingID;
@@ -1256,13 +1250,13 @@ implements Serializable, Transportable {
                 // Set the new building here.
 
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-                // 2015-12-13 Added buildingTypeID          
+                // 2015-12-13 Added buildingTypeID
                 int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(newBuildingType);
                 // 2015-01-16 Added scenario
                 String scenario = getCharForNumber(settlement.getID()+1);
                 //String buildingNickName = newBuildingType + " " + scenario + buildingID;
                 String buildingNickName = newBuildingType + " " + buildingTypeID;
-                
+
                 //System.out.println("Resupply.java Line 907: scenario is " + scenario);
                 //System.out.println("Resupply.java Line 908: buildingNickName is " + buildingNickName);
 
@@ -1352,14 +1346,14 @@ implements Serializable, Transportable {
             double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
             // Set the new building here.
             int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
-            // 2015-12-13 Added buildingTypeID          
+            // 2015-12-13 Added buildingTypeID
             int buildingTypeID = settlement.getBuildingManager().getNextBuildingTypeID(newBuildingType);
-            
+
             // 2015-01-16 Added scenario
             String scenario = getCharForNumber(settlement.getID()+1);
             //String buildingNickName = newBuildingType + " " + scenario + buildingID;
             String buildingNickName = newBuildingType + " " + buildingTypeID;
-            
+
             //System.out.println("Resupply.java Line 1001: scenario is " + scenario);
             //System.out.println("Resupply.java Line 1002: buildingNickName is " + buildingNickName);
             newPosition = new BuildingTemplate("A Resupply Mission", buildingID, scenario, newBuildingType, buildingNickName, width, newLength, centerX,

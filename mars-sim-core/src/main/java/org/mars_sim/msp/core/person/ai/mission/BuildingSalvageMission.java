@@ -616,7 +616,7 @@ implements Serializable {
 				settlement.getConstructionManager().removeConstructionSite(
 						constructionSite);
 				settlement.fireUnitUpdate(
-						UnitEventType.FINISH_SALVAGE_EVENT,
+						UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT,
 						constructionSite);
 				logger.log(Level.INFO,
 						Msg.getString(

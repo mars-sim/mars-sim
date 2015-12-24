@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 3.08 2015-02-10
-
+ * @version 3.08 2015-12-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.construction;
@@ -16,11 +15,13 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -59,6 +60,15 @@ implements Serializable {
 	public List<ConstructionSite> getConstructionSites() {
 		return new ArrayList<ConstructionSite>(sites);
 	}
+
+	/**
+	 * Returns the instance of all construction sites at the settlement.
+	 * @return list of construction sites.
+	 */
+	public List<ConstructionSite> getSites() {
+		return sites;
+	}
+
 
 	/**
 	 * Gets construction sites needing a construction mission.
@@ -155,10 +165,14 @@ implements Serializable {
 	 * @return newly created construction site.
 	 */
 	public ConstructionSite createNewConstructionSite() {
-		ConstructionSite result = new ConstructionSite(settlement, this);
+		ConstructionSite result = new ConstructionSite(settlement);//, this);
 		sites.add(result);
 		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, result);
 		return result;
+	}
+
+	public Settlement getSettlement() {
+		return settlement;
 	}
 
 	/**
@@ -230,6 +244,18 @@ implements Serializable {
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Person occupant = i.next();
+				BuildingManager.removePersonOrRobotFromBuilding(occupant, salvagedBuilding);
+				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
+			}
+		}
+
+		// 2015-12-23 Added handling robots
+		// Move any robot in building to somewhere else in the settlement.
+		if (salvagedBuilding.hasFunction(BuildingFunction.ROBOTIC_STATION)) {
+			RoboticStation station = (RoboticStation) salvagedBuilding.getFunction(BuildingFunction.ROBOTIC_STATION);
+			Iterator<Robot> i = station.getRobotOccupants().iterator();
+			while (i.hasNext()) {
+				Robot occupant = i.next();
 				BuildingManager.removePersonOrRobotFromBuilding(occupant, salvagedBuilding);
 				BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
 			}

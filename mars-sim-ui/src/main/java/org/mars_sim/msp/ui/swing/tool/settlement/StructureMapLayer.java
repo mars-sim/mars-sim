@@ -34,7 +34,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
     // Static members
     private static final Color BUILDING_COLOR = Color.GREEN;
-    private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
+    private static final Color CONSTRUCTION_SITE_COLOR = new Color(119, 59, 0); // dark orange
     private static final Color BUILDING_CONNECTOR_COLOR = Color.RED;
     private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.WHITE;
 
@@ -42,12 +42,12 @@ public class StructureMapLayer implements SettlementMapLayer {
     private SettlementMapPanel mapPanel;
     private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
     private double scale;
-    
+
  // 2014-11-04 Added building
     @SuppressWarnings("unused")
 	private Building building;
     private String buildingType;
-    
+
     /**
      * Constructor
      * @param mapPanel the settlement map panel.
@@ -58,7 +58,7 @@ public class StructureMapLayer implements SettlementMapLayer {
         this.mapPanel = mapPanel;
         svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
 
-        // Set Apache Batik library system property so that it doesn't output: 
+        // Set Apache Batik library system property so that it doesn't output:
         // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
         System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
     }
@@ -67,42 +67,42 @@ public class StructureMapLayer implements SettlementMapLayer {
 	// for the selected building in unit window's building tab
     public StructureMapLayer(SettlementMapPanel mapPanel, Building building) {
 
-    	
+
     	this.building = building;
     		System.out.println("StructureMapLayer() : building is "+ building);
         // Initialize data members.
         this.mapPanel = mapPanel;
         svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
 
-        // Set Apache Batik library system property so that it doesn't output: 
+        // Set Apache Batik library system property so that it doesn't output:
         // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
         System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
+
     public StructureMapLayer() {
 
         // Initialize data members.
-       
+
         svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
 
-        // Set Apache Batik library system property so that it doesn't output: 
+        // Set Apache Batik library system property so that it doesn't output:
         // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
         System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
     }
-    
+
     @Override
-    
+
  // 2014-11-04 Added new parameter building
     public void displayLayer(
-            Graphics2D g2d, Settlement settlement, Building building, double xPos, 
+            Graphics2D g2d, Settlement settlement, Building building, double xPos,
             double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
 
     	Graphics2D g2d0 = g2d;
     	// value of scale came from paintComponent() in SettlementMapPanel.java
         this.scale = scale;
         this.building = building;
-       
-        
+
+
         //2014-11-05 Added adjustScaleFactor()
         // discard the old scale value, compute a new value of scale.
     	//System.out.println("StructureMapLayer.java : displayLayer() : building is " + building);
@@ -110,7 +110,7 @@ public class StructureMapLayer implements SettlementMapLayer {
         	// Displaying a svg image for one single building
 	        double width = building.getWidth();
 	        double length = building.getLength();
-	        scale = adjustScaleFactor(width, length);    
+	        scale = adjustScaleFactor(width, length);
 	    	//System.out.println("StructureMapLayer.java : displayLayer() : width is "+ width);
 	      	//System.out.println("StructureMapLayer.java : displayLayer() : length is "+ length);
         }
@@ -122,14 +122,14 @@ public class StructureMapLayer implements SettlementMapLayer {
         double mapCenterX = mapWidth / 2D;
         double mapCenterY = mapHeight / 2D;
 
-        
+
         // Translate map from settlement center point.
         g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
 
         // Rotate map from North.
         g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
-     	// 2014-11-05 Added if then else clause for loading 
+     	// 2014-11-05 Added if then else clause for loading
         // an svg image for one building ONLY
         if (building != null) {
         	// Displaying a svg image for one single building
@@ -137,23 +137,23 @@ public class StructureMapLayer implements SettlementMapLayer {
         	//System.out.println("building is " + building);
         	drawOneBuilding(building, g2d0);
         }
-        
-        else {  // Displaying svg images of all buildings in the entire settlement 
+
+        else {  // Displaying svg images of all buildings in the entire settlement
 	        // Draw all buildings.
 	        drawBuildings(g2d, settlement);
-	
+
 	        // Draw all construction sites.
 	        drawConstructionSites(g2d, settlement);
-	
+
 	        // Draw all building connectors.
 	        drawBuildingConnectors(g2d, settlement);
-	
+
 	        // Restore original graphic transforms.
 	        g2d.setTransform(saveTransform);
         }
     }
 
-	// 2014-11-04 Added drawOneBuilding() for displaying a building's svg image in unit window  
+	// 2014-11-04 Added drawOneBuilding() for displaying a building's svg image in unit window
     public void drawOneBuilding(Building building, Graphics2D g2d) {
 
         GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
@@ -163,13 +163,13 @@ public class StructureMapLayer implements SettlementMapLayer {
             GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getBuildingType().toLowerCase());
 
             drawSVGStructure(
-                    g2d, 0.0, 0.0, 
-                    //g2d, building.getXLocation(), building.getYLocation(), 
+                    g2d, 0.0, 0.0,
+                    //g2d, building.getXLocation(), building.getYLocation(),
                     building.getWidth(), building.getLength(), building.getFacing(), svg, patternSVG
                     );
         }
     }
-    
+
     /**
      * Draw all of the buildings in the settlement.
      * @param g2d the graphics context.
@@ -199,15 +199,15 @@ public class StructureMapLayer implements SettlementMapLayer {
             GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getBuildingType().toLowerCase());
 
             drawSVGStructure(
-                    g2d, building.getXLocation(), building.getYLocation(), 
+                    g2d, building.getXLocation(), building.getYLocation(),
                     building.getWidth(), building.getLength(), building.getFacing(), svg, patternSVG
                     );
         }
         else {
             // Otherwise draw colored rectangle for building.
             drawRectangleStructure(
-                    g2d, building.getXLocation(), building.getYLocation(), 
-                    building.getWidth(), building.getLength(), building.getFacing(), 
+                    g2d, building.getXLocation(), building.getYLocation(),
+                    building.getWidth(), building.getLength(), building.getFacing(),
                     BUILDING_COLOR
                     );
         }
@@ -238,6 +238,7 @@ public class StructureMapLayer implements SettlementMapLayer {
         // Use SVG image for construction site if available.
         GraphicsNode svg = null;
         ConstructionStage stage = site.getCurrentConstructionStage();
+        //System.out.println("stage is " + stage.toString());
         if (stage != null) {
             svg = SVGMapUtil.getConstructionSiteSVG(stage.getInfo().getName().toLowerCase());
         }
@@ -250,15 +251,15 @@ public class StructureMapLayer implements SettlementMapLayer {
                             );
 
             drawSVGStructure(
-                    g2d, site.getXLocation(), site.getYLocation(), 
+                    g2d, site.getXLocation(), site.getYLocation(),
                     site.getWidth(), site.getLength(), site.getFacing(), svg, patternSVG
                     );
         }
         else {
             // Else draw colored rectangle for construction site.
             drawRectangleStructure(
-                    g2d, site.getXLocation(), site.getYLocation(), 
-                    site.getWidth(), site.getLength(), site.getFacing(), 
+                    g2d, site.getXLocation(), site.getYLocation(),
+                    site.getWidth(), site.getLength(), site.getFacing(),
                     CONSTRUCTION_SITE_COLOR
                     );
         }
@@ -311,13 +312,13 @@ public class StructureMapLayer implements SettlementMapLayer {
             if (hatch1SVG != null) {
 
                 // Draw hatch 1.
-                drawSVGStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
+                drawSVGStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(),
                         hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), hatch1SVG, null);
             }
             else {
                 // Otherwise draw colored rectangle for hatch 1.
-                drawRectangleStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
-                        hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), 
+                drawRectangleStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(),
+                        hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(),
                         BUILDING_CONNECTOR_COLOR);
             }
 
@@ -326,13 +327,13 @@ public class StructureMapLayer implements SettlementMapLayer {
             if (hatch2SVG != null) {
 
                 // Draw hatch 2.
-                drawSVGStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
+                drawSVGStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(),
                         hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), hatch2SVG, null);
             }
             else {
                 // Otherwise draw colored rectangle for hatch 2.
-                drawRectangleStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
-                        hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), 
+                drawRectangleStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(),
+                        hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(),
                         BUILDING_CONNECTOR_COLOR);
             }
         }
@@ -345,13 +346,13 @@ public class StructureMapLayer implements SettlementMapLayer {
             if (hatchSVG != null) {
 
                 // Draw hatch.
-                drawSVGStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
+                drawSVGStructure(g2d, hatch.getXLocation(), hatch.getYLocation(),
                         hatch.getWidth(), hatch.getLength(), hatch.getFacing(), hatchSVG, null);
             }
             else {
                 // Otherwise draw colored rectangle for hatch.
-                drawRectangleStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
-                        hatch.getWidth(), hatch.getLength(), hatch.getFacing(), 
+                drawRectangleStructure(g2d, hatch.getXLocation(), hatch.getYLocation(),
+                        hatch.getWidth(), hatch.getLength(), hatch.getFacing(),
                         BUILDING_CONNECTOR_COLOR);
             }
         }
@@ -370,7 +371,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      */
     private void drawSVGStructure(
             Graphics2D g2d, double xLoc, double yLoc,
-            double width, double length, double facing, GraphicsNode svg, 
+            double width, double length, double facing, GraphicsNode svg,
             GraphicsNode patternSVG) {
         drawStructure(true, g2d, xLoc, yLoc, width, length, facing, svg, patternSVG, null);
     }
@@ -386,17 +387,17 @@ public class StructureMapLayer implements SettlementMapLayer {
      * @param color the color to draw the rectangle.
      */
     private void drawRectangleStructure(
-            Graphics2D g2d, double xLoc, double yLoc, 
+            Graphics2D g2d, double xLoc, double yLoc,
             double width, double length, double facing, Color color) {
         drawStructure(false, g2d, xLoc, yLoc, width, length, facing, null, null, color);
     }
 
-	//2014-11-04 Added adjustScaleFactor() to maximize the display size of 
+	//2014-11-04 Added adjustScaleFactor() to maximize the display size of
     // the SVG Image of all buildings.
-	public double adjustScaleFactor(double x, double y)  {	
-		double largerValue = 0;	
+	public double adjustScaleFactor(double x, double y)  {
+		double largerValue = 0;
 		if (x >= y ) largerValue = x;
-		else largerValue = y;	
+		else largerValue = y;
 		scale = 100.0/largerValue * 0.9;
 
 		return scale;
@@ -416,9 +417,9 @@ public class StructureMapLayer implements SettlementMapLayer {
      */
     private void drawStructure(
             boolean isSVG, Graphics2D g2d, double xLoc, double yLoc,
-            double width, double length, double facing, GraphicsNode svg, 
+            double width, double length, double facing, GraphicsNode svg,
             GraphicsNode patternSVG, Color color) {
-    	
+
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
 
@@ -509,7 +510,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      * @return buffered image.
      */
     private BufferedImage getBufferedImage(
-            GraphicsNode svg, double width, double length, 
+            GraphicsNode svg, double width, double length,
             GraphicsNode patternSVG) {
 
         // Get image cache for current scale or create it if it doesn't exist.
@@ -544,7 +545,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      * @param patternSVG the pattern SVG graphics node (null if no pattern).
      * @return the created buffered image.
      */
-    private BufferedImage createBufferedImage(GraphicsNode svg, double width, double length, 
+    private BufferedImage createBufferedImage(GraphicsNode svg, double width, double length,
             GraphicsNode patternSVG) {
 
         int imageWidth = (int) (width * scale);
@@ -556,7 +557,7 @@ public class StructureMapLayer implements SettlementMapLayer {
             imageLength = 1;
         }
         BufferedImage bufferedImage = new BufferedImage(
-                imageWidth, imageLength, 
+                imageWidth, imageLength,
                 BufferedImage.TYPE_INT_ARGB
                 );
 
@@ -647,7 +648,7 @@ public class StructureMapLayer implements SettlementMapLayer {
                 BuildingKey buildingKeyObject = (BuildingKey) object;
                 if (
                         svg.equals(buildingKeyObject.svg) &&
-                        (width == buildingKeyObject.width) && 
+                        (width == buildingKeyObject.width) &&
                         (length == buildingKeyObject.length)) {
                     result = true;
                 }

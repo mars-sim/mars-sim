@@ -31,6 +31,8 @@ import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import javafx.application.Platform;
+
 /**
  * Window for the mission tool.
  */
@@ -46,6 +48,9 @@ extends ToolWindow {
 	// Private members
 	private JList<Mission> missionList;
 	private NavpointPanel navpointPane;
+	private MainScene ms;
+	private CreateMissionWizard createMissionWizard;
+	private EditMissionDialog editMissionDialog;
 
 	/**
 	 * Constructor.
@@ -55,6 +60,8 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
+
+		ms = desktop.getMainScene();
 
 		// Set window resizable to false.
 		//setResizable(false);
@@ -94,7 +101,7 @@ extends ToolWindow {
 
 		// Create the create mission button.
 		JButton createButton = new JButton("Create New Mission");
-		createButton.addActionListener( 
+		createButton.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// Create new mission.
@@ -161,31 +168,36 @@ extends ToolWindow {
 	 */
 	private void createNewMission() {
 
-		MainWindow mw = desktop.getMainWindow();
+		if (ms != null )  {
+			// 2015-12-16 Track the current pause state
+			boolean previous = Simulation.instance().getMasterClock().isPaused();
+			if (!previous) {
+				ms.pauseSimulation();
+		    	//System.out.println("previous is false. Paused sim");
+			}
+			desktop.getTimeWindow().enablePauseButton(false);
 
-		if (mw != null )  {
-			// Pause simulation.
-			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
-			// Also one should check the whether the game was previous on pause in order to preserve that state.
-			//mw.pauseSimulation();	
-			// Create new mission wizard.
-			new CreateMissionWizard(desktop);	
-			// Unpause simulation.
-			//mw.unpauseSimulation();
-		}
-		
-		MainScene ms = desktop.getMainScene();
-		
-		
-		if (ms !=null )  {
-			// Pause simulation.
-			//ms.pauseSimulation();
-			// Create new mission wizard.
-			new CreateMissionWizard(desktop);
-			// Unpause simulation.
-			//ms.unpauseSimulation();
-		}
-		
+			createMissionWizard = new CreateMissionWizard(desktop);
+
+			boolean now = Simulation.instance().getMasterClock().isPaused();
+			if (!previous) {
+				if (now) {
+					ms.unpauseSimulation();
+	   	    		//System.out.println("previous is false. now is true. Unpaused sim");
+				}
+			} else {
+				if (!now) {
+					ms.unpauseSimulation();
+	   	    		//System.out.println("previous is true. now is false. Unpaused sim");
+				}
+			}
+			desktop.getTimeWindow().enablePauseButton(true);
+
+		} else
+
+			createMissionWizard = new CreateMissionWizard(desktop);
+
+
 	}
 
 	/**
@@ -193,36 +205,37 @@ extends ToolWindow {
 	 * @param mission the mission to edit.
 	 */
 	private void editMission(Mission mission) {
-		
-		
-		MainWindow mw = desktop.getMainWindow();
 
-		if (mw !=null )  {
-			// Pause simulation.
-		    //mw.pauseSimulation();
-			// NOTE: pauseSimulation() is not needed anymore since CreateMissionWizard extends ModalInternalFrame
-			// Also one should check the whether the game was previous on pause in order to preserve that state.
+		if (ms != null )  {
+			// 2015-12-16 Track the current pause state
+			boolean previous = Simulation.instance().getMasterClock().isPaused();
+			if (!previous) {
+				ms.pauseSimulation();
+		    	//System.out.println("previous is false. Paused sim");
+			}
+			desktop.getTimeWindow().enablePauseButton(false);
 
-			// Create new mission wizard.
-			new EditMissionDialog(desktop, mission);
-			
-			// Unpause simulation.
-			//mw.unpauseSimulation();
-		}
-		
-		MainScene ms = desktop.getMainScene();
-		
-		if (ms !=null )  {
-			// Pause simulation.
-			//ms.pauseSimulation();
-	
-			// Create new mission wizard.
-			new EditMissionDialog(desktop, mission);
-			// Unpause simulation.
-			//ms.unpauseSimulation();
-		}
-		
-		
+			editMissionDialog = new EditMissionDialog(desktop, mission);
+
+			boolean now = Simulation.instance().getMasterClock().isPaused();
+			if (!previous) {
+				if (now) {
+					ms.unpauseSimulation();
+	   	    		//System.out.println("previous is false. now is true. Unpaused sim");
+				}
+			} else {
+				if (!now) {
+					ms.unpauseSimulation();
+	   	    		//System.out.println("previous is true. now is false. Unpaused sim");
+				}
+			}
+			desktop.getTimeWindow().enablePauseButton(true);
+
+		} else
+
+			editMissionDialog = new EditMissionDialog(desktop, mission);
+
+
 	}
 
 	/**
@@ -234,6 +247,11 @@ extends ToolWindow {
 
 		mission.endMission("User ending mission.");
 	}
+
+	public CreateMissionWizard getCreateMissionWizard() {
+		return createMissionWizard;
+	}
+
 
 	/**
 	 * Prepares tool window for deletion.
