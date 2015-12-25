@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -61,8 +62,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
 
+import java.awt.AWTException;
+import java.awt.Cursor;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -105,6 +115,7 @@ public class ConstructionWizard {
 
     private static int wait_time_in_secs = 30; // in seconds
 
+    private int xLast, yLast;
 	//private ConstructionStage constructionStage;
 
 	private MainDesktopPane desktop;
@@ -179,34 +190,35 @@ public class ConstructionWizard {
 	                //	+ "  f is " + constructionSite.getFacing());
 
 			    boolean previous = Simulation.instance().getMasterClock().isPaused();
-				if (!previous) {
-					mainScene.pauseSimulation();
-			    	//System.out.println("previous is false. Paused sim");
-				}
-				desktop.getTimeWindow().enablePauseButton(false);
-
-
-					//FXUtilities.runAndWait(() -> {
-					//Platform.runLater(() -> {
-						//ConstructionSite
-						modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
-						confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
-					//});
-
-
-				boolean now = Simulation.instance().getMasterClock().isPaused();
-				if (!previous) {
-					if (now) {
-						mainScene.unpauseSimulation();
-		   	    		//System.out.println("previous is false. now is true. Unpaused sim");
+			    if (mainScene != null) {
+					if (!previous) {
+						mainScene.pauseSimulation();
+				    	//System.out.println("previous is false. Paused sim");
 					}
-				} else {
-					if (!now) {
-						mainScene.unpauseSimulation();
-		   	    		//System.out.println("previous is true. now is false. Unpaused sim");
+					desktop.getTimeWindow().enablePauseButton(false);
+			    }
+				//FXUtilities.runAndWait(() -> {
+				//Platform.runLater(() -> {
+					//ConstructionSite
+					modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+					confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
+				//});
+
+				if (mainScene != null) {
+					boolean now = Simulation.instance().getMasterClock().isPaused();
+					if (!previous) {
+						if (now) {
+							mainScene.unpauseSimulation();
+			   	    		//System.out.println("previous is false. now is true. Unpaused sim");
+						}
+					} else {
+						if (!now) {
+							mainScene.unpauseSimulation();
+			   	    		//System.out.println("previous is true. now is false. Unpaused sim");
+						}
 					}
+					desktop.getTimeWindow().enablePauseButton(true);
 				}
-				desktop.getTimeWindow().enablePauseButton(true);
 			}
 
             mission.init_2(modifiedSite, modifiedSite.getStageInfo());
@@ -314,14 +326,14 @@ public class ConstructionWizard {
 
 		} else {
 
-	        desktop.openAnnouncementWindow("Pause for Cnstruction Wizard");
+	        desktop.openAnnouncementWindow("Pause for Construction Wizard");
 	        AnnouncementWindow aw = desktop.getAnnouncementWindow();
 	        Point location = MouseInfo.getPointerInfo().getLocation();
 	        double Xloc = location.getX() - aw.getWidth() * 2;
-			double Yloc = location.getX() - aw.getHeight() * 2;
+			double Yloc = location.getY() - aw.getHeight() * 2;
 			aw.setLocation((int)Xloc, (int)Yloc);
 
-			int reply = JOptionPane.showConfirmDialog(aw, message, TITLE, JOptionPane.YES_NO_OPTION);
+			int reply = JOptionPane.showConfirmDialog(aw, header, TITLE, JOptionPane.YES_NO_OPTION);
 			//repaint();
 
 			if (reply == JOptionPane.YES_OPTION) {
@@ -333,6 +345,8 @@ public class ConstructionWizard {
 				site = positionNewConstructionSite(site, stageInfo, constructionSkill);
 				confirmSiteLocation(site, constructionManager, false, stageInfo, constructionSkill);
 			}
+
+			desktop.disposeAnnouncementWindow();
 		}
 
 	}
@@ -355,6 +369,7 @@ public class ConstructionWizard {
 			double y = mainScene.getStage().getHeight();
 			double xx = alert.getDialogPane().getWidth();
 			double yy = alert.getDialogPane().getHeight();
+
 			alert.setX((x - xx)/2);
 			alert.setY((y - yy)*3/4);
 			alert.setTitle(title);
@@ -366,13 +381,15 @@ public class ConstructionWizard {
 
 			ButtonType buttonTypeYes = new ButtonType("Yes");
 			ButtonType buttonTypeNo = new ButtonType("No");
+			ButtonType buttonTypeMouse = new ButtonType("Use Mouse");
 			ButtonType buttonTypeCancelTimer = null;
+
 			if (hasTimer) {
 				buttonTypeCancelTimer = new ButtonType("Cancel Timer");
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancelTimer);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse, buttonTypeCancelTimer);
 			}
 			else
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse);
 
 			Optional<ButtonType> result = null;
 
@@ -400,15 +417,246 @@ public class ConstructionWizard {
 		    	//System.out.println("just removing building");
 				site = positionNewConstructionSite(site, stageInfo, constructionSkill);
 				confirmSiteLocation(site, constructionManager,false, stageInfo, constructionSkill);
-			}
 
-			else if (result.isPresent() && result.get() == buttonTypeCancelTimer) {
+			} else if (result.isPresent() && result.get() == buttonTypeMouse) {
+				mouseDialog(title,header, site);
+
+			} else if (result.isPresent() && result.get() == buttonTypeCancelTimer) {
 				timer.stop();
 				alertDialog(title, header, msg, constructionManager, site, false, stageInfo, constructionSkill);
 			}
 
 	}
 
+	/**
+	 * Pops up an alert dialog for confirming the position of a new construction site via right mouse drag
+	 * @param title
+	 * @param header
+	 * @param site
+	 */
+	// 2015-12-25 Added mouseDialog()
+	public void mouseDialog(String title, String header, ConstructionSite site) {
+
+    	// Platform.runLater(() -> {
+		// FXUtilities.runAndWait(() -> {
+
+			String msg = "Move cursor to desired location & left click to set in place. Then hit Confirm Position to proceed";
+
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.initOwner(mainScene.getStage());
+			alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
+			//alert.initModality(Modality.APPLICATION_MODAL);
+			double x = mainScene.getStage().getWidth();
+			double y = mainScene.getStage().getHeight();
+			double xx = alert.getDialogPane().getWidth();
+			double yy = alert.getDialogPane().getHeight();
+
+			alert.setX((x - xx)/2);
+			alert.setY((y - yy)*3/4);
+			alert.setTitle(title);
+			alert.setHeaderText(header);
+			alert.setContentText(msg);
+
+			ButtonType buttonTypeConfirm = new ButtonType("Confirm Position");
+			alert.getButtonTypes().setAll(buttonTypeConfirm);
+
+			//double xLoc = site.getXLocation();
+			//double yLoc = site.getYLocation();
+			//double scale = mapPanel.getScale();
+			//System.out.println("xLoc : " + xLoc + "   yLoc : " + yLoc + "   scale : " + scale);
+			//moveMouse(new Point((int)(xLoc*scale), (int)(yLoc*scale)));
+
+			SwingUtilities.invokeLater(() -> {
+
+				mapPanel.addMouseMotionListener(new MouseMotionAdapter() {
+					@Override
+					public void mouseDragged(MouseEvent evt) {
+						if (evt.getButton() == MouseEvent.BUTTON3) {
+
+							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+
+							double x = evt.getX();
+							double y = evt.getY();
+
+							moveConstructionSiteAt(site, (int)x, (int)y);
+
+						}
+					}
+				});
+
+				mapPanel.addMouseListener(new MouseListener() {
+				    @Override
+				    public void mouseClicked(MouseEvent evt) {
+
+/*
+						Point location = MouseInfo.getPointerInfo().getLocation();
+						double xloc = location.getX();
+						double yloc = location.getY();
+						if (xLast - xloc > scale*10) {
+							site.setXLocation(xloc);
+							updateX((int)xloc);
+						}
+						if (yLast - yloc > scale*10) {
+							site.setYLocation(yloc);
+							updateY((int)yloc);
+						}
+*/
+				    }
+
+					@Override
+					public void mouseEntered(MouseEvent arg0) {
+					}
+
+					@Override
+					public void mouseExited(MouseEvent arg0) {
+					}
+
+					@Override
+					public void mousePressed(MouseEvent evt) {
+						if (evt.getButton() == MouseEvent.BUTTON3) {
+							xLast = evt.getX();
+							yLast = evt.getY();
+						}
+					}
+
+					@Override
+					public void mouseReleased(MouseEvent evt) {
+					}
+
+				});
+			});
+
+
+			Optional<ButtonType> result = alert.showAndWait();
+
+			if (result.isPresent() && result.get() == buttonTypeConfirm) {
+
+			}
+
+	}
+
+/*
+	public boolean checkLocation(ConstructionSite site, int distance) {
+		boolean goodPosition = true;
+		List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+        Collections.shuffle(inhabitableBuildings);
+        Iterator<Building> i = inhabitableBuildings.iterator();
+        while (i.hasNext()) {
+            goodPosition = positionNextToBuilding(site, i.next(), distance, false);
+            if (!goodPosition) {
+                return false;
+            }
+        }
+        return goodPosition;
+	}
+*/
+	/**
+	 * Moves the site to a new position via the mouse's right drag
+	 * @param s
+	 * @param xPixel
+	 * @param yPixel
+	 */
+	// 2015-12-25 Added moveConstructionSiteAt()
+	public void moveConstructionSiteAt(ConstructionSite s, int xPixel, int yPixel) {
+		Point.Double pos = mapPanel.convertToSettlementLocation(xPixel, yPixel);
+
+		double xDiff = xPixel - xLast;
+		double yDiff = yPixel - yLast;
+
+		if (xDiff < mapPanel.getWidth() && yDiff < mapPanel.getHeight()) {
+			//System.out.println("xPixel : " + xPixel
+			//		+ "  yPixel : " + yPixel
+			//		+ "  xLast : " + xLast
+			//		+ "  yLast : " + yLast
+			//		+ "  xDiff : " + xDiff
+			//		+ "  yDiff : " + yDiff);
+
+			double width = s.getWidth();
+			double length = s.getLength();
+			int facing = (int) s.getFacing();
+			double x = s.getXLocation();
+			double y = s.getYLocation();
+			double xx = 0;
+			double yy = 0;
+
+			if (facing == 0) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 90){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			// Loading Dock Garage
+			if (facing == 180) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 270){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+			// Fortunately, they both have the same width and length
+			else if (facing == 45){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			else if (facing == 135){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			double distanceX = Math.abs(x - pos.getX());
+			double distanceY = Math.abs(y - pos.getY());
+			//System.out.println("distanceX : " + distanceX + "  distanceY : " + distanceY);
+
+
+			if (distanceX <= xx && distanceY <= yy) {
+				Point.Double last = mapPanel.convertToSettlementLocation((int)xLast, (int)yLast);
+				//double scale = mapPanel.getScale();
+				s.setXLocation(x + pos.getX() - last.getX());
+				s.setYLocation(y + pos.getY() - last.getY());
+
+				xLast = xPixel;
+				yLast = yPixel;
+			}
+
+		}
+	}
+
+
+	public void moveMouse(Point p) {
+	    GraphicsEnvironment ge =
+	        GraphicsEnvironment.getLocalGraphicsEnvironment();
+	    GraphicsDevice[] gs = ge.getScreenDevices();
+
+	    // Search the devices for the one that draws the specified point.
+	    for (GraphicsDevice device: gs) {
+	        GraphicsConfiguration[] configurations =
+	            device.getConfigurations();
+	        for (GraphicsConfiguration config: configurations) {
+	            Rectangle bounds = config.getBounds();
+	            if(bounds.contains(p)) {
+	                // Set point to screen coordinates.
+	                Point b = bounds.getLocation();
+	                Point s = new Point(p.x - b.x, p.y - b.y);
+
+	                try {
+	                	java.awt.Robot r = new java.awt.Robot(device);
+	                    r.mouseMove(s.x, s.y);
+	                } catch (AWTException e) {
+	                    e.printStackTrace();
+	                }
+
+	                return;
+	            }
+	        }
+	    }
+	    // Couldn't move to the point, it may be off screen.
+	    return;
+	}
 
 	   /**
      * Determines a new construction stage info for a site.

@@ -1381,7 +1381,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			//Settlement settlement = site.getSettlement();
 
 			if (mainWindow != null)  {
-				//mainWindow.openConstructionWizard(mgr);
+				mainWindow.openConstructionWizard(mission);
 			}
 			else if (mainScene != null) {
 				mainScene.openConstructionWizard(mission);

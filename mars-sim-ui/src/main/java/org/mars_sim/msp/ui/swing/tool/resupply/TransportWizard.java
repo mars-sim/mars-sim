@@ -162,8 +162,21 @@ public class TransportWizard {
 				   	//mainScene.unpauseSimulation();
 					determineEachBuildingPosition(mgr);
 
-				    unpause(previous0);
-
+					if (mainScene != null) {
+						boolean now = Simulation.instance().getMasterClock().isPaused();
+						if (!previous0) {
+							if (now) {
+								mainScene.unpauseSimulation();
+				   	    		//System.out.println("previous is false. now is true. Unpaused sim");
+							}
+						} else {
+							if (!now) {
+								mainScene.unpauseSimulation();
+				   	    		//System.out.println("previous is true. now is false. Unpaused sim");
+							}
+						}
+						desktop.getTimeWindow().enablePauseButton(true);
+					}
 				});
 
 			} catch (InterruptedException | ExecutionException e) {
@@ -592,8 +605,11 @@ public class TransportWizard {
      */
 	public synchronized void confirmBuildingLocation(BuildingManager mgr, BuildingTemplate template, boolean isAtPreDefinedLocation) {
 		//System.out.println("inside confirmBuildingLocation");
+		Building newBuilding = null;
 
-		Building newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
+		if (isAtPreDefinedLocation) {
+			newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
+		}
 
         // Determine location and facing for the new building.
 		double xLoc = newBuilding.getXLocation();
@@ -639,24 +655,25 @@ public class TransportWizard {
 
 		} else {
 
-	        desktop.openAnnouncementWindow("Pause for Building Transport and Confirm Location");
+	        desktop.openAnnouncementWindow("Pause for Transport Wizard");
 	        AnnouncementWindow aw = desktop.getAnnouncementWindow();
 	        Point location = MouseInfo.getPointerInfo().getLocation();
 	        double Xloc = location.getX() - aw.getWidth() * 2;
-			double Yloc = location.getX() - aw.getHeight() * 2;
+			double Yloc = location.getY() - aw.getHeight() * 2;
 			aw.setLocation((int)Xloc, (int)Yloc);
 
-			int reply = JOptionPane.showConfirmDialog(aw, message, TITLE, JOptionPane.YES_NO_OPTION);
+			int reply = JOptionPane.showConfirmDialog(aw, header, TITLE, JOptionPane.YES_NO_OPTION);
 			//repaint();
 
 			if (reply == JOptionPane.YES_OPTION) {
-	            logger.info("Building in Place : " + newBuilding.toString());
+	            logger.info(newBuilding.toString() + " is put in Place.");
 			}
 			else {
-				mgr.removeBuilding(newBuilding);
+				//mgr.removeBuilding(newBuilding);
 				confirmBuildingLocation(mgr, template, false);
 			}
 
+			desktop.disposeAnnouncementWindow();
         }
 	}
 
@@ -687,13 +704,15 @@ public class TransportWizard {
 
 			ButtonType buttonTypeYes = new ButtonType("Yes");
 			ButtonType buttonTypeNo = new ButtonType("No");
+			ButtonType buttonTypeMouse = new ButtonType("Use Mouse");
 			ButtonType buttonTypeCancelTimer = null;
+
 			if (hasTimer) {
 				buttonTypeCancelTimer = new ButtonType("Cancel Timer");
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancelTimer);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse, buttonTypeCancelTimer);
 			}
 			else
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse);
 
 			Optional<ButtonType> result = null;
 
@@ -718,7 +737,7 @@ public class TransportWizard {
 			 	+ " is put in place in " + mgr.getSettlement());
 
 			} else if (result.isPresent() && result.get() == buttonTypeNo) {
-		    	mgr.removeBuilding(newBuilding);
+		    	//mgr.removeBuilding(newBuilding);
 		    	//System.out.println("just removing building");
 		    	BuildingTemplate repositionedTemplate = mgr.getResupply().positionNewResupplyBuilding(template.getBuildingType());
 		    	//System.out.println("obtain new repositionedTemplate");
@@ -728,6 +747,12 @@ public class TransportWizard {
 				checkTemplatePosition(mgr, repositionedTemplate, false);
 				//System.out.println("done calling checkTemplatePosition()");
 
+
+			} else if (result.isPresent() && result.get() == buttonTypeMouse) {
+				//Point location = MouseInfo.getPointerInfo().getLocation();
+		        //double Xloc = location.getX();
+				//double Yloc = location.getY();
+				//newBuilding.setXLocation((int)Xloc), (int)Yloc);
 			}
 
 			else if (result.isPresent() && result.get() == buttonTypeCancelTimer) {

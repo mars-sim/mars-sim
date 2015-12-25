@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
@@ -47,9 +48,12 @@ import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
+
+import javafx.application.Platform;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -82,6 +86,7 @@ public class MainWindow extends JComponent {
 
 	// 2014-12-23 Added transportWizard
 	private TransportWizard transportWizard;
+	private ConstructionWizard constructionWizard;
 	private BuildingManager mgr; // mgr is very important for FINISH_BUILDING_PLACEMENT_EVENT
 
 	private Thread newSimThread;
@@ -151,6 +156,7 @@ public class MainWindow extends JComponent {
 
 		// 2014-12-23 Added transportWizard
 		transportWizard = new TransportWizard(this, desktop);
+		constructionWizard = new ConstructionWizard(desktop);
 	}
 
 	// 2015-02-04 Added init()
@@ -336,7 +342,7 @@ public class MainWindow extends JComponent {
 				                throw new IllegalStateException("earthclock is null");
 				            }
 				            t = earthclock.getTimeStamp();
-				            
+
 				            //System.out.println("millis is " + EarthClock.getMillis(earthclock));
 				            //System.out.println("Julian Date (UT) is " + EarthClock.getJulianDateUT(earthclock));
 				        }
@@ -768,7 +774,12 @@ public class MainWindow extends JComponent {
 		transportWizard.deliverBuildings(buildingManager);
 
 	}
-	
+
+	public void openConstructionWizard(BuildingConstructionMission mission) { // ConstructionManager constructionManager,
+		logger.info("MainWindow's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
+		constructionWizard.selectSite(mission);
+	}
+
 	public TransportWizard getTransportWizard() {
 		return transportWizard;
 	}

@@ -85,7 +85,7 @@ implements ClockListener {
 	private Settlement settlement;
 	private PopUpUnitMenu menu;
 	private SettlementTransparentPanel settlementTransparentPanel;
-	
+
 	private Graphics dbg;
 	//private Graphics2D g2d;
 	private Image dbImage = null;
@@ -129,7 +129,9 @@ implements ClockListener {
 		Simulation.instance().getMasterClock().addClockListener(this);
 
 		// 2015-01-16 Added detectMouseMovement() after refactoring
-		detectMouseMovement();
+		SwingUtilities.invokeLater(() -> {
+			detectMouseMovement();
+		});
 
         setVisible(true);
 	}
@@ -151,7 +153,7 @@ implements ClockListener {
 		//SwingUtilities.invokeLater(() -> {
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
-	    
+
 		////paintDoubleBuffer();
 		repaint();
 	}
@@ -181,10 +183,6 @@ implements ClockListener {
 
 		// Set foreground and background colors.
 		setOpaque(true);
-		//setBackground(getContentPane().get);
-		//setForeground(Color.WHITE);
-
-		//Simulation.instance().getMasterClock().addClockListener(this);
 
 		//paintDoubleBuffer();
 		repaint();
@@ -195,9 +193,11 @@ implements ClockListener {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				// Set initial mouse drag position.
-				xLast = evt.getX();
-				yLast = evt.getY();
+				if (evt.getButton() == MouseEvent.BUTTON1) {
+					// Set initial mouse drag position.
+					xLast = evt.getX();
+					yLast = evt.getY();
+				}
 			}
 
 			@Override
@@ -224,8 +224,10 @@ implements ClockListener {
 					doPop(evt);
 				}
 
-				xLast = evt.getX();
-				yLast = evt.getY();
+				if (evt.getButton() == MouseEvent.BUTTON1) {
+					xLast = evt.getX();
+					yLast = evt.getY();
+				}
 
 				repaint();
 
@@ -241,23 +243,20 @@ implements ClockListener {
 		    	// if NO building is selected, do NOT call popup menu
 		    	if (site != null || building != null || vehicle != null || person != null) {
 
-		    	    //SwingUtilities.invokeLater(new Runnable(){
-		    	        //public void run()  {
-	    	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below
-		    	        	// when one or more are detected
-		    	        	if (person != null)
-		    	        		menu = new PopUpUnitMenu(settlementWindow, person);
-		    	        	else if (robot != null)
-		    	        		menu = new PopUpUnitMenu(settlementWindow, robot);
-		    	        	else if (vehicle != null)
-		    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
-		    	        	else if (building != null)
-		    	        		menu = new PopUpUnitMenu(settlementWindow, building);
-		    	        	else if (site != null)
-		    	        		menu = new PopUpUnitMenu(settlementWindow, site);
+	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below
+    	        	// when one or more are detected
+    	        	if (person != null)
+    	        		menu = new PopUpUnitMenu(settlementWindow, person);
+    	        	else if (robot != null)
+    	        		menu = new PopUpUnitMenu(settlementWindow, robot);
+    	        	else if (vehicle != null)
+    	        		menu = new PopUpUnitMenu(settlementWindow, vehicle);
+    	        	else if (building != null)
+    	        		menu = new PopUpUnitMenu(settlementWindow, building);
+    	        	else if (site != null)
+    	        		menu = new PopUpUnitMenu(settlementWindow, site);
 
-		    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
-		    	        //} });
+    	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		        }
 		    }
 		} // end of class PopClickListener
@@ -268,17 +267,17 @@ implements ClockListener {
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
-				setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				// Move map center based on mouse drag difference.
-				double xDiff = evt.getX() - xLast;
-				double yDiff = evt.getY() - yLast;
-				moveCenter(xDiff, yDiff);
-				xLast = evt.getX();
-				yLast = evt.getY();
+				if (evt.getButton() == MouseEvent.BUTTON1) {
+					setCursor(new Cursor(Cursor.MOVE_CURSOR));
+					// Move map center based on mouse drag difference.
+					double xDiff = evt.getX() - xLast;
+					double yDiff = evt.getY() - yLast;
+					moveCenter(xDiff, yDiff);
+					xLast = evt.getX();
+					yLast = evt.getY();
+				}
 			}
-
 		});
-
 	}
 
 	/**
@@ -950,7 +949,7 @@ implements ClockListener {
 	public SettlementTransparentPanel getSettlementTransparentPanel() {
 		return settlementTransparentPanel;
 	}
-	
+
 	/**
 	 * Cleans up the map panel for disposal.
 	 */
