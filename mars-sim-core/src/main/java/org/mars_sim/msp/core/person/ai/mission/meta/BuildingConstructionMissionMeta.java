@@ -81,7 +81,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             boolean firstTenSols = (totalTimeSols < 10D);
 
             if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
-
+      	
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                     ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
@@ -99,6 +99,11 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                             ConstructionManager manager = settlement.getConstructionManager();
                             int numSites = manager.getConstructionSites().size();
                             result/= Math.pow(10, numSites);
+                        }
+                        
+                        // Modify if construction is the person's favorite activity.
+                        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
+                            result *= 1.1D;
                         }
                     }
                 }

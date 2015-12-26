@@ -56,7 +56,7 @@ implements Serializable, LocalBoundedObject {
 
     private boolean undergoingConstruction;
     private boolean undergoingSalvage;
-    private boolean manual, empty;
+    private boolean manual, isSitePicked;
 
     private transient List<ConstructionListener> listeners;
 
@@ -520,12 +520,12 @@ implements Serializable, LocalBoundedObject {
 		this.manual = manual;
 	}
 
-	public boolean getEmpty() {
-		return empty;
+	public boolean getSitePicked() {
+		return isSitePicked;
 	}
 
-	public void setEmpty(boolean value) {
-		this.empty = value;
+	public void setSitePicked(boolean value) {
+		this.isSitePicked = value;
 	}
 
 }

@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
@@ -530,52 +531,55 @@ implements ClockListener {
 		while (j.hasNext()) {
 			ConstructionSite s = j.next();
 
-			double width = s.getWidth();
-			double length = s.getLength();
-			int facing = (int) s.getFacing();
-			double x = s.getXLocation();
-			double y = s.getYLocation();
-			double xx = 0;
-			double yy = 0;
-
-			if (facing == 0) {
-				xx = width/2D;
-				yy = length/2D;
+			if (!LabelMapLayer.getConstructionLabel(s).equals(Msg.getString("LabelMapLayer.noConstruction")))  {
+				double width = s.getWidth();
+				double length = s.getLength();
+				int facing = (int) s.getFacing();
+				double x = s.getXLocation();
+				double y = s.getYLocation();
+				double xx = 0;
+				double yy = 0;
+	
+				if (facing == 0) {
+					xx = width/2D;
+					yy = length/2D;
+				}
+				else if (facing == 90){
+					yy = width/2D;
+					xx = length/2D;
+				}
+				// Loading Dock Garage
+				if (facing == 180) {
+					xx = width/2D;
+					yy = length/2D;
+				}
+				else if (facing == 270){
+					yy = width/2D;
+					xx = length/2D;
+				}
+	
+				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+				// Fortunately, they both have the same width and length
+				else if (facing == 45){
+					yy = width/2D;
+					xx = length/2D;
+				}
+				else if (facing == 135){
+					yy = width/2D;
+					xx = length/2D;
+				}
+	
+				double distanceX = Math.abs(x - clickPosition.getX());
+				double distanceY = Math.abs(y - clickPosition.getY());
+	
+				if (distanceX <= xx && distanceY <= yy) {
+					site = s;
+					break;
+				}
 			}
-			else if (facing == 90){
-				yy = width/2D;
-				xx = length/2D;
-			}
-			// Loading Dock Garage
-			if (facing == 180) {
-				xx = width/2D;
-				yy = length/2D;
-			}
-			else if (facing == 270){
-				yy = width/2D;
-				xx = length/2D;
-			}
-
-			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
-			// Fortunately, they both have the same width and length
-			else if (facing == 45){
-				yy = width/2D;
-				xx = length/2D;
-			}
-			else if (facing == 135){
-				yy = width/2D;
-				xx = length/2D;
-			}
-
-			double distanceX = Math.abs(x - clickPosition.getX());
-			double distanceY = Math.abs(y - clickPosition.getY());
-
-			if (distanceX <= xx && distanceY <= yy)
-				site = s;
 		}
-
+		
 		return site;
-
 	}
 
 /*

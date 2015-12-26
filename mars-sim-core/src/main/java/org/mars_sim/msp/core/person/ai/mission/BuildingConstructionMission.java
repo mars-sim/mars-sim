@@ -141,7 +141,7 @@ implements Serializable {
                 constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
             }
 
-            init_1a(constructionSkill);
+            init_case_1a(constructionSkill);
         }
 /*
         // Add phases.
@@ -157,8 +157,8 @@ implements Serializable {
 */
     }
 
-	public void init_1a(int constructionSkill) {
-
+	public void init_case_1a(int constructionSkill) {
+		//System.out.println("init_1a");
         ConstructionManager manager = settlement.getConstructionManager();
         ConstructionValues values = manager.getConstructionValues();
         values.clearCache();
@@ -184,15 +184,16 @@ implements Serializable {
 		else if (newSiteProfit > 0D) {
 
 		    if (Simulation.getUseGUI())  {
-	        	// if GUI is in use
+				System.out.println("Case 1 : the site has not been picked yet and the construction is started automatically by settlemen under one starting member");
+		    	// if GUI is in use
 		    	constructionSite = new ConstructionSite(settlement);//, manager);
 		    	constructionSite.setSkill(constructionSkill);
-		    	constructionSite.setManual(true);
+		    	constructionSite.setManual(false);
+		    	constructionSite.setSitePicked(false);
 		    	//constructionSite.setStageInfo(stageInfo);
 				manager.getSites().add(constructionSite);
 				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
 				settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
-
 
 	        } else {
 	        	// if GUI is NOT in use
@@ -229,7 +230,7 @@ implements Serializable {
 			        endMission("New construction stage could not be determined.");
 			    }
 
-			    init_1b(constructionSite, stageInfo, constructionSkill, values); //ConstructionSite constructionSite, ConstructionStageInfo stageInfo,
+			    init_case_1b(constructionSite, stageInfo, constructionSkill, values); //ConstructionSite constructionSite, ConstructionStageInfo stageInfo,
 			    setPhases_1();
 
 			}
@@ -238,9 +239,10 @@ implements Serializable {
 
 	}
 
-	public void init_1b(ConstructionSite modSite, ConstructionStageInfo info, int constructionSkill, ConstructionValues values) {
+	public void init_case_1b(ConstructionSite modSite, ConstructionStageInfo info, int constructionSkill, ConstructionValues values) {
     	this.constructionSite = modSite;
     	ConstructionStageInfo stageInfo = info;
+		//System.out.println("init_1b");
 
         //System.out.println("constructionSite is " + constructionSite.getDescription()
 	    ////	+ " x is " + constructionSite.getXLocation()
@@ -330,62 +332,66 @@ implements Serializable {
         this.settlement = settlement;
         this.constructionVehicles = vehicles;
 
+        int bestConstructionSkill = 0;
+
+        Iterator<MissionMember> i = members.iterator();
+
+        while (i.hasNext()) {
+
+            int constructionSkill = 0;
+
+	        MissionMember member = i.next();
+	        if (member instanceof Person) {
+	        	Person person = (Person) member;
+	        	//person.getMind().setMission(this);
+	        	constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
+                        SkillType.CONSTRUCTION);
+	        }
+	        else if (member instanceof Robot) {
+	        	Robot robot = (Robot) member;
+	        	//robot.getBotMind().setMission(this);
+	        	constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(
+        				SkillType.CONSTRUCTION);
+	        }
+
+            if (constructionSkill > bestConstructionSkill) {
+                bestConstructionSkill = constructionSkill;
+            }
+        }
+
         ConstructionManager manager = settlement.getConstructionManager();
 
         if (site != null) {
             constructionSite = site;
 
             if (Simulation.getUseGUI())  {
-            	//System.out.println("site is NOT null && GUI");
 	        	// if GUI is in use
-		    	constructionSite.setEmpty(false);
+				System.out.println("Case 2 : the site has been picked and the construction is started by users");
+     
+		    	constructionSite.setSkill(bestConstructionSkill);
+		    	constructionSite.setSitePicked(true);
 		    	constructionSite.setStageInfo(stageInfo);
 		    	constructionSite.setManual(true);
 				manager.getSites().add(constructionSite);
 				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, constructionSite);
 				settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
+
 	        }
         }
 
         else {
             logger.log(Level.INFO, "New construction site added at " + settlement.getName());
-        	//System.out.println("site is null");
-
-            int bestConstructionSkill = 0;
-
-            Iterator<MissionMember> i = members.iterator();
-
-            while (i.hasNext()) {
-
-                int constructionSkill = 0;
-
-    	        MissionMember member = i.next();
-    	        if (member instanceof Person) {
-    	        	Person person = (Person) member;
-    	        	//person.getMind().setMission(this);
-    	        	constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
-                            SkillType.CONSTRUCTION);
-    	        }
-    	        else if (member instanceof Robot) {
-    	        	Robot robot = (Robot) member;
-    	        	//robot.getBotMind().setMission(this);
-    	        	constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(
-            				SkillType.CONSTRUCTION);
-    	        }
-
-                if (constructionSkill > bestConstructionSkill) {
-                    bestConstructionSkill = constructionSkill;
-                }
-            }
-
+			//System.out.println("Case 3 : site has NOT been picked yet and the construction is manually started by users");
+		     
             //boolean check = false;
             //if (check) {
             if (Simulation.getUseGUI())  {
-            	//System.out.println("site is null && GUI");
 	        	// if GUI is in use
 		    	constructionSite = new ConstructionSite(settlement);//, manager);
 
 		    	constructionSite.setSkill(bestConstructionSkill);
+		    	constructionSite.setSitePicked(false);
+		    	constructionSite.setManual(true);
 		    	//constructionSite.setMembers(members);
 		    	//constructionSite.setVehicles(vehicles);
 
@@ -408,8 +414,6 @@ implements Serializable {
                     constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
                 }
 
-		    	constructionSite.setEmpty(true);
-		    	constructionSite.setManual(true);
 				manager.getSites().add(constructionSite);
 				//System.out.println("# of sites : " + settlement.getConstructionManager().getSites().size());
 				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, constructionSite);
