@@ -131,6 +131,9 @@ implements ClockListener {
 
 		// 2015-01-16 Added detectMouseMovement() after refactoring
 		SwingUtilities.invokeLater(() -> {
+			setFocusable(true);
+			requestFocusInWindow();
+
 			detectMouseMovement();
 		});
 
@@ -467,50 +470,54 @@ implements ClockListener {
 		while (j.hasNext()) {
 			Building building = j.next();
 
-			double width = building.getWidth();
-			double length = building.getLength();
-			int facing = (int) building.getFacing();
-			double x = building.getXLocation();
-			double y = building.getYLocation();
-			double xx = 0;
-			double yy = 0;
+			if (!building.getInTransport()) {
 
-			if (facing == 0) {
-				xx = width/2D;
-				yy = length/2D;
-			}
-			else if (facing == 90){
-				yy = width/2D;
-				xx = length/2D;
-			}
-			// Loading Dock Garage
-			if (facing == 180) {
-				xx = width/2D;
-				yy = length/2D;
-			}
-			else if (facing == 270){
-				yy = width/2D;
-				xx = length/2D;
-			}
+				double width = building.getWidth();
+				double length = building.getLength();
+				int facing = (int) building.getFacing();
+				double x = building.getXLocation();
+				double y = building.getYLocation();
+				double xx = 0;
+				double yy = 0;
 
-			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
-			// Fortunately, they both have the same width and length
-			else if (facing == 45){
-				yy = width/2D;
-				xx = length/2D;
-			}
-			else if (facing == 135){
-				yy = width/2D;
-				xx = length/2D;
-			}
+				if (facing == 0) {
+					xx = width/2D;
+					yy = length/2D;
+				}
+				else if (facing == 90){
+					yy = width/2D;
+					xx = length/2D;
+				}
+				// Loading Dock Garage
+				if (facing == 180) {
+					xx = width/2D;
+					yy = length/2D;
+				}
+				else if (facing == 270){
+					yy = width/2D;
+					xx = length/2D;
+				}
 
-			double distanceX = Math.abs(x - clickPosition.getX());
-			double distanceY = Math.abs(y - clickPosition.getY());
+				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+				// Fortunately, they both have the same width and length
+				else if (facing == 45){
+					yy = width/2D;
+					xx = length/2D;
+				}
+				else if (facing == 135){
+					yy = width/2D;
+					xx = length/2D;
+				}
 
-			if (distanceX <= xx && distanceY <= yy)
-				selectedBuilding = building;
+				double distanceX = Math.abs(x - clickPosition.getX());
+				double distanceY = Math.abs(y - clickPosition.getY());
+
+				if (distanceX <= xx && distanceY <= yy) {
+					selectedBuilding = building;
+					break;
+				}
+			}
 		}
-
 		return selectedBuilding;
 	}
 
@@ -539,7 +546,7 @@ implements ClockListener {
 				double y = s.getYLocation();
 				double xx = 0;
 				double yy = 0;
-	
+
 				if (facing == 0) {
 					xx = width/2D;
 					yy = length/2D;
@@ -557,7 +564,7 @@ implements ClockListener {
 					yy = width/2D;
 					xx = length/2D;
 				}
-	
+
 				// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
 				// Fortunately, they both have the same width and length
 				else if (facing == 45){
@@ -568,17 +575,17 @@ implements ClockListener {
 					yy = width/2D;
 					xx = length/2D;
 				}
-	
+
 				double distanceX = Math.abs(x - clickPosition.getX());
 				double distanceY = Math.abs(y - clickPosition.getY());
-	
+
 				if (distanceX <= xx && distanceY <= yy) {
 					site = s;
 					break;
 				}
 			}
 		}
-		
+
 		return site;
 	}
 

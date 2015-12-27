@@ -130,6 +130,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected double powerNeededForEVAheater;
 
 	boolean isImpactImminent = false;
+	boolean inTransport = true;
 
 	protected String buildingType;
 	protected String nickName;
@@ -563,14 +564,35 @@ LocalBoundedObject, InsidePathLocation {
 		return xLoc;
 	}
 
+
+	public void setXLocation(double x) {
+		this.xLoc = x ;
+	}
+
 	@Override
 	public double getYLocation() {
 		return yLoc;
 	}
 
+	public void setYLocation(double y) {
+		this.yLoc = y ;
+	}
+
 	@Override
 	public double getFacing() {
 		return facing;
+	}
+
+	public void setFacing(double facing) {
+		this.facing = facing ;
+	}
+
+	public boolean getInTransport() {
+		return inTransport;
+	}
+
+	public void setInTransport(boolean value) {
+		inTransport = value;
 	}
 
 	/**

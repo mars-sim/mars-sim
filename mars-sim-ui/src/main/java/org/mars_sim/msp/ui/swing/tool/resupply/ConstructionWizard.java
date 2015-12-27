@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionWizard.java
- * @version 3.08 2015-12-22
+ * @version 3.08 2015-12-26
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -43,6 +43,8 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard.KeyboardDetection;
+import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard.MouseDetection;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.reactfx.util.FxTimer;
@@ -62,6 +64,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 
 import java.awt.AWTException;
 import java.awt.Cursor;
@@ -118,11 +121,12 @@ public class ConstructionWizard {
 
     private static int wait_time_in_secs = 30; // in seconds
 
-    private int xLast, yLast;
+    private double xLast, yLast;
+
 	//private ConstructionStage constructionStage;
 
 	private MainDesktopPane desktop;
-	private Settlement settlement;
+	//private Settlement settlement;
 	private SettlementWindow settlementWindow;
 	private SettlementMapPanel mapPanel;
 	private MainScene mainScene;
@@ -159,7 +163,7 @@ public class ConstructionWizard {
 	public synchronized void selectSite(BuildingConstructionMission mission) {
 		logger.info("ConstructionWizard's selectSite() is in " + Thread.currentThread().getName() + " Thread");
 	    ConstructionSite constructionSite = mission.getConstructionSite();
-	    settlement = constructionSite.getSettlement();
+	    Settlement settlement = constructionSite.getSettlement();
 	    ConstructionManager constructionManager = settlement.getConstructionManager();
 
 		// Select the relevant settlement
@@ -179,10 +183,10 @@ public class ConstructionWizard {
 	    	if (!isSitePicked)
 	    		site_case = 3;
 	    }
-	    	
-	    	
+
+
 	    switch (site_case) {
-	    
+
 		    case 1: executeCase1(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
 		    	break;
 		    case 2: executeCase2(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
@@ -192,8 +196,8 @@ public class ConstructionWizard {
 	    }
 
 	}
-	
-	public void executeCase1(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo, 
+
+	public void executeCase1(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
 		System.out.println("Case 1");
 		ConstructionSite modifiedSite = null;
@@ -225,7 +229,7 @@ public class ConstructionWizard {
 	        modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
 	        confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
 
-	        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+	        logger.log(Level.INFO, "New construction site added at " + constructionSite.getSettlement().getName());
 	    }
 	    else {
 	        //endMission("New construction stage could not be determined.");
@@ -236,11 +240,11 @@ public class ConstructionWizard {
 	    mission.setPhases_1();
 	}
 
-	public void executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo, 
+	public void executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
 		System.out.println("Case 2");
 		ConstructionSite modifiedSite = constructionSite;
-		
+
 	    boolean previous = Simulation.instance().getMasterClock().isPaused();
 	    if (mainScene != null) {
 			if (!previous) {
@@ -249,9 +253,9 @@ public class ConstructionWizard {
 			}
 			desktop.getTimeWindow().enablePauseButton(false);
 	    }
-	    
+
 		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
-		
+
 		if (mainScene != null) {
 			boolean now = Simulation.instance().getMasterClock().isPaused();
 			if (!previous) {
@@ -267,18 +271,18 @@ public class ConstructionWizard {
 			}
 			desktop.getTimeWindow().enablePauseButton(true);
 		}
-		
+
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
 
 	}
-	
-	
-	public void executeCase3(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo, 
+
+
+	public void executeCase3(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
 		System.out.println("Case 3");
 		ConstructionSite modifiedSite = constructionSite;
-		
+
 	    boolean previous = Simulation.instance().getMasterClock().isPaused();
 	    if (mainScene != null) {
 			if (!previous) {
@@ -309,12 +313,12 @@ public class ConstructionWizard {
 			}
 			desktop.getTimeWindow().enablePauseButton(true);
 		}
-		
+
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
 
 	}
-	
+
 	@SuppressWarnings("restriction")
 	public synchronized void confirmSiteLocation(ConstructionSite site, ConstructionManager constructionManager,
 			boolean isAtPreDefinedLocation, ConstructionStageInfo stageInfo, int constructionSkill) {
@@ -336,10 +340,11 @@ public class ConstructionWizard {
 
 		String header = null;
 		String title = null;
-		String message  = "Note: unless timer is cancelled, default to \"Yes\" in 30 secs";
+		String message = "(1) Will default to \"Yes\" in 30 secs unless timer is cancelled."
+    			+ " (2) To manually place a site, click on \"Use Mouse/Keyboard Control\" button ";
 		StringProperty msg = new SimpleStringProperty(message);
 		String name = null;
-		
+
 		if (stageInfo != null) {
 			name = stageInfo.getName();
 			title = "A New " + Conversion.capitalize(stageInfo.getName()).replace(" X ", " x ") + " at " + constructionManager.getSettlement();
@@ -349,7 +354,7 @@ public class ConstructionWizard {
 			name = site.getName();
 			title = "A New " + Conversion.capitalize(site.getName()).replace(" X ", " x ") + " at " + constructionManager.getSettlement();
 		}
-		
+
 		if (isAtPreDefinedLocation) {
 			header = "Would you like to place the " +  name + " at its default position? ";
 		}
@@ -357,7 +362,7 @@ public class ConstructionWizard {
 			header = "Would you like to place the " + name + " at this position? ";
 		}
 
-	
+
         if (mainScene != null) {
         	alertDialog(title, header, msg, constructionManager, site, true, stageInfo, constructionSkill);
 
@@ -399,6 +404,8 @@ public class ConstructionWizard {
 		// FXUtilities.runAndWait(() -> {
 
 			Alert alert = new Alert(AlertType.CONFIRMATION);
+			//alert.setOnCloseRequest((event) -> event.consume());
+			//alert.initStyle(StageStyle.UNDECORATED);
 			alert.initOwner(mainScene.getStage());
 			alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
 			//alert.initModality(Modality.APPLICATION_MODAL);
@@ -418,31 +425,35 @@ public class ConstructionWizard {
 
 			ButtonType buttonTypeYes = new ButtonType("Yes");
 			ButtonType buttonTypeNo = new ButtonType("No");
-			ButtonType buttonTypeMouse = new ButtonType("Use Mouse");
+			ButtonType buttonTypeMouseKB = new ButtonType("Use Mouse/Keyboard Control");
 			ButtonType buttonTypeCancelTimer = null;
+
+			Timer timer = null;
 
 			if (hasTimer) {
 				buttonTypeCancelTimer = new ButtonType("Cancel Timer");
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse, buttonTypeCancelTimer);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB, buttonTypeCancelTimer);
+
+				IntegerProperty i = new SimpleIntegerProperty(wait_time_in_secs);
+				// 2015-12-19 Added ReactFX's Timer and FxTimer
+				timer = FxTimer.runPeriodically(java.time.Duration.ofMillis(1000), () -> {
+		        	int num = i.get() - 1;
+		        	if (num >= 0) {
+		        		i.set(num);
+		        	}
+		        	//System.out.println(num);
+		        	if (num == 0) {
+		        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
+		        	    button.fire();
+		        	}
+		        	msg.set("(1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
+		        			+ " (2) To manually place a site, use Mouse/Keyboard Control.");
+				});
 			}
 			else
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
 
 			Optional<ButtonType> result = null;
-
-			IntegerProperty i = new SimpleIntegerProperty(wait_time_in_secs);
-			// 2015-12-19 Added ReactFX's Timer and FxTimer
-			Timer timer = FxTimer.runPeriodically(java.time.Duration.ofMillis(1000), () -> {
-	        	int num = i.get() - 1;
-	            i.set(num);
-	        	//System.out.println(num);
-	        	if (num == 0) {
-	        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
-	        	    button.fire();
-	        	}
-	        	msg.set("Notes: (1). Will default to \"Yes\" in " + num + " secs unless timer is cancelled"
-	        			+ "(2). Click \"Switch to Mouse & Keyboard\" button to manually place a site");
-			});
 
 			result = alert.showAndWait();
 
@@ -455,10 +466,10 @@ public class ConstructionWizard {
 				site = positionNewConstructionSite(site, stageInfo, constructionSkill);
 				confirmSiteLocation(site, constructionManager,false, stageInfo, constructionSkill);
 
-			} else if (result.isPresent() && result.get() == buttonTypeMouse) {
+			} else if (result.isPresent() && result.get() == buttonTypeMouseKB) {
 				placementDialog(title,header, site);
 
-			} else if (result.isPresent() && result.get() == buttonTypeCancelTimer) {
+			} else if (hasTimer && result.isPresent() && result.get() == buttonTypeCancelTimer) {
 				timer.stop();
 				alertDialog(title, header, msg, constructionManager, site, false, stageInfo, constructionSkill);
 			}
@@ -476,12 +487,14 @@ public class ConstructionWizard {
 	public void placementDialog(String title, String header, ConstructionSite site) {
     	// Platform.runLater(() -> {
 		// FXUtilities.runAndWait(() -> {
-			String msg = "For Keyboard: (1) Use up/down/left/right to move the site; "
-					+ "(2) Press R to rotate the site 90 degrees clockwise; "					
-					+ "For Mouse: (1) Press & Hold the right mouse button to drag the site to a desired location; "
-					+ "(2) Release button to set in place; "
-					+ "(3) Hit \"Confirm Position\" button to proceed. ";
+			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the site\n"
+				+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise\n"
+				+ "   Mouse Control :\t(1) Press & Hold right button to drag the site to a new location\n"
+				+ "\t\t\t\t(2) Release button to drop in place\n"
+				+ "\t\t\t\t(3) Hit \"Confirm Position\" button to proceed";
 			Alert alert = new Alert(AlertType.CONFIRMATION);
+			//alert.setOnCloseRequest((event) -> event.consume());
+			//alert.initStyle(StageStyle.UNDECORATED);
 			alert.initOwner(mainScene.getStage());
 			alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
 			//alert.initModality(Modality.APPLICATION_MODAL);
@@ -505,15 +518,20 @@ public class ConstructionWizard {
 			//System.out.println("xLoc : " + xLoc + "   yLoc : " + yLoc + "   scale : " + scale);
 			//moveMouse(new Point((int)(xLoc*scale), (int)(yLoc*scale)));
 
+			mainScene.getStage().requestFocus();
+
+			final KeyboardDetection kb = new KeyboardDetection(site);
+			final MouseDetection md = new MouseDetection(site);
+
 			SwingUtilities.invokeLater(() -> {
 
 				mapPanel.setFocusable(true);
 				mapPanel.requestFocusInWindow();
-				
-				mapPanel.addKeyListener(new KeyboardDetection(site));			
-				
-				mapPanel.addMouseMotionListener(new MouseDetection(site)); 
-				
+
+				mapPanel.addKeyListener(kb);
+
+				mapPanel.addMouseMotionListener(md);
+
 				mapPanel.addMouseListener(new MouseListener() {
 				    @Override
 				    public void mouseClicked(MouseEvent evt) {
@@ -531,6 +549,8 @@ public class ConstructionWizard {
 					@Override
 					public void mousePressed(MouseEvent evt) {
 						if (evt.getButton() == MouseEvent.BUTTON3) {
+							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+
 							xLast = evt.getX();
 							yLast = evt.getY();
 						}
@@ -538,6 +558,7 @@ public class ConstructionWizard {
 
 					@Override
 					public void mouseReleased(MouseEvent evt) {
+						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					}
 
 				});
@@ -547,7 +568,8 @@ public class ConstructionWizard {
 			Optional<ButtonType> result = alert.showAndWait();
 
 			if (result.isPresent() && result.get() == buttonTypeConfirm) {
-
+				mapPanel.removeKeyListener(kb);
+				mapPanel.removeMouseMotionListener(md);
 			}
 
 	}
@@ -555,55 +577,52 @@ public class ConstructionWizard {
 	// 2015-12-25 Added MouseDetection
 	class MouseDetection implements MouseMotionListener{
 		private ConstructionSite site;
-		
+
 		MouseDetection(ConstructionSite site) {
 			this.site = site;
 		}
-		
+
 		@Override
 		public void mouseDragged(MouseEvent evt) {
 			if (evt.getButton() == MouseEvent.BUTTON3) {
 
 				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 
-				double x = evt.getX();
-				double y = evt.getY();
-
-				moveConstructionSiteAt(site, (int)x, (int)y);
+				moveConstructionSiteAt(site, evt.getX(), evt.getY());
 			}
 		}
-		
+
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			// TODO Auto-generated method stub
 		}
-		
+
 	}
-	
+
 	// 2015-12-25 Added KeyboardDetection
 	class KeyboardDetection implements KeyListener{
 		private ConstructionSite site;
-		
+
 		KeyboardDetection(ConstructionSite site) {
 			this.site = site;
 		}
-		
+
 		@Override
 		public void keyPressed(java.awt.event.KeyEvent e) {
 		    int c = e.getKeyCode();
-		    System.out.println("c is " + c);
+		    //System.out.println("c is " + c);
 		    moveConstructionSite(site, c);
 		    mapPanel.repaint();
 		}
 
 		@Override
 		public void keyTyped(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub			
+			// TODO Auto-generated method stub
 		}
 
 		@Override
 		public void keyReleased(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub		
+			// TODO Auto-generated method stub
 		}
 	}
 /*
@@ -628,8 +647,8 @@ public class ConstructionWizard {
 	 * @param yPixel
 	 */
 	// 2015-12-25 Added moveConstructionSiteAt()
-	public void moveConstructionSiteAt(ConstructionSite s, int xPixel, int yPixel) {
-		Point.Double pos = mapPanel.convertToSettlementLocation(xPixel, yPixel);
+	public void moveConstructionSiteAt(ConstructionSite s, double xPixel, double yPixel) {
+		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
 
 		double xDiff = xPixel - xLast;
 		double yDiff = yPixel - yLast;
@@ -679,16 +698,17 @@ public class ConstructionWizard {
 				xx = length/2D;
 			}
 
-			double distanceX = Math.abs(x - pos.getX());
-			double distanceY = Math.abs(y - pos.getY());
+			double distanceX = Math.abs(x - pixel.getX());
+			double distanceY = Math.abs(y - pixel.getY());
 			//System.out.println("distanceX : " + distanceX + "  distanceY : " + distanceY);
 
 
 			if (distanceX <= xx && distanceY <= yy) {
 				Point.Double last = mapPanel.convertToSettlementLocation((int)xLast, (int)yLast);
-				//double scale = mapPanel.getScale();
-				s.setXLocation(x + pos.getX() - last.getX());
-				s.setYLocation(y + pos.getY() - last.getY());
+				double new_x = Math.round(x + pixel.getX() - last.getX());
+				s.setXLocation(new_x);
+				double new_y = Math.round(y + pixel.getY() - last.getY());
+				s.setYLocation(new_y);
 
 				xLast = xPixel;
 				yLast = yPixel;
@@ -707,33 +727,33 @@ public class ConstructionWizard {
 		int facing = (int) s.getFacing();
 		double x = s.getXLocation();
 		double y = s.getYLocation();
-	
-	    if (c == java.awt.event.KeyEvent.VK_UP
-	    	|| c == java.awt.event.KeyEvent.VK_KP_UP) {  
+
+	    if (c == java.awt.event.KeyEvent.VK_UP // 38
+	    	|| c == java.awt.event.KeyEvent.VK_KP_UP) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("up");
 			s.setYLocation(y + 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
-	    } else if(c == java.awt.event.KeyEvent.VK_DOWN  	
+	    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
 	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("down");
-			s.setXLocation(y - 1);
+			s.setYLocation(y - 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
-	    } else if(c == java.awt.event.KeyEvent.VK_LEFT  	
-	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT) {  
+	    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
+	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("left");
 			s.setXLocation(x + 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
-	    } else if(c == java.awt.event.KeyEvent.VK_RIGHT
-	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT) {  
+	    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
+	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("right");
 			s.setXLocation(x - 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
 	    } else if(c == java.awt.event.KeyEvent.VK_R
-	    	|| c == java.awt.event.KeyEvent.VK_F) {   
+	    	|| c == java.awt.event.KeyEvent.VK_F) {
 	    	//System.out.println("f : " + facing);
 	    	//System.out.println("turn 90");
 	    	facing = facing + 45;
@@ -778,7 +798,7 @@ public class ConstructionWizard {
 	    return;
 	}
 */
-	
+
 	   /**
      * Determines a new construction stage info for a site.
      * @param site the construction site.
@@ -791,7 +811,7 @@ public class ConstructionWizard {
 
         ConstructionStageInfo result = null;
 
-        ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
+        ConstructionValues values = site.getSettlement().getConstructionManager().getConstructionValues();
         Map<ConstructionStageInfo, Double> stageProfits =
             values.getNewConstructionStageProfits(site, skill);
         if (!stageProfits.isEmpty()) {
@@ -815,7 +835,7 @@ public class ConstructionWizard {
         boolean goodPosition = false;
 
         // Determine preferred building type from foundation stage info.
-        String buildingType = determinePreferredConstructedBuildingType(foundationStageInfo, constructionSkill);
+        String buildingType = determinePreferredConstructedBuildingType(site, foundationStageInfo, constructionSkill);
         if (buildingType != null) {
             //buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
             site.setWidth(buildingConfig.getWidth(buildingType));
@@ -828,7 +848,7 @@ public class ConstructionWizard {
             }
             else if (hasLifeSupport) {
                 // Try to put building next to another inhabitable building.
-                List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+                List<Building> inhabitableBuildings = site.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
                 Collections.shuffle(inhabitableBuildings);
                 Iterator<Building> i = inhabitableBuildings.iterator();
                 while (i.hasNext()) {
@@ -840,7 +860,7 @@ public class ConstructionWizard {
             }
             else {
                 // Try to put building next to the same building type.
-                List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfSameType(buildingType);
+                List<Building> sameBuildings = site.getSettlement().getBuildingManager().getBuildingsOfSameType(buildingType);
                 Collections.shuffle(sameBuildings);
                 Iterator<Building> j = sameBuildings.iterator();
                 while (j.hasNext()) {
@@ -856,7 +876,7 @@ public class ConstructionWizard {
             // Try to put building next to another building.
             // If not successful, try again 10m from each building and continue out at 10m increments
             // until a location is found.
-            BuildingManager buildingManager = settlement.getBuildingManager();
+            BuildingManager buildingManager = site.getSettlement().getBuildingManager();
             if (buildingManager.getBuildingNum() > 0) {
                 for (int x = 10; !goodPosition; x+= 10) {
                     List<Building> allBuildings = buildingManager.getBuildings();
@@ -889,13 +909,13 @@ public class ConstructionWizard {
      * @param constructionSkill the mission starter's construction skill.
      * @return preferred building type or null if none found.
      */
-    private String determinePreferredConstructedBuildingType(ConstructionStageInfo foundationStageInfo,
-            int constructionSkill) {
+    private String determinePreferredConstructedBuildingType(ConstructionSite site,
+    		ConstructionStageInfo foundationStageInfo, int constructionSkill) {
 		logger.info("ConstructionWizard's determinePreferredConstructedBuildingType() is in " + Thread.currentThread().getName() + " Thread");
 
         String result = null;
 
-        ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
+        ConstructionValues values = site.getConstructionManager().getConstructionValues();
         List<String> constructableBuildings = ConstructionUtil.getConstructableBuildingNames(foundationStageInfo);
         Iterator<String> i = constructableBuildings.iterator();
         double maxBuildingValue = Double.NEGATIVE_INFINITY;
@@ -923,7 +943,7 @@ public class ConstructionWizard {
 
         boolean result = false;
 
-        BuildingManager manager = settlement.getBuildingManager();
+        BuildingManager manager = site.getSettlement().getBuildingManager();
         List<Building> inhabitableBuildings = manager.getBuildings(BuildingFunction.LIFE_SUPPORT);
         Collections.shuffle(inhabitableBuildings);
 
@@ -932,14 +952,14 @@ public class ConstructionWizard {
 
         // Try to find a connection between an inhabitable building without access to airlock and
         // another inhabitable building with access to an airlock.
-        if (settlement.getAirlockNum() > 0) {
+        if (site.getSettlement().getAirlockNum() > 0) {
 
             double leastDistance = Double.MAX_VALUE;
 
             Iterator<Building> i = inhabitableBuildings.iterator();
             while (i.hasNext()) {
                 Building startingBuilding = i.next();
-                if (!settlement.hasWalkableAvailableAirlock(startingBuilding)) {
+                if (!site.getSettlement().hasWalkableAvailableAirlock(startingBuilding)) {
 
                     // Find a different inhabitable building that has walkable access to an airlock.
                     Iterator<Building> k = inhabitableBuildings.iterator();
@@ -951,7 +971,7 @@ public class ConstructionWizard {
                             boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) ||
                                     (baseLevel == building.getBaseLevel());
 
-                            if (settlement.hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
+                            if (site.getSettlement().hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
                                 double distance = Point2D.distance(startingBuilding.getXLocation(),
                                         startingBuilding.getYLocation(), building.getXLocation(),
                                         building.getYLocation());
@@ -984,7 +1004,7 @@ public class ConstructionWizard {
                 Iterator<Building> k = inhabitableBuildings.iterator();
                 while (k.hasNext()) {
                     Building building = k.next();
-                    boolean hasWalkingPath = settlement.getBuildingConnectorManager().hasValidPath(
+                    boolean hasWalkingPath = site.getSettlement().getBuildingConnectorManager().hasValidPath(
                             startingBuilding, building);
 
                     // Check if connector base level matches either building.
@@ -1023,7 +1043,7 @@ public class ConstructionWizard {
                 Iterator<Building> k = inhabitableBuildings.iterator();
                 while (k.hasNext()) {
                     Building building = k.next();
-                    boolean directlyConnected = (settlement.getBuildingConnectorManager().getBuildingConnections(
+                    boolean directlyConnected = (site.getSettlement().getBuildingConnectorManager().getBuildingConnections(
                             startingBuilding, building).size() > 0);
 
                     // Check if connector base level matches either building.
@@ -1138,7 +1158,7 @@ public class ConstructionWizard {
 
             // Check to see if proposed new site position intersects with any existing buildings
             // or construction sites.
-            if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX,
+            if (site.getSettlement().getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX,
                     rectCenterY, site.getWidth(), site.getLength(), rectRotation, site)) {
                 // Set the new site here.
                 site.setXLocation(rectCenterX);
@@ -1187,7 +1207,7 @@ public class ConstructionWizard {
                     // Check line rect between positions for obstacle collision.
                     Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
                             secondBuildingPos.getX(), secondBuildingPos.getY());
-                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, settlement.getCoordinates(), false);
+                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, site.getSettlement().getCoordinates(), false);
                     if (clearPath) {
                         validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
                     }
@@ -1334,9 +1354,9 @@ public class ConstructionWizard {
 	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 	}
 
-	public Settlement getSettlement() {
-		return settlement;
-	}
+	//public Settlement getSettlement() {
+	//	return settlement;
+	//}
 
 	/**
 	 * Prepares tool window for deletion.
@@ -1345,7 +1365,7 @@ public class ConstructionWizard {
 		//constructionStage = null;
 		mainScene = null;
 		desktop = null;
-		settlement = null;
+		//settlement = null;
 		settlementWindow = null;
 		mapPanel = null;
 

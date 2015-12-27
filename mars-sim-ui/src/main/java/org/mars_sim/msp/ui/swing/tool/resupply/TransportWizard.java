@@ -21,12 +21,15 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.FXUtilities;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ConstructionWizard.KeyboardDetection;
+import org.mars_sim.msp.ui.swing.tool.resupply.ConstructionWizard.MouseDetection;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.reactfx.util.FxTimer;
@@ -50,10 +53,16 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import java.awt.Cursor;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -82,6 +91,8 @@ public class TransportWizard {
     private static int wait_time_in_secs = 30; // in seconds
 
     private final static String TITLE = "Transport Wizard";
+
+    private double xLast, yLast;
 
 	private String buildingNickName;
 
@@ -154,31 +165,18 @@ public class TransportWizard {
 						desktop.getTimeWindow().enablePauseButton(false);
 					}
 
-				    List<BuildingTemplate> templates = mgr.getResupply().orderNewBuildings();
-				    BuildingTemplate aTemplate = templates.get(0);
-					String missionName = aTemplate.getMissionName();
+				    //List<BuildingTemplate> templates = mgr.getResupply().orderNewBuildings();
+				    //BuildingTemplate aTemplate = templates.get(0);
+					//String missionName = aTemplate.getMissionName();
 
 				   	//askDefaultPosition(mgr, missionName, previous0);
-				   	//mainScene.unpauseSimulation();
 					determineEachBuildingPosition(mgr);
 
 					if (mainScene != null) {
-						boolean now = Simulation.instance().getMasterClock().isPaused();
-						if (!previous0) {
-							if (now) {
-								mainScene.unpauseSimulation();
-				   	    		//System.out.println("previous is false. now is true. Unpaused sim");
-							}
-						} else {
-							if (!now) {
-								mainScene.unpauseSimulation();
-				   	    		//System.out.println("previous is true. now is false. Unpaused sim");
-							}
-						}
-						desktop.getTimeWindow().enablePauseButton(true);
+						unpause(previous0);
 					}
-				});
 
+				});
 			} catch (InterruptedException | ExecutionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -283,58 +281,31 @@ public class TransportWizard {
 	 */
     // 2015-12-07 Added determineEachBuildingPosition()
 	public void determineEachBuildingPosition(BuildingManager mgr) {
-
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		if (mainScene != null)
 			mainScene.pauseSimulation();
-
         List<BuildingTemplate> orderedBuildings = mgr.getResupply().orderNewBuildings();
-        // 2014-12-23 Added sorting orderedBuildings according to its building id
-        //Collections.sort(orderedBuildings);
-        //Collections.shuffle(orderedBuildings);
-
         // 2015-12-19 Added the use of ComparatorOfBuildingID()
         Collections.sort(orderedBuildings, new ComparatorOfBuildingID());
-
         Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
-        //int size = orderedBuildings.size();
-        //int i = 0;
-
         while (buildingI.hasNext()) {
-
            BuildingTemplate template = buildingI.next();
            //System.out.println("TransportWizard : BuildingTemplate for " + template.getNickName());
-
-           // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
-
-
 /*    	   // check if it's a building connector and if it's connecting the two buildings at their template position
         	   boolean isConnector = buildingConfig.hasBuildingConnection(template.getBuildingType());
-           if (isConnector)
-        	   confirmBuildingLocation(correctedTemplate, false);
-           else
-        	   confirmBuildingLocation(correctedTemplate, true);
+           if (isConnector) confirmBuildingLocation(correctedTemplate, false);
+           else confirmBuildingLocation(correctedTemplate, true);
 */
-
            // 2015-12-06 Added this recursive method checkTemplatePosition()
            // to handle the creation of a new building template in case of an obstacle.
            checkTemplatePosition(mgr, template, true);
-
+           // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
 	    } // end of while (buildingI.hasNext())
 
         Building building = mgr.getBuildings().get(0);
         mgr.getSettlement().fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, building);
-
-		// 2015-10-17 Check if it was previously on pause mode
-		//if (isOnPauseMode) {
-		//	mainScene.pauseSimulation();
-		//}
-		//else
-		//	mainScene.unpauseSimulation(); // Note: this can take away any previous announcement window
-
 		if (mainScene != null)
 			mainScene.unpauseSimulation();
-
 	}
 
 
@@ -378,32 +349,22 @@ public class TransportWizard {
      	BuildingTemplate newT = new BuildingTemplate(template.getMissionName(),
      			buildingID, scenario, template.getBuildingType(), buildingNickName,
      			width, length, template.getXLoc(), template.getYLoc(), template.getFacing());
-
 		//System.out.println("inside checkTemplatePosition(), calling checkTemplateAddBuilding() now ");
      	// 2015-12-08 Added checkTemplateAddBuilding()
         checkTemplateAddBuilding(mgr, newT);
-
-/*
-        // True if the template position is clear of obstacles (existing buildings/vehicles/construction sites)
+/*		// True if the template position is clear of obstacles (existing buildings/vehicles/construction sites)
         if (mgr.getResupply().checkBuildingTemplatePosition(correctedTemplate)) {
      	   //System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
      	   confirmBuildingLocation(mgr, correctedTemplate, defaultPosition);
-
         } else {
      	    // check if a vehicle is the obstacle and move it
             boolean somethingStillBlocking = checkObstacleMoveVehicle(correctedTemplate);
-
             if (somethingStillBlocking) {
               	System.out.println("TransportWizard : somethingStillBlocking is true");
-
             	BuildingTemplate repositionedTemplate = mgr.getResupply().positionNewResupplyBuilding(template.getBuildingType());
-
              	checkTemplatePosition(mgr, repositionedTemplate, false);
-
-
             } else {
              	System.out.println("TransportWizard : somethingStillBlocking is false");
-
             	confirmBuildingLocation(mgr, correctedTemplate, defaultPosition);
             }
         } // end of else {
@@ -417,24 +378,38 @@ public class TransportWizard {
      * @param correctedTemplate
      */
     // 2015-12-07 Added checkTemplateAddBuilding()
-    public void checkTemplateAddBuilding(BuildingManager mgr, BuildingTemplate correctedTemplate) {
+    public synchronized void checkTemplateAddBuilding(BuildingManager mgr, BuildingTemplate correctedTemplate) {
     	//System.out.println("inside checkTemplateAddBuilding()");
-        // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
+
+    	boolean previous0 = Simulation.instance().getMasterClock().isPaused();
+
+		// Pause simulation.
+		if (mainScene != null) {
+			if (!previous0) {
+				mainScene.pauseSimulation();
+				//System.out.println("previous0 is false. Paused sim");
+			}
+			desktop.getTimeWindow().enablePauseButton(false);
+		}
+
+    	// Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
     	boolean checking = checkBuildingTemplatePosition(mgr, correctedTemplate);
-
     	//System.out.println("checking is " + checking);
+		if (checking) {
+			confirmBuildingLocation(mgr, correctedTemplate, true, false);
+			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, true)");
 
-        if (checking) {
-        	confirmBuildingLocation(mgr, correctedTemplate, true);
-    		//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, true)");
+		} else {
+			BuildingTemplate newT = clearCollision(correctedTemplate, mgr);
+			//System.out.println("inside checkTemplateAddBuilding(), just got newT");
+			confirmBuildingLocation(mgr, newT, false, true);
+			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, false)");
+		}
 
-        } else {
-        	BuildingTemplate newT = clearCollision(correctedTemplate, mgr);
-    		//System.out.println("inside checkTemplateAddBuilding(), just got newT");
-        	confirmBuildingLocation(mgr, newT, false);
-    		//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, false)");
+		if (mainScene != null) {
+			unpause(previous0);
+		}
 
-        }
     }
 
 
@@ -603,11 +578,13 @@ public class TransportWizard {
      * @param buildingManager
      * @param isAtPreDefinedLocation
      */
-	public synchronized void confirmBuildingLocation(BuildingManager mgr, BuildingTemplate template, boolean isAtPreDefinedLocation) {
+	public synchronized void confirmBuildingLocation(BuildingManager mgr, BuildingTemplate template,
+			boolean isAtPreDefinedLocation, boolean isNewTemplate) {
 		//System.out.println("inside confirmBuildingLocation");
+		//Building newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
 		Building newBuilding = null;
 
-		if (isAtPreDefinedLocation) {
+		if (isAtPreDefinedLocation || isNewTemplate) {
 			newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
 		}
 
@@ -627,7 +604,9 @@ public class TransportWizard {
 
 		String header = null;
 		String title = null;
-		String message = null;
+		String message = "(1) Will default to \"Yes\" in 30 secs unless timer is cancelled."
+    			+ " (2) To manually place a site, click on \"Use Mouse/Keyboard Control\" button ";
+		StringProperty msg = new SimpleStringProperty(message);
 
 		if (isAtPreDefinedLocation) {
 			header = "Would you like to place " + buildingNickName + " at its default position? ";
@@ -636,7 +615,6 @@ public class TransportWizard {
 			header = "Would you like to place " + buildingNickName + " at this position? ";
 		}
 
-		message = "Note: unless timer is cancelled, default to \"Yes\" in 30 secs";
 
 		String missionName = template.getMissionName();
 
@@ -645,9 +623,6 @@ public class TransportWizard {
 			title = template.getMissionName() + " at " + mgr.getSettlement();
         else
         	title = "A Resupply Transport" + " at " + mgr.getSettlement();
-
-		StringProperty msg = new SimpleStringProperty(message);
-		//Timer timer = null;
 
         if (mainScene != null) {
     		//System.out.println("inside confirmBuildingLocation, calling alertDialog");
@@ -669,8 +644,8 @@ public class TransportWizard {
 	            logger.info(newBuilding.toString() + " is put in Place.");
 			}
 			else {
-				//mgr.removeBuilding(newBuilding);
-				confirmBuildingLocation(mgr, template, false);
+				mgr.removeBuilding(newBuilding);
+				confirmBuildingLocation(mgr, template, false, true);
 			}
 
 			desktop.disposeAnnouncementWindow();
@@ -686,6 +661,8 @@ public class TransportWizard {
 		// FXUtilities.runAndWait(() -> {
 
 			Alert alert = new Alert(AlertType.CONFIRMATION);
+			//alert.setOnCloseRequest((event) -> event.consume());
+			//alert.initStyle(StageStyle.UNDECORATED);
 			alert.initOwner(mainScene.getStage());
 			alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
 			//alert.initModality(Modality.APPLICATION_MODAL);
@@ -704,65 +681,348 @@ public class TransportWizard {
 
 			ButtonType buttonTypeYes = new ButtonType("Yes");
 			ButtonType buttonTypeNo = new ButtonType("No");
-			ButtonType buttonTypeMouse = new ButtonType("Use Mouse");
+			ButtonType buttonTypeMouseKB = new ButtonType("Use Mouse/Keyboard Control");
 			ButtonType buttonTypeCancelTimer = null;
+
+			Timer timer = null;
 
 			if (hasTimer) {
 				buttonTypeCancelTimer = new ButtonType("Cancel Timer");
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse, buttonTypeCancelTimer);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancelTimer, buttonTypeMouseKB);
+
+				IntegerProperty i = new SimpleIntegerProperty(wait_time_in_secs);
+				// 2015-12-19 Added ReactFX's Timer and FxTimer
+				timer = FxTimer.runPeriodically(java.time.Duration.ofMillis(1000), () -> {
+		        	int num = i.get() - 1;
+		        	if (num >= 0) {
+		        		i.set(num);
+		        	}
+		        	//System.out.println(num);
+		        	if (num == 0) {
+		        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
+		        	    button.fire();
+		        	}
+		        	msg.set("(1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
+		        			+ " (2) To manually place a building, use Mouse/Keyboard Control");
+				});
 			}
 			else
-				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouse);
+				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
+
+			if (newBuilding.getBuildingType().equals("Hallway")
+					|| newBuilding.getBuildingType().equals("Tunnel")) {
+				Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeMouseKB);
+				button.setVisible(false);
+			}
 
 			Optional<ButtonType> result = null;
-
-			IntegerProperty i = new SimpleIntegerProperty(wait_time_in_secs);
-			// 2015-12-19 Added ReactFX's Timer and FxTimer
-			Timer timer = FxTimer.runPeriodically(java.time.Duration.ofMillis(1000), () -> {
-	        	int num = i.get() - 1;
-	            i.set(num);
-	        	//System.out.println(num);
-	        	if (num == 0) {
-	        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
-	        	    button.fire();
-	        	}
-	        	msg.set("Note: unless timer is cancelled, "
-	        			+ "default to \"Yes\" in " + num + " secs");
-			});
 
 			result = alert.showAndWait();
 
 			if (result.isPresent() && result.get() == buttonTypeYes) {
 				logger.info(newBuilding.toString() + " from " + template.getMissionName()
 			 	+ " is put in place in " + mgr.getSettlement());
+				newBuilding.setInTransport(false);
 
 			} else if (result.isPresent() && result.get() == buttonTypeNo) {
-		    	//mgr.removeBuilding(newBuilding);
-		    	//System.out.println("just removing building");
+		    	mgr.removeBuilding(newBuilding);
+		    	System.out.println("just removing building");
 		    	BuildingTemplate repositionedTemplate = mgr.getResupply().positionNewResupplyBuilding(template.getBuildingType());
 		    	//System.out.println("obtain new repositionedTemplate");
 		    	// 2015-12-16 Added setMissionName()
 				repositionedTemplate.setMissionName(template.getMissionName());
-				//System.out.println("just called setMissionName()");
-				checkTemplatePosition(mgr, repositionedTemplate, false);
+				//System.out.println("just called setMissionName()");\
+				checkTemplateAddBuilding(mgr, repositionedTemplate);
+				//checkTemplatePosition(mgr, repositionedTemplate, false);
 				//System.out.println("done calling checkTemplatePosition()");
 
 
-			} else if (result.isPresent() && result.get() == buttonTypeMouse) {
-				//Point location = MouseInfo.getPointerInfo().getLocation();
-		        //double Xloc = location.getX();
-				//double Yloc = location.getY();
-				//newBuilding.setXLocation((int)Xloc), (int)Yloc);
-			}
+			} else if (result.isPresent() && result.get() == buttonTypeMouseKB) {
+				placementDialog(title, header, newBuilding);
 
-			else if (result.isPresent() && result.get() == buttonTypeCancelTimer) {
+			} else if (hasTimer && result.isPresent() && result.get() == buttonTypeCancelTimer) {
 				timer.stop();
 				alertDialog(title, header, msg, template, mgr, newBuilding, false);
-
 			}
 
 	}
 
+
+	/**
+	 * Pops up an alert dialog for confirming the position placement of a new construction site via keyboard/mouse
+	 * @param title
+	 * @param header
+	 * @param site
+	 */
+	// 2015-12-25 Added mouseDialog()
+	@SuppressWarnings("restriction")
+	public void placementDialog(String title, String header, Building newBuilding) {
+    	// Platform.runLater(() -> {
+		// FXUtilities.runAndWait(() -> {
+			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the building\n"
+					+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise\n"
+					+ "   Mouse Control :\t(1) Press & Hold right button to drag the building to a new location\n"					+ "\t\t\t\t(2) Release button to drop in place\n"
+					+ "\t\t\t\t(3) Hit \"Confirm Position\" button to proceed";
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			//alert.setOnCloseRequest((event) -> event.consume());
+			//alert.initStyle(StageStyle.UNDECORATED);
+			alert.initOwner(mainScene.getStage());
+			alert.initModality(Modality.NONE); // users can zoom in/out, move around the settlement map and move a vehicle elsewhere
+			//alert.initModality(Modality.APPLICATION_MODAL);
+			double x = mainScene.getStage().getWidth();
+			double y = mainScene.getStage().getHeight();
+			double xx = alert.getDialogPane().getWidth();
+			double yy = alert.getDialogPane().getHeight();
+
+			alert.setX((x - xx)/2);
+			alert.setY((y - yy)*3/4);
+			alert.setTitle(title);
+			alert.setHeaderText(header);
+			alert.setContentText(msg);
+
+			ButtonType buttonTypeConfirm = new ButtonType("Confirm Position");
+			alert.getButtonTypes().setAll(buttonTypeConfirm);
+
+			//double xLoc = site.getXLocation();
+			//double yLoc = site.getYLocation();
+			//double scale = mapPanel.getScale();
+			//System.out.println("xLoc : " + xLoc + "   yLoc : " + yLoc + "   scale : " + scale);
+			//moveMouse(new Point((int)(xLoc*scale), (int)(yLoc*scale)));
+
+			mainScene.getStage().requestFocus();
+
+			final KeyboardDetection kb = new KeyboardDetection(newBuilding);
+			final MouseDetection md = new MouseDetection(newBuilding);
+
+			SwingUtilities.invokeLater(() -> {
+
+				mapPanel.setFocusable(true);
+				mapPanel.requestFocusInWindow();
+
+				mapPanel.addKeyListener(kb);
+
+				mapPanel.addMouseMotionListener(md);
+
+				mapPanel.addMouseListener(new MouseListener() {
+				    @Override
+				    public void mouseClicked(MouseEvent evt) {
+					//	Point location = MouseInfo.getPointerInfo().getLocation();
+				    }
+
+					@Override
+					public void mouseEntered(MouseEvent arg0) {
+					}
+
+					@Override
+					public void mouseExited(MouseEvent arg0) {
+					}
+
+					@Override
+					public void mousePressed(MouseEvent evt) {
+						if (evt.getButton() == MouseEvent.BUTTON3) {
+							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+
+							xLast = evt.getX();
+							yLast = evt.getY();
+						}
+					}
+
+					@Override
+					public void mouseReleased(MouseEvent evt) {
+						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+					}
+
+				});
+			});
+
+			Optional<ButtonType> result = alert.showAndWait();
+
+			if (result.isPresent() && result.get() == buttonTypeConfirm) {
+				newBuilding.setInTransport(false);
+				mapPanel.removeKeyListener(kb);
+				mapPanel.removeMouseMotionListener(md);
+			}
+
+	}
+
+	// 2015-12-25 Added MouseDetection
+	class MouseDetection implements MouseMotionListener{
+		private Building newBuilding;
+
+		MouseDetection(Building newBuilding) {
+			this.newBuilding = newBuilding;
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent evt) {
+			if (evt.getButton() == MouseEvent.BUTTON3) {
+
+				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+
+				moveNewBuildingAt(newBuilding, evt.getX(), evt.getY());
+			}
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent evt) {
+
+		}
+
+	}
+
+	// 2015-12-25 Added KeyboardDetection
+	class KeyboardDetection implements KeyListener{
+		private Building newBuilding;
+
+		KeyboardDetection(Building newBuilding) {
+			this.newBuilding = newBuilding;
+		}
+
+		@Override
+		public void keyPressed(java.awt.event.KeyEvent e) {
+		    int c = e.getKeyCode();
+		    //System.out.println("c is " + c);
+		    moveNewBuilding(newBuilding, c);
+		    mapPanel.repaint();
+		}
+
+		@Override
+		public void keyTyped(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void keyReleased(java.awt.event.KeyEvent e) {
+			// TODO Auto-generated method stub
+		}
+	}
+
+	/**
+	 * Moves the site to a new position via the mouse's right drag
+	 * @param b
+	 * @param xPixel
+	 * @param yPixel
+	 */
+	// 2015-12-26 Added moveNewBuildingAt()
+	public void moveNewBuildingAt(Building b, double xPixel, double yPixel) {
+		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
+
+		double xDiff = xPixel - xLast;
+		double yDiff = yPixel - yLast;
+
+		if (xDiff < mapPanel.getWidth() && yDiff < mapPanel.getHeight()) {
+			//System.out.println("xPixel : " + xPixel
+			//		+ "  yPixel : " + yPixel
+			//		+ "  xLast : " + xLast
+			//		+ "  yLast : " + yLast
+			//		+ "  xDiff : " + xDiff
+			//		+ "  yDiff : " + yDiff);
+
+			double width = b.getWidth();
+			double length = b.getLength();
+			int facing = (int) b.getFacing();
+			double x = b.getXLocation();
+			double y = b.getYLocation();
+			double xx = 0;
+			double yy = 0;
+
+			if (facing == 0) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 90){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			// Loading Dock Garage
+			if (facing == 180) {
+				xx = width/2D;
+				yy = length/2D;
+			}
+			else if (facing == 270){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			// Note: Both ERV Base and Starting ERV Base have 45 / 135 deg facing
+			// Fortunately, they both have the same width and length
+			else if (facing == 45){
+				yy = width/2D;
+				xx = length/2D;
+			}
+			else if (facing == 135){
+				yy = width/2D;
+				xx = length/2D;
+			}
+
+			double distanceX = Math.abs(x - pixel.getX());
+			double distanceY = Math.abs(y - pixel.getY());
+			//System.out.println("distanceX : " + distanceX + "  distanceY : " + distanceY);
+
+
+			if (distanceX <= xx && distanceY <= yy) {
+				Point.Double last = mapPanel.convertToSettlementLocation((int)xLast, (int)yLast);
+
+				double new_x = Math.round(x + pixel.getX() - last.getX());
+				b.setXLocation(new_x);
+				double new_y = Math.round(y + pixel.getY() - last.getY());
+				b.setYLocation(new_y);
+
+				xLast = xPixel;
+				yLast = yPixel;
+			}
+
+		}
+	}
+
+	/**
+	 * Sets the new x and y location and facing of the site
+	 * @param b
+	 * @param c
+	 */
+	// 2015-12-26 Added moveNewBuilding()
+	public void moveNewBuilding(Building b, int c) {
+		int facing = (int) b.getFacing();
+		double x = b.getXLocation();
+		double y = b.getYLocation();
+
+	    if (c == java.awt.event.KeyEvent.VK_UP // 38
+	    	|| c == java.awt.event.KeyEvent.VK_KP_UP) {
+	    	//System.out.println("x : " + x + "  y : " + y);
+	    	//System.out.println("up");
+			b.setYLocation(y + 1);
+	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
+	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN) {
+	    	//System.out.println("x : " + x + "  y : " + y);
+	    	//System.out.println("down");
+			b.setYLocation(y - 1);
+	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
+	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT) {
+	    	//System.out.println("x : " + x + "  y : " + y);
+	    	//System.out.println("left");
+			b.setXLocation(x + 1);
+	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
+	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT) {
+	    	//System.out.println("x : " + x + "  y : " + y);
+	    	//System.out.println("right");
+			b.setXLocation(x - 1);
+	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
+	    } else if(c == java.awt.event.KeyEvent.VK_R
+	    	|| c == java.awt.event.KeyEvent.VK_F) {
+	    	//System.out.println("f : " + facing);
+	    	//System.out.println("turn 90");
+	    	facing = facing + 45;
+	    	if (facing >= 360)
+	    		facing = facing - 360;
+	    	b.setFacing(facing);
+	    	//System.out.println("f : " + s.getFacing());
+	    }
+
+	}
 
 	/**
 	 * Compares and sorts a list of BuildingTemplates according to its building id

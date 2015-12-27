@@ -100,10 +100,10 @@ public class BuildingManager implements Serializable {
     private List<Building> buildingsNickNames;
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
-    
+
     //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
-    
-    
+
+
     private Settlement settlement; // The manager's settlement.
     private MarsClock lastBuildingValuesUpdateTime;
 
@@ -122,7 +122,7 @@ public class BuildingManager implements Serializable {
         this(settlement, SimulationConfig.instance().getSettlementConfiguration().
                 getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
 
-        buildingConfig = SimulationConfig.instance().getBuildingConfiguration(); 
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
     }
 
     /**
@@ -187,26 +187,6 @@ public class BuildingManager implements Serializable {
         return settlement;
     }
 
-
-    /**
-     * Adds a new building to the settlement.
-     * @param newBuilding the building to add.
-     * @param createBuildingConnections true if automatically create building connections.
-     */
-    public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
-        if (!buildings.contains(newBuilding)) {
-            buildings.add(newBuilding);
-    		//logger.info("addBuilding() : a new building has just been added");
-            // Create new building connections if needed.
-            if (createBuildingConnections) {
-                settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
-            }
-             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
-            //unitManager.fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
-            //unitManager.addUnit(newBuilding);
-        }
-    }
-
     /**
      * Removes a building from the settlement.
      * @param oldBuilding the building to remove.
@@ -224,6 +204,25 @@ public class BuildingManager implements Serializable {
     		//logger.info("removeBuilding() : a new building has just been removed");
 
             settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
+        }
+    }
+
+    /**
+     * Adds a new building to the settlement.
+     * @param newBuilding the building to add.
+     * @param createBuildingConnections true if automatically create building connections.
+     */
+    public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
+        if (!buildings.contains(newBuilding)) {
+            buildings.add(newBuilding);
+    		//logger.info("addBuilding() : a new building has just been added");
+            // Create new building connections if needed.
+            if (createBuildingConnections) {
+                settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
+            }
+             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
+            //unitManager.fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
+            //unitManager.addUnit(newBuilding);
         }
     }
 
@@ -552,7 +551,7 @@ public class BuildingManager implements Serializable {
         	List<Building> buildings = settlement.getBuildingManager().getBuildings(function);
 
             Building building = null;
-            
+
             // Note: if the function is robotic-station, go through the list and remove hallways
             // since we don't want robots to stay in a hallway
             List<Building> functionBuildings = new ArrayList<Building>();
@@ -567,7 +566,7 @@ public class BuildingManager implements Serializable {
             			i.remove();
             	}
             }
-            
+
             // Randomly pick one of the buildings
             if (functionBuildings.size() >= 1) {
                 int rand = RandomUtil.getRandomInt(functionBuildings.size() - 1);
@@ -1341,12 +1340,12 @@ public class BuildingManager implements Serializable {
             Building building = i.next();
             String type = building.getBuildingType();
             if (buildingType.equals(type))
-            	largestTypeID++;         
+            	largestTypeID++;
         }
 
         return largestTypeID + 1;
     }
-    
+
     /**
      * Gets a unique ID number for a new building in a settlement (but not unique in a simulation)
      * @return ID integer.
@@ -1365,7 +1364,7 @@ public class BuildingManager implements Serializable {
 
         return largestID + 1;
     }
-    
+
     /**
      * Gets a unique nick name for a new building
      * @return a unique nick name
