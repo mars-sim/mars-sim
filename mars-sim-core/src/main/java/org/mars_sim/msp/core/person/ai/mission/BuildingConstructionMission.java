@@ -74,6 +74,8 @@ implements Serializable {
             "Mission.description.buildingConstructionMission"); //$NON-NLS-1$
 
 	/** Mission phases. */
+	final public static MissionPhase SELECT_SITE_PHASE = new MissionPhase(Msg.getString(
+            "Mission.phase.selectConstructionSite")); //$NON-NLS-1$
 	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(Msg.getString(
             "Mission.phase.prepareConstructionSite")); //$NON-NLS-1$
 	final public static MissionPhase CONSTRUCTION_PHASE = new MissionPhase(Msg.getString(
@@ -114,6 +116,7 @@ implements Serializable {
 	public BuildingConstructionMission(MissionMember startingMember) {
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, startingMember, MIN_PEOPLE);
+		logger.info("BuildingConstructionMission's constructor is in " + Thread.currentThread().getName() + " Thread");
 
         if (!isDone()) {
             // Sets the settlement.
@@ -134,14 +137,39 @@ implements Serializable {
             int constructionSkill = 0;
             if (startingMember instanceof Person) {
                 Person person = (Person) startingMember;
+                System.out.println("The starting member is " + person);
+                //person.setMission(this);
                 constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
             }
             else if (startingMember instanceof Robot) {
                 Robot robot = (Robot) startingMember;
+                //robot.setMission(this);
                 constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
             }
 
-            init_case_1a(constructionSkill);
+            init_case_1_step_1(constructionSkill);
+        }
+
+        //init_case_1_step_3();
+
+        // Add phases.
+        addPhase(SELECT_SITE_PHASE);
+        addPhase(PREPARE_SITE_PHASE);
+        addPhase(CONSTRUCTION_PHASE);
+
+        // Set initial mission phase.
+        if (Simulation.getUseGUI()) {
+	        setPhase(SELECT_SITE_PHASE);
+	        setPhaseDescription(Msg.getString(
+	        		"Mission.phase.selectConstructionSite.description" //$NON-NLS-1$
+	                , settlement.getName()));
+        }
+        else {
+        	init_case_1_step_3();
+        	setPhase(PREPARE_SITE_PHASE);
+            setPhaseDescription(Msg.getString(
+            		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+                    , settlement.getName()));
         }
 /*
         // Add phases.
@@ -157,7 +185,8 @@ implements Serializable {
 */
     }
 
-	public void init_case_1a(int constructionSkill) {
+	@SuppressWarnings("unused")
+	public void init_case_1_step_1(int constructionSkill) {
 		//System.out.println("init_1a");
         ConstructionManager manager = settlement.getConstructionManager();
         ConstructionValues values = manager.getConstructionValues();
@@ -183,8 +212,8 @@ implements Serializable {
 
 		else if (newSiteProfit > 0D) {
 
-		    if (Simulation.getUseGUI())  {
-				System.out.println("Case 1 : the site has not been picked yet and the construction is started automatically by settlemen under one starting member");
+		    if (Simulation.getUseGUI())  { // false) { //
+				//System.out.println("Case 1 : the site has not been picked yet and the construction was started by settlement with a starting member");
 		    	// if GUI is in use
 		    	constructionSite = new ConstructionSite(settlement);//, manager);
 		    	constructionSite.setSkill(constructionSkill);
@@ -227,11 +256,12 @@ implements Serializable {
 			        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
 			    }
 			    else {
+			    	System.out.println("New construction stage could not be determined.");
 			        endMission("New construction stage could not be determined.");
 			    }
 
-			    init_case_1b(constructionSite, stageInfo, constructionSkill, values); //ConstructionSite constructionSite, ConstructionStageInfo stageInfo,
-			    setPhases_1();
+			    init_case_1_step_2(constructionSite, stageInfo, constructionSkill, values); //ConstructionSite constructionSite, ConstructionStageInfo stageInfo,
+			    //init_case_1_step_3();
 
 			}
 
@@ -239,7 +269,7 @@ implements Serializable {
 
 	}
 
-	public void init_case_1b(ConstructionSite modSite, ConstructionStageInfo info, int constructionSkill, ConstructionValues values) {
+	public void init_case_1_step_2(ConstructionSite modSite, ConstructionStageInfo info, int constructionSkill, ConstructionValues values) {
     	this.constructionSite = modSite;
     	ConstructionStageInfo stageInfo = info;
 		//System.out.println("init_1b");
@@ -278,14 +308,15 @@ implements Serializable {
 		    }
 		}
 		else {
+	    	System.out.println("Construction site could not be found or created.");
 		    endMission("Construction site could not be found or created.");
 		}
 
 	}
 
 
-	public void setPhases_1() {
-
+	public void init_case_1_step_3() {
+		//System.out.println("starting init_case_1_step_3");
 		if (!isDone()) {
 		    // Reserve construction vehicles.
 		    reserveConstructionVehicles();
@@ -296,16 +327,21 @@ implements Serializable {
 		    retrieveConstructionLUVParts();
 		}
 
+/*
         // Add phases.
+        addPhase(SELECT_SITE_PHASE);
         addPhase(PREPARE_SITE_PHASE);
         addPhase(CONSTRUCTION_PHASE);
         // Set initial mission phase.
-        setPhase(PREPARE_SITE_PHASE);
-
+        setPhase(SELECT_SITE_PHASE);
         setPhaseDescription(Msg.getString(
-        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+        		"ission.phase.selectConstructionSite.description" //$NON-NLS-1$
                 , settlement.getName()));
-
+*/
+        //setPhase(PREPARE_SITE_PHASE);
+        //setPhaseDescription(Msg.getString(
+        //		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+        //        , settlement.getName()));
 	}
 
 
@@ -366,8 +402,8 @@ implements Serializable {
 
             if (Simulation.getUseGUI())  {
 	        	// if GUI is in use
-				System.out.println("Case 2 : the site has been picked and the construction is started by users");
-     
+				//System.out.println("Case 2 : the site has been picked and the construction is started by users");
+
 		    	constructionSite.setSkill(bestConstructionSkill);
 		    	constructionSite.setSitePicked(true);
 		    	constructionSite.setStageInfo(stageInfo);
@@ -382,7 +418,7 @@ implements Serializable {
         else {
             logger.log(Level.INFO, "New construction site added at " + settlement.getName());
 			//System.out.println("Case 3 : site has NOT been picked yet and the construction is manually started by users");
-		     
+
             //boolean check = false;
             //if (check) {
             if (Simulation.getUseGUI())  {
@@ -451,7 +487,6 @@ implements Serializable {
 	            }
 
 	            init_2(constructionSite, stageInfo);//, vehicles, members);
-
 	            setPhases_2();
 	        }
 
@@ -669,7 +704,14 @@ implements Serializable {
 
     @Override
     protected void determineNewPhase() {
-        if (PREPARE_SITE_PHASE.equals(getPhase())) {
+    	//System.out.println("starting determineNewPhase()");
+        if (SELECT_SITE_PHASE.equals(getPhase())) {
+            setPhase(PREPARE_SITE_PHASE);
+            setPhaseDescription(Msg.getString(
+            		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+                    ,constructionStage.getInfo().getName()));
+        }
+        else if (PREPARE_SITE_PHASE.equals(getPhase())) {
             setPhase(CONSTRUCTION_PHASE);
             setPhaseDescription(Msg.getString(
             		"Mission.phase.construction.description" //$NON-NLS-1$
@@ -683,12 +725,30 @@ implements Serializable {
     @Override
     protected void performPhase(MissionMember member) {
         super.performPhase(member);
-        if (PREPARE_SITE_PHASE.equals(getPhase())) {
+        if (SELECT_SITE_PHASE.equals(getPhase())) {
+        	//System.out.println("performPhase() : in SELECT_SITE_PHASE");
+            selectSitePhase(member);
+        }
+        else if (PREPARE_SITE_PHASE.equals(getPhase())) {
+        	//System.out.println("performPhase() : in PREPARE_SITE_PHASE");
             prepareSitePhase(member);
         }
         else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-            constructionPhase(member);
+        	//System.out.println("performPhase() : in CONSTRUCTION_PHASE");
+        	constructionPhase(member);
         }
+    }
+
+    private void selectSitePhase(MissionMember member) {
+    	//System.out.println("at selectSitePhase(MissionMember member)");
+    	//selectSitePhase();
+    	// waiting for the site to be selected by mars-simmers
+    }
+
+    public void selectSitePhase() {
+    	//init_case_1_step_3();
+    	//System.out.println("starting selectSitePhase() and calling setPhaseEnded(true);");
+        setPhaseEnded(true);
     }
 
     /**
@@ -704,6 +764,7 @@ implements Serializable {
 //    }
 
     private void prepareSitePhase() {
+    	//System.out.println("starting prepareSitePhase()");
         // Load all available materials needed for construction.
         loadAvailableConstructionMaterials();
 
@@ -722,7 +783,7 @@ implements Serializable {
      * Load remaining required construction materials into site that are available at settlement inventory.
      */
     private void loadAvailableConstructionMaterials() {
-
+     	//System.out.println("starting loadAvailableConstructionMaterials()");
         Inventory inv = settlement.getInventory();
 
         // Load amount resources.
@@ -835,6 +896,8 @@ implements Serializable {
 
     @Override
     public void endMission(String reason) {
+    	logger.info("BuildingConstructionMission's endMission() is in " + Thread.currentThread().getName() + " Thread");
+    	System.out.println("starting endMission()");
         super.endMission(reason);
 
         // Mark site as not undergoing construction.
@@ -972,7 +1035,15 @@ implements Serializable {
      * @return list of construction vehicles.
      */
     public List<GroundVehicle> getConstructionVehicles() {
-        return new ArrayList<GroundVehicle>(constructionVehicles);
+    	// 2015-12-28 Added checking for null
+    	if (constructionVehicles != null) {
+	    	if (!constructionVehicles.isEmpty())
+	    		return new ArrayList<GroundVehicle>(constructionVehicles);
+	    	else
+	    		return null;
+    	}
+    	else
+    		return null;
     }
 
     @Override

@@ -55,7 +55,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  * The UnitManager class contains and manages all units in virtual Mars. It has
  * methods for getting information about units. It is also responsible for
  * creating all units on its construction. There should be only one instance of
- * this class and it should be constructed and owned by the virtual Mars object.
+ * this class and it should be constructed and owned by Simulation.
  */
 public class UnitManager implements Serializable {
 
@@ -114,7 +114,7 @@ public class UnitManager implements Serializable {
 	 * Constructor.
 	 */
 	public UnitManager() {
-		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
+		logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
 		solCache = 1;
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
@@ -605,7 +605,7 @@ public class UnitManager implements Serializable {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
-		
+
 		int size = personConfig.getNumberOfConfiguredPeople();
 		// Create all configured people.
 		for (int x = 0; x < size; x++) {
@@ -745,7 +745,7 @@ public class UnitManager implements Serializable {
 
 			// 2015-12-12 Added setEmotionalStates()
 			person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
-			
+
 		}
 
 		// Create all configured relationships.
@@ -1466,7 +1466,8 @@ public class UnitManager implements Serializable {
 	 *             if error during time passing.
 	 */
 	void timePassing(double time) {
-
+		//logger.info("UnitManager's timePassing() is in " + Thread.currentThread().getName() + " Thread");
+		// it's pool-4-thread-3 Thread
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
 			i.next().timePassing(time);

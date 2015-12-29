@@ -36,6 +36,8 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(TransportManager.class.getName());
 
 	// Data members
+	private volatile boolean isTransportingBuilding = false;
+
 	private Collection<Transportable> transportItems;
 
 	/**
@@ -160,6 +162,14 @@ implements Serializable {
                 }
 			}
 		}
+	}
+
+	public boolean isTransportingBuilding() {
+		return isTransportingBuilding;
+	}
+
+	public synchronized void setIsTransportingBuilding(boolean value) {
+		isTransportingBuilding = value;
 	}
 
 	/**

@@ -303,7 +303,7 @@ public class MainMenu {
 	}
 
    public void runOne() {
-	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+	   logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 	   stage.setIconified(true);
 	   stage.hide();
 	   // creates a mainScene instance
@@ -388,6 +388,7 @@ public class MainMenu {
     */
 	public class LoadSimulationTask implements Runnable {
 		public void run() {
+			logger.info("MainMenu'sLoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
 			fileSize = 1;
 			logger.info("Loading settlement data from the default saved simulation...");
 			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
@@ -407,7 +408,7 @@ public class MainMenu {
 	 * Prepares the scene in the main scene
 	 */
 	public void prepareScene() {
-	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+	   logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 	   // prepare main scene
 	   mainScene.prepareMainScene();
 	   // creates and initialize scene

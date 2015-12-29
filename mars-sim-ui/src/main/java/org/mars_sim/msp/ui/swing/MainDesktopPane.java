@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,7 +106,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	//private long currentTime;
 	//private long elapsedNanos;
 
-	private boolean isTransportingBuilding = false;
+	private boolean isTransportingBuilding = false, isConstructingSite = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
 	private boolean firstDisplay;
 	/** List of open or buttoned unit windows. */
@@ -145,6 +146,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private MainScene mainScene;
 	private MarqueeTicker marqueeTicker;
 
+	//private final ReentrantLock transportLock = new ReentrantLock();
+    //private int transportCount = 0;
+
+	//private final ReentrantLock constructionLock = new ReentrantLock();
+    //private int constructionCount = 0;
+
+
 	/**
 	 * Constructor 1.
 	 * @param mainWindow the main outer window
@@ -161,7 +169,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
-	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
 		init();
@@ -1334,6 +1342,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return isTransportingBuilding;
 	}
 
+	public boolean getIsConstructingSite() {
+		return isConstructingSite;
+	}
+
 	public void setMarqueeTicker(MarqueeTicker marqueeTicker) {
 		this.marqueeTicker = marqueeTicker;
 	}
@@ -1349,25 +1361,29 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
 		Object target = event.getTarget();
 		if (eventType == UnitEventType.START_TRANSPORT_WIZARD_EVENT) {
-			isTransportingBuilding = true;
+
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
 			//settlement = mgr.getSettlement();
 
-			if (mainWindow != null)  {//mainWindow.pauseSimulation();
-				//SwingUtilities.invokeLater(() -> {
-					mainWindow.openTransportWizard(mgr);
-				//});
-			}
-			else if (mainScene != null) {//mainScene.pauseSimulation();
-				//Platform.runLater(() -> {
-	                mainScene.openTransportWizard(mgr);
-				//});
+			if (!isTransportingBuilding) {
+				isTransportingBuilding = true;
+				if (mainWindow != null)  {//mainWindow.pauseSimulation();
+					//SwingUtilities.invokeLater(() -> {
+						mainWindow.openTransportWizard(mgr);
+					//});
+				}
+				else if (mainScene != null) {//mainScene.pauseSimulation();
+					//Platform.runLater(() -> {
+		                mainScene.openTransportWizard(mgr);
+					//});
+				}
+
+				Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
 			}
 
-			isTransportingBuilding = false;
 
-		} else if (eventType == UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT) {
+		} else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
 
 			isTransportingBuilding = false;
             disposeAnnouncementWindow();
@@ -1376,21 +1392,33 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
 			BuildingConstructionMission mission = (BuildingConstructionMission) target;
-			//ConstructionSite site = (ConstructionSite) mission.getConstructionSite();
-			//ConstructionManager constructionManager = site.getConstructionManager();
-			//Settlement settlement = site.getSettlement();
+		   	logger.info("MainDesktopPane's unitUpdate() is on " + Thread.currentThread().getName() + " Thread");
+		   	// it's on pool-4-thread-1
 
-			if (mainWindow != null)  {
-				mainWindow.openConstructionWizard(mission);
-			}
-			else if (mainScene != null) {
-				mainScene.openConstructionWizard(mission);
+			//constructionLock.lock();
+			//constructionCount++;
+			//try {// access the resource protected by this lock
+			//} catch(Exception ex) {// restore invariants
+			//} finally {
+				//constructionLock.unlock();
+				//constructionCount--;
+			//}
+
+			if (!isConstructingSite) {
+				isConstructingSite = true;
+
+				if (mainWindow != null)  {
+					mainWindow.openConstructionWizard(mission);
+				}
+				else if (mainScene != null) {
+					mainScene.openConstructionWizard(mission);
+				}
+
 			}
 		}
 
-		else if (eventType == UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT) {
-
-
+		else if (eventType == UnitEventType.END_CONSTRUCTION_WIZARD_EVENT) {
+			isConstructingSite = false;
 		}
 
 		// repaint(); // raise cpu util% way too much for putting it here

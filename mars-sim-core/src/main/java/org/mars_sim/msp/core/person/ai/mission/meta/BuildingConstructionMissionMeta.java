@@ -78,10 +78,16 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
-            boolean firstTenSols = (totalTimeSols < 10D);
+            boolean firstTenSols = (totalTimeSols < 2D);
 
-            if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
-      	
+            // Check if min number of EVA suits at settlement.
+            if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
+                    BuildingConstructionMission.MIN_PEOPLE) {
+                result = 0D;
+            }
+
+            else if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
+
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                     ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
@@ -100,7 +106,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                             int numSites = manager.getConstructionSites().size();
                             result/= Math.pow(10, numSites);
                         }
-                        
+
                         // Modify if construction is the person's favorite activity.
                         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
                             result *= 1.1D;
@@ -112,12 +118,6 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                 }
             }
 
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
-                    BuildingConstructionMission.MIN_PEOPLE) {
-                result = 0D;
-            }
-
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
@@ -125,6 +125,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             }
         }
 
+        if (result > 1.1) System.out.println("result : "+ result);
         return result;
     }
 

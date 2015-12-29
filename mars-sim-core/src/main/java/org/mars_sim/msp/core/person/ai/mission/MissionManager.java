@@ -415,8 +415,14 @@ implements Serializable {
 				}
 				else if (mission instanceof BuildingConstructionMission) {
 					BuildingConstructionMission construction = (BuildingConstructionMission) mission;
-					if (construction.getConstructionVehicles().contains(vehicle)) {
-						result = mission;
+					if (construction.getConstructionVehicles() != null) {
+						if (construction.getConstructionVehicles().contains(vehicle)) {
+							result = mission;
+						}
+					}
+					else {
+						// 2015-12-28
+						result = null;
 					}
 				}
 				else if (mission instanceof BuildingSalvageMission) {

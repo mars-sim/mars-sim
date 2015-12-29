@@ -90,7 +90,7 @@ public class SettlementTableModel extends AbstractTableModel {
 	public List<SettlementInfo> getSettlements() {
 		return settlements;
 	}
-	
+
 	public void setConfigEditor(ScenarioConfigEditorFX configEditor) {
 		this.configEditor = configEditor;
 	}
@@ -752,16 +752,16 @@ public class SettlementTableModel extends AbstractTableModel {
 			SettlementInfo settlement = i.next();
 
 			// Check that settlement name is valid.
-			if ((settlement.name == null) || (settlement.name.isEmpty())) {
+			if ((settlement.name.trim() == null) || (settlement.name.trim().isEmpty())) {
 				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
 			}
 
 			// Check if population is valid.
-			if ((settlement.population == null) || (settlement.population.isEmpty())) {
+			if ((settlement.population.trim() == null) || (settlement.population.trim().isEmpty())) {
 				setError(Msg.getString("SimulationConfigEditor.error.populationMissing")); //$NON-NLS-1$
 			} else {
 				try {
-					int popInt = Integer.parseInt(settlement.population);
+					int popInt = Integer.parseInt(settlement.population.trim());
 					if (popInt < 0) {
 						setError(Msg.getString("SimulationConfigEditor.error.populationTooFew")); //$NON-NLS-1$
 					}
@@ -772,11 +772,11 @@ public class SettlementTableModel extends AbstractTableModel {
 			}
 
 			// Check if number of robots is valid.
-			if ((settlement.numOfRobots == null) || (settlement.numOfRobots.isEmpty())) {
+			if ((settlement.numOfRobots.trim() == null) || (settlement.numOfRobots.trim().isEmpty())) {
 				setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
 			} else {
 				try {
-					int num = Integer.parseInt(settlement.numOfRobots);
+					int num = Integer.parseInt(settlement.numOfRobots.trim());
 					if (num < 0) {
 						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
 					}
@@ -787,7 +787,7 @@ public class SettlementTableModel extends AbstractTableModel {
 			}
 
 			// Check that settlement latitude is valid.
-			if ((settlement.latitude == null) || (settlement.latitude.isEmpty())) {
+			if ((settlement.latitude.trim() == null) || (settlement.latitude.trim().isEmpty())) {
 				setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 			} else {
 				String cleanLatitude = settlement.latitude.trim().toUpperCase();
@@ -804,7 +804,7 @@ public class SettlementTableModel extends AbstractTableModel {
 				else {
 					String numLatitude = cleanLatitude.substring(0, cleanLatitude.length() - 1);
 					try {
-						double doubleLatitude = Double.parseDouble(numLatitude);
+						double doubleLatitude = Double.parseDouble(numLatitude.trim());
 						if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
 							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
 						}
@@ -817,7 +817,7 @@ public class SettlementTableModel extends AbstractTableModel {
 			}
 
 			// Check that settlement longitude is valid.
-			if ((settlement.longitude == null) || (settlement.longitude.isEmpty())) {
+			if ((settlement.longitude.trim() == null) || (settlement.longitude.trim().isEmpty())) {
 				setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 			} else {
 				String cleanLongitude = settlement.longitude.trim().toUpperCase();
@@ -833,7 +833,7 @@ public class SettlementTableModel extends AbstractTableModel {
 				} else {
 					String numLongitude = cleanLongitude.substring(0, cleanLongitude.length() - 1);
 					try {
-						double doubleLongitude = Double.parseDouble(numLongitude);
+						double doubleLongitude = Double.parseDouble(numLongitude.trim());
 						if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
 							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
 						}

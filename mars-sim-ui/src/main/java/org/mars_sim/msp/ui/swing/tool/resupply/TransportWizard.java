@@ -138,7 +138,7 @@ public class TransportWizard {
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
-		//System.out.println("Just called TransportWizard's deliverBuildings()");
+		System.out.println("Just called TransportWizard's deliverBuildings()");
 
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
     	// how to make each building ask for a position ?
@@ -280,7 +280,7 @@ public class TransportWizard {
 	 * Determines the placement of each building manually, instead of using the template positions
 	 */
     // 2015-12-07 Added determineEachBuildingPosition()
-	public void determineEachBuildingPosition(BuildingManager mgr) {
+	public synchronized void determineEachBuildingPosition(BuildingManager mgr) {
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		if (mainScene != null)
 			mainScene.pauseSimulation();
@@ -303,7 +303,7 @@ public class TransportWizard {
 	    } // end of while (buildingI.hasNext())
 
         Building building = mgr.getBuildings().get(0);
-        mgr.getSettlement().fireUnitUpdate(UnitEventType.FINISH_BUILDING_PLACEMENT_EVENT, building);
+        mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
 		if (mainScene != null)
 			mainScene.unpauseSimulation();
 	}
@@ -654,7 +654,7 @@ public class TransportWizard {
 
 
 	@SuppressWarnings("restriction")
-	public void alertDialog(String title, String header, StringProperty msg, BuildingTemplate template,
+	public synchronized void alertDialog(String title, String header, StringProperty msg, BuildingTemplate template,
 		BuildingManager mgr, Building newBuilding, boolean hasTimer){
 
     	// Platform.runLater(() -> {

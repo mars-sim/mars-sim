@@ -56,6 +56,7 @@ public enum UnitEventType {
 	// from ConstructionManager.java
 	START_CONSTRUCTION_SITE_EVENT	("start construction site"),
 	START_CONSTRUCTION_WIZARD_EVENT	("start construction wizard"),
+	END_CONSTRUCTION_WIZARD_EVENT	("end construction wizard"),
 	//START_MANUAL_CONSTRUCTION_WIZARD_EVENT	("start construction event manually"),
 
 
@@ -69,6 +70,7 @@ public enum UnitEventType {
 
 	START_BUILDING_PLACEMENT_EVENT	("start building placement"),
 	START_TRANSPORT_WIZARD_EVENT	("start transport wizard"),
+	END_TRANSPORT_WIZARD_EVENT		("end transport wizard"),
 
 	FINISH_BUILDING_PLACEMENT_EVENT	("finish building placement"),
 

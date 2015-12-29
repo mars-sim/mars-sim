@@ -41,6 +41,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
@@ -179,6 +180,7 @@ public class MainScene {
 	private BorderPane borderPane;
 	private DndTabPane dndTabPane;
 	private FXDesktopPane fxDesktopPane;
+	private ESCHandler esc = null;
 
 	private Timeline timeline, autosaveTimeline;
 	private static NotificationPane notificationPane;
@@ -232,24 +234,45 @@ public class MainScene {
 		} );
 
 		// Detect if a user hits ESC
-		stage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-			@Override
-			public void handle(KeyEvent t) {
-				if (t.getCode() == KeyCode.ESCAPE) {
-					boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-					if (isOnPauseMode)
-						unpauseSimulation();
-					else
-						pauseSimulation();
-					// Toggle the full screen mode to OFF in the pull-down menu
-					// under setting
-					//menuBar.exitFullScreen();
-					// close the MarsNet side panel
-					//openSwingTab();
-				}
-			}
-		});
+		setEscapeEventHandler(true);
 	}
+
+	// 2015-12-28 Added setEscapeEventHandler()
+	public void setEscapeEventHandler(boolean value) {
+		if (value) {
+			esc = new ESCHandler();
+			stage.addEventHandler(KeyEvent.KEY_PRESSED, esc);
+		}
+		else
+			stage.removeEventHandler(KeyEvent.KEY_PRESSED, esc);
+
+	}
+
+	class ESCHandler implements EventHandler<KeyEvent> {
+
+		public void handle(KeyEvent t) {
+			if (t.getCode() == KeyCode.ESCAPE) {
+
+				boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+				if (isOnPauseMode) {
+					unpauseSimulation();
+					//desktop.getTimeWindow().enablePauseButton(true);
+				}
+				else {
+					pauseSimulation();
+					//desktop.getTimeWindow().enablePauseButton(false);
+				}
+				// Toggle the full screen mode to OFF in the pull-down menu
+				// under setting
+				//menuBar.exitFullScreen();
+				// close the MarsNet side panel
+				//openSwingTab();
+			}
+		}
+
+
+	}
+
 
 	/**
 	 * Calls an thread executor to submit MainSceneTask

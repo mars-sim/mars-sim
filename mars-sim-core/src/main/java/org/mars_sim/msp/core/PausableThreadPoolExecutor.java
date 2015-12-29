@@ -8,8 +8,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
+
+    /** initialized logger for this class. */
+    private static Logger logger = Logger.getLogger(PausableThreadPoolExecutor.class.getName());
+
    private boolean isPaused;
    private ReentrantLock pauseLock = new ReentrantLock();
    private Condition unpaused = pauseLock.newCondition();
@@ -32,6 +37,8 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
    public PausableThreadPoolExecutor(int threadsNr, int threadPriority) {
        super(threadsNr, threadsNr, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+       //logger.info("PausableThreadPoolExecutor's constructor 3 is on " + Thread.currentThread().getName() + " Thread");
+       // it's in pool-2-thread-1 Thread
 
        // bring the thread priority between min and max priority
        final int normalizedThreadPriority = Math.max(Thread.MIN_PRIORITY, Math.min(threadPriority, Thread.MAX_PRIORITY));

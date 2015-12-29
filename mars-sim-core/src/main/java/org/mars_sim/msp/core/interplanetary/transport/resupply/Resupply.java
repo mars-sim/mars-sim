@@ -92,19 +92,19 @@ implements Serializable, Transportable {
     private static final double MINIMUM_CONNECTOR_LENGTH = .5D;//.5D;
 
 	// Data members
-	private Settlement settlement;
+	private int newImmigrantNum;
 	private TransitState state;
-	private MarsClock launchDate;
-	private MarsClock arrivalDate;
+
 	private List<BuildingTemplate> newBuildings;
 	private List<String> newVehicles;
 	private Map<String, Integer> newEquipment;
-	private int newImmigrantNum;
 	private Map<AmountResource, Double> newResources;
 	private Map<Part, Integer> newParts;
 
-	//2014-12-23 Added data members
 	private BuildingManager buildingManager;
+	private Settlement settlement;
+	private MarsClock launchDate;
+	private MarsClock arrivalDate;
 
 	/**
 	 * Constructor.
@@ -335,7 +335,8 @@ implements Serializable, Transportable {
 	/**
      * Generates START_BUILDING_PLACEMENT_EVENT and test if GUI is in use
      */
-    public void startDeliveryEvent() {
+    public synchronized void startDeliveryEvent() {
+        logger.info("Resupply's deliverBuildings() is on " + Thread.currentThread().getName() + " Thread");
     	//System.out.println("Resupply : running deliverBuildings()");
 
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -346,14 +347,19 @@ implements Serializable, Transportable {
     	// 2014-12-26 Added Simulation.getUseGUI() to terminate handling of delivery
         // by Resupply.java if GUI is in use
         if (Simulation.getUseGUI())  {
-        	// if GUI is in use
-            List<BuildingTemplate> orderedBuildings = orderNewBuildings();
-            if (orderedBuildings.size() > 0) {
-            	Building aBuilding = buildingManager.getBuildings().get(0);
-            	// Fires the unit update below in order to use the version of deliverBuildings() in TransportWizard.java
-               	settlement.fireUnitUpdate(UnitEventType.START_TRANSPORT_WIZARD_EVENT, aBuilding);
-            }
-
+        	//boolean check = Simulation.instance().getTransportManager().isTransportingBuilding();
+        	//System.out.println("Resupply : is it transporting : " + check);
+        	//if(!check) {
+        		//Simulation.instance().getTransportManager().setIsTransportingBuilding(true);
+            	//System.out.println("Resupply : running deliverBuildings(). just set IsTransportingBuilding to true");
+	        	// if GUI is in use
+	            List<BuildingTemplate> orderedBuildings = orderNewBuildings();
+	            if (orderedBuildings.size() > 0) {
+	            	Building aBuilding = buildingManager.getBuildings().get(0);
+	            	// Fires the unit update below in order to use the version of deliverBuildings() in TransportWizard.java
+	               	settlement.fireUnitUpdate(UnitEventType.START_TRANSPORT_WIZARD_EVENT, aBuilding);
+	            }
+        	//}
         } else {
         	// if GUI is NOT in use, use the version of deliverBuildings() here in Resuppply.java
         	// Deliver buildings to the destination settlement.

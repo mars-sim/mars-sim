@@ -124,6 +124,7 @@ implements VehicleOperator, MissionMember, Serializable {
     public Person(String name, PersonGender gender, String birthplace, Settlement settlement) {
         // Use Unit constructor
         super(name, settlement.getCoordinates());
+		//logger.info("Person's constructor is in " + Thread.currentThread().getName() + " Thread");
 
         // Initialize data members
         this.name = name;
@@ -416,6 +417,7 @@ implements VehicleOperator, MissionMember, Serializable {
      */
     public void timePassing(double time) {
     	//System.out.println("Container Unit : " + this.getContainerUnit());
+		//logger.info("Person's timePassing() is in " + Thread.currentThread().getName() + " Thread");
 
        	// 2015-06-29 Added calling taskSchedule
     	//taskSchedule.timePassing(time);

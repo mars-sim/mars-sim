@@ -118,7 +118,7 @@ implements ClockListener, Serializable {
     //private transient Thread clockThread;
     //private transient ThreadPoolExecutor clockExecutor;
     //private transient ThreadPoolExecutor clockScheduler; //
-    private transient PausableThreadPoolExecutor clockScheduler;
+    private transient ThreadPoolExecutor clockScheduler;
 
     private transient ThreadPoolExecutor managerExecutor;
 
@@ -273,13 +273,13 @@ implements ClockListener, Serializable {
      */
     // 2015-02-04 Added threading
     private void initializeIntransientData() {
-        //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
+        logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
 
         if (eventManager == null)
         	eventManager = new HistoricalEventManager();
 
         if (managerExecutor == null || managerExecutor.isShutdown()) {
-            managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool();
+            managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newSingleThreadExecutor();newFixedThreadPool();
 
             malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
             managerExecutor.execute(malfunctionFactory);
@@ -318,9 +318,10 @@ implements ClockListener, Serializable {
      * Start the simulation.
      */
     public void start() {
-        //logger.info("Simulation's start() is on " + Thread.currentThread().getName() + " Thread");
+        logger.info("Simulation's start()-- where clockScheduler is declared--is on " + Thread.currentThread().getName() + " Thread");
         //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
         //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
+
 		//SwingUtilities.invokeLater(() -> {
 	    //    testConsole();
 		//});
@@ -329,9 +330,11 @@ implements ClockListener, Serializable {
         masterClock.startClockListenerExecutor();
 
         if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
-	        //clockExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newCachedThreadPool(); //
+	        clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);// newSingleThreadExecutor();// newCachedThreadPool(); //
+	        //logger.info("Simulation's instance() is on " + Thread.currentThread().getName() + " Thread");
+
 	        // 2015-06-24 Replaced with PausableThreadPoolExecutor
-        	clockScheduler =  new PausableThreadPoolExecutor(1, 5);
+        	//clockScheduler =  new PausableThreadPoolExecutor(1, 5);
         	//clockScheduler = (ThreadPoolExecutor) Executors.newCachedThreadPool(); // newSingleThreadExecutor(); newFixedThreadPool(1); //newScheduledThreadPool(1); // newSingleThreadScheduledExecutor(); //
         	//clockScheduler.scheduleAtFixedRate(masterClock.getClockThreadTask(), 0, (long) 16.66667, TimeUnit.MILLISECONDS);
         	//logger.info("Simulation's start() : clockExecutor was null. just made one");
@@ -509,15 +512,15 @@ implements ClockListener, Serializable {
 
     	// 2015-10-17 Save the current pause state
 		//boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
-    	
+
 		// 2015-12-18 Check if it was previously on pause
-		boolean previous = Simulation.instance().getMasterClock().isPaused();		
+		boolean previous = Simulation.instance().getMasterClock().isPaused();
 		// Pause simulation.
 		if (!previous) {
 			masterClock.setPaused(true);
 			//System.out.println("previous2 is false. Paused sim");
-		}	
-		
+		}
+
         Simulation simulation = instance();
         simulation.halt();
 
@@ -601,9 +604,9 @@ implements ClockListener, Serializable {
 			if (!now) {
 				masterClock.setPaused(false);
 	    		//System.out.println("previous is true. now is false. Unpaused sim");
-			}				
-		}  
-		
+			}
+		}
+
     }
 
     /*
@@ -634,6 +637,8 @@ implements ClockListener, Serializable {
      */
     @Override
     public void clockPulse(double time) {
+		//logger.info("Simulation's clockPulse() is in " + Thread.currentThread().getName() + " Thread");
+		// it's in pool-4-thread-1 Thread
         final UpTimer ut = masterClock.getUpTimer();
         if (!masterClock.isPaused()) {
 
@@ -822,13 +827,13 @@ implements ClockListener, Serializable {
     }
 
 
-   //public ThreadPoolExecutor getClockExecutor() {
-   //	return clockExecutor;
-   //}
+	public ThreadPoolExecutor getClockScheduler() {
+	   return clockScheduler;
+	}
 
-    public PausableThreadPoolExecutor getClockScheduler() {
-    	return clockScheduler;
-    }
+    //public PausableThreadPoolExecutor getClockScheduler() {
+    //	return clockScheduler;
+    //}
 
 /*
     // 2015-10-08 Added testConsole() for outputting text messages to mars-simmers

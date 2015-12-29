@@ -129,7 +129,7 @@ public class MarsProjectFX extends Application  {
 	}
 
 	public void start(Stage primaryStage) {
-	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
 		if (useGUI) {
 		    mainMenu = new MainMenu(this); //, args, true);
 		    mainMenu.initAndShowGUI(primaryStage);
@@ -260,7 +260,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the saved simulation.
      */
     void handleLoadSimulation(List<String> argList) throws Exception {
-		//logger.info("MarsProjectFX's handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		logger.info("MarsProjectFX's handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
     	// INFO: MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
         try {
             int index = argList.indexOf("-load");

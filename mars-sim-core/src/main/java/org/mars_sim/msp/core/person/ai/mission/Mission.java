@@ -392,14 +392,14 @@ implements Serializable {
             		shift = person.getSettlement().getAEmptyWorkShift(-1);
             		person.setShiftType(shift);
             	}
-            	else if (person.getVehicle() != null) 
+            	else if (person.getVehicle() != null)
             		if (person.getVehicle().getSettlement() != null){
             		shift = person.getVehicle().getSettlement().getAEmptyWorkShift(-1);
             		person.setShiftType(shift);
             	}
-                
+
             }
- 
+
             logger.finer(member.getName() + " removed from mission: " + name);
         }
     }
@@ -760,6 +760,8 @@ implements Serializable {
 	 * Mission can override this to perform necessary finalizing operations.
 	 */
 	public void endMission(String reason) {
+		logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
+
 		if (!done) {
 			done = true;
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);

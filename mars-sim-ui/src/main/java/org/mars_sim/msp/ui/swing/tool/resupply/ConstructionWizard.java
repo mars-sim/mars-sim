@@ -184,6 +184,14 @@ public class ConstructionWizard {
 	    		site_case = 3;
 	    }
 
+	    boolean previous = Simulation.instance().getMasterClock().isPaused();
+	    if (mainScene != null) {
+			if (!previous) {
+				mainScene.pauseSimulation();
+		    	//System.out.println("previous is false. Paused sim");
+			}
+			desktop.getTimeWindow().enablePauseButton(false);
+	    }
 
 	    switch (site_case) {
 
@@ -195,6 +203,11 @@ public class ConstructionWizard {
 		    	break;
 	    }
 
+	    if (mainScene != null) {
+			unpause(previous);
+		}
+
+	    settlement.fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, constructionSite);
 	}
 
 	public void executeCase1(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
@@ -236,41 +249,52 @@ public class ConstructionWizard {
 	        System.out.println("New construction stage could not be determined.");
 	    }
 
-	    mission.init_case_1b(modifiedSite, stageInfo, constructionSkill, values);
-	    mission.setPhases_1();
+		//Simulation.instance().getSimExecutor()
+	    //Simulation.instance().getClockScheduler()
+	    // 2015-12-28 Needed to get back to the original thread that started the BuildingConstructionMission instance
+	    Simulation.instance().getMasterClock().getClockListenerExecutor().submit(new SiteTask(
+				modifiedSite, stageInfo, constructionSkill, values, mission));
+
 	}
+
+	//2015-12-28 Added SiteTask
+	class SiteTask implements Runnable {
+
+		ConstructionSite modifiedSite;
+		ConstructionStageInfo stageInfo;
+		int constructionSkill;
+		ConstructionValues values;
+		BuildingConstructionMission mission;
+
+		SiteTask(ConstructionSite modifiedSite,
+				ConstructionStageInfo stageInfo,
+				int constructionSkill,
+				ConstructionValues values,
+				BuildingConstructionMission mission) {
+			this.modifiedSite = modifiedSite;
+			this.stageInfo = stageInfo;
+			this.constructionSkill = constructionSkill;
+			this.values = values;
+			this.mission = mission;
+
+		}
+
+		public void run() {
+		   	logger.info("ConstructionWizard's SiteTask's run() is on " + Thread.currentThread().getName() + " Thread");
+			// it's now on pool-4-thread-1 Thread
+
+		   	mission.init_case_1_step_2(modifiedSite, stageInfo, constructionSkill, values);
+		    mission.init_case_1_step_3();
+		    mission.selectSitePhase();
+		}
+    }
 
 	public void executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
 		System.out.println("Case 2");
 		ConstructionSite modifiedSite = constructionSite;
 
-	    boolean previous = Simulation.instance().getMasterClock().isPaused();
-	    if (mainScene != null) {
-			if (!previous) {
-				mainScene.pauseSimulation();
-		    	//System.out.println("previous is false. Paused sim");
-			}
-			desktop.getTimeWindow().enablePauseButton(false);
-	    }
-
 		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
-
-		if (mainScene != null) {
-			boolean now = Simulation.instance().getMasterClock().isPaused();
-			if (!previous) {
-				if (now) {
-					mainScene.unpauseSimulation();
-	   	    		//System.out.println("previous is false. now is true. Unpaused sim");
-				}
-			} else {
-				if (!now) {
-					mainScene.unpauseSimulation();
-	   	    		//System.out.println("previous is true. now is false. Unpaused sim");
-				}
-			}
-			desktop.getTimeWindow().enablePauseButton(true);
-		}
 
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
@@ -283,41 +307,33 @@ public class ConstructionWizard {
 		System.out.println("Case 3");
 		ConstructionSite modifiedSite = constructionSite;
 
-	    boolean previous = Simulation.instance().getMasterClock().isPaused();
-	    if (mainScene != null) {
-			if (!previous) {
-				mainScene.pauseSimulation();
-		    	//System.out.println("previous is false. Paused sim");
-			}
-			desktop.getTimeWindow().enablePauseButton(false);
-	    }
-		//FXUtilities.runAndWait(() -> {
-		//Platform.runLater(() -> {
-			//ConstructionSite
-			modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
-			confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
-		//});
-
-		if (mainScene != null) {
-			boolean now = Simulation.instance().getMasterClock().isPaused();
-			if (!previous) {
-				if (now) {
-					mainScene.unpauseSimulation();
-	   	    		//System.out.println("previous is false. now is true. Unpaused sim");
-				}
-			} else {
-				if (!now) {
-					mainScene.unpauseSimulation();
-	   	    		//System.out.println("previous is true. now is false. Unpaused sim");
-				}
-			}
-			desktop.getTimeWindow().enablePauseButton(true);
-		}
+		modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
 
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
 
 	}
+
+	  /**
+     * Checks for the previous state before unpausing the sim.
+     * @param previous state
+     */
+    public void unpause(boolean previous0) {
+    	boolean now0 = Simulation.instance().getMasterClock().isPaused();
+		if (!previous0) {
+			if (now0) {
+				mainScene.unpauseSimulation();
+	    		//System.out.println("previous0 is false. now0 is true. Unpaused sim");
+			}
+		} else {
+			if (!now0) {
+				mainScene.unpauseSimulation();
+	    		//System.out.println("previous0 is true. now0 is false. Unpaused sim");
+			}
+		}
+		desktop.getTimeWindow().enablePauseButton(true);
+    }
 
 	@SuppressWarnings("restriction")
 	public synchronized void confirmSiteLocation(ConstructionSite site, ConstructionManager constructionManager,

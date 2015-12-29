@@ -740,6 +740,8 @@ implements Serializable, Comparable<Unit> {
 	 * @param target the event target object or null if none.
 	 */
 	public final void fireUnitUpdate(UnitEventType updateType, Object target) {
+	   	//logger.info("Unit's fireUnitUpdate() is on " + Thread.currentThread().getName() + " Thread");
+
 		if (listeners == null || listeners.size() < 1) {
 			// listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
 			// we don't do anything if there's no listeners attached

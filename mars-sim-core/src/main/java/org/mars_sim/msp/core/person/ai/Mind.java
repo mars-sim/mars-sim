@@ -72,6 +72,7 @@ implements Serializable {
      * @throws Exception if mind could not be created.
      */
     public Mind(Person person) {
+		//logger.info("Mind's constructor is in " + Thread.currentThread().getName() + " Thread");
 
         // Initialize data members
         this.person = person;
@@ -99,6 +100,7 @@ implements Serializable {
      * @throws Exception if error.
      */
     public void timePassing(double time) {
+		//logger.info("Mind's timePassing() is in " + Thread.currentThread().getName() + " Thread");
 
         if (taskManager != null)
         	// 2015-10-22 Added recordTask()
@@ -376,7 +378,7 @@ implements Serializable {
 	                	cc.set3Divisions(true);
 	                	cc.assignSpecialiststo3Divisions(person);
 	                }
-	                
+
 		        }
     	    }
     	}

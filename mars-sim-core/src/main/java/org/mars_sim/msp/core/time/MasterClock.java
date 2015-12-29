@@ -107,7 +107,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @throws Exception if clock could not be constructed.
      */
     public MasterClock() {
-        //logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
+        logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
         // Initialize data members
         SimulationConfig config = SimulationConfig.instance();
@@ -441,6 +441,7 @@ public class MasterClock implements Serializable { // Runnable,
 		private static final long serialVersionUID = 1L;
 
 		private ClockThreadTask() {
+			logger.info("MasterClock's ClockThreadTask's constructor is on " + Thread.currentThread().getName() + " Thread");
 		}
 
 		@Override
@@ -511,6 +512,8 @@ public class MasterClock implements Serializable { // Runnable,
 
     // 2015-07-03  Relocated codes into statusUpdate()
     private void statusUpdate() {
+        //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
+    	// it's s on pool-5-thread-1 Thread
 
         long lastTimeDiff;
 
@@ -609,18 +612,19 @@ public class MasterClock implements Serializable { // Runnable,
      * Prepare clocklistener tasks for setting up threads.
      */
     // 2015-04-02 Added ClockListenerTask
-	class ClockListenerTask implements Runnable {
+	public class ClockListenerTask implements Runnable {
 
 		//long SLEEP_TIME = 1;
 		double time;
 		private ClockListener listener;
 
-		protected ClockListener getClockListener() {
+		public ClockListener getClockListener() {
 			return listener;
 		}
 
 		private ClockListenerTask(ClockListener listener) {
-			//logger.info(Msg.getString("MainDesktopPane.toolWindow.thread.running")); //$NON-NLS-1$
+			//logger.info("MasterClock's ClockListenerTask's constructor is on " + Thread.currentThread().getName() + " Thread");
+			// It's on pool-5-thread-1 Thread
 			this.listener = listener;
 
 		}
@@ -646,6 +650,9 @@ public class MasterClock implements Serializable { // Runnable,
      */
     // 2015-04-02 Modified fireClockPulse() to make use of ThreadPoolExecutor
 	public void fireClockPulse(double time) {
+		//logger.info("MasterClock's ClockListenerTask's constructor is on " + Thread.currentThread().getName() + " Thread");
+		// it's on pool-5-thread-1 Thread
+
 		// java 8 internal iterator style
 		//listeners.forEach(cl -> cl.clockPulse(time));
 
@@ -841,10 +848,13 @@ public class MasterClock implements Serializable { // Runnable,
      * Starts clock listener thread pool executor
      */
     public void startClockListenerExecutor() {
+	   	logger.info("MasterClock's startClockListenerExecutor() is on " + Thread.currentThread().getName() + " Thread");
+    	// it's in pool-2-thread-1 Thread
+
     	//if ( clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown() )
     	if (clockListenerExecutor == null)
     		clockListenerExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-//Executors.newSingleThreadExecutor();// Executors.newFixedThreadPool(1); // newCachedThreadPool(); //
+    	//Executors.newSingleThreadExecutor();// Executors.newFixedThreadPool(1); // newCachedThreadPool(); //
     }
 
     /**
@@ -865,6 +875,10 @@ public class MasterClock implements Serializable { // Runnable,
     		///
 */
     }
+
+	public ThreadPoolExecutor getClockListenerExecutor() {
+		return clockListenerExecutor;
+	}
 
     /**
      * Prepare object for garbage collection.
