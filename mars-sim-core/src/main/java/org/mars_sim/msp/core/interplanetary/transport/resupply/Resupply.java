@@ -355,7 +355,7 @@ implements Serializable, Transportable {
 	        	// if GUI is in use
 	            List<BuildingTemplate> orderedBuildings = orderNewBuildings();
 	            if (orderedBuildings.size() > 0) {
-	            	Building aBuilding = buildingManager.getBuildings().get(0);
+	            	Building aBuilding = buildingManager.getACopyOfBuildings().get(0);
 	            	// Fires the unit update below in order to use the version of deliverBuildings() in TransportWizard.java
 	               	settlement.fireUnitUpdate(UnitEventType.START_TRANSPORT_WIZARD_EVENT, aBuilding);
 	            }
@@ -382,7 +382,7 @@ implements Serializable, Transportable {
 
         if (orderedBuildings.size() > 0) {
 
-        	Building aBuilding = buildingManager.getBuildings().get(0);
+        	Building aBuilding = buildingManager.getACopyOfBuildings().get(0);
           	settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, aBuilding);
 
 	        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
@@ -936,7 +936,7 @@ implements Serializable, Transportable {
             BuildingManager buildingManager = settlement.getBuildingManager();
             if (buildingManager.getBuildingNum() > 0) {
                 for (int x = BUILDING_CENTER_SEPARATION; newPosition == null; x+= BUILDING_CENTER_SEPARATION/5) {
-                    List<Building> allBuildings = buildingManager.getBuildings();
+                    List<Building> allBuildings = buildingManager.getACopyOfBuildings();
                     //System.out.println("allBuildings.size() is "+ allBuildings.size());
                     //System.out.println("Building type is "+ buildingType);
                     Collections.shuffle(allBuildings);

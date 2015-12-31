@@ -263,10 +263,10 @@ public class BuildingManager implements Serializable {
     	this.resupply= resupply;
     }
     /**
-     * Gets the settlement's collection of buildings.
+     * Gets a copy of settlement's collection of buildings.
      * @return collection of buildings
      */
-    public List<Building> getBuildings() {
+    public List<Building> getACopyOfBuildings() {
         return new ArrayList<Building>(buildings);
     }
 
@@ -279,13 +279,29 @@ public class BuildingManager implements Serializable {
     }
 
     /**
+     * Gets a list of settlement's buildings with Life Supportfunction
+     * @return list of buildings
+     */
+	//2015-12-30 Added getBuildingsWithPLifeSupport()
+    public List<Building> getBuildingsWithLifeSupport() {
+    	// Using JavaFX/8 Stream
+		List<Building> buildings = getACopyOfBuildings();
+    	List<Building> buildingsWithLifeSupport =
+    		buildings.parallelStream()
+    	        .filter(s -> buildingConfig.hasLifeSupport(s.getBuildingType()) == true)
+    	        .collect(Collectors.toList());
+
+    	return buildingsWithLifeSupport;
+    }
+
+    /**
      * Gets a list of settlement's buildings with power function
      * @return list of buildings
      */
 	//2015-05-08 Added getBuildingsWithPower()
     public List<Building> getBuildingsWithPower() {
     	// Using JavaFX/8 Stream
-		List<Building> buildings = getBuildings();
+		List<Building> buildings = getACopyOfBuildings();
     	List<Building> buildingsWithPower =
     		buildings.parallelStream()
     	        .filter(s -> buildingConfig.hasPowerGeneration(s.getBuildingType()) == true)
@@ -301,7 +317,7 @@ public class BuildingManager implements Serializable {
 	//2015-04-02 Added getBuildingsWithThermal()
     public List<Building> getBuildingsWithThermal() {
     	// Using JavaFX/8 Stream
-		List<Building> buildings = getBuildings();
+		List<Building> buildings = getACopyOfBuildings();
     	List<Building> buildingsWithThermal =
     		buildings.parallelStream()
     	        .filter(s -> buildingConfig.hasThermalGeneration(s.getBuildingType()) == true)
@@ -1347,7 +1363,29 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets a unique ID number for a new building in a settlement (but not unique in a simulation)
+     * Obtains the inhabitable building having that particular id
+     * @param id
+     * @return inhabitable building
+     */
+    // 2015-12-30 Added getInhabitableBuilding()
+    public Building getInhabitableBuilding(int id) {
+
+    	Building b = null;
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building this_b = i.next();
+            int this_id = this_b.getInhabitable_id();
+            if (this_id == id) {
+            	b = this_b;
+            	break;
+            }
+        }
+
+        return b;
+    }
+
+    /**
+     * Gets the next unique ID number for a new building in a settlement (but not unique in a simulation)
      * @return ID integer.
      */
     public int getUniqueBuildingIDNumber() {
@@ -1360,6 +1398,25 @@ public class BuildingManager implements Serializable {
             if (id > largestID) {
                 largestID = id;
             }
+        }
+
+        return largestID + 1;
+    }
+
+    /**
+     * Gets a unique ID for a new inhabitable building in a settlement (but not unique in a simulation)
+     * @return ID integer (starting from 0).
+     */
+    // 2015-12-30 Added getNextInhabitableID()
+    public int getNextInhabitableID() {
+
+        int largestID = -1;
+        Iterator<Building> i = getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
+        while (i.hasNext()) {
+            Building b = i.next();
+            int id = b.getInhabitable_id();
+            if (id > largestID)
+            	largestID++;
         }
 
         return largestID + 1;

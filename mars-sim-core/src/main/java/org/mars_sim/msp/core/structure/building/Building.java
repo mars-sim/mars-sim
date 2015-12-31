@@ -114,6 +114,8 @@ LocalBoundedObject, InsidePathLocation {
 
     // Data members
 	protected int id;
+    // 2015-12-30 Added inhabitable_id
+	protected int inhabitable_id = -1;
 	protected int baseLevel;
 	private int solCache;
 
@@ -169,6 +171,7 @@ LocalBoundedObject, InsidePathLocation {
 		this(template.getID(), template.getBuildingType(), template.getNickName(), template.getWidth(),
 		        template.getLength(), template.getXLoc(), template.getYLoc(),
 				template.getFacing(), manager);
+	    //logger.info("Building's constructor 1 is on " + Thread.currentThread().getName() + " Thread");
 
 		this.manager = manager;
 		this.location = manager.getSettlement().getCoordinates();
@@ -182,11 +185,18 @@ LocalBoundedObject, InsidePathLocation {
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.ONLINE;
 
-		if (hasFunction(BuildingFunction.LIFE_SUPPORT))
-			lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
 
+		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+			if (lifeSupport == null) {
+				lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
+			    // 2015-12-30 Added setting up an inhabitable_id
+				int id = manager.getNextInhabitableID();
+				setInhabitable_id(id);
+			}
+		}
 		if (hasFunction(BuildingFunction.THERMAL_GENERATION))
-			furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
+			if (furnace == null)
+				furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
 
 	}
 
@@ -206,9 +216,8 @@ LocalBoundedObject, InsidePathLocation {
 	//2014-10-27  changed variable "name" to "buildingType"
 	public Building(int id, String buildingType, String nickName, double width, double length,
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
-
 		super(nickName, manager.getSettlement().getCoordinates());
-	    //logger.info("Building's constructor is on " + Thread.currentThread().getName() + " Thread");
+	    //logger.info("Building's constructor 2 is on " + Thread.currentThread().getName() + " Thread");
 
 		this.id = id;
 		this.buildingType = buildingType;
@@ -345,7 +354,10 @@ LocalBoundedObject, InsidePathLocation {
      */
 	//2014-10-17  Added getTemperature()
     public double getCurrentTemperature() {
+    	if (getThermalGeneration() != null)
             return getThermalGeneration().getHeating().getCurrentTemperature();
+    	else
+    		return roomTemperature;
     }
 
 	/**
@@ -354,6 +366,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * @throws Exception if error in functions.
 	 */
 	private List<Function> determineFunctions() {
+		//System.out.println("Building's determineFunctions");
 		List<Function> buildingFunctions = new ArrayList<Function>();
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -452,7 +465,8 @@ LocalBoundedObject, InsidePathLocation {
 		boolean result = false;
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
-			if (i.next().getFunction() == function) result = true;
+			if (i.next().getFunction() == function)
+				result = true;
 		}
 		return result;
 	}
@@ -468,7 +482,8 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			Function function = i.next();
-			if (function.getFunction() == functionType) result = function;
+			if (function.getFunction() == functionType)
+				result = function;
 		}
 		//if (result != null) return result;
 		//else throw new IllegalStateException(buildingType + " does not have " + functionType);
@@ -1008,6 +1023,14 @@ LocalBoundedObject, InsidePathLocation {
 
 	public Coordinates getLocation() {
 		return location;
+	}
+
+	public int getInhabitable_id() {
+		return inhabitable_id;
+	}
+
+	public void setInhabitable_id(int id) {
+		this.inhabitable_id = id;
 	}
 
 	/**

@@ -61,8 +61,7 @@ implements Serializable {
 	 * Constructor.
 	 */
 	public ThermalSystem(Settlement settlement) {
-		//count= count+1;
-			//logger.info("constructor : count is " + count);
+
 		this.settlement = settlement;
 		heatMode = HeatMode.POWER_UP;
 		heatGenerated = 0D;
@@ -415,7 +414,7 @@ implements Serializable {
 		double tempHeatRequired = 0D;
 		boolean heatUp = heatMode == HeatMode.POWER_UP;
 		BuildingManager manager = settlement.getBuildingManager();
-		List<Building> buildings = manager.getBuildings();
+		List<Building> buildings = manager.getACopyOfBuildings();
 		Iterator<Building> iUsed = buildings.iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();

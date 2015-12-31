@@ -39,6 +39,9 @@ public class SettlementUnitWindow extends UnitWindow {
         //setSize(600,600);
 
         // Add tab panels
+        // 2015-12-29 Added TabPanelAirComposition
+        addTabPanel(new TabPanelAirComposition(settlement, desktop));
+
         addTabPanel(new TabPanelAssociatedPeople(settlement, desktop));
         //2015-01-21 Added TabPanelBot
         addTabPanel(new TabPanelBots(settlement, desktop));

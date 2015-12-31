@@ -240,7 +240,7 @@ implements Serializable {
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
 			// Remove person from any other inhabitable building in the settlement.
-			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
+			Iterator<Building> i = getBuilding().getBuildingManager().getACopyOfBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(FUNCTION)) {

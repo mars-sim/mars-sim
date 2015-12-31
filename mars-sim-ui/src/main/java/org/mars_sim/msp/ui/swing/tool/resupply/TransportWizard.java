@@ -302,7 +302,7 @@ public class TransportWizard {
            // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
 	    } // end of while (buildingI.hasNext())
 
-        Building building = mgr.getBuildings().get(0);
+        Building building = mgr.getACopyOfBuildings().get(0);
         mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
 		if (mainScene != null)
 			mainScene.unpauseSimulation();

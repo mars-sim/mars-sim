@@ -114,7 +114,7 @@ public class UnitManager implements Serializable {
 	 * Constructor.
 	 */
 	public UnitManager() {
-		logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
 		solCache = 1;
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();

@@ -211,7 +211,7 @@ implements Serializable {
 			neededPower = neededPowerHr / timeHr;
 
 			BuildingManager manager = settlement.getBuildingManager();
-			List<Building> buildings = manager.getBuildings();
+			List<Building> buildings = manager.getACopyOfBuildings();
 
 			// Reduce each building's power mode to low power until
 			// required power reduction is met.
@@ -321,7 +321,7 @@ implements Serializable {
 		double tempPowerRequired = 0D;
 		boolean powerUp = powerMode == PowerMode.POWER_UP;
 		BuildingManager manager = settlement.getBuildingManager();
-		List<Building> buildings = manager.getBuildings();
+		List<Building> buildings = manager.getACopyOfBuildings();
 		Iterator<Building> iUsed = buildings.iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();

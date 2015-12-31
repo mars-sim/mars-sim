@@ -468,7 +468,7 @@ implements Serializable {
 
 		SalvageValues values = settlement.getConstructionManager().getSalvageValues();
 		Map<Building, Double> salvageBuildings = new HashMap<Building, Double>();
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings()
+		Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings()
 				.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();

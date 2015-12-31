@@ -129,7 +129,7 @@ public class MarsProjectFX extends Application  {
 	}
 
 	public void start(Stage primaryStage) {
-	   	logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
 		if (useGUI) {
 		    mainMenu = new MainMenu(this); //, args, true);
 		    mainMenu.initAndShowGUI(primaryStage);

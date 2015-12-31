@@ -362,7 +362,7 @@ public class LocalAreaUtil {
             if (settlement.getCoordinates().equals(coordinates)) {
 
                 // Add all buildings at settlement.
-                Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+                Iterator<Building> j = settlement.getBuildingManager().getACopyOfBuildings().iterator();
                 while (j.hasNext()) {
                     result.add(j.next());
                 }
@@ -404,7 +404,7 @@ public class LocalAreaUtil {
             if (settlement.getCoordinates().equals(coordinates)) {
 
                 // Add all buildings at settlement.
-                Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+                Iterator<Building> j = settlement.getBuildingManager().getACopyOfBuildings().iterator();
                 while (j.hasNext()) {
                     result.add(j.next());
                 }

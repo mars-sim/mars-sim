@@ -107,7 +107,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @throws Exception if clock could not be constructed.
      */
     public MasterClock() {
-        logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
         // Initialize data members
         SimulationConfig config = SimulationConfig.instance();
@@ -441,7 +441,7 @@ public class MasterClock implements Serializable { // Runnable,
 		private static final long serialVersionUID = 1L;
 
 		private ClockThreadTask() {
-			logger.info("MasterClock's ClockThreadTask's constructor is on " + Thread.currentThread().getName() + " Thread");
+			//logger.info("MasterClock's ClockThreadTask's constructor is on " + Thread.currentThread().getName() + " Thread");
 		}
 
 		@Override
@@ -848,7 +848,7 @@ public class MasterClock implements Serializable { // Runnable,
      * Starts clock listener thread pool executor
      */
     public void startClockListenerExecutor() {
-	   	logger.info("MasterClock's startClockListenerExecutor() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MasterClock's startClockListenerExecutor() is on " + Thread.currentThread().getName() + " Thread");
     	// it's in pool-2-thread-1 Thread
 
     	//if ( clockListenerExecutor.isTerminated() || clockListenerExecutor.isShutdown() )

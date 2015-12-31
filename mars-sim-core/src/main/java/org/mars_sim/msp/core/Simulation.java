@@ -273,7 +273,7 @@ implements ClockListener, Serializable {
      */
     // 2015-02-04 Added threading
     private void initializeIntransientData() {
-        logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
 
         if (eventManager == null)
         	eventManager = new HistoricalEventManager();
@@ -318,7 +318,7 @@ implements ClockListener, Serializable {
      * Start the simulation.
      */
     public void start() {
-        logger.info("Simulation's start()-- where clockScheduler is declared--is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's start()-- where clockScheduler is declared--is on " + Thread.currentThread().getName() + " Thread");
         //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
         //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
 

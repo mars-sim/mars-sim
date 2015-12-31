@@ -130,7 +130,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	private boolean[] exposed = {false, false, false};
 
-
 	//private int[] resourceArray = new int[9];
 	//private int[] solArray = new int[30];
 	//private double[] samplePointArray = new double[(int)1000/RECORDING_FREQUENCY];
@@ -149,11 +148,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	// 2014-10-17 Added heating system
 	/** The settlement's heating system. */
 	protected ThermalSystem thermalSystem;
-
 	private Inventory inv;
-
 	private ChainOfCommand chainOfCommand;
-
+	private CompositionOfAir compositionOfAir;
 	private MarsClock clock;
 
 	/** The settlement's achievement in scientific fields. */
@@ -230,6 +227,8 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
 
 		chainOfCommand = new ChainOfCommand(this);
+		// 2015-12-29 Added CompositionOfAir
+		compositionOfAir = new CompositionOfAir(this);
 
 		clock = Simulation.instance().getMasterClock().getMarsClock();
 
@@ -356,7 +355,7 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	public int getRobotCapacity() {
 		int result = 0;
 		int stations = 0;
-		Iterator<Building> i = buildingManager.getBuildings().iterator();
+		Iterator<Building> i = buildingManager.getACopyOfBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			result++;
@@ -641,6 +640,9 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		// 2015-04-18 Added updateRegistry();
 		// updateRegistry();
+
+	    // 2015-12-29 Added CompositionOfAir
+	    compositionOfAir.timePassing(time);
 	}
 
 	public void sampleAllResources() {
@@ -2508,6 +2510,10 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 	    }
 
 	    //return exposed;
+	}
+
+	public CompositionOfAir getCompositionOfAir() {
+		return compositionOfAir;
 	}
 
 	@Override

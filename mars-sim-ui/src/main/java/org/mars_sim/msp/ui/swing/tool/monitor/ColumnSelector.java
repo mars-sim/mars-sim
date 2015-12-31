@@ -185,7 +185,7 @@ extends ModalInternalFrame {
 
 	/**
 	 * Return the list of selected columns. The return is the index value
-	 * as described by the assoicated table model. The return array maybe
+	 * as described by the associated table model. The return array maybe
 	 * zero or more depending on selection and mode.
 	 * @return Array of TableColumn indexes of selection.
 	 */

@@ -559,7 +559,7 @@ public class MarsNode {
 	    v.setSpacing(10);
 	    v.setPadding(new Insets(0, 20, 10, 20));
 
-  	List<Building> buildings = settlement.getBuildingManager().getBuildings();
+  	List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
 
 		Iterator<Building> iter1 = buildings.iterator();
 		while (iter1.hasNext()) {

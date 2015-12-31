@@ -177,7 +177,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      */
     private void drawBuildings(Graphics2D g2d, Settlement settlement) {
         if (settlement != null) {
-            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+            Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
             while (i.hasNext()) drawBuilding(i.next(), g2d);
         }
     }

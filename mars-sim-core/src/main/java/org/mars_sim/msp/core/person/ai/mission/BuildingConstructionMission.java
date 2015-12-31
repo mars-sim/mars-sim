@@ -116,7 +116,7 @@ implements Serializable {
 	public BuildingConstructionMission(MissionMember startingMember) {
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, startingMember, MIN_PEOPLE);
-		logger.info("BuildingConstructionMission's constructor is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("BuildingConstructionMission's constructor is in " + Thread.currentThread().getName() + " Thread");
 
         if (!isDone()) {
             // Sets the settlement.
@@ -897,7 +897,7 @@ implements Serializable {
     @Override
     public void endMission(String reason) {
     	logger.info("BuildingConstructionMission's endMission() is in " + Thread.currentThread().getName() + " Thread");
-    	System.out.println("starting endMission()");
+    	//System.out.println("starting endMission()");
         super.endMission(reason);
 
         // Mark site as not undergoing construction.
@@ -1035,6 +1035,7 @@ implements Serializable {
      * @return list of construction vehicles.
      */
     public List<GroundVehicle> getConstructionVehicles() {
+    	//System.out.println("starting BuildingConstructionMission's getConstructionVehicles()");
     	// 2015-12-28 Added checking for null
     	if (constructionVehicles != null) {
 	    	if (!constructionVehicles.isEmpty())
@@ -1139,7 +1140,7 @@ implements Serializable {
             BuildingManager buildingManager = settlement.getBuildingManager();
             if (buildingManager.getBuildingNum() > 0) {
                 for (int x = 10; !goodPosition; x+= 10) {
-                    List<Building> allBuildings = buildingManager.getBuildings();
+                    List<Building> allBuildings = buildingManager.getACopyOfBuildings();
                     Collections.shuffle(allBuildings);
                     Iterator<Building> i = allBuildings.iterator();
                     while (i.hasNext()) {

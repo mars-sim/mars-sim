@@ -420,10 +420,10 @@ implements Serializable {
 							result = mission;
 						}
 					}
-					else {
+					//else {
 						// 2015-12-28
-						result = null;
-					}
+					//	result = null;
+					//}
 				}
 				else if (mission instanceof BuildingSalvageMission) {
 					BuildingSalvageMission salvage = (BuildingSalvageMission) mission;

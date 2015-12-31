@@ -169,7 +169,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
-	   	logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
 		init();
@@ -290,7 +290,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
 		Settlement settlement = settlementList.get(0);
-		List<Building> buildings = settlement.getBuildingManager().getBuildings();
+		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
 		building = buildings.get(0);
 		//building.addUnitListener(this); // not working
 		Iterator<Settlement> i = settlementList.iterator();
@@ -1392,7 +1392,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
 			BuildingConstructionMission mission = (BuildingConstructionMission) target;
-		   	logger.info("MainDesktopPane's unitUpdate() is on " + Thread.currentThread().getName() + " Thread");
+		   	//logger.info("MainDesktopPane's unitUpdate() is on " + Thread.currentThread().getName() + " Thread");
 		   	// it's on pool-4-thread-1
 
 			//constructionLock.lock();

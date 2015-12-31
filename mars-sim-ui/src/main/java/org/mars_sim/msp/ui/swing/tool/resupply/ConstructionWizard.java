@@ -161,7 +161,7 @@ public class ConstructionWizard {
 	}
 
 	public synchronized void selectSite(BuildingConstructionMission mission) {
-		logger.info("ConstructionWizard's selectSite() is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("ConstructionWizard's selectSite() is in " + Thread.currentThread().getName() + " Thread");
 	    ConstructionSite constructionSite = mission.getConstructionSite();
 	    Settlement settlement = constructionSite.getSettlement();
 	    ConstructionManager constructionManager = settlement.getConstructionManager();
@@ -280,7 +280,7 @@ public class ConstructionWizard {
 		}
 
 		public void run() {
-		   	logger.info("ConstructionWizard's SiteTask's run() is on " + Thread.currentThread().getName() + " Thread");
+		   	//logger.info("ConstructionWizard's SiteTask's run() is on " + Thread.currentThread().getName() + " Thread");
 			// it's now on pool-4-thread-1 Thread
 
 		   	mission.init_case_1_step_2(modifiedSite, stageInfo, constructionSkill, values);
@@ -474,7 +474,7 @@ public class ConstructionWizard {
 			result = alert.showAndWait();
 
 			if (result.isPresent() && result.get() == buttonTypeYes) {
-				logger.info(site.toString() + " is put in place in " + constructionManager.getSettlement());
+				logger.info(site.getName() + " is put in place in " + constructionManager.getSettlement());
 
 			} else if (result.isPresent() && result.get() == buttonTypeNo) {
 				//constructionManager.removeConstructionSite(site);
@@ -823,7 +823,7 @@ public class ConstructionWizard {
      * @throws Exception if error determining construction stage info.
      */
     private ConstructionStageInfo determineNewStageInfo(ConstructionSite site, int skill) {
-		logger.info("ConstructionWizard's determineNewStageInfo() is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("ConstructionWizard's determineNewStageInfo() is in " + Thread.currentThread().getName() + " Thread");
 
         ConstructionStageInfo result = null;
 
@@ -846,7 +846,7 @@ public class ConstructionWizard {
      */
     private ConstructionSite positionNewConstructionSite(ConstructionSite site, ConstructionStageInfo foundationStageInfo,
             int constructionSkill) {
-		logger.info("ConstructionWizard's positionNewConstructionSite() is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("ConstructionWizard's positionNewConstructionSite() is in " + Thread.currentThread().getName() + " Thread");
 
         boolean goodPosition = false;
 
@@ -895,7 +895,7 @@ public class ConstructionWizard {
             BuildingManager buildingManager = site.getSettlement().getBuildingManager();
             if (buildingManager.getBuildingNum() > 0) {
                 for (int x = 10; !goodPosition; x+= 10) {
-                    List<Building> allBuildings = buildingManager.getBuildings();
+                    List<Building> allBuildings = buildingManager.getACopyOfBuildings();
                     Collections.shuffle(allBuildings);
                     Iterator<Building> i = allBuildings.iterator();
                     while (i.hasNext()) {
@@ -927,7 +927,7 @@ public class ConstructionWizard {
      */
     private String determinePreferredConstructedBuildingType(ConstructionSite site,
     		ConstructionStageInfo foundationStageInfo, int constructionSkill) {
-		logger.info("ConstructionWizard's determinePreferredConstructedBuildingType() is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("ConstructionWizard's determinePreferredConstructedBuildingType() is in " + Thread.currentThread().getName() + " Thread");
 
         String result = null;
 

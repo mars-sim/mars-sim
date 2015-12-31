@@ -356,7 +356,7 @@ public class MainScene {
 	 */
 	// 2015-12-16 Added openConstructionWizard()
 	public void openConstructionWizard(BuildingConstructionMission mission) { // ConstructionManager constructionManager,
-		logger.info("MainScene's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
 		boolean previous = Simulation.instance().getMasterClock().isPaused();

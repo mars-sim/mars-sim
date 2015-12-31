@@ -184,12 +184,15 @@ implements Serializable {
 
         // Check if there is work that can be done on the construction stage.
         ConstructionStage stage = site.getCurrentConstructionStage();
+
+        // 2015-12-30 java.lang.NullPointerException on the following statement. why?
         boolean workAvailable = stage.getCompletableWorkTime() > stage.getCompletedWorkTime();
+        //System.out.println("stage is " + stage); // test if stage is null
 
         return (exitable && (sunlight || darkRegion) && !medical && workAvailable);
     }
-    
-    
+
+
     public static boolean canConstruct(Robot robot, ConstructionSite site) {
 
         // Check if robot can exit the settlement airlock.

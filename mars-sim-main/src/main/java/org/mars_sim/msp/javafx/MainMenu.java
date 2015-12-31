@@ -303,7 +303,7 @@ public class MainMenu {
 	}
 
    public void runOne() {
-	   logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 	   stage.setIconified(true);
 	   stage.hide();
 	   // creates a mainScene instance
@@ -313,7 +313,6 @@ public class MainMenu {
    }
 
    public void runTwo() {
-
 		Future future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
 
@@ -408,7 +407,7 @@ public class MainMenu {
 	 * Prepares the scene in the main scene
 	 */
 	public void prepareScene() {
-	   logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
 	   // prepare main scene
 	   mainScene.prepareMainScene();
 	   // creates and initialize scene
