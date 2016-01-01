@@ -140,11 +140,13 @@ implements Serializable {
                 System.out.println("The starting member is " + person);
                 //person.setMission(this);
                 constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+                person.getMind().setMission(this);
             }
             else if (startingMember instanceof Robot) {
                 Robot robot = (Robot) startingMember;
                 //robot.setMission(this);
                 constructionSkill = robot.getBotMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
+                robot.getBotMind().setMission(this);
             }
 
             init_case_1_step_1(constructionSkill);
@@ -402,8 +404,7 @@ implements Serializable {
 
             if (Simulation.getUseGUI())  {
 	        	// if GUI is in use
-				//System.out.println("Case 2 : the site has been picked and the construction is started by users");
-
+            	//System.out.println("Case 2 : the site has been picked and the construction is started by users");
 		    	constructionSite.setSkill(bestConstructionSkill);
 		    	constructionSite.setSitePicked(true);
 		    	constructionSite.setStageInfo(stageInfo);

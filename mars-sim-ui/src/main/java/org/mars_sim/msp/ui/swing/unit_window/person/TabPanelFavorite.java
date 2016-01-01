@@ -45,7 +45,7 @@ import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import com.vdurmont.emoji.EmojiParser;
+//import com.vdurmont.emoji.EmojiParser;
 
 /**
  * The TabPanelFavorite is a tab panel for general information about a person.
@@ -59,8 +59,8 @@ extends TabPanel {
 	private JTable table;
 	private PreferenceTableModel tableModel;
 	private BalloonToolTip balloonToolTip = new BalloonToolTip();
-	
-	
+
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -179,13 +179,13 @@ extends TabPanel {
 
 		DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
 			//private Font font;
-					
+
             @Override
             public Component getTableCellRendererComponent(JTable table, Object
                 value, boolean isSelected, boolean hasFocus, int row, int column) {
-            	
+
                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
- 
+
                 setHorizontalAlignment(JLabel.CENTER);
                 //String s = EmojiParser.parseToUnicode(value.toString());
                 String s = value.toString();
@@ -198,17 +198,17 @@ extends TabPanel {
         				row, column);
 
         		if (c instanceof JLabel) {
- 
+
         			JLabel cell = (JLabel) c;
         			cell.setText((String) value);
-        			
+
         		}
         		                return c;
 
-*/        		
-/*                
+*/
+/*
     			InputStream is = getClass().getResourceAsStream("/fxui/fonts/fontawesome-webfont.ttf");
-    			
+
 				try {
 					font = Font.createFont(Font.TRUETYPE_FONT, is);
 		            font = font.deriveFont(Font.PLAIN, 12f);
@@ -225,12 +225,12 @@ extends TabPanel {
                 setHorizontalAlignment(JLabel.CENTER);
                 //setIcon(value);
 				return this;
-*/                
-                        
+*/
+
             }
         };
         table.getColumnModel().getColumn(1).setCellRenderer(r);
-        
+
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
 		table.getColumnModel().getColumn(1).setPreferredWidth(30);
@@ -270,10 +270,10 @@ extends TabPanel {
 		private Preference manager;
 		private List<String> metaTaskStringList;
 		private Map<String, Integer> metaTaskStringMap;
-		
+
 		//ImageIcon icon = new ImageIcon("image.gif");
-	      
-  
+
+
 		//String blush = ":blush:";
 		//String frown = ":frowning:";
 		//String ok = ":neutral_face:";//":expressionless";
@@ -282,13 +282,13 @@ extends TabPanel {
         byte[] smileyBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x84};
         byte[] neutralBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x90};
         byte[] cryBytes = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0xA2};
-        
+
         String smileyStr = new String(smileyBytes, Charset.forName("UTF-8"));
         String neutralStr = new String(neutralBytes, Charset.forName("UTF-8"));
         String cryStr = new String(cryBytes, Charset.forName("UTF-8"));
-		        
+
 		private PreferenceTableModel(Unit unit) {
-			
+
 			Person person = null;
 	        Robot robot = null;
 
@@ -328,11 +328,11 @@ extends TabPanel {
 
 		public Object getValueAt(int row, int column) {
 			Object name = metaTaskStringList.get(row);
-			if (column == 0) 
+			if (column == 0)
 				return name;
-			else if (column == 1) 
+			else if (column == 1)
 				return metaTaskStringMap.get(name);
-			else 
+			else
 				return null;
 		}
 
@@ -351,7 +351,7 @@ extends TabPanel {
 
 		}
 	}
-	
+
 	/**
 	 * This renderer uses a delegation software design pattern to delegate
 	 * this rendering of the table cell header to the real default render
