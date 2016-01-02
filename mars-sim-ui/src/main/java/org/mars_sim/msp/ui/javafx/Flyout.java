@@ -26,6 +26,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -174,6 +175,7 @@ public class Flyout extends Region {
             popup.initStyle(StageStyle.TRANSPARENT);
             popup.initOwner(anchor.getScene().getWindow());
             popup.setScene(popupScene);
+            //popup.setOnShowing(new Insets(0, 0, 0, 0));
             
             defineFlyout();
             

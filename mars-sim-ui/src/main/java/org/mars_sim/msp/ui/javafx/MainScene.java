@@ -101,6 +101,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -680,8 +681,9 @@ public class MainScene {
     public Flyout createFlyout() {
         //marsNetButton = new ToggleButton(" MarsNet ");
         marsNetButton = new MaterialDesignToggleButton(" MarsNet ");
+        Flyout f = new Flyout(marsNetButton, createChatBox());
         marsNetButton.setId("marsNetButton");
-        marsNetButton.setTooltip(new Tooltip ("Open/close MarsNet chat box"));
+        marsNetButton.setTooltip(new Tooltip ("Open/Close MarsNet Chat Box"));
         marsNetButton.setPadding(new Insets(5, 5, 5, 5));
         marsNetButton.setOnAction(e -> {
             if (marsNetButton.isSelected()) {
@@ -690,8 +692,6 @@ public class MainScene {
                 flyout.dismiss();
             }
         });
-
-        Flyout f = new Flyout(marsNetButton, createChatBox());
 
         return f;
     }
@@ -703,22 +703,11 @@ public class MainScene {
     //2015-11-11 Added createChatBox()
   	public StackPane createChatBox() {
   		cb = new ChatBox();
+        cb.getAutoFillTextBox().getTextbox().requestFocus();
   		StackPane pane = new StackPane(cb);
-  		pane.setPadding(new Insets(5, 5, 5, 5));
-        //pane.setHgap(5);
-
-  		TextArea ta = cb.getTextArea();
-  		ta.setTooltip(new Tooltip ("Chatters on MarsNet"));
-
-  		TextField tf = cb.getTextField();
-  		tf.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
-  		tf.setPromptText("Type your msg here");// to broadcast to a channel");
-
-  		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
-  		ta.appendText("System : you are connected to MarsNet, the global network on Mars." + System.lineSeparator());
-
+  		pane.setPadding(new Insets(0, 0, 0, 0));
+        //pane.setHgap(0);
   		return pane;
-
   	}
 
 	/*

@@ -1,0 +1,22 @@
+/* 
+    Document   : main.css
+    Created on : Sep 18, 2011, 10:01:08 AM
+    Author     : WEBNEP
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+
+.autofill-text{
+    -fx-skin:"org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBoxSkin";
+}
+
+root { 
+    display: block;
+}
+

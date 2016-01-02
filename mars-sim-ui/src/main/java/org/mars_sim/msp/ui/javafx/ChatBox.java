@@ -7,10 +7,13 @@
 package org.mars_sim.msp.ui.javafx;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -22,9 +25,12 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -52,53 +58,156 @@ public class ChatBox extends BorderPane {
     protected Equipment equipment;
 
     protected final TextArea textArea = new TextArea();
-    protected final TextField textField = new TextField();
-
+    //protected final TextField textField = new TextField();
+    protected final AutoFillTextBox autoFillTextBox;
+    
     protected final List<String> history = new ArrayList<>();
 
     private Consumer<String> onMessageReceivedHandler;
-
+/* 
+    private String[] autoCompleteArray = new String[]{ "apple","ball","cat","doll","elephant",
+            "fight","georgeous","height","ice","jug",
+             "aplogize","bank","call","done","ego",
+             "finger","giant","hollow","internet","jumbo",
+             "kilo","lion","for","length","primary","stage",
+             "scene","zoo","jumble","auto","text",
+            "root","box","items","hip-hop","himalaya","nepal",
+            "kathmandu","kirtipur","everest","buddha","epic","hotel"};
+*/    
+    /**
+     * Constructor for ChatBox
+     */
     public ChatBox() {
-        Label titleLabel = new Label("MarsNet Chat Box");
+    	
+    	// 2016-01-01 Added autoCompleteData
+    	ObservableList<String> autoCompleteData = createAutoCompleteData();
+        
+        Label titleLabel = new Label("   MarsNet Chat Box");
         titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );");
 
         textArea.setEditable(false);
         textArea.setWrapText(true);
         textArea.setStyle("-fx-font: 11pt 'Corbel';");
+        textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
+		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
+  		textArea.appendText("<< Connecting to MarsNet...done. >>" + System.lineSeparator());
+  		textArea.appendText("System : how can I help? " + System.lineSeparator());
 
-        textField.setStyle("-fx-font: 11pt 'Corbel';");
-        textField.setPrefWidth(500);
-        textField.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
+  		// 2016-01-01 Replaced textField with autoFillTextBox
+        autoFillTextBox = new AutoFillTextBox(autoCompleteData);
+        autoFillTextBox.setFilterMode(false);
+        autoFillTextBox.getTextbox().addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
         	keyHandler(keyEvent);
         });
+        
+        autoFillTextBox.getTextbox().requestFocus();
+        autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
+        autoFillTextBox.getTextbox().setPrefWidth(560);
+        autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
+        autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
+  		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
+  		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel");
+  		
+  		//TextField tf = cb.getTextField();
+  		//tf.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
+  		//tf.setPromptText("Type your msg here");// to broadcast to a channel");
+        //textField.setStyle("-fx-font: 11pt 'Corbel';");
+        //textField.setPrefWidth(500);
+        //textField.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
+        //	keyHandler(keyEvent);
+        //});
 
         //Button button = new Button("Submit");
         MaterialDesignButton button = new MaterialDesignButton("Broadcast");
         //button.setAlignment(Pos.CENTER_RIGHT);
         button.setTooltip(new Tooltip ("Click to broadcast"));
+        //button.setPadding(new Insets(5, 5, 5, 5));
         button.setStyle("-fx-font: bold 10pt 'Corbel';");
         button.setOnAction(e -> {
         	hitEnter();
         });
 
         HBox hbox = new HBox();
-        hbox.setSpacing(2);
-        textField.setPadding(new Insets(5, 5, 5, 5));
-        hbox.getChildren().addAll(button,textField);
+        //hbox.setPadding(new Insets(2, 2, 2, 2));
+        //hbox.setSpacing(5);      
+        //textField.setPadding(new Insets(5, 5, 5, 5));
+        //hbox.getChildren().addAll(button, textField);
+        hbox.getChildren().addAll(button, autoFillTextBox);//.getTextbox());
 
         setTop(titleLabel);
         setCenter(textArea);
-
         setBottom(hbox);
 
     }
 
-    public String checkGreetings(String text) {
-    	String result = null;
-    	//
-    	return result;
-    }
+    /**
+     * Compiles the names of settlements and people and robots into the autocomplete data list
+     * @return ObservableList<String> 
+     */
+    public ObservableList<String> createAutoCompleteData() {
+		
+    	ObservableList<String> autoCompleteData = null;
+    	
+		// Creates an array with the names of all of settlements
+		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();
+		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+	
+		//autoCompleteArray = settlementList.toArray(new String[settlementList.size()]);	
+		// or with java 8 stream
+		//autoCompleteArray = settlementList.stream().toArray(String[]::new);
+	
+	   	// Creates an array with the names of all of people and robots
+		List<String> nameList = new ArrayList<>();
+		Iterator<Settlement> i = settlementList.iterator();
+		while (i.hasNext()) {
+			Settlement s = i.next();
+				nameList.add(s.getName());
+			
+			Iterator<Person> j = s.getAllAssociatedPeople().iterator();
+			while (j.hasNext()) {
+				Person p = j.next();
+				nameList.add(p.getName());
+			}
+			
+			Iterator<Robot> k = s.getAllAssociatedRobots().iterator();
+			while (k.hasNext()) {
+				Robot r = k.next();
+				nameList.add(r.getName());
+			}
+		}
+		
+		//String[] n2 = settlementList.stream().toArray(String[]::new);		
+		//autoCompleteArray = Stream.concat(Arrays.stream(n1), Arrays.stream(n2))
+	    //        .toArray(String[]::new);	
+		// alternatively,
+		//String[] both = Stream.of(n1, n2).flatMap(Stream::of).toArray(String[]::new);
+		// Use Apache Commons Lang lib
+		//autoCompleteArray = (String[])ArrayUtils.addAll(autoCompleteArray, peopleRobotsArray);
+		
+		autoCompleteData = FXCollections.observableArrayList(nameList);
+	    //autoCompleteData.addAll(nameList);    
+	    //for(int j=0; j<autoCompleteArray.length; j++){
+	    //    autoCompleteData.add(autoCompleteArray[j]);
+	    //}
+	    return autoCompleteData;
+	}
+	   // public String checkGreetings(String text) {
+    //	String result = null;
+    //	return result;
 
+    //2016-01-01 Added isInteger()
+    public static boolean isInteger(String s, int radix) {
+        if(s.isEmpty()) return false;
+        for(int i = 0; i < s.length(); i++) {
+            if(i == 0 && s.charAt(i) == '-') {
+                if(s.length() == 1) return false;
+                else continue;
+            }
+            if(Character.digit(s.charAt(i),radix) < 0) return false;
+        }
+        return true;
+    }
+    
     /**
      * Processes a question and return an answer regarding an unit
      * @param text
@@ -110,8 +219,7 @@ public class ChatBox extends BorderPane {
     	String questionText = null;
     	Unit cache = null;
     	String name = null;
-    	//Robot robot;
-    	//Person person;
+
     	if (personCache != null) {
     		cache = (Person) personCache;
     		name = cache.getName();
@@ -121,193 +229,228 @@ public class ChatBox extends BorderPane {
     		name = cache.getName();
     	}
 
-    	int num = Integer.parseUnsignedInt(text, 10);
-
-    	if (num == 0) {
-    		// exit
-    		personCache = null;
+    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("quit")) {
+    		// set personCache and robotCache to null so as to quit the conversation
+    		personCache = null; 
 	    	robotCache = null;
     		sys = name;
-    		questionText = "You : exit";
-    		responseText = "Bye. " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
-	    }
-
-    	else if (num == 1) {
-    		questionText = "You : what is your LocationState ?";
-    		LocationState state = cache.getLocationState();
-    		if (state != null)
-    			responseText = "My current LocationState is " + state.getName();
-    		else
-    			responseText = "My current LocationState is " + state;
+    		questionText = "You : have a nice sol. Bye!";
+    		responseText = "Bye! " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
     	}
-
-       	else if (num == 2) {
-    		questionText = "You : reserved";
-    		responseText = "reserved";
-       	}
-
-    	else if (num == 3) {
-    		questionText = "You : reserved";
-    		responseText = "reserved";
-    	}
-
-    	else if (num == 4) {
-    		questionText = "You : what is your container unit ?";
-    		Unit c = cache.getContainerUnit();
-    		if (c != null)
-    			responseText = "My container unit is " + c.getName();
-    		else
-    			responseText = "I don't have a container unit. ";
-    	}
-
-    	else if (num == 5) {
-
-    		questionText = "You : what is your top container unit ?";
-    		Unit tc = cache.getTopContainerUnit();
-    		if (tc != null)
-    			responseText = "My top container unit is " + tc.getName();
-    		else
-    			responseText = "I don't have a top container unit.";
-
-    	}
-    	else if (num == 6) {
-    		questionText = "You : what is your LocationSituation ?";
-       		responseText = "My LocationSituation is " + Conversion.capitalize(cache.getLocationSituation().getName());
-    	}
-
-       	else if (num == 7) {
-       		questionText = "You : what vehicle are you in and how is it ?";
-    		Vehicle v = cache.getVehicle();
-       		if (v  != null) {
-           		String d = cache.getVehicle().getDescription();
-           		String status = cache.getVehicle().getStatus();
-       			responseText = "My vehicle is " + v.getName() + " (a " + Conversion.capitalize(d)
-       				+ " type). It's currently " + status.toLowerCase() + ".";
-       		}
-       		else
-       			responseText = "I'm not on a vehicle.";
-       	}
-
-    	else if (num == 8) {
-    		questionText = "You : what building are you at ?";
-    		Settlement s = cache.getSettlement();
-    		if (s != null) {
-	    		Building b = s.getBuildingManager().getBuilding(cache);
-	    		Building b1 = cache.getBuildingLocation();
-	    		if (b != null && b1 != null)
-	    			responseText = "The building I'm in is " + b.getNickName()
-	    				+ "  (aka " + b1.getNickName() + ").";
+    	
+    	else if (isInteger(text, 10)) {
+    
+	    	int num = Integer.parseUnsignedInt(text, 10);
+	    	
+	    	if (num == 0) {
+	    		// exit
+	    		personCache = null;
+		    	robotCache = null;
+	    		sys = name;
+	    		questionText = "You : exit";
+	    		responseText = "Bye. " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
+		    }
+	
+	    	else if (num == 1) {
+	    		questionText = "You : what is your LocationState ?";
+	    		LocationState state = cache.getLocationState();
+	    		if (state != null)
+	    			responseText = "My current LocationState is " + state.getName();
 	    		else
-	    			responseText = "I'm not in a building.";
-    		}
-    		else
-    			responseText = "I'm not in a building.";
-
-    	}
-
-    	else if (num == 9) {
-    		questionText = "You : what is the settlement that you are at ?";
-    		Settlement s = cache.getSettlement();
-   			if (s != null)
-   				responseText = "My settlement is " + s.getName();
-   			else
-   				responseText = "I'm not inside a settlement";
-
-    	}
-
-    	else if (num == 10) {
-    		questionText = "You : what is your associated settlement ?";
-    		Settlement s = cache.getAssociatedSettlement();
-    		if (s  != null) {
-    			responseText = "My associated settlement is " + s.getName();
-    		}
-    		else
-    			responseText = "I don't have an associated settlement";
-    	}
-
-    	else if (num == 11) {
-    		questionText = "You : what is the buried settlement ?";
-    		Settlement s = cache.getBuriedSettlement();
-    		if (s  != null) {
-           		responseText = "The buried settlement is " + s.getName();
-           		sys = "System : ";
-       		}
-       		else
-       			responseText = "I'm not dead.";
-    	}
-
-    	else if (num == 12) {
-    		questionText = "You : what is your vehicle's container unit ?";
-    		Vehicle v = cache.getVehicle();
-       		if (v  != null) {
-       			Unit c = v.getContainerUnit();
-       			if (c != null)
-       				responseText = "My vehicle's container unit is " + c.getName();
-       			else
-       				responseText = "My vehicle doesn't have a container unit.";
-
-       		}
-       		else
-       			responseText = "I'm not on a vehicle.";
-       	}
-
-    	else if (num == 13) {
-    		questionText = "You : what is your vehicle's top container unit ?";
-    		Vehicle v = cache.getVehicle();
-       		if (v  != null) {
-       			Unit tc = v.getTopContainerUnit();
-       			if (tc != null)
-       				responseText = "My vehicle's top container unit is " + tc.getName();
-       			else
-       				responseText = "My vehicle doesn't have a top container unit.";
-       		}
-       		else
-       			responseText = "I'm not on a vehicle.";
-       	}
-
-    	else if (num == 14) {
-    		questionText = "You : what building does your vehicle park at ?";
-    		Vehicle v = cache.getVehicle();
-	       	if (v != null) {
-	       		Settlement s = v.getSettlement();
-	       		if (s != null) {
-	       			Building b = s.getBuildingManager().getBuilding(v);
-	       			if (b != null)
-	       				responseText = "My vehicle is parked inside " + b.getNickName();
-	       			else
-	       				responseText = "My vehicle does not park inside a building/garage";
+	    			responseText = "My current LocationState is " + state;
+	    	}
+	
+	       	else if (num == 2) {
+	    		questionText = "You : reserved";
+	    		responseText = "reserved";
+	       	}
+	
+	    	else if (num == 3) {
+	    		questionText = "You : reserved";
+	    		responseText = "reserved";
+	    	}
+	
+	    	else if (num == 4) {
+	    		questionText = "You : what is your container unit ?";
+	    		Unit c = cache.getContainerUnit();
+	    		if (c != null)
+	    			responseText = "My container unit is " + c.getName();
+	    		else
+	    			responseText = "I don't have a container unit. ";
+	    	}
+	
+	    	else if (num == 5) {
+	
+	    		questionText = "You : what is your top container unit ?";
+	    		Unit tc = cache.getTopContainerUnit();
+	    		if (tc != null)
+	    			responseText = "My top container unit is " + tc.getName();
+	    		else
+	    			responseText = "I don't have a top container unit.";
+	
+	    	}
+	    	else if (num == 6) {
+	    		questionText = "You : what is your LocationSituation ?";
+	       		responseText = "My LocationSituation is " + Conversion.capitalize(cache.getLocationSituation().getName());
+	    	}
+	
+	       	else if (num == 7) {
+	       		questionText = "You : what vehicle are you in and how is it ?";
+	    		Vehicle v = cache.getVehicle();
+	       		if (v  != null) {
+	           		String d = cache.getVehicle().getDescription();
+	           		String status = cache.getVehicle().getStatus();
+	       			responseText = "My vehicle is " + v.getName() + " (a " + Conversion.capitalize(d)
+	       				+ " type). It's currently " + status.toLowerCase() + ".";
 	       		}
 	       		else
-	       			responseText = "My vehicle is not at a settlement.";
-   			}
-	       	else
-       			responseText = "I'm not on a vehicle.";
-       	}
-
-    	else if (num == 15) {
-    		questionText = "You : what settlement is your vehicle located at ?";
-    		Vehicle v = cache.getVehicle();
-       		if (v  != null) {
-       			Settlement s = v.getSettlement();
-       			if (s != null)
-       				responseText = "My vehicle is at " + s.getName();
-       			else
-       				responseText = "My vehicle is not at a settlement.";
-       		}
-       		else
-       			responseText = "I'm not on a vehicle.";
+	       			responseText = "I'm not on a vehicle.";
+	       	}
+	
+	    	else if (num == 8) {
+	    		questionText = "You : what building are you at ?";
+	    		Settlement s = cache.getSettlement();
+	    		if (s != null) {
+		    		Building b = s.getBuildingManager().getBuilding(cache);
+		    		Building b1 = cache.getBuildingLocation();
+		    		if (b != null && b1 != null)
+		    			responseText = "The building I'm in is " + b.getNickName()
+		    				+ "  (aka " + b1.getNickName() + ").";
+		    		else
+		    			responseText = "I'm not in a building.";
+	    		}
+	    		else
+	    			responseText = "I'm not in a building.";
+	
+	    	}
+	
+	    	else if (num == 9) {
+	    		questionText = "You : what is the settlement that you are at ?";
+	    		Settlement s = cache.getSettlement();
+	   			if (s != null)
+	   				responseText = "My settlement is " + s.getName();
+	   			else
+	   				responseText = "I'm not inside a settlement";
+	
+	    	}
+	
+	    	else if (num == 10) {
+	    		questionText = "You : what is your associated settlement ?";
+	    		Settlement s = cache.getAssociatedSettlement();
+	    		if (s  != null) {
+	    			responseText = "My associated settlement is " + s.getName();
+	    		}
+	    		else
+	    			responseText = "I don't have an associated settlement";
+	    	}
+	
+	    	else if (num == 11) {
+	    		questionText = "You : what is the buried settlement ?";
+	    		Settlement s = cache.getBuriedSettlement();
+	    		if (s  != null) {
+	           		responseText = "The buried settlement is " + s.getName();
+	           		sys = "System : ";
+	       		}
+	       		else
+	       			responseText = "I'm not dead.";
+	    	}
+	
+	    	else if (num == 12) {
+	    		questionText = "You : what is your vehicle's container unit ?";
+	    		Vehicle v = cache.getVehicle();
+	       		if (v  != null) {
+	       			Unit c = v.getContainerUnit();
+	       			if (c != null)
+	       				responseText = "My vehicle's container unit is " + c.getName();
+	       			else
+	       				responseText = "My vehicle doesn't have a container unit.";
+	
+	       		}
+	       		else
+	       			responseText = "I'm not on a vehicle.";
+	       	}
+	
+	    	else if (num == 13) {
+	    		questionText = "You : what is your vehicle's top container unit ?";
+	    		Vehicle v = cache.getVehicle();
+	       		if (v  != null) {
+	       			Unit tc = v.getTopContainerUnit();
+	       			if (tc != null)
+	       				responseText = "My vehicle's top container unit is " + tc.getName();
+	       			else
+	       				responseText = "My vehicle doesn't have a top container unit.";
+	       		}
+	       		else
+	       			responseText = "I'm not on a vehicle.";
+	       	}
+	
+	    	else if (num == 14) {
+	    		questionText = "You : what building does your vehicle park at ?";
+	    		Vehicle v = cache.getVehicle();
+		       	if (v != null) {
+		       		Settlement s = v.getSettlement();
+		       		if (s != null) {
+		       			Building b = s.getBuildingManager().getBuilding(v);
+		       			if (b != null)
+		       				responseText = "My vehicle is parked inside " + b.getNickName();
+		       			else
+		       				responseText = "My vehicle does not park inside a building/garage";
+		       		}
+		       		else
+		       			responseText = "My vehicle is not at a settlement.";
+	   			}
+		       	else
+	       			responseText = "I'm not on a vehicle.";
+	       	}
+	
+	    	else if (num == 15) {
+	    		questionText = "You : what settlement is your vehicle located at ?";
+	    		Vehicle v = cache.getVehicle();
+	       		if (v  != null) {
+	       			Settlement s = v.getSettlement();
+	       			if (s != null)
+	       				responseText = "My vehicle is at " + s.getName();
+	       			else
+	       				responseText = "My vehicle is not at a settlement.";
+	       		}
+	       		else
+	       			responseText = "I'm not on a vehicle.";
+	    	}
+	
+	    	else {
+	    		questionText = "System : you were mumbling about...";
+	    		responseText = "Can you be more specific ?";
+	    	}
+	    	
     	}
-
+    	
+    	else if (text.equalsIgnoreCase("mission")) {
+    		sys = name;
+    		questionText = "You : are you involved in a mission right now?";
+    		responseText = "No. I'm not. ";
+    		
+    	}
+    	
     	else {
-    		questionText = "System : you were mumbling about...";
-    		responseText = "Can you be more specific ?";
+    		// set personCache and robotCache to null only if you want to quit the conversation
+    		//personCache = null; 
+	    	//robotCache = null;
+    		sys = name;
+    		questionText = "You : you were mumbling something about....";
+    		int rand0 = RandomUtil.getRandomInt(3);
+    		if (rand0 == 0)
+        		responseText = "could you repeat that?";
+    		else if (rand0 == 1)
+           		responseText = "pardon me?";
+    		else if (rand0 == 2)
+           		responseText = "what did you say?";
+        	else if (rand0 == 3)
+        		responseText = "I beg your pardon?"; 		
     	}
-
-    	textArea.appendText(questionText + System.lineSeparator());
-
+    	
+    	textArea.appendText(questionText + System.lineSeparator());	
 		sys = name;
    		textArea.appendText(sys + " : " + responseText + System.lineSeparator());
-
     }
 
     /*
@@ -526,13 +669,17 @@ public class ChatBox extends BorderPane {
      * Processes the textfield input
      */
     public void hitEnter() {
-    	String text = textField.getText();
+    	//String text = textField.getText();  	
+    	String text = autoFillTextBox.getTextbox().getText();
+    	
         if (text != "" && text != null && !text.trim().isEmpty()) {
             textArea.appendText("You : " + text + System.lineSeparator());
             Unit unit = null;
+
             if (personCache == null && robotCache == null)
             	unit = parseText(text);
             else {
+                // if both personCache and robotCache are set to null, then quit the askQuestion() stage and go back to parseText() stage
             	askQuestion(text);
             }
 
@@ -556,7 +703,9 @@ public class ChatBox extends BorderPane {
             if (onMessageReceivedHandler != null) {
                 onMessageReceivedHandler.accept(text);
             }
-            textField.clear();
+            
+            autoFillTextBox.getTextbox().clear();
+            //textField.clear();
         }
     }
 
@@ -565,6 +714,7 @@ public class ChatBox extends BorderPane {
      * @param keyEvent
      */
     public void keyHandler(final KeyEvent keyEvent){
+        //System.out.println("ChatBox's keyHandler() : keyEvent.getCode() is " + keyEvent.getCode());
         switch (keyEvent.getCode()) {
 	        case ENTER:
 	        	hitEnter();
@@ -578,8 +728,10 @@ public class ChatBox extends BorderPane {
 	            historyPointer--;
                 //System.out.println("historyPointer is " + historyPointer);
 	            ChatUtil.runSafe(() -> {
-	            	textField.setText(history.get(historyPointer));
-	                textField.selectAll();
+	            	///textField.setText(history.get(historyPointer));
+	                //textField.selectAll();
+	                autoFillTextBox.getTextbox().setText(history.get(historyPointer));
+	                autoFillTextBox.getTextbox().selectAll();
 	            });
 
 	            break;
@@ -592,8 +744,10 @@ public class ChatBox extends BorderPane {
                 historyPointer++;
                 //System.out.println("historyPointer is " + historyPointer);
 	            ChatUtil.runSafe(() -> {
-	           		textField.setText(history.get(historyPointer));
-	                textField.selectAll();
+	           		//textField.setText(history.get(historyPointer));
+	                //textField.selectAll();
+	                autoFillTextBox.getTextbox().setText(history.get(historyPointer));
+	                autoFillTextBox.getTextbox().selectAll();
 	            });
 
 	            break;
@@ -607,7 +761,8 @@ public class ChatBox extends BorderPane {
     @Override
     public void requestFocus() {
         super.requestFocus();
-        textField.requestFocus();
+        //textField.requestFocus();
+        autoFillTextBox.getTextbox().requestFocus();
     }
 
     public void setOnMessageReceivedHandler(final Consumer<String> onMessageReceivedHandler) {
@@ -636,7 +791,11 @@ public class ChatBox extends BorderPane {
     	return textArea;
     }
 
-    public TextField getTextField() {
-    	return textField;
+    //public TextField getTextField() {
+    //	return textField;
+    //}
+    
+    public AutoFillTextBox getAutoFillTextBox() {
+    	return autoFillTextBox;
     }
 }

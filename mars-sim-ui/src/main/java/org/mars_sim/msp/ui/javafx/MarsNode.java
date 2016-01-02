@@ -70,6 +70,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
@@ -140,9 +141,13 @@ public class MarsNode {
 		TextArea ta = cb.getTextArea();
 		ta.setTooltip(new Tooltip ("Voice chatters from settlement's Comm Nets"));
 		
-		TextField tf = cb.getTextField();
-		tf.setTooltip(new Tooltip ("Broadcast your message to the global channel on Mars"));
-		tf.setPromptText("Type here");
+ 		AutoFillTextBox autoFillTextBox = cb.getAutoFillTextBox();
+  		//autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
+  		//autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel");
+  		
+		//TextField tf = cb.getTextField();
+		//tf.setTooltip(new Tooltip ("Broadcast your message to the global channel on Mars"));
+		//tf.setPromptText("Type here");
 				
 		ta.appendText("Safe Net : a small dust storm is being built up within 20 km of Alpha Base"
     		  + System.lineSeparator());
