@@ -42,6 +42,8 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import javafx.application.Platform;
+
 /**
  * The TimeWindow is a tool window that displays the current
  * Martian and Earth time.<br/>
@@ -448,57 +450,75 @@ implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		//SwingUtilities.invokeLater(() -> {
+		if (mainScene != null) {
+			Platform.runLater(() -> {
+				updateTime(time);
+			});
+		}
+		else {
+			SwingUtilities.invokeLater(() -> {
+				updateTime(time);
+			});
+		}
 		//SwingUtilities.invokeLater(
 			//new Runnable() {
 				//public void run() {
 					// TODO: need to resolve mysterious NullPointerException at the start of sim
-					if (master == null)  {
-						//System.out.println("TimeWindow : master is null");
-						master = Simulation.instance().getMasterClock();
-					}
-
-			    	int solElapsed = MarsClock.getSolOfYear(master.getMarsClock());
-
-					if (marsTime != null) {
-						SwingUtilities.invokeLater(() -> {
-							martianTimeLabel.setText(marsTime.getDateTimeStamp());
-						});
-						// 2015-02-24 Added solElapsedCache
-						if (solElapsed != solElapsedCache) {
-
-							if (marsTime.getMonthName() != null)
-								martianMonthLabel.setText(marsTime.getMonthName());
-
-							setSeason();
-
-							solElapsedCache = solElapsed;
-						}
-					}
-
-					if (earthTime != null) {
-						if (earthTime.getTimeStamp() != null)
-							SwingUtilities.invokeLater(() -> {
-								earthTimeLabel.setText(earthTime.getTimeStamp());
-							});
-					}
-
-					if (master != null) {
-						DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
-						String pulsePerSecond = formatter.format(master.getPulsesPerSecond());
-						pulsespersecondLabel.setText(pulsePerSecond);
-					}
-
-					if (uptimer != null) {
-						uptimeLabel.setText(uptimer.getUptime());
-					}
-
-					calendarDisplay.update();
+				//updateTime(time);
 				//}
-
-			//});
+			//});			
 	}
 
+	/**
+	 * Updates date and time in Time Tool
+	 * @param time
+	 */
+	// 2015-01-09 Added updateTime()
+	public void updateTime(double time) {
+		if (master == null)  {
+			//System.out.println("TimeWindow : master is null");
+			master = Simulation.instance().getMasterClock();
+		}
+
+    	int solElapsed = MarsClock.getSolOfYear(master.getMarsClock());
+
+		if (marsTime != null) {
+			SwingUtilities.invokeLater(() -> {
+				martianTimeLabel.setText(marsTime.getDateTimeStamp());
+			});
+			// 2015-02-24 Added solElapsedCache
+			if (solElapsed != solElapsedCache) {
+
+				if (marsTime.getMonthName() != null)
+					martianMonthLabel.setText(marsTime.getMonthName());
+
+				setSeason();
+
+				solElapsedCache = solElapsed;
+			}
+		}
+
+		if (earthTime != null) {
+			if (earthTime.getTimeStamp() != null)
+				SwingUtilities.invokeLater(() -> {
+					earthTimeLabel.setText(earthTime.getTimeStamp());
+				});
+		}
+
+		if (master != null) {
+			DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
+			String pulsePerSecond = formatter.format(master.getPulsesPerSecond());
+			pulsespersecondLabel.setText(pulsePerSecond);
+		}
+
+		if (uptimer != null) {
+			uptimeLabel.setText(uptimer.getUptime());
+		}
+
+		calendarDisplay.update();	
+	}
+	
+	
 	@Override
 	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or .play()
 	public void pauseChange(boolean isPaused) {
