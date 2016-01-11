@@ -6,6 +6,7 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +22,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationState;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -254,20 +256,50 @@ public class ChatBox extends BorderPane {
 	    	else if (num == 1) {
 	    		questionText = "You : what is your LocationState ?";
 	    		LocationState state = cache.getLocationState();
-	    		if (state != null)
-	    			responseText = "My current LocationState is " + state.getName();
+	    		if (state != null) {
+	    			if (personCache != null) {
+	    	    		
+	    	    	}
+	    	    	else if (robotCache != null) {
+	    	    		
+	    	    	}
+	    			responseText = "My current LocationState is " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
+	    		}
 	    		else
 	    			responseText = "My current LocationState is " + state;
 	    	}
 	
 	       	else if (num == 2) {
-	    		questionText = "You : reserved";
-	    		responseText = "reserved";
+	    		questionText = "You : what are you doing ?";
+	    		if (personCache != null) {
+	    			responseText = personCache.getTaskDescription();
+    	    	}
+    	    	else if (robotCache != null) {
+    	    		responseText = robotCache.getTaskDescription();
+    	    	}
 	       	}
 	
 	    	else if (num == 3) {
-	    		questionText = "You : reserved";
-	    		responseText = "reserved";
+	    		questionText = "You : where is your designated quarters ? ";
+	    		Point2D bed = personCache.getBed();
+	    		if (bed == null)
+	    			responseText = "I don't have my own private quarters.";
+	    		else {
+	    			if (personCache != null) {
+		    			if (personCache.getSettlement() != null)
+		    				responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
+		    						+ personCache.getQuarters() + " at " + personCache.getSettlement();
+		    			else
+		    				responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + " in " 
+		    						+ personCache.getQuarters();
+	    	    	}
+	    	    	else if (robotCache != null) {
+	    	    		responseText = "I don't need one. My battery can be charged at any robotic station.";
+	    	    	}
+
+
+	    		}
+	    		
 	    	}
 	
 	    	else if (num == 4) {
@@ -311,11 +343,11 @@ public class ChatBox extends BorderPane {
 	    		questionText = "You : what building are you at ?";
 	    		Settlement s = cache.getSettlement();
 	    		if (s != null) {
-		    		Building b = s.getBuildingManager().getBuilding(cache);
-		    		Building b1 = cache.getBuildingLocation();
-		    		if (b != null && b1 != null)
-		    			responseText = "The building I'm in is " + b.getNickName()
-		    				+ "  (aka " + b1.getNickName() + ").";
+		    		//Building b1 = s.getBuildingManager().getBuilding(cache);
+		    		Building b = cache.getBuildingLocation();
+		    		if (b != null) // && b1 != null)
+		    			responseText = "The building I'm in is " + b.getNickName();
+		    				//+ "  (aka " + b1.getNickName() + ").";
 		    		else
 		    			responseText = "I'm not in a building.";
 	    		}
@@ -426,9 +458,35 @@ public class ChatBox extends BorderPane {
     	
     	else if (text.equalsIgnoreCase("mission")) {
     		sys = name;
-    		questionText = "You : are you involved in a mission right now?";
-    		responseText = "No. I'm not. ";
+    		questionText = "You : are you involved in any particular mission at this moment?";
+    		Mission mission = null;
+    		if (personCache != null) {
+    			mission = personCache.getMind().getMission();
+	    	}
+	    	else if (robotCache != null) {
+	    		mission = robotCache.getBotMind().getMission();
+	    	}
     		
+    		if (mission == null)
+    			responseText = "No. I'm not. ";
+    		else
+    			responseText = mission.getDescription();
+    	}
+    	
+    	else if (text.equalsIgnoreCase("task")) {
+    		sys = name;
+    		questionText = "You : what are you doing at this moment?";
+    		String task = null;
+    		if (personCache != null) {
+        		task = personCache.getMind().getTaskManager().getTaskDescription();
+	    	}
+	    	else if (robotCache != null) {
+	    		task = robotCache.getBotMind().getTaskManager().getTaskDescription();
+	    	}
+    		if (task == null)
+    			responseText = "No. I'm not. ";
+    		else
+    			responseText = task;
     	}
     	
     	else {

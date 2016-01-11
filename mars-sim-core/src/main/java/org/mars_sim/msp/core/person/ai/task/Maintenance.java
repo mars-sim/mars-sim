@@ -144,6 +144,7 @@ implements Serializable {
         // Initialize phase.
         addPhase(MAINTAIN);
         setPhase(MAINTAIN);
+        
     }
 	
     @Override

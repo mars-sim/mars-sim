@@ -4,7 +4,7 @@
  * @version 3.08 2015-12-26
  * @author Manny Kung
  */
-package org.mars_sim.msp.ui.swing.tool.resupply;
+package org.mars_sim.msp.ui.swing.tool.construction;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -16,7 +16,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
@@ -43,8 +42,6 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
-import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard.KeyboardDetection;
-import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard.MouseDetection;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.reactfx.util.FxTimer;
@@ -591,7 +588,7 @@ public class ConstructionWizard {
 	}
 
 	// 2015-12-25 Added MouseDetection
-	class MouseDetection implements MouseMotionListener{
+	public class MouseDetection implements MouseMotionListener{
 		private ConstructionSite site;
 
 		MouseDetection(ConstructionSite site) {
@@ -616,7 +613,7 @@ public class ConstructionWizard {
 	}
 
 	// 2015-12-25 Added KeyboardDetection
-	class KeyboardDetection implements KeyListener{
+	public class KeyboardDetection implements KeyListener{
 		private ConstructionSite site;
 
 		KeyboardDetection(ConstructionSite site) {

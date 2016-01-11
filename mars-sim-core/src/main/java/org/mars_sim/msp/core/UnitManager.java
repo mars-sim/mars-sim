@@ -1357,8 +1357,8 @@ public class UnitManager implements Serializable {
 					numMakerbot++;
 				else if (robot.getRobotType().equals(RobotType.MEDICBOT))
 					numMedicbot++;
-				else if (robot.getRobotType().equals(RobotType.REPAIRBOT))
-					numRepairbot++;
+				//else if (robot.getRobotType().equals(RobotType.REPAIRBOT))
+				//	numRepairbot++;
 			}
 		}
 
@@ -1376,8 +1376,8 @@ public class UnitManager implements Serializable {
 			robotType = RobotType.MAKERBOT;
 		else if (numMedicbot < 1 && num < 12) // 11,
 			robotType = RobotType.MEDICBOT;
-		else if (numRepairbot < 5 && num < 15) // 12, 13, 14,
-			robotType = RobotType.REPAIRBOT;
+		//else if (numRepairbot < 5 && num < 15) // 12, 13, 14,
+		//	robotType = RobotType.REPAIRBOT;
 		else // if a particular robottype already exceeded the limit
 			robotType = RobotType.MAKERBOT;
 

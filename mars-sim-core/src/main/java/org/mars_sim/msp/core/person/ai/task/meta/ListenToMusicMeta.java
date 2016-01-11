@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ListenToMusic;
+import org.mars_sim.msp.core.person.ai.task.PlayHoloGame;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -75,22 +76,29 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
                 result += (fatigue - 800D) / 4D;
             }
 */
-            try {
-            	Building building = Sleep.getAvailableLivingQuartersBuilding(person);
 
-            	if (building == null) {
-	                Building recBuilding = ListenToMusic.getAvailableRecreationBuilding(person);
-		                if (recBuilding != null) {
-		                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-		                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-		                }
-            	}
-            	else
-            		result *= RandomUtil.getRandomDouble(2);
-            }
-            catch (Exception e) {
+            try {
+            	// 2016-01-10 Added checking if a person has a designated bed
+                Building quarters = person.getQuarters();    
+                if (quarters == null) {
+                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
+
+	            	if (quarters == null) {
+		                Building recBuilding = ListenToMusic.getAvailableRecreationBuilding(person);
+			                if (recBuilding != null) {
+			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+			                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+			                    result *= RandomUtil.getRandomDouble(3);
+			                }
+	            	}
+	            	else
+	            		result *= RandomUtil.getRandomDouble(2);
+	            }
+	
+            } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }
+            
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 

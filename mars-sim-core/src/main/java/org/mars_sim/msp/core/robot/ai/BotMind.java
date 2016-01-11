@@ -150,7 +150,7 @@ implements Serializable {
                     try {
                         getNewAction(true, (!activeMission && !overrideMission));
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, "Could not get new action", e);
+                        logger.log(Level.WARNING, robot + " could not get new action", e);
                         e.printStackTrace(System.err);
                     }
                 }
@@ -298,7 +298,7 @@ implements Serializable {
 
         if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
 	                (Double.isInfinite(weightSum))) {
-        	throw new IllegalStateException("Mind.getNewAction(): weight sum: "
+        	throw new IllegalStateException("BotMind.getNewAction(): weight sum: "
         			+ weightSum);}
 
 
@@ -323,7 +323,7 @@ implements Serializable {
             if (rand < missionWeights) {
             	Mission newMission = null;
 
-            	logger.fine(robot.getName() + " starting a new mission.");
+            	logger.fine(robot.getName() + " is starting a new mission.");
             	newMission = missionManager.getNewMission(robot);
 
 

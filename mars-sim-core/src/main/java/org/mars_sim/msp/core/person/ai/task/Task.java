@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -762,6 +763,31 @@ implements Serializable, Comparable<Task> {
         }
     }
 
+    /**
+     * Walks to the bed assigned for this person
+     * @param accommodations
+     * @param person
+     * @param allowFail
+     */
+    // 2015-01-09 Added walkToBed()
+    protected void walkToBed(LivingAccommodations accommodations, Person person, boolean allowFail) { // Building quarters,
+    	Point2D bed = person.getBed();
+    	Building building = accommodations.getBuilding();
+    	Point2D spot = LocalAreaUtil.getLocalRelativeLocation(
+                bed.getX(), bed.getY(), building);
+    	
+        if (bed != null) {
+        	//System.out.println("Task : " + person + "'s bed is at (" + bed.getX() + ", " + bed.getY() + ") in " + building.getNickName());
+            // Create subtask for walking to destination.
+            createWalkingSubtask(building, spot, allowFail);
+        }
+        else {
+        	System.out.println("Task : walkToBed() : " + person + " has no designated bed in " + building.getNickName());
+        	// If no available activity spot, go to random location in building.
+            walkToRandomLocInBuilding(building, allowFail);
+        }
+    }
+    
     /**
      * Walk to an available activity spot in a building.
      * @param building the destination building.

@@ -34,10 +34,10 @@ implements Serializable {
 		super(Repairbot.class);
 
 		// Add technician-related tasks.
-		jobTasks.add(Maintenance.class);
+		//jobTasks.add(Maintenance.class);
 		//jobTasks.add(MaintenanceEVA.class); //check to what extend the walking bug is affecting the outdoor portion of this task
 		//jobTasks.add(RepairEVAMalfunction.class); //check to what extend the walking bug is affecting the outdoor portion of this task
-		jobTasks.add(RepairMalfunction.class);
+		//jobTasks.add(RepairMalfunction.class);
 
 	}
 

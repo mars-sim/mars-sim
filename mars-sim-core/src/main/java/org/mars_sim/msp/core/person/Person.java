@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -113,6 +115,10 @@ implements VehicleOperator, MissionMember, Serializable {
 
     private ReportingAuthority ra;
 
+    private Building quarters;
+    
+    private Point2D bed;
+    
     /**
      * Constructs a Person object at a given settlement.
      * @param name the person's name
@@ -443,6 +449,12 @@ implements VehicleOperator, MissionMember, Serializable {
             else {
                 // Person has died as a result of physical condition
                 setDead();
+                LivingAccommodations accommodations = (LivingAccommodations) quarters.getFunction(
+                        BuildingFunction.LIVING_ACCOMODATIONS);        
+                accommodations.getBedMap().remove(this);
+                quarters = null;
+                bed = null;
+                
             }
         }
 
@@ -873,6 +885,23 @@ implements VehicleOperator, MissionMember, Serializable {
 		emotional_states = states;
 	}
 
+	public Building getQuarters() {
+		return quarters; 
+	}
+
+	public void setQuarters(Building quarters) {
+		this.quarters = quarters; 
+	}
+
+	public Point2D getBed() {
+		return bed; 
+	}
+
+	public void setBed(Point2D bed) {
+		this.bed = bed; 
+	}
+
+	
     @Override
     public void destroy() {
         super.destroy();

@@ -180,13 +180,23 @@ public class SleepMeta implements MetaTask, Serializable {
 		        if (result > 0)
 		        	result += person.getPreference().getPreferenceScore(this);
 
-	            Building building = Sleep.getAvailableLivingQuartersBuilding(person);
-	            if (building != null) {
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
-	            }
+		        // 2016-01-10 Added checking if a person has a designated bed
+                Building quarters = person.getQuarters();    
+                if (quarters == null) {
+                	// he doesn't have his own bed and use shared/guest bed only, 
+                	// he should be less inclined to fall asleep
+                	result /= 1.5D;
+                	
+                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
 
-			    if (result < 0) result = 0;
+		            if (quarters != null) {
+		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+		            }
+                }
+                
+			    if (result < 0) 
+			    	result = 0;
 	        }
         }
 

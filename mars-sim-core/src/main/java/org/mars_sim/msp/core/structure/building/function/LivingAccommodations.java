@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -16,8 +17,13 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,9 +53,13 @@ public class LivingAccommodations extends Function implements Serializable {
     private double wasteWaterUsage; // wasteWaterUsage per person per millisol
     private double greyWaterFraction; // percent portion of grey water generated
     
+    private boolean hasAnUndesignatedBed = true;
+    
     private Settlement settlement;
     private Inventory inv;
 
+    private Building building;
+    private Map<Person, Point2D> bedMap = new HashMap<>();
     
     /**
      * Constructor
@@ -59,6 +69,8 @@ public class LivingAccommodations extends Function implements Serializable {
     public LivingAccommodations(Building building) {
         // Call Function constructor.
         super(FUNCTION, building);
+        
+        this.building = building;
 
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
@@ -136,23 +148,65 @@ public class LivingAccommodations extends Function implements Serializable {
      * Adds a sleeper to a bed.
      * @throws BuildingException if beds are already in use.
      */
-    public void addSleeper() {
-        sleepers++;
+    public void addSleeper(Person person) {
+    	sleepers++;
         if (sleepers > beds) {
             sleepers = beds;
-            throw new IllegalStateException("All beds are full.");
+            throw new IllegalStateException("No more unoccupied beds.");
+        }
+        else {
+        	if (bedMap.containsKey(person))
+        		; // nothing
+        	else {
+        		Point2D bed = designateABed(person);
+        		if (bed == null)
+        			System.out.println("no more undesignated beds in " + building.getNickName() + " in " + settlement);
+        	}
+
         }
     }
 
     /**
+     * Assigns an available bed 
+     * @param person
+     * @return
+     */
+    // 2016-01-09 Added designateABed()
+    public Point2D designateABed(Person person) {  	
+    	Point2D bed = null;	
+    	List<Point2D> spots = super.getActivitySpotsList();
+    	int numBeds = spots.size();
+    	int numDesignated = bedMap.size();   	
+    	if (numDesignated < numBeds) {
+	        Iterator<Point2D> i = spots.iterator();
+	        while (i.hasNext()) {
+	            Point2D spot = i.next();
+	            if (!bedMap.containsValue(spot)) {
+	            	bed = spot;
+	            	bedMap.put(person, bed);
+	        		person.setBed(bed);
+	        		person.setQuarters(building);
+	            	System.out.println("LivingAccommodations : the bed at (" + bed.getX() + ", " + bed.getY() 
+	            		+ ") in " + person.getQuarters() + " is now designated to " + person);
+	            	break;
+	            }
+	        }
+    	}
+
+    	return bed;
+    }
+    /**
      * Removes a sleeper from a bed.
      * @throws BuildingException if no sleepers to remove.
      */
-    public void removeSleeper() {
-        sleepers--;
+    public void removeSleeper(Person person) { 
+    	sleepers--;
         if (sleepers < 0) {
             sleepers = 0;
             throw new IllegalStateException("Beds are empty.");
+        }
+        else {
+        	//bedMap.remove(bedMap.get(person));	
         }
     }
 
@@ -244,8 +298,7 @@ public class LivingAccommodations extends Function implements Serializable {
     	
     	// computes water waste -- grey water and black water
     	double waterUsed = toiletUsagefactor * sleepers * wasteWaterUsage  * time;
-        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed);
-       
+        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed);    
         
         double greyWaterProduced = waterUsed * greyWaterFraction;
         double blackWaterProduced = waterUsed * (1 - greyWaterFraction);             
@@ -258,6 +311,25 @@ public class LivingAccommodations extends Function implements Serializable {
         retrieveAnResource("toilet tissue", toiletTissueUsed);
         storeAnResource(toiletTissueUsed, "toxic waste");
 
+    }
+    
+    public Building getBuilding() {
+    	return building;
+    }
+    
+    public Map<Person, Point2D> getBedMap() {
+    	return bedMap;
+    }
+    
+    public boolean hasAnUndesignatedBed() {
+    	List<Point2D> activitySpots = super.getActivitySpotsList();//(List<Point2D>) super.getAvailableActivitySpot(person);
+    	int numBeds = activitySpots.size();
+    	int numDesignated = bedMap.size();
+    	
+    	if (numDesignated < numBeds)
+    		return true;
+    	else
+    		return false;
     }
     
     /**

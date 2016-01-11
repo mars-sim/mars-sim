@@ -257,6 +257,8 @@ implements Serializable {
             result.building = building;
             
             if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+              	System.out.println("WalkingSteps : determineDestinationWalkState() : building is " + building);
+               	 
                 throw new IllegalStateException("Invalid walk destination location. (" + 
                     xLoc + ", " + yLoc + ") is not within building " + building);
             }

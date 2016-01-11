@@ -72,13 +72,29 @@ implements Serializable {
 		// If person is in a settlement, try to find a place to relax.
 		boolean walkSite = false;
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
 			try {
 
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
-				    walkToActivitySpotInBuilding(recBuilding, true);
+					// 2016-01-10 Added BuildingFunction.RECREATION
+				    walkToActivitySpotInBuilding(recBuilding, BuildingFunction.RECREATION, true);
 				    walkSite = true;
+				} else {
+                	// 2016-01-10 if rec building is not available, go to a gym
+                	Building gym = Workout.getAvailableGym(person);
+                	if (gym != null) {
+	                	walkToActivitySpotInBuilding(gym, BuildingFunction.EXERCISE, true);
+	                	walkSite = true;
+	                } else {
+						// 2016-01-10 if gym is not available, go back to his quarters
+		                Building quarters = person.getQuarters();    
+		                if (quarters != null) {
+		                	walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS, true);
+						    walkSite = true;
+		                }
+	                }
 				}
 			}
 			catch (Exception e) {

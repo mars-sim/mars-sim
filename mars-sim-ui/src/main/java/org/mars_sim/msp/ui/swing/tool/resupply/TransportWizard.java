@@ -28,8 +28,6 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.AnnouncementWindow;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.tool.resupply.ConstructionWizard.KeyboardDetection;
-import org.mars_sim.msp.ui.swing.tool.resupply.ConstructionWizard.MouseDetection;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.reactfx.util.FxTimer;

@@ -104,8 +104,8 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
+import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
-import org.mars_sim.msp.ui.swing.tool.resupply.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
@@ -508,7 +508,7 @@ public class MainScene {
 
 		rootStackPane = new StackPane(borderPane);
 		borderPane.setMinWidth(1024);
-		borderPane.setMinHeight(600);
+		borderPane.setMinHeight(480);
 
 		Scene scene = new Scene(rootStackPane, width-40, height-40, Color.BROWN);
 

@@ -63,23 +63,25 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
         // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             try {
+            	// 2016-01-10 Added checking if a person has a designated bed
+                Building quarters = person.getQuarters();    
+                if (quarters == null) {
+                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
 
-            	Building building = Sleep.getAvailableLivingQuartersBuilding(person);
-
-            	if (building == null) {
-	                Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
-		                if (recBuilding != null) {
-		                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
-		                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-		                    result *= RandomUtil.getRandomDouble(3);
-		                    // TODO: find other players using 0-3 makes it more likely to do multiplayer
-		                }
-            	}
-            	else
-            		result *= RandomUtil.getRandomDouble(2);
-            	}
-
-            catch (Exception e) {
+	            	if (quarters == null) {
+		                Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);
+			                if (recBuilding != null) {
+			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
+			                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
+			                    result *= RandomUtil.getRandomDouble(3);
+			                    // TODO: find other players using 0-3 makes it more likely to do multiplayer
+			                }
+	            	}
+	            	else
+	            		result *= RandomUtil.getRandomDouble(2);
+	            }
+	
+            } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());
             }
         }

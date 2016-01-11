@@ -105,8 +105,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<living-accommodations beds="4">
 				<activity>
 					<activity-spot xloc="1.06" yloc="2.45" />
-					<activity-spot xloc="-.33" yloc="2.74" />
-					<activity-spot xloc="-2.74" yloc=".55" />
+					<activity-spot xloc="-0.33" yloc="2.74" />
+					<activity-spot xloc="-2.74" yloc="0.55" />
 					<activity-spot xloc="-2.6" yloc="-1.06" />
 				</activity>
 			</living-accommodations>
@@ -596,10 +596,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<robotic-station slots="4">
 				<activity>
-					<activity-spot xloc="0.5" yloc="-0.5" />
-					<activity-spot xloc="-0.5" yloc="-0.5" />
-					<activity-spot xloc="-0.5" yloc="0.5" />
-					<activity-spot xloc="0.5" yloc="0.5" />
+					<activity-spot xloc="0.0" yloc="-0.5" />
+					<activity-spot xloc="0.0" yloc="-1.5" />
+					<activity-spot xloc="0.0" yloc="0.5" />
+					<activity-spot xloc="0.0" yloc="1.5" />
 				</activity>
 			</robotic-station>
 

@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -82,7 +83,8 @@ public class Sleep extends Task implements Serializable {
      * Constructor.
      * @param person the person to perform the task
      */
-    public Sleep(Person person) {
+    @SuppressWarnings("unused")
+	public Sleep(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true,
                 (250D + RandomUtil.getRandomDouble(80D)));
 
@@ -91,16 +93,59 @@ public class Sleep extends Task implements Serializable {
         timeFactor = 3D; // TODO: should vary this factor by person
 
         // If person is in a settlement, try to find a living accommodations building.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            Building quarters = getAvailableLivingQuartersBuilding(person);
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {	
+        	
+        	// 2016-01-10 Added checking if a person has a designated bed
+            Building quarters = person.getQuarters();    
+            
             if (quarters != null) {
-                // Walk to quarters.
-                walkToActivitySpotInBuilding(quarters, true);
-                accommodations = (LivingAccommodations) quarters.getFunction(
-                        BuildingFunction.LIVING_ACCOMODATIONS);
-                accommodations.addSleeper();
+            	// if this person has already been assigned a quarter and a bed
+            	logger.finer("Sleep : " + person + " has a designated bed at " + quarters.getNickName());
+                accommodations = (LivingAccommodations) quarters.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);    
+                Building startBuilding = BuildingManager.getBuilding(person);           
+                Point2D bed = person.getBed();         
+                logger.finer(person + " is walking from " + startBuilding + " to his private quarters at " + quarters);
+            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
+                accommodations.addSleeper(person);
+                walkToBed(accommodations, person, false);
+                //walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS, true);             
                 walkSite = true;
+            }
+            else {
+            	// if this person has never been assigned a quarter and a bed so far
+            	logger.info("Sleep : " + person + " has never been designated a bed");
+            	
+            	// Get a quarters that has an undesignated bed
+            	quarters = getAvailableLivingQuartersBuilding(person, true);
+            	
+            	if (quarters != null) {
+            		logger.info("Sleep : " + person + " will be designated a bed in " + quarters.getNickName());
+                    // set it as his quarters
+                	person.setQuarters(quarters);
+                    accommodations = (LivingAccommodations) quarters.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);    
+                    Building startBuilding = BuildingManager.getBuilding(person);           
+                    //Point2D bed = person.getBed();         
+                    logger.info(person + " is walking from " + startBuilding + " to his newly assigned quarters at " + quarters);
+                	//addSubTask(new WalkSettlementInterior(person, quarters, 0, 0));
+                    accommodations.addSleeper(person);    
+                	walkToBed(accommodations, person, false);         
+                    //walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS, true);             
+                    walkSite = true;
+                }
+            	else {
+              		// There are no undesignated beds left in any quarters
+                	logger.info("Sleep : there are no empty beds left in any quarters to be designated to " + person + ". Will use any bed randomly.");
+                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+                	quarters = getAvailableLivingQuartersBuilding(person, false);
+                	accommodations = (LivingAccommodations) quarters.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);    
+                    Building startBuilding = BuildingManager.getBuilding(person);                                  
+                    logger.finer(person + " is walking from " + startBuilding + " to his temporary quarters at " + quarters);
+                    //addSubTask(new WalkSettlementInterior(person, quarters, 0, 0));
+            		// TODO: should go to the "guest" quarter if the "designated" quarters are no longer available 
+            		walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS, true);
+                    accommodations.addSleeper(person);
+                    walkSite = true;
+            	}
             }
         }
 
@@ -264,7 +309,7 @@ public class Sleep extends Task implements Serializable {
 		if (person != null) {
 	        // Remove person from living accommodations bed so others can use it.
 	        if (accommodations != null && accommodations.getSleepers() > 0) {
-	            accommodations.removeSleeper();
+	            accommodations.removeSleeper(person);
 	        }
 		}
 		else if (robot != null) {
@@ -283,9 +328,10 @@ public class Sleep extends Task implements Serializable {
      * Gets an available living accommodations building that the person can use.
      * Returns null if no living accommodations building is currently available.
      * @param person the person
+     * @param need an undesignated bed or not.
      * @return available living accommodations building
      */
-    public static Building getAvailableLivingQuartersBuilding(Person person) {
+    public static Building getAvailableLivingQuartersBuilding(Person person, boolean needUndesignatedBed) {
 
         Building result = null;
 
@@ -293,7 +339,7 @@ public class Sleep extends Task implements Serializable {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> quartersBuildings = manager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS);
             quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
-            quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings);
+            quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, needUndesignatedBed);
             quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
 
             if (quartersBuildings.size() > 0) {
@@ -305,7 +351,7 @@ public class Sleep extends Task implements Serializable {
 
         return result;
     }
-
+    
     public static Building getAvailableRoboticStationBuilding(Robot robot) {
 
         Building result = null;
@@ -341,16 +387,26 @@ public class Sleep extends Task implements Serializable {
      * @param buildingList list of buildings with the living accommodations function.
      * @return list of buildings with empty beds.
      */
-    private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList) {
+    private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList, boolean needUndesignatedBed) {
         List<Building> result = new ArrayList<Building>();
 
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            LivingAccommodations quarters = (LivingAccommodations) building.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
-            if (quarters.getSleepers() < quarters.getBeds()) {
-                result.add(building);
+            LivingAccommodations quarters = (LivingAccommodations) building
+            		.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+            // 2016-01-10 Added checking if an undesignated bed is needed
+            if (needUndesignatedBed) {
+	            if (quarters.getSleepers() < quarters.getBeds() 
+	            		&& quarters.hasAnUndesignatedBed()) {
+	                result.add(building);
+	            }
+            } else {
+            	if (quarters.getSleepers() < quarters.getBeds()) {
+	                result.add(building);
+	            }
             }
+            
         }
 
         return result;

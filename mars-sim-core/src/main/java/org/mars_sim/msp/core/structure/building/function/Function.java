@@ -288,6 +288,10 @@ implements Serializable {
         return (activitySpots.size() > 0);
     }
     
+    public List<Point2D> getActivitySpotsList() {
+    	return activitySpots;
+    }
+    
     /**
      * Prepare object for garbage collection.
      */
