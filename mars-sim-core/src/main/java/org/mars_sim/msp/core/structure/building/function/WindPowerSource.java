@@ -21,6 +21,8 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double MAINTENANCE_FACTOR = 2D;
+	
 	/**
 	 * Constructor.
 	 * @param maxPower the maximum generated power.
@@ -38,12 +40,12 @@ implements Serializable {
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower() / 3D;
+		return getMaxPower();
 	}
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxPower() * 3D;
+	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
 
 	@Override

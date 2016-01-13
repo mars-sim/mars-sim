@@ -26,6 +26,8 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double MAINTENANCE_FACTOR = 2.5D;
+	
 	/** In terms of solar cell degradation, NASA MER has an observable degradation rate of 0.14% per sol
 	 *  on the solar cell (if starting from 100%).
 	 	Here we tentatively set to 0.04% per sol instead of 0.14%, since that in 10 earth years,
@@ -80,7 +82,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxPower() * 1D;
+	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
 
 	public void setEfficiency(double value) {

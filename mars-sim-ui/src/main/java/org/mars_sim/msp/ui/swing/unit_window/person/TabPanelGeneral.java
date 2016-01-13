@@ -125,7 +125,7 @@ extends TabPanel {
 		infoPanel.add(heightNameLabel);
 
 		// Prepare height label
-		int baseHeight = person.getHeight();
+		double baseHeight = Math.round(person.getHeight()*10.0)/10.0;
 		//JLabel heightLabel = new JLabel(Msg.getString("TabPanelGeneral.centimeters", baseHeight), JLabel.RIGHT); //$NON-NLS-1$
 		JTextField heightTF = new JTextField(Msg.getString("TabPanelGeneral.centimeters", baseHeight));
 		heightTF.setEditable(false);

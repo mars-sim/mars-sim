@@ -428,6 +428,8 @@ public class SettlementTableModel extends AbstractTableModel {
 				}
 			}
 
+			break;
+			
 		case 7:
 			info.hasMaxMSD = (Boolean) aValue; // new Boolean(true); //
 			break;
@@ -525,14 +527,16 @@ public class SettlementTableModel extends AbstractTableModel {
 			return false;
 		}
 		int i = 0;
-		if (str.charAt(0) == '-') { // Exception in thread "AWT-EventQueue-0" java.lang.StringIndexOutOfBoundsException: String index out of range: 0
-			//at java.lang.String.charAt(String.java:658)
-			//at org.mars_sim.msp.javafx.ScenarioConfigEditorFX$SettlementTableModel.isDecimal(ScenarioConfigEditorFX.java:1323)
+		
+		if (str.charAt(0) == '-') { 
 			if (length < 3) {
 				return false;
 			}
 			i = 1;
 		}
+		else
+			return false;
+		
 		int numOfDot = 0;
 		for (; i < length; i++) {
 			char c = str.charAt(i);

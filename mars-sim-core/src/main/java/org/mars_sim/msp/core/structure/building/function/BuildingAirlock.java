@@ -137,11 +137,13 @@ public class BuildingAirlock extends Airlock {
                     // Exit robot to outside building.
                     //logger.fine(robot + " exiting " + building + " via airlock.");
                 	logger.fine(robot + " is currently IN_SETTLEMENT. About to call retrieveUnit() to be removed from " + building.getBuildingManager().getSettlement());         
-                	//logger.fine(robot + " is about to exit the airlock door and leave " + building + " and going outside");
+                	logger.fine(robot + " is about to exit the airlock door and leave " + building + " and going outside");
                     inv.retrieveUnit(robot);
                     logger.fine(robot + " is about to be removed from " + building);                           
                 	BuildingManager.removePersonOrRobotFromBuilding(robot, building);
                     
+                	// robot is NOT allowed to leave the settlement 
+                	//return;
                 }
                 else {
                 	//if (LocationSituation.BURIED != robot.getLocationSituation()) {

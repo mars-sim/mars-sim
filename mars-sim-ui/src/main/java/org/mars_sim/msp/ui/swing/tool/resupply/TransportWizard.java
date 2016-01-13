@@ -16,12 +16,12 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.FXUtilities;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -33,6 +33,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -78,7 +79,6 @@ public class TransportWizard {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(TransportWizard.class.getName());
 
@@ -136,7 +136,7 @@ public class TransportWizard {
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
-		System.out.println("Just called TransportWizard's deliverBuildings()");
+    	logger.info("deliverBuildings() is in " + Thread.currentThread().getName() + " Thread");
 
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
     	// how to make each building ask for a position ?
@@ -173,6 +173,7 @@ public class TransportWizard {
 					if (mainScene != null) {
 						unpause(previous0);
 					}
+					
 
 				});
 			} catch (InterruptedException | ExecutionException e) {
@@ -183,9 +184,10 @@ public class TransportWizard {
         else {
         	// non-javaFX mode
         	determineEachBuildingPosition(mgr);
+           	
         }
 
-       	// 2015-11-12 Deliver the rest of the supplies and add people.
+        // 2015-11-12 Deliver the rest of the supplies and add people.
         mgr.getResupply().deliverOthers();
     }
 
@@ -279,33 +281,61 @@ public class TransportWizard {
 	 */
     // 2015-12-07 Added determineEachBuildingPosition()
 	public synchronized void determineEachBuildingPosition(BuildingManager mgr) {
-		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
-		if (mainScene != null)
-			mainScene.pauseSimulation();
+		logger.info("determineEachBuildingPosition() is in " + Thread.currentThread().getName() + " Thread");
+		
         List<BuildingTemplate> orderedBuildings = mgr.getResupply().orderNewBuildings();
-        // 2015-12-19 Added the use of ComparatorOfBuildingID()
-        Collections.sort(orderedBuildings, new ComparatorOfBuildingID());
-        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
-        while (buildingI.hasNext()) {
-           BuildingTemplate template = buildingI.next();
-           //System.out.println("TransportWizard : BuildingTemplate for " + template.getNickName());
-/*    	   // check if it's a building connector and if it's connecting the two buildings at their template position
-        	   boolean isConnector = buildingConfig.hasBuildingConnection(template.getBuildingType());
-           if (isConnector) confirmBuildingLocation(correctedTemplate, false);
-           else confirmBuildingLocation(correctedTemplate, true);
-*/
-           // 2015-12-06 Added this recursive method checkTemplatePosition()
-           // to handle the creation of a new building template in case of an obstacle.
-           checkTemplatePosition(mgr, template, true);
-           // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
-	    } // end of while (buildingI.hasNext())
-
-        Building building = mgr.getACopyOfBuildings().get(0);
-        mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
-		if (mainScene != null)
-			mainScene.unpauseSimulation();
+        //System.out.println("orderedBuildings.size() : " + orderedBuildings.size());
+        //if (orderedBuildings.size() > 0) {
+        	
+        	// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
+    		//if (mainScene != null)
+    		//	mainScene.pauseSimulation();
+    		
+	        // 2015-12-19 Added the use of ComparatorOfBuildingID()
+	        Collections.sort(orderedBuildings, new ComparatorOfBuildingID());
+	        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
+	        while (buildingI.hasNext()) {
+	           BuildingTemplate template = buildingI.next();
+	           //System.out.println("TransportWizard : BuildingTemplate for " + template.getNickName());
+	/*    	   // check if it's a building connector and if it's connecting the two buildings at their template position
+	        	   boolean isConnector = buildingConfig.hasBuildingConnection(template.getBuildingType());
+	           if (isConnector) confirmBuildingLocation(correctedTemplate, false);
+	           else confirmBuildingLocation(correctedTemplate, true);
+	*/
+	           // 2015-12-06 Added this recursive method checkTemplatePosition()
+	           // to handle the creation of a new building template in case of an obstacle.
+	           checkTemplatePosition(mgr, template, true);
+	           // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
+		    } // end of while (buildingI.hasNext())
+	
+	        Building building = mgr.getACopyOfBuildings().get(0);
+	        mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
+	        	        
+			//if (mainScene != null)
+			//	mainScene.unpauseSimulation();
+        //} else {}
+        
+        //mgr.getResupply().deliverOthers();
+        //2016-01-12 Needed to get back to the original thread in Resupply.java that started the instance
+        //Simulation.instance().getMasterClock().getClockListenerExecutor().submit(new DeliverOthersTask(mgr));
+        
 	}
 
+
+	//2016-01-12 Added DeliverOthersTask
+	class DeliverOthersTask implements Runnable {
+		BuildingManager mgr;
+		DeliverOthersTask(BuildingManager mgr) {
+			this.mgr = mgr;
+		}
+
+		public void run() {
+			logger.info("DeliverOthersTask's run() is in " + Thread.currentThread().getName() + " Thread");
+	       	// 2015-11-12 Deliver the rest of the supplies and add people.
+	        mgr.getResupply().deliverOthers();
+		}
+    }
+	
 
     /**
      * Checks if the prescribed template position for a building has obstacles and if it does, gets a new template position
@@ -598,7 +628,9 @@ public class TransportWizard {
   		// set up the Settlement Map Tool to display the suggested location of the building
 		mapPanel.reCenter();
 		mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-		mapPanel.setShowBuildingLabels(true);
+		//mapPanel.setShowBuildingLabels(true);
+		//mapPanel.getSettlementTransparentPanel().getBuildingLabelMenuItem().setSelected(true);
+
 
 		String header = null;
 		String title = null;
@@ -700,13 +732,15 @@ public class TransportWizard {
 		        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
 		        	    button.fire();
 		        	}
-		        	msg.set("(1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
-		        			+ " (2) To manually place a building, use Mouse/Keyboard Control");
+		        	msg.set("Notes: (1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
+		        			+ " (2) To manually place a building, use Mouse/Keyboard Control.");
 				});
 			}
-			else
+			else {
+				msg.set("Note: To manually place a building, use Mouse/Keyboard Control.");
 				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
-
+			}
+			
 			if (newBuilding.getBuildingType().equals("Hallway")
 					|| newBuilding.getBuildingType().equals("Tunnel")) {
 				Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeMouseKB);

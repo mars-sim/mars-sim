@@ -26,6 +26,8 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double MAINTENANCE_FACTOR = 2D;
+	
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
@@ -167,7 +169,7 @@ implements Serializable {
 
 	 @Override
 	 public double getMaintenanceTime() {
-	     return getMaxPower() * 2D;
+	     return getMaxPower() * MAINTENANCE_FACTOR;
 	 }
 
 	 // 2015-09-28 Added removeFromSettlement() to return the fuel cell stacks to the inventory

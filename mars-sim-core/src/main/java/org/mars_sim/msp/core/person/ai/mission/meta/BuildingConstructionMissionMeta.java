@@ -37,6 +37,8 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
+    private static int FIRST_AVAILABLE_SOL = 14;
+    
     @Override
     public String getName() {
         return NAME;
@@ -78,7 +80,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
-            boolean firstTenSols = (totalTimeSols < 2D);
+            boolean firstTenSols = (totalTimeSols < FIRST_AVAILABLE_SOL);
 
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <

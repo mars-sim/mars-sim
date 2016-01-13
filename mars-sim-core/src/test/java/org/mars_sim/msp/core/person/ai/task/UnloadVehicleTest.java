@@ -83,7 +83,7 @@ extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 		
-		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
 		
 		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);

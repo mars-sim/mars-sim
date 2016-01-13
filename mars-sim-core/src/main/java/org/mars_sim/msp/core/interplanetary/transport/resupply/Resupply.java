@@ -327,7 +327,7 @@ implements Serializable, Transportable {
 
 	@Override
  	// 2014-12-26 Created startDeliveryEvent
-	public void performArrival() {
+	public synchronized void performArrival() {
      	// Deliver buildings to the destination settlement.
 		startDeliveryEvent();
 	}
@@ -336,7 +336,7 @@ implements Serializable, Transportable {
      * Generates START_BUILDING_PLACEMENT_EVENT and test if GUI is in use
      */
     public synchronized void startDeliveryEvent() {
-        logger.info("Resupply's deliverBuildings() is on " + Thread.currentThread().getName() + " Thread");
+        logger.info("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread");
     	//System.out.println("Resupply : running deliverBuildings()");
 
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -358,6 +358,10 @@ implements Serializable, Transportable {
 	            	Building aBuilding = buildingManager.getACopyOfBuildings().get(0);
 	            	// Fires the unit update below in order to use the version of deliverBuildings() in TransportWizard.java
 	               	settlement.fireUnitUpdate(UnitEventType.START_TRANSPORT_WIZARD_EVENT, aBuilding);
+	            }
+	            else {
+	            	// 2016-01-12 Deliver the rest of the supplies and add people.
+	                deliverOthers();
 	            }
         	//}
         } else {
@@ -439,10 +443,8 @@ implements Serializable, Transportable {
 
         // Check if building template position/facing collides with any existing buildings/vehicles/construction sites.
         if (checkBuildingTemplatePosition(correctedTemplate)) {
-        	//
-
+        	;
         } else {
-
         	correctedTemplate = clearCollision(correctedTemplate);
         }
 
@@ -617,8 +619,6 @@ implements Serializable, Transportable {
     }
 */
 
-
-
     /**
      * Delivers vehicles, resources and immigrants to a settlement on a resupply mission
      */
@@ -689,7 +689,7 @@ implements Serializable, Transportable {
 
             String birthplace = "Earth"; //TODO: randomize from list of countries/federations.
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-            Person immigrant = new Person(immigrantName, gender, birthplace, settlement); //TODO: read from file
+            Person immigrant = new Person(immigrantName, gender, false, birthplace, settlement); //TODO: read from file
 
             // Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();

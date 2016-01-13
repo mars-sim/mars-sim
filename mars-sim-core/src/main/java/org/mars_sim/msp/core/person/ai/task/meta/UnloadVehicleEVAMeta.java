@@ -123,7 +123,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	public double getProbability(Robot robot) {
 
         double result = 0D;
-
+/*
         if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
 
             if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -157,7 +157,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
                 }
             }
         }
-
+*/
         return result;
     }
 }

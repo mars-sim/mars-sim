@@ -135,6 +135,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+/*        
         if (robot.getBotMind().getRobotJob() instanceof Deliverybot)  {
 
             if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -173,7 +174,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
             }
 
         }
-
+*/
         return result;
     }
 }

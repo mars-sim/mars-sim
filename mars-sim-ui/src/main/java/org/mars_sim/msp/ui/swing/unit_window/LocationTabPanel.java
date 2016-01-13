@@ -40,21 +40,20 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.steelseries.gauges.DigitialRadial;
+import org.mars_sim.msp.steelseries.gauges.DisplayCircular;
+import org.mars_sim.msp.steelseries.gauges.DisplaySingle;
+import org.mars_sim.msp.steelseries.tools.BackgroundColor;
+import org.mars_sim.msp.steelseries.tools.FrameDesign;
+import org.mars_sim.msp.steelseries.tools.LcdColor;
+import org.mars_sim.msp.steelseries.tools.Orientation;
+import org.mars_sim.msp.steelseries.tools.PointerType;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
-
-import eu.hansolo.steelseries.gauges.DisplaySingle;
-import eu.hansolo.steelseries.gauges.DigitialRadial;
-import eu.hansolo.steelseries.gauges.DisplayCircular;
-import eu.hansolo.steelseries.tools.BackgroundColor;
-import eu.hansolo.steelseries.tools.FrameDesign;
-import eu.hansolo.steelseries.tools.LcdColor;
-import eu.hansolo.steelseries.tools.Orientation;
-import eu.hansolo.steelseries.tools.PointerType;
 
 /**
  * The LocationTabPanel is a tab panel for location information.

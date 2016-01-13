@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.robot.ai;
 
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -296,11 +297,16 @@ implements Serializable {
         	weightSum += missionWeights;
 	   }
 
-        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
-	                (Double.isInfinite(weightSum))) {
-        	throw new IllegalStateException("BotMind.getNewAction(): weight sum: "
-        			+ weightSum);}
-
+        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {      	
+	        try {
+				TimeUnit.MILLISECONDS.sleep(1000L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	        throw new IllegalStateException("BotMind.getNewAction(): weight sum: "
+	    			+ weightSum);
+	        }
+        
 
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);
@@ -309,8 +315,12 @@ implements Serializable {
         if (tasks) {
             if (rand < taskWeights) {
                 Task newTask = taskManager.getNewTask();
-                taskManager.addTask(newTask);
-
+                
+                if (newTask != null)
+                	taskManager.addTask(newTask);
+                else 
+                	logger.severe(robot + " : newTask is null ");
+                
                 return;
             }
             else {

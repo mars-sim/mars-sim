@@ -22,6 +22,8 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final double MAINTENANCE_FACTOR = 2D;
+	
 	public StandardPowerSource(double maxPower) {
 		// Call PowerSource constructor.
 		super(PowerSourceType.STANDARD, maxPower);
@@ -43,7 +45,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxPower() * 2D;
+	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
 
 	@Override

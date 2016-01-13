@@ -71,12 +71,11 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.steelseries.gauges.DisplaySingle;
+import org.mars_sim.msp.steelseries.tools.LcdColor;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import eu.hansolo.steelseries.gauges.DisplaySingle;
-import eu.hansolo.steelseries.tools.LcdColor;
 
 public class SettlementTransparentPanel extends JComponent {
 
@@ -96,6 +95,8 @@ public class SettlementTransparentPanel extends JComponent {
 	private JComboBoxMW<?> settlementListBox;
 	/** Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
+	
+	private JCustomCheckBoxMenuItem buildingLabelMenuItem, personLabelMenuItem, constructionLabelMenuItem, vehicleLabelMenuItem, robotLabelMenuItem ;
 
 	private SettlementMapPanel mapPanel;
 	private MainDesktopPane desktop;
@@ -616,7 +617,7 @@ public class SettlementTransparentPanel extends JComponent {
 		result.add(dayNightLabelMenuItem);
 
 		// Create building label menu item.
-		JCustomCheckBoxMenuItem buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
+		buildingLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.buildings"), mapPanel.isShowBuildingLabels()); //$NON-NLS-1$
 		// 2014-12-24 Added setting setForeground setContentAreaFilled setOpaque
 		buildingLabelMenuItem.setForeground(new Color(139,69,19));
@@ -631,7 +632,7 @@ public class SettlementTransparentPanel extends JComponent {
 		result.add(buildingLabelMenuItem);
 
 		// Create construction/salvage label menu item.
-		JCustomCheckBoxMenuItem constructionLabelMenuItem = new JCustomCheckBoxMenuItem(
+		constructionLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.constructionSites"), mapPanel.isShowConstructionLabels()); //$NON-NLS-1$
 		constructionLabelMenuItem.setForeground(new Color(139,69,19));
 		//constructionLabelMenuItem.setBackground(new Color(222,184,135,0));
@@ -645,7 +646,7 @@ public class SettlementTransparentPanel extends JComponent {
 		result.add(constructionLabelMenuItem);
 
 		// Create vehicle label menu item.
-		JCustomCheckBoxMenuItem vehicleLabelMenuItem = new JCustomCheckBoxMenuItem(
+		vehicleLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.vehicles"), mapPanel.isShowVehicleLabels()); //$NON-NLS-1$
 		vehicleLabelMenuItem.setForeground(new Color(139,69,19));
 		//vehicleLabelMenuItem.setBackground(new Color(222,184,135,0));
@@ -659,7 +660,7 @@ public class SettlementTransparentPanel extends JComponent {
 		result.add(vehicleLabelMenuItem);
 
 		// Create person label menu item.
-		JCustomCheckBoxMenuItem personLabelMenuItem = new JCustomCheckBoxMenuItem(
+		personLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.people"), mapPanel.isShowPersonLabels()); //$NON-NLS-1$
 		personLabelMenuItem.setForeground(new Color(139,69,19));
 		//personLabelMenuItem.setBackground(new Color(222,184,135,0));
@@ -673,7 +674,7 @@ public class SettlementTransparentPanel extends JComponent {
 		result.add(personLabelMenuItem);
 
 		// Create person label menu item.
-		JCustomCheckBoxMenuItem robotLabelMenuItem = new JCustomCheckBoxMenuItem(
+		robotLabelMenuItem = new JCustomCheckBoxMenuItem(
 				Msg.getString("SettlementWindow.menu.robots"), mapPanel.isShowRobotLabels()); //$NON-NLS-1$
 		robotLabelMenuItem.setForeground(new Color(139,69,19));
 		robotLabelMenuItem.setContentAreaFilled(false);
@@ -943,6 +944,26 @@ public class SettlementTransparentPanel extends JComponent {
 		return settlementListBox;
 	}
 
+	public JCustomCheckBoxMenuItem getBuildingLabelMenuItem() {
+		return buildingLabelMenuItem;
+	}
+	
+	public JCustomCheckBoxMenuItem getPersonLabelMenuItem () {
+		return personLabelMenuItem ;
+	}
+
+	public JCustomCheckBoxMenuItem getConstructionLabelMenuItem () {
+		return constructionLabelMenuItem ;
+	}
+	
+	public JCustomCheckBoxMenuItem getVehicleLabelMenuItem () {
+		return vehicleLabelMenuItem ;
+	}
+	
+	public JCustomCheckBoxMenuItem getRobotLabelMenuItem () {
+		return robotLabelMenuItem ;
+	}
+	
 	/**
 	 * Prepare class for deletion.
 	 */

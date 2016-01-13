@@ -206,7 +206,7 @@ implements Serializable {
                         // 2015-10-22 Added recordTask()
                         //taskManager.recordTask();
                     } catch (Exception e) {
-                        logger.log(Level.WARNING, "Could not get new action", e);
+                        logger.log(Level.WARNING, person + " could not get new action", e);
                         e.printStackTrace(System.err);
                     }
                 }
@@ -461,14 +461,13 @@ implements Serializable {
 	           weightSum += missionWeights;
 		}
 
-        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) ||
-                (Double.isInfinite(weightSum))) {
+        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {
         	try {
 				TimeUnit.MILLISECONDS.sleep(1000L);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-            throw new IllegalStateException("Mind.getNewAction(): weight sum: "
+            throw new IllegalStateException("Mind.getNewAction(): " + person + " weight sum: "
                     + weightSum);
         }
 
@@ -479,7 +478,10 @@ implements Serializable {
         if (tasks) {
             if (rand < taskWeights) {
                 Task newTask = taskManager.getNewTask();
-                taskManager.addTask(newTask);
+                if (newTask != null)
+                	taskManager.addTask(newTask);
+                else 
+                	logger.severe(person + " : newTask is null ");                
 
                 return;
             }

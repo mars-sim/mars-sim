@@ -1134,6 +1134,7 @@ implements Serializable {
      * Gets the key of the Sleep Habit Map with the highest weight
      * @return int[] the two best times in integer
      */
+    // 2015-12-05 Added getBestKeySleepHabit()
     public int[] getBestKeySleepHabit() {
     	int largest[] = {0,0};
 
@@ -1158,6 +1159,7 @@ implements Serializable {
      * @param millisols the time
      * @param updateType increase or reduce
      */
+    // 2015-12-05 Added updateValueSleepHabit()
     public void updateValueSleepHabit(int millisols, boolean updateType) {
     	// set HEAT_MAP_RESOLUTION of discrete sleep periods
     	millisols = (millisols / SLEEP_MAP_RESOLUTION )* SLEEP_MAP_RESOLUTION;

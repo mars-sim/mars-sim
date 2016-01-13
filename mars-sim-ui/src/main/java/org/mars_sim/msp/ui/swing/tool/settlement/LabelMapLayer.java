@@ -97,6 +97,7 @@ implements SettlementMapLayer {
 
 		// Draw all building labels.
 		if (mapPanel.isShowBuildingLabels()) {
+			//mapPanel.getSettlementTransparentPanel().getBuildingLabelMenuItem().setState(true);
 			drawBuildingLabels(g2d, settlement);
 		}
 

@@ -670,7 +670,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Create person and add to the unit manager.
-			Person person = new Person(name, gender, "Earth", settlement); // TODO:
+			Person person = new Person(name, gender, false, "Earth", settlement); // TODO:
 																			// read
 																			// from
 																			// file
@@ -781,7 +781,7 @@ public class UnitManager implements Serializable {
 						gender = PersonGender.MALE;
 					}
 
-					Person person = new Person(getNewName(UnitType.PERSON, null, gender, null), gender, "Earth",
+					Person person = new Person(getNewName(UnitType.PERSON, null, gender, null), gender, false, "Earth",
 							settlement); // TODO: read from file
 					addUnit(person);
 

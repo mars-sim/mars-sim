@@ -148,20 +148,20 @@ public class LivingAccommodations extends Function implements Serializable {
      * Adds a sleeper to a bed.
      * @throws BuildingException if beds are already in use.
      */
-    public void addSleeper(Person person) {
+    public void addSleeper(Person person, boolean isAGuest) {
     	sleepers++;
         if (sleepers > beds) {
-            sleepers = beds;
-            throw new IllegalStateException("No more unoccupied beds.");
+            //sleepers = beds;
+            sleepers--;
+            System.out.println("Living Accommodation : " + person + " could not find any unoccupied beds. #sleepers : " + sleepers + "  #beds : " + beds);
         }
         else {
-        	if (bedMap.containsKey(person))
-        		; // nothing
-        	else {
-        		Point2D bed = designateABed(person);
-        		if (bed == null)
-        			System.out.println("no more undesignated beds in " + building.getNickName() + " in " + settlement);
-        	}
+        	if (!isAGuest)
+	        	if (!bedMap.containsKey(person)) {
+	        		Point2D bed = designateABed(person);
+	        		if (bed == null)
+	        			System.out.println("Living Accommodation : " + person + " could not find any undesignated beds in " + building.getNickName() + " in " + settlement);
+	        	}
 
         }
     }
@@ -186,7 +186,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	            	bedMap.put(person, bed);
 	        		person.setBed(bed);
 	        		person.setQuarters(building);
-	            	System.out.println("LivingAccommodations : the bed at (" + bed.getX() + ", " + bed.getY() 
+	            	logger.fine("LivingAccommodations : the bed at (" + bed.getX() + ", " + bed.getY() 
 	            		+ ") in " + person.getQuarters() + " is now designated to " + person);
 	            	break;
 	            }

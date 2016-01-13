@@ -209,7 +209,7 @@ public class ConstructionWizard {
 
 	public void executeCase1(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		System.out.println("Case 1");
+		//System.out.println("Case 1");
 		ConstructionSite modifiedSite = null;
 	    ConstructionValues values = constructionManager.getConstructionValues();
         values.clearCache();
@@ -243,11 +243,9 @@ public class ConstructionWizard {
 	    }
 	    else {
 	        //endMission("New construction stage could not be determined.");
-	        System.out.println("New construction stage could not be determined.");
+	        System.out.println("ConstructionWizard : New construction stage could not be determined.");
 	    }
 
-		//Simulation.instance().getSimExecutor()
-	    //Simulation.instance().getClockScheduler()
 	    // 2015-12-28 Needed to get back to the original thread that started the BuildingConstructionMission instance
 	    Simulation.instance().getMasterClock().getClockListenerExecutor().submit(new SiteTask(
 				modifiedSite, stageInfo, constructionSkill, values, mission));
@@ -288,7 +286,7 @@ public class ConstructionWizard {
 
 	public void executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		System.out.println("Case 2");
+		//System.out.println("Case 2");
 		ConstructionSite modifiedSite = constructionSite;
 
 		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
@@ -301,7 +299,7 @@ public class ConstructionWizard {
 
 	public void executeCase3(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		System.out.println("Case 3");
+		//System.out.println("Case 3");
 		ConstructionSite modifiedSite = constructionSite;
 
 		modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
@@ -349,7 +347,8 @@ public class ConstructionWizard {
   		// set up the Settlement Map Tool to display the suggested location of the building
 		mapPanel.reCenter();
 		mapPanel.moveCenter(xLoc*scale, yLoc*scale);
-		mapPanel.setShowConstructionLabels(true);
+		//mapPanel.setShowConstructionLabels(true);
+		//mapPanel.getSettlementTransparentPanel().getConstructionLabelMenuItem().setSelected(true);
 
 		String header = null;
 		String title = null;
@@ -459,13 +458,15 @@ public class ConstructionWizard {
 		        		Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeYes);
 		        	    button.fire();
 		        	}
-		        	msg.set("(1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
+		        	msg.set("Notes: (1) Will default to \"Yes\" in " + num + " secs unless timer is cancelled."
 		        			+ " (2) To manually place a site, use Mouse/Keyboard Control.");
 				});
 			}
-			else
+			else {
+				msg.set("Note: To manually place a site, use Mouse/Keyboard Control.");
 				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
-
+			}
+			
 			Optional<ButtonType> result = null;
 
 			result = alert.showAndWait();

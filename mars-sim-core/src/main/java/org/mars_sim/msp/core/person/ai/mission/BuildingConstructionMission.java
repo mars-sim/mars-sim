@@ -137,7 +137,7 @@ implements Serializable {
             int constructionSkill = 0;
             if (startingMember instanceof Person) {
                 Person person = (Person) startingMember;
-                System.out.println("The starting member is " + person);
+                //logger.info("The starting member is " + person);
                 //person.setMission(this);
                 constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                 person.getMind().setMission(this);

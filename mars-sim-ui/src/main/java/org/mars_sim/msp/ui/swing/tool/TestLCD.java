@@ -14,21 +14,20 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
-
-import eu.hansolo.steelseries.extras.Led;
-import eu.hansolo.steelseries.gauges.DisplayMulti;
-import eu.hansolo.steelseries.gauges.DisplayRectangular;
-import eu.hansolo.steelseries.gauges.DisplaySingle;
-import eu.hansolo.steelseries.gauges.Lcd;
-import eu.hansolo.steelseries.gauges.DigitialRadial;
-import eu.hansolo.steelseries.gauges.Radial;
-import eu.hansolo.steelseries.tools.BackgroundColor;
-import eu.hansolo.steelseries.tools.ColorDef;
-import eu.hansolo.steelseries.tools.KnobStyle;
-import eu.hansolo.steelseries.tools.LcdColor;
-import eu.hansolo.steelseries.tools.LedColor;
-import eu.hansolo.steelseries.tools.Orientation;
-import eu.hansolo.steelseries.tools.TickmarkType;
+import org.mars_sim.msp.steelseries.extras.Led;
+import org.mars_sim.msp.steelseries.gauges.DigitialRadial;
+import org.mars_sim.msp.steelseries.gauges.DisplayMulti;
+import org.mars_sim.msp.steelseries.gauges.DisplayRectangular;
+import org.mars_sim.msp.steelseries.gauges.DisplaySingle;
+import org.mars_sim.msp.steelseries.gauges.Lcd;
+import org.mars_sim.msp.steelseries.gauges.Radial;
+import org.mars_sim.msp.steelseries.tools.BackgroundColor;
+import org.mars_sim.msp.steelseries.tools.ColorDef;
+import org.mars_sim.msp.steelseries.tools.KnobStyle;
+import org.mars_sim.msp.steelseries.tools.LcdColor;
+import org.mars_sim.msp.steelseries.tools.LedColor;
+import org.mars_sim.msp.steelseries.tools.Orientation;
+import org.mars_sim.msp.steelseries.tools.TickmarkType;
 
 
 public class TestLCD {

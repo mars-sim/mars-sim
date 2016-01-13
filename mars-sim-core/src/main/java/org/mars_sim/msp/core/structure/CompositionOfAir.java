@@ -195,10 +195,9 @@ public class CompositionOfAir implements Serializable {
 		int numBuildings = buildings.size();
 
 		if (numBuildings != numBuildingsCache) {
-			System.out.println("numBuildings : " + numBuildings
-					+ "   numBuildingsCache : " + numBuildingsCache);
+			//System.out.println("numBuildings : " + numBuildings + "   numBuildingsCache : " + numBuildingsCache);
 			//System.out.println("percentComposition.length : " + percentComposition.length);
-			System.out.println("partialPressure[0].length : " + partialPressure[0].length);
+			//System.out.println("partialPressure[0].length : " + partialPressure[0].length);
 			// increase the size of the vectors...
 			// initialize the new building with default values;
 			int diff = 	numBuildings - numBuildingsCache;
@@ -223,10 +222,10 @@ public class CompositionOfAir implements Serializable {
 		             .toArray((int length) -> new double[length + diff][]);
 */
 
-			System.out.println("new_partialPressure[0].length : " + new_partialPressure[0].length);
+			//System.out.println("new_partialPressure[0].length : " + new_partialPressure[0].length);
 
 			for (int j = numBuildingsCache ; j< numBuildings; j++) {
-				System.out.println("j : " + j);
+				//System.out.println("j : " + j);
 				new_totalPressure [j] = 1.0;
 
 				new_partialPressure [0][j] = 0.0005;

@@ -54,6 +54,8 @@ public class ChatBox extends BorderPane {
 
     protected Person personCache;
     protected Robot robotCache;
+    protected Settlement settlementCache;
+    
     protected Vehicle vehicle;
     protected Settlement settlement;
     protected Building building;
@@ -230,27 +232,102 @@ public class ChatBox extends BorderPane {
     		cache = (Robot) robotCache;
     		name = cache.getName();
     	}
+    	else if (settlementCache != null) {
+    		cache = (Settlement) settlementCache;
+    		name = cache.getName();
+    	}	
 
+    	// Case 0 : exit
     	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("quit")) {
     		// set personCache and robotCache to null so as to quit the conversation
-    		personCache = null; 
-	    	robotCache = null;
+
     		sys = name;
     		questionText = "You : have a nice sol. Bye!";
-    		responseText = "Bye! " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
+    		if (settlementCache != null)
+    			responseText = "Bye! " + System.lineSeparator() + " System : exit inquiry regarding " + name;
+    		else
+    			responseText = "Bye! " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
+    		
+    		personCache = null; 
+	    	robotCache = null;
+	    	settlementCache = null;
+    	}
+ 	
+    	// Case 1: ask about a settlement
+    	else if (settlementCache != null) {
+    		
+    		if (isInteger(text, 10) ) {
+    		    
+    	    	int num = Integer.parseUnsignedInt(text, 10);
+    	    	
+    	    	if (num == 0) {
+    	    		// exit
+    	    		sys = name;
+    	    		questionText = "You : exit asking about the " + name;
+    	    		responseText = "Bye! " + System.lineSeparator() + " System : exit the inquiry.";
+    	    		
+    	    		personCache = null; 
+    		    	robotCache = null;
+    		    	settlementCache = null;
+    		    }
+    	
+    	    	else if (num == 1) {
+    	    		questionText = "You : how many beds are there in total ? ";
+    	    		responseText = "The total number of beds is " + settlementCache.getPopulationCapacity();
+    	    		
+    	    	}
+
+    	    	else if (num == 2) {
+    	    		questionText = "You : how many beds that have already been designated to a person ? ";
+    	    		responseText = "There are " + settlementCache.getDesignatedBeds() + " designated beds. ";
+    	    		
+    	    	}
+
+    	    	else if (num == 3) {
+    	    		questionText = "You : how many beds that are currently NOT occupied ? ";
+    	    		responseText = "There are " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers()) + " unoccupied beds. ";
+    	    		
+    	    	}
+
+    	    	else if (num == 4) {
+    	    		questionText = "You : how many people are currently sleeping ? ";
+    	    		responseText = "There are " + settlementCache.getSleepers() + " people sleeping at this moment. ";
+    	    		
+    	    	}
+	
+    	    } else {
+        		// set personCache and robotCache to null only if you want to quit the conversation
+        		//personCache = null; 
+    	    	//robotCache = null;
+        		sys = name;
+        		questionText = "You : you were mumbling something about....";
+        		int rand0 = RandomUtil.getRandomInt(3);
+        		if (rand0 == 0)
+            		responseText = "could you repeat that?";
+        		else if (rand0 == 1)
+               		responseText = "pardon me?";
+        		else if (rand0 == 2)
+               		responseText = "what did you say?";
+            	else if (rand0 == 3)
+            		responseText = "I beg your pardon?"; 		
+        	}
+ 		
     	}
     	
-    	else if (isInteger(text, 10)) {
+    	// Case 2: ask to talk to a person or robot
+    	else if (isInteger(text, 10) && settlementCache == null) {
     
 	    	int num = Integer.parseUnsignedInt(text, 10);
 	    	
 	    	if (num == 0) {
 	    		// exit
-	    		personCache = null;
-		    	robotCache = null;
 	    		sys = name;
-	    		questionText = "You : exit";
-	    		responseText = "Bye. " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
+	    		questionText = "You : have a nice sol. Bye!";
+	    		responseText = "Bye! " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
+	    		
+	    		personCache = null; 
+		    	robotCache = null;
+		    	settlementCache = null;
 		    }
 	
 	    	else if (num == 1) {
@@ -258,12 +335,15 @@ public class ChatBox extends BorderPane {
 	    		LocationState state = cache.getLocationState();
 	    		if (state != null) {
 	    			if (personCache != null) {
-	    	    		
+	    				if (personCache.getBuildingLocation() != null)
+	    					responseText = "My current LocationState is " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
+	    				else {
+	    					responseText = "My current LocationState is " + state.getName();				
+	    				}
 	    	    	}
 	    	    	else if (robotCache != null) {
-	    	    		
-	    	    	}
-	    			responseText = "My current LocationState is " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
+	    	    		responseText = "My current LocationState is " + state.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
+	    	    	}	
 	    		}
 	    		else
 	    			responseText = "My current LocationState is " + state;
@@ -286,20 +366,28 @@ public class ChatBox extends BorderPane {
 	    			responseText = "I don't have my own private quarters.";
 	    		else {
 	    			if (personCache != null) {
-		    			if (personCache.getSettlement() != null)
-		    				responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
-		    						+ personCache.getQuarters() + " at " + personCache.getSettlement();
+	    				Settlement s1 = personCache.getSettlement();
+		    			if (s1 != null) {	
+		    				// check to see if a person is on a trading mission
+		    				Settlement s2 = personCache.getAssociatedSettlement();		    				
+		    				if (s2 != null) {
+		    					if (s1 == s2)
+		    						responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
+		    								+ personCache.getQuarters() + " at " + s1;
+		    					else
+				    				// yes, a person is on a trading mission
+		    						responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
+		    								+ personCache.getQuarters() + " at " + s2;
+		    				}
+		    			}
 		    			else
-		    				responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + " in " 
+		    				responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
 		    						+ personCache.getQuarters();
 	    	    	}
 	    	    	else if (robotCache != null) {
 	    	    		responseText = "I don't need one. My battery can be charged at any robotic station.";
 	    	    	}
-
-
-	    		}
-	    		
+	    		} 		
 	    	}
 	
 	    	else if (num == 4) {
@@ -694,6 +782,8 @@ public class ChatBox extends BorderPane {
 						if (s_name.equalsIgnoreCase(text)) {
 							//name = "System";
 							responseText = name + " : yes, what would like to know about \"" + s_name + "\" ?";
+							
+							settlementCache = settlement;
 							//System.out.println("matching settlement name " + s_name);
 							break;
 						}
@@ -734,7 +824,7 @@ public class ChatBox extends BorderPane {
             textArea.appendText("You : " + text + System.lineSeparator());
             Unit unit = null;
 
-            if (personCache == null && robotCache == null)
+            if (personCache == null && robotCache == null && settlementCache == null)
             	unit = parseText(text);
             else {
                 // if both personCache and robotCache are set to null, then quit the askQuestion() stage and go back to parseText() stage
@@ -746,6 +836,9 @@ public class ChatBox extends BorderPane {
             		personCache = (Person) unit;
             	else if (unit instanceof Robot)
             		robotCache = (Robot) unit;
+            	else if (unit instanceof Settlement)
+            		settlementCache = (Settlement) unit;
+            
 
 
         	// Checks if the text already exists

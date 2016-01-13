@@ -303,6 +303,34 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return result;
 	}
 
+	// 2016-01-12 Added getSleepers()
+	public int getSleepers() {
+		int result = 0;
+		Iterator<Building> i = buildingManager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			LivingAccommodations livingAccommodations = (LivingAccommodations) building
+					.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+			result += livingAccommodations.getSleepers();
+		}
+
+		return result;
+	}
+
+	// 2016-01-12 Added getDesignatedBeds()
+	public int getDesignatedBeds() {
+		int result = 0;
+		Iterator<Building> i = buildingManager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			LivingAccommodations livingAccommodations = (LivingAccommodations) building
+					.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+			result += livingAccommodations.getBedMap().size();
+		}
+
+		return result;
+	}
+	
 	/**
 	 * Gets the current population number of the settlement
 	 *

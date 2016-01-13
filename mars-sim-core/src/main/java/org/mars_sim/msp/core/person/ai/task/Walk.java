@@ -1013,8 +1013,12 @@ implements Serializable {
 
         }
         else if (robot != null) {
-            logger.finer(robot + " in exitingAirlockPhase()");
+        	
 
+        	// 2016-01-12 robot is NOT allowed to leave the settlement 
+        	endTask();
+/*        	
+            logger.finer(robot + " in exitingAirlockPhase()");
 
             // Check if robot has reached the outside of the airlock.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
@@ -1045,7 +1049,7 @@ implements Serializable {
                     endTask();
                 }
             }
-
+*/
         }
 
 

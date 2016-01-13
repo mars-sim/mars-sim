@@ -284,7 +284,7 @@ implements Transportable, Serializable {
 	}
 
 	@Override
-	public void performArrival() {
+	public synchronized void performArrival() {
 		// Create new settlement.
 		Settlement newSettlement = createNewSettlement();
 		//System.out.println("ArrivingSettlement.java : performArrival() : just done calling");
@@ -343,7 +343,7 @@ implements Transportable, Serializable {
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = PersonGender.MALE;
 			String birthplace = "Earth"; //TODO: randomize from list of countries/federations
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-			Person immigrant = new Person(immigrantName, gender, birthplace, newSettlement);
+			Person immigrant = new Person(immigrantName, gender, false, birthplace, newSettlement);
 			
 			// Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();

@@ -12,18 +12,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import eu.hansolo.steelseries.gauges.DigitalRadial;
-import eu.hansolo.steelseries.gauges.DigitialRadial;
-import eu.hansolo.steelseries.gauges.DisplayCircular;
-import eu.hansolo.steelseries.gauges.Radial;
-import eu.hansolo.steelseries.gauges.RadialQuarterN;
-import eu.hansolo.steelseries.tools.BackgroundColor;
-import eu.hansolo.steelseries.tools.ColorDef;
-import eu.hansolo.steelseries.tools.FrameDesign;
-import eu.hansolo.steelseries.tools.KnobStyle;
-import eu.hansolo.steelseries.tools.LcdColor;
-import eu.hansolo.steelseries.tools.LedColor;
-import eu.hansolo.steelseries.tools.PointerType;
+import org.mars_sim.msp.steelseries.gauges.DigitalRadial;
+import org.mars_sim.msp.steelseries.gauges.DigitialRadial;
+import org.mars_sim.msp.steelseries.gauges.DisplayCircular;
+import org.mars_sim.msp.steelseries.gauges.Radial;
+import org.mars_sim.msp.steelseries.gauges.RadialQuarterN;
+import org.mars_sim.msp.steelseries.tools.BackgroundColor;
+import org.mars_sim.msp.steelseries.tools.ColorDef;
+import org.mars_sim.msp.steelseries.tools.FrameDesign;
+import org.mars_sim.msp.steelseries.tools.KnobStyle;
+import org.mars_sim.msp.steelseries.tools.LcdColor;
+import org.mars_sim.msp.steelseries.tools.LedColor;
+import org.mars_sim.msp.steelseries.tools.PointerType;
 
 
 public class TestGauge {

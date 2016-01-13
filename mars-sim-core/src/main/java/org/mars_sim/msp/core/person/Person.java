@@ -68,10 +68,14 @@ implements VehicleOperator, MissionMember, Serializable {
     private final static double BASE_CAPACITY = 60D;
 
     // Data members
+    private boolean bornOnMars;
     /** True if person is dead and buried. */
     private boolean isBuried;
     /** The height of the person (in cm). */
-    private int height;
+    private double height;
+    /** The height of the person (in kg). */ 
+    private double weight;
+    
     /** Settlement X location (meters) from settlement center. */
     private double xLoc;
     /** Settlement Y location (meters) from settlement center. */
@@ -80,8 +84,13 @@ implements VehicleOperator, MissionMember, Serializable {
     private String birthplace;
     /** The person's name. */
     private String name;
+    
+    private String bloodType;
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
+
+    private Map<Integer, Gene> paternal_chromosome;
+    private Map<Integer, Gene> maternal_chromosome;
 
     private int[] emotional_states;
 
@@ -127,13 +136,14 @@ implements VehicleOperator, MissionMember, Serializable {
      * @param settlement {@link Settlement} the settlement the person is at
      * @throws Exception if no inhabitable building available at settlement.
      */
-    public Person(String name, PersonGender gender, String birthplace, Settlement settlement) {
+    public Person(String name, PersonGender gender, boolean bornOnMars, String birthplace, Settlement settlement) {
         // Use Unit constructor
         super(name, settlement.getCoordinates());
 		//logger.info("Person's constructor is in " + Thread.currentThread().getName() + " Thread");
 
         // Initialize data members
         this.name = name;
+        this.bornOnMars = bornOnMars;
         xLoc = 0D;
         yLoc = 0D;
         this.gender = gender;
@@ -166,18 +176,11 @@ implements VehicleOperator, MissionMember, Serializable {
         preference = new Preference(this);
         //preference.initializePreference();
 
-        // Set base mass of person from 58 to 76, peaking at 67.
-        setBaseMass(56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
-        // Set height of person as gender-correlated curve.
-        height = (this.gender == PersonGender.MALE ?
-                156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
-                    146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
-                );
-
-        // Set inventory total mass capacity based on the person's strength.
-        int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
-        getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
-
+        //2016-01-13 Set up chromosomes
+        paternal_chromosome = new HashMap<>();
+        maternal_chromosome = new HashMap<>();
+        setupChromosomeMap();
+        
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
         BuildingManager.addToRandomBuilding(this, settlement);
@@ -187,6 +190,158 @@ implements VehicleOperator, MissionMember, Serializable {
         assignReportingAuthority();
     }
 
+    
+    //2016-01-13 Added setupChromosomeMap()
+    public void setupChromosomeMap() {
+
+    	if (bornOnMars) {
+    		
+    	}
+    	else {
+
+    		// Biochemistry: id 0 - 19
+    		setupBloodType();
+			
+			// Physical Characteristics: id 20 - 39
+			setupHeight();
+			setupWeight();
+
+			// Personality traits: id 40 - 59
+			setupTrait();
+    	}
+		
+    }
+    
+    
+    // 2016-01-12 Added setupTrait()
+    public void setupTrait() {
+       	int ID = 40;
+    	boolean dominant = false;
+    	  	
+        // Set inventory total mass capacity based on the person's strength.
+        int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
+        getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
+        
+        
+    	int rand = RandomUtil.getRandomInt(100);
+    	
+		Gene trait1_G = new Gene(this, ID, "Trait 1", true, dominant, "Introvert", rand);
+		paternal_chromosome.put(ID, trait1_G);
+	
+    }
+    
+    // 2016-01-12 Added setupBloodType()
+    public void setupBloodType() {
+       	int ID = 1;
+    	boolean dominant = false;
+		
+		String dad_bloodType = null;
+		int rand = RandomUtil.getRandomInt(2);
+		if (rand == 0) {
+			dad_bloodType = "A";
+			dominant = true;
+		}
+		else if (rand == 1) {
+			dad_bloodType = "B";
+			dominant = true;
+		}
+		else if (rand == 2) {
+			dad_bloodType = "O";
+			dominant = false;
+		}	
+		
+		// Biochemistry 0 - 19
+		Gene dad_bloodType_G = new Gene(this, ID, "Blood Type", true, dominant, dad_bloodType, 0);	
+		paternal_chromosome.put(ID, dad_bloodType_G);
+
+		
+		String mom_bloodType = null;
+		rand = RandomUtil.getRandomInt(2);
+		if (rand == 0) {
+			mom_bloodType = "A";
+			dominant = true;
+		}
+		else if (rand == 1) {
+			mom_bloodType = "B";
+			dominant = true;
+		}
+		else if (rand == 2) {
+			mom_bloodType = "O";
+			dominant = false;
+		}	
+		
+		Gene mom_bloodType_G = new Gene(this, 0, "Blood Type", false, dominant, mom_bloodType, 0);
+		maternal_chromosome.put(0, mom_bloodType_G);
+
+		
+		if (dad_bloodType.equals("A") && mom_bloodType.equals("A"))
+			bloodType = "A";
+		else if (dad_bloodType.equals("A") && mom_bloodType.equals("B"))
+			bloodType = "AB";
+		else if (dad_bloodType.equals("A") && mom_bloodType.equals("O"))
+			bloodType = "A";
+		else if (dad_bloodType.equals("B") && mom_bloodType.equals("A"))
+			bloodType = "AB";
+		else if (dad_bloodType.equals("B") && mom_bloodType.equals("B"))
+			bloodType = "B";
+		else if (dad_bloodType.equals("B") && mom_bloodType.equals("O"))
+			bloodType = "B";
+		else if (dad_bloodType.equals("O") && mom_bloodType.equals("A"))
+			bloodType = "A";
+		else if (dad_bloodType.equals("O") && mom_bloodType.equals("B"))
+			bloodType = "B";
+		else if (dad_bloodType.equals("O") && mom_bloodType.equals("O"))
+			bloodType = "O";
+		
+    }
+    
+    // 2016-01-12 Added setupHeight()
+    public void setupHeight() {
+       	int ID = 20;
+    	boolean dominant = false;
+    	
+        double dad_height = (this.gender == PersonGender.MALE ?
+                156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
+                    146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
+                );       
+        // Set height of person as gender-correlated curve.
+        double mom_height = (this.gender == PersonGender.MALE ?
+                156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
+                    146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
+                );      
+	
+    	Gene dad_height_G = new Gene(this, ID, "Height", true, dominant, null, dad_height);
+    	paternal_chromosome.put(ID, dad_height_G);
+		
+    	Gene mom_height_G = new Gene(this, ID, "Height", false, dominant, null, mom_height);
+    	maternal_chromosome.put(ID, mom_height_G);
+    	
+        height = (dad_height + mom_height) / 2D;      
+
+    }
+    
+
+    // 2016-01-12 Added setupWeight()
+    public void setupWeight() {
+    	int ID = 21;
+
+    	boolean dominant = false;
+    	
+        double dad_weight = 56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D;   
+        double mom_weight = 56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D;
+	
+    	Gene dad_weight_G = new Gene(this, ID, "Weight", true, dominant, null, dad_weight);
+    	paternal_chromosome.put(ID, dad_weight_G);
+		
+    	Gene mom_weight_G = new Gene(this, ID, "Weight", false, dominant, null, mom_weight);
+    	maternal_chromosome.put(ID, mom_weight_G);
+    	
+    	// Set base mass of person from 58 to 76, peaking at 67 kg.
+        weight = (dad_weight + mom_weight) / 2D;   
+        setBaseMass(weight);
+
+    }
+    
     // 2015-10-05 added setupReportingAuthority()
     public void assignReportingAuthority() {
 
@@ -551,7 +706,7 @@ implements VehicleOperator, MissionMember, Serializable {
      * Returns the person's height in cm
      * @return the person's height
      */
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 

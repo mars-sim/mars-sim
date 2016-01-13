@@ -818,11 +818,12 @@ implements ClockListener {
 	 */
 	public void setShowBuildingLabels(boolean showLabels) {
 		this.showBuildingLabels = showLabels;
-
+		//if (showLabels) settlementTransparentPanel.getBuildingLabelMenuItem().setState(true);
+		//else settlementTransparentPanel.getBuildingLabelMenuItem().setState(false);
 		//paintDoubleBuffer();
 		repaint();
 	}
-
+	
 	/**
 	 * Checks if construction site labels should be displayed.
 	 * @return true if construction site labels should be displayed.
@@ -837,7 +838,8 @@ implements ClockListener {
 	 */
 	public void setShowConstructionLabels(boolean showLabels) {
 		this.showConstructionLabels = showLabels;
-
+		//if (showLabels) settlementTransparentPanel.getConstructionLabelMenuItem().setState(true);
+		//else settlementTransparentPanel.getConstructionLabelMenuItem().setState(false);
 		//paintDoubleBuffer();
 		repaint();
 	}
@@ -856,7 +858,8 @@ implements ClockListener {
 	 */
 	public void setShowPersonLabels(boolean showLabels) {
 		this.showPersonLabels = showLabels;
-
+		//if (showLabels) settlementTransparentPanel.getPersonLabelMenuItem().setState(true);
+		//else settlementTransparentPanel.getPersonLabelMenuItem().setState(false);
 		//paintDoubleBuffer();
 		repaint();
 	}
@@ -875,7 +878,8 @@ implements ClockListener {
 	 */
 	public void setShowRobotLabels(boolean showLabels) {
 		this.showRobotLabels = showLabels;
-
+		//if (showLabels) settlementTransparentPanel.getRobotLabelMenuItem().setState(true);
+		//else settlementTransparentPanel.getRobotLabelMenuItem().setState(false);
 		//paintDoubleBuffer();
 		repaint();
 	}
@@ -893,7 +897,8 @@ implements ClockListener {
 	 */
 	public void setShowVehicleLabels(boolean showLabels) {
 		this.showVehicleLabels = showLabels;
-
+		//if (showLabels) settlementTransparentPanel.getVehicleLabelMenuItem().setState(true);
+		//else settlementTransparentPanel.getVehicleLabelMenuItem().setState(false);
 		//paintDoubleBuffer();
 		repaint();
 	}

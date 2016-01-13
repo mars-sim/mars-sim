@@ -1249,8 +1249,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Wind Turbine" width="5.0" length="5.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>  The Wind Turbine power generator provides a completely non-polluting
-		form of renewable energy. Asides from typical maintenance tasks,
-		it is an integral part of a modular distributed renewable energy generation system complimenting
+		form of renewable energy and requires more mechanical maintenance due to dust cumulation.
+		It is an integral part of a modular distributed renewable energy generation system complimenting
 			the nuclear power generators for the power grid.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
