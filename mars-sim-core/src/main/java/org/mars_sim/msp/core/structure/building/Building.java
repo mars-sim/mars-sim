@@ -132,7 +132,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected double powerNeededForEVAheater;
 
 	boolean isImpactImminent = false;
-	boolean inTransport = true;
+	boolean inTransportMode = true;
 
 	protected String buildingType;
 	protected String nickName;
@@ -603,11 +603,11 @@ LocalBoundedObject, InsidePathLocation {
 	}
 
 	public boolean getInTransport() {
-		return inTransport;
+		return inTransportMode;
 	}
 
 	public void setInTransport(boolean value) {
-		inTransport = value;
+		inTransportMode = value;
 	}
 
 	/**
@@ -927,8 +927,10 @@ LocalBoundedObject, InsidePathLocation {
 		malfunctionManager.timePassing(time);
 
 		// If powered up, active time passing.
-		if (powerMode == PowerMode.FULL_POWER) malfunctionManager.activeTimePassing(time);
+		if (powerMode == PowerMode.FULL_POWER)
+			malfunctionManager.activeTimePassing(time);
 
+		inTransportMode = false;
 	}
 
 	public List<Function> getFunctions() {

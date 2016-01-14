@@ -466,7 +466,7 @@ public class ConstructionWizard {
 				msg.set("Note: To manually place a site, use Mouse/Keyboard Control.");
 				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
 			}
-			
+
 			Optional<ButtonType> result = null;
 
 			result = alert.showAndWait();
@@ -503,9 +503,11 @@ public class ConstructionWizard {
 		// FXUtilities.runAndWait(() -> {
 			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the site\n"
 				+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise\n"
-				+ "   Mouse Control :\t(1) Press & Hold right button to drag the site to a new location\n"
-				+ "\t\t\t\t(2) Release button to drop in place\n"
-				+ "\t\t\t\t(3) Hit \"Confirm Position\" button to proceed";
+				+ "   Mouse Control :\t(1) Press & Hold the left button on the Site\n"
+				+ "\t\t\t\t(2) Move the cursor to the destination\n"
+				+ "\t\t\t\t(3) Release button to drop it off\n"
+				+ "\t\t\t\t(4) Hit \"Confirm Position\" button to proceed";
+
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			//alert.setOnCloseRequest((event) -> event.consume());
 			//alert.initStyle(StageStyle.UNDECORATED);
@@ -553,18 +555,15 @@ public class ConstructionWizard {
 				    }
 
 					@Override
-					public void mouseEntered(MouseEvent arg0) {
-					}
+					public void mouseEntered(MouseEvent arg0) {}
 
 					@Override
-					public void mouseExited(MouseEvent arg0) {
-					}
+					public void mouseExited(MouseEvent arg0) {}
 
 					@Override
 					public void mousePressed(MouseEvent evt) {
-						if (evt.getButton() == MouseEvent.BUTTON3) {
+						if (evt.getButton() == MouseEvent.BUTTON1) {
 							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-
 							xLast = evt.getX();
 							yLast = evt.getY();
 						}
@@ -572,7 +571,10 @@ public class ConstructionWizard {
 
 					@Override
 					public void mouseReleased(MouseEvent evt) {
-						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						if (evt.getButton() == MouseEvent.BUTTON1) {
+							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+							moveConstructionSiteAt(site, evt.getX(), evt.getY());
+						}
 					}
 
 				});
@@ -598,18 +600,14 @@ public class ConstructionWizard {
 
 		@Override
 		public void mouseDragged(MouseEvent evt) {
-			if (evt.getButton() == MouseEvent.BUTTON3) {
-
+			if (evt.getButton() == MouseEvent.BUTTON1) {
 				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-
 				moveConstructionSiteAt(site, evt.getX(), evt.getY());
 			}
 		}
 
 		@Override
-		public void mouseMoved(MouseEvent e) {
-			// TODO Auto-generated method stub
-		}
+		public void mouseMoved(MouseEvent e) {}
 
 	}
 

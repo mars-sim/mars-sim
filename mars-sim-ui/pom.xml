@@ -201,11 +201,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>2.2.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sothawo</groupId>
-			<artifactId>mapjfx</artifactId>
-			<version>1.4.9</version>
-		</dependency>
-		<dependency>
 			<groupId>net.java.balloontip</groupId>
 			<artifactId>balloontip-examples</artifactId>
 			<version>1.2.4.1</version>
@@ -215,11 +210,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>reactfx</artifactId>
 			<version>2.0-M4u1</version>
 		</dependency>
-	    <dependency>
-	        <groupId>com.ui4j</groupId>
-	        <artifactId>ui4j-all</artifactId>
-	        <version>2.1.0</version>
-	    </dependency>
 	</dependencies>
 	<repositories>
 		<repository>

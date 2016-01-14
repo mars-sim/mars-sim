@@ -173,7 +173,7 @@ public class TransportWizard {
 					if (mainScene != null) {
 						unpause(previous0);
 					}
-					
+
 
 				});
 			} catch (InterruptedException | ExecutionException e) {
@@ -184,7 +184,7 @@ public class TransportWizard {
         else {
         	// non-javaFX mode
         	determineEachBuildingPosition(mgr);
-           	
+
         }
 
         // 2015-11-12 Deliver the rest of the supplies and add people.
@@ -282,15 +282,15 @@ public class TransportWizard {
     // 2015-12-07 Added determineEachBuildingPosition()
 	public synchronized void determineEachBuildingPosition(BuildingManager mgr) {
 		logger.info("determineEachBuildingPosition() is in " + Thread.currentThread().getName() + " Thread");
-		
+
         List<BuildingTemplate> orderedBuildings = mgr.getResupply().orderNewBuildings();
         //System.out.println("orderedBuildings.size() : " + orderedBuildings.size());
         //if (orderedBuildings.size() > 0) {
-        	
+
         	// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
     		//if (mainScene != null)
     		//	mainScene.pauseSimulation();
-    		
+
 	        // 2015-12-19 Added the use of ComparatorOfBuildingID()
 	        Collections.sort(orderedBuildings, new ComparatorOfBuildingID());
 	        Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
@@ -307,18 +307,18 @@ public class TransportWizard {
 	           checkTemplatePosition(mgr, template, true);
 	           // TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
 		    } // end of while (buildingI.hasNext())
-	
+
 	        Building building = mgr.getACopyOfBuildings().get(0);
 	        mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
-	        	        
+
 			//if (mainScene != null)
 			//	mainScene.unpauseSimulation();
         //} else {}
-        
+
         //mgr.getResupply().deliverOthers();
         //2016-01-12 Needed to get back to the original thread in Resupply.java that started the instance
         //Simulation.instance().getMasterClock().getClockListenerExecutor().submit(new DeliverOthersTask(mgr));
-        
+
 	}
 
 
@@ -335,7 +335,7 @@ public class TransportWizard {
 	        mgr.getResupply().deliverOthers();
 		}
     }
-	
+
 
     /**
      * Checks if the prescribed template position for a building has obstacles and if it does, gets a new template position
@@ -740,7 +740,7 @@ public class TransportWizard {
 				msg.set("Note: To manually place a building, use Mouse/Keyboard Control.");
 				alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeMouseKB);
 			}
-			
+
 			if (newBuilding.getBuildingType().equals("Hallway")
 					|| newBuilding.getBuildingType().equals("Tunnel")) {
 				Button button = (Button) alert.getDialogPane().lookupButton(buttonTypeMouseKB);
@@ -793,8 +793,10 @@ public class TransportWizard {
 		// FXUtilities.runAndWait(() -> {
 			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the building\n"
 					+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise\n"
-					+ "   Mouse Control :\t(1) Press & Hold right button to drag the building to a new location\n"					+ "\t\t\t\t(2) Release button to drop in place\n"
-					+ "\t\t\t\t(3) Hit \"Confirm Position\" button to proceed";
+					+ "   Mouse Control :\t(1) Press & Hold the left button on the building\n"
+					+ "\t\t\t\t(2) Move the cursor to the destination\n"
+					+ "\t\t\t\t(3) Release button to drop it off\n"
+					+ "\t\t\t\t(4) Hit \"Confirm Position\" button to proceed";
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			//alert.setOnCloseRequest((event) -> event.consume());
 			//alert.initStyle(StageStyle.UNDECORATED);
@@ -842,18 +844,15 @@ public class TransportWizard {
 				    }
 
 					@Override
-					public void mouseEntered(MouseEvent arg0) {
-					}
+					public void mouseEntered(MouseEvent arg0) {}
 
 					@Override
-					public void mouseExited(MouseEvent arg0) {
-					}
+					public void mouseExited(MouseEvent arg0) {}
 
 					@Override
 					public void mousePressed(MouseEvent evt) {
-						if (evt.getButton() == MouseEvent.BUTTON3) {
+						if (evt.getButton() == MouseEvent.BUTTON1) {
 							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-
 							xLast = evt.getX();
 							yLast = evt.getY();
 						}
@@ -861,8 +860,10 @@ public class TransportWizard {
 
 					@Override
 					public void mouseReleased(MouseEvent evt) {
-						mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
+						if (evt.getButton() == MouseEvent.BUTTON1) {
+							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+							moveNewBuildingAt(newBuilding, evt.getX(), evt.getY());
+						}
 					}
 
 				});
@@ -888,19 +889,14 @@ public class TransportWizard {
 
 		@Override
 		public void mouseDragged(MouseEvent evt) {
-			if (evt.getButton() == MouseEvent.BUTTON3) {
-
+			if (evt.getButton() == MouseEvent.BUTTON1) {
 				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-
 				moveNewBuildingAt(newBuilding, evt.getX(), evt.getY());
 			}
 		}
 
 		@Override
-		public void mouseMoved(MouseEvent evt) {
-
-		}
-
+		public void mouseMoved(MouseEvent evt) {}
 	}
 
 	// 2015-12-25 Added KeyboardDetection

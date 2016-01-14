@@ -197,7 +197,8 @@ implements ClockListener {
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				if (evt.getButton() == MouseEvent.BUTTON1) {
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+				if (evt.getButton() == MouseEvent.BUTTON3) {
 					// Set initial mouse drag position.
 					xLast = evt.getX();
 					yLast = evt.getY();
@@ -207,30 +208,49 @@ implements ClockListener {
 			@Override
 			public void mouseClicked(MouseEvent evt) {
 				// Select person if clicked on.
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
 				selectPersonAt(evt.getX(), evt.getY());
 				selectRobotAt(evt.getX(), evt.getY());
 			}
+		});
 
+		addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent evt) {
+				//System.out.println("mouseDragged()");
+				if (evt.getButton() == MouseEvent.BUTTON3) {
+					//System.out.println("button3");
+					setCursor(new Cursor(Cursor.MOVE_CURSOR));
+					// Move map center based on mouse drag difference.
+					double xDiff = evt.getX() - xLast;
+					double yDiff = evt.getY() - yLast;
+					moveCenter(xDiff, yDiff);
+					xLast = evt.getX();
+					yLast = evt.getY();
+				}
+			}
 		});
 
 		//2014-11-22 Added PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
 		    public void mousePressed(MouseEvent evt){
 				 if (evt.isPopupTrigger()) {
+					 setCursor(new Cursor(Cursor.HAND_CURSOR));
 					 repaint();
 					 doPop(evt);
 				 }
 		    }
 
 		    public void mouseReleased(MouseEvent evt){
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				if (evt.isPopupTrigger()) {
-					doPop(evt);
-				}
-
-				if (evt.getButton() == MouseEvent.BUTTON1) {
+		    	setCursor(new Cursor(Cursor.HAND_CURSOR));
+				//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				if (evt.getButton() == MouseEvent.BUTTON3) {
 					xLast = evt.getX();
 					yLast = evt.getY();
+				}
+
+				if (evt.isPopupTrigger()) {
+					doPop(evt);
 				}
 
 				repaint();
@@ -238,6 +258,7 @@ implements ClockListener {
 		    }
 		    //2015-01-14 Added vehicle detection
 		    private void doPop(final MouseEvent evt){
+		    	//System.out.println("doPop()");
 		    	final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
 		    	final Building building = selectBuildingAt(evt.getX(), evt.getY());
 		    	final Vehicle vehicle = selectVehicleAt(evt.getX(), evt.getY());
@@ -245,7 +266,7 @@ implements ClockListener {
 		    	final Robot robot = selectRobotAt(evt.getX(), evt.getY());
 
 		    	// if NO building is selected, do NOT call popup menu
-		    	if (site != null || building != null || vehicle != null || person != null) {
+		    	if (site != null || building != null || vehicle != null || person != null || robot != null) {
 
 	        		// 2015-01-16 Deconflict cases by the virtue of the if-else order below
     	        	// when one or more are detected
@@ -267,21 +288,6 @@ implements ClockListener {
 
 		addMouseListener(new PopClickListener());
 
-
-		addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent evt) {
-				if (evt.getButton() == MouseEvent.BUTTON1) {
-					setCursor(new Cursor(Cursor.MOVE_CURSOR));
-					// Move map center based on mouse drag difference.
-					double xDiff = evt.getX() - xLast;
-					double yDiff = evt.getY() - yLast;
-					moveCenter(xDiff, yDiff);
-					xLast = evt.getX();
-					yLast = evt.getY();
-				}
-			}
-		});
 	}
 
 	/**
@@ -374,7 +380,6 @@ implements ClockListener {
 	 * @param yDiff the Y axis pixels.
 	 */
 	public void moveCenter(double xDiff, double yDiff) {
-
 		xDiff /= scale;
 		yDiff /= scale;
 
@@ -463,15 +468,16 @@ implements ClockListener {
 	 */
 	// 2014-11-22 Added building selection
 	public Building selectBuildingAt(int xPixel, int yPixel) {
+		//System.out.println("selectBuildingAt()");
 		Point.Double clickPosition = convertToSettlementLocation(xPixel, yPixel);
 		Building selectedBuilding = null;
 
 		Iterator<Building> j = settlement.getBuildingManager().getACopyOfBuildings().iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-
+			//System.out.println("building : " + building.getNickName());
 			if (!building.getInTransport()) {
-
+				//System.out.println("building : " + building.getNickName());
 				double width = building.getWidth();
 				double length = building.getLength();
 				int facing = (int) building.getFacing();
@@ -509,11 +515,21 @@ implements ClockListener {
 					xx = length/2D;
 				}
 
-				double distanceX = Math.abs(x - clickPosition.getX());
-				double distanceY = Math.abs(y - clickPosition.getY());
+				double c_x = clickPosition.getX();
+				double c_y = clickPosition.getY();
 
-				if (distanceX <= xx && distanceY <= yy) {
+
+				double distanceX = Math.round((c_x - x)*100.0)/100.0; //Math.abs(x - c_x);
+				double distanceY = Math.round((c_y - y)*100.0)/100.0; //Math.abs(y - c_y);
+
+				if (Math.abs(distanceX) <= xx && Math.abs(distanceY) <= yy) {
 					selectedBuilding = building;
+
+					//System.out.println(" x : " + distanceX + "   y : " + distanceY);
+
+					settlementWindow.setXCoor(distanceX);
+					settlementWindow.setYCoor(distanceY);
+
 					break;
 				}
 			}
@@ -823,7 +839,7 @@ implements ClockListener {
 		//paintDoubleBuffer();
 		repaint();
 	}
-	
+
 	/**
 	 * Checks if construction site labels should be displayed.
 	 * @return true if construction site labels should be displayed.

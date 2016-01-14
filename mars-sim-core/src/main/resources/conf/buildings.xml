@@ -41,23 +41,23 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<administration population-support="2">
 				<activity>
 					<!-- temporarily using two of the activity-spots/chairs in the dining space for now -->
-					<activity-spot xloc="1.54" yloc="-2.34" />
-					<activity-spot xloc=".55" yloc="-2.34" />
+					<activity-spot xloc="-0.3" yloc="-3.15" />
+					<activity-spot xloc="-1.1" yloc="-2.98" />
 				</activity>
 			</administration>
 
 			<!-- The building has communication capabilities. -->
 			<communication>
 				<activity>
-					<activity-spot xloc="2.27" yloc="2.05" />
+					<activity-spot xloc="-0.8" yloc="-2.4" />
 				</activity>
 			</communication>
 
 			<!-- The building has facilities for cooking/preparing meals. -->
 			<cooking capacity="2">
 				<activity>
-					<activity-spot xloc="2.19" yloc="-1.76" />
-					<activity-spot xloc="2.3" yloc="-1.4" />
+					<activity-spot xloc="3.13" yloc="-1.02" />
+					<activity-spot xloc="2.8" yloc="-1.35" />
 				</activity>
 			</cooking>
 
@@ -65,9 +65,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<dining capacity="4">
 				<activity>
 					<activity-spot xloc="1.54" yloc="-2.34" />
-					<activity-spot xloc=".55" yloc="-2.34" />
+					<activity-spot xloc="0.55" yloc="-2.34" />
 					<activity-spot xloc="1.54" yloc="-3.18" />
-					<activity-spot xloc=".55" yloc="-3.18" />
+					<activity-spot xloc="0.55" yloc="-3.18" />
 				</activity>
 			</dining>
 
@@ -89,9 +89,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<food-production tech-level="2" concurrent-processes="3">
 				<activity>
-					<activity-spot xloc="2.0" yloc="-1.9" />
-					<activity-spot xloc="2.2" yloc="-1.7" />
-					<activity-spot xloc="2.4" yloc="-1.5" />
+					<activity-spot xloc="2.6" yloc="-1.0" />
+					<activity-spot xloc="1.8" yloc="-1.0" />
+					<activity-spot xloc="2.2" yloc="-1.4" />
 				</activity>
 			</food-production>
 
@@ -117,7 +117,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			     can support -->
 			<manufacture tech-level="2" concurrent-processes="1">
 				<activity>
-					<activity-spot xloc="-1.43" yloc="-1.87" />
+					<activity-spot xloc="-0.8" yloc="-1.25" />
 				</activity>
 			</manufacture>
 
@@ -126,8 +126,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- beds: the number of patients the infirmary can support. -->
 			<medical-care tech-level="4" beds="2">
 				<activity>
-					<activity-spot xloc="1.06" yloc="2.45" />
-					<activity-spot xloc="-.33" yloc="2.74" />
+					<activity-spot xloc="0.4" yloc="1.25" />
+					<activity-spot xloc="0.4" yloc="1.75" />
 				</activity>
 			</medical-care>
 
@@ -142,10 +142,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation population-support="4">
 				<activity>
-					<activity-spot xloc="1.54" yloc="-2.34" />
-					<activity-spot xloc=".55" yloc="-2.34" />
-					<activity-spot xloc="1.54" yloc="-3.18" />
-					<activity-spot xloc=".55" yloc="-3.18" />
+					<activity-spot xloc="2.74" yloc="1.6" />
+					<activity-spot xloc="2.45" yloc="2.0" />
+					<activity-spot xloc="1.95" yloc="1.74" />
+					<activity-spot xloc="1.5" yloc="1.25" />
 				</activity>
 			</recreation>
 
@@ -160,7 +160,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="MEDICINE" />
 				<activity>
-					<activity-spot xloc="-.99" yloc="-2.89" />
+					<activity-spot xloc="-1.72" yloc="-2.65" />
 				</activity>
 			</research>
 
@@ -216,7 +216,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
-					<activity-spot xloc="-1.82" yloc="-1.45" />
+					<activity-spot xloc="-2.6" yloc="-2.13" />
 				</activity>
 
 			</resource-processing>
@@ -283,8 +283,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<waste-specialty name="radiactive material" />
 			-->
 				<activity>
-					<activity-spot xloc="-1.6" yloc="-1.8" />
-					<activity-spot xloc="-1.6" yloc="-1.9" />
+					<activity-spot xloc="-2.85" yloc="2.3" />
+					<activity-spot xloc="-1.42" yloc="-2.0" />
 				</activity>
 			</waste-disposal>
 

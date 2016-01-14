@@ -53,12 +53,12 @@ extends ToolWindow {
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;
 
-    private String statusText;
-    private String populationText;
-	private String marsDateString, marsTimeString;
+	private double xCoor, yCoor;
+
+    private String statusText, populationText, marsDateString, marsTimeString;
 
     private JStatusBar statusBar;
-    private JLabel solLabel, popLabel;
+    private JLabel solLabel, popLabel, xLabel, yLabel;
     private JLabel timeLabel, dateLabel;
     private JPanel subPanel;
 
@@ -121,19 +121,25 @@ extends ToolWindow {
 	    //subPanel.setOpaque(false);
 	    //subPanel.setBackground(new Color(0,0,0,128));
 	    subPanel.setBackground(Color.BLACK);
-	
+
 		mapPanel = new SettlementMapPanel(desktop, this);
     	subPanel.add(mapPanel, BorderLayout.CENTER);
 		//mainPanel.add(mapPanel, BorderLayout.CENTER);
-	
+
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);
-        
+
         solLabel = new JLabel();
         popLabel = new JLabel();  //statusText + populationText;
+	    //xLabel = new JLabel();//.setText("x : " + xCoor);
+	    //yLabel = new JLabel();//.setText("y : " + yCoor);
+
         statusBar.setLeftComponent(solLabel, true);
-        statusBar.setLeftComponent(popLabel, false);
+        statusBar.setLeftComponent(popLabel, true);
+        //statusBar.setLeftComponent(xLabel, false);
+        //statusBar.setLeftComponent(yLabel, true);
+
         dateLabel = new JLabel();
         timeLabel = new JLabel();
         balloonToolTip.createBalloonTip(timeLabel, Msg.getString("SettlementWindow.timeLabel.tooltip")); //$NON-NLS-1$
@@ -147,7 +153,7 @@ extends ToolWindow {
 		marqueeTicker = new MarqueeTicker(this);
 		//marqueeTicker.setBackground(Color.BLACK);
     	subPanel.add(marqueeTicker, BorderLayout.SOUTH);
-    	
+
 		pack();
 		setVisible(true);
 
@@ -173,6 +179,8 @@ extends ToolWindow {
 				    // 2015-02-09 Added leftLabel
 				    solLabel.setText("Sol : " + statusText);
 				    popLabel.setText("Population : " + populationText);
+				    //xLabel.setText("x : " + xCoor);
+				    //yLabel.setText("y : " + yCoor);
 			    }
 			};
 		}
@@ -210,6 +218,14 @@ extends ToolWindow {
 	    subPanel.draw(g);
 	}
 */
+
+	public void setXCoor(double x) {
+		this.xCoor = x;
+	}
+
+	public void setYCoor(double y) {
+		this.yCoor = y;
+	}
 
 	@Override
 	public void destroy() {

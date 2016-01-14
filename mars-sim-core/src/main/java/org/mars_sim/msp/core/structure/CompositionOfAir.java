@@ -364,7 +364,6 @@ public class CompositionOfAir implements Serializable {
 */
 	}
 
-
 	public double [][] makeNewArray(double [][] array, int numBuildings) {
 		double [][] result = new double[numGases][numBuildings];
 
