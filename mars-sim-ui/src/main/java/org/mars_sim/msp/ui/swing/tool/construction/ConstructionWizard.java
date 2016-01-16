@@ -563,7 +563,7 @@ public class ConstructionWizard {
 					@Override
 					public void mousePressed(MouseEvent evt) {
 						if (evt.getButton() == MouseEvent.BUTTON1) {
-							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+							//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 							xLast = evt.getX();
 							yLast = evt.getY();
 						}
@@ -572,9 +572,10 @@ public class ConstructionWizard {
 					@Override
 					public void mouseReleased(MouseEvent evt) {
 						if (evt.getButton() == MouseEvent.BUTTON1) {
-							mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+							//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 							moveConstructionSiteAt(site, evt.getX(), evt.getY());
 						}
+						mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 					}
 
 				});

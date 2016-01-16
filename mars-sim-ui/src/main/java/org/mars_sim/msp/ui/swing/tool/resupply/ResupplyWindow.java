@@ -325,6 +325,14 @@ implements ListSelectionListener {
 		}
 	}
 
+	public IncomingListPanel getIncomingListPane() {
+		return incomingListPane;
+	}
+	
+	public void setModifyButton(boolean value) {
+		modifyButton.setEnabled(value);
+	}
+	
 	/**
 	 * Prepare this window for deletion.
 	 */

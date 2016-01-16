@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.resupply;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * An abstract panel for editing a transport item.
@@ -52,4 +53,5 @@ extends JPanel {
 	 * Creates the transport item with the editing panel information.
 	 */
 	public abstract boolean createTransportItem();
+
 }

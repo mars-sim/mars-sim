@@ -306,7 +306,7 @@ implements ClockListener, Serializable {
             managerExecutor.execute(scientificStudyManager);
 
             transportManager = new TransportManager();
-            managerExecutor.execute(transportManager);
+            //managerExecutor.execute(transportManager);
 
         }
 

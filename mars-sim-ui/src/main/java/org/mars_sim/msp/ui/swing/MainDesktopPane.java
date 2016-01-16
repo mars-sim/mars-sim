@@ -1381,6 +1381,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 				Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
 			}
+			else {
+				//mgr.getResupply();
+			}
 
 
 		} else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {

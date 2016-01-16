@@ -725,6 +725,7 @@ public class HelpGenerator {
 	 */
 	public static final void generateHtmlHelpFiles() {
 		logger.log(Level.INFO,"Starting to generate help files");
+		
 		HelpGenerator.generateVehicleDescriptions();
 		logger.log(Level.INFO,"generateVehicleDescriptions() is done");
 		HelpGenerator.generateResourceDescriptions();

@@ -1,18 +1,20 @@
 /**
  * Mars Simulation Project
  * ResupplyMissionEditingPanel.java
- * @version 3.07 2014-12-01
+ * @version 3.07 2016-01-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,26 +22,39 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
+import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
+import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -61,6 +76,9 @@ extends TransportItemEditingPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+	private String errorString = new String();
+	private boolean validation_result = true;
+	
 	private JComboBoxMW<Settlement> destinationCB;
 	private JRadioButton arrivalDateRB;
 	private JLabel arrivalDateTitleLabel;
@@ -80,16 +98,25 @@ extends TransportItemEditingPanel {
 	private JTable supplyTable;
 	private JButton removeSupplyButton;
 
+	private JLabel errorLabel;
+	
 	private Resupply resupply;
+	private NewTransportItemDialog newTransportItemDialog = null;
+	private ModifyTransportItemDialog modifyTransportItemDialog = null;
 	private ResupplyWindow resupplyWindow;
 	
+	private MarsClock marsCurrentTime;
+	
 	/** constructor. */
-	public ResupplyMissionEditingPanel(Resupply resupply, ResupplyWindow resupplyWindow) {
+	public ResupplyMissionEditingPanel(Resupply resupply, ResupplyWindow resupplyWindow, 
+			ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {
 		// User TransportItemEditingPanel constructor.
 		super(resupply);
 
 		// Initialize data members.
 		this.resupply = resupply;
+		this.newTransportItemDialog = newTransportItemDialog;
+		this.modifyTransportItemDialog = modifyTransportItemDialog;
 		this.resupplyWindow = resupplyWindow; 
 		
 
@@ -119,7 +146,7 @@ extends TransportItemEditingPanel {
 		destinationPane.add(destinationCB);
 
 		// Create arrival date pane.
-		JPanel arrivalDatePane = new JPanel(new GridLayout(2, 1, 10, 10));
+		JPanel arrivalDatePane = new JPanel(new GridLayout(3, 1, 10, 10));
 		arrivalDatePane.setBorder(new TitledBorder("Arrival Date"));
 		topEditPane.add(arrivalDatePane, BorderLayout.CENTER);
 
@@ -231,12 +258,23 @@ extends TransportItemEditingPanel {
 		solsTF.setHorizontalAlignment(JTextField.RIGHT);
 		solsTF.setEnabled(false);
 		timeUntilArrivalPane.add(solsTF);
-
+		// 2016-01-15 Implemented addChangeListener() to validate solsTF.
+		addChangeListener(solsTF, e -> validateSolsTF());
+		
 		// Create sol information label.
 		solInfoLabel = new JLabel("(668 Sols = 1 Martian Orbit)");
 		solInfoLabel.setEnabled(false);
 		timeUntilArrivalPane.add(solInfoLabel);
 
+		// 2016-01-14 Create error pane.
+		JPanel errorPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		arrivalDatePane.add(errorPane);//, BorderLayout.SOUTH);
+
+		// Create error label
+		errorLabel = new JLabel(new String());
+		errorLabel.setForeground(Color.RED);
+		errorPane.add(errorLabel);
+		
 		// Create immigrants panel.
 		JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		topEditPane.add(immigrantsPane, BorderLayout.SOUTH);
@@ -321,6 +359,7 @@ extends TransportItemEditingPanel {
 		monthCB.setEnabled(enable);
 		orbitLabel.setEnabled(enable);
 		orbitCB.setEnabled(enable);
+		errorLabel.setEnabled(!enable);
 	}
 
 	/**
@@ -477,25 +516,55 @@ extends TransportItemEditingPanel {
 	public boolean createTransportItem() {
 		// Create new resupply mission.
 		Settlement destination = (Settlement) destinationCB.getSelectedItem();
-		MarsClock arrivalDate = getArrivalDate();
-		Resupply newResupply = new Resupply(arrivalDate, destination);
-		populateResupplyMission(newResupply);
-		Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
-		return true;
+		MarsClock arrivalDate = null;
+		if (marsCurrentTime == null)
+			arrivalDate = getArrivalDate();
+		else
+			arrivalDate = marsCurrentTime;
+
+		if (!validation_result) 
+			return false;
+		
+		else {
+			Resupply newResupply = new Resupply(arrivalDate, destination);
+			modifyResupplyMission(newResupply, arrivalDate);
+			//boolean good = populateResupplyMission(newResupply);
+			//if (!good)
+			//	return false;
+			//else {
+			Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
+			return true;
+			//}
+		}
 	}
 
 	/**
 	 * Populates a resupply mission from the dialog info.
 	 * @param resupplyMission the resupply mission to populate.
 	 */
-	private void populateResupplyMission(Resupply resupplyMission) {
-
+	private boolean populateResupplyMission(Resupply resupplyMission) {
 		// Set destination settlement.
 		Settlement destination = (Settlement) destinationCB.getSelectedItem();
 		resupplyMission.setSettlement(destination);
-
 		// Set arrival date.
-		MarsClock arrivalDate = getArrivalDate();
+		MarsClock arrivalDate = null;
+		if (marsCurrentTime == null)
+			arrivalDate = getArrivalDate();
+		else
+			arrivalDate = marsCurrentTime;
+		
+		if (!validation_result) {
+			return false;
+		}
+		else {
+			modifyResupplyMission(resupplyMission, arrivalDate);
+			return true;
+		}
+	}
+	
+	// 2016-01-15 Added modifyResupplyMission()
+	private void modifyResupplyMission(Resupply resupplyMission, MarsClock arrivalDate) {
+		
 		resupplyMission.setArrivalDate(arrivalDate);
 
 		// Determine launch date.
@@ -628,6 +697,8 @@ extends TransportItemEditingPanel {
 			}
 		}
 		resupplyMission.setNewParts(newParts);
+		
+		//return true;
 	}
 
 	/**
@@ -751,10 +822,18 @@ extends TransportItemEditingPanel {
 	 * @return {@link MarsClock} arrival date.
 	 */
 	private MarsClock getArrivalDate() {
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		MarsClock result = (MarsClock) currentTime.clone();
+		//String errorString = new String();
+		errorString = null;
+		
+		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		//marsCurrentTime = (MarsClock) currentTime.clone();
 
 		if (arrivalDateRB.isSelected()) {
+			
+			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+			marsCurrentTime = (MarsClock) currentTime.clone();
+
+	
 			// Determine arrival date from arrival date combo boxes.
 			try {
 				int sol = solCB.getSelectedIndex() + 1;
@@ -767,31 +846,208 @@ extends TransportItemEditingPanel {
 						(orbit == currentTime.getOrbit())) {
 					millisols = currentTime.getMillisol();
 				}
-
-				result = new MarsClock(orbit, month, sol, millisols);
+				//validation_result = true;
+				marsCurrentTime = new MarsClock(orbit, month, sol, millisols);
 			}
 			catch (NumberFormatException e) {
 				e.printStackTrace(System.err);
 			}
 		}
+		
 		else if (timeUntilArrivalRB.isSelected()) {
-			// Determine arrival date from time until arrival text field.
-			try {
-				int solsDiff = Integer.parseInt(solsTF.getText());
-				if (solsDiff > 0) {
-					result.addTime(solsDiff * 1000D);					
-				}
-				// load 
-				
-				else {
-					result.addTime(currentTime.getMillisol());
-				}
+			// 2016-01-15 Implemented addChangeListener() to validate solsTF.
+			String timeArrivalString = solsTF.getText().trim();
+			if (timeArrivalString.isEmpty()) {
+				validation_result = false;
+				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
+				errorLabel.setText(errorString);
+				enableButton(false);
+				System.out.println("Invalid Sols. It cannot be empty.");
 			}
-			catch (NumberFormatException e) {
-				e.printStackTrace(System.err);
+			else {
+				//System.out.println("calling validateSolsTF()");
+				marsCurrentTime = validateSolsTF();
+			}		
+		}
+		return marsCurrentTime;
+	}
+	
+
+	// 2016-01-15 Implemented validateSolsTF()
+	public MarsClock validateSolsTF() { //String timeArrivalString) {
+		//System.out.println("running validateSolsTF()");
+		errorString = null;
+	
+		String timeArrivalString = solsTF.getText().trim();
+		if (timeArrivalString.isEmpty()) {
+			validation_result = false;
+			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
+			errorLabel.setText(errorString);
+			//marsCurrentTime = null;
+			enableButton(false);
+			System.out.println("Invalid entry in Sols. It cannot be empty.");
+		}
+		else {			
+			// Determine arrival date from time until arrival text field.
+			List<Integer> sols = new ArrayList<>();	
+			if (timeArrivalString.equals("-"))
+				timeArrivalString = "-1";
+			double timeArrival = Double.parseDouble(timeArrivalString);
+			int inputSols = (int)timeArrival;
+			//int inputSols = Integer.parseInt(solsTF.getText());
+			if (inputSols < 0D) {
+			//if (inputSols < 0D) {
+				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
+				errorLabel.setText(errorString);
+				//marsCurrentTime = null;
+				validation_result = false;
+				enableButton(false);
+				System.out.println("Invalid entry in Sols. It cannot be less than zero.");
+			}
+			else {
+				try {
+					boolean good = true;
+					// 2016-01-14 Added checking if that sol has already been taken
+					JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
+					ListModel<?> model = jList.getModel();
+	
+					for(int i=0; i < model.getSize(); i++){
+					     Transportable transportItem = (Transportable) model.getElementAt(i);  
+	
+						if ((transportItem != null)) {
+							if (transportItem instanceof Resupply) {
+								// Create modify resupply mission dialog.
+								Resupply newR = (Resupply) transportItem;								
+								if (!newR.equals(resupply)) {
+									MarsClock arrivingTime = newR.getArrivalDate();									
+									MarsClock nowTime = Simulation.instance().getMasterClock().getMarsClock();
+									int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, nowTime) / 1000D));									
+									sols.add(solsDiff);
+								}
+							}
+							else if (transportItem instanceof ArrivingSettlement) {
+								// Create modify arriving settlement dialog.
+								ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
+								MarsClock arrivingTime = settlement.getArrivalDate();							
+								MarsClock nowTime = Simulation.instance().getMasterClock().getMarsClock();
+								int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, nowTime) / 1000D));
+								sols.add(solsDiff);
+							}								
+						}					     
+					}
+					//System.out.println("sols.size() : " + sols.size() );
+					
+					Iterator<Integer> i = sols.iterator();
+					while (i.hasNext()) {
+						int sol = i.next();
+						if (sol == inputSols) {
+							System.out.println("Invalid entry in Sols since " + sol + " has already been used in another mission.");
+							good = false;
+							enableButton(false);
+							errorString = Msg.getString("ArrivingSettlementEditingPanel.error.duplicatedSol"); //$NON-NLS-1$
+							errorLabel.setText(errorString);							
+							validation_result = false;
+							break;
+						}
+					}
+					
+					if (good) {
+						errorString = null;
+						errorLabel.setText(errorString);
+						enableButton(true);	
+						System.out.println("Sols " + inputSols + " is good to go.");						
+						MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+						marsCurrentTime = (MarsClock) currentTime.clone();
+						if (inputSols == 0)
+							marsCurrentTime.addTime(marsCurrentTime.getMillisol());
+						else
+							marsCurrentTime.addTime(inputSols * 1000D);
+					}
+					
+				}
+				catch (NumberFormatException e) {
+					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidSols"); //$NON-NLS-1$
+					errorLabel.setText(errorString);
+					e.printStackTrace(System.err);
+					//marsCurrentTime = null;
+					validation_result = false;
+					enableButton(false);
+					System.out.println("Invalid entry for Sols ");
+				}
 			}
 		}
-
-		return result;
+		return marsCurrentTime;
 	}
+
+	
+	public void enableButton(boolean value) {
+		if (modifyTransportItemDialog != null)
+			modifyTransportItemDialog.setModifyButton(value);
+		else if (newTransportItemDialog != null)
+			newTransportItemDialog.setCreateButton(value);
+	}
+	
+	/**
+	 * Installs a listener to receive notification when the text of any
+	 * {@code JTextComponent} is changed. Internally, it installs a
+	 * {@link DocumentListener} on the text component's {@link Document},
+	 * and a {@link PropertyChangeListener} on the text component to detect
+	 * if the {@code Document} itself is replaced.
+	 * 
+	 * @param text any text component, such as a {@link JTextField}
+	 *        or {@link JTextArea}
+	 * @param changeListener a listener to receieve {@link ChangeEvent}s
+	 *        when the text is changed; the source object for the events
+	 *        will be the text component
+	 * @throws NullPointerException if either parameter is null
+	 */
+	// see http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
+	// 2016-01-15 Added addChangeListener()
+	public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+	    Objects.requireNonNull(text);
+	    Objects.requireNonNull(changeListener);
+	    DocumentListener dl = new DocumentListener() {
+	        private int lastChange = 0, lastNotifiedChange = 0;
+	
+	        @Override
+	        public void insertUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+	
+	        @Override
+	        public void removeUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+	
+	        public void changedUpdate(DocumentEvent e) {
+				//System.out.println("calling addChangeListener()'s changedUpdate()");
+	            lastChange++;
+	            SwingUtilities.invokeLater(() -> {
+	                if (lastNotifiedChange != lastChange) {
+	                    lastNotifiedChange = lastChange;
+	                    changeListener.stateChanged(new ChangeEvent(text));
+	                }
+	            });
+	        }
+	    };
+	    text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+	        Document d1 = (Document)e.getOldValue();
+	        Document d2 = (Document)e.getNewValue();
+	        if (d1 != null) d1.removeDocumentListener(dl);
+	        if (d2 != null) d2.addDocumentListener(dl);
+	        dl.changedUpdate(null);
+	    });
+	    Document d = text.getDocument();
+	    if (d != null) d.addDocumentListener(dl);
+	}
+
+	/**
+	 * Prepare this window for deletion.
+	 */
+	public void destroy() {
+		modifyTransportItemDialog = null;
+		newTransportItemDialog = null;
+	}
+
+	
 }

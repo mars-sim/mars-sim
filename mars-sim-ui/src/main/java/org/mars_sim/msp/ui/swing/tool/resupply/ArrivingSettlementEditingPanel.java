@@ -13,23 +13,37 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
+import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.networking.ClientRegistry;
@@ -50,6 +64,9 @@ extends TransportItemEditingPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+	private String errorString = new String();
+	private boolean validation_result = true;
+	
 	private JTextField nameTF;
 	private JComboBoxMW<String> templateCB;
 	private JRadioButton arrivalDateRB;
@@ -73,18 +90,25 @@ extends TransportItemEditingPanel {
 	private JTextField populationTF;
 	private JTextField numOfRobotsTF;
 
+	private ModifyTransportItemDialog modifyTransportItemDialog;
+	private ResupplyWindow resupplyWindow;
+	private NewTransportItemDialog newTransportItemDialog;
 	private ArrivingSettlement settlement;
 	private List<SettlementRegistry> settlementList;
+	
 
 	/**
 	 * Constructor.
 	 * @param settlement the arriving settlement to modify
 	 * or null if creating a new one.
 	 */
-	public ArrivingSettlementEditingPanel(ArrivingSettlement settlement) {
+	public ArrivingSettlementEditingPanel(ArrivingSettlement settlement, ResupplyWindow resupplyWindow, 
+			ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {
 		// User TransportItemEditingPanel constructor
 		super(settlement);
-
+		this.modifyTransportItemDialog = modifyTransportItemDialog;
+		this.resupplyWindow = resupplyWindow;
+		this.newTransportItemDialog = newTransportItemDialog;
 		// Initialize data members.
 		this.settlement = settlement;
 
@@ -347,7 +371,7 @@ extends TransportItemEditingPanel {
 		latitudeDirectionCB.addItem(deg + Msg.getString("direction.southShort")); //$NON-NLS-1$
 		if (settlement != null) {
 			String latString = settlement.getLandingLocation().getFormattedLatitudeString();
-			System.out.println("ArrivingSettlementEditingPanel : latString is " + latString);
+			//System.out.println("ArrivingSettlementEditingPanel : latString is " + latString);
 			// Remove last two characters from formatted latitude string.
 			String cleanLatString = latString.substring(0, latString.length() - 3);
 			latitudeTF.setText(cleanLatString);
@@ -385,7 +409,7 @@ extends TransportItemEditingPanel {
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.eastShort")); //$NON-NLS-1$
 		if (settlement != null) {
 			String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
-			System.out.println("ArrivingSettlementEditingPanel : lonString is " + lonString);
+			//System.out.println("ArrivingSettlementEditingPanel : lonString is " + lonString);
 			// Remove last three characters from formatted longitude string.
 			String cleanLonString = lonString.substring(0, lonString.length() - 3);
 			longitudeTF.setText(cleanLonString);
@@ -403,6 +427,7 @@ extends TransportItemEditingPanel {
 		errorLabel = new JLabel(new String());
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
+		
 	}
 
 	/**
@@ -479,38 +504,38 @@ extends TransportItemEditingPanel {
 	 * @return true if data is valid.
 	 */
 	private boolean validateData() {
-		boolean result = true;
-		String errorString = new String();
+		validation_result = true;
+		errorString = null;
 
 		// Validate settlement name.
 		if (nameTF.getText().trim().isEmpty()) {
-			result = false;
+			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noName"); //$NON-NLS-1$
 		}
 
 		// Validate template.
 		String templateName = (String) templateCB.getSelectedItem();
 		if ((templateName == null) || templateName.trim().isEmpty()) {
-			result = false;
+			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noTemplate"); //$NON-NLS-1$
 		}
 
 		// Validate population number.
 		String populationNumString = populationTF.getText();
 		if (populationNumString.trim().isEmpty()) {
-			result = false;
+			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noPopulation"); //$NON-NLS-1$
 		}
 		else {
 			try {
 				int popNum = Integer.parseInt(populationNumString);
 				if (popNum < 0) {
-					result = false;
+					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativePopulation"); //$NON-NLS-1$
 				}
 			}
 			catch (NumberFormatException e) {
-				result = false;
+				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidPopulation"); //$NON-NLS-1$
 			}
 		}
@@ -519,61 +544,62 @@ extends TransportItemEditingPanel {
 		// Validate numOfRobots.
 		String numOfRobotsString = numOfRobotsTF.getText();
 		if (numOfRobotsString.trim().isEmpty()) {
-			result = false;
+			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.nonumOfRobots"); //$NON-NLS-1$
 		}
 		else {
 			try {
 				int numOfRobots = Integer.parseInt(numOfRobotsString);
 				if (numOfRobots < 0) {
-					result = false;
+					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativenumOfRobots"); //$NON-NLS-1$
 				}
 			}
 			catch (NumberFormatException e) {
-				result = false;
+				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidnumOfRobots"); //$NON-NLS-1$
 			}
 		}
 
-		// Validate sols until arrival number.
+		errorLabel.setText(errorString);
+		
+		// 2016-01-15 Implemented addChangeListener() to validate solsTF.
 		if (solsTF.isEnabled()) {
 			String timeArrivalString = solsTF.getText().trim();
 			if (timeArrivalString.isEmpty()) {
-				result = false;
+				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
+				errorLabel.setText(errorString);
+				enableButton(false);
+				System.out.println("Invalid sol. It cannot be empty.");
 			}
 			else {
-				try {
-					double timeArrival = Double.parseDouble(timeArrivalString);
-					if (timeArrival < 0D) {
-						result = false;
-						errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
-					}
-				}
-				catch (NumberFormatException e) {
-					result = false;
-					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidSols"); //$NON-NLS-1$
-				}
+				//System.out.println("calling addChangeListener()");
+				addChangeListener(solsTF, e -> validateSolsTF(timeArrivalString));
+			
+				if (errorString == null)
+					validation_result = true;
+				else
+					validation_result = false;
 			}
 		}
 
 		// Validate latitude value.
 		String latitudeString = latitudeTF.getText().trim();
 		if (latitudeString.isEmpty()) {
-			result = false;
+			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLatitude"); //$NON-NLS-1$
 		}
 		else {
 			try {
 				Double latitudeValue = Double.parseDouble(latitudeString);
 				if ((latitudeValue < 0D) || (latitudeValue > 90D)) {
-					result = false;
+					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLatitude"); //$NON-NLS-1$
 				}
 			}
 			catch (NumberFormatException e) {
-				result = false;
+				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLatitude"); //$NON-NLS-1$
 			}
 		}
@@ -581,34 +607,178 @@ extends TransportItemEditingPanel {
 		// Validate longitude value.
 		String longitudeString = longitudeTF.getText().trim();
 		if (longitudeString.isEmpty()) {
-			result = false;
+			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLongitude"); //$NON-NLS-1$
 		}
 		else {
 			try {
 				Double longitudeValue = Double.parseDouble(longitudeString);
 				if ((longitudeValue < 0D) || (longitudeValue > 180D)) {
-					result = false;
+					validation_result = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLongitude"); //$NON-NLS-1$
 				}
 			}
 			catch (NumberFormatException e) {
-				result = false;
+				validation_result = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLongitude"); //$NON-NLS-1$
 			}
 		}
 
 		// Check that landing location is not at an existing settlement's location.
-		if (result && !validateLandingLocation()) {
-			result = false;
+		if (validation_result && !validateLandingLocation()) {
+			validation_result = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.collision"); //$NON-NLS-1$
 		}
 
 		errorLabel.setText(errorString);
 
-		return result;
+		return validation_result;
 	}
 
+	public void validateSolsTF(String timeArrivalString) {
+		//System.out.println("running validateSolsTF()");
+		errorString = null;
+	
+		try {
+
+			List<Integer> sols = new ArrayList<>();
+			if (timeArrivalString.equals("-"))
+				timeArrivalString = "-1";
+			double timeArrival = Double.parseDouble(timeArrivalString);
+			//int inputSols = Integer.parseInt(solsTF.getText());
+			if (timeArrival < 0D) {
+				validation_result = false;
+				enableButton(false);
+				System.out.println("Invalid entry! Sol must be greater than zero.");
+				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
+				errorLabel.setText(errorString);
+			}
+			else {
+				boolean good = true;
+				// 2016-01-14 Added checking if that sol has already been taken
+				JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
+				ListModel<?> model = jList.getModel();
+	     
+				for(int i=0; i < model.getSize(); i++){
+				     Transportable transportItem = (Transportable) model.getElementAt(i);  
+
+					if ((transportItem != null)) {
+						if (transportItem instanceof Resupply) {
+							// Create modify resupply mission dialog.
+							Resupply resupply = (Resupply) transportItem;
+							MarsClock arrivingTime = resupply.getArrivalDate();							
+							MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+							int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));									
+							sols.add(solsDiff);
+							
+						}
+						else if (transportItem instanceof ArrivingSettlement) {
+							// Create modify arriving settlement dialog.
+							ArrivingSettlement newS = (ArrivingSettlement) transportItem;
+							if (!newS.equals(settlement)) {
+								MarsClock arrivingTime = newS.getArrivalDate();										
+								MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+								int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));	
+								sols.add(solsDiff);
+							}
+						}								
+					}					     
+				}
+				
+				//System.out.println("sols.size() : " + sols.size() );
+				
+				Iterator<Integer> i = sols.iterator();
+				while (i.hasNext()) {
+					int sol = i.next();
+					if (sol == (int)timeArrival) {
+						System.out.println("Invalid entry! Sol " + sol + " has already been taken.");
+						validation_result = false;
+						good = false;
+						enableButton(false);
+						errorString = Msg.getString("ArrivingSettlementEditingPanel.error.duplicatedSol"); //$NON-NLS-1$
+						errorLabel.setText(errorString);
+						break;
+					}
+				}
+				
+				if (good) {
+					validation_result = true;
+					errorString = null;
+					errorLabel.setText(errorString);
+					enableButton(true);
+				}
+			}
+		}
+		catch (NumberFormatException e) {
+			validation_result = false;
+			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidSols"); //$NON-NLS-1$
+			enableButton(false);
+			errorLabel.setText(errorString);
+		}
+
+	}
+	
+	public void enableButton(boolean value) {
+		if (modifyTransportItemDialog != null)
+			modifyTransportItemDialog.setModifyButton(value);
+		else if (newTransportItemDialog != null)
+			newTransportItemDialog.setCreateButton(value);
+	}
+	
+	/**
+	 * Installs a listener to receive notification when the text of any
+	 * {@code JTextComponent} is changed. Internally, it installs a
+	 * {@link DocumentListener} on the text component's {@link Document},
+	 * and a {@link PropertyChangeListener} on the text component to detect
+	 * if the {@code Document} itself is replaced.
+	 * 
+	 * @param text any text component, such as a {@link JTextField}
+	 *        or {@link JTextArea}
+	 * @param changeListener a listener to receieve {@link ChangeEvent}s
+	 *        when the text is changed; the source object for the events
+	 *        will be the text component
+	 * @throws NullPointerException if either parameter is null
+	 */
+	// see http://stackoverflow.com/questions/3953208/value-change-listener-to-jtextfield
+	// 2016-01-15 Added addChangeListener()
+	public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+	    Objects.requireNonNull(text);
+	    Objects.requireNonNull(changeListener);
+	    DocumentListener dl = new DocumentListener() {
+	        private int lastChange = 0, lastNotifiedChange = 0;
+
+	        @Override
+	        public void insertUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+
+	        @Override
+	        public void removeUpdate(DocumentEvent e) {
+	            changedUpdate(e);
+	        }
+
+	        public void changedUpdate(DocumentEvent e) {
+				//System.out.println("calling addChangeListener()'s changedUpdate()");
+	            lastChange++;
+	            SwingUtilities.invokeLater(() -> {
+	                if (lastNotifiedChange != lastChange) {
+	                    lastNotifiedChange = lastChange;
+	                    changeListener.stateChanged(new ChangeEvent(text));
+	                }
+	            });
+	        }
+	    };
+	    text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+	        Document d1 = (Document)e.getOldValue();
+	        Document d2 = (Document)e.getNewValue();
+	        if (d1 != null) d1.removeDocumentListener(dl);
+	        if (d2 != null) d2.addDocumentListener(dl);
+	        dl.changedUpdate(null);
+	    });
+	    Document d = text.getDocument();
+	    if (d != null) d.addDocumentListener(dl);
+	}
+	
 	/**
 	 * Validate that landing location is not equal to an existing settlement's location.
 	 * @return true if good landing location.
@@ -818,5 +988,13 @@ extends TransportItemEditingPanel {
 		String fullLonString = longitudeTF.getText().trim() + longitudeDirectionCB.getSelectedItem();
 		//System.out.println("fullLonString : " + fullLonString);
 		return new Coordinates(fullLatString, fullLonString);
+	}
+	
+	/**
+	 * Prepare this window for deletion.
+	 */
+	public void destroy() {
+		modifyTransportItemDialog = null;
+		newTransportItemDialog = null;
 	}
 }

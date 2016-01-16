@@ -253,7 +253,6 @@ public class MainScene {
 
 		public void handle(KeyEvent t) {
 			if (t.getCode() == KeyCode.ESCAPE) {
-
 				boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
 				if (isOnPauseMode) {
 					unpauseSimulation();

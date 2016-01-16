@@ -60,7 +60,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
         super("New Transport Item");
         this.resupplyWindow = resupplyWindow;
 
-		setSize(500, 500);
+		setSize(560, 500);
 		
 		 // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -98,11 +98,11 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		mainEditingPanel.add(emptyPanel, DEFAULT_MESSAGE);
 
 		// Create resupply mission editing panel.
-		resupplyMissionPanel = new ResupplyMissionEditingPanel(null, resupplyWindow);
+		resupplyMissionPanel = new ResupplyMissionEditingPanel(null, resupplyWindow, null, this);
 		mainEditingPanel.add(resupplyMissionPanel, RESUPPLY_MISSION);
 
 		// Create arriving settlement editing panel.
-		arrivingSettlementPanel = new ArrivingSettlementEditingPanel(null);
+		arrivingSettlementPanel = new ArrivingSettlementEditingPanel(null, resupplyWindow, null, this);
 		mainEditingPanel.add(arrivingSettlementPanel, ARRIVING_SETTLEMENT);
 
 		// Create the button pane.
@@ -167,6 +167,10 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		}
 	}
 
+	public void setCreateButton(boolean value) {
+		createButton.setEnabled(value);
+	}
+	
 	/**
 	 * Create the new transport item and close the dialog.
 	 */

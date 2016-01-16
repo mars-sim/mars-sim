@@ -552,6 +552,7 @@ implements ClockListener {
 		pauseButton.setEnabled(value);
 		desktop.getMainScene().setEscapeEventHandler(value);
 	}
+		
 
 	/**
 	 * Prepare tool window for deletion.

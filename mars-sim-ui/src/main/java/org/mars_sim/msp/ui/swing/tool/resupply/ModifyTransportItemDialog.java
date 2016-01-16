@@ -35,6 +35,8 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	private TransportItemEditingPanel editingPanel;
 	private ResupplyWindow resupplyWindow;
 
+	private JButton modifyButton;
+	
 	/**
 	 * Constructor.
 	 * @param owner the owner of this dialog.
@@ -68,7 +70,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 
 		// Create modify button.
 		// 9/29/2014 by mkung: Changed button text from "Modify" to "Commit Changes"
-		JButton modifyButton = new JButton("Commit Changes");
+		modifyButton = new JButton("Commit Changes");
 		modifyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Modify transport item and close dialog.
@@ -106,10 +108,10 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		// Create editing panel.
 		editingPanel = null;
 		if (transportItem instanceof ArrivingSettlement) {
-			editingPanel = new ArrivingSettlementEditingPanel((ArrivingSettlement) transportItem);
+			editingPanel = new ArrivingSettlementEditingPanel((ArrivingSettlement) transportItem, resupplyWindow, this, null);
 		}
 		else if (transportItem instanceof Resupply) {
-			editingPanel = new ResupplyMissionEditingPanel((Resupply) transportItem, resupplyWindow);
+			editingPanel = new ResupplyMissionEditingPanel((Resupply) transportItem, resupplyWindow, this, null);
 		}
 		else {
 			throw new IllegalStateException("Transport item: " + transportItem + " is not valid.");
@@ -128,4 +130,9 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 			dispose();
 		}
 	}
+	
+	public void setModifyButton(boolean value) {
+		modifyButton.setEnabled(value);
+	}
+	
 }
