@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -56,11 +57,16 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 /**
  * f The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements Serializable, LifeSupportType {
+public class Settlement 
+extends Structure 
+implements Serializable, LifeSupportType, Objective {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -130,6 +136,19 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 	private boolean[] exposed = {false, false, false};
 
+	private ObjectiveType objectiveType;
+	
+	private String objectiveName;
+	
+	//private ObservableList<String> objectivesOList;
+	
+	private final String[] objArray = new String[]{
+			Msg.getString("ObjectiveType.crop")
+			, Msg.getString("ObjectiveType.manu")
+			, Msg.getString("ObjectiveType.research")
+			, Msg.getString("ObjectiveType.transportation")
+			, Msg.getString("ObjectiveType.trade")};
+	
 	//private int[] resourceArray = new int[9];
 	//private int[] solArray = new int[30];
 	//private double[] samplePointArray = new double[(int)1000/RECORDING_FREQUENCY];
@@ -232,6 +251,11 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 
 		clock = Simulation.instance().getMasterClock().getMarsClock();
 
+		
+		// 2016-01-16 Added setObjective()
+		//
+		objectiveName = Msg.getString("ObjectiveType.crop");
+		setObjective(ObjectiveType.CROP_FARM);
 
 	}
 
@@ -2544,6 +2568,27 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		return compositionOfAir;
 	}
 
+
+	@Override
+	public void setObjective(ObjectiveType objectiveType) {
+		//System.out.println(name + "'s objective is " + objectiveType.toString());
+		this.objectiveType = objectiveType;
+	}
+
+	@Override
+	public ObjectiveType getObjective() {
+		return objectiveType;
+	}
+	
+	//public ObservableList<String> getObjectivesOList() {
+	//	return objectivesOList;
+	//}
+
+	public String[] getObjArray() {
+		return objArray;
+	}
+	
+	
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -2580,5 +2625,6 @@ public class Settlement extends Structure implements Serializable, LifeSupportTy
 		}
 		scientificAchievement = null;
 	}
+
 
 }

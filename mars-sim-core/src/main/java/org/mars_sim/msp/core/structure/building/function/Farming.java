@@ -1,5 +1,5 @@
 /**
- * Mars Simulation Project
+* Mars Simulation Project
  * Farming.java
  * @version 3.08 2015-04-08
  * @author Scott Davis

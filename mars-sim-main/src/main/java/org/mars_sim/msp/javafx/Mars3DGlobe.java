@@ -49,8 +49,8 @@ public class Mars3DGlobe {
 
     // 2k maps
     Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
-    Image dImage = new Image(this.getClass().getResource("/maps/rgbmars-2k.jpg").toExternalForm());
-    //Image dImage = new Image(this.getClass().getResource("/maps/MarsV3-Shaded-2k.jpg").toExternalForm());
+    //Image dImage = new Image(this.getClass().getResource("/maps/rgbmars-2k.jpg").toExternalForm());
+    Image dImage = new Image(this.getClass().getResource("/maps/MarsV3-Shaded-2k.jpg").toExternalForm());
     Image nImage = new Image(this.getClass().getResource("/maps/MarsNormalMap-2K.png").toExternalForm()); //.toString());
     Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.png").toExternalForm()); //.toString());
 
@@ -133,7 +133,7 @@ public class Mars3DGlobe {
 
         final PhongMaterial material = new PhongMaterial();
         
-        material.setDiffuseColor(Color.WHITE);
+        material.setDiffuseColor(Color.WHITE);//TRANSPARENT);//BROWN);
         material.diffuseMapProperty().bind(Bindings.when(diffuseMap).then(dImage).otherwise((Image) null));
         
         material.setSpecularColor(Color.TRANSPARENT);
