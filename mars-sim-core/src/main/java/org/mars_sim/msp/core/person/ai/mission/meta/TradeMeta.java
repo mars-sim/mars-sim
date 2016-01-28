@@ -74,14 +74,14 @@ public class TradeMeta implements MetaMission {
 
 	@Override
 	public Mission constructInstance(Robot robot) {
-        return new Trade(robot);
+        return null;//new Trade(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
 	       
         double missionProbability = 0D;
-
+/*
         if (robot.getBotMind().getRobotJob() instanceof Deliverybot)
 	        // Check if robot is in a settlement.
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -91,7 +91,7 @@ public class TradeMeta implements MetaMission {
 	
 	            missionProbability = checkMission(settlement);
 	        }
-   
+*/   
         return missionProbability;
 	}
 	

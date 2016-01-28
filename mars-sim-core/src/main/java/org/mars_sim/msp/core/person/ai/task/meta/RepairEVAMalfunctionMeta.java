@@ -134,7 +134,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new RepairEVAMalfunction(robot);
+        return null;//new RepairEVAMalfunction(robot);
 	}
 
 	@Override

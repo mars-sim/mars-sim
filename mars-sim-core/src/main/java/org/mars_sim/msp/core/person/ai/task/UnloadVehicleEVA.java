@@ -106,8 +106,10 @@ implements Serializable {
         }
     }
     public UnloadVehicleEVA(Robot robot) {
-        // Use EVAOperation constructor.
+    	// Use EVAOperation constructor.
         super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+/*
+       
 
         settlement = robot.getSettlement();
 
@@ -137,6 +139,7 @@ implements Serializable {
         else {
             endTask();
         }
+*/        
     }
     /**
      * Constructor

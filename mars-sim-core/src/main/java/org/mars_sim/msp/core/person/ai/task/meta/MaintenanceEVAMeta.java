@@ -138,7 +138,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new MaintenanceEVA(robot);
+        return null;//new MaintenanceEVA(robot);
 	}
 
 	@Override

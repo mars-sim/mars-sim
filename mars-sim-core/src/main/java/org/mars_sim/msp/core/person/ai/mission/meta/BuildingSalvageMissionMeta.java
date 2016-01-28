@@ -117,14 +117,14 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
 	@Override
 	public Mission constructInstance(Robot robot) {
-        return new BuildingSalvageMission(robot);
+        return null;//new BuildingSalvageMission(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
 
         double result = 0D;
-
+/*
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot)
 
 	        // Check if robot is in a settlement.
@@ -133,21 +133,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
 	            // Check if available light utility vehicles.
 	            boolean reservableLUV = BuildingSalvageMission.isLUVAvailable(settlement);
-	/*
-	            // Check if enough available people at settlement for mission.
-	            int availablePeopleNum = 0;
-	            Iterator<Robot> i = settlement.getInhabitants().iterator();
-	            while (i.hasNext()) {
-	                Person member = i.next();
-	                boolean noMission = !member.getMind().hasActiveMission();
-	                boolean isFit = !member.getPhysicalCondition()
-	                        .hasSeriousMedicalProblems();
-	                if (noMission && isFit) {
-	                    availablePeopleNum++;
-	                }
-	            }
-	            boolean enoughPeople = (availablePeopleNum >= BuildingSalvageMission.MIN_PEOPLE);
-	  */
+	
 	            // No construction until after the first ten sols of the simulation.
 	            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
 	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -182,7 +168,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
 
 	        }
-
+*/
         return result;
     }
 }

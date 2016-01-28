@@ -44,7 +44,7 @@ public class TravelToSettlementMeta implements MetaMission {
 
     @Override
     public Mission constructInstance(Robot robot) {
-        return new TravelToSettlement(robot);
+        return null;//new TravelToSettlement(robot);
     }
     
     @Override
@@ -74,7 +74,7 @@ public class TravelToSettlementMeta implements MetaMission {
     public double getProbability(Robot robot) {
         
         double missionProbability = 0D;
-
+/*
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check if mission is possible for robot based on their
@@ -83,7 +83,7 @@ public class TravelToSettlementMeta implements MetaMission {
 
             getMission(settlement, robot);
         }
-        
+*/        
         return missionProbability;
     }
     

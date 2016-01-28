@@ -133,7 +133,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
 
 	@Override
 	public Mission constructInstance(Robot robot) {
-        return new BuildingConstructionMission(robot);
+        return null;//new BuildingConstructionMission(robot);
 	}
 
 	@Override

@@ -117,14 +117,14 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new SalvageBuilding(robot);
+        return null;//new SalvageBuilding(robot);
 	}
 
 	@Override
 	public double getProbability(Robot robot) {
 
         double result = 0D;
-
+/*
         if (robot.getBotMind().getRobotJob() instanceof Constructionbot) {
 
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -157,6 +157,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
             }
 
         }
+*/        
         return result;
     }
 }

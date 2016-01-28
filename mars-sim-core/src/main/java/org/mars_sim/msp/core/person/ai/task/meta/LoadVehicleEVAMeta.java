@@ -127,7 +127,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-		return new LoadVehicleEVA(robot);
+		return null;//new LoadVehicleEVA(robot);
 	}
 
 	@Override
