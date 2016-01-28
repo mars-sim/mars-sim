@@ -136,7 +136,7 @@ public class MarsNode {
 	
 	//2015-11-10 Added createChatBox()
 	public void createChatBox() {
-		ChatBox cb = new ChatBox();
+		ChatBox cb = new ChatBox(mainScene);
     	
 		TextArea ta = cb.getTextArea();
 		ta.setTooltip(new Tooltip ("Voice chatters from settlement's Comm Nets"));

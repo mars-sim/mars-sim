@@ -60,7 +60,8 @@ public class ChatBox extends BorderPane {
     protected Settlement settlement;
     protected Building building;
     protected Equipment equipment;
-
+    protected MainScene mainScene;
+    
     protected final TextArea textArea = new TextArea();
     //protected final TextField textField = new TextField();
     protected final AutoFillTextBox autoFillTextBox;
@@ -81,14 +82,22 @@ public class ChatBox extends BorderPane {
     /**
      * Constructor for ChatBox
      */
-    public ChatBox() {
-    	
+    public ChatBox(MainScene mainScene) {
+    	this.mainScene = mainScene;
     	// 2016-01-01 Added autoCompleteData
     	ObservableList<String> autoCompleteData = createAutoCompleteData();
         
         Label titleLabel = new Label("   MarsNet Chat Box");
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );");
-
+        int theme = mainScene.getTheme();
+        if (theme == 6)
+        	titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );");
+        else if (theme == 7)
+            titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );");
+        else 
+            titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );");
+        
+        	
+        
         textArea.setEditable(false);
         textArea.setWrapText(true);
         textArea.setStyle("-fx-font: 11pt 'Corbel';");
@@ -629,6 +638,42 @@ public class ChatBox extends BorderPane {
     		proceed = true;
     	}
 
+    	else if (text.equalsIgnoreCase("\\h")
+    			|| text.equalsIgnoreCase("/h")
+    			|| text.equalsIgnoreCase("h")
+    			|| text.equalsIgnoreCase("help")
+    			|| text.equalsIgnoreCase("/help") 
+    			|| text.equalsIgnoreCase("\\help")
+    			|| text.equals("\\?")
+    			|| text.equals("?")
+    			|| text.equals("/?")
+    			) {
+
+    		responseText = name + " : (1) type in the name of a person/bot/settlement. (2) ask a pre-defined question by entering a number (1 to 15).";
+    		//proceed = true; 		
+    		
+    	}
+    	
+     	else if (text.equalsIgnoreCase("quit")
+    			|| text.equalsIgnoreCase("/quit") 
+    			|| text.equalsIgnoreCase("\\quit")
+    			|| text.equalsIgnoreCase("\\q")
+    			//|| text.equalsIgnoreCase("q")
+    			|| text.equalsIgnoreCase("/q")
+    			|| text.equalsIgnoreCase("/exit") 
+    			|| text.equalsIgnoreCase("\\exit")
+    			|| text.equalsIgnoreCase("\\x")
+    			//|| text.equalsIgnoreCase("x")
+    			|| text.equalsIgnoreCase("/x")
+
+    			) {
+
+    		responseText = name + " : Bye! ";
+    		//proceed = true; 		
+            mainScene.getFlyout().dismiss();
+
+    		
+    	}
     	else if (len >= 2 && text.substring(0,2).equalsIgnoreCase("hi")) {
 
     		if (len > 2) {
@@ -796,6 +841,13 @@ public class ChatBox extends BorderPane {
 						else
 				    		responseText = name + " : I do not recognize anyone or any settlements by \"" + text + "\"." ;
 
+						
+						// check vehicle names
+						
+						
+						// check commander's name
+						
+						
 					}
 		    	}
 		    	else

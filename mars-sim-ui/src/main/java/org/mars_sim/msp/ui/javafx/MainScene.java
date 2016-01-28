@@ -680,7 +680,7 @@ public class MainScene {
     public Flyout createFlyout() {
         //marsNetButton = new ToggleButton(" MarsNet ");
         marsNetButton = new MaterialDesignToggleButton(" MarsNet ");
-        Flyout f = new Flyout(marsNetButton, createChatBox());
+        flyout = new Flyout(marsNetButton, createChatBox());
         marsNetButton.setId("marsNetButton");
         marsNetButton.setTooltip(new Tooltip ("Open/Close MarsNet Chat Box"));
         marsNetButton.setPadding(new Insets(5, 5, 5, 5));
@@ -692,7 +692,11 @@ public class MainScene {
             }
         });
 
-        return f;
+        return flyout;
+    }
+    
+    public Flyout getFlyout() {
+    	return flyout;
     }
 
     /*
@@ -701,7 +705,7 @@ public class MainScene {
      */
     //2015-11-11 Added createChatBox()
   	public StackPane createChatBox() {
-  		cb = new ChatBox();
+  		cb = new ChatBox(this);
         cb.getAutoFillTextBox().getTextbox().requestFocus();
   		StackPane pane = new StackPane(cb);
   		pane.setPadding(new Insets(0, 0, 0, 0));
@@ -741,16 +745,17 @@ public class MainScene {
 				com.sun.management.OperatingSystemMXBean.class);
 
 		statusBar.getRightItems().add(new Separator(VERTICAL));
-		cpuBtn = new Button(" CPU ");
-		cpuBtn.setTooltip(new Tooltip(" % CPU Usage"));
+		//cpuBtn = new Button();//" CPU ");
+		//cpuBtn.setTooltip(new Tooltip(" % CPU Usage"));
 		//cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//cpuBtn.setTextFill(Color.ORANGE);
 		//statusBar.getRightItems().add(new Separator(VERTICAL));
-		statusBar.getRightItems().add(cpuBtn);
-		statusBar.getRightItems().add(new Separator(VERTICAL));
+		//statusBar.getRightItems().add(cpuBtn);
+		//statusBar.getRightItems().add(new Separator(VERTICAL));
 
 		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		processCpuLoadText = new Text(" " + twoDigitFormat.format(processCpuLoad) + " % ");
+		processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		//cpuBtn.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
 		//processCpuLoadText.setFill(Color.GREY);
 		statusBar.getRightItems().add(processCpuLoadText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
@@ -763,11 +768,11 @@ public class MainScene {
 
 
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-		memBtn = new Button(" Memory ");
+		//memBtn = new Button();//" Memory ");
 		//memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
 		//memBtn.setTextFill(Color.ORANGE);
-		memBtn.setTooltip(new Tooltip(" Memory used out of " + memMax + " MB designated"));
-		statusBar.getRightItems().add(memBtn);
+		//memBtn.setTooltip(new Tooltip(" Memory used out of " + memMax + " MB designated"));
+		//statusBar.getRightItems().add(memBtn);
 
 		//memMaxText = new Text(" Designated : " + memMax + " MB ");
 		//memMaxText.setFill(Color.GREY);
@@ -776,9 +781,12 @@ public class MainScene {
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
-		memUsedText = new Text(" " + memUsed + " MB ");
+		memUsedText = new Text(" Memory : " + memUsed + " MB ");
 		memUsedText.setId("mem-text");
-		// memUsedText.setStyle("-fx-text-inner-color: orange;");
+		//memBtn
+		memUsedText.setText(" Memory : " + memUsed + " MB ");
+		
+		//memUsedText.setStyle("-fx-text-inner-color: orange;");
 		//memUsedText.setFill(Color.GREY);
 		statusBar.getRightItems().add(memUsedText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
@@ -792,16 +800,18 @@ public class MainScene {
 			throw new IllegalStateException("earthclock is null");
 		}
 
-		clkBtn = new Button(" Earth Time ");
-		clkBtn.setTooltip(new Tooltip("Simulation begins at 2043-Sep-30 00:00:00 (UT)"));
+		//clkBtn = new Button(" Earth Time ");
+		//clkBtn.setTooltip(new Tooltip("Simulation begins at 2043-Sep-30 00:00:00 (UT)"));
 		//clkBtn.setTextFill(Color.ORANGE);
 		//clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
-		statusBar.getRightItems().add(clkBtn);
+		//statusBar.getRightItems().add(clkBtn);
 
 		timeText = new Text(" " + timeStamp + "  ");
 		// timeText.setStyle("-fx-text-inner-color: orange;");
-		timeText.setId("time-text");
+		//timeText.setId("time-text");
 		//timeText.setFill(Color.GREY);
+		//clkBtn
+		timeText.setText(" Earth Time : " + timeStamp + "  ");
 		statusBar.getRightItems().add(timeText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 
@@ -868,20 +878,25 @@ public class MainScene {
 		// catch (Exception ee) {
 		// ee.printStackTrace(System.err);
 		// }
-		timeText.setText(" " + t + "  ");
-		// timeText.setStyle("-fx-text-inner-color: orange;");
+		//timeText.setText(" " + t + "  ");
+		//clkBtn
+		timeText.setText(" Earth Time : " + t + " ");
+		timeText.setStyle("-fx-text-inner-color: orange;");
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
 		// int mem = ( memUsedCache + memUsed ) /2;
 		if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
-			memUsedText.setText(" " + memUsed + " MB ");
-			// memUsedText.setStyle("-fx-text-inner-color: orange;");
+			memUsedText.setText(" Memory : " + memUsed + " MB ");
+			//memBtn.setText(" Memory : " + memUsed + " MB ");
+			memUsedText.setStyle("-fx-text-inner-color: orange;");
 		}
 		memUsedCache = memUsed;
 
 		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		processCpuLoadText.setText(" " + twoDigitFormat.format(processCpuLoad) + " % ");
+		//processCpuLoadText.setText(" " + twoDigitFormat.format(processCpuLoad) + " % ");
+		//cpuBtn
+		processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
 		//processCpuLoadText.setFill(Color.GREY);
 
 		//systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
