@@ -361,6 +361,10 @@ public class CrewEditorFX {
         //stage.setResizable(true);
  	   	stage.setFullScreen(false);
         stage.setTitle(TITLE);
+        
+        //2016-02-07 Added calling setMonitor()
+        scenarioConfigEditorFX.getMainMenu().setMonitor(stage);
+ 	   
         stage.show();
 
     	stage.setOnCloseRequest(e -> {
@@ -788,7 +792,11 @@ public class CrewEditorFX {
                             0,
                             background
                     );
+                    
+                    //2016-02-07 Added calling setMonitor()
+                    scenarioConfigEditorFX.getMainMenu().setMonitor(stage);
                     stage.show();
+                    
                 }));
                 pause.play();
             }

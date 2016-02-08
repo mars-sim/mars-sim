@@ -41,6 +41,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;
@@ -69,6 +70,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -83,6 +85,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ProgressIndicator;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 
 import org.controlsfx.control.MaskerPane;
 import org.mars_sim.msp.core.Simulation;
@@ -91,6 +94,7 @@ import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTas
 import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
 
 /*
@@ -270,6 +274,10 @@ public class MainMenu {
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
        //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        stage.setScene(mainMenuScene);
+       
+       //2016-02-07 Added calling setMonitor()
+       mainMenu.setMonitor(stage);
+	   
        stage.show();
 
        createProgressCircle();
@@ -306,6 +314,7 @@ public class MainMenu {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 	   stage.setIconified(true);
 	   stage.hide();
+
 	   // creates a mainScene instance
 	   mainScene = new MainScene(stage);
 	   // goes to scenario config editor
@@ -320,6 +329,10 @@ public class MainMenu {
 		Platform.runLater(() -> {
 		//	mainMenuScene.setCursor(Cursor.WAIT);
 			// TODO: the ring won't turn after a couple of seconds
+
+			//2016-02-07 Added calling setMonitor()
+			setMonitor(circleStage);
+		       
 			circleStage.show();
 			circleStage.requestFocus();
 		});
@@ -441,6 +454,10 @@ public class MainMenu {
 	   mainScene.openInitialWindows();
 
 	   stage.setIconified(false);
+	   
+       //2016-02-07 Added calling setMonitor()
+       mainMenu.setMonitor(stage);
+       
 	   stage.show();
 
 	   Platform.runLater(() -> {
@@ -548,11 +565,50 @@ public class MainMenu {
 		scene.setFill(Color.TRANSPARENT);
 		circleStage.initStyle (StageStyle.TRANSPARENT);
 		circleStage.setScene(scene);
+		
+		//2016-02-07 Added calling setMonitor()
+		setMonitor(circleStage);
         circleStage.show();
 
         //return indicator;
 	}
 
+	public void chooseScreen(int num) {
+		
+		ObservableList<Screen> screens = Screen.getScreens();//.getScreensForRectangle(xPos, yPos, 1, 1); 
+    	Screen currentScreen = screens.get(num);
+		Rectangle2D rect = currentScreen.getVisualBounds();
+		
+		Screen primaryScreen = Screen.getPrimary();
+	}
+	
+	public void setMonitor(Stage stage) {
+		// Issue: can't run the MSP on the "active" monitor.
+		// by default MSP runs on the primary monitor (aka monitor 1 as reported by windows os) only.
+		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
+
+		StartUpLocation startUpLoc = new StartUpLocation(root.getPrefWidth(), root.getPrefHeight());
+        double xPos = startUpLoc.getXPos();
+        double yPos = startUpLoc.getYPos();
+        // Set Only if X and Y are not zero and were computed correctly
+     	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
+     	//ObservableList<Screen> screens = Screen.getScreens();	
+    	//System.out.println("# of monitors : " + screens.size());
+
+        if (xPos != 0 && yPos != 0) {
+            stage.setX(xPos);
+            stage.setY(yPos);
+            stage.centerOnScreen();
+            //System.out.println(" x : " + xPos + "   y : " + yPos);
+        } else {
+            stage.centerOnScreen();
+            //System.out.println("calling centerOnScreen()");
+            //System.out.println(" x : " + xPos + "   y : " + yPos);
+        }
+        
+		
+	}
+	
 	public Stage getCircleStage() {
 		return circleStage;
 	}

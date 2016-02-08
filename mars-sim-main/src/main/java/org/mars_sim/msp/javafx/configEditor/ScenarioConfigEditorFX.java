@@ -243,7 +243,11 @@ public class ScenarioConfigEditorFX {
 	        stage.setResizable(true);
 	 	   	stage.setFullScreen(false);
 	        //stage.setTitle(TITLE);
-	        stage.show();
+	 	   	
+	 	   	//2016-02-07 Added calling setMonitor()
+	 	   	mainMenu.setMonitor(stage);
+
+	 	   	stage.show();
 
 	    	stage.setOnCloseRequest(e -> {
 				boolean isExit = mainMenu.getScreensSwitcher().exitDialog(stage);
@@ -1013,6 +1017,10 @@ public class ScenarioConfigEditorFX {
 		return settlementTableModel;
 	}
 
+	public MainMenu getMainMenu() {
+		return mainMenu;
+	}
+	
 	public void destroy() {
 
 		config  = null;

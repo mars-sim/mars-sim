@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
  
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -59,9 +61,13 @@ public class EmotionJSONConfig {
     
     public EmotionJSONConfig(){
     	
+    	// read contents of a file into a single String
+    	//String content = new String(Files.readAllBytes(Paths.get("C:/file.txt")));
+        //System.out.println(content);
+    	
         InputStream fis = null;
         JsonReader jsonReader = null;
-        fis =		this.getClass().getResourceAsStream(JSON_FILE);
+        fis = this.getClass().getResourceAsStream(JSON_FILE);
         jsonReader = Json.createReader(fis);
          
         /**
