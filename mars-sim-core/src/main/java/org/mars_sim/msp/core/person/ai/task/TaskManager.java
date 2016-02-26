@@ -94,6 +94,7 @@ implements Serializable {
 		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
 	}
+	
 	/**
 	 * Returns true if person has an active task.
 	 * @return true if person has an active task
@@ -296,7 +297,7 @@ implements Serializable {
 		// Changing reduce energy to be just time as it otherwise
 		// ends up being too much energy reduction compared to the
 		// amount gained from eating.
-		health.reduceEnergy(time);;
+		health.reduceEnergy(time);
         //System.out.println("TaskManager : reduce Energy by "+ Math.round( newTime * 10.0)/10.0);
     }
 
@@ -457,7 +458,7 @@ implements Serializable {
 			}
 		}
 		else if (robot != null) {
-
+/*
 			// Check for emergency malfunction.
 			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(robot)) {
 
@@ -491,8 +492,8 @@ implements Serializable {
 					}
 				}
 			}
+*/
 		}
-
 	}
 
 	/**

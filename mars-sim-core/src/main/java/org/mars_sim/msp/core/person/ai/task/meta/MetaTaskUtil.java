@@ -202,22 +202,22 @@ public class MetaTaskUtil {
         // Populate robotMetaTasks list with all robotMeta tasks.
         robotMetaTasks.add(new CookMealMeta());
         robotMetaTasks.add(new ConsolidateContainersMeta());
-        robotMetaTasks.add(new ConstructBuildingMeta());
-        robotMetaTasks.add(new LoadVehicleEVAMeta());
+        //robotMetaTasks.add(new ConstructBuildingMeta());
+        //robotMetaTasks.add(new LoadVehicleEVAMeta());
         robotMetaTasks.add(new LoadVehicleGarageMeta());
-        robotMetaTasks.add(new MaintenanceEVAMeta());
+        //robotMetaTasks.add(new MaintenanceEVAMeta());
         robotMetaTasks.add(new MaintenanceMeta());
         robotMetaTasks.add(new ManufactureGoodMeta());
         robotMetaTasks.add(new PrepareDessertMeta());
         robotMetaTasks.add(new PrescribeMedicationMeta());
         robotMetaTasks.add(new ProduceFoodMeta());
-        robotMetaTasks.add(new RepairEVAMalfunctionMeta());
+        //robotMetaTasks.add(new RepairEVAMalfunctionMeta());
         robotMetaTasks.add(new RepairMalfunctionMeta());
-        robotMetaTasks.add(new ReturnLightUtilityVehicleMeta());
-        robotMetaTasks.add(new SalvageBuildingMeta());
+        //robotMetaTasks.add(new ReturnLightUtilityVehicleMeta());
+        //robotMetaTasks.add(new SalvageBuildingMeta());
         robotMetaTasks.add(new SleepMeta());
         robotMetaTasks.add(new TendGreenhouseMeta());
-        robotMetaTasks.add(new UnloadVehicleEVAMeta());
+        //robotMetaTasks.add(new UnloadVehicleEVAMeta());
         robotMetaTasks.add(new UnloadVehicleGarageMeta());
         robotMetaTasks.add(new WalkMeta());
 

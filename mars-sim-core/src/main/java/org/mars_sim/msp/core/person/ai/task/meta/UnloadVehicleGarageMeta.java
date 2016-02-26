@@ -89,7 +89,7 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
 
 	@Override
 	public Task constructInstance(Robot robot) {
-        return new UnloadVehicleEVA(robot);
+        return new UnloadVehicleGarage(robot);
 	}
 
 	@Override

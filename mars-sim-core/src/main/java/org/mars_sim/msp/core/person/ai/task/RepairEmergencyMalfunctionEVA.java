@@ -245,7 +245,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
     public static boolean canPerformEVA(Robot robot) {
 
-        boolean result = true;
+        boolean result = false;
 /*
         // Check if an airlock is available
         Airlock airlock = EVAOperation.getWalkableAvailableAirlock(robot);
@@ -338,6 +338,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                              newLocation.getY(), person.getCoordinates());
                 }
                 else if (robot != null) {
+                	System.out.println(robot + " is calling determineMalfunctionLocation() in RepairEmergencyMalfunctionEVA.java");                 	
                 	 //goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(),
                      //        newLocation.getY(), robot.getCoordinates());
                 }
@@ -391,7 +392,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 		}
 		else if (robot != null) {
 		     // A robot moves slower than a person and incurs penalty on workTime
-	        //workTime = time/2;
+	        workTime = time/2;
 		}
 
         // Determine effective work time based on "Mechanic" skill.

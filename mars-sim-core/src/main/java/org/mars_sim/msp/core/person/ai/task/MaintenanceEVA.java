@@ -97,6 +97,7 @@ implements Serializable {
 	public MaintenanceEVA(Robot robot) {
 		super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
+/*		
 		settlement = robot.getSettlement();
 
 		try {
@@ -119,6 +120,7 @@ implements Serializable {
 		addPhase(MAINTAIN);
 
 		logger.finest(robot.getName() + " is starting " + getDescription());
+*/
 	}
 
     /**

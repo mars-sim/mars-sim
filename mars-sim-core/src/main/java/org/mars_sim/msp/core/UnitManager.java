@@ -1208,10 +1208,7 @@ public class UnitManager implements Serializable {
 			// instance of robot from getting overwritten
 			if (settlement != null) {
 				// Create robot and add to the unit manager.
-				Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates()); // TODO:
-																											// read
-																											// from
-																											// file
+				Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates());
 				addUnit(robot);
 				// System.out.println("UnitManager : createConfiguredRobots() :
 				// a robot is added !");

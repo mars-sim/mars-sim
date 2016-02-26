@@ -165,10 +165,11 @@ implements Serializable {
 
         logger.fine(person.getName() + " is unloading " + vehicle.getName());
     }
+    
     public UnloadVehicleEVA(Robot robot, Vehicle vehicle) {
         // Use EVAOperation constructor.
         super("Unloading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-
+/*
         setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail",
                 vehicle.getName()));  //$NON-NLS-1$
         this.vehicle = vehicle;
@@ -183,7 +184,9 @@ implements Serializable {
         addPhase(UNLOADING);
 
         logger.fine(robot.getName() + " is unloading " + vehicle.getName());
+*/        
     }
+    
     /**
      * Gets a list of vehicles that need unloading and aren't reserved for a mission.
      * @param settlement the settlement the vehicle is at.

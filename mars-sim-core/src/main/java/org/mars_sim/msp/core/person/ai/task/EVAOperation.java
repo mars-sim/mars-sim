@@ -110,9 +110,11 @@ implements Serializable {
         // Set initial phase.
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
+    
     public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
         super(name, robot, true, false, STRESS_MODIFIER, false, 0D);
 
+/*        
         // Initialize data members
         this.hasSiteDuration = hasSiteDuration;
         this.siteDuration = siteDuration;
@@ -146,6 +148,8 @@ implements Serializable {
 
         // Set initial phase.
         setPhase(WALK_TO_OUTSIDE_SITE);
+        
+*/        
     }
     /**
      * Check if EVA should end.

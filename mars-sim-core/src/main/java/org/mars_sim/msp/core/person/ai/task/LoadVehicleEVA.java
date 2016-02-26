@@ -138,6 +138,7 @@ implements Serializable {
         // Use Task constructor
         super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
+        /*
         List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(robot.getSettlement());
         if (roversNeedingEVASuits.size() > 0) {
             int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
@@ -177,6 +178,7 @@ implements Serializable {
         else {
             endTask();
         }
+*/        
     }
 
     /**
@@ -220,12 +222,14 @@ implements Serializable {
         // Initialize task phase
         addPhase(LOADING);
     }
+    
     public LoadVehicleEVA(Robot robot, Vehicle vehicle, Map<Resource, Number> requiredResources,
             Map<Resource, Number> optionalResources, Map<Class, Integer> requiredEquipment,
             Map<Class, Integer> optionalEquipment) {
         // Use Task constructor.
         super("Loading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
+/*        
         setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                 vehicle.getName())); //$NON-NLS-1$
         this.vehicle = vehicle;
@@ -251,6 +255,8 @@ implements Serializable {
 
         // Initialize task phase
         addPhase(LOADING);
+        
+*/        
     }
 
     /**

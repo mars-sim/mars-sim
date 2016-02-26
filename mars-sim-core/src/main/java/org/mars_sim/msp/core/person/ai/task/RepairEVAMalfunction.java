@@ -77,7 +77,7 @@ implements Repair, Serializable {
      */
     public RepairEVAMalfunction(Robot robot) {
         super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
-
+/*
         containerUnit = robot.getTopContainerUnit();
 
         // Get the malfunctioning entity.
@@ -101,6 +101,7 @@ implements Repair, Serializable {
         addPhase(REPAIRING);
 
         logger.fine(robot.getName() + " has started the RepairEVAMalfunction task.");
+ */
     }
 
     public RepairEVAMalfunction(Person person) {
