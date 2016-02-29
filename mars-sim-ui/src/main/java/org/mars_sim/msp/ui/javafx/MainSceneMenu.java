@@ -56,6 +56,8 @@ public class MainSceneMenu extends MenuBar  {
 
 	private static Logger logger = Logger.getLogger(MainSceneMenu.class.getName());
 
+	private boolean isFullScreenCache = false;
+	
 	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,
 							monitorToolItem, missionToolItem,settlementMapToolItem,
 							scienceToolItem, resupplyToolItem, marsViewerItem, webToolItem;
@@ -449,16 +451,22 @@ public class MainSceneMenu extends MenuBar  {
         });
 */
         showFullScreenItem.setOnAction(e -> {
+        		
             	boolean isFullScreen =  mainScene.getStage().isFullScreen();
             	if (!isFullScreen) {
 	            	//mainScene.getStage().sizeToScene();
+            		//System.out.println("isFullScreen is false");
             		showFullScreenItem.setSelected(true);
-	            	mainScene.getStage().setFullScreen(true);
+            		if (!isFullScreenCache)
+            			mainScene.getStage().setFullScreen(true);
             	}
             	else {
+            		//System.out.println("isFullScreen is true");
             		showFullScreenItem.setSelected(false);
-	            	mainScene.getStage().setFullScreen(false);
+            		if (isFullScreenCache)
+            			mainScene.getStage().setFullScreen(false);
             	}
+            	isFullScreenCache =  mainScene.getStage().isFullScreen();
         });
 
 /*
@@ -677,12 +685,11 @@ public class MainSceneMenu extends MenuBar  {
             		long SLEEP_TIME = 100;
             		cmi.setSelected(true);
                 	Platform.runLater(() -> {
-                		mainScene.openSwingTab();
+                		//mainScene.openSwingTab();
 					});
                 	try {
 						TimeUnit.MILLISECONDS.sleep(SLEEP_TIME);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
                 	SwingUtilities.invokeLater(() -> {

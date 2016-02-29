@@ -185,7 +185,7 @@ public class SleepMeta implements MetaTask, Serializable {
                 if (quarters == null) {
                 	// he doesn't have his own bed and use shared/guest bed only, 
                 	// he should be less inclined to fall asleep
-                	result /= 1.5D;
+                	result /= 1.2D;
                 	
                 	quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
 

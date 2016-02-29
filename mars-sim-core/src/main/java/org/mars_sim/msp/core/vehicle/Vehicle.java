@@ -33,7 +33,9 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -663,6 +665,37 @@ public abstract class Vehicle extends Unit implements Serializable,
         return people;
     }
 
+
+    /**
+     * Gets a collection of people who are available for social conversation in this vehicle
+     * @return person collection
+     */
+    // 2016-02-26 Added getTalkingPeople()
+    public Collection<Person> getTalkingPeople() {
+        Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+
+
+        // Check all people.
+        Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            Task task = person.getMind().getTaskManager().getTask();
+
+            //Add all people having conversation from all places as the task
+            if (task instanceof HaveConversation)
+                   if (!people.contains(person))
+                	   people.add(person);
+            
+            // Add all people ready for switching to having conversation as task in this vehicle.
+            //if (task instanceof Relax)
+            //       if (!people.contains(person))
+            //    	   people.add(person);
+        }
+
+        return people;
+    }
+
+    
     public Collection<Robot> getAffectedRobots() {
         Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 

@@ -137,7 +137,7 @@ implements Serializable {
     // 2015-04-29 Added RadiationExposure
     private RadiationExposure radiation;
 
-	private MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+	private MarsClock clock;// = Simulation.instance().getMasterClock().getMarsClock();
 
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepHabitMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
@@ -149,6 +149,7 @@ implements Serializable {
      */
     public PhysicalCondition(Person newPerson) {
         // 2015-04-29 Added RadiationExposure();
+    	clock = Simulation.instance().getMasterClock().getMarsClock();
         radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
 
@@ -187,6 +188,8 @@ implements Serializable {
      * @param robot The robot requiring a physical presence.
      */
     public PhysicalCondition(Robot newRobot) {
+    	clock = Simulation.instance().getMasterClock().getMarsClock();
+    	
         deathDetails = null;
         robot = newRobot;
         problems = new HashMap<Complaint, HealthProblem>();

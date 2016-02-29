@@ -27,6 +27,10 @@ import jfxtras.scene.menu.CornerMenu;
 
 import com.sun.management.OperatingSystemMXBean;
 
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -104,6 +108,7 @@ import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
+import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
@@ -193,6 +198,7 @@ public class MainScene {
 	private TransportWizard transportWizard;
 	private ConstructionWizard constructionWizard;
 
+	ObservableList<Screen> screens;
 
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 
@@ -226,7 +232,9 @@ public class MainScene {
 
 		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in Mac) to toggle full screen mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
-
+        //stage.setFullScreen(false);
+        //stage.setFullScreen(true);
+        
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
 			boolean exit = alertOnExit();
@@ -412,15 +420,78 @@ public class MainScene {
 		// root.getChildren().add(bg1);
 
 		// Obtain screens
-		ObservableList<Screen> screens = Screen.getScreens();
-		Screen primaryScreen = Screen.getPrimary();
-		Rectangle2D primaryScreenBounds = primaryScreen.getVisualBounds();
-		width = primaryScreenBounds.getWidth();
-		height = primaryScreenBounds.getHeight();
-
+		//ObservableList<Screen> screens = Screen.getScreens();
+		//Screen primaryScreen = Screen.getPrimary();
+		
 		// Create group to hold swingNode1 which holds the swing desktop
 		swingPane = new StackPane();
 		swingNode = new SwingNode();
+
+		
+/*		
+ *  * 	// Failed since the mouse cursor never enter swingPane 
+		swingPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
+		      @Override public void handle(MouseEvent event) {
+		    	  
+		  		screens = Screen.getScreensForRectangle(event.getX(), event.getY(), 1, 1);  	
+		        //String msg =
+		        //  "(x: "       + event.getX()      + ", y: "       + event.getY()       + ") -- " +
+		        //  "(sceneX: "  + event.getSceneX() + ", sceneY: "  + event.getSceneY()  + ") -- " +
+		        //  "(screenX: " + event.getScreenX()+ ", screenY: " + event.getScreenY() + ")";
+		  		System.out.println("(x: " + event.getX()      
+		  					+ ", y: "  + event.getY());
+		      }
+		    });
+		 
+		System.out.println("screens have the size of " + screens.size());		
+		Screen currentScreen = screens.get(0);
+		Rectangle2D rect = currentScreen.getVisualBounds();
+		width = rect.getWidth();
+		height = rect.getHeight();
+*/		
+		
+/*		
+ * 		// below doesn't not work for multi-monitor setup. The width will become the total width of both monitors
+		Rectangle2D rect = Screen.getPrimary().getVisualBounds();
+		width = rect.getWidth();
+		height = rect.getHeight();
+*/			
+		
+/*
+ * 		// Issue: can't run the MSP on the "active" monitor.
+		// by default MSP runs on the primary monitor (aka monitor 1 as reported by windows os) only.
+		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
+/
+		StartUpLocation startUpLoc = new StartUpLocation(swingPane.getPrefWidth(), swingPane.getPrefHeight());
+        double xPos = startUpLoc.getXPos();
+        double yPos = startUpLoc.getYPos();
+        // Set Only if X and Y are not zero and were computed correctly
+        if (xPos > 0 && yPos > 0) {
+            //stage.setX(xPos);
+            //stage.setY(yPos);
+        	screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
+        	Screen currentScreen = screens.get(0);
+    		Rectangle2D rect = currentScreen.getVisualBounds();
+    		width = rect.getWidth()-80;
+    		height = rect.getHeight()-80;
+    		stage.setX(0);
+    	    stage.setY(0);
+            System.out.println(" x : " + xPos + "   y : " + yPos);
+
+        } else {
+            stage.setX(0);
+            stage.setY(0);
+            width = 1366-80;
+    		height = 768-80;
+            stage.centerOnScreen();
+            System.out.println("calling centerOnScreen()");
+        }
+*/        
+ 
+        
+		width = 1366-80;
+		height = 768-80;
+		
 		createSwingNode();
 		swingPane.getChildren().add(swingNode);
 		swingPane.setPrefWidth(width);
@@ -451,6 +522,8 @@ public class MainScene {
 			marqueeNode.setContent(marqueePane);
 		} );
 */
+		
+/*		
 		// 2015-05-26 Create fxDesktopPane
 		fxDesktopPane = marsNode.createFXDesktopPane();
 		//fxDesktopPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
@@ -475,7 +548,7 @@ public class MainScene {
 		nodeTab.setClosable(false);
 		nodeTab.setText("JavaFX UI");
 		nodeTab.setContent(fxDesktopPane);
-
+*/
 		/*
 		 * // create a button to toggle floating. final RadioButton floatControl
 		 * = new RadioButton("Toggle floating");
@@ -487,7 +560,7 @@ public class MainScene {
 		 * tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING); } else {
 		 * tabPane.getStyleClass().remove(TabPane.STYLE_CLASS_FLOATING); } } });
 		 */
-
+/*
 		// Create swing tab to hold classic UI
 		swingTab = new Tab();
 		swingTab.setClosable(false);
@@ -504,13 +577,17 @@ public class MainScene {
 		// wrap dndTabPane inside notificationNode
 		Node notificationNode = createNotificationPane();
 		borderPane.setCenter(notificationNode);
+		
+		
+*/		
+		
+		borderPane.setCenter(swingPane);
 
 		rootStackPane = new StackPane(borderPane);
-		borderPane.setMinWidth(1024);
-		borderPane.setMinHeight(480);
-
-		Scene scene = new Scene(rootStackPane, width-40, height-40, Color.BROWN);
-
+		borderPane.setMinWidth(width);//1024);
+		borderPane.setMinHeight(height);//480);
+        
+		Scene scene = new Scene(rootStackPane, width, height, Color.BROWN);
 
 		//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
@@ -580,7 +657,9 @@ public class MainScene {
 		swingPane.getStylesheets().clear();
 		menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();
-		marsNode.getFXDesktopPane().getStylesheets().clear();
+		
+		//marsNode.getFXDesktopPane().getStylesheets().clear();
+		
 		marsNetButton.getStylesheets().clear();
 
 		String cssColor;
@@ -638,7 +717,8 @@ public class MainScene {
 	public void updateThemeColor(Color txtColor, Color btnTxtColor, String cssColor) {
 		swingPane.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 		menuBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
-		marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
+		
+		//marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 
 		memUsedText.setFill(txtColor);
 		//memMaxText.setFill(txtColor);
@@ -1408,6 +1488,7 @@ public class MainScene {
 		return swingNode;
 	}
 
+/*	
 	public void openSwingTab() {
 		// splitPane.setDividerPositions(1.0f);
 		dndTabPane.getSelectionModel().select(swingTab);
@@ -1418,7 +1499,8 @@ public class MainScene {
 		// splitPane.setDividerPositions(0.8f);
 		dndTabPane.getSelectionModel().select(nodeTab);
 	}
-
+*/
+	
 	/**
 	 * Creates an Alert Dialog to confirm ending or exiting the simulation or
 	 * MSP
@@ -1506,8 +1588,11 @@ public class MainScene {
 		//2015-09-27 for testing the use of fxml
 		//marsNode.createMaterialDesignWindow();
 		//marsNode.createSettlementWindow();
-		marsNode.createStory();
-		marsNode.createDragDrop();
+		
+		// 2016-02-25 Disabled marsNode
+		//marsNode.createStory();
+		//marsNode.createDragDrop();
+		
 		//marsNode.createEarthMap();
 		//marsNode.createMarsMap();
 		//marsNode.createChatBox();

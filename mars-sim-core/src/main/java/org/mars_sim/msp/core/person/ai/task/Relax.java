@@ -49,14 +49,14 @@ implements Serializable {
 
 	// Static members
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.3D;
+	private static final double STRESS_MODIFIER = -.5D;
 
 	/**
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
 	public Relax(Person person) {
-		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D +
+		super(NAME, person, false, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(3), true, 10D +
 				RandomUtil.getRandomDouble(40D));
 
 		// If during person's work shift, only relax for short period.

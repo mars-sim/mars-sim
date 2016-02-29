@@ -75,6 +75,7 @@ public class MetaTaskUtil {
 	        anyHourTasks = new ArrayList<MetaTask>();
 
 	        anyHourTasks.add(new EatMealMeta());
+	        anyHourTasks.add(new HaveConversationMeta());
 	        anyHourTasks.add(new ListenToMusicMeta());
 	        anyHourTasks.add(new LoadVehicleEVAMeta());
 	        anyHourTasks.add(new LoadVehicleGarageMeta());
@@ -171,7 +172,7 @@ public class MetaTaskUtil {
 	    	List<MetaTask> tasks = new ArrayList<MetaTask>();
 
 	    	tasks.add(new ConnectWithEarthMeta());
-	    	tasks.add(new HaveConversationMeta());
+	    	//tasks.add(new HaveConversationMeta());
 	    	tasks.add(new PlayHoloGameMeta());
 	    	tasks.add(new ReadMeta());
 
