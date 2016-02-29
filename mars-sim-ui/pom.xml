@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -176,7 +176,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</artifactId>
-		    <version>8.8</version>
+		    <version>8.9</version>
 		</dependency>
 	    <dependency>
 	        <groupId>org.testfx</groupId>
@@ -195,6 +195,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>testFx</artifactId>
 			<version>3.1.2</version>
 		</dependency>
+		<dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.ogce</groupId>
 			<artifactId>xpp3</artifactId>
@@ -223,8 +229,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
-			<version>4.4</version>
+			<version>4.5</version>
 			<type>pom</type>
+		</dependency>
+		<dependency>
+		  <groupId>de.jonato</groupId>
+		  <artifactId>jfxc</artifactId>
+		  <version>1.1</version>
 		</dependency>
 	</dependencies>
 	<repositories>
@@ -239,6 +250,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <snapshots>
 	            <enabled>false</enabled>
 	        </snapshots>
+	    </repository>
+	    <repository>
+	        <id>sonatype-repo</id>
+	        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	       </snapshots>
 	    </repository>
 	    <repository>
 	        <id>sonatype-snapshots-repo</id>
