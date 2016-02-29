@@ -150,20 +150,34 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     public void addSleeper(Person person, boolean isAGuest) {
     	sleepers++;
-        if (sleepers > beds) {
-            //sleepers = beds;
-            sleepers--;
-            System.out.println("Living Accommodation : " + person + " could not find any unoccupied beds. #sleepers : " + sleepers + "  #beds : " + beds);
-        }
-        else {
-        	if (!isAGuest)
+    	if (isAGuest) {
+    		if (sleepers > beds) {
+                //sleepers = beds;
+                sleepers--;
+                System.out.println("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
+                		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
+            }
+    	}
+    	else {
+        	if (sleepers > beds) {
+                //sleepers = beds;
+                sleepers--;
+                System.out.println("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
+                		+ sleepers + "  # beds : " + beds+ ". Will sleep at a random location.");
+            }
+            else {           	
 	        	if (!bedMap.containsKey(person)) {
+	        		// if a person has never been assigned a bed
 	        		Point2D bed = designateABed(person);
 	        		if (bed == null)
-	        			System.out.println("Living Accommodation : " + person + " could not find any undesignated beds in " + building.getNickName() + " in " + settlement);
+	        			System.out.println("Living Accommodation : " + person + " could not find any undesignated beds in " 
+	        					+ building.getNickName() + " in " + settlement);
 	        	}
+            }
+    	}
+    		
+    		
 
-        }
     }
 
     /**

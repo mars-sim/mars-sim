@@ -135,7 +135,7 @@ implements Serializable {
             list.addAll(pool);
             // pool includes the one who starts the conversation
             if (num == 1) {
-                invitee = invitees.get(0);
+                invitee = list.get(0);
         		invitees.add(invitee);
         		talkTo(invitee);
             }
@@ -171,7 +171,7 @@ implements Serializable {
     	if (invitee.getMind().getTaskManager().getTask() instanceof HaveConversation) {
         	setDescription(Msg.getString("Task.description.havingConversation.detail", 
                 invitee.getName())); //$NON-NLS-1$
-        	logger.info(person.getName() + " is chatting with " + invitee.getName());
+        	//logger.info(person.getName() + " is chatting with " + invitee.getName());
         }	
     }
     

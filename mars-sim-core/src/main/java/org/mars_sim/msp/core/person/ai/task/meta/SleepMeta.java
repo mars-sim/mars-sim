@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -20,7 +21,11 @@ import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -30,6 +35,9 @@ public class SleepMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(SleepMeta.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString("Task.description.sleep"); //$NON-NLS-1$
@@ -116,8 +124,11 @@ public class SleepMeta implements MetaTask, Serializable {
         	// the desire to go to bed increase linearly after 12 hours of wake time
             result = (fatigue - 500D) / 3D;
 
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                
+            	
+            }
+            else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 	            // Check if person is an astronomer.
 	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
@@ -175,29 +186,78 @@ public class SleepMeta implements MetaTask, Serializable {
 			            	//result = result * 2D;
 		           	}
 			    }
+		        else {
+		        	// if he's on-call
+		        	//result = result * 1.2D;
+		        }
 
 	            // 2015-06-07 Added Preference modifier
 		        if (result > 0)
 		        	result += person.getPreference().getPreferenceScore(this);
-
-		        // 2016-01-10 Added checking if a person has a designated bed
-                Building quarters = person.getQuarters();    
-                if (quarters == null) {
-                	// he doesn't have his own bed and use shared/guest bed only, 
-                	// he should be less inclined to fall asleep
-                	result /= 1.2D;
                 	
-                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
+		        	Building quarters = null;
+                	Settlement s1 = person.getSettlement();
+                	Settlement s2 = person.getAssociatedSettlement();
+                	
+        			// check to see if a person is a trader or on a trading mission
+                	if (!s1.equals(s2)) {
+                		// he is a guest
+                    	logger.info("SleepMeta : " + person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
+                    	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+                    	quarters = Sleep.getAvailableLivingQuartersBuilding(person, false);
+                        if (quarters != null) {
+                        	result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+     		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+                        } else {
+                           	logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at right where he/she is.");
+                        	// TODO: should allow him/her to sleep in gym or anywhere.
+    		            }
+        			}
+        			
+        			else {
+    
+    			        // 2016-01-10 Added checking if a person has a designated bed
+    	                quarters = person.getQuarters();    
+    	                if (quarters != null) {
+    		            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
+    	                	// he should be "more" inclined to fall asleep this way
+    	                	result *= 1.2D; 	
+      		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+    		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+    	                }
+    	                else {
+    		            	// if this person has never been assigned a quarter and a bed so far
+        	            	logger.fine("SleepMeta : " + person + " has never been designated a bed");
 
-		            if (quarters != null) {
-		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
-		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
-		            }
-                }
-                
-			    if (result < 0) 
-			    	result = 0;
+               				quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
+
+        		            if (quarters != null) {
+        	            		logger.finer("SleepMeta : " + person + " will be designated a bed in " + quarters.getNickName());
+        	                    // set it as his quarters
+        		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+        		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+        		            } 
+        		            else {
+        	              		// There are no undesignated beds left in any quarters
+        	                	logger.info("SleepMeta : " + person + " cannot find any empty, undesignated beds in any quarters. Will use an unoccupied bed randomly.");
+        	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+        	                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, false);
+        	                	if (quarters != null) {
+              		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+            		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+        	                	}
+        	                    else {
+        	                    	logger.fine("Sleep : " + person + " couldn't find an empty bed. Falling asleep at right where he/she is.");
+        	                    	// TODO: should allow him/her to sleep in gym or anywhere.
+            	                	// he should be "less" inclined to fall asleep this way
+        	                    	result /= 1.2D;
+        	                    }       		            
+        	                }
+    	                }
+        			}
+
 	        }
+
         }
 
         // No sleeping outside.
@@ -205,6 +265,9 @@ public class SleepMeta implements MetaTask, Serializable {
         //   result = 0D;
         //}
 
+	    if (result < 0) 
+	    	result = 0;
+	    
         //System.out.println("sleep's result is " + result);
         return result;
     }

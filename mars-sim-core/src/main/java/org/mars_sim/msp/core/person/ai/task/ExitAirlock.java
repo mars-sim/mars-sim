@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
@@ -704,23 +705,32 @@ implements Serializable {
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
             logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " due to already being outside.");
+                    " since he/she is already outside.");
         }
 
         // Check if EVA suit is available.
         if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
             result = false;
             logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                    " due to not able to find good EVA suit.");
+                    " since no EVA suit is available.");
         }
 
         // Check if person is incapacitated.
         // TODO: if incapacitated, should someone else help this person to get out?
         if (person.getPerformanceRating() == 0D) {
             result = false;
-        	// TODO: how to prevent the logger statement below from being repeated?
+        	// TODO: how to prevent the logger statement below from being repeated multiple times?
         	logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                " due to performance rating is 0 (fatigue, stress, hunger, etc.)");
+                " due to zero performance rating (fatigue, stress, hunger, etc.)");
+        
+            // 2016-02-28 Calling getNewAction(true, false)
+            try {
+            	logger.info(person.getName() + " is abandoning the action of exiting the airlock.");
+            	person.getMind().getNewAction(true, false);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, person + " could not get new action", e);
+                e.printStackTrace(System.err);
+            }
         }
 
 
@@ -731,7 +741,7 @@ implements Serializable {
 
         boolean result = true;
 
-		// Check if person is outside.
+		// Check if robot is outside.
         if (robot.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
             logger.severe(robot.getName() + " cannot exit airlock from " + airlock.getEntityName() +

@@ -104,12 +104,12 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             }
             else if (num == 1) {
         		double rand = RandomUtil.getRandomDouble(2);
-            	result = (rand + 1)*result;
+            	result = rand*result;
             }
             else if (num > 1) {
         		//result = (num + 1)*result;
         		double rand = RandomUtil.getRandomDouble(num+1);
-            	result = (rand + 1)*result;
+            	result = rand*result;
             }
   
         }
@@ -119,11 +119,9 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         	
         	Vehicle v = (Vehicle) person.getContainerUnit();
         	// get the number of people maintaining or repairing this vehicle
-        	Collection<Person> affected = v.getAffectedPeople();
-        	
+        	Collection<Person> affected = v.getAffectedPeople();       	
             Collection<Person> crew = ((Rover) v).getCrew();           
-            Collection<Person> talking = v.getTalkingPeople();
-                
+            Collection<Person> talking = v.getTalkingPeople();               
             candidates.addAll(affected);
             candidates.addAll(crew);   
             candidates.addAll(talking);        
@@ -138,19 +136,19 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             }
             else if (num == 1) {
         		double rand = RandomUtil.getRandomDouble(2);
-            	result = (rand + 1)*result;
+            	result = rand*result;
             }
             else if (num > 1) {
         		//result = (num + 1)*result;
         		double rand = RandomUtil.getRandomDouble(num+1);
-            	result = (rand + 1)*result;
+            	result = rand*result;
             }
         }
 
     	int now = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
-        	result = result/1.5;
+        	result = result/2.0;
         
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
