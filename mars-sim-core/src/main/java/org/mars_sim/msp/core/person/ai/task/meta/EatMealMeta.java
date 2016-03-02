@@ -77,7 +77,7 @@ public class EatMealMeta implements MetaTask, Serializable {
                 }
 
                 // Check if there is a local dining building.
-                Building diningBuilding = EatMeal.getAvailableDiningBuilding(person);
+                Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, false);
                 if (diningBuilding != null) {
                     // Modify probability by social factors in dining building.
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);

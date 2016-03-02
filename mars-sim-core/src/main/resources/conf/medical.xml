@@ -202,13 +202,24 @@
 		<!-- An anxiety attack happens when a person is at maximum stress for too long. -->
 		<!-- It is a mental breakdown, reducing the person's performance on activities -->
 		<!-- to minimal and forcing them to relax and distress.  The effects do not last -->
-		<!-- long, however. (See "stress-breakdown-chance" in person.xml.) -->
+		<!-- long, however. (See "stress-breakdown-chance" in people.xml.) -->
 		<medical-complaint name="Anxiety Attack">
 			<seriousness value="30" />
 			<recovery-time value="1.0" />
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
 			<bed-rest-recovery value="false" />
+		</medical-complaint>
+
+		<!-- The high fatigue collapse happens when a person has not been able to rest for a while. -->
+		<!-- The effects do not last long, however. (See "high-fatigue-collapse-chance" in people.xml.)-->
+		<medical-complaint name="High Fatigue Collapse">
+			<seriousness value="20" />
+			<recovery-time value="1.0" />
+			<probability value="0.0" />
+			<performance-percent value="0.0" />
+			<bed-rest-recovery value="true" />
+			<treatment-type value="Hospitalization" />			
 		</medical-complaint>
 
 <!-- Future:

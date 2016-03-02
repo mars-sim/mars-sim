@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HaveConversation.java
- * @version 3.08 2015-09-24
+ * @version 3.08 2016-03-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -64,55 +64,110 @@ implements Serializable {
     private Person invitee;
     //private int randomTime;
 
+    private Location invitee_location = null;
+    
+    private enum Location
+    {
+        All_Settlements,
+        Another_Building,
+    	Dining_Building,
+    	None,
+        Same_Building,
+        Same_Vehicle
+    }
+   
+    
     /**
      * Constructor. This is an effort-driven task.
      * @param person the person performing the task.
      */
+    // 2016-03-01 Added 8 situations for having a conversation
     public HaveConversation(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(3), true, 2D + RandomUtil.getRandomDouble(5));
+        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(3), true, 5D + RandomUtil.getRandomDouble(10));
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // Check if there is a local dining building.
-            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person);
-            if (diningBuilding != null)
-            	// Walk to that building.
-            	walkToActivitySpotInBuilding(diningBuilding, BuildingFunction.DINING, true);
-
             Set<Person> pool = new HashSet<Person>();
             Settlement s = person.getSettlement();
-            Collection<Person> idle = s.getIdlePeople();           
-            Collection<Person> talking = s.getTalkingPeople();
-            pool.addAll(idle);   
-            pool.addAll(talking);
-            pool.remove((Person)person);
-            int num = pool.size();
-            List<Person> list = new ArrayList<Person>();
-            list.addAll(pool);
-            // pool includes the one who starts the conversation
-            if (num == 1) {
-        		invitee = list.get(0);
-        		invitees.add(invitee);
-        		talkTo(invitee);
+            
+            Collection<Person> p_same_bldg_talking = s.getChattingPeople(person, false, true, false);        	          
+            pool.addAll(p_same_bldg_talking);
+        	invitee_location = Location.Same_Building;
+        	
+            if (pool.size() == 0) {
+            	// Go to a chatty chow hall
+                Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
+                if (diningBuilding != null) {
+                	// Walk to that building.
+                	walkToActivitySpotInBuilding(diningBuilding, BuildingFunction.DINING, true);
+                    Collection<Person> p_dining = s.getChattingPeople(person, false, true, false);
+                	pool.addAll(p_dining);
+                	invitee_location = Location.Dining_Building;
+                }
+                // TODO: should try going to another chow hall that have people chatting if not found and not just the one that he is going to
             }
-            else if (num > 1) {
-            	int rand = RandomUtil.getRandomInt(num-1);           	
-            	// half of the time, talk to just one person
-            	if (RandomUtil.getRandomInt(1) == 0) {
-            		invitee = list.get(rand);
-            		invitees.add(invitee);
-            		talkTo(invitee);
-            	}
-            	else {	
-            	// speak to a group of people
-	            	for (int i= 0; i< rand; i++) {
-	            		invitee = list.get(i);
+ /*           
+            if (pool.size() == 0) {
+                Collection<Person> p_same_bldg_idle = s.getChattingPeople(person, true, true, false);                       
+            	pool.addAll(p_same_bldg_idle);
+            	invitee_location = Location.Same_Building;
+            }           
+*/            
+            if (pool.size() == 0) {
+                Collection<Person> p_diff_bldg_talking = s.getChattingPeople(person, false, false, false);                 
+            	pool.addAll(p_diff_bldg_talking);
+            	invitee_location = Location.Another_Building;
+            }
+/*            
+            if (pool.size() == 0) {
+                Collection<Person> p_diff_bldg_idle = s.getChattingPeople(person, true, false, false);               
+            	pool.addAll(p_diff_bldg_idle);
+            	invitee_location = Location.Another_Building;
+            }
+*/            
+            if (pool.size() == 0) {
+                Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
+            	pool.addAll(p_talking_all);
+            	invitee_location = Location.All_Settlements;
+            }
+/*            
+            if (pool.size() == 0) {
+                Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);         
+            	pool.addAll(p_idle_all);
+            	invitee_location = Location.All_Settlements;
+            }           
+*/            
+            if (pool.size() == 0) {
+            	invitee_location = Location.None;
+             }
+            else {
+	            int num = pool.size();
+	            List<Person> list = new ArrayList<Person>();
+	            list.addAll(pool);
+	            if (num == 1) {
+	        		invitee = list.get(0);
+	        		invitees.add(invitee);
+	        		talkTo(invitee);
+	            }
+	            else if (num > 1) {
+	            	int rand = RandomUtil.getRandomInt(num-1);           	
+	            	// half of the time, talk to just one person
+	            	if (RandomUtil.getRandomInt(1) == 0) {
+	            		invitee = list.get(rand);
 	            		invitees.add(invitee);
 	            		talkTo(invitee);
-	            	}     	
-            	}
-            }  
+	            	}
+	            	else {	
+	            	// speak to a group of people
+		            	for (int i= 0; i< rand; i++) {
+		            		invitee = list.get(i);
+		            		invitees.add(invitee);
+		            		talkTo(invitee);
+		            	}     	
+	            	}
+	            }  
+            }
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
@@ -123,17 +178,27 @@ implements Serializable {
         	//person.getPreference().setTaskStatus(this, false);
         	
             Set<Person> pool = new HashSet<Person>();
+        	Settlement s = person.getAssociatedSettlement();
+            Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
+
             Vehicle v = (Vehicle) person.getContainerUnit();
-            Collection<Person> crew = ((Rover) v).getCrew();           
+            //Collection<Person> crew = ((Rover) v).getCrew();           
             Collection<Person> talking = v.getTalkingPeople();
-            pool.addAll(crew);   
-            pool.addAll(talking);
+            //pool.addAll(crew);   
+            
             // remove the one who starts the conversation
-            pool.remove((Person)person);
+            pool.remove((Person)person);         
+            pool.addAll(talking);
+    		invitee_location = Location.Same_Vehicle;
+    		
+            if (pool.size() == 0) {
+            	pool.addAll(p_talking_all);
+            	invitee_location = Location.All_Settlements;
+            }          
+ 
             int num = pool.size();
             List<Person> list = new ArrayList<Person>();
             list.addAll(pool);
-            // pool includes the one who starts the conversation
             if (num == 1) {
                 invitee = list.get(0);
         		invitees.add(invitee);
@@ -167,11 +232,16 @@ implements Serializable {
         setPhase(HAVING_CONVERSATION);
     }
 
+    // 2016-03-01 Added conditional checking to append " via radio" in two cases
     public void talkTo(Person invitee) {
+    	String detail = invitee.getName();
+    	if (invitee_location == Location.Another_Building | invitee_location == Location.All_Settlements)
+    		detail = detail + " via radio";
+    		
     	if (invitee.getMind().getTaskManager().getTask() instanceof HaveConversation) {
         	setDescription(Msg.getString("Task.description.havingConversation.detail", 
-                invitee.getName())); //$NON-NLS-1$
-        	//logger.info(person.getName() + " is chatting with " + invitee.getName());
+                detail)); //$NON-NLS-1$
+        	//logger.info(person.getName() + " is chatting with " + detail);
         }	
     }
     

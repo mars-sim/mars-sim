@@ -9,6 +9,7 @@ package org.mars_sim.msp.javafx;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -322,7 +323,9 @@ public class MainMenu {
    }
 
    public void runTwo() {
-		Future future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
+
+		Future  future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
+	   	//CompletableFuture future = (CompletableFuture) Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
 
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");

@@ -501,7 +501,8 @@ extends UnitTableModel {
 			case TASK : {
 				// If the Person is dead, there is no Task Manager
 				TaskManager mgr = person.getMind().getTaskManager();
-				result = ((mgr != null)? mgr.getTaskName() : null);
+				//result = ((mgr != null)? mgr.getTaskName() : null);
+				result = ((mgr != null)? mgr.getTaskDescription(true) : null);			
 			} break;
 
 			case MISSION : {

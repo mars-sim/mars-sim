@@ -708,7 +708,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 	@Override
     public String getTaskDescription() {
-        return getBotMind().getTaskManager().getTaskDescription();
+        return getBotMind().getTaskManager().getTaskDescription(true);
     }
 
 	@Override

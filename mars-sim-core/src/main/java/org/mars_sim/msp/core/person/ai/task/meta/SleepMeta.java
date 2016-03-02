@@ -202,15 +202,15 @@ public class SleepMeta implements MetaTask, Serializable {
         			// check to see if a person is a trader or on a trading mission
                 	if (!s1.equals(s2)) {
                 		// he is a guest
-                    	logger.info("SleepMeta : " + person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
+                    	logger.fine("SleepMeta : " + person + " is a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
                     	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
                     	quarters = Sleep.getAvailableLivingQuartersBuilding(person, false);
                         if (quarters != null) {
                         	result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
      		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
                         } else {
-                           	logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at right where he/she is.");
-                        	// TODO: should allow him/her to sleep in gym or anywhere.
+                           	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
+                        	// TODO: should allow him/her to go sleep in gym or medical station.
     		            }
         			}
         			
@@ -232,14 +232,14 @@ public class SleepMeta implements MetaTask, Serializable {
                				quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
 
         		            if (quarters != null) {
-        	            		logger.finer("SleepMeta : " + person + " will be designated a bed in " + quarters.getNickName());
+        	            		logger.fine("SleepMeta : " + person + " will be designated a bed in " + quarters.getNickName());
         	                    // set it as his quarters
         		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
         		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
         		            } 
         		            else {
         	              		// There are no undesignated beds left in any quarters
-        	                	logger.info("SleepMeta : " + person + " cannot find any empty, undesignated beds in any quarters. Will use an unoccupied bed randomly.");
+        	                	logger.fine("SleepMeta : " + person + " cannot find any empty, undesignated beds in any quarters. Will use an unoccupied bed randomly.");
         	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
         	                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, false);
         	                	if (quarters != null) {

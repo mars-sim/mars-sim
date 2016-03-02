@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.08 2015-06-15
+ * @version 3.08 2016-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -556,7 +556,8 @@ public class EatMeal extends Task implements Serializable {
      * @return available dining building
      * @throws BuildingException if error finding dining building.
      */
-    public static Building getAvailableDiningBuilding(Person person) {
+    // 2016-03-01 Added canChat param
+    public static Building getAvailableDiningBuilding(Person person, boolean canChat) {
 
         Building result = null;
 
@@ -566,9 +567,15 @@ public class EatMeal extends Task implements Serializable {
             List<Building> diningBuildings = manager.getBuildings(BuildingFunction.DINING);
             diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
             diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
-            diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
-
+            if (canChat)
+                // 2016-03-01 Added getChattyBuildings()
+            	diningBuildings = BuildingManager.getChattyBuildings(diningBuildings);
+            else
+                diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
+            
             if (diningBuildings.size() > 0) {
+            	
+            	
                 Map<Building, Double> diningBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, diningBuildings);
                 result = RandomUtil.getWeightedRandomObject(diningBuildingProbs);

@@ -137,21 +137,22 @@ implements Serializable {
 		}
 	}
 
+
 	/**
 	 * Returns a description of current task for UI purposes.
 	 * Returns a blank string if there is no current task.
 	 * @return a description of the current task
 	 */
-	public String getTaskDescription() {
+	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
-			String doAction = currentTask.getDescription();
+			String doAction = currentTask.getDescription(subTask);
 
 			return doAction;
 		} else {
 			return "";
 		}
 	}
-
+	
 	/**
 	 * Returns the current task phase if there is one.
 	 * Returns null if current task has no phase.
@@ -195,7 +196,7 @@ implements Serializable {
 	// 2015-10-22 Added recordTask()
 	@SuppressWarnings("null")
 	public void recordTask() {
-		String taskDescription = getTaskDescription();//currentTask.getDescription(); //
+		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
 

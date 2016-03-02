@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HaveConversationMeta.java
- * @version 3.08 2015-09-24
+ * @version 3.08 2016-03-01
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -49,6 +49,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
+    
     @Override
     public String getName() {
         return NAME;
@@ -69,70 +70,98 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check if there is a local dining building.
-            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person);
-            if (diningBuilding != null) {
-                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, diningBuilding);
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
-            }
-            
+            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
+
             Set<Person> pool = new HashSet<Person>();
             Settlement s = person.getSettlement();
-            Collection<Person> idle = s.getIdlePeople();           
-            Collection<Person> talking = s.getTalkingPeople();
-            pool.addAll(idle);   
-            pool.addAll(talking);
+
+            if (diningBuilding != null) {
+            	// Walk to that building.
+            	//pool.addAll(p_same_bldg_talking);
+            }
+            
+            // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
+            Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
+                 	      	              
+            pool.addAll(p_talking_all); 
+            
             // pool doesn't include the one who starts the conversation
             pool.remove((Person)person);
-            int num = pool.size();
-            List<Person> list = new ArrayList<Person>();
-            list.addAll(pool);
-/*       	
-        	Building b = person.getBuildingLocation();     	
-            // Check all people.
-            Iterator<Person> i = candidates.iterator();
-            while (i.hasNext()) {
-                Person p = i.next();
-                if (p.getLocationState().getName().equals("Inside a building"))
-	                if (p.getBuildingLocation().equals(b))
-            }                   
-    		double rand = RandomUtil.getRandomDouble(finalCandidates.size());
-        	result = result + result*rand;
-*/   
-            if (num == 0) {
-            	// no one to talk to, set result to zero
-            	result = 0;
+            
+        	// check if someone is idling somewhere and ready for a chat 
+            if (pool.size() != 0) {
+                
+                int num = pool.size();
+            	// Note: having people who are already chatting will increase the probability of having this person to join
+                if (num == 0) {
+                	// no one is chatting to yet
+                	// but he could the first person to start the chat 
+                }
+                else if (num == 1) {
+            		double rand = RandomUtil.getRandomDouble(2);
+                	result = rand*result;
+                }
+                else if (num > 1) {
+            		double rand = RandomUtil.getRandomDouble(num+1);
+                	result = rand*result;
+                }
             }
-            else if (num == 1) {
-        		double rand = RandomUtil.getRandomDouble(2);
-            	result = rand*result;
+
+            
+            Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);  
+            
+            pool.clear();
+        	pool.addAll(p_idle_all);
+        	         
+        	// Note: having idling people will somewhat increase the chance of starting conversations,
+        	// though at a low probability 
+        	if (pool.size() != 0) {
+                int num = pool.size();
+
+                if (num == 0) {
+                }
+                else if (num == 1) {
+            		double rand = RandomUtil.getRandomDouble(.3);
+                	result = result + rand*result;
+                }
+                else if (num > 1) {
+            		double rand = RandomUtil.getRandomDouble(.3*(num+1));
+                	result = result + rand*result;
+                }
+        	}
+ 
+            if (diningBuilding != null) {
+            	// having a dining hall will increase the base chance of conversation by 1.2 times 
+            	result = result * 1.2;
+            	// modified by his relationship with those already there
+                result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
             }
-            else if (num > 1) {
-        		//result = (num + 1)*result;
-        		double rand = RandomUtil.getRandomDouble(num+1);
-            	result = rand*result;
-            }
-  
+
         }
 
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        	Set<Person> candidates = new HashSet<Person>();
+        	Settlement s = person.getAssociatedSettlement();
+        	Set<Person> pool = new HashSet<Person>();
         	
         	Vehicle v = (Vehicle) person.getContainerUnit();
         	// get the number of people maintaining or repairing this vehicle
         	Collection<Person> affected = v.getAffectedPeople();       	
-            Collection<Person> crew = ((Rover) v).getCrew();           
-            Collection<Person> talking = v.getTalkingPeople();               
-            candidates.addAll(affected);
-            candidates.addAll(crew);   
-            candidates.addAll(talking);        
-            candidates.remove((Person)person);
-            int num = candidates.size();
+            //Collection<Person> crew = ((Rover) v).getCrew();     
+            Collection<Person> talking = v.getTalkingPeople();
+            // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements
+            Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
+            
+            pool.addAll(affected);
+            pool.addAll(p_talking_all);
+            //candidates.addAll(crew);          
+            pool.addAll(talking);        
+            int num = pool.size();
             //System.out.println("talking folks : " + talking);
             //TODO: get some candidates to switch their tasks to HaveConversation       
             // need to have at least two people to have a social conversation
             if (num == 0) {
-            	// no one to talk to, set result to zero
-            	result = 0;
+            	// no one is chatting to yet
+            	// but he could the first person to start the chat 
             }
             else if (num == 1) {
         		double rand = RandomUtil.getRandomDouble(2);

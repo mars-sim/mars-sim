@@ -116,6 +116,12 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default: .01 -->
 	<stress-breakdown-chance value=".01" />
 
+	<!-- Base percent chance per millisol that a person at high fatigue will collapse. -->
+	<!-- See medical complaint: "High Fatigue Collapse" in medical.xml. -->
+	<!-- Note: 1 millisol = 88.77 seconds -->
+	<!-- Default: .10 -->
+	<high-fatigue-collapse-chance value="5" />
+
 	<!-- The average percentage of males to total population in the simulation. -->
 	<!-- Default 50 (equal numbers of males and females) -->
 	<gender-male-percentage value="50.0" />

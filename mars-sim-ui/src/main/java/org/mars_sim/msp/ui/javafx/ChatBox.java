@@ -575,10 +575,10 @@ public class ChatBox extends BorderPane {
     		questionText = "You : what are you doing at this moment?";
     		String task = null;
     		if (personCache != null) {
-        		task = personCache.getMind().getTaskManager().getTaskDescription();
+        		task = personCache.getMind().getTaskManager().getTaskDescription(true);
 	    	}
 	    	else if (robotCache != null) {
-	    		task = robotCache.getBotMind().getTaskManager().getTaskDescription();
+	    		task = robotCache.getBotMind().getTaskManager().getTaskDescription(true);
 	    	}
     		if (task == null)
     			responseText = "No. I'm not. ";

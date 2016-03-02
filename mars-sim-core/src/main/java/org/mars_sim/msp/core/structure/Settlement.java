@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.08 2015-12-10
+ * @version 3.08 2016-03-01
  * @author Scott Davis
  */
 
@@ -38,9 +38,11 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Relax;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -1184,59 +1186,83 @@ implements Serializable, LifeSupportType, Objective {
 
 
     /**
-     * Gets a collection of people that are available for social conversation inside settlement
-     * @return person collection
+     * Gets a collection of people who are available for social conversation in the same/another building
+     * in the same/another settlement
+     * @param Person initiator the initiator of this conversation 
+     * @param boolean checkIdle true if the invitee is idling/relaxing (false if the invitee is in a chat) 
+     * @param boolean sameBuilding true if the invitee is at the same building as the initiator (false if it doesn't matter)
+     * @param boolean allSettlement true if the collection includes all settlements (false if only the initiator's settlement) 
+     * @return person a collection of invitee(s)
      */
-    // 2016-02-26 Added getIdlePeople()
-    public Collection<Person> getIdlePeople() {
+    // 2016-03-01 Added getChattingPeople()
+    public Collection<Person> getChattingPeople(Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements) {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-
-        // Check all people.
-        //Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
-        Iterator<Person> i = getInhabitants().iterator();
-        while (i.hasNext()) {
-            Person person = i.next();
-          
-		    boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
-            if (!people.contains(person) && person.getSettlement() != null)
-            	if (isOff)
-                	people.add(person); 
-            	else {
-            		Task task = person.getMind().getTaskManager().getTask();
-                    // Add all people with Relax as tasks.
-                    if (task instanceof Relax)
-                    	people.add(person);
-            	}
+        Iterator<Person> i; 
+        // TODO: set up rules that allows 
+        
+        if (allSettlements) {
+        	// could be either radio (non face-to-face) conversation, don't care
+        	i = Simulation.instance().getUnitManager().getPeople().iterator(); 
+        	sameBuilding = false;
         }
-
-        return people;
-    }
-
-
-    /**
-     * Gets a collection of people who are available for social conversation in this vehicle
-     * @return person collection
-     */
-    // 2016-02-26 Added getTalkingPeople()
-    public Collection<Person> getTalkingPeople() {
-        Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-
-
-        // Check all people.
-        Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+        else {
+        	// the only initiator's settlement
+        	// may be radio or face-to-face conversation
+        	i = getInhabitants().iterator(); 
+        }
         while (i.hasNext()) {
             Person person = i.next();
             Task task = person.getMind().getTaskManager().getTask();
-
-            //Add all people having conversation from all places as the task
-            if (task instanceof HaveConversation)
-                   if (!people.contains(person))
-                	   people.add(person);
+            if (sameBuilding) {
+            	// face-to-face conversation
+                if (person.getLocationState().getName().equals("Inside a building")) {
+                    if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
+                    	if (checkIdle) {
+                    		if (task instanceof Relax
+                    			//| task instanceof Read
+                    			//| task instanceof Workout
+                    			) {
+                    			if (!person.equals(initiator))
+                    				people.add(person); 
+                    		}
+    		            }
+    	                else {
+    	               		if (task instanceof HaveConversation) {
+    	               			//boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
+    	               			//if (isOff)
+    	               				if (!person.equals(initiator))
+    	               					people.add(person);
+    		                   }
+    	                }
+                    }
+                }
+            }
+            else {
+            	// may be radio (non face-to-face) conversation
+                if (person.getLocationState().getName().equals("Inside a building")
+                		&& initiator.getLocationState().getName().equals("Inside a building")) {
+                    if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
+                    	if (checkIdle) {
+                    		if (task instanceof Relax
+                    			| task instanceof Read
+                    			| task instanceof Workout) {
+                    			if (!person.equals(initiator))
+                    				people.add(person); 
+                    		}
+    		            }
+    	                else {
+    	               		if (task instanceof HaveConversation) {
+    	               			//boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
+    	               			//if (isOff)
+                    			if (!person.equals(initiator))
+    	               				people.add(person);
+    		                   }
+    	                }
+                    }
+                }
+            }
             
-            // Add all people ready for switching to having conversation as task in this vehicle.
-            //if (task instanceof Relax)
-            //       if (!people.contains(person))
-            //    	   people.add(person);
+
         }
 
         return people;

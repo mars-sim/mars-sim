@@ -127,7 +127,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
             }
         }
 
-        if (result > 1.1) System.out.println("result : "+ result);
+        //if (result > 1.1) System.out.println("result : "+ result);
         return result;
     }
 

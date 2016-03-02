@@ -1,7 +1,7 @@
 <!ELEMENT people-configuration (oxygen-consumption-rate, water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
 dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, water-deprivation-time,
 food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time,
-min-temperature, max-temperature, freezing-time, stress-breakdown-chance,
+min-temperature, max-temperature, freezing-time, stress-breakdown-chance, high-fatigue-collapse-chance,
 gender-male-percentage, personality-types, person-name-list, first-name-list, last-name-list,person-list)>
 <!ELEMENT oxygen-consumption-rate EMPTY>
 <!ATTLIST oxygen-consumption-rate value CDATA #REQUIRED>
@@ -37,6 +37,9 @@ gender-male-percentage, personality-types, person-name-list, first-name-list, la
 <!ATTLIST freezing-time value CDATA #REQUIRED>
 <!ELEMENT stress-breakdown-chance EMPTY>
 <!ATTLIST stress-breakdown-chance value CDATA #REQUIRED>
+<!ELEMENT high-fatigue-collapse-chance EMPTY>
+<!ATTLIST high-fatigue-collapse-chance value CDATA #REQUIRED>
+
 <!ELEMENT gender-male-percentage EMPTY>
 <!ATTLIST gender-male-percentage value CDATA #REQUIRED>
 <!ELEMENT personality-types (mbti*)>

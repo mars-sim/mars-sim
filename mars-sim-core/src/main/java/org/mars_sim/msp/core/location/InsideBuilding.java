@@ -43,7 +43,6 @@ public class InsideBuilding implements LocationState, Serializable {
 		unit.setLocationState(unit.getSettlementVicinity());
 	}
 
-
 	public void embarkVehicleInVicinity() {
 		unit.setLocationState(unit.getInsideVehicle());
 	}
@@ -59,7 +58,6 @@ public class InsideBuilding implements LocationState, Serializable {
 	public void disembarkVehicleInGarage() {
 		unit.setLocationState(unit.getInsideBuilding());
 	}
-
 
 	public void transferFromSettlementToPerson() {
 		unit.setLocationState(unit.getOnAPerson());

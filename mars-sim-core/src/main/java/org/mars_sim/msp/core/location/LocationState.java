@@ -12,6 +12,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public interface LocationState {
 
+	//TODO: need to fix the methods in LocationState to truly take advantage of the use of interface,
+	// compared to the use of LocationState declared as just an enum
+	
 	String getName();
 
 	public void leaveBuilding();

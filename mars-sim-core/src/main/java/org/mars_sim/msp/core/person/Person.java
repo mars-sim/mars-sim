@@ -1006,7 +1006,7 @@ implements VehicleOperator, MissionMember, Serializable {
 
     @Override
     public String getTaskDescription() {
-        return getMind().getTaskManager().getTaskDescription();
+        return getMind().getTaskManager().getTaskDescription(true);
     }
 
     @Override

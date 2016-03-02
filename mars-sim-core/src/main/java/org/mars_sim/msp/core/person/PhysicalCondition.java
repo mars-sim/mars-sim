@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.08 2015-06-01
+ * @version 3.08 2016-03-01
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -67,9 +67,13 @@ implements Serializable {
     public static final double ACCIDENT_STRESS = 40D;
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
+    
+    private static final double COLLAPSE_IMMINENT = 2500D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     private static final String ANXIETY_ATTACK = "Anxiety Attack";
+
+    private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
 
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
@@ -341,6 +345,11 @@ implements Serializable {
             checkForStressBreakdown(config, time);
         }
 
+        // 2016-03-01 check if person is at very high fatigue may collapse.
+        if (fatigue == COLLAPSE_IMMINENT) {
+            checkForHighFatigueCollapse(config, time);
+        }
+        
         // Calculate performance and most serious illness.
         recalculate();
 
@@ -884,6 +893,42 @@ implements Serializable {
                         logger.info(person.getName() + " has an anxiety attack.");
                     }
                     else logger.log(Level.SEVERE,"Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,"Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
+        }
+    }
+
+    /**
+     * Checks if person has very high fatigue.
+     * @param config the person configuration.
+     * @param time the time passing (millisols)
+     */
+    // 2016-03-01 checkForHighFatigue
+    private void checkForHighFatigueCollapse(PersonConfig config, double time) {
+        try {
+            if (!problems.containsKey(HIGH_FATIGUE_COLLAPSE)) {
+
+                // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
+                int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
+                
+                // a person with high endurance will be less likely to be collapse
+                if (fatigue - endurance * 5D >= COLLAPSE_IMMINENT ) {
+                    int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+                    double modifier = (double) (100 - endurance *2/3 - strength/3) / 10D;
+
+                	
+	                if (RandomUtil.lessThanRandPercent(config.getHighFatigueCollapseChance() * time * modifier)) {
+	                    Complaint highFatigue = getMedicalManager().getComplaintByName(HIGH_FATIGUE_COLLAPSE);
+	                    if (highFatigue != null) {
+	                        addMedicalComplaint(highFatigue);
+	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+	                        logger.info(person.getName() + " collapses because of high fatigue exhaustion.");
+	                    }
+	                    else logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
+	                }
                 }
             }
         }

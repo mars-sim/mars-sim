@@ -12,9 +12,6 @@ import org.mars_sim.msp.core.Unit;
 
 public class OutsideOnMars implements LocationState, Serializable {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 	private String name = "Outside on the surface of Mars";
 	private Unit unit;

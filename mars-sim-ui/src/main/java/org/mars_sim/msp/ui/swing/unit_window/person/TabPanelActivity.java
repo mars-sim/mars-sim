@@ -133,9 +133,9 @@ implements ActionListener {
 		if (dead) taskCache = deathInfo.getTask();
 		else {
 			if (person != null)
-				taskCache = mind.getTaskManager().getTaskDescription();
+				taskCache = mind.getTaskManager().getTaskDescription(true);
 			else if (robot != null)
-				taskCache = botMind.getTaskManager().getTaskDescription();
+				taskCache = botMind.getTaskManager().getTaskDescription(true);
 		}
 		taskTextArea = new JTextArea(2, 20);
 		if (taskCache != null) taskTextArea.setText(taskCache);
@@ -335,7 +335,7 @@ implements ActionListener {
 
 		// Update task text area if necessary.
 		if (dead) taskCache = deathInfo.getTask() + DEAD_PHRASE ;
-		else taskCache = taskManager.getTaskDescription();
+		else taskCache = taskManager.getTaskDescription(true);
 		if (!taskCache.equals(taskTextArea.getText())) 
 			taskTextArea.setText(taskCache);
 

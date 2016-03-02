@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.08 2015-04-02
+ * @version 3.08 2016-03-01
  * @author Scott Davis
  */
 
@@ -33,6 +33,8 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.HaveConversation;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
@@ -873,6 +875,34 @@ public class BuildingManager implements Serializable {
         return result;
     }
 
+
+    /**
+     * Gets a map of buildings having on-going social conversations
+     * @param buildingList the list of buildings to filter.
+     * @return map of buildings and their probabilities.
+     */
+    public static List<Building> getChattyBuildings(List<Building> buildingList) {
+    	List<Building> result = new ArrayList<Building>();
+        Iterator<Building> i = buildingList.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
+            int numPeople = 0;
+            Iterator<Person> j = lifeSupport.getOccupants().iterator();
+            while (j.hasNext()) {
+                Person occupant = j.next();
+                Task task = occupant.getMind().getTaskManager().getTask();
+                if (task instanceof HaveConversation) {
+                    numPeople++;
+                }              
+            }           
+            if (numPeople > 0)
+            	result.add(building);
+        }
+        return result;
+    }
+
+    
     /**
      * Gets a list of buildings that don't have any malfunctions from a list of buildings.
      * @param buildingList the list of buildings.

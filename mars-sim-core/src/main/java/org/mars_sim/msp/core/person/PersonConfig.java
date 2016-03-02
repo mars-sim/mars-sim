@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.07 2015-03-24
+ * @version 3.08 2016-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person;
@@ -62,6 +62,8 @@ implements Serializable {
 	private static final String MAX_TEMPERATURE = "max-temperature";
 	private static final String FREEZING_TIME = "freezing-time";
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
+	private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
+
 	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
 	private static final String PERSONALITY_TYPES = "personality-types";
 	private static final String MBTI = "mbti";
@@ -342,6 +344,16 @@ implements Serializable {
 	public double getStressBreakdownChance() {
 		return getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
 	}
+	
+	/**
+	 * Gets the base percent chance that a person will collapse under high fatigue.
+	 * @return percent chance of a collapse per millisol.
+	 * @throws Exception if collapse time could not be found.
+	 */
+	public double getHighFatigueCollapseChance() {
+		return getValueAsDouble(HIGH_FATIGUE_COLLAPSE);
+	}
+
 
 	/**
 	 * Gets the gender ratio between males and the total population on Mars.
