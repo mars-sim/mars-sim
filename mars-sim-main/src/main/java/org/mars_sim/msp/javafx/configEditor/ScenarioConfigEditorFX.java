@@ -8,9 +8,11 @@ package org.mars_sim.msp.javafx.configEditor;
 
 import org.mars_sim.msp.javafx.MainMenu;
 import org.mars_sim.msp.javafx.MarsProjectFX;
+import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
 import org.mars_sim.msp.networking.MultiplayerClient;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
+import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 import java.awt.Dimension;
@@ -19,6 +21,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +50,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -66,6 +71,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 
+import org.controlsfx.control.MaskerPane;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -124,7 +130,8 @@ public class ScenarioConfigEditorFX {
 	private BorderPane borderAll;
 	private Parent parent;
 	private SwingNode swingNode;
-	private Stage stage;
+	private Stage stage;       
+	private Stage cstage;// = new Stage();
 	private Scene scene;
 
 	private transient ThreadPoolExecutor executor;
@@ -238,7 +245,6 @@ public class ScenarioConfigEditorFX {
 			stage.sizeToScene();
 			stage.toFront();
 
-
 	        stage.centerOnScreen();
 	        stage.setResizable(true);
 	 	   	stage.setFullScreen(false);
@@ -302,6 +308,7 @@ public class ScenarioConfigEditorFX {
 */
 
 	//private Parent createEditor() {
+	@SuppressWarnings("restriction")
 	private BorderPane createEditorFrame() {
 		//AnchorPane pane = new AnchorPane();
 		borderAll = new BorderPane();
@@ -501,44 +508,17 @@ public class ScenarioConfigEditorFX {
 				tableCellEditor.stopCellEditing();
 			}
 
-
 			if (!hasError) {
-
 				setConfiguration();
-				Platform.runLater(() -> {
-					waitLoading();
-				});
-
-				// 2015-10-13 Set up a Task Thread
-				Task task = new Task() {
-		            @Override
-		            protected Integer call() throws Exception {
-						try {
-							Future future = Simulation.instance().getSimExecutor().submit(new SimulationTask());
-
-							while (!future.isDone() && !mainMenu.getMainScene().isMainSceneDone()) {
-								//System.out.println("Wait for 0.2 sec inside the while loop");
-				        		TimeUnit.MILLISECONDS.sleep(200L);
-							}
-			       			//System.out.println("future.get() is " + future.get());
-			       			//System.out.println("future.isDone() is " + future.isDone());
-
-							Platform.runLater(() -> {
-								closeWindow();
-							});
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-
-		                return 0;
-		            }
-		        };
-		        Thread th = new Thread(task);
-		        th.setDaemon(true);
-		        th.start();
-
-                scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
-
+		        scene.setCursor(Cursor.WAIT); //Change cursor to wait style	        
+				cstage = new Stage();
+				CompletableFuture<?> future = CompletableFuture
+						.supplyAsync(() -> submitTask())
+						.thenAccept(lr -> waitLoading());	//loadProgress()); //
+		    	//Platform.runLater(() -> {
+					closeWindow();
+				//});
+				scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 			} //end of if (!hasError)
 
 		});
@@ -567,6 +547,18 @@ public class ScenarioConfigEditorFX {
 		//return borderAll;
 	}
 
+	public int loadProgress() {
+    	Platform.runLater(() -> {
+			waitLoading();
+		});
+		return 1;
+	}
+	
+	public int submitTask() {
+		Simulation.instance().getSimExecutor().submit(new SimulationTask());
+		return 1;
+	}
+	
 	/**
 	 * Swaps the mouse cursor type between DEFAULT and HAND
 	 * @param node
@@ -743,19 +735,53 @@ public class ScenarioConfigEditorFX {
 	/**
 	 * Close and dispose dialog window.
 	 */
-	public void waitLoading() {
-        scene.setCursor(Cursor.WAIT); //Change cursor to wait style
-		mainMenu.getCircleStage().show();
-		mainMenu.getCircleStage().requestFocus();
+	private int waitLoading() {
+      
+        StackPane stackPane = new StackPane();
+
+		MaskerPane indicator = new MaskerPane();
+		indicator.setScaleX(1.2);
+		indicator.setScaleY(1.2);
+
+		stackPane.getChildren().add(indicator);
+		StackPane.setAlignment(indicator, Pos.CENTER);
+		stackPane.setBackground(Background.EMPTY);
+		 
+		//stage.hide();
+		Scene scene = new Scene(stackPane);//, 200, 200);
+		scene.setFill(Color.TRANSPARENT);
+		
+		//cstage = stage;
+		cstage.initStyle (StageStyle.TRANSPARENT);
+		cstage.setScene(scene);
+			
+		StartUpLocation startUpLoc = new StartUpLocation(borderAll.getPrefWidth(), borderAll.getPrefHeight());
+        double xPos = startUpLoc.getXPos();
+        double yPos = startUpLoc.getYPos();
+  
+        if (xPos != 0 && yPos != 0) {
+            cstage.setX(xPos);
+            cstage.setY(yPos);
+            cstage.centerOnScreen();
+            //System.out.println(" x : " + xPos + "   y : " + yPos);
+        } else {
+            cstage.centerOnScreen();
+            //System.out.println("calling centerOnScreen()");
+            //System.out.println(" x : " + xPos + "   y : " + yPos);
+        }
+        cstage.show();
+        cstage.requestFocus();      
 		stage.hide();
+		return 1;
 	}
 
 	/**
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
-		mainMenu.getCircleStage().hide();
-		mainMenu.getCircleStage().close();
+		cstage.hide();	
+		cstage.close();	
+		//stage.hide();
 		stage.close();
 	}
 

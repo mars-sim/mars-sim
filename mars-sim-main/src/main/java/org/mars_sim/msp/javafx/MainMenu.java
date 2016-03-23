@@ -277,10 +277,13 @@ public class MainMenu {
        stage.setScene(mainMenuScene);
        
        //2016-02-07 Added calling setMonitor()
-       mainMenu.setMonitor(stage);
+       setMonitor(stage);
 	   
        stage.show();
 
+       mainSceneStage = new Stage();
+       //mainSceneStage.hide();
+       
        createProgressCircle();
        circleStage.hide();
    }
@@ -317,83 +320,57 @@ public class MainMenu {
 	   stage.hide();
 
 	   // creates a mainScene instance
-	   mainScene = new MainScene(stage);
+	   mainScene = new MainScene(mainSceneStage);
 	   // goes to scenario config editor
 	   marsProjectFX.handleNewSimulation();
    }
 
    public void runTwo() {
-
-		Future  future = Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
+		mainMenuScene.setCursor(Cursor.WAIT);
+		stage.setIconified(true);
+		stage.hide();
+		
+		// creates a mainScene instance
+		mainScene = new MainScene(mainSceneStage);	   
+		prepareScene();
+			
+		//Future future = 
+		Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
 	   	//CompletableFuture future = (CompletableFuture) Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
 
-	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName() + " Thread");
 		Platform.runLater(() -> {
-		//	mainMenuScene.setCursor(Cursor.WAIT);
-			// TODO: the ring won't turn after a couple of seconds
 
-			//2016-02-07 Added calling setMonitor()
-			setMonitor(circleStage);
-		       
-			circleStage.show();
-			circleStage.requestFocus();
-		});
+		   mainScene.prepareOthers();
 
-		stage.setIconified(true);//hide();
-		mainScene = new MainScene(mainSceneStage);
+		   mainScene.initializeTheme();
 
-		// 2015-10-13 Set up a Task Thread
-		Task task = new Task<Void>() {
-            @Override
-            protected Void call() {
-				try {
+		   while (!mainScene.isMainSceneDone())
+		   {
+			   try {
+				TimeUnit.MILLISECONDS.sleep(200L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		   }
 
-					   TimeUnit.MILLISECONDS.sleep(2000L);
-					   // Note 1: The delay time for launching the JavaFX UI should also be based on the file size of the default.sim
-					   long delay_time = (long) (fileSize * 4000L);
-					   TimeUnit.MILLISECONDS.sleep(delay_time);
+		   //mainScene.openInitialWindows();
 
-					   //System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
-					   //System.out.println("isMainSceneDone is " + mainScene.isMainSceneDone());
+		   //stage.setIconified(false);
+		   
+	       //2016-02-07 Added calling setMonitor()
+	       setMonitor(mainSceneStage);
+	       
+	       mainSceneStage.centerOnScreen();
+	       //mainSceneStage.setResizable(false);
+	       mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+		   mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+	 
+	       mainSceneStage.show();
+	       mainSceneStage.requestFocus();
 
-					   //while (!future.isDone() && !mainScene.isMainSceneDone()) {
-					   while ( !future.isDone() && mainMenu.getMainScene().getDesktop() == null) {
-			        		long delay = (long) (fileSize * 1000L);
-							//System.out.println("Wait for " + delay/1000D + " secs inside the while loop");
-							TimeUnit.MILLISECONDS.sleep(delay);
-			        		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
-			        		//System.out.println("desktop is " + mainScene.isMainSceneDone());
-			     		   // Note: java8u60 requires a longer time (than 8u45) such as 4 secs instead of 2 secs on some machines.
-			 			   // or else it will proceed to prepareStage() below prematurely and results in NullPointerException
-			 			   // as it tries to read people data before it was properly populated in UnitManager.
-			 			   //service.shutdownNow();
-			 			   //try {
-			 			   //   service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-			 			   //} catch (InterruptedException e) {}
-					   }
-					   //System.out.println("future.get() is " + future.get());
-					   //System.out.println("future.isDone() is " + future.isDone());
-
-					   TimeUnit.MILLISECONDS.sleep(2000L);
-					   Platform.runLater(() -> {
-						   prepareStage();
-					   });
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return null;
-            }
-        };
-
-        //ProgressIndicator ind = createProgressCircle();
-        //ind.progressProperty().bind(task.progressProperty());
-
-        Thread th = new Thread(task);
-        th.setDaemon(true);
-        th.start();
-
+	   });
+		   
         mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
    }
@@ -412,10 +389,10 @@ public class MainMenu {
 			Simulation.instance().start();
 			Simulation.instance().stop();
 			Simulation.instance().start();
-			Platform.runLater(() -> {
-				prepareScene();
+			//Platform.runLater(() -> {
+			//	prepareScene();
 				//System.out.println("done with prepareScene()");
-			});
+			//});
 		}
 	}
 
@@ -429,7 +406,7 @@ public class MainMenu {
 	   // creates and initialize scene
 	   mainSceneScene = mainScene.initializeScene();
 	   // switch from the main menu's scene to the main scene's scene
-	   stage.setScene(mainSceneScene);
+	   mainSceneStage.setScene(mainSceneScene);
 
 	}
 
@@ -456,20 +433,25 @@ public class MainMenu {
 
 	   mainScene.openInitialWindows();
 
-	   stage.setIconified(false);
+	   //stage.setIconified(false);
 	   
        //2016-02-07 Added calling setMonitor()
-       mainMenu.setMonitor(stage);
+       setMonitor(mainSceneStage);
        
-	   stage.show();
+       mainSceneStage.centerOnScreen();
+       //mainSceneStage.setResizable(false);
+       mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+	   mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+ 
+       mainSceneStage.show();
 
-	   Platform.runLater(() -> {
-		   circleStage.close();
-		});
+	   //Platform.runLater(() -> {
+	   //   circleStage.close();
+	   //});
 
-	   //stage.requestFocus();
+       mainSceneStage.requestFocus();
 
-	   //logger.info("done with stage.show() in MainMenu's prepareStage()");
+	   logger.info("done with mainSceneStage.show() in MainMenu's prepareStage()");
 	}
 
    public void runThree() {

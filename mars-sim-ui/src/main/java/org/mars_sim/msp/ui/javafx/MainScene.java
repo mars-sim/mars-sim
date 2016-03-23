@@ -85,7 +85,8 @@ import javafx.util.Duration;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
-
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -100,11 +101,13 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
+//import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
@@ -113,7 +116,7 @@ import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
-
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
 
 
@@ -219,7 +222,7 @@ public class MainScene {
 		this.stage = stage;
 		this.isMainSceneDone = false;
 
-		stage.setResizable(true);
+		//stage.setResizable(true);
 
 		//stage.setMinWidth(1280);
 		//stage.setMinHeight(600);
@@ -310,10 +313,10 @@ public class MainScene {
 	 */
 	public void prepareOthers() {
 		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
-		transportWizard = new TransportWizard(this, desktop);
-		constructionWizard = new ConstructionWizard(this, desktop);
 		startAutosaveTimer();
 		startEarthTimer();
+		transportWizard = new TransportWizard(this, desktop);
+		constructionWizard = new ConstructionWizard(this, desktop);
 		//logger.info("done with MainScene's prepareOthers()");
 	}
 
@@ -1025,7 +1028,7 @@ public class MainScene {
 	// 2015-01-25 Added autosave
 	public void loadSimulation(int type) {
 		//logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
-
+		
 		// if (earthTimer != null)
 		// earthTimer.stop();
 		// earthTimer = null;
@@ -1045,6 +1048,7 @@ public class MainScene {
 		} else {
 			loadSimThread.interrupt();
 		}
+		
 	}
 
 	/**
@@ -1053,6 +1057,7 @@ public class MainScene {
 	 */
 	public void loadSimulationProcess(int type) {
 		//logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+		
 		String dir = null;
 		String title = null;
 		File fileLocn = null;
@@ -1116,8 +1121,8 @@ public class MainScene {
 			}
 		}
 
-		// Simulation.instance().getExecutorServiceThread().submit(new
-		// LoadSimulationTask(fileLocn));
+		//NOT WORKING Simulation.instance().getSimExecutor().submit(new LoadSimulationTask(fileLocn));
+		//Simulation.instance().getExecutorServiceThread().submit(new	LoadSimulationTask(fileLocn));
 
 		try {
 			desktop.resetDesktop();
@@ -1134,16 +1139,60 @@ public class MainScene {
 
 		desktop.disposeAnnouncementWindow();
 
+		
+		// 2016-03-22 uncheck all tool windows in the menu bar
+        Collection<ToolWindow> toolWindows = desktop.getToolWindowsList();   
+        Iterator<ToolWindow> i = toolWindows.iterator();
+		while (i.hasNext()) {
+			menuBar.uncheckToolWindow(i.next().getToolName());
+		}
+		
+/*
+ * 		// Note: it should save and load up the previous desktop setting instead of the Guide Tool
 		// Open Guide tool after loading.
         desktop.openToolWindow(GuideWindow.NAME);
         GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
     	int Xloc = (int)((stage.getScene().getWidth() - ourGuide.getWidth()) * .5D);
 		int Yloc = (int)((stage.getScene().getHeight() - ourGuide.getHeight()) * .5D);
 		ourGuide.setLocation(Xloc, Yloc);
-        ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+        ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$	
+*/
 	}
 
 
+	   /*
+	    * Loads settlement data from a default saved sim
+	    
+		public class LoadSimulationTask implements Runnable {
+			File fileLocn;
+			
+			LoadSimulationTask(File fileLocn) {
+				this.fileLocn = fileLocn;
+			}
+			
+			public void run() {
+				logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
+				//fileSize = 1;
+				logger.info("Loading settlement data from the saved simulation.");
+				Simulation.instance().stop();
+				Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+				//System.out.println("done with loadSimulation(null)");
+				logger.info("Restarting " + Simulation.WINDOW_TITLE);
+				Simulation.instance().stop();
+				Simulation.instance().start();
+				Platform.runLater(() -> {
+					//prepareScene();
+					prepareMainScene();		
+					stage.setScene(initializeScene());
+					//System.out.println("MainScene : done with prepareMainScene()");
+				});
+				//Simulation.instance().start();
+				Simulation.instance().stop();
+				Simulation.instance().start();
+			}
+		}
+*/
+	
 	/**
 	 * Create a new simulation.
 	 */
@@ -1478,6 +1527,7 @@ public class MainScene {
 	private void createSwingNode() {
 		desktop = new MainDesktopPane(this);
 		SwingUtilities.invokeLater(() -> {
+			//desktop = new MainDesktopPane(this);
 			setLookAndFeel(1);
 			swingNode.setContent(desktop);
 		} );

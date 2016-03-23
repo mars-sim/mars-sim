@@ -1,13 +1,18 @@
 /**
  * Mars Simulation Project
  * TransportWizard.java
- * @version 3.08 2015-12-18
+ * @version 3.08 2016-03-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import org.mars_sim.msp.core.BoundedObject;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -33,13 +38,23 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
+//import javafx.scene.input.KeyEvent;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.PauseTransition;
@@ -65,8 +80,11 @@ import java.awt.event.MouseMotionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -91,6 +109,38 @@ public class TransportWizard {
     private final static String TITLE = "Transport Wizard";
 
     private double xLast, yLast;
+
+	// 2016-03-08 Added key bindings related declarations
+    private static final int ANIMATION_DELAY = 5;
+    private EnumMap<KeyboardDirection, Boolean> enumMap = new EnumMap<>(KeyboardDirection.class);
+    private Map<Integer, KeyboardDirection> keyboardMap = new HashMap<>();
+    private javax.swing.Timer animationTimer;
+
+    //public int xLoc;
+    //public int yLoc;
+    //public int facing;
+
+	enum KeyboardDirection {
+	   UP(0, 1, 0), DOWN(0, -1, 0), LEFT(1, 0, 0), RIGHT(-1, 0, 0), TURN(0, 0, 45);
+	   private int incrX;
+	   private int incrY;
+	   private int facingChange;
+	
+	   private KeyboardDirection(int incrX, int incrY, int facingChange) {
+	      this.incrX = incrX;
+	      this.incrY = incrY;
+	      this.facingChange = facingChange;	      
+	   }	
+	   public int getIncrX() {
+	      return incrX;
+	   }	
+	   public int getIncrY() {
+	      return incrY;
+	   }   
+	   public int getFacing() {
+		   return facingChange;
+	   }
+	}
 
 	private String buildingNickName;
 
@@ -123,9 +173,11 @@ public class TransportWizard {
 	public TransportWizard(final MainScene mainScene, MainDesktopPane desktop) {
 		this.desktop = desktop;
 		this.mainScene = mainScene;
-		settlementWindow = desktop.getSettlementWindow();
+    	//if (desktop.getSettlementWindow() != null)
+    	//	settlementWindow = desktop.getSettlementWindow();
 		//if (settlementWindow == null) System.out.println("settlementWindow is null");
-		mapPanel = settlementWindow.getMapPanel();
+    	//if (settlementWindow.getMapPanel() != null)
+    	//	mapPanel = settlementWindow.getMapPanel();
 		//if (mapPanel == null) System.out.println("mapPanel is null");
 		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
@@ -137,7 +189,11 @@ public class TransportWizard {
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
     	logger.info("deliverBuildings() is in " + Thread.currentThread().getName() + " Thread");
-
+    	if (settlementWindow == null)
+    		settlementWindow = desktop.getSettlementWindow();
+    	if (mapPanel == null)
+    		mapPanel = settlementWindow.getMapPanel();
+		
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
     	// how to make each building ask for a position ?
 
@@ -379,7 +435,7 @@ public class TransportWizard {
      			width, length, template.getXLoc(), template.getYLoc(), template.getFacing());
 		//System.out.println("inside checkTemplatePosition(), calling checkTemplateAddBuilding() now ");
      	// 2015-12-08 Added checkTemplateAddBuilding()
-        checkTemplateAddBuilding(mgr, newT);
+        pauseAndCheck(mgr, newT);
 /*		// True if the template position is clear of obstacles (existing buildings/vehicles/construction sites)
         if (mgr.getResupply().checkBuildingTemplatePosition(correctedTemplate)) {
      	   //System.out.println("TransportWizard : resupply.checkBuildingTemplatePosition(template) is true");
@@ -406,7 +462,7 @@ public class TransportWizard {
      * @param correctedTemplate
      */
     // 2015-12-07 Added checkTemplateAddBuilding()
-    public synchronized void checkTemplateAddBuilding(BuildingManager mgr, BuildingTemplate correctedTemplate) {
+    public synchronized void pauseAndCheck(BuildingManager mgr, BuildingTemplate correctedTemplate) {
     	//System.out.println("inside checkTemplateAddBuilding()");
 
     	boolean previous0 = Simulation.instance().getMasterClock().isPaused();
@@ -424,13 +480,13 @@ public class TransportWizard {
     	boolean checking = checkBuildingTemplatePosition(mgr, correctedTemplate);
     	//System.out.println("checking is " + checking);
 		if (checking) {
-			confirmBuildingLocation(mgr, correctedTemplate, true, false);
+			createDialog(mgr, correctedTemplate, true, false);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, true)");
 
 		} else {
 			BuildingTemplate newT = clearCollision(correctedTemplate, mgr);
 			//System.out.println("inside checkTemplateAddBuilding(), just got newT");
-			confirmBuildingLocation(mgr, newT, false, true);
+			createDialog(mgr, newT, false, true);
 			//System.out.println("inside checkTemplateAddBuilding(), done calling confirmBuildingLocation(mgr, correctedTemplate, false)");
 		}
 
@@ -540,7 +596,7 @@ public class TransportWizard {
 
 		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-		boolean collison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
+		boolean collison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
 
         return !collison;
@@ -606,7 +662,7 @@ public class TransportWizard {
      * @param buildingManager
      * @param isAtPreDefinedLocation
      */
-	public synchronized void confirmBuildingLocation(BuildingManager mgr, BuildingTemplate template,
+	public synchronized void createDialog(BuildingManager mgr, BuildingTemplate template,
 			boolean isAtPreDefinedLocation, boolean isNewTemplate) {
 		//System.out.println("inside confirmBuildingLocation");
 		//Building newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
@@ -675,7 +731,7 @@ public class TransportWizard {
 			}
 			else {
 				mgr.removeBuilding(newBuilding);
-				confirmBuildingLocation(mgr, template, false, true);
+				createDialog(mgr, template, false, true);
 			}
 
 			desktop.disposeAnnouncementWindow();
@@ -764,13 +820,13 @@ public class TransportWizard {
 		    	// 2015-12-16 Added setMissionName()
 				repositionedTemplate.setMissionName(template.getMissionName());
 				//System.out.println("just called setMissionName()");\
-				checkTemplateAddBuilding(mgr, repositionedTemplate);
+				pauseAndCheck(mgr, repositionedTemplate);
 				//checkTemplatePosition(mgr, repositionedTemplate, false);
 				//System.out.println("done calling checkTemplatePosition()");
 
 
 			} else if (result.isPresent() && result.get() == buttonTypeMouseKB) {
-				placementDialog(title, header, newBuilding);
+				placementDialog(title, header, newBuilding, mgr);
 
 			} else if (hasTimer && result.isPresent() && result.get() == buttonTypeCancelTimer) {
 				timer.stop();
@@ -788,7 +844,7 @@ public class TransportWizard {
 	 */
 	// 2015-12-25 Added mouseDialog()
 	@SuppressWarnings("restriction")
-	public void placementDialog(String title, String header, Building newBuilding) {
+	public void placementDialog(String title, String header, Building newBuilding, BuildingManager mgr) {
     	// Platform.runLater(() -> {
 		// FXUtilities.runAndWait(() -> {
 			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the building\n"
@@ -825,15 +881,38 @@ public class TransportWizard {
 
 			mainScene.getStage().requestFocus();
 
-			final KeyboardDetection kb = new KeyboardDetection(newBuilding);
-			final MouseDetection md = new MouseDetection(newBuilding);
+			//final KeyboardDetection kb = new KeyboardDetection(newBuilding, mgr);
+			
+			// 2016-03-08 Added keyboard mapping and key bindings
+			for (KeyboardDirection dir : KeyboardDirection.values()) {
+				enumMap.put(dir, Boolean.FALSE);
+			}
+			
+			keyboardMap.put(java.awt.event.KeyEvent.VK_UP, KeyboardDirection.UP);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_DOWN, KeyboardDirection.DOWN);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_LEFT, KeyboardDirection.LEFT);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_RIGHT, KeyboardDirection.RIGHT);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_R, KeyboardDirection.TURN);
+
+			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_UP, KeyboardDirection.UP);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_DOWN, KeyboardDirection.DOWN);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_LEFT, KeyboardDirection.LEFT);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_KP_RIGHT, KeyboardDirection.RIGHT);
+			keyboardMap.put(java.awt.event.KeyEvent.VK_F, KeyboardDirection.TURN);
+
+			setKeyBindings();			
+			animationTimer = new javax.swing.Timer(ANIMATION_DELAY, new AnimationListener(newBuilding, mgr));
+			animationTimer.start();
+
+			
+			final MouseDetection md = new MouseDetection(newBuilding, mgr);
 
 			SwingUtilities.invokeLater(() -> {
 
 				mapPanel.setFocusable(true);
 				mapPanel.requestFocusInWindow();
 
-				mapPanel.addKeyListener(kb);
+				//mapPanel.addKeyListener(kb);
 
 				mapPanel.addMouseMotionListener(md);
 
@@ -862,7 +941,12 @@ public class TransportWizard {
 					public void mouseReleased(MouseEvent evt) {
 						if (evt.getButton() == MouseEvent.BUTTON1) {
 							//mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-							moveNewBuildingAt(newBuilding, evt.getX(), evt.getY());
+							
+						    // Check for collision here
+						    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
+						    boolean ok2 = checkCollisionImmovable(newBuilding, mgr);
+						    if (ok1 && ok2) 							
+						    	moveNewBuildingTo(newBuilding, evt.getX(), evt.getY());
 						}
 						mapPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 					}
@@ -874,25 +958,166 @@ public class TransportWizard {
 
 			if (result.isPresent() && result.get() == buttonTypeConfirm) {
 				newBuilding.setInTransport(false);
-				mapPanel.removeKeyListener(kb);
+				//mapPanel.removeKeyListener(kb);
+				removeKeyBindings();
+				animationTimer.stop();
 				mapPanel.removeMouseMotionListener(md);
 			}
 
 	}
 
+	// 2016-03-08 Added setKeyBindings()
+	private void setKeyBindings() {
+	      int condition = javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
+	      final javax.swing.InputMap inputMap = mapPanel.getInputMap(condition);
+	      final javax.swing.ActionMap actionMap = mapPanel.getActionMap();
+	      boolean[] keyPressed = { true, false };
+		  
+	      //boolean[] keys = new boolean[KeyEvent.KEY_TYPED];
+		  //keys[evt.getKeyCode()] = true;
+
+	      for (Integer keyCode : keyboardMap.keySet()) {
+	         KeyboardDirection dir = keyboardMap.get(keyCode);
+	         for (boolean onKeyPress : keyPressed) {
+	            boolean onKeyRelease = !onKeyPress;
+	            KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, 0, onKeyRelease);
+	            Object key = keyStroke.toString();
+	            inputMap.put(keyStroke, key);
+	            actionMap.put(key, new KeyBindingsAction(dir, onKeyPress));
+	         }
+	      }
+	   }
+
+	// 2016-03-08 Added removeKeyBindings()
+	private void removeKeyBindings() {
+	      int condition = javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
+	      final javax.swing.InputMap inputMap = mapPanel.getInputMap(condition);
+	      final javax.swing.ActionMap actionMap = mapPanel.getActionMap();
+	      boolean[] keyPressed = { true, false };
+		  
+	      //boolean[] keys = new boolean[KeyEvent.KEY_TYPED];
+		  //keys[evt.getKeyCode()] = true;
+
+	      for (Integer keyCode : keyboardMap.keySet()) {
+	         KeyboardDirection dir = keyboardMap.get(keyCode);
+	         for (boolean onKeyPress : keyPressed) {
+	            boolean onKeyRelease = !onKeyPress;
+	            KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, 0, onKeyRelease);
+	            //Object key = keyStroke.toString();
+	            inputMap.put(keyStroke, "none");
+	            actionMap.put("none", new KeyBindingsAction(dir, onKeyPress));
+	         }
+	      }
+	   }
+	
+	// 2016-03-08 KeyBindingsAction class
+	   private class KeyBindingsAction extends AbstractAction {
+	      private KeyboardDirection dir;
+	      boolean pressed;
+
+	      public KeyBindingsAction(KeyboardDirection dir, boolean pressed) {
+	         this.dir = dir;
+	         this.pressed = pressed;
+	      }
+
+	      @Override
+	      public void actionPerformed(ActionEvent evt) {
+	         enumMap.put(dir, pressed);
+	      }
+	   }
+
+	   private class AnimationListener implements ActionListener {
+		   private Building b;
+		   private BuildingManager mgr;
+		   
+		   AnimationListener(Building b, BuildingManager mgr) {
+			   this.b = b;
+			   this.mgr = mgr;
+		   }
+
+	      @Override
+	      public void actionPerformed(ActionEvent evt) {
+	    	  boolean repaint = false;
+	    	  int xLoc = (int) b.getXLocation();
+	    	  int yLoc = (int) b.getYLocation();
+	    	  int facing = (int) b.getFacing();
+	    	  	    	  
+      
+				  for (KeyboardDirection dir : KeyboardDirection.values()) {
+	    		  					    
+    				  if (enumMap.get(dir)) {
+    					  System.out.println("dir.getIncrX() : " + dir.getIncrX());	
+    					  //boolean ok1 = checkCollisionMoveVehicle(b, mgr);
+    					  boolean ok2 = checkCollisionImmovable(b, mgr);
+    					  
+    					  if (ok2) {
+    						  System.out.println("ok2 : "+ ok2);
+			    			  xLoc += dir.getIncrX();
+			    			  yLoc += dir.getIncrY();
+			    			  
+			    			  b.setXLocation(xLoc);
+			    			  b.setYLocation(yLoc);
+			    			  
+			    			  facing += dir.getFacing();
+			    			  if (facing >= 360)
+			    			    facing = facing - 360;
+			    			  b.setFacing(facing);
+			    			  
+			    			  repaint = true;
+			    			  
+    					  } else {
+	    				  
+		    				  xLoc = xLoc - dir.getIncrX() * 2;
+			    			  yLoc = yLoc - dir.getIncrY() * 2;
+			    			  
+			    			  b.setXLocation(xLoc);
+			    			  b.setYLocation(yLoc);
+			    			  
+			    			  facing -= dir.getFacing();
+			    			  if (facing < 0)
+			    				  facing = facing + 360;		    			  
+			    			  b.setFacing(facing);
+			    			  
+			    			  repaint = true;	    				  
+
+			    			  return;
+		    				  //break;
+			    			  //continue;
+		    			  }
+	    			  }
+	    			  else {	    	
+	    				  //System.out.println("dir.getIncrX() : " + dir.getIncrX());
+	    				  //System.out.println("dir.getIncrY() : " + dir.getIncrY());  
+
+	    			  }
+				  }
+
+			  
+			  if (repaint) {
+				  mapPanel.repaint();
+			  }
+	      }
+	}
+		   
 	// 2015-12-25 Added MouseDetection
 	class MouseDetection implements MouseMotionListener{
 		private Building newBuilding;
+		private BuildingManager mgr;
 
-		MouseDetection(Building newBuilding) {
+		MouseDetection(Building newBuilding, BuildingManager mgr) {
 			this.newBuilding = newBuilding;
+			this.mgr = mgr;
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent evt) {
 			if (evt.getButton() == MouseEvent.BUTTON1) {
 				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				moveNewBuildingAt(newBuilding, evt.getX(), evt.getY());
+			    // Check for collision here
+			    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
+			    boolean ok2 = checkCollisionImmovable(newBuilding, mgr);
+			    if (ok1 && ok2) 			
+			    	moveNewBuildingTo(newBuilding,  evt.getX(), evt.getY());
 			}
 		}
 
@@ -901,18 +1126,24 @@ public class TransportWizard {
 	}
 
 	// 2015-12-25 Added KeyboardDetection
-	class KeyboardDetection implements KeyListener{
+	class KeyboardDetection implements KeyListener{		
 		private Building newBuilding;
-
-		KeyboardDetection(Building newBuilding) {
+		private BuildingManager mgr;
+		
+		KeyboardDetection(Building newBuilding, BuildingManager mgr) {
 			this.newBuilding = newBuilding;
+			this.mgr = mgr;
 		}
 
 		@Override
 		public void keyPressed(java.awt.event.KeyEvent e) {
 		    int c = e.getKeyCode();
 		    //System.out.println("c is " + c);
-		    moveNewBuilding(newBuilding, c);
+		    // Check for collision here
+		    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
+		    boolean ok2 = checkCollisionImmovable(newBuilding, mgr);
+		    if (ok1 && ok2) 
+		    	handleKeyboardInput(newBuilding, c);
 		    mapPanel.repaint();
 		}
 
@@ -934,7 +1165,7 @@ public class TransportWizard {
 	 * @param yPixel
 	 */
 	// 2015-12-26 Added moveNewBuildingAt()
-	public void moveNewBuildingAt(Building b, double xPixel, double yPixel) {
+	public void moveNewBuildingTo(Building b, double xPixel, double yPixel) {
 		Point.Double pixel = mapPanel.convertToSettlementLocation((int)xPixel, (int)yPixel);
 
 		double xDiff = xPixel - xLast;
@@ -1010,8 +1241,8 @@ public class TransportWizard {
 	 * @param b
 	 * @param c
 	 */
-	// 2015-12-26 Added moveNewBuilding()
-	public void moveNewBuilding(Building b, int c) {
+	// 2016-03-08 Renamed to handleKeyboardInput()
+	public void handleKeyboardInput(Building b, int c) {
 		int facing = (int) b.getFacing();
 		double x = b.getXLocation();
 		double y = b.getYLocation();
@@ -1053,6 +1284,48 @@ public class TransportWizard {
 
 	}
 
+    /**
+     * Checks for collision and relocate any vehicles if found
+     * @param xLoc
+     * @param yLoc
+     * @param coordinates
+     * @return true if the location is clear of collision
+     */
+    // 2015-12-07 Added checkCollisionMoveVehicle()
+    public boolean checkCollisionMoveVehicle(Building b, BuildingManager mgr) {
+
+    	double xLoc = b.getXLocation();
+    	double yLoc = b.getYLocation();
+    	double w = b.getWidth();
+		double l = b.getLength();
+		double f = b.getFacing();
+
+		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+
+		// true if it doesn't collide
+        boolean col = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
+        return !col;
+    }
+
+
+    // 2015-12-07 Added checkCollisionImmovable()
+    public boolean checkCollisionImmovable(Building b, BuildingManager mgr) {
+
+    	double xLoc = b.getXLocation();
+    	double yLoc = b.getYLocation();
+    	double w = b.getWidth();
+		double l = b.getLength();
+		double f = b.getFacing();
+
+		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
+
+		// true if it doesn't collide
+		boolean col = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
+        //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
+        return !col;
+    }
+	
+	
 	/**
 	 * Compares and sorts a list of BuildingTemplates according to its building id
 	 */

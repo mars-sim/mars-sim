@@ -229,8 +229,14 @@ public class LocalAreaUtil {
         return result;
     }
 
-
-    // 2015-12-08 Added
+    /**
+     * Checks if a point location does not collide with any existing vehicle
+     * or construction site.
+     * @param LocalBoundedObject object
+     * @param boolean needToMove
+     * @return true if location doesn't collide with anything.
+     */
+    // 2015-12-08 Added checkVehicleBoundedOjectIntersected()
     public static boolean checkVehicleBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates, boolean needToMove) {
     	boolean result = false;
 
@@ -261,7 +267,7 @@ public class LocalAreaUtil {
      * @param coordinates the global coordinate location to check.
      * @return true if location doesn't collide with anything.
      */
-    // 2015-12-08 Added
+    // 2015-12-08 Added checkVehicleCollision()
     public static boolean checkVehicleCollision(double xLoc, double yLoc, Coordinates coordinates, boolean needToMove) {
 
         boolean result = true;
@@ -314,7 +320,7 @@ public class LocalAreaUtil {
      * @param coordinates the coordinate location.
      * @return set of local bounded objects at location (may be empty).
      */
-    // 2015-12-08 Added
+    // 2015-12-08 Added getAllVehicleBoundedObjectsAtLocation()
     public static Set<LocalBoundedObject> getAllVehicleBoundedObjectsAtLocation(Coordinates coordinates) {
 
         Set<LocalBoundedObject> result = new HashSet<LocalBoundedObject>();
@@ -331,8 +337,14 @@ public class LocalAreaUtil {
         return result;
     }
 
-    // 2015-12-08 Added
-    public static boolean checkImmovableBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates, boolean needToMove) {
+    /** 
+     * Checks for collisions with any immovable objects
+     * @return true if location doesn't collide with anything.
+     * @param LocalBoundedObject object
+     * @param Coordinates coordinates
+     */
+    // 2015-12-08 Added checkImmovableBoundedOjectIntersected()
+    public static boolean checkImmovableBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates) { //, boolean needToMove) {
     	boolean result = false;
 
         Iterator<LocalBoundedObject> i = getAllImmovableBoundedObjectsAtLocation(coordinates).iterator();
@@ -364,7 +376,10 @@ public class LocalAreaUtil {
                 // Add all buildings at settlement.
                 Iterator<Building> j = settlement.getBuildingManager().getACopyOfBuildings().iterator();
                 while (j.hasNext()) {
-                    result.add(j.next());
+                	Building b = j.next();
+                	// 2016-03-07 Added checking for getInTransport()
+                	if (!b.getInTransport())
+                		result.add(b);
                 }
 
                 // Check all construction sites at settlement.

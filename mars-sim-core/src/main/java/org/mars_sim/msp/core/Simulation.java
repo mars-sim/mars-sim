@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core;
 
 import java.awt.Color;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
@@ -40,6 +43,9 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
+import org.tukaani.xz.LZMA2Options;
+import org.tukaani.xz.XZInputStream;
+import org.tukaani.xz.XZOutputStream;
 
 import javafx.application.Platform;
 //import mikera.gui.Frames;
@@ -461,7 +467,8 @@ implements ClockListener, Serializable {
      * @throws IOException if error reading from file.
      */
     private void readFromFile(File file) throws ClassNotFoundException, IOException {
-
+    	System.out.println("Simulation : running readFromFile()");
+/*
         //ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
         FileInputStream fin = new FileInputStream(file);
         GZIPInputStream gis = new GZIPInputStream(fin);
@@ -494,12 +501,105 @@ implements ClockListener, Serializable {
         unitManager = (UnitManager) ois.readObject();
         masterClock = (MasterClock) ois.readObject();
         ois.close();
+*/
+    	
+    	// 2016-03-22 Replace gzip with xz compression (based on LZMA2)
+        // Decompress a xz compressed file
+        
+        byte[] buf = new byte[8192];
 
-        // Initialize transient data.
-        initializeTransientData();
+        ObjectInputStream ois = null;
+        FileInputStream in = null;
+ 
+    	System.out.println("Simulation : before calling try");
 
-        instance().initialSimulationCreated = true;
-    }
+        try {
+        	System.out.println("Simulation : inside try. starting decompressing");
+            in = new FileInputStream(file);
+
+            //try {
+                // Since XZInputStream does some buffering internally
+                // anyway, BufferedInputStream doesn't seem to be
+                // needed here to improve performance.
+                // in = new BufferedInputStream(in);
+            	XZInputStream xzin = new XZInputStream(in, 256 * 1024);              
+                // limit memory usage to 256 MB
+               
+                // define a temporary uncompressed file
+                File uncompressed = new File(DEFAULT_DIR, "temp");
+                FileOutputStream fos = new FileOutputStream(uncompressed);                
+
+                int size;
+                while ((size = xzin.read(buf)) != -1)
+                	fos.write(buf, 0, size);
+   
+                ois = new ObjectInputStream(new FileInputStream(uncompressed));
+                
+                // Destroy old simulation.
+                if (instance().initialSimulationCreated) {
+                    destroyOldSimulation();
+                }
+
+                // Load intransient objects.
+                SimulationConfig.setInstance((SimulationConfig) ois.readObject());
+                //SimulationConfig instance = (SimulationConfig) ois.readObject();
+            	//SimulationConfig.setInstance(instance);
+
+                loadBuild = SimulationConfig.instance().getBuild();
+            	if (loadBuild == null)
+            		loadBuild = "unknown";
+            	logger.info("Running MSP Build " + Simulation.BUILD + ". Loading a sim saved in Build " + loadBuild);
+
+               	System.out.println("Simulation : inside try. starting loading objects");
+
+                malfunctionFactory = (MalfunctionFactory) ois.readObject();
+                mars = (Mars) ois.readObject();
+                mars.initializeTransientData();
+                missionManager = (MissionManager) ois.readObject();
+                relationshipManager = (RelationshipManager) ois.readObject();
+                medicalManager = (MedicalManager) ois.readObject();
+                scientificStudyManager = (ScientificStudyManager) ois.readObject();
+                transportManager = (TransportManager) ois.readObject();
+                creditManager = (CreditManager) ois.readObject();
+                unitManager = (UnitManager) ois.readObject();
+                masterClock = (MasterClock) ois.readObject();
+                //ois.close();
+                
+            //} finally {           	                           
+                // Close FileInputStream (directly or indirectly
+                // via XZInputStream, it doesn't matter).
+                in.close();
+                xzin.close();
+                fos.close();                
+            //}
+                
+        } catch (FileNotFoundException e) {
+            System.err.println("XZDecDemo: Cannot open " + file + ": "
+                               + e.getMessage());
+            System.exit(1);
+
+        } catch (EOFException e) {
+            System.err.println("XZDecDemo: Unexpected end of input on "
+                               + file);
+            System.exit(1);
+
+        } catch (IOException e) {
+            System.err.println("XZDecDemo: Error decompressing from "
+                               + file + ": " + e.getMessage());
+            System.exit(1);
+ 
+	    } finally {
+	        if (ois != null) {
+	            ois.close();
+	        }
+
+            
+	    }
+	        // Initialize transient data.
+	        initializeTransientData();
+	
+	        instance().initialSimulationCreated = true;
+	    }
 
 
     /**
@@ -548,17 +648,16 @@ implements ClockListener, Serializable {
 
         }
 
-        //else if file != null
-            // file should already have the correct dir, name and extension, no need to change it
-
         //ObjectOutputStream p = null;
         ObjectOutputStream oos = null;
 
         try {
-            //oos = new ObjectOutputStream(new FileOutputStream(file));
+ /*
+        	//oos = new ObjectOutputStream(new FileOutputStream(file));
             FileOutputStream fos = new FileOutputStream(file);
             GZIPOutputStream gz = new GZIPOutputStream(fos);
             oos = new ObjectOutputStream(gz);
+			oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
 
             // Store the intransient objects.
             oos.writeObject(SimulationConfig.instance());
@@ -576,9 +675,56 @@ implements ClockListener, Serializable {
             oos.flush();
             oos.close();
             oos = null;
+ */
+        	
+            // 2016-03-22 Replace gzip with xz compression (based on LZMA2)
+            // See (1) http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
+            //     (2) http://tukaani.org/xz/xz-javadoc/
+            
+            // STEP 1: combine all objects into one single uncompressed file
+            File uncompressed = new File(DEFAULT_DIR, DEFAULT_FILE);            
+            oos = new ObjectOutputStream(new FileOutputStream(uncompressed));           
+            // Store the intransient objects.
+            oos.writeObject(SimulationConfig.instance());
+            oos.writeObject(malfunctionFactory);
+            oos.writeObject(mars);
+            oos.writeObject(missionManager);
+            oos.writeObject(relationshipManager);
+            oos.writeObject(medicalManager);
+            oos.writeObject(scientificStudyManager);
+            oos.writeObject(transportManager);
+            oos.writeObject(creditManager);
+            oos.writeObject(unitManager);
+            oos.writeObject(masterClock);
+            oos.flush();
+            oos.close();
+            
+            // STEP 2: convert the uncompressed file into a fis
+            // set up fos and outxz
+            FileInputStream fis = new FileInputStream(uncompressed);          
+            //File xzFilename = new File(DEFAULT_DIR, DEFAULT_FILE + ".xz");           
+            FileOutputStream fos = new FileOutputStream(file);
+			LZMA2Options options = new LZMA2Options();		
+			options.setPreset(6); 
+			// play with this number: 6 is default but 7 works better for mid sized archives ( > 8mb)		
+			XZOutputStream xzout = new XZOutputStream(fos, options);
+			
+			// STEP 3: set up buffer and create outxz and save as a .sim file
+			byte[] buf = new byte[8192];
+			int size;
+			while ((size = fis.read(buf)) != -1)
+			   xzout.write(buf, 0, size);			
+			xzout.finish();       
+					
+			fis.close();
+			xzout.close();
+			oos = null;
+            //
+          
         } catch (IOException e){
             logger.log(Level.WARNING, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
             throw e;
+            
         } finally {
             if (oos != null) {
                 oos.close();

@@ -108,6 +108,8 @@
 	</part>
 
 	<part name="rover battery" mass="50.0">
+		<description>This rechargeable battery module provide auxiliary electric power
+		to the vehicle. The fuel cell trickle charges the battery at night.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 			<entity name="light utility vehicle" probability="5" max-number="1" />
@@ -278,7 +280,8 @@
 	</part>
 
 	<part name="eva backpack" mass="15.0" >
-		<description>made with polyethylene and a steel frame.</description>
+		<description>The backpack is the most crucial part of the Portable Life-Support System (PLSS).
+		It is made with polyethylene and a steel frame.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
@@ -717,10 +720,59 @@
 	</part>
 
 	<part name="solid oxide fuel cell" mass=".3">
-		<description>Each solid oxide fuel cell (SOFC) can generate 200W. It consumes methane and has attained a rating of 85% efficiency</description>
+		<description>Each solid oxide fuel cell (SOFC) can generate 200W. 
+		It consumes methane and has attained a rating of 85% efficiency</description>
 	</part>
 
+	<part name="portable water purification unit" mass="1">
+		<description>The PWPU recycle liquid wastes and is used inside a vehicle/rover </description>
+	    <maintenance-entity-list>
+			<entity name="vehicle" probability="2" max-number="2" />
+		</maintenance-entity-list>
+	</part>
 
+	<part name="telescoping antenna" mass="2.0">
+		<description>This long transmitting antenna serves to transmit telemetry data for a portable science station in the field. 
+		</description>
+		<maintenance-entity-list>
+			<entity name="vehicle" probability="10" max-number="1" />
+			<entity name="communication" probability="10" max-number="1" />
+		</maintenance-entity-list>
+	</part>
+
+	<part name="portable gas chromatograph" mass="15.0">
+		<description>This lab instrument separates the constituents of a volatile substance 
+		and is used to gas content analysis. </description>
+	</part>
+
+	<part name="portable mass spectrometer" mass="10.0">
+		<description>This apparatus can separate isotopes and molecular fragments according to 
+		mass. The sample is vaporized and ionized, and the ions are accelerated in an electric 
+		field and deflected by a magnetic field into a curved trajectory that 
+		gives a distinctive mass spectrum. </description>
+	</part>
+
+	<part name="portable X-ray fluorescene spectrometer" mass="8.0">
+		<description>This apparatus is used to perform non-destructive chemical analyses of rocks, minerals, sediments and fluids. 
+		</description>
+	</part>
+
+	<part name="infra-red spectrometer" mass="10.0">
+		<description>This instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
+		by using infrared spectroscopy to produce an infrared spectrum of the sample. </description>
+	</part>
+
+	<part name="heat probe" mass="10.0">
+		<description>This instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
+		by using infrared spectroscopy to produce an infrared spectrum of the sample. </description>
+	</part>
+
+	<part name="cmos camera" mass="10.0">
+		<description>This instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
+		by using infrared spectroscopy to produce an infrared spectrum of the sample. </description>
+	</part>
+
+	
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

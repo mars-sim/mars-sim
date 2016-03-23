@@ -1469,6 +1469,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return timeWindow;
 	}
 
+	public Collection<ToolWindow> getToolWindowsList() {;
+		return toolWindows;
+	}
+	
 	public void destroy() {
 		updateThread = null;
 		//updateThreadTask = null;

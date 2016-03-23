@@ -515,7 +515,7 @@ implements Serializable, Transportable {
 
 		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-		boolean collison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, settlement.getCoordinates(), true);
+		boolean collison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, settlement.getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
 
         return !collison;

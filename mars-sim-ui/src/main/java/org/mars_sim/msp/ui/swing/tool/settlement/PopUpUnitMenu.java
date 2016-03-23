@@ -37,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.stage.StageStyle;
 import javafx.stage.Popup;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
@@ -50,6 +51,8 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.javafx.Dash;
+import org.mars_sim.msp.ui.javafx.FrostedPanel;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ComponentMover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -444,18 +447,29 @@ public class PopUpUnitMenu extends JPopupMenu {
 	 */
     public void createBuildingPanelFX(Building building) {
     	Stage stage = new Stage();
+    	StackPane swingPane = new StackPane();
 
+        
     	//Popup stage = new Popup();
     	SwingNode swingNode  = new SwingNode();
-
-    	StackPane swingPane = new StackPane();
     	swingPane.setStyle("-fx-background-radius:5; -fx-background-color: transparent;");
-
-
 		swingPane.getChildren().add(swingNode);
+    	Scene scene = new Scene(swingPane, 400, 400, javafx.scene.paint.Color.TRANSPARENT);
+
 		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 		//swingPane.setPrefWidth(primaryScreenBounds.getWidth());
 
+/*
+        Group root = new Group();
+        Dash dash = new Dash();
+        //Scene scene = new Scene(root, 800, 600);
+        dash.setup(scene);  
+        FrostedPanel panel = new FrostedPanel(dash);       
+        dash.prefWidthProperty().bind(scene.widthProperty());
+        dash.prefHeightProperty().bind(scene.heightProperty());      
+        root.getChildren().add(dash);
+        root.getChildren().add(panel);
+*/		
 		final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
 
 		SwingUtilities.invokeLater(() -> {
@@ -463,8 +477,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	    	swingNode.setStyle("-fx-background-color: transparent;");
 	    });
 
-	   	Scene scene = new Scene(swingPane, 400, 400, javafx.scene.paint.Color.TRANSPARENT);
-
+	   	
+	   	
 	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 
 	   	stage.requestFocus();

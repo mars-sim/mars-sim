@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionWizard.java
- * @version 3.08 2015-12-26
+ * @version 3.08 2016-03-07
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.construction;
@@ -114,7 +114,7 @@ public class ConstructionWizard {
     /** Minimum length of a building connector (meters). */
     private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 
-    private final static String TITLE = "Transport Wizard";
+    private final static String TITLE = "Construction Wizard";
 
     private static int wait_time_in_secs = 30; // in seconds
 
@@ -152,14 +152,20 @@ public class ConstructionWizard {
 	public ConstructionWizard(final MainScene mainScene, MainDesktopPane desktop) {
 		this.desktop = desktop;
 		this.mainScene = mainScene;
-		this.settlementWindow = desktop.getSettlementWindow();
-		this.mapPanel = settlementWindow.getMapPanel();
+		//this.settlementWindow = desktop.getSettlementWindow();
+		//this.mapPanel = settlementWindow.getMapPanel();
 		this.buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 	}
 
 	public synchronized void selectSite(BuildingConstructionMission mission) {
 		//logger.info("ConstructionWizard's selectSite() is in " + Thread.currentThread().getName() + " Thread");
-	    ConstructionSite constructionSite = mission.getConstructionSite();
+	    
+		if (settlementWindow == null)
+    		settlementWindow = desktop.getSettlementWindow();
+    	if (mapPanel == null)
+    		mapPanel = settlementWindow.getMapPanel();
+    	
+		ConstructionSite constructionSite = mission.getConstructionSite();
 	    Settlement settlement = constructionSite.getSettlement();
 	    ConstructionManager constructionManager = settlement.getConstructionManager();
 

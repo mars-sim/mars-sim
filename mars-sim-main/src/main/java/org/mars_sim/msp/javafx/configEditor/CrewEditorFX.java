@@ -69,6 +69,9 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
 
+import de.jonato.jfxc.controls.combobox.AutoCompleteComboBox;
+import de.jonato.jfxc.controls.combobox.FilterComboBox;
+
 
 /**
  * CrewEditorFX allows users to design the crew manifest for an initial settlement
@@ -627,7 +630,9 @@ public class CrewEditorFX {
 		return type;
 	}
 
+	//public FilterComboBox<String> setUpJobCB() {
 	public ComboBox<String> setUpJobCB() {
+	
 	/*
 		ObservableList<String> options =
 			    FXCollections.observableArrayList(
@@ -659,8 +664,12 @@ public class CrewEditorFX {
 
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
 		jobsOListComboBox = new ComboBox<String>(jobsOList);
-
 		return jobsOListComboBox;
+		
+		//AutoCompleteComboBox<String> jobsACCB = new AutoCompleteComboBox<>(FXCollections.observableArrayList(jobs));
+		//FilterComboBox<String> jobsFCB = new FilterComboBox<>(FXCollections.observableArrayList(jobs));
+		
+		//return jobsFCB;
 	}
 
 
