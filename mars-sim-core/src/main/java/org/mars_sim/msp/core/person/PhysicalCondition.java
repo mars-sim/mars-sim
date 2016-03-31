@@ -1098,7 +1098,7 @@ implements Serializable {
      */
     public static double getOxygenConsumptionRate() {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getOxygenConsumptionRate();
+        return config.getNominalO2Rate();
     }
 
     /**

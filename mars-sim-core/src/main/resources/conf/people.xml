@@ -8,11 +8,18 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 <people-configuration>
 
-	<!-- The average amount of oxygen (kg) breathed by a person each Martian Sol -->
-	<!-- Default: 1.0 -->
-	<oxygen-consumption-rate value="1.0" />
+	<!-- The metabolic load or the average amount of oxygen (kg) breathed by a person on each Martian Sol -->
+	<!-- Previously called oxygen-consumption-rate -->
 
-	<!-- The normal average amount of water (kg) drank by a person each Martian Sol -->
+	<!-- Total surface requirement for a crew of 3 during a 500-day surface stay based on 
+	nominal	activity is ~1260 kg of O2-->
+	
+	<low-activity-metaboic-load-o2-consumption-rate value="0.78" />
+	<nominal-activity-metaboic-load-o2-consumption-rate value="0.84" />
+	<high-activity-metaboic-load-o2-consumption-rate value="0.96" />
+	
+	
+	<!-- The normal average amount of water (kg) drank by a person on each Martian Sol -->
 	<!-- Default: 4.0 -->
 	<water-consumption-rate value="4.0" />
 
@@ -27,11 +34,11 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default: 4.0. This translates to 80% grey water and 20% black water (OR 4 to 1) -->
 	<grey-to-black-water-ratio value="4.0" />
 
-	<!-- The normal average amount of dessert (kg) in dry weight eaten by a person each Martian Sol -->
+	<!-- The normal average amount of dessert (kg) in dry weight eaten by a person on each Martian Sol -->
 	<!-- Default: 0.3 dry Weight (arbitrary), note that beverage has arbitrary predefined weight-->
 	<dessert-consumption-rate value="0.3" />
 
-	<!-- The normal average amount of food (kg) in dry weight eaten by a person each Martian Sol -->
+	<!-- The normal average amount of food (kg) in dry weight eaten by a person on each Martian Sol -->
 	<!-- Default: 0.62 dry Weight -->
 	<food-consumption-rate value="0.62" />
 

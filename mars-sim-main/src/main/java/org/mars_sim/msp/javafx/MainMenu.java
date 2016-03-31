@@ -10,6 +10,7 @@ package org.mars_sim.msp.javafx;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -91,6 +92,7 @@ import javafx.stage.Screen;
 import org.controlsfx.control.MaskerPane;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTask;
 import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
@@ -330,47 +332,52 @@ public class MainMenu {
 		stage.setIconified(true);
 		stage.hide();
 		
-		// creates a mainScene instance
-		mainScene = new MainScene(mainSceneStage);	   
-		prepareScene();
-			
 		//Future future = 
 		Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
 	   	//CompletableFuture future = (CompletableFuture) Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
-		//System.out.println("desktop is " + mainMenu.getMainScene().getDesktop());
 
-		Platform.runLater(() -> {
-
-		   mainScene.prepareOthers();
-
-		   mainScene.initializeTheme();
-
-		   while (!mainScene.isMainSceneDone())
-		   {
-			   try {
-				TimeUnit.MILLISECONDS.sleep(200L);
+		try {
+			TimeUnit.MILLISECONDS.sleep(2000L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		//MasterClock masterClock = Simulation.instance().getMasterClock();
+		//if (Simulation.instance().getMasterClock() == null)
+		//	System.out.println("masterClock == null");
+		while (Simulation.instance().getMasterClock() == null || Simulation.instance().getMasterClock().isLoadingSimulation()) {
+			//System.out.println("MainMenu : main scene is not ready yet. Wait for another 1/2 secs");
+			try {
+				TimeUnit.MILLISECONDS.sleep(500L);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		   }
+		}
+		
+		//try {
+		//FXUtilities.runAndWait(() -> {
+			Platform.runLater(() -> {
 
-		   //mainScene.openInitialWindows();
-
-		   //stage.setIconified(false);
+			// creates a mainScene instance
+			mainScene = new MainScene(mainSceneStage);	   
+			prepareScene();
+			mainScene.initializeTheme();						
+			mainScene.prepareOthers();
+			mainScene.openInitialWindows();
 		   
-	       //2016-02-07 Added calling setMonitor()
-	       setMonitor(mainSceneStage);
-	       
-	       mainSceneStage.centerOnScreen();
-	       //mainSceneStage.setResizable(false);
-	       mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
-		   mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-	 
-	       mainSceneStage.show();
-	       mainSceneStage.requestFocus();
+			//2016-02-07 Added calling setMonitor() for screen detection
+			setMonitor(mainSceneStage);
+			   
+			mainSceneStage.centerOnScreen();
+			//mainSceneStage.setResizable(false);
+			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+			mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+ 
+			mainSceneStage.show();
+			mainSceneStage.requestFocus();
 
-	   });
-		   
+		});
+	   
         mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
    }
@@ -380,14 +387,14 @@ public class MainMenu {
     */
 	public class LoadSimulationTask implements Runnable {
 		public void run() {
-			logger.info("MainMenu'sLoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
-			fileSize = 1;
+			logger.info("MainMenu's LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
+			//fileSize = 1;
 			logger.info("Loading settlement data from the default saved simulation...");
 			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
 			//System.out.println("done with loadSimulation(null)");
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
-			Simulation.instance().start();
-			Simulation.instance().stop();
+			//Simulation.instance().start();
+			//Simulation.instance().stop();
 			Simulation.instance().start();
 			//Platform.runLater(() -> {
 			//	prepareScene();

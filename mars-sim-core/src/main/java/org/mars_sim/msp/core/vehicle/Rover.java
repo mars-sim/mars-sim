@@ -483,7 +483,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     		
     	// Check oxygen capacity as range limit.
     	AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-    	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
+    	double oxygenConsumptionRate = config.getNominalO2Rate();
     	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygen, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
     	double oxygenRange = distancePerSol * oxygenSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;

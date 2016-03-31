@@ -575,7 +575,8 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-			boolean isDone = false;
+			logger.info("ScenarioConfigEditorFX's LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
+			//boolean isDone = false;
 			Simulation.createNewSimulation();
 			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");
 			Simulation.instance().start();

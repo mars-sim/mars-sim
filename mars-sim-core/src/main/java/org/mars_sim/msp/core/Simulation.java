@@ -411,7 +411,7 @@ implements ClockListener, Serializable {
         if (f.exists() && f.canRead()) {
             try {
     			fileSize = (f.length() / 1024D / 1024D);
-    			logger.info("The saved sim has a file size of " + Math.round(fileSize*1000.00)/1000.00 + " MB" );
+    			logger.info("loadSimulation() : The Saved Sim has a file size of " + Math.round(fileSize*1000.00)/1000.00 + " MB" );
                 simulation.readFromFile(f);
 
             } catch (ClassNotFoundException ex) {
@@ -467,7 +467,7 @@ implements ClockListener, Serializable {
      * @throws IOException if error reading from file.
      */
     private void readFromFile(File file) throws ClassNotFoundException, IOException {
-    	System.out.println("Simulation : running readFromFile()");
+    	//System.out.println("Simulation : running readFromFile()");
 /*
         //ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
         FileInputStream fin = new FileInputStream(file);
@@ -511,10 +511,10 @@ implements ClockListener, Serializable {
         ObjectInputStream ois = null;
         FileInputStream in = null;
  
-    	System.out.println("Simulation : before calling try");
+    	//System.out.println("Simulation : before calling try");
 
         try {
-        	System.out.println("Simulation : inside try. starting decompressing");
+        	//System.out.println("Simulation : inside try. starting decompressing");
             in = new FileInputStream(file);
 
             //try {
@@ -550,7 +550,7 @@ implements ClockListener, Serializable {
             		loadBuild = "unknown";
             	logger.info("Running MSP Build " + Simulation.BUILD + ". Loading a sim saved in Build " + loadBuild);
 
-               	System.out.println("Simulation : inside try. starting loading objects");
+               	//System.out.println("Simulation : inside try. starting loading objects");
 
                 malfunctionFactory = (MalfunctionFactory) ois.readObject();
                 mars = (Mars) ois.readObject();

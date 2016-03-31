@@ -287,7 +287,7 @@ implements Serializable {
 
 		// Check oxygen capacity as time limit.
 		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenConsumptionRate = config.getOxygenConsumptionRate();
+		double oxygenConsumptionRate = config.getNominalO2Rate();
 		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;

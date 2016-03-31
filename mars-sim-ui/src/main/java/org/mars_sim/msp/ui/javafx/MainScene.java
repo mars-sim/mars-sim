@@ -89,6 +89,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,7 +108,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
-//import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
@@ -1056,8 +1056,8 @@ public class MainScene {
 	 * @param type
 	 */
 	public void loadSimulationProcess(int type) {
-		//logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
-		
+		logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+
 		String dir = null;
 		String title = null;
 		File fileLocn = null;
@@ -1102,31 +1102,40 @@ public class MainScene {
 		}
 
 		else if (type == DEFAULT) {
-
 			fileLocn = null;
 		}
 
-		// fileLabel.setText(file.getPath());
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
 		desktop.clearDesktop();
 
-		MasterClock masterClock = Simulation.instance().getMasterClock();
-		Simulation.instance().getClockScheduler().submit(masterClock.getClockThreadTask());
+		
+		//Simulation.instance().loadSimulation(fileLocn);
+		logger.info("");
+		logger.info("Restarting " + Simulation.WINDOW_TITLE);
 
-		while (masterClock.isLoadingSimulation()) {
-			try {
-				Thread.sleep(100L);
-			} catch (InterruptedException e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
-			}
-		}
-
-		//NOT WORKING Simulation.instance().getSimExecutor().submit(new LoadSimulationTask(fileLocn));
-		//Simulation.instance().getExecutorServiceThread().submit(new	LoadSimulationTask(fileLocn));
+		Simulation.instance().getSimExecutor().submit(new LoadSimulationTask(fileLocn));
 
 		try {
-			desktop.resetDesktop();
-			logger.info(" loadSimulationProcess() : desktop.resetDesktop()");
+			TimeUnit.MILLISECONDS.sleep(2000L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		while (Simulation.instance().getMasterClock() == null || Simulation.instance().getMasterClock().isLoadingSimulation()) {
+			//System.out.println("MainMenu : main scene is not ready yet. Wait for another 1/2 secs");
+			try {
+				TimeUnit.MILLISECONDS.sleep(500L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		try {
+			SwingUtilities.invokeLater(() -> {
+				desktop.resetDesktop();
+			});		
+			logger.info("LoadSimulationProcess() : desktop.resetDesktop() is done");
 		} catch (Exception e) {
 			// New simulation process should continue even if there's an
 			// exception in the UI.
@@ -1134,8 +1143,9 @@ public class MainScene {
 			e.printStackTrace(System.err);
 		}
 
+		
 		// load UI config
-		UIConfig.INSTANCE.parseFile();
+		//UIConfig.INSTANCE.parseFile();
 
 		desktop.disposeAnnouncementWindow();
 
@@ -1157,41 +1167,32 @@ public class MainScene {
 		ourGuide.setLocation(Xloc, Yloc);
         ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$	
 */
+		
+		
 	}
 
 
-	   /*
-	    * Loads settlement data from a default saved sim
-	    
-		public class LoadSimulationTask implements Runnable {
-			File fileLocn;
-			
-			LoadSimulationTask(File fileLocn) {
-				this.fileLocn = fileLocn;
-			}
-			
-			public void run() {
-				logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
-				//fileSize = 1;
-				logger.info("Loading settlement data from the saved simulation.");
-				Simulation.instance().stop();
-				Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-				//System.out.println("done with loadSimulation(null)");
-				logger.info("Restarting " + Simulation.WINDOW_TITLE);
-				Simulation.instance().stop();
-				Simulation.instance().start();
-				Platform.runLater(() -> {
-					//prepareScene();
-					prepareMainScene();		
-					stage.setScene(initializeScene());
-					//System.out.println("MainScene : done with prepareMainScene()");
-				});
-				//Simulation.instance().start();
-				Simulation.instance().stop();
-				Simulation.instance().start();
-			}
+   /*
+    * Loads settlement data from a default saved sim
+    */
+	public class LoadSimulationTask implements Runnable {
+		File fileLocn;
+		
+		LoadSimulationTask(File fileLocn){
+			this.fileLocn = fileLocn;
 		}
-*/
+		
+		public void run() {
+			logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
+			logger.info("Loading settlement data from the default saved simulation...");
+			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+			Simulation.instance().start();
+			//Simulation.instance().stop();
+			//Simulation.instance().start();
+		}
+	}
+
+
 	
 	/**
 	 * Create a new simulation.
@@ -1525,6 +1526,7 @@ public class MainScene {
 	}
 
 	private void createSwingNode() {
+		setLookAndFeel(1);
 		desktop = new MainDesktopPane(this);
 		SwingUtilities.invokeLater(() -> {
 			//desktop = new MainDesktopPane(this);

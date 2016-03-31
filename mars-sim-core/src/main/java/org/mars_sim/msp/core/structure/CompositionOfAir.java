@@ -100,7 +100,7 @@ public class CompositionOfAir implements Serializable {
 		weather = Simulation.instance().getMars().getWeather();
 
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
-		o2Consumed = personConfig.getOxygenConsumptionRate() /1000D; // [kg/millisol]
+		o2Consumed = personConfig.getNominalO2Rate() /1000D; // [kg/millisol]
 		cO2Expelled = o2Consumed *.9 /1000D; //[kg/millisol] or  ~.9 kg per sol
 		// see https://micpohling.wordpress.com/2007/03/27/math-how-much-co2-is-emitted-by-human-on-earth-annually/
 		moistureExpelled = .4/1000D; //[kg/millisol] or ~400 ml through breathing per sol

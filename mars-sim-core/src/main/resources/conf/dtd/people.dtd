@@ -1,10 +1,17 @@
-<!ELEMENT people-configuration (oxygen-consumption-rate, water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
+<!ELEMENT people-configuration (low-activity-metaboic-load-o2-consumption-rate, 
+nominal-activity-metaboic-load-o2-consumption-rate, high-activity-metaboic-load-o2-consumption-rate, water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
 dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, water-deprivation-time,
 food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time,
 min-temperature, max-temperature, freezing-time, stress-breakdown-chance, high-fatigue-collapse-chance,
 gender-male-percentage, personality-types, person-name-list, first-name-list, last-name-list,person-list)>
-<!ELEMENT oxygen-consumption-rate EMPTY>
-<!ATTLIST oxygen-consumption-rate value CDATA #REQUIRED>
+
+<!ELEMENT low-activity-metaboic-load-o2-consumption-rate EMPTY>
+<!ATTLIST low-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
+<!ELEMENT nominal-activity-metaboic-load-o2-consumption-rate EMPTY>
+<!ATTLIST nominal-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
+<!ELEMENT high-activity-metaboic-load-o2-consumption-rate EMPTY>
+<!ATTLIST high-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
+
 <!ELEMENT water-consumption-rate EMPTY>
 <!ATTLIST water-consumption-rate value CDATA #REQUIRED>
 
@@ -17,6 +24,7 @@ gender-male-percentage, personality-types, person-name-list, first-name-list, la
 <!ATTLIST dessert-consumption-rate value CDATA #REQUIRED>
 <!ELEMENT food-consumption-rate EMPTY>
 <!ATTLIST food-consumption-rate value CDATA #REQUIRED>
+
 <!ELEMENT oxygen-deprivation-time EMPTY>
 <!ATTLIST oxygen-deprivation-time value CDATA #REQUIRED>
 <!ELEMENT water-deprivation-time EMPTY>

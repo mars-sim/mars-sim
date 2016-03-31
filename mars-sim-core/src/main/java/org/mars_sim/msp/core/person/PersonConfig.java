@@ -44,7 +44,9 @@ implements Serializable {
 	private static final String PERSON_NAME = "person-name";
 	private static final String GENDER = "gender";
 	private static final String SPONSOR = "sponsor";
-	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
+	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
+	private static final String NOMINAL_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
+	private static final String HIGH_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String WATER_USAGE_RATE = "water-usage-rate";
@@ -199,14 +201,35 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the oxygen consumption rate.
+	 * Gets the nominal oxygen consumption rate.
 	 * @return oxygen rate (kg/sol)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	public double getOxygenConsumptionRate() {
-		return getValueAsDouble(OXYGEN_CONSUMPTION_RATE);
+	// 2016-03-31 Added getNominalO2Rate()
+	public double getNominalO2Rate() {
+		return getValueAsDouble(NOMINAL_O2_RATE);
 	}
 
+	/**
+	 * Gets the low oxygen consumption rate.
+	 * @return oxygen rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	// 2016-03-31 Added getLowO2Rate()
+	public double getLowO2Rate() {
+		return getValueAsDouble(NOMINAL_O2_RATE);
+	}
+	
+	/**
+	 * Gets the high oxygen consumption rate.
+	 * @return oxygen rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	// 2016-03-31 Added getHIghO2Rate()
+	public double getHighO2Rate() {
+		return getValueAsDouble(NOMINAL_O2_RATE);
+	}
+	
 	/**
 	 * Gets the water consumption rate.
 	 * @return water rate (kg/sol)

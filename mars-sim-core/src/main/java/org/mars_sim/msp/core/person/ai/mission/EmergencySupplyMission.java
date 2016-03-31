@@ -654,7 +654,7 @@ implements Serializable {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
+            if (resource.equals(oxygen)) amountNeededSol = config.getNominalO2Rate();
             AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
             AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
@@ -739,7 +739,7 @@ implements Serializable {
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
         AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenAmountNeeded = config.getOxygenConsumptionRate() * numPeople * solsMonth;
+        double oxygenAmountNeeded = config.getNominalO2Rate() * numPeople * solsMonth;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygen, false);
  
         // 2015-01-09 Added addDemandTotalRequest()
