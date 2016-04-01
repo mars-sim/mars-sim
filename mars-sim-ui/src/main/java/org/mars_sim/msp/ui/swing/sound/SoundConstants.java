@@ -21,7 +21,7 @@ public interface SoundConstants {
 															// deleted
 
 	/** Music tracks */
-	public final static String SND_MUSIC1 = "Aréologie.ogg";
+	public final static String SND_MUSIC1 = "Areologie.ogg";
 
 	/** Unit window sounds for equipment. */
 	public final static String SND_EQUIPMENT = "equipment.ogg";
