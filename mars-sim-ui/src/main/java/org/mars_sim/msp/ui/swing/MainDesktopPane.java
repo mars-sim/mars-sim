@@ -181,7 +181,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer();
-		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
+		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_MUSIC1); // play our intro music
 
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();

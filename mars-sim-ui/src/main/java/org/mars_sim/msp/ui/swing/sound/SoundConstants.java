@@ -1,45 +1,45 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 3.08 2015-05-21
-
- * @author Dima Stepanchuk
+ * @version 3.08 2016-03-31
+ * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
+
 package org.mars_sim.msp.ui.swing.sound;
 
 /**
- * File names to sounds used in the user interface.
+ * Constants for sounds used in the simulation.
  */
+
 public interface SoundConstants {
 
-	/** The root path for sounds. */
+	/** The path (relative to classpath) for sounds. */
 	public final static String SOUNDS_ROOT_PATH = "audio/";
 
-	// Unit window sounds for rovers.
-	public final static String SND_ROVER_MOVING = "rover_moving.ogg";
-	public final static String SND_ROVER_MALFUNCTION = "rover_malfunction.ogg";
-	public final static String SND_ROVER_MAINTENANCE = "rover_maintenance.ogg";
-	public final static String SND_ROVER_PARKED = "";
+	/** Sound for splash screen in classic MSP */
+	public final static String SND_SPLASH = "splash.ogg"; // can perhaps be
+															// deleted
 
-	/** Unit window sound for settlements. */
-	public final static String SND_SETTLEMENT = "settlement.ogg";
-
-	/** Sound for splash. */
-	public final static String SND_SPLASH = "splash.ogg";
-
-	// Unit window sounds for people.
-	public final static String SND_PERSON_FEMALE1 = "female_person1.ogg";
-	public final static String SND_PERSON_FEMALE2 = "female_person2.ogg";
-	public final static String SND_PERSON_MALE1 = "male_person1.ogg";
-	public final static String SND_PERSON_MALE2 = "male_person2.ogg";
-	public final static String SND_PERSON_DEAD = "person_dead.ogg";
+	/** Music tracks */
+	public final static String SND_MUSIC1 = "Aréologie.ogg";
 
 	/** Unit window sounds for equipment. */
 	public final static String SND_EQUIPMENT = "equipment.ogg";
 
-	// Supported sound formats
-	public final static String SND_FORMAT_OGG = ".ogg";
+	/** Unit window sounds for people. */
+	public final static String SND_PERSON_DEAD = "person_dead.ogg";
+	public final static String SND_PERSON_FEMALE1 = "female_person1.ogg";
+	public final static String SND_PERSON_FEMALE2 = "female_person2.ogg";
+	public final static String SND_PERSON_MALE1 = "male_person1.ogg";
+	public final static String SND_PERSON_MALE2 = "male_person2.ogg";
 
-	/** maximum amount of clips in cache. */
-	public final static int MAX_CACHE_SIZE = 5;
+	/** Unit window sounds for rovers. */
+	public final static String SND_ROVER_MAINTENANCE = "rover_maintenance.ogg";
+	public final static String SND_ROVER_MALFUNCTION = "rover_malfunction.ogg";
+	public final static String SND_ROVER_MOVING = "rover_moving.ogg";
+	public final static String SND_ROVER_PARKED = "";
+
+	/** Unit window sounds for settlements. */
+	public final static String SND_SETTLEMENT = "settlement.ogg";
+
 }

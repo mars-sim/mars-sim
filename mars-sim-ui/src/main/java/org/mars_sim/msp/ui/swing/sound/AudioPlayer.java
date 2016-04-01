@@ -1,69 +1,29 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 3.08 2015-05-21
-
- * @author Dima Stepanchuk
- * @author Sebastien Venot
+ * @version 3.08 2016-03-31
+ * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
+
 package org.mars_sim.msp.ui.swing.sound;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.BooleanControl;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
-import javax.sound.sampled.SourceDataLine;
-
-import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.UIConfig;
 
 /**
- * A class to play sound files.
+ * A class to dispatch playback of OGG files to OGGSoundClip.
  */
-public class AudioPlayer
-implements LineListener {
-
-	private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
-
-	// Data members
-	/** The current compressed sound. */
-	private SourceDataLine currentLine;
+public class AudioPlayer {
 
 	/** The current clip sound. */
-	private Clip currentClip;
-
-	/** Is the audio player muted? */
-	private boolean mute;
+	private OGGSoundClip currentOGGSoundClip;
 
 	/** The volume of the audio player (0.0 to 1.0) */
-	private float volume;
-
-	/** Audio cache collection */
-	private ConcurrentHashMap<String, Clip> audioCache = new ConcurrentHashMap<String, Clip>();
-
-	/** looping mode */
-	private boolean looping = false;
-
-	/** sound player thread instance */
-	private Thread sound_player;
+	private float volume = .5F;
 
 	public AudioPlayer() {
-		currentClip = null;
-		currentLine = null;
-
+		currentOGGSoundClip = null;
 
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
@@ -75,175 +35,50 @@ implements LineListener {
 	}
 
 	/**
-	 * Starts playing a sound (either compressed or not)
-	 * @param filepath the file path to the sound .
-	 * @param loop Should the sound clip be looped?
+	 * Play a clip once.
+	 * 
+	 * @param filepath
+	 *            the file path to the sound file.
 	 */
-	private void startPlay(final String filepath, final boolean loop) {
-
-		// if the sound is long, the whole UI get stuck, so we play
-		// the sound within its own thread
-		sound_player = new Thread() {
-			public void run() {
-				if ((filepath != null) && filepath.length() != 0) {
-					if (filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
-						//startPlayCompressedSound(filepath, loop);
-					}
-				}
-			}
-
-		};
-
-		sound_player.setPriority(Thread.MIN_PRIORITY);
-		sound_player.setName(filepath);
-		sound_player.setDaemon(true);
-		sound_player.start();
-	}
-
-	/**
-	 * Play and cache sound of type WAV.
-	 * @param filepath the file path to the sound
-	 * @param loop Should the sound clip be looped?
-	 */
-	public void startPlayOggSound(String filepath, boolean loop) {
+	public void play(String filepath) {
 		try {
-			if (!audioCache.containsKey(filepath)) {
-				URL soundURL = getClass().getClassLoader().getResource(filepath);
-				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundURL);
-				currentClip = AudioSystem.getClip();
-
-				// This way of creating the currentClip works for OpenJDK on Linux,
-				// but hangs when closing the clip.
-				// AudioFormat format = audioInputStream.getFormat();
-				// DataLine.Info info = new DataLine.Info(Clip.class, format);
-				// currentClip = (Clip) AudioSystem.getLine(info);
-
-				currentClip.open(audioInputStream);
-				audioCache.put(filepath, currentClip);
-
-				if (audioCache.size() > SoundConstants.MAX_CACHE_SIZE) {
-					Object[] keys = audioCache.keySet().toArray();
-					audioCache.remove(keys[0]);
-					keys = null;
-				}
-			} else {
-				currentClip = audioCache.get(filepath);
-				currentClip.setFramePosition(0);
-				currentClip.stop();
-			}
-
-			currentClip.addLineListener(this);
-			setVolume(volume);
-			setMute(mute);
-
-			if (loop) {
-				currentClip.loop(Clip.LOOP_CONTINUOUSLY);
-			} else {
-				currentClip.start();
-			}
-		} catch (Exception e) {
-			// e.printStackTrace(System.err);
-			logger.log(Level.SEVERE, Msg.getString("AudioPlayer.log.issuesWav"), e); //$NON-NLS-1$
+			currentOGGSoundClip = new OGGSoundClip(filepath);
+			currentOGGSoundClip.play();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Play compressed sound (OGG files) The sounds are not cached in
-	 * this case.
-	 * @param filepath filepath the file path to the sound
-	 * @param loop Should the sound clip be looped?
-	 */
-	public void startPlayCompressedSound(String filepath, boolean loop) {
-		stop();
-
-		AudioInputStream din = null;
-		looping = loop;
-
-		do {
-			try {
-				File file = new File(filepath);
-				AudioInputStream in = AudioSystem.getAudioInputStream(file);
-				AudioFormat baseFormat = in.getFormat();
-				AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, baseFormat.getSampleRate(), 16,
-						baseFormat.getChannels(), baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
-
-				din = AudioSystem.getAudioInputStream(decodedFormat, in);
-
-				DataLine.Info info = new DataLine.Info(SourceDataLine.class, decodedFormat);
-
-				currentLine = (SourceDataLine) AudioSystem.getLine(info);
-
-				if (currentLine != null) {
-					currentLine.addLineListener(this);
-					currentLine.open(decodedFormat);
-					setVolume(volume);
-					setMute(mute);
-
-					byte[] data = new byte[decodedFormat.getSampleSizeInBits()];
-					// Start
-					currentLine.start();
-
-					int nBytesRead = 0;
-
-					while ((nBytesRead = din.read(data, 0, data.length)) != -1) {
-						currentLine.write(data, 0, nBytesRead);
-					}
-
-					currentLine.drain();
-					currentLine.stop();
-				}
-			} catch (Exception e) {
-				e.printStackTrace(System.err);
-				logger.log(Level.SEVERE, Msg.getString("AudioPlayer.log.issuesCompressed"), e); //$NON-NLS-1$
-			} finally {
-				if (din != null) {
-					try {
-						din.close();
-						din = null;
-					} catch (IOException e) {
-					}
-				}
-			}
-		} while (looping);
-	}
-
-	/**
-	 * Play a clip once.
-	 * @param filepath the filepath to the sound file.
-	 */
-	public void play(String filepath) {
-		this.startPlay(filepath, false);
-	}
-
-	/**
 	 * Play the clip in a loop.
-	 * @param filepath the filepath to the sound file.
+	 * 
+	 * @param filepath
+	 *            the filepath to the sound file.
 	 */
 	public void loop(String filepath) {
-		this.startPlay(filepath, true);
+		try {
+			currentOGGSoundClip = new OGGSoundClip(filepath);
+			currentOGGSoundClip.loop();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
 	 * Stops the playing clip.
 	 */
 	public void stop() {
-		looping = false;
-		if ((currentClip != null) && currentClip.isOpen()) {
-			currentClip.stop();
-			currentClip.removeLineListener(this);
-			currentClip = null;
-		}
-		if ((currentLine != null) && currentLine.isOpen()) {
-			currentLine.drain();
-			currentLine.close();
-			currentLine.removeLineListener(this);
-			currentLine = null;
+		if (currentOGGSoundClip != null) {
+			currentOGGSoundClip.stop();
+			currentOGGSoundClip = null;
 		}
 
 	}
 
 	/**
 	 * Gets the volume of the audio player.
+	 * 
 	 * @return volume (0.0 to 1.0)
 	 */
 	public float getVolume() {
@@ -251,110 +86,47 @@ implements LineListener {
 	}
 
 	/**
-	 * Sets the volume for the audio player.
-	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
+	 * Sets the volume of the audio player.
+	 * 
+	 * @param volume
+	 *            (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
 	 */
 	public void setVolume(float volume) {
-		if ((volume < 0F) && (volume > 1F)) {
-			throw new IllegalArgumentException(
-				Msg.getString(
-					"AudioPlayer.log.volumeInvalid", //$NON-NLS-1$
-					Float.toString(volume)
-				)
-			);
-    	}
+		if (volume < 0F)
+			volume = 0F;
+		if (volume > 1F)
+			volume = 1F;
 
 		this.volume = volume;
-
-		// Set volume
-		if (currentClip != null) {
-			// Note: No linear volume control for the clip,
-			// so use gain control.
-			// Linear volume = pow(10.0, gainDB/20.0)
-			// float gainLog10 = (float) Math.log10(volume);
-			float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
-			float gain = gainLog10 * 20F;
-			try {
-				if (currentClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-					FloatControl gainControl = (FloatControl) currentClip.getControl(FloatControl.Type.MASTER_GAIN);
-					gainControl.setValue(gain);
-				}
-			} catch (IllegalArgumentException e) {};
+		if (currentOGGSoundClip != null) {
+			currentOGGSoundClip.setGain(volume);
 		}
-
-		if (currentLine != null) {
-			// Note: No linear volume control for the clip,
-			// so use gain control.
-			// Linear volume = pow(10.0, gainDB/20.0)
-			// float gainLog10 = (float) Math.log10(volume);
-			float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
-			float gain = gainLog10 * 20F;
-			try {
-				if (currentClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-					FloatControl gainControl = (FloatControl) currentLine.getControl(FloatControl.Type.MASTER_GAIN);
-					gainControl.setValue(gain);
-				}
-			} catch (IllegalArgumentException e) {};
-		}
-
 	}
 
 	/**
 	 * Checks if the audio player is muted.
+	 * 
 	 * @return true if muted.
 	 */
 	public boolean isMute() {
-		return mute;
+		return currentOGGSoundClip.isMute();
 	}
 
 	/**
 	 * Sets if the audio player is mute or not.
-	 * @param mute is audio player mute?
+	 * 
+	 * @param mute
+	 *            is audio player mute?
 	 */
 	public void setMute(boolean mute) {
-		// Set mute value.
-		this.mute = mute;
-
-		if (currentClip != null) {
-			if (currentClip.isControlSupported(BooleanControl.Type.MUTE)) {
-				BooleanControl muteControl = (BooleanControl) currentClip.getControl(BooleanControl.Type.MUTE);
-				muteControl.setValue(mute);
-			}
+		if (currentOGGSoundClip != null) {
+			currentOGGSoundClip.setMute(mute);
 		}
 
-		if (currentLine != null) {
-			if (currentLine.isControlSupported(BooleanControl.Type.MUTE)) {
-				BooleanControl muteControl = (BooleanControl) currentLine.getControl(BooleanControl.Type.MUTE);
-				muteControl.setValue(mute);
-			}
-		}
-
-
-	}
-
-
-	/**
-	 * LineListener interface. This method is called when an event occurs during
-	 * the sound playing: end of sound...
-	 */
-	@Override
-	public void update(LineEvent event) {
-		if (event.getType() == LineEvent.Type.STOP || event.getType() == LineEvent.Type.CLOSE) {
-			if (event.getSource().equals(currentClip)) {
-				currentClip.stop();
-			} else {
-				Line line = event.getLine();
-				line.close();
-				line.removeLineListener(this);
-			}
-		}
 	}
 
 	public void cleanAudioPlayer() {
 		stop();
-		audioCache.clear();
-		sound_player = null;
 	}
-
 
 }
