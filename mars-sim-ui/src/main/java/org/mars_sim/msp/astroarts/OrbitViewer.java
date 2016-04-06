@@ -1,3 +1,12 @@
+/* Mars Simulation Project
+ * OrbitViewer.java
+ * @version 3.08 2015-05-30
+ * @author Manny Kung
+ * Original work by Osamu Ajiki and Ron Baalke (NASA/JPL)
+ * http://www.astroarts.com/products/orbitviewer/
+ * http://neo.jpl.nasa.gov/
+ */
+
 package org.mars_sim.msp.astroarts;
 
 /**
@@ -138,6 +147,7 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		"1 Month", "3 Months", "6 Months",
 		"1 Year"
 	};
+	
 	static final TimeSpan timeStepSpan[] = {
                 new TimeSpan(0, 0,  0, 1, 0, 0.0),
 		new TimeSpan(0, 0,  1, 0, 0, 0.0),
@@ -148,41 +158,42 @@ implements InternalFrameListener, ActionListener, WindowListener {
 		new TimeSpan(0, 6,  0, 0, 0, 0.0),
 		new TimeSpan(1, 0,  0, 0, 0, 0.0),	
 	};
+	
 	public TimeSpan timeStep = timeStepSpan[1];
 	public int      playDirection = ATime.F_INCTIME;
 
-        /**
-         * Centered Object
-         */
-        static final int CenterObjectCount = 11;
-        static final String CenterObjectLabel[] = {
-                "Sun",   "Asteroid/Comet", "Mercury", "Venus", "Earth", 
-                "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
-        };
-        public int CenterObjectSelected = 0;
+    /**
+     * Centered Object
+     */
+    static final int CenterObjectCount = 11;
+    static final String CenterObjectLabel[] = {
+            "Sun",   "Asteroid/Comet", "Mercury", "Venus", "Earth", 
+            "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
+    };
+    
+    public int CenterObjectSelected = 0;
 
-        /**
-         * Orbits Displayed
-         */
-        static final int OrbitDisplayCount = 14;
-        static final String OrbitDisplayLabel[] = {
-                "Default Orbits", "All Orbits", "No Orbits", "------",
-                "Asteroid/Comet", "Mercury", "Venus", "Earth",
-                "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
-        };
-        public int OrbitCount = 11;
-        public boolean OrbitDisplay[] = {false, true, true, true, true, true, true,
-                                         false, false, false, false };
-        public boolean OrbitDisplayDefault[] = {false, true, true, true, true, true, true,
-                                         false, false, false, false };
+    /**
+     * Orbits Displayed
+     */
+    static final int OrbitDisplayCount = 14;
+    static final String OrbitDisplayLabel[] = {
+            "Default Orbits", "All Orbits", "No Orbits", "------",
+            "Asteroid/Comet", "Mercury", "Venus", "Earth",
+            "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"
+    };
+    
+    public int OrbitCount = 11;
+    public boolean OrbitDisplay[] = {false, true, true, true, true, true, true,
+                                     false, false, false, false };
+    public boolean OrbitDisplayDefault[] = {false, true, true, true, true, true, true,
+                                     false, false, false, false };
 
-
-	
 	/**
 	 * Limit of ATime
 	 */
 //	private ATime minATime = new ATime(-30000,1,1,0,0,0.0,0.0);
-        private ATime minATime = new ATime( 1600,1,1,0,0,0.0,0.0);
+	private ATime minATime = new ATime( 1600,1,1,0,0,0.0,0.0);
 	private ATime maxATime = new ATime( 2200,1,1,0,0,0.0,0.0);
 	
 	/**

@@ -345,8 +345,8 @@ public class MainMenu {
 		//MasterClock masterClock = Simulation.instance().getMasterClock();
 		//if (Simulation.instance().getMasterClock() == null)
 		//	System.out.println("masterClock == null");
-		while (Simulation.instance().getMasterClock() == null || Simulation.instance().getMasterClock().isLoadingSimulation()) {
-			//System.out.println("MainMenu : main scene is not ready yet. Wait for another 1/2 secs");
+		while (Simulation.instance().getMasterClock() == null) {// || Simulation.instance().getMasterClock().isLoadingSimulation()) {
+			//System.out.println("MainMenu : the master clock instance is not ready yet. Wait for another 1/2 secs");
 			try {
 				TimeUnit.MILLISECONDS.sleep(500L);
 			} catch (InterruptedException e) {
@@ -458,7 +458,7 @@ public class MainMenu {
 
        mainSceneStage.requestFocus();
 
-	   logger.info("done with mainSceneStage.show() in MainMenu's prepareStage()");
+	   //logger.info("done with mainSceneStage.show() in MainMenu's prepareStage()");
 	}
 
    public void runThree() {

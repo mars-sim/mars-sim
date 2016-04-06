@@ -1121,8 +1121,8 @@ public class MainScene {
 			e.printStackTrace();
 		}
 		
-		while (Simulation.instance().getMasterClock() == null || Simulation.instance().getMasterClock().isLoadingSimulation()) {
-			//System.out.println("MainMenu : main scene is not ready yet. Wait for another 1/2 secs");
+		while (Simulation.instance().getMasterClock() == null) {// || Simulation.instance().getMasterClock().isLoadingSimulation()) {
+			System.out.println("MainScene : the master clock instance is not ready yet. Wait for another 1/2 secs");
 			try {
 				TimeUnit.MILLISECONDS.sleep(500L);
 			} catch (InterruptedException e) {
@@ -1168,6 +1168,7 @@ public class MainScene {
         ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$	
 */
 		
+		unpauseSimulation();
 		
 	}
 
@@ -1185,8 +1186,15 @@ public class MainScene {
 		public void run() {
 			logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
 			logger.info("Loading settlement data from the default saved simulation...");
+			
+			//MasterClock clock = Simulation.instance().getMasterClock();
+			//clock.loadSimulation(fileLocn);
+			
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+			Simulation.instance().stop();
+			//Simulation.instance().getMasterClock().removeClockListener(oldListener);
 			Simulation.instance().start();
+			
 			//Simulation.instance().stop();
 			//Simulation.instance().start();
 		}

@@ -265,11 +265,12 @@ public class MasterClock implements Serializable { // Runnable,
      * Checks if in the process of loading a simulation.
      *
      * @return true if loading simulation.
-     */
+     
     public boolean isLoadingSimulation() {
         return loadSimulation;
     }
-
+*/
+    
     /**
      * Sets the save simulation flag and the file to save to.
      *
@@ -541,8 +542,11 @@ public class MasterClock implements Serializable { // Runnable,
 
             marsTime.addTime(timePulse);
 
-		  		if (!isPaused || !clockListenerExecutor.isTerminating() || !clockListenerExecutor.isTerminated() || !clockListenerExecutor.isShutdown() )
-		  			fireClockPulse(timePulse);
+		  	if (!isPaused 
+		  			|| !clockListenerExecutor.isTerminating() 
+		  			|| !clockListenerExecutor.isTerminated() 
+		  			|| !clockListenerExecutor.isShutdown() )
+		  		fireClockPulse(timePulse);
 
             long endTime = System.nanoTime();
             lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
@@ -579,6 +583,7 @@ public class MasterClock implements Serializable { // Runnable,
         else if (loadSimulation) {
             // Load the simulation from a file.
             if (file.exists() && file.canRead()) {
+            	logger.info("ready to run Simulation's loadSimulation");
                 Simulation.instance().loadSimulation(file);
                 Simulation.instance().start();
             }

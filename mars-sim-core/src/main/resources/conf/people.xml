@@ -160,7 +160,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- List of person names -->
 	<person-name-list>
 
-		<person-name value="Aaron Wolfe" gender="male" sponsor="NASA"/>
+		<person-name value="Aaron Wolfe" gender="male" sponsor="Mars Society"/>
 		<person-name value="Adelina Shaneyfelt" gender="female" sponsor="Mars Society" />
 		<person-name value="Adrian Chan" gender="male" sponsor="Mars Society" />
 		<person-name value="Aki Sashava" gender="female" sponsor="Mars Society" />
@@ -441,6 +441,17 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Meirong" gender="female" sponsor="CNSA" />
 		<first-name value="Huiling" gender="female" sponsor="CNSA" />
 
+
+
+		<first-name value="a" gender="male" sponsor="CSA" />
+		<first-name value="b" gender="male" sponsor="CSA" />
+		
+		<first-name value="Roberta" gender="female" sponsor="CSA" />
+		<first-name value="Julie" gender="female" sponsor="CSA" />
+
+
+
+
 		<!--  Derived from https://en.wiki2.org/wiki/List_of_European_astronauts -->
 		<first-name value="Jean-Loup" gender="male" sponsor="ESA" />
 		<first-name value="Jean-Francois" gender="male" sponsor="ESA" />
@@ -475,51 +486,6 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Hans" gender="male" sponsor="ESA" />
 		<first-name value="Dumitru" gender="male" sponsor="ESA" />
 		<first-name value="Philippe" gender="male" sponsor="ESA" />
-
-		<!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality  -->
-		<first-name value="Vasili" gender="male" sponsor="RKA" />
-		<first-name value="Oleg" gender="male" sponsor="RKA" />
-		<first-name value="Viktor" gender="male" sponsor="RKA" />
-		<first-name value="Vladimir" gender="male" sponsor="RKA" />
-		<first-name value="Aleksandr" gender="male" sponsor="RKA" />
-		<first-name value="Anatoly" gender="male" sponsor="RKA" />
-		<first-name value="Yuri" gender="male" sponsor="RKA" />
-		<first-name value="Toktar" gender="male" sponsor="RKA" />
-
-		<first-name value="Sergei" gender="male" sponsor="RKA" />
-		<first-name value="Pavel" gender="male" sponsor="RKA" />
-		<first-name value="Georgi" gender="male" sponsor="RKA" />
-		<first-name value="Anatoly" gender="male" sponsor="RKA" />
-		<first-name value="Andrei" gender="male" sponsor="RKA" />
-		<first-name value="Nikolai" gender="male" sponsor="RKA" />
-		<first-name value="Valery" gender="male" sponsor="RKA" />
-		<first-name value="Lev" gender="male" sponsor="RKA" />
-
-
-		<first-name value="Konstantin" gender="male" sponsor="RKA" />
-		<first-name value="Aleksei" gender="male" sponsor="RKA" />
-		<first-name value="Yevgeny" gender="male" sponsor="RKA" />
-		<first-name value="Leonid" gender="male" sponsor="RKA" />
-		<first-name value="Pyotr" gender="male" sponsor="RKA" />
-		<first-name value="Dmitri" gender="male" sponsor="RKA" />
-		<first-name value="Mikhail" gender="male" sponsor="RKA" />
-		<first-name value="Boris" gender="male" sponsor="RKA" />
-
-		<first-name value="Yury" gender="male" sponsor="RKA" />
-		<first-name value="Gennadi" gender="male" sponsor="RKA" />
-		<first-name value="Musa" gender="male" sponsor="RKA" />
-		<first-name value="Talgat" gender="male" sponsor="RKA" />
-		<first-name value="Andriyan" gender="male" sponsor="RKA" />
-		<first-name value="Gennady" gender="male" sponsor="RKA" />
-		<first-name value="Salizhan" gender="male" sponsor="RKA" />
-
-		<first-name value="Maksim" gender="male" sponsor="RKA" />
-		<first-name value="Gherman" gender="male" sponsor="RKA" />
-		<first-name value="Igor" gender="male" sponsor="RKA" />
-		<first-name value="Fyodor" gender="male" sponsor="RKA" />
-		<first-name value="Vitali" gender="male" sponsor="RKA" />
-		<first-name value="Vyacheslav" gender="male" sponsor="RKA" />
-		<first-name value="Alexander" gender="male" sponsor="RKA" />
 
 
 		<!--  https://en.wiki2.org/wiki/Women_in_space -->
@@ -586,10 +552,80 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Nicole" gender="female" sponsor="ESA" />
 		<first-name value="Dorothy" gender="female" sponsor="ESA" />
 		<first-name value="Patricia" gender="female" sponsor="ESA" />
-
 		<first-name value="Anousheh" gender="female" sponsor="ESA" />
 
 
+		<first-name value="c" gender="male" sponsor="ISRO" />
+		<first-name value="d" gender="male" sponsor="ISRO" />
+
+		<first-name value="e" gender="female" sponsor="ISRO" />
+		<first-name value="f" gender="female" sponsor="ISRO" />
+	
+	
+
+		<first-name value="g" gender="male" sponsor="JAXA" />
+		<first-name value="h" gender="male" sponsor="JAXA" />
+		
+		<first-name value="Chiaki" gender="female" sponsor="JAXA" />
+		<first-name value="Naoko" gender="female" sponsor="JAXA" />
+	
+
+		<first-name value="i" gender="male" sponsor="NASA" />
+		<first-name value="j" gender="male" sponsor="NASA" />
+		
+		<first-name value="k" gender="female" sponsor="NASA" />
+		<first-name value="l" gender="female" sponsor="NASA" />
+	
+
+
+		<!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality  -->
+		<first-name value="Vasili" gender="male" sponsor="RKA" />
+		<first-name value="Oleg" gender="male" sponsor="RKA" />
+		<first-name value="Viktor" gender="male" sponsor="RKA" />
+		<first-name value="Vladimir" gender="male" sponsor="RKA" />
+		<first-name value="Aleksandr" gender="male" sponsor="RKA" />
+		<first-name value="Anatoly" gender="male" sponsor="RKA" />
+		<first-name value="Yuri" gender="male" sponsor="RKA" />
+		<first-name value="Toktar" gender="male" sponsor="RKA" />
+
+		<first-name value="Sergei" gender="male" sponsor="RKA" />
+		<first-name value="Pavel" gender="male" sponsor="RKA" />
+		<first-name value="Georgi" gender="male" sponsor="RKA" />
+		<first-name value="Anatoly" gender="male" sponsor="RKA" />
+		<first-name value="Andrei" gender="male" sponsor="RKA" />
+		<first-name value="Nikolai" gender="male" sponsor="RKA" />
+		<first-name value="Valery" gender="male" sponsor="RKA" />
+		<first-name value="Lev" gender="male" sponsor="RKA" />
+
+
+		<first-name value="Konstantin" gender="male" sponsor="RKA" />
+		<first-name value="Aleksei" gender="male" sponsor="RKA" />
+		<first-name value="Yevgeny" gender="male" sponsor="RKA" />
+		<first-name value="Leonid" gender="male" sponsor="RKA" />
+		<first-name value="Pyotr" gender="male" sponsor="RKA" />
+		<first-name value="Dmitri" gender="male" sponsor="RKA" />
+		<first-name value="Mikhail" gender="male" sponsor="RKA" />
+		<first-name value="Boris" gender="male" sponsor="RKA" />
+
+		<first-name value="Yury" gender="male" sponsor="RKA" />
+		<first-name value="Gennadi" gender="male" sponsor="RKA" />
+		<first-name value="Musa" gender="male" sponsor="RKA" />
+		<first-name value="Talgat" gender="male" sponsor="RKA" />
+		<first-name value="Andriyan" gender="male" sponsor="RKA" />
+		<first-name value="Gennady" gender="male" sponsor="RKA" />
+		<first-name value="Salizhan" gender="male" sponsor="RKA" />
+
+		<first-name value="Maksim" gender="male" sponsor="RKA" />
+		<first-name value="Gherman" gender="male" sponsor="RKA" />
+		<first-name value="Igor" gender="male" sponsor="RKA" />
+		<first-name value="Fyodor" gender="male" sponsor="RKA" />
+		<first-name value="Vitali" gender="male" sponsor="RKA" />
+		<first-name value="Vyacheslav" gender="male" sponsor="RKA" />
+		<first-name value="Alexander" gender="male" sponsor="RKA" />
+
+
+
+		<!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality  -->
 		<first-name value="Valentina" gender="female" sponsor="RKA" />
 		<first-name value="Irina" gender="female" sponsor="RKA" />
 		<first-name value="Zhanna" gender="female" sponsor="RKA" />
@@ -598,18 +634,9 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Yelena" gender="female" sponsor="RKA" />
 	
 		<first-name value="Svetlana" gender="female" sponsor="RKA" />
-		<first-name value="" gender="female" sponsor="RKA" />
-		<first-name value="" gender="female" sponsor="RKA" />
-		<first-name value="" gender="female" sponsor="RKA" />
-		<first-name value="" gender="female" sponsor="RKA" />
-		<first-name value="" gender="female" sponsor="RKA" />
+		<first-name value="m" gender="female" sponsor="RKA" />
 
-		<first-name value="Roberta" gender="female" sponsor="CSA" />
-		<first-name value="Julie" gender="female" sponsor="CSA" />
 
-		<first-name value="Chiaki" gender="female" sponsor="JAXA" />
-		<first-name value="Naoko" gender="female" sponsor="JAXA" />
-	
 	</first-name-list>
 
 
@@ -628,6 +655,26 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Ye"  sponsor="CNSA" />
 		<last-name value="Tang"  sponsor="CNSA" />
 		<last-name value="Liang"  sponsor="CNSA" />
+
+
+		<last-name value="aa"  sponsor="CSA" />
+		<last-name value="bb"  sponsor="CSA" />
+
+
+		<last-name value="cc"  sponsor="ESA" />
+		<last-name value="dd"  sponsor="ESA" />
+
+
+		<last-name value="ee"  sponsor="ISRO" />
+		<last-name value="ff"  sponsor="ISRO" />
+
+
+		<last-name value="gg"  sponsor="JAXA" />
+		<last-name value="hh"  sponsor="JAXA" />
+
+		<last-name value="ii"  sponsor="NASA" />
+		<last-name value="jj"  sponsor="NASA" />
+
 
 		<last-name value="Afanasyev"  sponsor="RKA" />
 		<last-name value="Aksyonov"  sponsor="RKA" />

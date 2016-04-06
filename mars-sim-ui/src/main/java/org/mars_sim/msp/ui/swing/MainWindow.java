@@ -451,9 +451,9 @@ public class MainWindow extends JComponent {
 			//masterClock.loadSimulation(chooser.getSelectedFile());
 
 
-			while (masterClock.isLoadingSimulation()) {
+			while (Simulation.instance().getMasterClock() == null) {//while (masterClock.isLoadingSimulation()) {
 				try {
-					Thread.sleep(100L);
+					Thread.sleep(500L);
 				} catch (InterruptedException e) {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
 				}

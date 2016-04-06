@@ -40,10 +40,17 @@ implements Serializable {
 
 	
 	// Element names
+	private static final String LAST_NAME_LIST = "last-name-list";
+	private static final String FIRST_NAME_LIST = "first-name-list";
+	private static final String LAST_NAME = "last-name";
+	private static final String FIRST_NAME = "first-name";
 	private static final String PERSON_NAME_LIST = "person-name-list";
 	private static final String PERSON_NAME = "person-name";
+	
 	private static final String GENDER = "gender";
+	
 	private static final String SPONSOR = "sponsor";
+	
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String NOMINAL_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String HIGH_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
@@ -114,7 +121,7 @@ implements Serializable {
 	 * @return List of person names.
 	 * @throws Exception if person names could not be found.
 	 */
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
 	public List<String> getPersonNameList() {
 
 		if (nameList == null) {
@@ -132,6 +139,150 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets a list of first names for settlers.
+	 * @return List of first names.
+	 * @throws Exception if first names could not be found.
+	 
+    //@SuppressWarnings("unchecked")
+    // 2016-04-06 Added getFirstNameList()
+	public List<String> getFirstNameList() {
+
+		if (nameList == null) {
+			nameList = new ArrayList<String>();
+			Element root = personDoc.getRootElement();
+			Element personNameList = root.getChild(FIRST_NAME_LIST);
+			List<Element> personNames = personNameList.getChildren(FIRST_NAME);
+
+			for (Element nameElement : personNames) {
+				nameList.add(nameElement.getAttributeValue(VALUE));
+			}
+		}
+
+		//System.out.println("done with getFirstNameList()");
+		
+		return nameList;
+	}
+*/
+    
+	/**
+	 * Gets a list of last names for settlers.
+	 * @return List of last names.
+	 * @throws Exception if last names could not be found.
+	 */
+    //@SuppressWarnings("unchecked")
+    // 2016-04-06 Added getLastNameList()
+	public List<String> getLastNameList(ReportingAuthorityType type) {
+
+    	List<String> nameList = new ArrayList<String>();
+		Element root = personDoc.getRootElement();
+		Element lastNameList = root.getChild(LAST_NAME_LIST);
+		List<Element> lastNames = lastNameList.getChildren(LAST_NAME);
+
+		for (Element nameElement : lastNames) {
+			
+			String sponsor = nameElement.getAttributeValue(SPONSOR);
+		
+			if (sponsor.equals("CNSA") && type == ReportingAuthorityType.CNSA)
+				nameList.add(nameElement.getAttributeValue(VALUE));
+			
+			else if (sponsor.equals("CSA") && type == ReportingAuthorityType.CSA)
+				nameList.add(nameElement.getAttributeValue(VALUE));
+			
+			else if (sponsor.equals("ESA") && type == ReportingAuthorityType.ESA)
+				nameList.add(nameElement.getAttributeValue(VALUE));
+				
+			else if (sponsor.equals("ISRO") && type == ReportingAuthorityType.ISRO)
+				nameList.add(nameElement.getAttributeValue(VALUE));
+				
+			else if (sponsor.equals("JAXA") && type == ReportingAuthorityType.JAXA)
+				nameList.add(nameElement.getAttributeValue(VALUE));	
+				
+			else if (sponsor.equals("NASA") && type == ReportingAuthorityType.NASA)
+				nameList.add(nameElement.getAttributeValue(VALUE));
+				
+			else if (sponsor.equals("RKA") && type == ReportingAuthorityType.RKA)
+				nameList.add(nameElement.getAttributeValue(VALUE));
+		}
+	
+
+		//System.out.println("done with getLastNameList()");
+		
+		return nameList;
+	}
+
+
+	/**
+	 * Gets a list of first names for settlers.
+	 * @return List of first names.
+	 * @throws Exception if first names could not be found.
+	 */
+    //@SuppressWarnings("unchecked")
+    // 2016-04-06 Added getFirstNameList()
+	public List<String> getFirstNameList(ReportingAuthorityType type, boolean isMale) {
+
+    	List<String> nameList = new ArrayList<String>();
+		Element root = personDoc.getRootElement();
+		Element maleFirstNameList = root.getChild(FIRST_NAME_LIST);
+		List<Element> maleFirstNames = maleFirstNameList.getChildren(FIRST_NAME);
+
+		for (Element nameElement : maleFirstNames) {
+
+			String gender = nameElement.getAttributeValue(GENDER);
+			String sponsor = nameElement.getAttributeValue(SPONSOR);
+		
+			if (isMale && gender.equals("male")) {
+				
+				if (sponsor.equals("CNSA") && type == ReportingAuthorityType.CNSA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+				
+				else if (sponsor.equals("CSA") && type == ReportingAuthorityType.CSA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+				
+				else if (sponsor.equals("ESA") && type == ReportingAuthorityType.ESA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+					
+				else if (sponsor.equals("ISRO") && type == ReportingAuthorityType.ISRO)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+					
+				else if (sponsor.equals("JAXA") && type == ReportingAuthorityType.JAXA)
+					nameList.add(nameElement.getAttributeValue(VALUE));	
+					
+				else if (sponsor.equals("NASA") && type == ReportingAuthorityType.NASA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+					
+				else if (sponsor.equals("RKA") && type == ReportingAuthorityType.RKA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+			}
+			
+			else if (!isMale && gender.equals("female")) {
+				
+				if (sponsor.equals("CNSA") && type == ReportingAuthorityType.CNSA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+				
+				else if (sponsor.equals("CSA") && type == ReportingAuthorityType.CSA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+				
+				else if (sponsor.equals("ESA") && type == ReportingAuthorityType.ESA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+					
+				else if (sponsor.equals("ISRO") && type == ReportingAuthorityType.ISRO)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+					
+				else if (sponsor.equals("JAXA") && type == ReportingAuthorityType.JAXA)
+					nameList.add(nameElement.getAttributeValue(VALUE));	
+					
+				else if (sponsor.equals("NASA") && type == ReportingAuthorityType.NASA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+					
+				else if (sponsor.equals("RKA") && type == ReportingAuthorityType.RKA)
+					nameList.add(nameElement.getAttributeValue(VALUE));
+			}
+		}
+
+		return nameList;
+	}
+    
+	/**
 	 * Gets the sponsor of a given person name.
 	 * @param name the name of the person
 	 * @return the sponsor of the person 
@@ -142,6 +293,7 @@ implements Serializable {
     	ReportingAuthorityType type = null;
     	
     	Element root = personDoc.getRootElement();
+    	
 		Element personNameList = root.getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
 		for (Element nameElement : personNames ) {
@@ -149,7 +301,7 @@ implements Serializable {
 			String sponsor = null;
 			if (personName.equals(name))  {
 				sponsor = nameElement.getAttributeValue(SPONSOR);
-
+/*		
 				if (sponsor.equals("CNSA"))
 					type = ReportingAuthorityType.CNSA;
 	
@@ -164,21 +316,24 @@ implements Serializable {
 	
 				else if (sponsor.equals("JAXA"))				
 					type = ReportingAuthorityType.JAXA;
-				
-				else if (sponsor.equals("Mars Society"))				
+*/				
+				if (sponsor.equals("Mars Society"))				
 					type = ReportingAuthorityType.MARS_SOCIETY;
-				
+/*				
 				else if (sponsor.equals("NASA"))
 					type = ReportingAuthorityType.NASA;
 	
 				else if (sponsor.equals("RKA"))				
 					type = ReportingAuthorityType.RKA;
+*/
 			}
 				
-		}
+		}	
+			
 		return type;
 	}
     
+
 	/**
 	 * Gets the gender of a given person name.
 	 * @param name the name of the person

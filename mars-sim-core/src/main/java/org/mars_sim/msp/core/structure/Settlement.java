@@ -922,7 +922,7 @@ implements Serializable, LifeSupportType, Objective {
 			solCache = solElapsed;
 
 			// getSupplyDemandReport(solElapsed);
-			refreshMapDaily(solElapsed);
+			refreshDataMap(solElapsed);
 		}
 	}
 
@@ -1107,7 +1107,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * Refreshes the supply and demand data and weather data
 	 */
 	// 2015-02-13 Added refreshMapDaily()
-	public void refreshMapDaily(int solElapsed) {
+	public void refreshDataMap(int solElapsed) {
 
 		boolean clearNow;
 
@@ -1131,7 +1131,7 @@ implements Serializable, LifeSupportType, Objective {
 			// 2015-03-06 Added clearing of weather data map
 			Simulation.instance().getMars().getWeather().clearMap();
 
-			logger.info("Just compacted supply/demand data map and cleared weather data maps at " + name);
+			logger.info(name + " : compacted supply demand data & cleared weather data.");
 		}
 
 	}
