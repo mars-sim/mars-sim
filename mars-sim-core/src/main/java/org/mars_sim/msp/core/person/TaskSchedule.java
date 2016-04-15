@@ -66,7 +66,8 @@ public class TaskSchedule implements Serializable {
 		this.schedules = new ConcurrentHashMap <>();
 		this.todaySchedule = new CopyOnWriteArrayList<OneTask>();
 
-		clock = Simulation.instance().getMasterClock().getMarsClock();
+		if (Simulation.instance().getMasterClock() != null)
+			clock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	public TaskSchedule(Robot robot) {

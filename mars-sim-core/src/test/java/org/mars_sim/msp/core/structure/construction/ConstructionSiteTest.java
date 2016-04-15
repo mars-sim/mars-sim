@@ -15,6 +15,7 @@ import java.util.Map;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 //import org.mars_sim.msp.simulation.structure.MockSettlement;
 //import org.mars_sim.msp.simulation.structure.Settlement;
@@ -37,7 +38,7 @@ public class ConstructionSiteTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        site = new ConstructionSite(null);
+        site = new ConstructionSite(new Settlement());
 
         Map<Part, Integer> parts = new HashMap<Part, Integer>(1);
         parts.put(new Part("test part","test resource description", 1D), 1);

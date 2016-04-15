@@ -92,10 +92,12 @@ implements Serializable, Comparable<Unit> {
 		this.inventory = new Inventory(this);
 
 		this.location = new Coordinates(0D, 0D);
-		this.location.setCoords(location);
-
-		this.inventory.setCoordinates(location);
-
+		
+		if (location != null) {
+			this.location.setCoords(location);	
+			this.inventory.setCoordinates(location);
+		}
+		
 		insideBuilding = new InsideBuilding(this);
 		insideVehicle = new InsideVehicle(this);
 		outsideOnMars = new OutsideOnMars(this);

@@ -182,6 +182,11 @@ implements Serializable, LifeSupportType, Objective {
 	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
 	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
 
+	// constructor 0
+	public Settlement() {
+		super(null, null);
+	}
+	
 	/**
 	 * Constructor for subclass extension.
 	 *

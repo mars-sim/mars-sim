@@ -151,10 +151,13 @@ implements Serializable {
      * Constructor 1.
      * @param newPerson The person requiring a physical presence.
      */
+    // 2015-04-29 Added RadiationExposure();
     public PhysicalCondition(Person newPerson) {
-        // 2015-04-29 Added RadiationExposure();
-    	clock = Simulation.instance().getMasterClock().getMarsClock();
-        radiation = new RadiationExposure(this);
+         	
+    	if (Simulation.instance().getMasterClock() != null) //.getMasterClock().getMarsClock() != null)
+    		clock = Simulation.instance().getMasterClock().getMarsClock();
+        
+    	radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
 
         deathDetails = null;

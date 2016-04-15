@@ -44,17 +44,24 @@ public class SleepMeta implements MetaTask, Serializable {
 
     private static final int MAX_SUPPRESSION = 10;
 
-	private MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+	private MarsClock clock;// = Simulation.instance().getMasterClock().getMarsClock();
 
 	//private int solCache = 0;
 
+	public SleepMeta() {
+		if (clock == null)
+			if (Simulation.instance().getMasterClock() != null)
+				clock = Simulation.instance().getMasterClock().getMarsClock();
+    	
+	}
+	
     @Override
     public String getName() {
         return NAME;
     }
 
     @Override
-    public Task constructInstance(Person person) {
+    public Task constructInstance(Person person) { 	
     	// the person will execute Sleep, increment numSleep;
     	PhysicalCondition pc = person.getPhysicalCondition();
     	pc.setNumSleep(pc.getNumSleep()+1);
