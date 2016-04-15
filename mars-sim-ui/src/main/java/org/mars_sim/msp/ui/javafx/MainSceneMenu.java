@@ -47,8 +47,8 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 
 @SuppressWarnings("restriction")
@@ -70,8 +70,8 @@ public class MainSceneMenu extends MenuBar  {
 	private Stage webStage;
 	private MainScene mainScene;
 	private Browser browser;
-	private FXDesktopPane fxDesktopPane;
-	private FXInternalWindow fxInternalWindow ;
+	//private FXDesktopPane fxDesktopPane;
+	//private FXInternalWindow fxInternalWindow ;
 	private MainDesktopPane desktop;
 
 	//private GreenhouseTool greenhouseTool;
@@ -90,7 +90,7 @@ public class MainSceneMenu extends MenuBar  {
 		// Puts the background task of responding to the pull down menu in a thread pool
 		Simulation.instance().getSimExecutor().submit(new CreateMenuTask());
 
-		fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
+		//fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
 		browser = new Browser(mainScene);
 	}
 
@@ -107,10 +107,10 @@ public class MainSceneMenu extends MenuBar  {
         Menu menuFile = new Menu("File");
         MenuItem newItem = new MenuItem("New...");
         newItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        MenuItem openItem = new MenuItem("Open...");
-        openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        MenuItem openAutoSaveItem = new MenuItem("Open autosave");
-        openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));//, KeyCombination.SHIFT_DOWN));
+        //MenuItem openItem = new MenuItem("Open...");
+        //openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        //MenuItem openAutoSaveItem = new MenuItem("Open autosave");
+        //openAutoSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));//, KeyCombination.SHIFT_DOWN));
         MenuItem saveItem = new MenuItem("Save");
         saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         MenuItem saveAsItem = new MenuItem("Save As...");
@@ -121,7 +121,8 @@ public class MainSceneMenu extends MenuBar  {
         SeparatorMenuItem SeparatorMenuItem2 = new SeparatorMenuItem();
         SeparatorMenuItem SeparatorMenuItem3 = new SeparatorMenuItem();
 
-        menuFile.getItems().addAll(newItem, SeparatorMenuItem1, openItem, openAutoSaveItem, SeparatorMenuItem2, saveItem, saveAsItem, SeparatorMenuItem3, exitItem);
+        menuFile.getItems().addAll(newItem, SeparatorMenuItem1, //openItem, openAutoSaveItem, 
+        		SeparatorMenuItem2, saveItem, saveAsItem, SeparatorMenuItem3, exitItem);
 
         // --- Menu Tools
         Menu menuTools = new Menu("Tools");
@@ -285,7 +286,7 @@ public class MainSceneMenu extends MenuBar  {
      		   mainScene.newSimulation();
      	   }
      	});
-
+/*
         openItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override
      	   public void handle(ActionEvent e) {
@@ -299,7 +300,7 @@ public class MainSceneMenu extends MenuBar  {
      		   mainScene.loadSimulation(MainScene.AUTOSAVE);
      	   }
      	});
-
+*/
         exitItem.setOnAction(new EventHandler<ActionEvent>() {
         	   @Override
         	   public void handle(ActionEvent e) {

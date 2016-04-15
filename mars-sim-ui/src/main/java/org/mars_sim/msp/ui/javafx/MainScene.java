@@ -188,7 +188,7 @@ public class MainScene {
 	private Tab nodeTab;
 	private BorderPane borderPane;
 	private DndTabPane dndTabPane;
-	private FXDesktopPane fxDesktopPane;
+	//private FXDesktopPane fxDesktopPane;
 	private ESCHandler esc = null;
 
 	private Timeline timeline, autosaveTimeline;
@@ -1113,7 +1113,8 @@ public class MainScene {
 		logger.info("");
 		logger.info("Restarting " + Simulation.WINDOW_TITLE);
 
-		Simulation.instance().getSimExecutor().submit(new LoadSimulationTask(fileLocn));
+		Simulation.instance().loadSimulation(fileLocn);
+		//imulation.instance().getSimExecutor().submit(new LoadSimulationTask(fileLocn));
 
 		try {
 			TimeUnit.MILLISECONDS.sleep(2000L);
@@ -1722,7 +1723,7 @@ public class MainScene {
 		cornerMenu = null;
 		swingPane = null;
 		borderPane = null;
-		fxDesktopPane = null;
+		//fxDesktopPane = null;
 		autosaveTimeline = null;
 
 		newSimThread = null;

@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.javafx;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -86,6 +87,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ProgressIndicator;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 
@@ -329,18 +331,61 @@ public class MainMenu {
 
    public void runTwo() {
 		mainMenuScene.setCursor(Cursor.WAIT);
+		
+		String dir = Simulation.DEFAULT_DIR;
+		String title = null;
+		File fileLocn = null;
+		
+		FileChooser chooser = new FileChooser();
+		// chooser.setInitialFileName(dir);
+		// Set to user directory or go to default if cannot access
+		// String userDirectoryString = System.getProperty("user.home");
+		File userDirectory = new File(dir);
+		chooser.setInitialDirectory(userDirectory);
+		chooser.setTitle(title); // $NON-NLS-1$
+
+		// Set extension filter
+		FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
+				"Simulation files (*.sim)", "*.sim");
+		FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
+				"all files (*.*)", "*.*");
+
+		chooser.getExtensionFilters().addAll(simFilter, allFilter);
+
+		// Show open file dialog
+		
+		File selectedFile = chooser.showOpenDialog(stage);
+
+		if (selectedFile != null) {
+			fileLocn = selectedFile;
+
+			//stage.display(selectedFile);
+			
+			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+	
+			logger.info("Restarting " + Simulation.WINDOW_TITLE);
+
+			Simulation.instance().start();
+
+		}
+		else {			
+			logger.info("No file was selected. Loading is cancelled");
+			return;		
+		}
+		
+		
 		stage.setIconified(true);
 		stage.hide();
-		
+				
 		//Future future = 
-		Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
+		//Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
 	   	//CompletableFuture future = (CompletableFuture) Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 
-		try {
-			TimeUnit.MILLISECONDS.sleep(2000L);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		//try {
+		//	TimeUnit.MILLISECONDS.sleep(2000L);
+		//} catch (InterruptedException e) {
+		//	e.printStackTrace();
+		//}
 		
 		//MasterClock masterClock = Simulation.instance().getMasterClock();
 		//if (Simulation.instance().getMasterClock() == null)
@@ -386,20 +431,12 @@ public class MainMenu {
     * Loads settlement data from a default saved sim
     */
 	public class LoadSimulationTask implements Runnable {
-		public void run() {
+		public void run() {			
+
 			logger.info("MainMenu's LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
 			//fileSize = 1;
 			logger.info("Loading settlement data from the default saved simulation...");
-			Simulation.instance().loadSimulation(null); // null means loading "default.sim"
-			//System.out.println("done with loadSimulation(null)");
-			logger.info("Restarting " + Simulation.WINDOW_TITLE);
-			//Simulation.instance().start();
-			//Simulation.instance().stop();
-			Simulation.instance().start();
-			//Platform.runLater(() -> {
-			//	prepareScene();
-				//System.out.println("done with prepareScene()");
-			//});
+		
 		}
 	}
 

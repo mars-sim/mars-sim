@@ -103,7 +103,7 @@
                         <Bloom />
                      </effect>
    			</Button>
-          	<Button id="option" mnemonicParsing="false" onAction="#goToTwo" prefHeight="38.0" prefWidth="298.0" style="-fx-background-color: transparent;" text="Load Default" textFill="#945f16">
+          	<Button id="option" mnemonicParsing="false" onAction="#goToTwo" prefHeight="38.0" prefWidth="298.0" style="-fx-background-color: transparent;" text="Load Sim" textFill="#945f16">
                      <font>
                         <Font name="Corbel" size="20.0" />
                      </font>

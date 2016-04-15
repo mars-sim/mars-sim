@@ -785,8 +785,11 @@ implements ClockListener, Serializable {
     public void clockPulse(double time) {
 		//logger.info("Simulation's clockPulse() is in " + Thread.currentThread().getName() + " Thread");
 		// it's in pool-4-thread-1 Thread
-        final UpTimer ut = masterClock.getUpTimer();
-        if (!masterClock.isPaused()) {
+        UpTimer ut = null;
+        if (masterClock != null)
+        	ut = masterClock.getUpTimer();
+        
+        if (ut != null && !masterClock.isPaused()) {
 
             ut.updateTime();
 
