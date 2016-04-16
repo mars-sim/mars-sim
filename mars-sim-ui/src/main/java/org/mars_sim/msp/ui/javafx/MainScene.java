@@ -23,7 +23,7 @@ import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory;
 import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory.FeedbackType;
 import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
-import jfxtras.scene.menu.CornerMenu;
+//import jfxtras.scene.menu.CornerMenu;
 
 import com.sun.management.OperatingSystemMXBean;
 
@@ -182,7 +182,7 @@ public class MainScene {
 	//private ToggleButton marsNetButton;
 	private MaterialDesignToggleButton marsNetButton;
 	private ChatBox cb;
-	private CornerMenu cornerMenu;
+	//private CornerMenu cornerMenu;
 	private StackPane swingPane;
 	private Tab swingTab;
 	private Tab nodeTab;
@@ -600,7 +600,7 @@ public class MainScene {
 
 		return scene;
 	}
-
+/*
 	private void createCornerMenu() {
         // uninstall the current cornerMenu
         //if (cornerMenu != null) {
@@ -616,7 +616,7 @@ public class MainScene {
         //cornerMenu.show();
         cornerMenu.setAutoShowAndHide(false);
     }
-
+*/
 
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
@@ -1720,7 +1720,7 @@ public class MainScene {
 		flyout = null;
 		marsNetButton = null;
 		cb = null;
-		cornerMenu = null;
+		//cornerMenu = null;
 		swingPane = null;
 		borderPane = null;
 		//fxDesktopPane = null;
