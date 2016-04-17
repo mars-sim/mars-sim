@@ -28,23 +28,15 @@ import javafx.scene.paint.Color;
 public class SettlementTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SettlementTableModel.class.getName());
-
 	// Data members
 	private String[] columns;
-
 	private int numS = 0; // # of existing settlements recognized by the editor at the moment
-
 	private List<SettlementInfo> settlements;
-
 	private List<SettlementInfo> cacheSList = new CopyOnWriteArrayList<>();
-
 	private SimulationConfig config;
-
 	private SettlementInfo cacheS = new SettlementInfo();
-
 	private ScenarioConfigEditorFX configEditor;
 
 	/**
@@ -659,6 +651,8 @@ public class SettlementTableModel extends AbstractTableModel {
 		clearError();
 
 		// TODO: check to ensure the latitude/longitude has NOT been chosen already in the table by another settlement registered by the host server
+
+		// TODO: incorporate checking for user locale and its decimal separation symbol (. or ,)
 
 		try {
 			boolean repeated = false;

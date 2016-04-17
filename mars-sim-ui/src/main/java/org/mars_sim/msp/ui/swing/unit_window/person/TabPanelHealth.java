@@ -7,10 +7,12 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -67,7 +71,12 @@ extends TabPanel {
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 
-
+	protected String[] radiationToolTips = {
+		    "Exposure Interval", 
+		    "[Max for BFO] 30-Day : 250; Annual : 500; Career : 1000",
+		    "[Max for Eye] 30-Day : 1000; Annual : 2000; Career : 4000",
+		    "[Max for Skin] 30-Day : 1500; Annual : 3000; Career : 6000"};
+	
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -161,6 +170,8 @@ extends TabPanel {
 		// Prepare radiation label
 		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelRadiation.label"), JLabel.CENTER); //$NON-NLS-1$
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
+		radiationLabel.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+		
 
 		// Prepare radiation scroll panel
 		JScrollPane radiationScrollPanel = new JScrollPane();
@@ -170,13 +181,35 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(person);
 
 		// Create radiation table
-		radiationTable = new ZebraJTable(radiationTableModel);
+		radiationTable = new ZebraJTable(radiationTableModel){
+		
+		    //2016-04-15 Implemented radiation table header tool tips
+		    protected JTableHeader createDefaultTableHeader() {
+		        return new JTableHeader(columnModel) {
+		            public String getToolTipText(MouseEvent e) {		            	
+		                String tip = null;
+		                java.awt.Point p = e.getPoint();
+		                int index = columnModel.getColumnIndexAtX(p.x);
+		                if (index > -1) {
+			                int realIndex = columnModel.getColumn(index).getModelIndex();
+			                return radiationToolTips[realIndex];
+		            	}
+		                else {
+		                	return Msg.getString("TabPanelRadiation.tooltip");
+		                }
+		            }
+		        };
+		    }
+		};
+		
+		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+
+		
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
 		//radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
-		balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
-
+		
 
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(radiationTable);
@@ -308,6 +341,22 @@ extends TabPanel {
 		radiationTableModel.update();
 	}
 
+	public class IconTextCellRemderer extends DefaultTableCellRenderer {
+	    public Component getTableCellRendererComponent(JTable table,
+	                                  Object value,
+	                                  boolean isSelected,
+	                                  boolean hasFocus,
+	                                  int row,
+	                                  int column) {
+	        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	        //setToolTipText(...);	        
+	        //BalloonToolTip balloonToolTip = new BalloonToolTip();
+	        //balloonToolTip.createBalloonTip(value, ""); //$NON-NLS-1$
+
+	        return this;
+	    }
+	}
+	
 	/**
 	 * Internal class used as model for the radiation dose table.
 	 */
@@ -321,9 +370,14 @@ extends TabPanel {
 
 		private double dose[][];
 
+		//private BalloonToolTip balloonToolTip = new BalloonToolTip();
+		
 		private RadiationTableModel(Person person) {
 			radiation = person.getPhysicalCondition().getRadiationExposure();
 			dose = radiation.getDose();
+			
+			//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
+
 		}
 
 		public int getRowCount() {
@@ -388,6 +442,7 @@ extends TabPanel {
 			dose = radiation.getDose();
 			fireTableDataChanged();
 		}
+		
 	}
 
 

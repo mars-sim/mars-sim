@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.EmotionJSONConfig;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -171,7 +172,16 @@ public class UnitManager implements Serializable {
 		createInitialEquipment();
 		createInitialResources();
 		createInitialParts();
+		
+		
+		// Create pre-configured robots as stated in robots.xml
+		createConfiguredRobots();
+		// Create more robots to fill the settlement(s)
 		createInitialRobots();
+		
+		// Create pre-configured settlers as stated in people.xml
+		createConfiguredPeople();
+		// Create more settlers to fill the settlement(s)
 		createInitialPeople();
 
 	}
@@ -660,10 +670,8 @@ public class UnitManager implements Serializable {
 	}
 
 	/**
-	 * Creates all configured people.
-	 *
-	 * @throws Exception
-	 *             if error parsing XML.
+	 * Creates all pre-configured people as listed in people.xml.
+	 * @throws Exception if error parsing XML.
 	 */
 	private void createConfiguredPeople() {
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
@@ -752,8 +760,10 @@ public class UnitManager implements Serializable {
 			if (jobName != null) {
 				Job job = JobManager.getJob(jobName);
 				if (job != null) {
-					//person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, "Approved",JobManager.MISSION_CONTROL);
-					person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
+					// 2016-04-16 Designate a specific job to a person
+					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED ,JobManager.MISSION_CONTROL);					
+					// Assign a job to a person based on settlement's need
+					//person.getMind().getInitialJob(JobManager.MISSION_CONTROL);				
 				}
 			}
 
@@ -824,9 +834,6 @@ public class UnitManager implements Serializable {
 	 *             if people can not be constructed.
 	 */
 	private void createInitialPeople() {
-
-		// Create configured people.
-		createConfiguredPeople();
 
 		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
@@ -1339,9 +1346,6 @@ public class UnitManager implements Serializable {
 	 *             if Robots can not be constructed.
 	 */
 	private void createInitialRobots() {
-
-		// Create configured robots.
-		createConfiguredRobots();
 
 		// RobotConfig robotConfig =
 		// SimulationConfig.instance().getRobotConfiguration();
