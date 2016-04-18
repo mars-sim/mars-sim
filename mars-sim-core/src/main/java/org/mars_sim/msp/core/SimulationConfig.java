@@ -326,6 +326,7 @@ public class SimulationConfig implements Serializable {
 	 * @return resource config
 	 */
 	public AmountResourceConfig getResourceConfiguration() {
+		//System.out.println("SimulationConfig : caling getResourceConfiguration()");
 		return resourceConfig;
 	}
 

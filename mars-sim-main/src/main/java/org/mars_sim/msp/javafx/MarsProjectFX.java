@@ -107,10 +107,6 @@ public class MarsProjectFX extends Application  {
 		useGUI = !argList.contains("-headless");
         generateHelp = argList.contains("-generateHelp");
 
-	    // this will generate html files for in-game help based on config xml files
-	    //if (generateHelp) {
-	    //	HelpGenerator.generateHtmlHelpFiles();
-	    //}
 
 	    if (useGUI) {
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
@@ -125,6 +121,11 @@ public class MarsProjectFX extends Application  {
 		    // Start the simulation.
 		    startSimulation();
 		}
+
+	    // this will generate html files for in-game help based on config xml files
+	    //if (generateHelp) {
+	    //	HelpGenerator.generateHtmlHelpFiles();
+	    //
 
 	}
 
@@ -289,8 +290,15 @@ public class MarsProjectFX extends Application  {
 		//isDone = true;
         try {
             SimulationConfig.loadConfig();
+            
+    	    // this will generate html files for in-game help based on config xml files
+    	    if (generateHelp) {
+    	    	HelpGenerator.generateHtmlHelpFiles();
+    	    }
+		
             if (useGUI) {
-            	Future future = Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
+            	//Future future = 
+            	Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
             	// note: cannot load editor in macosx if it was a JDialog
                 // ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
             	//while(future.get() == null && isDone) {

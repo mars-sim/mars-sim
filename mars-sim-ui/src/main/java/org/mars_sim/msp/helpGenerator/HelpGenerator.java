@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
 
@@ -76,12 +77,12 @@ public class HelpGenerator {
 	private static final void helpFileHeader(final StringBuffer s, final String title) {
 		StringBuffer header = new StringBuffer()
 		.append("<!DOCTYPE HTML>\n")
-		.append("<!-- generated for mars-sim by st.pa. -->\n")
-		.append("<html>\n")
+		.append("<!-- Generated for mars-sim by st.pa. -->\n")
+		//.append("<html>\n")
 		.append("\t<head>\n")
 		.append("\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n")
 		.append("\t\t<title>")
-		.append("Mars Simulation Project - generated help file - ")
+		.append("Mars Simulation Project - Generated help file - ")
 		.append(title)
 		.append("</title>\n")
 		.append("\t\t<link rel=\"stylesheet\" href=\"../msp.css\">\n")
@@ -121,6 +122,7 @@ public class HelpGenerator {
 				.getResource(DIR)
 				.toURI()
 			).getAbsolutePath();
+			//System.out.println("absPath is " + absPath);
 			File file = new File(absPath + '/' + path.toString());
 //			File file = new File(ABSOLUTE_DIR + '/' + path.toString());
 			PrintWriter pw = new PrintWriter(file);
@@ -210,7 +212,7 @@ public class HelpGenerator {
 	 * @return {@link String}
 	 */
 	private static final String getLinkResource(final String resourceName) {
-		return link(getPathResource(resourceName),resourceName);
+		return link(getPathResource(resourceName), resourceName);
 	}
 
 	/**
@@ -292,7 +294,7 @@ public class HelpGenerator {
 		.append("<a href=\"")
 		.append(target)
 		.append("\">")
-		.append(caption)
+		.append(Conversion.capitalize(caption))
 		.append("</a>")
 		.toString();
 	}
@@ -306,7 +308,7 @@ public class HelpGenerator {
 		// first generate "vehicles.html" with a list of defined vehicles
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Vehicles</h2>\n")
-		.append("<p>MSP features several types of vehicles for use on the Mars surface. Here are the default ones defined:</p>")
+		.append("<p>Mars-sim features the following types of vehicles for Mars surface operations:</p>")
 		.append("<ul>\n");
 		for (String vehicle : vehicles) {
 			content.append("<li>")
@@ -403,35 +405,47 @@ public class HelpGenerator {
 	/**
 	 * generate help files with resources descriptions.
 	 */
+	//2016-04-17 Added checking for edible
 	private static final void generateResourceDescriptions() {
+		//System.out.println("Calling generateResourceDescriptions()");
 		Map<String,AmountResource> resources = AmountResource.getAmountResourcesMap();
 
 		// first: generate "resources.html" with a list of defined resources
 		StringBuffer content = new StringBuffer()
-		.append("<h2>Resources</h2>\n")
-		.append("<p>These are all the default resources:</p>\n")
+		.append("<h2>Amount Resources</h2>\n")
+		.append("<p>Mars-sim features the following resources:</p>\n")
 		.append("<table>\n");
-
+		
+		//System.out.println("Done with making content");
+				
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
 			AmountResource resource = entry.getValue();
 			String name = entry.getKey();
-			String life = resource.isLifeSupport() ? " (life support)" : "";
+			String life = resource.isLifeSupport() ? "   (Life Support)" : "";
+			String edible = resource.isEdible() ? "   (Edible)" : "";
+
 			helpFileTableRow(
 				content,
 				new String[] {
 					getLinkResource(name),
-					resource.getPhase().getName(),
-					life
+					"   ",
+					Conversion.capitalize(resource.getPhase().getName()),
+					life,
+					edible
 				}
 			);
 		}
 
+		//System.out.println("Done with making all rows");
+		
 		content.append("</table>\n");
 
 		helpFileHeader(content,"resources");
 		helpFileFooter(content);
 		generateFile(getPathResources(),content);
 
+		//System.out.println("generateResourceDescriptions(): done with part 1");
+				
 		// second: loop over resource types to generate a help file for each one
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
 			AmountResource resource = entry.getValue();
@@ -452,6 +466,7 @@ public class HelpGenerator {
 			if (resource.isLifeSupport()) {
 				content.append("<p>this resource is needed for life support.</p>\n");
 			}
+			
 			// list of manufacturing processes with the current resource as output
 			List<ManufactureProcessInfo> output = ManufactureUtil
 			.getManufactureProcessesWithGivenOutput(name);
@@ -467,6 +482,7 @@ public class HelpGenerator {
 				}
 				content.append("</ul>\n");
 			} else helpFileNoSuchProcess(content);
+			
 			// list of manufacturing processes with the current resource as input
 			List<ManufactureProcessInfo> input = ManufactureUtil
 			.getManufactureProcessesWithGivenInput(name);
@@ -725,7 +741,7 @@ public class HelpGenerator {
 	 */
 	public static final void generateHtmlHelpFiles() {
 		logger.log(Level.INFO,"Starting to generate help files");
-		
+		//System.out.println("Calling generateHtmlHelpFiles()");
 		HelpGenerator.generateVehicleDescriptions();
 		logger.log(Level.INFO,"generateVehicleDescriptions() is done");
 		HelpGenerator.generateResourceDescriptions();
@@ -733,16 +749,17 @@ public class HelpGenerator {
 		HelpGenerator.generatePartsDescriptions();
 		logger.log(Level.INFO,"generatePartsDescriptions() is done");
 		HelpGenerator.generateProcessDescriptions();
-		//TODO: will create HelpGenerator.generateFoodProductionDescriptions();
-		//TODO: will create HelpGenerator.generateMealsDescriptions();
 		logger.log(Level.INFO,"generateProcessDescriptions() is done");
 
+		//TODO: will create HelpGenerator.generateFoodProductionDescriptions();
+		//TODO: will create HelpGenerator.generateMealsDescriptions();
+		
 		logger.log(
 			Level.INFO,
 			new StringBuffer()
-				.append("generated ")
+				.append("Files Generated: ")
 				.append(Integer.toString(filesGenerated))
-				.append(" help files. failures: ")
+				.append("  Failed: ")
 				.append(Integer.toString(filesNotGenerated))
 			.toString()
 		);
