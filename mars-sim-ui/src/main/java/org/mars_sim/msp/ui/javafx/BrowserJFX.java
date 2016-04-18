@@ -218,8 +218,12 @@ public class BrowserJFX {
     public void updateHistory(String href) {
     	//System.out.println("BrowserJFX : href is " + href);
     	//System.out.println("guideWindow is " + guideWindow);
-		guideWindow.updateHistory(getClass().getResource(Msg.getString("doc.help") + href));
+    	URL url = getClass().getResource(Msg.getString("doc.help") + href);
+    	//System.out.println("BrowserJFX : url is " + url);
+		guideWindow.updateHistory(url);
     	guideWindow.updateButtons();
+    	
+    	loadLocalURL(url.toExternalForm());
     }
     
     @SuppressWarnings("restriction")
