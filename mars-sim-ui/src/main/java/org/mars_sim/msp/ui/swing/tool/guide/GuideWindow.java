@@ -45,7 +45,9 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
  */
 public class GuideWindow
 extends ToolWindow
-implements ActionListener, HyperlinkListener, ComponentListener {
+implements ActionListener,
+//HyperlinkListener, 
+ComponentListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -59,7 +61,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	// Data members
 	private List<URL> history = new ArrayList<URL>();
 
-	private int historyIndex;
+	private int historyIndex = 0;
 
 	/** The view port for the text pane. */
 	private JViewport viewPort;
@@ -90,7 +92,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 
 		//SwingUtilities.invokeLater(new Runnable() {
 		//	public void run() {
-				browser = new BrowserJFX();
+				browser = new BrowserJFX(this);
 				browserPanel = browser.init();
 				//browser.loadURL("http://mars-sim.sourceforge.net");
 		//	}
@@ -115,7 +117,10 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		toolPanel.add(forwardButton);
 
 		//browser.addHyperlinkListener(this);
-		goToURL(guideURL);
+		
+		//goToURL(guideURL);
+		
+		
 	   	//logger.info("GuideWindow's constructor: initialize buttons and toolPanel");
 /*
 		htmlPane = new HTMLContentPane();
@@ -139,7 +144,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	   	//logger.info("GuideWindow's constructor: initialize mainPane");
 		// We have to define a starting size
 		//setSize(new Dimension(575, 475));
-		setSize(new Dimension(1024, 600));
+		setSize(new Dimension(1024, 640));
 	   	//logger.info("GuideWindow's constructor: setSize");
 		// Allow the window to be resized by the user.
 		//setResizable(true);
@@ -166,6 +171,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	 * Updates navigation buttons.
 	 */
 	public void updateButtons() {
+		//System.out.println("GuideWindow: Calling updateButtons(). historyIndex is " + historyIndex);
 		homeButton.setEnabled(true);
 		backButton.setEnabled(!isFirst());
 		forwardButton.setEnabled(!isLast());
@@ -176,7 +182,12 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	 */
 	public void setURL(String fileloc) {
 		//htmlPane.goToURL(getClass().getResource(fileloc));
-		browser.loadLocalURL(getClass().getResource(fileloc).toExternalForm());
+		//String path = getClass().getResource(fileloc).toExternalForm();
+		//browser.loadLocalURL(path);
+		//browser.loadLocalURL(getClass().getResource(fileloc).toExternalForm());
+		//System.out.println("GuideWindow's setURL() : fileloc is " + fileloc);
+		//System.out.println("GuideWindow's setURL() : URL is " + getClass().getResource(fileloc));
+		goToURL(getClass().getResource(fileloc));
 	}
 
 	/** Implementing ActionListener method. */
@@ -198,7 +209,13 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 
 
 	public void goToURL(URL url) {
+		//System.out.println("GuideWindow's goToURL()");
 		displayPage(url);
+		updateHistory(url);
+	}
+	
+	// 2016-04-18 Added updateHistory()
+	public void updateHistory(URL url) {
 		if (historyIndex < history.size() - 1) {
 			historyIndex++;
 			history.set(historyIndex, url);
@@ -244,7 +261,9 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 
 	private void displayPage(URL pageURL) {
 	    SwingUtilities.invokeLater(() -> {
-			browser.loadLocalURL(pageURL.toExternalForm());
+	    	String path = pageURL.toExternalForm();
+			browser.loadLocalURL(path);
+			//System.out.println("GuideWindow's displayPage() : URL path is " + path);
 			//setPage(pageURL);
 		});
 	}

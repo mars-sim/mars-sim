@@ -22,6 +22,9 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.foodProduction.FoodProductionProcessInfo;
+import org.mars_sim.msp.core.foodProduction.FoodProductionProcessItem;
+import org.mars_sim.msp.core.foodProduction.FoodProductionUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -60,6 +63,9 @@ public class HelpGenerator {
 
 	private static final String PROCESSES = "processes";
 	private static final String PROCESS = "process_";
+
+	private static final String FOOD_PRODUCTIONS = "food_productions";
+	private static final String FOOD_PRODUCTION = "food_production_";
 
 	private static final String EQUIPMENTS = "equipment";
 	private static final String EQUIPMENT = "equipment_";
@@ -111,6 +117,10 @@ public class HelpGenerator {
 
 	private static final void helpFileNoSuchProcess(final StringBuffer content) {
 		content.append("<p>&nbsp;&nbsp;no such manufacturing processes known.</p>");
+	}
+
+	private static final void helpFileNoSuchFoodProductionProcess(final StringBuffer content) {
+		content.append("<p>&nbsp;&nbsp;no such food production processes known.</p>");
 	}
 
 	private static final void generateFile(final StringBuffer path, final StringBuffer content) {
@@ -192,6 +202,19 @@ public class HelpGenerator {
 		.append(SUFFIX);
 	}
 
+	private static final StringBuffer getPathFoodProductionProcess(final String process) {
+		return new StringBuffer()
+		.append(FOOD_PRODUCTION)
+		.append(escape(process))
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathFoodProductionProcesses() {
+		return new StringBuffer()
+		.append(FOOD_PRODUCTIONS)
+		.append(SUFFIX);
+	}
+	
 	private static final StringBuffer getPathEquipment(final String equipment) {
 		return new StringBuffer()
 		.append(EQUIPMENT)
@@ -262,6 +285,25 @@ public class HelpGenerator {
 		return link(getPathProcesses(),caption);
 	}
 
+	/**
+	 * produces a link <code> a href = getPathFoodProductionProcess(name) </code>
+	 * with the name as caption.
+	 * @param processName {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkFoodProductionProcess(final String processName) {
+		return link(getPathFoodProductionProcess(processName),processName);
+	}
+
+	/**
+	 * produces a link to the Food Production processes page with the given caption.
+	 * @param caption {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkFoodProductionProcesses(final String caption) {
+		return link(getPathFoodProductionProcesses(),caption);
+	}
+	
 	private static final String getLinkEquipment(final String equipmentName) {
 		return link(getPathEquipment(equipmentName),equipmentName);
 	}
@@ -308,7 +350,7 @@ public class HelpGenerator {
 		// first generate "vehicles.html" with a list of defined vehicles
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Vehicles</h2>\n")
-		.append("<p>Mars-sim features the following types of vehicles for Mars surface operations:</p>")
+		.append("<p>Available types of vehicles are featured for Mars surface operations:</p>")
 		.append("<ul>\n");
 		for (String vehicle : vehicles) {
 			content.append("<li>")
@@ -340,7 +382,7 @@ public class HelpGenerator {
 			.append("\"</h2>\n")
 			.append("</p></p>\n")
 			.append("<p>")
-			.append(getLinkVehicles("Back to vehicles overview"))
+			.append(getLinkVehicles("Back to Vehicles Overview"))
 			.append("</p><br/>\n")
 			.append("<p>")
 			.append(v.getDescription())
@@ -396,7 +438,7 @@ public class HelpGenerator {
 
 			content.append("</table>\n");
 
-			helpFileHeader(content,"vehicle \"" + vehicle + "\"");
+			helpFileHeader(content, "Vehicle \"" + vehicle + "\"");
 			helpFileFooter(content);
 			generateFile(getPathVehicle(vehicle),content);
 		}
@@ -413,7 +455,7 @@ public class HelpGenerator {
 		// first: generate "resources.html" with a list of defined resources
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Amount Resources</h2>\n")
-		.append("<p>Mars-sim features the following resources:</p>\n")
+		.append("<p>Available types of resources :</p>")
 		.append("<table>\n");
 		
 		//System.out.println("Done with making content");
@@ -446,7 +488,8 @@ public class HelpGenerator {
 
 		//System.out.println("generateResourceDescriptions(): done with part 1");
 				
-		// second: loop over resource types to generate a help file for each one
+		// STEP 2 : 
+		// loop over resource types to generate a help file for each one
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
 			AmountResource resource = entry.getValue();
 			String name = entry.getKey();
@@ -458,7 +501,7 @@ public class HelpGenerator {
 			.append("\t</h2>\n")
 			.append("<br/>\n")
 			.append("<p>")
-			.append(getLinkResources("Back to resources overview"))
+			.append(getLinkResources("Back to Resources Overview"))
 			.append("</p><br/>\n")
 			.append("<p>")
 			.append(resource.getDescription())
@@ -493,15 +536,50 @@ public class HelpGenerator {
 				content.append("<ul>\n");
 				for (ManufactureProcessInfo info : input) {
 					content.append("\t<li>")
-					.append(getLinkProcess(info.getName()))
+					.append(getLinkFoodProductionProcess(info.getName()))
 					.append("</li>\n");
 				}
 				content.append("</ul>\n");
 			} else helpFileNoSuchProcess(content);
+		
+
+			// list of food production processes with the current resource as output
+			List<FoodProductionProcessInfo> output_fp = FoodProductionUtil
+			.getFoodProductionProcessesWithGivenOutput(name);
+			content.append("<p><u>how to make ")
+			.append(name)
+			.append(":</u></p>\n");
+			if (output_fp.size() > 0) {
+				content.append("<ul>\n");
+				for (FoodProductionProcessInfo info : output_fp) {
+					content.append("\t<li>")
+					.append(getLinkFoodProductionProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchFoodProductionProcess(content);
+			
+			// list of food production processes with the current resource as input
+			List<FoodProductionProcessInfo> input_fp = FoodProductionUtil
+			.getFoodProductionProcessesWithGivenInput(name);
+			content.append("<p><u>what to do with ")
+			.append(name)
+			.append(":</u></p>\n");
+			if (input_fp.size() > 0) {
+				content.append("<ul>\n");
+				for (FoodProductionProcessInfo info : input_fp) {
+					content.append("\t<li>")
+					.append(getLinkFoodProductionProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchFoodProductionProcess(content);
+			
 			// finalize and generate help file
-			helpFileHeader(content,"resource \"" + resource + "\"");
+			helpFileHeader(content,"Resource \"" + resource + "\"");
 			helpFileFooter(content);
 			generateFile(getPathResource(name),content);
+			
 		}
 	}
 
@@ -514,7 +592,7 @@ public class HelpGenerator {
 		// first: generate "parts.html" with a list of defined equipment parts
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Parts</h2>\n")
-		.append("<p>These are all the default equipment parts:</p>\n")
+		.append("<p>Available types of parts and equipments :</p>")
 		.append("<ul>\n");
 		for (String part : parts.keySet()) {
 			content.append("\t<li>")
@@ -536,7 +614,7 @@ public class HelpGenerator {
 			.append("\"</h2>\n")
 			.append("</p><br/>\n")
 			.append("<p>")
-			.append(getLinkParts("Back to parts overview"))
+			.append(getLinkParts("Back to Parts Overview"))
 			.append("</p><br/>\n")
 			.append("<p>mass per unit: ")
 			.append(Double.toString(part.getMassPerItem()))
@@ -544,6 +622,7 @@ public class HelpGenerator {
 			.append("<p>")
 			.append(part.getDescription())
 			.append("</p><br/>\n");
+			
 			// list of manufacturing processes with the current part as output
 			List<ManufactureProcessInfo> output = ManufactureUtil
 			.getManufactureProcessesWithGivenOutput(name);
@@ -575,10 +654,46 @@ public class HelpGenerator {
 				}
 				content.append("</ul>\n");
 			} else helpFileNoSuchProcess(content);
+	
+
+			// list of food production processes with the current resource as output
+			List<FoodProductionProcessInfo> output_fp = FoodProductionUtil
+			.getFoodProductionProcessesWithGivenOutput(name);
+			content.append("<p><u>how to make ")
+			.append(name)
+			.append(":</u></p>\n");
+			if (output_fp.size() > 0) {
+				content.append("<ul>\n");
+				for (FoodProductionProcessInfo info : output_fp) {
+					content.append("\t<li>")
+					.append(getLinkFoodProductionProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchFoodProductionProcess(content);
+			
+			// list of food production processes with the current resource as input
+			List<FoodProductionProcessInfo> input_fp = FoodProductionUtil
+			.getFoodProductionProcessesWithGivenInput(name);
+			content.append("<p><u>what to do with ")
+			.append(name)
+			.append(":</u></p>\n");
+			if (input_fp.size() > 0) {
+				content.append("<ul>\n");
+				for (FoodProductionProcessInfo info : input_fp) {
+					content.append("\t<li>")
+					.append(getLinkFoodProductionProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchFoodProductionProcess(content);
+			
 			// finalize and generate help file
-			helpFileHeader(content,"part \"" + part + "\"");
+			helpFileHeader(content,"Part \"" + part + "\"");
 			helpFileFooter(content);
 			generateFile(getPathPart(name),content);
+		
+			
 		}
 	}
 
@@ -599,7 +714,7 @@ public class HelpGenerator {
 		};
 		StringBuffer content = new StringBuffer()
 		.append("<h2>Processes</h2>\n")
-		.append("<p>These are all the default manufacturing processes:</p>\n")
+		.append("<p>Available types of manufacturing processes:</p>\n")
 		.append("<table>\n");
 		helpFileTableRow(content,header);
 		for (Entry<String,ManufactureProcessInfo> process : processes.entrySet()) {
@@ -632,7 +747,7 @@ public class HelpGenerator {
 			.append(name)
 			.append("\"</h2>\n")
 			.append("<br/>")
-			.append(getLinkProcesses("Back to processes overview"))
+			.append(getLinkProcesses("Back to Processes Overview"))
 			.append("</br>\n")
 			.append("<p>")
 			.append(info.getDescription())
@@ -682,12 +797,119 @@ public class HelpGenerator {
 			content.append("</table>\n");
 
 			// finalize and generate help file
-			helpFileHeader(content,"process \"" + name + "\"");
+			helpFileHeader(content,"Process \"" + name + "\"");
 			helpFileFooter(content);
 			generateFile(getPathProcess(name),content);
 		}
 	}
 
+
+	/**
+	 * generate help files with food production process descriptions.
+	 */
+	private static final void generateFoodProductionDescriptions() {
+		TreeMap<String,FoodProductionProcessInfo> processes = FoodProductionUtil.getAllFoodProductionProcessesMap();
+
+		// first: generate "foodProduction.html" with a list of defined processes
+		String[] header = new String[] {
+			"<b>tech </b>",
+			"<b>skill </b>",
+			"<b>work </b>",
+			"<b>time </b>",
+			"<b>power </b>",
+			"<b>name </b>"
+		};
+		StringBuffer content = new StringBuffer()
+		.append("<h2>Food Production</h2>\n")
+		.append("<p>Available types of food production processes:</p>\n")
+		.append("<table>\n");
+		helpFileTableRow(content,header);
+		for (Entry<String,FoodProductionProcessInfo> process : processes.entrySet()) {
+			String name = process.getKey();
+			FoodProductionProcessInfo info = process.getValue();
+			helpFileTableRow(
+				content,
+				new String[] {
+					Integer.toString(info.getTechLevelRequired()),
+					Integer.toString(info.getSkillLevelRequired()),
+					Double.toString(info.getWorkTimeRequired()),
+					Double.toString(info.getProcessTimeRequired()),
+					Double.toString(info.getPowerRequired()),
+					getLinkFoodProductionProcess(name)
+				}
+			);
+		}
+		helpFileTableRow(content,header);
+		content.append("</table>\n");
+		helpFileHeader(content,"Food Production");
+		helpFileFooter(content);
+		generateFile(getPathFoodProductionProcesses(),content);
+
+		// second: loop over processes to generate a help file for each one
+		for (Entry<String,FoodProductionProcessInfo> process : processes.entrySet()) {
+			String name = process.getKey();
+			FoodProductionProcessInfo info = process.getValue();
+			content = new StringBuffer()
+			.append("<h2>Food Production \"")
+			.append(name)
+			.append("\"</h2>\n")
+			.append("<br/>")
+			.append(getLinkFoodProductionProcesses("Back to Food Production Overview"))
+			.append("</br>\n")
+			.append("<p>")
+			.append(info.getDescription())
+			.append("</p><br/>\n")
+			.append("<table>\n");
+			helpFileTableRow(content,new String [] {"required building tech level",Integer.toString(info.getTechLevelRequired())});
+			helpFileTableRow(content,new String [] {"required skill level",Integer.toString(info.getSkillLevelRequired())});
+			helpFileTableRow(content,new String [] {"work time in millisols",Double.toString(info.getWorkTimeRequired())});
+			helpFileTableRow(content,new String [] {"time in millisols",Double.toString(info.getProcessTimeRequired())});
+			helpFileTableRow(content,new String [] {"power requirement",Double.toString(info.getPowerRequired())});
+			content.append("</table>\n")
+			.append("<br/>\n")
+			.append("<p><u>process inputs:</u></p>\n")
+			.append("<table>\n");
+			for (FoodProductionProcessItem input : info.getInputList()) {
+				String inputName = input.getName();
+				Type inputType = input.getType();
+				String link = getLink_ResourceType(inputType,inputName);
+				String type = getLink_ResourceLink(inputType);
+				helpFileTableRow(
+					content,
+					new String[] {
+						type,
+						Double.toString(input.getAmount()),
+						link
+					}
+				);
+			}
+			content.append("</table>\n")
+			.append("<br/>\n")
+			.append("<p><u>process outputs:</u></p>\n")
+			.append("<table>\n");
+			for (FoodProductionProcessItem output : info.getOutputList()) {
+				String outputName = output.getName();
+				Type outputType = output.getType();
+				String link = getLink_ResourceType(outputType,outputName);
+				String type = getLink_ResourceLink(outputType);
+				helpFileTableRow(
+					content,
+					new String[] {
+						type,
+						Double.toString(output.getAmount()),
+						link
+					}
+				);
+			}
+			content.append("</table>\n");
+
+			// finalize and generate help file
+			helpFileHeader(content,"Food Production \"" + name + "\"");
+			helpFileFooter(content);
+			generateFile(getPathFoodProductionProcess(name),content);
+		}
+	}
+	
 	private static String getLink_ResourceType(Type type, String name) {
 		String link;
 		switch (type) {
@@ -751,7 +973,11 @@ public class HelpGenerator {
 		HelpGenerator.generateProcessDescriptions();
 		logger.log(Level.INFO,"generateProcessDescriptions() is done");
 
-		//TODO: will create HelpGenerator.generateFoodProductionDescriptions();
+		//2016-04-18 Added generateFoodProductionDescriptions();
+		HelpGenerator.generateFoodProductionDescriptions();
+		logger.log(Level.INFO,"generateFoodProductionDescriptions() is done");
+
+		
 		//TODO: will create HelpGenerator.generateMealsDescriptions();
 		
 		logger.log(

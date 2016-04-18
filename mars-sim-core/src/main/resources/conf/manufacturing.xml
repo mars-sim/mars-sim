@@ -12,8 +12,7 @@ http://www.uapress.arizona.edu/onlinebks/ResourcesNearEarthSpace/resources28.pdf
 
 	<!-- tech - The minimum workshop tech level required to perform the process. (see tech_level.txt) -->
 	<!-- skill - The minimum person skill level in materials science to perform the process. -->
-	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled -->
-	<!--             workers will produce more effort time than lower skilled workers. -->
+	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
 	<process name="extract iron oxide and sand from regolith"

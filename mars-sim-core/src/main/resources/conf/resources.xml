@@ -50,7 +50,7 @@
 	<resource name="baking powder" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
 	<resource name="epsom salt" phase="solid" edible="true">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
 	<resource name="table salt" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="yeast" phase="solid" edible="true">For making bread.</resource>
+	<resource name="yeast" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
 <!-- Soybean-derived food items -->
 	<resource name="okara" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which

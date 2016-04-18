@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.javafx;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -17,15 +18,31 @@ import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.events.EventListener;
+import org.w3c.dom.events.EventTarget;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+//import java.util.EventListener;
 
 import static javafx.concurrent.Worker.State.FAILED;
+import static javafx.concurrent.Worker.State;
 
 public class BrowserJFX {
 
+    public static final String EVENT_TYPE_CLICK = "click";
+    public static final String EVENT_TYPE_MOUSEOVER = "mouseover";
+    public static final String EVENT_TYPE_MOUSEOUT = "mouseclick";
+ 
 	private boolean isLocalHtml = true;
 
     private final JFXPanel jfxPanel = new JFXPanel();
@@ -37,20 +54,24 @@ public class BrowserJFX {
 
     private WebEngine engine;
 
-    public BrowserJFX() {}
+    private GuideWindow guideWindow;
+    
+    public BrowserJFX(GuideWindow gw) {
+    	this.guideWindow = gw;
+    }
 
     public JPanel init() {
         initJFX();
-
+        
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loadURL(txtURL.getText());
+                loadRemoteURL(txtURL.getText());
             }
         };
-
+        
         btnGo.addActionListener(al);
-        txtURL.addActionListener(al);
+        txtURL.addActionListener(al);			
 
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
@@ -72,14 +93,20 @@ public class BrowserJFX {
         return panel;
     }
 
-    private void initJFX() {
+    @SuppressWarnings("restriction")
+	private void initJFX() {
 
         Platform.runLater(new Runnable() {
-            @Override
+            @SuppressWarnings("unchecked")
+			@Override
             public void run() {
+
+			    //GuideWindow gw = guideWindow;
 
                 WebView view = new WebView();
                 engine = view.getEngine();
+                
+                Worker worker = engine.getLoadWorker();
 /*
                 engine.titleProperty().addListener(new ChangeListener<String>() {
                     @Override
@@ -100,6 +127,7 @@ public class BrowserJFX {
                             @Override
                             public void run() {
                                 lblStatus.setText(event.getData());
+                                //System.out.println("BrowserJFX : event.getData() is " + event.getData());
                             }
                         });
                     }
@@ -111,16 +139,20 @@ public class BrowserJFX {
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
                             public void run() {
-                            	if (isLocalHtml)
+                            	if (isLocalHtml) {
                             		txtURL.setText("");
-                            	else
+                            		//System.out.println("BrowserJFX : isLocalHtml is true. setText() to null");	
+                            	}
+                            	else {
                             		txtURL.setText(newValue);
+                            		//System.out.println("BrowserJFX : isLocalHtml is false. setText(newValue). newValue is " + newValue);
+                            	}
                             }
                         });
                     }
                 });
 
-                engine.getLoadWorker().workDoneProperty().addListener(new ChangeListener<Number>() {
+                worker.workDoneProperty().addListener(new ChangeListener<Number>() {
                     @Override
                     public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, final Number newValue) {
                         SwingUtilities.invokeLater(new Runnable() {
@@ -132,54 +164,91 @@ public class BrowserJFX {
                     }
                 });
 
-                engine.getLoadWorker()
-                        .exceptionProperty()
-                        .addListener(new ChangeListener<Throwable>() {
+                worker.exceptionProperty().addListener(new ChangeListener<Throwable>() {
 
-                            public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
-                                if (engine.getLoadWorker().getState() == FAILED) {
-                                    SwingUtilities.invokeLater(new Runnable() {
-                                        @Override public void run() {
-                                            JOptionPane.showMessageDialog(
-                                                    panel,
-                                                    (value != null) ?
-                                                    engine.getLocation() + "\n" + value.getMessage() :
-                                                    engine.getLocation() + "\nUnexpected error.",
-                                                    "Loading error...",
-                                                    JOptionPane.ERROR_MESSAGE);
-                                        }
-                                    });
-                                }
+                public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
+                	if (worker.getState() == FAILED) {
+                		SwingUtilities.invokeLater(new Runnable() {
+                			@Override 
+                			public void run() {
+                				JOptionPane.showMessageDialog(
+                                            panel,
+                                            (value != null) ?
+                                            engine.getLocation() + "\n" + value.getMessage() :
+                                            engine.getLocation() + "\nUnexpected error.",
+                                            "Loading error...",
+                                            JOptionPane.ERROR_MESSAGE);
+                			}
+                		});
+                	}
+             	
+                }});
+
+                worker.stateProperty().addListener(new ChangeListener<javafx.concurrent.Worker.State>() {
+                    public void changed(ObservableValue ov, State oldState, State newState) {
+                        if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                                // note next classes are from org.w3c.dom domain
+                        	EventListener listener = new EventListener() {
+								@Override
+								public void handleEvent(org.w3c.dom.events.Event ev) {
+																	    
+									String href = ((Element)ev.getTarget()).getAttribute("href");
+                                	//System.out.println("BrowserJFX : href is " + href);
+                                	updateHistory(href);                         	
+								}
+                            };
+
+                            Document doc = engine.getDocument();                   
+                            NodeList nodeList = doc.getElementsByTagName("a");
+                            for (int i = 0; i < nodeList.getLength(); i++) {
+                                ((EventTarget) nodeList.item(i)).addEventListener(EVENT_TYPE_CLICK, listener, false);
+                                //((EventTarget) nodeList.item(i)).addEventListener(EVENT_TYPE_MOUSEOVER, listener, false);
+                                //((EventTarget) nodeList.item(i)).addEventListener(EVENT_TYPE_MOUSEOVER, listener, false);
                             }
-                        });
-
+                        }
+                    }
+                });
+                
                 jfxPanel.setScene(new Scene(view));
             }
         });
     }
 
-    public void loadURL(final String url) {
+	// 2016-04-18 Added updateHistory()
+    public void updateHistory(String href) {
+    	//System.out.println("BrowserJFX : href is " + href);
+    	//System.out.println("guideWindow is " + guideWindow);
+		guideWindow.updateHistory(getClass().getResource(Msg.getString("doc.help") + href));
+    	guideWindow.updateButtons();
+    }
+    
+    @SuppressWarnings("restriction")
+	public void loadRemoteURL(final String url) {
     	isLocalHtml = false;
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 String tmp = toURL(url);
-
+                //System.out.println("before, tmp is "+ tmp);
                 if (tmp == null) {
                     tmp = toURL("http://" + url);
                 }
-
+                //System.out.println("before, tmp is "+ tmp);
                 engine.load(tmp);
             }
         });
     }
 
-    public void loadLocalURL(String path) {
+    @SuppressWarnings("restriction")
+	public void loadLocalURL(String path) {
        	isLocalHtml = true;
+       	  	
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                //System.out.println("before, path is "+ path);
                 String p = path.replace("file://", "file:///").replace("file:/", "file:///");
+                //System.out.println("after, path is "+ p);
                 engine.load(p);
             }
         });
@@ -192,6 +261,5 @@ public class BrowserJFX {
                 return null;
         }
     }
-
-
+    
 }
