@@ -45,6 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import org.mars_sim.msp.astroarts.OrbitViewer;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -146,6 +147,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private MainScene mainScene;
 	private MarqueeTicker marqueeTicker;
 
+	private OrbitViewer orbitViewer;
+	
 	//private final ReentrantLock transportLock = new ReentrantLock();
     //private int transportCount = 0;
 
@@ -1469,9 +1472,21 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return timeWindow;
 	}
 
-	public Collection<ToolWindow> getToolWindowsList() {;
+	public Collection<ToolWindow> getToolWindowsList() {
 		return toolWindows;
 	}
+	
+	public boolean isOrbitViewerOn() {
+		if (orbitViewer == null)
+			return false;
+		else
+			return true;
+	}
+	
+	public void setOrbitViewer(OrbitViewer orbitViewer) {
+		this.orbitViewer = orbitViewer;
+	}
+	
 	
 	public void destroy() {
 		updateThread = null;

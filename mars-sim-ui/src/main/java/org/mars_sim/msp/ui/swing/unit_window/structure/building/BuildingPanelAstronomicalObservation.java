@@ -39,7 +39,6 @@ extends BuildingFunctionPanel {
 	private AstronomicalObservation function;
 	private OrbitViewer orbitViewer;
 	
-
 	/**
 	 * Constructor.
 	 * @param observatory the astronomical observatory building function.
@@ -132,14 +131,15 @@ extends BuildingFunctionPanel {
 	private void openOrbitViewer() {
 
 		MainWindow mw = desktop.getMainWindow();
-		if (mw != null )  {
-			if (orbitViewer == null)
+		if (mw != null)  {
+			if (orbitViewer == null && !desktop.isOrbitViewerOn())
 				orbitViewer = new OrbitViewer(desktop, this);
 		}
 
 		MainScene ms = desktop.getMainScene();
-		if (ms != null )  {
-			if (orbitViewer == null) {
+		
+		if (ms != null)  {
+			if (orbitViewer == null && !desktop.isOrbitViewerOn()) {
 				orbitViewer = new OrbitViewer(desktop, this);
 			}
 		}

@@ -39,6 +39,19 @@ public abstract class ModalInternalFrame extends JInternalFrame {
         super(title, false, false, false, false);
     }
 
+    public ModalInternalFrame(String title, 
+    		 boolean resizable, 
+    		 boolean closable, 
+    		 boolean maximizable, 
+    		 boolean iconifiable) {
+        // Call JInternalFrame constructor.
+        super(title, 
+        		resizable, 
+        		closable, 
+        		maximizable, 
+        		iconifiable);
+    }
+    
     @Override
     public void show() {
         super.show();
