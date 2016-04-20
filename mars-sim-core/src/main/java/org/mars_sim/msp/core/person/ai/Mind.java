@@ -110,23 +110,26 @@ implements Serializable {
         	// 2015-10-31 Added recordMission()
         	missionManager.recordMission();
 
-
-    	// Note: the new job will be locked in until the beginning of the next day
-    	if (jobLock) {
-	        MarsClock clock = masterClock.getMarsClock();
-	        // check for the passing of each day
-	        int solElapsed = MarsClock.getSolOfYear(clock);
-	        if (solElapsed != solCache) {
-	        	solCache = solElapsed;
-	        	jobLock = false;
-	        }
-    	}
-
     	// Note : for now a Mayor/Manager cannot switch job
     	if (job instanceof Manager)
     		jobLock = true;
 
-    	checkJob();
+     	else {
+    		if (jobLock) {
+    		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
+   	
+    	        MarsClock clock = masterClock.getMarsClock();
+    	        // check for the passing of each day
+    	        int solElapsed = MarsClock.getSolOfYear(clock);
+    	        if (solElapsed != solCache) {
+    	        	solCache = solElapsed;
+    	        	jobLock = false;
+    	        }
+        	}
+    		else
+    			checkJob();
+    	}
+    	
 
         // Update stress based on personality.
         personality.updateStress(time);
@@ -140,10 +143,13 @@ implements Serializable {
 
     }
 
-    // 2015-04-30 Added assignJob()
+    /*
+     * Checks if a person has a job. If not, get a new one.
+     */
+    // 2015-04-30 Added checkJob()
     public void checkJob() { //String status, String approvedBy) {
         // Check if this person needs to get a new job or change jobs.
-        if (!jobLock || job == null) {
+        if (job == null) { // removing !jobLock 
         	// Note: getNewJob() is checking if existing job is "good enough"/ or has good prospect
          	Job newJob = JobManager.getNewJob(person);
            	// 2015-04-30 Already excluded mayor/manager job from being assigned in JobManager.getNewJob()
@@ -151,11 +157,13 @@ implements Serializable {
         	String jobStr = null;
         	if (job != null)
         		jobStr = job.getName(person.getGender());
-        	if (newJob != null) //System.out.println("timePassing() : newJob is null");
+        	if (newJob != null) {
+        		//System.out.println("timePassing() : newJob is null"); 	
 	           	if (!newJobStr.equals(jobStr)) {
 		            //job = newJob;
 	           		setJob(newJob, false, JobManager.SETTLEMENT, JobAssignmentType.APPROVED, JobManager.SETTLEMENT);
 	           	}
+        	}
         	//System.out.println(person.getName() + "'s jobLock is false.");
         }
     }
@@ -222,46 +230,6 @@ implements Serializable {
 
     }
 
-    /**
-     * Returns the person owning this mind.
-     * @return person
-     */
-    public Person getPerson() {
-        return person;
-    }
-
-    /**
-     * Returns the person's task manager
-     * @return task manager
-     */
-    public TaskManager getTaskManager() {
-        return taskManager;
-    }
-
-    /**
-     * Returns the person's current mission. Returns null if there is no current mission.
-     * @return current mission
-     */
-    public Mission getMission() {
-        return mission;
-    }
-
-    /**
-     * Gets the person's job
-     * @return job or null if none.
-     */
-    public Job getJob() {
-        return job;
-    }
-
-     /**
-     * Checks if the person's job is locked and can't be changed.
-     * @return true if job lock.
-     */
-    public boolean getJobLock() {
-        return jobLock;
-    }
-
 
     /**
      * Reassign the person's job.
@@ -293,6 +261,9 @@ implements Serializable {
      * Sets the person's job.
      * @param newJob the new job
      * @param bypassingJobLock
+     * @param assignedBy
+     * @param status of JobAssignmentType
+     * @param approvedBy
      */
     // Called by
     // (1) setRole() in Person.java (if a person has a Manager role type)
@@ -313,6 +284,9 @@ implements Serializable {
      * Assigns a person a new job.
      * @param newJob the new job
      * @param bypassingJobLock
+     * @param assignedBy
+     * @param status of JobAssignmentType
+     * @param approvedBy
      */
     public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
     	//System.out.println("Mind.java : assignJob() : starting");
@@ -329,6 +303,7 @@ implements Serializable {
 
     	// TODO : check if the initiator's role allows the job to be changed
     	if (!newJobStr.equals(jobStr)) {
+    		
     	    if (bypassingJobLock || !jobLock) {
 	            job = newJob;
 
@@ -355,9 +330,6 @@ implements Serializable {
 		    	//System.out.println("just called JobHistory's saveJob()");
 		        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
-		    	// the new job will be Locked in until the beginning of the next day
-		        jobLock = true;
-
 		        int population = 0;
 
 		        // Assign a new role type to the person and others in a settlement
@@ -380,6 +352,10 @@ implements Serializable {
 	                }
 
 		        }
+		        
+		    	// the new job will be Locked in until the beginning of the next day
+		        jobLock = true;
+		        //System.out.println("Mind's assignJob() : just set jobLock = true");
     	    }
     	}
     }
@@ -531,6 +507,54 @@ implements Serializable {
         return skillManager;
     }
 
+
+    /**
+     * Returns the person owning this mind.
+     * @return person
+     */
+    public Person getPerson() {
+        return person;
+    }
+
+    /**
+     * Returns the person's task manager
+     * @return task manager
+     */
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+
+    /**
+     * Returns the person's current mission. Returns null if there is no current mission.
+     * @return current mission
+     */
+    public Mission getMission() {
+        return mission;
+    }
+
+    /**
+     * Gets the person's job
+     * @return job or null if none.
+     */
+    public Job getJob() {
+        return job;
+    }
+
+     /**
+     * Checks if the person's job is locked and can't be changed.
+     * @return true if job lock.
+     */
+    public boolean getJobLock() {
+        return jobLock;
+    }
+
+    /*
+     * Set the value of jobLock so that the job can or cannot be changed
+     */
+    public void setJobLock(boolean value) {
+    	jobLock = value;
+    }
+    
     /**
      * Prepare object for garbage collection.
      */

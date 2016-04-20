@@ -434,15 +434,15 @@ implements ActionListener {
         	Vehicle vehicle = (Vehicle) person.getContainerUnit();
         	settlement = vehicle.getSettlement();
         }
+        
+      //List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
+    	int last = list.size()-1;
+
+    	JobAssignmentType status = list.get(last).getStatus();
 
         pop = settlement.getAllAssociatedPeople().size();
 
-        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
-
-        	//List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
-        	int last = list.size()-1;
-
-        	JobAssignmentType status = list.get(last).getStatus();
+        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {     	
 
         	if (status.equals(JobAssignmentType.PENDING)) {
         		statusCache = JobAssignmentType.PENDING;
@@ -463,6 +463,8 @@ implements ActionListener {
 		        	String selectedJobStr = list.get(last).getJobType();
 		        	jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job reassignment will be submitted in
 				    jobComboBox.setSelectedItem(selectedJobStr);
+
+				    person.getMind().setJobLock(true);
 
         		}
         		else if (status.equals(JobAssignmentType.NOT_APPROVED))	{
@@ -509,7 +511,12 @@ implements ActionListener {
     				; // do nothing. at the start of sim
     		    } //if (statusCache.equals(JobAssignmentType.PENDING))
 
-	        } // if (pop > UnitManager.POPULATION_WITH_COMMANDER)
+	        } else  { 
+	        	//2016-04-20 update the jobComboBox if pop is less than POPULATION_WITH_COMMANDER) 	        	
+	        	String selectedJobStr = list.get(last).getJobType();
+	        	jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job reassignment will be submitted in
+			    jobComboBox.setSelectedItem(selectedJobStr);
+	        }
         }
 	/**
 	 * Updates the info on this panel.
@@ -652,7 +659,7 @@ implements ActionListener {
 			        }
 
 			        else if (pop > 0 && pop <= UnitManager.POPULATION_WITH_COMMANDER){
-			        	System.out.println("TabPanelCareer : actionPerformed() : pop <= 4");
+			        	//System.out.println("TabPanelCareer : actionPerformed() : pop <= 4");
 						jobChangeLabel.setForeground(Color.RED);
 						jobChangeLabel.setText("");
 					    jobComboBox.setSelectedItem(selectedJobStr);
@@ -660,10 +667,12 @@ implements ActionListener {
 					    statusCache = JobAssignmentType.APPROVED;
 						person.getMind().reassignJob(selectedJobStr, true, JobManager.USER, statusCache, JobManager.USER);
 
-						// updates the jobHistoryList in jobHistoryTableModel
-						jobHistoryTableModel.update();
 						//System.out.println("Yes they are diff");
 						jobCache = selectedJobStr;
+						
+						// updates the jobHistoryList in jobHistoryTableModel
+						jobHistoryTableModel.update();
+
 
 			        }
 				}
