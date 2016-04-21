@@ -32,7 +32,7 @@ public class Conversion {
 	    boolean nextTitleCase = true;
 
 	    for (char c : input.toCharArray()) {
-	        if (Character.isSpaceChar(c)) {
+	        if (Character.isSpaceChar(c) || c == '(' ) {
 	            nextTitleCase = true;
 	        } else if (nextTitleCase) {
 	            c = Character.toTitleCase(c);

@@ -206,39 +206,39 @@
 
 
 <!-- Mineral concentrations. -->
-	<resource name="Chalcopyrite" phase="solid" />
-	<resource name="Goethite" phase="solid" />
-	<resource name="Hematite" phase="solid" />
-	<resource name="Kamacite" phase="solid" />
-	<resource name="Magnesite" phase="solid" />
-	<resource name="Magnetite" phase="solid" />
-	<resource name="Malachite" phase="solid" />
-	<resource name="Olivine" phase="solid" />
-	<resource name="Taenite" phase="solid" />
-	<resource name="Sylvite" phase="solid" >Potassium Chloride </resource>
+	<resource name="Chalcopyrite" phase="solid">A mineral.</resource>
+	<resource name="Goethite" phase="solid">A mineral.</resource>
+	<resource name="Hematite" phase="solid">A mineral.</resource>
+	<resource name="Kamacite" phase="solid">A mineral.</resource>
+	<resource name="Magnesite" phase="solid">A mineral.</resource>
+	<resource name="Magnetite" phase="solid">A mineral.</resource>
+	<resource name="Malachite" phase="solid">A mineral.</resource>
+	<resource name="Olivine" phase="solid">A mineral.</resource>
+	<resource name="Taenite" phase="solid">A mineral.</resource>
+	<resource name="Sylvite" phase="solid">Potassium Chloride. A mineral.</resource>
 <!-- Compare with NASA MGS/TES Mineral Maps at http://www.mars.asu.edu/data/
 May add Plagioclase, Feldspar, High-Ca Pyroxene, Low-Ca Pyroxene, Quartz, Amphibole, Silicates, etc. -->
 
 <!-- Mineral Elements -->
-	<resource name="Copper" phase="solid" />
-	<resource name="Calcium" phase="solid">A mineral.</resource>
+	<resource name="Copper" phase="solid">An element.</resource>
+	<resource name="Calcium" phase="solid">An element.</resource>
 	<resource name="Carbon" phase="solid">Carbon powder</resource>
 <!--	<resource name="Iron" phase="solid" />     -->
-	<resource name="Magnesium" phase="solid" />
-	<resource name="Nickel" phase="solid" />
-	<resource name="Phosphorus" phase="solid">A mineral.</resource>
-	<resource name="Potassium" phase="solid">A mineral.</resource>
-	<resource name="Silicon" phase="solid" />
-	<resource name="Sulfur" phase="solid" />
-	<resource name="Zinc" phase="solid" />
+	<resource name="Magnesium" phase="solid">An element.</resource>
+	<resource name="Nickel" phase="solid">An element.</resource>
+	<resource name="Phosphorus" phase="solid">An element.</resource>
+	<resource name="Potassium" phase="solid">An element.</resource>
+	<resource name="Silicon" phase="solid">An element.</resource>
+	<resource name="Sulfur" phase="solid">An element.</resource>
+	<resource name="Zinc" phase="solid">An element.</resource>
 
 <!-- Building Material -->
-	<resource name="Cement" phase="solid" />
-	<resource name="Concrete" phase="solid" />
-	<resource name="Mortar" phase="solid" />
+	<resource name="Cement" phase="solid" >A Building Material.</resource>
+	<resource name="Concrete" phase="solid" >A Building Material.</resource>
+	<resource name="Mortar" phase="solid" >A Building Material.</resource>
 
 <!-- Drugs and Supplements -->
-	<resource name="Immune Booster" phase="solid" />
+	<resource name="Immune Booster" phase="solid" >A Drug.</resource>
 
 <!-- Bio-organisms -->
 	<resource name="Acetic Acid Bacteria" phase="solid">This bacteria has the ability to oxidize many types of sugars and alcohols to organic acids as end products during fermentation process. Useful for making vinegar.</resource>

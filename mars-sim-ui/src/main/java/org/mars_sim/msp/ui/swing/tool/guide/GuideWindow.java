@@ -126,19 +126,20 @@ ComponentListener {
 		htmlPane = new HTMLContentPane();
 		htmlPane.addHyperlinkListener(this);
 		htmlPane.goToURL(guideURL);
-		htmlPane.setBackground(Color.lightGray);
+		htmlPane.setBackground(Color.lightGray); (65,65,65)
 		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 		JScrollPane scrollPane = new JScrollPane(htmlPane);
 
 	   	//logger.info("GuideWindow's constructor: initialize htmlPane");
 */
-		JScrollPane scrollPane = new JScrollPane(browserPanel);
-		scrollPane.setBorder(new MarsPanelBorder());
-		viewPort = scrollPane.getViewport();
-		viewPort.addComponentListener(this);
-		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
-
-		mainPane.add(scrollPane, BorderLayout.CENTER);
+		//JScrollPane scrollPane = new JScrollPane(browserPanel);
+		//scrollPane.setBorder(new MarsPanelBorder());
+		//viewPort = scrollPane.getViewport();
+		//viewPort.addComponentListener(this);
+		//viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);	
+		//mainPane.add(scrollPane, BorderLayout.CENTER);
+		
+		mainPane.add(browserPanel, BorderLayout.CENTER);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
 
 	   	//logger.info("GuideWindow's constructor: initialize mainPane");

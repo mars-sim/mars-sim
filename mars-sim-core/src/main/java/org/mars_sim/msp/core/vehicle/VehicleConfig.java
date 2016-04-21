@@ -99,7 +99,7 @@ implements Serializable {
 				VehicleDescription v = new VehicleDescription();
 				v.width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
 				v.length = Double.parseDouble(vehicleElement.getAttributeValue(LENGTH));
-				v.description = "no description available.";
+				v.description = "No Description is Available.";
 				if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
 					v.description = vehicleElement.getChildText(DESCRIPTION);
 				}

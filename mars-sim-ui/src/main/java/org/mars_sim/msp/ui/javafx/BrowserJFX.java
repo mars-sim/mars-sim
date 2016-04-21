@@ -104,6 +104,9 @@ public class BrowserJFX {
 			    //GuideWindow gw = guideWindow;
 
                 WebView view = new WebView();
+                view.setStyle("-fx-background-color: #656565;"
+                		+ " -fx-font-color: white;"
+                		+ " -fx-border-color: #00a7c8");
                 engine = view.getEngine();
                 
                 Worker worker = engine.getLoadWorker();
@@ -193,8 +196,11 @@ public class BrowserJFX {
 								public void handleEvent(org.w3c.dom.events.Event ev) {
 																	    
 									String href = ((Element)ev.getTarget()).getAttribute("href");
-                                	//System.out.println("BrowserJFX : href is " + href);
-                                	updateHistory(href);                         	
+                                	
+									if (href != null) {
+										//System.out.println("BrowserJFX : href is " + href);
+	                                	updateHistory(href);
+	                                }
 								}
                             };
 
