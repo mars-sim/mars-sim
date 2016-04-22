@@ -153,7 +153,7 @@ public class MainScene {
 	private int processCpuLoad;
 	//private int systemCpuLoad;
 
-	private boolean isMainSceneDone = false;
+	private boolean isMainSceneDoneLoading = false;
 
 	private double width;
 	private double height;
@@ -220,7 +220,7 @@ public class MainScene {
 	public MainScene(Stage stage) {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
-		this.isMainSceneDone = false;
+		this.isMainSceneDoneLoading = false;
 
 		//stage.setResizable(true);
 
@@ -649,7 +649,7 @@ public class MainScene {
 
 		//logger.info("done with MainScene's initializeTheme()");
 
-		isMainSceneDone = true;
+		//isMainSceneDone = true;
 	}
 
 	/*
@@ -1019,7 +1019,7 @@ public class MainScene {
 	}
 
 	public boolean isMainSceneDone() {
-		return isMainSceneDone;
+		return isMainSceneDoneLoading;
 	}
 	/**
 	 * Load a previously saved simulation.
@@ -1657,6 +1657,8 @@ public class MainScene {
 		//marsNode.createEarthMap();
 		//marsNode.createMarsMap();
 		//marsNode.createChatBox();
+		
+		isMainSceneDoneLoading = true;
 	}
 
 	public MarsNode getMarsNode() {

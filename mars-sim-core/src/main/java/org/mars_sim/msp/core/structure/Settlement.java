@@ -351,7 +351,7 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	// 2016-01-12 Added getDesignatedBeds()
-	public int getDesignatedBeds() {
+	public int getTotalNumDesignatedBeds() {
 		int result = 0;
 		Iterator<Building> i = buildingManager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS).iterator();
 		while (i.hasNext()) {

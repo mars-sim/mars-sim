@@ -71,6 +71,9 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
+import org.mars_sim.msp.ui.javafx.demo.DragDrop3;
+import org.mars_sim.msp.ui.javafx.demo.PannableView;
+import org.mars_sim.msp.ui.javafx.demo.Story;
 
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;

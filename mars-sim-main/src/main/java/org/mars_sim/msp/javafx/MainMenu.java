@@ -146,7 +146,7 @@ public class MainMenu {
 
     //private Group root;
     private StackPane root;
-	private Stage stage, mainSceneStage, circleStage;
+	private Stage stage, mainSceneStage, circleStage, waitStage;
 	public Scene mainMenuScene, mainSceneScene;
 
 	public MainMenu mainMenu;
@@ -159,6 +159,8 @@ public class MainMenu {
 	public MainMenuController mainMenuController;
 
 	public SpinningGlobe spinningGlobe;
+	
+	private WaitIndicator waiti;
 
     public MainMenu(MarsProjectFX marsProjectFX) {
     	this.marsProjectFX = marsProjectFX;
@@ -322,7 +324,7 @@ public class MainMenu {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
 	   stage.setIconified(true);
 	   stage.hide();
-
+   
 	   // creates a mainScene instance
 	   mainScene = new MainScene(mainSceneStage);
 	   // goes to scenario config editor
@@ -359,41 +361,32 @@ public class MainMenu {
 		if (selectedFile != null) {
 			fileLocn = selectedFile;
 
-			//stage.display(selectedFile);
+			stage.setIconified(true);
+			stage.hide();
 			
+			waitStage = new Stage();
+			waiti = new WaitIndicator(waitStage);
+			
+			//stage.display(selectedFile);		
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-	
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
-
 			Simulation.instance().start();
-
 		}
 		else {			
 			logger.info("No file was selected. Loading is cancelled");
 			return;		
 		}
+					
+		//waiti = new WaitIndicator();
 		
-		
-		stage.setIconified(true);
-		stage.hide();
-				
 		//Future future = 
 		//Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
 	   	//CompletableFuture future = (CompletableFuture) Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
 
-		//try {
-		//	TimeUnit.MILLISECONDS.sleep(2000L);
-		//} catch (InterruptedException e) {
-		//	e.printStackTrace();
-		//}
-		
-		//MasterClock masterClock = Simulation.instance().getMasterClock();
-		//if (Simulation.instance().getMasterClock() == null)
-		//	System.out.println("masterClock == null");
 		while (Simulation.instance().getMasterClock() == null) {// || Simulation.instance().getMasterClock().isLoadingSimulation()) {
 			//System.out.println("MainMenu : the master clock instance is not ready yet. Wait for another 1/2 secs");
 			try {
-				TimeUnit.MILLISECONDS.sleep(500L);
+				TimeUnit.MILLISECONDS.sleep(250L);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -401,7 +394,7 @@ public class MainMenu {
 		
 		//try {
 		//FXUtilities.runAndWait(() -> {
-			Platform.runLater(() -> {
+		Platform.runLater(() -> {
 
 			// creates a mainScene instance
 			mainScene = new MainScene(mainSceneStage);	   
@@ -418,13 +411,19 @@ public class MainMenu {
 			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
 			mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
  
+
+			waitStage.close();
+			
 			mainSceneStage.show();
 			mainSceneStage.requestFocus();
-
+			
 		});
 	   
+			
         mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
+        //waiti.getStage().close();
+		//waitStage.close();
    }
 
    /*
@@ -465,7 +464,7 @@ public class MainMenu {
 	   //mainScene.getMarsNode().createJMEWindow(stage);
 
 	   mainScene.initializeTheme();
-
+/*
 	   while (!mainScene.isMainSceneDone())
 	   {
 		   try {
@@ -474,7 +473,7 @@ public class MainMenu {
 			e.printStackTrace();
 		}
 	   }
-
+*/
 	   mainScene.openInitialWindows();
 
 	   //stage.setIconified(false);
@@ -654,6 +653,10 @@ public class MainMenu {
 		return spinningGlobe;
 	}
 
+	public WaitIndicator getWait() {
+		return waiti;
+	}
+	
 	public void destroy() {
 
 		root = null;

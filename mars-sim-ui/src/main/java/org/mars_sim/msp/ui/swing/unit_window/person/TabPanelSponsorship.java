@@ -62,20 +62,20 @@ extends TabPanel {
 		labelPanel.add(titleLabel);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(2, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(2, 2, 2, 2));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
 		// Prepare sponsor name label
 		JLabel sponsorNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.sponsor"), JLabel.RIGHT); //$NON-NLS-1$
-		sponsorNameLabel.setSize(5, 2);
+		//sponsorNameLabel.setSize(2, 2);
 		infoPanel.add(sponsorNameLabel);
 
 		// Prepare sponsor label
 		ReportingAuthorityType sponsor = person.getReportingAuthority().getOrg();
 		JTextField sponsorTF = new JTextField(sponsor+""); // Conversion.capitalize(sponsor)
 		sponsorTF.setEditable(false);
-		sponsorTF.setColumns(20);
+		sponsorTF.setColumns(16);
 		sponsorTF.setCaretPosition(0);
 		sponsorTF.setToolTipText(person.getReportingAuthority().getToolTipStr());
 		//JLabel sponsorLabel = new JLabel(sponsor, JLabel.RIGHT);
@@ -84,7 +84,7 @@ extends TabPanel {
 
 		// Prepare birth location name label
 		JLabel objectiveNameLabel = new JLabel(Msg.getString("TabPanelSponsorship.objective"), JLabel.RIGHT); //$NON-NLS-1$
-		objectiveNameLabel.setSize(5, 2);
+		//objectiveNameLabel.setSize(2, 2);
 		infoPanel.add(objectiveNameLabel);
 
 		// Prepare birth location label
@@ -92,7 +92,7 @@ extends TabPanel {
 		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
 		JTextField objectiveTF = new JTextField(Conversion.capitalize(objective));
 		objectiveTF.setEditable(false);
-		objectiveTF.setColumns(20);
+		objectiveTF.setColumns(16);
 		objectiveTF.setCaretPosition(0);
 		infoPanel.add(objectiveTF);
 

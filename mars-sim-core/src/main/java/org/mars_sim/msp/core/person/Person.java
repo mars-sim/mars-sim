@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -71,6 +72,11 @@ implements VehicleOperator, MissionMember, Serializable {
     private boolean bornOnMars;
     /** True if person is dead and buried. */
     private boolean isBuried;
+    /** The age of a person */
+    private int age;
+    
+	private int solCache = 1;
+			
     /** The height of the person (in cm). */
     private double height;
     /** The height of the person (in kg). */ 
@@ -128,6 +134,8 @@ implements VehicleOperator, MissionMember, Serializable {
     
     private Point2D bed;
     
+    private MarsClock clock;
+    
     /**
      * Constructs a Person object at a given settlement.
      * @param name the person's name
@@ -149,7 +157,12 @@ implements VehicleOperator, MissionMember, Serializable {
         this.gender = gender;
         this.birthplace = birthplace;
         this.associatedSettlement = settlement;
+        
+        super.setDescription(associatedSettlement.getName());
 
+    	if (clock == null)
+			clock = Simulation.instance().getMasterClock().getMarsClock();
+    	
         String birthTimeString = createBirthTimeString();
 
         birthTimeStamp = new EarthClock(birthTimeString);
@@ -599,6 +612,15 @@ implements VehicleOperator, MissionMember, Serializable {
 	                mind.timePassing(time);
             	} catch(Exception ex)  {
         			ex.printStackTrace();
+        		}         		
+
+        		// check for the passing of each day
+        		int solElapsed = MarsClock.getSolOfYear(clock);
+
+        		if (solCache != solElapsed) {
+        			// 2016-04-20 Added updating a person's age
+        			age = getAge();
+        			solCache = solElapsed;
         		}
             }
             else {
@@ -691,11 +713,12 @@ implements VehicleOperator, MissionMember, Serializable {
      * Returns the person's age
      * @return the person's age
      */
+    // 2016-04-20 Corrected the use of the day of month
     public int getAge() {
         EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
         int age = simClock.getYear() - birthTimeStamp.getYear() - 1;
         if (simClock.getMonth() >= birthTimeStamp.getMonth()
-                && simClock.getMonth() >= birthTimeStamp.getMonth()) {
+                && simClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth()) {
             age++;
         }
 
@@ -903,6 +926,8 @@ implements VehicleOperator, MissionMember, Serializable {
             if (newSettlement != null) {
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
             }
+            
+            super.setDescription(associatedSettlement.getName());
         }
     }
 

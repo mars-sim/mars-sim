@@ -9,20 +9,31 @@ package org.mars_sim.msp.ui.swing.unit_window;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.ImageIcon;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -53,6 +64,17 @@ public abstract class UnitWindow extends JInternalFrame {
 
 	//private BufferedImage image;
 
+	private static final String TOWN = Msg.getString("icon.town");
+	private static final String JOB = Msg.getString("icon.job");
+	private static final String ROLE = Msg.getString("icon.role");
+	private static final String SHIFT = Msg.getString("icon.shift");
+	
+	
+	private JLabel townLabel;
+    private JLabel jobLabel;
+    private JLabel roleLabel;
+    private JLabel shiftLabel; 
+	
 	/** Main window. */
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
@@ -63,9 +85,9 @@ public abstract class UnitWindow extends JInternalFrame {
      *
      * @param desktop the main desktop panel.
      * @param unit the unit for this window.
-     * @param displayDescription true if unit description is to be displayed.
+     * @param hasDescription true if unit description is to be displayed.
      */
-    public UnitWindow(MainDesktopPane desktop, Unit unit, boolean displayDescription) {
+    public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
         // Use JInternalFrame constructor
         super(unit.getName(), false, true, false, true);
 
@@ -91,7 +113,9 @@ public abstract class UnitWindow extends JInternalFrame {
         //getContentPane().setBackground(THEME_COLOR);
 
         // Create name panel
-        namePanel = new JPanel(new BorderLayout(0, 0));
+        //namePanel = new JPanel(new BorderLayout(0, 0));
+        namePanel = new JPanel(new FlowLayout());//FlowLayout.LEFT));
+        
         //namePanel.setBackground(THEME_COLOR);
         //namePanel.setBorder(new MarsPanelBorder());
         mainPane.add(namePanel, BorderLayout.NORTH);
@@ -103,16 +127,98 @@ public abstract class UnitWindow extends JInternalFrame {
         nameLabel.setOpaque(true);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        nameLabel.setBorder(new EmptyBorder(5, 5, 5, 5) );
+        //nameLabel.setBorder(new EmptyBorder(5, 5, 5, 5) );
+        //nameLabel.setBorder(new MarsPanelBorder());
         namePanel.setBorder(new MarsPanelBorder());
         //namePanel.add(nameLabel, BorderLayout.EAST);
         //namePanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
-        namePanel.add(nameLabel, BorderLayout.WEST);
+        //namePanel.add(nameLabel, BorderLayout.WEST);
+        namePanel.add(nameLabel);
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        JLabel empty = new JLabel("    ");
+        namePanel.add(empty);
+        empty.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
         // Create description label if necessary.
-        if (displayDescription) {
-            JLabel descriptionLabel = new JLabel(Conversion.capitalize(unit.getDescription()), JLabel.CENTER);
-            namePanel.add(descriptionLabel, BorderLayout.SOUTH);
+        if (hasDescription) {
+            if (unit instanceof Person) {
+            	     	
+            	JLabel townIconLabel = new JLabel();
+            	townIconLabel.setToolTipText("Home Town or Associated Settlement");
+            	setImage(TOWN, townIconLabel);
+            	 
+            	JLabel jobIconLabel = new JLabel();
+            	jobIconLabel.setToolTipText("Job");
+            	setImage(JOB, jobIconLabel);
+            	
+            	JLabel roleIconLabel = new JLabel();
+            	roleIconLabel.setToolTipText("Role");
+            	setImage(ROLE, roleIconLabel);
+            	
+            	JLabel shiftIconLabel = new JLabel();
+            	shiftIconLabel.setToolTipText("Work Shift");
+            	setImage(SHIFT, shiftIconLabel);
+            	
+            	//createImageIcon("/icons/city_32.png", null));
+            	//SwingUtilities.invokeLater(new Runnable() { 
+            	//	   public void run() {
+            		      //JLabel myLabel = new JLabel("Old Text");
+            	//		   iconLabel.setIcon(new ImageIcon("image.png"));
+            	//	   }
+            	//});          	
+            	
+            	JPanel townPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            	JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            	JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
+            	JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
+    
+            	Person p = (Person) unit;
+               	
+            	String text = Conversion.capitalize(unit.getDescription());
+             	townLabel = new JLabel(text);// , JLabel.CENTER);
+                
+                String jobString = p.getMind().getJob().getName(p.getGender());
+                jobLabel = new JLabel(jobString);// , JLabel.CENTER);
+                
+                String roleString = p.getRole().getType().getName();
+                roleLabel = new JLabel(roleString);// , JLabel.CENTER);
+                
+                String shiftString = p.getTaskSchedule().getShiftType().getName();
+                shiftLabel = new JLabel(shiftString);// , JLabel.CENTER);
+            	
+                //setAlignment(int align) 
+                
+                townPanel.add(townIconLabel);
+                townPanel.add(townLabel);
+                townPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                
+                jobPanel.add(jobIconLabel);
+                jobPanel.add(jobLabel);
+                jobPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                
+                rolePanel.add(roleIconLabel);
+                rolePanel.add(roleLabel);
+                rolePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                
+                shiftPanel.add(shiftIconLabel);
+                shiftPanel.add(shiftLabel);
+                shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+                
+            	JPanel rowPanel = new JPanel(new GridLayout(2,2,0,0));
+            	rowPanel.setBorder(new MarsPanelBorder());
+            	
+            	rowPanel.add(townPanel);//, FlowLayout.LEFT);
+            	rowPanel.add(rolePanel);//, FlowLayout.LEFT);
+            	rowPanel.add(shiftPanel);//, FlowLayout.LEFT);
+            	rowPanel.add(jobPanel);//, FlowLayout.LEFT);
+            	
+                namePanel.add(rowPanel);
+                rowPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                
+                
+            	statueUpdate();
+            }
         }
 
         // Create center panel
@@ -129,7 +235,7 @@ public abstract class UnitWindow extends JInternalFrame {
         //centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
-        mainPane.add(namePanel, BorderLayout.NORTH);
+
         //centerPanel.setBackground(THEME_COLOR);
         mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
@@ -141,7 +247,50 @@ public abstract class UnitWindow extends JInternalFrame {
   		//setBorder(new DropShadowBorder(Color.BLACK, 0, 11, .2f, 16,false, true, true, true));
     }
 
+	/**
+	 * Sets weather image.
+	 */
+	public void setImage(String imageLocation, JLabel label) {
+        URL resource = ImageLoader.class.getResource(imageLocation);
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image img = kit.createImage(resource);
+        ImageIcon imageIcon = new ImageIcon(img);
+    	label.setIcon(imageIcon);
+	}
+	
+    private ImageIcon createImageIcon(String path, String description) {
+        java.net.URL imgURL = getClass().getResource(path);
+        if (imgURL != null) {
+        	if (description != null)
+        		return new ImageIcon(imgURL, description);
+        	else 
+        		return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
+    
+    public void statueUpdate() {   
+        	
+    	Person p = (Person) unit;
+   	
+    	String text = Conversion.capitalize(unit.getDescription());
+    	//System.out.println("Description is : " + text);
+    	townLabel.setText(text);// , JLabel.CENTER);
+        
+        String jobString = p.getMind().getJob().getName(p.getGender());
+        jobLabel.setText(jobString);// , JLabel.CENTER);
+        
+        String roleString = p.getRole().getType().getName();
+        roleLabel.setText(roleString);// , JLabel.CENTER);
+        
+        String shiftString = p.getTaskSchedule().getShiftType().getName();
+        shiftLabel.setText(shiftString);// , JLabel.CENTER);
+   
 
+    }
+    
     /**
      * Adds a tab panel to the center panel.
      *
@@ -188,6 +337,10 @@ public abstract class UnitWindow extends JInternalFrame {
         // Update each of the tab panels.
         for (TabPanel tabPanel : tabPanels) {
         	tabPanel.update();
+        }
+        
+        if (unit instanceof Person) {
+        	statueUpdate();
         }
     }
 

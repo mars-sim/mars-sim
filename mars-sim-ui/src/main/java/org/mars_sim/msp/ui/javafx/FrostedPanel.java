@@ -5,6 +5,8 @@
  */
 package org.mars_sim.msp.ui.javafx;
 
+import org.mars_sim.msp.ui.javafx.demo.Dash;
+
 import javafx.animation.AnimationTimer;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;

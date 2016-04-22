@@ -8,6 +8,7 @@ package org.mars_sim.msp.javafx.configEditor;
 
 import org.mars_sim.msp.javafx.MainMenu;
 import org.mars_sim.msp.javafx.MarsProjectFX;
+import org.mars_sim.msp.javafx.WaitIndicator;
 import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
 import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
 import org.mars_sim.msp.networking.MultiplayerClient;
@@ -143,6 +144,8 @@ public class ScenarioConfigEditorFX {
 
 	private MultiplayerClient multiplayerClient;
 	private SettlementConfig settlementConfig;
+
+	private WaitIndicator waiti;
 
 	private List<SettlementRegistry> settlementList;
 
@@ -509,16 +512,39 @@ public class ScenarioConfigEditorFX {
 			}
 
 			if (!hasError) {
+				
+				//waiti = new WaitIndicator();
+					
 				setConfiguration();
-		        scene.setCursor(Cursor.WAIT); //Change cursor to wait style	        
+		        scene.setCursor(Cursor.WAIT); //Change cursor to wait style	  
+		        
 				cstage = new Stage();
 				CompletableFuture<?> future = CompletableFuture
-						.supplyAsync(() -> submitTask())
-						.thenAccept(lr -> waitLoading());	//loadProgress()); //
+						.supplyAsync(() -> submitTask());
+						//.thenAccept(lr -> waitLoading());	//loadProgress()); //
+				
 		    	//Platform.runLater(() -> {
 					closeWindow();
 				//});
+					
+/*					
+				while (//Simulation.instance().getMasterClock() == null
+						//&& 
+						!mainMenu.getMainScene().isMainSceneDone()) {// || Simulation.instance().getMasterClock().isLoadingSimulation()) {
+					System.out.print(".");
+					//MainMenu : the master clock instance is not ready yet. Wait for another 1/2 secs");
+					try {
+						TimeUnit.MILLISECONDS.sleep(500L);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
+
+				waiti.getStage().close();							
+*/					
 				scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
+								
 			} //end of if (!hasError)
 
 		});
@@ -592,6 +618,7 @@ public class ScenarioConfigEditorFX {
 
 			//JmeCanvas jme = new JmeCanvas();
 	    	//jme.setupJME();
+			
 		}
 	}
 
@@ -780,9 +807,9 @@ public class ScenarioConfigEditorFX {
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
-		cstage.hide();	
-		cstage.close();	
-		//stage.hide();
+		//cstage.hide();	
+		//cstage.close();	
+		stage.hide();
 		stage.close();
 	}
 

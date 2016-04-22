@@ -2,7 +2,7 @@
 
 // Adapted from jewelsea's PannableView.java at https://gist.github.com/jewelsea/5032398
 
-package org.mars_sim.msp.ui.javafx;
+package org.mars_sim.msp.ui.javafx.demo;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;

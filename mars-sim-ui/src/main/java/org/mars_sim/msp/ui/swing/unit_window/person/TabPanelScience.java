@@ -40,6 +40,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -308,7 +309,7 @@ extends TabPanel {
 			String result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				if (columnIndex == 0) result = study.toString();
+				if (columnIndex == 0) result = Conversion.capitalize(study.toString());
 				else if (columnIndex == 1) {
 					if (person.equals(study.getPrimaryResearcher())) result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
 					else result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$

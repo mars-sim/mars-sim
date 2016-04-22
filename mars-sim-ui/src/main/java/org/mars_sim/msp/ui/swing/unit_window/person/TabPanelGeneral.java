@@ -112,9 +112,9 @@ extends TabPanel {
 		infoPanel.add(weightNameLabel);
 
 		// Prepare weight label
-		double baseMass = person.getBaseMass();
+		double baseMass = Math.round(person.getBaseMass()*10.0)/10.0;
 		//JLabel weightLabel = new JLabel(Msg.getString("TabPanelGeneral.kilograms",baseMass), JLabel.RIGHT); //$NON-NLS-1$
-		JTextField weightTF = new JTextField(Msg.getString("TabPanelGeneral.kilograms",baseMass));
+		JTextField weightTF = new JTextField(Msg.getString("TabPanelGeneral.kilograms", baseMass));
 		weightTF.setEditable(false);
 		weightTF.setColumns(12);
 		infoPanel.add(weightTF);

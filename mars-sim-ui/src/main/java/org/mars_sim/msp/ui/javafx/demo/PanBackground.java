@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx;
+package org.mars_sim.msp.ui.javafx.demo;
 
 import javafx.animation.*;
 import javafx.application.Application;

@@ -288,7 +288,7 @@ public class ChatBox extends BorderPane {
 
     	    	else if (num == 2) {
     	    		questionText = "You : how many beds that have already been designated to a person ? ";
-    	    		responseText = "There are " + settlementCache.getDesignatedBeds() + " designated beds. ";
+    	    		responseText = "There are " + settlementCache.getTotalNumDesignatedBeds() + " designated beds. ";
     	    		
     	    	}
 

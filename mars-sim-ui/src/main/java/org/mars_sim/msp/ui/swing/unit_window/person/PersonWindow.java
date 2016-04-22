@@ -32,7 +32,7 @@ extends UnitWindow {
 	 */
 	public PersonWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
-		super(desktop, person, false);
+		super(desktop, person, true);
 
 		// Add tab panels
 		addTabPanel(new TabPanelActivity(person, desktop));

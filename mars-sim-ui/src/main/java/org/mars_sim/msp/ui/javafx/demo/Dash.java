@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.mars_sim.msp.ui.javafx;
+package org.mars_sim.msp.ui.javafx.demo;
+
+import org.mars_sim.msp.ui.javafx.FrostedPanel;
 
 import javafx.scene.Group;
 import javafx.scene.Scene;
