@@ -160,8 +160,9 @@ implements VehicleOperator, MissionMember, Serializable {
         
         super.setDescription(associatedSettlement.getName());
 
-    	if (clock == null)
-			clock = Simulation.instance().getMasterClock().getMarsClock();
+        if (Simulation.instance().getMasterClock() != null)
+        	if (clock == null)
+        		clock = Simulation.instance().getMasterClock().getMarsClock();
     	
         String birthTimeString = createBirthTimeString();
 

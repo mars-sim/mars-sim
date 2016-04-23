@@ -27,6 +27,8 @@ import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
 import com.sun.management.OperatingSystemMXBean;
 
+import eu.hansolo.enzo.notification.Notification;
+import eu.hansolo.enzo.notification.Notification.Notifier;
 import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -128,6 +130,9 @@ public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
+	public static final Image QUOTE_ICON = new Image(MainScene.class.getResource("/icons/quote.png").toExternalForm());
+    //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
+
 	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
@@ -208,6 +213,20 @@ public class MainScene {
 	@SuppressWarnings("restriction")
 	private OperatingSystemMXBean osBean;
 
+    private static String[] quote = new String[10];
+    
+	//private static final Random         RND           = new Random();
+    private static final Notification[] NOTIFICATIONS = {
+        new Notification("Quote", quote[0], Notification.INFO_ICON),
+        new Notification("Warning", "Attention, somethings wrong", Notification.WARNING_ICON),
+        new Notification("Success", "Great it works", Notification.SUCCESS_ICON),
+        new Notification("Error", "ZOMG", Notification.ERROR_ICON)
+    };
+
+  
+    		
+    private Notification.Notifier notifier;
+    
 	//static {
    //     Font.loadFont(MainScene.class.getResource("/fxui/fonts/fontawesome-webfont.ttf").toExternalForm(), 10);
     //}
@@ -222,6 +241,11 @@ public class MainScene {
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
 
+		quote[0] = "\" All the conditions necessary for murder are \n "
+	    		+ " met if you shut 2 men in a cabin measuring \n"
+	    		+ " 18'x20' and leave them together for 2 months.\"\n"
+	    		+ "                                                 - Valery Ryumin";				
+	    
 		//stage.setResizable(true);
 
 		//stage.setMinWidth(1280);
@@ -247,6 +271,7 @@ public class MainScene {
 
 		// Detect if a user hits ESC
 		setEscapeEventHandler(true);
+		
 	}
 
 	// 2015-12-28 Added setEscapeEventHandler()
@@ -1659,8 +1684,27 @@ public class MainScene {
 		//marsNode.createChatBox();
 		
 		isMainSceneDoneLoading = true;
+		
+		openQuote(quote[0]);
 	}
 
+	/*
+	 * Create a quote using Enzo's Notification  
+	 */
+	// 2016-04-21 Added openQuote()
+	public void openQuote(String quote) {
+        notifier = Notification.Notifier.INSTANCE;
+		Notifier.setHeight(120);
+        Notifier.setWidth(350);
+        Notifier.setNotificationOwner(stage);
+        Duration duration = new Duration(20);
+        notifier.setPopupLifetime(duration);
+        
+		Notification n0 = new Notification("Quotation", quote, QUOTE_ICON);
+	
+		notifier.notify(n0);
+	}
+	
 	public MarsNode getMarsNode() {
 		return marsNode;
 	}

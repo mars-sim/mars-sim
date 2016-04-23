@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -211,12 +212,73 @@ ComponentListener {
 
 	public void goToURL(URL url) {
 		//System.out.println("GuideWindow's goToURL()");
-		displayPage(url);
-		updateHistory(url);
+		URL new_url = displayPage(url);
+		//System.out.println("goToURL(). new_url is "+ new_url);
+		updateHistory(new_url);
 	}
 	
+
+	//2016-04-22 Revised displayPage() to discern between a local or a remote href
+	private URL displayPage(URL pageURL) {
+		//System.out.println("displayPage() : pageURL is " + pageURL);
+		String input = pageURL.toExternalForm();
+		
+	    //SwingUtilities.invokeLater(() -> {
+	    	    	
+    	String fileString = "file:/";
+
+		boolean status = input.toLowerCase().contains(fileString);          	
+		int pos = input.toLowerCase().indexOf(fileString);
+    			
+		if (status && pos == 0) {
+			input = input.replace("file:/", "file:///");	
+			//System.out.println("displayPage(). case 1 : input is "+ input);
+			browser.loadLocalURL(input);       		
+		}
+		else {
+			
+			fileString = "file://";
+
+			status = input.toLowerCase().contains(fileString);          	
+			pos = input.toLowerCase().indexOf(fileString);
+	    			
+			if (status && pos == 0) {
+				input = input.replace("file://", "file:///");	
+				//System.out.println("displayPage(). case 2 : input is "+ input);
+				browser.loadLocalURL(input);       		
+			}
+			else {
+				
+				fileString = "file:///";
+
+				status = input.toLowerCase().contains(fileString);          	
+				pos = input.toLowerCase().indexOf(fileString);
+		    			
+				if (status && pos == 0) {				
+					//System.out.println("displayPage(). case 3 : input is "+ input);
+					browser.loadLocalURL(input);       		
+				}
+				else {
+					//System.out.println("displayPage(). case 4 : input is "+ input);
+					browser.loadRemoteURL(input);
+				}
+					
+			}			
+		}
+		//});
+	    
+	    try {
+			return new URL(input);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	// 2016-04-18 Added updateHistory()
 	public void updateHistory(URL url) {
+		//System.out.println("calling updateHistory(URL url). url is "+ url);
 		if (historyIndex < history.size() - 1) {
 			historyIndex++;
 			history.set(historyIndex, url);
@@ -258,15 +320,6 @@ ComponentListener {
 
 	public boolean isLast() {
 		return (historyIndex == history.size() - 1);
-	}
-
-	private void displayPage(URL pageURL) {
-	    SwingUtilities.invokeLater(() -> {
-	    	String path = pageURL.toExternalForm();
-			browser.loadLocalURL(path);
-			//System.out.println("GuideWindow's displayPage() : URL path is " + path);
-			//setPage(pageURL);
-		});
 	}
 
 	/**

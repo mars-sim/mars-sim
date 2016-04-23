@@ -1,0 +1,20 @@
+/**
+ * Mars Simulation Project
+ * msp.css
+ * @version 3.08 2016-01-07
+ * @author Lars Naesbye Christensen
+ */
+
+@font-face {
+        font-family: "Jura-Medium";
+        src: url("../../fxui/fonts/Jura-Medium.ttf")
+      }
+h1 { font-family: "Jura-Medium", serif;}
+      
+a, a:link, a:visited, a:hover{color:rgb(184, 134, 11);text-decoration:none;}
+body {background-color:rgb(50, 50, 50);color:#FFFFFF;font-family:sans-serif;}
+body, h3{font-size:14pt;line-height:1.1em;}
+h2{font-size:14pt;font-weight:700;line-height:1.2em;text-align:center;}
+h3{font-weight:700;}
+p{margin-left:13pt;}
+hr{width:90%;}

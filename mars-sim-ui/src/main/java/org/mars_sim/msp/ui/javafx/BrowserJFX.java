@@ -43,13 +43,19 @@ public class BrowserJFX {
     public static final String EVENT_TYPE_MOUSEOVER = "mouseover";
     public static final String EVENT_TYPE_MOUSEOUT = "mouseclick";
  
-	private boolean isLocalHtml = true;
+    public static final String MSP_HEADER = "msp://";
+    public static final String HTTP_HEADER = "http://";
+    public static final String HTTPS_HEADER = "https://";
+    
+    public String textInputCache;
+    
+	private boolean isLocalHtml = false, isInternal = false;
 
     private final JFXPanel jfxPanel = new JFXPanel();
     private final JPanel panel = new JPanel(new BorderLayout());
-    private final JLabel lblStatus = new JLabel();
+    private final JLabel statusBarLbl = new JLabel();
     private final JButton btnGo = new JButton("Go");
-    private final JTextField txtURL = new JTextField();
+    private final JTextField urlTF = new JTextField();
     private final JProgressBar progressBar = new JProgressBar();
 
     private WebEngine engine;
@@ -60,30 +66,41 @@ public class BrowserJFX {
     	this.guideWindow = gw;
     }
 
+    // 2016-04-22 Added ability to interpret internal commands
     public JPanel init() {
         initJFX();
         
         ActionListener al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loadRemoteURL(txtURL.getText());
+            	
+        		String input = urlTF.getText().trim();          	
+        		textInputCache = input; 
+
+        		if (input.equals("ticket") 
+        				|| input.equals("map1")
+        				|| input.equals("globe1")) {
+        			parseInput(input, 0);
+        		}
+        		else 
+        			parseInput(input, 2); //or 3 
             }
         };
         
         btnGo.addActionListener(al);
-        txtURL.addActionListener(al);			
+        urlTF.addActionListener(al);			
 
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
 
         JPanel topBar = new JPanel(new BorderLayout(5, 0));
         topBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        topBar.add(txtURL, BorderLayout.CENTER);
+        topBar.add(urlTF, BorderLayout.CENTER);
         topBar.add(btnGo, BorderLayout.EAST);
 
         JPanel statusBar = new JPanel(new BorderLayout(5, 0));
         statusBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        statusBar.add(lblStatus, BorderLayout.CENTER);
+        statusBar.add(statusBarLbl, BorderLayout.CENTER);
         statusBar.add(progressBar, BorderLayout.EAST);
 
         panel.add(topBar, BorderLayout.NORTH);
@@ -93,23 +110,77 @@ public class BrowserJFX {
         return panel;
     }
 
+    // 2016-04-22 Added parseInput()
+    public void parseInput(String input, int URL_type) {
+		
+		//boolean status = input.toLowerCase().contains(MSP_HEADER.toLowerCase());          	
+		//int pos = input.toLowerCase().indexOf(MSP_HEADER.toLowerCase());
+		
+		//if (status && pos == 0) {
+			// remove the "msp://"
+		//	input = input.replace(MSP_HEADER, "");         		
+		//}
+		
+			
+		if (URL_type == 0)  {
+			isInternal = true;
+			isLocalHtml = true;
+			System.out.println("BrowserJFX : input is " + input);
+			//URL url = getClass().getResource(Msg.getString("doc.help") + input + ".html");
+			//loadLocalURL(url.toExternalForm());
+			updateHistory(input + ".html", 0);
+	    }
+		else if (URL_type == 1) {
+			isLocalHtml = true;
+			// will need to add http://
+			updateHistory(input, 1);
+		}
+		
+		else {
+			isInternal = false;
+			
+			boolean status = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
+			int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
+			
+			if (status && pos == 0) {
+				//input = input.replace(HTTP_HEADER, "");  
+				isLocalHtml = false;
+				updateHistory(input, 2);
+				//loadRemoteURL(input);
+			}
+			else {
+				status = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
+				pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
+				
+				if (status && pos == 0) {
+					//input = input.replace(HTTP_HEADER, "");
+					isLocalHtml = false;
+					updateHistory(input, 2);
+					//loadRemoteURL(input);
+				}
+				else {
+					// e.g. type in google.com
+					isLocalHtml = false;
+					// will need to add http://
+					updateHistory(input, 3);
+									
+				}				
+			}
+			
+			
+		}
+    }
+	
     @SuppressWarnings("restriction")
 	private void initJFX() {
 
-        Platform.runLater(new Runnable() {
-            @SuppressWarnings("unchecked")
-			@Override
-            public void run() {
-
-			    //GuideWindow gw = guideWindow;
-
+        Platform.runLater(() -> {       
                 WebView view = new WebView();
                 view.setStyle("-fx-background-color: #656565;"
                 		+ " -fx-font-color: white;"
                 		+ " -fx-border-color: #00a7c8");
-                engine = view.getEngine();
-                
-                Worker worker = engine.getLoadWorker();
+                engine = view.getEngine();              
+                Worker<?> worker = engine.getLoadWorker();
 /*
                 engine.titleProperty().addListener(new ChangeListener<String>() {
                     @Override
@@ -126,11 +197,14 @@ public class BrowserJFX {
                 engine.setOnStatusChanged(new EventHandler<WebEvent<String>>() {
                     @Override
                     public void handle(final WebEvent<String> event) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                lblStatus.setText(event.getData());
-                                //System.out.println("BrowserJFX : event.getData() is " + event.getData());
+                        SwingUtilities.invokeLater(()->{
+                        	//System.out.println("setOnStatusChanged()");
+                        	// Note: it shows the content of the hyperlink (even before the user clicks on it.
+                            String content = event.getData();
+                            if (content != null && !content.equals(null)) {
+                            	statusBarLbl.setText(content);
+                                // TODO: tweak how lblStatus displays the loading of a internal file having file:///... 
+                                //System.out.println("BrowserJFX : event.getData() is [" + event.getData() + "]");
                             }
                         });
                     }
@@ -139,18 +213,21 @@ public class BrowserJFX {
                 engine.locationProperty().addListener(new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> ov, String oldValue, final String newValue) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                            	if (isLocalHtml) {
-                            		txtURL.setText("");
-                            		//System.out.println("BrowserJFX : isLocalHtml is true. setText() to null");	
-                            	}
-                            	else {
-                            		txtURL.setText(newValue);
-                            		//System.out.println("BrowserJFX : isLocalHtml is false. setText(newValue). newValue is " + newValue);
-                            	}
-                            }
+                        SwingUtilities.invokeLater(() ->{
+                        	//System.out.println("locationProperty()");
+                        	if (isLocalHtml) {
+                            	// TODO: consider parsing what to display on the textfield AFTER the user clicks on it.
+                        		if (isInternal)
+                            		urlTF.setText(textInputCache);
+                        		else
+                        			urlTF.setText("");
+                        		//System.out.println("BrowserJFX : isLocalHtml is true. setText() to null");	
+                        	}
+                        	else {
+                            	// Note: it displays the content of a remote URL AFTER the user clicks on it.
+                        		urlTF.setText(newValue);
+                        		//System.out.println("BrowserJFX : isLocalHtml is false. setText(newValue). newValue is " + newValue);
+                        	}
                         });
                     }
                 });
@@ -158,11 +235,9 @@ public class BrowserJFX {
                 worker.workDoneProperty().addListener(new ChangeListener<Number>() {
                     @Override
                     public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, final Number newValue) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
+                        SwingUtilities.invokeLater(()->{
+                        	//System.out.println("workDoneProperty()");
                                 progressBar.setValue(newValue.intValue());
-                            }
                         });
                     }
                 });
@@ -171,36 +246,44 @@ public class BrowserJFX {
 
                 public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
                 	if (worker.getState() == FAILED) {
-                		SwingUtilities.invokeLater(new Runnable() {
-                			@Override 
-                			public void run() {
-                				JOptionPane.showMessageDialog(
+                		SwingUtilities.invokeLater(()-> {
+                				System.out.println("exceptionProperty()");
+                				//System.out.println("BrowserJFX : worker.getState() == FAILED");
+/*                				JOptionPane.showMessageDialog(
                                             panel,
                                             (value != null) ?
                                             engine.getLocation() + "\n" + value.getMessage() :
                                             engine.getLocation() + "\nUnexpected error.",
                                             "Loading error...",
                                             JOptionPane.ERROR_MESSAGE);
-                			}
+*/
                 		});
                 	}
              	
                 }});
 
+                // Listens for clicking on a hyperlink (internal link on a html file only)
                 worker.stateProperty().addListener(new ChangeListener<javafx.concurrent.Worker.State>() {
                     public void changed(ObservableValue ov, State oldState, State newState) {
                         if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                                // note next classes are from org.w3c.dom domain
+                             // Note : classes are from org.w3c.dom domain
                         	EventListener listener = new EventListener() {
 								@Override
-								public void handleEvent(org.w3c.dom.events.Event ev) {
-																	    
-									String href = ((Element)ev.getTarget()).getAttribute("href");
-                                	
-									if (href != null) {
-										//System.out.println("BrowserJFX : href is " + href);
-	                                	updateHistory(href);
-	                                }
+								public void handleEvent(org.w3c.dom.events.Event ev) {	
+									//System.out.println("stateProperty()");
+									String href = ((Element)ev.getTarget()).getAttribute("href");                                	
+									if (href != null && !href.equals(null)) {									
+										System.out.println("BrowserJFX : before calling parseInput(). href is " + href);										
+										parseInput(href, 1);
+										
+/*		                                if (isLocalHtml) {
+											// Note: call up updateHistory to update index and buttons and load the local html file
+		                                	updateHistory(href, false);
+		                                }
+		                                else {
+		                                	updateHistory(href, true);
+		                                }
+*/	                                }
 								}
                             };
 
@@ -216,54 +299,105 @@ public class BrowserJFX {
                 });
                 
                 jfxPanel.setScene(new Scene(view));
-            }
         });
     }
 
 	// 2016-04-18 Added updateHistory()
-    public void updateHistory(String href) {
-    	//System.out.println("BrowserJFX : href is " + href);
-    	//System.out.println("guideWindow is " + guideWindow);
-    	URL url = getClass().getResource(Msg.getString("doc.help") + href);
-    	//System.out.println("BrowserJFX : url is " + url);
-		guideWindow.updateHistory(url);
-    	guideWindow.updateButtons();
-    	
-    	loadLocalURL(url.toExternalForm());
+    public void updateHistory(String href, int URL_type) {
+    	if (URL_type == 0 || URL_type == 1) {
+	    	URL url = getClass().getResource(Msg.getString("doc.help") + href);
+	    	//System.out.println("BrowserJFX : updateHistory(). Type " + URL_type + " url is " + url);
+			guideWindow.updateHistory(url);
+	    	guideWindow.updateButtons(); 
+	    	loadLocalURL(url.toExternalForm());
+    	}
+    	else if (URL_type == 2) {
+    		try {
+    			URL url = new URL(href);
+    	    	//System.out.println("BrowserJFX : updateHistory(). Type 2. url is " + url);
+				guideWindow.updateHistory(url);
+		    	guideWindow.updateButtons();
+		    	loadRemoteURL(url.toExternalForm());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	else if (URL_type == 3) {
+    		try {
+    			URL url = new URL(HTTP_HEADER + href);
+    	    	//System.out.println("BrowserJFX : updateHistory(). Type 2. url is " + url);
+				guideWindow.updateHistory(url);
+		    	guideWindow.updateButtons();
+		    	loadRemoteURL(url.toExternalForm());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
-    
+   
     @SuppressWarnings("restriction")
-	public void loadRemoteURL(final String url) {
+	public void loadRemoteURL(final String input) {
     	isLocalHtml = false;
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                String tmp = toURL(url);
-                //System.out.println("before, tmp is "+ tmp);
-                if (tmp == null) {
-                    tmp = toURL("http://" + url);
-                }
-                //System.out.println("before, tmp is "+ tmp);
-                engine.load(tmp);
+    	isInternal = false;
+    	
+        Platform.runLater(()-> {
+/*            String url2 = toURL(url);
+            //System.out.println("before, tmp is "+ tmp);
+            if (url2 == null) {
+            	if (isSecure)
+            		url2 = toURL("https://" + url);
+            	else
+            		url2 = toURL("http://" + url);
+            	
             }
+            //System.out.println("before, tmp is "+ tmp);
+*/            
+        				
+			boolean status = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
+			int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
+			
+			if (status && pos == 0) {
+				//input = input.replace(HTTP_HEADER, "");  
+				engine.load(input);
+			}
+			else {
+				status = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
+				pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
+				
+				if (status && pos == 0) {
+					//input = input.replace(HTTP_HEADER, "");
+					engine.load(input);
+				}
+				else {
+					engine.load(HTTP_HEADER + input);
+					
+					// TODO: should it try https as well ?
+					
+					// TODO: how to handle the case when the remote url is bad ?
+					// should delete this bad url and its history index, instead of saving it
+					
+				}				
+			}
+			
+			
+            // TODO: how to check if the url is valid or if it's loaded successfully?
         });
     }
 
     @SuppressWarnings("restriction")
-	public void loadLocalURL(String path) {
+	public void loadLocalURL(String input) {
        	isLocalHtml = true;
        	  	
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                //System.out.println("before, path is "+ path);
-                String p = path.replace("file://", "file:///").replace("file:/", "file:///");
-                //System.out.println("after, path is "+ p);
-                engine.load(p);
-            }
+        Platform.runLater(()-> {
+            //System.out.println("before, path is "+ path);
+            //String p = path.replace("file://", "file:///").replace("file:/", "file:///");
+            //System.out.println("after, path is "+ p);
+            engine.load(input);
         });
     }
-
+/*
     private static String toURL(String str) {
         try {
             return new URL(str).toExternalForm();
@@ -271,5 +405,5 @@ public class BrowserJFX {
                 return null;
         }
     }
-    
+*/    
 }
