@@ -131,8 +131,7 @@ public class BrowserJFX {
 			updateHistory(input + ".html", 0);
 	    }
 		else if (URL_type == 1) {
-			isLocalHtml = true;
-			// will need to add http://
+			isLocalHtml = true;			
 			updateHistory(input, 1);
 		}
 		
@@ -140,9 +139,9 @@ public class BrowserJFX {
 			isInternal = false;
 			
 			boolean status = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
-			int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
+			//int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
 			
-			if (status && pos == 0) {
+			if (status) {// && pos == 0) {
 				//input = input.replace(HTTP_HEADER, "");  
 				isLocalHtml = false;
 				updateHistory(input, 2);
@@ -150,9 +149,9 @@ public class BrowserJFX {
 			}
 			else {
 				status = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
-				pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
+				//pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
 				
-				if (status && pos == 0) {
+				if (status) {// && pos == 0) {
 					//input = input.replace(HTTP_HEADER, "");
 					isLocalHtml = false;
 					updateHistory(input, 2);
@@ -262,7 +261,7 @@ public class BrowserJFX {
              	
                 }});
 
-                // Listens for clicking on a hyperlink (internal link on a html file only)
+                // Listens for clicking on a hyperlink (internal link on a local html file or remote link on a local html file)
                 worker.stateProperty().addListener(new ChangeListener<javafx.concurrent.Worker.State>() {
                     public void changed(ObservableValue ov, State oldState, State newState) {
                         if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
@@ -273,8 +272,22 @@ public class BrowserJFX {
 									//System.out.println("stateProperty()");
 									String href = ((Element)ev.getTarget()).getAttribute("href");                                	
 									if (href != null && !href.equals(null)) {									
-										System.out.println("BrowserJFX : before calling parseInput(). href is " + href);										
-										parseInput(href, 1);
+										System.out.println("BrowserJFX : before calling parseInput(). href is " + href);
+										
+										boolean status = href.toLowerCase().contains(HTTPS_HEADER.toLowerCase());       
+										
+										if (status) {
+											parseInput(href, 2);
+										}
+										else {
+											status = href.toLowerCase().contains(HTTP_HEADER.toLowerCase());       
+											if (status) {
+												parseInput(href, 2);
+											}	
+											else {
+												parseInput(href, 1);
+											}
+										}
 										
 /*		                                if (isLocalHtml) {
 											// Note: call up updateHistory to update index and buttons and load the local html file
@@ -356,17 +369,17 @@ public class BrowserJFX {
 */            
         				
 			boolean status = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
-			int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
+			//int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
 			
-			if (status && pos == 0) {
+			if (status) {// && pos == 0) {
 				//input = input.replace(HTTP_HEADER, "");  
 				engine.load(input);
 			}
 			else {
 				status = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
-				pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
+				//pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
 				
-				if (status && pos == 0) {
+				if (status) {// && pos == 0) {
 					//input = input.replace(HTTP_HEADER, "");
 					engine.load(input);
 				}

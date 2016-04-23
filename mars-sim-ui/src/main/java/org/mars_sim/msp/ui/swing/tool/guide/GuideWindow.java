@@ -228,9 +228,9 @@ ComponentListener {
     	String fileString = "file:/";
 
 		boolean status = input.toLowerCase().contains(fileString);          	
-		int pos = input.toLowerCase().indexOf(fileString);
+		//int pos = input.toLowerCase().indexOf(fileString);
     			
-		if (status && pos == 0) {
+		if (status) {// && pos == 0) {
 			input = input.replace("file:/", "file:///");	
 			//System.out.println("displayPage(). case 1 : input is "+ input);
 			browser.loadLocalURL(input);       		
@@ -240,9 +240,9 @@ ComponentListener {
 			fileString = "file://";
 
 			status = input.toLowerCase().contains(fileString);          	
-			pos = input.toLowerCase().indexOf(fileString);
+			//pos = input.toLowerCase().indexOf(fileString);
 	    			
-			if (status && pos == 0) {
+			if (status) {// && pos == 0) {
 				input = input.replace("file://", "file:///");	
 				//System.out.println("displayPage(). case 2 : input is "+ input);
 				browser.loadLocalURL(input);       		
@@ -252,9 +252,9 @@ ComponentListener {
 				fileString = "file:///";
 
 				status = input.toLowerCase().contains(fileString);          	
-				pos = input.toLowerCase().indexOf(fileString);
+				//pos = input.toLowerCase().indexOf(fileString);
 		    			
-				if (status && pos == 0) {				
+				if (status) {// && pos == 0) {				
 					//System.out.println("displayPage(). case 3 : input is "+ input);
 					browser.loadLocalURL(input);       		
 				}
