@@ -40,6 +40,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import javafx.application.Platform;
+
 /**
  * The GuideWindow is a tool window that displays the built-in User Guide,
  * About Box and Tutorial.
@@ -74,8 +76,8 @@ ComponentListener {
 	private URL guideURL;
 
 	private JButton homeButton = new JButton(Msg.getString("GuideWindow.button.home")); //$NON-NLS-1$
-	private JButton backButton = new JButton(Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
-	private JButton forwardButton = new JButton(Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
+	//private JButton backButton = new JButton(Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
+	//private JButton forwardButton = new JButton(Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
 
 	private BrowserJFX browser;
 	private JPanel browserPanel;
@@ -93,8 +95,8 @@ ComponentListener {
 
 		//SwingUtilities.invokeLater(new Runnable() {
 		//	public void run() {
-				browser = new BrowserJFX(this);
-				browserPanel = browser.init();
+				browser = desktop.getBrowserJFX();
+				browserPanel = browser.getPanel();//.init();
 				//browser.loadURL("http://mars-sim.sourceforge.net");
 		//	}
 		//});
@@ -106,16 +108,17 @@ ComponentListener {
 
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.addActionListener(this);
+/*
 		backButton.setToolTipText(Msg.getString("GuideWindow.tooltip.back")); //$NON-NLS-1$
 		backButton.addActionListener(this);
 		forwardButton.setToolTipText(Msg.getString("GuideWindow.tooltip.forward")); //$NON-NLS-1$
 		forwardButton.addActionListener(this);
-
+*/
 		// A toolbar to hold all our buttons
 		JPanel toolPanel = new JPanel();
 		toolPanel.add(homeButton);
-		toolPanel.add(backButton);
-		toolPanel.add(forwardButton);
+		//toolPanel.add(backButton);
+		//toolPanel.add(forwardButton);
 
 		//browser.addHyperlinkListener(this);
 		
@@ -161,22 +164,22 @@ ComponentListener {
 	/**
 	 * Handles a click on a link.
 	 * @param event the HyperlinkEvent
-	 */
+	 
 	public void hyperlinkUpdate(HyperlinkEvent event) {
 		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			goToURL(event.getURL());
 			updateButtons();
 		}
 	}
-
+*/
 	/**
 	 * Updates navigation buttons.
 	 */
 	public void updateButtons() {
 		//System.out.println("GuideWindow: Calling updateButtons(). historyIndex is " + historyIndex);
 		homeButton.setEnabled(true);
-		backButton.setEnabled(!isFirst());
-		forwardButton.setEnabled(!isLast());
+		//backButton.setEnabled(!isFirst());
+		//forwardButton.setEnabled(!isLast());
 	}
 
 	/**
@@ -200,13 +203,15 @@ ComponentListener {
 			//browser.loadLocalURL(guideURL.toExternalForm());
 			goToURL(guideURL);
 			updateButtons();
-		} else if (source == this.backButton) {
+		} 
+/*		else if (source == this.backButton) {
 			back();
 			updateButtons();
 		} else if (source == this.forwardButton) {
 			forward();
 			updateButtons();
 		}
+*/		
 	}
 
 
@@ -214,7 +219,7 @@ ComponentListener {
 		//System.out.println("GuideWindow's goToURL()");
 		URL new_url = displayPage(url);
 		//System.out.println("goToURL(). new_url is "+ new_url);
-		updateHistory(new_url);
+		//updateHistory(new_url);
 	}
 	
 
@@ -223,6 +228,15 @@ ComponentListener {
 		//System.out.println("displayPage() : pageURL is " + pageURL);
 		String input = pageURL.toExternalForm();
 		
+		SwingUtilities.invokeLater(()->{
+			//browser.getURLType(input);
+			browser.loadLocalURL(input);
+			//Platform.runLater(()-> {
+				//browser.addCSS();
+			//	});
+			
+		});
+/*		
 	    //SwingUtilities.invokeLater(() -> {
 	    	    	
     	String fileString = "file:/";
@@ -231,9 +245,10 @@ ComponentListener {
 		//int pos = input.toLowerCase().indexOf(fileString);
     			
 		if (status) {// && pos == 0) {
-			input = input.replace("file:/", "file:///");	
-			//System.out.println("displayPage(). case 1 : input is "+ input);
-			browser.loadLocalURL(input);       		
+			//input = input.replace("file:/", "file:///");	
+			System.out.println("displayPage(). Case A : input is "+ input);
+			
+			browser.getURLType(input);//loadLocalURL(input);       		
 		}
 		else {
 			
@@ -244,8 +259,8 @@ ComponentListener {
 	    			
 			if (status) {// && pos == 0) {
 				input = input.replace("file://", "file:///");	
-				//System.out.println("displayPage(). case 2 : input is "+ input);
-				browser.loadLocalURL(input);       		
+				System.out.println("displayPage(). Case B : input is "+ input);
+				browser.getURLType(input);//loadLocalURL(input);       		
 			}
 			else {
 				
@@ -255,18 +270,18 @@ ComponentListener {
 				//pos = input.toLowerCase().indexOf(fileString);
 		    			
 				if (status) {// && pos == 0) {				
-					//System.out.println("displayPage(). case 3 : input is "+ input);
+					System.out.println("displayPage(). Case C : input is "+ input);
 					browser.loadLocalURL(input);       		
 				}
 				else {
-					//System.out.println("displayPage(). case 4 : input is "+ input);
+					System.out.println("displayPage(). Case D : input is "+ input);
 					browser.loadRemoteURL(input);
 				}
 					
 			}			
 		}
 		//});
-	    
+*/	    
 	    try {
 			return new URL(input);
 		} catch (MalformedURLException e) {
@@ -275,7 +290,7 @@ ComponentListener {
 			return null;
 		}
 	}
-
+/*
 	// 2016-04-18 Added updateHistory()
 	public void updateHistory(URL url) {
 		//System.out.println("calling updateHistory(URL url). url is "+ url);
@@ -321,7 +336,7 @@ ComponentListener {
 	public boolean isLast() {
 		return (historyIndex == history.size() - 1);
 	}
-
+*/
 	/**
 	 * Implement ComponentListener interface.
 	 * Make sure the text is scrolled to the top.

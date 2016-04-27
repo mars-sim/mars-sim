@@ -3,14 +3,13 @@
 <head>
 <meta charset=UTF-8">
 <title>Mars Simulation Project - internal</title>
-<link rel="stylesheet" href="msp.css">
-<style>
-      @font-face {
-        font-family: "Jura-Medium";
-        src: url("../../fxui/fonts/Jura-Medium.ttf")
-      }
-      h2 { font-family: "Jura-Medium", serif;}
-    </style>
+<link rel="stylesheet" href="../msp.css">
+<script>
+	function sayhi(name)  {
+		var message = JavaBridge.submit(name);
+		document.getElementById('my_submission').innerHTML = message;
+	}
+</script>
 </head>
 <body>
     <h1>Ticket Submission</h1>
@@ -23,6 +22,9 @@
         <p><label> <input type=radio name=size> Low </label></p>
         </fieldset>
 </form>
+	<div id="my_submission">
+	<a href='#' onclick="sayhi();">submit the ticket</a>
+	</div>
     <summary>Uploading... <progress max="100" value="0"></progress> 0%</summary>
 </body>
 </html>    

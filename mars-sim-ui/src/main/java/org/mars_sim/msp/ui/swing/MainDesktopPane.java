@@ -63,6 +63,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
@@ -149,6 +150,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	private OrbitViewer orbitViewer;
 	
+	private BrowserJFX browserJFX;
+	
 	//private final ReentrantLock transportLock = new ReentrantLock();
     //private int transportCount = 0;
 
@@ -188,6 +191,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
+
+		
+		browserJFX = new BrowserJFX();
 
 		prepareToolWindows();
 
@@ -377,7 +383,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		if (toolWindows != null)
 			toolWindows.clear();
-
+			
+		//browserJFX = new BrowserJFX();
+		
 	   	//logger.info("toolWindows.clear()");
 
 		// Prepare navigator window
@@ -1220,6 +1228,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
+	
+		//browserJFX = new BrowserJFX();
+
 	   	//logger.info("MainDesktopPane's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 /*
 		JFXPannableView v = new JFXPannableView(this);
@@ -1244,7 +1255,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			// Open user guide tool.
 			openToolWindow(GuideWindow.NAME);
 			// SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC (but not in other platform)
-
 
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
 			if (mainScene != null) {
@@ -1485,6 +1495,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	
 	public void setOrbitViewer(OrbitViewer orbitViewer) {
 		this.orbitViewer = orbitViewer;
+	}
+	
+	public BrowserJFX getBrowserJFX() {
+		return browserJFX;
 	}
 	
 	

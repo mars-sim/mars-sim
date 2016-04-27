@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
   <children>
       <BorderPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;">
          <left>
@@ -17,11 +17,11 @@
 			</VBox>
          </left>
          <bottom>
-            <VBox prefHeight="62.0" prefWidth="640.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="30.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox prefHeight="23.0" prefWidth="640.0">
+                  <HBox maxWidth="300.0" minWidth="300.0" prefHeight="23.0" prefWidth="300.0">
                      <children>
-                        <Label text="Simulation Time Ratio  1 : " textFill="#945f16">
+                        <Label text="Simulation Speed  1 : " textFill="#945f16" HBox.hgrow="ALWAYS">
 							<font>
 								<Font name="Corbel Bold" size="18.0" />
 			                </font>
@@ -45,7 +45,7 @@
                         </Label>
                      </children>
                   </HBox>
-                  <Button onAction="#setDefaultRotation" prefHeight="22.0" prefWidth="122.0" style="-fx-background-color: transparent;" text="Reset to default" textFill="#976c0f">
+                  <Button onAction="#setDefaultRotation" prefHeight="22.0" prefWidth="122.0" style="-fx-background-color: transparent;" text="">
 					<font>
 						<Font name="Constantia Italic" size="12.0" />
 	                </font>
@@ -90,12 +90,27 @@
             </VBox>
          </top>
          <right>
-          <VBox id="menuOptionBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="350.0" prefHeight="768.0" spacing="15.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER_LEFT">
-            <padding>
-              <Insets />
-            </padding>
+          <VBox id="menuOptionBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="350.0" prefHeight="300.0" spacing="15.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER_LEFT">
                <children>
-            <Button id="option" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="New Sim" textFill="#945f16">
+                  <Label alignment="CENTER" text="MAIN MENU" textFill="#945f16">
+                     <font>
+                        <Font name="Corbel Bold" size="28.0" />
+                     </font>
+                     <effect>
+                        <Lighting>
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant />
+                           </light>
+                        </Lighting>
+                     </effect>
+                     <VBox.margin>
+                        <Insets top="150.0" />
+                     </VBox.margin>
+                  </Label>
+            <Button id="option" maxHeight="30.0" mnemonicParsing="false" onAction="#goToOne" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="New Sim" textFill="#945f16" VBox.vgrow="ALWAYS">
                      <font>
                         <Font name="Corbel" size="20.0" />
                      </font>
@@ -103,13 +118,14 @@
                         <Bloom />
                      </effect>
    			</Button>
-          	<Button id="option" mnemonicParsing="false" onAction="#goToTwo" prefHeight="38.0" prefWidth="298.0" style="-fx-background-color: transparent;" text="Load Sim" textFill="#945f16">
+          	<Button id="option" maxHeight="30.0" mnemonicParsing="false" onAction="#goToTwo" prefHeight="30.0" prefWidth="298.0" style="-fx-background-color: transparent;" text="Load Sim" textFill="#945f16" VBox.vgrow="ALWAYS">
                      <font>
                         <Font name="Corbel" size="20.0" />
                      </font>
                      <effect>
                         <Bloom />
                      </effect></Button>
+<!--                     
             <Button id="option" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Network" textFill="#945f16">
                      <font>
                         <Font name="Corbel" size="20.0" />
@@ -131,7 +147,8 @@
                      <effect>
                         <Bloom />
                      </effect></Button>
-            <Button id="option" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Exit" textFill="#945f16">
+-->                     
+            <Button id="option" maxHeight="30.0" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Exit" textFill="#945f16" VBox.vgrow="ALWAYS">
                      <font>
                         <Font name="Corbel" size="20.0" />
                      </font>
@@ -140,7 +157,7 @@
                      </effect></Button>
                </children>
                <BorderPane.margin>
-                  <Insets />
+                  <Insets top="100.0" />
                </BorderPane.margin>
           </VBox>
          </right>

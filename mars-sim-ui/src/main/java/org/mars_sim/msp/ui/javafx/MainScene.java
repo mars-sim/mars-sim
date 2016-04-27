@@ -130,7 +130,9 @@ public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
-	public static final Image QUOTE_ICON = new Image(MainScene.class.getResource("/icons/quote.png").toExternalForm());
+	//public static final Image QUOTE_ICON = new Image(MainScene.class.getResource("/icons/quote.png").toExternalForm());
+	public static final Image QUOTE_ICON = new Image(MainScene.class.getResourceAsStream("/icons/quote.png"));
+	
     //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
 
 	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
@@ -1697,7 +1699,7 @@ public class MainScene {
 		Notifier.setHeight(120);
         Notifier.setWidth(350);
         Notifier.setNotificationOwner(stage);
-        Duration duration = new Duration(20);
+        Duration duration = new Duration(20000);
         notifier.setPopupLifetime(duration);
         
 		Notification n0 = new Notification("Quotation", quote, QUOTE_ICON);
