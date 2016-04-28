@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * This class is a factory for Malfunction objects.
  */
-public final class MalfunctionFactory extends Thread
+public final class MalfunctionFactory //extends Thread
 implements Serializable {
 
 	/** default serial id. */
@@ -51,10 +51,9 @@ implements Serializable {
 	 */
 	public MalfunctionFactory(MalfunctionConfig config)  {
 		 this.config = config;
-	}
-
+	//}
 	// 2015-02-04 Added run()
-	public void run() {
+	//public void run() {
 	   	//System.out.println("MalfunctionFactory's run() is on " + Thread.currentThread().getName() + " Thread");
 		malfunctions = config.getMalfunctionList();
 	}

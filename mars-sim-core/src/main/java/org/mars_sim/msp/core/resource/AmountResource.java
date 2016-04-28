@@ -139,6 +139,9 @@ implements Serializable {
 	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
 	public static Map<String,AmountResource> getAmountResourcesMap() {
+		
+		//System.out.println("AmountResource : caling getAmountResourcesMap()");
+
 		return SimulationConfig
 		.instance()
 		.getResourceConfiguration()

@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A class that keeps track of all scientific studies in the simulation.
  */
-public class ScientificStudyManager extends Thread
+public class ScientificStudyManager //extends Thread
 implements Serializable {
 
     /** default serial id. */
@@ -36,10 +36,9 @@ implements Serializable {
     /**
      * Constructor.
      */
-    public ScientificStudyManager() { }
-    
+    public ScientificStudyManager() { //}   
 	// 2015-02-04 Added run()
-	public void run() {
+	//public void run() {
         studies = new ArrayList<ScientificStudy>();
 	}
     

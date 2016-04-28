@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProjectFX.java
- * @version 3.08 2015-03-26
+ * @version 3.08 2016-04-28
  * @author Manny Kung
  */
 package org.mars_sim.msp.javafx;
@@ -34,6 +34,62 @@ import org.mars_sim.msp.javafx.MarsProjectUtility.AppLaunch;
 import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 
+/**--------------------------------------------------------------
+ * Case A : if in headless mode, the loading order is as follows :
+ **--------------------------------------------------------------
+ * 1. main() 						-- on Main Thread
+ * 2. Default Constructor 			-- on JavaFX Application Thread 
+ * 3. init()						-- on JavaFX-Launcher Thread
+ * 4. SimulationTask's run() 		-- on pool-2-thread-1
+ * 5. prepare()						-- on pool-2-thread-1
+ * 6. start() 						-- on JavaFX Application Thread 
+ * 7. initializeSimulation() 		-- on pool-2-thread-1
+ * 8. handleLoadDefaultSimulation() -- on pool-2-thread-1  
+ * 9. startSimulation() 			-- on pool-2-thread-1
+ * 10. Simulation's start()			-- on pool-2-thread-1
+ *
+ * Note0 : clockScheduler is initialized on Simulation's start()
+ * 
+ **-------------------------------------------------------------- 
+ * Case B : in GUI mode, if choosing to start a new sim in the Main Menu, 
+ **--------------------------------------------------------------
+ * 
+ * 1. main() 						-- on Main Thread
+ * 2. Default Constructor 			-- on JavaFX Application Thread 
+ * 3. init()						-- on JavaFX-Launcher Thread
+ * 4. SimulationTask's run() 		-- on pool-2-thread-1
+ * 5. prepare()						-- on pool-2-thread-1
+ * 6. start() 						-- on JavaFX Application Thread 
+ * 7. MainMenu's constructor 		-- on JavaFX Application Thread
+ * 8. MainMenu's initAndShowGUI() 	-- on JavaFX Application Thread
+ * 9. MainMenu's runOne() 		 	-- on JavaFX Application Thread
+ * 10. handleNewSimulation()		-- on JavaFX Application Thread 
+ * 11. ConfigEditorTask's run()		-- on pool-2-thread-1
+ * 12. ScenarioConfigEditorFX's 
+ * 		constructor 				-- on pool-2-thread-1
+ * 13. ScenarioConfigEditorFX's
+ *  	LoadSimulationTask's run()	-- on pool-2-thread-1
+ * 14. Simulation's start()			-- on pool-2-thread-1
+ * 
+ * 
+ **-------------------------------------------------------------- 
+ * Case C : in GUI mode, if choosing to load a saved sim in the Main Menu,  
+ **--------------------------------------------------------------
+ * 
+ * Step 1 to 8 are the same as in Case B
+ * 9. MainMenu's runTwo() 		 	-- on JavaFX Application Thread
+ * 10. Simulation loadSimulation() 	-- on JavaFX Application Thread
+ * 11. Simulation's start()			-- on pool-2-thread-1
+ * 
+ * 
+ * Note1 : at step 7, Case A (headless) and Case B/C (GUI mode) begin to diverge 
+ *
+ * Note2 : if the switch "-helpGenerator" is included in the eclipse launcher, 
+ * 		selecting "New Sim" in the Main Menu will run HelpGenerator.generateHtmlHelpFiles()
+ *  	in handleNewSimulation() right before calling ScenarioConfigEditorFX.
+ */
+      
+
 /**
  * MarsProjectFX is the main class for MSP. It creates JavaFX/8 application thread.
  */
@@ -60,8 +116,11 @@ public class MarsProjectFX extends Application  {
 
     private MarsProjectFX marsProjectFX;
 
+    /*
+     * Default Constructor
+     */
     public MarsProjectFX() {
-	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
     	marsProjectFX = this;
 /*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -82,47 +141,35 @@ public class MarsProjectFX extends Application  {
 	public class SimulationTask implements Runnable {
 
 		public void run() {
-		   	//logger.info("MarsProjectFX's SimulationTask's run() is on " + Thread.currentThread().getName() + " Thread");
+		   	//logger.info("MarsProjectFX's SimulationTask's run() is on " + Thread.currentThread().getName());
 		   	//INFO: MarsProjectFX's SimulationTask's run() is on pool-2-thread-1 Thread
 			prepare();
 		}
     }
 
 	public void prepare() {
-	   	//logger.info("MarsProjectFX's prepare() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's prepare() is on " + Thread.currentThread().getName());
 	   	//INFO: MarsProjectFX's prepare() is on pool-2-thread-1 Thread
 	   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
-		setLogging();
-		setDirectory();
-
-        // general text antialiasing
-        System.setProperty("swing.aatext", "true");
-        //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
-        //Properties props = System.getProperties();
-        //props.setProperty("swing.jlf.contentPaneTransparent", "true");
-
-    	logger.info("Starting " + Simulation.WINDOW_TITLE);
-
-		argList = Arrays.asList(args);
-		useGUI = !argList.contains("-headless");
-        generateHelp = argList.contains("-generateHelp");
-
 
 	    if (useGUI) {
+	    	logger.info("prepare() : Running MarsProjectFX in GUI mode");
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 	    	//System.setProperty("sun.java2d.ddforcevram", "true");
 
 	       	// Enable capability of loading of svg image using regular method
 	    	//SvgImageLoaderFactory.install();
 
-		} else { // GUI-less
-		    // Initialize the simulation.
+		} else { // Using -headless arg (GUI-less)
+	    	logger.info("prepare() : Running MarsProjectFX in headless mode");
+			// Initialize the simulation.
 		    initializeSimulation(args); // evaluate args switches
 		    // Start the simulation.
 		    startSimulation();
 		}
 
 	    // this will generate html files for in-game help based on config xml files
+	    // 2016-04-16 Relocated the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
 	    //if (generateHelp) {
 	    //	HelpGenerator.generateHtmlHelpFiles();
 	    //
@@ -130,10 +177,14 @@ public class MarsProjectFX extends Application  {
 	}
 
 	public void start(Stage primaryStage) {
-	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() + " Thread");
-		if (useGUI) {
-		    mainMenu = new MainMenu(this); //, args, true);
+	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
+	   	if (useGUI) {
+		   	//logger.info("start() : in GUI mode, loading Main Menu");			
+		    mainMenu = new MainMenu(this);
 		    mainMenu.initAndShowGUI(primaryStage);
+		}
+		else {
+		   	//logger.info("start() : in headless mode, not loading Main Menu");			
 		}
 	}
 
@@ -147,9 +198,9 @@ public class MarsProjectFX extends Application  {
      * @return true if new simulation (not loaded)
      */
     boolean initializeSimulation(String[] args) {
+		//logger.info("initializeSimulation() is on " + Thread.currentThread().getName() );
         boolean result = false;
-		//logger.info("initializeSimulation() is on " + Thread.currentThread().getName() + " Thread");
-
+        
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
@@ -188,8 +239,8 @@ public class MarsProjectFX extends Application  {
     boolean initializeNewSimulation() {
         boolean result = false;
 
-            handleNewSimulation(); // if this fails we always exit, continuing is useless
-            result = true;
+        handleNewSimulation(); // if this fails we always exit, continuing is useless
+        result = true;
 
         return result;
     }
@@ -228,7 +279,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the default saved simulation.
      */
     void handleLoadDefaultSimulation() throws Exception {
-		logger.info("MarsProjectFX's handleLoadDefaultSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProjectFX's handleLoadDefaultSimulation() is on "+Thread.currentThread().getName());
 
     	try {
             // Load a the default simulation
@@ -244,7 +295,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the default saved simulation.
      */
     void handleLoadDefaultSavedSimulation() {
-		logger.info("MarsProjectFX's handleLoadDefaultSavedSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		logger.info("MarsProjectFX's handleLoadDefaultSavedSimulation() is on "+Thread.currentThread().getName() );
     	try {
     		List<String> argList = new ArrayList<String>(1);
     		argList.add("-load");
@@ -261,8 +312,8 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the saved simulation.
      */
     void handleLoadSimulation(List<String> argList) throws Exception {
-		logger.info("MarsProjectFX's handleLoadSimulation() is in "+Thread.currentThread().getName() + " Thread");
-    	// INFO: MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
+		logger.info("MarsProjectFX's handleLoadSimulation() is on "+Thread.currentThread().getName() );
+    	// INFO: MarsProjectFX's handleLoadSimulation() is in JavaFX Application Thread Thread
         try {
             int index = argList.indexOf("-load");
             // Get the next argument as the filename.
@@ -285,13 +336,13 @@ public class MarsProjectFX extends Application  {
      * Create a new simulation instance.
      */
     void handleNewSimulation() {
-		//logger.info("MarsProjectFX's handleNewSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		logger.info("MarsProjectFX's handleNewSimulation() is on "+Thread.currentThread().getName() );
 		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
 		//isDone = true;
         try {
             SimulationConfig.loadConfig();
             
-    	    // this will generate html files for in-game help based on config xml files
+    	    // 2016-04-17 this will generate html files for in-game help based on config xml files
     	    if (generateHelp) {
     	    	HelpGenerator.generateHtmlHelpFiles();
     	    }
@@ -317,7 +368,7 @@ public class MarsProjectFX extends Application  {
      * Start the simulation instance.
      */
     public void startSimulation() {
-		//logger.info("MarsProjectFX's startSimulation() is in "+Thread.currentThread().getName() + " Thread");
+		logger.info("MarsProjectFX's startSimulation() is on "+Thread.currentThread().getName() );
 
         // Start the simulation.
         Simulation.instance().start();
@@ -329,7 +380,7 @@ public class MarsProjectFX extends Application  {
 
 
     public void setLogging() {
-
+    	//logger.info("setLogging() is on " + Thread.currentThread().getName() );
         try {
             LogManager.getLogManager().readConfiguration(MarsProjectFX.class.getResourceAsStream("/logging.properties"));
         } catch (IOException e) {
@@ -343,7 +394,9 @@ public class MarsProjectFX extends Application  {
     }
 
 	public class ConfigEditorTask implements Runnable {
+	   	
 		  public void run() {
+			  logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
 			  new ScenarioConfigEditorFX(marsProjectFX, mainMenu);
 		  }
 	}
@@ -362,20 +415,36 @@ public class MarsProjectFX extends Application  {
      */
     @Override
     public void init() throws Exception {
-	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
 	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
 
+		setLogging();
+		setDirectory();
+
+        // general text antialiasing
+        System.setProperty("swing.aatext", "true");
+        //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
+        //Properties props = System.getProperties();
+        //props.setProperty("swing.jlf.contentPaneTransparent", "true");
+
+    	logger.info("Starting " + Simulation.WINDOW_TITLE);
+
+		argList = Arrays.asList(args);
+		useGUI = !argList.contains("-headless");
+        generateHelp = argList.contains("-generateHelp");
+
+    	
 	   	Simulation.instance().startSimExecutor();
 	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
     }
 
     @Override
     public void stop() throws Exception {
-	   	//logger.info("MarsProjectFX's stop is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("MarsProjectFX's stop is on " + Thread.currentThread().getName() );
     }
 
     public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException{
-    	//logger.info("MarsProjectFX's main() is in " + Thread.currentThread().getName() + " Thread");
+    	//logger.info("MarsProjectFX's main() is on " + Thread.currentThread().getName() + " Thread" );
     	MarsProjectFX.args = args;
 /*
         // 2015-10-13  Added command prompt console

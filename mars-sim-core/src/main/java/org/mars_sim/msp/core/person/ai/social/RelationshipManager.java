@@ -37,7 +37,7 @@ import com.phoenixst.plexus.Traverser;
  * <br/>
  * The simulation instance has only one relationship manager.
  */
-public class RelationshipManager extends Thread
+public class RelationshipManager // extends Thread
 implements Serializable {
 
 	/** default serial id. */
@@ -72,10 +72,9 @@ implements Serializable {
 	/**
 	 * Constructor
 	 */
-	public RelationshipManager() {}
-
+	public RelationshipManager() {
 	// 2015-02-04 Added run()
-	public void run() {
+	//public void run() {
 	   	//System.out.println("RelationshipManager's run() is on " + Thread.currentThread().getName() + " Thread");
 		// Create new graph for relationships.
 		relationshipGraph = new DefaultGraph();

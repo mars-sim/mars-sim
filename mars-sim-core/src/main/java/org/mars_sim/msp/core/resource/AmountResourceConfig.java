@@ -98,6 +98,7 @@ public class AmountResourceConfig implements Serializable {
 		for (AmountResource resource : resources) {
 			map.put(resource.getName(),resource);
 		}
+		//System.out.println("AmountResourceConfig : done getAmountResourcesMap()");
 		return map;
 
 	}

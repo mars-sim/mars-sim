@@ -23,8 +23,10 @@ public class TestCreditManager extends TestCase {
         Settlement settlement2 = new MockSettlement();
         settlements.add(settlement2);
         CreditManager manager = new CreditManager(settlements);
-        Thread creditThread = new Thread(manager);
-        creditThread.start();
+        
+        // Only if managerExecutor (ThreadPoolExecutor) is in use
+        //Thread creditThread = new Thread(manager); 
+        //creditThread.start();
 
         // Sleeping the thread for a short time to allow the credit manager to finish loading.
         try {

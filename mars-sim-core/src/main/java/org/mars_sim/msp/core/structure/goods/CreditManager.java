@@ -30,7 +30,7 @@ import com.phoenixst.plexus.GraphUtils;
  * The simulation instance has only one credit manager.
  */
 public class CreditManager
-implements Runnable, Serializable {
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -48,10 +48,8 @@ implements Runnable, Serializable {
 	public CreditManager() {
 		// Creates credit manager with all settlements in the simulation.
 		this(Simulation.instance().getUnitManager().getSettlements());
-
-	}
-
-	public void run() {
+	//}
+	//public void run() {
 		// Create new graph for credit.
 		creditGraph = new DefaultGraph();
 

@@ -173,6 +173,7 @@ implements Serializable, Comparable<Unit> {
 	 */
 	protected final void setDescription(String description) {
 		this.description = description;
+		//System.out.println("Description is : "+ description);
 		fireUnitUpdate(UnitEventType.DESCRIPTION_EVENT, description);
 	}
 

@@ -126,7 +126,7 @@ implements ClockListener, Serializable {
     //private transient ThreadPoolExecutor clockScheduler; //
     private transient ThreadPoolExecutor clockScheduler;
 
-    private transient ThreadPoolExecutor managerExecutor;
+    //private transient ThreadPoolExecutor managerExecutor;
 
     private transient ExecutorService simExecutor;
 
@@ -284,21 +284,21 @@ implements ClockListener, Serializable {
         if (eventManager == null)
         	eventManager = new HistoricalEventManager();
 
-        if (managerExecutor == null || managerExecutor.isShutdown()) {
-            managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newSingleThreadExecutor();newFixedThreadPool();
+        //if (managerExecutor == null || managerExecutor.isShutdown()) {
+        //    managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newSingleThreadExecutor();newFixedThreadPool();
 
             malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
-            managerExecutor.execute(malfunctionFactory);
+            //managerExecutor.execute(malfunctionFactory);
 
             mars = new Mars();
 
             missionManager = new MissionManager();
 
             relationshipManager = new RelationshipManager();
-            managerExecutor.execute(relationshipManager);
+            //managerExecutor.execute(relationshipManager);
 
             medicalManager = new MedicalManager();
-            managerExecutor.execute(medicalManager);
+            //managerExecutor.execute(medicalManager);
 
             masterClock = new MasterClock();
 
@@ -306,15 +306,15 @@ implements ClockListener, Serializable {
             unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
 
             creditManager = new CreditManager();
-            managerExecutor.execute(creditManager);
+            //managerExecutor.execute(creditManager);
 
             scientificStudyManager = new ScientificStudyManager();
-            managerExecutor.execute(scientificStudyManager);
+            //managerExecutor.execute(scientificStudyManager);
 
             transportManager = new TransportManager();
             //managerExecutor.execute(transportManager);
 
-        }
+        //}
 
     }
 
@@ -324,7 +324,7 @@ implements ClockListener, Serializable {
      * Start the simulation.
      */
     public void start() {
-        logger.info("Simulation's start()-- where clockScheduler is declared--is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's start() -- where clockScheduler is initialized -- is on " + Thread.currentThread().getName());
         //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
         //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
 
@@ -388,7 +388,7 @@ implements ClockListener, Serializable {
      * @throws Exception if simulation could not be loaded.
      */
     public void loadSimulation(final File file) {
-        //logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
         isUpdating = true;
 
         File f = file;
@@ -424,7 +424,7 @@ implements ClockListener, Serializable {
         }
         else{
         	logger.info("Encountering an error when loading the simulation!");
-        	logger.info("Note : you are running MSP Build " + Simulation.BUILD + "but is loading a sim saved in MSP Build " + loadBuild);
+        	logger.info("Note : you are running Build " + Simulation.BUILD + "but is loading a sim saved in Build " + loadBuild);
             throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
                     f.getPath() + " is not accessible");
         }
@@ -443,9 +443,11 @@ implements ClockListener, Serializable {
 
         masterClock.endClockListenerExecutor();
         clockScheduler.shutdownNow();
-        if (managerExecutor != null) {
-            managerExecutor.shutdownNow();
-        }
+        
+        //if (managerExecutor != null) {
+        //    managerExecutor.shutdownNow();
+        //}
+        
         // Wait until current time pulse runs its course
         // we have no idea how long it will take it to
         // run its course. But this might be enough.
@@ -548,8 +550,12 @@ implements ClockListener, Serializable {
                 loadBuild = SimulationConfig.instance().getBuild();
             	if (loadBuild == null)
             		loadBuild = "unknown";
-            	logger.info("Running MSP Build " + Simulation.BUILD + ". Loading a sim saved in Build " + loadBuild);
-
+            	
+            	if (Simulation.BUILD.equals(loadBuild))
+            		logger.info("readFromFile() : You are both running and loading a sim saved in Build " + loadBuild);
+            	else
+            		logger.warning("readFromFile() : You are running Build " + Simulation.BUILD + " but loading a sim saved in Build " + loadBuild);
+            		
                	//System.out.println("Simulation : inside try. starting loading objects");
 
                 malfunctionFactory = (MalfunctionFactory) ois.readObject();
@@ -1065,10 +1071,12 @@ implements ClockListener, Serializable {
             eventManager = null;
         }
 
+/*        
         if (managerExecutor != null) {
             managerExecutor.shutdownNow();
             managerExecutor = null;
         }
+*/        
     	//logger.info("Simulation's destroyOldSimulation() is done");
     }
 

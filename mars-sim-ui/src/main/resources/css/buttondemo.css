@@ -1,0 +1,49 @@
+
+
+.button-small{
+    -fx-background-color: -fx-outer-border, -fx-body-color;
+    -fx-background-insets: 1,2;
+    -fx-text-fill: -fx-text-base-color;
+    -fx-alignment: CENTER;
+    -fx-font-size: 0.8em;
+    -fx-background-radius: 10, 9, 8;
+    -fx-padding: 3px 5px 3px 5px;
+}
+
+.button-small:selected{
+    -fx-background-color: rgb(101,101,101);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.6) , 6, 0.0 , 1, 1 );
+}
+
+.button-small:pressed{
+    -fx-background-color: rgb(101,101,101);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.button-small > .color-picker-label{
+    -fx-padding: 0px 0.667px 0px 5px;
+    -fx-font-size: 0.4em;
+}
+
+.button-small > .label,
+.button-small > .list-cell,
+.button-small > .list-cell:selected{
+    -fx-padding: 0px 0px 0px 5px;
+    -fx-cell-size: 12;
+    -fx-font-weight: normal;
+}
+
+.button-small > .glyph-icon:hover{
+}
+
+.button-small > .color-picker-label > .picker-color{
+    -fx-scale-x: 0.7;
+    -fx-scale-y: 0.7;
+}
+
+.button-small > .arrow-button{
+    -fx-padding: 0px 0.667px 0px 0px;
+}

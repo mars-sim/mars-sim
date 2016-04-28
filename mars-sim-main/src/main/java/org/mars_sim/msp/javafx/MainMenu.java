@@ -163,17 +163,17 @@ public class MainMenu {
 	private WaitIndicator waiti;
 
     public MainMenu(MarsProjectFX marsProjectFX) {
+       	logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	this.marsProjectFX = marsProjectFX;
     	mainMenu = this;
-    	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName() + " Thread");
-	}
+ 	}
 
     /*
      * Sets up and shows the MainMenu and prepare the stage for MainScene
      */
 	@SuppressWarnings("restriction")
 	void initAndShowGUI(Stage stage) {
-	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName() + " Thread");
+	   logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName());
 
 		this.stage = stage;
 
@@ -288,6 +288,8 @@ public class MainMenu {
        stage.show();
 
        mainSceneStage = new Stage();
+       mainSceneStage.getIcons().add(new Image(MainScene.class.getResource("/icons/lander_hab64.png").toExternalForm()));
+		 
        //mainSceneStage.hide();
        
        createProgressCircle();
@@ -321,7 +323,7 @@ public class MainMenu {
 	}
 
    public void runOne() {
-	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName() + " Thread");
+	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName());
 	   stage.setIconified(true);
 	   stage.hide();
    
@@ -332,27 +334,29 @@ public class MainMenu {
    }
 
    public void runTwo() {
-		mainMenuScene.setCursor(Cursor.WAIT);
+	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName());
+
+	   mainMenuScene.setCursor(Cursor.WAIT);
 		
-		String dir = Simulation.DEFAULT_DIR;
-		String title = null;
-		File fileLocn = null;
+	   String dir = Simulation.DEFAULT_DIR;
+	   String title = null;
+	   File fileLocn = null;
 		
-		FileChooser chooser = new FileChooser();
+	   FileChooser chooser = new FileChooser();
 		// chooser.setInitialFileName(dir);
 		// Set to user directory or go to default if cannot access
 		// String userDirectoryString = System.getProperty("user.home");
-		File userDirectory = new File(dir);
-		chooser.setInitialDirectory(userDirectory);
-		chooser.setTitle(title); // $NON-NLS-1$
+	   File userDirectory = new File(dir);
+	   chooser.setInitialDirectory(userDirectory);
+	   chooser.setTitle(title); // $NON-NLS-1$
 
 		// Set extension filter
-		FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
+	   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
 				"Simulation files (*.sim)", "*.sim");
-		FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
+	   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
 				"all files (*.*)", "*.*");
 
-		chooser.getExtensionFilters().addAll(simFilter, allFilter);
+	   chooser.getExtensionFilters().addAll(simFilter, allFilter);
 
 		// Show open file dialog
 		
@@ -409,8 +413,7 @@ public class MainMenu {
 			mainSceneStage.centerOnScreen();
 			//mainSceneStage.setResizable(false);
 			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
-			mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
- 
+	
 
 			waitStage.close();
 			

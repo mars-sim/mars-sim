@@ -718,10 +718,9 @@ implements VehicleOperator, MissionMember, Serializable {
     public int getAge() {
         EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
         int age = simClock.getYear() - birthTimeStamp.getYear() - 1;
-        if (simClock.getMonth() >= birthTimeStamp.getMonth()
-                && simClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth()) {
-            age++;
-        }
+        if (simClock.getMonth() >= birthTimeStamp.getMonth())
+        	if (simClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth()) 
+               	age++;
 
         return age;
     }

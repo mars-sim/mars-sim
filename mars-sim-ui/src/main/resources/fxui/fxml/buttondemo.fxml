@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox alignment="TOP_CENTER" prefWidth="700.0" spacing="40.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" 
+fx:controller="org.mars_sim.msp.ui.javafx.demo.ButtonDemoController">
+   <children>
+      <VBox alignment="TOP_CENTER">
+         <children>
+            <Label text="Button of  Choice - DEMO">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label text="Make a ToggleGroup behave like a RadioGroup">
+               <font>
+                  <Font name="Arial Italic" size="13.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox alignment="TOP_CENTER" spacing="10.0">
+         <children>
+            <Label text="Grouped with ToggleGroup. BUT: selected Toggles can still be set to unselected state: ">
+               <font>
+                  <Font name="Arial Bold" size="14.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" selected="true" text="Heisenberg">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="g1" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Pinkman" toggleGroup="$g1" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Gustavo" toggleGroup="$g1" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Hank" toggleGroup="$g1" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Ehrmantraut" toggleGroup="$g1" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox alignment="TOP_CENTER" spacing="10.0">
+         <children>
+            <Label text="&quot;AlwaysOneSelected&quot; enabled: ">
+               <font>
+                  <Font name="Arial Bold" size="14.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" selected="true" text="Heisenberg">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="g2" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Pinkman" toggleGroup="$g2" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Gustavo" toggleGroup="$g2" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Hank" toggleGroup="$g2" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="100.0" text="Ehrmantraut" toggleGroup="$g2" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox alignment="TOP_CENTER" spacing="10.0">
+         <children>
+            <Label text="... and with some addition styling: ">
+               <font>
+                  <Font name="Arial Bold" size="14.0" />
+               </font>
+            </Label>
+            <HBox alignment="CENTER" spacing="5.0">
+               <children>
+                  <ToggleButton mnemonicParsing="false" prefWidth="80.0" selected="true" styleClass="button-small" text="Heisenberg">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="g3" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton mnemonicParsing="false" prefWidth="80.0" styleClass="button-small" text="Pinkman" toggleGroup="$g3" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="80.0" styleClass="button-small" text="Gustavo" toggleGroup="$g3" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="80.0" styleClass="button-small" text="Hank" toggleGroup="$g3" />
+                  <ToggleButton mnemonicParsing="false" prefWidth="80.0" styleClass="button-small" text="Ehrmantraut" toggleGroup="$g3" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>
