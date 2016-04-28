@@ -40,22 +40,12 @@ implements Serializable {
 	/** Credit listeners. */
 	private transient List<CreditListener> listeners;
 
-	private Collection<Settlement> settlements;
-
 	/**
 	 * Constructor.
 	 */
 	public CreditManager() {
 		// Creates credit manager with all settlements in the simulation.
 		this(Simulation.instance().getUnitManager().getSettlements());
-	//}
-	//public void run() {
-		// Create new graph for credit.
-		creditGraph = new DefaultGraph();
-
-		// Add all settlements as nodes.
-		Iterator<Settlement> i = settlements.iterator();
-		while (i.hasNext()) creditGraph.addNode(i.next());
 	}
 
 
@@ -64,7 +54,13 @@ implements Serializable {
 	 * @param settlements collection of settlements to use.
 	 */
 	public CreditManager(Collection<Settlement> settlements) {
-		this.settlements = settlements;
+		
+		// Create new graph for credit.
+		creditGraph = new DefaultGraph();
+		
+		// Add all settlements as nodes.
+        Iterator<Settlement> i = settlements.iterator();
+        while (i.hasNext()) creditGraph.addNode(i.next());
 	}
 
 	/**
