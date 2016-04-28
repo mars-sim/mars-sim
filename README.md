@@ -1,21 +1,21 @@
 # mars-sim
 
-The Mars Simulation Project is a free Java software project that creates a simulation of future human settlement of Mars. 
+The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars in a virtual environment. Each agent has various human-like characteristics, capable of making distinct decisions on a virtual Mars and interacting with one another. 
 
-It is a social simulation, modeling the human behavior of scientists, engineers, doctors, technicians, etc. as they go about their day-to-day lives in the virtual Martian environment. 
+As a social simulation, mars-sim models in terms of a settler's career type, job role, technical skills, personality and temperament and relationship with one another as they go about their day-to-day lives. 
 
-There are many different settlements spread out across the planet, ranging from simple 4-person initial landing habitats to more mature bases hosting dozens of people and advanced buildings. 
+Player can create numerous settlements spreading across Mars, from a simple 4-person initial landing site, a mining site to more matured bases hosting higher functions. 
 
-Settlers spend much of their time maintaining their settlements, growing crops in their greenhouses, and manufacturing needed parts and equipment from collected local resources. 
+These settlements have command structures, their own goals, and can trade with one another. 
 
-Settlers also go out on rover missions to explore and study the surrounding area, prospect and mine mineral concentrations, and trade with their neighboring settlements. 
+At the base construction phase, most settlers will spend much of their time learning to "live off the land". They will be busy in maintenance, growing crops in greenhouses, and manufacturing needed parts and equipment from collected local resources. 
 
-Mars is a harsh and dangerous world, and the settlers have to contend with accidents, equipment malfunctions, illnesses, injuries, and even death. 
+Settlers will also go out on rover missions to explore and study surrounding areas, prospect and mine mineral concentrations, and trade with neighboring settlements. 
 
-Survival depends on the settlers working together, building relationships, improving skills and balancing the needs of their settlements.
+Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents, equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together, improve their survival skills and balance individual vs. settlement needs.
 
-Since MSP is an openly-developed project, we welcome anyone who would like to contribute code, artwork, sounds, or simply ideas and provides us your feedback. 
+We welcome anyone who would like to contribute mars-sim in coding or artwork/sounds or simply drop in your ideas and provide us your feedback. 
 
-See also our project web site at at http://mars-sim.sourceforge.net/
+See our project web site at at http://mars-sim.sourceforge.net/
 
-Download MSP at http://sourceforge.net/projects/mars-sim
+Download mars-sim binaries at http://sourceforge.net/projects/mars-sim
