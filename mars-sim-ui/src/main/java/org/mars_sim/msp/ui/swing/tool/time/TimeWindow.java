@@ -529,16 +529,16 @@ implements ClockListener {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 
-			if (mainScene != null)
-				mainScene.getAutosaveTimeline().pause();
+			//if (mainScene != null)
+			Simulation.instance().getAutosaveTimeline().pause();
 
 		} else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.disposeAnnouncementWindow();
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 
-			if (mainScene != null)
-				mainScene.getAutosaveTimeline().play();
+			//if (mainScene != null)
+			Simulation.instance().getAutosaveTimeline().play();
 
 		}
 	}

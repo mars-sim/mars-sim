@@ -9,19 +9,19 @@ package org.mars_sim.msp.ui.javafx;
 
 import static javafx.geometry.Orientation.VERTICAL;
 
-import com.jidesoft.swing.MarqueePane;
+//import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
 import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
-import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory;
-import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory.FeedbackType;
-import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
+//import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory;
+//import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory.FeedbackType;
+//import org.eclipse.fx.ui.controls.tabpane.skin.DnDTabPaneSkin;
 
 //import jfxtras.scene.menu.CornerMenu;
 
@@ -86,6 +86,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -102,6 +103,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -135,7 +137,6 @@ public class MainScene {
 	
     //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
 
-	private static int AUTOSAVE_EVERY_X_MINUTE = 15;
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
 	// Categories of loading and saving simulation
@@ -198,7 +199,7 @@ public class MainScene {
 	//private FXDesktopPane fxDesktopPane;
 	private ESCHandler esc = null;
 
-	private Timeline timeline, autosaveTimeline;
+	private Timeline timeline;// autosaveTimeline;
 	private static NotificationPane notificationPane;
 
 
@@ -217,6 +218,27 @@ public class MainScene {
 
     private static String[] quote = new String[10];
     
+	private static String quote0 = 
+			  "\" All the conditions necessary for murder are \n "
+    		+ " met if you shut 2 men in a cabin measuring \n"
+    		+ " 18'x20' and leave them together for 2 months.\"\n"
+    		+ "                                                 - Valery Ryumin";				
+    
+	private static String quote1 = 
+			  "\" We have some special space shampoo that doesn't\n "
+    		+ " require water, and it does a pretty good job. So at "
+			+ " the end of the mission, even though it's 6 months "
+    		+ " without a bath, we're still pretty good, and we  \n"
+    		+ " don't smell too bad.\"  - Mike Fincke, NASA astronaut";
+
+	private static String quote2 = 
+			  "\" The Dog, and the Plough, and the Hunter, and all\n "
+    		+ "      And the star of the sailor, and Mars,\n"
+    		+ " These shone in the sky, and the pail by the wall \n"
+    		+ "      Would be half full of water and stars.\"\n"
+    		+ "   - Robert Louis Steenson, from Escape at Bedtime";
+
+/*	
 	//private static final Random         RND           = new Random();
     private static final Notification[] NOTIFICATIONS = {
         new Notification("Quote", quote[0], Notification.INFO_ICON),
@@ -224,9 +246,8 @@ public class MainScene {
         new Notification("Success", "Great it works", Notification.SUCCESS_ICON),
         new Notification("Error", "ZOMG", Notification.ERROR_ICON)
     };
-
-  
-    		
+*/
+	
     private Notification.Notifier notifier;
     
 	//static {
@@ -242,12 +263,7 @@ public class MainScene {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
-
-		quote[0] = "\" All the conditions necessary for murder are \n "
-	    		+ " met if you shut 2 men in a cabin measuring \n"
-	    		+ " 18'x20' and leave them together for 2 months.\"\n"
-	    		+ "                                                 - Valery Ryumin";				
-	    
+ 
 		//stage.setResizable(true);
 
 		//stage.setMinWidth(1280);
@@ -340,7 +356,7 @@ public class MainScene {
 	 */
 	public void prepareOthers() {
 		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
-		startAutosaveTimer();
+		//startAutosaveTimer();
 		startEarthTimer();
 		transportWizard = new TransportWizard(this, desktop);
 		constructionWizard = new ConstructionWizard(this, desktop);
@@ -1015,27 +1031,6 @@ public class MainScene {
 
 	}
 
-	// 2015-01-07 Added startAutosaveTimer()
-	public void startAutosaveTimer() {
-
-		autosaveTimeline = new Timeline(
-				new KeyFrame(Duration.seconds(60 * AUTOSAVE_EVERY_X_MINUTE),
-						ae -> saveSimulation(AUTOSAVE)));
-		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
-		// All the objects with animated properties would not be garbage collected.
-		autosaveTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-		autosaveTimeline.play();
-
-	}
-
-	/**
-	 * Gets the timeline instance of the autosave timer.
-	 * @return autosaveTimeline
-	 */
-	public Timeline getAutosaveTimeline() {
-		return autosaveTimeline;
-	}
-
 	/**
 	 * Gets the main desktop panel.
 	 * @return desktop
@@ -1399,7 +1394,7 @@ public class MainScene {
 	 */
 	public void pauseSimulation() {
 		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
-		autosaveTimeline.pause();
+		//autosaveTimeline.pause();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		Simulation.instance().getMasterClock().setPaused(true);
 		//desktop.getTimeWindow().enablePauseButton(false);
@@ -1411,7 +1406,7 @@ public class MainScene {
 	public void unpauseSimulation() {
 		Simulation.instance().getMasterClock().setPaused(false);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-		autosaveTimeline.play();
+		//autosaveTimeline.play();
 		desktop.disposeAnnouncementWindow();
 		//desktop.getTimeWindow().enablePauseButton(true);
 	}
@@ -1687,22 +1682,36 @@ public class MainScene {
 		
 		isMainSceneDoneLoading = true;
 		
-		openQuote(quote[0]);
+		
+		openQuote(quote);
 	}
 
 	/*
 	 * Create a quote using Enzo's Notification  
 	 */
 	// 2016-04-21 Added openQuote()
-	public void openQuote(String quote) {
+	public void openQuote(String[] quoteArray) {
+
+        Array.set(quoteArray, 0 ,quote0);
+        Array.set(quoteArray, 1 ,quote1);
+        Array.set(quoteArray, 2 ,quote2);
+        
+		// Randomly select a quote
+		int rand = RandomUtil.getRandomInt(2);	
+		String quoteString = quoteArray[rand];
+		
+		int length = quoteString.length();
+		int lines = length/45 + 1;
+		int height = lines * 25;
+		
         notifier = Notification.Notifier.INSTANCE;
-		Notifier.setHeight(120);
+		Notifier.setHeight(height);
         Notifier.setWidth(350);
         Notifier.setNotificationOwner(stage);
         Duration duration = new Duration(20000);
         notifier.setPopupLifetime(duration);
-        
-		Notification n0 = new Notification("Quotation", quote, QUOTE_ICON);
+  
+		Notification n0 = new Notification("Quotation", quoteString, QUOTE_ICON);
 	
 		notifier.notify(n0);
 	}
@@ -1772,7 +1781,7 @@ public class MainScene {
 		swingPane = null;
 		borderPane = null;
 		//fxDesktopPane = null;
-		autosaveTimeline = null;
+		//autosaveTimeline = null;
 
 		newSimThread = null;
 		loadSimThread = null;
