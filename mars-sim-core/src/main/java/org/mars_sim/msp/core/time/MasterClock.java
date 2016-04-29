@@ -743,6 +743,11 @@ public class MasterClock implements Serializable { // Runnable,
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
 
+        if (isPaused)
+        	Simulation.instance().getAutosaveTimeline().pause();
+        else
+        	Simulation.instance().getAutosaveTimeline().play();
+        
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.

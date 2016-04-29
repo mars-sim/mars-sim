@@ -101,7 +101,7 @@ public class MarsProjectFX extends Application  {
     static String[] args;
 
     /** true if displaying graphic user interface. */
-    private boolean useGUI = true;
+    private boolean useGUI = true, newSim = true;
 
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
@@ -137,6 +137,38 @@ public class MarsProjectFX extends Application  {
 */
     }
 
+	/*
+     * Initiates any tasks or methods on a JavaFX-Launcher Thread
+     * @see javafx.application.Application#init()
+     */
+    @Override
+    public void init() throws Exception {
+	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
+	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
+
+		setLogging();
+		setDirectory();
+
+        // general text antialiasing
+        System.setProperty("swing.aatext", "true");
+        //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
+        //Properties props = System.getProperties();
+        //props.setProperty("swing.jlf.contentPaneTransparent", "true");
+
+    	logger.info("Starting " + Simulation.WINDOW_TITLE);
+
+		argList = Arrays.asList(args);
+		useGUI = !argList.contains("-headless");
+        newSim = argList.contains("-new");
+		generateHelp = argList.contains("-generateHelp");
+
+        //System.out.println("useGUI is " + useGUI);
+        //System.out.println("newSim is " + newSim);
+    	
+        
+	   	Simulation.instance().startSimExecutor();
+	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
+    }
 
 	public class SimulationTask implements Runnable {
 
@@ -161,7 +193,11 @@ public class MarsProjectFX extends Application  {
 	    	//SvgImageLoaderFactory.install();
 
 		} else { // Using -headless arg (GUI-less)
-	    	logger.info("prepare() : Running MarsProjectFX in headless mode");
+			if (newSim)
+				logger.info("prepare() : Starting a new MarsProjectFX in headless mode");
+			else
+				logger.info("prepare() : Loading a saved sim and running MarsProjectFX in headless mode");
+
 			// Initialize the simulation.
 		    initializeSimulation(args); // evaluate args switches
 		    // Start the simulation.
@@ -197,6 +233,7 @@ public class MarsProjectFX extends Application  {
      * @param args the command arguments.
      * @return true if new simulation (not loaded)
      */
+	//2016-04-28 Modified to handle starting a new sim in headless mode
     boolean initializeSimulation(String[] args) {
 		//logger.info("initializeSimulation() is on " + Thread.currentThread().getName() );
         boolean result = false;
@@ -204,9 +241,14 @@ public class MarsProjectFX extends Application  {
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
-        if (argList.contains("-new")) {
+        if (newSim) {
             // If new argument, create new simulation.
-            handleNewSimulation(); // if this fails we always exit, continuing is useless
+
+        	SimulationConfig.instance();
+        	SimulationConfig.loadConfig();
+
+        	Simulation.createNewSimulation();
+        	
             result = true;
 
         } else if (argList.contains("-load")) {
@@ -235,7 +277,7 @@ public class MarsProjectFX extends Application  {
      * Initialize the simulation.
      * @param args the command arguments.
      * @return true if new simulation (not loaded)
-     */
+     
     boolean initializeNewSimulation() {
         boolean result = false;
 
@@ -244,7 +286,8 @@ public class MarsProjectFX extends Application  {
 
         return result;
     }
-
+*/
+    
     /**
      * Exit the simulation with an error message.
      * @param message the error message.
@@ -368,7 +411,7 @@ public class MarsProjectFX extends Application  {
      * Start the simulation instance.
      */
     public void startSimulation() {
-		logger.info("MarsProjectFX's startSimulation() is on "+Thread.currentThread().getName() );
+		//logger.info("MarsProjectFX's startSimulation() is on "+Thread.currentThread().getName() );
 
         // Start the simulation.
         Simulation.instance().start();
@@ -409,34 +452,6 @@ public class MarsProjectFX extends Application  {
         }
     }
 */
-	/*
-     * Initiates any tasks or methods on a JavaFX-Launcher Thread
-     * @see javafx.application.Application#init()
-     */
-    @Override
-    public void init() throws Exception {
-	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
-	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
-
-		setLogging();
-		setDirectory();
-
-        // general text antialiasing
-        System.setProperty("swing.aatext", "true");
-        //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
-        //Properties props = System.getProperties();
-        //props.setProperty("swing.jlf.contentPaneTransparent", "true");
-
-    	logger.info("Starting " + Simulation.WINDOW_TITLE);
-
-		argList = Arrays.asList(args);
-		useGUI = !argList.contains("-headless");
-        generateHelp = argList.contains("-generateHelp");
-
-    	
-	   	Simulation.instance().startSimExecutor();
-	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
-    }
 
     @Override
     public void stop() throws Exception {

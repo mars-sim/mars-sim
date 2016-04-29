@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="583.0" prefWidth="690.0" style="-fx-background-color:  rgba(0,0,0,0);" xmlns:fx="http://javafx.com/fxml" fx:controller="AppSamplerController">
+  <children>
+    <Text layoutX="27.0" layoutY="49.0" stroke="BLACK" text="JavaFX 2.x Introduction By Example">
+      <effect>
+        <DropShadow color="#bfbfbf" height="18.217261904761905" radius="8.798363095238095" width="18.976190476190474" />
+      </effect>
+      <fill>
+        <Color blue="0.020" green="0.804" red="1.000" fx:id="x3" />
+      </fill>
+      <font>
+        <Font name="Arial Black" size="32.0" />
+      </font>
+    </Text>
+    <Text layoutX="495.0" layoutY="350.0" scaleY="1.1428567247690997" stroke="BLACK">
+      <font>
+        <Font size="14.0" />
+      </font>
+    </Text>
+    <TabPane id="MyTabPane" layoutX="27.0" layoutY="87.0" prefHeight="400.943359375" prefWidth="637.0" tabClosingPolicy="UNAVAILABLE">
+      <tabs>
+        <Tab id="chap1tapheader" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}" text="Chapter 1">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="365.943359375" prefWidth="637.0" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}">
+              <children>
+                <TableView fx:id="chap1RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="609.0">
+                  <columns>
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                  </columns>
+                </TableView>
+                <Text layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="JavaFX Fundamentals">
+                  <fill>
+                    <Color blue="0.000" green="0.720" red="1.000" fx:id="x1" />
+                  </fill>
+                  <font>
+                    <Font name="Arial Black" size="24.0" fx:id="x2" />
+                  </font>
+                </Text>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab text="Chapter 2">
+          <content>
+            <AnchorPane id="Content" cache="true" cacheHint="SPEED" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <TableView fx:id="chap2RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="610.0">
+                  <columns>
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                  </columns>
+                </TableView>
+                <Text fill="$x1" font="$x2" layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.5" text="Graphics with JavaFX" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab text="Chapter 3">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <TableView fx:id="chap3RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="610.0">
+                  <columns>
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                  </columns>
+                </TableView>
+                <Text fill="$x1" font="$x2" layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="Media with JavaFX" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab text="Chapter 4">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <TableView fx:id="chap4RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="610.0">
+                  <columns>
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                    <TableColumn prefWidth="75.0" text="Column X" />
+                  </columns>
+                </TableView>
+                <Text fill="$x1" font="$x2" layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="JavaFX on the Web" />
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+    <Text fill="$x3" layoutX="587.0" layoutY="523.0" stroke="$x3" text="Apress">
+      <font>
+        <Font size="26.0" />
+      </font>
+    </Text>
+    <Text fill="WHITE" layoutX="590.0" layoutY="544.0" stroke="BLACK" strokeWidth="0.0" text="Publishing">
+      <font>
+        <Font name="Arial" size="16.0" fx:id="x4" />
+      </font>
+    </Text>
+    <Text fill="$x3" layoutX="547.0" layoutY="565.0" stroke="$x3" text="www.apress.com">
+      <font>
+        <Font size="16.0" />
+      </font>
+    </Text>
+    <Hyperlink fx:id="carlfxHyperlink" font="$x4" layoutX="571.0" layoutY="59.0" text="by Carl Dea" textFill="WHITE" />
+  </children>
+</AnchorPane>

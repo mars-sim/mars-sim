@@ -17,8 +17,6 @@ public class MainMenuController implements Initializable, ControlledScreen {
 	@FXML
 	Label rotationRate;
 
-
-
     ScreensSwitcher switcher;
     /**
      * Initializes the controller class.

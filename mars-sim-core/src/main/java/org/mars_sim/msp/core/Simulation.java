@@ -47,7 +47,10 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.util.Duration;
 //import mikera.gui.Frames;
 //import mikera.gui.JConsole;
 /**
@@ -91,6 +94,8 @@ implements ClockListener, Serializable {
             File.separator +
             Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$
 
+	public static int autosave_minute = 15;
+	
     @SuppressWarnings("restriction")
     public final static String WINDOW_TITLE = Msg.getString(
             "Simulation.title", Simulation.VERSION
@@ -116,6 +121,9 @@ implements ClockListener, Serializable {
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild = "unknown";
 
+    
+	private Timeline autosaveTimeline;
+	
     // Transient data members (aren't stored in save file)
 
     /** All historical info. */
@@ -260,6 +268,7 @@ implements ClockListener, Serializable {
         simulation.initialSimulationCreated = true;
 
         isUpdating = false;
+        
     }
 
 
@@ -352,6 +361,10 @@ implements ClockListener, Serializable {
 	    //    clockExecutor.submit(masterClock.getClockThreadTask());
 	    //    logger.info("Simulation : just loading clockExecutor for masterClock");
         //}
+        
+        //2016-04-28 Relocated the autosave timer from MainMenu to here
+		startAutosaveTimer();
+		
     }
 
 
@@ -644,9 +657,11 @@ implements ClockListener, Serializable {
                 logger.info("Autosaving " + autosaveFilename);
             }
 
-            else
+            else {         	
                 file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
-
+                logger.info("Saving " + DEFAULT_FILE + DEFAULT_EXTENSION);
+            }
+                
             // if the autosave directory does not exist, create one now
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
@@ -1015,11 +1030,39 @@ implements ClockListener, Serializable {
     	return jc;
     }
 */
+	
+	//2015-01-07 Added startAutosaveTimer()
+    //2016-04-28 Relocated the autosave timer from MainMenu to here
+	public void startAutosaveTimer() {
+
+		autosaveTimeline = new Timeline(
+				new KeyFrame(Duration.seconds(60 * autosave_minute),
+						//ae -> masterClock.autosaveSimulation()));
+		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock, 
+		// instead of directly call saveSimulation() here in Simulation
+						ae -> masterClock.saveSimulation(null)));
+		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
+		// All the objects with animated properties would not be garbage collected.
+		autosaveTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		autosaveTimeline.play();
+
+	}
+
+	/**
+	 * Gets the timeline instance of the autosave timer.
+	 * @return autosaveTimeline
+	 */
+	public Timeline getAutosaveTimeline() {
+		return autosaveTimeline;
+	}
+	
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
     public void destroyOldSimulation() {
     	//logger.info("starting Simulation's destroyOldSimulation()");
+
+		autosaveTimeline = null;
 
         if (malfunctionFactory != null) {
             malfunctionFactory.destroy();
