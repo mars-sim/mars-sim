@@ -133,7 +133,7 @@ public class MainScene {
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	//public static final Image QUOTE_ICON = new Image(MainScene.class.getResource("/icons/quote.png").toExternalForm());
-	public static final Image QUOTE_ICON = new Image(MainScene.class.getResourceAsStream("/icons/quote.png"));
+	//public static final Image QUOTE_ICON = new Image(MainScene.class.getResourceAsStream("/icons/quote.png"));
 	
     //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
 
@@ -226,17 +226,18 @@ public class MainScene {
     
 	private static String quote1 = 
 			  "\" We have some special space shampoo that doesn't\n "
-    		+ " require water, and it does a pretty good job. So at "
-			+ " the end of the mission, even though it's 6 months "
-    		+ " without a bath, we're still pretty good, and we  \n"
-    		+ " don't smell too bad.\"  - Mike Fincke, NASA astronaut";
+    		+ " require water, and it does a pretty good job. So at\n "
+			+ " the end of the mission, even though it's 6 months\n "
+    		+ " without a bath, we're still pretty good, and we \n"
+    		+ " don't smell too bad.\"\n"
+    		+ "                                         -Mike Fincke, NASA Astronaut";
 
 	private static String quote2 = 
 			  "\" The Dog, and the Plough, and the Hunter, and all\n "
-    		+ "      And the star of the sailor, and Mars,\n"
+    		+ "          And the star of the sailor, and Mars,\n"
     		+ " These shone in the sky, and the pail by the wall \n"
-    		+ "      Would be half full of water and stars.\"\n"
-    		+ "   - Robert Louis Steenson, from Escape at Bedtime";
+    		+ "          Would be half full of water and stars.\"\n"
+    		+ "              - Robert Louis Steenson, 'Escape at Bedtime'";
 
 /*	
 	//private static final Random         RND           = new Random();
@@ -1701,17 +1702,17 @@ public class MainScene {
 		String quoteString = quoteArray[rand];
 		
 		int length = quoteString.length();
-		int lines = length/45 + 1;
-		int height = lines * 25;
+		int lines = length/45 +1 ;
+		int height = lines * 24;
 		
         notifier = Notification.Notifier.INSTANCE;
 		Notifier.setHeight(height);
-        Notifier.setWidth(350);
+        Notifier.setWidth(370);
         Notifier.setNotificationOwner(stage);
         Duration duration = new Duration(20000);
         notifier.setPopupLifetime(duration);
   
-		Notification n0 = new Notification("Quotation", quoteString, QUOTE_ICON);
+		Notification n0 = new Notification("QUOTATION", quoteString, Notification.INFO_ICON);//QUOTE_ICON);
 	
 		notifier.notify(n0);
 	}

@@ -1,3 +1,4 @@
+package org.mars_sim.msp.javafx.configEditor;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -8,7 +9,7 @@ import javafx.beans.property.StringProperty;
  *
  * @author cdea
  */
-public class Recipe {
+public class Scenario {
     private StringProperty chapter;
     private IntegerProperty sortOrder;
     private StringProperty name;
@@ -16,7 +17,7 @@ public class Recipe {
     private StringProperty className;
     private StringProperty description;
 
-    public Recipe (String name, int sortOrder, String chapter, String fullClassName, String className, String description) {
+    public Scenario (String name, int sortOrder, String chapter, String fullClassName, String className, String description) {
         this.sortOrder = new SimpleIntegerProperty(sortOrder);
         this.name = new SimpleStringProperty(name);
         this.chapter = new SimpleStringProperty(chapter);

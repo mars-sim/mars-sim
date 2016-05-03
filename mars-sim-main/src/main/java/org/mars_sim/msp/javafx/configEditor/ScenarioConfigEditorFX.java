@@ -155,7 +155,7 @@ public class ScenarioConfigEditorFX {
 	 * @param config the simulation configuration.
 	 */
 	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { //, SimulationConfig config) {
-	    //logger.info("ScenarioConfigEditorFX's constructor is on " + Thread.currentThread().getName() + " Thread");
+	    logger.info("ScenarioConfigEditorFX's constructor is on " + Thread.currentThread().getName() );
 
 		// Initialize data members.
 		this.config = SimulationConfig.instance();
@@ -222,10 +222,13 @@ public class ScenarioConfigEditorFX {
 
 			Undecorator undecorator = new Undecorator(stage, (Region) parent);
 			undecorator.getStylesheets().add("/skin/undecorator.css");
+			
+			AnchorPane anchorpane = null;
 			if ( parent.lookup("#anchorRoot") == null)
 				System.out.println("Warning: anchorRoot is not found");
-
-		    AnchorPane anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
+			else
+				anchorpane = ((AnchorPane) parent.lookup("#anchorRoot"));
+			
 		    // List should stretch as anchorpane is resized
 		    BorderPane bp = createEditorFrame();
 		    AnchorPane.setTopAnchor(bp, 5.0);
@@ -601,7 +604,7 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-			logger.info("ScenarioConfigEditorFX's LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
+			logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
 			//boolean isDone = false;
 			Simulation.createNewSimulation();
 			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");

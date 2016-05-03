@@ -1,3 +1,4 @@
+package org.mars_sim.msp.javafx.configEditor;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -31,21 +32,21 @@ import javafx.stage.Stage;
  *
  * @author cdea
  */
-public class AppSamplerController implements Initializable {
+public class ScenarioEditorController implements Initializable {
     	
         @FXML Hyperlink carlfxHyperlink;
-        @FXML TableView<Recipe> chap1RecipeTableView;
-        @FXML TableView<Recipe> chap2RecipeTableView;
-        @FXML TableView<Recipe> chap3RecipeTableView;
-        @FXML TableView<Recipe> chap4RecipeTableView;
-        Map<String, List<Recipe>> recipeMap = new HashMap<>();
+        @FXML TableView<Scenario> chap1RecipeTableView;
+        @FXML TableView<Scenario> chap2RecipeTableView;
+        @FXML TableView<Scenario> chap3RecipeTableView;
+        @FXML TableView<Scenario> chap4RecipeTableView;
+        Map<String, List<Scenario>> map = new HashMap<>();
         
         @Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
             
-            loadRecipes();
+            loadScenarios();
             carlfxHyperlink.setTooltip(TooltipBuilder.create()
-                                                     .text("Blog: carlfx.wordpress.com \nTwitter: @carldea \ne-mail: carldea@yahoo.com")
+                                                     .text("mars-sim.sourceforge.net \n https://www.facebook.com/groups/125541663548/")
                                                      .build()
                     );
                 carlfxHyperlink.setOnAction(new EventHandler<ActionEvent>() {
@@ -70,13 +71,13 @@ public class AppSamplerController implements Initializable {
                 chap4RecipeTableView.setItems(getChapterRecipes("4"));
                 createLaunchAppEvent(chap4RecipeTableView);
 	}
-        private void createLaunchAppEvent(final TableView<Recipe> tableView) {
+        private void createLaunchAppEvent(final TableView<Scenario> tableView) {
             
             EventHandler<MouseEvent> x =
                     new EventHandler<MouseEvent>(){
                     public void handle(MouseEvent event){
                         if (event.getClickCount() == 2) {
-                            final Recipe recipe = tableView.getSelectionModel().getSelectedItem();
+                            final Scenario recipe = tableView.getSelectionModel().getSelectedItem();
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -106,12 +107,12 @@ public class AppSamplerController implements Initializable {
             tableView.setOnMouseClicked(x);
         }
         
-        private void loadRecipes() {
+        private void loadScenarios() {
         
             
             Properties prop = new Properties();
             try {
-                prop.load(getClass().getResourceAsStream("recipes.properties"));
+                prop.load(getClass().getResourceAsStream("scenarios.properties"));
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -119,41 +120,41 @@ public class AppSamplerController implements Initializable {
             for (Entry<Object, Object> element:prop.entrySet()){
                 String key = String.valueOf(element.getKey());
                 String value = String.valueOf(element.getValue());
-                String[] recipeStrings = value.split("[,]+", 5);
-                int sortOrder = Integer.parseInt(recipeStrings[0].trim());
-                String chapter = recipeStrings[1].trim();
-                Recipe recipe = new Recipe(key, sortOrder, chapter, recipeStrings[2].trim(), recipeStrings[3].trim(), recipeStrings[4].trim());
-                System.out.println(recipe);
-                if (recipeMap.get(chapter) == null) {
-                    recipeMap.put(chapter, new ArrayList<Recipe>());
+                String[] scenarioStrings = value.split("[,]+", 5);
+                int sortOrder = Integer.parseInt(scenarioStrings[0].trim());
+                String chapter = scenarioStrings[1].trim();
+                Scenario scenario = new Scenario(key, sortOrder, chapter, scenarioStrings[2].trim(), scenarioStrings[3].trim(), scenarioStrings[4].trim());
+                System.out.println(scenario);
+                if (map.get(chapter) == null) {
+                    map.put(chapter, new ArrayList<Scenario>());
                 }
-                recipeMap.get(chapter).add(recipe);
+                map.get(chapter).add(scenario);
             }
         }
-        private void createColumns(TableView<Recipe> tableView) {
-            TableColumn<Recipe, String> recipeNameCol = new TableColumn<>("Recipe");
+        private void createColumns(TableView<Scenario> tableView) {
+            TableColumn<Scenario, String> recipeNameCol = new TableColumn<>("Title");
             recipeNameCol.setCellValueFactory(new PropertyValueFactory("name"));
             recipeNameCol.setPrefWidth( 100 );
 
-            TableColumn<Recipe, String> classNameCol = new TableColumn<>("Class Name");
+            TableColumn<Scenario, String> classNameCol = new TableColumn<>("Scenario Name");
             classNameCol.setCellValueFactory(new PropertyValueFactory("className"));
             classNameCol.setPrefWidth( 100 );
 
-            TableColumn<Recipe, String> descriptionCol = new TableColumn<>("Description");
+            TableColumn<Scenario, String> descriptionCol = new TableColumn<>("Description");
             descriptionCol.setCellValueFactory(new PropertyValueFactory("description"));
             descriptionCol.setPrefWidth(tableView.getPrefWidth() - 200 );
             tableView.getColumns().setAll(recipeNameCol, classNameCol, descriptionCol);
         }
         
-        private ObservableList<Recipe> getChapterRecipes(String chapter) {
-            ObservableList<Recipe> chap = FXCollections.observableArrayList();
-            Collections.sort(recipeMap.get(chapter), new Comparator<Recipe>(){
-                public int compare(Recipe r1, Recipe r2) {
+        private ObservableList<Scenario> getChapterRecipes(String chapter) {
+            ObservableList<Scenario> chap = FXCollections.observableArrayList();
+            Collections.sort(map.get(chapter), new Comparator<Scenario>(){
+                public int compare(Scenario r1, Scenario r2) {
                     return (r1.getSortOrderProperty()<r2.getSortOrderProperty() ? -1 : (r1==r2 ? 0 : 1));
                 }
             });
             
-            chap.addAll(recipeMap.get(chapter));
+            chap.addAll(map.get(chapter));
             return chap;
         }
 }

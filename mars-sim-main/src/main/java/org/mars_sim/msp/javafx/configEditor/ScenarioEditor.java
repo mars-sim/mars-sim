@@ -1,3 +1,4 @@
+package org.mars_sim.msp.javafx.configEditor;
 
 import java.io.IOException;
 import java.net.URL;
@@ -8,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -23,7 +25,7 @@ import javafx.stage.StageStyle;
  *
  * @author cdea
  */
-public class AppSampler extends Application{
+public class ScenarioEditor extends Application{
 
 
      /**
@@ -40,14 +42,37 @@ public class AppSampler extends Application{
     
     @Override
     public void start(final Stage primaryStage) throws IOException {
-        System.setProperty("sampler.mode", "true");
-        URL url = AppSampler.class.getResource("AppSampler.fxml");
-        AnchorPane mainViewPane = FXMLLoader.load(url);
+        System.setProperty("sampler.mode", "true");        
+        //URL url = ScenarioEditor.class.getResource("ScenarioEditor.fxml");
+        //AnchorPane mainViewPane = FXMLLoader.load(url);
+ 		
+        Parent parent = null;// = null;
+        //AnchorPane pane;
+        AnchorPane anchorpane = null;
+        //AnchorPane mainViewPane = null;
+		FXMLLoader fxmlLoader = null;
+
+		try {
+			fxmlLoader = new FXMLLoader();
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ScenarioEditor.fxml"));
+            fxmlLoader.setController(this);
+            parent = (Parent) fxmlLoader.load();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+              
+        if (parent.lookup("#AnchorPane") == null)
+			System.out.println("Warning: AnchorPane is not found");
+        else
+        	anchorpane = ((AnchorPane) parent.lookup("#AnchorPane"));
+	    
 
         primaryStage.centerOnScreen();
         primaryStage.initStyle(StageStyle.TRANSPARENT);
-        double sceneWidth = mainViewPane.getPrefWidth() + 30;
-        double sceneHeight = mainViewPane.getPrefHeight()+ 30;
+        
+        double sceneWidth = anchorpane.getPrefWidth() + 30;
+        double sceneHeight = anchorpane.getPrefHeight()+ 30;
 
         Group root = new Group();
         Scene scene = new Scene(root, sceneWidth, sceneHeight, Color.rgb(0, 0, 0, 0));
@@ -66,10 +91,10 @@ public class AppSampler extends Application{
                 .stroke(Color.rgb(255, 255, 255, .70))
                 .build();
        root.getChildren().add(applicationArea);
-       mainViewPane.setLayoutX(10);
-       mainViewPane.setLayoutY(10);
+       anchorpane.setLayoutX(10);
+       anchorpane.setLayoutY(10);
        
-       root.getChildren().add(mainViewPane);
+       root.getChildren().add(anchorpane);
        
        // starting initial anchor point
        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
