@@ -7,8 +7,12 @@
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.time.MarsClock;
 
 public class Role implements Serializable {
 
@@ -17,11 +21,17 @@ public class Role implements Serializable {
 
 	String name;
 	Person person;
-	RoleType roleType;
+	
+	private MarsClock clock;
+	
+	private RoleType roleType;
 
+    private Map<RoleType, MarsClock> roleHistory = new ConcurrentHashMap<>();
+	
 	public Role(Person person) { //, RoleType type) {
 		//this.type = type;
 		this.person = person;
+
 	}
 
 	/**
@@ -48,7 +58,7 @@ public class Role implements Serializable {
 	 * @param role type
 	 */
 	public void setNewRoleType(RoleType newType) {
-        RoleType oldType = getType();
+        RoleType oldType = roleType;//getType();
 
 	    if (newType != oldType) {
 //	        relinquishOldRoleType();
@@ -57,6 +67,11 @@ public class Role implements Serializable {
 	        person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
 	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
 	        relinquishOldRoleType(oldType);
+	        
+	       	// 2016-05-02 Added saving roleHistory
+	       	if (clock == null)
+        		clock = Simulation.instance().getMasterClock().getMarsClock();
+	       	roleHistory.put(newType, clock);
 	    }
 /*
 		if (type == RoleType.SAFETY_SPECIALIST)

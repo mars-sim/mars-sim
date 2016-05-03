@@ -287,15 +287,19 @@ public class MainMenu {
 	   
        stage.show();
 
-       mainSceneStage = new Stage();
-       mainSceneStage.getIcons().add(new Image(MainScene.class.getResource("/icons/lander_hab64.png").toExternalForm()));
-		 
-       //mainSceneStage.hide();
-       
-       createProgressCircle();
-       circleStage.hide();
    }
 
+	
+	public void setupMainSceneStage() {
+
+	       mainSceneStage = new Stage();
+	       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+			 
+	       //mainSceneStage.hide();
+	       
+	       //createProgressCircle();
+	       //circleStage.hide();
+	}
 /*
 	public void switchScene(Scene scene) {
 		// Starts a new stage for MainScene
@@ -374,7 +378,7 @@ public class MainMenu {
 			//stage.display(selectedFile);		
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
-			Simulation.instance().start();
+			Simulation.instance().start(false);
 		}
 		else {			
 			logger.info("No file was selected. Loading is cancelled");
@@ -429,6 +433,93 @@ public class MainMenu {
 		//waitStage.close();
    }
 
+
+   public void loadSim() {
+	   //logger.info("MainMenu's loadSim() is on " + Thread.currentThread().getName());
+
+	   //mainMenuScene.setCursor(Cursor.WAIT);
+		
+	   String dir = Simulation.DEFAULT_DIR;
+	   String title = null;
+	   File fileLocn = null;
+		
+	   FileChooser chooser = new FileChooser();
+		// chooser.setInitialFileName(dir);
+		// Set to user directory or go to default if cannot access
+		// String userDirectoryString = System.getProperty("user.home");
+	   File userDirectory = new File(dir);
+	   chooser.setInitialDirectory(userDirectory);
+	   chooser.setTitle(title); // $NON-NLS-1$
+
+		// Set extension filter
+	   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
+				"Simulation files (*.sim)", "*.sim");
+	   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
+				"all files (*.*)", "*.*");
+
+	   chooser.getExtensionFilters().addAll(simFilter, allFilter);
+
+		// Show open file dialog
+		
+		File selectedFile = chooser.showOpenDialog(stage);
+
+		if (selectedFile != null) {
+			fileLocn = selectedFile;
+
+			//stage.setIconified(true);
+			//stage.hide();
+			
+			//waitStage = new Stage();
+			//waiti = new WaitIndicator(waitStage);
+			
+			//stage.display(selectedFile);		
+			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+			logger.info("Restarting " + Simulation.WINDOW_TITLE);
+			Simulation.instance().start(false);
+		}
+		else {			
+			logger.info("No file was selected. Loading is cancelled");
+			return;		
+		}
+					
+
+		while (Simulation.instance().getMasterClock() == null) {// || Simulation.instance().getMasterClock().isLoadingSimulation()) {
+			//System.out.println("MainMenu : the master clock instance is not ready yet. Wait for another 1/2 secs");
+			try {
+				TimeUnit.MILLISECONDS.sleep(250L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		Platform.runLater(() -> {
+
+			// creates a mainScene instance
+			mainScene = new MainScene(mainSceneStage);	   
+			prepareScene();
+			mainScene.initializeTheme();						
+			mainScene.prepareOthers();
+			mainScene.openInitialWindows();
+		   
+			//2016-02-07 Added calling setMonitor() for screen detection
+			//setMonitor(mainSceneStage);
+			   
+			mainSceneStage.centerOnScreen();
+			//mainSceneStage.setResizable(false);
+			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+
+			//waitStage.close();
+			
+			mainSceneStage.show();
+			mainSceneStage.requestFocus();
+			
+		});
+	   
+			
+   }
+
+   
    /*
     * Loads settlement data from a default saved sim
     */

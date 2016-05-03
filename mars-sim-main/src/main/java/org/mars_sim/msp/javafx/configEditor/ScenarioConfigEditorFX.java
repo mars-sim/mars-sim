@@ -608,7 +608,7 @@ public class ScenarioConfigEditorFX {
 			//boolean isDone = false;
 			Simulation.createNewSimulation();
 			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");
-			Simulation.instance().start();
+			Simulation.instance().start(false);
 			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().start()");
 			Platform.runLater(() -> {
 				mainMenu.prepareScene();

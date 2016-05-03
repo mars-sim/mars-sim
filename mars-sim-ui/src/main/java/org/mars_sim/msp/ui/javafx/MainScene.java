@@ -1217,7 +1217,7 @@ public class MainScene {
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
 			Simulation.instance().stop();
 			//Simulation.instance().getMasterClock().removeClockListener(oldListener);
-			Simulation.instance().start();
+			Simulation.instance().start(false);
 			
 			//Simulation.instance().stop();
 			//Simulation.instance().start();

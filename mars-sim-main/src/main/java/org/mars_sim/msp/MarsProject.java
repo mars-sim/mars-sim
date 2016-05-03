@@ -191,10 +191,15 @@ public class MarsProject extends SimpleApplication {
             if (useGUI) {
                 // Create the main desktop window.
                 new MainWindow(false);
+                
+             // Start simulation.
+                startSimulation(true);
             }
-
-            // Start simulation.
-            startSimulation();
+            else {
+            	// Start simulation.
+            	startSimulation(false);
+            }
+            
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not load default simulation", e);
             throw e;
@@ -220,7 +225,7 @@ public class MarsProject extends SimpleApplication {
                 new MainWindow(false);
 
                 // Start simulation.
-                startSimulation();
+                startSimulation(false);
             }
             else {
                 exitWithError("Problem loading simulation. " + argList.get(index + 1) +
@@ -258,11 +263,11 @@ public class MarsProject extends SimpleApplication {
     /**
      * Start the simulation instance.
      */
-    public void startSimulation() {
+    public void startSimulation(boolean useDefaultName) {
 		//logger.info("MarsProject's startSimulation() is on "+Thread.currentThread().getName() + " Thread");
 
         // Start the simulation.
-        Simulation.instance().start();
+        Simulation.instance().start(useDefaultName);
     }
 
     /**

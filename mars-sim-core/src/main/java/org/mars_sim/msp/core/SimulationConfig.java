@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.08 2015-02-16
+ * @version 3.08 2016-05-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -81,11 +81,13 @@ public class SimulationConfig implements Serializable {
 	private static final String TIME_BETWEEN_UPDATES = "time-between-updates";
 	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
 	private static final String MAX_FRAME_SKIPS = "max-frame-skips";
-
+	
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
+	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
 
+	
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
@@ -217,11 +219,32 @@ public class SimulationConfig implements Serializable {
 	public double getSimulationTimeRatio() {
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element timeRatio = timeConfig.getChild(TIME_RATIO);
-		double ratio = Double.parseDouble(timeRatio.getAttributeValue(VALUE));
-		if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
-		else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
-		return ratio;
+		Element timeRatioEL = timeConfig.getChild(TIME_RATIO);
+		String str = timeRatioEL.getAttributeValue(VALUE);
+
+		double d = 0;
+		
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException("time_ratio must be greater than zero and cannot be blank.");
+		else {
+			try {
+		         d = Double.valueOf(str.trim()).doubleValue();
+		         //System.out.println("double d = " + d);
+		         
+		         if (d < 0.0001 || d > 500000)
+		 			throw new IllegalStateException("time_ratio must be between .0001 and 500,000.");
+		         
+		         
+		      } catch (NumberFormatException nfe) {
+		         System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());
+		      }
+		}
+		
+		return d;
+			
+		//if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
+		//else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
+
 	}
 
 	/**
@@ -235,10 +258,34 @@ public class SimulationConfig implements Serializable {
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element el = timeConfig.getChild(TIME_BETWEEN_UPDATES);
-		double result = Double.parseDouble(el.getAttributeValue(VALUE));
-		if (result < 0D) throw new IllegalStateException("time-between-updates in simulation.xml must be positive number.");
-		else if (result == 0D) throw new IllegalStateException("time-between-updates in simulation.xml cannot be zero.");
-		return result;
+		String str = el.getAttributeValue(VALUE);
+		
+		double d = 0;
+		
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException("time-between-updates must be greater than zero and cannot be blank.");
+		else {
+			try {
+		         d = Double.valueOf(str.trim()).doubleValue();
+		         //System.out.println("double d = " + d);
+		         
+		         if (d > 1000 || d < 1)
+		 			throw new IllegalStateException("time-between-updates must be between 1 and 1,000");
+		         
+		         
+		      } catch (NumberFormatException nfe) {
+		         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+		      }
+		}
+		
+		return d;
+		
+		
+		//double result = Double.parseDouble(el.getAttributeValue(VALUE));
+		//if (result < 0D) throw new IllegalStateException("time-between-updates in simulation.xml must be positive number.");
+		//else if (result == 0D) throw new IllegalStateException("time-between-updates in simulation.xml cannot be zero.");
+		//return result;
+		
 	}
 
 	/**
@@ -251,10 +298,32 @@ public class SimulationConfig implements Serializable {
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element el = timeConfig.getChild(NO_DELAYS_PER_YIELD);
-		int result = Integer.parseInt(el.getAttributeValue(VALUE));
-		if (result < 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml must be positive number.");
-		else if (result == 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml cannot be zero.");
+		
+		String str = el.getAttributeValue(VALUE);
+		
+		int result = 0;
+		
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException("no-delays-per-yield must be greater than zero and cannot be blank.");
+		else {
+			try {
+		         result = Integer.parseInt(str);
+		         
+		         if (result > 200 || result < 1)
+		 			throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
+		         
+		         
+		      } catch (NumberFormatException nfe) {
+		         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+		      }
+		}
+		
 		return result;
+					
+		//int result = Integer.parseInt(el.getAttributeValue(VALUE));
+		//if (result < 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml must be positive number.");
+		//else if (result == 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml cannot be zero.");
+		//return result;
 	}
 
 	/**
@@ -267,14 +336,38 @@ public class SimulationConfig implements Serializable {
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element el = timeConfig.getChild(MAX_FRAME_SKIPS);
-		int result = Integer.parseInt(el.getAttributeValue(VALUE));
-		if (result < 0) throw new IllegalStateException("max-frame-skips in simulation.xml must be positive number.");
-		else if (result == 0) throw new IllegalStateException("max-frame-skips in simulation.xml cannot be zero.");
+		
+		String str = el.getAttributeValue(VALUE);
+		
+		int result = 0;
+		
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException("max-frame-skips must be greater than zero and cannot be blank.");
+		else {
+			try {
+		         result = Integer.parseInt(str);
+		         
+		         if (result > 200 || result < 1)
+		 			throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
+		         
+		         
+		      } catch (NumberFormatException nfe) {
+		         System.out.println("NumberFormatException found in max-frame-skips : " + nfe.getMessage());
+		      }
+		}
+		
 		return result;
+					
+		
+		//int result = Integer.parseInt(el.getAttributeValue(VALUE));
+		//if (result < 0) throw new IllegalStateException("max-frame-skips in simulation.xml must be positive number.");
+		//else if (result == 0) throw new IllegalStateException("max-frame-skips in simulation.xml cannot be zero.");
+		//return result;
+		
 	}
 
 	/**
-	 * Gets the Earth date/time for when the simulation starts.
+	 * Gets the Earth date/time when the simulation starts.
 	 * @return date/time as string in "MM/dd/yyyy hh:mm:ss" format.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -290,7 +383,7 @@ public class SimulationConfig implements Serializable {
 	}
 
 	/**
-	 * Gets the Mars date/time for when the simulation starts.
+	 * Gets the Mars date/time when the simulation starts.
 	 * @return date/time as string in "orbit-month-sol:millisol" format.
 	 * @throws Exception if value is null or empty.
 	 */
@@ -304,6 +397,41 @@ public class SimulationConfig implements Serializable {
 
 		return startDate;
 	}
+
+	/**
+	 * Gets the autosave interval when the simulation starts.
+	 * @return date/time as string in "orbit-month-sol:millisol" format.
+	 * @throws Exception if value is null or empty.
+	 */
+	// 2016-05-02 Added getAutosaveInterval()
+	public double getAutosaveInterval() {
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element el = timeConfig.getChild(AUTOSAVE_INTERVAL);
+		String str = el.getAttributeValue(VALUE);
+		
+		double d = 0;
+		
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException("autosave_interval must not be blank and must be greater than zero.");
+		else {
+			try {
+		         d = Double.valueOf(str.trim()).doubleValue();
+		         //System.out.println("double d = " + d);
+		         
+		         if (d < 1 || d > 1440)
+		 			throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
+		         
+		         
+		      } catch (NumberFormatException nfe) {
+		         System.out.println("NumberFormatException found in autosave_interval : " + nfe.getMessage());
+		      }
+	
+		}
+		
+		return d;
+	}
+	
 
 	/**
 	 * Gets the part config subset.
@@ -456,13 +584,33 @@ public class SimulationConfig implements Serializable {
 		return constructionConfig;
 	}
 
-	/* ---------------------------------------------------------------------------------------------------- *
-	 * Private Methods
-	 * ---------------------------------------------------------------------------------------------------- */
 
 	public String getBuildVersion() {
 		return build;
 	}
+
+	/**
+	 * Parses an XML file into a DOM document.
+	 * @param filename the path of the file.
+	 * @param useDTD true if the XML DTD should be used.
+	 * @return DOM document
+	 * @throws Exception if XML could not be parsed or file could not be found.
+	 */
+	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws IOException, JDOMException {
+		InputStream stream = getInputStream(filename);
+		/* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
+		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
+		/* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
+		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
+		Document result = saxBuilder.build(reader);
+		stream.close();
+		return result;
+	}
+
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Private Methods
+	 * ---------------------------------------------------------------------------------------------------- */
 
 	private void loadDefaultConfiguration() {
 		try {
@@ -500,6 +648,46 @@ public class SimulationConfig implements Serializable {
 			e.printStackTrace();
 		}
 	}
+
+
+	/**
+	 * Gets a configuration file as an input stream.
+	 * @param filename the filename of the configuration file.
+	 * @return input stream
+	 * @throws IOException if file cannot be found.
+	 */
+	private static InputStream getInputStream(String filename) throws IOException {
+		/* [landrus, 28.11.09]: dont use filesystem separators in classloader loading envs. */
+		String fullPathName = "/conf/" + filename + ".xml";
+		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
+		if (stream == null) throw new IOException(fullPathName + " failed to load");
+		return stream;
+	}
+	
+
+/*	
+	public int testValue(String str, String name) {
+		int result = 0;
+
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException(name + " must be greater than zero and cannot be blank.");
+		else {
+			try {
+		         result = Integer.parseInt(str);
+		         
+		         if (result > 200 || result < 1)
+		 			throw new IllegalStateException(name + " must be between 1 and 200.");
+		         
+		         
+		      } catch (NumberFormatException nfe) {
+		         System.out.println(name + " has NumberFormatException : " + nfe.getMessage());
+		      }
+		}
+		
+		return result;
+		
+	}
+*/
 
 	/**
 	 * Prepares all configuration objects for garbage collection.
@@ -540,38 +728,5 @@ public class SimulationConfig implements Serializable {
 		mealConfig = null;
 		robotConfig.destroy();
 		robotConfig = null;
-	}
-
-	/**
-	 * Parses an XML file into a DOM document.
-	 * @param filename the path of the file.
-	 * @param useDTD true if the XML DTD should be used.
-	 * @return DOM document
-	 * @throws Exception if XML could not be parsed or file could not be found.
-	 */
-	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws IOException, JDOMException {
-		InputStream stream = getInputStream(filename);
-		/* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
-		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-		/* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
-		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
-		Document result = saxBuilder.build(reader);
-		stream.close();
-		return result;
-	}
-
-	/**
-	 * Gets a configuration file as an input stream.
-	 * @param filename the filename of the configuration file.
-	 * @return input stream
-	 * @throws IOException if file cannot be found.
-	 */
-	private static InputStream getInputStream(String filename) throws IOException {
-		/* [landrus, 28.11.09]: dont use filesystem separators in classloader loading envs. */
-		String fullPathName = "/conf/" + filename + ".xml";
-		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
-		if (stream == null) throw new IOException(fullPathName + " failed to load");
-		return stream;
 	}
 }

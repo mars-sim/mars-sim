@@ -201,7 +201,7 @@ public class MarsProjectFX extends Application  {
 			// Initialize the simulation.
 		    initializeSimulation(args); // evaluate args switches
 		    // Start the simulation.
-		    startSimulation();
+		    startSimulation(true);
 		}
 
 	    // this will generate html files for in-game help based on config xml files
@@ -216,8 +216,19 @@ public class MarsProjectFX extends Application  {
 	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
 	   	if (useGUI) {
 		   	//logger.info("start() : in GUI mode, loading Main Menu");			
-		    mainMenu = new MainMenu(this);
-		    mainMenu.initAndShowGUI(primaryStage);
+		    
+	   		mainMenu = new MainMenu(this);
+	   		
+	   		
+	   		if (newSim) {
+	   			mainMenu.initAndShowGUI(primaryStage);
+		   		mainMenu.setupMainSceneStage();
+	   		}
+	   		else {
+		   		mainMenu.setupMainSceneStage();		   		
+	   			mainMenu.loadSim();
+	   		}
+		    	    
 		}
 		else {
 		   	//logger.info("start() : in headless mode, not loading Main Menu");			
@@ -410,11 +421,11 @@ public class MarsProjectFX extends Application  {
     /**
      * Start the simulation instance.
      */
-    public void startSimulation() {
+    public void startSimulation(boolean useDefaultName) {
 		//logger.info("MarsProjectFX's startSimulation() is on "+Thread.currentThread().getName() );
 
         // Start the simulation.
-        Simulation.instance().start();
+        Simulation.instance().start(useDefaultName);
     }
 
     public void setDirectory() {

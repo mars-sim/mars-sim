@@ -94,7 +94,7 @@ implements ClockListener, Serializable {
             File.separator +
             Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$
 
-	public static int autosave_minute = 15;
+	public static double autosave_minute;// = 15;
 	
     @SuppressWarnings("restriction")
     public final static String WINDOW_TITLE = Msg.getString(
@@ -163,7 +163,7 @@ implements ClockListener, Serializable {
 	//public JConsole jc;
 
     /**
-     * Private constructor for the Singleton Simulation. This rrevents instantiation from other classes.
+     * Private constructor for the Singleton Simulation. This prevents instantiation from other classes.
      * */
     private Simulation() {
         //logger.info("Simulation's constructor is on " + Thread.currentThread().getName() + " Thread");
@@ -332,7 +332,7 @@ implements ClockListener, Serializable {
      *
      * Start the simulation.
      */
-    public void start() {
+    public void start(boolean useDefaultName) {
         //logger.info("Simulation's start() -- where clockScheduler is initialized -- is on " + Thread.currentThread().getName());
         //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
         //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
@@ -363,7 +363,7 @@ implements ClockListener, Serializable {
         //}
         
         //2016-04-28 Relocated the autosave timer from MainMenu to here
-		startAutosaveTimer();
+		startAutosaveTimer(useDefaultName);
 		
     }
 
@@ -650,7 +650,7 @@ implements ClockListener, Serializable {
             // 2015-01-08 Added isAutosave
             if (isAutosave) {
                 String autosaveFilename = new SystemDateTime().getDateTimeStr()
-                		+ "_sol" + masterClock.getMarsClock().getTotalSol() + "_"
+                		+ "_sol" + masterClock.getMarsClock().getTotalSol() 
                 		+ "_build" + BUILD
                 		+ DEFAULT_EXTENSION;
                 file = new File(AUTOSAVE_DIR, autosaveFilename);
@@ -1033,16 +1033,27 @@ implements ClockListener, Serializable {
 	
 	//2015-01-07 Added startAutosaveTimer()
     //2016-04-28 Relocated the autosave timer from MainMenu to here
-	public void startAutosaveTimer() {
+	public void startAutosaveTimer(boolean useDefaultName) {
 
-		autosaveTimeline = new Timeline(
-				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						//ae -> masterClock.autosaveSimulation()));
+		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
+			
 		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock, 
 		// instead of directly call saveSimulation() here in Simulation
+		
+		if (useDefaultName) {
+			autosaveTimeline = new Timeline(
+				new KeyFrame(Duration.seconds(60 * autosave_minute),
 						ae -> masterClock.saveSimulation(null)));
-		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
-		// All the objects with animated properties would not be garbage collected.
+		}
+		else {
+			autosaveTimeline = new Timeline(
+				new KeyFrame(Duration.seconds(60 * autosave_minute),
+						ae -> masterClock.autosaveSimulation()));
+		}
+		
+		// Note1: Infinite Timeline might result in a memory leak if not stopped properly.
+		// Note2: All the objects with animated properties would NOT be garbage collected.
+		
 		autosaveTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
 		autosaveTimeline.play();
 

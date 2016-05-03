@@ -583,9 +583,9 @@ public class MasterClock implements Serializable { // Runnable,
         else if (loadSimulation) {
             // Load the simulation from a file.
             if (file.exists() && file.canRead()) {
-            	logger.info("ready to run Simulation's loadSimulation");
                 Simulation.instance().loadSimulation(file);
-                Simulation.instance().start();
+               	//logger.info("just done running Simulation's loadSimulation().");
+                Simulation.instance().start(false);
             }
             else {
                 logger.warning("Cannot access file " + file.getPath() + ", not reading");

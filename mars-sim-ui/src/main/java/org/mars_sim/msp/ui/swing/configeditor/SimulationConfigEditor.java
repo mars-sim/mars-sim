@@ -277,7 +277,7 @@ public class SimulationConfigEditor {
 					// 3. Simulation.instance().start();
 					Simulation.createNewSimulation();
 					new MainWindow(true);
-					Simulation.instance().start();
+					Simulation.instance().start(false);
 
 					closeWindow();
 				}
