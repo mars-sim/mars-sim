@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -647,7 +648,7 @@ implements Serializable, Comparable<Task> {
                 learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
 			}
 			else if (robot != null) {
-	            learningModifier = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+	            learningModifier = 0;//robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.ACADEMIC_APTITUDE);
 			}
 
             result+= (double) (teachingModifier + learningModifier) / 100D;

@@ -13,15 +13,15 @@ min-temperature, max-temperature, freezing-time, robot-list)>
 <!ELEMENT freezing-time EMPTY>
 <!ATTLIST freezing-time value CDATA #REQUIRED>
 <!ELEMENT robot-list (robot*)>
-<!ELEMENT robot (natural-attribute-list?, skill-list?)>
+<!ELEMENT robot (robotic-attribute-list?, skill-list?)>
 <!ATTLIST robot name CDATA #REQUIRED>
 <!ATTLIST robot type CDATA #REQUIRED>
 <!ATTLIST robot settlement CDATA #IMPLIED>
 <!ATTLIST robot job CDATA #IMPLIED>
-<!ELEMENT natural-attribute-list (natural-attribute*)>
-<!ELEMENT natural-attribute EMPTY>
-<!ATTLIST natural-attribute name CDATA #REQUIRED>
-<!ATTLIST natural-attribute value CDATA #REQUIRED>
+<!ELEMENT robotic-attribute-list (robotic-attribute*)>
+<!ELEMENT robotic-attribute EMPTY>
+<!ATTLIST robotic-attribute name CDATA #REQUIRED>
+<!ATTLIST robotic-attribute value CDATA #REQUIRED>
 <!ELEMENT skill-list (skill*)>
 <!ELEMENT skill EMPTY>
 <!ATTLIST skill name CDATA #REQUIRED>

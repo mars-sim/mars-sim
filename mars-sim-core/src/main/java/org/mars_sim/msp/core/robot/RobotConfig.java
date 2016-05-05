@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotConfig.java
- * @version 3.07 2015-01-21
+ * @version 3.08 2016-05-04
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.robot;
@@ -44,8 +44,8 @@ implements Serializable {
 	private static final String ROBOT = "robot";
 	private static final String SETTLEMENT = "settlement";
 	private static final String JOB = "job";
-	private static final String NATURAL_ATTRIBUTE_LIST = "natural-attribute-list";
-	private static final String NATURAL_ATTRIBUTE = "natural-attribute";
+	private static final String ROBOTIC_ATTRIBUTE_LIST = "robotic-attribute-list";
+	private static final String ROBOTIC_ATTRIBUTE = "robotic-attribute";
 	private static final String NAME= "name";
 	private static final String VALUE= "value";
 	private static final String SKILL_LIST = "skill-list";
@@ -276,21 +276,21 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<String, Integer> getNaturalAttributeMap(int index) {
+	public Map<String, Integer> getRoboticAttributeMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = robotDoc.getRootElement();
 		Element robotList = root.getChild(ROBOT_LIST);
 		Element robotElement = (Element) robotList.getChildren(ROBOT).get(index);
-		List<Element> naturalAttributeListNodes = robotElement.getChildren(NATURAL_ATTRIBUTE_LIST);
+		List<Element> nodes = robotElement.getChildren(ROBOTIC_ATTRIBUTE_LIST);
 
-		if ((naturalAttributeListNodes != null) && (naturalAttributeListNodes.size() > 0)) {
-			Element naturalAttributeList = naturalAttributeListNodes.get(0);
-			int attributeNum = naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).size();
+		if ((nodes != null) && (nodes.size() > 0)) {
+			Element attributeList = nodes.get(0);
+			int attributeNum = attributeList.getChildren(ROBOTIC_ATTRIBUTE).size();
 
 			for (int x=0; x < attributeNum; x++) {
-				Element naturalAttributeElement = (Element) naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).get(x);
-				String name = naturalAttributeElement.getAttributeValue(NAME);
-				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
+				Element attributeElement = (Element) attributeList.getChildren(ROBOTIC_ATTRIBUTE).get(x);
+				String name = attributeElement.getAttributeValue(NAME);
+				Integer value = new Integer(attributeElement.getAttributeValue(VALUE));
 				result.put(name, value);
 			}
 		}

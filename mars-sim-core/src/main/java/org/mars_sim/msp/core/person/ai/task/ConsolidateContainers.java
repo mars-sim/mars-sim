@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
@@ -205,7 +206,7 @@ implements Serializable {
     	   	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);	
     	}
 		else if (robot != null) {
-			strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+			strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.STRENGTH);
 		}
         
         double strengthModifier = .1D + (strength * .018D);

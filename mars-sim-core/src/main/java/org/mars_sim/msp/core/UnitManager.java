@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.robot.RobotType;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -1296,14 +1297,14 @@ public class UnitManager implements Serializable {
 				}
 
 				// Set robot's configured natural attributes (if any).
-				Map<String, Integer> naturalAttributeMap = robotConfig.getNaturalAttributeMap(x);
-				if (naturalAttributeMap != null) {
-					Iterator<String> i = naturalAttributeMap.keySet().iterator();
+				Map<String, Integer> attributeMap = robotConfig.getRoboticAttributeMap(x);
+				if (attributeMap != null) {
+					Iterator<String> i = attributeMap.keySet().iterator();
 					while (i.hasNext()) {
 						String attributeName = i.next();
-						int value = (Integer) naturalAttributeMap.get(attributeName);
-						robot.getNaturalAttributeManager()
-								.setAttribute(NaturalAttribute.valueOfIgnoreCase(attributeName), value);
+						int value = (Integer) attributeMap.get(attributeName);
+						robot.getRoboticAttributeManager()
+								.setAttribute(RoboticAttribute.valueOfIgnoreCase(attributeName), value);
 					}
 				}
 

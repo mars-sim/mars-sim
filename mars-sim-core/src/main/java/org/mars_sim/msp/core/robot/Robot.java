@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Robot.java
- * @version 3.08 2015-02-11
+ * @version 3.08 2016-05-04
  * @author Manny Kung
  */
 
@@ -29,8 +29,8 @@ import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttribute;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -98,7 +98,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     //private Map<ScienceType, Double> scientificAchievement;
 
     /** Manager for robot's natural attributes. */
-    private NaturalAttributeManager attributes;
+    private RoboticAttributeManager attributes;
     /** robot's mind. */
     private BotMind botMind;
     /** robot's physical condition. */
@@ -159,7 +159,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         String timeString = createTimeString();
 
         birthTimeStamp = new EarthClock(timeString);
-        attributes = new NaturalAttributeManager(this);
+        attributes = new RoboticAttributeManager(this);
         botMind = new BotMind(this);
         health = new PhysicalCondition(this);
         //scientificAchievement = new HashMap<ScienceType, Double>(0);
@@ -170,7 +170,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         height = 156 + RandomUtil.getRandomInt(22);
 
         // Set inventory total mass capacity based on the robot's strength.
-        int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
+        int strength = attributes.getAttribute(RoboticAttribute.STRENGTH);
         getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
         // Put robot into the settlement.
@@ -378,10 +378,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 
     /**
-     * Returns a reference to the robot's natural attribute manager
+     * Returns a reference to the robot's attribute manager
      * @return the robot's natural attribute manager
      */
-    public NaturalAttributeManager getNaturalAttributeManager() {
+    public RoboticAttributeManager getRoboticAttributeManager() {
         return attributes;
     }
 

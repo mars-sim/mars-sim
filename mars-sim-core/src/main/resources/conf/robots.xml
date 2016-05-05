@@ -27,18 +27,14 @@
 	<!-- List of robot type -->
 	<robot-list>
 		<robot name="ChefBot 001" type="ChefBot" settlement="Schiaparelli Point" job="Cook">
-			<natural-attribute-list>
-				<natural-attribute name="Strength" value="95"/>
-				<natural-attribute name="Endurance" value="95"/>
-				<natural-attribute name="Agility" value="40"/>
-				<natural-attribute name="Teaching" value="10"/>
-				<natural-attribute name="Academic Aptitude" value="95"/>
-				<natural-attribute name="Experience Aptitude" value="95"/>
-				<natural-attribute name="Stress Resilience" value="95"/>
-				<natural-attribute name="Attractiveness" value="10"/>
-				<natural-attribute name="Leadership" value="10"/>
-				<natural-attribute name="Conversation" value="10"/>
-			</natural-attribute-list>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
 				<skill name="Mechanics" level="1"/>
@@ -51,18 +47,14 @@
 		</robot>
 		
 		<robot name="GardenBot 002" type="GardenBot" settlement="Schiaparelli Point" job="Gardener">
-			<natural-attribute-list>
-				<natural-attribute name="Strength" value="95"/>
-				<natural-attribute name="Endurance" value="95"/>
-				<natural-attribute name="Agility" value="40"/>
-				<natural-attribute name="Teaching" value="10"/>
-				<natural-attribute name="Academic Aptitude" value="95"/>
-				<natural-attribute name="Experience Aptitude" value="95"/>
-				<natural-attribute name="Stress Resilience" value="95"/>
-				<natural-attribute name="Attractiveness" value="10"/>
-				<natural-attribute name="Leadership" value="10"/>
-				<natural-attribute name="Conversation" value="10"/>
-			</natural-attribute-list>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="2"/>
 				<skill name="Mechanics" level="1"/>
@@ -75,18 +67,14 @@
 		</robot>
 		
 		<robot name="RepairBot 003" type="RepairBot" settlement="Schiaparelli Point" job="Handyman">
-			<natural-attribute-list>
-				<natural-attribute name="Strength" value="95"/>
-				<natural-attribute name="Endurance" value="95"/>
-				<natural-attribute name="Agility" value="40"/>
-				<natural-attribute name="Teaching" value="10"/>
-				<natural-attribute name="Academic Aptitude" value="95"/>
-				<natural-attribute name="Experience Aptitude" value="95"/>
-				<natural-attribute name="Stress Resilience" value="95"/>
-				<natural-attribute name="Attractiveness" value="10"/>
-				<natural-attribute name="Leadership" value="10"/>
-				<natural-attribute name="Conversation" value="10"/>
-			</natural-attribute-list>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
 				<skill name="Mechanics" level="2"/>
@@ -99,18 +87,14 @@
 		</robot>
 		
 		<robot name="ConstructionBot 004" type="ConstructionBot" settlement="Schiaparelli Point" job="Builder">
-			<natural-attribute-list>
-				<natural-attribute name="Strength" value="95"/>
-				<natural-attribute name="Endurance" value="95"/>
-				<natural-attribute name="Agility" value="40"/>
-				<natural-attribute name="Teaching" value="10"/>
-				<natural-attribute name="Academic Aptitude" value="95"/>
-				<natural-attribute name="Experience Aptitude" value="95"/>
-				<natural-attribute name="Stress Resilience" value="95"/>
-				<natural-attribute name="Attractiveness" value="10"/>
-				<natural-attribute name="Leadership" value="10"/>
-				<natural-attribute name="Conversation" value="10"/>
-			</natural-attribute-list>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
 				<skill name="Construction" level="2"/>
@@ -123,18 +107,14 @@
 		</robot>
 
 		<robot name="DeliveryBot 005" type="DeliveryBot" settlement="Schiaparelli Point" job="Postman">
-			<natural-attribute-list>
-				<natural-attribute name="Strength" value="95"/>
-				<natural-attribute name="Endurance" value="95"/>
-				<natural-attribute name="Agility" value="40"/>
-				<natural-attribute name="Teaching" value="10"/>
-				<natural-attribute name="Academic Aptitude" value="95"/>
-				<natural-attribute name="Experience Aptitude" value="95"/>
-				<natural-attribute name="Stress Resilience" value="95"/>
-				<natural-attribute name="Attractiveness" value="10"/>
-				<natural-attribute name="Leadership" value="10"/>
-				<natural-attribute name="Conversation" value="10"/>
-			</natural-attribute-list>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
 				<skill name="Trading" level="2"/>
@@ -147,18 +127,14 @@
 		</robot>	
 
 		<robot name="MedicBot 006" type="MedicBot" settlement="Schiaparelli Point" job="Medic">
-			<natural-attribute-list>
-				<natural-attribute name="Strength" value="95"/>
-				<natural-attribute name="Endurance" value="95"/>
-				<natural-attribute name="Agility" value="40"/>
-				<natural-attribute name="Teaching" value="10"/>
-				<natural-attribute name="Academic Aptitude" value="95"/>
-				<natural-attribute name="Experience Aptitude" value="95"/>
-				<natural-attribute name="Stress Resilience" value="95"/>
-				<natural-attribute name="Attractiveness" value="10"/>
-				<natural-attribute name="Leadership" value="10"/>
-				<natural-attribute name="Conversation" value="10"/>
-			</natural-attribute-list>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
 				<skill name="Trading" level="1"/>
@@ -171,18 +147,14 @@
 		</robot>				
 		
 		<robot name="MakerBot 007" type="MakerBot" settlement="Schiaparelli Point" job="Maker">
-			<natural-attribute-list>
-				<natural-attribute name="Strength" value="95"/>
-				<natural-attribute name="Endurance" value="95"/>
-				<natural-attribute name="Agility" value="40"/>
-				<natural-attribute name="Teaching" value="10"/>
-				<natural-attribute name="Academic Aptitude" value="95"/>
-				<natural-attribute name="Experience Aptitude" value="95"/>
-				<natural-attribute name="Stress Resilience" value="95"/>
-				<natural-attribute name="Attractiveness" value="10"/>
-				<natural-attribute name="Leadership" value="10"/>
-				<natural-attribute name="Conversation" value="10"/>
-			</natural-attribute-list>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
 				<skill name="Materials Science" level="2"/>

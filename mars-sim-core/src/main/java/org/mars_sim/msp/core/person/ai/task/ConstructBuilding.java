@@ -28,6 +28,8 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
@@ -452,12 +454,16 @@ implements Serializable {
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = null;
-        if (person != null)
+        RoboticAttributeManager rManager = null;
+        int experienceAptitude = 0;
+        if (person != null) {
             nManager = person.getNaturalAttributeManager();
-      	else if (robot != null)
-      		nManager = robot.getNaturalAttributeManager();
-
-        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+        }
+        else if (robot != null) {
+        	rManager = robot.getRoboticAttributeManager();
+            experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+        }
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

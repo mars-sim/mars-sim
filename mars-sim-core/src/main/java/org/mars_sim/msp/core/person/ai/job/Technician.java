@@ -34,6 +34,8 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.WriteReport;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Technician
@@ -130,8 +132,8 @@ implements Serializable {
 		int mechanicSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
 		result = mechanicSkill;
 
-		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
+		int experienceAptitude = attributes.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		//if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;

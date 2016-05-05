@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -460,7 +461,7 @@ implements Repair, Serializable {
       
         }
         else if (robot != null) {
-            int experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            int experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             newPoints *= getTeachingExperienceModifier();
             robot.getBotMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);

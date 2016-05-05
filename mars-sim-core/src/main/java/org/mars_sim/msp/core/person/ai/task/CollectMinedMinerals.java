@@ -33,6 +33,8 @@ import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -429,12 +431,17 @@ implements Serializable {
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = null;
-        if (person != null)
+        RoboticAttributeManager rManager = null;
+        int experienceAptitude = 0;
+        if (person != null) {
             nManager = person.getNaturalAttributeManager();
-        else if (robot != null)
-        	nManager = robot.getNaturalAttributeManager();
+            experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+        }
+        else if (robot != null) {
+        	rManager = robot.getRoboticAttributeManager();
+            experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+        }     
 
-        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

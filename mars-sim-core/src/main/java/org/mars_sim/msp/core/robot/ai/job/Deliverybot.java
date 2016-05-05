@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.robot.ai.job;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
@@ -62,14 +62,14 @@ implements Serializable {
 		int tradingSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.TRADING);
 		result = tradingSkill;
 
-		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
+		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
 
 		// Add experience aptitude.
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		// Add conversation.
-		int conversation = attributes.getAttribute(NaturalAttribute.CONVERSATION);
+		int conversation = attributes.getAttribute(RoboticAttribute.CONVERSATION);
 		result+= result * ((conversation - 50D) / 100D);
 
 		return result;

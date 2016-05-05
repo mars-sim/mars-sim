@@ -9,8 +9,8 @@ package org.mars_sim.msp.core.robot.ai.job;
 
 import java.io.Serializable;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
@@ -71,8 +71,8 @@ implements Serializable {
 		int mechanicSkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MECHANICS);
 		result += mechanicSkill;
 
-		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
+		int experienceAptitude = attributes.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		//if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;

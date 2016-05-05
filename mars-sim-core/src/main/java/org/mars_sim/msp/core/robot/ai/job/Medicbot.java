@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.robot.Robot;
@@ -51,9 +51,9 @@ implements Serializable {
 		int kkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.MEDICINE);
 		result = kkill;
 
-		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
-		result+= result * ((academicAptitude - 50D) / 100D);
+		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
+		int experienceAptitude = attributes.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		return result;
 	}

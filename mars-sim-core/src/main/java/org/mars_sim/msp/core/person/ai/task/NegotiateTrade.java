@@ -24,6 +24,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -224,34 +226,57 @@ implements Serializable {
 
         // Note: buying and selling traders are reversed here since this is regarding the goods
         // that the buyer is selling and the seller is buying.
-        NaturalAttributeManager sellerAttributes = null;
-        NaturalAttributeManager buyerAttributes = null;
+        //RoboticAttributeManager sellerAttributes = null;
+        //NaturalAttributeManager sellerAttributes = null;
+        //RoboticAttributeManager sellerAttributes = null;
+        
+        
+        
 	   	if (buyingTrader instanceof Person) {
 	   		person = (Person) buyingTrader; 
+	        NaturalAttributeManager sellerAttributes = null;
+	        
 	        sellerAttributes = person.getNaturalAttributeManager();
+	        // Modify by 10% for conversation natural attributes in buyer and seller.
+	        modifier += sellerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
+	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
+	        modifier += sellerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
+
 		}
 	 	else if (buyingTrader instanceof Robot) {
 	  	 	robot = (Robot) sellingTrader;
-	        sellerAttributes = robot.getNaturalAttributeManager();
+	        //NaturalAttributeManager buyerAttributes = null;
+	        RoboticAttributeManager sellerAttributes = null;
+
+	        sellerAttributes = robot.getRoboticAttributeManager();
+	        
+	        // Modify by 10% for conversation natural attributes in buyer and seller.
+	        modifier += sellerAttributes.getAttribute(RoboticAttribute.CONVERSATION) / 1000D;	
+	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
+	        //modifier += sellerAttributes.getAttribute(RoboticAttribute.ATTRACTIVENESS) / 1000D;
+	
 		}
 	   	if (sellingTrader instanceof Person) {
 	   		person = (Person) buyingTrader; 
-	   		buyerAttributes = person.getNaturalAttributeManager();
+	        NaturalAttributeManager buyerAttributes = person.getNaturalAttributeManager();
+	   		
+	        // Modify by 10% for conversation natural attributes in buyer and seller.
+	        modifier -= buyerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
+	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
+	        modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
+
 		}
 	 	else if (sellingTrader instanceof Robot) {
 	  	 	robot = (Robot) sellingTrader;
-	  	 	buyerAttributes = robot.getNaturalAttributeManager();
+	  	 	RoboticAttributeManager buyerAttributes = robot.getRoboticAttributeManager();
+	  	 	
+	        // Modify by 10% for conversation natural attributes in buyer and seller.
+	        modifier -= buyerAttributes.getAttribute(RoboticAttribute.CONVERSATION) / 1000D;
+	        // Modify by 10% for attractiveness natural attributes in buyer and seller.
+	        // modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
+
 		}
   
-
-        // Modify by 10% for conversation natural attributes in buyer and seller.
-        modifier += sellerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
-        modifier -= buyerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
-
-        // Modify by 10% for attractiveness natural attributes in buyer and seller.
-        modifier += sellerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
-        modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
-
         // Modify by 10% for each skill level in trading for buyer and seller.
 	   	if (buyingTrader instanceof Person) {
 	   		person = (Person) buyingTrader; 
@@ -321,7 +346,7 @@ implements Serializable {
     	}
     	else if (trader instanceof Robot) {
     		robot = (Robot) trader;
-    		experienceAptitude = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+    		experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
             newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
             newPoints *= getTeachingExperienceModifier();            
             robot.getBotMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);           

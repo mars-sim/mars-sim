@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.medical.AntiStressMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -295,8 +296,8 @@ implements Serializable {
 			experienceAptitude = person.getNaturalAttributeManager().getAttribute(
 		            NaturalAttribute.EXPERIENCE_APTITUDE);		       			
 		else if (robot != null)
-			experienceAptitude = robot.getNaturalAttributeManager().getAttribute(
-					NaturalAttribute.EXPERIENCE_APTITUDE);
+			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(
+					RoboticAttribute.EXPERIENCE_APTITUDE);
         
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();

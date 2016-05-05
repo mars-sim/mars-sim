@@ -32,6 +32,8 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -489,14 +491,16 @@ implements Repair, Serializable {
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
         NaturalAttributeManager nManager = null;
-
-        if (person != null)
+        RoboticAttributeManager rManager = null;
+        int experienceAptitude = 0;
+        if (person != null) {
             nManager = person.getNaturalAttributeManager();
-        else if (robot != null)
-        // Experience points adjusted by person's "Experience Aptitude" attribute.
-        	nManager = robot.getNaturalAttributeManager();
-
-        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+        }
+        else if (robot != null) {
+        	rManager = robot.getRoboticAttributeManager();
+            experienceAptitude = rManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+        }
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

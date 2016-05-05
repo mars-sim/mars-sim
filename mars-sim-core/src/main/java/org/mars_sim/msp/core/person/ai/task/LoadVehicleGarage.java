@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -368,7 +369,7 @@ implements Serializable {
 		if (person != null) 
 	       	strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);			
 		else if (robot != null)        
-        	strength = robot.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+        	strength = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double amountLoading = LOAD_RATE * strengthModifier * time;
         

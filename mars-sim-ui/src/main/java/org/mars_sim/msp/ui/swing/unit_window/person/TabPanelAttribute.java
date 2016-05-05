@@ -31,6 +31,8 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
@@ -154,48 +156,77 @@ extends TabPanel {
 	private static class AttributeTableModel
 	extends AbstractTableModel {
 
-		private List<Map<String,NaturalAttribute>> attributes;
-
+		private List<Map<String, NaturalAttribute>> n_attributes;
+		private List<Map<String, RoboticAttribute>> r_attributes;
+		
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		private NaturalAttributeManager manager;
+		private NaturalAttributeManager n_manager;
+		private RoboticAttributeManager r_manager;
+		
+        Person person = null;
+        Robot robot = null;
 
 		/**
 		 * hidden constructor.
 		 * @param person {@link Person}
 		 */
 		private AttributeTableModel(Unit unit) {
-	        Person person = null;
-	        Robot robot = null;
+
 	        if (unit instanceof Person) {
 	         	person = (Person) unit;
-	         	manager = person.getNaturalAttributeManager();
+	         	n_manager = person.getNaturalAttributeManager();
+	         	
+	    		n_attributes = new ArrayList<Map<String, NaturalAttribute>>();
+				for (NaturalAttribute value : NaturalAttribute.values()) {
+					Map<String,NaturalAttribute> map = new TreeMap<String,NaturalAttribute>();
+					map.put(value.getName(),value);
+					n_attributes.add(map);
+				}
+				Collections.sort(
+					n_attributes,
+					new Comparator<Map<String, NaturalAttribute>>() {
+						@Override
+						public int compare(Map<String, NaturalAttribute> o1,Map<String, NaturalAttribute> o2) {
+							return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
+						}
+					}
+				);
 	        }
+	        
 	        else if (unit instanceof Robot) {
 	        	robot = (Robot) unit;
-	        	manager = robot.getNaturalAttributeManager();
+	        	r_manager = robot.getRoboticAttributeManager();
+	        	
+	    		r_attributes = new ArrayList<Map<String, RoboticAttribute>>();
+				for (RoboticAttribute value : RoboticAttribute.values()) {
+					Map<String, RoboticAttribute> map = new TreeMap<String, RoboticAttribute>();
+					map.put(value.getName(),value);
+					r_attributes.add(map);
+				}
+				Collections.sort(
+					r_attributes,
+					new Comparator<Map<String,RoboticAttribute>>() {
+						@Override
+						public int compare(Map<String,RoboticAttribute> o1,Map<String,RoboticAttribute> o2) {
+							return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
+						}
+					}
+				);
 	        }
 
-			attributes = new ArrayList<Map<String,NaturalAttribute>>();
-			for (NaturalAttribute value : NaturalAttribute.values()) {
-				Map<String,NaturalAttribute> map = new TreeMap<String,NaturalAttribute>();
-				map.put(value.getName(),value);
-				attributes.add(map);
-			}
-			Collections.sort(
-				attributes,
-				new Comparator<Map<String,NaturalAttribute>>() {
-					@Override
-					public int compare(Map<String,NaturalAttribute> o1,Map<String,NaturalAttribute> o2) {
-						return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
-					}
-				}
-			);
+	
 		}
 
 		@Override
 		public int getRowCount() {
-			return manager.getAttributeNum();
+			if (person != null)
+				return n_manager.getAttributeNum();
+
+			else if (robot != null)
+				return r_manager.getAttributeNum();
+			else
+				return 0;
 		}
 
 		@Override
@@ -220,8 +251,27 @@ extends TabPanel {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return attributes.get(row).keySet().iterator().next();
-			else if (column == 1) return getLevelString(manager.getAttribute(attributes.get(row).values().iterator().next()));
+			if (column == 0) {
+				if (person != null)
+					return n_attributes.get(row).keySet().iterator().next();
+
+				else if (robot != null)
+					return r_attributes.get(row).keySet().iterator().next();
+				else
+					return null;
+
+			}
+			
+			else if (column == 1) {
+				if (person != null)
+					return getLevelString(n_manager.getAttribute(n_attributes.get(row).values().iterator().next()));
+
+				else if (robot != null)
+					return getLevelString(r_manager.getAttribute(r_attributes.get(row).values().iterator().next()));
+				else
+					return null;			
+			}
+			
 			else return null;
 		}
 		/*

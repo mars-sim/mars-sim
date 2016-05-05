@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.core.person.NaturalAttribute;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.robot.Robot;
@@ -56,11 +56,9 @@ implements Serializable {
 		int botanySkill = robot.getBotMind().getSkillManager().getSkillLevel(SkillType.BOTANY);
 		result += botanySkill;
 
-		NaturalAttributeManager attributes = robot.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
-		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
-		result+= result * ((averageAptitude - 50D) / 100D);
+		RoboticAttributeManager attributes = robot.getRoboticAttributeManager();
+		int experienceAptitude = attributes.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
+		result+= result * ((experienceAptitude - 50D) / 100D);
 
 		//if (robot.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
 

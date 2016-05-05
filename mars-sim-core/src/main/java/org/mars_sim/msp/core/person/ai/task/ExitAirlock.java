@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -680,8 +682,8 @@ implements Serializable {
         }
         else if (robot != null) {
             // Experience points adjusted by robot's "Experience Aptitude" attribute.
-            NaturalAttributeManager nManager = robot.getNaturalAttributeManager();
-            int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+            RoboticAttributeManager nManager = robot.getRoboticAttributeManager();
+            int experienceAptitude = nManager.getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
             double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
             evaExperience += evaExperience * experienceAptitudeModifier;
             evaExperience *= getTeachingExperienceModifier();
