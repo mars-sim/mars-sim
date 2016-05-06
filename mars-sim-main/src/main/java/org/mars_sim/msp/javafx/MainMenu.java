@@ -537,7 +537,7 @@ public class MainMenu {
 	 * Prepares the scene in the main scene
 	 */
 	public void prepareScene() {
-	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName() + " Thread");
+	   logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
 	   // prepare main scene
 	   mainScene.prepareMainScene();
 	   // creates and initialize scene
@@ -551,6 +551,7 @@ public class MainMenu {
 	 * Sets up the stage for the main scene
 	 */
 	public void prepareStage() {
+	   logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName());
 
 	   mainScene.prepareOthers();
 

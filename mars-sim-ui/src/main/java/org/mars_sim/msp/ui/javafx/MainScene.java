@@ -132,7 +132,7 @@ public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
-	//public static final Image QUOTE_ICON = new Image(MainScene.class.getResource("/icons/quote.png").toExternalForm());
+	public static final Image QUOTE_ICON = new Image(MainScene.class.getResource("/icons/quote_24.png").toExternalForm());
 	//public static final Image QUOTE_ICON = new Image(MainScene.class.getResourceAsStream("/icons/quote.png"));
 	
     //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
@@ -199,7 +199,7 @@ public class MainScene {
 	//private FXDesktopPane fxDesktopPane;
 	private ESCHandler esc = null;
 
-	private Timeline timeline;// autosaveTimeline;
+	private Timeline timeline, notify_timeline;
 	private static NotificationPane notificationPane;
 
 
@@ -1698,23 +1698,31 @@ public class MainScene {
         Array.set(quoteArray, 2 ,quote2);
         
 		// Randomly select a quote
-		int rand = RandomUtil.getRandomInt(2);	
+		int rand = RandomUtil.getRandomInt(0, 2);	
 		String quoteString = quoteArray[rand];
 		
 		int length = quoteString.length();
-		int lines = length/45 +1 ;
-		int height = lines * 24;
+		int lines = length/45 + 1;
+		int height = lines * 23;
 		
         notifier = Notification.Notifier.INSTANCE;
-		Notifier.setHeight(height);
-        Notifier.setWidth(370);
-        Notifier.setNotificationOwner(stage);
+		notifier.setHeight(height);
+        notifier.setWidth(370);
+        notifier.setNotificationOwner(stage);
         Duration duration = new Duration(20000);
-        notifier.setPopupLifetime(duration);
-  
-		Notification n0 = new Notification("QUOTATION", quoteString, Notification.INFO_ICON);//QUOTE_ICON);
+        notifier.setPopupLifetime(duration); 
+		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON);//QUOTE_ICON);	
+		notifier.notify("QUOTATION", quoteString, QUOTE_ICON);//n0);
+				
+		notify_timeline = new Timeline(new KeyFrame(Duration.millis(21000), ae -> stopNotification()));
+		notify_timeline.setCycleCount(1);//javafx.animation.Animation.INDEFINITE);
+		notify_timeline.play();
+		
+	}
 	
-		notifier.notify(n0);
+	public void stopNotification() {
+		notify_timeline.stop();
+		notifier.stop();
 	}
 	
 	public MarsNode getMarsNode() {
@@ -1794,6 +1802,7 @@ public class MainScene {
 		nodeTab = null;
 		dndTabPane = null;
 		timeline = null;
+		notify_timeline = null;
 		notificationPane = null;
 
 		desktop.destroy();
