@@ -459,11 +459,11 @@ implements Serializable, LocalBoundedObject {
         ConstructionStage stage = getCurrentConstructionStage();
         if (stage != null) {
             result.append(": ").append(stage.getInfo().getName());
-            if (undergoingConstruction) result.append(" - under construction");
-            else if (undergoingSalvage) result.append(" - under salvage");
+            if (undergoingConstruction) result.append(" - Under Construction");
+            else if (undergoingSalvage) result.append(" - Under Salvage");
             else if (hasUnfinishedStage()) {
-                if (stage.isSalvaging()) result.append(" - salvage unfinished");
-                else result.append(" - construction unfinished");
+                if (stage.isSalvaging()) result.append(" - Salvage Unfinished");
+                else result.append(" - Construction Unfinished");
             }
         }
 

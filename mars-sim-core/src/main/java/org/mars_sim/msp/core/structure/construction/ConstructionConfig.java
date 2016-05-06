@@ -12,11 +12,14 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -86,7 +89,15 @@ public class ConstructionConfig implements Serializable {
         }
         else throw new IllegalStateException("stageType: " + stageType + " is invalid.");
         
-        return new ArrayList<ConstructionStageInfo>(stageInfo);
+        stageInfo = new ArrayList<ConstructionStageInfo>(stageInfo);
+        Collections.sort(stageInfo, new Comparator<ConstructionStageInfo>() {
+            @Override
+            public int compare(ConstructionStageInfo c2, ConstructionStageInfo c1) {
+                return c2.getName().compareTo(c1.getName());
+            }
+        });		
+        
+        return stageInfo;//new ArrayList<ConstructionStageInfo>(stageInfo);
     }
     
     /**

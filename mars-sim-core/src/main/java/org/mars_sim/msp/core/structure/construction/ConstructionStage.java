@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * A construction stage of a construction site.
@@ -288,8 +289,8 @@ public class ConstructionStage implements Serializable {
     @Override
     public String toString() {
         String result = "";
-        if (isSalvaging) result = "salvaging " + info.getName();
-        else result = "constructing " + info.getName();
+        if (isSalvaging) result = Conversion.capitalize("Salvaging " + info.getName());
+        else result = Conversion.capitalize("Constructing " + info.getName());
         return result;
     }
 }

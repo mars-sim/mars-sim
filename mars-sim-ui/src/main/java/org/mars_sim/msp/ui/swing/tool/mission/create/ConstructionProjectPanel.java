@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -254,7 +255,7 @@ class ConstructionProjectPanel extends WizardPanel {
                 .getSelectedValue();
         projectList.setToolTipText(getToolTipText(stageInfo));
         if (stageInfo != null) {
-            if (selectedSite.indexOf(" unfinished") >= 0) {
+            if (selectedSite.indexOf(" Unfinished") >= 0) {
                 
                 // Get construction site.
                 Settlement settlement = getConstructionSettlement();
@@ -399,6 +400,8 @@ class ConstructionProjectPanel extends WizardPanel {
         siteListModel.clear();
         siteListModel.addElement("New Site");
 
+        int num = 1;
+        
         Settlement settlement = getConstructionSettlement();
         if (settlement != null) {
             ConstructionManager manager = settlement.getConstructionManager();
@@ -408,20 +411,20 @@ class ConstructionProjectPanel extends WizardPanel {
                 ConstructionSite site = i.next();
                 ConstructionStage stage = site.getCurrentConstructionStage();
                 if (site.isUndergoingConstruction()) {
-                    siteListModel.addElement("Site: " + stage
-                            + " - under construction");
+                    siteListModel.addElement("Site " + num + " : " + stage
+                            + " - Under Construction");
                 } else if (site.isUndergoingSalvage()) {
-                    siteListModel.addElement("Site: " + stage
-                            + " - under salvage");
+                    siteListModel.addElement("Site " + num + " : " + stage
+                            + " - Under Salvage");
                 } else if (site.hasUnfinishedStage()) {
                     if (stage.isSalvaging())
-                        siteListModel.addElement("Site: " + stage
-                                + " salvage unfinished");
+                        siteListModel.addElement("Site " + num + " : " + stage
+                                + " - Salvage Unfinished");
                     else
-                        siteListModel.addElement("Site: " + stage
-                                + " construction unfinished");
+                        siteListModel.addElement("Site " + num + " : " + stage
+                                + " - Construction Unfinished");
                 } else {
-                    siteListModel.addElement("Site: " + stage);
+                    siteListModel.addElement("Site " + num + " : " + stage);
                 }
             }
         }
@@ -450,11 +453,11 @@ class ConstructionProjectPanel extends WizardPanel {
                 } catch (Exception e) {
                     e.printStackTrace(System.err);
                 }
-            } else if (selectedSite.indexOf(" - under construction") >= 0) {
-                errorMessageTextPane.setText("Cannot start mission on site already undergoing construction.");
+            } else if (selectedSite.indexOf(" - Under Construction") >= 0) {
+                errorMessageTextPane.setText("Cannot start mission on a site already undergoing construction.");
                 // Do nothing.
-            } else if (selectedSite.indexOf(" - under salvage") >= 0) {
-                errorMessageTextPane.setText("Cannot start mission on site already undergoing salvage.");
+            } else if (selectedSite.indexOf(" - Under Salvage") >= 0) {
+                errorMessageTextPane.setText("Cannot start mission on a site already undergoing salvage.");
                 // Do nothing.
             } else {
                 Settlement settlement = getConstructionSettlement();
@@ -465,7 +468,7 @@ class ConstructionProjectPanel extends WizardPanel {
                     ConstructionSite site = manager.getConstructionSites().get(
                             siteNum);
                     if (site != null) {
-                        if (selectedSite.indexOf(" unfinished") >= 0) {
+                        if (selectedSite.indexOf(" Unfinished") >= 0) {
                             // Show current construction stage.
                             projectListModel.addElement(site
                                     .getCurrentConstructionStage().getInfo());
@@ -699,7 +702,7 @@ class ConstructionProjectPanel extends WizardPanel {
             String selectedSite = (String) siteList.getSelectedValue();
             if (info != null) {
                 
-                if (selectedSite.indexOf(" unfinished") > 0) {
+                if (selectedSite.indexOf(" Unfinished") > 0) {
                     try {
                         // For site with stage under construction, display remaining
                         // construction resources and parts.

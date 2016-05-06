@@ -1712,7 +1712,7 @@ public class MainScene {
         Duration duration = new Duration(20000);
         notifier.setPopupLifetime(duration); 
 		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON);//QUOTE_ICON);	
-		notifier.notify("QUOTATION", quoteString, QUOTE_ICON);//n0);
+		notifier.notify("QUOTATION", quoteString, Notification.INFO_ICON);// QUOTE_ICON);//n0);
 				
 		notify_timeline = new Timeline(new KeyFrame(Duration.millis(21000), ae -> stopNotification()));
 		notify_timeline.setCycleCount(1);//javafx.animation.Animation.INDEFINITE);

@@ -5,6 +5,29 @@
 <construction>
 	<foundation-list>
 
+		
+		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" base-level="0"
+		 constructable="true" salvagable="true" work-time="100.0" skill-required="3" >
+		 	<resource name="water" amount="100.0" />
+		 	<part name="bore drill bit" number="1" />
+		 	<part name="bore drill pipe" number="20" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
+
+		<foundation name="deep borehole drilling site" width="10.0" length="15.0" base-level="0"
+		 constructable="true" salvagable="true" work-time="300.0" skill-required="4" >
+		 	<resource name="water" amount="200.0" />
+		 	<part name="bore drill bit" number="4" />
+		 	<part name="bore drill pipe" number="60" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
+
 		<foundation name="surface foundation 3m x 2m" width="2.0" length="3.0" base-level="0"
 		 constructable="true" salvagable="true" work-time=".5" skill-required="1" >
 			<vehicle type="light utility vehicle" >
@@ -29,6 +52,31 @@
 			</vehicle>
 		</foundation>
 
+		<foundation name="surface foundation for medium habitation 7x9" width="7" length="9" base-level="0"
+		 constructable="true" salvagable="true" work-time="5.0" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="surface foundation for large greenhouse 12x18" width="12" length="18" base-level="0"
+		 constructable="true" salvagable="true" work-time="15.0"  skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="surface foundation for medium greenhouse 6x9" width="6" length="9" base-level="0"
+		 constructable="true" salvagable="true" work-time="4.2"  skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+		
+
 		<foundation name="subsurface foundation 5m x 5m x 3m" width="5.0" length="5.0" base-level="-1"
 		 constructable="true" salvagable="true" work-time="20.0" skill-required="1" >
 			<resource name="concrete" amount="500.0" />
@@ -36,32 +84,6 @@
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="backhoe" />
-			</vehicle>
-		</foundation>
-
-		<!-- Unprepared surface foundation has width and length that is dynamically set. -->
-		<foundation name="unprepared surface foundation" width="-1.0" length="-1.0" base-level="0"
-		 constructable="false" salvagable="true" work-time="0.0" skill-required="0" />
-
-		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" base-level="0"
-		 constructable="true" salvagable="true" work-time="100.0" skill-required="3" >
-		 	<resource name="water" amount="100.0" />
-		 	<part name="bore drill bit" number="1" />
-		 	<part name="bore drill pipe" number="20" />
-			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
-				<attachment-part name="drilling rig" />
-			</vehicle>
-		</foundation>
-
-		<foundation name="deep borehole drilling site" width="10.0" length="15.0" base-level="0"
-		 constructable="true" salvagable="true" work-time="300.0" skill-required="4" >
-		 	<resource name="water" amount="200.0" />
-		 	<part name="bore drill bit" number="4" />
-		 	<part name="bore drill pipe" number="60" />
-			<vehicle type="light utility vehicle" >
-				<attachment-part name="crane boom" />
-				<attachment-part name="drilling rig" />
 			</vehicle>
 		</foundation>
 
@@ -112,6 +134,11 @@
 				<attachment-part name="backhoe" />
 			</vehicle>
 		</foundation>
+
+		<!-- Unprepared surface foundation has width and length that is dynamically set. -->
+		<foundation name="unprepared surface foundation" width="-1.0" length="-1.0" base-level="0"
+		 constructable="false" salvagable="true" work-time="0.2" skill-required="0" />
+
 
 	</foundation-list>
 
@@ -187,7 +214,7 @@
 
 		<!-- Note: the transparent inflatable frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="transparent inflatable frame" width="6.0" length="9.0" base-level="0" constructable="false"
-		 salvagable="true" work-time="100.0" skill-required="2" foundation="unprepared surface foundation" >
+		 salvagable="true" work-time="100.0" skill-required="2" foundation="surface foundation for medium greenhouse 6x9" >
 		  <part name="steel scrap" number="4" />
 		  <part name="aluminum scrap" number="8" />
 		  <part name="glass sheet" number="10" />
@@ -248,9 +275,9 @@
 			<part name="gasket" number="20" />
 		</frame>
 
-		<!-- Note: the large habitation frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="large habitation frame" width="7.0" length="9.0" base-level="0" constructable="false"
-		 salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+		<!-- Note: the medium habitation frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="medium habitation frame" width="7.0" length="9.0" base-level="0" constructable="true"
+		 salvagable="true" work-time="200.0" skill-required="2" foundation="surface foundation for medium habitation 7x9" >
 			<part name="steel scrap" number="25" />
 			<part name="aluminum scrap" number="25" />
 			<part name="plastic pipe" number="10" />
@@ -264,7 +291,7 @@
 
 		<!-- Note: the large greenhouse frame is just for salvaging and cannot be constructed insitu. -->
 		<frame name="large greenhouse frame" width="12.0" length="18.0" base-level="0" constructable="false"
-		 salvagable="true" work-time="300.0" skill-required="3" foundation="unprepared surface foundation" >
+		 salvagable="true" work-time="300.0" skill-required="3" foundation="surface foundation for large greenhouse 12x18" >
 		  <part name="steel scrap" number="10" />
 		  <part name="aluminum scrap" number="15" />
 		  <part name="glass sheet" number="20" />
@@ -729,7 +756,7 @@
 
 		<!-- Residential quarters building project for refitting or salvaging. -->
 		<building name="residential quarters" width="7.0" length="9.0" base-level="0" constructable="true"
-		 salvagable="true" work-time="100.0" skill-required="3" frame="large habitation frame" >
+		 salvagable="true" work-time="100.0" skill-required="3" frame="medium habitation frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -745,7 +772,7 @@
 
 		<!-- Lounge building project for refitting or salvaging. -->
 		<building name="lounge" width="7.0" length="9.0" base-level="0" constructable="true"
-		 salvagable="true" work-time="100.0" skill-required="3" frame="large habitation frame" >
+		 salvagable="true" work-time="100.0" skill-required="3" frame="medium habitation frame" >
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="5.0" />
 			<resource name="polyethylene" amount="10.0" />
@@ -758,7 +785,7 @@
 
 		<!-- Infirmary building project for refitting or salvaging. -->
 		<building name="infirmary" width="7.0" length="9.0" base-level="0" constructable="true"
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium habitation frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -774,7 +801,7 @@
 
 		<!-- Command and control building project for refitting or salvaging. -->
 		<building name="command and control" width="7.0" length="9.0" base-level="0" constructable="true"
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium habitation frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -820,7 +847,7 @@
 -->
 		<!-- Laboratory building project for refitting or salvaging. -->
 		<building name="laboratory" width="7.0" length="9.0" base-level="0" constructable="true"
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium habitation frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
@@ -852,7 +879,7 @@
 
 		<!-- Workshop building project for refitting or salvaging. -->
 		<building name="workshop" width="7.0" length="9.0" base-level="0" constructable="true"
-		 salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+		 salvagable="true" work-time="200.0" skill-required="4" frame="medium habitation frame" >
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
