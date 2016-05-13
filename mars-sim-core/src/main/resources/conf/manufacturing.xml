@@ -3291,6 +3291,23 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		</outputs>
 	</process>
 
+		<!-- 2016-05-08 Added turbopump manufacturing -->
+	<process name="turbopump manufacturing" tech="4" skill="4" work-time="5000" process-time="1000"
+			power-required="10">
+		<inputs>
+			<part name="steel sheet" number="1" />
+			<part name="plastic sheet" number="1" />
+			<part name="electrical wire" number="8" />
+			<part name="wire connector" number="20" />
+			<part name="steel pipe" number="3" />
+			<part name="microcontroller" number="1" />
+		</inputs>
+		<outputs>
+			<part name="turbopump" number="1" />
+		</outputs>
+	</process>
+
+
 	<!-- 2015-05-31 Added
 
 	1. work glove

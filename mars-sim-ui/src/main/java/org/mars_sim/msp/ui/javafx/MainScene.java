@@ -96,6 +96,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.swing.AbstractAction;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -879,9 +883,26 @@ public class MainScene {
 		//statusBar.getRightItems().add(new Separator(VERTICAL));
 		//statusBar.getRightItems().add(cpuBtn);
 		//statusBar.getRightItems().add(new Separator(VERTICAL));
-
-		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
+		
+/*
+		double cpuText = osBean.getProcessCpuLoad() * 100D;
+		if (cpuText > 0)
+			processCpuLoad = (int) (cpuText);
+		else
+			processCpuLoad = 0;	
 		processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
+*/
+		
+		double cpuText;
+		try {
+			cpuText = getProcessCpuLoad();
+			processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		
 		//cpuBtn.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
 		//processCpuLoadText.setFill(Color.GREY);
 		statusBar.getRightItems().add(processCpuLoadText);
@@ -1020,18 +1041,53 @@ public class MainScene {
 		}
 		memUsedCache = memUsed;
 
-		processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		//processCpuLoadText.setText(" " + twoDigitFormat.format(processCpuLoad) + " % ");
-		//cpuBtn
-		processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
-		//processCpuLoadText.setFill(Color.GREY);
+		//processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
+		
+		double cpuText;
+		try {
+			cpuText = getProcessCpuLoad();
+			processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+/*		
+		//osBean.getProcessCpuLoad() * 100D;
 
+		if (cpuText > 0) {
+			processCpuLoad = (int) (cpuText);
+			processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");		
+		}
+		else {
+			osBean = ManagementFactory.getPlatformMXBean(
+					com.sun.management.OperatingSystemMXBean.class);
+		}
+		
+		//processCpuLoadText.setFill(Color.GREY);
+*/
 		//systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
 		//systemCpuLoadText.setText(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
 		//systemCpuLoadText.setFill(Color.GREY);
 
 	}
 
+	public static double getProcessCpuLoad() throws Exception {
+
+	    MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
+	    ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
+	    AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
+
+	    if (list.isEmpty())     return Double.NaN;
+
+	    Attribute att = (Attribute)list.get(0);
+	    Double value  = (Double)att.getValue();
+
+	    // usually takes a couple of seconds before we get real values
+	    if (value == -1.0)      return Double.NaN;
+	    // returns a percentage value with 1 decimal point precision
+	    return ((int)(value * 1000) / 10.0);
+	}
+	
 	/**
 	 * Gets the main desktop panel.
 	 * @return desktop

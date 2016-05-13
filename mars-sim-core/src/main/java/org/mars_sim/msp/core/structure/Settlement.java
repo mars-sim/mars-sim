@@ -146,7 +146,7 @@ implements Serializable, LifeSupportType, Objective {
 	
 	//private ObservableList<String> objectivesOList;
 	
-	private final String[] objArray = new String[]{
+	private final String[] objectiveArray = new String[]{
 			Msg.getString("ObjectiveType.crop")
 			, Msg.getString("ObjectiveType.manu")
 			, Msg.getString("ObjectiveType.research")
@@ -2662,24 +2662,46 @@ implements Serializable, LifeSupportType, Objective {
 		return compositionOfAir;
 	}
 
-
-	@Override
+	//@Override
 	public void setObjective(ObjectiveType objectiveType) {
 		//System.out.println(name + "'s objective is " + objectiveType.toString());
 		this.objectiveType = objectiveType;
 	}
 
-	@Override
+	//@Override
 	public ObjectiveType getObjective() {
 		return objectiveType;
+	}
+	
+	// 2016-05-08 Added getObjectiveBuildingType()
+	public String getObjectiveBuildingType() {
+		
+		// TODO: check if a particular building has existed, if yes, build the next relevant building
+		if (objectiveType == ObjectiveType.CROP_FARM) 
+			return "Inflatable Greenhouse";
+		// alternatives : "Large Greenhouse"
+		else if (objectiveType == ObjectiveType.MANUFACTURING)
+			return "Workshop";
+		// alternatives : "Manufacturing Shed", MD1, MD4
+		else if (objectiveType == ObjectiveType.RESEARCH_CENTER)
+			return "Laboratory";
+		// alternatives : "Mining Lab", "Astronomy Observatory"
+		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
+			return "Loading Dock Garage";
+		// alternatives :"Garage";
+		else if (objectiveType == ObjectiveType.TRADE_TOWN)
+			return "Storage Shed";
+		// alternatives : 
+		else
+			return null;
 	}
 	
 	//public ObservableList<String> getObjectivesOList() {
 	//	return objectivesOList;
 	//}
 
-	public String[] getObjArray() {
-		return objArray;
+	public String[] getObjectiveArray() {
+		return objectiveArray;
 	}
 	
 	

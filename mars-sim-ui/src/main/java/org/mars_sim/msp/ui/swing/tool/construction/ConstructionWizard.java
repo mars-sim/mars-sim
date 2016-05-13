@@ -198,11 +198,16 @@ public class ConstructionWizard {
 
 	    switch (site_case) {
 
-		    case 1: executeCase1(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
+	    	// A settler initiated the construction mission. 
+	    	// The site building had been pre-selected and approved by the settlement
+		    case 1: constructionSite = executeCase1(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
 		    	break;
-		    case 2: executeCase2(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
+		    // The site is picked manually by user
+		    case 2: constructionSite = executeCase2(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
 		    	break;
-		    case 3: executeCase3(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
+		    // Use Mission Tool to create a construction mission.
+		    // The site location will need to be chosen by user
+		    case 3: constructionSite = executeCase3(mission, constructionManager, stageInfo, constructionSite, constructionSkill);
 		    	break;
 	    }
 
@@ -210,19 +215,24 @@ public class ConstructionWizard {
 			unpause(previous);
 		}
 
+	    //stageInfo = constructionSite.getStageInfo();
+		
 	    settlement.fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, constructionSite);
 	}
 
-	public void executeCase1(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
+	public ConstructionSite executeCase1(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		//System.out.println("Case 1");
-		ConstructionSite modifiedSite = null;
+		System.out.println("Case 1");
+		//ConstructionSite modifiedSite = null;
 	    ConstructionValues values = constructionManager.getConstructionValues();
         values.clearCache();
 
-        // Determine construction site location and facing.
-	    stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
+        constructionSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
 
+        // Determine construction site location and facing.
+	    //stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
+        stageInfo = constructionSite.getStageInfo();
+	    
 	    if (stageInfo != null) {
 
 	        // Set construction site size.
@@ -242,20 +252,26 @@ public class ConstructionWizard {
 	            constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
 	        }
 
-	        modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
-	        confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
+	        //modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+	        //confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
+	        confirmSiteLocation(constructionSite, constructionManager, true, stageInfo, constructionSkill);
 
+	        
 	        logger.log(Level.INFO, "New construction site added at " + constructionSite.getSettlement().getName());
 	    }
 	    else {
 	        //endMission("New construction stage could not be determined.");
-	        System.out.println("ConstructionWizard : New construction stage could not be determined.");
+	        System.out.println("ConstructionWizard : Case 1. New construction stageInfo could not be determined.");
 	    }
 
+	    System.out.println("ConstructionWizard : Case 1. stageInfo is " + stageInfo.getName() );
+	    		
 	    // 2015-12-28 Needed to get back to the original thread that started the BuildingConstructionMission instance
 	    Simulation.instance().getMasterClock().getClockListenerExecutor().submit(new SiteTask(
-				modifiedSite, stageInfo, constructionSkill, values, mission));
-
+				//modifiedSite, stageInfo, constructionSkill, values, mission));
+	    		constructionSite, stageInfo, constructionSkill, values, mission));
+	    
+	    return constructionSite;
 	}
 
 	//2015-12-28 Added SiteTask
@@ -290,9 +306,9 @@ public class ConstructionWizard {
 		}
     }
 
-	public void executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
+	public ConstructionSite  executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		//System.out.println("Case 2");
+		System.out.println("Case 2");
 		ConstructionSite modifiedSite = constructionSite;
 
 		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
@@ -300,12 +316,13 @@ public class ConstructionWizard {
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
 
+	    return constructionSite;
 	}
 
 
-	public void executeCase3(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
+	public ConstructionSite executeCase3(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		//System.out.println("Case 3");
+		System.out.println("Case 3");
 		ConstructionSite modifiedSite = constructionSite;
 
 		modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
@@ -314,6 +331,7 @@ public class ConstructionWizard {
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
 
+	    return constructionSite;
 	}
 
 	  /**
@@ -853,8 +871,20 @@ public class ConstructionWizard {
 
         boolean goodPosition = false;
 
-        // Determine preferred building type from foundation stage info.
-        String buildingType = determinePreferredConstructedBuildingType(site, foundationStageInfo, constructionSkill);
+		Settlement settlement = site.getSettlement();
+
+		// 2016-05-08 Added the use of getObjectiveBuildingType() to determine the desired building type
+        String buildingType = settlement.getObjectiveBuildingType();     		      
+        
+        System.out.println("ConstructionWizard's positionNewConstructionSite() settlement objective is " + buildingType);
+         
+        
+        if (buildingType == null || buildingType.isEmpty())
+            // Determine preferred building type from foundation stage info.
+        	buildingType = determinePreferredConstructedBuildingType(site, foundationStageInfo, constructionSkill);
+         
+        System.out.println("ConstructionWizard's positionNewConstructionSite() buildingType is " + buildingType);        
+        
         if (buildingType != null) {
             //buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
             site.setWidth(buildingConfig.getWidth(buildingType));

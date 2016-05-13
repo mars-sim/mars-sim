@@ -762,14 +762,21 @@
 		by using infrared spectroscopy to produce an infrared spectrum of the sample. </description>
 	</part>
 
-	<part name="heat probe" mass="10.0">
-		<description>This instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
-		by using infrared spectroscopy to produce an infrared spectrum of the sample. </description>
+	<part name="heat probe" mass="1.0">
+		<description>This instrument is used for thermometry applications in that one can measure temperature inside 
+		fluid containers, tanks, and pipes and underground environment</description>
 	</part>
 
-	<part name="cmos camera" mass="10.0">
-		<description>This instrument can identify and study chemicals on a given sample (solid, liquid, or gaseous)
-		by using infrared spectroscopy to produce an infrared spectrum of the sample. </description>
+	<part name="cmos camera" mass="0.5">
+		<description>Complementary Metal–Oxide–Semiconductor(CMOS) Camera has an array of CMOS sensors. Each sensor consists
+		of millions of pixel sensors, each of which includes a photodetector. As light enters the camera through the lens, 
+		it strikes the CMOS image sensor, which causes each photodetector to accumulate an electric charge based on the amount of light that strikes it. 
+		</description>
+	</part>
+
+	<part name="turbopump" mass="100.0">
+		<description>This turbopump is compatible with delivering liquid methane. The purpose of a turbopump is 
+		to produce a high pressure fluid for feeding a combustion chamber. </description>
 	</part>
 
 	

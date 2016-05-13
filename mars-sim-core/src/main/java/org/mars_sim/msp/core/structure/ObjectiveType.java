@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.Msg;
 
 public enum ObjectiveType {
 
-	CROP_FARM 		(Msg.getString("ObjectiveType.crop")), //$NON-NLS-1$
+	CROP_FARM 			(Msg.getString("ObjectiveType.crop")), //$NON-NLS-1$
 	MANUFACTURING		(Msg.getString("ObjectiveType.manu")), //$NON-NLS-1$
 	RESEARCH_CENTER		(Msg.getString("ObjectiveType.research")), //$NON-NLS-1$
 	TRANSPORTATION_HUB	(Msg.getString("ObjectiveType.transportation")), //$NON-NLS-1$

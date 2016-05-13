@@ -88,7 +88,7 @@ extends TabPanel {
 
 		// Initialize data members.
 		this.settlement = settlement;
-		this.objectives = settlement.getObjArray();
+		this.objectives = settlement.getObjectiveArray();
 		//this.cb = new ComboBox<ObjectiveType>();//FXCollections.observableArrayList(objArray)); 
 		//this.cb.getItems().setAll(ObjectiveType.values());   
 		//setupChoiceBox();
