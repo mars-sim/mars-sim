@@ -4,6 +4,23 @@
 
 <settlement-configuration>
 
+	<!-- Typical atmospheric requirements for a closed-loop habitat  -->
+	<life-support-requirements>
+
+		<!-- all pressures in kPa-->
+		<total-pressure low="99.9" high="102.7" />
+		<partial-pressure-of-oxygen low="19.5" high="23.1" />
+		<partial-pressure-of-nitrogen low="79" high="79"/>
+		<partial-pressure-of-carbon-dioxide low=".4" high=".4" />
+		<!-- temperature in degree celsius-->
+		<temperature low="18.3" high="23.9"/>
+		<!-- humidity in %-->
+		<relative-humidity low="30" high="70"/>
+		<!-- ventilation in m/s-->
+		<ventilation low="0.076" high="0.203"/>
+	
+	</life-support-requirements>
+
 	<!-- List of templates for settlements -->
 	<settlement-template-list>
 

@@ -243,6 +243,23 @@ public class MainScene {
     		+ "          Would be half full of water and stars.\"\n"
     		+ "              - Robert Louis Steenson, 'Escape at Bedtime'";
 
+	private static String quote3 = 
+			  "\" A human being should be able to change a diaper,\n "
+			+ " plan an invasion, conn a ship, design a building,\n"
+			+ " write a sonnet, balance accounts, build a wall, \n"
+			+ " comfort the dyding, take orders, cooperate, act alone,\n"
+			+ " solve equations, analyze a new problem, pitch manure,\n"
+			+ " program a computer, cook a tasty meal, fight efficiently\n"
+			+ " , and die gallantly. Specialization is for insects.\"\n"
+			+ "                                                - Robert A. Heinlein";
+
+	private static String quote4 = 
+			  "\" Don't tell me that man doesn't belong out there.\n "
+			+ " Man belongs wherever he wants to go, and he'll do \n"
+			+ " plenty well when he gest there.\"\n"
+			+ "                - Wernher von Braun, Time Magazine, 1958";
+
+	
 /*	
 	//private static final Random         RND           = new Random();
     private static final Notification[] NOTIFICATIONS = {
@@ -1752,9 +1769,11 @@ public class MainScene {
         Array.set(quoteArray, 0 ,quote0);
         Array.set(quoteArray, 1 ,quote1);
         Array.set(quoteArray, 2 ,quote2);
+        Array.set(quoteArray, 3 ,quote3);
+        Array.set(quoteArray, 4 ,quote4);
         
 		// Randomly select a quote
-		int rand = RandomUtil.getRandomInt(0, 2);	
+		int rand = RandomUtil.getRandomInt(0, 3);	
 		String quoteString = quoteArray[rand];
 		
 		int length = quoteString.length();

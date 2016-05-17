@@ -1,8 +1,33 @@
-<!ELEMENT settlement-configuration (settlement-template-list,
+<!ELEMENT settlement-configuration (life-support-requirements, settlement-template-list,
 initial-settlement-list, new-arriving-settlement-list, settlement-name-list)>
+
+<!ELEMENT life-support-requirements (total-pressure, partial-pressure-of-oxygen, 
+partial-pressure-of-nitrogen, partial-pressure-of-carbon-dioxide, temperature,
+relative-humidity, ventilation)>
+<!ELEMENT total-pressure EMPTY>
+<!ATTLIST total-pressure low CDATA #REQUIRED>
+<!ATTLIST total-pressure high CDATA #REQUIRED>
+<!ELEMENT partial-pressure-of-oxygen EMPTY>
+<!ATTLIST partial-pressure-of-oxygen low CDATA #REQUIRED>
+<!ATTLIST partial-pressure-of-oxygen high CDATA #REQUIRED>
+<!ELEMENT partial-pressure-of-nitrogen EMPTY>
+<!ATTLIST partial-pressure-of-nitrogen low CDATA #REQUIRED>
+<!ATTLIST partial-pressure-of-nitrogen high CDATA #REQUIRED>
+<!ELEMENT partial-pressure-of-carbon-dioxide EMPTY>
+<!ATTLIST partial-pressure-of-carbon-dioxide low CDATA #REQUIRED>
+<!ATTLIST partial-pressure-of-carbon-dioxide high CDATA #REQUIRED>
+<!ELEMENT temperature EMPTY>
+<!ATTLIST temperature low CDATA #REQUIRED>
+<!ATTLIST temperature high CDATA #REQUIRED>
+<!ELEMENT relative-humidity EMPTY>
+<!ATTLIST relative-humidity low CDATA #REQUIRED>
+<!ATTLIST relative-humidity high CDATA #REQUIRED>
+<!ELEMENT ventilation EMPTY>
+<!ATTLIST ventilation low CDATA #REQUIRED>
+<!ATTLIST ventilation high CDATA #REQUIRED>
+
 <!ELEMENT settlement-template-list (template*)>
-<!ELEMENT template (building*, vehicle*, equipment*, resource*, part*,
-part-package*, resupply?)>
+<!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, part-package*, resupply?)>
 <!ATTLIST template name CDATA #REQUIRED>
 <!ATTLIST template id CDATA #REQUIRED>
 <!ATTLIST template default-population CDATA #REQUIRED>
