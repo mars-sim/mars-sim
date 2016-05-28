@@ -43,7 +43,7 @@
 		<part type="small water pump" number="3" />
 		<part type="carbon dioxide pump" number="3" />
 		<part type="small transformer" number="5" />
-		<part type="magnetron tube" number="10" />
+		<part type="rF power transistor" number="10" />
 		<part type="autoclave" number="3" />
 		<part type="blender" number="3" />
 		<part type="air compressor" number="3" />
@@ -146,7 +146,7 @@
 		<part type="small water pump" number="10" />
 		<part type="carbon dioxide pump" number="10" />
 		<part type="small transformer" number="10" />
-		<part type="magnetron tube" number="10" />
+		<part type="rF power transistor" number="10" />
 		<part type="autoclave" number="10" />
 		<part type="blender" number="10" />
 		<part type="air compressor" number="10" />
@@ -250,7 +250,7 @@
 		<part type="small water pump" number="15" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="15" />
-		<part type="magnetron tube" number="20" />
+		<part type="rF power transistor" number="20" />
 		<part type="autoclave" number="15" />
 		<part type="blender" number="15" />
 		<part type="air compressor" number="15" />
@@ -354,7 +354,7 @@
 		<part type="small water pump" number="20" />
 		<part type="carbon dioxide pump" number="15" />
 		<part type="small transformer" number="25" />
-		<part type="magnetron tube" number="40" />
+		<part type="rF power transistor" number="40" />
 		<part type="autoclave" number="15" />
 		<part type="blender" number="15" />
 		<part type="air compressor" number="15" />

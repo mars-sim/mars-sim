@@ -1,5 +1,6 @@
 package org.mars_sim.msp.ui.swing.tool;
 
+/*
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.concurrent.Callable;
@@ -29,8 +30,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.util.SkyFactory;
 
-/** Sample 3 - how to load an OBJ model, and OgreXML model,
- * a material/texture, or text. */
+
+// Sample 3 - how to load an OBJ model, and OgreXML model,  a material/texture, or text. 
 public class MarsAssets extends SimpleApplication {
 
 
@@ -90,3 +91,4 @@ public class MarsAssets extends SimpleApplication {
 
     }
 }
+*/

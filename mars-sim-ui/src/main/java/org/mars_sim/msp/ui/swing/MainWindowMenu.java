@@ -27,7 +27,7 @@ import javax.swing.event.MenuListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.notification.NotificationMenu;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
-import org.mars_sim.msp.ui.swing.tool.MarsViewer;
+//import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;

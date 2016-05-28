@@ -585,6 +585,25 @@
 		</repair-parts-list>
 	</malfunction>
 
+	<!-- 2016-05-27 Added Kitchen Microwave Failure. -->
+	<malfunction name="Kitchen Microwave Failure">
+		<severity value="40" />
+		<probability value="3.0" />
+		<repair-time value="200.0" />
+		<emergency-repair-time value="100.0" />
+		<entity-list>
+			<entity name="cooking" />
+		</entity-list>
+		<repair-parts-list>
+			<part name="electrical wire" number="2" probability="20" />
+			<part name="steel sheet" number="2" probability="2" />			
+			<part name="wire connector" number="5" probability="20" />
+			<part name="microcontroller" number="1" probability="5" />
+			<part name="small transformer" number="1" probability="5" />
+			<part name="rF power transistor" number="1" probability="5" />			
+		</repair-parts-list>
+	</malfunction>
+	
 	<!-- 2015-02-16 Added solar parabolic mirror failure. -->
 	<malfunction name="solar parabolic mirror failure">
 		<severity value="40" />

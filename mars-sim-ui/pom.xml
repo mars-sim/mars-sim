@@ -106,16 +106,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.jme3</groupId>
-			<artifactId>jme3-core</artifactId>
-			<version>3.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jme3</groupId>
-			<artifactId>jme3-desktop</artifactId>
-			<version>3.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
 			<version>8.40.10</version>

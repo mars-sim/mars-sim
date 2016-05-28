@@ -2915,15 +2915,14 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="microwave manufacturing" tech="4" skill="4" work-time="500" process-time="20"
 			power-required="3.0">
 		<inputs>
-			<part name="aluminum wire" number="1" />
 			<part name="steel sheet" number="2" />
 			<part name="electrical wire" number="1" />
 			<part name="wire connector" number="5" />
 			<part name="plastic sheet" number="1" />
 			<part name="microcontroller" number="1" />
 			<part name="small transformer" number="1" />
-			<part name="magnetron tube" number="1" />
-			<part name="steel pipe" number="1" />
+<!--		<part name="magnetron tube" number="1" /> 		-->	
+			<part name="rF power transistor" number="1" />
 		</inputs>
 		<outputs>
 			<part name="microwave" number="1" />

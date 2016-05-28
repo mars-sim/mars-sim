@@ -32,6 +32,7 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
+/*
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
@@ -59,13 +60,11 @@ public class MarsViewer
 extends ToolWindow
 implements InternalFrameListener {
 
-	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
 	//private static Logger logger = Logger.getLogger(SettlementWindow.class.getName());
 
-	/** Tool name. */
 	public static final String NAME = Msg.getString("MarsViewer.title"); //$NON-NLS-1$
 
 	public static final int HORIZONTAL = 600;
@@ -106,13 +105,13 @@ implements InternalFrameListener {
 		createJMECanvas();
 
 		//desktop.add(this);
-/*
-		Dimension desktopSize = desktop.getParent().getSize();
-	    Dimension jInternalFrameSize = frame.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
-*/
+
+		//Dimension desktopSize = desktop.getParent().getSize();
+	    //Dimension jInternalFrameSize = frame.getSize();
+	    //int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    //int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    //setLocation(width, height);
+
 		pack();
 	    setVisible(true);
 
@@ -193,7 +192,11 @@ implements InternalFrameListener {
                }
            }
         });
-/*
+        
+        
+//
+  
+ 
         JMenuItem itemSwitchLaf = new JMenuItem("Switch Look and Feel");
         menuTortureMethods.add(itemSwitchLaf);
         itemSwitchLaf.addActionListener(new ActionListener(){
@@ -219,7 +222,9 @@ implements InternalFrameListener {
                 frame.setPreferredSize(preferred);
             }
         });
-*/
+//
+
+
         JMenuItem itemKillCanvas = new JMenuItem("Stop/Start Canvas");
         menuTortureMethods.add(itemKillCanvas);
         itemKillCanvas.addActionListener(new ActionListener() {
@@ -289,7 +294,7 @@ implements InternalFrameListener {
         canvas.setSize(settings.getWidth(), settings.getHeight());
 
 
-/*
+//
         SwingCanvasTest canvasApplication = new SwingCanvasTest();
         canvasApplication.setSettings(settings);
         canvasApplication.createCanvas(); // create canvas!
@@ -297,7 +302,9 @@ implements InternalFrameListener {
         ctx.setSystemListener(canvasApplication);
         Dimension dim = new Dimension(640, 480);
         ctx.getCanvas().setPreferredSize(dim);
- */
+//
+
+
         System.out.println("done with createCanvas()");
     }
 
@@ -351,7 +358,9 @@ implements InternalFrameListener {
                 //frame.setVisible(true); // will crash
             }
         });
-/*
+
+
+//
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -368,7 +377,8 @@ implements InternalFrameListener {
 
             }
         });
-*/
+//
+
         System.out.println("done with createJMECanvas()");
     }
 
@@ -423,3 +433,4 @@ implements InternalFrameListener {
 	}
 
 }
+*/

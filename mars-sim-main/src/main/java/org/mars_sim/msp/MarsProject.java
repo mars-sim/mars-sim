@@ -17,7 +17,7 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 
-import com.jme3.app.SimpleApplication;
+//import com.jme3.app.SimpleApplication;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
@@ -42,7 +42,8 @@ import java.util.logging.Logger;
  * MarsProject is the main class for the application. It creates both the simulation and
  * the user interface.
  */
-public class MarsProject extends SimpleApplication {
+public class MarsProject {
+//extends SimpleApplication {
 
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProject.class.getName());
@@ -317,8 +318,8 @@ public class MarsProject extends SimpleApplication {
         MarsProject mp = new MarsProject(args);
         //mp.start(com.jme3.system.JmeContext.Type.Headless);
 
-    }
 
+/*    
 	@Override
 	public void simpleInitApp() {
 		// TODO Auto-generated method stub
@@ -327,7 +328,8 @@ public class MarsProject extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-       /* Interact with game events in the main loop */
+       // Interact with game events in the main loop /
     }
-
+*/
+    }
 }

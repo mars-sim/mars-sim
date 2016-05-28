@@ -562,9 +562,16 @@
 		</maintenance-entity-list>
 	</part>
 
-	<!-- 2014-11-19 Added a magnetron tube. -->
+	<!-- 2014-11-19 Added a magnetron tube. 
 	<part name="magnetron tube" mass="0.5" >
 	</part>
+	-->
+
+	<!-- 2016-05-27 Added RF power transistor, replacaing the use of heavy, bulky magnetron tube used in microwave oven. 
+	see http://www.nxp.com/products/rf/rf-power-transistors/rf-cooking:RF-COOKING?cof=0&am=0   -->
+	<part name="rF power transistor" mass="0.01" >
+	</part>
+
 
 	<!-- 2014-11-19 Added a microcontroller. -->
 	<part name="microcontroller" mass="0.1" >

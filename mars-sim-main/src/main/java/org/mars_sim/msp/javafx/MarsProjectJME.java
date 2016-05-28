@@ -6,6 +6,9 @@
  */
 package org.mars_sim.msp.javafx;
 
+public class MarsProjectJME { }
+
+/*
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -13,15 +16,15 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 
-/**
- * The MarsProjectJME class starts a JME's thread and calls on a static method in MarsProjectUtility to create a JavaFX thread
- */
+
+ // The MarsProjectJME class starts a JME's thread and calls on a static method in MarsProjectUtility to create a JavaFX thread
+ //
 public class MarsProjectJME extends SimpleApplication {
 
-    /**
+    *
      * Constructor 1.
      * @param args command line arguments.
-     */
+     
     public MarsProjectJME() {
     }
 
@@ -46,22 +49,22 @@ public class MarsProjectJME extends SimpleApplication {
 
 
     	MarsProjectUtility.launchApp((app, stage) -> {
-/*
- 				MarsProjectJME mpj = new MarsProjectJME();
-                Button but = mpj.button;
-                stage.setWidth(300);
-                stage.setHeight(300);
-                Scene scene = new Scene(but);
-                stage.setScene(scene);
-                System.out.print(app.getParameters());
-                stage.show();
-*/
+
+ 				//MarsProjectJME mpj = new MarsProjectJME();
+                //Button but = mpj.button;
+                //stage.setWidth(300);
+                //stage.setHeight(300);
+                //Scene scene = new Scene(but);
+                //stage.setScene(scene);
+                //System.out.print(app.getParameters());
+                //stage.show();
+
             }, arArgs);
     }
 
     @Override
     public void simpleUpdate(float tpf) {
-       /* Interact with game events in the main loop */
+       // Interact with game events in the main loop 
     }
 
     @Override
@@ -74,5 +77,5 @@ public class MarsProjectJME extends SimpleApplication {
         geom.setMaterial(mat);                   // set the cube's material
         rootNode.attachChild(geom);              // make the cube appear in the scene
     }
-
 }
+*/

@@ -70,7 +70,7 @@ import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.FXInSwing;
 import org.mars_sim.msp.ui.swing.tool.JFXPannableView;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
-import org.mars_sim.msp.ui.swing.tool.MarsViewer;
+//import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
