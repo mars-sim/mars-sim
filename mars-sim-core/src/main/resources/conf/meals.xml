@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE meal-list SYSTEM "conf/dtd/meals.dtd">
+<!DOCTYPE meal-configuration SYSTEM "conf/dtd/meals.dtd">
 
-<meal-list>
+<meal-configuration>
 
+	<!-- The average water usage (kg) for each cooked meal during meal preparation and clean-up-->
+	<!-- Default: 0.8 -->
+	<water-consumption-rate value="0.8" />
+
+	<!-- The average amount of cleaning agent (kg) used per sol for clean-up-->
+	<!-- Default: 0.8 -->
+	<cleaning-agent-per-sol value="0.1" />
+
+	<meal-list>
 		<!--  A MAIN DISH will have dry mass with a total proportion of 0.8 while a SIDE DISH will have the remaining  proportion of 0.2 -->
 
 		<main-dish id="0" name="Kidney Bean Fried Rice" oil="0.05" salt="0.01" category="meal">
@@ -149,8 +158,8 @@
 			<ingredient id="0" name="Peas" proportion="0.1"/>
 			<ingredient id="1" name="red beet" proportion="0.2"/>
 			<ingredient id="2" name="White Onion" proportion="0.1"/>
-
 		</main-dish>
 
-
-</meal-list>
+	</meal-list>
+	
+</meal-configuration>	

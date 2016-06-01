@@ -29,8 +29,13 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	
+	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
+	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
+	private static final String VALUE= "value";
+	
 	// Element names
-	//private static final String MEAL_LIST = "meal-list";
+	private static final String MEAL_LIST = "meal-list";
 	private static final String MAIN_DISH = "main-dish";
 
 	private static final String INGREDIENT = "ingredient";
@@ -65,6 +70,44 @@ implements Serializable {
 		this.mealDoc = mealDoc;
 	}
 
+	
+	/**
+	 * Gets the water consumption rate.
+	 * @return water rate (kg/meal)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	// 2016-05-31 Added getWaterConsumptionRate()
+	public double getWaterConsumptionRate() {
+		return getValueAsDouble(WATER_CONSUMPTION_RATE);
+	}
+
+	
+	/**
+	 * Gets average amount of cleaning agent per sol
+	 * @return rate (kg/sol)
+	 * @throws Exception if rate could not be found.
+	 */
+	// 2016-05-31 Added getCleaningAgentPerSol()
+	public double getCleaningAgentPerSol() {
+		return getValueAsDouble(CLEANING_AGENT_PER_SOL);
+	}
+
+	
+
+	/*
+	 * Gets the value of an element as a double
+	 * @param an element
+	 * @return a double 
+	 */
+	// 2016-05-31 Added getValueAsDouble()
+	private double getValueAsDouble(String child) {
+		Element root = mealDoc.getRootElement();
+		Element element = root.getChild(child);
+		String str = element.getAttributeValue(VALUE);
+		return Double.parseDouble(str);
+	}
+	
+	
 	/**
 	 * Gets a list of meal.
 	 * @return list of meal
@@ -74,9 +117,10 @@ implements Serializable {
 		//System.out.println("calling getMealList()");
 		if (mealList == null) {
 			mealList = new ArrayList<HotMeal>();
-
+		
 			Element root = mealDoc.getRootElement();
-			List<Element> mainDishes = root.getChildren(MAIN_DISH);
+			Element mealListElement = root.getChild(MEAL_LIST);
+			List<Element> mainDishes = mealListElement.getChildren(MAIN_DISH);
 
 			//Set<Integer> mealIDs = new HashSet<Integer>();
 

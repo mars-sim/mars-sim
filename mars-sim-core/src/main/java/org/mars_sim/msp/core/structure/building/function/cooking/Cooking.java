@@ -70,10 +70,14 @@ implements Serializable {
 
     public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
     public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
-    public static final double CLEANING_AGENT_PER_SOL = 0.1D;
-
+    
+    // The average amount of cleaning agent (kg) used per sol for clean-up
+    //public static final double CLEANING_AGENT_PER_SOL = 0.1D;
+    private double cleaningAgentPerSol;
+    
     // the average amount of water in kg per cooked meal during meal preparation and clean-up
-    public static final double WATER_USAGE_PER_MEAL = 0.8D;
+    //public static final double WATER_USAGE_PER_MEAL = 0.8D;
+    private double waterUsagePerMeal;
 
     private boolean cookNoMore = false;
 
@@ -140,6 +144,10 @@ implements Serializable {
     	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
         mealConfigMealList = mealConfig.getMealList();
 
+        // 2016-05-31 Added loading the two parameters from meals.xml
+        cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
+        waterUsagePerMeal = mealConfig.getWaterConsumptionRate();
+        
     	// 2014-12-08 Added multimaps
         qualityMap = ArrayListMultimap.create();
     	timeMap = ArrayListMultimap.create();
@@ -762,7 +770,7 @@ implements Serializable {
     	//TODO: need to move the hardcoded amount to a xml file
     	int sign = RandomUtil.getRandomInt(0, 1);
     	double rand = RandomUtil.getRandomDouble(0.2);
-    	double usage = WATER_USAGE_PER_MEAL;
+    	double usage = waterUsagePerMeal;
     	if (sign == 0)
     		usage = 1 + rand;
     	else
@@ -921,8 +929,8 @@ implements Serializable {
 
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL, "sodium hypochlorite", inv, true);
-		Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+		Storage.retrieveAnResource(cleaningAgentPerSol, "sodium hypochlorite", inv, true);
+		//Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 	}
 
 	// 2015-01-16 Added salt as preservatives

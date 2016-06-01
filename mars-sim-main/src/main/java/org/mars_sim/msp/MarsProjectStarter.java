@@ -48,9 +48,9 @@ public class MarsProjectStarter {
         //command.append(" org.mars_sim.msp.MarsProject");
         command.append(" org.mars_sim.msp.javafx.MarsProjectFX");
 
+        // 2016-05-28 Added checking for input args
         List<String> argList = Arrays.asList(args);
         
-
         if (argList.isEmpty()) {
         	// by default, use gui and 1GB
             command.append(" -Xms256m");
@@ -60,7 +60,7 @@ public class MarsProjectStarter {
         
         else { 
         	
-	        if (argList.contains("5")) {
+	        if (argList.contains("5")) {// || argList.contains("5 ")) {
 	            command.append(" -Xms256m");
 	            command.append(" -Xmx2048m");
 	        }
@@ -99,110 +99,21 @@ public class MarsProjectStarter {
 		        if (argList.contains("headless"))
 		        	command.append(" -headless");
 		        
-		        if (!argList.contains("load") && argList.contains("new"))
+		        if (argList.contains("new"))
 		        	command.append(" -new");
+		        else if (argList.contains("load"))
+		        	;
+		        else {
+		        	System.out.println("Note: it's missing 'new' or 'load'. Assume you are loading a saved sim here.");
+		        }
 	        
 	        }
 
-        }
-/*        
-    	if (args == null) {
-        	String[] defaultArray = {"0", "gui", "new"};
-    		args = defaultArray;
-    	}
-    	
-    	else {
-    	 	
-        	int x0 = 0;
-
-        	if (args[0] != null || !args[0].isEmpty())
-        		x0 = Integer.parseInt(args[0]);
-
-            switch(x0) {
-    	        
-    	        // 0. 1.5 GB // if no arg
-    	    	// 1. 1.5 GB
-    	    	// 2. 1 GB
-    	    	// 3. 768 MB
-    	    	// 4. 512 MB
-    	        
-    	        case 0: 
-    	            command.append(" -Xms256m");
-    	            command.append(" -Xmx1536m");
-    	            //command.append(" -Xmx2048m");
-    	            break;    	
-    	        
-    	        case 1: 
-    	            command.append(" -Xms256m");
-    	            //command.append(" -Xmx1024m");
-    	            command.append(" -Xmx1536m");
-    	            break;
-    	        case 2: 
-    	            command.append(" -Xms256m");
-    	            //command.append(" -Xmx1024m");
-    	            command.append(" -Xmx1024m");
-    	            break;
-    	        case 3: 
-    	            command.append(" -Xms256m");
-    	            //command.append(" -Xmx1024m");
-    	            command.append(" -Xmx768m");
-    	            break;
-    	        case 4: 
-    	            command.append(" -Xms256m");
-    	            //command.append(" -Xmx1024m");
-    	            command.append(" -Xmx512m");
-    	            break;
-    	 
-    	        default :System.out.println("The 1st argument is invalid!");
-    	    }  
-
-            String x1 = null;
-           	if (args[1] != null || !args[1].isEmpty())
-        		x1 = args[1];
-
-            switch(x1) {
-            
-    	        case "null": 
-    	            break;    	
-    	        
-    	        case "headless": 
-    	            command.append(" -headless");
-    	            break;
-    	        case "gui": 
-    	            //command.append(" -gui");
-    	            break;
-    	        case "html": 
-    	            command.append(" -generateHelp");
-    	            break;            
-    	            
-    	        default : System.out.println("The 2nd argument is invalid");
-            }
-            
-            String x2 = null;
-           	if (args[2] != null || !args[2].isEmpty())
-        		x2 = args[2];
-
-            switch(x2) {
-            
-    	        case "null": 
-    	            command.append(" -new");
-    	            break;    	
-    	        
-    	        case "new": 
-    	            command.append(" -new");
-    	            break;
-    	        case "load": 
-    	            //command.append(" -load");
-    	            break;
-
-    	        default : System.out.println("The 3rd argument is invalid");
-            }             		
-    	} 	
-*/   
-        
+        }     
         
         String commandStr = command.toString();
         System.out.println("Command: " + commandStr);
+        
         try {
             Process process = Runtime.getRuntime().exec(commandStr);
 
@@ -219,6 +130,7 @@ public class MarsProjectStarter {
             // Close stream consumers.
             errorConsumer.join();
             outputConsumer.join();
+            
         } catch (IOException e) {
             throw new IllegalStateException(e);
         } catch (InterruptedException e) {

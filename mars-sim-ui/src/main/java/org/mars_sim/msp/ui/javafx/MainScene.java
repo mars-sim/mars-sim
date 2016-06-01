@@ -181,9 +181,9 @@ public class MainScene {
 	private Text timeText;
 	private Text memUsedText;
 	//private Text memMaxText;
-	private Text processCpuLoadText;
+	//private Text processCpuLoadText;
 	//private Text systemCpuLoadText;
-	private Button memBtn, clkBtn, cpuBtn;
+	private Button memBtn, clkBtn;//, cpuBtn;
 
 	private Stage stage;
 	//private Scene scene;
@@ -796,7 +796,7 @@ public class MainScene {
 		//memMaxText.setFill(txtColor);
 		timeText.setFill(txtColor);
 		//systemCpuLoadText.setFill(txtColor);
-		processCpuLoadText.setFill(txtColor);
+		//processCpuLoadText.setFill(txtColor);
 
 		statusBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 
@@ -914,19 +914,19 @@ public class MainScene {
 		processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
 */
 		
-		double cpuText;
-		try {
-			cpuText = getProcessCpuLoad();
-			processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
-		} catch (Exception e) {
+		//double cpuText;
+		//try {
+		//	cpuText = getProcessCpuLoad();
+		//	processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		//} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		//	e.printStackTrace();
+		//} 
 		
 		
 		//cpuBtn.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
 		//processCpuLoadText.setFill(Color.GREY);
-		statusBar.getRightItems().add(processCpuLoadText);
+		//statusBar.getRightItems().add(processCpuLoadText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 
 		//systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
@@ -1064,14 +1064,14 @@ public class MainScene {
 
 		//processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
 		
-		double cpuText;
-		try {
-			cpuText = getProcessCpuLoad();
-			processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
-		} catch (Exception e) {
+		//double cpuText;
+		//try {
+		//	cpuText = getProcessCpuLoad();
+		//	processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
+		//} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		//	e.printStackTrace();
+		//} 
 /*		
 		//osBean.getProcessCpuLoad() * 100D;
 
@@ -1864,10 +1864,10 @@ public class MainScene {
 	    eventsMenuItem = null;
 	    timeStamp = null;
 	    memUsedText = null;
-		processCpuLoadText = null;
+		//processCpuLoadText = null;
 		memBtn = null;
 		clkBtn = null;
-		cpuBtn = null;
+		//cpuBtn = null;
 		rootStackPane = null;
 		statusBar = null;
 		flyout = null;
