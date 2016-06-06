@@ -94,11 +94,14 @@ public class HelpGenerator {
 		.append("</title>\n")
 		.append("\t\t<link rel=\"stylesheet\" href=\"../msp.css\">\n")
 		.append("\t</head>\n")
-		.append("\t<body>\n\n");
+		.append("\t<body>\n\n")
+		.append("\t<TT>\n\n");
+		
 		s.insert(0,header.toString());
 	}
 
-	private static final void helpFileFooter(final StringBuffer s) {
+	private static final void helpFileFooter(final StringBuffer s) {	
+		s.append("\n\t</TT>\n\n");
 		s.append("\n\t</body>\n");
 		s.append("</html>\n");
 	}

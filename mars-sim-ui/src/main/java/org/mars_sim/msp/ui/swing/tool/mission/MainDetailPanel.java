@@ -431,35 +431,37 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			    // Display first of mission's list of construction vehicles.
 			    BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
 			    List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-			    if (constVehicles.size() > 0) {
-			        Vehicle vehicle = constVehicles.get(0);
-			        isVehicle = true;
-			        vehicleButton.setText(vehicle.getName());
-                    vehicleButton.setVisible(true);
-                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
-                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
-                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-                    vehicle.addUnitListener(this);
-                    currentVehicle = vehicle;
-			    }
+			    if (!constVehicles.isEmpty())
+				    if (constVehicles.size() > 0) {
+				        Vehicle vehicle = constVehicles.get(0);
+				        isVehicle = true;
+				        vehicleButton.setText(vehicle.getName());
+	                    vehicleButton.setVisible(true);
+	                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
+	                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    vehicle.addUnitListener(this);
+	                    currentVehicle = vehicle;
+				    }
 			}
 			else if (mission instanceof BuildingSalvageMission) {
 	            // Display first of mission's list of construction vehicles.
 			    BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
                 List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-                if (constVehicles.size() > 0) {
-                    Vehicle vehicle = constVehicles.get(0);
-                    isVehicle = true;
-                    vehicleButton.setText(vehicle.getName());
-                    vehicleButton.setVisible(true);
-                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
-                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
-                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
-                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-                    vehicle.addUnitListener(this);
-                    currentVehicle = vehicle;
-                }
+                if (!constVehicles.isEmpty())
+	                if (constVehicles.size() > 0) {
+	                    Vehicle vehicle = constVehicles.get(0);
+	                    isVehicle = true;
+	                    vehicleButton.setText(vehicle.getName());
+	                    vehicleButton.setVisible(true);
+	                    vehicleStatusLabel.setText(Msg.getString("MainDetailPanel.vehicleStatus",vehicle.getStatus())); //$NON-NLS-1$
+	                    speedLabel.setText(Msg.getString("MainDetailPanel.vehicleSpeed",formatter.format(vehicle.getSpeed()))); //$NON-NLS-1$
+	                    distanceNextNavLabel.setText(Msg.getString("MainDetailPanel.distanceNextNavpoint","0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    traveledLabel.setText(Msg.getString("MainDetailPanel.distanceTraveled","0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
+	                    vehicle.addUnitListener(this);
+	                    currentVehicle = vehicle;
+	                }
 			}
 			
 			if (!isVehicle) {

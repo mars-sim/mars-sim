@@ -6,17 +6,40 @@
 <LINK rel="stylesheet" href="../msp.css">
 </HEAD>
 <BODY>
+<TT>
 <H2>Time Tool</H2>
-<P>The Time Tool displays the current time in the simulation.
-<P>The Martian Time panel shows the current Martian time in the following format: Orbit-Month-Sol Millisol.
-<P>The second panel shows a calendar display of the month and the sol of the month.  The one letter abbreviation for the weeksols are also given.
-<P>The Earth Time panel shows the current Earth time in GMT.
-<P>The Simulation Uptime panel shows the amount of time the simulation has been running in real world time.
-<P>The Ticks Per Second panel shows the average number of simulation clock ticks per real world second.  The larger the number, the faster the simulation is running.</P>
-<P>The Pause button will pause the simulation.  Pressing the "Resume" button will resume the simulation.</P>
-<P>The last panel shows the time compression for the simulation.  It displays the amount of simulation time per real world second.</P>
-<P>The slider bar at the bottom of the panel allows the user to change the time compression ratio of the simulation.</P>
+
+<P>The Time Tool is your timekeeper on Mars in the simulation.</P>
+
+<P>1. Martian Time : the current Martian time in the format of Orbit-Month-Sol Millisol. </P>
+
+<P><i>Note : Orbit are the Martian Year and Millisols are between 0 and 1000 up to the 3 decimal places.</i></P>
+
+<P>2. Martian Calendar : displays a Martian Calendar with the sol of the week/month highlighted. </P>
+
+<P>3. Martian Seasons : shows the current season one would experience on the Northern and southern hemisphere of Mars. </P>
+
+<P>4. Earth Time : shows the corresponding date and time on Earth. </P>
+
+<P>5. Simulation Uptime : displays how long mars-sim has been running. </P>
+
+<P>6. Tick Per Second (TPS) : shows how fast mars-sim updates the changes. </P>
+
+<P><i>Note : TPS is essentially the same as a more common programming construct called "Frames Per Second" (FPS) in designing the game loop for mars-sim. </P>
+
+<P>e.g. if TPS/FPS is 25, then for each second, the simulation is updated 25 times. </i></P>
+
+<P>7. Pause Button : click to toggle between pause and resume the simulation or hit the 'ESC' button once on your keyboard anytime. </P> 
+
+<P>8. Real to Sim Time Ratio : shows the ratio of the real time to the simulation time. </P>
+
+<P>By default, it is set to the ratio of 1 second of real time to 8 minutes and 20 seconds of simulation time. </P>
+
+<P>You may speed up (or slow down) the simulation by dragging the handle to the right (or to the left). </P>
+
+
 <HR>
+
 <P>The Martian calendar used in this simulation is based on Shaun Moss's "Areosynchronous Calendar".<BR>
   http://pweb.jps.net/~gangale3/moss/Virtual_Mars/Calendar.asp</P>
 <P>The Areosynchronous Calendar is heavily derived from Tom Gangale's Darian Calendar.<BR>
@@ -25,6 +48,7 @@
  calendar, about half of the orbits are 668 Sols long, and the other half are "leap-orbits" with 669 
  Sols. See the Areosynchronous Calendar for complete details on leap-orbits.</P>
 <P>The orbit has 24 months with either 27 or 28 Sols:</P>
+<P>
 <TABLE>
   <TR>
     <TH>Month Name</TH>
@@ -152,9 +176,11 @@
     <TD>27 or 28 if a leap-orbit</TD>
   </TR>
 </TABLE>
+</P>
 <P>The month names are based on Frans Blok's "The Rotterdam System".<BR>
   http://www.geocities.com/fra_nl/rotmonth.html</P>
 <P>There are seven sols in a Martian week with the following week names:</P>
+<P>
 <OL>
   <LI>Heliosol</LI>
   <LI>Neriosol</LI>
@@ -164,6 +190,7 @@
   <LI>Mercusol</LI>
   <LI>Jovisol</LI>
 </OL>
+</P>
 <P>Every Martian month has 4 weeks. On months with 27 Sols, the last week only has
  six Sols and Jovisol is clipped. This allows the first Sol of every month and 
  every orbit to be Heliosol.</P>
@@ -177,5 +204,6 @@
 <P>The time of the day is based on Bruce Mackenzie's "Metric Time for Mars".<BR>
   http://pweb.jps.net/~gangale3/other/mcknzfrm.htm</P>
 <hr>
+</TT>
 </BODY>
 </HTML>

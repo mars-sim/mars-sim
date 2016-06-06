@@ -452,7 +452,7 @@ implements ActionListener {
 		optionsMenu.add(unitLabelItem);
 
 		// Create day/night tracking menu item.
-		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.dayNightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
+		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.daylightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
 		dayNightItem.addActionListener(this);
 		optionsMenu.add(dayNightItem);
 

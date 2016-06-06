@@ -246,16 +246,16 @@ public class ChatBox extends BorderPane {
     		name = cache.getName();
     	}	
 
-    	// Case 0 : exit
-    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("bye")) {
+    	// Case 0 : exit the conversation
+    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("x") || text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("q") || text.equalsIgnoreCase("bye")) {
     		// set personCache and robotCache to null so as to quit the conversation
 
     		sys = name;
     		questionText = "You : have a nice sol. Bye!";
     		if (settlementCache != null)
-    			responseText = "Bye! " + System.lineSeparator() + " System : exit inquiry regarding " + name;
+    			responseText = "Bye! " + System.lineSeparator() + "System : exit the inquiry regarding " + name;
     		else
-    			responseText = "Bye! " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
+    			responseText = "Bye! " + System.lineSeparator() + "System : " + sys + " had left the conversation.";
     		
     		personCache = null; 
 	    	robotCache = null;
@@ -272,8 +272,8 @@ public class ChatBox extends BorderPane {
     	    	if (num == 0) {
     	    		// exit
     	    		sys = name;
-    	    		questionText = "You : exit asking about the " + name;
-    	    		responseText = "Bye! " + System.lineSeparator() + " System : exit the inquiry.";
+    	    		questionText = "You : have a nice sol. Bye!";
+    	    		responseText = "Bye! " + System.lineSeparator() + "System : exit the inquiry regarding " + name;
     	    		
     	    		personCache = null; 
     		    	robotCache = null;
@@ -304,6 +304,11 @@ public class ChatBox extends BorderPane {
     	    		
     	    	}
 	
+    	    	else {
+    	    		questionText = "You entered '" + num + "'.";
+    	    		responseText = "Sorry. This number is not assigned to a valid question.";
+    	    	}
+    	    	
     	    } else {
         		// set personCache and robotCache to null only if you want to quit the conversation
         		//personCache = null; 
@@ -332,7 +337,7 @@ public class ChatBox extends BorderPane {
 	    		// exit
 	    		sys = name;
 	    		questionText = "You : have a nice sol. Bye!";
-	    		responseText = "Bye! " + System.lineSeparator() + " System : " + sys + " had left the conversation.";
+	    		responseText = "Bye! " + System.lineSeparator() + "System : " + sys + " had left the conversation.";
 	    		
 	    		personCache = null; 
 		    	robotCache = null;
@@ -340,22 +345,22 @@ public class ChatBox extends BorderPane {
 		    }
 	
 	    	else if (num == 1) {
-	    		questionText = "You : what is your LocationState ?";
+	    		questionText = "You : what is your Location State ?";
 	    		LocationState state = cache.getLocationState();
 	    		if (state != null) {
 	    			if (personCache != null) {
 	    				if (personCache.getBuildingLocation() != null)
-	    					responseText = "My current LocationState is " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
+	    					responseText = "My current Location State is " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
 	    				else {
-	    					responseText = "My current LocationState is " + state.getName();				
+	    					responseText = "My current Location State is " + state.getName();				
 	    				}
 	    	    	}
 	    	    	else if (robotCache != null) {
-	    	    		responseText = "My current LocationState is " + state.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
+	    	    		responseText = "My current Location State is " + state.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
 	    	    	}	
 	    		}
 	    		else
-	    			responseText = "My current LocationState is " + state;
+	    			responseText = "My current Location State is " + state;
 	    	}
 	
 	       	else if (num == 2) {
@@ -369,10 +374,10 @@ public class ChatBox extends BorderPane {
 	       	}
 	
 	    	else if (num == 3) {
-	    		questionText = "You : where is your designated quarters ? ";
+	    		questionText = "You : where is your designated quarters/bed ? ";
 	    		Point2D bed = personCache.getBed();
 	    		if (bed == null)
-	    			responseText = "I don't have my own private quarters.";
+	    			responseText = "I don't have my own private quarters/bed.";
 	    		else {
 	    			if (personCache != null) {
 	    				Settlement s1 = personCache.getSettlement();
@@ -381,16 +386,16 @@ public class ChatBox extends BorderPane {
 		    				Settlement s2 = personCache.getAssociatedSettlement();		    				
 		    				if (s2 != null) {
 		    					if (s1 == s2)
-		    						responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
+		    						responseText = "My designated quarters/bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
 		    								+ personCache.getQuarters() + " at " + s1;
 		    					else
 				    				// yes, a person is on a trading mission
-		    						responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
+		    						responseText = "My designated quarters/bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
 		    								+ personCache.getQuarters() + " at " + s2;
 		    				}
 		    			}
 		    			else
-		    				responseText = "My designated bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
+		    				responseText = "My designated quarters/bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
 		    						+ personCache.getQuarters();
 	    	    	}
 	    	    	else if (robotCache != null) {
@@ -400,27 +405,27 @@ public class ChatBox extends BorderPane {
 	    	}
 	
 	    	else if (num == 4) {
-	    		questionText = "You : what is your container unit ?";
+	    		questionText = "You : what is your Container unit ?";
 	    		Unit c = cache.getContainerUnit();
 	    		if (c != null)
-	    			responseText = "My container unit is " + c.getName();
+	    			responseText = "My Container unit is " + c.getName();
 	    		else
-	    			responseText = "I don't have a container unit. ";
+	    			responseText = "I don't have a Container unit. ";
 	    	}
 	
 	    	else if (num == 5) {
 	
-	    		questionText = "You : what is your top container unit ?";
+	    		questionText = "You : what is your Top Container unit ?";
 	    		Unit tc = cache.getTopContainerUnit();
 	    		if (tc != null)
-	    			responseText = "My top container unit is " + tc.getName();
+	    			responseText = "My Top Container unit is " + tc.getName();
 	    		else
-	    			responseText = "I don't have a top container unit.";
+	    			responseText = "I don't have a Top Container unit.";
 	
 	    	}
 	    	else if (num == 6) {
-	    		questionText = "You : what is your LocationSituation ?";
-	       		responseText = "My LocationSituation is " + Conversion.capitalize(cache.getLocationSituation().getName());
+	    		questionText = "You : what is your Location Situation ?";
+	       		responseText = "My Location Situation is " + Conversion.capitalize(cache.getLocationSituation().getName());
 	    	}
 	
 	       	else if (num == 7) {

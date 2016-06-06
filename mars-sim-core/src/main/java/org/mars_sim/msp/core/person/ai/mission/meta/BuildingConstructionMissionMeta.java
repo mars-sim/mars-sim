@@ -102,17 +102,39 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                         double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
                         double existingSiteProfit = values.getAllConstructionSitesProfit(constructionSkill);
 
-                        if (newSiteProfit > existingSiteProfit) {
-                            // Divide profit by 10 to the power of the number of existing construction sites.
-                            ConstructionManager manager = settlement.getConstructionManager();
-                            int numSites = manager.getConstructionSites().size();
-                            result/= Math.pow(10, numSites);
-                        }
-
                         // Modify if construction is the person's favorite activity.
                         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Construction")) {
                             result *= 1.1D;
                         }
+                        
+                        if (newSiteProfit > existingSiteProfit) {
+                            // Divide profit by 10 to the power of the number of existing construction sites.
+                            ConstructionManager manager = settlement.getConstructionManager();
+                            int numSites = manager.getConstructionSites().size();
+                            
+                            // 2016-06-06 Added considering the size of the settlement population
+                            int numPeople = person.getSettlement().getCurrentPopulationNum();
+                            int limit = (int)(numSites - numPeople/24);
+                           
+                            result/= Math.pow(10, 2 + limit);
+/*                            
+                            if (numPeople < 24)
+                            	result/= Math.pow(10, numSites)/50;
+                            else if (numPeople < 48)
+                            	result/= Math.pow(10, numSites-1)/50;
+                            else if (numPeople < 72)
+                            	result/= Math.pow(10, numSites-2)/50;
+                            else if (numPeople < 96)
+                            	result/= Math.pow(10, numSites-3)/50;
+                            else if (numPeople < 120)
+                            	result/= Math.pow(10, numSites-4)/50;
+                            else 
+                            	result/= Math.pow(10, numSites-5)/50;
+*/                            
+                            
+                        }
+
+
                     }
                 }
                 catch (Exception e) {
