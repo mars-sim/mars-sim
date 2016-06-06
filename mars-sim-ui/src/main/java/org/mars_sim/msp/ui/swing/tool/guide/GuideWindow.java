@@ -149,7 +149,7 @@ ComponentListener {
 	   	//logger.info("GuideWindow's constructor: initialize mainPane");
 		// We have to define a starting size
 		//setSize(new Dimension(575, 475));
-		setSize(new Dimension(1024, 640));
+		setSize(new Dimension(1024, 600));
 	   	//logger.info("GuideWindow's constructor: setSize");
 		// Allow the window to be resized by the user.
 		//setResizable(true);

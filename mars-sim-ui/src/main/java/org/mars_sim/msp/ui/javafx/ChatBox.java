@@ -247,7 +247,7 @@ public class ChatBox extends BorderPane {
     	}	
 
     	// Case 0 : exit
-    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("quit")) {
+    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("bye")) {
     		// set personCache and robotCache to null so as to quit the conversation
 
     		sys = name;

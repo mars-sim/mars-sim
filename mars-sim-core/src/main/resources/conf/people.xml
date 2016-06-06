@@ -656,13 +656,91 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Tang"  sponsor="CNSA" />
 		<last-name value="Liang"  sponsor="CNSA" />
 
+		<!-- https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_North_America#Canada  -->
 
-		<last-name value="aa"  sponsor="CSA" />
-		<last-name value="bb"  sponsor="CSA" />
+		<last-name value="Li"  sponsor="CSA" />
+		<last-name value="Smith"  sponsor="CSA" />
+		<last-name value="Lam"  sponsor="CSA" />
+		<last-name value="Martin"  sponsor="CSA" />
+		<last-name value="Brown"  sponsor="CSA" />
+		<last-name value="Roy"  sponsor="CSA" />
+		<last-name value="Tremblay"  sponsor="CSA" />
+		<last-name value="Lee"  sponsor="CSA" />
+		<last-name value="Gagnon"  sponsor="CSA" />
+		<last-name value="Wilson"  sponsor="CSA" />
 
 
-		<last-name value="cc"  sponsor="ESA" />
-		<last-name value="dd"  sponsor="ESA" />
+		<!-- https://en.wikipedia.org/wiki/List_of_the_most_common_surnames_in_Europe  -->
+
+		<!-- see the names of all the ESA member nations at https://en.wikipedia.org/wiki/European_Space_Agency -->
+
+		<!-- 10 most common Austria surnames-->
+
+		<last-name value="Gruber"  sponsor="ESA" />
+		<last-name value="Huber"  sponsor="ESA" />
+		<last-name value="Bauer"  sponsor="ESA" />
+		<last-name value="Wagner"  sponsor="ESA" />
+		<last-name value="Muller"  sponsor="ESA" />
+		<last-name value="Pichler"  sponsor="ESA" />
+		<last-name value="Steiner"  sponsor="ESA" />
+		<last-name value="Moser"  sponsor="ESA" />
+		<last-name value="Mayer"  sponsor="ESA" />
+		<last-name value="Hofer"  sponsor="ESA" />
+
+
+		<!-- 10 most common Belgium surnames-->
+
+		<last-name value="Peeters"  sponsor="ESA" />
+		<last-name value="Janssens"  sponsor="ESA" />
+		<last-name value="Maes"  sponsor="ESA" />
+		<last-name value="Jacobs"  sponsor="ESA" />
+		<last-name value="Mertens"  sponsor="ESA" />
+		<last-name value="Willems"  sponsor="ESA" />
+		<last-name value="Claes"  sponsor="ESA" />
+		<last-name value="Goossens"  sponsor="ESA" />
+		<last-name value="Wouters"  sponsor="ESA" />
+		<last-name value="De Smet"  sponsor="ESA" />
+		
+
+		<!-- 10 most common Czech Republic surnames (male only)-->
+
+		<last-name value="Novák"  sponsor="ESA" />
+		<last-name value="Svoboda"  sponsor="ESA" />
+		<last-name value="Novotný"  sponsor="ESA" />
+		<last-name value="Dvořák"  sponsor="ESA" />
+		<last-name value="Černý"  sponsor="ESA" />
+		<last-name value="Procházka"  sponsor="ESA" />
+		<last-name value="Kučera"  sponsor="ESA" />
+		<last-name value="Veselý"  sponsor="ESA" />
+		<last-name value="Horák"  sponsor="ESA" />
+		<last-name value="Němec"  sponsor="ESA" />
+
+		<!-- 10 most common Danish surnames-->
+
+		<last-name value="Nielsen"  sponsor="ESA" />
+		<last-name value="Jensen"  sponsor="ESA" />
+		<last-name value="Hansen"  sponsor="ESA" />
+		<last-name value="Pedersen"  sponsor="ESA" />
+		<last-name value="Andersen"  sponsor="ESA" />
+		<last-name value="Christensen"  sponsor="ESA" />
+		<last-name value="Larsen"  sponsor="ESA" />
+		<last-name value="Sørensen"  sponsor="ESA" />
+		<last-name value="Rasmussen"  sponsor="ESA" />
+		<last-name value="Jørgensen"  sponsor="ESA" />
+		
+		<!-- 10 most common Estonia surnames-->
+
+		<last-name value="Tamm"  sponsor="ESA" />
+		<last-name value="Saar"  sponsor="ESA" />
+		<last-name value="Sepp"  sponsor="ESA" />
+		<last-name value="Kask"  sponsor="ESA" />
+		<last-name value="Kukk"  sponsor="ESA" />
+		<last-name value="Rebane"  sponsor="ESA" />
+		<last-name value="Ilves"  sponsor="ESA" />
+		<last-name value="Pärn"  sponsor="ESA" />
+		<last-name value="Koppel"  sponsor="ESA" />
+		
+
 
 
 		<last-name value="ee"  sponsor="ISRO" />
@@ -672,8 +750,43 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="gg"  sponsor="JAXA" />
 		<last-name value="hh"  sponsor="JAXA" />
 
-		<last-name value="ii"  sponsor="NASA" />
-		<last-name value="jj"  sponsor="NASA" />
+
+		<!--  http://www.census.gov/topics/population/genealogy/data/2000_surnames.html-->
+
+		<last-name value="Smith"  sponsor="NASA" />
+		<last-name value="Johnson"  sponsor="NASA" />
+		<last-name value="Williams"  sponsor="NASA" />
+		<last-name value="Brown"  sponsor="NASA" />
+		<last-name value="Jones"  sponsor="NASA" />
+		<last-name value="Miller"  sponsor="NASA" />
+		<last-name value="Davis"  sponsor="NASA" />
+		<last-name value="Garcia"  sponsor="NASA" />
+		<last-name value="Roriguez"  sponsor="NASA" />
+		<last-name value="Wilson"  sponsor="NASA" />
+		<last-name value="Martinez"  sponsor="NASA" />
+		<last-name value="Anderson"  sponsor="NASA" />
+		<last-name value="Taylor"  sponsor="NASA" />
+		<last-name value="Thomas"  sponsor="NASA" />
+		<last-name value="Hernandez"  sponsor="NASA" />
+		<last-name value="Moore"  sponsor="NASA" />
+		
+		<last-name value="Martin"  sponsor="NASA" />
+		<last-name value="Jackson"  sponsor="NASA" />
+		<last-name value="Thompson"  sponsor="NASA" />
+		<last-name value="White"  sponsor="NASA" />
+		<last-name value="Lopez"  sponsor="NASA" />
+		<last-name value="Lee"  sponsor="NASA" />
+		<last-name value="Gonzalez"  sponsor="NASA" />
+		<last-name value="Harris"  sponsor="NASA" />
+		<last-name value="Clark"  sponsor="NASA" />
+		<last-name value="Lewis"  sponsor="NASA" />
+		<last-name value="Robinson"  sponsor="NASA" />
+		<last-name value="Walker"  sponsor="NASA" />
+		<last-name value="Perez"  sponsor="NASA" />
+		<last-name value="Hall"  sponsor="NASA" />
+		<last-name value="Young"  sponsor="NASA" />
+		<last-name value="Allen"  sponsor="NASA" />
+
 
 
 		<last-name value="Afanasyev"  sponsor="RKA" />

@@ -256,15 +256,15 @@ public class ConstructionWizard {
 	        //confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
 	        confirmSiteLocation(constructionSite, constructionManager, true, stageInfo, constructionSkill);
 
+		    System.out.println("ConstructionWizard : Case 1. stageInfo is " + stageInfo.getName() );
 	        
 	        logger.log(Level.INFO, "New construction site added at " + constructionSite.getSettlement().getName());
 	    }
 	    else {
 	        //endMission("New construction stage could not be determined.");
-	        System.out.println("ConstructionWizard : Case 1. New construction stageInfo could not be determined.");
+	        System.out.println("ConstructionWizard : Case 1. new construction stageInfo could not be determined.");
 	    }
 
-	    System.out.println("ConstructionWizard : Case 1. stageInfo is " + stageInfo.getName() );
 	    		
 	    // 2015-12-28 Needed to get back to the original thread that started the BuildingConstructionMission instance
 	    Simulation.instance().getMasterClock().getClockListenerExecutor().submit(new SiteTask(
@@ -308,26 +308,49 @@ public class ConstructionWizard {
 
 	public ConstructionSite  executeCase2(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		System.out.println("Case 2");
-		ConstructionSite modifiedSite = constructionSite;
 
+	    //System.out.println("ConstructionWizard : Case 2. stageInfo is " + stageInfo.getName() );
+
+		ConstructionSite modifiedSite = constructionSite;	    
 		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
 
+	    stageInfo = modifiedSite.getStageInfo();
+	 	
+	    if (stageInfo != null) {
+	    	System.out.println("ConstructionWizard : Case 2. stageInfo is " + stageInfo.getName() );
+	    }
+	    else {
+	        System.out.println("ConstructionWizard : Case 2. new construction stageInfo could not be determined.");
+	    }
+	
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
 
+        
 	    return constructionSite;
 	}
 
 
 	public ConstructionSite executeCase3(BuildingConstructionMission mission, ConstructionManager constructionManager, ConstructionStageInfo stageInfo,
 			ConstructionSite constructionSite, int constructionSkill) {
-		System.out.println("Case 3");
-		ConstructionSite modifiedSite = constructionSite;
 
-		modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+	    //System.out.println("ConstructionWizard : Case 3. stageInfo is " + stageInfo.getName() );
+
+		//ConstructionSite modifiedSite = constructionSite;
+		//modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
+		
+		ConstructionSite modifiedSite = positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
 		confirmSiteLocation(modifiedSite, constructionManager, true, stageInfo, constructionSkill);
 
+	    stageInfo = modifiedSite.getStageInfo();
+	 	
+	    if (stageInfo != null) {
+	    	System.out.println("ConstructionWizard : Case 3. stageInfo is " + stageInfo.getName() );
+	    }
+	    else {
+	        System.out.println("ConstructionWizard : Case 3. new construction stageInfo could not be determined.");
+	    }
+	
         mission.init_2(modifiedSite, modifiedSite.getStageInfo());
         mission.setPhases_2();
 
