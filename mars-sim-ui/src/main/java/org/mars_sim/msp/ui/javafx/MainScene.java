@@ -304,13 +304,13 @@ public class MainScene {
         
 		// Detect if a user hits the top-right close button
 		stage.setOnCloseRequest(e -> {
-			boolean exit = alertOnExit();
-			if (!exit)
+			boolean result = alertOnExit();
+			if (!result)
 				e.consume();
-			else {
-				Platform.exit();
-				System.exit(0);
-			}
+			//else {
+			//	Platform.exit();
+			//	System.exit(0);
+			//}
 		} );
 
 		// Detect if a user hits ESC
@@ -1522,7 +1522,7 @@ public class MainScene {
 
 		logger.info("Exiting simulation");
 
-		Simulation sim = Simulation.instance();
+		//Simulation sim = Simulation.instance();
 		/*
 		 * // Save the UI configuration. UIConfig.INSTANCE.saveFile(this);
 		 *
@@ -1534,8 +1534,8 @@ public class MainScene {
 		 * e.printStackTrace(System.err); }
 		 */
 
-		sim.getMasterClock().exitProgram();
-		Platform.exit();
+		Simulation.instance().getMasterClock().exitProgram();
+		//Platform.exit();
 	}
 
 	/**
@@ -1691,6 +1691,8 @@ public class MainScene {
 			saveOnExit();
 			endSim();
 			exitSimulation();
+			Platform.exit();
+			System.exit(0);
 			return true;
 		//} else if (result.get() == buttonTypeTwo) {
 		//	desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
@@ -1699,6 +1701,8 @@ public class MainScene {
 		} else if (result.get() == buttonTypeThree) {
 			endSim();
 			exitSimulation();
+			Platform.exit();
+			System.exit(0);
 			return true;
 		} else { //if (result.get() == buttonTypeCancel) {
 			return false;
@@ -1716,9 +1720,14 @@ public class MainScene {
 		UIConfig.INSTANCE.saveFile(this);
 
 		// Save the simulation.
-		Simulation sim = Simulation.instance();
+		//Simulation sim = Simulation.instance();
+		MasterClock clock = Simulation.instance().getMasterClock();
 		try {
-			sim.getMasterClock().saveSimulation(null);
+			clock.saveSimulation(null);
+						
+			while (clock.isSavingSimulation())
+				TimeUnit.MILLISECONDS.sleep(500L);
+			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
 			e.printStackTrace(System.err);

@@ -91,9 +91,10 @@ public class MarsProjectStarter {
 	        }
 	        
 	        
-	        if (argList.contains("html"))
-	        	command.append(" -generateHelp");
-	        
+	        if (argList.contains("html")) {
+	        	command.append(" -new");	        	
+	        	command.append(" -html");
+	        }
 	        else {
 	        
 		        if (argList.contains("headless"))

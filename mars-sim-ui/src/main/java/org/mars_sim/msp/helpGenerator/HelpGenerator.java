@@ -1016,7 +1016,6 @@ public class HelpGenerator {
 		//2016-04-18 Added generateFoodProductionDescriptions();
 		HelpGenerator.generateFoodProductionDescriptions();
 		logger.log(Level.INFO,"generateFoodProductionDescriptions() is done");
-
 		
 		//TODO: will create HelpGenerator.generateMealsDescriptions();
 		
@@ -1029,5 +1028,7 @@ public class HelpGenerator {
 				.append(Integer.toString(filesNotGenerated))
 			.toString()
 		);
+		
+		System.exit(0);
 	}
 }

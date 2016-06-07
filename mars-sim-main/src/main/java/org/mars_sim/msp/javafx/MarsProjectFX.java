@@ -101,10 +101,10 @@ public class MarsProjectFX extends Application  {
     static String[] args;
 
     /** true if displaying graphic user interface. */
-    private boolean useGUI = true, newSim = true;
+    private boolean headless = false, newSim = false, loadSim = false;
 
     /** true if help documents should be generated from config xml files. */
-    private boolean generateHelp = false;
+    private boolean generateHTML = false;
 
     private boolean isDone;
 
@@ -158,13 +158,22 @@ public class MarsProjectFX extends Application  {
     	logger.info("Starting " + Simulation.WINDOW_TITLE);
 
 		argList = Arrays.asList(args);
-		useGUI = !argList.contains("-headless");
+		
         newSim = argList.contains("-new");
-		generateHelp = argList.contains("-generateHelp");
+        
+        loadSim = argList.contains("-load");
+        
+		generateHTML = argList.contains("-html");
+		
+		if (generateHTML)
+			headless = true;
+		else
+			headless = argList.contains("-headless");
 
-        //System.out.println("useGUI is " + useGUI);
-        //System.out.println("newSim is " + newSim);
-    	
+        //System.out.println("headless is " + headless);
+        //System.out.println("newSim is " + newSim); 	
+        //System.out.println("loadSim is " + loadSim); 	
+        //System.out.println("generateHTML is " + generateHTML); 	  
         
 	   	Simulation.instance().startSimExecutor();
 	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
@@ -184,7 +193,7 @@ public class MarsProjectFX extends Application  {
 	   	//INFO: MarsProjectFX's prepare() is on pool-2-thread-1 Thread
 	   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
 
-	    if (useGUI) {
+	    if (!headless) {
 	    	logger.info("prepare() : Running MarsProjectFX in GUI mode");
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 	    	//System.setProperty("sun.java2d.ddforcevram", "true");
@@ -193,20 +202,42 @@ public class MarsProjectFX extends Application  {
 	    	//SvgImageLoaderFactory.install();
 
 		} else { // Using -headless arg (GUI-less)
-			if (newSim)
+			
+			if (newSim) {
 				logger.info("prepare() : Starting a new MarsProjectFX in headless mode");
-			else
+				// Initialize the simulation.
+			    initializeSimulation();
+			    // Start the simulation.
+			    startSimulation(true);
+			}
+			else if (loadSim) {
 				logger.info("prepare() : Loading a saved sim and running MarsProjectFX in headless mode");
+				// Initialize the simulation.
+			    initializeSimulation();
+			    // Start the simulation.
+			    startSimulation(true);
+			}
+            
+			// 2016-06-06 Generated html files for in-game help 
+			else if (generateHTML) {
+				logger.info("prepare() : Generating html help files in headless mode");
+                
+				try {
+					
+		            SimulationConfig.loadConfig();
+		    	    HelpGenerator.generateHtmlHelpFiles();
 
-			// Initialize the simulation.
-		    initializeSimulation(args); // evaluate args switches
-		    // Start the simulation.
-		    startSimulation(true);
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		            exitWithError("Could not create a new simulation, startup cannot continue", e);
+		        }
+			}
+			
 		}
 
 	    // this will generate html files for in-game help based on config xml files
 	    // 2016-04-16 Relocated the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
-	    //if (generateHelp) {
+	    //if (generateHTML) {
 	    //	HelpGenerator.generateHtmlHelpFiles();
 	    //
 
@@ -214,12 +245,11 @@ public class MarsProjectFX extends Application  {
 
 	public void start(Stage primaryStage) {
 	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
-	   	if (useGUI) {
+	   	if (!headless) {
 		   	//logger.info("start() : in GUI mode, loading Main Menu");			
 		    
 	   		mainMenu = new MainMenu(this);
-	   		
-	   		
+	   			   		
 	   		if (newSim) {
 	   			mainMenu.initAndShowGUI(primaryStage);
 		   		mainMenu.setupMainSceneStage();
@@ -245,12 +275,12 @@ public class MarsProjectFX extends Application  {
      * @return true if new simulation (not loaded)
      */
 	//2016-04-28 Modified to handle starting a new sim in headless mode
-    boolean initializeSimulation(String[] args) {
+    boolean initializeSimulation() {//String[] args) {
 		//logger.info("initializeSimulation() is on " + Thread.currentThread().getName() );
         boolean result = false;
         
         // Create a simulation
-        List<String> argList = Arrays.asList(args);
+        //List<String> argList = Arrays.asList(args);
 
         if (newSim) {
             // If new argument, create new simulation.
@@ -262,7 +292,7 @@ public class MarsProjectFX extends Application  {
         	
             result = true;
 
-        } else if (argList.contains("-load")) {
+        } else if (loadSim) {
             // If load argument, load simulation from file.
             try {
                 handleLoadSimulation(argList);
@@ -323,7 +353,7 @@ public class MarsProjectFX extends Application  {
             logger.log(Level.SEVERE, message);
         }
 
-        if (useGUI) {
+        if (!headless) {
             JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -396,14 +426,8 @@ public class MarsProjectFX extends Application  {
         try {
             SimulationConfig.loadConfig();
             
-    	    // 2016-04-17 this will generate html files for in-game help based on config xml files
-    	    if (generateHelp) {
-    	    	HelpGenerator.generateHtmlHelpFiles();
-    	    }
-		
-            if (useGUI) {
-            	//Future future = 
-            	Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
+           	//Future future = 
+           	Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
             	// note: cannot load editor in macosx if it was a JDialog
                 // ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
             	//while(future.get() == null && isDone) {
@@ -411,7 +435,6 @@ public class MarsProjectFX extends Application  {
      			//   isDone = false;
      		    //}
 
-            }
         } catch (Exception e) {
             e.printStackTrace();
             exitWithError("Could not create a new simulation, startup cannot continue", e);
