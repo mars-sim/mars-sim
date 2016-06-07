@@ -333,7 +333,7 @@ implements ClockListener, Serializable {
      * Start the simulation.
      */
     public void start(boolean useDefaultName) {
-        logger.info("Simulation's start() -- where clockScheduler is initialized -- is on " + Thread.currentThread().getName());
+        //logger.info("Simulation's start() -- where clockScheduler is initialized -- is on " + Thread.currentThread().getName());
         //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
         //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
 

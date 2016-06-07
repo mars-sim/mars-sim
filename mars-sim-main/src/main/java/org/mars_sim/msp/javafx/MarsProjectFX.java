@@ -193,7 +193,7 @@ public class MarsProjectFX extends Application  {
 	   	//INFO: MarsProjectFX's prepare() is on pool-2-thread-1 Thread
 	   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
 
-	    if (!headless) {
+	    if (!headless) { // Wsing GUI mode
 	    	logger.info("prepare() : Running MarsProjectFX in GUI mode");
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 	    	//System.setProperty("sun.java2d.ddforcevram", "true");
@@ -246,7 +246,7 @@ public class MarsProjectFX extends Application  {
 	public void start(Stage primaryStage) {
 	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
 	   	if (!headless) {
-		   	//logger.info("start() : in GUI mode, loading Main Menu");			
+		   	logger.info("start() : in GUI mode, loading the Main Menu");			
 		    
 	   		mainMenu = new MainMenu(this);
 	   			   		
@@ -261,7 +261,7 @@ public class MarsProjectFX extends Application  {
 		    	    
 		}
 		else {
-		   	//logger.info("start() : in headless mode, not loading Main Menu");			
+		   	logger.info("start() : in headless mode, not loading the Main Menu");			
 		}
 	}
 
@@ -276,14 +276,10 @@ public class MarsProjectFX extends Application  {
      */
 	//2016-04-28 Modified to handle starting a new sim in headless mode
     boolean initializeSimulation() {//String[] args) {
-		//logger.info("initializeSimulation() is on " + Thread.currentThread().getName() );
+		logger.info("initializeSimulation() is on " + Thread.currentThread().getName() );
         boolean result = false;
         
-        // Create a simulation
-        //List<String> argList = Arrays.asList(args);
-
         if (newSim) {
-            // If new argument, create new simulation.
 
         	SimulationConfig.instance();
         	SimulationConfig.loadConfig();
@@ -301,6 +297,7 @@ public class MarsProjectFX extends Application  {
                 handleNewSimulation();
                 result = true;
             }
+            
         } else {
             try {
                 handleLoadDefaultSimulation();

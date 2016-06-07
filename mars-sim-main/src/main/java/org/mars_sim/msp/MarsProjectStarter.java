@@ -92,7 +92,7 @@ public class MarsProjectStarter {
 	        
 	        
 	        if (argList.contains("html")) {
-	        	command.append(" -new");	        	
+	        	//command.append(" -new");	        	
 	        	command.append(" -html");
 	        }
 	        else {
@@ -103,9 +103,10 @@ public class MarsProjectStarter {
 		        if (argList.contains("new"))
 		        	command.append(" -new");
 		        else if (argList.contains("load"))
-		        	;
+		        	command.append(" -load");
 		        else {
-		        	System.out.println("Note: it's missing 'new' or 'load'. Assume you are loading a saved sim here.");
+		        	System.out.println("Note: it's missing 'new' or 'load'. Assume you want to start a new sim now.");
+		        	command.append(" -new");
 		        }
 	        
 	        }
