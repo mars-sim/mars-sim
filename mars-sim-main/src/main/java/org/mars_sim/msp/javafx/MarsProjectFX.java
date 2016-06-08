@@ -276,7 +276,7 @@ public class MarsProjectFX extends Application  {
      */
 	//2016-04-28 Modified to handle starting a new sim in headless mode
     boolean initializeSimulation() {//String[] args) {
-		logger.info("initializeSimulation() is on " + Thread.currentThread().getName() );
+		//logger.info("initializeSimulation() is on " + Thread.currentThread().getName() );
         boolean result = false;
         
         if (newSim) {

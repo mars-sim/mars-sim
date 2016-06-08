@@ -163,7 +163,7 @@ public class MainMenu {
 	private WaitIndicator waiti;
 
     public MainMenu(MarsProjectFX marsProjectFX) {
-       	logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
+       	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	this.marsProjectFX = marsProjectFX;
     	mainMenu = this;
  	}
@@ -173,7 +173,7 @@ public class MainMenu {
      */
 	@SuppressWarnings("restriction")
 	void initAndShowGUI(Stage stage) {
-	   logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName());
+	   //logger.info("MainMenu's initAndShowGUI() is on " + Thread.currentThread().getName());
 
 		this.stage = stage;
 
@@ -525,8 +525,7 @@ public class MainMenu {
     */
 	public class LoadSimulationTask implements Runnable {
 		public void run() {			
-
-			logger.info("MainMenu's LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
+			//logger.info("MainMenu's LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
 			//fileSize = 1;
 			logger.info("Loading settlement data from the default saved simulation...");
 		
@@ -537,7 +536,7 @@ public class MainMenu {
 	 * Prepares the scene in the main scene
 	 */
 	public void prepareScene() {
-	   logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
+	   //logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
 	   // prepare main scene
 	   mainScene.prepareMainScene();
 	   // creates and initialize scene
@@ -551,7 +550,7 @@ public class MainMenu {
 	 * Sets up the stage for the main scene
 	 */
 	public void prepareStage() {
-	   logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName());
+	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName());
 
 	   mainScene.prepareOthers();
 

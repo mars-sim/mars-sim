@@ -68,6 +68,8 @@ implements Serializable {
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
     
+    public static final double MENTAL_BREAKDOWN = 80D;
+    
     private static final double COLLAPSE_IMMINENT = 2500D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
@@ -343,13 +345,13 @@ implements Serializable {
             }
         }
 
-        // If person is at maximum stress, check for mental breakdown.
-        if (stress == 100.0D) {
+        // If person is at high stress, check for mental breakdown.
+        if (stress > MENTAL_BREAKDOWN) {
             checkForStressBreakdown(config, time);
         }
 
         // 2016-03-01 check if person is at very high fatigue may collapse.
-        if (fatigue == COLLAPSE_IMMINENT) {
+        if (fatigue > COLLAPSE_IMMINENT) {
             checkForHighFatigueCollapse(config, time);
         }
         
@@ -894,8 +896,10 @@ implements Serializable {
                         addMedicalComplaint(anxietyAttack);
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         logger.info(person.getName() + " has an anxiety attack.");
+                        System.out.println(person.getName() + " has an anxiety attack.");
                     }
-                    else logger.log(Level.SEVERE,"Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
+                    else 
+                    	logger.log(Level.SEVERE,"Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
                 }
             }
         }
@@ -930,7 +934,8 @@ implements Serializable {
 	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 	                        logger.info(person.getName() + " collapses because of high fatigue exhaustion.");
 	                    }
-	                    else logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
+	                    else 
+	                    	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
 	                }
                 }
             }

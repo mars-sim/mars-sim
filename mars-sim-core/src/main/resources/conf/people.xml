@@ -119,13 +119,11 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 	<!-- Base percent chance per millisol that a person at maximum stress will have an anxiety attack. -->
 	<!-- See medical complaint: "Anxiety Attack" in medical.xml. -->
-	<!-- Note: 1 millisol = 88.77 seconds -->
 	<!-- Default: .01 -->
 	<stress-breakdown-chance value=".01" />
 
 	<!-- Base percent chance per millisol that a person at high fatigue will collapse. -->
 	<!-- See medical complaint: "High Fatigue Collapse" in medical.xml. -->
-	<!-- Note: 1 millisol = 88.77 seconds -->
 	<!-- Default: .10 -->
 	<high-fatigue-collapse-chance value="5" />
 

@@ -330,7 +330,7 @@ public class ChatBox extends BorderPane {
     	
     	// Case 2: ask to talk to a person or robot
     	else if (isInteger(text, 10) && settlementCache == null) {
-    
+	
 	    	int num = Integer.parseUnsignedInt(text, 10);
 	    	
 	    	if (num == 0) {
@@ -479,9 +479,9 @@ public class ChatBox extends BorderPane {
 	    	}
 	
 	    	else if (num == 11) {
-	    		questionText = "You : what is the buried settlement ?";
+	    		questionText = "You : what is his/her buried settlement ?";
 	    		Settlement s = cache.getBuriedSettlement();
-	    		if (s  != null) {
+	    		if (s == null) {
 	           		responseText = "The buried settlement is " + s.getName();
 	           		sys = "System : ";
 	       		}

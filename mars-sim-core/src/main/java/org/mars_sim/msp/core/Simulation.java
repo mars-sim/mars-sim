@@ -238,7 +238,7 @@ implements ClockListener, Serializable {
      * @throws Exception if new simulation could not be created.
      */
     public static void createNewSimulation() {
-        logger.info("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's createNewSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
         isUpdating = true;
 
@@ -277,7 +277,7 @@ implements ClockListener, Serializable {
      * @throws Exception if transient data could not be loaded.
      */
     private void initializeTransientData() {
-        logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
 
     	eventManager = new HistoricalEventManager();
     }
@@ -288,7 +288,7 @@ implements ClockListener, Serializable {
      */
     // 2015-02-04 Added threading
     private void initializeIntransientData() {
-        logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
 
         if (eventManager == null)
         	eventManager = new HistoricalEventManager();

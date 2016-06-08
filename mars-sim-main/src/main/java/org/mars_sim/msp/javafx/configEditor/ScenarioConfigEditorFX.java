@@ -155,7 +155,7 @@ public class ScenarioConfigEditorFX {
 	 * @param config the simulation configuration.
 	 */
 	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { //, SimulationConfig config) {
-	    logger.info("ScenarioConfigEditorFX's constructor is on " + Thread.currentThread().getName() );
+	    //logger.info("ScenarioConfigEditorFX's constructor is on " + Thread.currentThread().getName() );
 
 		// Initialize data members.
 		this.config = SimulationConfig.instance();
@@ -604,7 +604,7 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-			logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
+			//logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
 			//boolean isDone = false;
 			Simulation.createNewSimulation();
 			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");

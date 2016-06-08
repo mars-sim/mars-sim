@@ -72,7 +72,6 @@ public class BrowserJFX {
     public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
     public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
 
-    
     public String textInputCache;
     
     private static final String CSS = 
@@ -112,35 +111,13 @@ public class BrowserJFX {
         Platform.runLater(() -> {       
             view = new WebView();
             engine = view.getEngine();          
+            history = engine.getHistory();
         });
         
         initJFX();
         panel = init();
     }
 
-    
-    public void getURLType(String input) {
-    	if (input != null && !input.isEmpty()) {
-    		textInputCache = input; 
-
-    		if (input.equals("ticket") 
-    				|| input.equals("map1")
-    				|| input.equals("globe1")) {
-    			parseInput(input, 0);
-    		}
-    		else if (input.contains("file:/")) {
-    				parseInput(input, 1); //or 3   			
-    		}
-    		else {
-    			parseInput(input, 2);
-        	}
-		}
-    	else {
-			parseInput(input, 1); //or 3 
-    	}
-	
-    }
-    
     
     // 2016-04-22 Added ability to interpret internal commands
     public JPanel init() {
@@ -185,6 +162,29 @@ public class BrowserJFX {
         return panel;
     }
 
+    
+    public void getURLType(String input) {
+    	if (input != null && !input.isEmpty()) {
+    		textInputCache = input; 
+
+    		if (input.equals("ticket") 
+    				|| input.equals("map1")
+    				|| input.equals("globe1")) {
+    			parseInput(input, 0);
+    		}
+    		else if (input.contains("file:/")) {
+    				parseInput(input, 1); //or 3   			
+    		}
+    		else {
+    			parseInput(input, 2);
+        	}
+		}
+    	else {
+			parseInput(input, 1); //or 3 
+    	}
+	
+    }
+    
     // 2016-04-22 Added parseInput()
     public void parseInput(String input, int URL_type) {
 		
@@ -194,7 +194,7 @@ public class BrowserJFX {
 			isLocalHtml = true;
 			//System.out.println("BrowserJFX : input is " + input);
 			updateURL(input + ".html", 0);
-			addCSS();
+			//addCSS();
 	    }
 		// Type 1 is local html file 
 		else if (URL_type == 1) {
@@ -209,25 +209,20 @@ public class BrowserJFX {
 			isInternal = false;
 			
 			boolean status = input.toLowerCase().contains(HTTPS_HEADER);          	
-			//int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
 			
 			// Type 2 is a remote url 
-			if (status) {// && pos == 0) {
-				//input = input.replace(HTTP_HEADER, "");  
+			if (status) {
 				isLocalHtml = false;
 				updateURL(input, 2);
-				//loadRemoteURL(input);
 			}
 			else {
 				status = input.toLowerCase().contains(HTTP_HEADER);          	
 				//pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
 				
 				// Type 2 is a remote url 
-				if (status) {// && pos == 0) {
-					//input = input.replace(HTTP_HEADER, "");
+				if (status) {
 					isLocalHtml = false;
 					updateURL(input, 2);
-					//loadRemoteURL(input);
 				}
 				else {
 					
@@ -235,8 +230,7 @@ public class BrowserJFX {
 					// e.g. type in google.com
 					isLocalHtml = false;
 					// will need to add http://
-					updateURL(input, 3);
-									
+					updateURL(input, 3);									
 				}				
 			}
 			
@@ -244,74 +238,23 @@ public class BrowserJFX {
 		}
     }
 
-/*    
-    private boolean isRemoteURL(String input) {
-    	
-    	//String input = urlTF.getText().trim();
-		
-    	//System.out.println("BrowserJFX's checkURL() : input is [" + input + "]");
-    	
-		if (input != null && !input.isEmpty()) {
-    		//textInputCache = input; 
-
-    		if (input.equals("ticket") 
-    				|| input.equals("map1")
-    				|| input.equals("globe1")) {
-    			return false;
-    		}
-    		else {
-    			// input is not empty and not an internal command
-    			System.out.println("isRemoteURL() : input is not empty and not an internal command");
-    			return true;
-    		}
-		}
-		else {
-			// input is empty, a local html
-			System.out.println("isRemoteURL() : input is empty");
-			return true;
-		}
-		
-		
-    	//String input = event.getURL().toString();
-        //System.out.println(input);
-        
-        boolean status0 = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
-        boolean status1 = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
-
-        //pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
-		
-		if (status0 || status1) {    					
-			isLocalHtml = false;    					
-		}
-		else {
-			isLocalHtml = true;
-		}
-
-    }
-*/    
     
     @SuppressWarnings("restriction")
 	private void initJFX() {
 
     	java.net.CookieHandler.setDefault(null);
     	
-        Platform.runLater(() -> {       
-                //WebView view = new WebView();
-                //engine = view.getEngine();          
-                
+        Platform.runLater(() -> {  
+                  
                 WebViewHyperlinkListener eventPrintingListener = event -> {
                 	
                 	if (event.getEventType() == EventType.ACTIVATED) {
-	                	//String input = WebViews.hyperlinkEventToString(event);
 	                	String input = event.getURL().toString();
-	                    //System.out.println(input);
-	                    
+	                     
 	                    boolean status0 = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
 	                    boolean status1 = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
 	
-	                    //pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
-	    				
-	    				if (status0 || status1) {    					
+	                    if (status0 || status1) {    					
 	    					isLocalHtml = false;    					
 	        			}
 	    				else {
@@ -328,35 +271,6 @@ public class BrowserJFX {
                 		+ " -fx-font-color: white;"
                 		+ " -fx-border-color: #00a7c8");
 
-                
-                //Worker<?> worker = engine.getLoadWorker();
-                //ReadOnlyObjectProperty<State> stateProperty = worker.stateProperty();
-                
-                history = engine.getHistory();
-/*                
-                ComboBox comboBox = new ComboBox();
-                comboBox.setPromptText("History");
-                comboBox.setMaxWidth(110);
-                
-                history.getEntries().addListener((Change<? extends Entry> c) -> {
-                    c.next();
-                    for (Entry e : c.getRemoved()) {
-                        comboBox.getItems().remove(e.getUrl());
-                    }
-                    for (Entry e : c.getAddedSubList()) {
-                        comboBox.getItems().add(e.getUrl());
-                    }
-                });
-
-                comboBox.setPrefWidth(60);
-                comboBox.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent ev) {
-                        int offset = comboBox.getSelectionModel().getSelectedIndex() - history.getCurrentIndex();
-                        history.go(offset);
-                    }
-                });
-*/        
 
                 Button reloadB = new Button("Refresh");
                 reloadB.setMaxWidth(110);
@@ -373,25 +287,19 @@ public class BrowserJFX {
                 	
                 	engine.executeScript("history.back()");              	
                 	String input = urlTF.getText().trim();
-                	
-                	//if (!isRemoteURL(input)) {
-                	//	addCSS();
-                		getURLType(input);
-                		System.out.println("calling history.back()");
-                	//}
-                	
+      
+                	getURLType(input);
+                	System.out.println("calling history.back()");
+ 	
                 });
                 
                 forwardB.setOnAction(e -> {  
                 	
                 	engine.executeScript("history.forward()");
                 	String input = urlTF.getText().trim();
-                	
-                	//if (!isRemoteURL(input)) {
-                	//	addCSS();
-                		getURLType(input);
-                		System.out.println("calling history.forward()");
-                	//}
+                 	
+                	getURLType(input);
+                	System.out.println("calling history.forward()");
                 });
                 
 /*
@@ -414,14 +322,19 @@ public class BrowserJFX {
                     @Override
                     public void handle(final WebEvent<String> event) {
                         SwingUtilities.invokeLater(()->{
-                        	//System.out.println("setOnStatusChanged()");
+                        	//System.out.println("BrowserJFX : hovering over a hyperlink, calling setOnStatusChanged() to display its url on the status bar");
                         	// Note: it shows the content of the hyperlink (even before the user clicks on it.
                             String content = event.getData();
                             if (content != null && !content.isEmpty()) {
-                            	                     			
-                            	statusBarLbl.setText(content);
-                                // TODO: tweak how lblStatus displays the loading of a internal file having file:///... 
-                                //System.out.println("BrowserJFX : event.getData() is [" + event.getData() + "]");
+                            	     
+                            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
+                            	if (content.contains("docs")) {                            	
+                            		int i = content.indexOf("docs")-1;
+                            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
+                            	}
+                            	else
+                            		// this is a remote link or internal link
+                            		statusBarLbl.setText(content);
                             }
                         });
                     }
@@ -435,23 +348,11 @@ public class BrowserJFX {
 	                        JSObject jsobj = (JSObject) engine.executeScript("window");
 	        				jsobj.setMember("JavaBridge", new TicketSubmission());  
                     	});
-                    	
-                    	
+                    	                   	
                     	SwingUtilities.invokeLater(() ->{
-                        	//System.out.println("locationProperty()");
-       	
-                        	//String urlText = getCurrentURL();
-                        	//getURLType(urlText);//urlTF.getText());
-                        	
-                        	//getURLType(getCurrentURL());                     		
- 
                     		textInputCache = newValue;
-                    		SwingUtilities.invokeLater(() ->{
-                        		setURLText();
-                        	});
-                       	
-                        	
-                        });
+                       		setURLText();
+                    	});
                     }
                 });
 
@@ -470,8 +371,7 @@ public class BrowserJFX {
 	                public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
 	                	if (engine.getLoadWorker().getState() == FAILED) {
 	                		SwingUtilities.invokeLater(()-> {
-	                				//System.out.println("exceptionProperty()");
-	                				//System.out.println("BrowserJFX : worker.getState() == FAILED");
+	                				//System.out.println("BrowserJFX : worker.getState() == FAILED, calling exceptionProperty()");
 	/*                				JOptionPane.showMessageDialog(
 	                                            panel,
 	                                            (value != null) ?
@@ -481,23 +381,17 @@ public class BrowserJFX {
 	                                            JOptionPane.ERROR_MESSAGE);
 	*/
 		                		});
-		                	}
-		             	
+		                	}	             	
 		                }
-		            }
-                
+		            }              
                 );
  /*                             
                 engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-                    if (newState == Worker.State.SUCCEEDED) {
-                    
-                    	System.out.println("calling stateProperty");                   	                   	
-                    	
-                    	getURLType(getCurrentURL());
-                    	
+                    if (newState == Worker.State.SUCCEEDED) {                  
+                    	System.out.println("calling stateProperty");                   	                   	                   	
+                    	getURLType(getCurrentURL());                 	
                         JSObject jsobj = (JSObject) engine.executeScript("window");
-        				jsobj.setMember("JavaBridge", new TicketSubmission());  
-	
+        				jsobj.setMember("JavaBridge", new TicketSubmission());  	
                     }
                 });
 */            
@@ -508,15 +402,10 @@ public class BrowserJFX {
                         public void changed(ObservableValue<? extends State> ov,
                             State oldState, State newState) {                           
                                 if (newState == State.SUCCEEDED) {
-                                	//System.out.println("calling stateProperty");  
-                                	
-                                	getURLType(getCurrentURL());
-                                	
-                                	if (!isLocalHtml)
-                                		
-                                	SwingUtilities.invokeLater(() ->{
-                                		setURLText();
-                                	});
+                                	//System.out.println("BrowserJFX : clicking on a hyperlink, calling stateProperty()");                              	
+                                	getURLType(getCurrentURL());                             	
+                                	if (!isLocalHtml)                                		
+	                                	SwingUtilities.invokeLater(() ->setURLText());
                                 }
                             }
                         }
@@ -526,6 +415,9 @@ public class BrowserJFX {
         });
     }
 
+    /*
+     * Set the url text in the address textfield 
+     */
     public void setURLText() {
 		//System.out.println("isLocalHtml : " + isLocalHtml + "   isInternal : " + isInternal);
     	if (isLocalHtml) {
@@ -533,7 +425,9 @@ public class BrowserJFX {
         		;//urlTF.setText(urlTF.getText());
      		}
     		else {
+    			// if it is a local html file, show blank on the address bar
     			urlTF.setText("");
+    			//urlTF.setText(textInputCache);
     		}
      	}
     	else {
@@ -542,17 +436,12 @@ public class BrowserJFX {
     }
     
     public void addCSS() { 	
-    	//Platform.runLater(()-> {
-   		//SwingUtilities.invokeLater(()->{
-	   		//System.out.println("adding css");
-	        Document doc = engine.getDocument() ;
-	        Element styleNode = doc.createElement("style");
-	        Text styleContent = doc.createTextNode(CSS);
-	        styleNode.appendChild(styleContent);
-	        doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
-	        //System.out.println(engine.executeScript("document.documentElement.innerHTML"));
-	        // post re-initialization
-    	//});
+	   	//System.out.println("adding css");
+    	Document doc = engine.getDocument() ;
+	    Element styleNode = doc.createElement("style");
+	    Text styleContent = doc.createTextNode(CSS);
+	    styleNode.appendChild(styleContent);
+	    doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
     }
     
 	// 2016-04-18 Added updateURL()
@@ -562,9 +451,6 @@ public class BrowserJFX {
 		    	URL url = getClass().getResource(Msg.getString("doc.help") + href);
 		    	//System.out.println("BrowserJFX : updateHistory(). Type " + URL_type + ". url is " + href);
 		    	loadLocalURL(url.toExternalForm());
-				//isLocalHtml = true;	
-				//isInternal = false;
-		    	
 	    	}
 	    	else if (URL_type == 1) {
 		    	//URL url = getClass().getResource(Msg.getString("doc.help") + href);
@@ -614,32 +500,16 @@ public class BrowserJFX {
     	isLocalHtml = false;
     	isInternal = false;
     	
-        Platform.runLater(()-> {
-/*            String url2 = toURL(url);
-            //System.out.println("before, tmp is "+ tmp);
-            if (url2 == null) {
-            	if (isSecure)
-            		url2 = toURL("https://" + url);
-            	else
-            		url2 = toURL("http://" + url);
-            	
-            }
-            //System.out.println("before, tmp is "+ tmp);
-*/            
-        				
+        Platform.runLater(()-> {    				
 			boolean status = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
-			//int pos = input.toLowerCase().indexOf(HTTPS_HEADER.toLowerCase());
-			
-			if (status) {// && pos == 0) {
-				//input = input.replace(HTTP_HEADER, "");  
+		
+			if (status) {
 				engine.load(input);
 			}
 			else {
 				status = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
-				//pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
-				
-				if (status) {// && pos == 0) {
-					//input = input.replace(HTTP_HEADER, "");
+			
+				if (status) {
 					engine.load(input);
 				}
 				else {
@@ -648,43 +518,37 @@ public class BrowserJFX {
 						//System.out.println("BrowserJFX's loadRemoteURL() : input is [" + input +"]");
 						engine.load(HTTP_HEADER + input);
 						//System.out.println("input is " + HTTP_HEADER + input);
-
 					}
-					// TODO: should it try https as well ?
-					
+					// TODO: should it try https as well ?					
 					// TODO: how to handle the case when the remote url is bad ?
 					// should delete this bad url and its history index, instead of saving it
 					
 				}				
-			}
-			
-			
+			}		
             // TODO: how to check if the url is valid or if it's loaded successfully?
         });
         
     }
 
     @SuppressWarnings("restriction")
-	public void loadLocalURL(String input) {
-       	isLocalHtml = true;
-       	  	
+	public void loadLocalURL(String content) {
+       	isLocalHtml = true;      	  	
         Platform.runLater(()-> {
-            //System.out.println("before, path is "+ path);
-            //String p = path.replace("file://", "file:///").replace("file:/", "file:///");
-            //System.out.println("after, path is "+ p);
-            engine.load(input);
+            engine.load(content);
+            if (content != null && !content.isEmpty()) {
+       	     
+            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
+            	if (content.contains("docs")) {                            	
+            		int i = content.indexOf("docs")-1;
+            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
+            	}
+            	else
+            		// this is a remote link or internal link
+            		statusBarLbl.setText(content);
+            }
         });
         
     }
-/*
-    private static String toURL(String str) {
-        try {
-            return new URL(str).toExternalForm();
-        } catch (MalformedURLException exception) {
-                return null;
-        }
-    }
-*/    
 
     private void highlight() {
         //System.out.println("highlight()");
@@ -703,31 +567,7 @@ public class BrowserJFX {
     private Object executejQuery(final WebEngine engine, String script) {
         return executejQuery(engine, DEFAULT_JQUERY_MIN_VERSION, script);
     } 
-*/   
-      
- /*   
-    public String goBack() {    
-      final WebHistory history = engine.getHistory();
-      ObservableList<WebHistory.Entry> entryList = history.getEntries();
-      int currentIndex = history.getCurrentIndex();
-//      Out("currentIndex = "+currentIndex);
-//      Out(entryList.toString().replace("],","]\n"));
-
-      Platform.runLater(new Runnable() { public void run() { history.go(-1); } });
-      return entryList.get(currentIndex>0?currentIndex-1:currentIndex).getUrl();
-    }
-
-    public String goForward() {    
-      final WebHistory history = engine.getHistory();
-      ObservableList<WebHistory.Entry> entryList = history.getEntries();
-      int currentIndex = history.getCurrentIndex();
-//      Out("currentIndex = "+currentIndex);
-//      Out(entryList.toString().replace("],","]\n"));
-
-      Platform.runLater(new Runnable() { public void run() { history.go(1); } });
-      return entryList.get(currentIndex<entryList.size()-1?currentIndex+1:currentIndex).getUrl();
-    }
- */
+*/      
     
     @SuppressWarnings("restriction")
 	public String getCurrentURL() {    
@@ -736,15 +576,17 @@ public class BrowserJFX {
         int currentIndex = history.getCurrentIndex();
 
         String txt = entryList.get(currentIndex).getUrl();
-        //System.out.println("currentIndex is " + currentIndex + " url is " + txt);
-        
-        //Platform.runLater(() -> { history.go(0);} );
-               
+        //System.out.println("currentIndex is " + currentIndex + " url is " + txt);       
+        //Platform.runLater(() -> { history.go(0);} );           
         return txt;
       }
     
     public JPanel getPanel() {
     	return panel;
+    }
+    
+    public JLabel getStatusBarLabel() {
+    	return statusBarLbl;
     }
 }
 

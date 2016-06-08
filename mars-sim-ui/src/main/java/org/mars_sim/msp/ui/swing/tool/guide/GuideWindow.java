@@ -93,13 +93,8 @@ ComponentListener {
 		/* [landrus, 27.11.09]: use classloader compliant paths */
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
 
-		//SwingUtilities.invokeLater(new Runnable() {
-		//	public void run() {
-				browser = desktop.getBrowserJFX();
-				browserPanel = browser.getPanel();//.init();
-				//browser.loadURL("http://mars-sim.sourceforge.net");
-		//	}
-		//});
+		browser = desktop.getBrowserJFX();
+		browserPanel = browser.getPanel();//.init();
 
 		// Create the main panel
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -185,14 +180,15 @@ ComponentListener {
 	/**
 	 * Set a display URL .
 	 */
+	// 2016-06-07 Added displaying the hyperlink's path and html filename.
 	public void setURL(String fileloc) {
-		//htmlPane.goToURL(getClass().getResource(fileloc));
 		//String path = getClass().getResource(fileloc).toExternalForm();
 		//browser.loadLocalURL(path);
 		//browser.loadLocalURL(getClass().getResource(fileloc).toExternalForm());
 		//System.out.println("GuideWindow's setURL() : fileloc is " + fileloc);
 		//System.out.println("GuideWindow's setURL() : URL is " + getClass().getResource(fileloc));
 		goToURL(getClass().getResource(fileloc));
+		browser.getStatusBarLabel().setText(fileloc);
 	}
 
 	/** Implementing ActionListener method. */
@@ -203,7 +199,9 @@ ComponentListener {
 			//browser.loadLocalURL(guideURL.toExternalForm());
 			goToURL(guideURL);
 			updateButtons();
+			browser.getStatusBarLabel().setText(guideURL.toExternalForm());
 		} 
+		
 /*		else if (source == this.backButton) {
 			back();
 			updateButtons();
@@ -217,7 +215,8 @@ ComponentListener {
 
 	public void goToURL(URL url) {
 		//System.out.println("GuideWindow's goToURL()");
-		URL new_url = displayPage(url);
+		//URL new_url = 
+		displayPage(url);
 		//System.out.println("goToURL(). new_url is "+ new_url);
 		//updateHistory(new_url);
 	}
@@ -348,14 +347,11 @@ ComponentListener {
 		viewPort.setViewPosition(new Point(0, 0));
 	}
 
-	public void componentMoved(ComponentEvent e) {
-	}
+	public void componentMoved(ComponentEvent e) {}
 
-	public void componentShown(ComponentEvent e) {
-	}
+	public void componentShown(ComponentEvent e) {}
 
-	public void componentHidden(ComponentEvent e) {
-	}
+	public void componentHidden(ComponentEvent e) {}
 
 	/**
 	 * Prepare tool window for deletion.
