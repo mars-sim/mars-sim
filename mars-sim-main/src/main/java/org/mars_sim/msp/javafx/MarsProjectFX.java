@@ -417,7 +417,7 @@ public class MarsProjectFX extends Application  {
      * Create a new simulation instance.
      */
     void handleNewSimulation() {
-		logger.info("MarsProjectFX's handleNewSimulation() is on "+Thread.currentThread().getName() );
+		//logger.info("MarsProjectFX's handleNewSimulation() is on "+Thread.currentThread().getName() );
 		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
 		//isDone = true;
         try {
@@ -470,7 +470,7 @@ public class MarsProjectFX extends Application  {
 	public class ConfigEditorTask implements Runnable {
 	   	
 		  public void run() {
-			  logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
+			  //logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
 			  new ScenarioConfigEditorFX(marsProjectFX, mainMenu);
 		  }
 	}

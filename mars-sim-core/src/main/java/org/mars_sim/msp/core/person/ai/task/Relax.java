@@ -51,6 +51,8 @@ implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.5D;
 
+    private double timeFactor;
+
 	/**
 	 * Constructor.
 	 * @param person the person to perform the task
@@ -58,6 +60,8 @@ implements Serializable {
 	public Relax(Person person) {
 		super(NAME, person, false, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(3), true, 10D +
 				RandomUtil.getRandomDouble(40D));
+
+        timeFactor = 1D; // TODO: should vary this factor by person
 
 		// If during person's work shift, only relax for short period.
 		int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
@@ -170,7 +174,17 @@ implements Serializable {
 	 * @return the amount of time (millisol) left after performing the phase.
 	 */
 	private double relaxingPhase(double time) {
-		// Do nothing
+		
+		if (person != null) {
+	        // Reduce person's fatigue
+	        double newFatigue = person.getPhysicalCondition().getFatigue() - (timeFactor * time);
+	        if (newFatigue < 0D) {
+	            newFatigue = 0D;
+	        }
+	        person.getPhysicalCondition().setFatigue(newFatigue);
+
+		}
+		
 		return 0D;
 	}
 

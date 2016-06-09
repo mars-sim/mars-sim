@@ -46,21 +46,14 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             
             // Check if mission is possible for person based on their circumstance.
             boolean missionPossible = true;
+            
             Settlement settlement = person.getSettlement();
         
-            // Check if available rover.
-            if (!RoverMission.areVehiclesAvailable(settlement, true)) {
-                missionPossible = false;
-            }
+            Vehicle vehicleTarget = null;
             
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < 
-                    RescueSalvageVehicle.MISSION_MIN_MEMBERS) {
-                missionPossible = false;
-            }
+            boolean rescue = false;
             
             // Check if there are any beacon vehicles within range that need help.
-            Vehicle vehicleTarget = null;
             try {
                 Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
                 if (vehicle != null) {
@@ -75,11 +68,24 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                 }
             }
             catch (Exception e) {}
+           
+            if (!missionPossible)
+            ;
+            // Check if available rover.
+            else if (!RoverMission.areVehiclesAvailable(settlement, true)) {
+                missionPossible = false;
+            }
+            
+            // Check if min number of EVA suits at settlement.
+            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < 
+                    RescueSalvageVehicle.MISSION_MIN_MEMBERS) {
+                missionPossible = false;
+            }
             
             // Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
             // Also check for backup rover for salvage mission.
-            boolean rescue = false;
-            if (vehicleTarget != null) {
+            //boolean rescue = false;
+            else if (vehicleTarget != null) {
                 rescue = (RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget) > 0);
                 if (rescue) {
                     // if (!atLeastOnePersonRemainingAtSettlement(settlement, person)) missionPossible = false;
@@ -93,17 +99,17 @@ public class RescueSalvageVehicleMeta implements MetaMission {
                     }
                     
                     // Check if available backup rover.
-                    if (!RoverMission.hasBackupRover(settlement)) {
+                    else if (!RoverMission.hasBackupRover(settlement)) {
                         missionPossible = false;
                     }
                 }
             }
             
             // Check for embarking missions.
-            if (VehicleMission.hasEmbarkingMissions(settlement)) {
+            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
                 missionPossible = false;
             }
-            
+             
             // Determine mission probability.
             if (missionPossible) {
                 if (rescue) {

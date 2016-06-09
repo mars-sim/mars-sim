@@ -34,7 +34,11 @@ implements Serializable {
 	private static final String ROBOT_TYPE = "type";
 	private static final String POWER_CONSUMPTION_RATE = "power-consumption-rate";
 	private static final String POWER_DEPRIVATION_TIME = "power-deprivation-time";
-	private static final String STARVATION_START_TIME = "starvation-start-time";
+	private static final String FUEL_CONSUMPTION_RATE = "fuel-consumption-rate";
+	private static final String FUEL_DEPRIVATION_TIME = "fuel-deprivation-time";
+
+	
+	private static final String LOW_POWER_MODE_START_TIME = "low-power-mode-start-time";
 	private static final String MIN_AIR_PRESSURE = "min-air-pressure";
 	private static final String DECOMPRESSION_TIME = "decompression-time";
 	private static final String MIN_TEMPERATURE = "min-temperature";
@@ -97,6 +101,15 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets the fuel consumption rate.
+	 * @return fuel rate (kg/sol)
+	 * @throws Exception if consumption rate could not be found.
+	 */
+	public double getFuelConsumptionRate() {
+		return getValueAsDouble(FUEL_CONSUMPTION_RATE);
+	}
+	
+	/**
 	 * Gets the Power deprivation time.
 	 * @return Power time in sols.
 	 * @throws Exception if Power deprivation time could not be found.
@@ -107,12 +120,12 @@ implements Serializable {
 
 
 	/**
-	 * Gets the starvation start time.
-	 * @return starvation time in sols.
-	 * @throws Exception if starvation start time could not be found.
+	 * Gets the low power mode start time.
+	 * @return low power mode start time in sols.
+	 * @throws Exception if low power mode start time could not be found.
 	 */
-	public double getStarvationStartTime() {
-		return getValueAsDouble(STARVATION_START_TIME);
+	public double getLowPowerModeStartTime() {
+		return getValueAsDouble(LOW_POWER_MODE_START_TIME);
 	}
 
 	/**

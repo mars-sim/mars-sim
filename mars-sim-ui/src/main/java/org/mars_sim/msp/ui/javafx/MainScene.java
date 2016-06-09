@@ -27,8 +27,8 @@ import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
 
 import com.sun.management.OperatingSystemMXBean;
 
-import eu.hansolo.enzo.notification.Notification;
-import eu.hansolo.enzo.notification.Notification.Notifier;
+//import eu.hansolo.enzo.notification.Notification;
+//import eu.hansolo.enzo.notification.Notification.Notifier;
 import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -203,7 +203,7 @@ public class MainScene {
 	//private FXDesktopPane fxDesktopPane;
 	private ESCHandler esc = null;
 
-	private Timeline timeline, notify_timeline;
+	private Timeline timeline;
 	private static NotificationPane notificationPane;
 
 
@@ -220,45 +220,6 @@ public class MainScene {
 	@SuppressWarnings("restriction")
 	private OperatingSystemMXBean osBean;
 
-    private static String[] quote = new String[10];
-    
-	private static String quote0 = 
-			  "\" All the conditions necessary for murder are \n "
-    		+ " met if you shut 2 men in a cabin measuring \n"
-    		+ " 18'x20' and leave them together for 2 months.\"\n"
-    		+ "                                                 - Valery Ryumin";				
-    
-	private static String quote1 = 
-			  "\" We have some special space shampoo that doesn't\n "
-    		+ " require water, and it does a pretty good job. So at\n "
-			+ " the end of the mission, even though it's 6 months\n "
-    		+ " without a bath, we're still pretty good, and we \n"
-    		+ " don't smell too bad.\"\n"
-    		+ "                                         -Mike Fincke, NASA Astronaut";
-
-	private static String quote2 = 
-			  "\" The Dog, and the Plough, and the Hunter, and all\n "
-    		+ "          And the star of the sailor, and Mars,\n"
-    		+ " These shone in the sky, and the pail by the wall \n"
-    		+ "          Would be half full of water and stars.\"\n"
-    		+ "              - Robert Louis Steenson, 'Escape at Bedtime'";
-
-	private static String quote3 = 
-			  "\" A human being should be able to change a diaper,\n "
-			+ " plan an invasion, conn a ship, design a building,\n"
-			+ " write a sonnet, balance accounts, build a wall, \n"
-			+ " comfort the dyding, take orders, cooperate, act alone,\n"
-			+ " solve equations, analyze a new problem, pitch manure,\n"
-			+ " program a computer, cook a tasty meal, fight efficiently\n"
-			+ " , and die gallantly. Specialization is for insects.\"\n"
-			+ "                                                - Robert A. Heinlein";
-
-	private static String quote4 = 
-			  "\" Don't tell me that man doesn't belong out there.\n "
-			+ " Man belongs wherever he wants to go, and he'll do \n"
-			+ " plenty well when he gest there.\"\n"
-			+ "                - Wernher von Braun, Time Magazine, 1958";
-
 	
 /*	
 	//private static final Random         RND           = new Random();
@@ -270,7 +231,6 @@ public class MainScene {
     };
 */
 	
-    private Notification.Notifier notifier;
     
 	//static {
    //     Font.loadFont(MainScene.class.getResource("/fxui/fonts/fontawesome-webfont.ttf").toExternalForm(), 10);
@@ -1777,13 +1737,15 @@ public class MainScene {
 		
 		isMainSceneDoneLoading = true;
 		
-		
-		openQuote(quote);
+		QuotationPopup quote = new QuotationPopup();
+		quote.popAQuote(stage);
+			
+		//openQuote(quote);
 	}
 
-	/*
+/*
 	 * Create a quote using Enzo's Notification  
-	 */
+	 
 	// 2016-04-21 Added openQuote()
 	public void openQuote(String[] quoteArray) {
 
@@ -1820,6 +1782,7 @@ public class MainScene {
 		notify_timeline.stop();
 		notifier.stop();
 	}
+*/
 	
 	public MarsNode getMarsNode() {
 		return marsNode;
@@ -1898,7 +1861,7 @@ public class MainScene {
 		nodeTab = null;
 		dndTabPane = null;
 		timeline = null;
-		notify_timeline = null;
+		//notify_timeline = null;
 		notificationPane = null;
 
 		desktop.destroy();

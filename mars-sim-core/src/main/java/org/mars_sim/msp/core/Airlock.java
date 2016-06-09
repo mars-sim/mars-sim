@@ -525,7 +525,7 @@ public abstract class Airlock implements Serializable {
                 }
                 else if (operator instanceof Robot) {
                 	robot = (Robot) operator;
-                	isDead = robot.getPhysicalCondition().isDead();
+                	isDead = robot.getSystemCondition().isInoperable();
 
                 }
 

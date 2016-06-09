@@ -101,8 +101,8 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     private RoboticAttributeManager attributes;
     /** robot's mind. */
     private BotMind botMind;
-    /** robot's physical condition. */
-    private PhysicalCondition health;
+    /** robot's System condition. */
+    private SystemCondition health;
 
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
@@ -161,7 +161,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         birthTimeStamp = new EarthClock(timeString);
         attributes = new RoboticAttributeManager(this);
         botMind = new BotMind(this);
-        health = new PhysicalCondition(this);
+        health = new SystemCondition(this);
         //scientificAchievement = new HashMap<ScienceType, Double>(0);
         // 2015-03-19 Added TaskSchedule class
         taskSchedule = new TaskSchedule(this);
@@ -394,10 +394,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     }
 
     /**
-     * Returns a reference to the robot's physical condition
-     * @return the robot's physical condition
+     * Returns a reference to the robot's system condition
+     * @return the robot's batteryCondition
      */
-    public PhysicalCondition getPhysicalCondition() {
+    public SystemCondition getSystemCondition() {
         return health;
     }
 
@@ -568,7 +568,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @return true if vehicle operator is fit.
      */
     public boolean isFitForOperatingVehicle() {
-        return !health.hasSeriousMedicalProblems();
+        return false; //!health.hasSeriousMedicalProblems();
     }
 
     /**

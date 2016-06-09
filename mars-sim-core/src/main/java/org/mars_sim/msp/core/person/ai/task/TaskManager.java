@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.robot.SystemCondition;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -286,20 +287,24 @@ implements Serializable {
 	 */
     public void reduceEnergy(double time) {
     	PhysicalCondition health = null;
-		if (person != null)
+    	SystemCondition sys = null;
+		if (person != null) {
 			health = person.getPhysicalCondition();
-		else if (robot != null)
-			health = robot.getPhysicalCondition();
+//			int ACTIVITY_FACTOR = 6;
+//			double newTime = ACTIVITY_FACTOR * time ;
+//			health.reduceEnergy(newTime);
 
-//		int ACTIVITY_FACTOR = 6;
-//		double newTime = ACTIVITY_FACTOR * time ;
-//		health.reduceEnergy(newTime);
+			// Changing reduce energy to be just time as it otherwise
+			// ends up being too much energy reduction compared to the
+			// amount gained from eating.
+			health.reduceEnergy(time);
+	        //System.out.println("TaskManager : reduce Energy by "+ Math.round( newTime * 10.0)/10.0);
+		}
+		else if (robot != null) {
+			sys = robot.getSystemCondition();
+			sys.reduceEnergy(time);
+		}
 
-		// Changing reduce energy to be just time as it otherwise
-		// ends up being too much energy reduction compared to the
-		// amount gained from eating.
-		health.reduceEnergy(time);
-        //System.out.println("TaskManager : reduce Energy by "+ Math.round( newTime * 10.0)/10.0);
     }
 
 	/**

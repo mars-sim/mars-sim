@@ -154,8 +154,10 @@ implements Serializable {
      * @param newPerson The person requiring a physical presence.
      */
     // 2015-04-29 Added RadiationExposure();
-    public PhysicalCondition(Person newPerson) {
-         	
+    public PhysicalCondition(Person newPerson) { 	
+
+        alive = true;
+        
     	if (Simulation.instance().getMasterClock() != null) //.getMasterClock().getMarsClock() != null)
     		clock = Simulation.instance().getMasterClock().getMarsClock();
         
@@ -175,7 +177,6 @@ implements Serializable {
         // 2015-02-23 Added hygiene
         hygiene = RandomUtil.getRandomDouble(100D);
 
-        alive = true;
         medicationList = new ArrayList<Medication>();
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
@@ -190,31 +191,6 @@ implements Serializable {
         }
 
 
-    }
-
-    /**
-     * Constructor 2.
-     * @param robot The robot requiring a physical presence.
-     */
-    public PhysicalCondition(Robot newRobot) {
-    	clock = Simulation.instance().getMasterClock().getMarsClock();
-    	
-        deathDetails = null;
-        robot = newRobot;
-        problems = new HashMap<Complaint, HealthProblem>();
-        performance = 1.0D;
-        hunger = RandomUtil.getRandomDouble(400D);
-        alive = true;
-
-        RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
-
-        try {
-        	robotBatteryDrainTime = robotConfig.getStarvationStartTime() * 1000D;
-            //System.out.println("robotBatteryDrainTime : "+ Math.round(robotBatteryDrainTime*10.0)/10.0);
-        }
-        catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
     }
 
     public RadiationExposure getRadiationExposure() {
@@ -249,159 +225,125 @@ implements Serializable {
     boolean timePassing(double time, LifeSupportType support,
             PersonConfig config) {
 
-      	// 2015-12-05 check for the passing of each day
-    	int solElapsed = MarsClock.getSolOfYear(clock);
-    	if (solCache != solElapsed) {
-    		// 2015-12-05 reset numSleep back to zero at the beginning of each sol
-    		numSleep = 0;
-    		suppressHabit = 0;
-    		solCache = solElapsed;
+    	if (alive) {
+	      	// 2015-12-05 check for the passing of each day
+	    	int solElapsed = MarsClock.getSolOfYear(clock);
+	    	if (solCache != solElapsed) {
+	    		// 2015-12-05 reset numSleep back to zero at the beginning of each sol
+	    		numSleep = 0;
+	    		suppressHabit = 0;
+	    		solCache = solElapsed;
+	    	}
+	
+	        boolean illnessEvent = false;
+	
+	        radiation.timePassing(time);
+	
+	        // Check the existing problems
+	        if (!problems.isEmpty()) {
+	            // Throw illness event if any problems already exist.
+	            illnessEvent = true;
+	
+	            List<Complaint> newProblems = new ArrayList<Complaint>();
+	            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
+	
+	            Iterator<HealthProblem> iter = currentProblems.iterator();
+	            while(!isDead() && iter.hasNext()) {
+	                HealthProblem problem = iter.next();
+	
+	                // Advance each problem, they may change into a worse problem.
+	                // If the current is completed or a new problem exists then
+	                // remove this one.
+	                Complaint next = problem.timePassing(time, this);
+	
+	                if (problem.getCured() || (next != null)) {
+	                    problems.remove(problem.getIllness());
+	                }
+	
+	                // If a new problem, check it doesn't exist already
+	                if (next != null) {
+	                    newProblems.add(next);
+	                }
+	            }
+	
+	            // Add the new problems
+	            Iterator<Complaint> newIter = newProblems.iterator();
+	            while(newIter.hasNext()) {
+	                addMedicalComplaint(newIter.next());
+	                illnessEvent = true;
+	            }
+	        }
+	
+	        // Has the person died ?
+	        //if (isDead()) return false;
+	
+	        // See if any random illnesses happen.
+	        List<Complaint> randomAilments = checkForRandomAilments(time);
+	        if (randomAilments.size() > 0) {
+	            illnessEvent = true;
+	        }
+	
+	        // Consume necessary oxygen and water.
+	        try {
+	            if (consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D)))
+	                logger.log(Level.SEVERE, person.getName() + " has insufficient oxygen.");
+	            if (consumeWater(support, getWaterConsumptionRate() * (time / 1000D)))
+	                logger.log(Level.SEVERE, person.getName() + " has insufficient water.");
+	            if (requireAirPressure(support, config.getMinAirPressure()))
+	                logger.log(Level.SEVERE, person.getName() + " has insufficient air pressure.");
+	            if (requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature()))
+	                logger.log(Level.SEVERE, person.getName() + " cannot survive long at this high/low temperature.");
+	        }
+	        catch (Exception e) {
+	            logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
+	        }
+	
+	        // Build up fatigue & hunger for given time passing.
+	        setFatigue(fatigue + time);
+	        setHunger(hunger + time);
+	
+	        // normal bodily function consume a minute amount of energy
+	        // even if a person does not perform any tasks
+	        // Note: removing this as reduce energy is already handled
+	        // in the TaskManager and people are always performing tasks
+	        // unless dead. - Scott
+	        //reduceEnergy(time);
+	
+	        checkStarvation(hunger);
+	        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
+	
+	        // Add time to all medications affecting the person.
+	        Iterator<Medication> i = medicationList.iterator();
+	        while (i.hasNext()) {
+	            Medication med = i.next();
+	            med.timePassing(time);
+	            if (!med.isMedicated()) {
+	                i.remove();
+	            }
+	        }
+	
+	        // If person is at high stress, check for mental breakdown.
+	        if (stress > MENTAL_BREAKDOWN) {
+	            checkForStressBreakdown(config, time);
+	        }
+	
+	        // 2016-03-01 check if person is at very high fatigue may collapse.
+	        if (fatigue > COLLAPSE_IMMINENT) {
+	            checkForHighFatigueCollapse(config, time);
+	        }
+	        
+	        // Calculate performance and most serious illness.
+	        recalculate();
+	
+	        if (illnessEvent) {
+	            person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+	        }
+
     	}
+    	
+        return (alive);
 
-        boolean illnessEvent = false;
-
-        radiation.timePassing(time);
-
-        // Check the existing problems
-        if (!problems.isEmpty()) {
-            // Throw illness event if any problems already exist.
-            illnessEvent = true;
-
-            List<Complaint> newProblems = new ArrayList<Complaint>();
-            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
-
-            Iterator<HealthProblem> iter = currentProblems.iterator();
-            while(!isDead() && iter.hasNext()) {
-                HealthProblem problem = iter.next();
-
-                // Advance each problem, they may change into a worse problem.
-                // If the current is completed or a new problem exists then
-                // remove this one.
-                Complaint next = problem.timePassing(time, this);
-
-                if (problem.getCured() || (next != null)) {
-                    problems.remove(problem.getIllness());
-                }
-
-                // If a new problem, check it doesn't exist already
-                if (next != null) {
-                    newProblems.add(next);
-                }
-            }
-
-            // Add the new problems
-            Iterator<Complaint> newIter = newProblems.iterator();
-            while(newIter.hasNext()) {
-                addMedicalComplaint(newIter.next());
-                illnessEvent = true;
-            }
-        }
-
-        // Has the person died ?
-        if (isDead()) return false;
-
-        // See if any random illnesses happen.
-        List<Complaint> randomAilments = checkForRandomAilments(time);
-        if (randomAilments.size() > 0) {
-            illnessEvent = true;
-        }
-
-        // Consume necessary oxygen and water.
-        try {
-            if (consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D)))
-                logger.log(Level.SEVERE, person.getName() + " has insufficient oxygen.");
-            if (consumeWater(support, getWaterConsumptionRate() * (time / 1000D)))
-                logger.log(Level.SEVERE, person.getName() + " has insufficient water.");
-            if (requireAirPressure(support, config.getMinAirPressure()))
-                logger.log(Level.SEVERE, person.getName() + " has insufficient air pressure.");
-            if (requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature()))
-                logger.log(Level.SEVERE, person.getName() + " cannot survive long at this high/low temperature.");
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
-        }
-
-        // Build up fatigue & hunger for given time passing.
-        setFatigue(fatigue + time);
-        setHunger(hunger + time);
-
-        // normal bodily function consume a minute amount of energy
-        // even if a person does not perform any tasks
-        // Note: removing this as reduce energy is already handled
-        // in the TaskManager and people are always performing tasks
-        // unless dead. - Scott
-        //reduceEnergy(time);
-
-        checkStarvation(hunger);
-        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
-
-        // Add time to all medications affecting the person.
-        Iterator<Medication> i = medicationList.iterator();
-        while (i.hasNext()) {
-            Medication med = i.next();
-            med.timePassing(time);
-            if (!med.isMedicated()) {
-                i.remove();
-            }
-        }
-
-        // If person is at high stress, check for mental breakdown.
-        if (stress > MENTAL_BREAKDOWN) {
-            checkForStressBreakdown(config, time);
-        }
-
-        // 2016-03-01 check if person is at very high fatigue may collapse.
-        if (fatigue > COLLAPSE_IMMINENT) {
-            checkForHighFatigueCollapse(config, time);
-        }
-        
-        // Calculate performance and most serious illness.
-        recalculate();
-
-        if (illnessEvent) {
-            person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-        }
-
-        return (!isDead());
-    }
-
-    /**
-     * This timePassing method 2 reflect a passing of time for robots.
-
-     * @param time amount of time passing (in millisols)
-     * @param support life support system.
-     * @param config robot configuration.
-     * @return True still alive.
-     */
-    public boolean timePassing(double time, LifeSupportType support,
-            RobotConfig config) {
-/*
-    	//1. Check malfunction
-
-    	if (isDead()) return false;
-
-        try {
-            //if (consumePower(support, getPowerConsumptionRate() * (time / 1000D)))
-            //    logger.log(Level.SEVERE, robot.getName() + " has insufficient water.");
-            if (requireAirPressure(support, config.getMinAirPressure()))
-                logger.log(Level.SEVERE, robot.getName() + " has insufficient air pressure.");
-            if (requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature()))
-                logger.log(Level.SEVERE, robot.getName() + " cannot survive long at this high/low temperature.");
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE,robot.getName() + " - Error in lifesupport needs: " + e.getMessage());
-        }
-
-        setHunger(hunger + time);
-        // Consume a minute amount of energy even if a robot does not perform any tasks
-        reduceEnergy(time);
-        //checkStarvation(hunger);
-        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
-
-        // Calculate performance
-        recalculate();
-*/
-        return (!isDead());
+        //return (!isDead());
     }
 
 
@@ -746,9 +688,6 @@ implements Serializable {
             performance = newPerformance;
 			if (person != null)
 	            person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
-			else if (robot != null)
-				robot.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
-
         }
     }
 
@@ -769,9 +708,6 @@ implements Serializable {
             fatigue = newFatigue;
 			if (person != null)
 	            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-			else if (robot != null)
-				robot.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-
         }
     }
 
@@ -785,35 +721,7 @@ implements Serializable {
 
     public void checkStarvation(double hunger) {
 
-        // TODO: need a different method and different terminology to account for the drain on the robot's battery
-        if (robot != null) {
-/*
-                Complaint starvation = getMedicalManager().getStarvation();
-                if (hunger > robotBatteryDrainTime
-                		|| ((hunger > 1000D) && (kJoules < 500D))) {
-                    if (!problems.containsKey(starvation)) {
-                        addMedicalComplaint(starvation);
-                        isStarving = true;
-                        //System.out.println("PhysicalCondition : checkStarvation() : hunger is " + Math.round(hunger*10.0)/10.0 + " ");
-                        //System.out.println("PhysicalCondition : checkStarvation() : kJ is  " + Math.round(kJoules*10.0)/10.0 + " ");
-                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                    }
-                }
-                else if (hunger < 1000D
-                		|| kJoules > 500D ) {
-                    HealthProblem illness = problems.get(starvation);
-                    if (illness != null) {
-                        illness.startRecovery();
-                        isStarving = false;
-                        robot.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                    }
-                }
-
-                robot.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
-*/
-        }
-
-        else if (person != null) {
+    	if (person != null) {
 
                 Complaint starvation = getMedicalManager().getStarvation();
 
@@ -889,8 +797,12 @@ implements Serializable {
                 int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
                 double resilienceModifier = (double) (100 - resilience) / 50D;
 
+                
                 // If random breakdown, add anxiety attack.
                 if (RandomUtil.lessThanRandPercent(config.getStressBreakdownChance() * time * resilienceModifier)) {
+                	
+                	fatigue++;
+                	
                     Complaint anxietyAttack = getMedicalManager().getComplaintByName(ANXIETY_ATTACK);
                     if (anxietyAttack != null) {
                         addMedicalComplaint(anxietyAttack);
@@ -926,9 +838,12 @@ implements Serializable {
                     int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
                     double modifier = (double) (100 - endurance *2/3 - strength/3) / 10D;
 
-                	
+
 	                if (RandomUtil.lessThanRandPercent(config.getHighFatigueCollapseChance() * time * modifier)) {
 	                    Complaint highFatigue = getMedicalManager().getComplaintByName(HIGH_FATIGUE_COLLAPSE);
+	                    
+	                    stress = stress + .5;
+	                	
 	                    if (highFatigue != null) {
 	                        addMedicalComplaint(highFatigue);
 	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
@@ -1071,13 +986,7 @@ implements Serializable {
             }
 
         }
-        else if (robot != null) {
-
-             if (kJoules < 200D) {
-                tempPerformance = kJoules / 200D;
-            }
-
-        }
+        
 
         if (tempPerformance < 0D) {
             tempPerformance = 0D;

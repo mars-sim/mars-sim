@@ -603,6 +603,8 @@ implements VehicleOperator, MissionMember, Serializable {
             support = getLifeSupportType();
             // Pass the time in the physical condition first as this may
             // result in death.
+            
+            // if alive
             if (health.timePassing(time, support, config)) {
 
             	// 2015-06-29 Added calling preference

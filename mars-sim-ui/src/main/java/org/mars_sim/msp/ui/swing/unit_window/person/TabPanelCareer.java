@@ -129,8 +129,8 @@ implements ActionListener {
 		else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
-			dead = robot.getPhysicalCondition().isDead();
-			deathInfo = robot.getPhysicalCondition().getDeathDetails();
+			dead = robot.getSystemCondition().isInoperable();
+			deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 		// Prepare label panel
@@ -580,8 +580,8 @@ implements ActionListener {
 		} else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
-			dead = robot.getPhysicalCondition().isDead();
-			deathInfo = robot.getPhysicalCondition().getDeathDetails();
+			dead = robot.getSystemCondition().isInoperable();
+			deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 	}

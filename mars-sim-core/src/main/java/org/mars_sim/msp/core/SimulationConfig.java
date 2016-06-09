@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.08 2016-05-02
+ * @version 3.08 2016-06-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.mars.LandmarkConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.medical.MedicalConfig;
+import org.mars_sim.msp.core.quotation.QuotationConfig;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
@@ -70,11 +71,13 @@ public class SimulationConfig implements Serializable {
 	public static final String RESOURCE_FILE = "resources";
 	public static final String MANUFACTURE_FILE = "manufacturing";
 	public static final String CONSTRUCTION_FILE = "construction";
-	public static final String VALUE = "value";
 	public static final String FOODPRODUCTION_FILE = "foodProduction";
 	public static final String MEAL_FILE = "meals";
 	public static final String ROBOT_FILE = "robots";
-
+	public static final String QUOTATION_FILE = "quotations";
+	
+	public static final String VALUE = "value";
+	
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 	private static final String TIME_RATIO = "time-ratio";
@@ -121,7 +124,8 @@ public class SimulationConfig implements Serializable {
 	private MealConfig mealConfig;
 	// 2015-01-21 Added robotConfig
 	private RobotConfig robotConfig;
-
+	// 2016-06-08 Added quotationConfig
+	private QuotationConfig quotationConfig;
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
@@ -584,6 +588,15 @@ public class SimulationConfig implements Serializable {
 		return constructionConfig;
 	}
 
+	
+	/**
+	 * Gets the quotation config subset.
+	 * @return quotation config
+	 */
+	public QuotationConfig getQuotationConfiguration() {
+		return quotationConfig;
+	}
+
 
 	public String getBuildVersion() {
 		return build;
@@ -642,7 +655,10 @@ public class SimulationConfig implements Serializable {
 			mealConfig = new MealConfig(parseXMLFileAsJDOMDocument(MEAL_FILE, true));
 			// 2015-01-21 Added robotConfig
 			robotConfig = new RobotConfig(parseXMLFileAsJDOMDocument(ROBOT_FILE, true));
+			// 2016-06-08 Added quotationConfig
+			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
 
+			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error reading the config files: " + e.getMessage());
 			e.printStackTrace();
@@ -728,5 +744,7 @@ public class SimulationConfig implements Serializable {
 		mealConfig = null;
 		robotConfig.destroy();
 		robotConfig = null;
+		quotationConfig.destroy();
+		quotationConfig = null;
 	}
 }

@@ -370,7 +370,7 @@ implements ActionListener {
 					else if (column == 3) 
 						result = (int) (robot.getPerformanceRating() * 100D) + "%";
 					else if (column == 4)
-						result = robot.getPhysicalCondition().getHealthSituation();
+						result = robot.getSystemCondition().getHealthSituation();
 				}
 				catch (Exception e) {}
 			}
@@ -490,7 +490,7 @@ implements ActionListener {
 					else if (column == 3) 
 						result = (int) (robot.getPerformanceRating() * 100D) + "%";
 					else if (column == 4)
-						result = robot.getPhysicalCondition().getHealthSituation();
+						result = robot.getSystemCondition().getHealthSituation();
 				}
 				catch (Exception e) {}
 			}

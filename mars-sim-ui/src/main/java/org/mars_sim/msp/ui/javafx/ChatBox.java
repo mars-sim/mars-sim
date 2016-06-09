@@ -785,7 +785,7 @@ public class ChatBox extends BorderPane {
 
 					if (!robotList.isEmpty()) {
 						robot = robotList.get(0);
-						if (robot.getPhysicalCondition().isDead()) {
+						if (robot.getSystemCondition().isInoperable()) {
 						    // Case 4: decomissioned
 							responseText = name + " : I'm sorry. " + text + " has been decomissioned.";
 						}
@@ -1006,4 +1006,31 @@ public class ChatBox extends BorderPane {
     public AutoFillTextBox getAutoFillTextBox() {
     	return autoFillTextBox;
     }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+
+        personCache = null;
+        robotCache = null;
+        settlementCache = null;
+        
+        vehicle = null;
+        settlement = null;
+        building = null;
+        equipment = null;
+        mainScene = null;
+        
+        //textArea = null;
+        //autoFillTextBox = null;
+        
+        if (history != null) history.clear();
+        //history = null;
+
+        //if (onMessageReceivedHandler != null) onMessageReceivedHandler.clear();
+        onMessageReceivedHandler = null;
+    }
+    
+    
 }

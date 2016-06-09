@@ -99,8 +99,8 @@ implements ActionListener {
 		else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
-			dead = robot.getPhysicalCondition().isDead();
-			deathInfo = robot.getPhysicalCondition().getDeathDetails();
+			dead = robot.getSystemCondition().isInoperable();
+			deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 		// Prepare activity label panel
@@ -312,8 +312,8 @@ implements ActionListener {
 		else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
-			dead = robot.getPhysicalCondition().isDead();
-			deathInfo = robot.getPhysicalCondition().getDeathDetails();
+			dead = robot.getSystemCondition().isInoperable();
+			deathInfo = robot.getSystemCondition().getDeathDetails();
 		}		
 		
 		TaskManager taskManager = null;
@@ -411,10 +411,10 @@ implements ActionListener {
 			else if (unit instanceof Robot) {
 		        robot = (Robot) unit;
 				botMind = robot.getBotMind();
-				dead = robot.getPhysicalCondition().isDead();
-				deathInfo = robot.getPhysicalCondition().getDeathDetails();
+				dead = robot.getSystemCondition().isInoperable();
+				deathInfo = robot.getSystemCondition().getDeathDetails();
 				
-				if (!robot.getPhysicalCondition().isDead()) {
+				if (!robot.getSystemCondition().isInoperable()) {
 					botMind = robot.getBotMind();
 					if (botMind.hasActiveMission()) {
 						if (source == missionButton) {

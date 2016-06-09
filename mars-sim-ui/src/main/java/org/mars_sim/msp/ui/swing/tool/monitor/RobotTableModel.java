@@ -135,15 +135,15 @@ extends UnitTableModel {
             HashMap<String, Integer> m = new HashMap<String, Integer>();
             m.put(Unit.NAME_EVENT, NAME);
             m.put(Unit.LOCATION_EVENT, LOCATION);
-            m.put(PhysicalCondition.HUNGER_EVENT, HUNGER);
-            m.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
-            m.put(PhysicalCondition.STRESS_EVENT, STRESS);
-            m.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
+            m.put(SystemCondition.HUNGER_EVENT, HUNGER);
+            m.put(SystemCondition.FATIGUE_EVENT, FATIGUE);
+            m.put(SystemCondition.STRESS_EVENT, STRESS);
+            m.put(SystemCondition.PERFORMANCE_EVENT, PERFORMANCE);
             m.put(Mind.JOB_EVENT, JOB);
             m.put(TaskManager.TASK_EVENT, TASK);
             m.put(Mind.MISSION_EVENT, MISSION);
-            m.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
-            m.put(PhysicalCondition.DEATH_EVENT, HEALTH);
+            m.put(SystemCondition.ILLNESS_EVENT, HEALTH);
+            m.put(SystemCondition.DEATH_EVENT, HEALTH);
                     EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
         }
 	 */
@@ -298,7 +298,7 @@ extends UnitTableModel {
 		if (rowIndex < getUnitNumber()) {
 			Robot robot = (Robot)getUnit(rowIndex);
 
-			Boolean isDead = robot.getPhysicalCondition().isDead();
+			Boolean isDead = robot.getSystemCondition().isInoperable();
 
 			switch (columnIndex) {
 			case NAME : {
@@ -318,28 +318,28 @@ extends UnitTableModel {
 			//} break;
 
 			case BATTERY : {
-				double hunger = robot.getPhysicalCondition().getHunger();
+				double hunger = robot.getSystemCondition().getPowerDischarge();
 				//result = new Float(hunger).intValue();
 				if (isDead)	result = "";
 					else result = getHungerStatus(hunger);
 			} break;
 /*
 			case FATIGUE : {
-				double fatigue = robot.getPhysicalCondition().getFatigue();
+				double fatigue = robot.getSystemCondition().getFatigue();
 				//result = new Float(fatigue).intValue();
 			if (isDead)	result = "";
 					else result = getFatigueStatus(fatigue);
 			} break;
 
 			case STRESS : {
-				double stress = robot.getPhysicalCondition().getStress();
+				double stress = robot.getSystemCondition().getStress();
 				//result = new Double(stress).intValue();
 				if (isDead)	result = "";
 					else result = getStressStatus(stress);
 			} break;
 
 			case PERFORMANCE : {
-				double performance = robot.getPhysicalCondition().getPerformanceFactor();
+				double performance = robot.getSystemCondition().getPerformanceFactor();
 				//result = new Float(performance * 100D).intValue();
 				if (isDead)	result = "";
 					else result = getPerformanceStatus(performance* 100D);
@@ -347,7 +347,7 @@ extends UnitTableModel {
 */
 			case HEALTH : {
 
-				result = robot.getPhysicalCondition().getHealthSituation();
+				result = robot.getSystemCondition().getHealthSituation();
 			} break;
 
 			case LOCATION : {
@@ -363,8 +363,8 @@ extends UnitTableModel {
 
 			case JOB : {
 				// If robot is dead, get job from death info.
-				if (robot.getPhysicalCondition().isDead())
-					result = robot.getPhysicalCondition().getDeathDetails().getRobotJob();
+				if (robot.getSystemCondition().isInoperable())
+					result = robot.getSystemCondition().getDeathDetails().getRobotJob();
 				else {
 					RobotJob robotJob = robot.getBotMind().getRobotJob();
 					if (robotJob != null)
@@ -543,14 +543,14 @@ extends UnitTableModel {
 			int columnNum = -1;
 			if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
 			else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
-			else if (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum = HUNGER;
-			else if (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
-			else if (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum = STRESS;
-			else if (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
+			else if (eventType.equals(SystemCondition.HUNGER_EVENT)) columnNum = HUNGER;
+			else if (eventType.equals(SystemCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
+			else if (eventType.equals(SystemCondition.STRESS_EVENT)) columnNum = STRESS;
+			else if (eventType.equals(SystemCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
 			else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
 			else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
 			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
-			else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
+			else if (eventType.equals(SystemCondition.ILLNESS_EVENT) ||
 			*/
 
 			if (eventType == UnitEventType.DEATH_EVENT) {

@@ -58,37 +58,51 @@ public class BuildingConstructionMissionMeta implements MetaMission {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
-            // Check if available light utility vehicles.
-            boolean reservableLUV = BuildingConstructionMission.isLUVAvailable(settlement);
+            boolean go = true;
 
-            // Check if enough available people at settlement for mission.
             int availablePeopleNum = 0;
-            Iterator<Person> i = settlement.getInhabitants().iterator();
-            while (i.hasNext()) {
-                Person member = i.next();
-                boolean noMission = !member.getMind().hasActiveMission();
-                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
-                if (noMission && isFit) availablePeopleNum++;
-            }
-            boolean enoughPeople = (availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE);
-
-            // Check if settlement has construction override flag set.
-            boolean constructionOverride = settlement.getConstructionOverride();
-
+            
             // No construction until after the first ten sols of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
-            boolean firstTenSols = (totalTimeSols < FIRST_AVAILABLE_SOL);
+            
+            Iterator<Person> i = settlement.getInhabitants().iterator();
+            while (i.hasNext()) {
+                Person member = i.next();
+                boolean noMission = !member.getMind().hasActiveMission();
+                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
+                if (noMission && isFit) 
+                	availablePeopleNum++;
+            }
+            
+            // Check if available light utility vehicles.
+            if (!BuildingConstructionMission.isLUVAvailable(settlement))
+            	go = false;
 
+            // Check if enough available people at settlement for mission.
+            else if (!(availablePeopleNum >= BuildingConstructionMission.MIN_PEOPLE))
+            	go = false;
+            
+            // Check if settlement has construction override flag set.
+            else if (settlement.getConstructionOverride())
+            	go = false;
+            
+            // No construction until after the first ten sols of the simulation.
+
+            else if (totalTimeSols < FIRST_AVAILABLE_SOL)
+            	go = false;
+        	
             // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
+        	else if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
                     BuildingConstructionMission.MIN_PEOPLE) {
-                result = 0D;
+                //result = 0D;
+            	go = false;
             }
 
-            else if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
+            if (go) {
+            //if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
 
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);

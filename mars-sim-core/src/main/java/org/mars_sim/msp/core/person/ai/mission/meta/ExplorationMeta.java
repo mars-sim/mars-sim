@@ -53,39 +53,44 @@ public class ExplorationMeta implements MetaMission {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
+            boolean go = true;
+  
             // Check if a mission-capable rover is available.
-            boolean reservableRover = RoverMission.areVehiclesAvailable(
-                    settlement, false);
+            if (!RoverMission.areVehiclesAvailable(settlement, false))
+            	go = false;
 
             // Check if available backup rover.
-            boolean backupRover = RoverMission.hasBackupRover(settlement);
-
+            else if (!RoverMission.hasBackupRover(settlement))
+            	go = false;
+            
             // Check if minimum number of people are available at the settlement.
             // Plus one to hold down the fort.
-            boolean minNum = RoverMission.minAvailablePeopleAtSettlement(
-                    settlement, (RoverMission.MIN_PEOPLE + 1));
-
+            else if (!RoverMission.minAvailablePeopleAtSettlement(
+                    settlement, (RoverMission.MIN_PEOPLE + 1)))
+            	go = false;
+            
             // Check if there are enough specimen containers at the settlement for collecting rock samples.
-            boolean enoughContainers = false;
-            int numContainers = settlement.getInventory()
-                    .findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
-            enoughContainers = (numContainers >= Exploration.REQUIRED_SPECIMEN_CONTAINERS);
-
+            //boolean enoughContainers = false;
+            //int numContainers = settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
+            else if (!(settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false) >= Exploration.REQUIRED_SPECIMEN_CONTAINERS))
+            	go = false;
+            
             // Check for embarking missions.
-            boolean embarkingMissions = VehicleMission
-                    .hasEmbarkingMissions(settlement);
-
+            else if (!VehicleMission.hasEmbarkingMissions(settlement))
+            	go = false;
+            
             // Check if settlement has enough basic resources for a rover mission.
-            boolean hasBasicResources = RoverMission
-                    .hasEnoughBasicResources(settlement);
-
+            else if (!RoverMission.hasEnoughBasicResources(settlement))
+            	go = false;
+            
             // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
-
-            if (reservableRover && backupRover && minNum && enoughContainers
-                    && !embarkingMissions && hasBasicResources && enoughMethane) {
+            //AmountResource methane = AmountResource.findAmountResource("methane");
+            else if (!(settlement.getInventory().getAmountResourceStored(AmountResource.findAmountResource("methane"), false) >= 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE))
+            		go = false;
+            
+            if (go) {
+            //if (reservableRover && backupRover && minNum && enoughContainers && !embarkingMissions && hasBasicResources && enoughMethane) {
                 try {
                     // Get available rover.
                     Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(

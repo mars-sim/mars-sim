@@ -41,19 +41,19 @@ public class CollectRegolithMeta implements MetaMission {
     @Override
     public double getProbability(Person person) {
         
-        double result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
+    	double result = 0;
+    	
+        // Check if min number of EVA suits at settlement.
+        if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < 
+                CollectRegolith.MIN_PEOPLE) {
+            result = 0D;
+        }
+        
+        else 
+        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
                 CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE, CollectRegolith.class);
         
         if (result > 0D) {
-            
-            // Factor the value of regolith at the settlement.
-            GoodsManager manager = person.getSettlement().getGoodsManager();
-            AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-            double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-            result *= value;
-            if (result > 1D) {
-                result = 1D;
-            }
             
             // Don't start mission until after first Sol of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
@@ -63,12 +63,21 @@ public class CollectRegolithMeta implements MetaMission {
                 result = 0;
             }
             
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < 
-                    CollectRegolith.MIN_PEOPLE) {
-                result = 0D;
+            else {
+	            // Factor the value of regolith at the settlement.
+	            GoodsManager manager = person.getSettlement().getGoodsManager();
+	            AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+	            double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
+	            result *= value;
+	            if (result > 1D) {
+	                result = 1D;
+	            }
             }
+            
         }
+        
+        //if (result > 0)
+        //	System.out.println("CollectRegolithMeta : " + result);
         
         return result;
     }

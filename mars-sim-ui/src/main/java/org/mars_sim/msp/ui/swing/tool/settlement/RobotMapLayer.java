@@ -48,7 +48,7 @@ public class RobotMapLayer implements SettlementMapLayer {
 				Robot robot = i.next();
 
 				// Only select functional robots.
-				if (!robot.getPhysicalCondition().isDead()) {
+				if (!robot.getSystemCondition().isInoperable()) {
 
 					// Select a robot that is at the settlement location.
 					Coordinates settlementLoc = settlement.getCoordinates();

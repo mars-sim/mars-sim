@@ -52,34 +52,43 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
+            boolean go = true;
+            
             // Check if a mission-capable rover is available.
-            boolean reservableRover = RoverMission.areVehiclesAvailable(settlement, false);
+            if (!RoverMission.areVehiclesAvailable(settlement, false))
+            	go = false;
 
             // Check if available backup rover.
-            boolean backupRover = RoverMission.hasBackupRover(settlement);
+            else if (!RoverMission.hasBackupRover(settlement))
+            	go = false;
 
             // Check if minimum number of people are available at the settlement.
             // Plus one to hold down the fort.
-            boolean minNum = RoverMission.minAvailablePeopleAtSettlement(settlement, 
-                    (BiologyStudyFieldMission.MIN_PEOPLE + 1));
-
+            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement,
+            		BiologyStudyFieldMission.MIN_PEOPLE + 1))
+            	go = false;
+            	
             // Check for embarking missions.
-            boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
-
+            else if (VehicleMission.hasEmbarkingMissions(settlement))
+            	go = false;
+            	
             // Check if settlement has enough basic resources for a rover mission.
-            boolean hasBasicResources = RoverMission.hasEnoughBasicResources(settlement);
-
+            else if (!RoverMission.hasEnoughBasicResources(settlement))
+            	go = false;
+            	
             // Check if min number of EVA suits at settlement.
-            boolean enoughSuits = (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) 
-                    > BiologyStudyFieldMission.MIN_PEOPLE); 
-
+            else if (!(Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) 
+                    > BiologyStudyFieldMission.MIN_PEOPLE))
+            	go = false;
+            	
             // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
-
-            if (reservableRover && backupRover && minNum && !embarkingMissions && hasBasicResources 
-                    && enoughSuits && enoughMethane) {
+            //AmountResource methane = AmountResource.findAmountResource("methane");
+            else if (!(settlement.getInventory().getAmountResourceStored(AmountResource.findAmountResource("methane"), false) >= 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE))
+      	
+            if (go) {
+            	
+            //if (reservableRover && backupRover && minNum && !embarkingMissions && hasBasicResources && enoughSuits && enoughMethane) {
 
                 // Get available rover.
                 Rover rover = (Rover) RoverMission.getVehicleWithGreatestRange(settlement, false);

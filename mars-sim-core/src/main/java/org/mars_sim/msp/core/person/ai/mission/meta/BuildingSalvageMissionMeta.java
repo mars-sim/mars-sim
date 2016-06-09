@@ -55,9 +55,8 @@ public class BuildingSalvageMissionMeta implements MetaMission {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
-            // Check if available light utility vehicles.
-            boolean reservableLUV = BuildingSalvageMission.isLUVAvailable(settlement);
-
+            boolean go = true;
+  
             // Check if enough available people at settlement for mission.
             int availablePeopleNum = 0;
             Iterator<Person> i = settlement.getInhabitants().iterator();
@@ -70,19 +69,31 @@ public class BuildingSalvageMissionMeta implements MetaMission {
                     availablePeopleNum++;
                 }
             }
-            boolean enoughPeople = (availablePeopleNum >= BuildingSalvageMission.MIN_PEOPLE);
-
+            
             // No construction until after the first ten sols of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
             double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
             double totalTimeSols = totalTimeMillisols / 1000D;
-            boolean firstTenSols = (totalTimeSols < 10D);
+            
+
+            if (!(availablePeopleNum >= BuildingSalvageMission.MIN_PEOPLE))
+            	go = false;
+
+            // Check if available light utility vehicles.
+            else if (!BuildingSalvageMission.isLUVAvailable(settlement))
+            	go = false;
+            
+
+            else if (totalTimeSols < 10D)
+               	go = false;          	
 
             // Check if settlement has construction override flag set.
-            boolean constructionOverride = settlement.getConstructionOverride();
-
-            if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
+            else if (settlement.getConstructionOverride());
+           		go = false;  
+           	
+           	if (go) {	
+            //if (reservableLUV && enoughPeople && !constructionOverride && !firstTenSols) {
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                     SalvageValues values = settlement.getConstructionManager()

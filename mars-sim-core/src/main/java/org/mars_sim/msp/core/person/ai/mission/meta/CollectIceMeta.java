@@ -54,38 +54,43 @@ public class CollectIceMeta implements MetaMission {
             boolean missionPossible = true;
             Settlement settlement = person.getSettlement();
 
+            // Check if there are any desirable settlements within range.
+            double topSettlementDesirability = 0D;
+            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
+            
             // Check if available rover.
             if (!RoverMission.areVehiclesAvailable(settlement, false)) {
                 missionPossible = false;
             }
 
             // Check if available backup rover.
-            if (!RoverMission.hasBackupRover(settlement)) {
+            else if (!RoverMission.hasBackupRover(settlement)) {
                 missionPossible = false;
             }
 
             // Check if minimum number of people are available at the
             // settlement.
             // Plus one to hold down the fort.
-            if (!RoverMission.minAvailablePeopleAtSettlement(settlement, (RoverMission.MIN_PEOPLE + 1))) {
+            else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, (RoverMission.MIN_PEOPLE + 1))) {
                 missionPossible = false;
             }
 
             // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < 
+            else if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < 
                     RoverMission.MIN_PEOPLE) {
                 missionPossible = false;
             }
 
             // Check if settlement has enough basic resources for a rover mission.
-            if (!RoverMission.hasEnoughBasicResources(settlement)) {
+            else if (!RoverMission.hasEnoughBasicResources(settlement)) {
                 missionPossible = false;
             }
 
             // Check if there are any desirable settlements within range.
-            double topSettlementDesirability = 0D;
-            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
-            if (vehicle != null) {
+            //double topSettlementDesirability = 0D;
+            //Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
+            else if (vehicle != null) {          
+            	
                 Map<Settlement, Double> desirableSettlements = TravelToSettlement.getDestinationSettlements(
                         person, settlement, vehicle.getRange());
                 if (desirableSettlements.size() == 0) {
@@ -101,14 +106,15 @@ public class CollectIceMeta implements MetaMission {
                 }
             }
 
+            // TODO: if water resource is dangerously low, we should allow collect ice mission to proceed no matter what !?
             // Check for embarking missions.
-            if (VehicleMission.hasEmbarkingMissions(settlement)) {
+            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
                 missionPossible = false;
             }
             
             // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            if (settlement.getInventory().getAmountResourceStored(methane, false) < 
+            //AmountResource methane = AmountResource.findAmountResource("methane");
+            else if (settlement.getInventory().getAmountResourceStored(AmountResource.findAmountResource("methane"), false) < 
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
                 missionPossible = false;
             }

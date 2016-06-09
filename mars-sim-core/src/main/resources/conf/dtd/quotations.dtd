@@ -1,0 +1,4 @@
+<!ELEMENT quotation-list (quotation*)>
+<!ELEMENT quotation EMPTY>
+<!ATTLIST quotation name CDATA #REQUIRED>
+<!ATTLIST quotation text CDATA #REQUIRED>

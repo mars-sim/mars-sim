@@ -469,7 +469,6 @@ implements Serializable, Comparable<Task> {
         }
 
 		if (person != null)
-			// For robot only
 			// Modify stress performing task.
 			modifyStress(time - timeLeft);
 

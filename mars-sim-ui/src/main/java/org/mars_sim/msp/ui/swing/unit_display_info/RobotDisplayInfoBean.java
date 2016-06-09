@@ -145,7 +145,7 @@ implements UnitDisplayInfo {
 		String result = "";
 		//boolean male = PersonGender.MALE == person.getGender();
 		//int randomSoundNum = RandomUtil.getRandomInt(1, 2);
-		if (robot.getPhysicalCondition().isDead()) result = SoundConstants.SND_PERSON_DEAD;
+		if (robot.getSystemCondition().isInoperable()) result = SoundConstants.SND_PERSON_DEAD;
 		else {
 			//if (male) {
 				//if (randomSoundNum == 1)
