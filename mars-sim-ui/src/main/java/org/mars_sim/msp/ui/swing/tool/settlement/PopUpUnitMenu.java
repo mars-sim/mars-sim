@@ -37,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.stage.StageStyle;
 import javafx.stage.Popup;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.event.EventHandler;
@@ -213,17 +214,17 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 		UnitInfoPanel unitInfoPanel = new UnitInfoPanel(desktop);
 		unitInfoPanel.init(name, type, description);
-		unitInfoPanel.setBackground(null);
+		//unitInfoPanel.setBackground(null);
 		unitInfoPanel.setOpaque(false);
 		unitInfoPanel.setBackground(new Color(0,0,0,128));
 
 		Rectangle rect = new Rectangle(350+20, frameHeight+20);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
 		rect.setArcWidth(10);
 		rect.setArcHeight(10);
-		rect.setEffect(new javafx.scene.effect.DropShadow(10,5,5, javafx.scene.paint.Color.TAN)); // rgb(27,8,0)));// for bottom right edge
+		//rect.setEffect(new javafx.scene.effect.DropShadow(10,5,5, javafx.scene.paint.Color.TAN)); // rgb(27,8,0)));// for bottom right edge
 
     	SwingNode swingNode  = new SwingNode();
-    	swingNode.setStyle("-fx-background-color: transparent;");
+    	//swingNode.setStyle("-fx-background-color: transparent;");
 
 		StackPane swingPane = new StackPane();
     	swingPane.setStyle("-fx-background-radius:5px; -fx-background-color: transparent;");
@@ -237,7 +238,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	    });
 
 	   	Scene scene = new Scene(swingPane, 350, frameHeight, javafx.scene.paint.Color.TRANSPARENT);
-	   	scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+	   	//scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
 	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
     	//Popup stage = new Popup();
@@ -249,8 +250,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	   	addDraggableNode(swingNode);
 
 	   	//stage.setTitle("Building Detail");
-		stage.setOpacity(.9);
-	   	stage.initStyle(StageStyle.TRANSPARENT);
+		stage.setOpacity(.8);
+	   	//stage.initStyle(StageStyle.TRANSPARENT);
 	    stage.initStyle(StageStyle.UNDECORATED);
 		stage.setResizable(false);
 	   	stage.setScene(scene);
@@ -319,7 +320,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 		f.setSize(350, frameHeight); // undecorated 301, 348 ; decorated : 303, 373
 		f.setResizable(false);
 		f.setUndecorated(true);
-		f.setBackground(new Color(0,0,0,0)); // not working for decorated jframe
+		f.setBackground(new Color(0,0,0,128)); // not working for decorated jframe
 
 		UnitInfoPanel b = new UnitInfoPanel(desktop);
 		b.init(name, type, description);
@@ -510,20 +511,28 @@ public class PopUpUnitMenu extends JPopupMenu {
         node.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent me) {
-                if (me.getButton() != MouseButton.MIDDLE) {
+                if (me.getButton() != MouseButton.MIDDLE
+                		&& me.getButton() != MouseButton.PRIMARY) {
+                	node.setCursor(Cursor.MOVE);
                     initialX = me.getSceneX();
                     initialY = me.getSceneY();
-              }
+                }
+                else
+                	node.setCursor(Cursor.DEFAULT);
             }
         });
 
         node.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent me) {
-                if (me.getButton() != MouseButton.MIDDLE) {
+                if (me.getButton() != MouseButton.MIDDLE
+                		&& me.getButton() != MouseButton.PRIMARY) {
+                	node.setCursor(Cursor.MOVE);
                     node.getScene().getWindow().setX(me.getScreenX() - initialX);
                     node.getScene().getWindow().setY(me.getScreenY() - initialY);
                 }
+                else
+                	node.setCursor(Cursor.DEFAULT);
             }
         });
     }

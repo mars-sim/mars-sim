@@ -114,7 +114,7 @@ implements ClockListener {
 		showPersonLabels = false;
 		showVehicleLabels = false;
 		showRobotLabels = false;
-		showDayNightLayer = true;  // turn on by default
+		showDayNightLayer = false;  // turn off by default
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 

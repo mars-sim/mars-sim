@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -95,8 +96,8 @@ public abstract class UnitWindow extends JInternalFrame {
         this.desktop = desktop;
         this.unit = unit;
         
-	    this.setMaximumSize(new Dimension(460, 580));
-	    this.setPreferredSize(new Dimension(460, 580));
+	    this.setMaximumSize(new Dimension(480, 580));
+	    this.setPreferredSize(new Dimension(480, 580));
 	    
         // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
         BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
@@ -125,6 +126,8 @@ public abstract class UnitWindow extends JInternalFrame {
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         JLabel nameLabel = new JLabel(" " + Conversion.capitalize(unit.getName()) + " ", displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
         nameLabel.setOpaque(true);
+        Font font = new Font("DIALOG", Font.BOLD, 12);
+        nameLabel.setFont(font);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
         //nameLabel.setBorder(new EmptyBorder(5, 5, 5, 5) );
@@ -136,7 +139,7 @@ public abstract class UnitWindow extends JInternalFrame {
         namePanel.add(nameLabel);
         nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel empty = new JLabel("    ");
+        JLabel empty = new JLabel(" ");
         namePanel.add(empty);
         empty.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -177,16 +180,20 @@ public abstract class UnitWindow extends JInternalFrame {
                	
             	String text = Conversion.capitalize(unit.getDescription());
              	townLabel = new JLabel(text);// , JLabel.CENTER);
-                
+             	townLabel.setFont(font);
+             	
                 String jobString = p.getMind().getJob().getName(p.getGender());
                 jobLabel = new JLabel(jobString);// , JLabel.CENTER);
+                jobLabel.setFont(font);
                 
                 String roleString = p.getRole().getType().getName();
                 roleLabel = new JLabel(roleString);// , JLabel.CENTER);
+                roleLabel.setFont(font);
                 
                 String shiftString = p.getTaskSchedule().getShiftType().getName();
                 shiftLabel = new JLabel(shiftString);// , JLabel.CENTER);
-            	
+                shiftLabel.setFont(font);
+                
                 //setAlignment(int align) 
                 
                 townPanel.add(townIconLabel);

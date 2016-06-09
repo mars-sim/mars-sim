@@ -40,7 +40,7 @@ public class UnitInfoPanel extends JPanel {
 		super();
     	setOpaque(false);
     	//setBackground(new Color(51,25,0,128));
-    	setBackground(new Color(0,0,0,128));
+    	setBackground(new Color(0,0,0,0));
     }
 
     @Override
@@ -55,7 +55,9 @@ public class UnitInfoPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(new Color(51,25,0,128));
+        //g2.setColor(new Color(51,25,0,128));
+        g2.setColor(new Color(0,0,0,128));
+        
         g2.fillRoundRect(x, y, w, h, arc, arc);
         g2.setStroke(new BasicStroke(3f));
         //g2.setColor(Color.lightGray);
@@ -93,23 +95,25 @@ public class UnitInfoPanel extends JPanel {
         this.add(eastPanel, BorderLayout.EAST);
 
         // Creating the text Input
-        JTextField tf1 = new JTextField("", 15);
+        JTextField tf1 = new JTextField("", 20);
 
         tf1.setHorizontalAlignment(JTextField.CENTER);
         tf1.setOpaque(false);
         tf1.setFocusable(false);
-        tf1.setBackground(new Color(0,0,0,180));
-        tf1.setColumns(20);
+        tf1.setBackground(new Color(0,0,0,128));//180));
+        tf1.setColumns(25);
         Border border = BorderFactory.createLineBorder(Color.gray, 2);
         tf1.setBorder(border);
         tf1.setText(unitName);
         tf1.setForeground(Color.YELLOW); // orange font
-        tf1.setFont( new Font("Arial", Font.BOLD, 14 ) );
+        //tf1.setFont( new Font("Arial", Font.BOLD, 14 ) );
+        tf1.setFont( new Font("MONOSPACED", Font.BOLD, 14 ) );
 
         mainPanel.add(tf1);
 
         //JTextArea ta = new JTextArea();//290, 300);
         pane = new JEditorPane("text/html", "");  
+        pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
 /*        DefaultStyledDocument document = new DefaultStyledDocument();
         StyleContext context = new StyleContext();
         // build a style
@@ -131,8 +135,12 @@ public class UnitInfoPanel extends JPanel {
         //Font font = pane.getFont();  
         //pane.setFont(font.deriveFont(Font.ITALIC));
 
+        pane.setEnabled(true);
+        pane.setDisabledTextColor(Color.BLACK);
+        pane.requestFocusInWindow();
+        
         //ta.setLineWrap(true);
-        pane.setFocusable(false);
+        //pane.setFocusable(false);
         //ta.setWrapStyleWord(true);
         pane.setText("<html><font color='orange'>" + type + "<br>" 
         		+ unitType + "<br><br>"
@@ -142,8 +150,10 @@ public class UnitInfoPanel extends JPanel {
         //append(unitType + "\n\n");
         //append(description + "\n");
         //append(unitDescription);
-        pane.setForeground(Color.ORANGE); // orange font
-        pane.setFont( new Font( "Dialog", Font.PLAIN, 14 ) );
+        //pane.setForeground(Color.ORANGE); // orange font
+        //pane.setFont( new Font( "Dialog", Font.PLAIN, 14 ) );
+        pane.setFont( new Font("MONOSPACED", Font.PLAIN, 14 ) );
+
         pane.setOpaque(false);
         pane.setBackground(new Color(0, 0, 0, 128)); //0
 

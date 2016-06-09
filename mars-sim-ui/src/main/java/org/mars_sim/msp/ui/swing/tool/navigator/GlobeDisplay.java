@@ -349,7 +349,7 @@ implements Runnable {
 		}
 
 		drawUnits(dbg);
-		//drawCrossHair(dbg);
+		drawCrossHair(dbg);
 
 	}
 
@@ -489,9 +489,9 @@ implements Runnable {
 	 * Draw green rectanges and lines (cross-hair type thingy), and write the
 	 * latitude and logitude of the center point of the current globe view.
 	 * @param g graphics context
-
+	 */
 	protected void drawCrossHair(Graphics g) {
-		g.setColor(Color.green);
+		g.setColor(Color.orange);
 
 		// If USGS map is used, use small crosshairs.
 		if (useUSGSMap & !topo) {
@@ -503,19 +503,28 @@ implements Runnable {
 		}
 		// If not USGS map, use large crosshairs.
 		else {
-			g.drawRect(57, 57, 33, 33);
-			g.drawLine(0, 74, 56, 74);
-			g.drawLine(90, 74, 149, 74);
-			g.drawLine(74, 0, 74, 57);
-			g.drawLine(74, 90, 74, 149);
+			//g.drawRect(57, 57, 33, 33);
+			//g.drawLine(0, 74, 56, 74);
+			//g.drawLine(90, 74, 149, 74);
+			//g.drawLine(74, 0, 74, 57);
+			//g.drawLine(74, 90, 74, 149);
+			
+			g.drawRect(118, 118, 66, 66);			
+			g.drawLine(0, 150, 117, 150);		
+			g.drawLine(184, 150, 299, 150);
+			g.drawLine(150, 0, 150, 117);
+			g.drawLine(150, 185, 150, 300);
+			
 		}
 
 		// use prepared font
 		g.setFont(positionFont);
 
 		// Draw longitude and latitude strings using prepared measurements
-		g.drawString(latitude, 5, 130);
-		g.drawString(longitude, 145 - rightWidth, 130);
+		//g.drawString(latitude, 5, 130);
+		g.drawString(latitude, 5, 260);
+		//g.drawString(longitude, 145 - rightWidth, 130);
+		g.drawString(longitude, 290 - rightWidth, 260);
 
 		String latString = centerCoords.getFormattedLatitudeString();
 		String longString = centerCoords.getFormattedLongitudeString();
@@ -524,12 +533,15 @@ implements Runnable {
 		int longWidth = positionMetrics.stringWidth(longString);
 
 		int latPosition = ((leftWidth - latWidth) / 2) + 5;
-		int longPosition = 145 - rightWidth + ((rightWidth - longWidth) / 2);
+		int longPosition = 290 - rightWidth + ((rightWidth - longWidth) / 2);
 
-		g.drawString(latString, latPosition, 142);
-		g.drawString(longString, longPosition, 142);
+		//g.drawString(latString, latPosition, 142);
+		//g.drawString(longString, longPosition, 142);
+		g.drawString(latString, latPosition, 284);
+		g.drawString(longString, longPosition, 284);
+
 	}
-*/
+
 	/**
 	 * Returns unit x, y position on globe panel
 	 * @param unitCoords the unit's location

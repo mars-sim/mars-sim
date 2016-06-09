@@ -453,9 +453,12 @@ implements ActionListener {
 
 		// Create day/night tracking menu item.
 		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.daylightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
-		dayNightItem.addActionListener(this);
+		dayNightItem.addActionListener(this);		
 		optionsMenu.add(dayNightItem);
-
+		//2016-06-08 Unchecked dayNightItem at the start of sim
+		//globeNav.setDayNightTracking(false);
+		//dayNightItem.setSelected(false);
+		
 		// Create vehicle trails menu item.
 		trailItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showVehicleTrails"), map.hasMapLayer(trailLayer)); //$NON-NLS-1$
 		trailItem.addActionListener(this);

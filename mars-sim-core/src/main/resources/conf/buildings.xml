@@ -24,9 +24,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- room-temperature: in deg Celsius (old default : 22.5D). -->
 	<building type="Lander Hab" width="9.0" length="9.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
-		<description> The Lander Hab is a general purpose habitat for four persons.
+		<description> The Lander Hab is the initial habitat for a crew of four.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
-	 		to jump start a settlement.
+	 		to jump start a settlement. It's commonly used as a central hub providing four connection points 
+	 		when developing a colony.
 		</description>
 		<!-- The power requirements of the building. -->
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->

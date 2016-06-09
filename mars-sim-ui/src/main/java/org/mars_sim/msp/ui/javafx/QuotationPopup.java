@@ -82,8 +82,8 @@ public class QuotationPopup implements Serializable {
 			numWhiteSpace = (int)((maxPerLine - nameSize)*1.33-2);
 			height = (numLines + 4) * 25;
 			str += "\n";
-			System.out.println("Case 1 : quote can fit one line ");
-			System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
+			//System.out.println("Case 1 : quote can fit one line ");
+			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 			
 		}
 		else if (remaining > nameSize + 2) {
@@ -94,23 +94,23 @@ public class QuotationPopup implements Serializable {
 			else
 				height = (numLines + 1) * 25;
 			
-			System.out.println("Case 2 : last line can fit author's name");
-			System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
+			//System.out.println("Case 2 : last line can fit author's name");
+			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 		}	
 		else {
 			numWhiteSpace = (int)((maxPerLine - nameSize)*1.33-2);
 			height = (numLines + 2) * 25;
 			str += "\n";
-			System.out.println("Case 3 : last line cannot fit author's name");
-			System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
+			//System.out.println("Case 3 : last line cannot fit author's name");
+			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 		}
 		
 		
-		System.out.println("# of remaining whitespace: " + remaining);
-		System.out.println("# of chars in the quote : " + strSize);
-		System.out.println("# of lines : " + numLines);
-		System.out.println("max char per line : " + maxPerLine);
-		System.out.println("height in px : " + height);
+		//System.out.println("# of remaining whitespace: " + remaining);
+		//System.out.println("# of chars in the quote : " + strSize);
+		//System.out.println("# of lines : " + numLines);
+		//System.out.println("max char per line : " + maxPerLine);
+		//System.out.println("height in px : " + height);
 		
 		StringBuffer nameLine = new StringBuffer ("");
 		for (int i = 0; i < numWhiteSpace; i++)
@@ -120,7 +120,7 @@ public class QuotationPopup implements Serializable {
 					
 		str += nameLine;
 		
-		System.out.println(str);	
+		//System.out.println(str);	
 		
         notifier = Notification.Notifier.INSTANCE;
         
