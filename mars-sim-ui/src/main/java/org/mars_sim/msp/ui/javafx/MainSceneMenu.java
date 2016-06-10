@@ -58,18 +58,21 @@ public class MainSceneMenu extends MenuBar  {
 
 	private boolean isFullScreenCache = false;
 	
+	private boolean isNotificationOnCache = true;
+	
+	
 	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,
 							monitorToolItem, missionToolItem,settlementMapToolItem,
-							scienceToolItem, resupplyToolItem, marsViewerItem, webToolItem;
+							scienceToolItem, resupplyToolItem;//, marsViewerItem, webToolItem;
 
-	private CheckMenuItem showFullScreenItem;
+	private CheckMenuItem showFullScreenItem, notificationItem; 
 
-	private MenuItem skinThemeItem;
+	private MenuItem skinThemeItem, quotationItem ;
 
 	private Stage stage;
-	private Stage webStage;
+	//private Stage webStage;
 	private MainScene mainScene;
-	private Browser browser;
+	//private Browser browser;
 	//private FXDesktopPane fxDesktopPane;
 	//private FXInternalWindow fxInternalWindow ;
 	private MainDesktopPane desktop;
@@ -91,7 +94,7 @@ public class MainSceneMenu extends MenuBar  {
 		Simulation.instance().getSimExecutor().submit(new CreateMenuTask());
 
 		//fxDesktopPane = mainScene.getMarsNode().getFXDesktopPane();
-		browser = new Browser(mainScene);
+		//browser = new Browser(mainScene);
 	}
 
 	class CreateMenuTask implements Runnable {
@@ -177,7 +180,7 @@ public class MainSceneMenu extends MenuBar  {
 
         Menu skinThemeItem = new Menu("Skin Theme");
         ToggleGroup skinThemeToggleGroup = new ToggleGroup();
-
+        
         RadioMenuItem sevenItem = new RadioMenuItem("Standard");
         sevenItem.setToggleGroup(skinThemeToggleGroup);
         sevenItem.setSelected(true);
@@ -207,6 +210,19 @@ public class MainSceneMenu extends MenuBar  {
 
         SeparatorMenuItem SeparatorMenuItem4 = new SeparatorMenuItem();
 
+        quotationItem = new MenuItem("Quotation");
+        quotationItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
+        //quotationItem.setSelected(true);
+
+        SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
+        
+        notificationItem = new CheckMenuItem("Notification");
+        notificationItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+        notificationItem.setSelected(true);
+
+        SeparatorMenuItem SeparatorMenuItem6 = new SeparatorMenuItem();
+
+        
         MenuItem volumeUpItem = new MenuItem("Volume Up");
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
         MenuItem volumeDownItem = new MenuItem("Volume Down");
@@ -214,7 +230,12 @@ public class MainSceneMenu extends MenuBar  {
         CheckMenuItem muteItem = new CheckMenuItem("Mute");
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
-        menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, SeparatorMenuItem4, volumeUpItem, volumeDownItem,muteItem); // showUnitBarItem,showToolBarItem,
+        menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, SeparatorMenuItem4, 
+        		quotationItem,
+        		SeparatorMenuItem5, 
+        		notificationItem,
+        		SeparatorMenuItem6, 
+        		volumeUpItem, volumeDownItem,muteItem); // showUnitBarItem,showToolBarItem,
 
         // --- Menu Notification
 /*
@@ -271,11 +292,11 @@ public class MainSceneMenu extends MenuBar  {
         MenuItem aboutItem = new MenuItem("About");
         MenuItem tutorialItem = new MenuItem("Tutorial");
         tutorialItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
-        SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
+        SeparatorMenuItem SeparatorMenuItem7 = new SeparatorMenuItem();
         MenuItem userGuideItem = new MenuItem("User Guide");
         userGuideItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
 
-        menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem5, userGuideItem);
+        menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem7, userGuideItem);
 
         super.getMenus().addAll(menuFile, menuTools, menuSettings, menuHelp); // menuNotification,
 
@@ -578,6 +599,36 @@ public class MainSceneMenu extends MenuBar  {
         });
 */
 
+        
+        quotationItem.setOnAction(e -> {
+        	mainScene.popAQuote();
+        	desktop.requestFocus();
+        });
+              
+        
+        notificationItem.setOnAction(e -> {
+
+        	boolean isNotificationOn = desktop.getEventTableModel().isFiring();
+        	
+        	if (!isNotificationOn) {
+            	//mainScene.getStage().sizeToScene();
+        		//System.out.println("isFullScreen is false");
+        		notificationItem.setSelected(true);
+        		if (!isNotificationOnCache)
+                	desktop.getEventTableModel().setNoFiring(true);
+        	}
+        	else {
+        		//System.out.println("isFullScreen is true");
+        		notificationItem.setSelected(false);
+        		if (isNotificationOnCache)
+                	desktop.getEventTableModel().setNoFiring(false);
+        	}
+        	
+        	isNotificationOnCache =  mainScene.getStage().isFullScreen();
+        	
+        });
+        
+        
         volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {

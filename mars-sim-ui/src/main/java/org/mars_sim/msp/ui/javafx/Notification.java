@@ -45,11 +45,12 @@ import javafx.util.Duration;
  * Time: 07:10
  */
 public class Notification {
-    public static final Image INFO_ICON    = new Image(Notifier.class.getResourceAsStream("info.png"));
-    public static final Image WARNING_ICON = new Image(Notifier.class.getResourceAsStream("warning.png"));
-    public static final Image SUCCESS_ICON = new Image(Notifier.class.getResourceAsStream("success.png"));
-    public static final Image ERROR_ICON   = new Image(Notifier.class.getResourceAsStream("error.png"));
- 
+    public static Image INFO_ICON;//    = new Image(this.getClass().getResourceAsStream("info.png"));
+    public static Image WARNING_ICON;// = new Image(this.getClass().getResourceAsStream("warning.png"));
+    public static Image SUCCESS_ICON;// = new Image(this.getClass().getResourceAsStream("success.png"));
+    public static Image ERROR_ICON;//   = new Image(this.getClass().getResourceAsStream("error.png"));
+    public static Image QUOTE_ICON;
+    
     public final String       TITLE;
     public final String       MESSAGE;
     public final Image        IMAGE;
@@ -73,8 +74,8 @@ public class Notification {
     public enum Notifier {
         INSTANCE;
 
-        private static final double ICON_WIDTH    = 24;
-        private static final double ICON_HEIGHT   = 24;
+        private static final double ICON_WIDTH    = 32;//32;//24;
+        private static final double ICON_HEIGHT   = 32;//32;//24;
         private static       double width         = 300;
         private static       double height        = 80;
         private static       double offsetX       = 0;
@@ -99,14 +100,21 @@ public class Notification {
         private void init() {
             popupLifetime = Duration.millis(5000);
             popups = FXCollections.observableArrayList();
+            
+            INFO_ICON    = new Image(this.getClass().getResourceAsStream("/icons/notification/info.png"));
+            WARNING_ICON = new Image(this.getClass().getResourceAsStream("/icons/notification/warning.png"));
+            SUCCESS_ICON = new Image(this.getClass().getResourceAsStream("/icons/notification/success.png"));
+            ERROR_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/error.png"));
+            QUOTE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/orange_quote_36.png"));//quote_24.png"));
+
         }
 
         private void initGraphics() {
             scene = new Scene(new Region());
             scene.setFill(null);
-            scene.getStylesheets().add(getClass().getResource("notifier.css").toExternalForm());
-
+            scene.getStylesheets().add(this.getClass().getResource("/css/notifier.css").toExternalForm());
             stage = new Stage();
+        	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.setScene(scene);
         }
@@ -328,8 +336,9 @@ public class Notification {
             // Move popup to the right during fade out
             //POPUP.opacityProperty().addListener((observableValue, oldOpacity, opacity) -> popup.setX(popup.getX() + (1.0 - opacity.doubleValue()) * popup.getWidth()) );
 
+       	 
             if (stage.isShowing()) {
-                stage.toFront();
+            	stage.toFront();
             } else {
                 stage.show();
             }

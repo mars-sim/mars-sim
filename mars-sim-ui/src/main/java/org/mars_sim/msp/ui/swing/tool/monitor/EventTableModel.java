@@ -61,6 +61,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	private boolean showMalfunction = true;
 	private boolean showMalfunctionCache = true;
 
+	private boolean noFiring = false;
 	/** Names of the displayed columns. */
 	static private String columnNames[];
 	/** Types of the individual columns. */
@@ -107,6 +108,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		this.notifyBox = notifyBox;
 		this.desktop = desktop;
 
+		desktop.setEventTableModel(this);
+		
 		//count++;
 		// Update the cached events.
 		updateCachedEvents();
@@ -320,7 +323,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 			} else if (nMenu != null) {
 
 				// 2015-01-14 Added noFiring condition
-				Boolean noFiring = false;
+				//Boolean noFiring = false;
 
 				showMedical = nMenu.getShowMedical();
 				if (showMedical != showMedicalCache ) {
@@ -359,7 +362,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 			} else if (mainSceneMenu != null) {
 
 				// 2015-01-14 Added noFiring condition
-				Boolean noFiring = false;
+				//Boolean noFiring = false;
 /*
 				showMedical = nMenu.getShowMedical();
 				if (showMedical != showMedicalCache ) {
@@ -570,6 +573,14 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		isPaused = true;
 	};
 
+	public void setNoFiring(boolean value) {
+		noFiring = value;
+	}
+	
+	public boolean isFiring() {
+		return noFiring;
+	}
+	
 	/**
 	 * Prepares the model for deletion.
 	 */

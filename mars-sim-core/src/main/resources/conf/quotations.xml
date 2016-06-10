@@ -9,6 +9,35 @@
 <quotation-list>
   <!--Note: text must be less than xx letters in total -->
   
+   <!-- Wernher von Braun quotes -->
+  
+	<quotation name="Wernher von Braun" text="Don't tell me that man doesn't belong out there. Man belongs wherever he wants to go and he'll do plenty well when he gets there." />
+  <!-- Time magazine (17 February 1958) -->
+
+	<quotation name="Wernher von Braun" text="We can lick gravity, but sometimes the paperwork is overwhelming." />
+  <!-- On Bureaucracy, Chicago Sun Times, 10 July 1958, as quoted in Gaither's Dictionary of Scientific Quotations (2012, 2nd edition) by Carl C. Gaither and Alma E. Cavazos-Gaither, editors, p. 925 -->
+
+	<quotation name="Wernher von Braun" text="My experiences with science led me to God. They challenge science to prove the existence of God. But must we really light a candle to see the sun?" />
+  <!-- From a letter to the California State board of Education (14 September 1972) -->
+  
+	<quotation name="Wernher von Braun" text="It is in scientific honesty that I endorse the presentation of alternative theories for the origin of the universe, life and man in the science classroom. It would be an error to overlook the possibility that the universe was planned rather than happening by chance." />
+  <!-- From a letter to the California State board of Education (14 September 1972) -->
+
+	<quotation name="Wernher von Braun" text="Basic research is what I am doing when I don't know what I am doing." />
+  <!-- In an interview in the New York Times, 16 December 1957 -->
+  
+  
+  <!-- Others --> 
+  
+	<quotation name="Robert Louis Steenson" text="The Dog, and the Plough, and the Hunter, and all. And the star of the sailor, and Mars, These shone in the sky, and the pail by the wall. Would be half full of water and stars." />
+	<!-- Escape at Bedtime" -->  
+  
+  	<quotation name="Mike Fincke, NASA Astronaut" text="We have some special space shampoo that doesn't require water, and it does a pretty good job. So at without a bath, we're still pretty good, and we don't smell too bad." />
+
+  	<quotation name="Valery Ryumin" text="All the conditions necessary for murder are met if you shut 2 men in a cabin measuring 18'x20' and leave them together for 2 months." />
+	 
+	 
+  
   <!-- Robert A. Heinlein -->
 
 	<quotation name="Robert A. Heinlein" text="Never worry about theory as long as the machinery does what it's supposed to do." />
@@ -44,7 +73,7 @@
 	<quotation name="Robert A. Heinlein" text="The best things in history are accomplished by people who get tired of being shoved around." />
   <!-- Have Space Suit—Will Travel, Chapter 12 -->
 
-	<quotation name="Robert A. Heinlein" text="A rational anarchist believes that concepts, such as 'state' and 'society' and 'government' have no existence save as physically exemplified in the acts of self-responsible individuals." />
+	<quotation name="Robert A. Heinlein" text="A rational anarchist believes that concepts, such as 'state', 'society' and 'government', have no existence save as physically exemplified in the acts of self-responsible individuals." />
   <!-- The Moon Is a Harsh Mistress -->
 
 	<quotation name="Robert A. Heinlein" text="I will accept the rules that you feel necessary to your freedom. I am free, no matter what rules surround me. If I find them tolerable, I tolerate them; if I find them too obnoxious, I break them. I am free because I know that I alone am morally responsible for everything I do." />
@@ -81,32 +110,6 @@
   <!-- Time Enough for Love -->
 
 	<quotation name="Robert A. Heinlein" text="A human being should be able to change a diaper, plan an invasion, conn a ship, design a building, write a sonnet, balance accounts, build a wall, comfort the dying, take orders, cooperate, act alone, solve equations, analyze a new problem, pitch manure, program a computer, cook a tasty meal, fight efficiently and die gallantly. Specialization is for insects." />
-  <!-- Wernher von Braun quotes -->
   
-	<quotation name="Wernher von Braun" text="Don't tell me that man doesn't belong out there. Man belongs wherever he wants to go and he'll do plenty well when he gets there." />
-  <!-- Time magazine (17 February 1958) -->
-
-	<quotation name="Wernher von Braun" text="We can lick gravity, but sometimes the paperwork is overwhelming." />
-  <!-- On Bureaucracy, Chicago Sun Times, 10 July 1958, as quoted in Gaither's Dictionary of Scientific Quotations (2012, 2nd edition) by Carl C. Gaither and Alma E. Cavazos-Gaither, editors, p. 925 -->
-
-	<quotation name="Wernher von Braun" text="My experiences with science led me to God. They challenge science to prove the existence of God. But must we really light a candle to see the sun?" />
-  <!-- From a letter to the California State board of Education (14 September 1972) -->
-  
-	<quotation name="Wernher von Braun" text="It is in scientific honesty that I endorse the presentation of alternative theories for the origin of the universe, life and man in the science classroom. It would be an error to overlook the possibility that the universe was planned rather than happening by chance." />
-  <!-- From a letter to the California State board of Education (14 September 1972) -->
-
-	<quotation name="Wernher von Braun" text="Basic research is what I am doing when I don't know what I am doing." />
-  <!-- In an interview in the New York Times, 16 December 1957 -->
-  
-  
-  <!-- Others --> 
-  
-	<quotation name="Robert Louis Steenson" text="The Dog, and the Plough, and the Hunter, and all. And the star of the sailor, and Mars, These shone in the sky, and the pail by the wall. Would be half full of water and stars." />
-	<!-- Escape at Bedtime" -->  
-  
-  	<quotation name="Mike Fincke, NASA Astronaut" text="We have some special space shampoo that doesn't require water, and it does a pretty good job. So at without a bath, we're still pretty good, and we don't smell too bad." />
-
-  	<quotation name="Valery Ryumin" text="All the conditions necessary for murder are met if you shut 2 men in a cabin measuring 18'x20' and leave them together for 2 months." />
-	  
   
 </quotation-list>

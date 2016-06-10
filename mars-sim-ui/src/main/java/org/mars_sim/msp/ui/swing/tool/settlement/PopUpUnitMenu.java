@@ -215,8 +215,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 		UnitInfoPanel unitInfoPanel = new UnitInfoPanel(desktop);
 		unitInfoPanel.init(name, type, description);
 		//unitInfoPanel.setBackground(null);
-		unitInfoPanel.setOpaque(false);
-		unitInfoPanel.setBackground(new Color(0,0,0,128));
+		//unitInfoPanel.setOpaque(false);
+		//unitInfoPanel.setBackground(new Color(0,0,0,128));
 
 		Rectangle rect = new Rectangle(350+20, frameHeight+20);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
 		rect.setArcWidth(10);

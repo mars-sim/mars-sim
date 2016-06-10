@@ -73,6 +73,7 @@ import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 //import org.mars_sim.msp.ui.swing.tool.MarsViewer;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.swing.tool.monitor.EventTableModel;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
@@ -151,6 +152,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private OrbitViewer orbitViewer;
 	
 	private BrowserJFX browserJFX;
+	
+	private EventTableModel eventTableModel;
 	
 	//private final ReentrantLock transportLock = new ReentrantLock();
     //private int transportCount = 0;
@@ -1501,6 +1504,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return browserJFX;
 	}
 	
+	public void setEventTableModel(EventTableModel eventTableModel) {
+		this.eventTableModel = eventTableModel;
+	}
+	
+	public EventTableModel getEventTableModel() {
+		return eventTableModel;
+	}
 	
 	public void destroy() {
 		updateThread = null;
@@ -1517,6 +1527,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		//settlement = null;
 		mainWindow = null;
 		mainScene = null;
+		eventTableModel = null;
 	}
 
 }

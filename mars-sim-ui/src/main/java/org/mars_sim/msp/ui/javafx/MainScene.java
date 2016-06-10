@@ -117,6 +117,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
+import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
@@ -135,11 +136,6 @@ import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
 public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
-
-	public static final Image QUOTE_ICON = new Image(MainScene.class.getResource("/icons/quote_24.png").toExternalForm());
-	//public static final Image QUOTE_ICON = new Image(MainScene.class.getResourceAsStream("/icons/quote.png"));
-	
-    //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
@@ -185,6 +181,8 @@ public class MainScene {
 	//private Text systemCpuLoadText;
 	private Button memBtn, clkBtn;//, cpuBtn;
 
+	
+	
 	private Stage stage;
 	//private Scene scene;
 	private StackPane rootStackPane;
@@ -206,19 +204,18 @@ public class MainScene {
 	private Timeline timeline;
 	private static NotificationPane notificationPane;
 
-
+	private ObservableList<Screen> screens;
+	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
+	@SuppressWarnings("restriction")
+	private OperatingSystemMXBean osBean;
+	
 	private static MainDesktopPane desktop;
 	private MainSceneMenu menuBar;
 	private MarsNode marsNode;
 	private TransportWizard transportWizard;
 	private ConstructionWizard constructionWizard;
 
-	ObservableList<Screen> screens;
-
-	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
-
-	@SuppressWarnings("restriction")
-	private OperatingSystemMXBean osBean;
+	private QuotationPopup quote;
 
 	
 /*	
@@ -1737,52 +1734,14 @@ public class MainScene {
 		
 		isMainSceneDoneLoading = true;
 		
-		QuotationPopup quote = new QuotationPopup();
-		quote.popAQuote(stage);
-			
-		//openQuote(quote);
+		quote = new QuotationPopup();
+		popAQuote();
+		
 	}
 
-/*
-	 * Create a quote using Enzo's Notification  
-	 
-	// 2016-04-21 Added openQuote()
-	public void openQuote(String[] quoteArray) {
-
-        Array.set(quoteArray, 0 ,quote0);
-        Array.set(quoteArray, 1 ,quote1);
-        Array.set(quoteArray, 2 ,quote2);
-        Array.set(quoteArray, 3 ,quote3);
-        Array.set(quoteArray, 4 ,quote4);
-        
-		// Randomly select a quote
-		int rand = RandomUtil.getRandomInt(0, 3);	
-		String quoteString = quoteArray[rand];
-		
-		int length = quoteString.length();
-		int lines = length/45 + 1;
-		int height = lines * 23;
-		
-        notifier = Notification.Notifier.INSTANCE;
-		notifier.setHeight(height);
-        notifier.setWidth(370);
-        notifier.setNotificationOwner(stage);
-        Duration duration = new Duration(20000);
-        notifier.setPopupLifetime(duration); 
-		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON);//QUOTE_ICON);	
-		notifier.notify("QUOTATION", quoteString, Notification.INFO_ICON);// QUOTE_ICON);//n0);
-				
-		notify_timeline = new Timeline(new KeyFrame(Duration.millis(21000), ae -> stopNotification()));
-		notify_timeline.setCycleCount(1);//javafx.animation.Animation.INDEFINITE);
-		notify_timeline.play();
-		
+	public void popAQuote() {
+		quote.popAQuote(stage);		
 	}
-	
-	public void stopNotification() {
-		notify_timeline.stop();
-		notifier.stop();
-	}
-*/
 	
 	public MarsNode getMarsNode() {
 		return marsNode;
