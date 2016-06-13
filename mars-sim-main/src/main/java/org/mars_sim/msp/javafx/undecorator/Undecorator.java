@@ -25,7 +25,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.mars_sim.msp.javafx.insidefx.undecorator;
+package org.mars_sim.msp.javafx.undecorator;
 
 import java.io.IOException;
 import java.net.URL;
@@ -158,7 +158,7 @@ public class Undecorator extends StackPane {
     }
 
     public Undecorator(Stage stage, Region root) {
-        this(stage, root, "/fxui/fxml/stagedecoration.fxml", StageStyle.UNDECORATED);
+        this(stage, root, "/undecorator/fxml/stagedecoration.fxml", StageStyle.UNDECORATED);
     }
 
     public Undecorator(Stage stag, Region clientArea, String stageDecorationFxml, StageStyle st) {
@@ -921,7 +921,7 @@ public class Undecorator extends StackPane {
 
         try {
             //prop.load(Undecorator.class.getClassLoader().getResourceAsStream("/skin/undecorator.properties"));
-            prop.load(getClass().getResourceAsStream("/skin/undecorator.properties"));
+            prop.load(getClass().getResourceAsStream("/undecorator/skin/undecorator.properties"));
 
             SHADOW_WIDTH = Integer.parseInt(prop.getProperty("window-shadow-width"));
             RESIZE_PADDING = Integer.parseInt(prop.getProperty("window-resize-padding"));

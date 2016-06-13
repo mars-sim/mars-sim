@@ -1,4 +1,4 @@
-package demo;
+package org.mars_sim.msp.demo;
 
 import java.util.Random;
 import javafx.application.Application;

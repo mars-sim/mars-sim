@@ -76,9 +76,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 	private static final long serialVersionUID = 1L;
 
 	private JMenuItem itemOne, itemTwo, itemThree;
-    //private Building building;
-    //private Vehicle vehicle;
     private Unit unit;
+    
     private Settlement settlement;
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
@@ -139,7 +138,7 @@ public class PopUpUnitMenu extends JPopupMenu {
             add(itemOne);
         	buildItemOne(unit);
         }
-     /*
+/*
      // Determine what the GraphicsDevice can support.
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice gd = ge.getDefaultScreenDevice();
@@ -152,15 +151,13 @@ public class PopUpUnitMenu extends JPopupMenu {
                 "Per-pixel translucency is not supported");
                 System.exit(0);
         }
-        */
-
+*/
     }
 
 
     public void buildItemOne(final Unit unit) {
 
         itemOne.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
 
             	if (mainScene != null) {

@@ -112,7 +112,7 @@ public class QuotationPopup implements Serializable {
 			numWhiteSpace = (int)(strSize - nameSize);
 			
 			new_width = (int)(strSize * 7.818);
-			new_width = 40 + new_width;
+			new_width = 50 + new_width;
 			
 			height = base_height + 15;
 			
@@ -173,6 +173,7 @@ public class QuotationPopup implements Serializable {
 		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON)
 		notifier.notify(" QUOTATION", str, Notification.QUOTE_ICON); //INFO_ICON);
 
+		stage.requestFocus();
 /*		
  		// The timeer is for removing the icon in the windows taskbar. 
  		// Using it will clamp the next notifier from having lived the full 20 seconds life time

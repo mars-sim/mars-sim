@@ -1,6 +1,6 @@
 // http://stackoverflow.com/questions/24472170/how-can-we-make-text-auto-scroll-continuious-loop
 
-package demo;
+package org.mars_sim.msp.demo;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;

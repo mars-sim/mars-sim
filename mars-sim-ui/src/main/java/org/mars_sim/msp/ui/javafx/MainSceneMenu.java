@@ -7,6 +7,11 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import javafx.scene.layout.Pane;
+import javafx.animation.ParallelTransition;
+import javafx.util.Duration;
+import javafx.animation.TranslateTransition;
+import javafx.scene.input.MouseEvent;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,6 +31,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.EventListener;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,6 +66,7 @@ public class MainSceneMenu extends MenuBar  {
 	
 	private boolean isNotificationOnCache = true;
 	
+	private boolean fMenuVisible = false;
 	
 	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,
 							monitorToolItem, missionToolItem,settlementMapToolItem,
@@ -217,7 +224,7 @@ public class MainSceneMenu extends MenuBar  {
         SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
         
         notificationItem = new CheckMenuItem("Notification");
-        notificationItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+        notificationItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         notificationItem.setSelected(true);
 
         SeparatorMenuItem SeparatorMenuItem6 = new SeparatorMenuItem();
@@ -298,9 +305,75 @@ public class MainSceneMenu extends MenuBar  {
 
         menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem7, userGuideItem);
 
+        //MenuBar menuBar = mainScene.getMenuBar();
+        
         super.getMenus().addAll(menuFile, menuTools, menuSettings, menuHelp); // menuNotification,
 
+        /*           
+        MenuBar menuBar = mainScene.getMenuBar();
+        //menuBar.toBack();
+        
+        //Pane clipPane = new Pane();
+            
+        mainScene.getRootStackPane().setOnMouseMoved(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if ((event.getY() <= 35) && (!fMenuVisible)) {
+                	
+                	mainScene.getBorderPane().setTop(menuBar);
+                	//menuBar.toFront();
 
+              	
+                    TranslateTransition clipPane_Slide = new TranslateTransition(Duration.millis(300), clipPane);
+                    clipPane_Slide.setFromY(0);
+                    clipPane_Slide.setToY(35);
+                    clipPane_Slide.setCycleCount(1);
+                    clipPane_Slide.setAutoReverse(false);
+
+                    TranslateTransition menuBar_Slide = new TranslateTransition(Duration.millis(300), menuBar);
+                    menuBar_Slide.setFromY(0);
+                    menuBar_Slide.setToY(35);
+                    menuBar_Slide.setCycleCount(1);
+                    menuBar_Slide.setAutoReverse(false);
+
+                    ParallelTransition ShowMenu = new ParallelTransition(); 
+                    ShowMenu.getChildren().addAll(clipPane_Slide, menuBar_Slide);
+                    ShowMenu.setCycleCount(1);
+                    ShowMenu.playFromStart();
+
+                    fMenuVisible = true;
+                    
+                    
+                    
+                } else if ((event.getY() > 35) && (fMenuVisible)) {
+  
+                	mainScene.getBorderPane().setTop(null);
+                	//menuBar.toBack();
+                	
+                    TranslateTransition clipPane_Slide = new TranslateTransition(Duration.millis(300), clipPane);
+                    clipPane_Slide.setFromY(35);
+                    clipPane_Slide.setToY(0);
+                    clipPane_Slide.setCycleCount(1);
+                    clipPane_Slide.setAutoReverse(false);
+
+                    TranslateTransition menuBar_Slide = new TranslateTransition(Duration.millis(300), menuBar);
+                    menuBar_Slide.setFromY(35);
+                    menuBar_Slide.setToY(0);
+                    menuBar_Slide.setCycleCount(1);
+                    menuBar_Slide.setAutoReverse(false);
+
+                    ParallelTransition HideMenu = new ParallelTransition(); 
+                    HideMenu.getChildren().addAll(clipPane_Slide, menuBar_Slide);
+                    HideMenu.setCycleCount(1);
+                    HideMenu.playFromStart();
+
+                    fMenuVisible = false;
+                    
+                }
+            }
+        });
+        
+*/        
         newItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override
      	   public void handle(ActionEvent e) {

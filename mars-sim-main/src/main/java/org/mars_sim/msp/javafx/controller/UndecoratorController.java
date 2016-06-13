@@ -2,7 +2,7 @@ package org.mars_sim.msp.javafx.controller;
 
 import java.util.logging.Level;
 
-import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
+import org.mars_sim.msp.javafx.undecorator.Undecorator;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;

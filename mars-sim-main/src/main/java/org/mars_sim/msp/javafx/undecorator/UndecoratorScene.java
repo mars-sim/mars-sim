@@ -24,7 +24,7 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.mars_sim.msp.javafx.insidefx.undecorator;
+package org.mars_sim.msp.javafx.undecorator;
 
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -40,10 +40,10 @@ import javafx.stage.StageStyle;
  */
 public class UndecoratorScene extends Scene {
 
-    static public final String DEFAULT_STYLESHEET = "/skin/undecorator.css";
-    static public final String DEFAULT_STYLESHEET_UTILITY = "/skin/undecoratorUtilityStage.css";
-    static public final String DEFAULT_STAGEDECORATION = "/fxui/fxml/stagedecoration.fxml";
-    static public final String DEFAULT_STAGEDECORATION_UTILITY = "/fxui/fxml/stageUtilityDecoration.fxml";
+    static public final String DEFAULT_STYLESHEET = "/undecorator/skin/undecorator.css";
+    static public final String DEFAULT_STYLESHEET_UTILITY = "/undecorator/skin/undecoratorUtilityStage.css";
+    static public final String DEFAULT_STAGEDECORATION = "/undecorator/fxml/stagedecoration.fxml";
+    static public final String DEFAULT_STAGEDECORATION_UTILITY = "/undecorator/fxml/stageUtilityDecoration.fxml";
     Undecorator undecorator;
 
     /**

@@ -10,7 +10,7 @@ import org.mars_sim.msp.javafx.MainMenu;
 import org.mars_sim.msp.javafx.MarsProjectFX;
 import org.mars_sim.msp.javafx.WaitIndicator;
 import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
-import org.mars_sim.msp.javafx.insidefx.undecorator.Undecorator;
+import org.mars_sim.msp.javafx.undecorator.Undecorator;
 import org.mars_sim.msp.networking.MultiplayerClient;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
@@ -221,7 +221,7 @@ public class ScenarioConfigEditorFX {
 	        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 
 			Undecorator undecorator = new Undecorator(stage, (Region) parent);
-			undecorator.getStylesheets().add("/skin/undecorator.css");
+			undecorator.getStylesheets().add("/undecorator/skin/undecorator.css");
 			
 			AnchorPane anchorpane = null;
 			if ( parent.lookup("#anchorRoot") == null)
@@ -387,7 +387,7 @@ public class ScenarioConfigEditorFX {
 		StackPane swingPane = new StackPane();
 		swingPane.setMaxSize(HORIZONTAL_SIZE, 200);
 		swingNode = new SwingNode();
-		swingNode.setOpacity(.7);
+		swingNode.setOpacity(.8);
 		//swingNode.setBlendMode(BlendMode.SRC_OVER);
 		createSwingNode(swingNode);
 		swingPane.getChildren().add(swingNode);

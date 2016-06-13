@@ -66,7 +66,7 @@
 .tab {
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }
-
+/*
 .tool-bar:horizontal {
 	-fx-font-weight: normal;
 	-fx-font-family: "Noto";
@@ -95,13 +95,13 @@
 }
 
 .toggle-button .text {
-    -fx-text-fill: white; /* text color inside the button */
+    -fx-text-fill: white; /* text color inside the button 
    	-fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
 .button {
 	-fx-background-color: linear-gradient(#F9BF00, #E5AB00);
-    -fx-text-fill: white; /* text color inside the button */
+    -fx-text-fill: white;  text color inside the button 
     -fx-border-color: #ADAB89;
     -fx-border-radius: 2;
     -fx-padding: 1 1 1 1;
@@ -109,6 +109,7 @@
 	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 
 }
+*/
 
 .button .text {
     -fx-text-fill: white; /* text color inside the button */

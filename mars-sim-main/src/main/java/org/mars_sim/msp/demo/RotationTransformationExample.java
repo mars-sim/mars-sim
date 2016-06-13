@@ -1,4 +1,4 @@
-package demo;
+package org.mars_sim.msp.demo;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;

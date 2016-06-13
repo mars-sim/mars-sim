@@ -1,4 +1,4 @@
-package demo;
+package org.mars_sim.msp.demo;
 
 import java.awt.*;
 import java.awt.event.*;

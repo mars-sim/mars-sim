@@ -32,11 +32,8 @@ import com.sun.management.OperatingSystemMXBean;
 import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.MenuItem;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -44,33 +41,25 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.geometry.Side;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -116,6 +105,8 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.javafx.BorderSlideBar;
+import org.mars_sim.msp.steelseries.tools.Orientation;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -127,6 +118,9 @@ import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
+import org.reactfx.inhibeans.property.SimpleBooleanProperty;
+import org.reactfx.util.FxTimer;
+import org.reactfx.util.Timer;
 
 
 /**
@@ -162,11 +156,14 @@ public class MainScene {
 	//private int systemCpuLoad;
 
 	private boolean isMainSceneDoneLoading = false;
-
-	private double width;
-	private double height;
+	private boolean fMenuVisible = false;
+	private boolean isMarsNetOpen = false;
+	
+	private double width = 1286;//1366-80;
+	private double height = 688; //768-80;
 
 	private StringProperty timeStamp;
+    private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
 	private String lookAndFeelTheme = "nimrod";
 
@@ -174,31 +171,25 @@ public class MainScene {
 	private Thread loadSimThread;
 	private Thread saveSimThread;
 
-	private Text timeText;
+	private Label timeText; //Text timeText	
 	private Text memUsedText;
-	//private Text memMaxText;
-	//private Text processCpuLoadText;
-	//private Text systemCpuLoadText;
-	private Button memBtn, clkBtn;//, cpuBtn;
 
-	
-	
+	private Button memBtn, clkBtn;//, cpuBtn;
+	private ToggleButton marsNetButton;
+	//private MaterialDesignToggleButton marsNetButton;
+
 	private Stage stage;
-	//private Scene scene;
-	private StackPane rootStackPane;
+	private AnchorPane anchorPane;
 	private SwingNode swingNode;
 	private StatusBar statusBar;
 	private Flyout flyout;
-	//private ToggleButton marsNetButton;
-	private MaterialDesignToggleButton marsNetButton;
+
 	private ChatBox cb;
-	//private CornerMenu cornerMenu;
 	private StackPane swingPane;
 	private Tab swingTab;
 	private Tab nodeTab;
 	private BorderPane borderPane;
 	private DndTabPane dndTabPane;
-	//private FXDesktopPane fxDesktopPane;
 	private ESCHandler esc = null;
 
 	private Timeline timeline;
@@ -207,7 +198,7 @@ public class MainScene {
 	private ObservableList<Screen> screens;
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 	@SuppressWarnings("restriction")
-	private OperatingSystemMXBean osBean;
+	//private OperatingSystemMXBean osBean;
 	
 	private static MainDesktopPane desktop;
 	private MainSceneMenu menuBar;
@@ -216,22 +207,6 @@ public class MainScene {
 	private ConstructionWizard constructionWizard;
 
 	private QuotationPopup quote;
-
-	
-/*	
-	//private static final Random         RND           = new Random();
-    private static final Notification[] NOTIFICATIONS = {
-        new Notification("Quote", quote[0], Notification.INFO_ICON),
-        new Notification("Warning", "Attention, somethings wrong", Notification.WARNING_ICON),
-        new Notification("Success", "Great it works", Notification.SUCCESS_ICON),
-        new Notification("Error", "ZOMG", Notification.ERROR_ICON)
-    };
-*/
-	
-    
-	//static {
-   //     Font.loadFont(MainScene.class.getResource("/fxui/fonts/fontawesome-webfont.ttf").toExternalForm(), 10);
-    //}
 
 	/**
 	 * Constructor for MainScene
@@ -242,18 +217,12 @@ public class MainScene {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
- 
 		//stage.setResizable(true);
-
-		//stage.setMinWidth(1280);
-		//stage.setMinHeight(600);
-
-		//stage.setWidth(1280);
+		stage.setMinWidth(width);//1024);
+		stage.setMinHeight(height);//480);
 		//stage.setHeight(600);
-
 		//stage.setMaxWidth(1920);
 		//stage.setMaxHeight(1200);
-
 		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in Mac) to toggle full screen mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
         //stage.setFullScreen(false);
@@ -403,14 +372,9 @@ public class MainScene {
 		}
 		desktop.getTimeWindow().enablePauseButton(false);
 
-		//try {
-			//FXUtilities.runAndWait(() -> {
-			Platform.runLater(() -> {
+		Platform.runLater(() -> {
 				constructionWizard.selectSite(mission);
 			});
-		//catch (InterruptedException | ExecutionException e) {
-		//	e.printStackTrace();
-		//}
 
 		boolean now = Simulation.instance().getMasterClock().isPaused();
 		if (!previous) {
@@ -442,142 +406,69 @@ public class MainScene {
 	public Scene initializeScene() {
 		//logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
 		marsNode = new MarsNode(this, stage);
-
-		// ImageView bg1 = new ImageView();
-		// bg1.setImage(new Image("/images/splash.png")); // in lieu of the
-		// interactive Mars map
-		// root.getChildren().add(bg1);
-
-		// Obtain screens
-		//ObservableList<Screen> screens = Screen.getScreens();
-		//Screen primaryScreen = Screen.getPrimary();
-		
+	
 		// Create group to hold swingNode1 which holds the swing desktop
 		swingPane = new StackPane();
 		swingNode = new SwingNode();
-
-		
-/*		
- *  * 	// Failed since the mouse cursor never enter swingPane 
-		swingPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
-		      @Override public void handle(MouseEvent event) {
-		    	  
-		  		screens = Screen.getScreensForRectangle(event.getX(), event.getY(), 1, 1);  	
-		        //String msg =
-		        //  "(x: "       + event.getX()      + ", y: "       + event.getY()       + ") -- " +
-		        //  "(sceneX: "  + event.getSceneX() + ", sceneY: "  + event.getSceneY()  + ") -- " +
-		        //  "(screenX: " + event.getScreenX()+ ", screenY: " + event.getScreenY() + ")";
-		  		System.out.println("(x: " + event.getX()      
-		  					+ ", y: "  + event.getY());
-		      }
-		    });
-		 
-		System.out.println("screens have the size of " + screens.size());		
-		Screen currentScreen = screens.get(0);
-		Rectangle2D rect = currentScreen.getVisualBounds();
-		width = rect.getWidth();
-		height = rect.getHeight();
-*/		
-		
-/*		
- * 		// below doesn't not work for multi-monitor setup. The width will become the total width of both monitors
-		Rectangle2D rect = Screen.getPrimary().getVisualBounds();
-		width = rect.getWidth();
-		height = rect.getHeight();
-*/			
-		
-/*
- * 		// Issue: can't run the MSP on the "active" monitor.
-		// by default MSP runs on the primary monitor (aka monitor 1 as reported by windows os) only.
-		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
-/
-		StartUpLocation startUpLoc = new StartUpLocation(swingPane.getPrefWidth(), swingPane.getPrefHeight());
-        double xPos = startUpLoc.getXPos();
-        double yPos = startUpLoc.getYPos();
-        // Set Only if X and Y are not zero and were computed correctly
-        if (xPos > 0 && yPos > 0) {
-            //stage.setX(xPos);
-            //stage.setY(yPos);
-        	screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
-        	Screen currentScreen = screens.get(0);
-    		Rectangle2D rect = currentScreen.getVisualBounds();
-    		width = rect.getWidth()-80;
-    		height = rect.getHeight()-80;
-    		stage.setX(0);
-    	    stage.setY(0);
-            System.out.println(" x : " + xPos + "   y : " + yPos);
-
-        } else {
-            stage.setX(0);
-            stage.setY(0);
-            width = 1366-80;
-    		height = 768-80;
-            stage.centerOnScreen();
-            System.out.println("calling centerOnScreen()");
-        }
-*/        
- 
-        
-		width = 1366-80;
-		height = 768-80;
 		
 		createSwingNode();
 		swingPane.getChildren().add(swingNode);
 		swingPane.setPrefWidth(width);
 		swingPane.setPrefHeight(height);
 
+	    //2015-11-11 Added createFlyout()
+		flyout = createFlyout();
+        EffectUtilities.makeDraggable(flyout.getStage(), cb);
+					
 		// Create ControlFX's StatusBar
 		statusBar = createStatusBar();
-		VBox bottomBox = new VBox();
-		bottomBox.getChildren().addAll(statusBar);
+	    //System.out.println("height : " + statusBar.getHeight());
+
+        Button memoryButton = new Button();
+        memoryButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/memory_chip_48.png"))));
+        memoryButton.setOnAction(e -> {
+        	memoryButton.setTooltip(new Tooltip ("Memory Usage : " + memUsed + " MB"));
+            memoryButton.getTooltip().show(stage);
+            Timer timer = FxTimer.runLater(
+    				java.time.Duration.ofMillis(2000),
+    		        () -> memoryButton.getTooltip().hide());
+        });
+        
+        //memoryButton.setTooltip(new Tooltip ("Memory Usage : " + memUsed + " MB"));
+        
+        //Button dateTimeButton = new Button("", new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/memory_chip_48.png"))));
+/*
+		ToolBar miscToolBar = new ToolBar(
+				marsNetButton
+				//new Separator(),
+				//memoryButton
+				//new Separator()
+				);
+		
+		miscToolBar.setOrientation(javafx.geometry.Orientation.VERTICAL);
+		miscToolBar.setStyle(
+	    		   //"-fx-border-style: none; "
+	    		   //"-fx-background-color: #231d12; "
+	       			"-fx-background-color: transparent; "
+	       			//+ "-fx-background-radius: 1px;"
+	    		   );
+		//.setOpacity(0); 
+*/		
+		//VBox bottomBox = new VBox();
+		//bottomBox.getChildren().addAll(statusBar);
 
 		// Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
-		//menuBar.getStylesheets().addAll("/fxui/css/mainskin.css");
 
 		// Create BorderPane
 		borderPane = new BorderPane();
-		borderPane.setTop(menuBar);
-		// borderPane.setTop(toolbar);
-		borderPane.setBottom(bottomBox);
-		// borderPane.setStyle("-fx-background-color: palegorange");
-
-/*
-		// 2015-10-23 Creates marqueeNode and marqueePane
-		SwingNode marqueeNode = null;
-
-		SwingUtilities.invokeLater(() -> {
-			marqueePane = new MarqueePane();
-			marqueeNode.setContent(marqueePane);
-		} );
-*/
 		
-/*		
-		// 2015-05-26 Create fxDesktopPane
-		fxDesktopPane = marsNode.createFXDesktopPane();
-		//fxDesktopPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
+		//VBox topBox = new VBox();
+		//topBox.getChildren().addAll(menuBar, toolBar);
+		
+		//borderPane.setTop(topBox);
+		//borderPane.setBottom(bottomBox);
 
-		// 2015-05-26 Create the dndTabPane.
-		dndTabPane = new DndTabPane();
-		StackPane containerPane = new StackPane(dndTabPane);
-		//containerPane.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
-
-		// We need to create the skin manually, could also be your custom skin.
-		DnDTabPaneSkin skin = new DnDTabPaneSkin(dndTabPane);
-
-		// Setup the dragging.
-		DndTabPaneFactory.setup(FeedbackType.MARKER, containerPane, skin);
-
-		// Set the skin.
-		dndTabPane.setSkin(skin);
-		dndTabPane.setSide(Side.RIGHT);
-
-		// Create nodeTab
-		nodeTab = new Tab();
-		nodeTab.setClosable(false);
-		nodeTab.setText("JavaFX UI");
-		nodeTab.setContent(fxDesktopPane);
-*/
 		/*
 		 * // create a button to toggle floating. final RadioButton floatControl
 		 * = new RadioButton("Toggle floating");
@@ -589,60 +480,139 @@ public class MainScene {
 		 * tabPane.getStyleClass().add(TabPane.STYLE_CLASS_FLOATING); } else {
 		 * tabPane.getStyleClass().remove(TabPane.STYLE_CLASS_FLOATING); } } });
 		 */
-/*
-		// Create swing tab to hold classic UI
-		swingTab = new Tab();
-		swingTab.setClosable(false);
-		swingTab.setText("Classic UI");
-		swingTab.setContent(swingPane);
-		//Tab noteTab = new Tab("");
 
-		// Set to select the swing tab at the start of simulation
-		// Used dndTabPane instead of the regular TabPane
-		dndTabPane.getSelectionModel().select(swingTab);
-		dndTabPane.getTabs().addAll(swingTab, nodeTab);
-		//borderPane.setCenter(dndTabPane);
-
-		// wrap dndTabPane inside notificationNode
-		Node notificationNode = createNotificationPane();
-		borderPane.setCenter(notificationNode);
-		
-		
-*/		
 		
 		borderPane.setCenter(swingPane);
-
-		rootStackPane = new StackPane(borderPane);
 		borderPane.setMinWidth(width);//1024);
-		borderPane.setMinHeight(height);//480);
+		//borderPane.setMinHeight(height-30);//480);
+          
+		//rootStackPane = new StackPane(borderPane);
+
+		/*		
+		hideProperty.setValue(true);
+		
+		// binding to hideProperty
+        // card back is visible if hide property is true
+		menuBar.visibleProperty().bind(hideProperty.not());
         
-		Scene scene = new Scene(rootStackPane, width, height, Color.BROWN);
+		Pane pane = new Pane();
+		pane.setStyle("-fx-background-color: transparent;");
+		// card front is visible if property is false, see "not()" call
+        pane.visibleProperty().bind(hideProperty);
 
-		//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());
-		borderPane.prefHeightProperty().bind(scene.heightProperty());
-		borderPane.prefWidthProperty().bind(scene.widthProperty());
+        //setOnMouseClicked((e)-> {
+            // click on card to flip it
+        //    hideProperty.setValue(!hideProperty.getValue());
+        //});
+		
+		rootStackPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
+		      @Override
+		      public void handle(MouseEvent event) {
+		          if ((event.getY() <= 35) && (!fMenuVisible)) {
+		          	System.out.println("slide open");	        	  
+		          	//borderPane.setTop(menuBar);
+		          	//menuBar.setVisible(true);
+		          	hideProperty.setValue(false);
+		          	fMenuVisible = true;            
+		              
+		          } else if ((event.getY() > 35) && (fMenuVisible)) {
+			        System.out.println("slide close");	
+		          	//borderPane.setTop(null);
+			        //menuBar.setVisible(false);
+		          	hideProperty.setValue(true);//!hideProperty.getValue());
+		          	fMenuVisible = false;
+		              
+		          }
+		      }
+		  });
+*/
+		
+	
+    	//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());	
+		
+		anchorPane = new AnchorPane();
+		anchorPane.setMinWidth(width);//1024);
+		anchorPane.setMinHeight(height);//480);
+        //anchorPane.setPrefHeight(431);
+        //anchorPane.setPrefWidth(600);       
 
-		//createCornerMenu();
+        //BorderPane borderPane = new BorderPane();
+		//borderPane.prefHeightProperty().bind(scene.heightProperty());
+		borderPane.prefWidthProperty().bind(anchorPane.widthProperty());
 
+        AnchorPane.setBottomAnchor(borderPane, 0.0);
+        AnchorPane.setLeftAnchor(borderPane, 0.0);
+        AnchorPane.setRightAnchor(borderPane, 0.0);
+        AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
+/*
+        ToolBar toolbar = new ToolBar();
+        toolbar.setPrefWidth(width);
+		toolbar.setStyle(
+	    		   //"-fx-border-style: none; "
+	    		   //"-fx-background-color: #231d12; "
+	       			"-fx-background-color: transparent; "
+	       			//+ "-fx-background-radius: 1px;"
+	    		   );
+		
+        //AnchorPane.setTopAnchor(toolbar, 0.0);
+        AnchorPane.setLeftAnchor(toolbar, 0.0);
+        AnchorPane.setRightAnchor(toolbar, 0.0);
+        AnchorPane.setBottomAnchor(toolbar, 30.0);
+*/        
+        
+
+        Button menubarButton = new Button();
+        menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/menubar_36.png"))));
+
+        AnchorPane.setLeftAnchor(marsNetButton, 5.0);
+        //AnchorPane.setRightAnchor(marsNetButton, 0.0);
+        AnchorPane.setBottomAnchor(marsNetButton, 35.0);
+        
+        //AnchorPane.setLeftAnchor(menubarButton, 0.0);
+        AnchorPane.setRightAnchor(menubarButton, 5.0);
+        AnchorPane.setBottomAnchor(menubarButton, 35.0);
+        
+        //Button buttonTop = new Button("Top");
+        //Label labelTop = new Label("Top");
+        
+        //Button buttonLeft = new Button("Left");
+        //Label labelLeft = new Label("Left");
+        
+        //Button buttonBottom = new Button("Bottom");
+        //Label labelBottom = new Label("Bottom");
+        //labelBottom.setTextAlignment(TextAlignment.CENTER);
+        
+        //Button buttonRight = new Button("Right");
+        //Label labelRight = new Label("Right");
+
+        /**
+         * Instanciate a BorderSlideBar for each childs layouts
+         */
+        BorderSlideBar topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
+        borderPane.setTop(topFlapBar);
+        borderPane.setBottom(statusBar);
+        
+        
+        //BorderSlideBar leftFlapBar = new BorderSlideBar(70, buttonLeft, Pos.BASELINE_LEFT, miscToolBar);
+        //leftFlapBar.setOpacity(0.5);
+        //borderPane.setLeft(leftFlapBar);
+
+        //BorderSlideBar bottomFlapBar = new BorderSlideBar(30, buttonBottom, Pos.BOTTOM_LEFT, statusBar);
+        //borderPane.setBottom(bottomFlapBar);
+        
+        //BorderSlideBar rightFlapBar = new BorderSlideBar(100, buttonRight, Pos.BASELINE_RIGHT, labelRight);
+        //borderPane.setRight(rightFlapBar);
+        
+        //toolbar.getItems().addAll(menubarButton, marsNetButton);//, buttonBottom);//, buttonLeft, buttonRight);
+
+        anchorPane.getChildren().addAll(borderPane, marsNetButton, menubarButton);//toolbar);
+
+    	Scene scene = new Scene(anchorPane, width, height);//, Color.BROWN);
+		anchorPane.prefHeightProperty().bind(scene.heightProperty());
+		anchorPane.prefWidthProperty().bind(scene.widthProperty());
+    		
 		return scene;
 	}
-/*
-	private void createCornerMenu() {
-        // uninstall the current cornerMenu
-        //if (cornerMenu != null) {
-        //    cornerMenu.autoShowAndHideProperty().unbind();
-        //    cornerMenu.removeFromPane();
-         //   cornerMenu = null;
-        //}
-        // create a new one
-        cornerMenu = new CornerMenu(CornerMenu.Location.BOTTOM_RIGHT, borderPane, true);
-        //if (CornerMenu.Location.TOP_LEFT.equals(cornerMenu.getLocation())) {
-        cornerMenu.getItems().addAll(navMenuItem, mapMenuItem, missionMenuItem, monitorMenuItem, searchMenuItem, eventsMenuItem);
-        //cornerMenu.autoShowAndHideProperty().bind(autoShowAndHideCheckBox.selectedProperty());
-        //cornerMenu.show();
-        cornerMenu.setAutoShowAndHide(false);
-    }
-*/
 
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
@@ -655,27 +625,15 @@ public class MainScene {
 		// (2). the inability of loading the tab icons of the Monitor Tool at the beginning
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
-		//rootStackPane.getStylesheets().clear();
 
 		changeTheme(theme);
-/*
-		theme = 1;
-		//rootStackPane
-		swingPane.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
-		menuBar.getStylesheets().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 
-		updateStatusBarThemeColor(Color.GREEN, Color.PALEGREEN);
-		lookAndFeelTheme = "LightTabaco";
-*/
 		// SwingUtilities is needed for MacOSX compatibility
 		SwingUtilities.invokeLater(() -> {
 			setLookAndFeel(theme);
-			//swingNode.setContent(desktop);
 		});
 
 		//logger.info("done with MainScene's initializeTheme()");
-
-		//isMainSceneDone = true;
 	}
 
 	/*
@@ -689,7 +647,7 @@ public class MainScene {
 		
 		//marsNode.getFXDesktopPane().getStylesheets().clear();
 		
-		marsNetButton.getStylesheets().clear();
+		//marsNetButton.getStylesheets().clear();
 
 		String cssColor;
 
@@ -728,12 +686,14 @@ public class MainScene {
 			cssColor = "/fxui/css/snowBlue.css";
 			updateThemeColor(Color.rgb(0,107,184), Color.rgb(0,107,184), cssColor); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
+			//marsNetButton
 
 		} else if (theme == 7) { // standard
 			cssColor = "/fxui/css/nimrodskin.css";
 			updateThemeColor(Color.rgb(156,77,0), Color.rgb(156,77,0), cssColor); //DARKORANGE, CORAL
 			//updateThemeColor(Color.rgb(0,0,0,128), Color.rgb(0,0,0,128), cssColor); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
+	        //marsNetButton.new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_32.png"))));
 		}
 
 		//logger.info("done with MainScene's changeTheme()");
@@ -748,10 +708,11 @@ public class MainScene {
 		menuBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 		
 		//marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
-
-		memUsedText.setFill(txtColor);
+		
+		//memUsedText.setTextFill(txtColor);
 		//memMaxText.setFill(txtColor);
-		timeText.setFill(txtColor);
+		timeText.setTextFill(txtColor);
+		
 		//systemCpuLoadText.setFill(txtColor);
 		//processCpuLoadText.setFill(txtColor);
 
@@ -788,20 +749,34 @@ public class MainScene {
     //2015-11-11 Added createFlyout()
     public Flyout createFlyout() {
         //marsNetButton = new ToggleButton(" MarsNet ");
-        marsNetButton = new MaterialDesignToggleButton(" MarsNet ");
+        //marsNetButton = new MaterialDesignToggleButton("", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))); //" MarsNet ");
+    	marsNetButton = new ToggleButton();
+    	//marsNetButton = new Button();
+        marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/gray_chat_36.png")))); //" MarsNet ");
+        
         flyout = new Flyout(marsNetButton, createChatBox());
         marsNetButton.setId("marsNetButton");
-        marsNetButton.setTooltip(new Tooltip ("Open/Close MarsNet Chat Box"));
-        marsNetButton.setPadding(new Insets(5, 5, 5, 5));
+        marsNetButton.setTooltip(new Tooltip ("Toggle on and off MarsNet"));
+        //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
         marsNetButton.setOnAction(e -> {
             if (marsNetButton.isSelected()) {
                 flyout.flyout();
             } else {
                 flyout.dismiss();
             }
+            //if (!isMarsNetOpen) {
+            //    flyout.flyout();
+            //    isMarsNetOpen = true;
+            //} else {
+            //    flyout.dismiss();
+            //}
         });
-
+       
         return flyout;
+    }
+    
+    public void ToggleOffMarsNetButton() {
+    	marsNetButton.setSelected(false);
     }
     
     public Flyout getFlyout() {
@@ -826,95 +801,19 @@ public class MainScene {
 	 * Creates the status bar for MainScene
 	 */
 	public StatusBar createStatusBar() {
-		//StatusBar statusBar = null;
 		if (statusBar == null) {
 			statusBar = new StatusBar();
-			statusBar.setText(""); // needed for deleting the default text "OK"
+			statusBar.setText("");
 		}
-		// statusBar.setAlignment(Pos.BASELINE_RIGHT);
-		// statusBar.setStyle("-fx-background-color: gainsboro;");
-		// statusBar.setAlignment(Pos.CENTER);
-		// statusBar.setStyle("-fx-border-stylel:solid; -fx-border-width:2pt;
-		// -fx-border-color:grey; -fx-font: 14 arial; -fx-text-fill: white;
-		// -fx-base: #cce6ff;");
-		// statusBar.setMinHeight(memMaxText.getBoundsInLocal().getHeight() +
-		// 10);
-		// statusBar.setMijnWidth (memMaxText.getBoundsInLocal().getWidth() +
-		// 10);
-
-	    //2015-11-11 Added createFlyout()
-		flyout = createFlyout();
-        EffectUtilities.makeDraggable(flyout.getStage(), cb);
-
-		statusBar.getLeftItems().add(new Separator(VERTICAL));
-		statusBar.getLeftItems().add(flyout);
-		//statusBar.getLeftItems().add(new Separator(VERTICAL));
-
-		osBean = ManagementFactory.getPlatformMXBean(
-				com.sun.management.OperatingSystemMXBean.class);
-
+		
 		statusBar.getRightItems().add(new Separator(VERTICAL));
-		//cpuBtn = new Button();//" CPU ");
-		//cpuBtn.setTooltip(new Tooltip(" % CPU Usage"));
-		//cpuBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
-		//cpuBtn.setTextFill(Color.ORANGE);
-		//statusBar.getRightItems().add(new Separator(VERTICAL));
-		//statusBar.getRightItems().add(cpuBtn);
-		//statusBar.getRightItems().add(new Separator(VERTICAL));
-		
-/*
-		double cpuText = osBean.getProcessCpuLoad() * 100D;
-		if (cpuText > 0)
-			processCpuLoad = (int) (cpuText);
-		else
-			processCpuLoad = 0;	
-		processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
-*/
-		
-		//double cpuText;
-		//try {
-		//	cpuText = getProcessCpuLoad();
-		//	processCpuLoadText = new Text(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
-		//} catch (Exception e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//} 
-		
-		
-		//cpuBtn.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
-		//processCpuLoadText.setFill(Color.GREY);
-		//statusBar.getRightItems().add(processCpuLoadText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
-
-		//systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
-		//systemCpuLoadText = new Text(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
-		//systemCpuLoadText.setFill(Color.GREY);
-		//statusBar.getRightItems().add(new Separator(VERTICAL));
-		//statusBar.getRightItems().add(systemCpuLoadText);
-
 
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
-		//memBtn = new Button();//" Memory ");
-		//memBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
-		//memBtn.setTextFill(Color.ORANGE);
-		//memBtn.setTooltip(new Tooltip(" Memory used out of " + memMax + " MB designated"));
-		//statusBar.getRightItems().add(memBtn);
-
-		//memMaxText = new Text(" Designated : " + memMax + " MB ");
-		//memMaxText.setFill(Color.GREY);
-		//statusBar.getRightItems().add(memMaxText);
-
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
-		memUsedText = new Text(" Memory : " + memUsed + " MB ");
-		memUsedText.setId("mem-text");
-		//memBtn
-		memUsedText.setText(" Memory : " + memUsed + " MB ");
 		
-		//memUsedText.setStyle("-fx-text-inner-color: orange;");
-		//memUsedText.setFill(Color.GREY);
-		statusBar.getRightItems().add(memUsedText);
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 
 		MasterClock master = Simulation.instance().getMasterClock();
@@ -926,19 +825,12 @@ public class MainScene {
 			throw new IllegalStateException("earthclock is null");
 		}
 
-		//clkBtn = new Button(" Earth Time ");
-		//clkBtn.setTooltip(new Tooltip("Simulation begins at 2043-Sep-30 00:00:00 (UT)"));
-		//clkBtn.setTextFill(Color.ORANGE);
-		//clkBtn.setBackground(new Background(new BackgroundFill(Color.ORANGE, new CornerRadii(2), new Insets(1))));
-		//statusBar.getRightItems().add(clkBtn);
+		timeText = new Label();
+		timeText.setText("  " + timeStamp + "  ");
+		timeText.setStyle("-fx-text-inner-color: orange;");
+		timeText.setTooltip(new Tooltip ("Earth Time"));
 
-		timeText = new Text(" " + timeStamp + "  ");
-		// timeText.setStyle("-fx-text-inner-color: orange;");
-		//timeText.setId("time-text");
-		//timeText.setFill(Color.GREY);
-		//clkBtn
-		timeText.setText(" Earth Time : " + timeStamp + "  ");
-		statusBar.getRightItems().add(timeText);
+		statusBar.getRightItems().add(timeText);		
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 
 		return statusBar;
@@ -985,7 +877,6 @@ public class MainScene {
 	public void updateStatusBarText() {
 
 		String t = null;
-		// try {
 		// Check if new simulation is being created or loaded from file.
 		if (!Simulation.isUpdating()) {
 
@@ -998,74 +889,19 @@ public class MainScene {
 				throw new IllegalStateException("earthclock is null");
 			}
 			t = earthclock.getTimeStamp();
-			// timeStamp = new SimpleStringProperty(earthclock.getTimeStamp());
+
 		}
-		// }
-		// catch (Exception ee) {
-		// ee.printStackTrace(System.err);
-		// }
-		//timeText.setText(" " + t + "  ");
-		//clkBtn
-		timeText.setText(" Earth Time : " + t + " ");
-		timeText.setStyle("-fx-text-inner-color: orange;");
+
+		timeText.setText("  " + t + "  ");
+	
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
-		memUsed = memTotal - memFree;
-		// int mem = ( memUsedCache + memUsed ) /2;
-		if (memUsed > memUsedCache * 1.1 || memUsed < memUsedCache * 0.9) {
-			memUsedText.setText(" Memory : " + memUsed + " MB ");
-			//memBtn.setText(" Memory : " + memUsed + " MB ");
-			memUsedText.setStyle("-fx-text-inner-color: orange;");
-		}
-		memUsedCache = memUsed;
+		memUsedCache = memTotal - memFree;
 
-		//processCpuLoad = (int) (osBean.getProcessCpuLoad() * 100D);
-		
-		//double cpuText;
-		//try {
-		//	cpuText = getProcessCpuLoad();
-		//	processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");
-		//} catch (Exception e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//} 
-/*		
-		//osBean.getProcessCpuLoad() * 100D;
-
-		if (cpuText > 0) {
-			processCpuLoad = (int) (cpuText);
-			processCpuLoadText.setText(" CPU : " + twoDigitFormat.format(processCpuLoad) + " % ");		
-		}
-		else {
-			osBean = ManagementFactory.getPlatformMXBean(
-					com.sun.management.OperatingSystemMXBean.class);
-		}
-		
-		//processCpuLoadText.setFill(Color.GREY);
-*/
-		//systemCpuLoad = (int) (osBean.getSystemCpuLoad() * 100D);
-		//systemCpuLoadText.setText(" System : " + twoDigitFormat.format(systemCpuLoad) + " % ");
-		//systemCpuLoadText.setFill(Color.GREY);
+		memUsed = (int)((memUsed + memUsedCache)/2D);
 
 	}
 
-	public static double getProcessCpuLoad() throws Exception {
-
-	    MBeanServer mbs    = ManagementFactory.getPlatformMBeanServer();
-	    ObjectName name    = ObjectName.getInstance("java.lang:type=OperatingSystem");
-	    AttributeList list = mbs.getAttributes(name, new String[]{ "ProcessCpuLoad" });
-
-	    if (list.isEmpty())     return Double.NaN;
-
-	    Attribute att = (Attribute)list.get(0);
-	    Double value  = (Double)att.getValue();
-
-	    // usually takes a couple of seconds before we get real values
-	    if (value == -1.0)      return Double.NaN;
-	    // returns a percentage value with 1 decimal point precision
-	    return ((int)(value * 1000) / 10.0);
-	}
-	
 	/**
 	 * Gets the main desktop panel.
 	 * @return desktop
@@ -1085,13 +921,7 @@ public class MainScene {
 	// 2015-01-25 Added autosave
 	public void loadSimulation(int type) {
 		//logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
-		
-		// if (earthTimer != null)
-		// earthTimer.stop();
-		// earthTimer = null;
-
-		// timeline.stop(); // Note: no need to stop and restart at all
-
+	
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
@@ -1763,14 +1593,18 @@ public class MainScene {
 		return height;
 	}
 
-	public StackPane getRootStackPane() {
-		return rootStackPane;
-	}
+	//public StackPane getRootStackPane() {
+	//	return rootStackPane;
+	//}
 
 	public BorderPane getBorderPane() {
 		return borderPane;
 	}
 
+	public MenuBar getMenuBar() {
+		return menuBar;
+	}
+	
     private MenuItem registerAction(MenuItem menuItem) {
 
         menuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -1799,13 +1633,15 @@ public class MainScene {
 		memBtn = null;
 		clkBtn = null;
 		//cpuBtn = null;
-		rootStackPane = null;
+		
+
 		statusBar = null;
 		flyout = null;
 		marsNetButton = null;
 		cb = null;
 		//cornerMenu = null;
 		swingPane = null;
+		anchorPane = null;
 		borderPane = null;
 		//fxDesktopPane = null;
 		//autosaveTimeline = null;

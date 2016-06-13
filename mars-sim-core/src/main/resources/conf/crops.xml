@@ -87,6 +87,42 @@
 	(photosynthetic photon flux (PPF), average daily air temperature (T),
 
 	http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/Publications/fleisher/modelingcontrol2001.pdf
+
+12. E.A. Mitsherlich (1909) proposed a theory of “Law of diminishing returns” states that,
+	‘The increase in any crop produce by a unit increment of a deficient factor is proportional to the
+	decrement of that factor from the maximum and the response is curvilinear instead of linear’.
+	Mitscherlich equation is dy/dx = C (A-Y) where,
+
+		d – increment or change
+		dy – amount of increase in yield
+		dx – amount of increment of the growth factor x.
+		A – Maximum possible yield
+		Y – Yield obtained for the given quantity of factor ‘x’ and
+		C – Proportionality constant that depends on the nature of the growth factor
+
+	in mars-sim, 
+
+		maximum harvest = max harvest mass [Kg per day] * crop's growing day,
+		
+		max harvest mass is affected by the availability of
+		1. fertilizer
+		2. water
+		3. CO2
+		4. O2
+		5. sunlight
+		6. planting/daily tending work required vs. served, 
+		
+		
+		
+13. There are 4 phases of a food crop:
+
+	a. Planting
+	b. germinating
+	c. growing
+	d. harvesting
+
+		
+		
 -->
 
 <crop-list>

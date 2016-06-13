@@ -15,6 +15,7 @@
  */
 package org.mars_sim.msp.ui.javafx;
 
+import javafx.scene.control.ToggleButton;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -24,6 +25,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener.Change;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -81,6 +83,8 @@ public class Flyout extends Region {
     /** The default style of the background */
     private String styleString = "-fx-background-color: rgba(0, 0, 0, 0.5);";
     
+    //private MainScene mainScene;
+    
     /**
      * Constructs a new {@code Flyout} using the specified "anchor"
      * as the location from which the specified "contents" will 
@@ -90,8 +94,9 @@ public class Flyout extends Region {
      * @param contents      Node containing the "control" to fly out
      */
     @SuppressWarnings("restriction")
-	public Flyout(Node anchor, Node contents) {
-        this.anchor = anchor;
+	public Flyout(Node anchor, Node contents) { // MainScene mainScene, 
+    	//this.mainScene = mainScene;
+    	this.anchor = anchor;
         this.flyoutContents = contents;
         userNodeContainer = new Pane();
         
@@ -112,6 +117,7 @@ public class Flyout extends Region {
         getChildren().add(anchor);
         
         popup = new Stage();
+        
     }
     
     /**
@@ -186,6 +192,19 @@ public class Flyout extends Region {
         
         popup.show();
         doFlyOut(false);
+/*        
+        // 2016-06-12 When popup loses the focus, it will close
+        popup.focusedProperty().addListener(new ChangeListener<Boolean>()
+	   	{
+	   	  @Override
+	   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+	   	  {
+	   		//mainScene.ToggleOffMarsNetButton();
+	   		((ToggleButton)anchor).setSelected(false);
+	   		dismiss();
+	   	  }
+	   	});
+*/	   	
     }
     
     public Stage getStage() {
@@ -369,5 +388,7 @@ public class Flyout extends Region {
             default : return null;
         }
     }
+    
+    
     
 }

@@ -48,7 +48,7 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	public static final int TIME_DELAY = 1000;
+	public static final int TIME_DELAY = 100;
 
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;

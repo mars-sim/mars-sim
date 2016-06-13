@@ -113,13 +113,14 @@ public class ChatBox extends BorderPane {
         	keyHandler(keyEvent);
         });
         
-        autoFillTextBox.getTextbox().requestFocus();
+        //autoFillTextBox.getTextbox().requestFocus();
+        
         autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
         autoFillTextBox.getTextbox().setPrefWidth(560);
         autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
-        autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
+        //autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
   		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
-  		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel");
+  		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel"); 			
   		
   		//TextField tf = cb.getTextField();
   		//tf.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
@@ -141,7 +142,7 @@ public class ChatBox extends BorderPane {
         });
 
         HBox hbox = new HBox();
-        //hbox.setPadding(new Insets(2, 2, 2, 2));
+        hbox.setPadding(new Insets(0, 0, 0, 0));
         //hbox.setSpacing(5);      
         //textField.setPadding(new Insets(5, 5, 5, 5));
         //hbox.getChildren().addAll(button, textField);
@@ -151,6 +152,8 @@ public class ChatBox extends BorderPane {
         setCenter(textArea);
         setBottom(hbox);
 
+        autoFillTextBox.getTextbox().requestFocus();
+        
     }
 
     /**
