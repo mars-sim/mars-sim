@@ -52,7 +52,7 @@ public class DayNightMapLayer implements SettlementMapLayer {
 		//System.out.println("DayNightMapLayer : settlement is " + settlement);
 		// TODO: overlay a red/orange mask if having local dust storm
 
-		if (mapPanel.isShowDayNightLayer()) {
+		if (mapPanel.isDaylightTrackingOn()) {
 //			int width = SettlementWindow.HORIZONTAL;
 //			int height = SettlementWindow.VERTICAL;
 

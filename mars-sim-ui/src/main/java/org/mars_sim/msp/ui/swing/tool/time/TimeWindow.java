@@ -526,12 +526,14 @@ implements ClockListener {
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
-			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-
+			desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$
+			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
 			//if (mainScene != null)
 			Simulation.instance().getAutosaveTimeline().pause();
 
+			//if (desktop.getMainScene() != null)
+			//	desktop.getMainScene().pauseTimeText();
+			
 		} else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			desktop.disposeAnnouncementWindow();

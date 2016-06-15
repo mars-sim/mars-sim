@@ -1181,6 +1181,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	public void disposeAnnouncementWindow() {
 		announcementWindow.dispose();
+		if (mainScene != null) {
+			mainScene.hideLoadingStage();
+			mainScene.hideSavingStage();
+			mainScene.hidePausedStage();
+		}
 	}
 
 

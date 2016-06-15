@@ -18,8 +18,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
+import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -31,6 +33,7 @@ import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.JStatusBar;
 import org.mars_sim.msp.ui.swing.tool.MarqueeTicker;
 import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
+import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 /**
@@ -48,7 +51,7 @@ extends ToolWindow {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
-	public static final int TIME_DELAY = 100;
+	public static final int TIME_DELAY = 200;
 
 	public static final int HORIZONTAL = 800;
 	public static final int VERTICAL = 600;
@@ -123,9 +126,13 @@ extends ToolWindow {
 	    subPanel.setBackground(Color.BLACK);
 
 		mapPanel = new SettlementMapPanel(desktop, this);
-    	subPanel.add(mapPanel, BorderLayout.CENTER);
-		//mainPanel.add(mapPanel, BorderLayout.CENTER);
-
+	
+		//2016-06-14 Added SpotlightLayerUI
+		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
+		JLayer<JPanel> jlayer = new JLayer<JPanel>(mapPanel, layerUI);
+    	subPanel.add(jlayer, BorderLayout.CENTER);
+    	//subPanel.add(mapPanel, BorderLayout.CENTER);
+    	
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);

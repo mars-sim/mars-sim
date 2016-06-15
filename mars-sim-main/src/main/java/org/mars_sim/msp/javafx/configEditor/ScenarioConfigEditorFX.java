@@ -8,10 +8,11 @@ package org.mars_sim.msp.javafx.configEditor;
 
 import org.mars_sim.msp.javafx.MainMenu;
 import org.mars_sim.msp.javafx.MarsProjectFX;
-import org.mars_sim.msp.javafx.WaitIndicator;
+//import org.mars_sim.msp.javafx.WaitIndicator;
 import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
 import org.mars_sim.msp.javafx.undecorator.Undecorator;
 import org.mars_sim.msp.networking.MultiplayerClient;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -145,7 +146,9 @@ public class ScenarioConfigEditorFX {
 	private MultiplayerClient multiplayerClient;
 	private SettlementConfig settlementConfig;
 
-	private WaitIndicator waiti;
+	//private WaitIndicator waiti;
+	
+	private MainScene mainScene;
 
 	private List<SettlementRegistry> settlementList;
 
@@ -161,6 +164,7 @@ public class ScenarioConfigEditorFX {
 		this.config = SimulationConfig.instance();
 		this.mainMenu = mainMenu;
 		this.marsProjectFX = marsProjectFX;
+		this.mainScene = mainMenu.getMainScene();
 
 	    hasError = false;
 
@@ -605,6 +609,9 @@ public class ScenarioConfigEditorFX {
 	public class SimulationTask implements Runnable {
 		public void run() {
 			//logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
+			//mainScene.createProgressCircle();
+			mainScene.showLoadingStage();
+			
 			//boolean isDone = false;
 			Simulation.createNewSimulation();
 			//System.out.println("ScenarioConfigEditorFX : done calling Simulation.instance().createNewSimulation()");
@@ -1080,8 +1087,21 @@ public class ScenarioConfigEditorFX {
 	
 	public void destroy() {
 
+		//header = null;
+		//settlementTableModel = null;
+		//settlementTable = null;
+		//settlementScrollPane = null;
+		//tableCellEditor = null;
+		//crewEditorFX = null;
+		//marsProjectFX = null;
+		//multiplayerClient = null;
+		//settlementConfig = null;
+		//waiti = null;
+		//settlementList.clear();	
+		//settlementList = null;
 		config  = null;
 		mainMenu  = null;
+		mainScene = null;
 		crewEditorFX  = null;
 		marsProjectFX  = null;
 		multiplayerClient  = null;

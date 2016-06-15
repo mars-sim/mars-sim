@@ -594,10 +594,12 @@ public class MainWindow extends JComponent {
 		MasterClock clock = Simulation.instance().getMasterClock();
 
 		if (isAutosave) {
+			desktop.disposeAnnouncementWindow();
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
 			clock.autosaveSimulation();
 		}
 		else {
+			desktop.disposeAnnouncementWindow();
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}

@@ -146,7 +146,7 @@ public class MainMenu {
 
     //private Group root;
     private StackPane root;
-	private Stage stage, mainSceneStage, circleStage, waitStage;
+	private Stage stage, mainSceneStage, circleStage;//, waitStage;
 	public Scene mainMenuScene, mainSceneScene;
 
 	public MainMenu mainMenu;
@@ -160,7 +160,7 @@ public class MainMenu {
 
 	public SpinningGlobe spinningGlobe;
 	
-	private WaitIndicator waiti;
+	//private WaitIndicator waiti;
 
     public MainMenu(MarsProjectFX marsProjectFX) {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
@@ -339,9 +339,10 @@ public class MainMenu {
 
    public void runTwo() {
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName());
-
 	   mainMenuScene.setCursor(Cursor.WAIT);
 		
+	   Platform.runLater(() -> mainScene = new MainScene(mainSceneStage));
+
 	   String dir = Simulation.DEFAULT_DIR;
 	   String title = null;
 	   File fileLocn = null;
@@ -368,13 +369,12 @@ public class MainMenu {
 
 		if (selectedFile != null) {
 			fileLocn = selectedFile;
-
+		
+			mainScene.showLoadingStage();		
 			stage.setIconified(true);
-			stage.hide();
-			
-			waitStage = new Stage();
-			waiti = new WaitIndicator(waitStage);
-			
+			stage.hide();		
+			//waitStage = new Stage();
+			//waiti = new WaitIndicator(waitStage);		
 			//stage.display(selectedFile);		
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
@@ -402,10 +402,7 @@ public class MainMenu {
 		
 		//try {
 		//FXUtilities.runAndWait(() -> {
-		Platform.runLater(() -> {
-
-			// creates a mainScene instance
-			mainScene = new MainScene(mainSceneStage);	   
+		Platform.runLater(() -> {	   
 			prepareScene();
 			mainScene.initializeTheme();						
 			mainScene.prepareOthers();
@@ -417,10 +414,7 @@ public class MainMenu {
 			mainSceneStage.centerOnScreen();
 			//mainSceneStage.setResizable(false);
 			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
-	
-
-			waitStage.close();
-			
+			//waitStage.close();		
 			mainSceneStage.show();
 			mainSceneStage.requestFocus();
 			
@@ -436,9 +430,8 @@ public class MainMenu {
 
    public void loadSim() {
 	   //logger.info("MainMenu's loadSim() is on " + Thread.currentThread().getName());
-
-	   //mainMenuScene.setCursor(Cursor.WAIT);
-		
+	   Platform.runLater(() -> mainScene = new MainScene(mainSceneStage));
+	
 	   String dir = Simulation.DEFAULT_DIR;
 	   String title = null;
 	   File fileLocn = null;
@@ -460,19 +453,13 @@ public class MainMenu {
 	   chooser.getExtensionFilters().addAll(simFilter, allFilter);
 
 		// Show open file dialog
-		
 		File selectedFile = chooser.showOpenDialog(stage);
 
 		if (selectedFile != null) {
 			fileLocn = selectedFile;
-
-			//stage.setIconified(true);
-			//stage.hide();
-			
-			//waitStage = new Stage();
-			//waiti = new WaitIndicator(waitStage);
-			
-			//stage.display(selectedFile);		
+	
+			mainScene.showLoadingStage();
+	
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
 			Simulation.instance().start(false);
@@ -494,23 +481,17 @@ public class MainMenu {
 		
 		
 		Platform.runLater(() -> {
-
-			// creates a mainScene instance
-			mainScene = new MainScene(mainSceneStage);	   
+			//mainScene = new MainScene(mainSceneStage);	   
 			prepareScene();
 			mainScene.initializeTheme();						
 			mainScene.prepareOthers();
-			mainScene.openInitialWindows();
-		   
+			mainScene.openInitialWindows();		   
 			//2016-02-07 Added calling setMonitor() for screen detection
-			//setMonitor(mainSceneStage);
-			   
+			//setMonitor(mainSceneStage);		   
 			mainSceneStage.centerOnScreen();
 			//mainSceneStage.setResizable(false);
 			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
-
-			//waitStage.close();
-			
+			//waitStage.close();		
 			mainSceneStage.show();
 			mainSceneStage.requestFocus();
 			
@@ -536,13 +517,13 @@ public class MainMenu {
 	 * Prepares the scene in the main scene
 	 */
 	public void prepareScene() {
-	   //logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
-	   // prepare main scene
-	   mainScene.prepareMainScene();
-	   // creates and initialize scene
-	   mainSceneScene = mainScene.initializeScene();
-	   // switch from the main menu's scene to the main scene's scene
-	   mainSceneStage.setScene(mainSceneScene);
+		//logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
+		// prepare main scene
+		mainScene.prepareMainScene();
+		// creates and initialize scene
+		mainSceneScene = mainScene.initializeScene();
+		// switch from the main menu's scene to the main scene's scene
+		mainSceneStage.setScene(mainSceneScene);
 
 	}
 
@@ -747,9 +728,9 @@ public class MainMenu {
 		return spinningGlobe;
 	}
 
-	public WaitIndicator getWait() {
-		return waiti;
-	}
+	//public WaitIndicator getWait() {
+	//	return waiti;
+	//}
 	
 	public void destroy() {
 

@@ -15,6 +15,7 @@ import com.nilo.plaf.nimrod.NimRODTheme;
 //import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 //import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
+import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
@@ -37,6 +38,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -178,7 +180,7 @@ public class MainScene {
 	private ToggleButton marsNetButton;
 	//private MaterialDesignToggleButton marsNetButton;
 
-	private Stage stage;
+	private Stage stage, loadingCircleStage, savingCircleStage, pausedCircleStage;
 	private AnchorPane anchorPane;
 	private SwingNode swingNode;
 	private StatusBar statusBar;
@@ -242,6 +244,8 @@ public class MainScene {
 		// Detect if a user hits ESC
 		setEscapeEventHandler(true);
 		
+		createProgressCircle("Loading");
+		
 	}
 
 	// 2015-12-28 Added setEscapeEventHandler()
@@ -284,6 +288,8 @@ public class MainScene {
 	 * Calls an thread executor to submit MainSceneTask
 	 */
 	public void prepareMainScene() {
+		//createProgressCircle();
+		showLoadingStage();
 		//logger.info("MainScene's prepareMainScene() is in " + Thread.currentThread().getName() + " Thread");
 		Simulation.instance().getSimExecutor().submit(new MainSceneTask());
 	}
@@ -875,11 +881,15 @@ public class MainScene {
 	 * Updates the cpu loads, memory usage and time text in the status bar
 	 */
 	public void updateStatusBarText() {
-
-		String t = null;
+ 
+		String t = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
 		// Check if new simulation is being created or loaded from file.
-		if (!Simulation.isUpdating()) {
-
+		if (Simulation.isUpdating() || Simulation.instance().getMasterClock().isPaused()) {
+			timeText.setText(" [ Paused ]  " + t + "  ");		
+		}
+		
+		else { 
+/*
 			MasterClock master = Simulation.instance().getMasterClock();
 			if (master == null) {
 				throw new IllegalStateException("master clock is null");
@@ -889,17 +899,19 @@ public class MainScene {
 				throw new IllegalStateException("earthclock is null");
 			}
 			t = earthclock.getTimeStamp();
-
+*/				
+			timeText.setText("  " + t + "  ");
 		}
 
-		timeText.setText("  " + t + "  ");
-	
+	/*
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsedCache = memTotal - memFree;
 
 		memUsed = (int)((memUsed + memUsedCache)/2D);
-
+*/
+				
+				
 	}
 
 	/**
@@ -914,10 +926,11 @@ public class MainScene {
 	public boolean isMainSceneDone() {
 		return isMainSceneDoneLoading;
 	}
+	
 	/**
 	 * Load a previously saved simulation.
 	 * @param type
-	 */
+	
 	// 2015-01-25 Added autosave
 	public void loadSimulation(int type) {
 		//logger.info("MainScene's loadSimulation() is on " + Thread.currentThread().getName() + " Thread");
@@ -937,7 +950,8 @@ public class MainScene {
 		}
 		
 	}
-
+ */
+	
 	/**
 	 * Performs the process of loading a simulation.
 	 * @param type
@@ -1131,7 +1145,7 @@ public class MainScene {
 
 		if (result.get() == buttonTypeOne) {
 			saveOnExit();
-			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			//desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			endSim();
 			exitSimulation();
 			Platform.exit();
@@ -1157,7 +1171,7 @@ public class MainScene {
 		boolean previous = Simulation.instance().getMasterClock().isPaused();
 		// Pause simulation.
 		if (!previous) {
-			pauseSimulation();
+			pauseSave();
 			//System.out.println("previous2 is false. Paused sim");
 		}
 		desktop.getTimeWindow().enablePauseButton(false);
@@ -1182,12 +1196,12 @@ public class MainScene {
 		boolean now = Simulation.instance().getMasterClock().isPaused();
 		if (!previous) {
 			if (now) {
-				unpauseSimulation();
+				unpauseSave();
 	    		//System.out.println("previous is false. now is true. Unpaused sim");
 			}
 		} else {
 			if (!now) {
-				unpauseSimulation();
+				unpauseSave();
 	    		//System.out.println("previous is true. now is false. Unpaused sim");
 			}
 		}
@@ -1235,10 +1249,12 @@ public class MainScene {
 		MasterClock clock = Simulation.instance().getMasterClock();
 
 		if (type == AUTOSAVE) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
+			desktop.disposeAnnouncementWindow();
+			desktop.openAnnouncementWindow(Msg.getString("MainScene.autosavingSim")); //$NON-NLS-1$
 			clock.autosaveSimulation();
 		} else if (type == SAVE_AS || type == DEFAULT) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
+			desktop.disposeAnnouncementWindow();
+			desktop.openAnnouncementWindow(Msg.getString("MainScene.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
 
@@ -1262,13 +1278,18 @@ public class MainScene {
 	 * Pauses the simulation and opens an announcement window.
 	 */
 	public void pauseSimulation() {
-		desktop.openAnnouncementWindow(Msg.getString("MainWindow.pausingSim")); //$NON-NLS-1$
+		desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$
 		//autosaveTimeline.pause();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		Simulation.instance().getMasterClock().setPaused(true);
+		//timeText.setText(" [Paused] " + timeStamp + "  ");
 		//desktop.getTimeWindow().enablePauseButton(false);
 	}
 
+	//public void pauseTimeText() {
+	//	Platform.runLater(() -> timeText.setText(" [Paused] " + timeStamp + "  "));
+	//}
+	
 	/**
 	 * Closes the announcement window and unpauses the simulation.
 	 */
@@ -1280,6 +1301,22 @@ public class MainScene {
 		//desktop.getTimeWindow().enablePauseButton(true);
 	}
 
+
+	/**
+	 * Pauses the simulation.
+	 */
+	public void pauseSave() {
+		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
+		Simulation.instance().getMasterClock().setPaused(true);
+	}
+
+	/**
+	 * Unpauses the simulation.
+	 */
+	public void unpauseSave() {
+		Simulation.instance().getMasterClock().setPaused(false);
+		desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
+	}
 
 	/**
 	 * Ends the current simulation, closes the JavaFX stage of MainScene but leaves the main menu running
@@ -1501,7 +1538,7 @@ public class MainScene {
 	 */
 	public void saveOnExit() {
 		//logger.info("MainScene's saveOnExit() is on " + Thread.currentThread().getName() + " Thread");
-
+		desktop.disposeAnnouncementWindow();
 		desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
@@ -1566,6 +1603,11 @@ public class MainScene {
 		
 		quote = new QuotationPopup();
 		popAQuote();
+	
+		hideLoadingStage();
+		
+		createProgressCircle("Saving");
+		createProgressCircle("Paused");
 		
 	}
 
@@ -1619,6 +1661,113 @@ public class MainScene {
 
     }
 
+
+    /*
+     * Create the progress circle animation while waiting for loading the main scene
+     */
+ 	public void createProgressCircle(String title) {
+
+ 		StackPane stackPane = new StackPane();
+ 		//BorderPane controlsPane = new BorderPane();
+ 		//controlsPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+ 		//stackPane.getChildren().add(controlsPane);
+ 		//controlsPane.setCenter(new TableView<Void>());
+ 		MaskerPane indicator = new MaskerPane();
+ 		indicator.setText(title);
+ 		indicator.setScaleX(1.5);
+ 		indicator.setScaleY(1.5);
+ 		//indicator.setMaxSize(200, 200);
+ /*
+ 		ProgressIndicator indicator = new ProgressIndicator();
+ 		indicator.setMaxSize(120, 120);
+ 		//indicator.setProgress(50);
+ 		ColorAdjust adjust = new javafx.scene.effect.ColorAdjust();
+ 		adjust.setHue(-0.07); // -.07, -0.1 cyan; 3, 17 = red orange; -0.4 = bright green
+ 		indicator.setEffect(adjust);
+ */
+ 		stackPane.getChildren().add(indicator);
+ 		StackPane.setAlignment(indicator, Pos.CENTER);
+ 		//StackPane.setMargin(indicator, new Insets(5));
+ 		stackPane.setBackground(Background.EMPTY);
+ 		//stackPane.setScaleX(1.5);
+ 		//stackPane.setScaleY(1.5);
+
+ 		stackPane.setStyle(
+     		   //"-fx-border-style: none; "
+     		   //"-fx-background-color: #231d12; "
+        		"-fx-background-color: transparent; "
+        		//+ "-fx-background-radius: 1px;"
+        		);     
+		
+		
+ 		Scene scene = new Scene(stackPane, 150, 150);
+ 		scene.setFill(Color.TRANSPARENT);
+ 		
+ 		if (title.contains("Loading")) {
+ 			loadingCircleStage = new Stage();
+	 		loadingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+	 
+	 		loadingCircleStage.initStyle (StageStyle.TRANSPARENT);
+	 		loadingCircleStage.setScene(scene);
+	 		loadingCircleStage.hide();
+	 	}
+ 		else if (title.contains("Saving") || title.contains("Autosaving")) {
+ 			savingCircleStage = new Stage();
+ 			savingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+	 
+ 			savingCircleStage.initStyle (StageStyle.TRANSPARENT);
+ 			savingCircleStage.setScene(scene);
+ 			savingCircleStage.hide();
+	 	}
+ 		else if (title.contains("Paused")) {
+ 			pausedCircleStage = new Stage();
+ 			pausedCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+	 
+ 			pausedCircleStage.initStyle (StageStyle.TRANSPARENT);
+ 			pausedCircleStage.setScene(scene);
+ 			pausedCircleStage.hide();
+	 	} 		
+ 		
+        //circleStage.show();
+ 	}
+
+ 	public void showLoadingStage() {
+		Platform.runLater(() -> {
+			loadingCircleStage.show();
+			//loadingCircleStage.requestFocus();
+		});		
+ 	}
+ 	 	
+ 	 	
+ 	public void hideLoadingStage() {
+ 		Platform.runLater(() -> loadingCircleStage.hide());
+ 	}
+
+
+ 	public void showPausedStage() {
+		Platform.runLater(() -> {
+			pausedCircleStage.show();
+			//pausedCircleStage.requestFocus();
+		});		
+ 	}
+ 	
+ 	public void hidePausedStage() {
+ 		Platform.runLater(() -> pausedCircleStage.hide());
+ 	}
+
+ 	public void showSavingStage() {
+		Platform.runLater(() -> {
+			savingCircleStage.show();
+			//savingCircleStage.requestFocus();
+			
+		});		
+ 	}
+ 	
+ 	public void hideSavingStage() {
+ 		Platform.runLater(() -> savingCircleStage.hide());
+ 	}
+
+ 	
 	public void destroy() {
 
 	    navMenuItem = null;
@@ -1651,6 +1800,7 @@ public class MainScene {
 		saveSimThread = null;
 
 		stage = null;
+		loadingCircleStage = null;
 
 		swingTab = null;
 		nodeTab = null;

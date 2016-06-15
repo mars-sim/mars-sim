@@ -24,8 +24,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.plaf.LayerUI;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
@@ -38,6 +40,7 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 
 /**
  * A panel for displaying the settlement map.
@@ -75,7 +78,7 @@ implements ClockListener {
 	private boolean showPersonLabels;
 	private boolean showVehicleLabels;
 	private boolean showRobotLabels;
-	private boolean showDayNightLayer;
+	private boolean showDaylightLayer;
 
 	private List<SettlementMapLayer> mapLayers;
 	private Map<Settlement, Person> selectedPerson;
@@ -114,7 +117,7 @@ implements ClockListener {
 		showPersonLabels = false;
 		showVehicleLabels = false;
 		showRobotLabels = false;
-		showDayNightLayer = false;  // turn off by default
+		showDaylightLayer = true;//false;  // turn off by default
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 
@@ -157,7 +160,7 @@ implements ClockListener {
 		//SwingUtilities.invokeLater(() -> {
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
-
+	
 		////paintDoubleBuffer();
 		repaint();
 	}
@@ -921,11 +924,11 @@ implements ClockListener {
 
 
 	/**
-	 * Checks if DayNightLayer should be displayed.
-	 * @return true if DayNightLayer should be displayed.
+	 * Checks if DaylightLayer should be displayed.
+	 * @return true if DaylightLayer should be displayed.
 	 */
-	public boolean isShowDayNightLayer() {
-		return showDayNightLayer;
+	public boolean isDaylightTrackingOn() {
+		return showDaylightLayer;
 	}
 
 	/**
@@ -933,7 +936,7 @@ implements ClockListener {
 	 * @param showDayNightLayer true if DayNightLayer should be displayed.
 	 */
 	public void setShowDayNightLayer(boolean showDayNightLayer) {
-		this.showDayNightLayer = showDayNightLayer;
+		this.showDaylightLayer = showDayNightLayer;
 
 		////paintDoubleBuffer();
 		repaint();

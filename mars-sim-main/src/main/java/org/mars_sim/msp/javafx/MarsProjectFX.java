@@ -244,7 +244,7 @@ public class MarsProjectFX extends Application  {
 	}
 
 	public void start(Stage primaryStage) {
-	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
+	   	logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
 	   	if (!headless) {
 		   	logger.info("start() : in GUI mode, loading the Main Menu");			
 		    

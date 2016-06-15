@@ -606,12 +606,12 @@ public class SettlementTransparentPanel extends JComponent {
 
 		// Create Day Night Layer menu item.
 		JCustomCheckBoxMenuItem dayNightLabelMenuItem = new JCustomCheckBoxMenuItem(
-				Msg.getString("SettlementWindow.menu.daylightTracking"), mapPanel.isShowDayNightLayer()); //$NON-NLS-1$
+				Msg.getString("SettlementWindow.menu.daylightTracking"), mapPanel.isDaylightTrackingOn()); //$NON-NLS-1$
 		dayNightLabelMenuItem.setForeground(new Color(139,69,19));
 		dayNightLabelMenuItem.setContentAreaFilled(false);
 		dayNightLabelMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				mapPanel.setShowDayNightLayer(!mapPanel.isShowDayNightLayer());
+				mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn());
 			}
 		});
 		result.add(dayNightLabelMenuItem);

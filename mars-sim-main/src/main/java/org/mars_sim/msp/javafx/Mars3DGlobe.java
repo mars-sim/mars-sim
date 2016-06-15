@@ -49,10 +49,10 @@ public class Mars3DGlobe {
 
     // 2k maps
     Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
-    //Image dImage = new Image(this.getClass().getResource("/maps/rgbmars-2k.jpg").toExternalForm());
-    Image dImage = new Image(this.getClass().getResource("/maps/MarsV3-Shaded-2k.jpg").toExternalForm());
+    Image dImage = new Image(this.getClass().getResource("/maps/Mars-Shaded-names-2k.jpg").toExternalForm());
     Image nImage = new Image(this.getClass().getResource("/maps/MarsNormalMap-2K.png").toExternalForm()); //.toString());
-    Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.png").toExternalForm()); //.toString());
+    //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.png").toExternalForm()); //.toString());
+    //Image siImage = new Image(this.getClass().getResource("/maps/names-2k-grey.png").toExternalForm()); //.toString());
 
     // 1k maps
     //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
@@ -141,7 +141,7 @@ public class Mars3DGlobe {
         
         material.bumpMapProperty().bind(Bindings.when(bumpMap).then(nImage).otherwise((Image) null));
         
-        material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
+        //material.selfIlluminationMapProperty().bind(Bindings.when(selfIlluminationMap).then(siImage).otherwise((Image) null));
 
         Xform marsXform = new Xform();
         Sphere mars = new Sphere(300.0);
