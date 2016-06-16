@@ -624,7 +624,8 @@ public class ScenarioConfigEditorFX {
 			});
 			if (multiplayerClient != null)
 				multiplayerClient.prepareListeners();
-			//System.out.println("ScenarioConfigEditorFX : done calling SimulationTask");
+			
+			//logger.info("ScenarioConfigEditorFX : done calling SimulationTask");
 
 			//JmeCanvas jme = new JmeCanvas();
 	    	//jme.setupJME();

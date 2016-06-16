@@ -103,7 +103,7 @@ implements Serializable {
 			// Start the treatment
 			try {
 				medical.startTreatment(problem, duration);
-				logger.fine(person.getName() + " treating " + problem.getIllness().getName());
+				logger.fine(person.getName() + " treating " + problem.getIllness().getType().toString());
 
 				// Add person to medical care building if necessary.
 				if (medical instanceof MedicalCare) {

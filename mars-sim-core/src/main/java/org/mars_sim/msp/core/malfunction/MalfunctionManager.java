@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.medical.Complaint;
+import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -622,12 +623,13 @@ implements Serializable {
 	public void issueMedicalComplaints(Malfunction malfunction) {
 
 		// Determine medical complaints for each malfunction.
-		Iterator<String> i1 = malfunction.getMedicalComplaints().keySet().iterator();
+		Iterator<ComplaintType> i1 = malfunction.getMedicalComplaints().keySet().iterator();
 		while (i1.hasNext()) {
-			String complaintName = i1.next();
-			double probability = malfunction.getMedicalComplaints().get(complaintName);
+			ComplaintType type = i1.next();
+			double probability = malfunction.getMedicalComplaints().get(type);
 			MedicalManager medic = Simulation.instance().getMedicalManager();
-			Complaint complaint = medic.getComplaintByName(complaintName);
+			// 2016-06-15 Replaced the use of String name with ComplaintType
+			Complaint complaint = medic.getComplaintByName(type);			
 			if (complaint != null) {
 				// Get people who can be affected by this malfunction.
 				Iterator<Person> i2 = entity.getAffectedPeople().iterator();

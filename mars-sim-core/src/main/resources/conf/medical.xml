@@ -8,7 +8,11 @@
 	<medical-complaint-list>
 
 		<!-- Appendicitis is a painful infection of the appendix,
-		     which, if left untreated, can lead to a ruptured appendix. -->
+		     which, if left untreated, can lead to a ruptured appendix. 
+
+		     WARNINGT : the name of the medical-complaint must not be changed		     
+		-->
+		
 		<medical-complaint name="Appendicitis">
 
 			<!-- Seriousness of complaint (required) -->
@@ -21,7 +25,10 @@
 			<!-- Recovery time (once cured, if necessary) (sols) (required) -->
 			<recovery-time value="14.0" />
 
-			<!-- Random probability of this complaint occurring on its own. (required) -->
+			<!-- Random probability of this complaint occurring on its own. (required) 
+				if > 0, use checkForRandomAilments() in PhysicalCondition to create this ailment,
+				regardless the situation, 
+				if = 0.0, use other means -->
 			<!-- Values: 0.0 (no chance) to 100.0 (very likely) -->
 			<probability value="0.5" />
 
@@ -199,32 +206,69 @@
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
 
-		<!-- An anxiety attack happens when a person is at maximum stress for too long. -->
-		<!-- It is a mental breakdown, reducing the person's performance on activities -->
-		<!-- to minimal and forcing them to relax and distress.  The effects do not last -->
+		<!-- 2016-06-15 A panic attack happens when a person is at high stress for too long. -->
+		<!-- It is a form of mental breakdown, reducing the person's performance on activities -->
+		<!-- to minimal and forcing them to rest.  The effects do not last -->
 		<!-- long, however. (See "stress-breakdown-chance" in people.xml.) -->
-		<medical-complaint name="Anxiety Attack">
+		<medical-complaint name="Panic Attack">
 			<seriousness value="30" />
-			<recovery-time value="1.0" />
+			<recovery-time value="2.0" />
 			<probability value="0.0" />
-			<performance-percent value="0.0" />
+			<performance-percent value="40.0" />
 			<bed-rest-recovery value="false" />
+			<treatment-type value="Anxiety Medication" />
 		</medical-complaint>
 
-		<!-- The high fatigue collapse happens when a person has not been able to rest for a while. -->
+		<!--2016-06-15 Depression happens usually when a person is at high stress for too long. -->
+		<!-- It reduces the person's performance on activities -->
+		<!-- to minimal and forcing them to relax and rest.  The effects do not last -->
+		<!-- long, however. (See "stress-breakdown-chance" in people.xml.) -->
+		<medical-complaint name="Depression">
+			<seriousness value="10" />
+			<recovery-time value="3.0" />
+			<probability value="0.0" />
+			<performance-percent value="60.0" />
+			<bed-rest-recovery value="false" />
+			<treatment-type value="Anxiety Medication" />
+		</medical-complaint>
+
+
+		<!-- 2016-03-01 The high fatigue collapse happens when a person has not been able to rest for a while. -->
 		<!-- The effects do not last long, however. (See "high-fatigue-collapse-chance" in people.xml.)-->
 		<medical-complaint name="High Fatigue Collapse">
-			<seriousness value="20" />
-			<recovery-time value="1.0" />
+			<seriousness value="60" />
+			<recovery-time value="10.0" />
 			<probability value="0.0" />
-			<performance-percent value="0.0" />
+			<performance-percent value="10.0" />
 			<bed-rest-recovery value="true" />
 			<treatment-type value="Hospitalization" />			
 		</medical-complaint>
 
+
+		<!-- 2016-06-15 Food Poisoning occurs when a kitchen equipment malfunction -->
+		<!-- The effects do not last long, however. (See Food Contamination in malfunctions.xml.)-->
+		<medical-complaint name="Food Poisoning">
+			<seriousness value="60" />
+			<recovery-time value="3.0" />
+			<probability value="2.0" />
+			<performance-percent value="40.0" />
+			<bed-rest-recovery value="true" />
+			<treatment-type value="Hospitalization" />			
+		</medical-complaint>
+
+		<!-- 2016-06-16 Heartburn occurs in stressful situations. (This should vary according to the individual)-->
+		<!-- The effects do not last long.-->
+		<medical-complaint name="Heartburn">
+			<seriousness value="10" />
+			<recovery-time value="0.5" />
+			<probability value="5.0" />
+			<performance-percent value="80.0" />
+			<bed-rest-recovery value="false" />		
+		</medical-complaint>
+
 <!-- Future:
-	1.
-	2.
+	1. Medium cut ?
+	2. Ex;osion ?
 	3.
 	4.
 -->
@@ -304,6 +348,14 @@
 			<self-admin value="false" />
 		</treatment>
 
+        <!-- 2016-06-15 Taking Anti-anxiety Medication. -->
+        <treatment name="Anxiety Medication">
+        	<skill value="1" />
+        	<medical-tech-level value="1" />
+        	<treatment-time value="1.0" />
+        	<self-admin value="true" />
+        </treatment>
+        
 	</treatment-list>
 
 </medical>

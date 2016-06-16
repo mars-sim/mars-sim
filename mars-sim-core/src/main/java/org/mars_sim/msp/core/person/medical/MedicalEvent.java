@@ -29,6 +29,6 @@ extends HistoricalEvent {
 		
 		// Call HistoricalEvent constructor.
 		super(HistoricalEventCategory.MEDICAL, eventType, person, 
-			illness.getIllness().getName());
+			illness.getIllness().getType().getName());
 	}
 }

@@ -1649,6 +1649,15 @@ implements Serializable, LifeSupportType, Objective {
 	public List<Person> returnPersonList(String aName) {
 		List<Person> personList = new ArrayList<>();
 		aName = aName.trim();
+		
+		// 2016-06-15 Checked if "," is presented in  "last, first"
+		if (aName.contains(", ")) {
+			int index = aName.indexOf(",");
+			String last = aName.substring(0, index);
+			String first = aName.substring(index + 2, aName.length());			
+			aName = first + " " + last;
+		}
+		
 		String initial = null;
 		boolean hasASpace = aName.contains(" ");
 		int found = 0;

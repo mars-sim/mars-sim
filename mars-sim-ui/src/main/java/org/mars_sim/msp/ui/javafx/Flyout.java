@@ -81,7 +81,8 @@ public class Flyout extends Region {
     private boolean flyoutShowing;
     
     /** The default style of the background */
-    private String styleString = "-fx-background-color: rgba(0, 0, 0, 0.5);";
+    private String styleString = "-fx-background-color: rgba(0, 0, 0, 0.5);"  +
+                	"-fx-background-radius: 2px;";
     
     //private MainScene mainScene;
     

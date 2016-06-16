@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.malfunction;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -39,7 +40,7 @@ public class Malfunction implements Serializable {
     private Collection<String> scope;
     private Map<AmountResource, Double> resourceEffects;
     private Map<String, Double> lifeSupportEffects;
-    private Map<String, Double> medicalComplaints;
+    private Map<ComplaintType, Double> medicalComplaints;
     private Map<Part, Integer> repairParts;
 
     // Work time tracking
@@ -57,7 +58,7 @@ public class Malfunction implements Serializable {
     public Malfunction(String name, int severity, double probability, double emergencyWorkTime, 
 		       double workTime, double EVAWorkTime, Collection<String> scope, 
 		       Map<AmountResource, Double> resourceEffects, 
-		       Map<String, Double> lifeSupportEffects, Map<String, Double> medicalComplaints) {
+		       Map<String, Double> lifeSupportEffects, Map<ComplaintType, Double> medicalComplaints) {
 
         // Initialize data members
         this.name = name;
@@ -253,7 +254,7 @@ public class Malfunction implements Serializable {
      * and their probability of occuring.
      * @return medical complaints as name-value pairs in Map
      */
-    public Map<String, Double> getMedicalComplaints() {
+    public Map<ComplaintType, Double> getMedicalComplaints() {
         return medicalComplaints;
     }
 

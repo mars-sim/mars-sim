@@ -497,10 +497,10 @@ implements Serializable {
      * @return A string containing the current illness if any.
      */
     public String getHealthSituation() {
-        String situation = "Well";
+        String situation = "Operable";
         if (serious != null) {
             if (isInoperable()) {
-                situation = "Dead, " + serious.getIllness().getName();
+                situation = "Inoperable : " + serious.getIllness().getType().toString();
             }
             else {
                 situation = serious.getSituation();

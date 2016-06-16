@@ -26,16 +26,6 @@
 	<quotation name="Wernher von Braun" text="Basic research is what I am doing when I don't know what I am doing." />
   <!-- In an interview in the New York Times, 16 December 1957 -->
   
-  
-  <!-- Others --> 
-  
-	<quotation name="Robert Louis Steenson" text="The Dog, and the Plough, and the Hunter, and all. And the star of the sailor, and Mars, These shone in the sky, and the pail by the wall. Would be half full of water and stars." />
-	<!-- Escape at Bedtime" -->  
-  
-  	<quotation name="Mike Fincke, NASA Astronaut" text="We have some special space shampoo that doesn't require water, and it does a pretty good job. So at without a bath, we're still pretty good, and we don't smell too bad." />
-
-  	<quotation name="Valery Ryumin" text="All the conditions necessary for murder are met if you shut 2 men in a cabin measuring 18'x20' and leave them together for 2 months." />
-	 
 	 
   
   <!-- Robert A. Heinlein -->
@@ -112,4 +102,19 @@
 	<quotation name="Robert A. Heinlein" text="A human being should be able to change a diaper, plan an invasion, conn a ship, design a building, write a sonnet, balance accounts, build a wall, comfort the dying, take orders, cooperate, act alone, solve equations, analyze a new problem, pitch manure, program a computer, cook a tasty meal, fight efficiently and die gallantly. Specialization is for insects." />
   
   
+  
+  <!-- Other authors --> 
+  
+	<quotation name="Robert Louis Steenson" text="The Dog, and the Plough, and the Hunter, and all. And the star of the sailor, and Mars, These shone in the sky, and the pail by the wall. Would be half full of water and stars." />
+	<!-- Escape at Bedtime" -->  
+  
+  	<quotation name="Mike Fincke, NASA Astronaut" text="We have some special space shampoo that doesn't require water, and it does a pretty good job. So at without a bath, we're still pretty good, and we don't smell too bad." />
+
+  	<quotation name="Valery Ryumin" text="All the conditions necessary for murder are met if you shut 2 men in a cabin measuring 18'x20' and leave them together for 2 months." />
+	  
+	<quotation name="Alan M. Turing" text="The view that machines cannot give rise to surprises is due...to a fallacy to which philosophers and mathematicians are particularly subject...the assumption that as soon as a fact is presented to a mind all consequences of that fact spring into the mind simultaneously with it. It is a very useful assumption under many circumstances, but one too easily forgets that it is false." />
+ 
+	<quotation name="Kurt Gödel" text="I believe that mechanism in biology is a prejudice of our time which will be disproved...in a mathematical theorem...that the formation within geological time of a human body by the laws of physics..., starting from a random distribution of the elementary particles and the field, is as unlikely as the separation by chance of the atmosphere into its components." />
+
+
 </quotation-list>

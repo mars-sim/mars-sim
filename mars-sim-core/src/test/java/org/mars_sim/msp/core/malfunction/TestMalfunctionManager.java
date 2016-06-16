@@ -7,6 +7,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.person.medical.ComplaintType;
 
 import junit.framework.TestCase;
 
@@ -37,7 +38,7 @@ public class TestMalfunctionManager extends TestCase {
 		private MockMalfunction(String name, int severity, double emergencyWorkTime, double workTime, 
 				double evaWorkTime) {
 			super(name, severity, 0D, emergencyWorkTime, workTime, evaWorkTime, null, null, null, 
-					new HashMap<String, Double>());
+					new HashMap<ComplaintType, Double>());
 		}
 	}
 }

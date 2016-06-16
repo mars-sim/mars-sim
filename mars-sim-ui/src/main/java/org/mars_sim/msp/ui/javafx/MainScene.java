@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.08 2015-12-18
+ * @version 3.08 2016-06-15
  * @author Lars NÃ¦sbye Christensen
  */
 
@@ -74,7 +74,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-
+import java.awt.Toolkit;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
@@ -135,6 +135,9 @@ public class MainScene {
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
+	private static final int TOP_EDGE_DETECTION_PIXELS_Y = 30;
+	private static final int TOP_EDGE_DETECTION_PIXELS_X = 200;
+	
 	// Categories of loading and saving simulation
 	public static final int DEFAULT = 1;
 	public static final int AUTOSAVE = 2;
@@ -176,7 +179,7 @@ public class MainScene {
 	private Label timeText; //Text timeText	
 	private Text memUsedText;
 
-	private Button memBtn, clkBtn;//, cpuBtn;
+	private Button memBtn, clkBtn, menubarButton;//, cpuBtn;
 	private ToggleButton marsNetButton;
 	//private MaterialDesignToggleButton marsNetButton;
 
@@ -186,7 +189,7 @@ public class MainScene {
 	private StatusBar statusBar;
 	private Flyout flyout;
 
-	private ChatBox cb;
+	private ChatBox chatBox;
 	private StackPane swingPane;
 	private Tab swingTab;
 	private Tab nodeTab;
@@ -411,8 +414,22 @@ public class MainScene {
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
 		//logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
-		marsNode = new MarsNode(this, stage);
+		//marsNode = new MarsNode(this, stage);
 	
+		//see dpi scaling at http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
+		//"I guess we’ll have to wait until Java 9 for more flexible DPI support. 
+		//In the meantime I managed to get JavaFX DPI scale factor, 
+		//but it is a hack (uses both AWT and JavaFX methods):"
+		
+		// Number of actual horizontal lines (768p)
+		double trueHorizontalLines = Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+		// Number of scaled horizontal lines. (384p for 200%)
+		double scaledHorizontalLines = Screen.getPrimary().getBounds().getHeight();
+		// DPI scale factor.
+		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
+		logger.info("DPI Scale Factor is " + dpiScaleFactor);
+		
+		
 		// Create group to hold swingNode1 which holds the swing desktop
 		swingPane = new StackPane();
 		swingNode = new SwingNode();
@@ -424,7 +441,7 @@ public class MainScene {
 
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
-        EffectUtilities.makeDraggable(flyout.getStage(), cb);
+        EffectUtilities.makeDraggable(flyout.getStage(), chatBox);
 					
 		// Create ControlFX's StatusBar
 		statusBar = createStatusBar();
@@ -494,7 +511,7 @@ public class MainScene {
           
 		//rootStackPane = new StackPane(borderPane);
 
-		/*		
+/*		
 		hideProperty.setValue(true);
 		
 		// binding to hideProperty
@@ -505,33 +522,11 @@ public class MainScene {
 		pane.setStyle("-fx-background-color: transparent;");
 		// card front is visible if property is false, see "not()" call
         pane.visibleProperty().bind(hideProperty);
-
+*/
         //setOnMouseClicked((e)-> {
             // click on card to flip it
         //    hideProperty.setValue(!hideProperty.getValue());
         //});
-		
-		rootStackPane.setOnMouseMoved(new EventHandler<MouseEvent>() {
-		      @Override
-		      public void handle(MouseEvent event) {
-		          if ((event.getY() <= 35) && (!fMenuVisible)) {
-		          	System.out.println("slide open");	        	  
-		          	//borderPane.setTop(menuBar);
-		          	//menuBar.setVisible(true);
-		          	hideProperty.setValue(false);
-		          	fMenuVisible = true;            
-		              
-		          } else if ((event.getY() > 35) && (fMenuVisible)) {
-			        System.out.println("slide close");	
-		          	//borderPane.setTop(null);
-			        //menuBar.setVisible(false);
-		          	hideProperty.setValue(true);//!hideProperty.getValue());
-		          	fMenuVisible = false;
-		              
-		          }
-		      }
-		  });
-*/
 		
 	
     	//System.out.println("w : " + scene.getWidth() + "   h : " + scene.getHeight());	
@@ -550,6 +545,9 @@ public class MainScene {
         AnchorPane.setLeftAnchor(borderPane, 0.0);
         AnchorPane.setRightAnchor(borderPane, 0.0);
         AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
+        
+        
+        
 /*
         ToolBar toolbar = new ToolBar();
         toolbar.setPrefWidth(width);
@@ -567,9 +565,21 @@ public class MainScene {
 */        
         
 
-        Button menubarButton = new Button();
+        menubarButton = new Button();
         menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/menubar_36.png"))));
 
+        menubarButton.setStyle(
+     		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
+     		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
+     		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
+     		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
+     		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
+     		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+     		  // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
+     		   //"-fx-font-size: 80px;"
+           		"-fx-background-radius: 2px;"
+     		   );
+        
         AnchorPane.setLeftAnchor(marsNetButton, 5.0);
         //AnchorPane.setRightAnchor(marsNetButton, 0.0);
         AnchorPane.setBottomAnchor(marsNetButton, 35.0);
@@ -616,7 +626,8 @@ public class MainScene {
     	Scene scene = new Scene(anchorPane, width, height);//, Color.BROWN);
 		anchorPane.prefHeightProperty().bind(scene.heightProperty());
 		anchorPane.prefWidthProperty().bind(scene.widthProperty());
-    		
+ 
+
 		return scene;
 	}
 
@@ -649,14 +660,11 @@ public class MainScene {
 		this.theme = theme;
 		swingPane.getStylesheets().clear();
 		menuBar.getStylesheets().clear();
-		statusBar.getStylesheets().clear();
-		
-		//marsNode.getFXDesktopPane().getStylesheets().clear();
-		
+		statusBar.getStylesheets().clear();	
+		//marsNode.getFXDesktopPane().getStylesheets().clear();	
 		//marsNetButton.getStylesheets().clear();
-
 		String cssColor;
-
+	
 		//logger.info("MainScene's changeTheme()");
 		if (theme == 1) { // olive green
 			cssColor = "/fxui/css/oliveskin.css";
@@ -664,6 +672,7 @@ public class MainScene {
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 			lookAndFeelTheme = "LightTabaco";
+			
 
 		} else if (theme == 2) { // burgundy red
 			cssColor = "/fxui/css/burgundyskin.css";
@@ -692,14 +701,14 @@ public class MainScene {
 			cssColor = "/fxui/css/snowBlue.css";
 			updateThemeColor(Color.rgb(0,107,184), Color.rgb(0,107,184), cssColor); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
-			//marsNetButton
+
+
 
 		} else if (theme == 7) { // standard
 			cssColor = "/fxui/css/nimrodskin.css";
 			updateThemeColor(Color.rgb(156,77,0), Color.rgb(156,77,0), cssColor); //DARKORANGE, CORAL
-			//updateThemeColor(Color.rgb(0,0,0,128), Color.rgb(0,0,0,128), cssColor); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
-	        //marsNetButton.new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_32.png"))));
+
 		}
 
 		//logger.info("done with MainScene's changeTheme()");
@@ -733,6 +742,42 @@ public class MainScene {
 		//clkBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
 		//cpuBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
 		//marsNetButton.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
+		
+		chatBox.getTitleLabel().setStyle("-fx-text-fill: white;" +
+				" -fx-font: bold 12pt 'Corbel';" + 
+        		//+ " -fx-effect: dropshadow( one-pass-box , " + cssColor + " , 8 , 0.0 , 2 , 0 );"
+        		"-fx-background-color: transparent;" //+
+				//"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+        		);
+		
+        menubarButton.setStyle(
+      		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
+      		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
+      		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
+      		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
+      		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
+      		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+     		   "-fx-base : " + cssColor + ";" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+      		   // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
+      		   //"-fx-font-size: 80px;"
+            	"-fx-background-radius: 2px;" +
+            	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+      		   );
+        
+        marsNetButton.setStyle(
+       		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
+       		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
+       		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
+       		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
+       		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
+       		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+      		   "-fx-base : " + cssColor + ";" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+       		   // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
+       		   //"-fx-font-size: 80px;"
+             	"-fx-background-radius: 2px;" +
+            	//"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );"
+            	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"           	
+       		   );
 	}
 	/**
 	 * Creates and starts the earth timer
@@ -760,6 +805,19 @@ public class MainScene {
     	//marsNetButton = new Button();
         marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/gray_chat_36.png")))); //" MarsNet ");
         
+        marsNetButton.setStyle(
+        		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
+        		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
+        		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
+        		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
+        		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
+        		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+        		  // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
+        		   //"-fx-font-size: 80px;"
+              		"-fx-background-radius: 2px;"
+        		   );
+        
+        
         flyout = new Flyout(marsNetButton, createChatBox());
         marsNetButton.setId("marsNetButton");
         marsNetButton.setTooltip(new Tooltip ("Toggle on and off MarsNet"));
@@ -767,6 +825,8 @@ public class MainScene {
         marsNetButton.setOnAction(e -> {
             if (marsNetButton.isSelected()) {
                 flyout.flyout();
+                chatBox.getAutoFillTextBox().getTextbox().clear();
+                chatBox.getAutoFillTextBox().getTextbox().requestFocus();
             } else {
                 flyout.dismiss();
             }
@@ -795,9 +855,9 @@ public class MainScene {
      */
     //2015-11-11 Added createChatBox()
   	public StackPane createChatBox() {
-  		cb = new ChatBox(this);
-        cb.getAutoFillTextBox().getTextbox().requestFocus();
-  		StackPane pane = new StackPane(cb);
+  		chatBox = new ChatBox(this);
+        chatBox.getAutoFillTextBox().getTextbox().requestFocus();
+  		StackPane pane = new StackPane(chatBox);
   		pane.setPadding(new Insets(0, 0, 0, 0));
         //pane.setHgap(0);
   		return pane;
@@ -1598,16 +1658,65 @@ public class MainScene {
 		//marsNode.createEarthMap();
 		//marsNode.createMarsMap();
 		//marsNode.createChatBox();
-		
-		isMainSceneDoneLoading = true;
-		
+			
 		quote = new QuotationPopup();
-		popAQuote();
-	
+		popAQuote();	
+   		
+		// 2016-06-15 Added top edge mouse cursor detection for sliding down the menu bar
+		anchorPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
+			//System.out.println("event.getY() is " + e.getSceneY());
+	          if ((e.getSceneX() <= TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= TOP_EDGE_DETECTION_PIXELS_Y) && (!fMenuVisible)) {
+	          	//System.out.println("slide open");
+	          	menubarButton.fire();
+	          	//borderPane.setTop(menuBar);
+	          	//menuBar.setVisible(true);
+	          	//hideProperty.setValue(false);
+	          	fMenuVisible = true;            
+	              
+	          } else if ((e.getSceneX() > TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() > TOP_EDGE_DETECTION_PIXELS_Y) && (fMenuVisible)) {
+		        //System.out.println("slide close");	
+		        menubarButton.fire();
+	          	//borderPane.setTop(null);
+		        //menuBar.setVisible(false);
+	          	//hideProperty.setValue(true);//!hideProperty.getValue());
+	          	fMenuVisible = false;
+	              
+	          }
+        });
+		
+
+/*
+        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
+		      @Override
+		      public void handle(MouseEvent event) {
+		    	  System.out.println("event.getY() is " + event.getY());
+		          if ((event.getY() <= 35) && (!fMenuVisible)) {
+		          	System.out.println("slide open");
+		          	menubarButton.fire();
+		          	//borderPane.setTop(menuBar);
+		          	//menuBar.setVisible(true);
+		          	//hideProperty.setValue(false);
+		          	fMenuVisible = true;            
+		              
+		          } else if ((event.getY() > 35) && (fMenuVisible)) {
+			        System.out.println("slide close");	
+			        menubarButton.fire();
+		          	//borderPane.setTop(null);
+			        //menuBar.setVisible(false);
+		          	//hideProperty.setValue(true);//!hideProperty.getValue());
+		          	fMenuVisible = false;
+		              
+		          }
+		      }
+		  });
+*/		
+		
 		hideLoadingStage();
 		
 		createProgressCircle("Saving");
 		createProgressCircle("Paused");
+	
+		isMainSceneDoneLoading = true;
 		
 	}
 
@@ -1787,7 +1896,7 @@ public class MainScene {
 		statusBar = null;
 		flyout = null;
 		marsNetButton = null;
-		cb = null;
+		chatBox = null;
 		//cornerMenu = null;
 		swingPane = null;
 		anchorPane = null;

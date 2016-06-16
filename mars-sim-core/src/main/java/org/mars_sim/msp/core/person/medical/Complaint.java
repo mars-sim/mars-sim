@@ -27,7 +27,8 @@ public class Complaint implements Serializable {
     public final static double MAXPROBABILITY = 10000D;
 
 
-    private String name;                    // Identifying name
+    //private String name;                    // Identifying name
+    private ComplaintType type;
     private int seriousness;                // Seriousness of this illness
     private double degradePeriod;           // Time before complaint degrades
     private double recoveryPeriod;          // Time before Person recovers
@@ -36,7 +37,8 @@ public class Complaint implements Serializable {
     private boolean bedRestRecovery;        // Does complaint require bed rest during recovery?
     private Treatment recoveryTreatment;    // Treatment needed for recovery
     Complaint nextPhase;                    // Next phase of this illness
-    String nextPhaseStr;					// Temporary next phase complaint name.
+    //String nextPhaseStr;					// Temporary next phase complaint name.
+    ComplaintType nextPhaseStr;					// Temporary next phase complaint name.
 
     /**
      * Create a Medical Complaint instance.
@@ -56,7 +58,9 @@ public class Complaint implements Serializable {
      * @param recoveryTreatment Any treatment that is needed for recovery.
      * @param next The complaint that this degrades into unless checked.
      */
-    Complaint(String name, int seriousness,
+    Complaint(//String name, 
+    		ComplaintType type,
+    		int seriousness,
                              double degrade, 
                              double recovery,
                              double probability,
@@ -64,15 +68,16 @@ public class Complaint implements Serializable {
                              boolean bedRestRecovery,
                              Treatment recoveryTreatment, 
                              Complaint next) {
-        this.name = name;
+        //this.name = name;
+        this.type = type;
         this.seriousness = seriousness;
         this.degradePeriod = degrade;
         this.recoveryPeriod = recovery;
         this.performanceFactor = (performance / 100D);
         this.bedRestRecovery = bedRestRecovery;
         this.nextPhase = next;
-        this.nextPhaseStr = "";
-        if (next != null) this.nextPhaseStr = next.name;
+        this.nextPhaseStr = null;//"";
+        if (next != null) this.nextPhaseStr = next.type;//name;
         this.probability = probability;
         this.recoveryTreatment = recoveryTreatment;
     }
@@ -89,10 +94,15 @@ public class Complaint implements Serializable {
      * @param performance performance factor
      * @param bedRestRecovery True if bed rest is required during recovery.
      */
-    Complaint(String name, int seriousness, double degrade, double recovery, 
+    Complaint(//String name, 
+    		ComplaintType type,
+    		int seriousness, double degrade, double recovery, 
     		double probability, Treatment recoveryTreatment, 
-    		String nextStr, double performance, boolean bedRestRecovery) {
-    	this.name = name;
+    		//String nextStr, 
+    		ComplaintType nextStr,
+    		double performance, boolean bedRestRecovery) {
+    	//this.name = name;
+    	this.type = type;
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;
 		this.recoveryPeriod = recovery;
@@ -123,10 +133,19 @@ public class Complaint implements Serializable {
      * Get the name of complaint.
      * @return Complaint name.
      */
-    public String getName() {
-        return name;
+    //public String getName() {
+    //    return name;
+    //}
+
+    /**
+     * Get the type of complaint.
+     * @return Complaint type.
+     */
+    public ComplaintType getType() {
+        return type;
     }
 
+    
     /**
      * Get the next complaint that this complaint developers into.
      * @return The next complaint, if null then death results.
@@ -136,10 +155,10 @@ public class Complaint implements Serializable {
     }
     
     /**
-     * Gets the next complaint's string name.
-     * @return complaint name
+     * Gets the next complaintType.
+     * @return complaint type
      */
-    String getNextPhaseStr() {
+    ComplaintType getNextPhaseStr() {
     	return nextPhaseStr;
     }
 
@@ -193,9 +212,9 @@ public class Complaint implements Serializable {
 
     /**
      * Get a string representation.
-     * @return The name of the complaint.
+     * @return The String name of the ComplaintType.
      */
     public String toString() {
-        return name;
+        return type.getName();
     }
 }

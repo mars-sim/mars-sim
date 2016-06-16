@@ -156,7 +156,7 @@ public class MarsProjectFX extends Application  {
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
 
     	logger.info("Starting " + Simulation.WINDOW_TITLE);
-
+    	
 		argList = Arrays.asList(args);
 		
         newSim = argList.contains("-new");
@@ -244,9 +244,9 @@ public class MarsProjectFX extends Application  {
 	}
 
 	public void start(Stage primaryStage) {
-	   	logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
+	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName() );
 	   	if (!headless) {
-		   	logger.info("start() : in GUI mode, loading the Main Menu");			
+		   //	logger.info("start() : in GUI mode, loading the Main Menu");			
 		    
 	   		mainMenu = new MainMenu(this);
 	   			   		
@@ -376,7 +376,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the default saved simulation.
      */
     void handleLoadDefaultSavedSimulation() {
-		logger.info("MarsProjectFX's handleLoadDefaultSavedSimulation() is on "+Thread.currentThread().getName() );
+		//logger.info("MarsProjectFX's handleLoadDefaultSavedSimulation() is on "+Thread.currentThread().getName() );
     	try {
     		List<String> argList = new ArrayList<String>(1);
     		argList.add("-load");
@@ -393,7 +393,7 @@ public class MarsProjectFX extends Application  {
      * @throws Exception if error loading the saved simulation.
      */
     void handleLoadSimulation(List<String> argList) throws Exception {
-		logger.info("MarsProjectFX's handleLoadSimulation() is on "+Thread.currentThread().getName() );
+		//logger.info("MarsProjectFX's handleLoadSimulation() is on "+Thread.currentThread().getName() );
     	// INFO: MarsProjectFX's handleLoadSimulation() is in JavaFX Application Thread Thread
         try {
             int index = argList.indexOf("-load");

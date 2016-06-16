@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This class provides a Factory for the {@link Complaint} class. Some of the Medical Complaints are pre-defined. Instances are
@@ -23,10 +24,14 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final Logger logger = Logger.getLogger(MedicalManager.class.getName());
+
 	public final static int MINSPERDAY = (24 * 60);
 
 	/** Possible Complaints. */
-	private HashMap<String, Complaint> complaints = new HashMap<String, Complaint>();
+	//private HashMap<String, Complaint> complaints = new HashMap<String, Complaint>();
+	private HashMap<ComplaintType, Complaint> complaints = new HashMap<ComplaintType, Complaint>();
+
 	/** Possible Treatments. */
 	private HashMap<String, Treatment> treatments = new HashMap<String, Treatment>();
 	/** Treatments to Facilities. */
@@ -45,18 +50,19 @@ implements Serializable {
 	/** Pre-defined complaint. */
 	private Complaint heatStroke;
 
+	// 2016-06-15 Moved these environement complaints to ComplaintType
 	/** The name of the suffocation complaint. */
-	public final static String SUFFOCATION = Msg.getString("MedicalManager.suffocation"); //$NON-NLS-1$
+	//public final static String SUFFOCATION = Msg.getString("MedicalManager.suffocation"); //$NON-NLS-1$
 	/** The name of the dehydration complaint. */
-	public final static String DEHYDRATION = Msg.getString("MedicalManager.dehydration"); //$NON-NLS-1$
+	//public final static String DEHYDRATION = Msg.getString("MedicalManager.dehydration"); //$NON-NLS-1$
 	/** The name of the starvation complaint. */
-	public final static String STARVATION = Msg.getString("MedicalManager.starvation"); //$NON-NLS-1$
+	//public final static String STARVATION = Msg.getString("MedicalManager.starvation"); //$NON-NLS-1$
 	/** The name of the decompression complaint. */
-	public final static String DECOMPRESSION = Msg.getString("MedicalManager.decompression"); //$NON-NLS-1$
+	//public final static String DECOMPRESSION = Msg.getString("MedicalManager.decompression"); //$NON-NLS-1$
 	/** The name of the freezing complaint. */
-	public final static String FREEZING = Msg.getString("MedicalManager.freezing"); //$NON-NLS-1$
+	//public final static String FREEZING = Msg.getString("MedicalManager.freezing"); //$NON-NLS-1$
 	/** The name of the heat stroke complaint. */
-	public final static String HEAT_STROKE = Msg.getString("MedicalManager.heatStroke"); //$NON-NLS-1$
+	//public final static String HEAT_STROKE = Msg.getString("MedicalManager.heatStroke"); //$NON-NLS-1$
 
 	/**
 	 * Construct a new {@link MedicalManager}. This also constructs all the pre-defined Complaints and the user-defined ones in
@@ -78,45 +84,54 @@ implements Serializable {
 		PersonConfig personConfig = simConfig.getPersonConfiguration();
 		MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
+        //logger.info("initMedical() : Done with initializing all three configs");
+        
 		// Quite serious, 70, and has a 80% performance factor.
 		// Zero recovery as death will result if unchecked.
-		starvation = createEnvironmentComplaint(STARVATION, 70, (personConfig
+		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 70, (personConfig
 				.getFoodDeprivationTime() - personConfig
 				.getStarvationStartTime()) * 1000D, 80);
 
 		// Most serious complaint, 100, and has a 25% performance factor, i.e.
 		// Person can be nothing.
-		suffocation = createEnvironmentComplaint(SUFFOCATION, 100, personConfig
+		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 100, personConfig
 				.getOxygenDeprivationTime(), 25);
 
 		// Very serious complaint, 70, and a 70% performance effect. Zero
 		// recovery as death will result
-		dehydration = createEnvironmentComplaint(DEHYDRATION, 60, personConfig
+		dehydration = createEnvironmentComplaint(ComplaintType.DEHYDRATION, 60, personConfig
 				.getWaterDeprivationTime() * 1000D, 70);
 
 		// Very serious complaint, 100, and has a 10% performance factor. Zero
 		// recovery as death will result
-		decompression = createEnvironmentComplaint(DECOMPRESSION, 100,
+		decompression = createEnvironmentComplaint(ComplaintType.DECOMPRESSION, 100,
 				personConfig.getDecompressionTime(), 10);
 
 		// Somewhat serious complaint, 80, and a 40% performance factor. Zero
 		// recovery as death will result
-		freezing = createEnvironmentComplaint(FREEZING, 80, personConfig
+		freezing = createEnvironmentComplaint(ComplaintType.FREEZING, 80, personConfig
 				.getFreezingTime(), 40);
 
 		// Somewhat serious complaint, 80, and a 40% performance factor. Zero
 		// recovery as death will result
-		heatStroke = createEnvironmentComplaint(HEAT_STROKE, 80, 100D, 40);
+		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 80, 100D, 40);
 
+		//logger.info("initMedical() : adding Treatments");
+		
 		// Create treatments from medical config.
 		Iterator<Treatment> i = medicalConfig.getTreatmentList().iterator();
 		while (i.hasNext())
 			addTreatment(i.next());
 
+		//logger.info("initMedical() : adding Complaints");
+
 		// Create additional complaints from medical config.
 		Iterator<Complaint> j = medicalConfig.getComplaintList().iterator();
 		while (j.hasNext())
 			addComplaint(j.next());
+		
+		//logger.info("initMedical() : Done.");
+	      	
 	}
 
 	/**
@@ -124,23 +139,25 @@ implements Serializable {
 	 * result in death hence have no next phase and no recovery period, when the environment changes, the complaint is
 	 * resolved.
 	 */
-	private Complaint createEnvironmentComplaint(String name, int seriousness,
+	private Complaint createEnvironmentComplaint(ComplaintType type, //String name, 
+			int seriousness,
 			double degrade, double performance) {
-		return new Complaint(name, seriousness, degrade, 0D, 0D, performance,
+		return new Complaint(type, seriousness, degrade, 0D, 0D, performance,
 				false, null, null);
 	}
 
 	/**
 	 * Package friendly factory method.
 	 */
-	void createComplaint(String name, int seriousness, double degrade,
+	void createComplaint(ComplaintType type, //String name, // 
+			int seriousness, double degrade,
 			double recovery, double probability, double performance,
 			boolean bedRest, Treatment recoveryTreatment, Complaint next) {
 
-		Complaint complaint = new Complaint(name, seriousness, degrade,
+		Complaint complaint = new Complaint(type, seriousness, degrade,
 				recovery, probability, performance, bedRest, recoveryTreatment, next);
 		// Add an entry keyed on name.
-		complaints.put(name, complaint);
+		complaints.put(type, complaint);
 	}
 
 	/**
@@ -149,12 +166,12 @@ implements Serializable {
 	 * @throws Exception if complaint already exists in map.
 	 */
 	void addComplaint(Complaint newComplaint) {
-		if (!complaints.containsKey(newComplaint.getName()))
-			complaints.put(newComplaint.getName(), newComplaint);
+		if (!complaints.containsKey(newComplaint.getType()))
+			complaints.put(newComplaint.getType(), newComplaint);
 		else throw new IllegalStateException(
 			Msg.getString(
 				"MedicalManager.error.complaint", //$NON-NLS-1$
-				newComplaint.getName()
+				newComplaint.getType().toString()
 			)
 		);
 	}
@@ -195,11 +212,12 @@ implements Serializable {
 
 	/**
 	 * This is a finder method that returns a Medical Complaint matching the specified name.
-	 * @param name Name of the complaint to retrieve.
+	 * @param name Name of the complaintType to retrieve.
 	 * @return Matched complaint, if none is found then a null.
 	 */
-	public Complaint getComplaintByName(String name) {
-		return complaints.get(name);
+	// 2016-06-15 Converted all complaint String names to ComplaintType
+	public Complaint getComplaintByName(ComplaintType type) {//String name) {
+		return complaints.get(type);//.getName());
 	}
 
 	/**

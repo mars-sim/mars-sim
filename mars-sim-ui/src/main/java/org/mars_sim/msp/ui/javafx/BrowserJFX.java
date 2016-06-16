@@ -1,6 +1,6 @@
 /* Mars Simulation Project
  * BrowserJFX.java
- * @version 3.08 2015-12-31
+ * @version 3.08 2016-06-15
  * @author Manny Kung
  */
 
@@ -46,6 +46,7 @@ import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 //import java.util.EventListener;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -60,6 +61,9 @@ import static javafx.concurrent.Worker.State.FAILED;
 import static javafx.concurrent.Worker.State;
 
 public class BrowserJFX {
+
+    /** initialized logger for this class. */
+    private static Logger logger = Logger.getLogger(BrowserJFX.class.getName());
 
     public static final String EVENT_TYPE_CLICK = "click";
     public static final String EVENT_TYPE_MOUSEOVER = "mouseover";
@@ -112,6 +116,9 @@ public class BrowserJFX {
             view = new WebView();
             engine = view.getEngine();          
             history = engine.getHistory();
+            
+        	logger.info("Web Engine supported : " + engine.getUserAgent());
+
         });
         
         initJFX();

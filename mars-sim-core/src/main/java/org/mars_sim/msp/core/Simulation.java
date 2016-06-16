@@ -277,7 +277,7 @@ implements ClockListener, Serializable {
      * @throws Exception if transient data could not be loaded.
      */
     private void initializeTransientData() {
-        //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
+       logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
 
     	eventManager = new HistoricalEventManager();
     }
@@ -292,13 +292,14 @@ implements ClockListener, Serializable {
 
         if (eventManager == null)
         	eventManager = new HistoricalEventManager();
-
+        	//logger.info("Done with HistoricalEventManager()");
         //if (managerExecutor == null || managerExecutor.isShutdown()) {
         //    managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newSingleThreadExecutor();newFixedThreadPool();
 
             malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
             //managerExecutor.execute(malfunctionFactory);
-
+            //logger.info("Done with MalfunctionFactory()");
+            
             mars = new Mars();
 
             missionManager = new MissionManager();
@@ -308,7 +309,8 @@ implements ClockListener, Serializable {
 
             medicalManager = new MedicalManager();
             //managerExecutor.execute(medicalManager);
-
+            //logger.info("Done with MedicalManager()");
+            
             masterClock = new MasterClock();
 
             unitManager = new UnitManager();
@@ -324,7 +326,7 @@ implements ClockListener, Serializable {
             //managerExecutor.execute(transportManager);
 
         //}
-
+            //logger.info("Done with Simulation's initializeIntransientData()");
     }
 
 

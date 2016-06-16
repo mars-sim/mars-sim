@@ -89,10 +89,18 @@ public final class RandomUtil {
 		return random.nextDouble() * ceiling;
 	}
 
+	/**Returns a random double number under Gaussian ("normally") distributed 
+	 * with mean 0.0 and standard deviation 1.0 from 
+	 * this random number generator's sequence
+	 * @return the random number
+	 */
+	public static double getGaussianDouble() {
+		return random.nextGaussian();
+	}
+	
 	/**
-	 * Returns a random integer from 1 to the given integer.
-	 * -breakiterator
-	 * 1 has twice the chance of being chosen as 2 and so forth
+	 * Returns a random integer from 1 to the given integer. 
+	 * 1 has twice the chance of being chosen than 2 and so forth
 	 * to the given integer.
 	 * @param ceiling the maximum integer result, ( ceiling > 0 )
 	 * @return the random integer

@@ -45,7 +45,8 @@ implements Serializable {
     // Data members
     private String timeOfDeath;
     /** Medical cause of death. */
-    private String illness;
+    private ComplaintType illness;
+    
     private String placeOfDeath;
     /** Container unit at time of death. */
     private Unit containerUnit;
@@ -78,7 +79,7 @@ implements Serializable {
         timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 
         Complaint serious = person.getPhysicalCondition().getMostSerious();
-        if (serious != null) illness = serious.getName();
+        if (serious != null) illness = serious.getType();
 
         if (person.getLocationSituation() == LocationSituation.OUTSIDE) placeOfDeath = "Outside";
         else {
@@ -216,12 +217,12 @@ implements Serializable {
     }
 
     /**
-     * Get the name of the illness that caused the death.
-     * @return name of the illness.
+     * Get the type of the illness that caused the death.
+     * @return type of the illness.
      */
-    public String getIllness() {
+    public ComplaintType getIllness() {
         if (illness != null) return illness;
-        else return "";
+        else return null;//"";
     }
 
     /**

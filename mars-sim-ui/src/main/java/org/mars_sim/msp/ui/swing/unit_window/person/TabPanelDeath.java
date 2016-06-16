@@ -76,7 +76,7 @@ implements ActionListener {
 		
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         causeTF = new JTextField();
-        causeTF.setText(death.getIllness());
+        causeTF.setText(death.getIllness().getName());
         causeTF.setEditable(false);
         causeTF.setColumns(8);
         causeTF.setFont(new Font("Serif", Font.PLAIN, 12));

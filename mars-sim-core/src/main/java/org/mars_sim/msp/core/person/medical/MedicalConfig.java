@@ -61,7 +61,7 @@ public class MedicalConfig implements Serializable {
 	 * @return list of complaints
 	 * @throws Exception if list could not be found.
 	 */
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
 	public List<Complaint> getComplaintList() {
 		
 		if (complaintList == null) {
@@ -75,7 +75,10 @@ public class MedicalConfig implements Serializable {
 					
 				// Get name.
 				complaintName = medicalComplaint.getAttributeValue(NAME);
-
+				
+				//2016-06-15 
+				//TODO: Converted all complaint String names to ComplaintType
+				
 				// Get seriousness.
 				Element seriousnessElement = medicalComplaint.getChild(SERIOUSNESS);
 				int seriousness = Integer.parseInt(seriousnessElement.getAttributeValue(VALUE));
@@ -132,28 +135,31 @@ public class MedicalConfig implements Serializable {
 				    degradeComplaint = degradeComplaintElement.getAttributeValue(VALUE);
 				}
 
-				Complaint complaint = new Complaint(complaintName, seriousness, 
+				Complaint complaint = new Complaint(ComplaintType.fromString(complaintName), seriousness, 
 				        degradeTime * 1000D, recoveryTime * 1000D, probability, 
-				        treatment, degradeComplaint, performance, bedRestRecovery);
+				        treatment, ComplaintType.fromString(degradeComplaint), performance, bedRestRecovery);
 
+				//System.out.println("ComplaintName is " + complaintName);
+				//System.out.println("ComplaintType is " + ComplaintType.valueOf(complaintName).getName());
 				complaintList.add(complaint);
 			}
 			
 			// Fill in degrade complaint objects based on complaint names.
 			for (Complaint complaint : complaintList) {
-				String degradeComplaintName = complaint.getNextPhaseStr();
+				ComplaintType degradeComplaintName = complaint.getNextPhaseStr();
 				
-				if (degradeComplaintName.length() != 0) {
+				if (degradeComplaintName != null) {//.length() != 0) {
 					Iterator<Complaint> j = complaintList.iterator();
                     while (j.hasNext()) {
                         Complaint degradeComplaint = j.next();
-                        if (degradeComplaint.getName().equals(degradeComplaintName))
-                            complaint.setNextComplaint(degradeComplaint);
+                        //if (degradeComplaint.getType().equals(degradeComplaintName))
+                        if (degradeComplaint.getType() == degradeComplaintName)
+                        	complaint.setNextComplaint(degradeComplaint);
                     }
 					
 					if (complaint.getNextPhase() == null){ 
 						throw new IllegalStateException("Degrade complaint " + degradeComplaintName +
-							" can not be found in medical complaint list.");
+							" cannot be found in medical complaint list.");
 					}
 				} 
 			}

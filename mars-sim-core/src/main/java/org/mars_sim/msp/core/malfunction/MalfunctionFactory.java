@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -38,6 +39,9 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
+
 	// Data members
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
@@ -51,11 +55,10 @@ implements Serializable {
 	 */
 	public MalfunctionFactory(MalfunctionConfig config)  {
 		 this.config = config;
-	//}
-	// 2015-02-04 Added run()
-	//public void run() {
-	   	//System.out.println("MalfunctionFactory's run() is on " + Thread.currentThread().getName() + " Thread");
-		malfunctions = config.getMalfunctionList();
+		 //logger.info("start calling config.getMalfunctionList()");
+	
+		 malfunctions = config.getMalfunctionList();
+		 //logger.info("Done with calling config.getMalfunctionList()");
 	}
 
 	/**

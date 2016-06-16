@@ -52,6 +52,8 @@ public class ChatBox extends BorderPane {
 
     protected boolean hasPerson = false;
 
+    protected Label titleLabel;
+    
     protected Person personCache;
     protected Robot robotCache;
     protected Settlement settlementCache;
@@ -87,37 +89,51 @@ public class ChatBox extends BorderPane {
     	// 2016-01-01 Added autoCompleteData
     	ObservableList<String> autoCompleteData = createAutoCompleteData();
         
-        Label titleLabel = new Label("   MarsNet Chat Box");
+        titleLabel = new Label("   MarsNet");
+  
         int theme = mainScene.getTheme();
         if (theme == 6)
-        	titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );");
+        	titleLabel.setStyle("-fx-text-fill: white;"
+        			+ " -fx-font: bold 12pt 'Corbel';"
+        			+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
+        			);
         else if (theme == 7)
-            titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );");
+            titleLabel.setStyle("-fx-text-fill: white;"
+            		+ " -fx-font: bold 12pt 'Corbel';"
+            		+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
+            		);
         else 
-            titleLabel.setStyle("-fx-text-fill: white; -fx-font: bold 12pt 'Corbel'; -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );");
-        
-        	
-        
+            titleLabel.setStyle("-fx-text-fill: white;"
+            		+ " -fx-font: bold 12pt 'Corbel';"
+            		+ " -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );"
+            		);
+           	       
         textArea.setEditable(false);
         textArea.setWrapText(true);
         textArea.setStyle("-fx-font: 11pt 'Corbel';");
+        textArea.setStyle("-fx-background-color: transparent" +
+        		"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+        		);
         textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
-  		textArea.appendText("<< Connecting to MarsNet...done. >>" + System.lineSeparator());
-  		textArea.appendText("System : how can I help? " + System.lineSeparator());
+  		textArea.appendText("<< Connection to MarsNet established >>" + System.lineSeparator());
+  		textArea.appendText("System : how can I help you ? " + System.lineSeparator());
 
   		// 2016-01-01 Replaced textField with autoFillTextBox
         autoFillTextBox = new AutoFillTextBox(autoCompleteData);
+        autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
+        autoFillTextBox.setStyle(//"-fx-background-color: transparent" +
+        		"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);");          
+
         autoFillTextBox.setFilterMode(false);
         autoFillTextBox.getTextbox().addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
         	keyHandler(keyEvent);
         });
         
         //autoFillTextBox.getTextbox().requestFocus();
-        
-        autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
+      
         autoFillTextBox.getTextbox().setPrefWidth(560);
-        autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
+        //autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
         //autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
   		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
   		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel"); 			
@@ -136,11 +152,18 @@ public class ChatBox extends BorderPane {
         //button.setAlignment(Pos.CENTER_RIGHT);
         button.setTooltip(new Tooltip ("Click to broadcast"));
         //button.setPadding(new Insets(5, 5, 5, 5));
-        button.setStyle("-fx-font: bold 10pt 'Corbel';");
+        button.setStyle("-fx-font: bold 10pt 'Corbel';" +
+     		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
+     		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
+     		   //"-fx-inner-border : transparent;" +  // if you don't want a button border.
+     		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
+     		   "-fx-faint-focus-color : transparent;"  // if you don't want any focus ring.
+     		   //"-fx-background-radius: 2px;"
+     		   );
         button.setOnAction(e -> {
         	hitEnter();
         });
-
+  
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(0, 0, 0, 0));
         //hbox.setSpacing(5);      
@@ -151,8 +174,6 @@ public class ChatBox extends BorderPane {
         setTop(titleLabel);
         setCenter(textArea);
         setBottom(hbox);
-
-        autoFillTextBox.getTextbox().requestFocus();
         
     }
 
@@ -178,11 +199,19 @@ public class ChatBox extends BorderPane {
 		while (i.hasNext()) {
 			Settlement s = i.next();
 				nameList.add(s.getName());
-			
+
 			Iterator<Person> j = s.getAllAssociatedPeople().iterator();
 			while (j.hasNext()) {
 				Person p = j.next();
-				nameList.add(p.getName());
+				
+				// 2016-06-15 Added names in both orders, namely, "first last" or "last, and first"
+				String firstLast = p.getName();
+				int index = firstLast.indexOf(" ");
+				String first = firstLast.substring(0, index);
+				String last = firstLast.substring(index+1, firstLast.length());
+				String lastFirst = last + ", " + first;
+				nameList.add(lastFirst);				
+				nameList.add(firstLast);
 			}
 			
 			Iterator<Robot> k = s.getAllAssociatedRobots().iterator();
@@ -682,22 +711,18 @@ public class ChatBox extends BorderPane {
 
     		
     	}
-    	else if (len >= 2 && text.substring(0,2).equalsIgnoreCase("hi")) {
 
-    		if (len > 2) {
-    			text = text.substring(2, len);
-    		   	text = text.trim();
-    		   	proceed = true;
-    		}
-    		else {
-     	   		responseText = name + " : Hi Earth Control, how can I help?";
-    		}
-    	}
 
-    	else if (len >= 5 && text.substring(0,5).equalsIgnoreCase("hello")) {
+    	else if (len >= 5 && text.substring(0,5).equalsIgnoreCase("hello")
+    			|| len >= 4 && text.substring(0,4).equalsIgnoreCase("helo")) {
 
     		if (len > 5) {
     			text = text.substring(5, len);
+    		   	text = text.trim();
+    		   	proceed = true;
+    		}
+    		else if (len > 4) {
+    			text = text.substring(4, len);
     		   	text = text.trim();
     		   	proceed = true;
     		}
@@ -718,6 +743,18 @@ public class ChatBox extends BorderPane {
     		}
     	}
 
+    	else if (len >= 2 && text.substring(0,2).equalsIgnoreCase("hi")) {
+
+    		if (len > 2) {
+    			text = text.substring(2, len);
+    		   	text = text.trim();
+    		   	proceed = true;
+    		}
+    		else {
+     	   		responseText = name + " : Hi Earth Control, how can I help?";
+    		}
+    	}
+    	
     	else if (len >= 2) {
     		proceed = true;
     	}
@@ -725,13 +762,17 @@ public class ChatBox extends BorderPane {
 
     	// Part 2 //
 
-    	if (text == null) {
-    		responseText = name + " : I'm afraid I don't understand. Could you repeat that?";
+    	if (text == null || text.length() == 1) {
+    		
+    		int rand = RandomUtil.getRandomInt(2);
+			if (rand == 0)
+				responseText = name + " : I'm not sure if I understand. Can you say it again?";
+			else if (rand == 1)
+				responseText = name + " : I'm sorry. Would you say it again?";
+			else
+				responseText = name + " : I'm afraid I don't understand. Would you repeat that?";
     	}
 
-    	else if (text.length() == 1) {
-		   	responseText = name + " : I'm afraid I don't understand. Could you repeat that?";
-    	}
 
     	else if (proceed) { // && text.length() > 1) {
 	    	//System.out.println("B: text is " + text);
@@ -780,7 +821,11 @@ public class ChatBox extends BorderPane {
 						person = personList.get(0);
 						if (person.getPhysicalCondition().isDead()) {
 						    // Case 4: passed away
-					    	responseText = name + " : I'm sorry. " + text + " has passed away.";
+							int rand = RandomUtil.getRandomInt(1);
+							if (rand == 0)
+								responseText = name + " : I'm sorry. " + text + " has passed away and is buried at " + person.getBuriedSettlement();
+							else
+								responseText = name + " : I'm sorry. " + text + " is dead and is buried at " + person.getBuriedSettlement();
 						}
 						else
 							unit = person;
@@ -1008,6 +1053,10 @@ public class ChatBox extends BorderPane {
     
     public AutoFillTextBox getAutoFillTextBox() {
     	return autoFillTextBox;
+    }
+    
+    public Label getTitleLabel() {
+    	return titleLabel;
     }
     
     /**

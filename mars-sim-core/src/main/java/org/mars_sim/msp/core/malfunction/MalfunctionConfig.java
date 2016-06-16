@@ -12,9 +12,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.person.medical.ComplaintType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Type;
 
@@ -23,6 +25,9 @@ import org.mars_sim.msp.core.resource.Type;
  * Uses a DOM document to get the information. 
  */
 public class MalfunctionConfig implements Serializable {
+
+
+	private static final Logger logger = Logger.getLogger(MalfunctionConfig.class.getName());
 
     // Element names
     private static final String MALFUNCTION = "malfunction";
@@ -62,7 +67,7 @@ public class MalfunctionConfig implements Serializable {
      * @return list of malfunctions
      * @throws Exception when malfunctions can not be resolved.
      */
-    @SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     public List<Malfunction> getMalfunctionList() {
 
         if (malfunctionList == null) {
@@ -73,7 +78,7 @@ public class MalfunctionConfig implements Serializable {
             for (Element malfunctionElement : malfunctionNodes) {
                 String name = "";
 
-                try {
+                //try {
 
                     // Get name.
                     name = malfunctionElement.getAttributeValue(NAME);
@@ -149,7 +154,7 @@ public class MalfunctionConfig implements Serializable {
 
 
                     // Get medical complaints.
-                    Map<String, Double> medicalComplaints = new HashMap<String, Double>();
+                    Map<ComplaintType, Double> medicalComplaints = new HashMap<>();
 
                     Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
 
@@ -159,7 +164,10 @@ public class MalfunctionConfig implements Serializable {
                         for (Element medicalComplaintElement : medicalComplaintNodes) {
                             String complaintName = medicalComplaintElement.getAttributeValue(NAME);
                             Double complaintProbability = new Double(medicalComplaintElement.getAttributeValue(PROBABILITY));
-                            medicalComplaints.put(complaintName, complaintProbability);
+                            medicalComplaints.put(ComplaintType.fromString(complaintName), complaintProbability);
+                            
+                            //logger.info("complaintName is " + complaintName);
+                            
                         }
                     }
 
@@ -182,12 +190,14 @@ public class MalfunctionConfig implements Serializable {
                     }
 
                     malfunctionList.add(malfunction);
-                } catch (Exception e) {
-                    throw new IllegalStateException("Error reading malfunction " + name + ": " + e.getMessage(), e);
-                }
+                //} catch (Exception e) {
+                //    throw new IllegalStateException("Error reading malfunction " + name + ": " + e.getMessage(), e);
+                //}
             }
         }
 
+        //logger.info("Done with calling getMalfunctionList()");
+        
         return malfunctionList;
     }
 

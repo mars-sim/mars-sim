@@ -64,7 +64,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
         
-        logger.finest(person.getName() + " has new health problem: " + complaint.getName());
+        logger.finest(person.getName() + " has new health problem : " + complaint.getType().toString());
     }
     
     /**
@@ -350,8 +350,8 @@ public class HealthProblem implements Serializable {
     public String toString() {
         StringBuilder buffer = new StringBuilder();
         if (state == RECOVERING) {
-            buffer.append("Recovering ");
-            buffer.append(illness.getName());
+            buffer.append("Recovering from ");
+            buffer.append(illness.getType().toString());
         }
         else if (state == TREATMENT) {
             buffer.append("Treatment (");
@@ -360,9 +360,9 @@ public class HealthProblem implements Serializable {
                 buffer.append(treatment.getName());
             }
             buffer.append(") ");
-            buffer.append(illness.getName());
+            buffer.append(illness.getType());
         }
-        else buffer.append(illness.getName());
+        else buffer.append(illness.getType());
 
         buffer.append(' ');
         buffer.append(getHealthRating());

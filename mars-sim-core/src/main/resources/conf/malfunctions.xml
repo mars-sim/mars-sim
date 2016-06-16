@@ -52,8 +52,10 @@
 		</effect-list>
 
 		<!-- List of medical injuries that can be immediately caused by this malfunction. (optional) -->
-		<!-- See medical complaint list in medical.xml. -->
 		<medical-complaint-list>
+			<!-- See medical complaint names in medical.xml. -->
+			<!-- Values: probability - the percentage probability that the complaint may happen. -->
+			<medical-complaint name="Heartburn" probability="10.0" />		
 		</medical-complaint-list>
 
 		<!-- Repair parts required to fix this malfunction. (optional) -->
@@ -202,6 +204,9 @@
 			<entity name="solar power source" />
 			<entity name="electric heat source" />
 		</entity-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="3.0" />
+		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
@@ -325,6 +330,9 @@
 			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
 			<effect type="resource" name="sodium hypochlorite" change-rate="-0.02" />
 		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Heartburn" probability="10.0" />
+		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
@@ -343,12 +351,17 @@
 		<entity-list>
 			<entity name="cooking" />
 			<entity name="rover" />
-		</entity-list>
+		</entity-list>		
 		<effect-list>
 			<effect type="resource" name="Food" change-rate="-1.0" />
 			<!-- use sodium hypochlorite as bleaching agent for cleaning -->
 			<effect type="resource" name="sodium hypochlorite" change-rate="-0.02" />
 		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Food Poisoning" probability="10.0" />
+			<medical-complaint name="Heartburn" probability="10.0" />
+		</medical-complaint-list>
+		
 	</malfunction>
 
 	<!-- Dangerous chemical spill. -->
@@ -365,6 +378,9 @@
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="10.0" />
+		</medical-complaint-list>
 	</malfunction>
 
 	<!-- EVA suit tear. -->
@@ -674,16 +690,16 @@
 			<entity name="manufacturing" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="aluminum wire" number="2" probability="10"  />
-			<part name="electrical wire" number="2" probability="10" />
-			<part name="wire connector" number="2" probability="10" />
+			<part name="aluminum wire" number="2" probability="2"  />
+			<part name="electrical wire" number="2" probability="2" />
+			<part name="wire connector" number="2" probability="2" />
 			<part name="small water pump" number="1" probability="5" />
 			<part name="electric heating element" number="1" probability="5" />
 			<part name="microcontroller" number="1" probability="5" />
 			<part name="ventilation fan" number="1" probability="5" />
-			<part name="carbon dioxide laser" number="1" probability="20" />
-			<part name="small stepper motor" number="3" probability="15" />
-			<part name="timing belt" number="3" probability="10" />
+			<part name="carbon dioxide laser" number="1" probability="5" />
+			<part name="small stepper motor" number="3" probability="2" />
+			<part name="timing belt" number="3" probability="5" />
 			<part name="optical prism" number="3" probability="3" />
 		</repair-parts-list>
 	</malfunction>
@@ -708,6 +724,7 @@
 			<medical-complaint name="Minor Burns" probability="15.0" />
 			<medical-complaint name="Laceration" probability="30.0" />
 			<medical-complaint name="Broken Bone" probability="5.0" />
+			<medical-complaint name="Panic Attack" probability="10.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="co2 extinguisher" number="2" probability="30" />
@@ -729,6 +746,10 @@
 			<entity name="vehicle" />
 			<entity name="methane power generator" />
 		</entity-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" probability="5.0" />
+			<medical-complaint name="Laceration" probability="2.0" />			
+		</medical-complaint-list>
 		<repair-parts-list>
 			<part name="electrical wire" number="5" probability="10"/>
 			<part name="wire connector" number="5" probability="30"/>
