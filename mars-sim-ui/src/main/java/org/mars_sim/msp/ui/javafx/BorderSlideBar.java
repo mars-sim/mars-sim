@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.scene.control.ToggleButton;
 
 /**
  * Animates a node on and off screen to the top, right, bottom or left side.
@@ -40,7 +41,7 @@ public class BorderSlideBar extends VBox {
      * @param nodes Nodes inside the panel.
      */
     public BorderSlideBar(double expandedSize,
-            final Button controlButton, Pos location, Node... nodes) {
+            final ToggleButton controlButton, Pos location, Node... nodes) {
 
         getStyleClass().add("sidebar");
         getStylesheets().add(CSS);        

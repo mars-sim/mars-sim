@@ -130,26 +130,14 @@ public class ChatBox extends BorderPane {
         	keyHandler(keyEvent);
         });
         
-        //autoFillTextBox.getTextbox().requestFocus();
-      
+ 
         autoFillTextBox.getTextbox().setPrefWidth(560);
         //autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
         //autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
   		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
   		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel"); 			
-  		
-  		//TextField tf = cb.getTextField();
-  		//tf.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
-  		//tf.setPromptText("Type your msg here");// to broadcast to a channel");
-        //textField.setStyle("-fx-font: 11pt 'Corbel';");
-        //textField.setPrefWidth(500);
-        //textField.addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
-        //	keyHandler(keyEvent);
-        //});
-
-        //Button button = new Button("Submit");
+ 
         MaterialDesignButton button = new MaterialDesignButton("Broadcast");
-        //button.setAlignment(Pos.CENTER_RIGHT);
         button.setTooltip(new Tooltip ("Click to broadcast"));
         //button.setPadding(new Insets(5, 5, 5, 5));
         button.setStyle("-fx-font: bold 10pt 'Corbel';" +
@@ -161,14 +149,17 @@ public class ChatBox extends BorderPane {
      		   //"-fx-background-radius: 2px;"
      		   );
         button.setOnAction(e -> {
-        	hitEnter();
+          	String text = autoFillTextBox.getTextbox().getText();
+            if (text != "" && text != null && !text.trim().isEmpty()) {
+            	hitEnter();
+            }
+            else {
+            	 autoFillTextBox.getTextbox().clear();
+            }
         });
   
         HBox hbox = new HBox();
         hbox.setPadding(new Insets(0, 0, 0, 0));
-        //hbox.setSpacing(5);      
-        //textField.setPadding(new Insets(5, 5, 5, 5));
-        //hbox.getChildren().addAll(button, textField);
         hbox.getChildren().addAll(button, autoFillTextBox);//.getTextbox());
 
         setTop(titleLabel);
@@ -259,11 +250,12 @@ public class ChatBox extends BorderPane {
      */
     //2015-12-21 askQuestion()
     public void askQuestion(String text) {
-    	String sys = "System";
+    	String theOtherParty = "System";
     	String responseText = null;
     	String questionText = null;
     	Unit cache = null;
     	String name = null;
+    	boolean help = false;
 
     	if (personCache != null) {
     		cache = (Person) personCache;
@@ -279,15 +271,51 @@ public class ChatBox extends BorderPane {
     	}	
 
     	// Case 0 : exit the conversation
-    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("x") || text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("q") || text.equalsIgnoreCase("bye")) {
+    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("x") || text.equalsIgnoreCase("/x")
+    			|| text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("q") || text.equalsIgnoreCase("/q") 
+    			|| text.equalsIgnoreCase("bye")) {
     		// set personCache and robotCache to null so as to quit the conversation
+   		
+    		int r0 = RandomUtil.getRandomInt(5);
 
-    		sys = name;
-    		questionText = "You : have a nice sol. Bye!";
+			if (r0 == 0)
+				questionText = "You : bye!";
+			else if (r0 == 1)
+				questionText = "You : farewell!";
+			else if (r0 == 2)
+				questionText = "You : bye now!";
+			else if (r0 == 3)
+				questionText = "You : have a nice sol!";
+			else if (r0 == 4)
+				questionText = "You : Take it easy!";
+			else 
+				questionText = "You : Take care!";
+			    
+    		
     		if (settlementCache != null)
-    			responseText = "Bye! " + System.lineSeparator() + "System : exit the inquiry regarding " + name;
-    		else
-    			responseText = "Bye! " + System.lineSeparator() + "System : " + sys + " had left the conversation.";
+    			// it's a settlement 
+    			responseText = "disconnected.";
+    		
+    		else {
+    			
+    			int rand = RandomUtil.getRandomInt(6);
+
+    			if (rand == 0)
+    				responseText = "bye!" + System.lineSeparator() + "System : disconnected. "; //" + sys + " had left the conversation.";
+    			else if (rand == 1)
+    				responseText = "farewell!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    			else if (rand == 2)
+    				responseText = "bye now" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    			else if (rand == 3)
+    				responseText = "have a nice sol!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    			else if (rand == 4)
+    				responseText = "Take it easy!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    			else if (rand == 5)
+    				responseText = "Take care!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    			else
+    				responseText = "oh well! " + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    		    
+    		}
     		
     		personCache = null; 
 	    	robotCache = null;
@@ -297,10 +325,10 @@ public class ChatBox extends BorderPane {
     	// Case 1: ask about a settlement
     	else if (settlementCache != null) {
     		
-    		if (isInteger(text, 10) ) {
+    		if (isInteger(text, 10)) {
     		    
     	    	int num = Integer.parseUnsignedInt(text, 10);
-    	    	
+/*    	    	
     	    	if (num == 0) {
     	    		// exit
     	    		sys = name;
@@ -311,8 +339,8 @@ public class ChatBox extends BorderPane {
     		    	robotCache = null;
     		    	settlementCache = null;
     		    }
-    	
-    	    	else if (num == 1) {
+*/    	
+    	    	if (num == 1) {
     	    		questionText = "You : how many beds are there in total ? ";
     	    		responseText = "The total number of beds is " + settlementCache.getPopulationCapacity();
     	    		
@@ -331,71 +359,90 @@ public class ChatBox extends BorderPane {
     	    	}
 
     	    	else if (num == 4) {
-    	    		questionText = "You : how many people are currently sleeping ? ";
-    	    		responseText = "There are " + settlementCache.getSleepers() + " people sleeping at this moment. ";
+    	    		questionText = "You : how many beds are currently occupied ? ";
+    	    		responseText = "There are " + settlementCache.getSleepers() + " occupied beds with people sleeping on it at this moment. ";
     	    		
     	    	}
 	
     	    	else {
-    	    		questionText = "You entered '" + num + "'.";
+    	    		questionText = "You : You entered '" + num + "'.";
     	    		responseText = "Sorry. This number is not assigned to a valid question.";
     	    	}
     	    	
-    	    } else {
-        		// set personCache and robotCache to null only if you want to quit the conversation
-        		//personCache = null; 
-    	    	//robotCache = null;
-        		sys = name;
+    	    // if it's not a integer input	
+    		} else if (text.contains("bed")
+    				|| text.contains("sleep") 
+    				|| text.equalsIgnoreCase("lodging") 
+    				|| text.contains("quarters")) {
+    			  			
+    			questionText = "You : how well are the beds utilized ? ";
+	    		responseText = "Total number of beds : " + settlementCache.getPopulationCapacity() + "\n" +
+	    				"Desginated beds : " + settlementCache.getTotalNumDesignatedBeds() + "\n" +
+	    				"Unoccupied beds : " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers())  + "\n" +
+	    				"Occupied beds : " + settlementCache.getSleepers() + System.lineSeparator();
+    		} 
+    		
+        	else if (text.contains("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("h")){
+    	    	
+        		help = true;
+    	    	questionText = "You : I need some help. What are the available commands ? ";
+    			responseText = "Keywords are 'bed', 'lodging', 'sleep', 'quarters'\n"
+						+ "For specific questions : 1 to 4\n"
+    					+ "To quit, enter 'quit', 'exit', 'bye', 'q', or 'x'\n"
+    					+ "For help, enter 'help', or 'h'"
+    					+ System.lineSeparator();	    	
+    	    		    		
+    	    } else {    	    	
+
         		questionText = "You : you were mumbling something about....";
-        		int rand0 = RandomUtil.getRandomInt(3);
-        		if (rand0 == 0)
-            		responseText = "could you repeat that?";
-        		else if (rand0 == 1)
-               		responseText = "pardon me?";
-        		else if (rand0 == 2)
-               		responseText = "what did you say?";
-            	else if (rand0 == 3)
-            		responseText = "I beg your pardon?"; 		
+	    		int rand0 = RandomUtil.getRandomInt(4);
+	    		if (rand0 == 0)
+	        		responseText = "could you repeat that?";
+	    		else if (rand0 == 1)
+	           		responseText = "pardon me?";
+	    		else if (rand0 == 2)
+	           		responseText = "what did you say?";
+	        	else if (rand0 == 3)
+	        		responseText = "I beg your pardon?"; 
+	        	else
+	        		responseText = "Can you be more specific ?";
+        		
         	}
  		
-    	}
-    	
+    	}	
     	// Case 2: ask to talk to a person or robot
-    	else if (isInteger(text, 10) && settlementCache == null) {
+    	else if (settlementCache == null) {
 	
-	    	int num = Integer.parseUnsignedInt(text, 10);
-	    	
-	    	if (num == 0) {
-	    		// exit
-	    		sys = name;
-	    		questionText = "You : have a nice sol. Bye!";
-	    		responseText = "Bye! " + System.lineSeparator() + "System : " + sys + " had left the conversation.";
-	    		
-	    		personCache = null; 
-		    	robotCache = null;
-		    	settlementCache = null;
-		    }
-	
-	    	else if (num == 1) {
-	    		questionText = "You : what is your Location State ?";
+    		int num = 0;
+  
+    		if (isInteger(text, 10))  			
+    			num = Integer.parseUnsignedInt(text, 10);
+    		
+    		if (num == 1 || text.equalsIgnoreCase("where") || text.equalsIgnoreCase("location")) {// || text.contains("location")) {
+	    		questionText = "You : where are you ? "; //what is your Location State [Expert Mode only] ?";
 	    		LocationState state = cache.getLocationState();
 	    		if (state != null) {
 	    			if (personCache != null) {
 	    				if (personCache.getBuildingLocation() != null)
-	    					responseText = "My current Location State is " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
+	    					responseText = "I'm " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
 	    				else {
-	    					responseText = "My current Location State is " + state.getName();				
+	    					responseText = "I'm " + state.getName();				
 	    				}
 	    	    	}
 	    	    	else if (robotCache != null) {
-	    	    		responseText = "My current Location State is " + state.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
+	    	    		responseText = "I'm " + state.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
 	    	    	}	
 	    		}
 	    		else
-	    			responseText = "My current Location State is " + state;
+	    			responseText = "It may sound strange but I don't know where I'm at. ";
 	    	}
 	
-	       	else if (num == 2) {
+	    	else if (num == 2 || text.contains("located") || text.contains("location") && text.contains("situation")) {
+	    		questionText = "You : where are you located ? "; //what is your Location Situation [Expert Mode only] ?";
+	       		responseText = "I'm located at " + Conversion.capitalize(cache.getLocationSituation().getName());
+	    	}
+    		
+	       	else if (num == 3 || text.equalsIgnoreCase("task") || text.equalsIgnoreCase("activity") || text.equalsIgnoreCase("action")) {
 	    		questionText = "You : what are you doing ?";
 	    		if (personCache != null) {
 	    			responseText = personCache.getTaskDescription();
@@ -403,9 +450,29 @@ public class ChatBox extends BorderPane {
     	    	else if (robotCache != null) {
     	    		responseText = robotCache.getTaskDescription();
     	    	}
+	    		
 	       	}
 	
-	    	else if (num == 3) {
+	       	else if (num == 4 || text.equalsIgnoreCase("mission")) {
+    		
+    			//sys = name;
+	    		questionText = "You : are you involved in a particular mission at this moment?";
+	    		Mission mission = null;
+	    		if (personCache != null) {
+	    			mission = personCache.getMind().getMission();
+		    	}
+		    	else if (robotCache != null) {
+		    		mission = robotCache.getBotMind().getMission();
+		    	}
+    		
+	    		if (mission == null)
+	    			responseText = "No. I'm not. ";
+	    		else
+	    			responseText = mission.getDescription();
+    	
+    		}
+    		
+	    	else if (num == 5 || text.equalsIgnoreCase("bed") || text.equalsIgnoreCase("quarter") || text.equalsIgnoreCase("quarters")) {
 	    		questionText = "You : where is your designated quarters/bed ? ";
 	    		Point2D bed = personCache.getBed();
 	    		if (bed == null)
@@ -436,44 +503,26 @@ public class ChatBox extends BorderPane {
 	    		} 		
 	    	}
 	
-	    	else if (num == 4) {
-	    		questionText = "You : what is your Container unit ?";
+	    	else if (num == 6 || text.equalsIgnoreCase("inside") || text.equalsIgnoreCase("container")) {
+	    		questionText = "You : are you inside?"; //what is your Container unit [Expert Mode only] ?";
 	    		Unit c = cache.getContainerUnit();
 	    		if (c != null)
-	    			responseText = "My Container unit is " + c.getName();
+	    			responseText = "I'm at/in " + c.getName();
 	    		else
-	    			responseText = "I don't have a Container unit. ";
+	    			responseText = "I'm not inside a building or vehicle"; //"I don't have a Container unit. ";
 	    	}
 	
-	    	else if (num == 5) {
-	
-	    		questionText = "You : what is your Top Container unit ?";
+	    	else if (num == 7 ||text.equalsIgnoreCase("outside") || text.contains("top") && text.contains("container")) {	
+	    		questionText = "You : are you inside?"; //"You : what is your Top Container unit [Expert Mode only] ?";
 	    		Unit tc = cache.getTopContainerUnit();
 	    		if (tc != null)
-	    			responseText = "My Top Container unit is " + tc.getName();
+	    			responseText = "I'm in " + tc.getName();
 	    		else
-	    			responseText = "I don't have a Top Container unit.";
+	    			responseText = "I'm nowhere";// don't have a Top Container unit.";
 	
 	    	}
-	    	else if (num == 6) {
-	    		questionText = "You : what is your Location Situation ?";
-	       		responseText = "My Location Situation is " + Conversion.capitalize(cache.getLocationSituation().getName());
-	    	}
 	
-	       	else if (num == 7) {
-	       		questionText = "You : what vehicle are you in and how is it ?";
-	    		Vehicle v = cache.getVehicle();
-	       		if (v  != null) {
-	           		String d = cache.getVehicle().getDescription();
-	           		String status = cache.getVehicle().getStatus();
-	       			responseText = "My vehicle is " + v.getName() + " (a " + Conversion.capitalize(d)
-	       				+ " type). It's currently " + status.toLowerCase() + ".";
-	       		}
-	       		else
-	       			responseText = "I'm not on a vehicle.";
-	       	}
-	
-	    	else if (num == 8) {
+	    	else if (num == 8 || text.equalsIgnoreCase("building") ) {
 	    		questionText = "You : what building are you at ?";
 	    		Settlement s = cache.getSettlement();
 	    		if (s != null) {
@@ -490,7 +539,8 @@ public class ChatBox extends BorderPane {
 	
 	    	}
 	
-	    	else if (num == 9) {
+    		
+	    	else if (num == 9 || text.equalsIgnoreCase("settlement")) {
 	    		questionText = "You : what is the settlement that you are at ?";
 	    		Settlement s = cache.getSettlement();
 	   			if (s != null)
@@ -500,7 +550,7 @@ public class ChatBox extends BorderPane {
 	
 	    	}
 	
-	    	else if (num == 10) {
+	    	else if (num == 10 || text.equalsIgnoreCase("associated settlement")) {
 	    		questionText = "You : what is your associated settlement ?";
 	    		Settlement s = cache.getAssociatedSettlement();
 	    		if (s  != null) {
@@ -509,9 +559,11 @@ public class ChatBox extends BorderPane {
 	    		else
 	    			responseText = "I don't have an associated settlement";
 	    	}
-	
-	    	else if (num == 11) {
+
+/*    		
+	    	else if (num == 9 || text.equalsIgnoreCase("buried settlement")) {
 	    		questionText = "You : what is his/her buried settlement ?";
+	    		if personCache.
 	    		Settlement s = cache.getBuriedSettlement();
 	    		if (s == null) {
 	           		responseText = "The buried settlement is " + s.getName();
@@ -520,37 +572,51 @@ public class ChatBox extends BorderPane {
 	       		else
 	       			responseText = "I'm not dead.";
 	    	}
-	
-	    	else if (num == 12) {
-	    		questionText = "You : what is your vehicle's container unit ?";
+*/	
+       		
+	       	else if (num == 11 || text.equalsIgnoreCase("vehicle") ) {
+	       		questionText = "You : what vehicle are you in and where is it ?";
+	    		Vehicle v = cache.getVehicle();
+	       		if (v  != null) {
+	           		String d = cache.getVehicle().getDescription();
+	           		String status = cache.getVehicle().getStatus();
+	       			responseText = "My vehicle is " + v.getName() + " (a " + Conversion.capitalize(d)
+	       				+ " type). It's currently " + status.toLowerCase() + ".";
+	       		}
+	       		else
+	       			responseText = "I'm not in a vehicle.";
+	       	}
+    		
+	    	else if (num == 12 || text.equalsIgnoreCase("vehicle inside") || text.equalsIgnoreCase("vehicle container") || text.contains("vehicle") && text.contains("container")) {
+	    		questionText = "You : where is your vehicle at?";//'s container unit ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Unit c = v.getContainerUnit();
 	       			if (c != null)
-	       				responseText = "My vehicle's container unit is " + c.getName();
+	       				responseText = "My vehicle is at" + c.getName();
 	       			else
-	       				responseText = "My vehicle doesn't have a container unit.";
+	       				responseText = "My vehicle is not inside";//doesn't have a container unit.";
 	
 	       		}
 	       		else
-	       			responseText = "I'm not on a vehicle.";
+	       			responseText = "I'm not in a vehicle.";
 	       	}
 	
-	    	else if (num == 13) {
-	    		questionText = "You : what is your vehicle's top container unit ?";
+	    	else if (num == 13 || text.equalsIgnoreCase("vehicle outside") || text.equalsIgnoreCase("vehicle top container") || text.contains("vehicle") && text.contains("top") && text.contains("container")) {
+	    		questionText = "You : what is your vehicle located?";//'s top container unit ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Unit tc = v.getTopContainerUnit();
 	       			if (tc != null)
-	       				responseText = "My vehicle's top container unit is " + tc.getName();
+	       				responseText = "My vehicle is at " + tc.getName();
 	       			else
-	       				responseText = "My vehicle doesn't have a top container unit.";
+	       				responseText = "My vehicle is not inside";//doesn't have a top container unit.";
 	       		}
 	       		else
-	       			responseText = "I'm not on a vehicle.";
+	       			responseText = "I'm not in a vehicle.";
 	       	}
 	
-	    	else if (num == 14) {
+	    	else if (num == 14  || text.contains("vehicle") && text.contains("park")) {
 	    		questionText = "You : what building does your vehicle park at ?";
 	    		Vehicle v = cache.getVehicle();
 		       	if (v != null) {
@@ -569,7 +635,7 @@ public class ChatBox extends BorderPane {
 	       			responseText = "I'm not on a vehicle.";
 	       	}
 	
-	    	else if (num == 15) {
+	    	else if (num == 15 || text.contains("vehicle") && text.contains("settlement")) {
 	    		questionText = "You : what settlement is your vehicle located at ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
@@ -583,53 +649,42 @@ public class ChatBox extends BorderPane {
 	       			responseText = "I'm not on a vehicle.";
 	    	}
 	
-	    	else {
-	    		questionText = "System : you were mumbling about...";
-	    		responseText = "Can you be more specific ?";
+	    	else if (text.contains("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("h")){
+		    	
+        		help = true;
+		    	questionText = "You : I need some help. What are the available keywords/commands ? ";
+				responseText = "Keywords are 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "
+						+ "'bed', 'quarters', 'building', 'inside', 'outside',"
+						+ "'settlement', 'assocated settlement', 'buried settlement', "
+						+ "'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container', "
+						+ "'vehicle top container'\n"
+						+ "For specific questions : 1 to 15\n"
+						+ "To quit, enter 'quit', 'exit', 'bye', '/q', 'q', '/x', or 'x'\n"
+						+ "For help, enter 'help', '/h', or 'h'"
+						+ System.lineSeparator();	    	
+				
+		    } else {
+	    		
+	    		questionText = "You : you were mumbling something about....";
+	    		int rand0 = RandomUtil.getRandomInt(4);
+	    		if (rand0 == 0)
+	        		responseText = "could you repeat that?";
+	    		else if (rand0 == 1)
+	           		responseText = "pardon me?";
+	    		else if (rand0 == 2)
+	           		responseText = "what did you say?";
+	        	else if (rand0 == 3)
+	        		responseText = "I beg your pardon?"; 
+	        	else
+	        		responseText = "Can you be more specific ?";
 	    	}
 	    	
     	}
-    	
-    	else if (text.equalsIgnoreCase("mission")) {
-    		sys = name;
-    		questionText = "You : are you involved in any particular mission at this moment?";
-    		Mission mission = null;
-    		if (personCache != null) {
-    			mission = personCache.getMind().getMission();
-	    	}
-	    	else if (robotCache != null) {
-	    		mission = robotCache.getBotMind().getMission();
-	    	}
-    		
-    		if (mission == null)
-    			responseText = "No. I'm not. ";
-    		else
-    			responseText = mission.getDescription();
-    	}
-    	
-    	else if (text.equalsIgnoreCase("task")) {
-    		sys = name;
-    		questionText = "You : what are you doing at this moment?";
-    		String task = null;
-    		if (personCache != null) {
-        		task = personCache.getMind().getTaskManager().getTaskDescription(true);
-	    	}
-	    	else if (robotCache != null) {
-	    		task = robotCache.getBotMind().getTaskManager().getTaskDescription(true);
-	    	}
-    		if (task == null)
-    			responseText = "No. I'm not. ";
-    		else
-    			responseText = task;
-    	}
-    	
+   	
     	else {
     		// set personCache and robotCache to null only if you want to quit the conversation
-    		//personCache = null; 
-	    	//robotCache = null;
-    		sys = name;
     		questionText = "You : you were mumbling something about....";
-    		int rand0 = RandomUtil.getRandomInt(3);
+    		int rand0 = RandomUtil.getRandomInt(4);
     		if (rand0 == 0)
         		responseText = "could you repeat that?";
     		else if (rand0 == 1)
@@ -637,12 +692,19 @@ public class ChatBox extends BorderPane {
     		else if (rand0 == 2)
            		responseText = "what did you say?";
         	else if (rand0 == 3)
-        		responseText = "I beg your pardon?"; 		
+        		responseText = "I beg your pardon?"; 
+        	else
+        		responseText = "Can you be more specific ?";		
     	}
     	
     	textArea.appendText(questionText + System.lineSeparator());	
-		sys = name;
-   		textArea.appendText(sys + " : " + responseText + System.lineSeparator());
+    	
+    	if (help)
+			theOtherParty = "System";
+    	else
+    		theOtherParty = name;
+    	
+   		textArea.appendText(theOtherParty + " : " + responseText + System.lineSeparator());
     }
 
     /*
@@ -651,6 +713,7 @@ public class ChatBox extends BorderPane {
      */
     //2015-12-01 Added parseText()
     public Unit parseText(String text) {
+    	//System.out.println("starting parseText()");
     	Unit unit = null;
     	String responseText = null;
     	String name = "System";
@@ -677,7 +740,7 @@ public class ChatBox extends BorderPane {
 
     	else if (text.equalsIgnoreCase("\\h")
     			|| text.equalsIgnoreCase("/h")
-    			|| text.equalsIgnoreCase("h")
+    			//|| text.equalsIgnoreCase("h")
     			|| text.equalsIgnoreCase("help")
     			|| text.equalsIgnoreCase("/help") 
     			|| text.equalsIgnoreCase("\\help")
@@ -686,8 +749,10 @@ public class ChatBox extends BorderPane {
     			|| text.equals("/?")
     			) {
 
-    		responseText = name + " : (1) type in the name of a person/bot/settlement. (2) ask a pre-defined question by entering a number (1 to 15).";
-    		//proceed = true; 		
+    		responseText = name + " : (1) type in the name of a person, bot, or settlement to connect to.\n"
+    				+ "(2) type in a keyword or a numeral question or type '/h' or 'help' for a list of keywords.\n"
+    				+ "(3) type '/q', 'quit', 'bye', '/x' or 'exit' to quit the chat box"
+    				+ System.lineSeparator();	
     		
     	}
     	
@@ -697,18 +762,22 @@ public class ChatBox extends BorderPane {
     			|| text.equalsIgnoreCase("\\q")
     			//|| text.equalsIgnoreCase("q")
     			|| text.equalsIgnoreCase("/q")
+    			
+    			|| text.equalsIgnoreCase("exit") 
     			|| text.equalsIgnoreCase("/exit") 
     			|| text.equalsIgnoreCase("\\exit")
     			|| text.equalsIgnoreCase("\\x")
     			//|| text.equalsIgnoreCase("x")
     			|| text.equalsIgnoreCase("/x")
+    			
+       			|| text.equalsIgnoreCase("bye")
+       			|| text.equalsIgnoreCase("/bye")
+      			|| text.equalsIgnoreCase("\\bye")
+     			){
 
-    			) {
-
-    		responseText = name + " : Bye! ";
+    		responseText = name + " : disconnecting..." + System.lineSeparator();
     		//proceed = true; 		
             mainScene.getFlyout().dismiss();
-
     		
     	}
 
@@ -762,7 +831,7 @@ public class ChatBox extends BorderPane {
 
     	// Part 2 //
 
-    	if (text == null || text.length() == 1) {
+    	if (len == 0 || text == null || text.length() == 1) {
     		
     		int rand = RandomUtil.getRandomInt(2);
 			if (rand == 0)
@@ -913,8 +982,9 @@ public class ChatBox extends BorderPane {
 
     	}
 
-		textArea.appendText(responseText + System.lineSeparator());
-
+    	if (len > 0)
+    		textArea.appendText(responseText + System.lineSeparator());
+		
 		return unit;
     }
 
@@ -922,15 +992,17 @@ public class ChatBox extends BorderPane {
      * Processes the textfield input
      */
     public void hitEnter() {
+    	//System.out.println("starting hitEnter()");
     	//String text = textField.getText();  	
-    	String text = autoFillTextBox.getTextbox().getText();
+       	String text = autoFillTextBox.getTextbox().getText();
     	
         if (text != "" && text != null && !text.trim().isEmpty()) {
             textArea.appendText("You : " + text + System.lineSeparator());
             Unit unit = null;
 
-            if (personCache == null && robotCache == null && settlementCache == null)
+            if (personCache == null && robotCache == null && settlementCache == null) {
             	unit = parseText(text);
+            }
             else {
                 // if both personCache and robotCache are set to null, then quit the askQuestion() stage and go back to parseText() stage
             	askQuestion(text);
@@ -960,9 +1032,10 @@ public class ChatBox extends BorderPane {
                 onMessageReceivedHandler.accept(text);
             }
             
-            autoFillTextBox.getTextbox().clear();
             //textField.clear();
         }
+        
+        autoFillTextBox.getTextbox().clear();
     }
 
     /**
@@ -973,7 +1046,13 @@ public class ChatBox extends BorderPane {
         //System.out.println("ChatBox's keyHandler() : keyEvent.getCode() is " + keyEvent.getCode());
         switch (keyEvent.getCode()) {
 	        case ENTER:
-	        	hitEnter();
+	          	String text = autoFillTextBox.getTextbox().getText();
+	            if (text != "" && text != null && !text.trim().isEmpty()) {
+	            	hitEnter();
+	            }
+	            else {
+	            	 autoFillTextBox.getTextbox().clear();
+	            }
 	            break;
 
 	        case UP:

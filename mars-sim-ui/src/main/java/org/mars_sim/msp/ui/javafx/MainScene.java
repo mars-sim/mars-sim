@@ -135,7 +135,7 @@ public class MainScene {
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
-	private static final int TOP_EDGE_DETECTION_PIXELS_Y = 30;
+	private static final int TOP_EDGE_DETECTION_PIXELS_Y = 35;
 	private static final int TOP_EDGE_DETECTION_PIXELS_X = 200;
 	
 	// Categories of loading and saving simulation
@@ -161,7 +161,7 @@ public class MainScene {
 	//private int systemCpuLoad;
 
 	private boolean isMainSceneDoneLoading = false;
-	private boolean fMenuVisible = false;
+	private boolean menuBarVisible = false;
 	private boolean isMarsNetOpen = false;
 	
 	private double width = 1286;//1366-80;
@@ -179,8 +179,8 @@ public class MainScene {
 	private Label timeText; //Text timeText	
 	private Text memUsedText;
 
-	private Button memBtn, clkBtn, menubarButton;//, cpuBtn;
-	private ToggleButton marsNetButton;
+	private Button memBtn, clkBtn;//, cpuBtn;
+	private ToggleButton marsNetButton, menubarButton;
 	//private MaterialDesignToggleButton marsNetButton;
 
 	private Stage stage, loadingCircleStage, savingCircleStage, pausedCircleStage;
@@ -565,7 +565,7 @@ public class MainScene {
 */        
         
 
-        menubarButton = new Button();
+        menubarButton = new ToggleButton();
         menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/menubar_36.png"))));
 
         menubarButton.setStyle(
@@ -1664,24 +1664,25 @@ public class MainScene {
    		
 		// 2016-06-15 Added top edge mouse cursor detection for sliding down the menu bar
 		anchorPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
-			//System.out.println("event.getY() is " + e.getSceneY());
-	          if ((e.getSceneX() <= TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= TOP_EDGE_DETECTION_PIXELS_Y) && (!fMenuVisible)) {
-	          	//System.out.println("slide open");
-	          	menubarButton.fire();
-	          	//borderPane.setTop(menuBar);
-	          	//menuBar.setVisible(true);
-	          	//hideProperty.setValue(false);
-	          	fMenuVisible = true;            
-	              
-	          } else if ((e.getSceneX() > TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() > TOP_EDGE_DETECTION_PIXELS_Y) && (fMenuVisible)) {
-		        //System.out.println("slide close");	
-		        menubarButton.fire();
-	          	//borderPane.setTop(null);
-		        //menuBar.setVisible(false);
-	          	//hideProperty.setValue(true);//!hideProperty.getValue());
-	          	fMenuVisible = false;
-	              
-	          }
+		
+			if (!menubarButton.isSelected()) {
+				boolean within = (e.getSceneX() <= TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= TOP_EDGE_DETECTION_PIXELS_Y);
+			
+				if (within && !menuBarVisible) {
+					//System.out.println("slide open");
+					menubarButton.setSelected(true);
+					menubarButton.fire();
+					menuBarVisible = true;             		        
+				} else if (!within && menuBarVisible) {
+		        	menubarButton.setSelected(false);
+					menubarButton.fire();
+					menuBarVisible = false;
+				} else if (!within && !menuBarVisible) {
+					
+				} else if (within && menuBarVisible) {
+					
+				}
+			}
         });
 		
 

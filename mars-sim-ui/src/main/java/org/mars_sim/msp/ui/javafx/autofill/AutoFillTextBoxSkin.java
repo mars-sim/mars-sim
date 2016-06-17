@@ -1,7 +1,4 @@
-/*
 
- *
- */
 package org.mars_sim.msp.ui.javafx.autofill;
 
 //IMPORT DIRECTIVES
@@ -80,16 +77,24 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
             //listview.getItems().addAll(text.getData());
             listview.setItems(text.getData());
         }
+        
         listview.itemsProperty().addListener(new ChangeListener() {
 
             @Override
             public void changed(ObservableValue ov, Object t, Object t1) {
-                if (listview.getItems().size() > 0 && listview.getItems() != null) {
-                    showPopup();
-                } // Hiding popup when no matches found
-                else {
-                    hidePopup();
-                }
+            	
+                // 2016-06-16 Added checking if (listview != null && t1 != null)
+            	if (listview != null && t1 != null) {
+	                if (listview.getItems().size() > 0 && listview.getItems() != null) {
+	                    showPopup();
+	                } // Hiding textfield popup when no matches found
+	                else {
+	                    hidePopup();
+	                }
+            	}
+                //else {
+                //	hidePopup();
+                //}
             }
 
         });
@@ -281,6 +286,19 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
                         listview.getSelectionModel().select(0);
                     }
                 }
+            	
+            	//2016-06-16 Added checking for whitespaces
+            	else if (t.getCode() == KeyCode.ENTER) {
+              	                 	
+                    String text = textbox.getText();
+    	            if (text != "" && text != null && !text.trim().isEmpty()) {
+    	            	//System.out.println("not empty");
+    	            }
+    	            else {
+    	            	//System.out.println("is empty");
+    	            	textbox.clear();
+    	            }                   
+                }
 
             }
         } /**
@@ -294,7 +312,17 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
             KeyEvent t = (KeyEvent) evt;
             if (t.getSource() == listview) {
                 if (t.getCode() == KeyCode.ENTER) {
-                    selectList();
+                	  
+                	//2016-06-16 Added checking for whitespaces
+                    String text = textbox.getText();
+    	            if (text != "" && text != null && !text.trim().isEmpty()) {
+    	            	selectList();
+    	            }
+    	            else {
+    	            	 textbox.clear();
+    	            }
+                    
+                    
                 } else if (t.getCode() == KeyCode.UP) {
                     if (listview.getSelectionModel().getSelectedIndex() == 0) {
                         textbox.requestFocus();
@@ -391,19 +419,28 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
                         break;
                     }
                 }
-                if (listview.getItems().containsAll(list)
-                        && listview.getItems().size() == list.size() && listview.getItems() != null) {
-                    showPopup();
-                } else {
-                    listview.setItems(list);
-                }
+                
+                // 2016-06-16 Added checking listview.getItems() != null
+                //if (!listview.getItems().isEmpty()) {// != null) {
+	                if (listview.getItems().containsAll(list)
+	                        && listview.getItems().size() == list.size() 
+	                        && listview.getItems() != null) {
+	                    showPopup();
+	                } else {
+	                    listview.setItems(list);
+	                }
+                //}
+                //else {
+                //	hidePopup();
+                //}
 
             } else {
                 //listview.getItems().clear();
                 if (autofillTextbox.getFilterMode()) {
                     listview.setItems(data);
                 } else {
-                    listview.setItems(null);
+                	//TODO: 2016-06-16 what is the use of setting listview.setItems(null)
+                    //listview.setItems(null);
                 }
                 //  listview.getItems().addAll(data);
 
