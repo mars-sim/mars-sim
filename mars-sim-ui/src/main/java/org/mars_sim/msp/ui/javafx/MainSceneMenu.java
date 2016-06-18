@@ -64,7 +64,7 @@ public class MainSceneMenu extends MenuBar  {
 
 	private boolean isFullScreenCache = false;
 	
-	private boolean isNotificationOnCache = true;
+	private boolean isNotificationOnCache = false;
 	
 	private boolean fMenuVisible = false;
 	
@@ -619,18 +619,33 @@ public class MainSceneMenu extends MenuBar  {
 
         sixItem.setOnAction(e -> {
         	mainScene.changeTheme(6);
-            SwingUtilities.invokeLater(() -> {
-            	mainScene.setLookAndFeel(1);
+
+    		SwingUtilities.invokeLater(() -> {	
+    			// 2016-06-17 Added checking for OS. 
+    			// Note: NIMROD theme lib doesn't work on linux 
+    			if (MainScene.OS.equals("linux"))
+    				mainScene.setLookAndFeel(2);			
+    			else 
+    				mainScene.setLookAndFeel(1);		
+    			
             	mainScene.getSwingNode().setContent(desktop);
-            });
+    		});
+            
         });
 
         sevenItem.setOnAction(e -> {
         	mainScene.changeTheme(7);
-            SwingUtilities.invokeLater(() -> {
-            	mainScene.setLookAndFeel(1);
+    		SwingUtilities.invokeLater(() -> {	
+    			// 2016-06-17 Added checking for OS. 
+    			// Note: NIMROD theme lib doesn't work on linux 
+    			if (MainScene.OS.equals("linux"))
+    				mainScene.setLookAndFeel(2);			
+    			else 
+    				mainScene.setLookAndFeel(1);		
+    			
             	mainScene.getSwingNode().setContent(desktop);
-            });
+    		});
+            
         });
 
 /*
@@ -681,23 +696,22 @@ public class MainSceneMenu extends MenuBar  {
         
         notificationItem.setOnAction(e -> {
 
-        	boolean isNotificationOn = desktop.getEventTableModel().isFiring();
-        	
-        	if (!isNotificationOn) {
-            	//mainScene.getStage().sizeToScene();
-        		//System.out.println("isFullScreen is false");
-        		notificationItem.setSelected(true);
-        		if (!isNotificationOnCache)
-                	desktop.getEventTableModel().setNoFiring(true);
+        	boolean isNotificationOn = !desktop.getEventTableModel().isNoFiring();    	
+
+       		if (isNotificationOn) {	
+        		//System.out.println("turn off notification");
+        		notificationItem.setSelected(false);
+        		//if (isNotificationOnCache)
+                desktop.getEventTableModel().setNoFiring(true);
         	}
         	else {
-        		//System.out.println("isFullScreen is true");
-        		notificationItem.setSelected(false);
-        		if (isNotificationOnCache)
-                	desktop.getEventTableModel().setNoFiring(false);
+        		//System.out.println("turn on notification");
+        		notificationItem.setSelected(true);
+        		//if (!isNotificationOnCache)
+                desktop.getEventTableModel().setNoFiring(false);
         	}
         	
-        	isNotificationOnCache =  mainScene.getStage().isFullScreen();
+        	//isNotificationOnCache =  isNotificationOn;
         	
         });
         

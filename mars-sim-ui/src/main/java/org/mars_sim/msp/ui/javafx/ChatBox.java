@@ -91,22 +91,6 @@ public class ChatBox extends BorderPane {
         
         titleLabel = new Label("   MarsNet");
   
-        int theme = mainScene.getTheme();
-        if (theme == 6)
-        	titleLabel.setStyle("-fx-text-fill: white;"
-        			+ " -fx-font: bold 12pt 'Corbel';"
-        			+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
-        			);
-        else if (theme == 7)
-            titleLabel.setStyle("-fx-text-fill: white;"
-            		+ " -fx-font: bold 12pt 'Corbel';"
-            		+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
-            		);
-        else 
-            titleLabel.setStyle("-fx-text-fill: white;"
-            		+ " -fx-font: bold 12pt 'Corbel';"
-            		+ " -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );"
-            		);
            	       
         textArea.setEditable(false);
         textArea.setWrapText(true);
@@ -116,8 +100,7 @@ public class ChatBox extends BorderPane {
         		);
         textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
-  		textArea.appendText("<< Connection to MarsNet established >>" + System.lineSeparator());
-  		textArea.appendText("System : how can I help you ? " + System.lineSeparator());
+  		
 
   		// 2016-01-01 Replaced textField with autoFillTextBox
         autoFillTextBox = new AutoFillTextBox(autoCompleteData);
@@ -166,8 +149,56 @@ public class ChatBox extends BorderPane {
         setCenter(textArea);
         setBottom(hbox);
         
+        //update();
+    }
+    
+    
+    /*
+     * Display the initial system greeting and update the css style
+     */
+    // 2016-06-17 Added update() 
+    public void update() {   
+
+        int theme = mainScene.getTheme();
+        if (theme == 6)
+        	titleLabel.setStyle("-fx-text-fill: white;"
+        			+ " -fx-font: bold 12pt 'Corbel';"
+        			+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
+        			);
+        else if (theme == 7)
+            titleLabel.setStyle("-fx-text-fill: white;"
+            		+ " -fx-font: bold 12pt 'Corbel';"
+            		+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
+            		);
+        else 
+            titleLabel.setStyle("-fx-text-fill: white;"
+            		+ " -fx-font: bold 12pt 'Corbel';"
+            		+ " -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );"
+            		);
+        
+        textArea.appendText("<< Connection to MarsNet established >>" + System.lineSeparator());
+  		
+  		int rand = RandomUtil.getRandomInt(2);
+  		if (rand == 0)
+  			textArea.appendText("System : how can I help you ? " + System.lineSeparator());
+  		else if (rand == 1)
+  			textArea.appendText("System : how may I assist you ? " + System.lineSeparator());
+  		else if (rand == 2)
+  			textArea.appendText("System : Is there anything I can help ? " + System.lineSeparator());
+
+        
     }
 
+    public void closeChatBox() {
+    			
+    	textArea.appendText("You : farewell!" + System.lineSeparator() + "<< Disconnected from MarsNet >>" + System.lineSeparator() + System.lineSeparator());    	
+  
+    	personCache = null; 
+    	robotCache = null;
+    	settlementCache = null;
+    	
+    }
+    
     /**
      * Compiles the names of settlements and people and robots into the autocomplete data list
      * @return ObservableList<String> 
@@ -376,9 +407,9 @@ public class ChatBox extends BorderPane {
     				|| text.contains("quarters")) {
     			  			
     			questionText = "You : how well are the beds utilized ? ";
-	    		responseText = "Total number of beds : " + settlementCache.getPopulationCapacity() + "\n" +
-	    				"Desginated beds : " + settlementCache.getTotalNumDesignatedBeds() + "\n" +
-	    				"Unoccupied beds : " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers())  + "\n" +
+	    		responseText = "Total number of beds : " + settlementCache.getPopulationCapacity() + System.lineSeparator() +
+	    				"Desginated beds : " + settlementCache.getTotalNumDesignatedBeds() + System.lineSeparator() +
+	    				"Unoccupied beds : " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers())  + System.lineSeparator() +
 	    				"Occupied beds : " + settlementCache.getSleepers() + System.lineSeparator();
     		} 
     		
@@ -386,11 +417,10 @@ public class ChatBox extends BorderPane {
     	    	
         		help = true;
     	    	questionText = "You : I need some help. What are the available commands ? ";
-    			responseText = "Keywords are 'bed', 'lodging', 'sleep', 'quarters'\n"
-						+ "For specific questions : 1 to 4\n"
-    					+ "To quit, enter 'quit', 'exit', 'bye', 'q', or 'x'\n"
-    					+ "For help, enter 'help', or 'h'"
-    					+ System.lineSeparator();	    	
+    			responseText = "Keywords are 'bed', 'lodging', 'sleep', 'quarters" + System.lineSeparator()
+						+ "Specific questions from 1 to 4" + System.lineSeparator()
+    					+ "To quit, enter 'quit', 'exit', 'bye', 'q', or 'x'" + System.lineSeparator()
+    					+ "For help, enter 'help', or 'h'" + System.lineSeparator();	    	
     	    		    		
     	    } else {    	    	
 
@@ -657,11 +687,10 @@ public class ChatBox extends BorderPane {
 						+ "'bed', 'quarters', 'building', 'inside', 'outside',"
 						+ "'settlement', 'assocated settlement', 'buried settlement', "
 						+ "'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container', "
-						+ "'vehicle top container'\n"
-						+ "For specific questions : 1 to 15\n"
-						+ "To quit, enter 'quit', 'exit', 'bye', '/q', 'q', '/x', or 'x'\n"
-						+ "For help, enter 'help', '/h', or 'h'"
-						+ System.lineSeparator();	    	
+						+ "'vehicle top container'" + System.lineSeparator()
+						+ "Specific questions from 1 to 15" + System.lineSeparator()
+						+ "To quit, enter 'quit', 'exit', 'bye', '/q', 'q', '/x', or 'x'" + System.lineSeparator()
+						+ "For help, enter 'help', '/h', or 'h'" + System.lineSeparator();	    	
 				
 		    } else {
 	    		
@@ -749,10 +778,9 @@ public class ChatBox extends BorderPane {
     			|| text.equals("/?")
     			) {
 
-    		responseText = name + " : (1) type in the name of a person, bot, or settlement to connect to.\n"
-    				+ "(2) type in a keyword or a numeral question or type '/h' or 'help' for a list of keywords.\n"
-    				+ "(3) type '/q', 'quit', 'bye', '/x' or 'exit' to quit the chat box"
-    				+ System.lineSeparator();	
+    		responseText = name + " : (1) type in the name of a person, bot, or settlement to connect with." + System.lineSeparator()
+    				+ "(2) type in a numeral question or a keyword ['/h' or 'help' for a list of keywords]." + System.lineSeparator()
+    				+ "(3) type '/q', 'quit', 'bye', '/x' or 'exit' to close the chat box" + System.lineSeparator();	
     		
     	}
     	
@@ -775,9 +803,10 @@ public class ChatBox extends BorderPane {
       			|| text.equalsIgnoreCase("\\bye")
      			){
 
-    		responseText = name + " : disconnecting..." + System.lineSeparator();
-    		//proceed = true; 		
+     		responseText = System.lineSeparator();
+            closeChatBox();
             mainScene.getFlyout().dismiss();
+            mainScene.ToggleMarsNetButton(false);
     		
     	}
 

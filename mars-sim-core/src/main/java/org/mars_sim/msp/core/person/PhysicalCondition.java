@@ -793,73 +793,77 @@ implements Serializable {
      */
     // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
     private void checkForStressBreakdown(PersonConfig config, double time) {
-        try {
-        	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
-        	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-        	// a person is limited to have either one of them
-            if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
+ 
+    	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
+    	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+    	// a person is limited to have either one of them
+        if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
 
-                // Determine stress resilience modifier (0D - 2D).
-                int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
-                int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
-                
-                double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 50D;
-                
-                // If random breakdown, add panic attack.
-                if (RandomUtil.lessThanRandPercent(config.getStressBreakdownChance() * time * resilienceModifier)) {
-                	
-                   	if (fatigue < 200) 
-                		fatigue = fatigue * 4;
-                	else if (fatigue < 400) 
-                		fatigue = fatigue * 2;
-                	else if (fatigue < 600) 
-                		fatigue = fatigue * 1.2;
-               	               	                	
-                	int rand = RandomUtil.getRandomInt(1);
-                	
-                	if (rand == 0) {
-                		                               				
-                		//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-	                    if (panicAttack != null) {
-	                        addMedicalComplaint(panicAttack);
-	                        //illnessEvent = true;
-	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	                        logger.info(person.getName() + " has a panic attack.");
-	                        //System.out.println(person.getName() + " has a panic attack.");
-	                    }
-	                    else 
-	                    	logger.log(Level.SEVERE,"Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
-                		
-                	} else {
-                		
-	                    //Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
-	                    if (depression != null) {
-	                        addMedicalComplaint(depression);
-	                        //illnessEvent = true;
-	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	                        logger.info(person.getName() + " has an episode of depression.");
-	                        //System.out.println(person.getName() + " has an episode of depression.");
-	                    }
-	                    else 
-	                    	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
-                	}
-                
-                
-                } else {
-                	
-                   	if (fatigue < 200) 
-                		fatigue = fatigue * 2;
-                	else if (fatigue < 400) 
-                		fatigue = fatigue * 1.5;
-                	
-                }
-        
+            // Determine stress resilience modifier (0D - 2D).
+            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
+            int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
+            
+            double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 50D;
+            
+            double chance = 0;
+            
+            try {              
+            	chance = config.getStressBreakdownChance();                
+            } 
+            catch (Exception e) {
+                logger.log(Level.SEVERE,"Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
             }
+            
+            // If random breakdown, add panic attack.
+            if (RandomUtil.lessThanRandPercent(chance * time * resilienceModifier)) {
+            	
+               	if (fatigue < 200) 
+            		fatigue = fatigue * 4;
+            	else if (fatigue < 400) 
+            		fatigue = fatigue * 2;
+            	else if (fatigue < 600) 
+            		fatigue = fatigue * 1.2;
+           	               	                	
+            	int rand = RandomUtil.getRandomInt(1);
+            	
+            	if (rand == 0) {
+            		                               				
+            		//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
+                    if (panicAttack != null) {
+                        addMedicalComplaint(panicAttack);
+                        //illnessEvent = true;
+                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                        logger.info(person.getName() + " has a panic attack.");
+                        //System.out.println(person.getName() + " has a panic attack.");
+                    }
+                    else 
+                    	logger.log(Level.SEVERE,"Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
+            		
+            	} else {
+            		
+                    //Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
+                    if (depression != null) {
+                        addMedicalComplaint(depression);
+                        //illnessEvent = true;
+                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                        logger.info(person.getName() + " has an episode of depression.");
+                        //System.out.println(person.getName() + " has an episode of depression.");
+                    }
+                    else 
+                    	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
+            	}
+            
+            
+            } else {
+            	
+               	if (fatigue < 200) 
+            		fatigue = fatigue * 2;
+            	else if (fatigue < 400) 
+            		fatigue = fatigue * 1.5;         	
+            }
+    
         }
-        
-        catch (Exception e) {
-            logger.log(Level.SEVERE,"Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
-        }
+       
     }
 
     /**

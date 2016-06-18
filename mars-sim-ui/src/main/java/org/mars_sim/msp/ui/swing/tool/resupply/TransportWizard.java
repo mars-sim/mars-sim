@@ -847,11 +847,11 @@ public class TransportWizard {
 	public void placementDialog(String title, String header, Building newBuilding, BuildingManager mgr) {
     	// Platform.runLater(() -> {
 		// FXUtilities.runAndWait(() -> {
-			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the building\n"
-					+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise\n"
-					+ "   Mouse Control :\t(1) Press & Hold the left button on the building\n"
-					+ "\t\t\t\t(2) Move the cursor to the destination\n"
-					+ "\t\t\t\t(3) Release button to drop it off\n"
+			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the building" + System.lineSeparator()
+					+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise" + System.lineSeparator()
+					+ "   Mouse Control :\t(1) Press & Hold the left button on the building" + System.lineSeparator()
+					+ "\t\t\t\t(2) Move the cursor to the destination" + System.lineSeparator()
+					+ "\t\t\t\t(3) Release button to drop it off" + System.lineSeparator()
 					+ "\t\t\t\t(4) Hit \"Confirm Position\" button to proceed";
 			Alert alert = new Alert(AlertType.CONFIRMATION);
 			//alert.setOnCloseRequest((event) -> event.consume());

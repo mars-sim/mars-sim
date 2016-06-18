@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.mars_sim.msp.ui.javafx.Notification;
+import org.mars_sim.msp.ui.javafx.PNotification;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 //import org.reactfx.util.Duration;
-import eu.hansolo.enzo.notification.NotifierBuilder;
-import eu.hansolo.enzo.notification.Notification.Notifier;
+//import eu.hansolo.enzo.notification.NotifierBuilder;
+//import eu.hansolo.enzo.notification.Notification.Notifier;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
@@ -31,6 +31,7 @@ import javafx.stage.Stage;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 
@@ -44,12 +45,12 @@ public class QuotationPopup implements Serializable {
 
 	private static final int WIDTH = 470;
 	private static final int CHARS_PER_LINE = 55;
-	private static final int POPUP_IN_MILLISECONDS = 20000;
+	private static final int POPUP_IN_MILLISECONDS = 20_000;
 	
 	// Data members	
 	private Map<Integer, Quotation> quotations;
 	
-    private Notification.Notifier notifier = Notification.Notifier.INSTANCE;
+    private QNotification.Notifier notifier = QNotification.Notifier.INSTANCE;
 	//private Timer timer;
 	
 	private Object[] quoteArray;
@@ -59,23 +60,24 @@ public class QuotationPopup implements Serializable {
 	
     /** Constructs a quotation object for creating a quote popup
      */
-    public QuotationPopup() {     	
+    public QuotationPopup() {     		
     	QuotationConfig quotationConfig = SimulationConfig.instance().getQuotationConfiguration();
     	quotations = quotationConfig.getQuotations();
-    	quoteArray = quotations.values().toArray();
-       
-        Duration duration = new Duration(POPUP_IN_MILLISECONDS);       
-        notifier.setPopupLifetime(duration); 
-        
+    	quoteArray = quotations.values().toArray();         
     	//System.out.println("# of quotes : " + quoteArray.length);
+    	
+    	Duration duration = new Duration(POPUP_IN_MILLISECONDS);       
+        notifier.setPopupLifetime(duration); 
+        //Notification.Notifier.setPopupLocation(stage, Pos.TOP_RIGHT);
+       
     }
 
-    public void popAQuote(Stage stage) {
-
-    	//Notification.Notifier notifier;
-        //notifier = Notification.Notifier.INSTANCE;
-        
-        //Notification.Notifier notifier = NotifierBuilder.create()
+    @SuppressWarnings("restriction")
+	public void popAQuote(Stage stage) {	
+    	//System.out.println("calling popAQuote()");
+     	//notifier = Notification.Notifier.INSTANCE;
+    
+        //Notification.Notifier notifier = NotifierBuilder.create().build();
                 //.popupLocation(Pos.TOP_RIGHT)
                 //.popupLifeTime(Duration.millis(10000))
                 //.styleSheet(getClass().getResource("mynotification.css").toExternalForm())
@@ -97,7 +99,7 @@ public class QuotationPopup implements Serializable {
 		int nameSize = name.length() + 3;
 		
 		//int remaining = CHARS_PER_LINE * numLines - strSize;
-		int index = str.lastIndexOf("\n");
+		int index = str.lastIndexOf(System.lineSeparator());//"\n");
 		String s = str.substring(index+1, strSize);
 		int lastLineLength = s.length();
 		int remaining = CHARS_PER_LINE - lastLineLength;
@@ -116,7 +118,7 @@ public class QuotationPopup implements Serializable {
 			
 			height = base_height + 15;
 			
-			str += "\n";
+			str += System.lineSeparator();//"\n";
 			
 			//System.out.println("Case 1 : quote can fit one line ");
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
@@ -141,7 +143,7 @@ public class QuotationPopup implements Serializable {
 			
 			height = base_height + 20 * (numLines + 1);
 		
-			str += "\n";
+			str += System.lineSeparator();//"\n";
 			//System.out.println("Case 3 : last line cannot fit author's name");
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 		}
@@ -164,14 +166,18 @@ public class QuotationPopup implements Serializable {
 		
 		//System.out.println(str);	
 		
-		notifier.setHeight(height);
-        notifier.setWidth(new_width);
-        
-        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-        //notifier.setNotificationOwner(stage);
- 
+
+        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+
+
+        //Duration duration = new Duration(POPUP_IN_MILLISECONDS);       
+        //notifier.setPopupLifetime(duration);        
+        QNotification.Notifier.setNotificationOwner(stage);
+        //notifier.setPopupLocation(stage, Pos.TOP_RIGHT);
+        QNotification.Notifier.setHeight(height);
+        QNotification.Notifier.setWidth(new_width);
 		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON)
-		notifier.notify(" QUOTATION", str, Notification.QUOTE_ICON); //INFO_ICON);
+		notifier.notify(" QUOTATION", str, QNotification.QUOTE_ICON); //INFO_ICON);
 
 		stage.requestFocus();
 /*		
@@ -207,12 +213,13 @@ public class QuotationPopup implements Serializable {
     	if (in.length() < len) 
     		return in;
     	
-    	if (in.substring(0, len).contains("\n"))
-    		return in.substring(0, in.indexOf("\n")).trim() + "\n\n" + wrap(in.substring(in.indexOf("\n") + 1), len);
+    	if (in.substring(0, len).contains(System.lineSeparator()))//"\n"))
+    		return in.substring(0, in.indexOf(System.lineSeparator())).trim() + System.lineSeparator() + System.lineSeparator()
+    		+ wrap(in.substring(in.indexOf(System.lineSeparator()) + 1), len);
     	
     	int place = Math.max(Math.max(in.lastIndexOf(" ",len),in.lastIndexOf("\t",len)),in.lastIndexOf("-",len));
     	
-    	return in.substring(0,place).trim()+"\n"+wrap(in.substring(place),len);
+    	return in.substring(0,place).trim() + System.lineSeparator() + wrap(in.substring(place),len);
     }
     
 /*    
@@ -226,4 +233,14 @@ public class QuotationPopup implements Serializable {
 			timer.stop();
 		}
 */		
+
+	public void destroy() {
+
+	    quotations.clear();
+	    quotations = null;
+	    notifier = null;
+	    quoteArray = null;
+	    q = null;
+	}
+    
 }

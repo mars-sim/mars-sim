@@ -133,6 +133,8 @@ public class MainScene {
 
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
+	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+	
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
 	private static final int TOP_EDGE_DETECTION_PIXELS_Y = 35;
@@ -163,6 +165,7 @@ public class MainScene {
 	private boolean isMainSceneDoneLoading = false;
 	private boolean menuBarVisible = false;
 	private boolean isMarsNetOpen = false;
+	private boolean onMenuBarCache = false;
 	
 	private double width = 1286;//1366-80;
 	private double height = 688; //768-80;
@@ -212,6 +215,9 @@ public class MainScene {
 	private ConstructionWizard constructionWizard;
 
 	private QuotationPopup quote;
+	private MessagePopup messagePopup;
+	
+	private BorderSlideBar topFlapBar;
 
 	/**
 	 * Constructor for MainScene
@@ -222,6 +228,7 @@ public class MainScene {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
+		
 		//stage.setResizable(true);
 		stage.setMinWidth(width);//1024);
 		stage.setMinHeight(height);//480);
@@ -244,6 +251,7 @@ public class MainScene {
 			//}
 		} );
 
+		
 		// Detect if a user hits ESC
 		setEscapeEventHandler(true);
 		
@@ -268,10 +276,12 @@ public class MainScene {
 			if (t.getCode() == KeyCode.ESCAPE) {
 				boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
 				if (isOnPauseMode) {
+					//System.out.println("calling unpauseSimulation()");
 					unpauseSimulation();
 					//desktop.getTimeWindow().enablePauseButton(true);
 				}
 				else {
+					//System.out.println("calling pauseSimulation()");
 					pauseSimulation();
 					//desktop.getTimeWindow().enablePauseButton(false);
 				}
@@ -305,9 +315,14 @@ public class MainScene {
 			//logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
-			SwingUtilities.invokeLater(() -> {
-				setLookAndFeel(1);
-			});
+			//SwingUtilities.invokeLater(() -> {	
+				// 2016-06-17 Added checking for OS. 
+				// Note: NIMROD theme lib doesn't work on linux 
+			//	if (OS.equals("linux"))
+			//		setLookAndFeel(2);			
+			//	else 
+			//		setLookAndFeel(1);			
+			//});
 			// System.out.println("done running createMainScene()");
 		}
 	}
@@ -569,6 +584,7 @@ public class MainScene {
         menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/menubar_36.png"))));
 
         menubarButton.setStyle(
+        		"-fx-background-color: transparent;" +     		    		
      		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
      		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
      		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
@@ -579,13 +595,15 @@ public class MainScene {
      		   //"-fx-font-size: 80px;"
            		"-fx-background-radius: 2px;"
      		   );
+    
         
-        AnchorPane.setLeftAnchor(marsNetButton, 5.0);
+        AnchorPane.setLeftAnchor(marsNetButton, 45.0);
         //AnchorPane.setRightAnchor(marsNetButton, 0.0);
         AnchorPane.setBottomAnchor(marsNetButton, 35.0);
         
-        //AnchorPane.setLeftAnchor(menubarButton, 0.0);
-        AnchorPane.setRightAnchor(menubarButton, 5.0);
+        AnchorPane.setLeftAnchor(menubarButton, 5.0);
+        //AnchorPane.setRightAnchor(menubarButton, 5.0);
+        //AnchorPane.setTopAnchor(menubarButton, 35.0);
         AnchorPane.setBottomAnchor(menubarButton, 35.0);
         
         //Button buttonTop = new Button("Top");
@@ -604,7 +622,7 @@ public class MainScene {
         /**
          * Instanciate a BorderSlideBar for each childs layouts
          */
-        BorderSlideBar topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
+        topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
         borderPane.setTop(topFlapBar);
         borderPane.setBottom(statusBar);
         
@@ -646,10 +664,15 @@ public class MainScene {
 		changeTheme(theme);
 
 		// SwingUtilities is needed for MacOSX compatibility
-		SwingUtilities.invokeLater(() -> {
-			setLookAndFeel(theme);
+		SwingUtilities.invokeLater(() -> {	
+			// 2016-06-17 Added checking for OS. 
+			// Note: NIMROD theme lib doesn't work on linux 
+			if (OS.equals("linux"))
+				setLookAndFeel(2);			
+			else 
+				setLookAndFeel(1);			
 		});
-
+		
 		//logger.info("done with MainScene's initializeTheme()");
 	}
 
@@ -668,7 +691,7 @@ public class MainScene {
 		//logger.info("MainScene's changeTheme()");
 		if (theme == 1) { // olive green
 			cssColor = "/fxui/css/oliveskin.css";
-			updateThemeColor(Color.GREEN, Color.PALEGREEN, cssColor); //DARKOLIVEGREEN
+			updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssColor); //DARKOLIVEGREEN
 			//notificationPane.getStyleClass().remove(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 			lookAndFeelTheme = "LightTabaco";
@@ -676,37 +699,37 @@ public class MainScene {
 
 		} else if (theme == 2) { // burgundy red
 			cssColor = "/fxui/css/burgundyskin.css";
-			updateThemeColor(Color.rgb(140,0,26), Color.YELLOW, cssColor); // ORANGERED
+			updateThemeColor(2, Color.rgb(140,0,26), Color.YELLOW, cssColor); // ORANGERED
 			//notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/burgundyskin.css").toExternalForm());
 			lookAndFeelTheme = "Burdeos";
 
 		} else if (theme == 3) { // dark chocolate
 			cssColor = "/fxui/css/darkTabaco.css";
-			updateThemeColor(Color.DARKGOLDENROD, Color.BROWN, cssColor);
+			updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssColor);
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/mainskin.css").toExternalForm());
 			lookAndFeelTheme = "DarkTabaco";
 
 		} else if (theme == 4) { // grey
 			cssColor = "/fxui/css/darkGrey.css";
-			updateThemeColor(Color.DARKSLATEGREY, Color.DARKGREY, cssColor);
+			updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssColor);
 			lookAndFeelTheme = "DarkGrey";
 
 		} else if (theme == 5) { // + purple
 			cssColor = "/fxui/css/nightViolet.css";
-			updateThemeColor(Color.rgb(73,55,125), Color.rgb(73,55,125), cssColor); // DARKMAGENTA, SLATEBLUE
+			updateThemeColor(5, Color.rgb(73,55,125), Color.rgb(73,55,125), cssColor); // DARKMAGENTA, SLATEBLUE
 			lookAndFeelTheme = "Night";
 
 		} else if (theme == 6) { // + skyblue
 			cssColor = "/fxui/css/snowBlue.css";
-			updateThemeColor(Color.rgb(0,107,184), Color.rgb(0,107,184), cssColor); // CADETBLUE // Color.rgb(23,138,255)
+			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssColor); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
 
 
 
 		} else if (theme == 7) { // standard
 			cssColor = "/fxui/css/nimrodskin.css";
-			updateThemeColor(Color.rgb(156,77,0), Color.rgb(156,77,0), cssColor); //DARKORANGE, CORAL
+			updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(156,77,0), cssColor); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
 
 		}
@@ -718,9 +741,20 @@ public class MainScene {
 	 * Updates the theme colors of statusBar, swingPane and menuBar
 	 */
 	// 2015-08-29 Added updateThemeColor()
-	public void updateThemeColor(Color txtColor, Color btnTxtColor, String cssColor) {
-		swingPane.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
-		menuBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
+	public void updateThemeColor(int theme, Color txtColor, Color btnTxtColor, String cssFile) {
+		swingPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		
+		// Note : menu bar color
+		//orange theme : F4BA00
+		//blue theme : 3291D2
+		
+		String color = txtColor.toString().replace("0x", "");
+		//System.out.println("txtColor is " + txtColor.toString());
+		//System.out.println("btnTxtColor is " + btnTxtColor.toString());
+		//System.out.println("cssFile is " + cssFile);
+		//System.out.println("color is " + color);
+
 		
 		//marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
 		
@@ -731,7 +765,7 @@ public class MainScene {
 		//systemCpuLoadText.setFill(txtColor);
 		//processCpuLoadText.setFill(txtColor);
 
-		statusBar.getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
+		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 
 		//memBtn.setTextFill(btnTxtColor);
 		//clkBtn.setTextFill(btnTxtColor);
@@ -749,35 +783,50 @@ public class MainScene {
         		"-fx-background-color: transparent;" //+
 				//"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
         		);
+
+		if (theme == 6) {
+			menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
+			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_chat_36.png"))));
+		}
+		else if (theme == 7) {
+			menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menubar_36.png"))));
+			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_36.png"))));
+		}
 		
+		
+/*		
         menubarButton.setStyle(
+        		"-fx-background-color: transparent;" +
       		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
       		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
       		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
       		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
       		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
-      		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-     		   "-fx-base : " + cssColor + ";" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+      		   //"-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+     		   "-fx-base : derive(#" + color + ", 80%);" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
       		   // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
       		   //"-fx-font-size: 80px;"
-            	"-fx-background-radius: 2px;" +
-            	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+            	"-fx-background-radius: 2px;"
+ //           	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
       		   );
         
         marsNetButton.setStyle(
+        		"-fx-background-color: transparent;" +
        		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
        		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
        		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
        		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
        		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
-       		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-      		   "-fx-base : " + cssColor + ";" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-       		   // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
+       		   //"-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+    		   "-fx-base : derive(#" + color + ", 80%);" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+    		   // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
        		   //"-fx-font-size: 80px;"
-             	"-fx-background-radius: 2px;" +
+             	"-fx-background-radius: 2px;"
             	//"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );"
-            	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"           	
+  //          	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"           	
        		   );
+*/        
+        
 	}
 	/**
 	 * Creates and starts the earth timer
@@ -806,6 +855,7 @@ public class MainScene {
         marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/gray_chat_36.png")))); //" MarsNet ");
         
         marsNetButton.setStyle(
+        			"-fx-background-color: transparent;" +   
         		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
         		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
         		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
@@ -825,10 +875,15 @@ public class MainScene {
         marsNetButton.setOnAction(e -> {
             if (marsNetButton.isSelected()) {
                 flyout.flyout();
+                // 2016-06-17 Added update() to show the initial system greeting
+                chatBox.update();
                 chatBox.getAutoFillTextBox().getTextbox().clear();
                 chatBox.getAutoFillTextBox().getTextbox().requestFocus();
             } else {
+            	// 2016-06-17 Added closeChatBox() to display a disconnection msg 
+            	chatBox.closeChatBox();
                 flyout.dismiss();
+                ToggleMarsNetButton(false);
             }
             //if (!isMarsNetOpen) {
             //    flyout.flyout();
@@ -841,8 +896,8 @@ public class MainScene {
         return flyout;
     }
     
-    public void ToggleOffMarsNetButton() {
-    	marsNetButton.setSelected(false);
+    public void ToggleMarsNetButton(boolean value) {
+    	marsNetButton.setSelected(value);
     }
     
     public Flyout getFlyout() {
@@ -1334,14 +1389,26 @@ public class MainScene {
 
 	}
 
+	
+	public void startPausePopup() {
+		//System.out.println("calling startPausePopup()");   
+		messagePopup.popAMessage("        PAUSED", "Hit ESC to resume mars-sim", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
+	}
+
+	public void stopPausePopup() {
+		messagePopup.stop();		    	
+	}
+	
 	/**
 	 * Pauses the simulation and opens an announcement window.
 	 */
-	public void pauseSimulation() {
-		desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$
+	public void pauseSimulation() {	
+		//System.out.println("pauseSimulation() ");    	
+		//desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$
 		//autosaveTimeline.pause();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		Simulation.instance().getMasterClock().setPaused(true);
+		startPausePopup();
 		//timeText.setText(" [Paused] " + timeStamp + "  ");
 		//desktop.getTimeWindow().enablePauseButton(false);
 	}
@@ -1353,11 +1420,13 @@ public class MainScene {
 	/**
 	 * Closes the announcement window and unpauses the simulation.
 	 */
-	public void unpauseSimulation() {
-		Simulation.instance().getMasterClock().setPaused(false);
+	public void unpauseSimulation() {	
+		//System.out.println("unpauseSimulation() "); 
+		stopPausePopup();
+		//desktop.disposeAnnouncementWindow();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-		//autosaveTimeline.play();
-		desktop.disposeAnnouncementWindow();
+		Simulation.instance().getMasterClock().setPaused(false);
+		//autosaveTimeline.play();	
 		//desktop.getTimeWindow().enablePauseButton(true);
 	}
 
@@ -1523,13 +1592,20 @@ public class MainScene {
 	}
 
 	private void createSwingNode() {
-		setLookAndFeel(1);
+		//setLookAndFeel(1);
 		desktop = new MainDesktopPane(this);
-		SwingUtilities.invokeLater(() -> {
-			//desktop = new MainDesktopPane(this);
-			setLookAndFeel(1);
+
+		SwingUtilities.invokeLater(() -> {	
+			// 2016-06-17 Added checking for OS. 
+			// Note: NIMROD theme lib doesn't work on linux 
+			if (OS.equals("linux"))
+				setLookAndFeel(2);			
+			else 
+				setLookAndFeel(1);		
+			
 			swingNode.setContent(desktop);
-		} );
+		});
+		
 		// desktop.openInitialWindows();
 	}
 
@@ -1620,7 +1696,7 @@ public class MainScene {
 
 	public void openInitialWindows() {
 		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
-		String OS = System.getProperty("os.name").toLowerCase();
+		//String OS = System.getProperty("os.name").toLowerCase();
 		//System.out.println("OS is " + OS);
 		if (OS.equals("mac os x")) {
 		// SwingUtilities needed below for MacOSX
@@ -1658,56 +1734,46 @@ public class MainScene {
 		//marsNode.createEarthMap();
 		//marsNode.createMarsMap();
 		//marsNode.createChatBox();
-			
+
+		messagePopup = new MessagePopup();
 		quote = new QuotationPopup();
+
 		popAQuote();	
    		
 		// 2016-06-15 Added top edge mouse cursor detection for sliding down the menu bar
 		anchorPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
 		
+			boolean onMenuBar = (e.getSceneX() <= TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= TOP_EDGE_DETECTION_PIXELS_Y);
+				
 			if (!menubarButton.isSelected()) {
-				boolean within = (e.getSceneX() <= TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= TOP_EDGE_DETECTION_PIXELS_Y);
-			
-				if (within && !menuBarVisible) {
+				
+				if (onMenuBar && !onMenuBarCache && !menuBarVisible) {// || menubarButton.isSelected()) 
 					//System.out.println("slide open");
-					menubarButton.setSelected(true);
-					menubarButton.fire();
-					menuBarVisible = true;             		        
-				} else if (!within && menuBarVisible) {
-		        	menubarButton.setSelected(false);
-					menubarButton.fire();
+					topFlapBar.slide();
+					menuBarVisible = true;
+					
+				} else if (!onMenuBar && onMenuBarCache && menuBarVisible) {// || menubarButton.isSelected()) 
+					//System.out.println("slide close");
+					topFlapBar.slide();
 					menuBarVisible = false;
-				} else if (!within && !menuBarVisible) {
-					
-				} else if (within && menuBarVisible) {
-					
 				}
+							
+				// 2016-06-17 Added self-correcting if-then clause to correct problems arising from hovering over the menu bar multiple times successively
+				if (onMenuBar)
+					menuBarVisible = true;
+				else
+					menuBarVisible = false;
+				
 			}
-        });
+			
+			onMenuBarCache = onMenuBar;
 		
+        });	
 
 /*
         scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
 		      @Override
 		      public void handle(MouseEvent event) {
-		    	  System.out.println("event.getY() is " + event.getY());
-		          if ((event.getY() <= 35) && (!fMenuVisible)) {
-		          	System.out.println("slide open");
-		          	menubarButton.fire();
-		          	//borderPane.setTop(menuBar);
-		          	//menuBar.setVisible(true);
-		          	//hideProperty.setValue(false);
-		          	fMenuVisible = true;            
-		              
-		          } else if ((event.getY() > 35) && (fMenuVisible)) {
-			        System.out.println("slide close");	
-			        menubarButton.fire();
-		          	//borderPane.setTop(null);
-			        //menuBar.setVisible(false);
-		          	//hideProperty.setValue(true);//!hideProperty.getValue());
-		          	fMenuVisible = false;
-		              
-		          }
 		      }
 		  });
 */		
@@ -1880,6 +1946,10 @@ public class MainScene {
  	
 	public void destroy() {
 
+		quote = null;
+		messagePopup = null;		
+		topFlapBar = null;
+		
 	    navMenuItem = null;
 	    mapMenuItem = null;
 	    missionMenuItem = null;
@@ -1891,8 +1961,7 @@ public class MainScene {
 		//processCpuLoadText = null;
 		memBtn = null;
 		clkBtn = null;
-		//cpuBtn = null;
-		
+		//cpuBtn = null;	
 
 		statusBar = null;
 		flyout = null;

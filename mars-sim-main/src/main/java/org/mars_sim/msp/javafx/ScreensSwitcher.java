@@ -121,7 +121,7 @@ public class ScreensSwitcher extends StackPane {
 		alert.setTitle("Exit MSP");//("Confirmation Dialog");
 		alert.setHeaderText("Do you really want to exit MSP?");
 		//alert.initModality(Modality.APPLICATION_MODAL);
-		alert.setContentText("Note: Yes will terminate any running simulation and exit without saving.");
+		alert.setContentText("Note: Yes to exit any running sim & without saving.");
 		ButtonType buttonTypeYes = new ButtonType("Yes");
 		ButtonType buttonTypeNo = new ButtonType("No");
 	   	alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);

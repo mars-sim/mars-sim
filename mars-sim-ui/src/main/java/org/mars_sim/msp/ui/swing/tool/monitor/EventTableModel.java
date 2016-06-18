@@ -577,7 +577,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		noFiring = value;
 	}
 	
-	public boolean isFiring() {
+	public boolean isNoFiring() {
 		return noFiring;
 	}
 	

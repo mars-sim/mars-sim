@@ -18,6 +18,8 @@ public class BorderSlideBar extends VBox {
     private final String CSS = this.getClass().getResource("/slide/BorderSlideBar.css").toExternalForm();
     // "/" + this.getClass().getSimpleName() + ".css";
     
+    private final static int DELAY = 500; // in milliseconds
+    
     private double expandedSize;
     private Pos flapbarLocation;
 
@@ -62,60 +64,67 @@ public class BorderSlideBar extends VBox {
         controlButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                // Create an animation to hide the panel.
-                final Animation hidePanel = new Transition() {
-                    {
-                        setCycleDuration(Duration.millis(250));
-                    }
-
-                    @Override
-                    protected void interpolate(double frac) {
-                        final double size = getExpandedSize() * (1.0 - frac);
-                        translateByPos(size);
-                    }
-                };
-
-                hidePanel.onFinishedProperty().set(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        setVisible(false);
-                    }
-                });
-
-                // Create an animation to show the panel.
-                final Animation showPanel = new Transition() {
-                    {
-                        setCycleDuration(Duration.millis(250));
-                    }
-
-                    @Override
-                    protected void interpolate(double frac) {
-                        final double size = getExpandedSize() * frac;
-                        translateByPos(size);
-                    }
-                };
-
-                showPanel.onFinishedProperty().set(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                    }
-                });
-
-                if (showPanel.statusProperty().get() == Animation.Status.STOPPED
-                        && hidePanel.statusProperty().get() == Animation.Status.STOPPED) {
-
-                    if (isVisible()) {
-                        hidePanel.play();
-
-                    } else {
-                        setVisible(true);
-                        showPanel.play();
-                    }
-                }
+            	slide();
             }
         });
     }
 
+    /*
+     * Create an animation to hide or show the panel .
+     */
+    public void slide() {
+        // Create an animation to hide the panel.
+        final Animation hidePanel = new Transition() {
+            {
+                setCycleDuration(Duration.millis(DELAY));
+            }
+
+            @Override
+            protected void interpolate(double frac) {
+                final double size = getExpandedSize() * (1.0 - frac);
+                translateByPos(size);
+            }
+        };
+
+        hidePanel.onFinishedProperty().set(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                setVisible(false);
+            }
+        });
+
+        // Create an animation to show the panel.
+        final Animation showPanel = new Transition() {
+            {
+                setCycleDuration(Duration.millis(250));
+            }
+
+            @Override
+            protected void interpolate(double frac) {
+                final double size = getExpandedSize() * frac;
+                translateByPos(size);
+            }
+        };
+
+        showPanel.onFinishedProperty().set(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+            }
+        });
+
+        if (showPanel.statusProperty().get() == Animation.Status.STOPPED
+                && hidePanel.statusProperty().get() == Animation.Status.STOPPED) {
+
+            if (isVisible()) {
+                hidePanel.play();
+
+            } else {
+                setVisible(true);
+                showPanel.play();
+            }
+        }
+    }
+    
     /**
      * Initialize position orientation.
      */

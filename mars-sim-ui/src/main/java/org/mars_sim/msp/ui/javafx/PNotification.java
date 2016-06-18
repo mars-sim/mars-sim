@@ -44,12 +44,13 @@ import javafx.util.Duration;
  * Date: 01.07.13
  * Time: 07:10
  */
-public class Notification {
+public class PNotification {
     public static Image INFO_ICON;//    = new Image(this.getClass().getResourceAsStream("info.png"));
     public static Image WARNING_ICON;// = new Image(this.getClass().getResourceAsStream("warning.png"));
     public static Image SUCCESS_ICON;// = new Image(this.getClass().getResourceAsStream("success.png"));
     public static Image ERROR_ICON;//   = new Image(this.getClass().getResourceAsStream("error.png"));
-    public static Image QUOTE_ICON;
+    public static Image PAUSE_ICON;
+    
     
     public final String       TITLE;
     public final String       MESSAGE;
@@ -57,13 +58,15 @@ public class Notification {
 
 
     // ******************** Constructors **************************************
-    public Notification(final String TITLE, final String MESSAGE) {
+    //public Notification() {}
+    
+    public PNotification(final String TITLE, final String MESSAGE) {
         this(TITLE, MESSAGE, null);
     }
-    public Notification(final String MESSAGE, final Image IMAGE) {
+    public PNotification(final String MESSAGE, final Image IMAGE) {
         this("", MESSAGE, IMAGE);
     }
-    public Notification(final String TITLE, final String MESSAGE, final Image IMAGE) {
+    public PNotification(final String TITLE, final String MESSAGE, final Image IMAGE) {
         this.TITLE   = TITLE;
         this.MESSAGE = MESSAGE;
         this.IMAGE   = IMAGE;
@@ -81,7 +84,7 @@ public class Notification {
         private static       double offsetX       = 0;
         private static       double offsetY       = 25;
         private static       double spacingY      = 5;
-        private static       Pos    popupLocation = Pos.TOP_RIGHT;
+        private static       Pos    popupLocation = Pos.CENTER;
         private static       Stage  stageRef      = null;
         private Duration              popupLifetime;
         private Stage                 stage;
@@ -105,7 +108,7 @@ public class Notification {
             WARNING_ICON = new Image(this.getClass().getResourceAsStream("/icons/notification/warning.png"));
             SUCCESS_ICON = new Image(this.getClass().getResourceAsStream("/icons/notification/success.png"));
             ERROR_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/error.png"));
-            QUOTE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/orange_quote_36.png"));//quote_24.png"));
+            PAUSE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_pause_32.png"));//quote_24.png"));
 
         }
 
@@ -126,9 +129,9 @@ public class Notification {
          * 					If null then the Notification will be positioned relative to the primary Screen.
          * @param POPUP_LOCATION  The default is TOP_RIGHT of primary Screen.
          */
-        public static void setPopupLocation(final Stage STAGE_REF, final Pos POPUP_LOCATION) {
+        public void setPopupLocation(final Stage STAGE_REF, final Pos POPUP_LOCATION) {
             if (null != STAGE_REF) {
-                INSTANCE.stage.initOwner(STAGE_REF);
+                //INSTANCE.stage.initOwner(STAGE_REF);
                 Notifier.stageRef = STAGE_REF;
             }
             Notifier.popupLocation = POPUP_LOCATION;
@@ -142,7 +145,8 @@ public class Notification {
          * @param OWNER
          */
         public static void setNotificationOwner(final Stage OWNER) {
-            INSTANCE.stage.initOwner(OWNER);
+        	if (INSTANCE.stage.getOwner() == null)
+        		INSTANCE.stage.initOwner(OWNER);
         }
 
         /**
@@ -202,17 +206,22 @@ public class Notification {
          * will fade out. The parameter is limited to values between 2 and 20 seconds.
          * @param POPUP_LIFETIME
          */
-        public void setPopupLifetime(final Duration POPUP_LIFETIME) {
-            popupLifetime = Duration.millis(clamp(2000, 20000, POPUP_LIFETIME.toMillis()));
+        public void setPopupLifetime(Duration POPUP_LIFETIME) {
+        	if (POPUP_LIFETIME == Duration.ZERO)
+        		popupLifetime = Duration.ZERO;
+        	else
+        		popupLifetime = Duration.millis(clamp(2000, 20_000_000, POPUP_LIFETIME.toMillis()));
+            //System.out.println("wait time : " + popupLifetime.toSeconds() + " secs");
         }
 
         /**
          * Show the given Notification on the screen
          * @param NOTIFICATION
          */
-        public void notify(final Notification NOTIFICATION) {
+        public void notify(final PNotification NOTIFICATION) {
+            //System.out.println("starting notify()");
             preOrder();
-            showPopup(NOTIFICATION);
+            showPopup(NOTIFICATION);          
         }
 
         /**
@@ -222,7 +231,8 @@ public class Notification {
          * @param IMAGE
          */
         public void notify(final String TITLE, final String MESSAGE, final Image IMAGE) {
-            notify(new Notification(TITLE, MESSAGE, IMAGE));
+            //System.out.println("goint to call notify(new Notification(TITLE, MESSAGE, IMAGE) in notify(1,2,3)");
+            notify(new PNotification(TITLE, MESSAGE, IMAGE));
         }
 
         /**
@@ -231,7 +241,7 @@ public class Notification {
          * @param MESSAGE
          */
         public void notifyInfo(final String TITLE, final String MESSAGE) {
-            notify(new Notification(TITLE, MESSAGE, Notification.INFO_ICON));
+            notify(new PNotification(TITLE, MESSAGE, PNotification.INFO_ICON));
         }
 
         /**
@@ -240,7 +250,7 @@ public class Notification {
          * @param MESSAGE
          */
         public void notifyWarning(final String TITLE, final String MESSAGE) {
-            notify(new Notification(TITLE, MESSAGE, Notification.WARNING_ICON));
+            notify(new PNotification(TITLE, MESSAGE, PNotification.WARNING_ICON));
         }
 
         /**
@@ -249,7 +259,7 @@ public class Notification {
          * @param MESSAGE
          */
         public void notifySuccess(final String TITLE, final String MESSAGE) {
-            notify(new Notification(TITLE, MESSAGE, Notification.SUCCESS_ICON));
+            notify(new PNotification(TITLE, MESSAGE, PNotification.SUCCESS_ICON));
         }
 
         /**
@@ -258,7 +268,7 @@ public class Notification {
          * @param MESSAGE
          */
         public void notifyError(final String TITLE, final String MESSAGE) {
-            notify(new Notification(TITLE, MESSAGE, Notification.ERROR_ICON));
+            notify(new PNotification(TITLE, MESSAGE, PNotification.ERROR_ICON));
         }
 
         /**
@@ -282,6 +292,7 @@ public class Notification {
             for (int i = 0 ; i < popups.size() ; i++) {
                 switch (popupLocation) {
                     case TOP_LEFT: case TOP_CENTER: case TOP_RIGHT: popups.get(i).setY(popups.get(i).getY() + height + spacingY); break;
+                    //case BOTTOM_LEFT: case BOTTOM_CENTER: case BOTTOM_RIGHT: popups.get(i).setY(popups.get(i).getY() + spacingY); break;
                     default: popups.get( i ).setY( popups.get( i ).getY() - height - spacingY);
                 }
             }
@@ -291,7 +302,9 @@ public class Notification {
          * Creates and shows a popup with the data from the given Notification object
          * @param NOTIFICATION
          */
-        private void showPopup(final Notification NOTIFICATION) {
+        private void showPopup(final PNotification NOTIFICATION) {
+            //System.out.println("starting showPopup(stage)");
+            
             Label title = new Label(NOTIFICATION.TITLE);
             title.getStyleClass().add("title");
 
@@ -326,13 +339,17 @@ public class Notification {
             KeyFrame kfBegin = new KeyFrame(Duration.ZERO, fadeOutBegin);
             KeyFrame kfEnd   = new KeyFrame(Duration.millis(500), fadeOutEnd);
 
-            Timeline timeline = new Timeline(kfBegin, kfEnd);
-            timeline.setDelay(popupLifetime);
-            timeline.setOnFinished(actionEvent -> Platform.runLater(() -> {
-                POPUP.hide();
-                popups.remove(POPUP);
-            }));
-
+            Timeline timeline = null;
+            // 2016-06-17 Enabled indefinite popup e.g. Pause popup
+            if (popupLifetime != Duration.ZERO) {	          	
+	            timeline = new Timeline(kfBegin, kfEnd);
+	            timeline.setDelay(popupLifetime);
+	            timeline.setOnFinished(actionEvent -> Platform.runLater(() -> {
+	                POPUP.hide();
+	                popups.remove(POPUP);
+	            }));
+            }
+            
             // Move popup to the right during fade out
             //POPUP.opacityProperty().addListener((observableValue, oldOpacity, opacity) -> popup.setX(popup.getX() + (1.0 - opacity.doubleValue()) * popup.getWidth()) );
 
@@ -344,7 +361,11 @@ public class Notification {
             }
 
             POPUP.show(stage);
-            timeline.play();
+		
+            if (popupLifetime != Duration.ZERO)
+            	timeline.play();
+            	
+           	//System.out.println();            	
         }
 
         private double getX() {
@@ -375,4 +396,10 @@ public class Notification {
             }
         }
     }
+    
+	public void destroy() {
+
+	    //this = null;
+	 
+	}
 }
