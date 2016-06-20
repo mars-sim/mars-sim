@@ -35,10 +35,10 @@ import javafx.stage.Stage;
 public class ScenarioEditorController implements Initializable {
     	
         @FXML Hyperlink carlfxHyperlink;
-        @FXML TableView<Scenario> chap1RecipeTableView;
-        @FXML TableView<Scenario> chap2RecipeTableView;
-        @FXML TableView<Scenario> chap3RecipeTableView;
-        @FXML TableView<Scenario> chap4RecipeTableView;
+        @FXML TableView<Scenario> recipeTableView1;
+        @FXML TableView<Scenario> recipeTableView2;
+        //@FXML TableView<Scenario> chap3RecipeTableView;
+        //@FXML TableView<Scenario> chap4RecipeTableView;
         Map<String, List<Scenario>> map = new HashMap<>();
         
         @Override
@@ -55,14 +55,14 @@ public class ScenarioEditorController implements Initializable {
                         //webEngine.load(rssFeed.link);
                     }
                 });
-                createColumns(chap1RecipeTableView);
-                chap1RecipeTableView.setItems(getChapterRecipes("1"));
-                createLaunchAppEvent(chap1RecipeTableView);
+                createColumns(recipeTableView1);
+                recipeTableView1.setItems(getChapterRecipes("1"));
+                createLaunchAppEvent(recipeTableView1);
                 
-                createColumns(chap2RecipeTableView);
-                chap2RecipeTableView.setItems(getChapterRecipes("2"));
-                createLaunchAppEvent(chap2RecipeTableView);
-                
+                createColumns(recipeTableView2);
+                recipeTableView2.setItems(getChapterRecipes("2"));
+                createLaunchAppEvent(recipeTableView2);
+/*                
                 createColumns(chap3RecipeTableView);
                 chap3RecipeTableView.setItems(getChapterRecipes("3"));
                 createLaunchAppEvent(chap3RecipeTableView);
@@ -70,6 +70,7 @@ public class ScenarioEditorController implements Initializable {
                 createColumns(chap4RecipeTableView);
                 chap4RecipeTableView.setItems(getChapterRecipes("4"));
                 createLaunchAppEvent(chap4RecipeTableView);
+*/
 	}
         private void createLaunchAppEvent(final TableView<Scenario> tableView) {
             
@@ -132,11 +133,11 @@ public class ScenarioEditorController implements Initializable {
             }
         }
         private void createColumns(TableView<Scenario> tableView) {
-            TableColumn<Scenario, String> recipeNameCol = new TableColumn<>("Title");
+            TableColumn<Scenario, String> recipeNameCol = new TableColumn<>("Settlement");
             recipeNameCol.setCellValueFactory(new PropertyValueFactory("name"));
             recipeNameCol.setPrefWidth( 100 );
 
-            TableColumn<Scenario, String> classNameCol = new TableColumn<>("Scenario Name");
+            TableColumn<Scenario, String> classNameCol = new TableColumn<>("Template");
             classNameCol.setCellValueFactory(new PropertyValueFactory("className"));
             classNameCol.setPrefWidth( 100 );
 

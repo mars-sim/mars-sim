@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="583.0" prefWidth="690.0" style="-fx-background-color:  rgba(0,0,0,0);" 
-xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" >
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="583.0" prefWidth="690.0" style="-fx-background-color:  rgba(0,0,0,0);" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <Text layoutX="27.0" layoutY="49.0" stroke="BLACK" text="Mars Simulation Project">
       <effect>
@@ -27,19 +30,25 @@ xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" >
         <Font size="14.0" />
       </font>
     </Text>
+   <Text fill="$x3" layoutX="590.0" layoutY="41.0" stroke="$x3" text="Version 3.1.0" />    
+    
     <TabPane id="MyTabPane" layoutX="27.0" layoutY="87.0" prefHeight="400.943359375" prefWidth="637.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
-        <Tab id="chap1tapheader" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}" text="Chapter 1">
+        <Tab id="chap1tapheader" closable="false" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}" text="Settlement">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="365.943359375" prefWidth="637.0" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}">
               <children>
                 <TableView fx:id="chap1RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="609.0">
                   <columns>
-                    <TableColumn prefWidth="75.0" text="Column X" />
-                    <TableColumn prefWidth="75.0" text="Column X" />
+                    <TableColumn prefWidth="131.0" text="Settlement" />
+                    <TableColumn prefWidth="228.0" text="Template" />
+                              <TableColumn prefWidth="67.0" text="# Settlers" />
+                              <TableColumn prefWidth="46.0" text="# Bots" />
+                              <TableColumn prefWidth="66.0" text="Latitude" />
+                              <TableColumn prefWidth="70.0" text="Longitude" />
                   </columns>
                 </TableView>
-                <Text layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="Scenario Editor">
+                <Text layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="Configuring Settlement ">
                   <fill>
                     <Color blue="0.000" green="0.720" red="1.000" fx:id="x1" />
                   </fill>
@@ -51,7 +60,7 @@ xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" >
             </AnchorPane>
           </content>
         </Tab>
-        <Tab text="Chapter 2">
+        <Tab closable="false" disable="true" text="Crew">
           <content>
             <AnchorPane id="Content" cache="true" cacheHint="SPEED" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
@@ -61,37 +70,7 @@ xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" >
                     <TableColumn prefWidth="75.0" text="Column X" />
                   </columns>
                 </TableView>
-                <Text fill="$x1" font="$x2" layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.5" text="Graphics with JavaFX" />
-              </children>
-            </AnchorPane>
-          </content>
-        </Tab>
-        <Tab text="Chapter 3">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <TableView fx:id="chap3RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="610.0">
-                  <columns>
-                    <TableColumn prefWidth="75.0" text="Column X" />
-                    <TableColumn prefWidth="75.0" text="Column X" />
-                  </columns>
-                </TableView>
-                <Text fill="$x1" font="$x2" layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="Media with JavaFX" />
-              </children>
-            </AnchorPane>
-          </content>
-        </Tab>
-        <Tab text="Chapter 4">
-          <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              <children>
-                <TableView fx:id="chap4RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="610.0">
-                  <columns>
-                    <TableColumn prefWidth="75.0" text="Column X" />
-                    <TableColumn prefWidth="75.0" text="Column X" />
-                  </columns>
-                </TableView>
-                <Text fill="$x1" font="$x2" layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="JavaFX on the Web" />
+                <Text fill="$x1" font="$x2" layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.5" text="Configuring Crew" />
               </children>
             </AnchorPane>
           </content>
@@ -110,11 +89,20 @@ xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" >
       </font>
     </Text>
     
-    <Text fill="$x3" layoutX="497.0" layoutY="565.0" stroke="$x3" text="mars-sim.sourceforge.net">
+    <Text fill="$x3" layoutX="478.0" layoutY="565.0" stroke="$x3" text="mars-sim.sourceforge.net">
       <font>
         <Font size="16.0" />
       </font>
     </Text>
-    <Hyperlink fx:id="carlfxHyperlink" font="$x4" layoutX="200.0" layoutY="59.0" text="Version 3.08" textFill="WHITE" />
+      <ButtonBar layoutX="128.0" layoutY="482.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="419.0">
+        <buttons>
+          <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Add" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="388.0" layoutY="18.0" mnemonicParsing="false" text="Remove" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="303.0" layoutY="18.0" mnemonicParsing="false" text="Start" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="388.0" layoutY="18.0" mnemonicParsing="false" text="Reload" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="133.0" layoutY="18.0" mnemonicParsing="false" text="Edit Crew" />
+        </buttons>
+      </ButtonBar>
+    <!--Hyperlink fx:id="carlfxHyperlink" font="$x4" layoutX="200.0" layoutY="59.0" text="Version 3.08" textFill="WHITE" />-->
   </children>
 </AnchorPane>

@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.Bloom?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.SepiaTone?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.javafx.controller.MainMenuController">
   <children>
       <BorderPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;">
          <left>
@@ -21,7 +29,7 @@
                <children>
                   <HBox maxWidth="300.0" minWidth="300.0" prefHeight="23.0" prefWidth="300.0">
                      <children>
-                        <Label text="Simulation Speed  1 : " textFill="#945f16" HBox.hgrow="ALWAYS">
+                        <Label textFill="#945f16" HBox.hgrow="ALWAYS">
 							<font>
 								<Font name="Corbel Bold" size="18.0" />
 			                </font>
@@ -32,7 +40,7 @@
                               <Insets left="20.0" />
                            </HBox.margin>
                         </Label>
-                        <Label fx:id="rotationRate" text="500" textFill="#945f16">
+                        <Label fx:id="rotationRate" textFill="#945f16">
                         	<font>
 								<Font name="Corbel Bold" size="18.0" />
 			                </font>
@@ -75,7 +83,7 @@
                      	<Bloom />                 
                      </effect>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="21.0" prefWidth="1024.0" text="Version 3.08" textAlignment="CENTER" textFill="#945f16">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="21.0" prefWidth="1024.0" text="Version 3.1.0" textAlignment="CENTER" textFill="#945f16">
                      <font>
                         <Font name="Verdana" size="15.0" />
                      </font>
@@ -92,7 +100,7 @@
          <right>
           <VBox id="menuOptionBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="350.0" prefHeight="300.0" spacing="15.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER_LEFT">
                <children>
-                  <Label alignment="CENTER" text="MAIN MENU" textFill="#945f16">
+                  <Label alignment="CENTER" textFill="#945f16">
                      <font>
                         <Font name="Corbel Bold" size="28.0" />
                      </font>

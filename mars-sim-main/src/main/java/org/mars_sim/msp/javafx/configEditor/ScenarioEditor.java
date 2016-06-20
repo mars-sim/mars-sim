@@ -11,6 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -147,13 +148,13 @@ public class ScenarioEditor extends Application{
         
         root.getChildren().add(closeApp);
 
-       
-       
-       
-       primaryStage.setScene(scene);
-       primaryStage.show();
-       previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY()); 
+        primaryStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+        
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        previousLocation = new Point2D(primaryStage.getX(), primaryStage.getY()); 
     }
+    
     @Override
     public void stop() throws Exception {
         super.stop();
