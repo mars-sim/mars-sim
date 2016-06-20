@@ -13,16 +13,16 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.steelseries.extras.Led;
-import org.mars_sim.msp.steelseries.gauges.DigitialRadial;
-import org.mars_sim.msp.steelseries.gauges.Radial;
-import org.mars_sim.msp.steelseries.tools.BackgroundColor;
-import org.mars_sim.msp.steelseries.tools.ColorDef;
-import org.mars_sim.msp.steelseries.tools.KnobStyle;
-import org.mars_sim.msp.steelseries.tools.LcdColor;
-import org.mars_sim.msp.steelseries.tools.LedColor;
-import org.mars_sim.msp.steelseries.tools.Orientation;
-import org.mars_sim.msp.steelseries.tools.TickmarkType;
+import org.mars_sim.msp.ui.steelseries.extras.Led;
+import org.mars_sim.msp.ui.steelseries.gauges.DigitialRadial;
+import org.mars_sim.msp.ui.steelseries.gauges.Radial;
+import org.mars_sim.msp.ui.steelseries.tools.BackgroundColor;
+import org.mars_sim.msp.ui.steelseries.tools.ColorDef;
+import org.mars_sim.msp.ui.steelseries.tools.KnobStyle;
+import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
+import org.mars_sim.msp.ui.steelseries.tools.LedColor;
+import org.mars_sim.msp.ui.steelseries.tools.Orientation;
+import org.mars_sim.msp.ui.steelseries.tools.TickmarkType;
 
 
 public class TestLED {

@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import org.mars_sim.msp.astroarts.OrbitViewer;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;

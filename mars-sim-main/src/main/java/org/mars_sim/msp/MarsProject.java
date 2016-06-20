@@ -9,9 +9,9 @@ package org.mars_sim.msp;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.javafx.MarsProjectFX;
 import org.mars_sim.msp.javafx.MarsProjectFX.SimulationTask;
+import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
