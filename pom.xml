@@ -7,7 +7,7 @@
 	<groupId>net.sf</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.08-SNAPSHOT</version>
+	<version>3.1.0-SNAPSHOT</version>
 	<name>mars-sim</name>
 	<url>http://mars-sim.sourceforge.net/site</url>
 	<inceptionYear>2009</inceptionYear>
