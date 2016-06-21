@@ -165,5 +165,21 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	    	<artifactId>mars-sim-network</artifactId>
 	    	<version>${project.version}</version>
 	    </dependency>
+		<dependency>
+			<groupId>insidefx.undecorator</groupId>
+			<artifactId>undecorator</artifactId>
+			<version>0.1.0</version>
+		</dependency>	    
 	</dependencies>
+	
+	<repositories>
+	    <repository>
+	        <id>jcenter</id>
+	        <url>http://jcenter.bintray.com/</url>
+	    </repository>
+	    <repository>
+	        <id>in-sidefx</id>
+	        <url>https://dl.bintray.com/in-sidefx/maven/</url>
+	    </repository>
+	</repositories>
 </project>

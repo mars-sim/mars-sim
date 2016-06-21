@@ -13,24 +13,26 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<VBox pickOnBounds="true" 
-maxHeight="450" maxWidth="1024" 
-minHeight="450.0" minWidth="1024.0" 
-prefHeight="450.0" prefWidth="1024.0"
-styleClass="clientarea-background"
-stylesheets="../css/configEditorFXOrange.css"
+<VBox fx:id="rootClientArea" 
+maxHeight="370" maxWidth="1024" minHeight="370.0" minWidth="1024.0"  prefHeight="370.0" prefWidth="1024.0"
+styleClass="clientarea-background" stylesheets="@demoapp.css"
 xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-   <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="20.0" prefWidth="1024.0" style="-fx-background-color: transparent;" visible="false">
+    <AnchorPane id="title" pickOnBounds="false"  style="-fx-background-color: #E5AB00; -fx-text-fill: white;" 
+    maxHeight="27" maxWidth="4096" minHeight="27.0" minWidth="1024" prefHeight="27.0" prefWidth="1024"
+    AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" >
       <children>
       </children>
     </AnchorPane>
-    <AnchorPane id="anchorRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+    <!-- AnchorPane id="anchorRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+    prefHeight="300.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"-->
+    <AnchorPane id="anchorRoot" pickOnBounds="false" prefHeight="300.0" prefWidth="4096" 
+        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" >
     <children>
     </children>
     </AnchorPane>
   </children>
    <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+      <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
    </padding>
 </VBox>

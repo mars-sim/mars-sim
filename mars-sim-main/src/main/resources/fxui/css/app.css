@@ -1,0 +1,73 @@
+/* 
+    Document   : Undecorator
+    Created on : Dec 19, 2014
+    Author     : In-SideFX
+    Description:
+        Demo app purpose
+*/
+
+.logo-label{
+    -fx-font-weight:bold;
+    -fx-text-fill: whitesmoke;
+}
+.clientarea-background{
+    -fx-background-color: transparent;
+}
+.undecorator-label-titlebar{
+    -fx-font-weight:bold;
+    -fx-text-fill: whitesmoke;
+}
+/*
+    The Stage background.
+    Currently a Rectangle node
+*/
+.decoration-background{
+    /*    -fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 25% 25%, radius 50%, reflect, #eeeeee88, #aaaaaa88 75%, gray);
+    */
+    -fx-stroke-width: 0;
+    -fx-arc-width:7px;
+    -fx-arc-height:7px;
+}
+/*
+    Defines the rectangle responsible for the shadow
+*/
+.decoration-shadow{
+    -fx-fill: black;
+    -fx-stroke-width: 0;
+    -fx-arc-width:7px;
+    -fx-arc-height:7px;
+}
+/*
+ Used to declare the definition of stage resize zone
+*/
+.decoration-resize{
+    -fx-fill:null;  /* avoid mouse events in the middle*/
+    -fx-border-color: transparent;
+    -fx-border-width: 7;
+    -fx-border-insets: 0;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+     -fx-background-color:  #2e569f;
+}
+/* All tabs transparent */
+.tab-pane > .tab-header-area > .headers-region > .tab:top {
+    -fx-background-color: transparent;
+    -fx-text-base-color: whitesmoke;
+    -fx-font-weight: bold;
+}
+/* Except Selected tabs */
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-border-width: 1, 1;
+    -fx-border-color: -fx-focus-color, -fx-faint-focus-color;
+    -fx-border-insets: -4 -4 -6 -5, -2 -2 -5 -3;
+    -fx-border-radius: 2, 1;
+    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-background;
+    -fx-background-insets: 0 1 1 0, 1 2 0 1, 2 3 0 2;
+    -fx-text-base-color: #2951a0;
+}
+/* Hide focus feedback on disabled tab */
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:disabled .focus-indicator {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}

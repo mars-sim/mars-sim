@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.web.*?>
+
+<AnchorPane fx:id="rootClientArea" minHeight="200.0" minWidth="300.0" prefHeight="400.0" prefWidth="600.0" 
+styleClass="clientarea-background" stylesheets="@demoapp.css" 
+xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+    <AnchorPane id="" pickOnBounds="false" prefHeight="50.0" prefWidth="600.0" style="-fx-background-color: #2e569f;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <TabPane id="draggableNode" fx:id="tabPane" layoutY="12.0" tabClosingPolicy="UNAVAILABLE" tabMaxHeight="17.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="22.0">
+        <tabs>
+            <Tab id="tabtransparent" closable="false" disable="true" style="-fx-background-color: transparent;" text="       ">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+          <Tab text="Features">
+               <content>
+        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="173.0" prefWidth="214.0">
+                     <children>
+                        <Slider fx:id="sliderOpacity" blockIncrement="0.1" layoutX="138.0" layoutY="117.0" max="1.0" min="0.2" prefHeight="16.0" prefWidth="142.0" value="1.0" />
+                        <Label layoutX="10.0" layoutY="115.0" text="Client Area opacity:" />
+                        <Label layoutX="7.0" layoutY="9.0" prefHeight="91.0" prefWidth="584.0" text="All graphical settings are exposed in the undecorator.css. Since Undecorator in now transparent, your client area could also be:" wrapText="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+          <Tab text="Stages Samples">
+               <content>
+        <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="281.0" prefWidth="640.0">
+          <children>
+            <Button layoutX="14.0" layoutY="24.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="175.0" text="Show Utility stage" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="24.0" />
+            <Button layoutX="14.0" layoutY="62.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="175.0" text="Show non resizable stage" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="62.0" />
+          </children>
+        </AnchorPane>
+               </content>
+            </Tab>
+            <Tab text="Code">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
+                     <children>
+                        <TextArea editable="false" text="&#10;/**&#10; * Code snippet&#10; * @author in-sideFX&#10; */&#10;public class UndecoratorDemoSkeleton extends Application {&#10;&#10;    Stage primaryStage;&#10;&#10;    @Override&#10;    public void start(final Stage stage) throws Exception {&#10;        primaryStage = stage;&#10;        primaryStage.setTitle(&quot;Undecorator Stage&quot;);&#10;&#10;        // The UI (Client Area) to display&#10;        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(&quot;ClientAreaNew.fxml&quot;));&#10;        fxmlLoader.setController(this);&#10;        Region root = (Region) fxmlLoader.load();&#10;&#10;        // The Undecorator as a Scene&#10;        final UndecoratorScene undecoratorScene = new UndecoratorScene(primaryStage, root);&#10;        &#10;        // Enable fade transition&#10;        undecoratorScene.setFadeInTransition();&#10;&#10;        /*&#10;         * Fade out transition on window closing request&#10;         */&#10;        primaryStage.setOnCloseRequest(new EventHandler&lt;WindowEvent&gt;() {&#10;            @Override&#10;            public void handle(WindowEvent we) {&#10;                we.consume();   // Do not hide yet&#10;                undecoratorScene.setFadeOutTransition();&#10;            }&#10;        });&#10;&#10;        primaryStage.setScene(undecoratorScene);&#10;&#10;        primaryStage.toFront();&#10;        primaryStage.show();&#10;    }&#10;&#10;    public static void main(String[] args) {&#10;        launch(args);&#10;    }&#10;}&#10;" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0" />
+                        <Hyperlink fx:id="hyperlink" layoutX="468.0" layoutY="21.0" text="more detais here..." AnchorPane.rightAnchor="5.0" />
+                        <Label layoutX="14.0" layoutY="21.0" text="How to enable it into your project:" AnchorPane.leftAnchor="14.0">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </TabPane>
+   </children>
+</AnchorPane>

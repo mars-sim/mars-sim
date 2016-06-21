@@ -10,7 +10,10 @@ import org.mars_sim.msp.javafx.MainMenu;
 import org.mars_sim.msp.javafx.MarsProjectFX;
 //import org.mars_sim.msp.javafx.WaitIndicator;
 import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
-import org.mars_sim.msp.javafx.undecorator.Undecorator;
+//import org.mars_sim.msp.javafx.undecorator.Undecorator;
+import insidefx.undecorator.Undecorator;
+import insidefx.undecorator.UndecoratorScene;
+
 import org.mars_sim.msp.networking.MultiplayerClient;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.configeditor.CrewEditor;
@@ -34,6 +37,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -45,6 +49,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -117,6 +122,9 @@ public class ScenarioConfigEditorFX {
 	private JScrollPane settlementScrollPane;
 	private TableCellEditor tableCellEditor;
 
+	@FXML
+	TabPane tabPane;
+	   
 	private Label errorLabel;
 	private Button startButton;
 	private Button addButton;
@@ -208,7 +216,7 @@ public class ScenarioConfigEditorFX {
 
 		try {
 			fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ConfigEditorFX.fxml"));//ClientArea.fxml"));
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ConfigEditorFX.fxml")); //ClientArea.fxml")); //
             fxmlLoader.setController(this);
 			parent = (Parent) fxmlLoader.load();
 		} catch (IOException e) {
@@ -220,13 +228,40 @@ public class ScenarioConfigEditorFX {
 		Platform.runLater(() -> {
 
 			stage = new Stage();
+	 	   	//2016-02-07 Added calling setMonitor()
+	 	   	mainMenu.setMonitor(stage);
 			stage.setTitle("Mars Simulation Project - Configuration Editor");
 		    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 	        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 
-			Undecorator undecorator = new Undecorator(stage, (Region) parent);
-			undecorator.getStylesheets().add("/undecorator/skin/undecorator.css");
-			
+		    Region root = (Region) parent;
+		       // The Undecorator as a Scene
+	        final UndecoratorScene undecoratorScene = new UndecoratorScene(stage, root);
+	        
+	        // Overrides defaults
+	        undecoratorScene.addStylesheet("/fxui/css/app.css");
+		    undecoratorScene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");
+
+	        // Enable fade transition
+	        undecoratorScene.setFadeInTransition();
+
+	        // Optional: Enable this node to drag the stage
+	        // By default the root argument of Undecorator is set as draggable
+	        //Node node = root.lookup("#draggableNode");  // Enable TabPane to drag the stage
+	        //undecoratorScene.setAsStageDraggable(stage, tabPane);
+
+	        /*
+	         * Fade out transition on window closing request
+	         */
+	        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+	            @Override
+	            public void handle(WindowEvent we) {
+	                we.consume();   // Do not hide yet
+	                undecoratorScene.setFadeOutTransition();
+	            }
+	        });
+
+		        
 			AnchorPane anchorpane = null;
 			if ( parent.lookup("#anchorRoot") == null)
 				System.out.println("Warning: anchorRoot is not found");
@@ -240,82 +275,44 @@ public class ScenarioConfigEditorFX {
 		    AnchorPane.setRightAnchor(bp, 5.0);
 		    anchorpane.getChildren().add(bp);
 
-			scene = new Scene(undecorator);
-			scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");
+			//scene = new Scene(undecorator);
 			//undecorator.setOnMousePressed(buttonOnMousePressedEventHandler);
 
 			// Transparent scene and stage
-			scene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
+		    //undecoratorScene.setFill(Color.TRANSPARENT); // needed to eliminate the white border
 
-			stage.initStyle(StageStyle.TRANSPARENT);
+			//stage.initStyle(StageStyle.TRANSPARENT);
 			//stage.setMinWidth(undecorator.getMinWidth());
 			//stage.setMinHeight(undecorator.getMinHeight());
-
-			stage.setScene(scene);
-			stage.sizeToScene();
-			stage.toFront();
-
 	        stage.centerOnScreen();
-	        stage.setResizable(true);
+	        stage.setResizable(false);
 	 	   	stage.setFullScreen(false);
-	        //stage.setTitle(TITLE);
-	 	   	
-	 	   	//2016-02-07 Added calling setMonitor()
-	 	   	mainMenu.setMonitor(stage);
-
-	 	   	stage.show();
+	        stage.setScene(undecoratorScene);
+			stage.sizeToScene();
+	        stage.toFront();
+	        stage.show();
+		    
 
 	    	stage.setOnCloseRequest(e -> {
 				boolean isExit = mainMenu.getScreensSwitcher().exitDialog(stage);
 				e.consume(); // need e.consume() in order to call setFadeOutTransition() below
 				if (isExit) {
 					 borderAll.setOpacity(0);
-					 undecorator.setFadeOutTransition();
+					 //undecorator.setFadeOutTransition();
 					 if (crewEditorFX != null || isCrewEditorOpen)
 						 crewEditorFX.getStage().close();
 					 Platform.exit();
 				}
 			});
-	/*
-			// Fade transition on window closing request
-			stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-				 @Override
-				 public void handle(WindowEvent we) {
-					 swingNode.setOpacity(0);
-					 createButton.setOpacity(0);
-					 addButton.setOpacity(0);
-					 refreshDefaultButton.setOpacity(0);
-					 alphaButton.setOpacity(0);
-					 removeButton.setOpacity(0);
-					 //titlePane.setOpacity(0);
-					 topVB.setOpacity(0);
-					 we.consume(); // Do not hide
-					 undecorator.setFadeOutTransition();
-					 if (crewEditorFX != null)
-						 crewEditorFX.getStage().close();
-				}
-			});
-	*/
+
+	    	
+	    	
+	    	
 		});
 
 
 	}
 
-/*
-	  EventHandler<MouseEvent> buttonOnMousePressedEventHandler =
-		        new EventHandler<MouseEvent>() {
-
-		        @Override
-		        public void handle(MouseEvent t) {
-		            orgSceneX = t.getSceneX();
-		            orgSceneY = t.getSceneY();
-		            orgTranslateX = ((Button)(t.getSource())).getTranslateX();
-		            orgTranslateY = ((Button)(t.getSource())).getTranslateY();
-
-		            ((Button)(t.getSource())).toFront();
-		        }
-		    };
-*/
 
 	//private Parent createEditor() {
 	@SuppressWarnings("restriction")
@@ -523,7 +520,7 @@ public class ScenarioConfigEditorFX {
 				//waiti = new WaitIndicator();
 					
 				setConfiguration();
-		        scene.setCursor(Cursor.WAIT); //Change cursor to wait style	  
+		        //scene.setCursor(Cursor.WAIT); //Change cursor to wait style	  
 		        
 				cstage = new Stage();
 				CompletableFuture<?> future = CompletableFuture
@@ -550,7 +547,7 @@ public class ScenarioConfigEditorFX {
 
 				waiti.getStage().close();							
 */					
-				scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
+				//scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 								
 			} //end of if (!hasError)
 

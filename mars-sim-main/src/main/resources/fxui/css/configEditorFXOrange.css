@@ -5,22 +5,22 @@
  * @author Manny Kung
  */
 
-/* The Stage background. */
+/* The Stage background. 
 .decoration-background{
 	-fx-fill: radial-gradient(focus-angle 45deg, focus-distance 20%, center 25% 25%, radius 50%, reflect, #eeeeee88, #aaaaaa88 75%, gray);
 	-fx-stroke-width: 0;
 	-fx-arc-width:20px;
 	-fx-arc-height:20px;
 }
-
-/* Defines the rectangle responsible for the shadow */
+*/
+/* Defines the rectangle responsible for the shadow 
 .decoration-shadow{
 	-fx-fill: black;
 	-fx-stroke-width: 0;
 	-fx-arc-width:20px;
 	-fx-arc-height:20px;
 }
-
+*/
 .button {
     -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
@@ -83,27 +83,27 @@
 	-fx-text-fill: #E5AB00;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
 }
 
 #playerLabel{
 	-fx-text-fill: #E5AB00;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
 }
 
 #gameModeLabel {
 	-fx-text-fill: #E5AB00;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
 }
 
 #titleLabel {
 	-fx-text-fill: #E5AB00;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
 }
 

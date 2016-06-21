@@ -599,7 +599,7 @@ public class MainWindow extends JComponent {
 			clock.autosaveSimulation();
 		}
 		else {
-			desktop.disposeAnnouncementWindow();
+			//desktop.disposeAnnouncementWindow();
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
