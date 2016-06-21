@@ -45,6 +45,8 @@ import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -82,6 +84,7 @@ import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -1070,7 +1073,7 @@ public class MainScene {
 	/**
 	 * Performs the process of loading a simulation.
 	 * @param type
-	 */
+	 
 	public void loadSimulationProcess(int type) {
 		logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 
@@ -1121,9 +1124,9 @@ public class MainScene {
 			fileLocn = null;
 		}
 
-		desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
+		showLoadingStage();
+		//desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
 		desktop.clearDesktop();
-
 		
 		//Simulation.instance().loadSimulation(fileLocn);
 		logger.info("");
@@ -1145,8 +1148,7 @@ public class MainScene {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
-		
+		}	
 		
 		try {
 			SwingUtilities.invokeLater(() -> {
@@ -1159,36 +1161,31 @@ public class MainScene {
 			logger.severe(e.getMessage());
 			e.printStackTrace(System.err);
 		}
-
 		
 		// load UI config
 		//UIConfig.INSTANCE.parseFile();
 
-		desktop.disposeAnnouncementWindow();
-
+		//desktop.disposeAnnouncementWindow();
 		
 		// 2016-03-22 uncheck all tool windows in the menu bar
         Collection<ToolWindow> toolWindows = desktop.getToolWindowsList();   
         Iterator<ToolWindow> i = toolWindows.iterator();
 		while (i.hasNext()) {
 			menuBar.uncheckToolWindow(i.next().getToolName());
-		}
-		
-/*
- * 		// Note: it should save and load up the previous desktop setting instead of the Guide Tool
-		// Open Guide tool after loading.
-        desktop.openToolWindow(GuideWindow.NAME);
-        GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-    	int Xloc = (int)((stage.getScene().getWidth() - ourGuide.getWidth()) * .5D);
-		int Yloc = (int)((stage.getScene().getHeight() - ourGuide.getHeight()) * .5D);
-		ourGuide.setLocation(Xloc, Yloc);
-        ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$	
-*/
-		
-		unpauseSimulation();
-		
-	}
+		}	
 
+  		// Note: it should save and load up the previous desktop setting instead of the Guide Tool
+		// Open Guide tool after loading.
+        //desktop.openToolWindow(GuideWindow.NAME);
+        //GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+    	//int Xloc = (int)((stage.getScene().getWidth() - ourGuide.getWidth()) * .5D);
+		//int Yloc = (int)((stage.getScene().getHeight() - ourGuide.getHeight()) * .5D);
+		//ourGuide.setLocation(Xloc, Yloc);
+        //ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$	
+	
+		unpauseSimulation();
+	}
+*/
 
    /*
     * Loads settlement data from a default saved sim
@@ -1282,6 +1279,8 @@ public class MainScene {
 	public void saveSimulation(int type) {
 		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
+		showSavingStage();
+		
 		// 2015-12-18 Check if it was previously on pause
 		boolean previous = Simulation.instance().getMasterClock().isPaused();
 		// Pause simulation.
@@ -1291,21 +1290,62 @@ public class MainScene {
 		}
 		desktop.getTimeWindow().enablePauseButton(false);
 
+		
+		//2016-06-20 Added Service Worker for calling up the saving indicator
 
+		Service<Void> service = new Service<Void>() {
+	        @Override
+	        protected Task<Void> createTask() {
+	            return new Task<Void>() {           
+	                @Override
+	                protected Void call() throws Exception {
+	                    //Background work               
+						saveSimulationProcess(type);
+						
+	                    final CountDownLatch latch = new CountDownLatch(1);
+	                    Platform.runLater(() -> {	                        
+                 			try {
+                 				while (Simulation.instance().getMasterClock().isSavingSimulation()) {
+                    				//FX Stuff done here
+                    				//System.out.println("sleep");
+	                        		//showSavingStage();
+                    				TimeUnit.MILLISECONDS.sleep(500L);
+                 				}
+                			} catch (InterruptedException e) {
+                				e.printStackTrace();
+                			} finally{
+                				//System.out.println("finally");
+                                latch.countDown();
+                                hideSavingStage();
+                            }
+	                    });
+	                    latch.await();                      
+	                    //Keep with the background work
+
+	                    return null;
+	                }
+	            };
+	        }
+	    };
+	    service.start();
+/*		
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
+		
 				@Override
 				public void run() {
 					Platform.runLater(() -> {
+						//showSavingStage();
 						saveSimulationProcess(type);
-					} );
+						//hideSavingStage();
+					});
 				}
 			};
 			saveSimThread.start();
 		} else {
 			saveSimThread.interrupt();
 		}
-
+*/
 
 		// 2015-12-18 Check if it was previously on pause
 		boolean now = Simulation.instance().getMasterClock().isPaused();
@@ -1322,6 +1362,8 @@ public class MainScene {
 		}
 		desktop.getTimeWindow().enablePauseButton(true);
 
+		//desktop.disposeAnnouncementWindow();
+		//hideSavingStage();
 	}
 
 	/**
@@ -1331,7 +1373,8 @@ public class MainScene {
 	private void saveSimulationProcess(int type) {
 		//logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 
-
+		//showSavingStage();
+		
 		File fileLocn = null;
 		String dir = null;
 		String title = null;
@@ -1361,15 +1404,17 @@ public class MainScene {
 				return;
 		}
 
+		//showSavingStage();
+		
 		MasterClock clock = Simulation.instance().getMasterClock();
 
 		if (type == AUTOSAVE) {
-			desktop.disposeAnnouncementWindow();
-			desktop.openAnnouncementWindow(Msg.getString("MainScene.autosavingSim")); //$NON-NLS-1$
+			//desktop.disposeAnnouncementWindow();			
+			//desktop.openAnnouncementWindow(Msg.getString("MainScene.autosavingSim")); //$NON-NLS-1$
 			clock.autosaveSimulation();
 		} else if (type == SAVE_AS || type == DEFAULT) {
-			desktop.disposeAnnouncementWindow();
-			desktop.openAnnouncementWindow(Msg.getString("MainScene.savingSim")); //$NON-NLS-1$
+			//desktop.disposeAnnouncementWindow();
+			//desktop.openAnnouncementWindow(Msg.getString("MainScene.savingSim")); //$NON-NLS-1$
 			clock.saveSimulation(fileLocn);
 		}
 
@@ -1386,7 +1431,8 @@ public class MainScene {
 */
 
 		//desktop.disposeAnnouncementWindow();
-
+		
+		//hideSavingStage();
 	}
 
 	
@@ -1435,6 +1481,7 @@ public class MainScene {
 	 * Pauses the simulation.
 	 */
 	public void pauseSave() {
+		//showSavingStage();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		Simulation.instance().getMasterClock().setPaused(true);
 	}
@@ -1445,6 +1492,7 @@ public class MainScene {
 	public void unpauseSave() {
 		Simulation.instance().getMasterClock().setPaused(false);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
+		//hideSavingStage();
 	}
 
 	/**
@@ -1471,7 +1519,7 @@ public class MainScene {
 	 */
 	public void exitSimulation() {
 		//logger.info("MainScene's exitSimulation() is on " + Thread.currentThread().getName() + " Thread");
-		desktop.openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
+		//desktop.openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
 
 		logger.info("Exiting simulation");
 
@@ -1647,7 +1695,7 @@ public class MainScene {
 		Optional<ButtonType> result = alert.showAndWait();
 
 		if (result.get() == buttonTypeOne) {
-			desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
+			//desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			saveOnExit();
 			endSim();
 			exitSimulation();
@@ -1674,8 +1722,8 @@ public class MainScene {
 	 */
 	public void saveOnExit() {
 		//logger.info("MainScene's saveOnExit() is on " + Thread.currentThread().getName() + " Thread");
-		desktop.disposeAnnouncementWindow();
-		desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
+		//desktop.disposeAnnouncementWindow();
+		//desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
 		// Save the UI configuration.
 		UIConfig.INSTANCE.saveFile(this);
 
@@ -1887,7 +1935,7 @@ public class MainScene {
 	 		loadingCircleStage.setScene(scene);
 	 		loadingCircleStage.hide();
 	 	}
- 		else if (title.contains("Saving") || title.contains("Autosaving")) {
+ 		else if (title.contains("Saving")) {// || title.contains("Autosaving")) {
  			savingCircleStage = new Stage();
  			savingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 	 
@@ -1934,13 +1982,15 @@ public class MainScene {
  	public void showSavingStage() {
 		Platform.runLater(() -> {
 			savingCircleStage.show();
-			//savingCircleStage.requestFocus();
-			
+			//System.out.println("showSavingStage()");//savingCircleStage.requestFocus();		
 		});		
  	}
  	
  	public void hideSavingStage() {
- 		Platform.runLater(() -> savingCircleStage.hide());
+ 		Platform.runLater(() -> {
+ 			savingCircleStage.hide();	
+			//System.out.println("hideSavingStage()");
+ 		});
  	}
 
  	

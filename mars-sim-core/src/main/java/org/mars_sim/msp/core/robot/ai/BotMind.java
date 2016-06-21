@@ -69,6 +69,13 @@ implements Serializable {
         robotJob = null;
         jobLock = false;
 
+        // Define the boundary in Sense-Act-Plan (Robot control methodology
+        // Sense - gather information using the sensors
+        // Plan - create a world model using all the information, and plan the next move
+        // Act
+        // SPA is used in iterations: After the acting phase, the sensing phase, and the entire cycle, is repeated.
+        // https://en.wikipedia.org/wiki/Sense_Plan_Act
+        
         // Set the MBTI personality type.
         //personality = new PersonalityType(person);
 

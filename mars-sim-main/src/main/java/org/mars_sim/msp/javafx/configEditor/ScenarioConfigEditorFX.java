@@ -220,7 +220,7 @@ public class ScenarioConfigEditorFX {
 		Platform.runLater(() -> {
 
 			stage = new Stage();
-			stage.setTitle("Mars Simulation Project v3.08 - Configuration Editor");
+			stage.setTitle("Mars Simulation Project - Configuration Editor");
 		    stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 	        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
 

@@ -298,7 +298,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @return true if saving simulation.
      */
     public boolean isSavingSimulation() {
-        return saveSimulation;
+        return saveSimulation || autosaveSimulation;
     }
 
     /**

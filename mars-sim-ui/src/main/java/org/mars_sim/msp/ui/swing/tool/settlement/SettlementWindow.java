@@ -118,6 +118,7 @@ extends ToolWindow {
 	    //mainPanel.setOpaque(false);
 	    //mainPanel.setBackground(new Color(0,0,0,128));
 		setContentPane(mainPanel);
+		
 
 		subPanel = new JPanel(new BorderLayout());
 	    mainPanel.add(subPanel, BorderLayout.CENTER);

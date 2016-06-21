@@ -61,16 +61,19 @@ extends JInternalFrame {
 	 * @param announcement the announcement text.
 	 */
 	public void setAnnouncement(String announcement) {
-		announcementLabel.setText(announcement);
-		
+
 		if (desktop.getMainScene() != null) {	
-			if (announcement.contains("Saving") || announcement.contains("Autosaving"))
-				desktop.getMainScene().showSavingStage();
+			if (announcement.contains("Saving") || announcement.contains("Autosaving")) {
+				//desktop.getMainScene().showSavingStage();
 			//else if (announcement.contains("Paused"))
 			//	desktop.getMainScene().showPausedStage();
-			else if (announcement.contains("Loading"))
+			} else if (announcement.contains("Loading"))
 				desktop.getMainScene().showLoadingStage();
 		}
+		else {
+			announcementLabel.setText(announcement);			
+		}
+		
 /*		
 		JPanel p = new JPanel();
 		

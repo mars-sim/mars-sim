@@ -151,6 +151,7 @@ public class MarsProjectFX extends Application  {
 
         // general text antialiasing
         System.setProperty("swing.aatext", "true");
+        
         //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");

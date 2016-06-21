@@ -27,5 +27,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="D:/660s/java Jun 2016/nimrodlf-1.2d.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

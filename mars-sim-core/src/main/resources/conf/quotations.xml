@@ -2,8 +2,10 @@
 <!DOCTYPE quotation-list SYSTEM "conf/dtd/quotations.dtd">
 
   <!--Sources : -->
-  <!--1. https://en.wikiquote.org/wiki/Robert_A._Heinlein -->
-  <!--2. https://en.wikiquote.org/wiki/Wernher_von_Braun -->
+  <!--	1. https://en.wikiquote.org/wiki/Robert_A._Heinlein 
+		2. https://en.wikiquote.org/wiki/Wernher_von_Braun 
+		3. https://en.wikiquote.org/wiki/Albert_Einstein 
+-->
 
 
 <quotation-list>
@@ -103,6 +105,35 @@
   
   
   
+  <!-- Albert Einstein --> 
+  
+
+	<quotation name="Albert Einstein" text="A happy man is too satisfied with the present to dwell too much on the future." />
+
+	<quotation name="Albert Einstein" text="Unthinking respect for authority is the greatest enemy of truth." />
+
+	<quotation name="Albert Einstein" text="Our entire much-praised technological progress, and civilization generally, could be compared to an axe in the hand of a pathological criminal." />
+
+	<quotation name="Albert Einstein" text="Nature hides her secret because of her essential loftiness, but not by means of ruse." />
+
+	<quotation name="Albert Einstein" text="Life is like riding a bicycle. To keep your balance you must keep moving." />
+
+	<quotation name="Albert Einstein" text="Imagination is more important than knowledge. For knowledge is limited, whereas imagination embraces the entire world, stimulating progress, giving birth to evolution. It is, strictly speaking, a real factor in scientific research." />
+
+	<quotation name="Albert Einstein" text="Everyone sits in the prison of his own ideas; he must burst it open, and that in his youth, and so try to test his ideas on reality." />
+
+	<quotation name="Albert Einstein" text="It can scarcely be denied that the supreme goal of all theory is to make the irreducible basic elements as simple and as few as possible without having to surrender the adequate representation of a single datum of experience." />
+
+	<quotation name="Albert Einstein" text="Why does this magnificent applied science which saves work and makes life easier bring us so little happiness? The simple answer runs: Because we have not yet learned to make sensible use of it." />
+
+	<quotation name="Albert Einstein" text="Great spirits have always encountered violent opposition from mediocre minds. The mediocre mind is incapable of understanding the man who refuses to bow blindly to conventional prejudices and chooses instead to express his opinions courageously and honestly." />
+
+	<quotation name="Albert Einstein" text="I am very smart. But not as strong-hearted as all the workers on earth for he toils endlessly and does it all to feed his family while I do it merely for solving an impossible puzzle." />
+
+	<quotation name="Albert Einstein" text="It is not enough to teach a man a specialty. Through it he may become a kind of useful machine but not a harmoniously developed personality. It is essential...(for him to) acquire an understanding of a lively feeling for values...a vivid sense of the beautiful and of the morally good...to understand the motives of human beings, their illusions, and their sufferings...a proper relationship to individual fellow-men and to the community." />
+
+   
+  
   <!-- Other authors --> 
   
 	<quotation name="Robert Louis Steenson" text="The Dog, and the Plough, and the Hunter, and all. And the star of the sailor, and Mars, These shone in the sky, and the pail by the wall. Would be half full of water and stars." />
@@ -115,6 +146,8 @@
 	<quotation name="Alan M. Turing" text="The view that machines cannot give rise to surprises is due...to a fallacy to which philosophers and mathematicians are particularly subject...the assumption that as soon as a fact is presented to a mind all consequences of that fact spring into the mind simultaneously with it. It is a very useful assumption under many circumstances, but one too easily forgets that it is false." />
  
 	<quotation name="Kurt Gödel" text="I believe that mechanism in biology is a prejudice of our time which will be disproved...in a mathematical theorem...that the formation within geological time of a human body by the laws of physics..., starting from a random distribution of the elementary particles and the field, is as unlikely as the separation by chance of the atmosphere into its components." />
+
+
 
 
 </quotation-list>

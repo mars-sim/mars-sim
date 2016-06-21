@@ -111,6 +111,7 @@ public abstract class UnitWindow extends JInternalFrame {
         JPanel mainPane = new JPanel(new BorderLayout());
         // mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
+        
         //getContentPane().setBackground(THEME_COLOR);
 
         // Create name panel

@@ -155,6 +155,7 @@ implements ActionListener {
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
+		
 
 		// Prepare top layout panes
 		JPanel topMainPane = new JPanel();

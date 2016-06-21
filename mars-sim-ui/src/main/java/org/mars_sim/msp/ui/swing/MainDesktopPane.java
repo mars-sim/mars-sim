@@ -1163,28 +1163,36 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	public void openAnnouncementWindow(String announcement) {
 		announcementWindow.setAnnouncement(announcement);
-		announcementWindow.pack();
-		add(announcementWindow, 0);
-		int Xloc = (int)((getWidth() - announcementWindow.getWidth()) * .5D);
-		int Yloc = (int)((getHeight() - announcementWindow.getHeight()) * .15D);
-		announcementWindow.setLocation(Xloc, Yloc);
-		// Note: second window packing seems necessary to get window
-		// to display components correctly.
-		announcementWindow.pack();
-		announcementWindow.setVisible(true);
-		validate();
-		repaint();
+				
+		if (mainScene != null) {
+			
+		} else {
+			announcementWindow.pack();
+			add(announcementWindow, 0);
+			int Xloc = (int)((getWidth() - announcementWindow.getWidth()) * .5D);
+			int Yloc = (int)((getHeight() - announcementWindow.getHeight()) * .15D);
+			announcementWindow.setLocation(Xloc, Yloc);
+			// Note: second window packing seems necessary to get window
+			// to display components correctly.
+			announcementWindow.pack();
+			announcementWindow.setVisible(true);
+			validate();
+			repaint();		
+		}
 	}
 
 	/**
 	 * Removes the popup announcement window from the desktop.
 	 */
 	public void disposeAnnouncementWindow() {
-		announcementWindow.dispose();
 		if (mainScene != null) {
 			mainScene.hideLoadingStage();
 			mainScene.hideSavingStage();
 			mainScene.hidePausedStage();
+		}
+		else {
+			announcementWindow.dispose();
+			
 		}
 	}
 
