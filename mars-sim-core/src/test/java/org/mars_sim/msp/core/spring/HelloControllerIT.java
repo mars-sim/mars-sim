@@ -23,7 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Applcation.class)
+@SpringApplicationConfiguration(classes = SpringApp.class)
 @WebAppConfiguration
 @IntegrationTest({"server.port=0"})
 public class HelloControllerIT {
@@ -43,6 +43,6 @@ public class HelloControllerIT {
     @Test
     public void getHello() throws Exception {
         ResponseEntity<String> response = template.getForEntity(base.toString(), String.class);
-        assertThat(response.getBody(), equalTo("Running HelloController : Greetings from Spring Boot!"));
+        assertThat(response.getBody(), equalTo("Running HelloControllerIT : Greetings from Spring Boot!"));
     }
 }

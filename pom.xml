@@ -149,8 +149,25 @@
 	<!-- * Build Section                                                                                 * -->
 	<!-- ************************************************************************************************* -->
 	<build>
+		<resources>
+		    <resource>
+		        <directory>src/main/resources</directory>
+		        <filtering>true</filtering>
+		    </resource>
+		</resources>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+				    <groupId>org.apache.maven.plugins</groupId>
+				    <artifactId>maven-resources-plugin</artifactId>
+				    <version>2.6</version>
+				    <configuration>
+				        <delimiters>
+				            <delimiter>@</delimiter>
+				        </delimiters>
+				        <useDefaultDelimiters>false</useDefaultDelimiters>
+				    </configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
@@ -210,6 +227,7 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
 	</build>
 	<!-- ************************************************************************************************* -->
 	<!-- * Reporting Section                                                                             * -->
@@ -309,4 +327,16 @@
 			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/site</url>
 		</site>
 	</distributionManagement>
+	<dependencyManagement>
+	     <dependencies>
+	        <dependency>
+	            <!-- Import dependency management from Spring Boot -->
+	            <groupId>org.springframework.boot</groupId>
+	            <artifactId>spring-boot-dependencies</artifactId>
+	            <version>1.3.5.RELEASE</version>
+	            <type>pom</type>
+	            <scope>import</scope>
+	        </dependency>
+	    </dependencies>
+	</dependencyManagement>  	
 </project>

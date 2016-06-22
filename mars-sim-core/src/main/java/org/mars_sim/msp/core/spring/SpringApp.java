@@ -1,5 +1,5 @@
 /* Mars Simulation Project
- * Application.java
+ * SpringApp.java
  * @version 3.1.0 2016-06-21
  * @author Manny Kung
  */
@@ -13,18 +13,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
-public class Applcation {
+public class SpringApp {
 
     public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(Applcation.class, args);
+    	
+    	ApplicationContext ctx = SpringApplication.run(SpringApp.class, args);
 
-        System.out.println("Running Applcation : Let's inspect the beans provided by Spring Boot :");
+        System.out.println();
+        System.out.println("------------ Running App : Let's inspect the beans provided by Spring Boot ------------");
+        System.out.println();
 
         String[] beanNames = ctx.getBeanDefinitionNames();
         Arrays.sort(beanNames);
         for (String beanName : beanNames) {
             System.out.println(beanName);
         }
+        
+        System.out.println();
+        System.out.println("------------ Now open http://localhost:8080/ in your browser ------------");
+        System.out.println();
+
     }
 
 }
