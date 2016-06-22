@@ -65,7 +65,7 @@ public class StartUpLocation {
                // Go through each screen to see if the mouse is currently on that screen
                for (Screen screen : screens) {
                    screenBounds = screen.getVisualBounds();
-                   // Trying to compute Left Top X-Y position for the Application Window
+                   // Trying to compute Left Top X-Y position for the Applcation Window
                    // If the Point p is in the Bounds
                    if (screenBounds.contains(p.x, p.y)) {
                        // Fixed Size Window Width and Height

@@ -29,7 +29,7 @@ public class DataLoadingStageExample extends Application {
         
         // manage stage layout:
         primaryStage.yProperty().addListener((obs, oldY, newY) -> monitorStage.setY(newY.doubleValue() - 100));
-        primaryStage.setTitle("Application");
+        primaryStage.setTitle("Applcation");
 
         // show both stages:
         monitorStage.show();
@@ -55,7 +55,7 @@ public class DataLoadingStageExample extends Application {
 	    dataLoadingTask = createDataLoadingTask();
 	
 	    // update UI when dataLoadingTask finishes
-	    // this will run on the FX Application Thread
+	    // this will run on the FX Applcation Thread
 	    dataLoadingTask.setOnSucceeded(event -> {
 	        DataClass data = dataLoadingTask.getValue();
 	        scene.setRoot(createUIFromData(data));

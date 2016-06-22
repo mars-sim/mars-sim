@@ -33,7 +33,7 @@
 package org.mars_sim.msp.ui.swing.tool;
 
 /*
-import com.jme3.app.Application;
+import com.jme3.app.Applcation;
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
@@ -73,7 +73,7 @@ implements InternalFrameListener {
 
     private static JmeCanvasContext context;
     private static Canvas canvas;
-    private static Application app;
+    private static Applcation app;
     private static JInternalFrame frame;
 
     private static Container canvasPanel1, canvasPanel2;

@@ -435,7 +435,7 @@ public class MainScene {
 		//marsNode = new MarsNode(this, stage);
 	
 		//see dpi scaling at http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
-		//"I guess we’ll have to wait until Java 9 for more flexible DPI support. 
+		//"I guess weï¿½ll have to wait until Java 9 for more flexible DPI support. 
 		//In the meantime I managed to get JavaFX DPI scale factor, 
 		//but it is a hack (uses both AWT and JavaFX methods):"
 		
@@ -1305,12 +1305,12 @@ public class MainScene {
 	                    final CountDownLatch latch = new CountDownLatch(1);
 	                    Platform.runLater(() -> {	                        
                  			try {
-                 				while (Simulation.instance().getMasterClock().isSavingSimulation()) {
+                 				//while (Simulation.instance().getMasterClock().isSavingSimulation()) {
                     				//FX Stuff done here
                     				//System.out.println("sleep");
-	                        		//showSavingStage();
-                    				TimeUnit.MILLISECONDS.sleep(500L);
-                 				}
+	                        		showSavingStage();
+                    				TimeUnit.MILLISECONDS.sleep(1000L);
+                 				//}
                 			} catch (InterruptedException e) {
                 				e.printStackTrace();
                 			} finally{

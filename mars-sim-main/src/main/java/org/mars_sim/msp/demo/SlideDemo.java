@@ -142,7 +142,7 @@ public class SlideDemo extends Application
    }
 
    /**
-    * JavaFX Application starting method.
+    * JavaFX Applcation starting method.
     * 
     * @param stage Primary stage.
     * @throws Exception Potential JavaFX application exception.

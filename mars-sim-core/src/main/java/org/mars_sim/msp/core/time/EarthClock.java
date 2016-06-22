@@ -301,9 +301,93 @@ implements Serializable {
 		return cal.get(Calendar.MONTH);
 	}
 
+	public String getMonthString() {
+		int w = getMonth();
+		String s = null;
+		if (w == Calendar.JANUARY)
+			s = "Jan";
+		else if (w == Calendar.FEBRUARY)
+			s = "Feb";
+		else if (w == Calendar.MARCH)
+			s = "Mar";
+		else if (w == Calendar.APRIL)
+			s = "Apr";
+		else if (w == Calendar.MAY)
+			s = "May";
+		else if (w == Calendar.JUNE)
+			s = "Jun";
+		else if (w == Calendar.JULY)
+			s = "Jul";
+		else if (w == Calendar.AUGUST)
+			s = "Aug";
+		else if (w == Calendar.SEPTEMBER)
+			s = "Sep";
+		else if (w == Calendar.OCTOBER)
+			s = "Oct";
+		else if (w == Calendar.NOVEMBER)
+			s = "Nov";
+		else if (w == Calendar.DECEMBER)
+			s = "Dec";
+		else
+			s = "";
+		return s;
+	}
+
 	public int getYear()
 	{
 		return cal.get(Calendar.YEAR);
 	}
-	
+
+	public int getSecond() { return cal.get(Calendar.SECOND);}
+
+	public String getSecondString() {
+		int s = getSecond();
+		if (s > 10)
+			return s + "";
+		else
+			return "0" + s;
+	}
+
+	public int getMinute() { return cal.get(Calendar.MINUTE);}
+
+	public String getMinuteString() {
+		int m = getMinute();
+		if (m > 10)
+			return m + "";
+		else
+			return "0" + m;
+	}
+
+	public int getHour() { return cal.get(Calendar.HOUR);}
+
+	public String getHourString() {
+		int h = getHour();
+		if (h > 10)
+			return h + "";
+		else
+			return "0" + h;
+	}
+
+	public String getDayOfWeekString() {
+		int w = cal.get(Calendar.DAY_OF_WEEK);
+		String s = null;
+		if (w == Calendar.SUNDAY)
+			s = "Sunday";
+		else if (w == Calendar.MONDAY)
+			s = "Monday";
+		else if (w == Calendar.TUESDAY)
+			s = "Tuesday";
+		else if (w == Calendar.WEDNESDAY)
+			s = "Wednesday";
+		else if (w == Calendar.THURSDAY)
+			s = "Thursday";
+		else if (w == Calendar.FRIDAY)
+			s = "Friday";
+		else if (w == Calendar.SATURDAY)
+			s = "Saturaday";
+		else
+			s = "";
+		return s;
+	}
+
 }

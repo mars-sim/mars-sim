@@ -16,7 +16,7 @@ public class GreenhouseOperation extends Application {
     	//Node fxForm = new FXForm(myBean);  // create the FXForm node for your bean
     	//root.getChildren().add(fxForm);  // add it to your scene graph
 
-        stage.setTitle("My JavaFX Application");
+        stage.setTitle("My JavaFX Applcation");
         stage.setScene(scene);
         stage.show();
     }
