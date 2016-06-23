@@ -176,7 +176,19 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <groupId>org.codefx.libfx</groupId>
 		    <artifactId>LibFX</artifactId>
 		    <version>0.3.0</version>
+		</dependency>	
+		<dependency>
+		  <groupId>org.thymeleaf</groupId>
+		  <artifactId>thymeleaf</artifactId>
+		  <version>2.1.4.RELEASE</version>
+		  <!--<version>3.0.0.RELEASE</version> -->
 		</dependency>		
+		<dependency>
+		    <groupId>org.thymeleaf</groupId>
+		    <artifactId>thymeleaf-spring4</artifactId>
+		  <version>2.1.4.RELEASE</version>
+		  <!--<version>3.0.0.RELEASE</version>-->
+		</dependency>			
 	</dependencies>
 	<repositories>
 		<repository>
