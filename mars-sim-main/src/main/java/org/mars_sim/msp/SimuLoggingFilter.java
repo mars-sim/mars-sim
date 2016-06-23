@@ -2,8 +2,9 @@
  * Mars Simulation Project
  * SimuLoggingFilter.java
  * @version 3.07 2014-12-06
-
  * @author Sebastien Venot
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 package org.mars_sim.msp;
 

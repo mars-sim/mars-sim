@@ -2,8 +2,9 @@
  * Mars Simulation Project
  * MarsProjectStarter.java
  * @version 3.07 2014-12-06
-
  * @author Scott Davis
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 
 package org.mars_sim.msp;

@@ -1,9 +1,10 @@
 /**
-That's how much Koreans inspire * Mars Simulation Project
+ * Mars Simulation Project
  * MarsProject.java
  * @version 3.08 2015-04-14
-
  * @author Scott Davis
+ * $LastChangedDate$
+ * $LastChangedRevision$
  */
 package org.mars_sim.msp;
 
