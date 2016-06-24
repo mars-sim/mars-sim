@@ -10,13 +10,20 @@ package org.mars_sim.msp.ui.springboot;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+//@Configuration
+//@EnableAutoConfiguration
+//@SpringBootApplication
+//@SpringBootApplication(exclude={org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.class})
+//@ComponentScan
+
+//@SpringBootApplication
+
 @Configuration
 @EnableAutoConfiguration
-@SpringBootApplication(exclude={org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.class})
 @ComponentScan
 public class SpringAppLeaf {
 

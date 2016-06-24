@@ -9,6 +9,9 @@
   <groupId>net.sf.mars-sim</groupId>
   <artifactId>mars-sim-core</artifactId>
   <name>mars-sim-core</name>
+    <properties>
+		<springboot.version>1.3.5.RELEASE</springboot.version>
+	</properties>
   <dependencies>
 	<dependency>
 		<groupId>junit</groupId>
@@ -60,22 +63,22 @@
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
-		<version>1.3.5.RELEASE</version>
+		<version>${springboot.version}</version>
 	</dependency>
 	  <dependency>
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-starter-test</artifactId>
-		  <version>1.3.5.RELEASE</version>
+		  <version>${springboot.version}</version>
 	  </dependency>
 	  <dependency>
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-starter-actuator</artifactId>
-		  <version>1.3.5.RELEASE</version>
+		  <version>${springboot.version}</version>
 	  </dependency>
 	  <dependency>
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-cli</artifactId>
-		  <version>1.3.5.RELEASE</version>
+		  <version>${springboot.version}</version>
 	  </dependency>	  
   </dependencies>
   	<!-- dependencyManagement>

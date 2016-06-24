@@ -128,7 +128,7 @@ implements ClockListener {
 		super(NAME, desktop);
 		mainScene = desktop.getMainScene();
 
-		new ClockTool();
+		//new ClockTool();
 
 		// Set window resizable to false.
 		setResizable(false);

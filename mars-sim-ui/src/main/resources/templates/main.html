@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+    <title>Simple Thymeleaf Example</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,800" rel="stylesheet" type="text/css" />
+    <link href="http://fonts.googleapis.com/css?family=Oleo+Script:400" rel="stylesheet" type="text/css" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/skel.min.js"></script>
+    <script src="js/skel-panels.min.js"></script>
+    <noscript>
+        <link rel="stylesheet" href="css/skel-noscript.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/style-desktop.css" />
+    </noscript>
+    <!--[if lte IE 8]><script src="js/html5shiv.js"></script><link rel="stylesheet" href="css/ie8.css" /><![endif]-->
+    <!--[if lte IE 7]><link rel="stylesheet" href="css/ie7.css" /><![endif]-->
+</head>
+<body class="homepage">
+
+<!-- Header Wrapper -->
+<div id="header-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="12u">
+                <!-- Header -->
+                <header id="header">
+                    <!-- Logo -->
+                    <div id="logo">
+                        <h1><a href="#" id="logo">{ Quinten De Swaef }</a></h1>
+                    </div>
+                </header>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Banner Wrapper -->
+<div id="banner-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="12u">
+
+                <!-- Banner -->
+                <div id="banner" class="box">
+
+                    <div>
+                        <div class="row">
+                            <div class="7u">
+                                <h2>Hi.</h2>
+                                <p>Welcome to my Thymeleaf Example using Spring Boot.</p>
+                            </div>
+                            <div class="5u">
+                                <ul>
+                                    <li><a href="https://github.com/Qkyrie/spring-thymeleaf-example" class="button big fa fa-arrow-circle-right">Visit on Github!</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Wrapper -->
+<div id="features-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="4u">
+
+                <!-- Box -->
+                <section class="box box-feature">
+                    <a href="http://twitter.com/QuintenDes" class="image image-full"><img src="images/twitter.png" alt="" /></a>
+                    <div class="inner">
+                        <header>
+                            <h2>Show off your tweets</h2>
+                            <span class="byline">of this week</span>
+                        </header>
+                        <p>Just a sample section to link to some tweetpage</p>
+                    </div>
+                </section>
+
+            </div>
+            <div class="4u">
+
+                <!-- Box -->
+                <section class="box box-feature">
+                    <a href="http://www.thymeleaf.org/" class="image image-full"><img src="images/thymeleaf.png" alt="thymeleaf logo" /></a>
+                    <div class="inner">
+                        <header>
+                            <h2>Thymeleaf</h2>
+                            <span class="byline">ME!.</span>
+                        </header>
+                        <p>Thymeleaf is a Java library. It is an <b>XML / XHTML / HTML5</b> template engine (extensible to other formats) that can work both in web and non-web environments.</p>
+                        <p>Using some statistics, we can easily visualize the traffic on this site:</p>
+                        <p>Active users:</p>
+                    </div>
+                </section>
+
+            </div>
+            <div class="4u">
+
+                <!-- Box -->
+                <section class="box box-feature last">
+                    <a href="#" class="image image-full"><img src="images/charts.png" alt="" /></a>
+                    <div class="inner">
+                        <header>
+                            <h2>Oh, and finally ...</h2>
+                            <span class="byline">Some <b>Awesome</b> Statistics</span>
+                        </header>
+                        <p>We'll be putting together some awesome statistics about stuff</p>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Wrapper -->
+<div id="main-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="4u">
+
+                <!-- Sidebar -->
+                <div id="sidebar">
+                    <section class="widget-thumbnails">
+                        <h3>More free stuff</h3>
+                        <div class="grid">
+                            <div class="row no-collapse half">
+                                <div class="6u"><a href="http://www.jetbrains.com/" class="image image-full"><img src="images/intellij.gif" alt="" /></a></div>
+                                <div class="6u"><a href="https://www.java.com/" class="image image-full"><img src="images/java.jpg" alt="" /></a></div>
+                            </div>
+                            <div class="row no-collapse half">
+                                <div class="6u"><a href="http://spring.io/" class="image image-full"><img src="images/spring.jpg" alt="" /></a></div>
+                                <div class="6u"><a href="https://github.com/qkyrie" class="image image-full"><img src="images/git.jpg" alt="" /></a></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+            <div class="8u">
+
+                <!-- Content -->
+                <div id="content">
+                    <section class="last">
+                        <h2>So what's this all about?</h2>
+                        <p>This is merely an example on how to create a Thymeleaf application using Bootstrap.</p>
+                    </section>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Wrapper -->
+<div id="footer-wrapper">
+    <footer id="footer" class="container">
+        <div class="row">
+            <div class="3u">
+
+                <!-- Links -->
+                <section class="widget-links">
+                    <h2>Spring Boot Examples</h2>
+                    <ul class="style2">
+                        <li><a href="http://www.de-swaef.com/spring-profiles-using-spring-boot/">Spring Profiles</a></li>
+                        <li><a href="http://www.de-swaef.com/spring-data-jpa/">Spring Data JPA</a></li>
+                        <li><a href="http://www.de-swaef.com/spring-cache-abstraction/">Spring Cache Example</a></li>
+
+                    </ul>
+                </section>
+
+            </div>
+            <div class="3u">
+
+                <!-- Links -->
+                <section class="widget-links">
+                    <h2>Tools</h2>
+                    <ul class="style2">
+                        <li><a href="http://www.de-swaef.com/yeoman-a-spring-initializr-alternative/">Yeoman - A spring initializr alternative</a></li>
+                    </ul>
+                </section>
+
+            </div>
+            <div class="3u">
+
+                <!-- Links -->
+                <section class="widget-links">
+                    <h2>Problem Solving</h2>
+                    <ul class="style2">
+                        <li><a href="http://www.de-swaef.com/spring-thymeleaf-and-java-8/">Spring 4, Thymeleaf and Java 8</a></li>
+                    </ul>
+                </section>
+
+            </div>
+            <div class="3u">
+
+                <!-- Contact -->
+                <section class="widget-contact last">
+                    <h2>Contact Us</h2>
+                    <ul>
+                        <li><a href="http://twitter.com/QuintenDes" class="fa fa-twitter solo"><span>Twitter</span></a></li>
+                        <li><a href="https://www.facebook.com/quinten.deswaef" class="fa fa-facebook solo"><span>Facebook</span></a></li>
+                        <li><a href="http://github.com/qkyrie" class="fa fa-github solo"><span>Github</span></a></li>
+                    </ul>
+                </section>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="12u">
+                <div id="copyright">
+                    &copy; Quinten De Swaef. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+</body>
+</html>
