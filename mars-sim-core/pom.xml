@@ -60,6 +60,7 @@
 		<artifactId>xz</artifactId>
 		<version>1.5</version>
 	</dependency>	
+<!--
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
@@ -79,9 +80,12 @@
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-cli</artifactId>
 		  <version>${springboot.version}</version>
-	  </dependency>	  
+	  </dependency>
+	--> 
+		  	  
   </dependencies>
-  	<!-- dependencyManagement>
+  <!--  
+  	<dependencyManagement>
 	     <dependencies>
 	        <dependency>
 	            Import dependency management from Spring Boot 
@@ -93,5 +97,5 @@
 	        </dependency>
 	    </dependencies>
 	</dependencyManagement>
-	-->  
+-->  
 </project>

@@ -86,14 +86,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.7</version>
+			<version>1.7.21</version>
 		</dependency>
 <!--  		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>		
+			<version>1.7.21</version>		
 		</dependency>
--->		
+--> 	
 		<dependency>
 			<groupId>com.plaf.nimrod</groupId>
 			<artifactId>nimrodlf</artifactId>

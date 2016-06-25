@@ -59,6 +59,7 @@
 	<quotation name="Robert A. Heinlein" text="'Die trying' is the proudest human thing" />
   <!-- Have Space Suit—Will Travel, Chapter 11 -->
 
+
 	<quotation name="Robert A. Heinlein" text="When a fact came along, he junked theories that failed to match." />
   <!-- Have Space Suit—Will Travel, Chapter 12 -->
 
@@ -103,7 +104,7 @@
 
 	<quotation name="Robert A. Heinlein" text="A human being should be able to change a diaper, plan an invasion, conn a ship, design a building, write a sonnet, balance accounts, build a wall, comfort the dying, take orders, cooperate, act alone, solve equations, analyze a new problem, pitch manure, program a computer, cook a tasty meal, fight efficiently and die gallantly. Specialization is for insects." />
   
-  
+
   
   <!-- Albert Einstein --> 
   
@@ -124,13 +125,13 @@
 
 	<quotation name="Albert Einstein" text="It can scarcely be denied that the supreme goal of all theory is to make the irreducible basic elements as simple and as few as possible without having to surrender the adequate representation of a single datum of experience." />
 
-	<quotation name="Albert Einstein" text="Why does this magnificent applied science which saves work and makes life easier bring us so little happiness? The simple answer runs: Because we have not yet learned to make sensible use of it." />
+	<quotation name="Albert Einstein" text="Why does this magnificent applied science which saves work and makes life easier bring us so little happiness? The simple answer runs: we have not yet learned to make sensible use of it." />
 
 	<quotation name="Albert Einstein" text="Great spirits have always encountered violent opposition from mediocre minds. The mediocre mind is incapable of understanding the man who refuses to bow blindly to conventional prejudices and chooses instead to express his opinions courageously and honestly." />
 
 	<quotation name="Albert Einstein" text="I am very smart. But not as strong-hearted as all the workers on earth for he toils endlessly and does it all to feed his family while I do it merely for solving an impossible puzzle." />
 
-	<quotation name="Albert Einstein" text="It is not enough to teach a man a specialty. Through it he may become a kind of useful machine but not a harmoniously developed personality. It is essential...(for him to) acquire an understanding of a lively feeling for values...a vivid sense of the beautiful and of the morally good...to understand the motives of human beings, their illusions, and their sufferings...a proper relationship to individual fellow-men and to the community." />
+	<quotation name="Albert Einstein" text="It is not enough to teach a man a specialty. Through it he may become a kind of useful machine but not a harmoniously developed personality. It is essential...(for him to) acquire an understanding of a lively feeling for values...a vivid sense of the beautiful and of the morally good...a proper relationship to individual fellow-men and to the community." />
 
    
   
@@ -143,7 +144,7 @@
 
   	<quotation name="Valery Ryumin" text="All the conditions necessary for murder are met if you shut 2 men in a cabin measuring 18'x20' and leave them together for 2 months." />
 	  
-	<quotation name="Alan M. Turing" text="The view that machines cannot give rise to surprises is due...to a fallacy to which philosophers and mathematicians are particularly subject...the assumption that as soon as a fact is presented to a mind all consequences of that fact spring into the mind simultaneously with it. It is a very useful assumption under many circumstances, but one too easily forgets that it is false." />
+	<quotation name="Alan M. Turing" text="The view that machines cannot give rise to surprises is due...to a fallacy to which philosophers and mathematicians (assumed)...a very useful assumption under many circumstances, but one too easily forgets that it is false." />
  
 	<quotation name="Kurt Gödel" text="I believe that mechanism in biology is a prejudice of our time which will be disproved...in a mathematical theorem...that the formation within geological time of a human body by the laws of physics..., starting from a random distribution of the elementary particles and the field, is as unlikely as the separation by chance of the atmosphere into its components." />
 

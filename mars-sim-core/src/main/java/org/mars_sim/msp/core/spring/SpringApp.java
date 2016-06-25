@@ -2,7 +2,7 @@
  * SpringApp.java
  * @version 3.1.0 2016-06-21
  * @author Manny Kung
- */
+ 
 
 package org.mars_sim.msp.core.spring;
 
@@ -36,3 +36,5 @@ public class SpringApp {
     }
 
 }
+
+*/

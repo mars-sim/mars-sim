@@ -43,8 +43,10 @@ public class QuotationPopup implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final int WIDTH = 470;
-	private static final int CHARS_PER_LINE = 55;
+	private static final int BASE_HEIGHT = 60;
+	private static final int HEIGHT_PER_LINE = 20;
+	private static final int WIDTH = 510;
+	private static final int CHARS_PER_LINE = 50;
 	private static final int POPUP_IN_MILLISECONDS = 20_000;
 	
 	// Data members	
@@ -105,18 +107,16 @@ public class QuotationPopup implements Serializable {
 		int remaining = CHARS_PER_LINE - lastLineLength;
 		
 		int numWhiteSpace = 0;
-		int height = 0;
+		int new_height = 0;
 		int new_width = WIDTH;
-		int base_height = 25 * 2 ;
-		
+	
 		if (strSize < CHARS_PER_LINE) {
-			
+			// case 1: the quote is a short one-liner, type the author name on the second line.
 			numWhiteSpace = (int)(strSize - nameSize);
 			
-			new_width = (int)(strSize * 7.818);
-			new_width = 50 + new_width;
-			
-			height = base_height + 15;
+			new_width = (int)(strSize * 9.5) + 50;
+
+			new_height = BASE_HEIGHT + HEIGHT_PER_LINE;
 			
 			str += System.lineSeparator();//"\n";
 			
@@ -125,23 +125,25 @@ public class QuotationPopup implements Serializable {
 			
 		}
 		else if (remaining > nameSize) {
+			// case 2: the author name can be fit to the last line with the quote.
 			numWhiteSpace = (int)(remaining - nameSize);
 			
 			//new_width = (int)((numWhiteSpace + nameSize) * 7.818);
 			//WIDTH = 40 + new_width;
 
-			height = base_height + 20 * numLines;
+			new_height = BASE_HEIGHT + HEIGHT_PER_LINE * numLines;
 
 			//System.out.println("Case 2 : last line can fit author's name");
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 		}	
 		else {
-			numWhiteSpace = (int)(CHARS_PER_LINE - nameSize);	
+			// case 3: author name must be on its own line
+			numWhiteSpace = (int)(CHARS_PER_LINE - nameSize - 3);	
 		
 			//new_width = (int)((numWhiteSpace + nameSize) * 7.818);
 			//WIDTH = 40 + new_width;
 			
-			height = base_height + 20 * (numLines + 1);
+			new_height = BASE_HEIGHT + HEIGHT_PER_LINE * (numLines + 1);
 		
 			str += System.lineSeparator();//"\n";
 			//System.out.println("Case 3 : last line cannot fit author's name");
@@ -174,7 +176,7 @@ public class QuotationPopup implements Serializable {
         //notifier.setPopupLifetime(duration);        
         QNotification.Notifier.setNotificationOwner(stage);
         //notifier.setPopupLocation(stage, Pos.TOP_RIGHT);
-        QNotification.Notifier.setHeight(height);
+        QNotification.Notifier.setHeight(new_height);
         QNotification.Notifier.setWidth(new_width);
 		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON)
 		notifier.notify(" QUOTATION", str, QNotification.QUOTE_ICON); //INFO_ICON);
