@@ -270,7 +270,6 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<person-name value="Jennifer Hare" gender="female" sponsor="Mars Society" />
 		<person-name value="Jennifer Lorbeck" gender="female" sponsor="Mars Society" />
 		<person-name value="Jennifer Proctor" gender="female" sponsor="Mars Society" />
-		<!-- http://en.wikipedia.org/wiki/Jens_Martin_Knudsen -->
 		<person-name value="Jens Martin Knudsen" gender="male" sponsor="Mars Society" />
 		<person-name value="Jeri Axberg" gender="female" sponsor="Mars Society" />
 		<person-name value="Jill Anglin" gender="female" sponsor="Mars Society" />
@@ -393,165 +392,149 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	
 		<!--  Derived from https://en.wiki2.org/wiki/List_of_Chinese_astronauts
 		http://www.20000-names.com/male_chinese_names.htm -->	
-		<first-name value="Haipeng" gender="male" sponsor="CNSA" />
-		<first-name value="Ming" gender="male" sponsor="CNSA" />
-		<first-name value="Shuying" gender="male" sponsor="CNSA" />
-		<first-name value="Qiu" gender="male" sponsor="CNSA" />
-		<first-name value="Xingrui" gender="male" sponsor="CNSA" />
-		<first-name value="Haipeng" gender="male" sponsor="CNSA" />
+
+		<first-name value="Boming" gender="male" sponsor="CNSA" />
+		<first-name value="Changming" gender="male" sponsor="CNSA" />
+		<first-name value="Chongfu" gender="male" sponsor="CNSA" />
 		<first-name value="Dazhe" gender="male" sponsor="CNSA" />
-		<first-name value="Junlong" gender="male" sponsor="CNSA" />
-		<first-name value="Qinghua" gender="male" sponsor="CNSA" />
-		<first-name value="Haipeng" gender="male" sponsor="CNSA" />
 		<first-name value="Donghai" gender="male" sponsor="CNSA" />
 		<first-name value="Enlai" gender="male" sponsor="CNSA" />
-		<first-name value="Changming" gender="male" sponsor="CNSA" />
-
-		<first-name value="Liwei" gender="male" sponsor="CNSA" />
+		<first-name value="Haipeng" gender="male" sponsor="CNSA" />
 		<first-name value="Haisheng" gender="male" sponsor="CNSA" />
-		<first-name value="Boming" gender="male" sponsor="CNSA" />
-		<first-name value="Zhigang" gender="male" sponsor="CNSA" />
+		<first-name value="Hongliang" gender="male" sponsor="CNSA" />
+		<first-name value="Junlong" gender="male" sponsor="CNSA" />
+		<first-name value="Liwei" gender="male" sponsor="CNSA" />
+		<first-name value="Ming" gender="male" sponsor="CNSA" />
+		<first-name value="Qinghua" gender="male" sponsor="CNSA" />
+		<first-name value="Qiu" gender="male" sponsor="CNSA" />
+		<first-name value="Rongsen" gender="male" sponsor="CNSA" />
+		<first-name value="Senlin" gender="male" sponsor="CNSA" />
+		<first-name value="Shichang" gender="male" sponsor="CNSA" />
+		<first-name value="Shuying" gender="male" sponsor="CNSA" />
 		<first-name value="Wang" gender="male" sponsor="CNSA" />
 		<first-name value="Xiaoguang" gender="male" sponsor="CNSA" />
-		<first-name value="Yaping" gender="male" sponsor="CNSA" />
-		<first-name value="Hongliang" gender="male" sponsor="CNSA" />
-		<first-name value="Shichang" gender="male" sponsor="CNSA" />
-		<first-name value="Senlin" gender="male" sponsor="CNSA" />
-		<first-name value="Rongsen" gender="male" sponsor="CNSA" />
 		<first-name value="Xiaohai" gender="male" sponsor="CNSA" />
-		<first-name value="Chongfu" gender="male" sponsor="CNSA" />
-
+		<first-name value="Xingrui" gender="male" sponsor="CNSA" />
+		<first-name value="Yaping" gender="male" sponsor="CNSA" />
+		<first-name value="Zhigang" gender="male" sponsor="CNSA" />
 
 		<!--  Derived from http://www.20000-names.com/female_chinese_names.htm -->
-		<first-name value="Yang" gender="female" sponsor="CNSA" />
-		<first-name value="Qianyi" gender="female" sponsor="CNSA" />		
+
+		<first-name value="Cuifen" gender="female" sponsor="CNSA" />
 		<first-name value="Haimei" gender="female" sponsor="CNSA" />
-		<first-name value="Qianyi" gender="female" sponsor="CNSA" />		
-		<first-name value="Suling" gender="female" sponsor="CNSA" />
-		<first-name value="Meilin" gender="female" sponsor="CNSA" />
-		<first-name value="Meifeng" gender="female" sponsor="CNSA" />
+		<first-name value="Huiling" gender="female" sponsor="CNSA" />
+		<first-name value="Jingfei" gender="female" sponsor="CNSA" />
 		<first-name value="Juan" gender="female" sponsor="CNSA" />
 		<first-name value="Lanfen" gender="female" sponsor="CNSA" />
 		<first-name value="Lihua" gender="female" sponsor="CNSA" />
-		<first-name value="Jingfei" gender="female" sponsor="CNSA" />
-		<first-name value="Cuifen" gender="female" sponsor="CNSA" />
-		<first-name value="MingZhu" gender="female" sponsor="CNSA" />
+		<first-name value="Meifeng" gender="female" sponsor="CNSA" />
+		<first-name value="Meilin" gender="female" sponsor="CNSA" />
 		<first-name value="Meirong" gender="female" sponsor="CNSA" />
-		<first-name value="Huiling" gender="female" sponsor="CNSA" />
-
+		<first-name value="MingZhu" gender="female" sponsor="CNSA" />
+		<first-name value="Qianyi" gender="female" sponsor="CNSA" />		
+		<first-name value="Suling" gender="female" sponsor="CNSA" />
+		<first-name value="Yang" gender="female" sponsor="CNSA" />
 
 
 		<first-name value="a" gender="male" sponsor="CSA" />
 		<first-name value="b" gender="male" sponsor="CSA" />
 		
-		<first-name value="Roberta" gender="female" sponsor="CSA" />
 		<first-name value="Julie" gender="female" sponsor="CSA" />
-
-
+		<first-name value="Roberta" gender="female" sponsor="CSA" />
 
 
 		<!--  Derived from https://en.wiki2.org/wiki/List_of_European_astronauts -->
-		<first-name value="Jean-Loup" gender="male" sponsor="ESA" />
-		<first-name value="Jean-Francois" gender="male" sponsor="ESA" />
-		<first-name value="Ivan" gender="male" sponsor="ESA" />
-		<first-name value="Maurizio" gender="male" sponsor="ESA" />
-		<first-name value="Pedro" gender="male" sponsor="ESA" />
-		<first-name value="Reinhold" gender="male" sponsor="ESA" />
-		<first-name value="Dirk" gender="male" sponsor="ESA" />
-		<first-name value="Jean-Jacques" gender="male" sponsor="ESA" />
-		<first-name value="Klaus-Dietrich" gender="male" sponsor="ESA" />
-		<first-name value="Frank" gender="male" sponsor="ESA" />
-		<first-name value="Umberto" gender="male" sponsor="ESA" />
-		<first-name value="Reinhard" gender="male" sponsor="ESA" />
-		<first-name value="Jean-Pierre" gender="male" sponsor="ESA" />
-		<first-name value="Miroslaw" gender="male" sponsor="ESA" />
-		<first-name value="Christer" gender="male" sponsor="ESA" />
 
-		<first-name value="Georgi" gender="male" sponsor="ESA" />
-		<first-name value="Sigmund" gender="male" sponsor="ESA" />
 		<first-name value="Andre" gender="male" sponsor="ESA" />
-		<first-name value="Franco" gender="male" sponsor="ESA" />
-		<first-name value="Ulf" gender="male" sponsor="ESA" />
-		<first-name value="Ernst" gender="male" sponsor="ESA" />
-		<first-name value="Paolo" gender="male" sponsor="ESA" />
+		<first-name value="Andreas" gender="male" sponsor="ESA" />
+		<first-name value="Christer" gender="male" sponsor="ESA" />
 		<first-name value="Claude" gender="male" sponsor="ESA" />
-		<first-name value="Wubbo" gender="male" sponsor="ESA" />
-		<first-name value="Piers" gender="male" sponsor="ESA" />
-		<first-name value="Lodewijk" gender="male" sponsor="ESA" />
-		<first-name value="Ulrich" gender="male" sponsor="ESA" />
-		<first-name value="Franz" gender="male" sponsor="ESA" />
-		<first-name value="Roberto" gender="male" sponsor="ESA" />
-		<first-name value="Hans" gender="male" sponsor="ESA" />
+		<first-name value="Dirk" gender="male" sponsor="ESA" />
 		<first-name value="Dumitru" gender="male" sponsor="ESA" />
+		<first-name value="Ernst" gender="male" sponsor="ESA" />
+		<first-name value="Franco" gender="male" sponsor="ESA" />
+		<first-name value="Frank" gender="male" sponsor="ESA" />
+		<first-name value="Franz" gender="male" sponsor="ESA" />
+		<first-name value="Georgi" gender="male" sponsor="ESA" />
+		<first-name value="Hans" gender="male" sponsor="ESA" />
+		<first-name value="Ivan" gender="male" sponsor="ESA" />
+		<first-name value="Jean-Francois" gender="male" sponsor="ESA" />
+		<first-name value="Jean-Jacques" gender="male" sponsor="ESA" />
+		<first-name value="Jean-Loup" gender="male" sponsor="ESA" />
+		<first-name value="Jean-Pierre" gender="male" sponsor="ESA" />
+		<first-name value="Klaus-Dietrich" gender="male" sponsor="ESA" />
+		<first-name value="Lodewijk" gender="male" sponsor="ESA" />
+		<first-name value="Maurizio" gender="male" sponsor="ESA" />
+		<first-name value="Miroslaw" gender="male" sponsor="ESA" />
+		<first-name value="Paolo" gender="male" sponsor="ESA" />
+		<first-name value="Pedro" gender="male" sponsor="ESA" />
 		<first-name value="Philippe" gender="male" sponsor="ESA" />
+		<first-name value="Piers" gender="male" sponsor="ESA" />
+		<first-name value="Reinhard" gender="male" sponsor="ESA" />
+		<first-name value="Reinhold" gender="male" sponsor="ESA" />
+		<first-name value="Roberto" gender="male" sponsor="ESA" />
+		<first-name value="Sigmund" gender="male" sponsor="ESA" />
+		<first-name value="Ulf" gender="male" sponsor="ESA" />
+		<first-name value="Ulrich" gender="male" sponsor="ESA" />
+		<first-name value="Umberto" gender="male" sponsor="ESA" />
+		<first-name value="Tim" gender="male" sponsor="ESA" />
+		<first-name value="Wubbo" gender="male" sponsor="ESA" />
 
 
 		<!--  https://en.wiki2.org/wiki/Women_in_space -->
-		<first-name value="Mariannie" gender="female" sponsor="ESA" />
-		<first-name value="Yvonne" gender="female" sponsor="ESA" />
-		<first-name value="Christa" gender="female" sponsor="ESA" />
 
-		<first-name value="Claudie" gender="female" sponsor="ESA" />
-		<first-name value="Samantha" gender="female" sponsor="ESA" />		
-		<first-name value="Roberta" gender="female" sponsor="ESA" />
-		<first-name value="Mae" gender="female" sponsor="ESA" />
-		<first-name value="Jan" gender="female" sponsor="ESA" />
-
-		<first-name value="Janice" gender="female" sponsor="ESA" />
-		<first-name value="Nancy" gender="female" sponsor="ESA" />		
-		<first-name value="Ellen" gender="female" sponsor="ESA" />
-		<first-name value="Millie" gender="female" sponsor="ESA" />
-		<first-name value="Tamara" gender="female" sponsor="ESA" />
-
-		<first-name value="Kathryn" gender="female" sponsor="ESA" />
-		<first-name value="Marsha" gender="female" sponsor="ESA" />		
-		<first-name value="Linda" gender="female" sponsor="ESA" />
-		<first-name value="Shannon" gender="female" sponsor="ESA" />
-		<first-name value="Margaret" gender="female" sponsor="ESA" />
-
-		<first-name value="Wendy" gender="female" sponsor="ESA" />
-		<first-name value="Bonnie" gender="female" sponsor="ESA" />		
-		<first-name value="Mary" gender="female" sponsor="ESA" />
-		<first-name value="Sally" gender="female" sponsor="ESA" />
-		<first-name value="Judith" gender="female" sponsor="ESA" />
-
-		<first-name value="Eileen" gender="female" sponsor="ESA" />
 		<first-name value="Anna" gender="female" sponsor="ESA" />		
-		<first-name value="Linda" gender="female" sponsor="ESA" />
-		<first-name value="Shannon" gender="female" sponsor="ESA" />
-		<first-name value="Margaret" gender="female" sponsor="ESA" />
-
-		<first-name value="Jeanette" gender="female" sponsor="ESA" />
-		<first-name value="Catherine" gender="female" sponsor="ESA" />		
-		<first-name value="Janet" gender="female" sponsor="ESA" />
-		<first-name value="Kalpana" gender="female" sponsor="ESA" />
-		<first-name value="Julie" gender="female" sponsor="ESA" />
-
-		<first-name value="Serena" gender="female" sponsor="ESA" />
-		<first-name value="Pamela" gender="female" sponsor="ESA" />		
-		<first-name value="Peggy" gender="female" sponsor="ESA" />
-		<first-name value="Sandra" gender="female" sponsor="ESA" />
-		<first-name value="Laurel" gender="female" sponsor="ESA" />
-
-		<first-name value="Jessica" gender="female" sponsor="ESA" />
-		<first-name value="Stephanie" gender="female" sponsor="ESA" />		
-		<first-name value="Lisa" gender="female" sponsor="ESA" />
-		<first-name value="Heidemarie" gender="female" sponsor="ESA" />
-		<first-name value="Sunita" gender="female" sponsor="ESA" />
-
-		<first-name value="Kathleen" gender="female" sponsor="ESA" />
-		<first-name value="Joan" gender="female" sponsor="ESA" />		
-		<first-name value="Tracy" gender="female" sponsor="ESA" />
-		<first-name value="Barabara" gender="female" sponsor="ESA" />
-		<first-name value="Karen" gender="female" sponsor="ESA" />
-
-		<first-name value="Christina" gender="female" sponsor="ESA" />
-		<first-name value="Megan" gender="female" sponsor="ESA" />		
-		<first-name value="Nicole" gender="female" sponsor="ESA" />
-		<first-name value="Dorothy" gender="female" sponsor="ESA" />
-		<first-name value="Patricia" gender="female" sponsor="ESA" />
 		<first-name value="Anousheh" gender="female" sponsor="ESA" />
-
+		<first-name value="Barabara" gender="female" sponsor="ESA" />
+		<first-name value="Bonnie" gender="female" sponsor="ESA" />		
+		<first-name value="Catherine" gender="female" sponsor="ESA" />		
+		<first-name value="Christa" gender="female" sponsor="ESA" />
+		<first-name value="Christina" gender="female" sponsor="ESA" />
+		<first-name value="Claudie" gender="female" sponsor="ESA" />
+		<first-name value="Dorothy" gender="female" sponsor="ESA" />
+		<first-name value="Eileen" gender="female" sponsor="ESA" />
+		<first-name value="Ellen" gender="female" sponsor="ESA" />
+		<first-name value="Heidemarie" gender="female" sponsor="ESA" />
+		<first-name value="Jan" gender="female" sponsor="ESA" />
+		<first-name value="Janet" gender="female" sponsor="ESA" />
+		<first-name value="Janice" gender="female" sponsor="ESA" />
+		<first-name value="Jeanette" gender="female" sponsor="ESA" />
+		<first-name value="Jessica" gender="female" sponsor="ESA" />
+		<first-name value="Joan" gender="female" sponsor="ESA" />		
+		<first-name value="Judith" gender="female" sponsor="ESA" />
+		<first-name value="Julie" gender="female" sponsor="ESA" />
+		<first-name value="Kalpana" gender="female" sponsor="ESA" />
+		<first-name value="Karen" gender="female" sponsor="ESA" />
+		<first-name value="Kathleen" gender="female" sponsor="ESA" />
+		<first-name value="Kathryn" gender="female" sponsor="ESA" />
+		<first-name value="Laurel" gender="female" sponsor="ESA" />
+		<first-name value="Linda" gender="female" sponsor="ESA" />
+		<first-name value="Lisa" gender="female" sponsor="ESA" />
+		<first-name value="Mae" gender="female" sponsor="ESA" />
+		<first-name value="Margaret" gender="female" sponsor="ESA" />
+		<first-name value="Mariannie" gender="female" sponsor="ESA" />
+		<first-name value="Marsha" gender="female" sponsor="ESA" />		
+		<first-name value="Mary" gender="female" sponsor="ESA" />
+		<first-name value="Megan" gender="female" sponsor="ESA" />		
+		<first-name value="Millie" gender="female" sponsor="ESA" />
+		<first-name value="Nancy" gender="female" sponsor="ESA" />		
+		<first-name value="Nicole" gender="female" sponsor="ESA" />
+		<first-name value="Pamela" gender="female" sponsor="ESA" />		
+		<first-name value="Patricia" gender="female" sponsor="ESA" />
+		<first-name value="Peggy" gender="female" sponsor="ESA" />
+		<first-name value="Roberta" gender="female" sponsor="ESA" />
+		<first-name value="Sally" gender="female" sponsor="ESA" />
+		<first-name value="Samantha" gender="female" sponsor="ESA" />		
+		<first-name value="Sandra" gender="female" sponsor="ESA" />
+		<first-name value="Serena" gender="female" sponsor="ESA" />
+		<first-name value="Shannon" gender="female" sponsor="ESA" />
+		<first-name value="Shannon" gender="female" sponsor="ESA" />
+		<first-name value="Stephanie" gender="female" sponsor="ESA" />		
+		<first-name value="Sunita" gender="female" sponsor="ESA" />
+		<first-name value="Tamara" gender="female" sponsor="ESA" />
+		<first-name value="Tracy" gender="female" sponsor="ESA" />
+		<first-name value="Wendy" gender="female" sponsor="ESA" />
+		<first-name value="Yvonne" gender="female" sponsor="ESA" />
 
 		<first-name value="c" gender="male" sponsor="ISRO" />
 		<first-name value="d" gender="male" sponsor="ISRO" />
@@ -577,60 +560,55 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 
 		<!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality  -->
-		<first-name value="Vasili" gender="male" sponsor="RKA" />
-		<first-name value="Oleg" gender="male" sponsor="RKA" />
-		<first-name value="Viktor" gender="male" sponsor="RKA" />
-		<first-name value="Vladimir" gender="male" sponsor="RKA" />
-		<first-name value="Aleksandr" gender="male" sponsor="RKA" />
-		<first-name value="Anatoly" gender="male" sponsor="RKA" />
-		<first-name value="Yuri" gender="male" sponsor="RKA" />
-		<first-name value="Toktar" gender="male" sponsor="RKA" />
 
-		<first-name value="Sergei" gender="male" sponsor="RKA" />
-		<first-name value="Pavel" gender="male" sponsor="RKA" />
-		<first-name value="Georgi" gender="male" sponsor="RKA" />
+		<first-name value="Aleksandr" gender="male" sponsor="RKA" />
+		<first-name value="Aleksei" gender="male" sponsor="RKA" />
+		<first-name value="Alexander" gender="male" sponsor="RKA" />
 		<first-name value="Anatoly" gender="male" sponsor="RKA" />
 		<first-name value="Andrei" gender="male" sponsor="RKA" />
-		<first-name value="Nikolai" gender="male" sponsor="RKA" />
-		<first-name value="Valery" gender="male" sponsor="RKA" />
-		<first-name value="Lev" gender="male" sponsor="RKA" />
-
-
-		<first-name value="Konstantin" gender="male" sponsor="RKA" />
-		<first-name value="Aleksei" gender="male" sponsor="RKA" />
-		<first-name value="Yevgeny" gender="male" sponsor="RKA" />
-		<first-name value="Leonid" gender="male" sponsor="RKA" />
-		<first-name value="Pyotr" gender="male" sponsor="RKA" />
-		<first-name value="Dmitri" gender="male" sponsor="RKA" />
-		<first-name value="Mikhail" gender="male" sponsor="RKA" />
-		<first-name value="Boris" gender="male" sponsor="RKA" />
-
-		<first-name value="Yury" gender="male" sponsor="RKA" />
-		<first-name value="Gennadi" gender="male" sponsor="RKA" />
-		<first-name value="Musa" gender="male" sponsor="RKA" />
-		<first-name value="Talgat" gender="male" sponsor="RKA" />
 		<first-name value="Andriyan" gender="male" sponsor="RKA" />
+		<first-name value="Boris" gender="male" sponsor="RKA" />
+		<first-name value="Dmitri" gender="male" sponsor="RKA" />
+		<first-name value="Fyodor" gender="male" sponsor="RKA" />
+		<first-name value="Gennadi" gender="male" sponsor="RKA" />
 		<first-name value="Gennady" gender="male" sponsor="RKA" />
-		<first-name value="Salizhan" gender="male" sponsor="RKA" />
-
-		<first-name value="Maksim" gender="male" sponsor="RKA" />
+		<first-name value="Georgi" gender="male" sponsor="RKA" />
 		<first-name value="Gherman" gender="male" sponsor="RKA" />
 		<first-name value="Igor" gender="male" sponsor="RKA" />
-		<first-name value="Fyodor" gender="male" sponsor="RKA" />
+		<first-name value="Konstantin" gender="male" sponsor="RKA" />
+		<first-name value="Leonid" gender="male" sponsor="RKA" />
+		<first-name value="Lev" gender="male" sponsor="RKA" />
+		<first-name value="Maksim" gender="male" sponsor="RKA" />
+		<first-name value="Mikhail" gender="male" sponsor="RKA" />
+		<first-name value="Musa" gender="male" sponsor="RKA" />
+		<first-name value="Nikolai" gender="male" sponsor="RKA" />
+		<first-name value="Oleg" gender="male" sponsor="RKA" />
+		<first-name value="Pavel" gender="male" sponsor="RKA" />
+		<first-name value="Pyotr" gender="male" sponsor="RKA" />
+		<first-name value="Salizhan" gender="male" sponsor="RKA" />
+		<first-name value="Sergei" gender="male" sponsor="RKA" />
+		<first-name value="Talgat" gender="male" sponsor="RKA" />
+		<first-name value="Toktar" gender="male" sponsor="RKA" />
+		<first-name value="Valery" gender="male" sponsor="RKA" />
+		<first-name value="Vasili" gender="male" sponsor="RKA" />
+		<first-name value="Viktor" gender="male" sponsor="RKA" />
 		<first-name value="Vitali" gender="male" sponsor="RKA" />
+		<first-name value="Vladimir" gender="male" sponsor="RKA" />
 		<first-name value="Vyacheslav" gender="male" sponsor="RKA" />
-		<first-name value="Alexander" gender="male" sponsor="RKA" />
-
+		<first-name value="Yevgeny" gender="male" sponsor="RKA" />
+		<first-name value="Yuri" gender="male" sponsor="RKA" />
+		<first-name value="Yury" gender="male" sponsor="RKA" />
 
 
 		<!-- Derived from https://en.wiki2.org/wiki/List_of_space_travelers_by_nationality  -->
-		<first-name value="Valentina" gender="female" sponsor="RKA" />
+
 		<first-name value="Irina" gender="female" sponsor="RKA" />
-		<first-name value="Zhanna" gender="female" sponsor="RKA" />
-		<first-name value="Yatyana" gender="female" sponsor="RKA" />
 		<first-name value="Nadezhda" gender="female" sponsor="RKA" />
+		<first-name value="Svetlana" gender="female" sponsor="RKA" />
+		<first-name value="Valentina" gender="female" sponsor="RKA" />
+		<first-name value="Yatyana" gender="female" sponsor="RKA" />
 		<first-name value="Yelena" gender="female" sponsor="RKA" />
-	
+		<first-name value="Zhanna" gender="female" sponsor="RKA" />
 		<first-name value="Svetlana" gender="female" sponsor="RKA" />
 		<first-name value="m" gender="female" sponsor="RKA" />
 
@@ -639,106 +617,102 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 
 	<last-name-list>
-		<last-name value="Wang"  sponsor="CNSA" />
-		<last-name value="Liu"  sponsor="CNSA" />
-		<last-name value="Yang"  sponsor="CNSA" />
-		<last-name value="Zhang"  sponsor="CNSA" />
-		<last-name value="Lee" sponsor="CNSA" />
-		<last-name value="Xu" sponsor="CNSA" />
 		<last-name value="Chen" sponsor="CNSA" />
-		<last-name value="Ma"  sponsor="CNSA" />
-		<last-name value="Wu" sponsor="CNSA" />
-		<last-name value="Zhu"  sponsor="CNSA" />
-		<last-name value="Zhao" sponsor="CNSA" />
-		<last-name value="Ye"  sponsor="CNSA" />
-		<last-name value="Tang"  sponsor="CNSA" />
+		<last-name value="Lee" sponsor="CNSA" />
 		<last-name value="Liang"  sponsor="CNSA" />
+		<last-name value="Liu"  sponsor="CNSA" />
+		<last-name value="Ma"  sponsor="CNSA" />
+		<last-name value="Tang"  sponsor="CNSA" />
+		<last-name value="Wang"  sponsor="CNSA" />
+		<last-name value="Wu" sponsor="CNSA" />
+		<last-name value="Xu" sponsor="CNSA" />
+		<last-name value="Yang"  sponsor="CNSA" />
+		<last-name value="Ye"  sponsor="CNSA" />
+		<last-name value="Zhang"  sponsor="CNSA" />
+		<last-name value="Zhao" sponsor="CNSA" />
+		<last-name value="Zhu"  sponsor="CNSA" />
 
 		<!-- https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_North_America#Canada  -->
 
-		<last-name value="Li"  sponsor="CSA" />
-		<last-name value="Smith"  sponsor="CSA" />
-		<last-name value="Lam"  sponsor="CSA" />
-		<last-name value="Martin"  sponsor="CSA" />
-		<last-name value="Brown"  sponsor="CSA" />
-		<last-name value="Roy"  sponsor="CSA" />
-		<last-name value="Tremblay"  sponsor="CSA" />
-		<last-name value="Lee"  sponsor="CSA" />
-		<last-name value="Gagnon"  sponsor="CSA" />
-		<last-name value="Wilson"  sponsor="CSA" />
 
+		<last-name value="Brown"  sponsor="CSA" />
+		<last-name value="Gagnon"  sponsor="CSA" />
+		<last-name value="Lam"  sponsor="CSA" />
+		<last-name value="Lee"  sponsor="CSA" />
+		<last-name value="Li"  sponsor="CSA" />
+		<last-name value="Martin"  sponsor="CSA" />
+		<last-name value="Roy"  sponsor="CSA" />
+		<last-name value="Smith"  sponsor="CSA" />
+		<last-name value="Tremblay"  sponsor="CSA" />
+		<last-name value="Wilson"  sponsor="CSA" />
 
 		<!-- https://en.wikipedia.org/wiki/List_of_the_most_common_surnames_in_Europe  -->
 
 		<!-- see the names of all the ESA member nations at https://en.wikipedia.org/wiki/European_Space_Agency -->
 
-		<!-- 10 most common Austria surnames-->
+		<!-- 10 most common Austrian surnames-->
 
-		<last-name value="Gruber"  sponsor="ESA" />
-		<last-name value="Huber"  sponsor="ESA" />
 		<last-name value="Bauer"  sponsor="ESA" />
-		<last-name value="Wagner"  sponsor="ESA" />
+		<last-name value="Gruber"  sponsor="ESA" />
+		<last-name value="Hofer"  sponsor="ESA" />
+		<last-name value="Huber"  sponsor="ESA" />
+		<last-name value="Mayer"  sponsor="ESA" />
+		<last-name value="Moser"  sponsor="ESA" />
 		<last-name value="Muller"  sponsor="ESA" />
 		<last-name value="Pichler"  sponsor="ESA" />
 		<last-name value="Steiner"  sponsor="ESA" />
-		<last-name value="Moser"  sponsor="ESA" />
-		<last-name value="Mayer"  sponsor="ESA" />
-		<last-name value="Hofer"  sponsor="ESA" />
+		<last-name value="Wagner"  sponsor="ESA" />
 
+		<!-- 10 most common Belgian surnames-->
 
-		<!-- 10 most common Belgium surnames-->
-
-		<last-name value="Peeters"  sponsor="ESA" />
+		<last-name value="Claes"  sponsor="ESA" />
+		<last-name value="De Smet"  sponsor="ESA" />
+		<last-name value="Goossens"  sponsor="ESA" />
+		<last-name value="Jacobs"  sponsor="ESA" />
 		<last-name value="Janssens"  sponsor="ESA" />
 		<last-name value="Maes"  sponsor="ESA" />
-		<last-name value="Jacobs"  sponsor="ESA" />
 		<last-name value="Mertens"  sponsor="ESA" />
+		<last-name value="Peeters"  sponsor="ESA" />
 		<last-name value="Willems"  sponsor="ESA" />
-		<last-name value="Claes"  sponsor="ESA" />
-		<last-name value="Goossens"  sponsor="ESA" />
-		<last-name value="Wouters"  sponsor="ESA" />
-		<last-name value="De Smet"  sponsor="ESA" />
-		
+		<last-name value="Wouters"  sponsor="ESA" />		
 
-		<!-- 10 most common Czech Republic surnames (male only)-->
+		<!-- 10 most common Czech surnames (male only)-->
 
-		<last-name value="Novák"  sponsor="ESA" />
-		<last-name value="Svoboda"  sponsor="ESA" />
-		<last-name value="Novotný"  sponsor="ESA" />
 		<last-name value="Dvořák"  sponsor="ESA" />
-		<last-name value="Černý"  sponsor="ESA" />
-		<last-name value="Procházka"  sponsor="ESA" />
-		<last-name value="Kučera"  sponsor="ESA" />
-		<last-name value="Veselý"  sponsor="ESA" />
 		<last-name value="Horák"  sponsor="ESA" />
+		<last-name value="Kučera"  sponsor="ESA" />
+		<last-name value="Novotný"  sponsor="ESA" />
+		<last-name value="Novák"  sponsor="ESA" />
 		<last-name value="Němec"  sponsor="ESA" />
+		<last-name value="Procházka"  sponsor="ESA" />
+		<last-name value="Svoboda"  sponsor="ESA" />
+		<last-name value="Veselý"  sponsor="ESA" />
+		<last-name value="Černý"  sponsor="ESA" />
 
 		<!-- 10 most common Danish surnames-->
 
-		<last-name value="Nielsen"  sponsor="ESA" />
-		<last-name value="Jensen"  sponsor="ESA" />
-		<last-name value="Hansen"  sponsor="ESA" />
-		<last-name value="Pedersen"  sponsor="ESA" />
 		<last-name value="Andersen"  sponsor="ESA" />
 		<last-name value="Christensen"  sponsor="ESA" />
-		<last-name value="Larsen"  sponsor="ESA" />
-		<last-name value="Sørensen"  sponsor="ESA" />
-		<last-name value="Rasmussen"  sponsor="ESA" />
+		<last-name value="Hansen"  sponsor="ESA" />
+		<last-name value="Jensen"  sponsor="ESA" />
 		<last-name value="Jørgensen"  sponsor="ESA" />
+		<last-name value="Larsen"  sponsor="ESA" />
+		<last-name value="Nielsen"  sponsor="ESA" />
+		<last-name value="Pedersen"  sponsor="ESA" />
+		<last-name value="Rasmussen"  sponsor="ESA" />
+		<last-name value="Sørensen"  sponsor="ESA" />
 		
-		<!-- 10 most common Estonia surnames-->
+		<!-- 10 most common Estonian surnames-->
 
-		<last-name value="Tamm"  sponsor="ESA" />
+		<last-name value="Ilves"  sponsor="ESA" />
+		<last-name value="Kask"  sponsor="ESA" />
+		<last-name value="Koppel"  sponsor="ESA" />
+		<last-name value="Kukk"  sponsor="ESA" />
+		<last-name value="Pärn"  sponsor="ESA" />
+		<last-name value="Rebane"  sponsor="ESA" />
 		<last-name value="Saar"  sponsor="ESA" />
 		<last-name value="Sepp"  sponsor="ESA" />
-		<last-name value="Kask"  sponsor="ESA" />
-		<last-name value="Kukk"  sponsor="ESA" />
-		<last-name value="Rebane"  sponsor="ESA" />
-		<last-name value="Ilves"  sponsor="ESA" />
-		<last-name value="Pärn"  sponsor="ESA" />
-		<last-name value="Koppel"  sponsor="ESA" />
-		
-
+		<last-name value="Tamm"  sponsor="ESA" />
 
 
 		<last-name value="ee"  sponsor="ISRO" />
@@ -751,40 +725,38 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 		<!--  http://www.census.gov/topics/population/genealogy/data/2000_surnames.html-->
 
-		<last-name value="Smith"  sponsor="NASA" />
-		<last-name value="Johnson"  sponsor="NASA" />
-		<last-name value="Williams"  sponsor="NASA" />
+		<last-name value="Allen"  sponsor="NASA" />
+		<last-name value="Anderson"  sponsor="NASA" />
 		<last-name value="Brown"  sponsor="NASA" />
-		<last-name value="Jones"  sponsor="NASA" />
-		<last-name value="Miller"  sponsor="NASA" />
+		<last-name value="Clark"  sponsor="NASA" />
 		<last-name value="Davis"  sponsor="NASA" />
 		<last-name value="Garcia"  sponsor="NASA" />
-		<last-name value="Roriguez"  sponsor="NASA" />
-		<last-name value="Wilson"  sponsor="NASA" />
+		<last-name value="Gonzalez"  sponsor="NASA" />
+		<last-name value="Hall"  sponsor="NASA" />
+		<last-name value="Harris"  sponsor="NASA" />
+		<last-name value="Hernandez"  sponsor="NASA" />
+		<last-name value="Jackson"  sponsor="NASA" />
+		<last-name value="Johnson"  sponsor="NASA" />
+		<last-name value="Jones"  sponsor="NASA" />
+		<last-name value="Lee"  sponsor="NASA" />
+		<last-name value="Lewis"  sponsor="NASA" />
+		<last-name value="Lopez"  sponsor="NASA" />
+		<last-name value="Martin"  sponsor="NASA" />
 		<last-name value="Martinez"  sponsor="NASA" />
-		<last-name value="Anderson"  sponsor="NASA" />
+		<last-name value="Miller"  sponsor="NASA" />
+		<last-name value="Moore"  sponsor="NASA" />
+		<last-name value="Perez"  sponsor="NASA" />
+		<last-name value="Robinson"  sponsor="NASA" />
+		<last-name value="Roriguez"  sponsor="NASA" />
+		<last-name value="Smith"  sponsor="NASA" />
 		<last-name value="Taylor"  sponsor="NASA" />
 		<last-name value="Thomas"  sponsor="NASA" />
-		<last-name value="Hernandez"  sponsor="NASA" />
-		<last-name value="Moore"  sponsor="NASA" />
-		
-		<last-name value="Martin"  sponsor="NASA" />
-		<last-name value="Jackson"  sponsor="NASA" />
 		<last-name value="Thompson"  sponsor="NASA" />
-		<last-name value="White"  sponsor="NASA" />
-		<last-name value="Lopez"  sponsor="NASA" />
-		<last-name value="Lee"  sponsor="NASA" />
-		<last-name value="Gonzalez"  sponsor="NASA" />
-		<last-name value="Harris"  sponsor="NASA" />
-		<last-name value="Clark"  sponsor="NASA" />
-		<last-name value="Lewis"  sponsor="NASA" />
-		<last-name value="Robinson"  sponsor="NASA" />
 		<last-name value="Walker"  sponsor="NASA" />
-		<last-name value="Perez"  sponsor="NASA" />
-		<last-name value="Hall"  sponsor="NASA" />
+		<last-name value="White"  sponsor="NASA" />
+		<last-name value="Williams"  sponsor="NASA" />
+		<last-name value="Wilson"  sponsor="NASA" />
 		<last-name value="Young"  sponsor="NASA" />
-		<last-name value="Allen"  sponsor="NASA" />
-
 
 
 		<last-name value="Afanasyev"  sponsor="RKA" />
@@ -793,28 +765,23 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Artsebarsky"  sponsor="RKA" />
 		<last-name value="Artyukhin"  sponsor="RKA" />
 		<last-name value="Atkov"  sponsor="RKA" />
-
-		<last-name value="Artyukhin"  sponsor="RKA" />
 		<last-name value="Avdeyev"  sponsor="RKA" />
 		<last-name value="Balandin"  sponsor="RKA" />
 		<last-name value="Baturin"  sponsor="RKA" />
 		<last-name value="Belyayev"  sponsor="RKA" />
 		<last-name value="Beregovoi"  sponsor="RKA" />
-
 		<last-name value="Berezovoy"  sponsor="RKA" />
 		<last-name value="Borisenko"  sponsor="RKA" />
 		<last-name value="Budarin"  sponsor="RKA" />
 		<last-name value="Bykovsky"  sponsor="RKA" />
 		<last-name value="Dezhurov"  sponsor="RKA" />
 		<last-name value="Dobrovolski"  sponsor="RKA" />
-
 		<last-name value="Dyomin"  sponsor="RKA" />
 		<last-name value="Dzhanibekov"  sponsor="RKA" />
 		<last-name value="Feoktistov"  sponsor="RKA" />
 		<last-name value="Filipchenko"  sponsor="RKA" />
 		<last-name value="Gargarin"  sponsor="RKA" />
 		<last-name value="Gidzenko"  sponsor="RKA" />
-
 	</last-name-list>
 
 	<!-- List of configured people -->
