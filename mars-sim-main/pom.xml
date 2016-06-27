@@ -18,7 +18,36 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
 				<version>1.0-beta-6</version>
-				<configuration>
+<!--  for compiling with Java 8 
+
+see http://stackoverflow.com/questions/31209479/maven-webstart-and-java-8-headaches
+see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-from-building-a-zip-file  -->
+
+				<dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>webstart-pack200-impl</artifactId>
+                        <version>1.0-beta-8-SNAPSHOT</version>
+					</dependency>
+<!--  see http://www.mojohaus.org/webstart/webstart-maven-plugin/upgrade.html                      
+ 
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>keytool-api-1.7</artifactId>
+                        <version>1.4</version>
+                    </dependency>
+  
+-->  					
+				</dependencies>
+				<configuration>				
+ 
+<!--  TODO: how to enable using pack200 instead of just zip or gzip for better compression ? 
+
+				<pack200>
+					<enabled>false</enabled>
+				</pack200>
+--> 
+                				
 					<sign>
 						<keystore>../../../mars-sim.store</keystore>
 						<keypass>marssim</keypass>
@@ -28,6 +57,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					<jnlp>
 						<outputFile>mars-sim.jnlp</outputFile>
 						<mainClass>org.mars_sim.msp.MarsProject</mainClass>
+						
+<!--					<resources>
+							<property name="jnlp.packEnabled" value="true"/>
+						</resources>
+-->						
 					</jnlp>
 				</configuration>
 			</plugin>

@@ -44,7 +44,10 @@ public class CrewEditor implements ActionListener {
 
 	public static final String TITLE = "Alpha Crew Editor";
 
-	public static final int SIZE_OF_CREW = 4;
+	public static final int SIZE_OF_CREW = PersonConfig.SIZE_OF_CREW;
+	
+	public static final int ALPHA_CREW = 0;
+
 
 	// Data members
 	private PersonConfig pc;// = SimulationConfig.instance().getPersonConfiguration();
@@ -191,7 +194,7 @@ public class CrewEditor implements ActionListener {
 
 				String nameStr = nameTF.get(i).getText();
 				//System.out.println(" name is " + nameStr);
-				pc.setPersonName(i, nameStr);
+				pc.setPersonName(i, nameStr, ALPHA_CREW);
 
 				String genderStr = (String) genderComboBoxList.get(i).getSelectedItem();
 				if ( genderStr.equals("M")  )
@@ -199,17 +202,17 @@ public class CrewEditor implements ActionListener {
 				else if ( genderStr.equals("F") )
 					genderStr = "FEMALE";
 				//System.out.println(" gender is " + genderStr);
-				pc.setPersonGender(i, genderStr);
+				pc.setPersonGender(i, genderStr, ALPHA_CREW);
 
 				//String personalityStr = (String) personalityComboBoxList.get(i).getSelectedItem();
 				String personalityStr = getPersonality(i);
 				//System.out.println(" personality is " + personalityStr);
-				pc.setPersonPersonality(i, personalityStr);
+				pc.setPersonPersonality(i, personalityStr, ALPHA_CREW);
 
 				//String jobStr = jobTF.get(i).getText();
 				String jobStr = (String) jobsComboBoxList.get(i).getSelectedItem();
 				//System.out.println(" job is " + jobStr);
-				pc.setPersonJob(i, jobStr);
+				pc.setPersonJob(i, jobStr, ALPHA_CREW);
 
 			}
 
@@ -221,7 +224,7 @@ public class CrewEditor implements ActionListener {
 
 	public void setUpCrewName() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
-			String n = pc.getConfiguredPersonName(i);
+			String n = pc.getConfiguredPersonName(i, ALPHA_CREW);
 			//System.out.println(" name is "+ n);
 				JTextField tf = new JTextField();
 				nameTF.add(tf);
@@ -271,7 +274,7 @@ public class CrewEditor implements ActionListener {
 
 		String s[] = new String[SIZE_OF_CREW];
 		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
-			PersonGender n = pc.getConfiguredPersonGender(j);
+			PersonGender n = pc.getConfiguredPersonGender(j, ALPHA_CREW);
 			// convert MALE to M, FEMAL to F
 			s[j] = n.toString();
 			if (s[j].equals("MALE")) s[j] = "M";
@@ -470,7 +473,7 @@ public class CrewEditor implements ActionListener {
 
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
 			String n[] = new String[15];
-			n[i] = pc.getConfiguredPersonJob(i);
+			n[i] = pc.getConfiguredPersonJob(i, ALPHA_CREW);
 			JComboBoxMW<String> g = setUpCB(2);		// 2 = Job
 		    g.setMaximumRowCount(8);
 			listPane.add(g);

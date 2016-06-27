@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.mars_sim.msp.ui.javafx.PNotification;
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 //import org.reactfx.util.Duration;
@@ -26,6 +25,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.quotation.Quotation;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
 import org.mars_sim.msp.core.structure.building.function.CropConfig;
+import org.mars_sim.msp.ui.javafx.notification.PNotification;
 
 import javafx.stage.Stage;
 
@@ -43,20 +43,21 @@ public class QuotationPopup implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final int SIZE_ICON = 32;
 	private static final int BASE_HEIGHT = 60;
 	private static final int HEIGHT_PER_LINE = 20;
-	private static final int WIDTH = 510;
+	//private static final int WIDTH = 510;
 	private static final int CHARS_PER_LINE = 50;
 	private static final int POPUP_IN_MILLISECONDS = 20_000;
 	
-	// Data members	
+	// Data members		
+	private int new_width;
+	
 	private Map<Integer, Quotation> quotations;
 	
     private QNotification.Notifier notifier = QNotification.Notifier.INSTANCE;
-	//private Timer timer;
-	
-	private Object[] quoteArray;
-	
+	//private Timer timer;	
+	private Object[] quoteArray;	
 	private Quotation q;
 
 	
@@ -108,13 +109,13 @@ public class QuotationPopup implements Serializable {
 		
 		int numWhiteSpace = 0;
 		int new_height = 0;
-		int new_width = WIDTH;
+		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON + 15; ;
 	
 		if (strSize < CHARS_PER_LINE) {
 			// case 1: the quote is a short one-liner, type the author name on the second line.
 			numWhiteSpace = (int)(strSize - nameSize);
 			
-			new_width = (int)(strSize * 9.5) + 50;
+			new_width = (int)(strSize * 10) + SIZE_ICON + 15;
 
 			new_height = BASE_HEIGHT + HEIGHT_PER_LINE;
 			
@@ -236,6 +237,10 @@ public class QuotationPopup implements Serializable {
 		}
 */		
 
+    public int getWidth() {
+    	return new_width;
+    }
+    
 	public void destroy() {
 
 	    quotations.clear();

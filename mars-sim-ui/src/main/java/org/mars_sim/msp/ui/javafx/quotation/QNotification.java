@@ -31,6 +31,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -72,9 +73,10 @@ public class QNotification {
     public enum Notifier {
         INSTANCE;
 
-        private static final double ICON_WIDTH    = 32;//32;//24;
-        private static final double ICON_HEIGHT   = 32;//32;//24;
-        private static       double width         = 300;
+    	private static final double left_indent		= 10;
+        private static final double ICON_WIDTH    = 48;//32;//24;
+        private static final double ICON_HEIGHT   = 48;//32;//24;
+        private static       double width         = 400;
         private static       double height        = 80;
         private static       double offsetX       = 0;
         private static       double offsetY       = 25;
@@ -99,7 +101,7 @@ public class QNotification {
             popupLifetime = Duration.millis(5000);
             popups = FXCollections.observableArrayList();
             
-            QUOTE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/orange_quote_36.png"));//quote_24.png"));
+            QUOTE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_quote_64.png"));//quote_24.png"));
   
         }
 
@@ -136,8 +138,10 @@ public class QNotification {
          * @param OWNER
          */
         public static void setNotificationOwner(final Stage OWNER) {
-        	if (INSTANCE.stage.getOwner() == null)
+        	if (INSTANCE.stage.getOwner() == null) {
         		INSTANCE.stage.initOwner(OWNER);
+        		//INSTANCE.stage.initModality(Modality.WINDOW_MODAL);
+        	}
         }
 
         /**
@@ -160,7 +164,7 @@ public class QNotification {
          * @param WIDTH  The default is 300 px.
          */
         public static void setWidth(final double WIDTH) {
-            Notifier.width = WIDTH;
+            Notifier.width = WIDTH * 1366 / Screen.getPrimary().getBounds().getWidth() * 1.15 ;
         }
 
         /**
@@ -265,6 +269,7 @@ public class QNotification {
             title.getStyleClass().add("title");
 
             ImageView icon = new ImageView(NOTIFICATION.IMAGE);
+            icon.setLayoutY(5);
             icon.setFitWidth(ICON_WIDTH);
             icon.setFitHeight(ICON_HEIGHT);
 
@@ -273,7 +278,7 @@ public class QNotification {
 
             VBox popupLayout = new VBox();
             popupLayout.setSpacing(10);
-            popupLayout.setPadding(new Insets(10, 10, 10, 10));
+            popupLayout.setPadding(new Insets(10, 10, 10, left_indent));
             popupLayout.getChildren().addAll(title, message);
 
             StackPane popupContent = new StackPane();

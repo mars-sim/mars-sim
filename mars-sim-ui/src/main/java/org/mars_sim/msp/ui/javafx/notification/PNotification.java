@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.mars_sim.msp.ui.javafx;
+package org.mars_sim.msp.ui.javafx.notification;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -31,12 +31,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-
+import javafx.scene.text.TextAlignment;
 
 /**
  * Created by
@@ -77,13 +78,14 @@ public class PNotification {
     public enum Notifier {
         INSTANCE;
 
-        private static final double ICON_WIDTH    = 32;//32;//24;
-        private static final double ICON_HEIGHT   = 32;//32;//24;
-        private static       double width         = 300;
+    	private static final double left_indent		= 30;
+        private static final double ICON_WIDTH    = 72;//32;//24;
+        private static final double ICON_HEIGHT   = 72;//32;//24;
+        private static       double width         = 400;
         private static       double height        = 80;
         private static       double offsetX       = 0;
-        private static       double offsetY       = 25;
-        private static       double spacingY      = 5;
+        private static       double offsetY       = 0;//25;
+        private static       double spacingY      = 0;//5;
         private static       Pos    popupLocation = Pos.CENTER;
         private static       Stage  stageRef      = null;
         private Duration              popupLifetime;
@@ -108,7 +110,7 @@ public class PNotification {
             WARNING_ICON = new Image(this.getClass().getResourceAsStream("/icons/notification/warning.png"));
             SUCCESS_ICON = new Image(this.getClass().getResourceAsStream("/icons/notification/success.png"));
             ERROR_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/error.png"));
-            PAUSE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_pause_32.png"));//quote_24.png"));
+            PAUSE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_pause_64.png"));//quote_24.png"));
 
         }
 
@@ -145,8 +147,10 @@ public class PNotification {
          * @param OWNER
          */
         public static void setNotificationOwner(final Stage OWNER) {
-        	if (INSTANCE.stage.getOwner() == null)
+        	if (INSTANCE.stage.getOwner() == null) {
         		INSTANCE.stage.initOwner(OWNER);
+        		//INSTANCE.stage.initModality(Modality.WINDOW_MODAL);
+        	}
         }
 
         /**
@@ -306,14 +310,25 @@ public class PNotification {
             //System.out.println("starting showPopup(stage)");
             
             Label title = new Label(NOTIFICATION.TITLE);
+            title.setMaxWidth(Double.MAX_VALUE);
+            title.setAlignment(Pos.CENTER);
+            title.setTextAlignment(TextAlignment.CENTER);
             title.getStyleClass().add("title");
 
             ImageView icon = new ImageView(NOTIFICATION.IMAGE);
+            //icon.setLayoutX(40);
             icon.setFitWidth(ICON_WIDTH);
             icon.setFitHeight(ICON_HEIGHT);
 
-            Label message = new Label(NOTIFICATION.MESSAGE, icon);
+            //Label message = new Label(NOTIFICATION.MESSAGE, icon);
+            Label message = new Label(" ", icon);
+            //message.getGraphic().setLayoutY(5);
+            //message.setMaxWidth(Double.MAX_VALUE);
+            message.setAlignment(Pos.CENTER);
             message.getStyleClass().add("message");
+            message.setTextAlignment(TextAlignment.CENTER);
+            message.setPadding(new Insets(10, 10, 10, left_indent));
+            //message.setLayoutX(40);
 
             VBox popupLayout = new VBox();
             popupLayout.setSpacing(10);

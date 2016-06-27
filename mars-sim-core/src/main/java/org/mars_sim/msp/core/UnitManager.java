@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.person.Crew;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -181,10 +182,12 @@ public class UnitManager implements Serializable {
 		createInitialRobots();
 		
 		// Create pre-configured settlers as stated in people.xml
-		createConfiguredPeople();
+		createConfiguredPeople();		
+		//System.out.println("done with createConfiguredPeople() in UnitManager");
+		
 		// Create more settlers to fill the settlement(s)
 		createInitialPeople();
-
+		//System.out.println("done with createInitialPeople() in UnitManager");
 	}
 
 	/**
@@ -679,17 +682,28 @@ public class UnitManager implements Serializable {
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
 
+		//Crew crew = new Crew("Alpha");
+		// TODO: will setting a limit on # crew to 7 be easier ?
+				
 		int size = personConfig.getNumberOfConfiguredPeople();
+		
+		//int crew_id = -1;
+
 		// Create all configured people.
 		for (int x = 0; x < size; x++) {
+			
 			// Get person's name (required)
-			String name = personConfig.getConfiguredPersonName(x);
+			int crew_id = personConfig.getCrew(x);
+			//System.out.println("crew_id : " + crew_id);
+			
+			// Get person's name (required)
+			String name = personConfig.getConfiguredPersonName(x, crew_id);
 			if (name == null) {
 				throw new IllegalStateException("Person name is null");
 			}
 
 			// Get person's gender or randomly determine it if not configured.
-			PersonGender gender = personConfig.getConfiguredPersonGender(x);
+			PersonGender gender = personConfig.getConfiguredPersonGender(x, crew_id);
 			if (gender == null) {
 				gender = PersonGender.FEMALE;
 				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
@@ -698,7 +712,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Get person's settlement or randomly determine it if not configured.
-			String settlementName = personConfig.getConfiguredPersonDestination(x);
+			String settlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
 			Settlement settlement = null;
 			if (settlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
@@ -743,21 +757,22 @@ public class UnitManager implements Serializable {
 			}
 
 			// Create person and add to the unit manager.
-			Person person = new Person(name, gender, false, "Earth", settlement); // TODO:
-																			// read
-																			// from
-																			// file
+			Person person = new Person(name, gender, false, "Earth", settlement); 
+			// TODO: read fromfile
 			addUnit(person);
+			
+			//System.out.println("done with addUnit() in createConfiguredPeople() in UnitManager");
+			
 			relationshipManager.addInitialSettler(person, settlement);
 
 			// Set person's configured personality type (if any).
-			String personalityType = personConfig.getConfiguredPersonPersonalityType(x);
+			String personalityType = personConfig.getConfiguredPersonPersonalityType(x, crew_id);
 			if (personalityType != null) {
 				person.getMind().getPersonalityType().setTypeString(personalityType);
 			}
 
 			// Set person's job (if any).
-			String jobName = personConfig.getConfiguredPersonJob(x);
+			String jobName = personConfig.getConfiguredPersonJob(x, crew_id);
 			if (jobName != null) {
 				Job job = JobManager.getJob(jobName);
 				if (job != null) {
@@ -769,15 +784,16 @@ public class UnitManager implements Serializable {
 			}
 
 			// 2015-02-27 and 2015-03-24 Added Favorite class
-			String mainDish = personConfig.getFavoriteMainDish(x);
-			String sideDish = personConfig.getFavoriteSideDish(x);
-			String dessert = personConfig.getFavoriteDessert(x);
-			String activity = personConfig.getFavoriteActivity(x);
+			String mainDish = personConfig.getFavoriteMainDish(x, crew_id);
+			String sideDish = personConfig.getFavoriteSideDish(x, crew_id);
+			String dessert = personConfig.getFavoriteDessert(x, crew_id);
+			String activity = personConfig.getFavoriteActivity(x, crew_id);
 
 			person.getFavorite().setFavoriteMainDish(mainDish);
 			person.getFavorite().setFavoriteSideDish(sideDish);
 			person.getFavorite().setFavoriteDessert(dessert);
 			person.getFavorite().setFavoriteActivity(activity);
+			//System.out.println("done with setFavorite_() in createConfiguredPeople() in UnitManager");
 
 			// 2015-11-23 Set the person's configured Big Five Personality traits (if any).
 			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
@@ -822,7 +838,7 @@ public class UnitManager implements Serializable {
 			person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
 
 		}
-
+		//System.out.println("b4 calling createConfiguredRelationships() in UnitManager");
 		// Create all configured relationships.
 		createConfiguredRelationships();
 
@@ -1463,8 +1479,9 @@ public class UnitManager implements Serializable {
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
 			try {
+								
 				// Get person's name
-				String name = personConfig.getConfiguredPersonName(x);
+				String name = personConfig.getConfiguredPersonName(x, PersonConfig.ALPHA_CREW);
 				if (name == null) {
 					throw new IllegalStateException("Person name is null");
 				}

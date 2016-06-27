@@ -821,6 +821,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<person-list>
 
 		<!-- Configured person -->
+		<!-- crew: the crew designation of the person (required) -->
 		<!-- name: the person's name (required) -->
 		<!-- gender: the person's gender ("male" or "female") (optional) -->
 		<!-- personality-type: the person's MBTI personality type. (optional) -->
@@ -830,7 +831,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
 		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
 		<!-- favorite-activity: the person's favorite hobby. (optional) -->
-		<person name="Karen Andersen" gender="female" personality-type="ISTJ" settlement="Schiaparelli Point" job="Botanist"
+		<person crew ="alpha" name="Karen Andersen" gender="female" personality-type="ISTJ" settlement="Schiaparelli Point" job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
 			favorite-side-dish="Roasted Carrot Soup"
 			favorite-dessert="strawberry"
@@ -907,7 +908,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 			</relationship-list>
 
 		</person>
-		<person name="Rik Declercq" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef"
+		<person crew ="alpha" name="Rik Declercq" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef"
 			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
 			favorite-activity="Workout">
 			<personality-trait-list>
@@ -927,7 +928,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
             </skill-list>
        </person>
 
-        <person name="Leonardo DaVinci" gender="male" personality-type="INFJ" settlement="Schiaparelli Point" job="Engineer"
+        <person crew ="alpha" name="Leonardo DaVinci" gender="male" personality-type="INFJ" settlement="Schiaparelli Point" job="Engineer"
 			favorite-main-dish="Roasted Carrot Soup and Brown Rice" favorite-side-dish="Baby Carrots" favorite-dessert="craneberry juice"
 			favorite-activity="Research">
 			<personality-trait-list>
@@ -950,7 +951,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
             </skill-list>
 
         </person>
-        <person name="Lena LaGranda" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
+        <person crew ="alpha" name="Lena LaGranda" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
 			favorite-activity="Lab Experimentation">
 			<personality-trait-list>

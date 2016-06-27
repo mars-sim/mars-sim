@@ -79,9 +79,11 @@ import de.jonato.jfxc.controls.combobox.FilterComboBox;
 public class CrewEditorFX {
 
 	/** Tool name. */
-	public static final String TITLE = "Alpha Crew Editor";
+	public static final String TITLE = "Crew Editor";
 
 	public static final int SIZE_OF_CREW = PersonConfig.SIZE_OF_CREW;
+	
+	public static final int ALPHA_CREW = PersonConfig.ALPHA_CREW;
 
 	private static final double BLUR_AMOUNT = 10;
 
@@ -97,7 +99,6 @@ public class CrewEditorFX {
 	private boolean goodToGo = true;
 
 	private String destinationStr;
-
 
 	private GridPane gridPane;
 
@@ -175,7 +176,7 @@ public class CrewEditorFX {
 		BorderPane borderAll = new BorderPane();
 		borderAll.setPadding(new Insets(5, 5, 5, 5));
 
-		Label titleLabel = new Label("Alpha Crew Manifest");// - Destination : Schiaparelli Point");
+		Label titleLabel = new Label("Crew Roster");// - Destination : Schiaparelli Point");
 		titleLabel.setAlignment(Pos.CENTER);
 
 		HBox hTop = new HBox();
@@ -228,8 +229,7 @@ public class CrewEditorFX {
 	    GridPane.setConstraints(personality, 0, 4);
 	    //GridPane.setConstraints(destination, 0, 5);
 	    gridPane.getChildren().addAll(name, gender, job, personality);//, destination);
-
-
+    
 		setUpCrewName();
 		setUpCrewGender();
 		setUpCrewJob();
@@ -255,7 +255,7 @@ public class CrewEditorFX {
 				//2015-10-19 Added isBlank() and checking against invalid names
 				if (!isBlank(nameStr)) {
 					// update PersonConfig with the new name
-					personConfig.setPersonName(i, nameStr);
+					personConfig.setPersonName(i, nameStr, ALPHA_CREW);
 					//System.out.println(" name is " + nameTF.get(i).getText());
 					goodToGo = true && goodToGo;
 					//System.out.println("goodToGo is "+ goodToGo);
@@ -283,18 +283,18 @@ public class CrewEditorFX {
 					genderStr = "FEMALE";
 				//System.out.println(" gender is " + genderStr);
 				// update PersonConfig with the new gender
-				personConfig.setPersonGender(i, genderStr);
+				personConfig.setPersonGender(i, genderStr, ALPHA_CREW);
 
 				String personalityStr = getPersonality(i); //(String) personalityList.get(i).getValue();
 				//System.out.println(" personality is " + personalityStr);
 				// update PersonConfig with the new personality
-				personConfig.setPersonPersonality(i, personalityStr);
+				personConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
 
 				//String jobStr = jobTF.get(i).getText();
 				String jobStr = (String) jobsList.get(i).getValue();
 				//System.out.println(" job is " + jobStr);
 				// update PersonConfig with the new job
-				personConfig.setPersonJob(i, jobStr);
+				personConfig.setPersonJob(i, jobStr, ALPHA_CREW);
 
 				//2015-11-13 Added setPersonDestination()
 				//String destinationStr = (String) destinationsList.get(i).getValue();
@@ -302,7 +302,7 @@ public class CrewEditorFX {
 
 				if (!isBlank(destinationStr))
 					// update PersonConfig with the new destination
-					personConfig.setPersonDestination(i, destinationStr);
+					personConfig.setPersonDestination(i, destinationStr, ALPHA_CREW);
 				else {
 					goodToGo = false;
 				}
@@ -324,7 +324,7 @@ public class CrewEditorFX {
 		commitBox.getChildren().add(commitButton);
 
 		Label destLabel = new Label("Settlement Destination :  ");
-		String dest = personConfig.getConfiguredPersonDestination(0);
+		String dest = personConfig.getConfiguredPersonDestination(0, ALPHA_CREW);
 		destinationCB = setUpCB(5);		// 5 = Destination
 		destinationCB.setValue(dest);
 		//destinationsList.add(destinationCB);
@@ -441,7 +441,9 @@ public class CrewEditorFX {
 	@SuppressWarnings("restriction")
 	public void setUpCrewName() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
-			String n = personConfig.getConfiguredPersonName(i);
+		    int crew_id = personConfig.getCrew(i);
+		    // TODO: will assign this person to the crew 
+			String n = personConfig.getConfiguredPersonName(i, ALPHA_CREW);
 			SimpleStringProperty np = new SimpleStringProperty(n);
 			//System.out.println(" name is "+ n);
 				TextField tf = new TextField();
@@ -498,7 +500,7 @@ public class CrewEditorFX {
 
 		String s[] = new String[SIZE_OF_CREW];
 		for (int j = 0 ; j < SIZE_OF_CREW; j++) {
-			PersonGender n = personConfig.getConfiguredPersonGender(j);
+			PersonGender n = personConfig.getConfiguredPersonGender(j, ALPHA_CREW);
 			// convert MALE to M, FEMAL to F
 			s[j] = n.toString();
 			if (s[j].equals("MALE")) s[j] = "M";
@@ -678,7 +680,7 @@ public class CrewEditorFX {
 		String n[] = new String[SIZE_OF_CREW];
 
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
-			n[i] = personConfig.getConfiguredPersonJob(i);
+			n[i] = personConfig.getConfiguredPersonJob(i, ALPHA_CREW);
 			ComboBox<String> g = setUpCB(3);		// 3 = Job
 		    //g.setMaximumRowCount(8);
 		    gridPane.add(g, i+1, 3);			// job's row = 3

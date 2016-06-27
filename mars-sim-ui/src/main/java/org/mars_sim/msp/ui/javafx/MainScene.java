@@ -112,6 +112,8 @@ import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.BorderSlideBar;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
+import org.mars_sim.msp.ui.javafx.notification.MessagePopup;
+import org.mars_sim.msp.ui.javafx.notification.PNotification;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.steelseries.tools.Orientation;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -1438,7 +1440,9 @@ public class MainScene {
 	
 	public void startPausePopup() {
 		//System.out.println("calling startPausePopup()");   
-		messagePopup.popAMessage("        PAUSED", "Hit ESC to resume mars-sim", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
+		//messagePopup.popAMessage("PAUSED", " ESC to resume", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
+		messagePopup.popAMessage("PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
+
 	}
 
 	public void stopPausePopup() {

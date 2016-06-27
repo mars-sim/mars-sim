@@ -9,12 +9,14 @@ package org.mars_sim.msp.core.person;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * Provides configuration information about people units.
@@ -27,17 +29,20 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final int SIZE_OF_CREW = 4;
+	public static final int ALPHA_CREW = 0; ;
+	
+	//private List<String> alphaCrewName; // = new ArrayList<String>();
+	//private List<String> alphaCrewGender; // = new ArrayList<String>();
+	//private List<String> alphaCrewPersonality; //  = new ArrayList<String>();
+	//private List<String> alphaCrewJob; //  = new ArrayList<String>();
+	//private List<String> alphaCrewDestination;
+	//private List<String> alphaCrewFavoriteMainDish;
+	//private List<String> alphaCrewFavoriteSideDish;
+	//private List<String> alphaCrewFavoriteDessert;
+	//private List<String> alphaCrewFavoriteActivity;
 
-	private List<String> alphaCrewName; // = new ArrayList<String>();
-	private List<String> alphaCrewGender; // = new ArrayList<String>();
-	private List<String> alphaCrewPersonality; //  = new ArrayList<String>();
-	private List<String> alphaCrewJob; //  = new ArrayList<String>();
-	private List<String> alphaCrewDestination;
-	private List<String> alphaCrewFavoriteMainDish;
-	private List<String> alphaCrewFavoriteSideDish;
-	private List<String> alphaCrewFavoriteDessert;
-	private List<String> alphaCrewFavoriteActivity;
-
+	// 2016-06-25 Added a list of crew 
+	private List<Crew> roster = new ArrayList<>();
 	
 	// Element names
 	private static final String LAST_NAME_LIST = "last-name-list";
@@ -84,6 +89,8 @@ implements Serializable {
 	//private static final String ALPHA_TEAM = "alpha-team";
 	private static final String PERSON_LIST = "person-list";
 	private static final String PERSON = "person";
+	// 2016-06-26 Added CREW
+	private static final String CREW = "crew";
 	private static final String NAME = "name";
 	private static final String SETTLEMENT = "settlement";
 	private static final String JOB = "job";
@@ -114,6 +121,7 @@ implements Serializable {
 	 */
 	public PersonConfig(Document personDoc) {
 		this.personDoc = personDoc;
+		
 	}
 
 	/**
@@ -580,17 +588,71 @@ implements Serializable {
 		else return 0;
 	}
 
+	
+	/**
+	 * Get person's crew designation 
+	 * @param index the person's index.
+	 * @return name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public int getCrew(int index) {
+		// retrieve the person's crew designation
+		String crewString = getValueAsString(index, CREW);
+		
+		if (crewString == null) {			
+			throw new IllegalStateException("The crew designation of a person is null");
+			
+		}
+		else { 
+				
+			boolean oldCrew = false;
+			
+			Iterator<Crew> i = roster.iterator();
+			while (i.hasNext()) {
+				Crew crew = i.next();
+				// if the name does not exist, create a new crew with this name
+				if (crewString.equals(crew.getName())) {				
+					oldCrew = true;						
+					// add a new member
+					//Member m = new Member();
+					crew.add(new Member());				
+					break;
+				}
+			}
+	
+			// if this is crew name doesn't exist
+			if (!oldCrew) {
+				Crew c = new Crew(crewString);
+				c.add(new Member());
+				roster.add(c);
+			}		
+			
+			//System.out.println("crewString : " + crewString);	
+			
+			return roster.size() - 1;
+		}
+		
+	}
+	
 	/**
 	 * Gets the configured person's name.
 	 * @param index the person's index.
 	 * @return name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonName(int index) {
-		if (alphaCrewName != null)
-			return alphaCrewName.get(index) ;
-		else 
-			return getValueAsString(index,NAME);
+	public String getConfiguredPersonName(int index, int crew_id) {
+		//System.out.println("roster.get(crew_id) : " + roster.get(crew_id));
+		//System.out.println("roster.get(crew_id).getTeam().get(index) : " + roster.get(crew_id).getTeam().get(index));		
+		//System.out.println("name : " + roster.get(crew_id).getTeam().get(index).getName());		
+
+		if (roster.get(crew_id).getTeam().get(index).getName() != null)		
+			return roster.get(crew_id).getTeam().get(index).getName();   //alphaCrewName.get(index) ;
+		else {		
+			String name = getValueAsString(index,NAME);
+			//System.out.println("name : " + name);
+			return name;
+			//return getValueAsString(index,NAME);
+		}
 	}
 
 	/**
@@ -599,9 +661,9 @@ implements Serializable {
 	 * @return {@link PersonGender} or null if not found.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public PersonGender getConfiguredPersonGender(int index) {
-		if (alphaCrewGender != null)
-			return PersonGender.valueOfIgnoreCase(alphaCrewGender.get(index)) ;
+	public PersonGender getConfiguredPersonGender(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getGender() != null)
+			return PersonGender.valueOfIgnoreCase(roster.get(crew_id).getTeam().get(index).getGender());//alphaCrewGender.get(index)) ;
 		else 
 			return PersonGender.valueOfIgnoreCase(getValueAsString(index,GENDER));
 	}
@@ -612,9 +674,9 @@ implements Serializable {
 	 * @return four character string for MBTI ex. "ISTJ". Return null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonPersonalityType(int index) {
-		if (alphaCrewPersonality != null)
-			return alphaCrewPersonality.get(index) ;
+	public String getConfiguredPersonPersonalityType(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getmbti() != null)
+			return roster.get(crew_id).getTeam().get(index).getmbti();//alphaCrewPersonality.get(index) ;
 		else
 			return getValueAsString(index,PERSONALITY_TYPE);
 	}
@@ -626,9 +688,9 @@ implements Serializable {
 	 * @return the job name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonJob(int index) {
-		if (alphaCrewJob != null)
-			return alphaCrewJob.get(index) ;
+	public String getConfiguredPersonJob(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getJob() != null)
+			return roster.get(crew_id).getTeam().get(index).getJob();//alphaCrewJob.get(index) ;
 		else
 			return getValueAsString(index,JOB);
 	}
@@ -639,9 +701,9 @@ implements Serializable {
 	 * @return the settlement name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonDestination(int index) {
-		if (alphaCrewDestination != null)
-			return alphaCrewDestination.get(index);
+	public String getConfiguredPersonDestination(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getDestination() != null)
+			return roster.get(crew_id).getTeam().get(index).getDestination();//alphaCrewDestination.get(index);
 		else 
 			return getValueAsString(index,SETTLEMENT);
 	}
@@ -651,13 +713,15 @@ implements Serializable {
 	 * @param index
 	 * @param name
 	 */
-	public void setPersonName(int index, String value) {
-		if (alphaCrewName == null) 
-			alphaCrewName = new ArrayList<String>(SIZE_OF_CREW);
-		if (alphaCrewName.size() == SIZE_OF_CREW) {
-			alphaCrewName.set(index, value);
-		} else
-			alphaCrewName.add(value);
+	public void setPersonName(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getName() == null) 
+			roster.get(crew_id).getTeam().get(index).setName(value);//alphaCrewName = new ArrayList<String>(SIZE_OF_CREW);
+		
+		//if (alphaCrewName.size() == SIZE_OF_CREW) {
+		//	alphaCrewName.set(index, value);
+		//} else
+		//	alphaCrewName.add(value);
+		
 	}
 
 	/*
@@ -665,13 +729,17 @@ implements Serializable {
 	 * @param index
 	 * @param personality 
 	 */
-	public void setPersonPersonality(int index, String value) {
-		if (alphaCrewPersonality == null)  
-			alphaCrewPersonality = new ArrayList<String>(SIZE_OF_CREW);
-		if (alphaCrewPersonality.size() == SIZE_OF_CREW) {
-			alphaCrewPersonality.set(index, value);
-		} else
-			alphaCrewPersonality.add(value);
+	public void setPersonPersonality(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getmbti() == null) 
+			roster.get(crew_id).getTeam().get(index).setmbti(value);
+		
+		
+		//if (alphaCrewPersonality == null)  
+		//	alphaCrewPersonality = new ArrayList<String>(SIZE_OF_CREW);
+		//if (alphaCrewPersonality.size() == SIZE_OF_CREW) {
+		//	alphaCrewPersonality.set(index, value);
+		//} else
+		//	alphaCrewPersonality.add(value);
 	}
 
 	/*
@@ -679,13 +747,17 @@ implements Serializable {
 	 * @param index
 	 * @param gender 
 	 */
-	public void setPersonGender(int index, String value) {
-		if (alphaCrewGender == null)  
-			alphaCrewGender = new ArrayList<String>(SIZE_OF_CREW);
-		if (alphaCrewGender.size() == SIZE_OF_CREW) {
-			alphaCrewGender.set(index, value);
-		} else
-			alphaCrewGender.add(value);
+	public void setPersonGender(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getGender() == null) 
+			roster.get(crew_id).getTeam().get(index).setGender(value);
+		
+		
+		//if (alphaCrewGender == null)  
+		//	alphaCrewGender = new ArrayList<String>(SIZE_OF_CREW);
+		//if (alphaCrewGender.size() == SIZE_OF_CREW) {
+		//	alphaCrewGender.set(index, value);
+		//} else
+		//	alphaCrewGender.add(value);
 	}
 
 	/*
@@ -693,13 +765,17 @@ implements Serializable {
 	 * @param index
 	 * @param job 
 	 */
-	public void setPersonJob(int index,String value) {
-		if (alphaCrewJob == null)  
-			alphaCrewJob = new ArrayList<String>(SIZE_OF_CREW);
-		if (alphaCrewJob.size() == SIZE_OF_CREW) {
-			alphaCrewJob.set(index, value);
-		} else
-			alphaCrewJob.add(value);
+	public void setPersonJob(int index,String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getJob() == null) 
+			roster.get(crew_id).getTeam().get(index).setJob(value);
+		
+		
+		//if (alphaCrewJob == null)  
+		//	alphaCrewJob = new ArrayList<String>(SIZE_OF_CREW);
+		//if (alphaCrewJob.size() == SIZE_OF_CREW) {
+		//	alphaCrewJob.set(index, value);
+		//} else
+		//	alphaCrewJob.add(value);
 	}
 	
 	/*
@@ -707,13 +783,17 @@ implements Serializable {
 	 * @param index
 	 * @param destination 
 	 */
-	public void setPersonDestination(int index,String value) {
-		if (alphaCrewDestination == null)  
-			alphaCrewDestination = new ArrayList<String>(SIZE_OF_CREW);
-		if (alphaCrewDestination.size() == SIZE_OF_CREW) {
-			alphaCrewDestination.set(index, value);
-		} else
-			alphaCrewDestination.add(value);
+	public void setPersonDestination(int index, String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getDestination() == null) 
+			roster.get(crew_id).getTeam().get(index).setDestination(value);
+				
+		
+		//if (alphaCrewDestination == null)  
+		//	alphaCrewDestination = new ArrayList<String>(SIZE_OF_CREW);
+		//if (alphaCrewDestination.size() == SIZE_OF_CREW) {
+		//	alphaCrewDestination.set(index, value);
+		//} else
+		//	alphaCrewDestination.add(value);
 	}
 	
 	/**
@@ -859,9 +939,10 @@ implements Serializable {
 	 * @return the name of the favorite main dish name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteMainDish(int index) {
-		if (alphaCrewFavoriteMainDish != null)
-			return alphaCrewFavoriteMainDish.get(index) ;
+	public String getFavoriteMainDish(int index, int crew_id) {
+			
+		if (roster.get(crew_id).getTeam().get(index).getMainDish() != null)
+			return roster.get(crew_id).getTeam().get(index).getMainDish() ;
 		else
 			return getValueAsString(index,MAIN_DISH);
 	}
@@ -872,9 +953,9 @@ implements Serializable {
 	 * @return the name of the favorite side dish name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteSideDish(int index) {
-		if (alphaCrewFavoriteSideDish != null)
-			return alphaCrewFavoriteSideDish.get(index) ;
+	public String getFavoriteSideDish(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getSideDish() != null)
+			return roster.get(crew_id).getTeam().get(index).getSideDish() ;
 		else
 			return getValueAsString(index,SIDE_DISH);
 	}
@@ -885,9 +966,9 @@ implements Serializable {
 	 * @return the name of the favorite dessert name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteDessert(int index) {
-		if (alphaCrewFavoriteDessert != null)
-			return alphaCrewFavoriteDessert.get(index) ;
+	public String getFavoriteDessert(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getDessert() != null)
+			return roster.get(crew_id).getTeam().get(index).getDessert() ;
 		else
 			return getValueAsString(index,DESSERT);
 	}
@@ -898,9 +979,9 @@ implements Serializable {
 	 * @return the name of the favorite activity name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getFavoriteActivity(int index) {
-		if (alphaCrewFavoriteActivity != null)
-			return alphaCrewFavoriteActivity.get(index) ;
+	public String getFavoriteActivity(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getActivity() != null)
+			return roster.get(crew_id).getTeam().get(index).getActivity();
 		else
 			return getValueAsString(index,ACTIVITY);
 	}

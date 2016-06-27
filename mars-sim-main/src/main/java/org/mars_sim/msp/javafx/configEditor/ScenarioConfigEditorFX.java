@@ -560,7 +560,7 @@ public class ScenarioConfigEditorFX {
 		crewButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")));
 		//alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
 		crewButton.setOnAction((event) -> {
-			editCrewProile("alpha");
+			editCrewProfile("alpha");
 		});
 		//bottomButtonPanel.getChildren().add(alphaButton);
 
@@ -670,9 +670,9 @@ public class ScenarioConfigEditorFX {
 	}
 
 	/**
-	 * Edits team profile.
+	 * Edits team roster.
 	 */
-	private void editCrewProile(String crew) {
+	private void editCrewProfile(String crew) {
 		if (crewEditorFX == null) {
 			crewEditorFX = new CrewEditorFX(config, this);
 			//System.out.println("new CrewEditorFX()");
