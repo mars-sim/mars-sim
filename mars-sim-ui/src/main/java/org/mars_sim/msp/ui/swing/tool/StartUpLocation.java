@@ -23,9 +23,10 @@ import java.util.List;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 
-// Issue: can't run the MSP on the "active" monitor.
-// by default MSP runs on the primary monitor (aka monitor 1 as reported by windows os) only.
-// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
+// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
+// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
+// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
+// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
 
 /**
 * X-Y position of a Window on active screen at startup if more than one screen.

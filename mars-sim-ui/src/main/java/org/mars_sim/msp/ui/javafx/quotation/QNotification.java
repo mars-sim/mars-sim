@@ -16,6 +16,9 @@
 
 package org.mars_sim.msp.ui.javafx.quotation;
 
+import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
+
+import javafx.scene.layout.AnchorPane;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -78,15 +81,16 @@ public class QNotification {
         private static final double ICON_HEIGHT   = 48;//32;//24;
         private static       double width         = 400;
         private static       double height        = 80;
-        private static       double offsetX       = 0;
-        private static       double offsetY       = 25;
-        private static       double spacingY      = 5;
+        private static       double offsetX       = 7;
+        private static       double offsetY       = 32;
+        private static       double spacingY      = 10;
         private static       Pos    popupLocation = Pos.TOP_RIGHT;
         private static       Stage  stageRef      = null;
         private Duration              popupLifetime;
         private Stage                 stage;
         private Scene                 scene;
         private ObservableList<Popup> popups;
+        private static AnchorPane anchorPane;
 
 
         // ******************** Constructor ***************************************
@@ -144,6 +148,10 @@ public class QNotification {
         	}
         }
 
+        public static void setPane(final AnchorPane anchorPane) {
+        	INSTANCE.anchorPane = anchorPane;
+        }
+        
         /**
          * @param OFFSET_X  The horizontal shift required.
          * <br> The default is 0 px.
@@ -164,14 +172,17 @@ public class QNotification {
          * @param WIDTH  The default is 300 px.
          */
         public static void setWidth(final double WIDTH) {
-            Notifier.width = WIDTH * 1366 / Screen.getPrimary().getBounds().getWidth() * 1.15 ;
+/*           //Notifier.width = WIDTH * res / 1920 / 1.05 ;
+*/
+            Notifier.width = WIDTH / 1.25; // 547 - > 438 is optimal
+            //System.out.println("adjusted width is " + Math.round(WIDTH / 1.25));
         }
 
         /**
          * @param HEIGHT  The default is 80 px.
          */
         public static void setHeight(final double HEIGHT) {
-            Notifier.height = HEIGHT;
+            Notifier.height = HEIGHT / 1.10;
         }
 
         /**
@@ -330,12 +341,31 @@ public class QNotification {
         }
 
         private double getX() {
-            if (null == stageRef) return calcX( 0.0, Screen.getPrimary().getBounds().getWidth() );
+        	double w1 = Screen.getPrimary().getBounds().getWidth();
+        	double w2 = 0;
+        	if (Screen.getScreens().size() == 2) {
+           		w2 = Screen.getScreens().get(1).getBounds().getWidth();
+        	}
+        	
+        	// check if mainScene is on primary or secondary and set w0
+        	double w0 = getMonitor();
+        	
+        	
+            if (null == stageRef) return calcX( 0.0, w0 );
 
             return calcX(stageRef.getX(), stageRef.getWidth());
         }
         private double getY() {
-            if (null == stageRef) return calcY( 0.0, Screen.getPrimary().getBounds().getHeight() );
+        	double h1 = Screen.getPrimary().getBounds().getWidth();
+        	double h2 = 0;
+        	if (Screen.getScreens().size() == 2) {
+           		h2 = Screen.getScreens().get(1).getBounds().getWidth();
+        	}
+        	
+        	// check if mainScene is on primary or secondary and set h0
+        	double h0 = getMonitor();
+        	
+            if (null == stageRef) return calcY( 0.0, h0 );
 
             return calcY(stageRef.getY(), stageRef.getHeight());
         }
@@ -356,8 +386,39 @@ public class QNotification {
                 default: return 0.0;
             }
         }
+        
+        //2016-06-27 Added getMonitor()
+    	public int getMonitor() {
+    		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
+    		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
+    		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
+    		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
+
+    		StartUpLocation startUpLoc = new StartUpLocation(anchorPane.getPrefWidth(), anchorPane.getPrefHeight());
+            double xPos = startUpLoc.getXPos();
+            double yPos = startUpLoc.getYPos();
+            // Set Only if X and Y are not zero and were computed correctly
+         	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
+         	//ObservableList<Screen> screens = Screen.getScreens();	
+        	//System.out.println("# of monitors : " + screens.size());
+
+            if (xPos != 0 && yPos != 0) {
+                //stage.setX(xPos);
+                //stage.setY(yPos);
+                //stage.centerOnScreen();
+                //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
+                return 0;
+            } else {
+                //stage.centerOnScreen();
+                //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
+                return 1;
+            }
+    	}
     }
     
+	
+
+		
 	public void destroy() {
 
 	    //this = null;

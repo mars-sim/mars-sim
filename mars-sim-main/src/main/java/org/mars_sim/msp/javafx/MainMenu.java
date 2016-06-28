@@ -549,7 +549,6 @@ public class MainMenu {
 		}
 	   }
 */
-	   mainScene.openInitialWindows();
 
 	   //stage.setIconified(false);
 	   
@@ -566,6 +565,8 @@ public class MainMenu {
 	   //Platform.runLater(() -> {
 	   //   circleStage.close();
 	   //});
+
+	   mainScene.openInitialWindows();
 
        mainSceneStage.requestFocus();
 
@@ -686,8 +687,9 @@ public class MainMenu {
 	}
 	
 	public void setMonitor(Stage stage) {
-		// Issue: can't run the MSP on the "active" monitor.
-		// by default MSP runs on the primary monitor (aka monitor 1 as reported by windows os) only.
+		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
+		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
+		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
 
 		StartUpLocation startUpLoc = new StartUpLocation(root.getPrefWidth(), root.getPrefHeight());
@@ -702,11 +704,11 @@ public class MainMenu {
             stage.setX(xPos);
             stage.setY(yPos);
             stage.centerOnScreen();
-            //System.out.println(" x : " + xPos + "   y : " + yPos);
+            //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
         } else {
             stage.centerOnScreen();
             //System.out.println("calling centerOnScreen()");
-            //System.out.println(" x : " + xPos + "   y : " + yPos);
+            //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
         }
         
 		

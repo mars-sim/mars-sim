@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.quotation.Quotation;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
 import org.mars_sim.msp.core.structure.building.function.CropConfig;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.notification.PNotification;
 
 import javafx.stage.Stage;
@@ -55,6 +56,7 @@ public class QuotationPopup implements Serializable {
 	
 	private Map<Integer, Quotation> quotations;
 	
+	private MainScene mainScene;
     private QNotification.Notifier notifier = QNotification.Notifier.INSTANCE;
 	//private Timer timer;	
 	private Object[] quoteArray;	
@@ -63,7 +65,8 @@ public class QuotationPopup implements Serializable {
 	
     /** Constructs a quotation object for creating a quote popup
      */
-    public QuotationPopup() {     		
+    public QuotationPopup(MainScene mainScene) {   
+    	this.mainScene = mainScene;
     	QuotationConfig quotationConfig = SimulationConfig.instance().getQuotationConfiguration();
     	quotations = quotationConfig.getQuotations();
     	quoteArray = quotations.values().toArray();         
@@ -71,7 +74,6 @@ public class QuotationPopup implements Serializable {
     	
     	Duration duration = new Duration(POPUP_IN_MILLISECONDS);       
         notifier.setPopupLifetime(duration); 
-        //Notification.Notifier.setPopupLocation(stage, Pos.TOP_RIGHT);
        
     }
 
@@ -109,15 +111,16 @@ public class QuotationPopup implements Serializable {
 		
 		int numWhiteSpace = 0;
 		int new_height = 0;
-		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON + 15; ;
+		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON + 17;
 	
+		
 		if (strSize < CHARS_PER_LINE) {
 			// case 1: the quote is a short one-liner, type the author name on the second line.
 			numWhiteSpace = (int)(strSize - nameSize);
 			
-			new_width = (int)(strSize * 10) + SIZE_ICON + 15;
+			new_width = (int)(strSize * 10) + SIZE_ICON + 17;
 
-			new_height = BASE_HEIGHT + HEIGHT_PER_LINE;
+			new_height = BASE_HEIGHT + HEIGHT_PER_LINE * 2;
 			
 			str += System.lineSeparator();//"\n";
 			
@@ -168,16 +171,14 @@ public class QuotationPopup implements Serializable {
 		str += nameLine;
 		
 		//System.out.println(str);	
-		
-
-        //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-
 
         //Duration duration = new Duration(POPUP_IN_MILLISECONDS);       
         //notifier.setPopupLifetime(duration);        
         QNotification.Notifier.setNotificationOwner(stage);
-        //notifier.setPopupLocation(stage, Pos.TOP_RIGHT);
+        QNotification.Notifier.setPane(mainScene.getAnchorPane());
+        notifier.setPopupLocation(stage, Pos.TOP_RIGHT);
         QNotification.Notifier.setHeight(new_height);
+        //System.out.println("new_width is " + new_width);
         QNotification.Notifier.setWidth(new_width);
 		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON)
 		notifier.notify(" QUOTATION", str, QNotification.QUOTE_ICON); //INFO_ICON);

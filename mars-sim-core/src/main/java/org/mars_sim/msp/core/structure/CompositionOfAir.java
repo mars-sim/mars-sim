@@ -44,6 +44,9 @@ public class CompositionOfAir implements Serializable {
 	private static Logger logger = Logger.getLogger(CompositionOfAir.class.getName());
 	private static final double C_TO_K = 273.15;
 	private static final int numGases = 5;
+	private static final int HEIGHT = 3;
+	
+	
 	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
     public static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
     // The standard atmosphere (symbol: atm) is a unit of pressure equal to 101325
@@ -173,7 +176,7 @@ public class CompositionOfAir implements Serializable {
 
 				double t =  22.5 + C_TO_K ;
 				temperature [i][id] = t;
-				double vol = b.getWidth() * b.getLength() * 2.5 * 1000;
+				double vol = b.getWidth() * b.getLength() * HEIGHT * 1000;
 				volume [id] = vol;
 				numMoles [i][id] = partialPressure [i][id] * vol / R_GAS_CONSTANT / t;
 				totalMoles [id] += numMoles [i][id];

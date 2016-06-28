@@ -1,9 +1,16 @@
 package org.mars_sim.msp.core.person;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Logger;
 
-public class Member {
-	
+public class Member implements Serializable {
+
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+
+    private static Logger logger = Logger.getLogger(Member.class.getName());
+
 	private String name; 
 	private String gender;
 	private String mbti; 

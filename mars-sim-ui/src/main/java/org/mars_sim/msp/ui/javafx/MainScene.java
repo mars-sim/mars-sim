@@ -1005,7 +1005,7 @@ public class MainScene {
 		String t = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
 		// Check if new simulation is being created or loaded from file.
 		if (Simulation.isUpdating() || Simulation.instance().getMasterClock().isPaused()) {
-			timeText.setText(" [ Paused ]  " + t + "  ");		
+			timeText.setText(" [ PAUSE ]  Note: ESC to resume  " + t + "  ");		
 		}
 		
 		else { 
@@ -1441,7 +1441,7 @@ public class MainScene {
 	public void startPausePopup() {
 		//System.out.println("calling startPausePopup()");   
 		//messagePopup.popAMessage("PAUSED", " ESC to resume", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
-		messagePopup.popAMessage("PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
+		messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
 
 	}
 
@@ -1788,7 +1788,7 @@ public class MainScene {
 		//marsNode.createChatBox();
 
 		messagePopup = new MessagePopup();
-		quote = new QuotationPopup();
+		quote = new QuotationPopup(this);
 
 		popAQuote();	
    		
@@ -1871,6 +1871,10 @@ public class MainScene {
 		return borderPane;
 	}
 
+	public AnchorPane getAnchorPane() {
+		return anchorPane;
+	}
+	
 	public MenuBar getMenuBar() {
 		return menuBar;
 	}

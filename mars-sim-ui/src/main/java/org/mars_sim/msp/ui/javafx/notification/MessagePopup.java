@@ -134,51 +134,6 @@ public class MessagePopup implements Serializable {
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 		}
 		
-		
-/*		
-		int height = 0;
-		int new_width = WIDTH;
-		int base_height = 25 * 2 ;
-		
-		if (strSize < CHARS_PER_LINE) {
-			
-			numWhiteSpace = (int)(strSize - nameSize);
-			
-			new_width = (int)(strSize * 7.818);
-			new_width = 50 + new_width;
-			
-			height = base_height + 15;
-			
-			msg += System.lineSeparator();//"\n";
-			
-			//System.out.println("Case 1 : quote can fit one line ");
-			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
-			
-		}
-		else if (remaining > nameSize) {
-			numWhiteSpace = (int)(remaining - nameSize);
-			
-			//new_width = (int)((numWhiteSpace + nameSize) * 7.818);
-			//WIDTH = 40 + new_width;
-
-			height = base_height + 20 * numLines;
-
-			//System.out.println("Case 2 : last line can fit author's name");
-			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
-		}	
-		else {
-			numWhiteSpace = (int)(CHARS_PER_LINE - nameSize);	
-		
-			//new_width = (int)((numWhiteSpace + nameSize) * 7.818);
-			//WIDTH = 40 + new_width;
-			
-			height = base_height + 20 * (numLines + 1);
-		
-			msg += System.lineSeparator();//"\n";
-			//System.out.println("Case 3 : last line cannot fit author's name");
-			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
-		}
-*/		
 
 		StringBuffer nameLine = new StringBuffer ("");
 		for (int i = 0; i < numWhiteSpace; i++)

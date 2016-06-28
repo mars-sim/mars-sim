@@ -83,9 +83,9 @@ public class PNotification {
         private static final double ICON_HEIGHT   = 72;//32;//24;
         private static       double width         = 400;
         private static       double height        = 80;
-        private static       double offsetX       = 0;
-        private static       double offsetY       = 0;//25;
-        private static       double spacingY      = 0;//5;
+        private static       double offsetX       = 25;
+        private static       double offsetY       = 25;
+        private static       double spacingY      = 5;
         private static       Pos    popupLocation = Pos.CENTER;
         private static       Stage  stageRef      = null;
         private Duration              popupLifetime;
