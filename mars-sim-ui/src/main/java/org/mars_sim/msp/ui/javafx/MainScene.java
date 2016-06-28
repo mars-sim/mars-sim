@@ -260,7 +260,7 @@ public class MainScene {
 		// Detect if a user hits ESC
 		setEscapeEventHandler(true);
 		
-		createProgressCircle("Loading");
+		//createProgressCircle("Loading");
 		
 	}
 
@@ -307,7 +307,7 @@ public class MainScene {
 	 */
 	public void prepareMainScene() {
 		//createProgressCircle();
-		showLoadingStage();
+		//showLoadingStage();
 		//logger.info("MainScene's prepareMainScene() is in " + Thread.currentThread().getName() + " Thread");
 		Simulation.instance().getSimExecutor().submit(new MainSceneTask());
 	}
@@ -1830,7 +1830,7 @@ public class MainScene {
 		  });
 */		
 		
-		hideLoadingStage();
+		//hideLoadingStage();
 		
 		createProgressCircle("Saving");
 		createProgressCircle("Paused");
@@ -1965,6 +1965,7 @@ public class MainScene {
 
  	public void showLoadingStage() {
 		Platform.runLater(() -> {
+			setMonitor(loadingCircleStage);
 			loadingCircleStage.show();
 			//loadingCircleStage.requestFocus();
 		});		
@@ -1972,12 +1973,15 @@ public class MainScene {
  	 	
  	 	
  	public void hideLoadingStage() {
- 		Platform.runLater(() -> loadingCircleStage.hide());
+ 		Platform.runLater(() -> {
+			loadingCircleStage.hide();	 
+ 		});
  	}
 
 
  	public void showPausedStage() {
 		Platform.runLater(() -> {
+			setMonitor(loadingCircleStage);
 			pausedCircleStage.show();
 			//pausedCircleStage.requestFocus();
 		});		
@@ -1989,6 +1993,7 @@ public class MainScene {
 
  	public void showSavingStage() {
 		Platform.runLater(() -> {
+			setMonitor(savingCircleStage);
 			savingCircleStage.show();
 			//System.out.println("showSavingStage()");//savingCircleStage.requestFocus();		
 		});		
@@ -2001,6 +2006,34 @@ public class MainScene {
  		});
  	}
 
+ 	// 2016-06-27 Added setMonitor()
+	public void setMonitor(Stage stage) {
+		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
+		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
+		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
+		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
+
+		StartUpLocation startUpLoc = new StartUpLocation(anchorPane.getPrefWidth(), anchorPane.getPrefHeight());
+        double xPos = startUpLoc.getXPos();
+        double yPos = startUpLoc.getYPos();
+        // Set Only if X and Y are not zero and were computed correctly
+     	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
+     	//ObservableList<Screen> screens = Screen.getScreens();	
+    	//System.out.println("# of monitors : " + screens.size());
+
+        if (xPos != 0 && yPos != 0) {
+            stage.setX(xPos);
+            stage.setY(yPos);
+            stage.centerOnScreen();
+            //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
+        } else {
+            stage.centerOnScreen();
+            //System.out.println("calling centerOnScreen()");
+            //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
+        }  
+		
+	}
+	
  	
 	public void destroy() {
 

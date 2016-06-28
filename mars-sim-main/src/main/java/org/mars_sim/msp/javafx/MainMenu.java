@@ -146,7 +146,7 @@ public class MainMenu {
 
     //private Group root;
     private StackPane root;
-	private Stage stage, mainSceneStage, circleStage;//, waitStage;
+	private Stage stage, mainSceneStage, circleStage, loadingCircleStage;//, waitStage;
 	public Scene mainMenuScene, mainSceneScene;
 
 	public MainMenu mainMenu;
@@ -287,6 +287,8 @@ public class MainMenu {
 	   
        stage.show();
 
+       createProgressCircle("Loading");
+		
    }
 
 	
@@ -370,7 +372,7 @@ public class MainMenu {
 		if (selectedFile != null) {
 			fileLocn = selectedFile;
 		
-			mainScene.showLoadingStage();		
+			showLoadingStage();		
 			stage.setIconified(true);
 			stage.hide();		
 			//waitStage = new Stage();
@@ -458,7 +460,7 @@ public class MainMenu {
 		if (selectedFile != null) {
 			fileLocn = selectedFile;
 	
-			mainScene.showLoadingStage();
+			showLoadingStage();
 	
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
 			logger.info("Restarting " + Simulation.WINDOW_TITLE);
@@ -495,6 +497,7 @@ public class MainMenu {
 			mainSceneStage.show();
 			mainSceneStage.requestFocus();
 			
+			hideLoadingStage();
 		});
 	   
 			
@@ -570,6 +573,7 @@ public class MainMenu {
 
        mainSceneStage.requestFocus();
 
+       hideLoadingStage();
 	   //logger.info("done with mainSceneStage.show() in MainMenu's prepareStage()");
 	}
 
@@ -635,7 +639,7 @@ public class MainMenu {
    /*
     * Create the progress circle animation while waiting for loading the main scene
     */
-	public void createProgressCircle() {
+	public void createProgressCircle(String title) {
 
 		StackPane stackPane = new StackPane();
 
@@ -645,8 +649,9 @@ public class MainMenu {
 		//controlsPane.setCenter(new TableView<Void>());
 
 		MaskerPane indicator = new MaskerPane();
-		indicator.setScaleX(1.2);
-		indicator.setScaleY(1.2);
+ 		indicator.setText(title);
+ 		indicator.setScaleX(1.5);
+ 		indicator.setScaleY(1.5);
 
 		//indicator.setMaxSize(200, 200);
 /*
@@ -663,18 +668,28 @@ public class MainMenu {
 		stackPane.setBackground(Background.EMPTY);
 		//stackPane.setScaleX(1.2);
 		//stackPane.setScaleY(1.2);
-
-		circleStage = new Stage();
-		Scene scene = new Scene(stackPane);//, 200, 200);
-		scene.setFill(Color.TRANSPARENT);
-		circleStage.initStyle (StageStyle.TRANSPARENT);
-		circleStage.setScene(scene);
+ 		stackPane.setStyle(
+      		   //"-fx-border-style: none; "
+      		   //"-fx-background-color: #231d12; "
+         		"-fx-background-color: transparent; "
+         		//+ "-fx-background-radius: 1px;"
+         		);     
+ 		
 		
+ 		Scene scene = new Scene(stackPane, 150, 150);
+ 		scene.setFill(Color.TRANSPARENT);
+ 
+		loadingCircleStage = new Stage();
+ 		loadingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+ 
+ 		loadingCircleStage.initStyle (StageStyle.TRANSPARENT);
+ 		loadingCircleStage.setScene(scene);
+	
 		//2016-02-07 Added calling setMonitor()
-		setMonitor(circleStage);
-        circleStage.show();
-
-        //return indicator;
+		setMonitor(loadingCircleStage);
+		
+ 		loadingCircleStage.hide();	
+		//loadingCircleStage.show();
 	}
 
 	public void chooseScreen(int num) {
@@ -709,8 +724,7 @@ public class MainMenu {
             stage.centerOnScreen();
             //System.out.println("calling centerOnScreen()");
             //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
-        }
-        
+        }  
 		
 	}
 	
@@ -734,6 +748,21 @@ public class MainMenu {
 	//	return waiti;
 	//}
 	
+	
+ 	public void showLoadingStage() {
+		Platform.runLater(() -> {
+			setMonitor(loadingCircleStage);
+			loadingCircleStage.show();
+			//loadingCircleStage.requestFocus();
+		});		
+ 	}
+ 	
+ 	public void hideLoadingStage() {
+ 		Platform.runLater(() -> {
+			loadingCircleStage.hide();	 
+ 		});
+ 	}
+
 	public void destroy() {
 
 		root = null;

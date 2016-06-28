@@ -536,19 +536,48 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Wendy" gender="female" sponsor="ESA" />
 		<first-name value="Yvonne" gender="female" sponsor="ESA" />
 
-		<first-name value="c" gender="male" sponsor="ISRO" />
-		<first-name value="d" gender="male" sponsor="ISRO" />
 
-		<first-name value="e" gender="female" sponsor="ISRO" />
-		<first-name value="f" gender="female" sponsor="ISRO" />
+		<!-- http://babynamescountry.com/origins/popular_indian_baby_names1.html  
+		https://www.quora.com/Which-is-the-most-common-surname-and-first-name-in-India-->
+		<first-name value="Nikhil" gender="male" sponsor="ISRO" />
+		<first-name value="Talan" gender="male" sponsor="ISRO" />
+		<first-name value="Raj" gender="male" sponsor="ISRO" />
+		<first-name value="Aditya" gender="male" sponsor="ISRO" />
+		<first-name value="Rahul" gender="male" sponsor="ISRO" />
+		<first-name value="Rakesh" gender="male" sponsor="ISRO" />
+		<first-name value="Dhruv" gender="male" sponsor="ISRO" />
+		<first-name value="Abhishek" gender="male" sponsor="ISRO" />
+		<first-name value="yash" gender="male" sponsor="ISRO" />
+		<first-name value="Rohit" gender="male" sponsor="ISRO" />
+		<first-name value="rajesh" gender="male" sponsor="ISRO" />
+		<first-name value="harish" gender="male" sponsor="ISRO" />
+
+
+		<first-name value="Anjali" gender="female" sponsor="ISRO" />
+		<first-name value="Naima" gender="female" sponsor="ISRO" />
+		<first-name value="Shreya" gender="female" sponsor="ISRO" />
+		<first-name value="Sneha" gender="female" sponsor="ISRO" />
+		<first-name value="priyanka" gender="female" sponsor="ISRO" />
+		<first-name value="aditi" gender="female" sponsor="ISRO" />
+		<first-name value="Shreya" gender="female" sponsor="ISRO" />
+		<first-name value="Kavitha" gender="female" sponsor="ISRO" />
+		<first-name value="Tanya" gender="female" sponsor="ISRO" />
+		<first-name value="nishi" gender="female" sponsor="ISRO" />
+		<first-name value="rhea" gender="female" sponsor="ISRO" />
+		<first-name value="Tanvi" gender="female" sponsor="ISRO" />
+
 	
 	
 
+		<!-- 
+		-->
 		<first-name value="g" gender="male" sponsor="JAXA" />
 		<first-name value="h" gender="male" sponsor="JAXA" />
+	
 		
 		<first-name value="Chiaki" gender="female" sponsor="JAXA" />
 		<first-name value="Naoko" gender="female" sponsor="JAXA" />
+	
 	
 
 		<first-name value="i" gender="male" sponsor="NASA" />
@@ -715,8 +744,33 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Tamm"  sponsor="ESA" />
 
 
-		<last-name value="ee"  sponsor="ISRO" />
-		<last-name value="ff"  sponsor="ISRO" />
+		<!-- top 22 common Indian suranames 
+		http://www.lowchensaustralia.com/names/popular-indian-names.htm  
+		https://in.answers.yahoo.com/question/index?qid=20061208222415AAsxQ59
+		-->
+		
+		<last-name value="Kumar"  sponsor="ISRO" />
+		<last-name value="Lal"  sponsor="ISRO" />
+		<last-name value="Sharma"  sponsor="ISRO" />
+		<last-name value="Shan"  sponsor="ISRO" />
+		<last-name value="Jai"  sponsor="ISRO" />
+		<last-name value="Pal"  sponsor="ISRO" />
+		<last-name value="Aggarwal"  sponsor="ISRO" />
+		<last-name value="Raje"  sponsor="ISRO" />
+		<last-name value="Chande"  sponsor="ISRO" />
+		<last-name value="Chander"  sponsor="ISRO" />
+		<last-name value="Nara"  sponsor="ISRO" />
+		<last-name value="Rai"  sponsor="ISRO" />
+		<last-name value="Nath"  sponsor="ISRO" />
+		<last-name value="Goel"  sponsor="ISRO" />
+		<last-name value="Bhat"  sponsor="ISRO" />
+		<last-name value="Raji"  sponsor="ISRO" />
+		<last-name value="Anand"  sponsor="ISRO" />
+		<last-name value="Suri"  sponsor="ISRO" />
+		<last-name value="Kappor"  sponsor="ISRO" />
+		<last-name value="Chandra"  sponsor="ISRO" />
+		<last-name value="Patel"  sponsor="ISRO" />
+		<last-name value="Verma"  sponsor="ISRO" />
 
 
 		<last-name value="gg"  sponsor="JAXA" />
@@ -798,7 +852,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
 		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
 		<!-- favorite-activity: the person's favorite hobby. (optional) -->
-		<person crew ="alpha" name="Karen Andersen" gender="female" personality-type="ISTJ" settlement="Schiaparelli Point" job="Botanist"
+		<person name="Karen Andersen" crew ="alpha" gender="female" personality-type="ISTJ" settlement="Schiaparelli Point" job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
 			favorite-side-dish="Roasted Carrot Soup"
 			favorite-dessert="strawberry"
@@ -875,7 +929,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 			</relationship-list>
 
 		</person>
-		<person crew ="alpha" name="Rik Declercq" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef"
+		<person name="Rik Declercq" crew ="alpha" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef"
 			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
 			favorite-activity="Workout">
 			<personality-trait-list>
@@ -895,7 +949,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
             </skill-list>
        </person>
 
-        <person crew ="alpha" name="Leonardo DaVinci" gender="male" personality-type="INFJ" settlement="Schiaparelli Point" job="Engineer"
+        <person name="Leonardo DaVinci" crew ="alpha" gender="male" personality-type="INFJ" settlement="Schiaparelli Point" job="Engineer"
 			favorite-main-dish="Roasted Carrot Soup and Brown Rice" favorite-side-dish="Baby Carrots" favorite-dessert="craneberry juice"
 			favorite-activity="Research">
 			<personality-trait-list>
@@ -918,7 +972,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
             </skill-list>
 
         </person>
-        <person crew ="alpha" name="Lena LaGranda" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
+        <person name="Lena LaGranda" crew ="alpha" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
 			favorite-activity="Lab Experimentation">
 			<personality-trait-list>

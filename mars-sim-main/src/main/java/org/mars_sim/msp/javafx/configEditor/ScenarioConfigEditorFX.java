@@ -607,7 +607,7 @@ public class ScenarioConfigEditorFX {
 		public void run() {
 			//logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
 			//mainScene.createProgressCircle();
-			mainScene.showLoadingStage();
+			mainMenu.showLoadingStage();
 			
 			//boolean isDone = false;
 			Simulation.createNewSimulation();

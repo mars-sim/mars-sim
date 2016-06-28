@@ -68,7 +68,8 @@ extends JInternalFrame {
 			//else if (announcement.contains("Paused"))
 			//	desktop.getMainScene().showPausedStage();
 			} else if (announcement.contains("Loading"))
-				desktop.getMainScene().showLoadingStage();
+				//desktop.getMainScene().showLoadingStage();
+				;
 		}
 		else {
 			announcementLabel.setText(announcement);			
