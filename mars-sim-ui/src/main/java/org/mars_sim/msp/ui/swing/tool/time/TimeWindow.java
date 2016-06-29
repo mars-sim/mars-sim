@@ -192,9 +192,7 @@ implements ClockListener {
 
 		// Create Martian season label
 		JLabel marsSeasonLabel = new JLabel(Msg.getString("TimeWindow.martianSeasons"), JLabel.CENTER); //$NON-NLS-1$
-		balloonToolTip.createBalloonTip(marsSeasonLabel, Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
 		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
-
 
 		// Create Northern season label
 		northernSeasonLabel = new JLabel(
@@ -205,6 +203,8 @@ implements ClockListener {
 		);
 		marsSeasonPane.add(northernSeasonLabel, BorderLayout.CENTER);
 
+		balloonToolTip.createBalloonTip(northernSeasonLabel, Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+
 		// Create Southern season label
 		southernSeasonLabel = new JLabel(
 			Msg.getString(
@@ -214,6 +214,9 @@ implements ClockListener {
 		);
 		marsSeasonPane.add(southernSeasonLabel, BorderLayout.SOUTH);
 
+		balloonToolTip.createBalloonTip(southernSeasonLabel, Msg.getString("TimeWindow.season.toolTip"), BalloonToolTip.Orientation.RIGHT_ABOVE); //$NON-NLS-1$
+
+		
 		// Create Earth time panel
 		JPanel earthTimePane = new JPanel(new BorderLayout());
 		earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
@@ -522,6 +525,8 @@ implements ClockListener {
 	
 	
 	@Override
+	
+	// Called by Masterclock's firePauseChange() since TimeWindow is on clocklistener
 	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or .play()
 	public void pauseChange(boolean isPaused) {
 		//System.out.println("TimeWindow : calling pauseChange()");
@@ -532,8 +537,8 @@ implements ClockListener {
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
 			//if (mainScene != null)
 			Simulation.instance().getAutosaveTimeline().pause();
-			//if (desktop.getMainScene() != null)
-			//	Platform.runLater(() -> desktop.getMainScene().startPausePopup());
+			if (desktop.getMainScene() != null)
+				Platform.runLater(() -> desktop.getMainScene().startPausePopup());
 			
 		} else {
 			
@@ -542,8 +547,8 @@ implements ClockListener {
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
 			//if (mainScene != null)
 			Simulation.instance().getAutosaveTimeline().play();
-			//if (desktop.getMainScene() != null)
-			//	Platform.runLater(() -> desktop.getMainScene().stopPausePopup());
+			if (desktop.getMainScene() != null)
+				Platform.runLater(() -> desktop.getMainScene().stopPausePopup());
 	
 		}
 	}

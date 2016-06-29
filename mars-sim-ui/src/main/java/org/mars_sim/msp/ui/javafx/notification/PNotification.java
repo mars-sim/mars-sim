@@ -83,7 +83,7 @@ public class PNotification {
         private static final double ICON_HEIGHT   = 72;//32;//24;
         private static       double width         = 400;
         private static       double height        = 80;
-        private static       double offsetX       = 25;
+        private static       double offsetX       = 40;
         private static       double offsetY       = 25;
         private static       double spacingY      = 5;
         private static       Pos    popupLocation = Pos.CENTER;
@@ -92,6 +92,7 @@ public class PNotification {
         private Stage                 stage;
         private Scene                 scene;
         private ObservableList<Popup> popups;
+        private boolean					isOn		= false;
 
 
         // ******************** Constructor ***************************************
@@ -192,6 +193,7 @@ public class PNotification {
         }
 
         public void stop() {
+            isOn = false;
             popups.clear();
             stage.close();
         }
@@ -370,12 +372,16 @@ public class PNotification {
 
        	 
             if (stage.isShowing()) {
-            	stage.toFront();
+            	//stage.toFront();
             } else {
                 stage.show();
+                
             }
 
             POPUP.show(stage);
+            isOn = true;
+            stage.toFront();
+            
 		
             if (popupLifetime != Duration.ZERO)
             	timeline.play();
@@ -410,6 +416,23 @@ public class PNotification {
                 default: return 0.0;
             }
         }
+        
+        public boolean getIsOn() {
+        	return isOn;
+        }
+/*
+        public boolean hasOnePopup() {
+        	if (popups.size() > 0) {
+        		if ((Stage)(popups.get(0).).isShowing())
+        	//if (popups.size() > 0)
+        			return true;
+        		else 
+        			return false;
+        	}
+            else 
+            	return false;
+        }
+*/
     }
     
 	public void destroy() {

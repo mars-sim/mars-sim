@@ -7,6 +7,7 @@
 
 	<!-- Potable water -->
 	<!-- name - the name of the resource. -->
+	<!-- type - the type of the resource (optional). -->	
 	<!-- phase - the normal phase of the resource as used. -->
 	<!--         Possible values: "solid", "liquid" or "gas" -->
 	<!-- life-support - Is the resource used for life support? -->
@@ -47,93 +48,94 @@
 	<resource name="chlorine" phase="gas"/>
 
 <!-- Cooking Condiment -->
-	<resource name="baking powder" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
-	<resource name="epsom salt" phase="solid" edible="true">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
-	<resource name="table salt" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="yeast" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
+	<resource name="baking powder" type="food" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="epsom salt" type="food" phase="solid" edible="true">Magnesium Sulfate as bath salt to soothe sore muscles or for gardeners to improve crops. </resource>
+	<resource name="table salt" type="food" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
+	<resource name="yeast" type="food" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
 <!-- Soybean-derived food items -->
-	<resource name="okara" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
+	<resource name="okara" type="dfood" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
-	<resource name="soybean ash" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
-	<resource name="soybean oil" phase="liquid" edible="true">Oil derived from Soybean.</resource>
-	<resource name="soymilk" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and grinding them with water.</resource>
-	<resource name="soy fiber" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
-	<resource name="soy flour" phase="solid" edible="true">Flour made from ground Soybean.</resource>
-	<resource name="soy protein" phase="solid">Protein extract derived from Soybean.</resource>
-	<resource name="soy sprout" phase="solid" edible="true">Sprouted Soybean.</resource>
-	<resource name="tofu" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
+	<resource name="soybean ash" type="food" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
+	<resource name="soybean oil" type="food" phase="liquid" edible="true">Oil derived from Soybean.</resource>
+	<resource name="soymilk" type="food" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and grinding them with water.</resource>
+	<resource name="soy fiber" type="food" phase="solid" edible="true">Light yellow, silky protein Soybean fiber .</resource>
+	<resource name="soy flour" type="food" phase="solid" edible="true">Flour made from ground Soybean.</resource>
+	<resource name="soy protein" type="food" phase="solid">Protein extract derived from Soybean.</resource>
+	<resource name="soy sprout" type="food" phase="solid" edible="true">Sprouted Soybean.</resource>
+	<resource name="tofu" type="food" phase="solid" edible="true">Tofu made of Okara from Soybean.</resource>
 
 
 <!-- Utility Items derived from crop harvest -->
-	<resource name="cane fiber" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
-	<resource name="fiber cloth" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
+	<resource name="cane fiber" type="misc" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
+	<resource name="fiber cloth" type="misc" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
 
 
 <!-- Food items derived from crop harvest -->
-	<resource name="Blueberry Muffin" phase="solid" edible="true"></resource>
-	<resource name="Brown Rice" phase="solid" edible="true"></resource>
-	<resource name="Cranberry Juice" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
-	<resource name="Cranberry Sauce" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
-	<resource name="French Fries" phase="solid" edible="true">French fries made from potatoes.</resource>
-	<resource name="Garlic Oil" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
-	<resource name="Granola Bar" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
-	<resource name="Honey" phase="liquid" edible="true">Honey extracted from bee hives</resource>
-	<resource name="Peanut Butter" phase="solid" edible="true"></resource>
-	<resource name="Peanut Oil" phase="liquid" edible="true"></resource>
-	<resource name="Pizza Dough" phase="solid" edible="true"></resource>
-	<resource name="Quinoa Sprout" phase="solid" edible="true">Sprouts from Quinoa</resource>
-	<resource name="Rice Noodle" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
-	<resource name="Rice Flour" phase="solid" edible="true">Flour made from White Rice. </resource>
-	<resource name="Rice Vinegar" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
-	<resource name="Roasted Peanut" phase="solid" edible="true"></resource>
-	<resource name="Sesame Oil" phase="liquid" edible="true">Oil pressed from Sesame Seeds.</resource>
-	<resource name="Soy Sauce" phase="liquid" edible="true">Made from fermented soybeans</resource>
-	<resource name="Sugarcane Juice" phase="liquid" edible="true">Juice made from Sugarcane</resource>
-	<resource name="Sugar" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
-	<resource name="Veggie Patty" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
-	<resource name="Wheat Noodle" phase="solid" edible="true">Noodle made of Wheat Flour.</resource>
-	<resource name="Wheat Flour" phase="solid" edible="true">Flour made from wheat kernel.</resource>
-	<resource name="Wheat Bun" phase="solid" edible="true">fluffy Buns for holding Veggie Patty.</resource>
-	<resource name="Wheat Bread" phase="solid" edible="true">Loaves of Bread for making sandwiches. </resource>
-	<resource name="White Bread" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
-	<resource name="White Bun" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
-	<resource name="White Rice" phase="solid" edible="true"></resource>
+	<resource name="Blueberry Muffin" type="food" phase="solid" edible="true"></resource>
+	<resource name="Brown Rice" type="food" phase="solid" edible="true"></resource>
+	<resource name="Cranberry Juice" type="food" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="Cranberry Sauce" type="food" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
+	<resource name="French Fries" type="food" phase="solid" edible="true">French fries made from potatoes.</resource>
+	<resource name="Garlic Oil" type="food" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
+	<resource name="Granola Bar" type="food" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
+	<resource name="Honey" type="food" phase="liquid" edible="true">Honey extracted from bee hives</resource>
+	<resource name="Peanut Butter" type="food" phase="solid" edible="true"></resource>
+	<resource name="Peanut Oil" type="food" phase="liquid" edible="true"></resource>
+	<resource name="Pizza Dough" type="food" phase="solid" edible="true"></resource>
+	<resource name="Quinoa Sprout" type="food" phase="solid" edible="true">Sprouts from Quinoa</resource>
+	<resource name="Rice Noodle" type="food" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
+	<resource name="Rice Flour" type="food" phase="solid" edible="true">Flour made from White Rice. </resource>
+	<resource name="Rice Vinegar" type="food" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
+	<resource name="Roasted Peanut" type="food" phase="solid" edible="true"></resource>
+	<resource name="Sesame Oil" type="food" phase="liquid" edible="true">Oil pressed from Sesame Seeds.</resource>
+	<resource name="Soy Sauce" type="food" phase="liquid" edible="true">Made from fermented soybeans</resource>
+	<resource name="Sugarcane Juice" type="food" phase="liquid" edible="true">Juice made from Sugarcane</resource>
+	<resource name="Sugar" type="food" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
+	<resource name="Veggie Patty" type="food" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
+	<resource name="Wheat Noodle" type="food" phase="solid" edible="true">Noodle made of Wheat Flour.</resource>
+	<resource name="Wheat Flour" type="food" phase="solid" edible="true">Flour made from wheat kernel.</resource>
+	<resource name="Wheat Bun" type="food" phase="solid" edible="true">fluffy Buns for holding Veggie Patty.</resource>
+	<resource name="Wheat Bread" type="food" phase="solid" edible="true">Loaves of Bread for making sandwiches. </resource>
+	<resource name="White Bread" type="food" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="White Bun" type="food" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="White Rice" type="food" phase="solid" edible="true"></resource>
 
 <!-- Crop Produce -->
-	<resource name="blueberry" phase="solid" edible="true"></resource>
-	<resource name="cabbage" phase="solid" edible="true"></resource>
-	<resource name="carrot" phase="solid" edible="true"></resource>
-	<resource name="celery" phase="solid" edible="true"></resource>
-	<resource name="cucumber" phase="solid" edible="true"></resource>
-	<resource name="cranberry" phase="solid" edible="true"></resource>
-	<resource name="garlic" phase="solid" edible="true"></resource>
-	<resource name="ginger" phase="solid" edible="true"></resource>
-	<resource name="green bell pepper" phase="solid" edible="true"></resource>
-	<resource name="green onion" phase="solid" edible="true"></resource>
-	<resource name="kidney bean" phase="solid" edible="true"></resource>
-	<resource name="lettuce" phase="solid" edible="true"></resource>
-	<resource name="morel mushroom" phase="solid" edible="true"></resource>
-	<resource name="peas" phase="solid" edible="true"></resource>
-	<resource name="peanut" phase="solid" edible="true"></resource>
-	<resource name="potato" phase="solid" edible="true"></resource>
-	<resource name="quinoa" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
-	<resource name="radish" phase="solid" edible="true"></resource>
-	<resource name="red beet" phase="solid" edible="true"></resource>
-	<resource name="rice" phase="solid" edible="true"></resource>
-	<resource name="sesame" phase="solid" edible="true">Seeds from sesame plant.</resource>
-	<resource name="soybean" phase="solid" edible="true">Soybean seeds.</resource>
-	<resource name="strawberry" phase="solid" edible="true"></resource>
-	<resource name="sugarcane" phase="solid" edible="true"></resource>
-	<resource name="swiss Chard" phase="solid" edible="true"></resource>
-	<resource name="tomato" phase="solid" edible="true"></resource>
-	<resource name="wheat" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
+	<resource name="blueberry" type="crop" phase="solid" edible="true"></resource>
+	<resource name="cabbage" type="crop" phase="solid" edible="true"></resource>
+	<resource name="carrot" type="crop" phase="solid" edible="true"></resource>
+	<resource name="celery" type="crop" phase="solid" edible="true"></resource>
+	<resource name="cucumber" type="crop" phase="solid" edible="true"></resource>
+	<resource name="cranberry" type="crop" phase="solid" edible="true"></resource>
+	<resource name="garlic" type="crop" phase="solid" edible="true"></resource>
+	<resource name="ginger" type="crop" phase="solid" edible="true"></resource>
+	<resource name="green bell pepper" type="crop" phase="solid" edible="true"></resource>
+	<resource name="green onion" type="crop" phase="solid" edible="true"></resource>
+	<resource name="kidney bean" type="crop" phase="solid" edible="true"></resource>
+	<resource name="lettuce" type="crop" phase="solid" edible="true"></resource>
+	<resource name="morel mushroom" type="crop" phase="solid" edible="true"></resource>
+	<resource name="peas" type="crop" phase="solid" edible="true"></resource>
+	<resource name="peanut" type="crop" phase="solid" edible="true"></resource>
+	<resource name="potato" type="crop" phase="solid" edible="true"></resource>
+	<resource name="quinoa" type="crop" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
+	<resource name="radish" type="crop" phase="solid" edible="true"></resource>
+	<resource name="red beet" type="crop" phase="solid" edible="true"></resource>
+	<resource name="rice" type="crop" phase="solid" edible="true"></resource>
+	<resource name="sesame" type="crop" phase="solid" edible="true">Seeds from sesame plant.</resource>
+	<resource name="soybean" type="crop" phase="solid" edible="true">Soybean seeds.</resource>
+	<resource name="strawberry" type="crop" phase="solid" edible="true"></resource>
+	<resource name="sugarcane" type="crop" phase="solid" edible="true"></resource>
+	<resource name="swiss chard" type="crop" phase="solid" edible="true"></resource>
+	<resource name="tomato" type="crop" phase="solid" edible="true"></resource>
+	<resource name="wheat" type="crop" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
 	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
-	<resource name="white onion" phase="solid" edible="true"></resource>
+	<resource name="white onion" type="crop" phase="solid" edible="true"></resource>
 
 <!-- Crop tissue culture -->
 <!-- see https://en.wiki2.org/wiki/Plant_tissue_culture
 		 http://extension.psu.edu/plants/green-industry/news/2014/tissue-culture-finishing-for-greenhouse-growers-stage-iii-stage-iv -->
+<!-- AUTO-GENERATED BY CODE
 	<resource name="blueberry tissue culture" phase="solid" ></resource>
 	<resource name="cabbage tissue culture" phase="solid" ></resource>
 	<resource name="carrot tissue culture" phase="solid" ></resource>
@@ -162,7 +164,7 @@
 	<resource name="tomato tissue culture" phase="solid" ></resource>
 	<resource name="wheat tissue culture" phase="solid" ></resource>
 	<resource name="white onion tissue culture" phase="solid" ></resource>
-
+-->
 
 <!-- Chemical or Mineral Compounds -->
 	<resource name="aluminum oxide" phase="solid" />

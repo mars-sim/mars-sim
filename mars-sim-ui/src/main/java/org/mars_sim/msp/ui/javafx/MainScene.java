@@ -142,8 +142,8 @@ public class MainScene {
 	
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
-	private static final int TOP_EDGE_DETECTION_PIXELS_Y = 35;
-	private static final int TOP_EDGE_DETECTION_PIXELS_X = 200;
+	private static final int EDGE_DETECTION_PIXELS_Y = 35;
+	private static final int EDGE_DETECTION_PIXELS_X = 200;
 	
 	// Categories of loading and saving simulation
 	public static final int DEFAULT = 1;
@@ -168,7 +168,7 @@ public class MainScene {
 	//private int systemCpuLoad;
 
 	private boolean isMainSceneDoneLoading = false;
-	private boolean menuBarVisible = false;
+	public static boolean menuBarVisible = false;
 	private boolean isMarsNetOpen = false;
 	private boolean onMenuBarCache = false;
 	
@@ -558,7 +558,7 @@ public class MainScene {
         //anchorPane.setPrefWidth(600);       
 
         //BorderPane borderPane = new BorderPane();
-		//borderPane.prefHeightProperty().bind(scene.heightProperty());
+		borderPane.prefHeightProperty().bind(anchorPane.heightProperty());
 		borderPane.prefWidthProperty().bind(anchorPane.widthProperty());
 
         AnchorPane.setBottomAnchor(borderPane, 0.0);
@@ -1005,7 +1005,7 @@ public class MainScene {
 		String t = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
 		// Check if new simulation is being created or loaded from file.
 		if (Simulation.isUpdating() || Simulation.instance().getMasterClock().isPaused()) {
-			timeText.setText(" [ PAUSE ]  Note: ESC to resume  " + t + "  ");		
+			timeText.setText(" [ PAUSE ]  ESC to resume  " + t + "  ");		
 		}
 		
 		else { 
@@ -1441,8 +1441,12 @@ public class MainScene {
 	public void startPausePopup() {
 		//System.out.println("calling startPausePopup()");   
 		//messagePopup.popAMessage("PAUSED", " ESC to resume", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
-		messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
-
+		if (!messagePopup.isOn()) {
+			//Platform.runLater(() -> 
+			messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON);
+			//);  		    	
+			//System.out.println("popping up pause"); 
+		}
 	}
 
 	public void stopPausePopup() {
@@ -1458,7 +1462,7 @@ public class MainScene {
 		//autosaveTimeline.pause();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		Simulation.instance().getMasterClock().setPaused(true);
-		startPausePopup();
+		//startPausePopup();
 		//timeText.setText(" [Paused] " + timeStamp + "  ");
 		//desktop.getTimeWindow().enablePauseButton(false);
 	}
@@ -1795,28 +1799,40 @@ public class MainScene {
 		// 2016-06-15 Added top edge mouse cursor detection for sliding down the menu bar
 		anchorPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
 		
-			boolean onMenuBar = (e.getSceneX() <= TOP_EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= TOP_EDGE_DETECTION_PIXELS_Y);
+			boolean onMenuBar = (e.getSceneX() <= EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= EDGE_DETECTION_PIXELS_Y);
 				
 			if (!menubarButton.isSelected()) {
 				
 				if (onMenuBar && !onMenuBarCache && !menuBarVisible) {// || menubarButton.isSelected()) 
 					//System.out.println("slide open");
 					topFlapBar.slide();
-					menuBarVisible = true;
+					//menuBarVisible = true;
+					
+					// add a timer countdown
+					
+					//FxTimer.runLater(
+		    		//		java.time.Duration.ofMillis(2000),
+		    		 //       () -> menuBarVisible = true);
+					
+					
 					
 				} else if (!onMenuBar && onMenuBarCache && menuBarVisible) {// || menubarButton.isSelected()) 
 					//System.out.println("slide close");
 					topFlapBar.slide();
-					menuBarVisible = false;
+					//menuBarVisible = false;
 				}
-							
+					
 				// 2016-06-17 Added self-correcting if-then clause to correct problems arising from hovering over the menu bar multiple times successively
-				if (onMenuBar)
-					menuBarVisible = true;
-				else
-					menuBarVisible = false;
-				
+				//if (onMenuBar) {
+				//	menuBarVisible = true;
+				//}
+				//else {
+				//	menuBarVisible = false;
+				//}
+
 			}
+			
+
 			
 			onMenuBarCache = onMenuBar;
 		
@@ -1934,7 +1950,7 @@ public class MainScene {
 		
  		Scene scene = new Scene(stackPane, 150, 150);
  		scene.setFill(Color.TRANSPARENT);
- 		
+/* 		
  		if (title.contains("Loading")) {
  			loadingCircleStage = new Stage();
 	 		loadingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -1943,7 +1959,9 @@ public class MainScene {
 	 		loadingCircleStage.setScene(scene);
 	 		loadingCircleStage.hide();
 	 	}
- 		else if (title.contains("Saving")) {// || title.contains("Autosaving")) {
+ 		else
+*/ 			
+ 		if (title.contains("Saving")) {// || title.contains("Autosaving")) {
  			savingCircleStage = new Stage();
  			savingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 	 
@@ -1951,6 +1969,8 @@ public class MainScene {
  			savingCircleStage.setScene(scene);
  			savingCircleStage.hide();
 	 	}
+ /*
+ 		
  		else if (title.contains("Paused")) {
  			pausedCircleStage = new Stage();
  			pausedCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -1959,37 +1979,37 @@ public class MainScene {
  			pausedCircleStage.setScene(scene);
  			pausedCircleStage.hide();
 	 	} 		
- 		
+ */		
         //circleStage.show();
  	}
 
- 	public void showLoadingStage() {
-		Platform.runLater(() -> {
-			setMonitor(loadingCircleStage);
-			loadingCircleStage.show();
+ //	public void showLoadingStage() {
+//		Platform.runLater(() -> {
+//			setMonitor(loadingCircleStage);
+//			loadingCircleStage.show();
 			//loadingCircleStage.requestFocus();
-		});		
- 	}
+//		});		
+ //	}
  	 	
  	 	
- 	public void hideLoadingStage() {
- 		Platform.runLater(() -> {
-			loadingCircleStage.hide();	 
- 		});
- 	}
+ //	public void hideLoadingStage() {
+ //		Platform.runLater(() -> {
+//			loadingCircleStage.hide();	 
+ //		});
+ //	}
 
 
- 	public void showPausedStage() {
-		Platform.runLater(() -> {
-			setMonitor(loadingCircleStage);
-			pausedCircleStage.show();
+ //	public void showPausedStage() {
+//		Platform.runLater(() -> {
+//			setMonitor(loadingCircleStage);
+	//		pausedCircleStage.show();
 			//pausedCircleStage.requestFocus();
-		});		
- 	}
+//		});		
+ //	}
  	
- 	public void hidePausedStage() {
- 		Platform.runLater(() -> pausedCircleStage.hide());
- 	}
+ //	public void hidePausedStage() {
+ //		Platform.runLater(() -> pausedCircleStage.hide());
+ //	}
 
  	public void showSavingStage() {
 		Platform.runLater(() -> {
@@ -2025,11 +2045,11 @@ public class MainScene {
             stage.setX(xPos);
             stage.setY(yPos);
             stage.centerOnScreen();
-            //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
+            System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
         } else {
             stage.centerOnScreen();
             //System.out.println("calling centerOnScreen()");
-            //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
+            System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
         }  
 		
 	}

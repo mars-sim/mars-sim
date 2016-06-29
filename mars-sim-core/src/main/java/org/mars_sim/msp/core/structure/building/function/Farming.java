@@ -55,6 +55,8 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
+    private static final double TISSUE_CULTURE_FACTOR = 100D;
+    
     private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
     /** (arbitrary) amount of crop tissue culture needed per square meter of growing area */
     private static final double TISSUE_PER_SQM = .05D;
@@ -105,12 +107,10 @@ implements Serializable {
         maxGrowingArea = buildingConfig.getCropGrowingArea(building.getBuildingType());
         remainingGrowingArea = maxGrowingArea;
 
-
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		cropTypeList = cropConfig.getCropList();
         cropNum = buildingConfig.getCropNum(building.getBuildingType());
-
-        
+       
         // Load activity spots
         loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
 
@@ -365,9 +365,7 @@ implements Serializable {
     public double useTissueCulture(CropType cropType, double cropArea) {
     	double percent = 0;
 
-    	double amount = cropArea * TISSUE_PER_SQM * cropType.getEdibleBiomass()/20D;
-
-    	double requestedAmount = amount;
+    	double requestedAmount = cropArea * TISSUE_PER_SQM * cropType.getEdibleBiomass()/TISSUE_CULTURE_FACTOR;
 
     	String tissue = cropType.getName()+ " tissue culture";
 
@@ -377,20 +375,24 @@ implements Serializable {
 	    	AmountResource nameAR = AmountResource.findAmountResource(tissue);
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);
+	    	
 	    	if (amountStored < 0.0000000001) {
 	    		//logger.warning("No more " + name);
 	    		percent = 0;
 	    	}
+	    	
 	    	else if (amountStored < requestedAmount) {
 	     		//logger.warning("Just ran out of " + name);
 	    		result = true;
 	    		percent = amountStored / requestedAmount * 100D;
-	    		requestedAmount  = amountStored;
+	    		requestedAmount = amountStored ;
+	    		System.out.println(tissue + " partially available : " + requestedAmount + " kg");
 	    	}
 
 	    	else {
 	    		result = true;
 	    		percent = 100;
+	    		System.out.println(tissue + " fully available : " + requestedAmount + " kg");
 	    	}
 
 	    	if (result) {

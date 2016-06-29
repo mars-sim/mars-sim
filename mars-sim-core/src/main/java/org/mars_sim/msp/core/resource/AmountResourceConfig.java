@@ -27,13 +27,16 @@ public class AmountResourceConfig implements Serializable {
 	private static final long serialVersionUID = 123L;
 
 	// Element names
+	private static final String TISSUE_CULTURE = "tissue culture"; 
 	private static final String RESOURCE = "resource";
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";
 	private static final String LIFE_SUPPORT = "life-support";
 
-	// 2014-11-25 Added edible
+	// 2014-11-25 Added EDIBLE
 	private static final String EDIBLE = "edible";
+	// 2016-06-28 Added TYPE
+	private static final String TYPE = "type";
 
 	// Data members.
 	private Set<AmountResource> resources = new TreeSet<AmountResource>();
@@ -57,11 +60,14 @@ public class AmountResourceConfig implements Serializable {
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
 		for (Element resourceElement : resourceNodes) {
-			String name = "";
-
+			
 			// Get name.
 			// 2015-02-24 Added toLowerCase() just in case
-			name = resourceElement.getAttributeValue(NAME).toLowerCase();
+			String name = resourceElement.getAttributeValue(NAME).toLowerCase();
+
+			// 2016-06-28 Added type
+			String type = resourceElement.getAttributeValue(TYPE);
+		
 			String description = resourceElement.getText();
 
 			// Get phase.
@@ -76,8 +82,17 @@ public class AmountResourceConfig implements Serializable {
 
 			// Create new amount resource.
 			// 2014-11-25 Added edible
-			AmountResource resource = new AmountResource(name, description, phase, lifeSupport, edible);
-			resources.add(resource);
+			
+			// Create new tissue culture for each crop.
+			// 2014-11-25 Added edible
+			AmountResource ar = new AmountResource(name, type, description, phase, lifeSupport, edible);
+			resources.add(ar);
+
+			if (type != null && type.equals("crop")) {
+				AmountResource tissue = new AmountResource(name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false);
+				resources.add(tissue);
+			}
+			
 		}
 	}
 

@@ -33,6 +33,9 @@ implements Serializable {
 	private boolean lifeSupport;
 	private int hashcode = -1;
 	private String name;
+	// 2016-06-28 Added type
+	private String type;
+	
 	private String description;
 
 	// 2014-11-25 Added edible
@@ -47,12 +50,14 @@ implements Serializable {
 	 */
 	public AmountResource(
 		String name,
+		String type,
 		String description,
 		Phase phase,
 		boolean lifeSupport,
 		boolean edible
 	) {
 		this.name = name.toLowerCase();
+		this.type = type;
 		this.description = description;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
@@ -67,6 +72,15 @@ implements Serializable {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Gets the resource's type.
+	 * @return type of resource.
+	 */
+	//@Override
+	public String getType() {
+		return type;
 	}
 
 	/**

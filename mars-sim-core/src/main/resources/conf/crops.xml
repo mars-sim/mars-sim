@@ -114,14 +114,48 @@
 		
 		
 		
-13. There are 4 phases of a food crop:
+13. In Mars-sim, there are 4 standard phases of a food crop:
 
 	a. Planting
 	b. germinating
 	c. growing
 	d. harvesting
 
+	In reality, each crop category have various phenological stage
+
+	e.g. 	for onion, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/cebolla.aspx#tabs-2 
+			for lettuce, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/lechuga.aspx#tabs-2
+			for potato, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/papa.aspx#tabs-4
+			for pepper, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pimiento.aspx#tabs-4
+			for garlic, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/ajo.aspx#tabs-2
+			for cucumber, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
+						
+						
+						
+14. For "root" crop-category such as sweet potato, 
+
+http://keys.lucidcentral.org/keys/sweetpotato/key/Sweetpotato%20Diagnotes/Media/Html/TheCrop/AboutTheCrop/Botany/Crop%20development.htm		
 		
+		
+15. Based on Food and Agriculture Organization of the United Nation
+	see http://www.fao.org/docrep/X5642E/x5642e06.htm
+
+Classification of vegetable crops: 
+-Classification based on edible part
+
+a. Root vegetables (carrots, beetroot, radish)
+b. Tuber vegetables (Yam, Irish potato)
+c. Corm (Taro)
+d. Stem vegetable (Asparagus)
+e  Leaf vegetables (Lettuce, Amaranth)
+f  Bulb vegetable (Onion, garlic)
+g. Fruit vegetable (Tomato, okra)
+h. Flower vegetables (Broccoli, Cauliflower)
+i. Seed vegetable (Berus, Peas)		
+		
+		
+16. Tissue Culture – Technology Harnessed for Potato Seed Production
+	http://keaneanjournalofscience.in/?p=131		
 		
 -->
 
@@ -453,6 +487,8 @@ Beetroot conservative: 14; likely: 18 target yield: 25
     	 Tumeric
     	 Green Pepper
     	 Radish
+    	 
+    	 broccoli : http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/brocoli.aspx
 -->
 
 </crop-list>

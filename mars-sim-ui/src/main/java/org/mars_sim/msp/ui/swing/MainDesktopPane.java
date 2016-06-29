@@ -212,6 +212,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// Set component listener
 		addComponentListener(this);
 
+		
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
 		backgroundLabel = new JLabel(backgroundImageIcon);
@@ -1188,7 +1189,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (mainScene != null) {
 			//mainScene.hideLoadingStage();
 			mainScene.hideSavingStage();
-			mainScene.hidePausedStage();
+			//mainScene.hidePausedStage();
 		}
 		else {
 			announcementWindow.dispose();

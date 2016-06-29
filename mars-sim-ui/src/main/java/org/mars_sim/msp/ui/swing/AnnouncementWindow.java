@@ -61,7 +61,7 @@ extends JInternalFrame {
 	 * @param announcement the announcement text.
 	 */
 	public void setAnnouncement(String announcement) {
-
+/*
 		if (desktop.getMainScene() != null) {	
 			if (announcement.contains("Saving") || announcement.contains("Autosaving")) {
 				//desktop.getMainScene().showSavingStage();
@@ -72,8 +72,11 @@ extends JInternalFrame {
 				;
 		}
 		else {
-			announcementLabel.setText(announcement);			
-		}
+*/			
+			announcementLabel.setText(announcement);
+			
+			
+		//}
 		
 /*		
 		JPanel p = new JPanel();

@@ -174,15 +174,15 @@ public class QNotification {
         public static void setWidth(final double WIDTH) {
 /*           //Notifier.width = WIDTH * res / 1920 / 1.05 ;
 */
-            Notifier.width = WIDTH / 1.25; // 547 - > 438 is optimal
-            //System.out.println("adjusted width is " + Math.round(WIDTH / 1.25));
+            Notifier.width = WIDTH;// / 1.25; // 547 - > 438 is optimal
+            //System.out.println("adjusted width is " + Math.round(WIDTH));// / 1.25));
         }
 
         /**
          * @param HEIGHT  The default is 80 px.
          */
         public static void setHeight(final double HEIGHT) {
-            Notifier.height = HEIGHT / 1.10;
+            Notifier.height = HEIGHT;// / 1.10;
         }
 
         /**
@@ -348,9 +348,16 @@ public class QNotification {
         	}
         	
         	// check if mainScene is on primary or secondary and set w0
-        	double w0 = getMonitor();
-        	
-        	
+        	double m = getMonitor();
+        	double w0 = 0; 
+
+        	if (m == 0)
+        		w0 = w1;
+        	else
+        		w0 = w2;
+        		
+    	    //System.out.println("width is " + w0);
+
             if (null == stageRef) return calcX( 0.0, w0 );
 
             return calcX(stageRef.getX(), stageRef.getWidth());
@@ -363,8 +370,16 @@ public class QNotification {
         	}
         	
         	// check if mainScene is on primary or secondary and set h0
-        	double h0 = getMonitor();
-        	
+        	double m = getMonitor();
+        	double h0 = 0; 
+
+        	if (m == 0)
+        		h0 = h1;
+        	else
+        		h0 = h2;
+        		
+    	    //System.out.println("height is " + h0);
+
             if (null == stageRef) return calcY( 0.0, h0 );
 
             return calcY(stageRef.getY(), stageRef.getHeight());

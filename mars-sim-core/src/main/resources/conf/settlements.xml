@@ -91,6 +91,37 @@
 
 			<!-- Crop -->
 			<!-- No starting crops for this template. -->
+			
+			
+			<!-- Food Crop Tissue Culture-->
+			<resource type="blueberry tissue culture" amount="0.1" />
+			<resource type="cabbage tissue culture" amount="0.1" />
+			<resource type="carrot tissue culture" amount="0.1" />
+			<resource type="celery tissue culture" amount="0.1" />
+			<resource type="cucumber tissue culture" amount="0.1" />
+			<resource type="cranberry tissue culture" amount="0.1" />
+			<resource type="garlic tissue culture" amount="0.1" />
+			<resource type="ginger tissue culture" amount="0.1" />
+			<resource type="green bell pepper tissue culture" amount="0.1" />
+			<resource type="green onion tissue culture" amount="0.1" />
+			<resource type="kidney bean tissue culture" amount="0.1" />
+			<resource type="lettuce tissue culture" amount="0.1" />
+			<resource type="morel Mushroom tissue culture" amount="0.1" />
+			<resource type="peas tissue culture" amount="0.1" />
+			<resource type="peanut tissue culture" amount="0.1" />
+			<resource type="potato tissue culture" amount="0.1" />
+			<resource type="quinoa tissue culture" amount="0.1" />
+			<resource type="radish tissue culture" amount="0.1" />
+			<resource type="red beet tissue culture" amount="0.1" />
+			<resource type="rice tissue culture" amount="0.1" />
+			<resource type="sesame tissue culture" amount="0.1" />
+			<resource type="soybean tissue culture" amount="0.1" />
+			<resource type="strawberry tissue culture" amount="0.1" />
+			<resource type="sugarcane tissue culture" amount="0.1" />
+			<resource type="swiss Chard tissue culture" amount="0.1" />
+			<resource type="tomato tissue culture" amount="0.1" />
+			<resource type="wheat tissue culture" amount="0.1" />
+			<resource type="white onion tissue culture" amount="0.1" />
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -224,6 +255,37 @@
 			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+
+			<!-- Food Crop Tissue Culture-->
+			<resource type="blueberry tissue culture" amount="0.2" />
+			<resource type="cabbage tissue culture" amount="0.2" />
+			<resource type="carrot tissue culture" amount="0.2" />
+			<resource type="celery tissue culture" amount="0.2" />
+			<resource type="cucumber tissue culture" amount="0.2" />
+			<resource type="cranberry tissue culture" amount="0.2" />
+			<resource type="garlic tissue culture" amount="0.2" />
+			<resource type="ginger tissue culture" amount="0.2" />
+			<resource type="green bell pepper tissue culture" amount="0.2" />
+			<resource type="green onion tissue culture" amount="0.2" />
+			<resource type="kidney bean tissue culture" amount="0.2" />
+			<resource type="lettuce tissue culture" amount="0.2" />
+			<resource type="morel Mushroom tissue culture" amount="0.2" />
+			<resource type="peas tissue culture" amount="0.2" />
+			<resource type="peanut tissue culture" amount="0.2" />
+			<resource type="potato tissue culture" amount="0.2" />
+			<resource type="quinoa tissue culture" amount="0.2" />
+			<resource type="radish tissue culture" amount="0.2" />
+			<resource type="red beet tissue culture" amount="0.2" />
+			<resource type="rice tissue culture" amount="0.2" />
+			<resource type="sesame tissue culture" amount="0.2" />
+			<resource type="soybean tissue culture" amount="0.2" />
+			<resource type="strawberry tissue culture" amount="0.2" />
+			<resource type="sugarcane tissue culture" amount="0.2" />
+			<resource type="swiss Chard tissue culture" amount="0.2" />
+			<resource type="tomato tissue culture" amount="0.2" />
+			<resource type="wheat tissue culture" amount="0.2" />
+			<resource type="white onion tissue culture" amount="0.2" />
+
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -393,6 +455,36 @@
 			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+
+			<!-- Food Crop Tissue Culture-->
+			<resource type="blueberry tissue culture" amount="0.3" />
+			<resource type="cabbage tissue culture" amount="0.3" />
+			<resource type="carrot tissue culture" amount="0.3" />
+			<resource type="celery tissue culture" amount="0.3" />
+			<resource type="cucumber tissue culture" amount="0.3" />
+			<resource type="cranberry tissue culture" amount="0.3" />
+			<resource type="garlic tissue culture" amount="0.3" />
+			<resource type="ginger tissue culture" amount="0.3" />
+			<resource type="green bell pepper tissue culture" amount="0.3" />
+			<resource type="green onion tissue culture" amount="0.3" />
+			<resource type="kidney bean tissue culture" amount="0.3" />
+			<resource type="lettuce tissue culture" amount="0.3" />
+			<resource type="morel Mushroom tissue culture" amount="0.3" />
+			<resource type="peas tissue culture" amount="0.3" />
+			<resource type="peanut tissue culture" amount="0.3" />
+			<resource type="potato tissue culture" amount="0.3" />
+			<resource type="quinoa tissue culture" amount="0.3" />
+			<resource type="radish tissue culture" amount="0.3" />
+			<resource type="red beet tissue culture" amount="0.3" />
+			<resource type="rice tissue culture" amount="0.3" />
+			<resource type="sesame tissue culture" amount="0.3" />
+			<resource type="soybean tissue culture" amount="0.3" />
+			<resource type="strawberry tissue culture" amount="0.3" />
+			<resource type="sugarcane tissue culture" amount="0.3" />
+			<resource type="swiss Chard tissue culture" amount="0.3" />
+			<resource type="tomato tissue culture" amount="0.3" />
+			<resource type="wheat tissue culture" amount="0.3" />
+			<resource type="white onion tissue culture" amount="0.3" />
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -662,6 +754,36 @@
 			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+
+			<!-- Food Crop Tissue Culture-->
+			<resource type="blueberry tissue culture" amount="0.4" />
+			<resource type="cabbage tissue culture" amount="0.4" />
+			<resource type="carrot tissue culture" amount="0.4" />
+			<resource type="celery tissue culture" amount="0.4" />
+			<resource type="cucumber tissue culture" amount="0.4" />
+			<resource type="cranberry tissue culture" amount="0.4" />
+			<resource type="garlic tissue culture" amount="0.4" />
+			<resource type="ginger tissue culture" amount="0.4" />
+			<resource type="green bell pepper tissue culture" amount="0.4" />
+			<resource type="green onion tissue culture" amount="0.4" />
+			<resource type="kidney bean tissue culture" amount="0.4" />
+			<resource type="lettuce tissue culture" amount="0.4" />
+			<resource type="morel Mushroom tissue culture" amount="0.4" />
+			<resource type="peas tissue culture" amount="0.4" />
+			<resource type="peanut tissue culture" amount="0.4" />
+			<resource type="potato tissue culture" amount="0.4" />
+			<resource type="quinoa tissue culture" amount="0.4" />
+			<resource type="radish tissue culture" amount="0.4" />
+			<resource type="red beet tissue culture" amount="0.4" />
+			<resource type="rice tissue culture" amount="0.4" />
+			<resource type="sesame tissue culture" amount="0.4" />
+			<resource type="soybean tissue culture" amount="0.4" />
+			<resource type="strawberry tissue culture" amount="0.4" />
+			<resource type="sugarcane tissue culture" amount="0.4" />
+			<resource type="swiss Chard tissue culture" amount="0.4" />
+			<resource type="tomato tissue culture" amount="0.4" />
+			<resource type="wheat tissue culture" amount="0.4" />
+			<resource type="white onion tissue culture" amount="0.4" />
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
