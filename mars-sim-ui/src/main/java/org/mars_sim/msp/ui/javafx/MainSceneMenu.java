@@ -554,6 +554,8 @@ public class MainSceneMenu extends MenuBar  {
             		showFullScreenItem.setSelected(true);
             		if (!isFullScreenCache)
             			mainScene.getStage().setFullScreen(true);
+            				//TODO: move quotation and pause popup to front.
+            				//mainScene.getStage().toBack();
             	}
             	else {
             		//System.out.println("isFullScreen is true");

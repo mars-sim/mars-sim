@@ -54,7 +54,7 @@ public class QNotification {
     public final String       TITLE;
     public final String       MESSAGE;
     public final Image        IMAGE;
-
+    
 
     // ******************** Constructors **************************************
     //public Notification() {}
@@ -91,6 +91,9 @@ public class QNotification {
         private Scene                 scene;
         private ObservableList<Popup> popups;
         private static AnchorPane anchorPane;
+   		double xPos = 0;
+		double yPos = 0;
+	    int count = 0;
 
 
         // ******************** Constructor ***************************************
@@ -130,6 +133,11 @@ public class QNotification {
             if (null != STAGE_REF) {
                 //INSTANCE.stage.initOwner(STAGE_REF);
                 Notifier.stageRef = STAGE_REF;
+                     		
+                // only need to add listener once 
+        		//stageRef.xProperty().addListener((obs, oldVal, newVal) -> System.out.println("X: " + newVal));
+        		//stageRef.yProperty().addListener((obs, oldVal, newVal) -> System.out.println("Y: " + newVal));
+        	
             }
             Notifier.popupLocation = POPUP_LOCATION;
         }
@@ -333,6 +341,7 @@ public class QNotification {
             }
 
             POPUP.show(stage);
+
 		
             if (popupLifetime != Duration.ZERO)
             	timeline.play();
@@ -348,10 +357,10 @@ public class QNotification {
         	}
         	
         	// check if mainScene is on primary or secondary and set w0
-        	double m = getMonitor();
+        	double m = getMonitor(w2);
         	double w0 = 0; 
 
-        	if (m == 0)
+        	if (m == 1)
         		w0 = w1;
         	else
         		w0 = w2;
@@ -370,10 +379,10 @@ public class QNotification {
         	}
         	
         	// check if mainScene is on primary or secondary and set h0
-        	double m = getMonitor();
+        	double m = getMonitor(h2);
         	double h0 = 0; 
 
-        	if (m == 0)
+        	if (m == 1)
         		h0 = h1;
         	else
         		h0 = h2;
@@ -403,32 +412,82 @@ public class QNotification {
         }
         
         //2016-06-27 Added getMonitor()
-    	public int getMonitor() {
+    	private int getMonitor(double position) {
     		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
     		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
     		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
     		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
 
-    		StartUpLocation startUpLoc = new StartUpLocation(anchorPane.getPrefWidth(), anchorPane.getPrefHeight());
-            double xPos = startUpLoc.getXPos();
-            double yPos = startUpLoc.getYPos();
-            // Set Only if X and Y are not zero and were computed correctly
-         	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
-         	//ObservableList<Screen> screens = Screen.getScreens();	
-        	//System.out.println("# of monitors : " + screens.size());
+      		//System.out.println("count is "+ count);
+      		
+    		if (count < 3) {
+          		
+          		count++;
+ 	 	       // only need to add listener once 
+ 		 		stageRef.xProperty().addListener((obs, oldVal, newVal) -> {
+ 		 			//System.out.println("X: " + newVal);
+ 		 			xPos = (double) newVal;
+ 		 		});
+ 		 		
+ 		 		stageRef.yProperty().addListener((obs, oldVal, newVal) -> {
+ 		 			//System.out.println("y: " + newVal);
+ 		 			yPos = (double) newVal;    			
+ 		 		});
+ 		 		
+	    		StartUpLocation startUpLoc = new StartUpLocation(anchorPane.getPrefWidth(), anchorPane.getPrefHeight());
+	            double x = startUpLoc.getXPos();
+	            double y = startUpLoc.getYPos();
+	            // Set Only if X and Y are not zero and were computed correctly
+	         	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
+	         	//ObservableList<Screen> screens = Screen.getScreens();	
+	        	//System.out.println("# of monitors : " + screens.size());
+	
 
-            if (xPos != 0 && yPos != 0) {
-                //stage.setX(xPos);
-                //stage.setY(yPos);
-                //stage.centerOnScreen();
-                //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
-                return 0;
-            } else {
-                //stage.centerOnScreen();
-                //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
-                return 1;
-            }
+	            if ( (Math.abs(x) < 2 * Double.MIN_VALUE) &&(Math.abs(y) < 2 * Double.MIN_VALUE)) {
+	           	   // xPos = 0 and yPos = 0 in startUpLocation, there may be 1 or more screens
+	            	//stage.centerOnScreen();
+	            	//System.out.println("Your system has a 1-monitor setup. Window starting position is at monitor 1");
+	                return 1;
+	            }
+	            
+	            else {
+	          	   // in order for xPos != 0 and yPos != 0 in startUpLocation, there has to be more than 1 screen       
+
+	            	if (position > 0) {
+	            		// if position can be > 0, then it has 2 screens
+	                    //System.out.println("Your system has a 2-monitor setup. Window starting position is at (" + x + ", " + y + ")");
+	                    return 2;
+	            	}
+	            	else {
+		                //System.out.println("Your system has a 2-monitor setup. Window starting position is unknown");
+		                return 1;
+	            	}
+	            }
+	            
+    		}
+           
+    		else {
+    			// Caution: this works only if the window moves around  		
+          		if (position > 0) {
+            		// if position can be > 0, then it's 
+                    //System.out.println("Your system has a 2-monitor setup. Window is positioned at (" + xPos + ", " + yPos + ")");
+                    return 2;
+            	}
+            	else {
+            		if (xPos > 1 || yPos > 1)
+            			;//System.out.println("Your system has a 1-monitor setup. Window is positioned at (" + xPos + ", " + yPos + ")");
+            		else
+               			;//System.out.println("Your system has a 1-monitor setup. Window is positioned at monitor");            			
+            		return 1;
+            	}
+          		
+                
+    		}
+ 
+
     	}
+  
+ 	   
     }
     
 	

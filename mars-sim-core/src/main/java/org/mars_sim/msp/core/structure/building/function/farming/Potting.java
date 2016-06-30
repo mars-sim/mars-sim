@@ -1,56 +1,48 @@
 /**
- * Mars Simulation Project
- * BeeGrowing.java
- * @version 3.07 2015-02-18
+* Mars Simulation Project
+ * Potting.java
+ * @version 3.1.0 2016-06-27
  * @author Manny Kung
  */
 
-package org.mars_sim.msp.core.structure.building.function;
+package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Function;
 
-public class BeeGrowing extends Function
-implements Serializable {
-	
-	/** default serial id. */
+public class Potting extends Function implements Serializable {
+
+    /** default serial id. */
     private static final long serialVersionUID = 1L;
     /** default logger. */
-	//private static Logger logger = Logger.getLogger(BeeGrowing.class.getName());
+	private static Logger logger = Logger.getLogger(Potting.class.getName());
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
 
-    private static int tally; 
-    // The bigger the number, the more erratic (and the less frequent) the update
-    private static final int TICKS_PER_UPDATE = 50; 
-    
     private Inventory inv;
     private Settlement settlement;
     private Building building;
-    private Farming farm;
-    private BeeHive hive;
-
-    public BeeGrowing(Farming farm) {
+	    
+	public Potting(Building building) {
         // Use Function constructor.
-        super(FUNCTION, farm.getBuilding());
-		
-        this.farm = farm;      
-        this.building = farm.getBuilding();		
+        super(FUNCTION, building);
+
+        this.building = building;
         this.inv = building.getInventory();
         this.settlement = building.getBuildingManager().getSettlement();
-        		
-        hive = new BeeHive(this, "Honey Bee");
-        
+
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+ 
 	}
 
-    public Farming getFarming() {
-    	return farm;
-    }
 
 	@Override
 	public double getMaintenanceTime() {
@@ -61,15 +53,7 @@ implements Serializable {
 
 	@Override
 	public void timePassing(double time) {
-		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-	    int millisols =  (int) clock.getMillisol();
-		//System.out.println("millisols : " + millisols);
-		
-		if (millisols % 100 == 1) {	
-			//System.out.println("millisols : " + millisols);
-			hive.timePassing(time);
-			//tally = 0;
-		}
+		// TODO Auto-generated method stub
 		
 	}
 
@@ -100,5 +84,4 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
 }

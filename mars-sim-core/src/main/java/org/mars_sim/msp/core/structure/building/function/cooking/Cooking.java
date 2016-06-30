@@ -33,12 +33,12 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.CropConfig;
-import org.mars_sim.msp.core.structure.building.function.CropType;
 import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
+import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import com.google.common.collect.ArrayListMultimap;

@@ -33,8 +33,8 @@ import org.mars_sim.msp.core.resource.PartPackageConfig;
 import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.function.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 

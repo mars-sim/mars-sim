@@ -4,12 +4,14 @@
  * @version 3.08 2015-04-08
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure.building.function;
+package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Function;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.PowerMode;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -44,6 +51,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 // 2015-02-16 Added Germination phase and custom growing area
 // 2015-02-28 Added soil usage (and changed fertilizer usage) based on sq meter
 // 2015-09-30 Changed the algorithm of selecting a new crop to plant
+// 2016-06-28 Added incubation phase and required tissue culture for new crops
 public class Farming
 extends Function
 implements Serializable {
@@ -54,13 +62,13 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Farming.class.getName());
 
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
-
-    private static final double TISSUE_CULTURE_FACTOR = 100D;
-    
+ 
     private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
-    /** (arbitrary) amount of crop tissue culture needed per square meter of growing area */
-    private static final double TISSUE_PER_SQM = .05D;
-
+    
+    /** amount of crop tissue culture needed for each square meter of growing area */
+    private static final double TISSUE_PER_SQM = .0005D; // 1/2 gram (arbitrary)
+    //private static final double TISSUE_CULTURE_FACTOR = 100D;
+    
     private int cropNum;
 	private int solCache = 1;
 
@@ -125,6 +133,8 @@ implements Serializable {
         // 2015-02-18 Created BeeGrowing
         // TODO: write codes to incorporate the idea of bee growing
         // beeGrowing = new BeeGrowing(this);
+        
+
     }
 
 
@@ -327,15 +337,15 @@ implements Serializable {
     // 2015-02-28 provideNewSoil()
     public void provideNewSoil(double cropArea) {
         // 2015-02-28 Replaced some amount of old soil with new soil
-    	double rand = RandomUtil.getRandomDouble(2);
+    	double rand = RandomUtil.getRandomDouble(1.2);
 
-    	double amount = Crop.SOIL_NEEDED_PER_SQM * cropArea / 8D *rand;
+    	double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea *rand;
 
     	// TODO: adjust how much old soil should be turned to crop waste
-    	Storage.storeAnResource(amount, "crop waste", inv);
+    	Storage.storeAnResource(amount, Crop.CROP_WASTE, inv);
 
     	// TODO: adjust how much new soil is needed to replenish the soil bed
-    	Storage.retrieveAnResource(amount, "soil", inv, true );
+    	Storage.retrieveAnResource(amount, Crop.SOIL, inv, true );
 
     }
 
@@ -349,8 +359,8 @@ implements Serializable {
     //2015-02-28 Modified provideFertilizer()
     public void provideFertilizer(double cropArea) {
     	double rand = RandomUtil.getRandomDouble(2);
-    	double amount = Crop.FERTILIZER_NEEDED_PER_SQM * cropArea / 10D * rand;
-    	Storage.retrieveAnResource(amount, "fertilizer", inv, true);
+    	double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
+    	Storage.retrieveAnResource(amount, Crop.FERTILIZER, inv, true);
 		//System.out.println("fertilizer used in planting a new crop : " + amount);
     }
 
@@ -365,9 +375,9 @@ implements Serializable {
     public double useTissueCulture(CropType cropType, double cropArea) {
     	double percent = 0;
 
-    	double requestedAmount = cropArea * TISSUE_PER_SQM * cropType.getEdibleBiomass()/TISSUE_CULTURE_FACTOR;
+    	double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
-    	String tissue = cropType.getName()+ " tissue culture";
+    	String tissue = cropType.getName()+ " " + Crop.TISSUE_CULTURE;
 
     	boolean result = false;
 
@@ -386,13 +396,13 @@ implements Serializable {
 	    		result = true;
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount = amountStored ;
-	    		System.out.println(tissue + " partially available : " + requestedAmount + " kg");
+	    		logger.info(tissue + " is partially available : " + requestedAmount + " kg");
 	    	}
 
 	    	else {
 	    		result = true;
 	    		percent = 100;
-	    		System.out.println(tissue + " fully available : " + requestedAmount + " kg");
+	    		logger.info(tissue + " is fully available : " + requestedAmount + " kg");
 	    	}
 
 	    	if (result) {
@@ -658,7 +668,7 @@ implements Serializable {
 	        produceDailyTendingCropWaste();
 	    }
 
-        // Determine resource processing production level.
+        // Determine the production level.
         double productionLevel = 0D;
         if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
         else if (getBuilding().getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
@@ -672,7 +682,7 @@ implements Serializable {
             crop.timePassing(time * productionLevel);
 
             // Remove old crops.
-            if (crop.getPhase().equals(Crop.FINISHED)) {
+            if (crop.getPhaseType() == PhaseType.FINISHED) {
                 remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
                 i.remove();
                 newCrops++;
@@ -721,7 +731,7 @@ implements Serializable {
 		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		Storage.storeAnResource(amountCropWaste, "crop waste", inv);
+		Storage.storeAnResource(amountCropWaste, Crop.CROP_WASTE, inv);
 	}
 
 /*
@@ -754,10 +764,10 @@ implements Serializable {
         Iterator<Crop> i = crops.iterator();
         while (i.hasNext()) {
             Crop crop = i.next();
-            if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.GERMINATION))
+            if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
                 //powerRequired += (crop.getMaxHarvest() * powerGrowingCrop + crop.getLightingPower() );
             	powerRequired += powerGrowingCrop + crop.getLightingPower();
-            else if (crop.getPhase().equals(Crop.HARVESTING) || crop.getPhase().equals(Crop.PLANTING))
+            else if (crop.getPhaseType() == PhaseType.HARVESTING || crop.getPhaseType() == PhaseType.PLANTING)
             	powerRequired += powerGrowingCrop;
         }
 
@@ -796,7 +806,7 @@ implements Serializable {
         Iterator<Crop> i = crops.iterator();
         while (i.hasNext()) {
             Crop crop = i.next();
-            if (crop.getPhase().equals(Crop.GROWING) || crop.getPhase().equals(Crop.GERMINATION))
+            if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
                 powerRequired += (crop.getMaxHarvest() * powerSustainingCrop);
         }
 

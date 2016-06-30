@@ -929,7 +929,12 @@ implements VehicleOperator, MissionMember, Serializable {
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
             }
             
-            super.setDescription(associatedSettlement.getName());
+            if (associatedSettlement == null)
+            	super.setDescription("Dead");            	
+            else
+            	// TODO: what is the potential use of description for a person ?
+            	// Why is it set to associatedSettlement.getName() ?
+            	super.setDescription(associatedSettlement.getName());
         }
     }
 

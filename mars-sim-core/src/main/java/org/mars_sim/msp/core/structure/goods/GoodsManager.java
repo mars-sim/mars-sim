@@ -61,9 +61,6 @@ import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.Crop;
-import org.mars_sim.msp.core.structure.building.function.CropConfig;
-import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
@@ -72,6 +69,9 @@ import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Ingredient;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
+import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
@@ -694,9 +694,9 @@ public class GoodsManager implements Serializable {
                     amountNeeded = cropConfig.getOxygenConsumptionRate();//Crop.OXYGEN_NEEDED;
                 // TODO: soil and fertilizer needs to be estimated differently
                 else if (resource.equals(soil))
-                    amountNeeded = Crop.SOIL_NEEDED_PER_SQM * 10;
+                    amountNeeded = Crop.NEW_SOIL_NEEDED_PER_SQM * 10; // TODO: why * 10 ?
                 else if (resource.equals(fertilizer))
-                	amountNeeded = Crop.FERTILIZER_NEEDED * 10 + 10 * Crop.FERTILIZER_NEEDED_PER_SQM;
+                	amountNeeded = Crop.FERTILIZER_NEEDED_WATERING * 10 + 10 * Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM;
                 // Crop.FERTILIZER_NEEDED = 0.001D // a very minute amount needed per timePassing() call if grey water is not available
 
                 // // TODO: very rough estimate now with Crop.FERTILIZER_NEEDED_PER_SQM = 1D // average amount needed when planting a new crop

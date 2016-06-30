@@ -35,16 +35,15 @@ import javafx.stage.Screen;
 * Window size after Stage.show() method. If the pref size is fixed, then use
 * this class in WindowEvent.WINDOW_SHOWING event, or if the pref size is set to
 * USE_COMPUTED_SIZE then use it in WindowEvent.WINDOW_SHOWN event (this will
-* give a quick splash Window though). Feel free to improve and share this code.
-* I am new to JavaFX so tired what I know so far. Tested on Windows but need
+* give a quick splash Window though). Tested on Windows but need
 * more attention to Linux and Mac
 *
 * @author
 */
 public class StartUpLocation {
 
-   private double xPos = 0;
-   private double yPos = 0;
+   private double xPos = 0D;
+   private double yPos = 0D;
 
    /**
     * Get Top Left X and Y Positions for a Window to centre it on the
@@ -53,6 +52,8 @@ public class StartUpLocation {
     * @param windowHeight - Window Height
     */
    public StartUpLocation(double windowWidth, double windowHeight) {
+	   
+	   //System.out.println("(" + windowWidth + ", " + windowHeight + ")");
        // Get X Y of start-up location on Active Screen
        // simple_JavaFX_App
        try {
@@ -61,6 +62,7 @@ public class StartUpLocation {
            // Get list of available screens
            List<Screen> screens = Screen.getScreens();
            if (p != null && screens != null && screens.size() > 1) {
+        	   // in order for xPos != 0 and yPos != 0 in startUpLocation, there has to be more than 1 screen
                // Screen bounds as rectangle
                Rectangle2D screenBounds;
                // Go through each screen to see if the mouse is currently on that screen
@@ -80,6 +82,7 @@ public class StartUpLocation {
            // Catch and report exceptions
            headlessException.printStackTrace();
        }
+       
    }
 
    /**

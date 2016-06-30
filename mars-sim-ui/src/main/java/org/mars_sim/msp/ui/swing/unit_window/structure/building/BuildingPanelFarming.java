@@ -48,10 +48,11 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.structure.building.function.Crop;
-import org.mars_sim.msp.core.structure.building.function.CropConfig;
-import org.mars_sim.msp.core.structure.building.function.CropType;
-import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
+import org.mars_sim.msp.core.structure.building.function.farming.CropType;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.structure.building.function.farming.PhaseType;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -746,7 +747,8 @@ implements Serializable, MouseListener {
 		public Object getValueAt(int row, int column) {
 
 			Crop crop = crops.get(row);
-			String phase = crop.getPhase();
+			//String phase = crop.getPhase();
+			PhaseType phaseType = crop.getPhaseType();
 			// 2014-10-10 mkung: added the crop's category
 			String category = crop.getCategory();
 
@@ -757,17 +759,17 @@ implements Serializable, MouseListener {
 				else return redDot;
 			}
 			else if (column == 1) return Conversion.capitalize(crop.getCropType().getName());
-			else if (column == 2) return phase;
+			else if (column == 2) return phaseType.getName();
 			else if (column == 3) {
 				int growth = 0;
 				double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
-				if (phase.equals(Crop.GERMINATION)) {
+				if (phaseType == PhaseType.GERMINATION) {
 					growth = (int) (growingCompleted * 100D);
 				}
-				else if (phase.equals(Crop.GROWING)) {
+				else if (phaseType == PhaseType.GROWING) {
 					growth = (int) (growingCompleted * 100D);
 				}
-				else if (phase.equals(Crop.HARVESTING) || phase.equals(Crop.FINISHED))
+				else if (phaseType == PhaseType.HARVESTING || phaseType == PhaseType.FINISHED)
 					growth = 100;
 
 				return String.valueOf(growth) + "%";

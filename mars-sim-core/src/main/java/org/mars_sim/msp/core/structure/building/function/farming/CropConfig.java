@@ -4,11 +4,13 @@
  * @version 3.08 2015-04-08
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure.building.function;
+package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -24,6 +26,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	public static final double INCUBATION_PERIOD  = 2000D;
 	// Element names
 	// 2015-12-04 Added a number of elements below
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
@@ -53,6 +56,7 @@ implements Serializable {
 	 */
 	public CropConfig(Document cropDoc) {
 		this.cropDoc = cropDoc;
+
 	}
 
 	/**
@@ -115,8 +119,39 @@ implements Serializable {
 				// Create crop type.
 				//CropType cropType = new CropType(name, growingTime * 1000D, cropCategory, ppf * 1D, photoperiod * 1D, harvestIndex);
 
+				// 2016-06-29 Set up the default growth phases of a crop
+				Map<Integer, Phase> phases = new HashMap<>();
+/*				
+				phases.put(0, new Phase(PhaseType.INCUBATION, 0));
+				phases.put(1, new Phase(PhaseType.PLANTING, 0));
+				phases.put(2, new Phase(PhaseType.GERMINATION, 5D));
+				phases.put(3, new Phase(PhaseType.GROWING, 95D));
+				phases.put(4, new Phase(PhaseType.HARVESTING, 0));
+				phases.put(5, new Phase(PhaseType.FINISHED, 0));
+				
+			// for cropCategory.equalsIgnoreCase("tubers")) {
+				phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
+				phases.put(1, new Phase(PhaseType.PLANTING, maxHarvest * 0.5D, 0));
+				phases.put(2, new Phase(PhaseType.SPROUTING, maxHarvest, 14D));
+				phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, maxHarvest, 5));
+				phases.put(4, new Phase(PhaseType.TUBER_INITIATION, maxHarvest, 14));
+				phases.put(5, new Phase(PhaseType.TUBER_FILLING, maxHarvest, 40));
+				phases.put(6, new Phase(PhaseType.MATURING, maxHarvest, 27));
+				phases.put(7, new Phase(PhaseType.HARVESTING, maxHarvest *1.5D, 0));
+				phases.put(8, new Phase(PhaseType.FINISHED, 0, 0));
+			}
+			
+*/				
+				phases.put(0, new Phase(PhaseType.INCUBATION, 2D, 0));
+				phases.put(1, new Phase(PhaseType.PLANTING, 0.75, 0));
+				phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+				phases.put(3, new Phase(PhaseType.GROWING, 1D, 95D));
+				phases.put(4, new Phase(PhaseType.HARVESTING, 0.75, 0));
+				phases.put(5, new Phase(PhaseType.FINISHED, 0, 0));
+				
+				
 				CropType cropType = new CropType(name, growingTime * 1000D, cropCategory,
-						edibleBiomass , edibleWaterContent, inedibleBiomass, dailyPAR);
+						edibleBiomass , edibleWaterContent, inedibleBiomass, dailyPAR, phases);
 
 				cropList.add(cropType);
 			}
@@ -167,6 +202,24 @@ implements Serializable {
 		String str = element.getAttributeValue(VALUE);
 		return Double.parseDouble(str);
 	}
+	
+/*	
+	public Map<Integer, Phase> getPhases() {
+		try {
+			return shallowCopy(phases);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return phases;
+	}
+
+	
+	static final Map shallowCopy(final Map source) throws Exception {
+	    final Map newMap = source.getClass().newInstance();
+	    newMap.putAll(source);
+	    return newMap;
+	}
+*/
 	
 	/**
 	 * Prepare object for garbage collection.

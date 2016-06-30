@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.quotation.Quotation;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
-import org.mars_sim.msp.core.structure.building.function.CropConfig;
+import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.notification.PNotification;
 

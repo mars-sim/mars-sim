@@ -1442,15 +1442,18 @@ public class MainScene {
 		//System.out.println("calling startPausePopup()");   
 		//messagePopup.popAMessage("PAUSED", " ESC to resume", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
 		if (!messagePopup.isOn()) {
-			//Platform.runLater(() -> 
-			messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON);
-			//);  		    	
+			Platform.runLater(() -> 
+				messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON)
+			);  		    	
 			//System.out.println("popping up pause"); 
 		}
 	}
 
 	public void stopPausePopup() {
-		messagePopup.stop();		    	
+		Platform.runLater(() -> 
+			messagePopup.stop()
+		);
+		    	
 	}
 	
 	/**

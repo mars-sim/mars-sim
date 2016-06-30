@@ -4,16 +4,19 @@
  * @version 3.08 2015-04-08
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure.building.function;
+package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
 /**
  * The CropType class is a type of crop.
  */
-//2014-10-14 mkung: added new attribute: edibleBiomass. commented out ppf and photoperiod
+//2014-10-05 Added cropCategory
+//2014-10-14 Added edibleBiomass. commented out ppf and photoperiod
 public class CropType
 implements Serializable, Comparable<CropType> {
 
@@ -25,49 +28,47 @@ implements Serializable, Comparable<CropType> {
 	private String name;
 	/** The length of the crop type's growing phase. */
 	private double growingTime;
-
-	//2014-10-05 mkung: added new attributes:  cropCategory, edibleBiomass, edibleWaterContent, inedibleBiomass;
-	// commented out ppf and photoperiod and harvestIndex
 	/** The type of crop */
 	private String cropCategory;
-	/** The Photosynthetic Photon Flux (PPF) is the amount of light needed [in micro mol per sq meter per second] */
-	//private double ppf;
-	/** The Photoperiod is the number of hours of light needed [in hours per day] */
-	//private double photoperiod;
-	//2014-10-14 mkung: added the fresh basis Edible Biomass Productivity [ in gram per sq m per day ]
-	private double edibleBiomass;
+	private double edibleBiomass; // the fresh basis Edible Biomass Productivity [ in gram per sq m per day ]
 	private double edibleWaterContent;
 	private double inedibleBiomass;
+	/** Note: the Photosynthetic Photon Flux (PPF) is the amount of light needed [in micro mol per sq meter per second] */
+	//private double ppf;
+	/** Note: The Photoperiod is the number of hours of light needed [in hours per day] */
+	//private double photoperiod;
+	
 	private double dailyPAR;
 	/** The average harvest index (from 0 to 1) -- the ratio of the edible over the inedible part of the harvested crop [dimenionsion-less] */
 	//private double harvestIndex;
 
-
+	private Map<Integer, Phase> phases = new HashMap<>();
+	
 
 	/**
 	 * Constructor.
-	 * @param name - The name of the type of crop.
-	 * @param growingTime - Length of growing phase for crop in millisols.
-	 * @param cropCategory
+	 * @param name - Name of the crop.
+	 * @param growingTime Length of growing phase for crop in millisols.
+	 * @param cropCategory The ntype of crop.
 	 * @param edibleBiomass
 	 * @param edibleWaterContent
 	 * @param inedibleBiomass
 	 * @param dailyPAR
+	 * @param a map of phases
 	 */
 	public CropType(String name, double growingTime, String cropCategory,
-			double edibleBiomass, double edibleWaterContent, double inedibleBiomass, double dailyPAR) {
+			double edibleBiomass, double edibleWaterContent, 
+			double inedibleBiomass, double dailyPAR, Map<Integer, Phase> phases) {
+		
 		this.name = name;
 		this.growingTime = growingTime;
-		//2014-10-05 Added by mkung
 		this.cropCategory = cropCategory;
-		//this.ppf = ppf;
-		//this.photoperiod = photoperiod;
-		//2014-10-14 Added by mkung
 		this.edibleBiomass = edibleBiomass;
 		this.edibleWaterContent = edibleWaterContent;
 		this.inedibleBiomass = inedibleBiomass;
 		this.dailyPAR = dailyPAR;
-		//this.harvestIndex = harvestIndex;
+		this.phases = phases;
+
 	}
 
 
@@ -94,19 +95,6 @@ implements Serializable, Comparable<CropType> {
 	public String getCropCategory() {
 		return cropCategory;
 	}
-
-	/**
-	* Gets the amount of light needed in terms of Photosynthetic Photon Flux (PPF)
-	* @return crop type's PPF in micro mol per sq meter per second.
-	public double getPpf() {
-		return ppf;
-	}
-	* Gets the hours of light needed as Photoperiod
-	* @return crop's photoperiod in hours per day.
-	public double getPhotoperiod() {
-		return photoperiod;
-	}
-	**/
 
 	/**
 	* Gets the edible biomass
@@ -147,6 +135,10 @@ implements Serializable, Comparable<CropType> {
 		return name;
 	}
 
+	public Map<Integer, Phase> getPhases() {
+		return phases;
+	}
+	
 	/**
 	 * Compares this object with the specified object for order.
 	 * @param o the Object to be compared.

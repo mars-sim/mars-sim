@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
 import javafx.scene.CacheHint;
@@ -671,17 +672,23 @@ public class MainMenu {
  		stackPane.setStyle(
       		   //"-fx-border-style: none; "
       		   //"-fx-background-color: #231d12; "
-         		"-fx-background-color: transparent; "
+         		"-fx-background-color: #f5f5dc7F "
          		//+ "-fx-background-radius: 1px;"
          		);     
  		
-		
- 		Scene scene = new Scene(stackPane, 150, 150);
- 		scene.setFill(Color.TRANSPARENT);
- 
 		loadingCircleStage = new Stage();
  		loadingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
+ 		loadingCircleStage.setOpacity(0.7);
+		
+ 		Scene scene = new Scene(stackPane, 150, 150);
+ 		scene.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+ 	 		//stackPane.setStyle("-fx-background-color: transparent; "); 
+ 			loadingCircleStage.setOpacity(1);
+ 		});
+ 		scene.setFill(Color.TRANSPARENT);
  
+
+ 		
  		loadingCircleStage.initStyle (StageStyle.TRANSPARENT);
  		loadingCircleStage.setScene(scene);
 	
