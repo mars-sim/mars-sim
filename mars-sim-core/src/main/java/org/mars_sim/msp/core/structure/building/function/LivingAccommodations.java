@@ -154,24 +154,27 @@ public class LivingAccommodations extends Function implements Serializable {
     		if (sleepers > beds) {
                 //sleepers = beds;
                 sleepers--;
-                System.out.println("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
+                logger.info("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
                 		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
             }
     	}
     	else {
+    		// for settlers who live here
         	if (sleepers > beds) {
                 //sleepers = beds;
                 sleepers--;
-                System.out.println("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
-                		+ sleepers + "  # beds : " + beds+ ". Will sleep at a random location.");
+                logger.info("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
+                		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
             }
             else {           	
 	        	if (!bedMap.containsKey(person)) {
 	        		// if a person has never been assigned a bed
 	        		Point2D bed = designateABed(person);
-	        		if (bed == null)
-	        			System.out.println("Living Accommodation : " + person + " could not find any undesignated beds in " 
+	        		if (bed == null) {
+	                    sleepers--;
+	        			logger.info("Living Accommodation : " + person + " could not find any undesignated beds in " 
 	        					+ building.getNickName() + " in " + settlement);
+	        		}
 	        	}
             }
     	}
@@ -181,7 +184,7 @@ public class LivingAccommodations extends Function implements Serializable {
     }
 
     /**
-     * Assigns an available bed 
+     * Assigns/designate an available bed to a person
      * @param person
      * @return
      */
@@ -192,6 +195,7 @@ public class LivingAccommodations extends Function implements Serializable {
     	int numBeds = spots.size();
     	int numDesignated = bedMap.size();   	
     	if (numDesignated < numBeds) {
+    		// there should be at least one bed available-- Note: it may not be empty. a traveller may be sleeping on it.
 	        Iterator<Point2D> i = spots.iterator();
 	        while (i.hasNext()) {
 	            Point2D spot = i.next();

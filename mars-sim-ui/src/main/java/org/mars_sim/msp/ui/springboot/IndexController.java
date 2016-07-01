@@ -28,17 +28,32 @@ public class IndexController {
         return "starter";
     }
 
+    @RequestMapping(value="/earthmoon", method = RequestMethod.GET)
+    public String loadEarthmoon(ModelMap map) {
+        return "earthmoon";
+    }
+
+    @RequestMapping(value="/mars", method = RequestMethod.GET)
+    public String loadMars(ModelMap map) {
+        return "mars";
+    }
+    
+    @RequestMapping(value="/marsphobos", method = RequestMethod.GET)
+    public String loadMarsPhobos(ModelMap map) {
+        return "marsphobos";
+    }
+    
     @RequestMapping(value="/hello", method=RequestMethod.GET)
     public String hello(Model model) {
         model.addAttribute("message", "[Note : loaded via a thymeleaf template]");
         return "hello";
     }
-
+/*
     @RequestMapping(value="/main", method=RequestMethod.GET)
     public String loadMain(ModelMap map) {
         return "main";
     }
-    
+*/    
     @RequestMapping(value="/starter", method=RequestMethod.GET)
     public String starter(Model model) {
         model.addAttribute("message", "[Note : loaded via a thymeleaf template]");

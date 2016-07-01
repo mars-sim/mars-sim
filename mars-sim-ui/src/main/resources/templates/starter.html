@@ -10,8 +10,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"></meta>
   <!-- Bootstrap 3.3.6 -->
-  <link rel="stylesheet" href="bootstrap.min.css" 
-  		th:href="@{bootstrap.min.css}" ></link>
+  <link rel="stylesheet" href="adminlte/css/bootstrap.min.css" 
+  		th:href="@{adminlte/css/bootstrap.min.css}" ></link>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" 
   		th:href="@{https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css}"></link>
@@ -19,14 +19,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" 
   		th:href="@{https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css}"></link>
   <!-- Theme style -->
-  <link rel="stylesheet" href="AdminLTE.min.css" 
-  		th:href="@{AdminLTE.min.css}"></link>
+  <link rel="stylesheet" href="adminlte/css/AdminLTE.min.css" 
+  		th:href="@{adminlte/css/AdminLTE.min.css}"></link>
   <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
         page. However, you can choose any other skin. Make sure you
         apply the skin class to the body tag so the changes take effect.
   -->
-  <link rel="stylesheet" href="skin-blue.min.css" 
-  		th:href="@{skin-blue.min.css}"></link>
+  <link rel="stylesheet" href="adminlte/css/skin-blue.min.css" 
+  		th:href="@{adminlte/css/skin-blue.min.css}"></link>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -72,7 +72,7 @@ desired effect
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>MSP</b></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Mars Net</b></span>
+      <span class="logo-lg"><b>Mars Simulation</b></span>
     </a>
 
     <!-- Header Navbar -->
@@ -100,8 +100,8 @@ desired effect
                     <a href="#">
                       <div class="pull-left">
                         <!-- User Image -->
-                        <img src="user2-160x160.jpg"
-                         th:src="@{user2-160x160.jpg}" class="img-circle" alt="User Image"></img>
+                        <img src="adminlte/images/user2-160x160.jpg"
+                         th:src="@{adminlte/images/user2-160x160.jpg}" class="img-circle" alt="User Image"></img>
                       </div>
                       <!-- Message title and timestamp -->
                       <h4>
@@ -185,16 +185,16 @@ desired effect
             <!-- Menu Toggle Button -->
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <!-- The user image in the navbar-->
-              <img src="user2-160x160.jpg"
-              th:src="@{user2-160x160.jpg}" class="user-image" alt="User Image"></img>
+              <img src="adminlte/images/user2-160x160.jpg"
+              th:src="@{adminlte/images/user2-160x160.jpg}" class="user-image" alt="User Image"></img>
               <!-- hidden-xs hides the username on small devices so only the image appears. -->
               <span class="hidden-xs">Manny Kung</span>
             </a>
             <ul class="dropdown-menu">
               <!-- The user image in the menu -->
               <li class="user-header">
-                <img src="user2-160x160.jpg"
-                th:src="@{user2-160x160.jpg}" class="img-circle" alt="User Image"></img>
+                <img src="adminlte/images/user2-160x160.jpg"
+                th:src="@{adminlte/images/user2-160x160.jpg}" class="img-circle" alt="User Image"></img>
 
                 <p>
                   Manny Kung - Alpha Base, Mars
@@ -244,8 +244,8 @@ desired effect
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="user2-160x160.jpg"
-          th:src="@{user2-160x160.jpg}" class="img-circle" alt="User Image"></img>
+          <img src="adminlte/images/user2-160x160.jpg"
+          th:src="@{adminlte/images/user2-160x160.jpg}" class="img-circle" alt="User Image"></img>
         </div>
         <div class="pull-left info">
           <p>Manny Kung</p>
@@ -294,7 +294,7 @@ desired effect
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Settlement Dashboard
+        <strong>Dashboard</strong>
         <small> -Daily Statistics</small>
       </h1>
       <ol class="breadcrumb">
@@ -305,10 +305,30 @@ desired effect
 
     <!-- Main content -->
     <section class="content">
+     <!-- Your Page Content Here -->
+	<p>
+	    <div class="pull-left hidden-xs">
+			<a href="mars.html">Mars 1   </a> 
+	    </div>
+	</p>
+	</section>
 
-      <!-- Your Page Content Here -->
-
-    </section>
+    <section class="content">
+	<p>
+		<div class="pull-left hidden-xs">
+		 	<a href="marsphobos.html">Mars 2   </a> 
+		</div>	
+	</p>
+	</section>
+	
+	<section class="content">
+	<p>
+	    <div class="pull-left hidden-xs">
+			<a href="earthmoon.html">Earth-Moon System   </a> 
+	    </div>
+	</p>    
+	</section>
+	
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
@@ -317,10 +337,19 @@ desired effect
   <footer class="main-footer">
     <!-- To the right -->
     <div class="pull-right hidden-xs">
-	May all your dreams come true on Mars
+		<a href="earthmoon.html">Earth-Moon System</a> 
+<!-- May all your dreams come true on Mars  -->
     </div>
+
+	<strong>          Mars Simulation Project, 2016</strong>
+    
     <!-- Default to the left -->
-    <strong>Copyright &copy; 2043, Mars. <a href="#">Company</a>.</strong> All rights reserved.
+<!--     <strong>Copyright &copy; Mars Simulation Project. <a href="#">Company</a>.</strong> All rights reserved.
+ -->
+	<div class="pull-left hidden-xs">
+	 	<a href="mars.html">Mars System</a> 
+	</div>	
+
   </footer>
 
   <!-- Control Sidebar -->
@@ -403,14 +432,14 @@ desired effect
 <!-- REQUIRED JS SCRIPTS -->
 
 <!-- jQuery 2.2.0 -->
-<script src="jQuery-2.2.0.min.js"
-	th:src="@{jQuery-2.2.0.min.js}"></script>
+<script src="adminlte/js/jQuery-2.2.0.min.js"
+	th:src="@{adminlte/js/jQuery-2.2.0.min.js}"></script>
 <!-- Bootstrap 3.3.6 -->
-<script src="bootstrap.min.js"
-	th:src="@{bootstrap.min.js}"></script>
+<script src="adminlte/js/bootstrap.min.js"
+	th:src="@{adminlte/js/bootstrap.min.js}"></script>
 <!-- AdminLTE App -->
-<script src="app.min.js"
-	th:src="@{app.min.js}"></script>
+<script src="adminlte/js/app.min.js"
+	th:src="@{adminlte/js/app.min.js}"></script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the

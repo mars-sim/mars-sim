@@ -101,21 +101,21 @@ public class Sleep extends Task implements Serializable {
         	
 			// check to see if a person is a trader or on a trading mission
 			if (!s1.equals(s2)) {
-        		// he is a guest
-            	logger.info("Sleep : " + person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
+        		// yes he is a trader/guest
+            	//logger.info(person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
             	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
             	Building quarters = getAvailableLivingQuartersBuilding(person, false);
                 if (quarters != null) {
 	            	accommodations = (LivingAccommodations) quarters.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);           	
 	                Building startBuilding = BuildingManager.getBuilding(person);                                  
-	                logger.fine(person + " is walking from " + startBuilding + " to his/her 'temporary' quarters at " + quarters);
+	                logger.info(person + " is walking from " + startBuilding + " to lool for his/her 'temporary' quarters at " + quarters);
 	        		// TODO: should go to the "guest" quarter if the "designated" quarters are no longer available 
 	        		walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS, false);
 	                accommodations.addSleeper(person, true);
 	                //walkSite = true;
                 }
                 else {
-                	logger.fine("Sleep : " + person + " couldn't find an empty bed at all. Falling asleep at right where he/she is.");
+                	logger.info(person + " couldn't find any available quarters bed at all. Falling asleep at right where he/she is.");
                 	// TODO: should allow him/her to sleep in gym or anywhere.
                 	//endTask();
                     // Walk to random location.
@@ -372,9 +372,10 @@ public class Sleep extends Task implements Serializable {
             quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
             quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, needUndesignatedBed);
             //if (!needUndesignatedBed) System.out.println("Sleep : # Bldgs with unoccupied beds : " + quartersBuildings.size());
-            quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
+            if (quartersBuildings.size() > 1)
+            	quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
             //if (!needUndesignatedBed) System.out.println("Sleep : # Least Crowded Bldgs with unoccupied beds: " + quartersBuildings.size());           
-            if (quartersBuildings.size() > 0) {
+            if (quartersBuildings.size() > 1) {
                 Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, quartersBuildings);
                 result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);

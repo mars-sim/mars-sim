@@ -208,7 +208,7 @@ public class SleepMeta implements MetaTask, Serializable {
                 	
         			// check to see if a person is a trader or on a trading mission
                 	if (!s1.equals(s2)) {
-                		// he is a guest
+                		// yes he is a trader/guest
                     	logger.fine("SleepMeta : " + person + " is a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
                     	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
                     	quarters = Sleep.getAvailableLivingQuartersBuilding(person, false);
