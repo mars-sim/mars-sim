@@ -443,7 +443,7 @@ implements Serializable, MouseListener {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
         	cropName = Conversion.capitalize(crop.getCropType().getName());
-            cat = crop.getCropType().getCropCategory();
+            cat = crop.getCropType().getCropCategoryType().getName();
         	mass0 = crop.getCropType().getEdibleBiomass();
         	water = 100 * crop.getCropType().getEdibleWaterContent();
         	mass1 = crop.getCropType().getInedibleBiomass();
@@ -452,7 +452,7 @@ implements Serializable, MouseListener {
         }
         else {
         	cropName = Conversion.capitalize(ct.getName());
-            cat = ct.getCropCategory();
+            cat = ct.getCropCategoryType().getName();
         	mass0 = ct.getEdibleBiomass();
         	water = 100 * ct.getEdibleWaterContent();
         	mass1 = ct.getInedibleBiomass();
@@ -750,7 +750,7 @@ implements Serializable, MouseListener {
 			//String phase = crop.getPhase();
 			PhaseType phaseType = crop.getPhaseType();
 			// 2014-10-10 mkung: added the crop's category
-			String category = crop.getCategory();
+			String category = crop.getCropType().getCropCategoryType().getName();
 
 			if (column == 0) {
 				double condition = crop.getCondition();

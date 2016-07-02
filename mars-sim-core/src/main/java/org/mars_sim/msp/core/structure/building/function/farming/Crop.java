@@ -216,7 +216,7 @@ implements Serializable {
 		    }
 		}
 */		
-		//String cropCategory = cropType.getCropCategory();
+		CropCategoryType cropCategory = cropType.getCropCategoryType();
 
 				
 		// Determine work required.
@@ -317,9 +317,9 @@ implements Serializable {
 	 */
 	// 2014-10-10 Added this method for UI to show crop category
 	// Called by BuildingPanelFarming.java to retrieve the crop category
-	public String getCategory() {
-		return cropType.getCropCategory();
-	}
+	//public String getCategory() {
+	//	return cropType.getCropCategory();
+	//}
 
 	/**
 	 * Gets the maximum possible food harvest for crop.

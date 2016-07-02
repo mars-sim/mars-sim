@@ -29,7 +29,9 @@ implements Serializable, Comparable<CropType> {
 	/** The length of the crop type's growing phase. */
 	private double growingTime;
 	/** The type of crop */
-	private String cropCategory;
+	//private String cropCategory;
+	private CropCategoryType cropCategoryType;
+	
 	private double edibleBiomass; // the fresh basis Edible Biomass Productivity [ in gram per sq m per day ]
 	private double edibleWaterContent;
 	private double inedibleBiomass;
@@ -56,13 +58,15 @@ implements Serializable, Comparable<CropType> {
 	 * @param dailyPAR
 	 * @param a map of phases
 	 */
-	public CropType(String name, double growingTime, String cropCategory,
-			double edibleBiomass, double edibleWaterContent, 
-			double inedibleBiomass, double dailyPAR, Map<Integer, Phase> phases) {
+	public CropType(String name, double growingTime, 
+			CropCategoryType cropCategoryType, double edibleBiomass, 
+			double edibleWaterContent, double inedibleBiomass, 
+			double dailyPAR, Map<Integer, Phase> phases) {
 		
 		this.name = name;
 		this.growingTime = growingTime;
-		this.cropCategory = cropCategory;
+		this.cropCategoryType = cropCategoryType;
+		//this.cropCategory = cropCategory;
 		this.edibleBiomass = edibleBiomass;
 		this.edibleWaterContent = edibleWaterContent;
 		this.inedibleBiomass = inedibleBiomass;
@@ -90,12 +94,20 @@ implements Serializable, Comparable<CropType> {
 
 	/**
 	* Gets the crop's type.
-	* @return cropCategory
-	*/
+	* @return cropCategory	
 	public String getCropCategory() {
 		return cropCategory;
 	}
-
+*/
+	
+	/**
+	* Gets the crop's category type.
+	* @return cropCategoryType
+	*/
+	public CropCategoryType getCropCategoryType() {
+		return cropCategoryType;
+	}
+	
 	/**
 	* Gets the edible biomass
 	* @return crop's edible biomass

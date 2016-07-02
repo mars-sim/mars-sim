@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ implements Serializable {
 	private Document cropDoc;
 	private List<CropType> cropList;
 
+	private List<CropCategoryType> cropCategoryTypes = new ArrayList<CropCategoryType>(Arrays.asList(CropCategoryType.values()));
+
 	/**
 	 * Constructor.
 	 * @param cropDoc the crop DOM document.
@@ -85,9 +88,24 @@ implements Serializable {
 				double growingTime = Double.parseDouble(growingTimeStr);
 
 				// Get crop category
-				String cropCategory ="";
-				cropCategory = crop.getAttributeValue(CROP_CATEGORY);
+				String cropCategory = crop.getAttributeValue(CROP_CATEGORY);
 
+				// 2016-07-01 Added checking against the crop category enum
+				boolean known = false;
+				CropCategoryType cat = null;
+				// check to see if this crop category is recognized in mars-sim
+				for (CropCategoryType c : cropCategoryTypes) {
+					if (CropCategoryType.getType(cropCategory) == c) {
+						known = true;
+						cat = c;
+						//System.out.println("cat is "+ cat);
+					}
+				}
+					
+				if (!known)
+					throw new IllegalArgumentException("no such crop category : " + cropCategory);
+				
+				
 				// Get ppf
 				//String ppfStr = crop.getAttributeValue(PPF);
 				//double ppf = Double.parseDouble(ppfStr);
@@ -150,7 +168,7 @@ implements Serializable {
 				phases.put(5, new Phase(PhaseType.FINISHED, 0, 0));
 				
 				
-				CropType cropType = new CropType(name, growingTime * 1000D, cropCategory,
+				CropType cropType = new CropType(name, growingTime * 1000D, cat,
 						edibleBiomass , edibleWaterContent, inedibleBiomass, dailyPAR, phases);
 
 				cropList.add(cropType);
@@ -220,6 +238,10 @@ implements Serializable {
 	    return newMap;
 	}
 */
+	
+	public List<CropCategoryType> getCropCategoryTypes() {
+		return cropCategoryTypes;
+	}
 	
 	/**
 	 * Prepare object for garbage collection.

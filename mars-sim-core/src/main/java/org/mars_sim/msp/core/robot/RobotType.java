@@ -38,9 +38,7 @@ public enum RobotType {
 	public String getDisplayName() {
 		return this.name;
 		//return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
-	}
-
-	
+	}	
 	
 	public static RobotType valueOfIgnoreCase(String s) {
 		return valueOf(s.toUpperCase().replace(' ','_'));
