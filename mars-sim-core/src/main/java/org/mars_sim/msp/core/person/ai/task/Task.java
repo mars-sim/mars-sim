@@ -777,12 +777,14 @@ implements Serializable, Comparable<Task> {
                 bed.getX(), bed.getY(), building);
     	
         if (bed != null) {
-        	//System.out.println("Task : " + person + "'s bed is at (" + bed.getX() + ", " + bed.getY() + ") in " + building.getNickName());
+        	//System.out.println("Task : " + 
+        	//logger.info(person + "'s bed is at (" + bed.getX() + ", " + bed.getY() + ") in " + building.getNickName());
             // Create subtask for walking to destination.
             createWalkingSubtask(building, spot, allowFail);
         }
         else {
-        	System.out.println("Task : walkToBed() : " + person + " has no designated bed in " + building.getNickName());
+        	//System.out.println("Task : walkToBed() : " + 
+        	//logger.info(person + " has no designated bed in " + building.getNickName());
         	// If no available activity spot, go to random location in building.
             walkToRandomLocInBuilding(building, allowFail);
         }

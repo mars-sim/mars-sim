@@ -232,7 +232,7 @@ implements Serializable {
 			if (tissuePercent <= 0) {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				growingTimeCompleted = phases.get(0).getWorkRequired();
-				logger.info(cropType + " is not available and needs " + growingTimeCompleted + " millisols to incubate enough to restock before planting.");
+				logger.info(cropType + " tissue culture needs " + growingTimeCompleted + " millisols to incubate and restock before planting.");
 
 			}
 			else if (tissuePercent >= 100) {

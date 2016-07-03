@@ -595,7 +595,7 @@ extends UnitTableModel {
 		        while (j.hasNext()) {
 		            Crop crop = j.next();
 		            String type = crop.getCropType().getCropCategoryType().getName();
-		            System.out.println("type is " + type);
+		            //System.out.println("type is " + type);
 		            if (type.equals(cropCat))
 		            	total++;
 		        }

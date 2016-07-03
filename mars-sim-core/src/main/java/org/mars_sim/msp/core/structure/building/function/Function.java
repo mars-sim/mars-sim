@@ -230,6 +230,48 @@ implements Serializable {
         return result;
     }
     
+    
+    /**
+     * Checks if an activity spot is empty/unoccupied 
+     * @return true if this activity spot is empty.
+     */
+    // 2016-07-02 Added isActivitySpotEmpty()
+    public boolean isActivitySpotEmpty(Point2D spot) {    
+        boolean result = false;
+        
+        if (activitySpots.isEmpty())
+        	return true;
+        
+        else {
+            Iterator<Point2D> i = activitySpots.iterator();
+	        while (i.hasNext()) {
+	            Point2D activitySpot = i.next();
+	            
+	            if (activitySpot == spot) {
+		            // Convert activity spot from building local to settlement local.
+		            Building b = getBuilding();
+		            Point2D settlementActivitySpot = LocalAreaUtil.getLocalRelativeLocation(
+		                    activitySpot.getX(), activitySpot.getY(), b);
+		              
+		            for (Person person : b.getInhabitants()) {
+			            // Check if person's location is identical or very very close (1e-5 meters) to activity spot.
+			            Point2D personLoc = new Point2D.Double(person.getXLocation(), person.getYLocation());
+			            if (LocalAreaUtil.areLocationsClose(settlementActivitySpot, personLoc)) {
+			                result = false;
+			            }
+			            else {
+			            	result = true;
+			            	break;
+			            }
+		            }       
+	            }
+	        }
+	        
+	        return result;
+        }
+    }
+    
+    
     /**
      * Checks if a person is at an activity for this building function.
      * @param person the person.

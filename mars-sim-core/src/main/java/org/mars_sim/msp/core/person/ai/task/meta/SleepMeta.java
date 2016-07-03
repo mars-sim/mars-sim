@@ -211,7 +211,7 @@ public class SleepMeta implements MetaTask, Serializable {
                 		// yes he is a trader/guest
                     	logger.fine("SleepMeta : " + person + " is a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
                     	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-                    	quarters = Sleep.getAvailableLivingQuartersBuilding(person, false);
+                    	quarters = Sleep.getBestAvailableQuarters(person, false);
                         if (quarters != null) {
                         	result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
      		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
@@ -236,7 +236,7 @@ public class SleepMeta implements MetaTask, Serializable {
     		            	// if this person has never been assigned a quarter and a bed so far
         	            	logger.fine("SleepMeta : " + person + " has never been designated a bed");
 
-               				quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
+               				quarters = Sleep.getBestAvailableQuarters(person, true);
 
         		            if (quarters != null) {
         	            		logger.fine("SleepMeta : " + person + " will be designated a bed in " + quarters.getNickName());
@@ -248,7 +248,7 @@ public class SleepMeta implements MetaTask, Serializable {
         	              		// There are no undesignated beds left in any quarters
         	                	logger.fine("SleepMeta : " + person + " cannot find any empty, undesignated beds in any quarters. Will use an unoccupied bed randomly.");
         	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-        	                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, false);
+        	                	quarters = Sleep.getBestAvailableQuarters(person, false);
         	                	if (quarters != null) {
               		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
             		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);

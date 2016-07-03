@@ -788,11 +788,11 @@ implements Serializable {
 
     /**
      * Checks if person has an anxiety attack due to too much stress.
-     * @param config the person configuration.
+     * @param personConfig the person configuration.
      * @param time the time passing (millisols)
      */
     // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
-    private void checkForStressBreakdown(PersonConfig config, double time) {
+    private void checkForStressBreakdown(PersonConfig personConfig, double time) {
  
     	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
     	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
@@ -808,22 +808,22 @@ implements Serializable {
             double chance = 0;
             
             try {              
-            	chance = config.getStressBreakdownChance();                
+            	chance = personConfig.getStressBreakdownChance();                
             } 
             catch (Exception e) {
-                logger.log(Level.SEVERE,"Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
+                logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
             }
             
             // If random breakdown, add panic attack.
             if (RandomUtil.lessThanRandPercent(chance * time * resilienceModifier)) {
-            	
+/*            	
                	if (fatigue < 200) 
             		fatigue = fatigue * 4;
             	else if (fatigue < 400) 
             		fatigue = fatigue * 2;
             	else if (fatigue < 600) 
             		fatigue = fatigue * 1.2;
-           	               	                	
+*/           	               	                	
             	int rand = RandomUtil.getRandomInt(1);
             	
             	if (rand == 0) {
@@ -837,7 +837,7 @@ implements Serializable {
                         //System.out.println(person.getName() + " has a panic attack.");
                     }
                     else 
-                    	logger.log(Level.SEVERE,"Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
+                    	logger.log(Level.SEVERE, "Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
             		
             	} else {
             		
@@ -855,11 +855,12 @@ implements Serializable {
             
             
             } else {
-            	
+/*            	
                	if (fatigue < 200) 
             		fatigue = fatigue * 2;
             	else if (fatigue < 400) 
             		fatigue = fatigue * 1.5;         	
+*/
             }
     
         }
@@ -868,55 +869,60 @@ implements Serializable {
 
     /**
      * Checks if person has very high fatigue.
-     * @param config the person configuration.
+     * @param personConfig the person configuration.
      * @param time the time passing (millisols)
      */
     // 2016-03-01 checkForHighFatigue
-    private void checkForHighFatigueCollapse(PersonConfig config, double time) {
-        try {
-        	Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-            if (!problems.containsKey(highFatigue)) {
+    private void checkForHighFatigueCollapse(PersonConfig personConfig, double time) {
+    	Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+        if (!problems.containsKey(highFatigue)) {
 
-                // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
-                int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
-                int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
-                
-                // a person with high endurance will be less likely to be collapse
-                double modifier = (double) (100 - endurance * .6 - strength *.4) / 10D;
+            // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
+            int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
+            int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+            
+            // a person with high endurance will be less likely to be collapse
+            double modifier = (double) (100 - endurance * .6 - strength *.4) / 10D;
 
-	                if (RandomUtil.lessThanRandPercent(config.getHighFatigueCollapseChance() * time * modifier)) {
-	                    //Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-	                                    	
-	                 	if (stress < 10) 
-	                 		stress = stress * 2;
-	                	else if (stress < 30) 
-	                		stress = stress * 1.5;
-	                	else if (stress < 50) 
-	                		stress = stress * 1.2;
-	                    
-	                    if (highFatigue != null) {
-	                        addMedicalComplaint(highFatigue);
-	                        //illnessEvent = true;
-	                        person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	                        logger.info(person.getName() + " collapses because of high fatigue exhaustion.");
-	                    }
-	                    else 
-	                    	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
-	                }
-	                else {
-	                	
-	                	if (stress < 10) 
-	                 		stress = stress * 1.5;
-	                	else if (stress < 30) 
-	                		stress = stress * 1.3;
-	                	else if (stress < 50) 
-	                		stress = stress * 1.1;
-	                    	                	
-	                }
+            double chance = 0;
+            
+            try {              
+            	chance = personConfig.getHighFatigueCollapseChance();                
+            } 
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
             }
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE,"Problem reading 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
+            
+            if (RandomUtil.lessThanRandPercent(chance * time * modifier)) {
+            //Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+/*                                	
+             	if (stress < 10) 
+             		stress = stress * 1.8;
+            	else if (stress < 30) 
+            		stress = stress * 1.5;
+            	else if (stress < 50) 
+*/            		stress = stress * 1.2;
+                
+                if (highFatigue != null) {
+                    addMedicalComplaint(highFatigue);
+                    //illnessEvent = true;
+                    person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+                    logger.info(person.getName() + " collapses because of high fatigue exhaustion.");
+                }
+                else 
+                	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
+            }
+            else {
+            	
+/*            	
+            	if (stress < 10) 
+             		stress = stress * 1.5;
+            	else if (stress < 30) 
+            		stress = stress * 1.3;
+            	else if (stress < 50) 
+            		stress = stress * 1.1;
+*/                	                	
+            }
         }
     }
 

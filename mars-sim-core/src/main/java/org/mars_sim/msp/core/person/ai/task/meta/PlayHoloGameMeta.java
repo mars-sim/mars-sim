@@ -66,7 +66,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
             	// 2016-01-10 Added checking if a person has a designated bed
                 Building quarters = person.getQuarters();    
                 if (quarters == null) {
-                	quarters = Sleep.getAvailableLivingQuartersBuilding(person, true);
+                	quarters = Sleep.getBestAvailableQuarters(person, true);
 
 	            	if (quarters == null) {
 		                Building recBuilding = PlayHoloGame.getAvailableRecreationBuilding(person);

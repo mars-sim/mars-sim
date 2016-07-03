@@ -120,12 +120,12 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Base percent chance per millisol that a person at high stress will have a panic attack or depression. -->
 	<!-- See medical complaint: "Panic Attack" and "Depression" in medical.xml. -->
 	<!-- Default: 10 [in percentage] -->
-	<stress-breakdown-chance value="10" />
+	<stress-breakdown-chance value="10.0" />
 
 	<!-- Base percent chance per millisol that a person at high fatigue will collapse. -->
 	<!-- See medical complaint: "High Fatigue Collapse" in medical.xml. -->
 	<!-- Default: 10 [in percentage]  -->
-	<high-fatigue-collapse-chance value="10" />
+	<high-fatigue-collapse-chance value="10.0" />
 
 	<!-- The average percentage of males to total population in the simulation. -->
 	<!-- Default 50 (equal numbers of males and females) -->

@@ -151,36 +151,33 @@ public class LivingAccommodations extends Function implements Serializable {
     public void addSleeper(Person person, boolean isAGuest) {
     	sleepers++;
     	if (isAGuest) {
-    		if (sleepers > beds) {
-                //sleepers = beds;
-                sleepers--;
-                logger.info("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
-                		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
-            }
+    		// Case 1 & 2 
+    		//if (sleepers > beds) {
+            //    sleepers--;
+            //    logger.info("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
+            //    		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
+            //}
     	}
     	else {
-    		// for settlers who live here
+    		// for inhabitants
         	if (sleepers > beds) {
                 //sleepers = beds;
                 sleepers--;
-                logger.info("Living Accommodation : " + person + " could not find any unoccupied beds. # sleepers : " 
-                		+ sleepers + "  # beds : " + beds + ". Will sleep at a random location.");
+                logger.info("# sleepers : " + sleepers + "  # beds : " + beds);
             }
-            else {           	
+            else {         	
 	        	if (!bedMap.containsKey(person)) {
 	        		// if a person has never been assigned a bed
+	        		logger.info(person + " does not have a designated bed yet.");
 	        		Point2D bed = designateABed(person);
 	        		if (bed == null) {
 	                    sleepers--;
-	        			logger.info("Living Accommodation : " + person + " could not find any undesignated beds in " 
+	        			logger.info(person + " could not find any unmarked beds in " 
 	        					+ building.getNickName() + " in " + settlement);
 	        		}
 	        	}
             }
     	}
-    		
-    		
-
     }
 
     /**
@@ -195,7 +192,7 @@ public class LivingAccommodations extends Function implements Serializable {
     	int numBeds = spots.size();
     	int numDesignated = bedMap.size();   	
     	if (numDesignated < numBeds) {
-    		// there should be at least one bed available-- Note: it may not be empty. a traveller may be sleeping on it.
+    		// there should be at least one bed available-- Note: it may not be empty. a traveler may be sleeping on it.
 	        Iterator<Point2D> i = spots.iterator();
 	        while (i.hasNext()) {
 	            Point2D spot = i.next();
@@ -204,8 +201,8 @@ public class LivingAccommodations extends Function implements Serializable {
 	            	bedMap.put(person, bed);
 	        		person.setBed(bed);
 	        		person.setQuarters(building);
-	            	logger.fine("LivingAccommodations : the bed at (" + bed.getX() + ", " + bed.getY() 
-	            		+ ") in " + person.getQuarters() + " is now designated to " + person);
+	            	logger.info(person + " has been designated a bed at (" + bed.getX() + ", " + bed.getY() 
+	            		+ ") in " + person.getQuarters());
 	            	break;
 	            }
 	        }
@@ -339,16 +336,27 @@ public class LivingAccommodations extends Function implements Serializable {
     	return bedMap;
     }
     
-    public boolean hasAnUndesignatedBed() {
+    /*
+     * Checks if an undesignated bed is available 
+     */
+    // 2016-01-10 Added hasAnUndesignatedBed 
+    public boolean hasAnUnmarkedBed() {
     	List<Point2D> activitySpots = super.getActivitySpotsList();//(List<Point2D>) super.getAvailableActivitySpot(person);
     	int numBeds = activitySpots.size();
+
     	int numDesignated = bedMap.size();
-    	
+		//logger.info("# designated beds : " +  numDesignated + " # beds : " +  numBeds);
+  	
     	if (numDesignated < numBeds)
     		return true;
     	else
     		return false;
     }
+    
+    public boolean isActivitySpotEmpty(Point2D spot) {
+    	return super.isActivitySpotEmpty(spot);
+    }
+    
     
     /**
      * Gets the amount of power required when function is at full power.
