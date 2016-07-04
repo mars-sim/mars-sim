@@ -771,23 +771,133 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 		<!-- 10 most common German surnames-->
 
+		<last-name value="Becker"  sponsor="ESA" />
+		<last-name value="Fischer"  sponsor="ESA" />
+		<last-name value="Hoffmann"  sponsor="ESA" />
+		<last-name value="Meyer"  sponsor="ESA" />
+		<last-name value="Müller"  sponsor="ESA" />
+		<last-name value="Schmidt"  sponsor="ESA" />
+		<last-name value="Schneider"  sponsor="ESA" />
+		<last-name value="Schulz"  sponsor="ESA" />
+		<last-name value="Wagner"  sponsor="ESA" />
+		<last-name value="Weber"  sponsor="ESA" />
+
 		<!-- 10 most common Greek surnames-->
+
+		<last-name value="Angelopoulos"  sponsor="ESA" />
+		<last-name value="Athanasiadis"  sponsor="ESA" />
+		<last-name value="Dimitriadis"  sponsor="ESA" />
+		<last-name value="Georgiou"  sponsor="ESA" />
+		<last-name value="Nikolaidis"  sponsor="ESA" />
+		<last-name value="Panagiotopoulos"  sponsor="ESA" />
+		<last-name value="Papadakis"  sponsor="ESA" />
+		<last-name value="Papadopoulos"  sponsor="ESA" />
+		<last-name value="Petridis"  sponsor="ESA" />
+		<last-name value="Vlachos"  sponsor="ESA" />
 
 		<!-- 10 most common Hungarian surnames-->
 
+		<last-name value="Farkas"  sponsor="ESA" />
+		<last-name value="Horváth"  sponsor="ESA" />
+		<last-name value="Kiss"  sponsor="ESA" />
+		<last-name value="Kovács"  sponsor="ESA" />
+		<last-name value="Molnár"  sponsor="ESA" />
+		<last-name value="Nagy"  sponsor="ESA" />
+		<last-name value="Németh"  sponsor="ESA" />
+		<last-name value="Szabó"  sponsor="ESA" />
+		<last-name value="Tóth"  sponsor="ESA" />
+		<last-name value="Varga"  sponsor="ESA" />
+
 		<!-- 10 most common Irish surnames-->
+
+		<last-name value="Byrne"  sponsor="ESA" />
+		<last-name value="Kelly"  sponsor="ESA" />
+		<last-name value="Murphy"  sponsor="ESA" />
+		<last-name value="Ryan"  sponsor="ESA" />
+		<last-name value="Smith"  sponsor="ESA" />
+		<last-name value="Sullivan"  sponsor="ESA" />
+		<last-name value="O'Brien"  sponsor="ESA" />
+		<last-name value="O'Connor"  sponsor="ESA" />
+		<last-name value="O'Neill"  sponsor="ESA" />
+		<last-name value="Walsh"  sponsor="ESA" />
 
 		<!-- 10 most common Italian surnames-->
 
+		<last-name value="Bianchi"  sponsor="ESA" />
+		<last-name value="Colombo"  sponsor="ESA" />
+		<last-name value="Esposito"  sponsor="ESA" />
+		<last-name value="Ferrari"  sponsor="ESA" />
+		<last-name value="Greco"  sponsor="ESA" />
+		<last-name value="Marino"  sponsor="ESA" />
+		<last-name value="Ricci"  sponsor="ESA" />
+		<last-name value="Romano"  sponsor="ESA" />
+		<last-name value="Rossi"  sponsor="ESA" />
+		<last-name value="Russo"  sponsor="ESA" />
+
 		<!-- 10 most common Luxembourgish surnames-->
+
+		<last-name value="Hoffmann"  sponsor="ESA" />
+		<last-name value="Klein"  sponsor="ESA" />
+		<last-name value="Muller"  sponsor="ESA" />
+		<last-name value="Reuter"  sponsor="ESA" />
+		<last-name value="Schmit"  sponsor="ESA" />
+		<last-name value="Schmitz"  sponsor="ESA" />
+		<last-name value="Schroeder"  sponsor="ESA" />
+		<last-name value="Thill"  sponsor="ESA" />
+		<last-name value="Wagner"  sponsor="ESA" />
+		<last-name value="Weber"  sponsor="ESA" />
 
 		<!-- 10 most common Dutch surnames-->
 
+		<last-name value="Bakker"  sponsor="ESA" />
+		<last-name value="De Boer"  sponsor="ESA" />
+		<last-name value="De Jong"  sponsor="ESA" />
+		<last-name value="De Vries"  sponsor="ESA" />
+		<last-name value="Janssen"  sponsor="ESA" />
+		<last-name value="Meijer"  sponsor="ESA" />
+		<last-name value="Smit"  sponsor="ESA" />
+		<last-name value="Van den Berg"  sponsor="ESA" />
+		<last-name value="Van Dijk"  sponsor="ESA" />
+		<last-name value="Visser"  sponsor="ESA" />
+
 		<!-- 10 most common Norwegian surnames-->
 
+		<last-name value="Andersen"  sponsor="ESA" />
+		<last-name value="Hansen"  sponsor="ESA" />
+		<last-name value="Jensen"  sponsor="ESA" />
+		<last-name value="Johansen"  sponsor="ESA" />
+		<last-name value="Karlsen"  sponsor="ESA" />
+		<last-name value="Kristiansen"  sponsor="ESA" />
+		<last-name value="Larsen"  sponsor="ESA" />
+		<last-name value="Nilsen"  sponsor="ESA" />
+		<last-name value="Olsen"  sponsor="ESA" />
+		<last-name value="Pedersen"  sponsor="ESA" />
+
 		<!-- 10 most common Polish surnames-->
+	
+		<last-name value="Kamiński"  sponsor="ESA" />
+		<last-name value="Kowalczyk"  sponsor="ESA" />
+		<last-name value="Kowalski"  sponsor="ESA" />
+		<last-name value="Lewandowski"  sponsor="ESA" />
+		<last-name value="Nowak"  sponsor="ESA" />
+		<last-name value="Szymański"  sponsor="ESA" />
+		<last-name value="Wiśniewski"  sponsor="ESA" />
+		<last-name value="Wójcik"  sponsor="ESA" />
+		<last-name value="Woźniak"  sponsor="ESA" />
+		<last-name value="Zieliński"  sponsor="ESA" />
 
 		<!-- 10 most common Portuguese surnames-->
+
+		<last-name value="Costa"  sponsor="ESA" />	
+		<last-name value="Ferreira"  sponsor="ESA" />
+		<last-name value="Jesus"  sponsor="ESA" />
+		<last-name value="Martins"  sponsor="ESA" />
+		<last-name value="Oliveira"  sponsor="ESA" />
+		<last-name value="Pereira"  sponsor="ESA" />
+		<last-name value="Rodrigues"  sponsor="ESA" />
+		<last-name value="Santos"  sponsor="ESA" />
+		<last-name value="Silva"  sponsor="ESA" />
+		<last-name value="Sousa"  sponsor="ESA" />
 
 		<!-- 10 most common Romanian surnames-->
 
@@ -799,7 +909,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 		<!-- 10 most common British surnames-->
 
-		<!-- top 22 common Indian suranames 
+		<!-- top 22 common Indian surnames 
 		http://www.lowchensaustralia.com/names/popular-indian-names.htm  
 		https://in.answers.yahoo.com/question/index?qid=20061208222415AAsxQ59
 		-->
