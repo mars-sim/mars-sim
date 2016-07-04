@@ -743,6 +743,61 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Sepp"  sponsor="ESA" />
 		<last-name value="Tamm"  sponsor="ESA" />
 
+		<!-- 10 most common Finnish surnames-->
+
+		<last-name value="Heikkinen"  sponsor="ESA" />
+		<last-name value="Hämäläinen"  sponsor="ESA" />
+		<last-name value="Järvinen"  sponsor="ESA" />
+		<last-name value="Korhonen"  sponsor="ESA" />
+		<last-name value="Koskinen"  sponsor="ESA" />
+		<last-name value="Laine"  sponsor="ESA" />
+		<last-name value="Mäkelä"  sponsor="ESA" />
+		<last-name value="Mäkinen"  sponsor="ESA" />
+		<last-name value="Nieminen"  sponsor="ESA" />
+		<last-name value="Virtanen"  sponsor="ESA" />
+
+		<!-- 10 most common French surnames-->
+
+		<last-name value="Bernard"  sponsor="ESA" />
+		<last-name value="Dubois"  sponsor="ESA" />
+		<last-name value="Durand"  sponsor="ESA" />
+		<last-name value="Leroy"  sponsor="ESA" />
+		<last-name value="Martin"  sponsor="ESA" />
+		<last-name value="Moreau"  sponsor="ESA" />
+		<last-name value="Petit"  sponsor="ESA" />
+		<last-name value="Richard"  sponsor="ESA" />
+		<last-name value="Robert"  sponsor="ESA" />
+		<last-name value="Thomas"  sponsor="ESA" />
+
+		<!-- 10 most common German surnames-->
+
+		<!-- 10 most common Greek surnames-->
+
+		<!-- 10 most common Hungarian surnames-->
+
+		<!-- 10 most common Irish surnames-->
+
+		<!-- 10 most common Italian surnames-->
+
+		<!-- 10 most common Luxembourgish surnames-->
+
+		<!-- 10 most common Dutch surnames-->
+
+		<!-- 10 most common Norwegian surnames-->
+
+		<!-- 10 most common Polish surnames-->
+
+		<!-- 10 most common Portuguese surnames-->
+
+		<!-- 10 most common Romanian surnames-->
+
+		<!-- 10 most common Spanish surnames-->
+
+		<!-- 10 most common Swedish surnames-->
+
+		<!-- 10 most common Swiss surnames-->
+
+		<!-- 10 most common British surnames-->
 
 		<!-- top 22 common Indian suranames 
 		http://www.lowchensaustralia.com/names/popular-indian-names.htm  
