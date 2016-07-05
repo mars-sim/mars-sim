@@ -39,6 +39,10 @@ public class SettlementTable extends JTable {
 
 	public static final long serialVersionUID = 1L;
 
+	
+	public static java.awt.Color BACK_COLOR = new java.awt.Color(209,103,0);//java.awt.Color.orange;//(229,171,0);//.orange);//(0, 167, 212));
+	public static java.awt.Color FORE_COLOR = java.awt.Color.WHITE;
+	
 	public static final int NUM_DISPLAYING_COLUMNS = 7; // currently not displaying column 7 and 8
 
 	public static final int COLUMN_PLAYER_NAME = 0;
@@ -85,8 +89,8 @@ public class SettlementTable extends JTable {
 
 		header = getTableHeader();
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
-		header.setBackground(new java.awt.Color(229,171,0));//.orange);//(0, 167, 212));
-		header.setForeground(java.awt.Color.white);
+		header.setBackground(BACK_COLOR);//new java.awt.Color(229,171,0));//.orange);//(0, 167, 212));
+		header.setForeground(FORE_COLOR);//java.awt.Color.white); 
 
 		configEditor.getSettlementScrollPane().setViewportView(this);
 
@@ -199,7 +203,7 @@ public class SettlementTable extends JTable {
     	if (configEditor.getHasSettlement() && row < configEditor.getSettlementList().size())
     		c.setForeground(new java.awt.Color(209,103,0));//255,60,8));//java.awt.Color.ORANGE); //BLUE);
     	else
-    		c.setForeground(new java.awt.Color(255,143,8)); // pale orange
+    		c.setForeground(BACK_COLOR);//new java.awt.Color(255,143,8)); // pale orange
         return c;
     }
 

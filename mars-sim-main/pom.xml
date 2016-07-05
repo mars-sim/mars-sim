@@ -203,7 +203,13 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 			<groupId>insidefx.undecorator</groupId>
 			<artifactId>undecorator</artifactId>
 			<version>0.1.0</version>
-		</dependency>	    
+		</dependency>	
+<!-- load jfoenix from mars-sim's maven-repo-snapshot --> 
+		<dependency>
+			<groupId>com.jfoenix</groupId>
+			<artifactId>jfoenix</artifactId>
+			<version>0.0.0-SNAPSHOT</version>
+		</dependency>		    
 	</dependencies>
 	
 	<repositories>

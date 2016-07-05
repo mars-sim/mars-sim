@@ -18,7 +18,7 @@ maxHeight="370" maxWidth="1024" minHeight="370.0" minWidth="1024.0"  prefHeight=
 styleClass="clientarea-background" stylesheets="@demoapp.css"
 xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <AnchorPane id="title" pickOnBounds="false"  style="-fx-background-color: #E5AB00; -fx-text-fill: white;" 
+    <AnchorPane id="title" pickOnBounds="false"  style="-fx-background-color: #cc6110; -fx-text-fill: white;" 
     maxHeight="27" maxWidth="4096" minHeight="27.0" minWidth="1024" prefHeight="27.0" prefWidth="1024"
     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" >
       <children>

@@ -91,6 +91,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>1.7.21</version>		
 		</dependency>
 --> 	
+<!-- load nimrodlf 1.2d from mars-sim's maven-repo--> 
 		<dependency>
 			<groupId>com.plaf.nimrod</groupId>
 			<artifactId>nimrodlf</artifactId>
@@ -225,6 +226,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  </version>
 		</dependency>		
 -->
+<!-- load jfoenix from mars-sim's maven-repo-snapshot --> 
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>

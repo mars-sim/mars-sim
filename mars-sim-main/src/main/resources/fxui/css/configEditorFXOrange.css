@@ -22,26 +22,27 @@
 }
 */
 .button {
+    -fx-button-type: RAISED;	
     -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
-	-fx-base: #E5AB00;
-	-fx-background: #E5AB00;
-	-fx-focus-color: #E5AB00;
+	-fx-base: #cc6110;
+	-fx-background: #cc6110;
+	-fx-focus-color: #f78e3d;
 	-fx-control-inner-background: #FFFFFF;
 	-fx-text-base-color: #FFFFFF;
     -fx-background-insets: -1.4, 0, 1, 2;
-    -fx-color: #E5AB00;
+    -fx-color: #cc6110;
     -fx-background-radius: 5;
 }
 
 .button:focused {
-	-fx-background-color: #b78800;
+	-fx-background-color: #cc6110;
 }
 
 .button:hover {
-	-fx-focus-color: #b78800;
+	-fx-focus-color: #f78e3d;
 	-fx-stroke-width: 5;
-	-fx-background-color: #E5AB00;
+	-fx-background-color: #cc6110;
 }
 
 .button:pressed {
@@ -51,17 +52,37 @@
 */
 }
 
+.button-raised{
+   /* -fx-padding: 0.7em 0.57em;*/
+    -fx-font-size: 15px;
+    -fx-button-type: RAISED;
+    -fx-background-color: #cc6110;
+/*    -fx-pref-width: 100; */
+    -fx-text-fill: WHITE;
+    -fx-stroke-width: 3;    
+    -fx-font-weight: bold;    
+}
+
+.button-sign{
+    -fx-padding: 0.1em 0.1em; 
+    -fx-font-size: 15px;
+    -fx-button-type: RAISED;
+    -fx-background-color: #cc6110;
+    -fx-pref-width: 30;
+	-fx-stroke-width: 4;    
+    -fx-text-fill: WHITE;
+}
 
 #startButton {
     -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
-	-fx-base: #E5AB00;
-	-fx-background: #E5AB00;
-	-fx-focus-color: #E5AB00;
+	-fx-base: #cc6110;
+	-fx-background: #cc6110;
+	-fx-focus-color: #f78e3d;
 	-fx-control-inner-background: #FFFFFF;
 	-fx-text-base-color: #FFFFFF;
     -fx-background-insets: -1.4, 0, 1, 2;
-    -fx-color: #E5AB00;
+    -fx-color: #cc6110;
     -fx-background-radius: 5;
 }
 
@@ -70,38 +91,38 @@
 }
 
 #startButton:hover {
-	-fx-focus-color: #b78800;
+	-fx-focus-color: #f78e3d;
 	-fx-stroke-width: 5;
-	-fx-background-color: #E5AB00;
+	-fx-background-color: #cc6110;
 }
 
 #startButton:focused {
-	-fx-background-color: #b78800;
+	-fx-background-color: #cc6110;
 }
 
 #clientIDLabel {
-	-fx-text-fill: #E5AB00;
+	-fx-text-fill: #cc6110;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
 	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
 }
 
 #playerLabel{
-	-fx-text-fill: #E5AB00;
+	-fx-text-fill: #cc6110;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
 	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
 }
 
 #gameModeLabel {
-	-fx-text-fill: #E5AB00;
+	-fx-text-fill: #cc6110;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
 	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
 }
 
 #titleLabel {
-	-fx-text-fill: #E5AB00;
+	-fx-text-fill: #cc6110;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
 	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/

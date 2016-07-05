@@ -9,63 +9,72 @@
 
 .label {
 	-fx-font-size: 16.0px;
-    -fx-stroke-width: 3;
+    -fx-stroke-width: 1;
     -fx-font-weight: bold;
 
 }
 
 .combo-box .text-field {
+    -fx-stroke-width: 1;	
 	-fx-font-size: 14.0px;
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
     -fx-font-weight: italic;
-    -fx-text-fill: #e79d1b; /*-fx-text-inner-color;*/
-    -fx-prompt-text-fill:  #E5AB00;
+    -fx-text-fill: #cc6110; /*-fx-text-inner-color;*/
+    -fx-prompt-text-fill:  #cc6110;
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+    -fx-font-weight: bold;
 }
 
 .combo-box .text-field:focused {
-    -fx-prompt-text-fill:  #E5AB00;
-    -fx-background-color: #E5AB00;
+    -fx-stroke-width: 1;	
+    -fx-prompt-text-fill:  #cc6110;
+    -fx-background-color: #cc6110;
+    -fx-font-weight: bold;
 }
 
 .combo-box .cell{
-    -fx-text-fill: #e79d1b;
+    -fx-stroke-width: 1;	
+    -fx-text-fill: #cc6110;
     -fx-font: 16px "Arial";
     -fx-background-color: transparent;
     -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+    -fx-font-weight: bold;
 }
 
 .combo-box >.list-cell {
-    -fx-text-fill: #e79d1b;
+    -fx-stroke-width: 1;	
+    -fx-text-fill: #cc6110;
     -fx-font: 16px "Arial";
     -fx-background-color: transparent;
-
+    -fx-font-weight: bold;
 }
 
 
 .combo-box >.list-view {
-    -fx-text-fill: #e79d1b;
+	-fx-stroke-width: 2;
+    -fx-text-fill: #cc6110;
     -fx-font: 16px "Arial";
     -fx-background-color: transparent;
-
+    -fx-font-weight: bold;
 }
 
 .text-field {
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
     -fx-font-weight: bold;
-    -fx-background-color: #e79d1b, #E5AB00, white;
+    -fx-background-color: #cc6110, #cc6110, white;
  /*   -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background; */
     -fx-background-insets: 0, 1, 2;
     -fx-background-radius: 3, 2, 2;
     -fx-padding: 0.25em 0.416667em  0.333333em 0.416667em; /* 3 5 4 5 */
-    -fx-text-fill: #e79d1b; /*-fx-text-inner-color;*/
+    -fx-text-fill: #cc6110; /*-fx-text-inner-color;*/
     -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
     -fx-cursor: text;
 }
 
 .titled-pane  {
     -fx-font: 16px "Arial";
-    -fx-stroke-width: 2;
+    -fx-stroke-width: 1;
+    -fx-font-weight: bold;   
     -fx-font-weight: italic;
 	-fx-text-fill: #FFFFFF;
 /*	-fx-effect: dropshadow(three-pass-box, rgba(100, 100, 100, 1), 24, 0.5, 0, 0); */
@@ -73,17 +82,20 @@
 
 .titled-pane:focused {
 	-fx-text-fill:#FFFFFF;
+    -fx-stroke-width: 1;
+    -fx-font-weight: bold;
+	
 }
 
 .titled-pane > .title {
     -fx-font: 16px "Arial";
     -fx-font-weight: italic;
     -fx-font-weight: bold;
-    -fx-stroke-width: 2;
-	-fx-background-color: #E5AB00;
-	-fx-box-border : #E5AB00;
-	-fx-inner-border :  #E5AB00;
-	-fx-body-color : #E5AB00;
+    -fx-stroke-width: 1;
+	-fx-background-color: #cc6110;
+	-fx-box-border : #cc6110;
+	-fx-inner-border :  #cc6110;
+	-fx-body-color : #cc6110;
 	-fx-background-insets: 0, 1, 2;
 	-fx-background-radius: 5 5 0 0, 4 4 0 0, 3 3 0 0;
 	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
@@ -91,39 +103,50 @@
 
 .titled-pane:focused > .title {
 	-fx-color: #FFFFFF;
-	-fx-focus-color: #E5AB00;
-	-fx-text-fill: #E5AB00;
+	-fx-focus-color: #cc6110;
+	-fx-text-fill: #cc6110;
+    -fx-stroke-width: 1;
+    -fx-font-weight: bold;
+	
 }
 
 .titled-pane > .title > .arrow-button .arrow {
 /*	-fx-shape: ""; */
+    -fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
+
 }
 
 .titled-pane > .title > .text {
  	-fx-color: #FFFFFF;
-	-fx-text-fill: #E5AB00;
+	-fx-text-fill: #cc6110;
+    -fx-stroke-width: 1;
+    -fx-font-weight: bold;
+
 }
 
 .titled-pane > *.content {
 	-fx-background-color: white;
   	-fx-background-insets: 0, 0 1 1 1;
 	-fx-padding: 0.167em;
-	-fx-box-border: #E5AB00;
-	-fx-text-fill: #E5AB00;
+	-fx-box-border: #cc6110;
+	-fx-text-fill: #cc6110;
+    -fx-stroke-width: 1;
+    -fx-font-weight: bold;
+	
  }
 
 .radio-button > .radio {
 	-fx-padding: 3px;
-	-fx-color: #E5AB00;
+	-fx-color: #cc6110;
 }
 
 .radio-button > .label {
-	-fx-text-fill: #E5AB00;
+	-fx-text-fill: #cc6110;
 }
 
 #textLabel {
-	-fx-text-fill: #E5AB00;
-	-fx-stroke-width: 3;
+	-fx-text-fill: #cc6110;
+	-fx-stroke-width: 2;
 	-fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
@@ -133,26 +156,37 @@
 #commitButton {
     -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
-	-fx-base: #E5AB00;
-	-fx-background: #E5AB00;
-	-fx-focus-color: #E5AB00;
+	-fx-base: #cc6110;
+	-fx-background: #cc6110;
+	-fx-focus-color: #cc6110;
 	-fx-control-inner-background: #FFFFFF;
 	-fx-text-base-color: #FFFFFF;
     -fx-background-insets: -1.4, 0, 1, 2;
-    -fx-color: #E5AB00;
+    -fx-color: #cc6110;
     -fx-background-radius: 5;
 
 }
 
 #commitButton:focused {
 	-fx-focus-color: #ff3c08;
-	-fx-stroke-width: 5;
-	-fx-background-color: #E5AB00;
+	-fx-stroke-width: 3;
+	-fx-background-color: #cc6110;
 }
 
 #commitButton:hover {
 	-fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
 	-fx-focus-color: #ff3c08;
+}
+
+.button-raised{
+   /* -fx-padding: 0.7em 0.57em;*/
+    -fx-font-size: 15px;
+    -fx-button-type: RAISED;
+    -fx-background-color: #cc6110;
+/*    -fx-pref-width: 100; */
+    -fx-text-fill: WHITE;
+    -fx-stroke-width: 3;
+    -fx-font-weight: bold;
 }
 
