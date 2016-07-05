@@ -7,33 +7,7 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-import javafx.scene.layout.Pane;
-import javafx.animation.ParallelTransition;
-import javafx.util.Duration;
-import javafx.animation.TranslateTransition;
-import javafx.scene.input.MouseEvent;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-
-import java.util.EventListener;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
@@ -52,6 +26,23 @@ import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
+
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.stage.Stage;
 
 //import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 //import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
@@ -223,7 +214,7 @@ public class MainSceneMenu extends MenuBar  {
 
         SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
         
-        notificationItem = new CheckMenuItem("Notification");
+        notificationItem = new CheckMenuItem("Notifications");
         notificationItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         notificationItem.setSelected(true);
 
