@@ -258,6 +258,7 @@ public class MainScene {
 
 		
 		// Detect if a user hits ESC
+		esc = new ESCHandler();
 		setEscapeEventHandler(true);
 		
 		//createProgressCircle("Loading");
@@ -267,12 +268,14 @@ public class MainScene {
 	// 2015-12-28 Added setEscapeEventHandler()
 	public void setEscapeEventHandler(boolean value) {
 		if (value) {
-			esc = new ESCHandler();
+			//esc = new ESCHandler();
 			stage.addEventHandler(KeyEvent.KEY_PRESSED, esc);
+			//System.out.println("addEventHandler()");
 		}
-		else
+		else {
 			stage.removeEventHandler(KeyEvent.KEY_PRESSED, esc);
-
+			//System.out.println("removeEventHandler()");
+		}
 	}
 
 	class ESCHandler implements EventHandler<KeyEvent> {
@@ -281,12 +284,12 @@ public class MainScene {
 			if (t.getCode() == KeyCode.ESCAPE) {
 				boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
 				if (isOnPauseMode) {
-					//System.out.println("calling unpauseSimulation()");
+					//System.out.println("ESCHandler : calling unpauseSimulation()");
 					unpauseSimulation();
 					//desktop.getTimeWindow().enablePauseButton(true);
 				}
 				else {
-					//System.out.println("calling pauseSimulation()");
+					//System.out.println("ESCHandler : calling pauseSimulation()");
 					pauseSimulation();
 					//desktop.getTimeWindow().enablePauseButton(false);
 				}
@@ -1798,7 +1801,8 @@ public class MainScene {
 		quote = new QuotationPopup(this);
 
 		popAQuote();	
-   		
+
+/*		
 		// 2016-06-15 Added top edge mouse cursor detection for sliding down the menu bar
 		anchorPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
 		
@@ -1840,7 +1844,7 @@ public class MainScene {
 			onMenuBarCache = onMenuBar;
 		
         });	
-
+*/
 /*
         scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
 		      @Override
@@ -1852,7 +1856,7 @@ public class MainScene {
 		//hideLoadingStage();
 		
 		createProgressCircle("Saving");
-		createProgressCircle("Paused");
+		//createProgressCircle("Paused");
 	
 		isMainSceneDoneLoading = true;
 		

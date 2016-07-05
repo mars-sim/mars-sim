@@ -1403,13 +1403,16 @@ implements Serializable {
 	public static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
 		int result = 0;
 
-		result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
+		if (settlement == null)
+			throw new NullPointerException();
+		else {
+			result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
 
-		// Leave one suit for settlement use.
-		if (result > 0) {
-			result--;
+			// Leave one suit for settlement use.
+			if (result > 0) {
+				result--;
+			}
 		}
-
 		return result;
 	}
 

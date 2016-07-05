@@ -18,7 +18,7 @@ public class BorderSlideBar extends VBox {
     private final String CSS = this.getClass().getResource("/slide/BorderSlideBar.css").toExternalForm();
     // "/" + this.getClass().getSimpleName() + ".css";
     
-    private final static int DELAY = 1000; // in milliseconds
+    private final static int DELAY = 300; // in milliseconds
     
     private double expandedSize;
     private Pos flapbarLocation;

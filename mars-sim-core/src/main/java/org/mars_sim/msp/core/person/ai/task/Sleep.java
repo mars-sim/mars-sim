@@ -413,29 +413,38 @@ public class Sleep extends Task implements Serializable {
             List<Building> quartersBuildings = person.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIVING_ACCOMODATIONS);
             quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
             quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, unmarked);
-            if (quartersBuildings.size() == 1)
-                ;//System.out.println("0: " + quartersBuildings.get(0) + " has empty beds");
+            if (quartersBuildings.size() > 0) {
+                quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
+                if (unmarked) 
+                	;//logger.info("Stage 1: it has empty and unmarked (EU) beds");
+                else
+                	;//logger.info("Stage 1: it has empty (either unmarked or designated) beds");
+            }
             else if (quartersBuildings.isEmpty())
-                logger.info("0: no buildings has empty beds");
-            
-            //if (!needUndesignatedBed) System.out.println("Sleep : # Bldgs with unoccupied beds : " + quartersBuildings.size());
-            if (quartersBuildings.size() > 0)
-            	quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
-            else if (quartersBuildings.size() == 1)
-                ;//System.out.println("1: " + quartersBuildings + " has empty beds");
-            else if (quartersBuildings.isEmpty())
-                logger.info("1: no buildings has empty beds");
-            
-            //if (!needUndesignatedBed) System.out.println("Sleep : # Least Crowded Bldgs with unoccupied beds: " + quartersBuildings.size());           
+                if (unmarked) 
+                	;//logger.info("Stage 1: no buildings has empty and unmarked (EU) beds");
+                else
+                	;//logger.info("Stage 1: no buildings has empty (either unmarked or designated) beds");
+
             if (quartersBuildings.size() > 0) {
                 Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, quartersBuildings);
                 result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
+                if (unmarked) 
+                	;//logger.info("Stage 2: it has empty and unmarked (EU) beds");
+                else
+                	;//logger.info("Stage 2: it has empty (either unmarked or designated) beds");
             } 
-            else if (result != null)
-                ;//System.out.println("2: " + result + " has empty beds");
+            else if (quartersBuildings.isEmpty())
+                if (unmarked) 
+                	;//logger.info("Stage 2: no buildings has empty and unmarked (EU) beds");
+                else
+                	;//logger.info("Stage 2: no buildings has empty (either unmarked or designated) beds");
+                                
+            if (result != null)
+                ;//logger.info("Stage 3: " + result.getNickName() + " has a bed available : " + result.getNickName());
             else
-            	logger.info("2: result is null");
+            	;//logger.info("Stage 3: no buildings are available");
 
         }
         

@@ -17,6 +17,9 @@ import javafx.util.Duration;
 
 /**
  * Example of displaying a splash page for a standalone JavaFX application
+https://gist.github.com/jewelsea/2305098
+http://stackoverflow.com/questions/29442625/javafx-splash-screen-not-showing
+ *
  */
 public class TaskBasedSplash extends Application {
     public static final String APPLICATION_ICON =

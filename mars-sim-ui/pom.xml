@@ -94,7 +94,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.plaf.nimrod</groupId>
 			<artifactId>nimrodlf</artifactId>
-			<version>1.2c</version>
+			<version>1.2d</version>
 		</dependency>		
 		<dependency>
 			<groupId>com.sibvisions.external.jvxfx</groupId>
@@ -109,7 +109,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.40.10</version>
+			<version>8.40.11</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jidesoft</groupId>
@@ -224,7 +224,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  2.1.4.RELEASE
 		  </version>
 		</dependency>		
--->			
+-->
+		<dependency>
+			<groupId>com.jfoenix</groupId>
+			<artifactId>jfoenix</artifactId>
+			<version>0.0.0-SNAPSHOT</version>
+		</dependency>			
 	</dependencies>
 	<repositories>
 		<repository>

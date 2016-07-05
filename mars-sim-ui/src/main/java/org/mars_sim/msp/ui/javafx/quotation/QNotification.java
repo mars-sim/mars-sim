@@ -1,3 +1,11 @@
+/**
+ * Mars Simulation Project
+ * QNotification.java
+ * @version 3.1.0 2016-06-17
+ * @author Manny Kung
+ */
+
+
 /*
  * Copyright (c) 2013 by Gerrit Grunwald
  *

@@ -560,9 +560,10 @@ implements ClockListener {
 	// 2015-12-07 Added enablePauseButton()
 	public void enablePauseButton(boolean value) {
 		pauseButton.setEnabled(value);
+		// Note : when a wizard or a dialog box is opened/close,
+		// need to call below to remove/add the ability to use ESC to unpause/pause
 		desktop.getMainScene().setEscapeEventHandler(value);
 	}
-		
 
 	/**
 	 * Prepare tool window for deletion.

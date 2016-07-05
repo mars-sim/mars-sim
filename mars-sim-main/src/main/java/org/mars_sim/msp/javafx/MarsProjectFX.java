@@ -35,8 +35,9 @@ import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 
 /**--------------------------------------------------------------
- * Case A : if in headless mode, the loading order is as follows :
+ * Case A : with 'headless' and 'new' switch, it will load the following :
  **--------------------------------------------------------------
+ *
  * 1. main() 						-- on Main Thread
  * 2. Default Constructor 			-- on JavaFX Application Thread 
  * 3. init()						-- on JavaFX-Launcher Thread
@@ -50,8 +51,26 @@ import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
  *
  * Note0 : clockScheduler is initialized on Simulation's start()
  * 
+ * 
  **-------------------------------------------------------------- 
- * Case B : in GUI mode, if choosing to start a new sim in the Main Menu, 
+ * Case B : with 'headless' and 'load' switch, it will load the following : 
+ **--------------------------------------------------------------
+ *
+ * * Note2 : if the switch "-helpGenerator" is included in the eclipse launcher, 
+ * 		selecting "New Sim" in the Main Menu will run HelpGenerator.generateHtmlHelpFiles()
+ *  	in handleNewSimulation() right before calling ScenarioConfigEditorFX.
+ *  
+ *  
+ *
+ **-------------------------------------------------------------- 
+ * Case C : with 'headless' and 'html' switch, it will load the following : 
+ **--------------------------------------------------------------
+ *
+ * 1. HelpGenerator.generateHtmlHelpFiles() in handleNewSimulation() 
+ * ...
+ *
+ **-------------------------------------------------------------- 
+ * Case D : with only 'new' switch (GUI mode is implied), it will load the Main Menu,
  **--------------------------------------------------------------
  * 
  * 1. main() 						-- on Main Thread
@@ -62,6 +81,13 @@ import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
  * 6. start() 						-- on JavaFX Application Thread 
  * 7. MainMenu's constructor 		-- on JavaFX Application Thread
  * 8. MainMenu's initAndShowGUI() 	-- on JavaFX Application Thread
+ *
+ * 
+ * *-------------------------------------------------------------- 
+ * Case D1 : if choosing the first option 'New Sim' in the Main Menu to start a new sim,  
+ **--------------------------------------------------------------
+ *
+ * Step 1 to 8 : same as in Case D
  * 9. MainMenu's runOne() 		 	-- on JavaFX Application Thread
  * 10. handleNewSimulation()		-- on JavaFX Application Thread 
  * 11. ConfigEditorTask's run()		-- on pool-2-thread-1
@@ -73,21 +99,15 @@ import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
  * 
  * 
  **-------------------------------------------------------------- 
- * Case C : in GUI mode, if choosing to load a saved sim in the Main Menu,  
+ * Case D2 : if choosing the second option 'Load Sim' in the Main Menu to load a saved sim,  
  **--------------------------------------------------------------
  * 
- * Step 1 to 8 are the same as in Case B
+ * Step 1 to 8 : same as in Case D
  * 9. MainMenu's runTwo() 		 	-- on JavaFX Application Thread
  * 10. Simulation loadSimulation() 	-- on JavaFX Application Thread
  * 11. Simulation's start()			-- on pool-2-thread-1
  * 
- * 
- * Note1 : at step 7, Case A (headless) and Case B/C (GUI mode) begin to diverge 
- *
- * Note2 : if the switch "-helpGenerator" is included in the eclipse launcher, 
- * 		selecting "New Sim" in the Main Menu will run HelpGenerator.generateHtmlHelpFiles()
- *  	in handleNewSimulation() right before calling ScenarioConfigEditorFX.
- */
+  */
       
 
 /**
@@ -375,7 +395,7 @@ public class MarsProjectFX extends Application  {
     /**
      * Calls handleLoadSimulation(argList). Used by MainMenu to load th default save sim.
      * @throws Exception if error loading the default saved simulation.
-     */
+
     void handleLoadDefaultSavedSimulation() {
 		//logger.info("MarsProjectFX's handleLoadDefaultSavedSimulation() is on "+Thread.currentThread().getName() );
     	try {
@@ -387,7 +407,8 @@ public class MarsProjectFX extends Application  {
 			e.printStackTrace();
 		}
     }
-
+*/
+ 
     /**
      * Loads the simulation from a save file.
      * @param argList the command argument list.
@@ -424,14 +445,8 @@ public class MarsProjectFX extends Application  {
         try {
             SimulationConfig.loadConfig();
             
-           	//Future future = 
            	Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
-            	// note: cannot load editor in macosx if it was a JDialog
-                // ScenarioConfigEditorFX editor = new ScenarioConfigEditorFX(mainMenu, SimulationConfig.instance());
-            	//while(future.get() == null && isDone) {
-            	//	mainMenu.getCircleStage().close();
-     			//   isDone = false;
-     		    //}
+          	// Warning: cannot load the editor in macosx if it was a JDialog
 
         } catch (Exception e) {
             e.printStackTrace();

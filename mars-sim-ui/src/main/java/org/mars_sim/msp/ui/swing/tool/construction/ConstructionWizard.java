@@ -186,8 +186,9 @@ public class ConstructionWizard {
 	    	if (!isSitePicked)
 	    		site_case = 3;
 	    }
-
+	
 	    boolean previous = Simulation.instance().getMasterClock().isPaused();
+	    	    	    
 	    if (mainScene != null) {
 			if (!previous) {
 				mainScene.pauseSimulation();

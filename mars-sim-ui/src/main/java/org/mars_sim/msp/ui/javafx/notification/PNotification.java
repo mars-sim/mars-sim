@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * PNotification.java
+ * @version 3.1.0 2016-06-17
+ * @author Manny Kung
+ */
+
 /*
  * Copyright (c) 2013 by Gerrit Grunwald
  *
@@ -347,7 +354,8 @@ public class PNotification {
             POPUP.setY( getY() );
             POPUP.getContent().add(popupContent);
 
-            popups.add(POPUP);
+            if (popups.size() == 0)
+            	popups.add(POPUP);
 
             // Add a timeline for popup fade out
             KeyValue fadeOutBegin = new KeyValue(POPUP.opacityProperty(), 1.0);
