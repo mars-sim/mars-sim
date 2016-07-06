@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.networking.SettlementRegistry;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 
 import javafx.application.Platform;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 
 /**
@@ -66,13 +67,15 @@ public class SettlementTableModel extends AbstractTableModel {
 
 		if (!configEditor.getHasSettlement()) {
 			Platform.runLater(() -> {
-				configEditor.getRefreshDefaultButton().setText(Msg.getString("SimulationConfigEditor.button.default"));
+				//configEditor.getUndoButton().setText(Msg.getString("SimulationConfigEditor.button.default"));
+				configEditor.getUndoButton().setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.undo"))); //$NON-NLS-1$
 			});
 			loadDefaultSettlements();
 		}
 		else {
 			Platform.runLater(() -> {
-				configEditor.getRefreshDefaultButton().setText(Msg.getString("SimulationConfigEditor.button.refresh"));
+				//configEditor.getUndoButton().setText(Msg.getString("SimulationConfigEditor.button.refresh"));
+				configEditor.getUndoButton().setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.refresh"))); //$NON-NLS-1$
 			});
 			loadExistingSettlements();
 		}

@@ -128,12 +128,12 @@ public class ScenarioConfigEditorFX {
 	@FXML
 	TabPane tabPane;
 
-	private Label errorLabel;
 	private JFXButton startButton;
 	private JFXButton addButton;
 	private JFXButton removeButton;
-	private JFXButton refreshDefaultButton;
+	private JFXButton undoButton;
 	private JFXButton crewButton;
+	private Label errorLabel;
 	private Label titleLabel;
 	private Label gameModeLabel;
 	private Label clientIDLabel;
@@ -170,10 +170,7 @@ public class ScenarioConfigEditorFX {
 	 * @param config
 	 *            the simulation configuration.
 	 */
-	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { // ,
-																					// SimulationConfig
-																					// config)
-																					// {
+	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { // ,																				// {
 		// logger.info("ScenarioConfigEditorFX's constructor is on " +
 		// Thread.currentThread().getName() );
 
@@ -408,33 +405,81 @@ public class ScenarioConfigEditorFX {
 		VBox vbTopLeft = new VBox();
 		borderButtons.setTop(vbTopLeft);
 		vbTopLeft.setSpacing(10);
-		vbTopLeft.setPadding(new Insets(0, 10, 10, 10));
+		vbTopLeft.setPadding(new Insets(5, 5, 5, 5));
 
 		// Create add settlement button.
-		addButton = new JFXButton("+");// Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
+		//addButton = new JFXButton("+");// Msg.getString("SimulationConfigEditor.button.add")); //$NON-NLS-1$
+		addButton = new JFXButton();
+		addButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-add.png"))));
 		setMouseCursor(addButton);
-		addButton.getStyleClass().add("button-sign");
+		addButton.getStyleClass().add("button-small");
 		addButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.add"))); //$NON-NLS-1$
 		addButton.setOnAction((event) -> {
 			addNewSettlement();
 		});
+		vbTopLeft.getChildren().addAll(new Label(),new Label());
 		vbTopLeft.getChildren().add(addButton);
 
 		// Create remove settlement button.
-		removeButton = new JFXButton("-");// Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
+		removeButton = new JFXButton();//"-");// Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
+		removeButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-delete.png"))));
 		setMouseCursor(removeButton);
 		removeButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.remove"))); //$NON-NLS-1$
 		// removeButton.setId("removeButton");
-		removeButton.getStyleClass().add("button-sign");
+		removeButton.getStyleClass().add("button-small");
 		removeButton.setOnAction((event) -> {
-			boolean isYes = confirmDeleteDialog("Removing settlement", "Are you sure you want to do this?");
-			if (isYes) {
-				removeSelectedSettlements();
-				// mainMenu.getStage().setIconified(true);
+			int[] indices = settlementTable.getSelectedRows();
+			if (indices.length > 0) {
+				boolean isYes = confirmDeleteDialog("Removing settlement", "Are you sure you want to do this?");
+				if (isYes) {
+					removeSelectedSettlements();
+					// mainMenu.getStage().setIconified(true);
+				}
 			}
 		});
 		vbTopLeft.getChildren().add(removeButton);
 
+
+		// Create refresh/defaultButton button.
+		undoButton = new JFXButton();//Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
+		undoButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/orange_undo_32.png"))));//button-undo.png"))));
+		undoButton.getStyleClass().add("button-mid");//-sign");
+		setMouseCursor(undoButton);
+		//undoButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.default"))); //$NON-NLS-1$
+		undoButton.setOnAction((event) -> {
+			if (multiplayerClient != null && hasSettlement) {
+				boolean isYes = confirmDeleteDialog(
+						"Undo All--delete, reload and refresh all settlement settings",
+						"Proceed ?");
+				if (isYes)
+					setExistingSettlements();
+			} else {
+				boolean isYes = confirmDeleteDialog(
+						"Undo All--delete and reload all settlement settings",
+						"Proceed ?");
+				if (isYes)
+					setDefaultSettlements();
+			}
+			// mainMenu.getStage().setIconified(true);
+		});
+		// vbCenter.getChildren().add(defaultButton);
+		//vbTopLeft.getChildren().add(refreshDefaultButton);
+		
+		// 2014-12-15 Added Edit Alpha Crew button.
+		crewButton = new JFXButton();//Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
+		crewButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/people32.png"))));
+		setMouseCursor(crewButton);
+		crewButton.getStyleClass().add("button-mid");//-sign");//raised");
+		// alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor"));
+		// //$NON-NLS-1$
+		crewButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")));
+		// alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
+		crewButton.setOnAction((event) -> {
+			editCrewProfile("alpha");
+		});
+		// bottomButtonPanel.getChildren().add(alphaButton);
+		//vbTopLeft.getChildren().add(crewButton);
+		
 		// Create configuration button inner bottom panel.
 		VBox vbCenter = new VBox();
 		vbCenter.setSpacing(10);
@@ -450,10 +495,6 @@ public class ScenarioConfigEditorFX {
 		 * setDefaultSettlements(); else setExistingSettlements(); });
 		 * vbCenter.getChildren().add(defaultButton);
 		 */
-		addButton.setMaxWidth(Double.MAX_VALUE);
-		removeButton.setMaxWidth(Double.MAX_VALUE);
-		// defaultButton.setMaxWidth(Double.MAX_VALUE);
-
 		// Create bottom panel.
 		BorderPane bottomPanel = new BorderPane();
 		borderAll.setBottom(bottomPanel);
@@ -468,37 +509,13 @@ public class ScenarioConfigEditorFX {
 		// HBox bottomButtonPanel = new HBox();
 		// bottomPanel.setBottom(bottomButtonPanel);
 
-		// Create refresh/defaultButton button.
-		refreshDefaultButton = new JFXButton(Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
-		setMouseCursor(refreshDefaultButton);
-		refreshDefaultButton.getStyleClass().add("button-raised");
-		refreshDefaultButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.default"))); //$NON-NLS-1$
-		refreshDefaultButton.setOnAction((event) -> {
-			if (multiplayerClient != null && hasSettlement) {
-				boolean isYes = confirmDeleteDialog(
-						"Delete current settlement settings, reload the default templates and refresh other players' settlements",
-						"Are you sure you want to do this?");
-				if (isYes)
-					setExistingSettlements();
-			} else {
-				boolean isYes = confirmDeleteDialog(
-						"Delete current settlement settings and reload the default templates",
-						"Are you sure you want to do this?");
-				if (isYes)
-					setDefaultSettlements();
-			}
-			// mainMenu.getStage().setIconified(true);
-		});
-		// vbCenter.getChildren().add(defaultButton);
-
 		// Create the start button.
-		startButton = new JFXButton("  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
+		startButton = new JFXButton();//"  " + Msg.getString("SimulationConfigEditor.button.newSim") + "  "); //$NON-NLS-1$
 		// startButton = new JFXButton();
 		// Icon value = new Icon("HEART");
 		// value.setPadding(new Insets(10));
-		// startButton.setGraphic(new ImageView(new
-		// Image(this.getClass().getResourceAsStream("/fxui/icons/play_64.png"))));
-		startButton.getStyleClass().add("button-raised");
+		startButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_48.png"))));
+		startButton.getStyleClass().add("button-large");
 		setMouseCursor(startButton);
 		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
 		startButton.setId("startButton");
@@ -507,7 +524,6 @@ public class ScenarioConfigEditorFX {
 		startButton.defaultButtonProperty().bind(startButton.focusedProperty());
 		startButton.requestFocus();
 		startButton.setOnAction((event) -> {
-
 			if (crewEditorFX != null) {
 				if (!crewEditorFX.isGoodToGo()) {
 					startButton.setDisable(true);
@@ -528,20 +544,15 @@ public class ScenarioConfigEditorFX {
 			}
 
 			if (!hasError) {
-
 				// waiti = new WaitIndicator();
-
 				setConfiguration();
 				// scene.setCursor(Cursor.WAIT); //Change cursor to wait style
-
 				cstage = new Stage();
 				CompletableFuture<?> future = CompletableFuture.supplyAsync(() -> submitTask());
 				// .thenAccept(lr -> waitLoading()); //loadProgress()); //
-
 				// Platform.runLater(() -> {
 				closeWindow();
 				// });
-
 				/*
 				 * while (//Simulation.instance().getMasterClock() == null //&&
 				 * !mainMenu.getMainScene().isMainSceneDone()) {// ||
@@ -550,8 +561,7 @@ public class ScenarioConfigEditorFX {
 				 * instance is not ready yet. Wait for another 1/2 secs"); try {
 				 * TimeUnit.MILLISECONDS.sleep(500L); } catch
 				 * (InterruptedException e) { e.printStackTrace(); } }
-				 * 
-				 * 
+				 *  
 				 * waiti.getStage().close();
 				 */
 				// scene.setCursor(Cursor.DEFAULT); //Change cursor to default
@@ -561,25 +571,23 @@ public class ScenarioConfigEditorFX {
 
 		});
 
-		// 2014-12-15 Added Edit Alpha Crew button.
-		crewButton = new JFXButton(Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
-		setMouseCursor(crewButton);
-		crewButton.getStyleClass().add("button-raised");
-		// alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor"));
-		// //$NON-NLS-1$
-		crewButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")));
-		// alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
-		crewButton.setOnAction((event) -> {
-			editCrewProfile("alpha");
-		});
-		// bottomButtonPanel.getChildren().add(alphaButton);
-
+		addButton.setMaxWidth(Double.MAX_VALUE);
+		removeButton.setMaxWidth(Double.MAX_VALUE);
+		undoButton.setMaxWidth(Double.MAX_VALUE);
+		crewButton.setMaxWidth(Double.MAX_VALUE);
+		startButton.setMaxWidth(Double.MAX_VALUE);
+		
+		
 		TilePane tileButtons = new TilePane(Orientation.HORIZONTAL);
 		tileButtons.setPadding(new Insets(5, 5, 5, 5));
-		tileButtons.setHgap(50.0);
-		tileButtons.setVgap(8.0);
-		tileButtons.getChildren().addAll(refreshDefaultButton, startButton, crewButton);
+		tileButtons.setHgap(200.0);
+		tileButtons.setVgap(3.0);
+		tileButtons.getChildren().addAll(
+				undoButton, 
+				startButton,
+				crewButton);
 		tileButtons.setAlignment(Pos.CENTER);
+		
 		bottomPanel.setBottom(tileButtons);
 
 		// pane.getChildren().add(borderAll);
@@ -1066,8 +1074,8 @@ public class ScenarioConfigEditorFX {
 		playerName = value;
 	}
 
-	public Button getRefreshDefaultButton() {
-		return refreshDefaultButton;
+	public Button getUndoButton() {
+		return undoButton;
 	}
 
 	public Button getStartButton() {
