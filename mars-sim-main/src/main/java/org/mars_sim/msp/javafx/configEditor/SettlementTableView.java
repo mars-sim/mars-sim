@@ -78,13 +78,13 @@ public class SettlementTableView {
                         return new TextFieldTableCell(new StringConverter() {
                             @Override
                             public String toString(Object t) {
-                            	updateSettlementInfo();
+                            	//updateSettlementInfo();
                             	//System.out.println("t.toString() is "+ t.toString());                    	
                                 return t.toString();
                             }
                             @Override
                             public Object fromString(String string) {
-                            	updateSettlementInfo();
+                            	//updateSettlementInfo();
                             	//System.out.println("string() is "+ string);
                                 return string;
                             }                                    

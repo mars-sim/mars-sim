@@ -126,10 +126,10 @@ public class ScenarioConfigEditorFX {
 	private String gameMode;
 
 	private JTableHeader header;
-	private SettlementTableModel settlementTableModel;
+	//private SettlementTableModel settlementTableModel;
 	// private JTable settlementTable;
-	private SettlementTable settlementTable;
-	private JScrollPane settlementScrollPane;
+	//private SettlementTable settlementTable;
+	//private JScrollPane settlementScrollPane;
 	private TableCellEditor tableCellEditor;
 
 	@FXML
@@ -488,7 +488,7 @@ public class ScenarioConfigEditorFX {
 						"Undo ALL changes",
 						"Proceed ?");
 				if (isYes)
-					setExistingSettlements();
+					;//setExistingSettlements();
 			} else {
 				boolean isYes = confirmDeleteDialog(
 						"Undo ALL changes and refresh",
@@ -689,7 +689,8 @@ public class ScenarioConfigEditorFX {
 
 		}
 	}
-
+	
+/*
 	@SuppressWarnings("serial")
 	private void createSwingNode(final SwingNode swingNode) {
 
@@ -698,9 +699,9 @@ public class ScenarioConfigEditorFX {
 			settlementTable = new SettlementTable(this, settlementTableModel);
 		});
 		swingNode.setContent(settlementScrollPane);
-
 	}
-
+*/
+	
 	/**
 	 * Adds a new settlement with default values.
 	 */
@@ -759,12 +760,12 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Sets the existing settlements loaded from others client machine.
-	 */
+	 
 	private void setExistingSettlements() {
 		settlementTableModel.loadExistingSettlements();
 		updateSettlementNames();
 	}
-
+*/
 	/**
 	 * Set the simulation configuration based on dialog choices.
 	 */
@@ -1164,19 +1165,19 @@ public class ScenarioConfigEditorFX {
 	public void setHasError(boolean value) {
 		hasError = value;
 	}
-
+/*
 	public JScrollPane getSettlementScrollPane() {
 		return settlementScrollPane;
 	}
-
+*/
 	public List<SettlementRegistry> getSettlementList() {
 		return settlementList;
 	}
-
+/*
 	public SettlementTableModel getSettlementTableModel() {
 		return settlementTableModel;
 	}
-
+*/
 	public SettlementTableView getSettlementTableView() {
 		return settlementTableView;
 	}

@@ -92,7 +92,7 @@ public class SettlementTable extends JTable {
 		header.setBackground(BACK_COLOR);//new java.awt.Color(229,171,0));//.orange);//(0, 167, 212));
 		header.setForeground(FORE_COLOR);//java.awt.Color.white); 
 
-		configEditor.getSettlementScrollPane().setViewportView(this);
+		//configEditor.getSettlementScrollPane().setViewportView(this);
 
 		// Create combo box for editing template column in settlement table.
 		TableColumn templateColumn = getColumnModel().getColumn(COLUMN_TEMPLATE);
