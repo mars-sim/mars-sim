@@ -130,13 +130,14 @@
 	-fx-text-fill: #cc6110;
 	-fx-stroke-width: 3;
 	-fx-font-size: 15.0px;
-	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
+	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 
 #titleLabel {
 	-fx-text-fill: #cc6110;
-	-fx-stroke-width: 3;
-	-fx-font-size: 15.0px;
-	/*-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );*/
+	-fx-stroke-width: 4;
+	-fx-font-size: 24.0px;
+	-fx-font-weight: bold;  
+	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
 }
 

@@ -12,7 +12,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="583.0" prefWidth="690.0" style="-fx-background-color:  rgba(0,0,0,0);" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+prefHeight="583.0" prefWidth="800.0" style="-fx-background-color:  rgba(0,0,0,0);" 
+xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <Text layoutX="27.0" layoutY="49.0" stroke="BLACK" text="Mars Simulation Project">
       <effect>
@@ -30,22 +32,23 @@
         <Font size="14.0" />
       </font>
     </Text>
-   <Text fill="$x3" layoutX="590.0" layoutY="41.0" stroke="$x3" text="Version 3.1.0" />    
+   <Text fill="$x3" layoutX="670.0" layoutY="41.0" stroke="$x3" text="Version 3.1.0" />    
     
-    <TabPane id="MyTabPane" layoutX="27.0" layoutY="87.0" prefHeight="400.943359375" prefWidth="637.0" tabClosingPolicy="UNAVAILABLE">
+    <TabPane id="MyTabPane" layoutX="27.0" layoutY="87.0" prefHeight="400.943359375" prefWidth="740.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab id="chap1tapheader" closable="false" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}" text="Settlement">
           <content>
-            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="365.943359375" prefWidth="637.0" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}">
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="365.943359375" prefWidth="730.0" style=".tab-pane *.tab-header-background {-fx-background-color: #00000000;}">
               <children>
-                <TableView fx:id="chap1RecipeTableView" layoutX="14.0" layoutY="82.0" prefHeight="274.0" prefWidth="609.0">
+                <TableView fx:id="chap1RecipeTableView" layoutX="14.0" layoutY="82.0" 
+                	prefHeight="274.0" prefWidth="720.0">
                   <columns>
-                    <TableColumn prefWidth="131.0" text="Settlement" />
-                    <TableColumn prefWidth="228.0" text="Template" />
-                              <TableColumn prefWidth="67.0" text="# Settlers" />
-                              <TableColumn prefWidth="46.0" text="# Bots" />
-                              <TableColumn prefWidth="66.0" text="Latitude" />
-                              <TableColumn prefWidth="70.0" text="Longitude" />
+                    <TableColumn prefWidth="170.0" text="Settlement" />
+                    <TableColumn prefWidth="220.0" text="Template" />
+                              <TableColumn prefWidth="80.0" text="# Settlers" />
+                              <TableColumn prefWidth="70.0" text="# Bots" />
+                              <TableColumn prefWidth="90.0" text="Latitude" />
+                              <TableColumn prefWidth="90.0" text="Longitude" />
                   </columns>
                 </TableView>
                 <Text layoutX="14.0" layoutY="44.0" stroke="BLACK" strokeWidth="0.5" text="Configuring Settlement ">
@@ -88,19 +91,23 @@
         <Font name="Arial" size="16.0" fx:id="x4" />
       </font>
     </Text>
+   
+    <!--Hyperlink fx:id="carlfxHyperlink" fill="$x3" layoutX="478.0" layoutY="565.0" 
+    		stroke="$x3" text="mars-sim.sourceforge.net" /-->
     
-    <Text fill="$x3" layoutX="478.0" layoutY="565.0" stroke="$x3" text="mars-sim.sourceforge.net">
-      <font>
+    <Text fill="$x3" layoutX="580.0" layoutY="565.0" stroke="$x3" text="mars-sim.sourceforge.net">
+       <font>
         <Font size="16.0" />
       </font>
     </Text>
-      <ButtonBar layoutX="128.0" layoutY="482.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="419.0">
+    
+      <ButtonBar layoutX="200.0" layoutY="482.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="40.0" prefWidth="419.0">
         <buttons>
-          <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Add" />
-            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="388.0" layoutY="18.0" mnemonicParsing="false" text="Remove" />
+          	<Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="+" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="388.0" layoutY="18.0" mnemonicParsing="false" text="-" />
             <Button alignment="CENTER" contentDisplay="CENTER" layoutX="303.0" layoutY="18.0" mnemonicParsing="false" text="Start" />
-            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="388.0" layoutY="18.0" mnemonicParsing="false" text="Reload" />
-            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="133.0" layoutY="18.0" mnemonicParsing="false" text="Edit Crew" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="388.0" layoutY="18.0" mnemonicParsing="false" text="Undo" />
+            <Button alignment="CENTER" contentDisplay="CENTER" layoutX="133.0" layoutY="18.0" mnemonicParsing="false" text="Crew" />
         </buttons>
       </ButtonBar>
     <!--Hyperlink fx:id="carlfxHyperlink" font="$x4" layoutX="200.0" layoutY="59.0" text="Version 3.08" textFill="WHITE" />-->

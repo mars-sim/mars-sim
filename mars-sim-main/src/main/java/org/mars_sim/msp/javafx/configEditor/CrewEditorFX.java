@@ -709,7 +709,7 @@ public class CrewEditorFX {
 	public void setupSettlementNames() {
 		// TODO: how to properly sense the change and rebuild the combobox
 		// real-time?
-		settlements = scenarioConfigEditorFX.getSettlementTableModel().getSettlements();
+		settlements = scenarioConfigEditorFX.getSettlementTableView().getSettlementInfo();
 
 		settlementNames.clear();
 
