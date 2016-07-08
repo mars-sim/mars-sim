@@ -225,7 +225,7 @@ public class SimulationConfigEditor {
 		configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
 
 		// Create default button.
-		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.default") + " "); //$NON-NLS-1$
+		JButton defaultButton = new JButton(" " + Msg.getString("SimulationConfigEditor.button.undo") + " "); //$NON-NLS-1$
 		defaultButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
 		defaultButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

@@ -461,8 +461,8 @@ public class ScenarioConfigEditorFX {
 			//ObservableList list = settlementTableView.getTableView().getSelectionModel().getSelectedIndices();
 			int index = -1;
 			index = settlementTableView.getTableView().getSelectionModel().getSelectedIndex();
-			
-			
+			//System.out.println("index is " + index);
+				
 			if (index > -1) {
 				boolean isYes = confirmDeleteDialog("Removing settlement", "Are you sure you want to do this?");
 				if (isYes) {
@@ -774,6 +774,8 @@ public class ScenarioConfigEditorFX {
 		settlementConfig.clearInitialSettlements();
 		// Add configuration settlements from table data.
 		//for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+		//System.out.println("rows : "+ settlementTableView.getRowCount());
+		//System.out.println("rows : "+ settlementTableView.getTableView().getItems().size());
 		for (int x = 0; x < settlementTableView.getRowCount(); x++) {			
 			if (multiplayerClient != null) {
 				if (hasSettlement && x < settlementList.size())

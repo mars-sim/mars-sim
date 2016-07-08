@@ -585,6 +585,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (mainScene != null) {
 			//System.out.println(toolName + " is running openToolWindow().");
 			Platform.runLater(() -> {
+				
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					//System.out.println("closing nav");
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
@@ -613,7 +614,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
+				
 			});
+		
 		}
 		//System.out.println("openToolWindow() ended");
 
@@ -634,6 +637,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		if (mainScene != null) {
 			//System.out.println(toolName + " is running closeToolWindow().");
 			Platform.runLater(() -> {
+
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					//System.out.println("closing nav");
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
@@ -662,8 +666,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
 				}
+				
 			});
 		}
+		
+		
 /*
 		else if (mainWindow != null) {
 

@@ -139,7 +139,8 @@ public class SettlementTableView {
     }
     
 	public int getRowCount() {
-		return settlements.size();
+		return getTableView().getItems().size();
+		//return settlements.size();
 	}
 	
 	public ObservableList<Map> getAllData() {
@@ -226,7 +227,10 @@ public class SettlementTableView {
 			//allData.remove(i);
 		//}	
 	    //remove selected item from the table list
-        allData.remove(table_view.getItems().get(i));        
+        allData.remove(table_view.getItems().get(i));  
+		table_view.refresh();
+		table_view.setItems(allData);
+        
 	}
 	
 	public List<SettlementInfo> getSettlementInfo() {

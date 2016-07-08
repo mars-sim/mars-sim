@@ -24,6 +24,7 @@
 
 package org.mars_sim.msp.ui.javafx.quotation;
 
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
 import javafx.scene.layout.AnchorPane;
@@ -190,8 +191,12 @@ public class QNotification {
         public static void setWidth(final double WIDTH) {
 /*           //Notifier.width = WIDTH * res / 1920 / 1.05 ;
 */
-            Notifier.width = WIDTH;// / 1.25; // 547 - > 438 is optimal
-            //System.out.println("adjusted width is " + Math.round(WIDTH));// / 1.25));
+        	if (MainScene.OS.equals("mac os x"))
+        		Notifier.width = WIDTH/1.35; // 547 - > 438 is optimal
+        	else
+        		 Notifier.width = WIDTH;
+        	
+            System.out.println("adjusted width is " + Math.round(width));// / 1.25));
         }
 
         /**

@@ -28,6 +28,7 @@ import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
 
 import com.sun.management.OperatingSystemMXBean;
 
+import de.codecentric.centerdevice.MenuToolkit;
 //import eu.hansolo.enzo.notification.Notification;
 //import eu.hansolo.enzo.notification.Notification.Notifier;
 import javafx.event.*;
@@ -83,6 +84,7 @@ import java.lang.reflect.Array;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -215,6 +217,8 @@ public class MainScene {
 	
 	private static MainDesktopPane desktop;
 	private MainSceneMenu menuBar;
+	//private MenuBar menuBar;
+	
 	private MarsNode marsNode;
 	private TransportWizard transportWizard;
 	private ConstructionWizard constructionWizard;
@@ -505,7 +509,10 @@ public class MainScene {
 
 		// Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
-
+		((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
+       
+        //createMenuBar();
+		
 		// Create BorderPane
 		borderPane = new BorderPane();
 		
@@ -627,11 +634,19 @@ public class MainScene {
         //Button buttonRight = new Button("Right");
         //Label labelRight = new Label("Right");
 
-        /**
-         * Instanciate a BorderSlideBar for each childs layouts
-         */
-        topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
-        borderPane.setTop(topFlapBar);
+		//final String os = System.getProperty ("os.name");
+		if (OS.equals("mac os x")) {
+		//if (os != null && os.startsWith ("Mac"))
+		  //menuBar.useSystemMenuBarProperty().set(true);		
+		}
+		else {
+	        /**
+	         * Instantiate a BorderSlideBar for each child layouts
+	         */
+	        topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
+	        borderPane.setTop(topFlapBar);
+		}
+		
         borderPane.setBottom(statusBar);
         
         
@@ -690,7 +705,7 @@ public class MainScene {
 	public void changeTheme(int theme) {
 		this.theme = theme;
 		swingPane.getStylesheets().clear();
-		menuBar.getStylesheets().clear();
+		if (menuBar.getStylesheets() != null) menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();	
 		//marsNode.getFXDesktopPane().getStylesheets().clear();	
 		//marsNetButton.getStylesheets().clear();
@@ -732,8 +747,6 @@ public class MainScene {
 			cssColor = "/fxui/css/snowBlue.css";
 			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssColor); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
-
-
 
 		} else if (theme == 7) { // standard
 			cssColor = "/fxui/css/nimrodskin.css";
@@ -1649,6 +1662,10 @@ public class MainScene {
 		return menuBar;
 	}
 
+	//public MenuBar getMainSceneMenu() {
+	//	return menuBar;
+	//}
+	
 	public Stage getStage() {
 		return stage;
 	}
@@ -1845,13 +1862,7 @@ public class MainScene {
 		
         });	
 */
-/*
-        scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
-		      @Override
-		      public void handle(MouseEvent event) {
-		      }
-		  });
-*/		
+
 		
 		//hideLoadingStage();
 		
@@ -1957,17 +1968,7 @@ public class MainScene {
 		
  		Scene scene = new Scene(stackPane, 150, 150);
  		scene.setFill(Color.TRANSPARENT);
-/* 		
- 		if (title.contains("Loading")) {
- 			loadingCircleStage = new Stage();
-	 		loadingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-	 
-	 		loadingCircleStage.initStyle (StageStyle.TRANSPARENT);
-	 		loadingCircleStage.setScene(scene);
-	 		loadingCircleStage.hide();
-	 	}
- 		else
-*/ 			
+
  		if (title.contains("Saving")) {// || title.contains("Autosaving")) {
  			savingCircleStage = new Stage();
  			savingCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -1976,47 +1977,9 @@ public class MainScene {
  			savingCircleStage.setScene(scene);
  			savingCircleStage.hide();
 	 	}
- /*
- 		
- 		else if (title.contains("Paused")) {
- 			pausedCircleStage = new Stage();
- 			pausedCircleStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-	 
- 			pausedCircleStage.initStyle (StageStyle.TRANSPARENT);
- 			pausedCircleStage.setScene(scene);
- 			pausedCircleStage.hide();
-	 	} 		
- */		
-        //circleStage.show();
+ 
  	}
 
- //	public void showLoadingStage() {
-//		Platform.runLater(() -> {
-//			setMonitor(loadingCircleStage);
-//			loadingCircleStage.show();
-			//loadingCircleStage.requestFocus();
-//		});		
- //	}
- 	 	
- 	 	
- //	public void hideLoadingStage() {
- //		Platform.runLater(() -> {
-//			loadingCircleStage.hide();	 
- //		});
- //	}
-
-
- //	public void showPausedStage() {
-//		Platform.runLater(() -> {
-//			setMonitor(loadingCircleStage);
-	//		pausedCircleStage.show();
-			//pausedCircleStage.requestFocus();
-//		});		
- //	}
- 	
- //	public void hidePausedStage() {
- //		Platform.runLater(() -> pausedCircleStage.hide());
- //	}
 
  	public void showSavingStage() {
 		Platform.runLater(() -> {
@@ -2061,6 +2024,45 @@ public class MainScene {
 		
 	}
 	
+/*	
+ 	public void createMenuBar() {
+		menuBar = new MenuBar();
+		
+		menuBar.useSystemMenuBarProperty().set(true);
+		
+		Platform.runLater(() -> {
+
+			MenuToolkit tk = MenuToolkit.toolkit(Locale.getDefault());
+			tk.setApplicationMenu(tk.createDefaultApplicationMenu("mars-sim"));
+
+			// Create the default Application menu
+			//Menu defaultApplicationMenu = tk.createDefaultApplicationMenu("mars-sim");
+
+			// Update the existing Application menu
+			//tk.setApplicationMenu(defaultApplicationMenu);
+
+			//defaultApplicationMenu.setText("mars-sim");
+	
+			//MenuBar menuBar = (MenuBar)this
+			//menuBar.useSystemMenuBarProperty().set(true);
+
+			Menu java = new Menu("Jave");
+			Menu file = new Menu("File");
+			Menu help = new Menu("Help");
+			
+			MenuItem newI = new MenuItem("New");
+			MenuItem quit = tk.createQuitMenuItem("mars-sim");
+
+			java.getItems().addAll(quit);
+
+			//menuBar.getMenus().addAll(new Menu(), java, file, help);
+			menuBar.getMenus().addAll(java, file, help);					
+				
+			tk.setMenuBar(stage, menuBar);
+			
+		});
+ 	}
+ */	
  	
 	public void destroy() {
 
