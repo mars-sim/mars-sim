@@ -6,17 +6,10 @@
  */
 package org.mars_sim.msp.javafx.configEditor;
 
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 
 import javafx.animation.*;
 import javafx.application.*;
@@ -47,15 +40,15 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+//import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+//import javafx.scene.control.RadioButton;
+//import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -65,11 +58,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXRadioButton;
+import com.jfoenix.controls.JFXTextField;
 
 import de.jonato.jfxc.controls.combobox.AutoCompleteComboBox;
 import de.jonato.jfxc.controls.combobox.FilterComboBox;
@@ -104,21 +101,21 @@ public class CrewEditorFX {
 
 	private GridPane gridPane;
 
-	private List<TextField> nameTF;// = new ArrayList<TextField>();
+	private List<JFXTextField> nameTF;// = new ArrayList<JFXTextField>();
 
-	// private ComboBox<String> personalityOListComboBox;
-	private ComboBox<String> jobsOListComboBox;
-	private ComboBox<String> genderOListComboBox;
-	private ComboBox<String> destinationsOListComboBox = new ComboBox<String>();
-	private ComboBox<String> destinationCB;
+	// private JFXComboBox<String> personalityOListComboBox;
+	private JFXComboBox<String> jobsOListComboBox;
+	private JFXComboBox<String> genderOListComboBox;
+	private JFXComboBox<String> destinationsOListComboBox = new JFXComboBox<String>();
+	private JFXComboBox<String> destinationCB;
 
-	private List<ComboBox<String>> genderList;// = new
-												// ArrayList<ComboBox<String>>();
-	private List<ComboBox<String>> jobsList;// = new
-											// ArrayList<ComboBox<String>>();
-	// private List<ComboBox<String>> personalityList;// = new
-	// ArrayList<ComboBox<String>>();
-	// private List<ComboBox<String>> destinationsList;
+	private List<JFXComboBox<String>> genderList;// = new
+												// ArrayList<JFXComboBox<String>>();
+	private List<JFXComboBox<String>> jobsList;// = new
+											// ArrayList<JFXComboBox<String>>();
+	// private List<JFXComboBox<String>> personalityList;// = new
+	// ArrayList<JFXComboBox<String>>();
+	// private List<JFXComboBox<String>> destinationsList;
 
 	private List<SettlementInfo> settlements;
 	private List<String> settlementNames = new ArrayList<String>();
@@ -148,11 +145,11 @@ public class CrewEditorFX {
 
 		personalityArray = new boolean[4][SIZE_OF_CREW];
 
-		nameTF = new ArrayList<TextField>();
-		genderList = new ArrayList<ComboBox<String>>();
-		jobsList = new ArrayList<ComboBox<String>>();
-		// personalityList = new ArrayList<ComboBox<String>>();
-		// destinationsList = new ArrayList<ComboBox<String>>();
+		nameTF = new ArrayList<JFXTextField>();
+		genderList = new ArrayList<JFXComboBox<String>>();
+		jobsList = new ArrayList<JFXComboBox<String>>();
+		// personalityList = new ArrayList<JFXComboBox<String>>();
+		// destinationsList = new ArrayList<JFXComboBox<String>>();
 
 		createGUI();
 
@@ -245,9 +242,12 @@ public class CrewEditorFX {
 		// setUpCrewDestination();
 
 		// Create commit button.
-		JFXButton commitButton = new JFXButton("COMMIT CHANGES");
+		JFXButton commitButton = new JFXButton();
 		setMouseCursor(commitButton);
-		commitButton.getStyleClass().add("button-raised");
+		//commitButton.getStyleClass().add("button-raised");
+		commitButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
+		commitButton.getStyleClass().add("button-mid");
+		commitButton.setTooltip(new Tooltip(Msg.getString("CrewEditorFX.tooltip.commit")));
 		commitButton.setId("commitButton");
 		commitButton.setAlignment(Pos.CENTER);
 		commitButton.requestFocus();
@@ -460,7 +460,9 @@ public class CrewEditorFX {
 			String n = personConfig.getConfiguredPersonName(i, ALPHA_CREW);
 			SimpleStringProperty np = new SimpleStringProperty(n);
 			// System.out.println(" name is "+ n);
-			TextField tf = new TextField();
+			JFXTextField tf = new JFXTextField();
+			//tf.setUnFocusColor(Color.rgb(255, 255, 255, 0.5));
+			tf.setFocusColor(Color.rgb(225, 206, 30, 1));
 			tf.setId("textfield");
 			nameTF.add(tf);
 			gridPane.add(tf, i + 1, 1); // name's row = 1
@@ -475,7 +477,7 @@ public class CrewEditorFX {
 		}
 	}
 
-	public ComboBox<String> setUpGenderCB() {
+	public JFXComboBox<String> setUpGenderCB() {
 
 		// List<String> genderList = new ArrayList<String>(2);
 		// genderList.add("M");
@@ -483,13 +485,13 @@ public class CrewEditorFX {
 		List<String> genderList = Arrays.asList("M", "F");
 
 		ObservableList<String> genderOList = FXCollections.observableArrayList(genderList);
-		genderOListComboBox = new ComboBox<String>(genderOList);
+		genderOListComboBox = new JFXComboBox<String>(genderOList);
 
 		return genderOListComboBox;
 	}
 
-	public ComboBox<String> setUpCB(int choice) {
-		ComboBox<String> m = null;
+	public JFXComboBox<String> setUpCB(int choice) {
+		JFXComboBox<String> m = null;
 		if (choice == 2)
 			m = setUpGenderCB();
 		else if (choice == 3)
@@ -499,7 +501,7 @@ public class CrewEditorFX {
 		else if (choice == 5)
 			m = setUpDestinationCB();
 
-		final ComboBox<String> g = m;
+		final JFXComboBox<String> g = m;
 		// g.setPadding(new Insets(10,10,10,10));
 		// g.setId("combobox");
 		g.setOnAction((event) -> {
@@ -522,7 +524,7 @@ public class CrewEditorFX {
 			else
 				s[j] = "F";
 
-			ComboBox<String> g = setUpCB(2); // 2 = Gender
+			JFXComboBox<String> g = setUpCB(2); // 2 = Gender
 			// g.setMaximumRowCount(2);
 			gridPane.add(g, j + 1, 2); // gender's row = 2
 			// genderOListComboBox.add(g);
@@ -564,8 +566,8 @@ public class CrewEditorFX {
 				c = cat4;
 			}
 
-			RadioButton ra = new RadioButton(a);
-			RadioButton rb = new RadioButton(b);
+			JFXRadioButton ra = new JFXRadioButton(a);
+			JFXRadioButton rb = new JFXRadioButton(b);
 			ra.setUserData(a);
 			rb.setUserData(b);
 
@@ -642,8 +644,8 @@ public class CrewEditorFX {
 		return type;
 	}
 
-	// public FilterComboBox<String> setUpJobCB() {
-	public ComboBox<String> setUpJobCB() {
+	// public FilterJFXComboBox<String> setUpJobCB() {
+	public JFXComboBox<String> setUpJobCB() {
 
 		/*
 		 * ObservableList<String> options = FXCollections.observableArrayList(
@@ -671,12 +673,12 @@ public class CrewEditorFX {
 		Collections.sort(jobs);
 
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
-		jobsOListComboBox = new ComboBox<String>(jobsOList);
+		jobsOListComboBox = new JFXComboBox<String>(jobsOList);
 		return jobsOListComboBox;
 
-		// AutoCompleteComboBox<String> jobsACCB = new
+		// AutoCompleteJFXComboBox<String> jobsACCB = new
 		// AutoCompleteComboBox<>(FXCollections.observableArrayList(jobs));
-		// FilterComboBox<String> jobsFCB = new
+		// FilterJFXComboBox<String> jobsFCB = new
 		// FilterComboBox<>(FXCollections.observableArrayList(jobs));
 
 		// return jobsFCB;
@@ -688,7 +690,7 @@ public class CrewEditorFX {
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			n[i] = personConfig.getConfiguredPersonJob(i, ALPHA_CREW);
-			ComboBox<String> g = setUpCB(3); // 3 = Job
+			JFXComboBox<String> g = setUpCB(3); // 3 = Job
 			// g.setMaximumRowCount(8);
 			gridPane.add(g, i + 1, 3); // job's row = 3
 			g.setValue(n[i]);
@@ -696,11 +698,11 @@ public class CrewEditorFX {
 		}
 	}
 
-	public ComboBox<String> setUpDestinationCB() {
+	public JFXComboBox<String> setUpDestinationCB() {
 
 		setupSettlementNames();
 
-		// destinationsOListComboBox = new ComboBox<String>(destinationsOList);
+		// destinationsOListComboBox = new JFXComboBox<String>(destinationsOList);
 		destinationsOListComboBox.setItems(destinationsOList);
 
 		return destinationsOListComboBox;
@@ -738,7 +740,7 @@ public class CrewEditorFX {
 	 * 
 	 * for (int i = 0 ; i < SIZE_OF_CREW; i++) { n[i] =
 	 * personConfig.getConfiguredPersonDestination(i);
-	 * //System.out.println("n[i] is "+ n[i]); ComboBox<String> destinationCB =
+	 * //System.out.println("n[i] is "+ n[i]); JFXComboBox<String> destinationCB =
 	 * setUpCB(5); // 5 = Destination //g.setMaximumRowCount(8);
 	 * gridPane.add(destinationCB, i+1, 5); // destination's row = 5
 	 * destinationCB.setValue(n[i]); destinationsList.add(destinationCB); } }
