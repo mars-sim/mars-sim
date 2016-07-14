@@ -1,0 +1,120 @@
+package org.mars_sim.restws.controller;
+
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.restws.mapper.InventoryMapper;
+import org.mars_sim.restws.mapper.PersonSummaryMapper;
+import org.mars_sim.restws.mapper.VehicleDetailsMapper;
+import org.mars_sim.restws.mapper.VehicleSummaryMapper;
+import org.mars_sim.restws.model.PagedList;
+import org.mars_sim.restws.model.PersonSummary;
+import org.mars_sim.restws.model.StoredAmount;
+import org.mars_sim.restws.model.StoredItem;
+import org.mars_sim.restws.model.VehicleDetails;
+import org.mars_sim.restws.model.VehicleSummary;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
+
+
+@RestController()
+public class VehicleController {
+	private static Log log = LogFactory.getLog(VehicleController.class);
+
+	@Autowired
+    private UnitManager vehicleManager;
+	
+	@Autowired
+	private VehicleDetailsMapper detailsMapper;
+
+	@Autowired
+	private InventoryMapper inventoryMapper;
+
+	@Autowired
+	private VehicleSummaryMapper summaryMapper;
+
+	@Autowired
+	private PersonSummaryMapper personSummaryMapper;
+	
+	/**
+	 * Find a Vehicle  entity by the unique identifier
+	 * @param vehicleId
+	 * @return
+	 */
+	private Vehicle getVehicle(int vehicleId) {
+		// Need a better way to find people
+		Iterator<Vehicle> it = vehicleManager.getVehicles().iterator();
+		while (it.hasNext()) {
+			Vehicle v = it.next();
+			if (v.getIdentifier() == vehicleId) {
+				return v;
+			}
+		}
+		log.error("There is no Vehicle with id=" + vehicleId);
+		
+		throw new NotFoundException("Vehicle", vehicleId);
+	}
+	
+	
+	@ApiOperation(value = "get Vehicle by Id", nickname = "getVehicle")
+	@RequestMapping(method = RequestMethod.GET, path="/vehicles/{id}", produces = "application/json")
+    public VehicleDetails  getVehicleDetails(@PathVariable(value="id") int vehicleId) {
+		
+        return detailsMapper.vehicleToVehicleDetails(getVehicle(vehicleId));
+    }
+	
+	@ApiOperation(value = "get All Vehicles", nickname = "getVehicles")
+    @RequestMapping(method=RequestMethod.GET, path="/vehicles", produces = "application/json")
+    public PagedList<VehicleSummary> getVehicles(@RequestParam(value="page", defaultValue="1") int page,
+    								   @RequestParam(value="size", defaultValue="10") int pageSize) {
+    	int start = 0;
+    	int end = Integer.MAX_VALUE;
+    	
+    	List<Vehicle> orderedList = new ArrayList<Vehicle>(vehicleManager.getVehicles());
+    	
+    	if (page  > 0) {
+    		start = (page - 1) * pageSize;
+    		end = start + pageSize;
+    	}
+    	end = (end < orderedList.size() ? end : (orderedList.size() - 1));
+		
+		return new PagedList<VehicleSummary>(summaryMapper.vehiclesToVehicleSummarys(orderedList.subList(start, end)),
+											page, pageSize, orderedList.size());
+    }
+	
+	@ApiOperation(value = "get Vehicle Resources", nickname = "getVehicleResources")
+	@RequestMapping(method = RequestMethod.GET, path="/vehicles/{id}/resources", produces = "application/json")
+    public List<StoredAmount> getResources(@PathVariable(value="id") int vehicleId) {
+		        
+        return inventoryMapper.getAmounts(getVehicle(vehicleId).getInventory());
+    }
+	
+	@ApiOperation(value = "get Vehicle Items", nickname = "getVehicleItems")
+	@RequestMapping(method = RequestMethod.GET, path="/vehicles/{id}/items", produces = "application/json")
+    public List<StoredItem> getItems(@PathVariable(value="id") int vehicleId) {
+		
+        return inventoryMapper.getItems(getVehicle(vehicleId).getInventory());
+    }
+	
+	@ApiOperation(value = "get Vehicle Persons", nickname = "getVehiclePersons")
+	@RequestMapping(method = RequestMethod.GET, path="/vehicles/{id}/persons", produces = "application/json")
+    public List<PersonSummary> getPersons(@PathVariable(value="id") int vehicleId) {
+
+        // THis is wrong and should be using Crewable
+        return personSummaryMapper.personsToPersonSummarys(
+        		new ArrayList<Person>(getVehicle(vehicleId).getAffectedPeople()));
+    }
+}
