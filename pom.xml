@@ -142,11 +142,13 @@
 	<!-- * Module Section                                                                                * -->
 	<!-- ************************************************************************************************* -->
 	<modules>
+		<module>mars-sim-service</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module>
 		<module>mars-sim-network</module>
+		<module>mars-sim-service</module>
 	</modules>
 	<!-- ************************************************************************************************* -->
 	<!-- * Build Section                                                                                 * -->
