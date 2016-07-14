@@ -244,12 +244,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<pluginRepositories>
-	        <pluginRepository>
-	            <id>spring-releases</id>
-	            <url>https://repo.spring.io/libs-release</url>
-	        </pluginRepository>
-		</pluginRepositories>	
 	</build>
 	<!-- ************************************************************************************************* -->
 	<!-- * Reporting Section                                                                             * -->
@@ -348,5 +342,11 @@
 			<name>Mars Sim Site</name>
 			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/site</url>
 		</site>
-	</distributionManagement> 		
+	</distributionManagement>
+	<pluginRepositories>
+        <pluginRepository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </pluginRepository>
+	</pluginRepositories>
 </project>
