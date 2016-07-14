@@ -1,10 +1,10 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.restws.model.VehicleDetails;
+import org.mars_sim.msp.restws.model.VehicleDetails;
 
 @Mapper(componentModel="spring",
 uses=UnitReferenceMapper.class)

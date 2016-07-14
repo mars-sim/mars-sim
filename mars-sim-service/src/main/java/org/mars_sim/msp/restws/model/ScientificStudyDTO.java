@@ -1,4 +1,4 @@
-package org.mars_sim.restws.model;
+package org.mars_sim.msp.restws.model;
 
 /**
  * DTO to flatten and present the most important properties of the ScientificStudy entity.

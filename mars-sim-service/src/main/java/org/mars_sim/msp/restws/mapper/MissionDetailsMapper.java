@@ -1,4 +1,4 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.restws.model.MissionDetails;
+import org.mars_sim.msp.restws.model.MissionDetails;
 
 /**
  * Each mapper method should include the @Mapping lists from the superclasses.

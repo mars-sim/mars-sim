@@ -1,4 +1,4 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 
 import java.util.List;
@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.restws.model.SettlementSummary;
+import org.mars_sim.msp.restws.model.SettlementSummary;
 
 @Mapper(componentModel="spring")
 public interface SettlementSummaryMapper {

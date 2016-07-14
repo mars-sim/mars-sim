@@ -1,11 +1,11 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.restws.model.CoordinateDTO;
+import org.mars_sim.msp.restws.model.CoordinateDTO;
 
 /**
  * This provides a mapper from a msp-core Person entity to the lightweight PersonSummary DTO.

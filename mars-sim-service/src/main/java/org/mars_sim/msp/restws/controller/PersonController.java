@@ -1,4 +1,4 @@
-package org.mars_sim.restws.controller;
+package org.mars_sim.msp.restws.controller;
 
 
 import java.util.ArrayList;
@@ -9,20 +9,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.restws.mapper.InventoryMapper;
-import org.mars_sim.restws.mapper.PersonDetailsMapper;
-import org.mars_sim.restws.mapper.PersonSummaryMapper;
-import org.mars_sim.restws.model.PagedList;
-import org.mars_sim.restws.model.PersonDetails;
-import org.mars_sim.restws.model.PersonSummary;
-import org.mars_sim.restws.model.StoredAmount;
-import org.mars_sim.restws.model.StoredItem;
+import org.mars_sim.msp.restws.mapper.InventoryMapper;
+import org.mars_sim.msp.restws.mapper.PersonDetailsMapper;
+import org.mars_sim.msp.restws.mapper.PersonSummaryMapper;
+import org.mars_sim.msp.restws.model.PagedList;
+import org.mars_sim.msp.restws.model.PersonDetails;
+import org.mars_sim.msp.restws.model.PersonSummary;
+import org.mars_sim.msp.restws.model.StoredAmount;
+import org.mars_sim.msp.restws.model.StoredItem;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.bind.annotation.PathVariable;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RequestMethod;
+//import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 

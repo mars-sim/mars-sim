@@ -1,4 +1,4 @@
-package org.mars_sim.restws.controller;
+package org.mars_sim.msp.restws.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

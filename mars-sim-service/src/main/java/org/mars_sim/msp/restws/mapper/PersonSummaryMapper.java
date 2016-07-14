@@ -1,4 +1,4 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 
 import java.util.Collection;
@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.restws.model.PersonSummary;
+import org.mars_sim.msp.restws.model.PersonSummary;
 
 /**
  * This provides a mapper from a msp-core Person entity to the lightweight PersonSummary DTO.

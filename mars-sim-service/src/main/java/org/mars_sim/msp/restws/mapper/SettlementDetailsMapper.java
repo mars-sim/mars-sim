@@ -1,4 +1,4 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 
 import org.mapstruct.Mapper;
@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.restws.model.SettlementDetails;
+import org.mars_sim.msp.restws.model.SettlementDetails;
 
 @Mapper(componentModel="spring",
 		uses=CoordinatesMapper.class)

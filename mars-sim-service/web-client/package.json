@@ -1,0 +1,26 @@
+{
+  "name": "mars-web",
+  "version": "0.0.1",
+  "description": "React web site for Mars-Sim project",
+  "main": "main.js",
+  "scripts": {
+    "gulp": "gulp",
+    "dev-build": "browserify -t [ reactify --es6 ] src/main.jsx > ../public/app.js",
+    "build": "browserify -t [ babelify --presets [ react ] ] src/main.jsx -o ../public/app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-preset-react": "^6.5.0",
+    "babelify": "^7.3.0",
+    "react": "^15.0.2",
+    "react-bootstrap": "^0.29.3",
+    "react-dom": "^15.0.2",
+    "react-router": "^2.4.0",
+    "react-router-bootstrap": "^0.23.0"
+  },
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "reactify": "^1.1.1"
+  }
+}

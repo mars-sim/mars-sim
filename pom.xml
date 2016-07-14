@@ -142,7 +142,6 @@
 	<!-- * Module Section                                                                                * -->
 	<!-- ************************************************************************************************* -->
 	<modules>
-		<module>mars-sim-service</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
 		<module>mars-sim-main</module>
@@ -189,13 +188,13 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>${springboot.version}</version>
-					<executions>
+					<!--executions>
 						<execution>
 							<goals>
 								<goal>repackage</goal>
 							</goals>
 						</execution>
-					</executions>
+					</executions-->
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

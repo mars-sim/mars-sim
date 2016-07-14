@@ -1,4 +1,4 @@
-package org.mars_sim.restws;
+package org.mars_sim.msp.restws;
 
 import static com.google.common.base.Predicates.or;
 import static springfox.documentation.builders.PathSelectors.regex;
@@ -91,6 +91,6 @@ public class Application {
         // Start simulation after everything has loaded
 		log.info("Simulation started");
 		Simulation sim = context.getBean(Simulation.class);
-		sim.start();
+		sim.start(true);
     }
 }

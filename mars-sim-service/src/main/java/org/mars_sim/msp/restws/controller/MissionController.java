@@ -1,4 +1,4 @@
-package org.mars_sim.restws.controller;
+package org.mars_sim.msp.restws.controller;
 
 
 import java.util.ArrayList;
@@ -18,19 +18,19 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.restws.mapper.MissionDetailsMapper;
-import org.mars_sim.restws.mapper.MissionSummaryMapper;
-import org.mars_sim.restws.mapper.PersonSummaryMapper;
-import org.mars_sim.restws.model.MissionDetails;
-import org.mars_sim.restws.model.MissionSummary;
-import org.mars_sim.restws.model.PagedList;
-import org.mars_sim.restws.model.PersonSummary;
+import org.mars_sim.msp.restws.mapper.MissionDetailsMapper;
+import org.mars_sim.msp.restws.mapper.MissionSummaryMapper;
+import org.mars_sim.msp.restws.mapper.PersonSummaryMapper;
+import org.mars_sim.msp.restws.model.MissionDetails;
+import org.mars_sim.msp.restws.model.MissionSummary;
+import org.mars_sim.msp.restws.model.PagedList;
+import org.mars_sim.msp.restws.model.PersonSummary;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.bind.annotation.PathVariable;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.RequestMethod;
+//import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 

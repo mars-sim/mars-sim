@@ -45,14 +45,16 @@ implements Serializable, Comparable<Unit> {
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
 	// Data members
-
+	// unit identifier
+	private static int unitIdentifer = 0;
+	// Unique identifier
+	private int identifier;
 	/** TODO Unit name needs to be internationalized. */
 	private String name;
 	/** TODO Unit description needs to be internationalized. */
 	private String description;
 	/** The mass of the unit without inventory. */
 	private double baseMass;
-
 
 
 	/** The unit's inventory. */
@@ -75,6 +77,13 @@ implements Serializable, Comparable<Unit> {
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
 
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different threads.
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return unitIdentifer++;
+	}
 
 	/**
 	 * Constructor.
@@ -84,6 +93,9 @@ implements Serializable, Comparable<Unit> {
 	public Unit(String name, Coordinates location) {
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
+
+		this.identifier = getNextIdentifier();
+	
 		// Initialize data members from parameters
 		this.name = name;
 		this.description = name;
@@ -119,6 +131,15 @@ implements Serializable, Comparable<Unit> {
 			currentState = settlementVicinity;
 	}
 
+
+	/**
+	 * Get the unique identifier for this unit
+	 * @return Identifier
+	 */
+	public int getIdentifier() {
+		return identifier;
+	}
+	
 	/**
 	 * Change the unit's name
 	 * @param name new name
@@ -679,9 +700,10 @@ implements Serializable, Comparable<Unit> {
 	 */
 	@Override
 	public String toString() {
-		return name;
+		return name  + " (" + identifier + ")";
 	}
 
+	
 	public synchronized boolean hasUnitListener(UnitListener listener) {
 		if(listeners == null) return false;
 		return listeners.contains(listener);

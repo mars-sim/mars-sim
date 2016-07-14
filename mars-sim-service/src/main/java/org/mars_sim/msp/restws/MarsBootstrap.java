@@ -1,4 +1,4 @@
-package org.mars_sim.restws;
+package org.mars_sim.msp.restws;
 
 import java.io.File;
 import java.io.IOException;

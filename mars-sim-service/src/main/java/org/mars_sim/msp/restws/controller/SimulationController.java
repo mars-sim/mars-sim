@@ -1,4 +1,4 @@
-package org.mars_sim.restws.controller;
+package org.mars_sim.msp.restws.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.restws.model.EntityReference;
-import org.mars_sim.restws.model.EventDTO;
-import org.mars_sim.restws.model.PagedList;
-import org.mars_sim.restws.model.SimulationDetails;
+import org.mars_sim.msp.restws.model.EntityReference;
+import org.mars_sim.msp.restws.model.EventDTO;
+import org.mars_sim.msp.restws.model.PagedList;
+import org.mars_sim.msp.restws.model.SimulationDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,7 +37,7 @@ public class SimulationController {
         
     	
     	return new SimulationDetails(clock.getUpTimer().getUptime(),
-    								 clock.getMarsClock().getTimeStamp(),
+    								 clock.getMarsClock().getDateTimeStamp(),
     								 clock.isPaused());
     }
 
@@ -98,7 +98,7 @@ public class SimulationController {
 				entityType = "mission";
 			}
 			
-			events.add(new EventDTO(idx, event.getType().getName(), event.getDescription(), event.getTimestamp().getTimeStamp(),
+			events.add(new EventDTO(idx, event.getType().getName(), event.getDescription(), event.getTimestamp().getDateTimeStamp(),
 					   entityRef, entityType));
 		}
 		

@@ -1,4 +1,4 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 import org.mars_sim.msp.core.time.MarsClock;
 import org.springframework.stereotype.Component;
@@ -10,6 +10,6 @@ public class MarsClockMapper {
 		if (clock == null) {
 			return null;
 		}
-		return clock.getTimeStamp();
+		return clock.getDateTimeStamp();
 	}
 }

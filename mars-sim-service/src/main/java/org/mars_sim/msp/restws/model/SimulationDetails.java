@@ -1,4 +1,4 @@
-package org.mars_sim.restws.model;
+package org.mars_sim.msp.restws.model;
 
 public class SimulationDetails {
 

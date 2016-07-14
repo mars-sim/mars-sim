@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
@@ -47,6 +48,12 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mission.class.getName());
 
+
+	// Global mission identifier
+	private static int missionIdentifer = 0;
+	// Unique identifier
+	private int identifier;
+	
 	// Data members
 	/** Mission members. */
 //	private Collection<Person> people;
@@ -75,6 +82,15 @@ implements Serializable {
 	/** Mission listeners. */
 	private transient List<MissionListener> listeners;
 
+
+	/**
+	 * Must be synchronised to prevent duplicate ids being assigned via different threads.
+	 * @return
+	 */
+	private static synchronized int getNextIdentifier() {
+		return missionIdentifer++;
+	}
+	
 	/**
 	 * Constructor.
 	 * @param name the name of the mission
@@ -135,8 +151,8 @@ implements Serializable {
 	}
 	*/
 	public Mission(String name, MissionMember startingMember, int minMembers) {
-
 		// Initialize data members
+		this.identifier = getNextIdentifier();
 		this.name = name;
 		description = name;
 //		people = new ConcurrentLinkedQueue<Person>();
@@ -215,6 +231,19 @@ implements Serializable {
 
 	}
 
+
+	public int getIdentifier() {
+		return identifier;
+	}
+	
+	/**
+	 * Generate the type from the Class name. Not ideal.
+	 * @return
+	 */
+	public String getType() {
+		return getClass().getSimpleName();
+	}
+	
 	/**
 	 * Adds a listener.
 	 * @param newListener the listener to add.
@@ -489,13 +518,28 @@ implements Serializable {
         return new ConcurrentLinkedQueue<MissionMember>(members);
     }
 
-//	/**
-//	 * Gets a collection of the people in the mission.
-//	 * @return collection of people
-//	 */
-//	public final Collection<Person> getPeople() {
-//		return new ConcurrentLinkedQueue<Person>(people);
-//	}
+	/**
+	 * Gets a collection of the people in the mission.
+	 * @return collection of people
+	 */
+	public final Collection<Person> getPeople() {
+		Collection<MissionMember> members = getMembers();
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		//Collection<Person> people = members.stream()
+	    //.filter(p -> p instanceof Person).collect(Collectors.toList());
+		
+		Iterator<MissionMember> i = members.iterator();
+	    while (i.hasNext()) {
+	    	MissionMember m = i.next();
+	        if (m instanceof Person) {
+	            people.add((Person) m);
+	        }
+	    }
+	    
+	    return people;
+		//return new ConcurrentLinkedQueue<Person>(people);
+	}
+	
 //	/**
 //	 * Determines if a mission includes the given robot.
 //	 * @param robot to be checked

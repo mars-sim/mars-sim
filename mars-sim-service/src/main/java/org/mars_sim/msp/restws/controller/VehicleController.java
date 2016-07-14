@@ -1,4 +1,4 @@
-package org.mars_sim.restws.controller;
+package org.mars_sim.msp.restws.controller;
 
 
 import java.util.ArrayList;
@@ -10,16 +10,16 @@ import org.apache.commons.logging.LogFactory;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.restws.mapper.InventoryMapper;
-import org.mars_sim.restws.mapper.PersonSummaryMapper;
-import org.mars_sim.restws.mapper.VehicleDetailsMapper;
-import org.mars_sim.restws.mapper.VehicleSummaryMapper;
-import org.mars_sim.restws.model.PagedList;
-import org.mars_sim.restws.model.PersonSummary;
-import org.mars_sim.restws.model.StoredAmount;
-import org.mars_sim.restws.model.StoredItem;
-import org.mars_sim.restws.model.VehicleDetails;
-import org.mars_sim.restws.model.VehicleSummary;
+import org.mars_sim.msp.restws.mapper.InventoryMapper;
+import org.mars_sim.msp.restws.mapper.PersonSummaryMapper;
+import org.mars_sim.msp.restws.mapper.VehicleDetailsMapper;
+import org.mars_sim.msp.restws.mapper.VehicleSummaryMapper;
+import org.mars_sim.msp.restws.model.PagedList;
+import org.mars_sim.msp.restws.model.PersonSummary;
+import org.mars_sim.msp.restws.model.StoredAmount;
+import org.mars_sim.msp.restws.model.StoredItem;
+import org.mars_sim.msp.restws.model.VehicleDetails;
+import org.mars_sim.msp.restws.model.VehicleSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

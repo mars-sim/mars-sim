@@ -1,4 +1,4 @@
-package org.mars_sim.restws.mapper;
+package org.mars_sim.msp.restws.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,8 @@ import java.util.Set;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.restws.model.StoredAmount;
-import org.mars_sim.restws.model.StoredItem;
+import org.mars_sim.msp.restws.model.StoredAmount;
+import org.mars_sim.msp.restws.model.StoredItem;
 import org.springframework.stereotype.Component;
 
 /**
