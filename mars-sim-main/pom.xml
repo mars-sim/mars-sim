@@ -182,6 +182,12 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<exclusions>
+		        <exclusion>
+		            <artifactId>hamcrest-core</artifactId>
+		            <groupId>org.hamcrest</groupId>
+		        </exclusion>
+			</exclusions>
 			<version>${junit.version}</version>
 		</dependency>	
 		<dependency>
@@ -203,7 +209,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 			<groupId>insidefx.undecorator</groupId>
 			<artifactId>undecorator</artifactId>
 			<version>0.1.0</version>
-		</dependency>	
+		</dependency>
 <!-- load jfoenix from mars-sim's maven-repo-snapshot --> 
 		<dependency>
 			<groupId>com.jfoenix</groupId>
