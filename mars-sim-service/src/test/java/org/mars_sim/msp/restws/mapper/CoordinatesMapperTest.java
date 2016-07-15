@@ -1,5 +1,5 @@
 package org.mars_sim.msp.restws.mapper;
-
+/*
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -33,3 +33,4 @@ public class CoordinatesMapperTest {
 	}
 
 }
+*/
