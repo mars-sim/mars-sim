@@ -54,4 +54,8 @@ public class Phase implements Serializable {
 	public double getPercentGrowth() {
 		return percentGrowth;
 	}
+	
+	public PhaseType getPhaseType() {
+		return phaseType;
+	}
 }

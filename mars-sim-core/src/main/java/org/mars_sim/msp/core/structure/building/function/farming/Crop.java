@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,6 +49,8 @@ implements Serializable {
 		
 	public static final double TISSUE_EXTRACTED_PERCENT = .1D;
 	
+
+	public static final String CARBON_DIOXIDE = "carbon dioxide";
 	public static final String CROP_WASTE = "crop waste";
 	public static final String TISSUE_CULTURE = "tissue culture"; 
 	public static final String FERTILIZER = "fertilizer";
@@ -80,22 +83,7 @@ implements Serializable {
 	public static final double LOSS_AS_HEAT_HPS = NON_VISIBLE_RADIATION_HPS*.75 + CONDUCTION_CONVECTION_HPS/2D;
 	//public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
-
-	// TODO Crop phases should be an internationalizable enum.
-	
-	//public static final double INCUBATION_PERIOD  = 2000D;
-	// 2016-06-28 Added incubation 
-	//public static final String INCUBATION = "Incubation";
-	//public static final String PLANTING = "Planting";
-	//public static final String GERMINATION = "Germination"; // include initial sprouting of a seedling
-	//public static final String GROWING = "Growing";
-	//public static final String HARVESTING = "Harvesting";
-	//public static final String FINISHED = "Finished";
-
     private static final double T_TOLERANCE = 3D;
-
-    //private static final double PERCENT_IN_GERMINATION_PHASE = 5; // Assuming the first 5% of a crop's life is in germination phase
-    //private static final double PERCENT_IN_INCUBATION_PHASE = 2;
 
 	// Data members
     /** Current sol since the start of sim. */
@@ -144,6 +132,7 @@ implements Serializable {
 	private String cropName;
 	/** The type of crop. */
 	private CropType cropType;
+	private CropCategoryType cropCategoryType;
 	private Inventory inv;
 	/** Farm crop being grown in. */
 	private Farming farm;
@@ -172,6 +161,7 @@ implements Serializable {
 	public Crop(CropType cropType, double growingArea, double maxHarvestinKgPerDay, Farming farm,
 			Settlement settlement, boolean newCrop, double tissuePercent) {
 		this.cropType = cropType;
+		this.cropCategoryType = cropType.getCropCategoryType();
 
 		this.farm = farm;
 		this.settlement = settlement;
@@ -191,7 +181,6 @@ implements Serializable {
 
 		// 2015-04-08  Added dailyPARRequired
 		dailyPARRequired = cropType.getDailyPAR();
-
 		cropName = cropType.getName();
 		// cropGrowingTime in millisols
 		cropGrowingTime = cropType.getGrowingTime();
@@ -200,7 +189,6 @@ implements Serializable {
 		double cropGrowingDay = cropGrowingTime/1000D;
 		//System.out.println(cropType.getName() + " cropGrowingDay : " + cropGrowingDay);
 		maxHarvest = maxHarvest_kg_daily * cropGrowingDay;
-
 		phases = cropType.getPhases();
 		
 		for (Phase p : phases.values()) {
@@ -216,9 +204,7 @@ implements Serializable {
 		    }
 		}
 */		
-		CropCategoryType cropCategory = cropType.getCropCategoryType();
-
-				
+	
 		// Determine work required.
 		// TODO: redetermine how much plantingWorkRequired should be
 		//plantingWorkRequired = maxHarvest * 1.5D;
@@ -238,8 +224,8 @@ implements Serializable {
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
 				growingTimeCompleted = 0;
+				phaseType = PhaseType.PLANTING;
 				logger.info(cropType + " is fully available. Proceed to planting.");
-
 			}
 			else {
 				growingTimeCompleted = 2D * (100D - tissuePercent);
@@ -248,22 +234,52 @@ implements Serializable {
 
 			}
 	
-		}
-		else { 
+		} else { 
 
 			// At the start of the sim, set up a crop's "initial" percentage of growth randomly 
 			growingTimeCompleted = RandomUtil.getRandomDouble(cropGrowingTime);
 			
 			fractionalGrowthCompleted = growingTimeCompleted/cropGrowingTime;
 	
-			if ( fractionalGrowthCompleted * 100D <= phases.get(2).getPercentGrowth()) {//PERCENT_IN_GERMINATION_PHASE) {	// assuming the first 10% growing day of each crop is germination
-				phaseType = PhaseType.GERMINATION;
+			if (cropCategoryType == CropCategoryType.TUBERS) {
+				
+				// 2016-07-15 Added checking for percent growth					
+				if ( fractionalGrowthCompleted * 100D <= phases.get(2).getPercentGrowth()) {
+					phaseType = PhaseType.SPROUTING;
+				}
+				else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(3)) {
+					phaseType = PhaseType.LEAF_DEVELOPMENT;
+				}
+				else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(4)) {
+					phaseType = PhaseType.TUBER_INITIATION;
+				}
+				else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(5)) {
+					phaseType = PhaseType.TUBER_FILLING;
+				}
+				else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(6)) {
+					phaseType = PhaseType.MATURING;
+				}
+				//else
+				//	phaseType = PhaseType.HARVESTING;
+
 			}
-			else if ( fractionalGrowthCompleted * 100D > phases.get(2).getPercentGrowth()) {
-				phaseType = PhaseType.GROWING;
+			
+			else {
+				
+				if ( phaseType != PhaseType.GROWING && fractionalGrowthCompleted * 100D > phases.get(2).getPercentGrowth()) {
+					phaseType = PhaseType.GROWING;
+				}	
+
+				else if (phaseType != PhaseType.HARVESTING && fractionalGrowthCompleted * 100D >= 100D)
+					;
+				
+				else if ( phaseType != PhaseType.GERMINATION && fractionalGrowthCompleted * 100D <= phases.get(2).getPercentGrowth()) {//PERCENT_IN_GERMINATION_PHASE) {	// assuming the first 10% growing day of each crop is germination
+					phaseType = PhaseType.GERMINATION;
+				}
+ 
+
 			}
-			//else
-			//	phase = PLANTING; 		
+			
 		
 			actualHarvest = maxHarvest * fractionalGrowthCompleted;
 			//System.out.println(cropType.getName() + " growingTimeCompleted : " + growingTimeCompleted);
@@ -307,6 +323,7 @@ implements Serializable {
 	 */
 	// 2016-06-29 Called by Farming and BuildingPanelFarming to retrieve the phase of the crop
 	public PhaseType getPhaseType() {
+		//if (phaseType == PhaseType.FINISHED) System.out.println("phaseType is " + phaseType.getName());
 		return phaseType;
 	}
 
@@ -325,7 +342,9 @@ implements Serializable {
 	 * Gets the maximum possible food harvest for crop.
 	 * @return food harvest (kg.)
 	 */
-	public double getMaxHarvest() { return maxHarvest; }
+	public double getMaxHarvest() {
+		return maxHarvest; 
+	}
 
 	/**
 	 * Gets the amount of growing time completed.
@@ -336,35 +355,54 @@ implements Serializable {
 	}
 
 	/**
-	 * Sets the amount of growing time completed.
-	 * @param percent
-	 */
-	//public void setGrowingTimeCompleted(double percent) {
-	//	this.growingTimeCompleted = percent * cropGrowingTime / 100D ;
-	//}
-
-
-	/**
 	 * Checks if crop needs additional work on current sol.
 	 * @return true if more work needed.
 	 */
 	public boolean requiresWork() {
 		boolean result = false;
-		if (phaseType == PhaseType.INCUBATION || phaseType == PhaseType.PLANTING || phaseType == PhaseType.HARVESTING) 
-			result = true;
-		else if (phaseType == PhaseType.GROWING) {
-			if (phases.get(2).getWorkRequired() > currentPhaseWorkCompleted) 
-				result = true;
-			else
-				result = false;
-		}
-		else if (phaseType == PhaseType.GERMINATION ) {
-			if (phases.get(3).getWorkRequired() > currentPhaseWorkCompleted) 
-				result = true;
-			else
-				result = false;
-		}
+		int phaseNum = getPhaseNum();
 
+		//if (cropCategoryType == CropCategoryType.TUBERS) {
+			if (phaseType == PhaseType.INCUBATION 
+					|| phaseType == PhaseType.PLANTING 
+					|| phaseType == PhaseType.HARVESTING) 
+				result = true;
+			//else if (phaseType == PhaseType.SPROUTING) {
+			//	if (phases.get(phaseNum).getWorkRequired() > currentPhaseWorkCompleted) 
+			//		result = true;
+			//	else
+			//		result = false;
+			//}
+			//else if (phaseType == PhaseType.FINISHED)
+			//	result = false;
+			else {
+				if (phases.get(phaseNum).getWorkRequired() > currentPhaseWorkCompleted) 
+					result = true;
+				else
+					result = false;
+			}
+
+		//}
+/*		else {
+			if (phaseType == PhaseType.INCUBATION 
+					|| phaseType == PhaseType.PLANTING 
+					|| phaseType == PhaseType.HARVESTING) 
+				result = true;
+			else {//if (phaseType == PhaseType.GROWING) {
+				if (phases.get(phaseNum).getWorkRequired() > currentPhaseWorkCompleted) 
+					result = true;
+				else
+					result = false;
+			}
+			//else if (phaseType == PhaseType.GERMINATION) {
+			//	if (phases.get(phaseNum).getWorkRequired() > currentPhaseWorkCompleted) 
+			//		result = true;
+			//	else
+			//		result = false;
+			//}
+
+		}
+*/
 		return result;
 	}
 
@@ -376,37 +414,73 @@ implements Serializable {
 	// Called by BuildingPanelFarming.java to retrieve the health condition status
 	// 2015-08-26 Revised getCondition()
 	public double getCondition() {
-		// O:bad, 1:good
+		// 0:bad, 1:good
 		double result = 0D;
-
 		//System.out.println(cropType.getName() + " fractionalGrowthCompleted : " + fractionalGrowthCompleted);
 		//System.out.println(cropType.getName() + " actualHarvest : " + actualHarvest);
 
-		if (phaseType == PhaseType.GROWING || phaseType == PhaseType.HARVESTING) {
-			result = actualHarvest / maxHarvest * cropGrowingTime / growingTimeCompleted ;
-			//System.out.println("condition is "+ result + " for " + cropName);
-		}
+		if (cropCategoryType == CropCategoryType.TUBERS) {
+			int phaseNum = getPhaseNum();			
+			int length = phases.size();
+			if (phaseNum > 2 && phaseNum < length - 1) {
+			//if (phaseType == PhaseType.GROWING || phaseType == PhaseType.HARVESTING) {
+			// the two phases where the crop will spend most of the time
+				result = getHealth();
+				//System.out.println("condition is "+ result + " for " + cropName);
+			}
 
-		else if (phaseType == PhaseType.GERMINATION) {
-			if ( (growingTimeCompleted / cropGrowingTime) <= .02 ) {
-				// avoid initial spurious data
-				result = 1; //actualHarvest / maxHarvest * cropGrowingTime / growingTimeCompleted ;
-				//System.out.println("condition is "+ result + " for " + cropName);
+			else if (phaseNum == 2) {
+			//else if (phaseType == PhaseType.GERMINATION) {
+				if ( (growingTimeCompleted / cropGrowingTime) <= .02 ) {
+					// avoid initial spurious data
+					result = 1D; 
+				}
+				else {
+					result = getHealth();
+				}
 			}
-			else {
-				result = actualHarvest / maxHarvest * cropGrowingTime / growingTimeCompleted ;
-				//System.out.println("condition is "+ result + " for " + cropName);
+			else if (phaseType == PhaseType.INCUBATION) {
+				result = 1D;
 			}
+			
+			else if (phaseType == PhaseType.PLANTING) {
+				result = 1D;
+			}
+			else
+				result = 1D;
+						
+		} else {
+			
+			if (phaseType == PhaseType.GROWING || phaseType == PhaseType.HARVESTING) {
+				// the two phases where the crop will spend most of the time
+				result = getHealth();
+			}
+	
+			else if (phaseType == PhaseType.GERMINATION) {
+				
+				if ( (growingTimeCompleted / cropGrowingTime) <= .02 ) {
+					// avoid initial spurious data
+					result = 1D;
+				}
+				else {
+					result = getHealth();
+					//System.out.println("condition is "+ result + " for " + cropName);
+				}
+				
+			}
+			else if (phaseType == PhaseType.INCUBATION) {
+				result = 1D;
+			}
+			
+			else if (phaseType == PhaseType.PLANTING) {
+				result = 1D;
+			}
+			else
+				result = 1D;
+			
 		}
-		
-		else if (phaseType == PhaseType.INCUBATION) {
-			result = 1D;
-		}
-		
-		else if (phaseType == PhaseType.PLANTING) {
-			result = 1D;
-		}
-		
+				
+	
 		if (result > 1D) result = 1D;
 		else if (result < 0D) result = 0D;
 
@@ -415,6 +489,14 @@ implements Serializable {
 		return result;
 	}
 
+	/*
+	 * Computes the health of a crop
+	 */
+	//2016-07-15 Added getHealth()
+	public double getHealth() {
+		return actualHarvest / maxHarvest * cropGrowingTime / growingTimeCompleted ;
+	}
+	
 	/**
 	 * Adds work time to the crops current phase.
 	 * @param workTime - Work time to be added (millisols)
@@ -425,12 +507,16 @@ implements Serializable {
 	public double addWork(double workTime) {
 		double remainingWorkTime = workTime;
 
+		int phaseNum = getPhaseNum();
+		int length = phases.size();
+		
 		if (actualHarvest <= 0D) {
 			actualHarvest = 0;
 			growingTimeCompleted = 0;
 		}
 
-		if (phaseType == PhaseType.INCUBATION) {
+		if (phaseNum == 0) {
+		//if (phaseType == PhaseType.INCUBATION) {
 			currentPhaseWorkCompleted += remainingWorkTime;		
 			
 			if (currentPhaseWorkCompleted >= phases.get(0).getWorkRequired()) {
@@ -438,67 +524,124 @@ implements Serializable {
 				currentPhaseWorkCompleted = 0D;
 				phaseType = PhaseType.PLANTING;
 				
-			} else {
-				remainingWorkTime = 0D;
-			}
-			
+			} else 
+				remainingWorkTime = 0D;	
 		}
 		
-		
-		
-		if (phaseType == PhaseType.PLANTING) {
+		else if (phaseNum == 1) {
 			currentPhaseWorkCompleted += remainingWorkTime;
 			
-			if (currentPhaseWorkCompleted >= phases.get(1).getWorkRequired()) {
-				remainingWorkTime = currentPhaseWorkCompleted - phases.get(1).getWorkRequired();
+			if (currentPhaseWorkCompleted >= phases.get(phaseNum).getWorkRequired()) {
+				remainingWorkTime = currentPhaseWorkCompleted - phases.get(phaseNum).getWorkRequired();
+				currentPhaseWorkCompleted = 0D;
+			}
+		}
+		
+/*	
+		//if (phaseNum == 1) {
+		if (phaseType == PhaseType.PLANTING) {
+			
+			if (cropCategoryType == CropCategoryType.TUBERS) {
+				
+				currentPhaseWorkCompleted += remainingWorkTime;
+				
+				if (currentPhaseWorkCompleted >= phases.get(phaseNum).getWorkRequired()) {
+					remainingWorkTime = currentPhaseWorkCompleted - phases.get(phaseNum).getWorkRequired();
+					currentPhaseWorkCompleted = 0D;
+
+					// 2016-07-15 Added checking for percent growth
+					fractionalGrowthCompleted = growingTimeCompleted/cropGrowingTime;
+					// 2016-07-15 Added checking for percent growth					
+					if ( fractionalGrowthCompleted * 100D <= phases.get(2).getPercentGrowth()) {
+						phaseType = PhaseType.SPROUTING;
+					}
+					else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(3)) {
+						phaseType = PhaseType.LEAF_DEVELOPMENT;
+					}
+					else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(4)) {
+						phaseType = PhaseType.TUBER_INITIATION;
+					}
+					else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(5)) {
+						phaseType = PhaseType.TUBER_FILLING;
+					}
+					else if ( fractionalGrowthCompleted * 100D <= getTotalPercent(6)) {
+						phaseType = PhaseType.MATURING;
+					}
+					//else
+						//phaseType = PhaseType.HARVESTING;
+				}
+				else 
+					remainingWorkTime = 0D;
+				
+			}
+			
+		} else {
+			
+			currentPhaseWorkCompleted += remainingWorkTime;
+			
+			if (currentPhaseWorkCompleted >= phases.get(phaseNum).getWorkRequired()) {
+				remainingWorkTime = currentPhaseWorkCompleted - phases.get(phaseNum).getWorkRequired();
 				currentPhaseWorkCompleted = 0D;
 
 				// 2015-08-26 Added checking the following two conditions
 				fractionalGrowthCompleted = growingTimeCompleted/cropGrowingTime;
-				if ( fractionalGrowthCompleted * 100D <= phases.get(2).getPercentGrowth()) {	// assuming the first 10% growing day of each crop is germination
+				if ( phaseType != PhaseType.GERMINATION && fractionalGrowthCompleted * 100D <= phases.get(2).getPercentGrowth()) {	// assuming the first 10% growing day of each crop is germination
 					phaseType = PhaseType.GERMINATION;
+					//phaseType = phases.get(phaseNum+2).getPhaseType();
 				}
-				else if ( fractionalGrowthCompleted * 100D > phases.get(2).getPercentGrowth()) {
+				else if (phaseType != PhaseType.HARVESTING && fractionalGrowthCompleted * 100D >= 100D)
+					phaseType = PhaseType.HARVESTING;
+				
+				else if (phaseType != PhaseType.GROWING && fractionalGrowthCompleted * 100D > phases.get(2).getPercentGrowth()) {
 					phaseType = PhaseType.GROWING;
+					//phaseType = phases.get(phaseNum+3).getPhaseType();
 				}
 
 			}
-			else {
+			else 
 				remainingWorkTime = 0D;
-			}
+			
 		}
-
-		// 2015-02-15 Added GERMINATION
-		if (phaseType == PhaseType.GERMINATION ) {
-			currentPhaseWorkCompleted += remainingWorkTime;
-	        //System.out.println("addWork() : currentPhaseWorkCompleted is " + currentPhaseWorkCompleted);
-			double w = phases.get(2).getWorkRequired();
-			if (currentPhaseWorkCompleted >= w) {
-				remainingWorkTime = currentPhaseWorkCompleted - w;
-				currentPhaseWorkCompleted = w;
-			}
-			else {
-				remainingWorkTime = 0D;
-			}
-		}
-
-		else if (phaseType == PhaseType.GROWING) {
-			currentPhaseWorkCompleted += remainingWorkTime;
-	        //System.out.println("addWork() : currentPhaseWorkCompleted is " + currentPhaseWorkCompleted);
-			double w = phases.get(3).getWorkRequired();
-			if (currentPhaseWorkCompleted >= w) {
-				remainingWorkTime = currentPhaseWorkCompleted - w;
-				currentPhaseWorkCompleted = w;
-			}
-			else {
-				remainingWorkTime = 0D;
-			}
-		}
+*/
+		//phaseNum = getPhaseNum();
+		//length = phases.size();
 		
-		else if (phaseType == PhaseType.HARVESTING) {
+		// 2015-02-15 Added GERMINATION
+		else if (phaseNum == 2) {
+		//if (phaseType == PhaseType.GERMINATION ) {
+			currentPhaseWorkCompleted += remainingWorkTime;
+	        //System.out.println("addWork() : currentPhaseWorkCompleted is " + currentPhaseWorkCompleted);
+			double w = phases.get(phaseNum).getWorkRequired();
+			if (currentPhaseWorkCompleted >= w) {
+				remainingWorkTime = currentPhaseWorkCompleted - w;
+				currentPhaseWorkCompleted = w;
+			}
+			else 
+				remainingWorkTime = 0D;
+			
+		}
+
+		else if (phaseNum > 2 && phaseNum < length - 2) {
+				//|| phaseType == PhaseType.GROWING) {
+			currentPhaseWorkCompleted += remainingWorkTime;
+	        //System.out.println("addWork() : currentPhaseWorkCompleted is " + currentPhaseWorkCompleted);
+			double w = phases.get(phaseNum).getWorkRequired();
+			if (currentPhaseWorkCompleted >= w) {
+				remainingWorkTime = currentPhaseWorkCompleted - w;
+				currentPhaseWorkCompleted = w;
+			}
+			else
+				remainingWorkTime = 0D;
+
+		}
+
+		else if (phaseNum < length - 1) {
+		//else if (phaseType == PhaseType.HARVESTING) {
 			//logger.info("addWork() : crop is in Harvesting phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
-			double w = phases.get(4).getWorkRequired();
+			double w = phases.get(phaseNum).getWorkRequired();
+			//System.out.println("currentPhaseWorkCompleted : " + currentPhaseWorkCompleted + "    w : " + w);
+
 			if (currentPhaseWorkCompleted >= w) {
 				// Harvest is over. Close out this phase
 				//logger.info("addWork() : done harvesting. remainingWorkTime is " + Math.round(remainingWorkTime));
@@ -509,6 +652,7 @@ implements Serializable {
 				Storage.storeAnResource(lastHarvest, cropName, inv);
 				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(lastHarvest * 1000.0)/1000.0 + " kg. All Done.");
 				remainingWorkTime = overWorkTime;
+				logger.info("addWork() : harvest is done on " + cropName);
 				
 				phaseType = PhaseType.FINISHED;
 				generateCropWaste(lastHarvest);
@@ -520,8 +664,7 @@ implements Serializable {
 			}
 			else { 	// continue the harvesting process
 				// 2014-10-07 modified parameter list to include crop name
-				double modifiedHarvest = actualHarvest * workTime / phases.get(4).getWorkRequired();
-				//logger.info("addWork() : " + cropName + " modifiedHarvest is " + Math.round(modifiedHarvest * 1000.0)/1000.0);
+				double modifiedHarvest = actualHarvest * workTime / w;
 				// Store the crop harvest
 				Storage.storeAnResource(modifiedHarvest, cropName, inv);
 				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(modifiedHarvest * 1000.0)/1000.0 + " kg.");
@@ -669,55 +812,95 @@ implements Serializable {
 	 */
 	public void timePassing(double time) {
 
-		if (phaseType == PhaseType.GROWING|| phaseType == PhaseType.GERMINATION) {
-			//System.out.println("timePassing() : GROWING or GERMINATION");
-			//System.out.println("timePassing() : time is " + time);
+		int phaseNum = getPhaseNum();
+		int length = phases.size();
+
+/*
+ * Case 1 : in a growing phase
+ * Case 2 : incubation phase
+ * Case 3 : finished phase
+ */
+		
+		if ((phaseNum > 1 && phaseNum < length - 2) || phaseNum == 2) {
+		//if (phaseType == PhaseType.GROWING || phaseType == PhaseType.GERMINATION) {
 			if (time > 0D) {
 				growingTimeCompleted += time;
 				//System.out.println("timePassing() : growingTimeCompleted : " + growingTimeCompleted );
 				//System.out.println("timePassing() : growingTimeCompleted / cropGrowingTime : " + growingTimeCompleted / cropGrowingTime);
 				
-				if (growingTimeCompleted  <= cropGrowingTime * phases.get(2).getPercentGrowth() / 100D) {
-					phaseType = PhaseType.GERMINATION;
-					currentPhaseWorkCompleted = 0D;
+				if (cropCategoryType == CropCategoryType.TUBERS) {
+					
+					if (growingTimeCompleted * 100D <= cropGrowingTime * phases.get(2).getPercentGrowth()) {
+						phaseType = PhaseType.SPROUTING;					
+						currentPhaseWorkCompleted = 0D;
+					}
+					else if (growingTimeCompleted * 100D < cropGrowingTime * getTotalPercent(3)) {						
+						phaseType = PhaseType.LEAF_DEVELOPMENT;
+						currentPhaseWorkCompleted = 0D;
+					}
+					else if (growingTimeCompleted * 100D < cropGrowingTime * getTotalPercent(4)) {						
+						phaseType = PhaseType.TUBER_INITIATION;
+						currentPhaseWorkCompleted = 0D;
+					}
+					else if (growingTimeCompleted * 100D < cropGrowingTime * getTotalPercent(5)) {						
+						phaseType = PhaseType.TUBER_FILLING;
+						currentPhaseWorkCompleted = 0D;
+					}
+					else if (growingTimeCompleted * 100D < cropGrowingTime * getTotalPercent(6)) {						
+						phaseType = PhaseType.MATURING;
+						currentPhaseWorkCompleted = 0D;
+					}
+					//currentPhaseWorkCompleted = 0D;
+					
+				} else {
+					
+					if (growingTimeCompleted * 100D <= cropGrowingTime * phases.get(2).getPercentGrowth()) {				
+						//System.out.println("Crop.java : Changed to Germinating.");
+						phaseType = PhaseType.GERMINATION;
+						currentPhaseWorkCompleted = 0D;
+					}
+					else if (//phaseType != PhaseType.GROWING && 
+							growingTimeCompleted < cropGrowingTime) {	
+						//System.out.println("Crop.java : Changed to Growing. growingTimeCompleted < cropGrowingTime");					
+						phaseType = PhaseType.GROWING;	
+						//System.out.println(growingTimeCompleted + " vs. " + cropGrowingTime);
+						currentPhaseWorkCompleted = 0D;
+					}
+					//currentPhaseWorkCompleted = 0D;
 				}
 
-				else if (growingTimeCompleted < cropGrowingTime) {
-					phaseType = PhaseType.GROWING;
-					currentPhaseWorkCompleted = 0D;
-				}
+				phaseNum = getPhaseNum();
 
-				if (growingTimeCompleted >= cropGrowingTime) {
+				
+				if (phaseType != PhaseType.HARVESTING && growingTimeCompleted >= cropGrowingTime) {
+					//if (phaseType != PhaseType.GROWING) 
+					//System.out.println("phaseType is " + phaseType.getName());
 					phaseType = PhaseType.HARVESTING;
+					//System.out.println("Crop.java : Changed to Harvesting. growingTimeCompleted >= cropGrowingTime");
+					//System.out.println(growingTimeCompleted + " vs. " + cropGrowingTime);
 					currentPhaseWorkCompleted = 0D;
 					
 				} else if (growingTimeCompleted == 0) {
 					
-					;//
+					;//System.out.println("Crop.java : growingTimeCompleted == 0");
 					
 				} else { // still in phase.equals(GROWING)|| phase.equals(GERMINATION)
-					//System.out.println("timePassing() : at else{}");
 
-/*					// getSolOfMonth() is unreliable for some reason. use MarsClock.getSolOfYear(clock) instead
-					if (marsClock == null)
-						marsClock = Simulation.instance().getMasterClock().getMarsClock();
-					int newSol = marsClock.getSolOfMonth();
-*/
-					// Modify actual harvest amount based on daily tending work.
 					if (masterClock == null)
 						masterClock = Simulation.instance().getMasterClock();
 					// get the current time
 					MarsClock clock = masterClock.getMarsClock();
 					// check for the passing of each day
-					int newSol = MarsClock.getSolOfYear(clock);
+					int newSol = MarsClock.getSolOfYear(clock); 
+					// getSolOfMonth() is unreliable for some reason. use MarsClock.getSolOfYear(clock) instead
 					if (newSol != currentSol) {
 						// TODO: why doing this at the end of a sol?
 						//double maxDailyHarvest = maxHarvest / cropGrowingDay;
-						double dailyWorkCompleted = currentPhaseWorkCompleted / phases.get(3).getWorkRequired();
-						// TODO: is it better off doing the actualHarvest computation once a day or every time
+						double dailyWorkCompleted = currentPhaseWorkCompleted / phases.get(phaseNum).getWorkRequired();
+						// Modify actual harvest amount based on daily tending work.
 						actualHarvest += (maxHarvest_kg_daily * (dailyWorkCompleted - .5D));
+						// TODO: is it better off doing the actualHarvest computation once a day or every time
 						currentSol = newSol;
-						//System.out.println(" a new sol");
 						// reset the daily work counter currentPhaseWorkCompleted back to zero
 						currentPhaseWorkCompleted = 0D;
 					}
@@ -743,7 +926,7 @@ implements Serializable {
 					getCondition();
 					fractionalGrowthCompleted = growingTimeCompleted/cropGrowingTime;
 					// Check on the health of a >25% grown crop
-					if ( (fractionalGrowthCompleted > .25D) && (healthCondition < .1D) ) {
+					if ( fractionalGrowthCompleted > .25D && healthCondition < .1D ) {
 						phaseType = PhaseType.FINISHED;
 						logger.info("Crop " + cropName + " at " + settlement.getName() + " died of poor health.");
 						// 2015-02-06 Added Crop Waste
@@ -773,6 +956,19 @@ implements Serializable {
 			growingTimeCompleted += time;
 			if (growingTimeCompleted >= phases.get(0).getWorkRequired()) {			
 				phaseType = PhaseType.PLANTING;
+				currentPhaseWorkCompleted = 0D;
+			}
+		}
+
+		else if (phaseType == PhaseType.PLANTING) {
+			growingTimeCompleted += time;
+			if (growingTimeCompleted >= phases.get(1).getWorkRequired()) {	
+				
+				if (cropCategoryType == CropCategoryType.TUBERS)
+					phaseType = PhaseType.SPROUTING;
+				else
+					phaseType = PhaseType.GERMINATION;
+				
 				currentPhaseWorkCompleted = 0D;
 			}
 		}
@@ -825,8 +1021,6 @@ implements Serializable {
 			marsClock = masterClock.getMarsClock();
 
 	    int currentMillisols = (int) marsClock.getMillisol();
-
-
 		// 2015-04-09 Add instantaneous PAR from solar irradiance
 		//double uPAR = SOLAR_IRRADIANCE_TO_PAR_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
 		double uPAR = WATT_TO_PHOTON_CONVERSION_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
@@ -855,21 +1049,15 @@ implements Serializable {
 	    	else {
 		    	//if no sunlight, turn on artificial lighting
 	    		double d_PAR = dailyPARRequired - dailyPARCache; // in mol / m2 / d
-
 	    		double d_PAR_area = d_PAR / (1000 - currentMillisols) / MarsClock.SECONDS_IN_MILLISOL * growingArea; // in mol / msol
-
 		    	double d_kW_area = d_PAR_area * 1000 *  WATT_TO_PHOTON_CONVERSION_RATIO ;
-
 		    	//double d_Joules_now = d_kWatt * time * MarsClock.SECONDS_IN_MILLISOL;
-
 		    	// TODO: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
 
 		    	int numLamp = (int) (d_kW_area / kW_PER_HPS / VISIBLE_RADIATION_HPS);
 		    	// each HPS lamp supplies 400W with 40% visible radiation efficiency
 		    	double supplykW = numLamp * kW_PER_HPS;
-
 		    	// TODO: should also allow the use of LED for lighting
-
 		    	//System.out.println("time : "+ time);
 		    	double supplyIntantaneousPAR = supplykW * time * MarsClock.SECONDS_IN_MILLISOL /1000 / WATT_TO_PHOTON_CONVERSION_RATIO / growingArea ; // in mol / m2
 
@@ -923,9 +1111,13 @@ implements Serializable {
 
 		// Determine harvest modifier according to amount of grey water available.
 
+		int phaseNum = getPhaseNum();			
+		int length = phases.size();
+				
 		double needFactor = 0;
 		// amount of wastewater/water needed is also based on % of growth
-		if (phaseType == PhaseType.GERMINATION)
+		if (phaseNum == 2) 
+		// if (phaseType == PhaseType.GERMINATION)
 			needFactor = .1;
 		else if (fractionalGrowthCompleted < .1 )
 			needFactor = .2;
@@ -933,7 +1125,8 @@ implements Serializable {
 			needFactor = .25;
 		else if (fractionalGrowthCompleted < .3 )
 			needFactor = .3;
-		else if (phaseType == PhaseType.GROWING)
+		else if (phaseNum > 2 && phaseNum < length - 2)
+		//else if (phaseType == PhaseType.GROWING)
 			needFactor = fractionalGrowthCompleted;
 
 		// Calculate water usage
@@ -984,13 +1177,13 @@ implements Serializable {
 
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * growingArea * time / 1000D * CO2_GENERATION_RATE;
-			Storage.storeAnResource(co2Amount, "carbon dioxide", inv);
+			Storage.storeAnResource(co2Amount, CARBON_DIOXIDE, inv);
 		}
 
 		else if (sunlightModifier > .5) {
 			// TODO: gives a better modeling of how the amount of light available will trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
-			AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+			AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 			double carbonDioxideRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageCarbonDioxideNeeded;
 			double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxide, false);
 			double carbonDioxideUsed = carbonDioxideRequired;
@@ -998,7 +1191,7 @@ implements Serializable {
 			if (carbonDioxideUsed > carbonDioxideAvailable)
 				carbonDioxideUsed = carbonDioxideAvailable;
 			//retrieveAnResource(carbonDioxide, carbonDioxideUsed);
-			Storage.retrieveAnResource(carbonDioxideUsed, "carbon dioxide", inv, true);
+			Storage.retrieveAnResource(carbonDioxideUsed, CARBON_DIOXIDE, inv, true);
 
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest modifier to the harvest.
 			co2Modifier = carbonDioxideUsed / carbonDioxideRequired * .5D + .5D;
@@ -1015,29 +1208,31 @@ implements Serializable {
 
 
 		// 2015-08-26 Tuned harvestModifier
-		if (phaseType == PhaseType.GROWING) {
+		if (phaseNum > 2 && phaseNum < length - 2) {
+		//if (phaseType == PhaseType.GROWING) {
 			// 2015-08-26 Tuned harvestModifier
 			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * sunlightModifier;
 			//System.out.println("Farming.java: sunlight harvestModifier is " + harvestModifier);
 		}
-		else if (phaseType == PhaseType.GERMINATION)
+		else if (phaseNum == 2)
+		//else if (phaseType == PhaseType.GERMINATION)
 			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * sunlightModifier;
 
-		if (sunlightModifier > .5) {
+		if (sunlightModifier < .5) {
 			// 2015-08-26 Tuned harvestModifier
 			harvestModifier = .7 * harvestModifier
 					+ .1 * harvestModifier * temperatureModifier
 					+ .1 * harvestModifier * waterModifier
 					+ .1 * harvestModifier * co2Modifier;
 		}
-
+/*
 		else {
 			harvestModifier = .7 * harvestModifier
 					+ .1 * harvestModifier * temperatureModifier
 					+ .1 * harvestModifier * waterModifier
 					+ .1 * harvestModifier * o2Modifier;
 		}
-
+*/
 		// TODO: add airPressureModifier in future
 
 		//System.out.println("harvestModifier is "+ harvestModifier);
@@ -1061,12 +1256,12 @@ implements Serializable {
 	        logger.log(Level.SEVERE,e.getMessage());
 		}
 	}
-	*/
-	   /**
+*/
+	/**
      * Retrieves the resource
      * @param name
      * @parama requestedAmount
-    */
+     */
     //2015-02-28 Added retrieveAnResource()
     public double retrieveAnResource(String name, double requestedAmount) {
     	try {
@@ -1106,6 +1301,28 @@ implements Serializable {
 		return totalGrowingTime / cropTypes.size();
 	}
 
+	public int getPhaseNum() {
+		int phaseNum = 0; 
+		for (Entry<Integer, Phase> entry : phases.entrySet()) {
+	        if (entry.getValue().getPhaseType() == phaseType) {
+	        	phaseNum = entry.getKey();
+	        }
+	    }
+		return phaseNum;
+	}
+	
+	public double getTotalPercent(int phase) {
+		double result = 0;
+		for (int i = 2; i < phase + 1; i++) {
+			result = result + phases.get(i).getPercentGrowth();
+		}
+		return result;
+	}
+	
+	public Map<Integer, Phase> getPhases() {
+		return phases;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -1115,5 +1332,13 @@ implements Serializable {
 		inv = null;
 		settlement = null;
 		phaseType = null;
+		cropCategoryType = null;
+		surface = null;
+		marsClock = null;
+		masterClock = null;
+		cropConfig = null;
+		phases.clear();
+		phases = null;
+		fmt = null;;
 	}
 }

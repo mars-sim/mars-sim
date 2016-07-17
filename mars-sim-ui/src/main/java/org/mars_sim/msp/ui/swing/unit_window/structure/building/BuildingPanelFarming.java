@@ -583,14 +583,14 @@ implements Serializable, MouseListener {
 		// Update farmers label if necessary.
 		if (farmersCache != farm.getFarmerNum()) {
 			farmersCache = farm.getFarmerNum();
-			farmersLabel.setText("Number of Farmers: " + farmersCache);
+			farmersLabel.setText("# Farmers: " + farmersCache);
 		    balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
 		}
 
 		// Update crops label if necessary.
 		if (cropsCache != farm.getCrops().size()) {
 			cropsCache = farm.getCrops().size();
-			cropsLabel.setText("Number of Crops: " + cropsCache);
+			cropsLabel.setText("# Crops: " + cropsCache);
 		    balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
 		}
 
@@ -749,7 +749,7 @@ implements Serializable, MouseListener {
 			Crop crop = crops.get(row);
 			//String phase = crop.getPhase();
 			PhaseType phaseType = crop.getPhaseType();
-			// 2014-10-10 mkung: added the crop's category
+			// 2014-10-10 Added the crop's category
 			String category = crop.getCropType().getCropCategoryType().getName();
 
 			if (column == 0) {
@@ -763,19 +763,22 @@ implements Serializable, MouseListener {
 			else if (column == 3) {
 				int growth = 0;
 				double growingCompleted = crop.getGrowingTimeCompleted() / crop.getCropType().getGrowingTime();
-				if (phaseType == PhaseType.GERMINATION) {
+				//if (phaseType == PhaseType.GERMINATION || phaseType == PhaseType.SPROUTING) {
+				//	growth = (int) (growingCompleted * 100D);
+				//}
+				//else if (phaseType == PhaseType.GROWING) {
+				//	growth = (int) (growingCompleted * 100D);
+				//}
+				//else 
+				if (phaseType == PhaseType.HARVESTING || phaseType == PhaseType.FINISHED)
+					growth = (int) (growingCompleted * 100D);//100;
+				else
 					growth = (int) (growingCompleted * 100D);
-				}
-				else if (phaseType == PhaseType.GROWING) {
-					growth = (int) (growingCompleted * 100D);
-				}
-				else if (phaseType == PhaseType.HARVESTING || phaseType == PhaseType.FINISHED)
-					growth = 100;
-
+				
 				return String.valueOf(growth) + "%";
 			}
 			// 2014-10-10 mkung: added column 4 showing the crop's category
-			else if (column == 4) return category;
+			else if (column == 4) return Conversion.capitalize(category);
 			else return null;
 		}
 
@@ -841,7 +844,7 @@ implements Serializable, MouseListener {
 		                list, value, index, isSelected, cellHasFocus);
     
 			if (value == null) {
-				setText(prompt);
+				setText(Conversion.capitalize(prompt));
 				return this;
 			}
 			//if (index == -1) {

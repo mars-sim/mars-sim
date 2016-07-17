@@ -27,7 +27,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final double INCUBATION_PERIOD  = 2000D;
+	public static final double INCUBATION_PERIOD  = 2D;
 	// Element names
 	// 2015-12-04 Added a number of elements below
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
@@ -79,7 +79,6 @@ implements Serializable {
 
 			for (Element crop : crops) {
 				String name = "";
-
 				// Get name.
 				name = crop.getAttributeValue(NAME).toLowerCase();
 
@@ -146,35 +145,39 @@ implements Serializable {
 				phases.put(3, new Phase(PhaseType.GROWING, 95D));
 				phases.put(4, new Phase(PhaseType.HARVESTING, 0));
 				phases.put(5, new Phase(PhaseType.FINISHED, 0));
-				
-			// for cropCategory.equalsIgnoreCase("tubers")) {
-				phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
-				phases.put(1, new Phase(PhaseType.PLANTING, maxHarvest * 0.5D, 0));
-				phases.put(2, new Phase(PhaseType.SPROUTING, maxHarvest, 14D));
-				phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, maxHarvest, 5));
-				phases.put(4, new Phase(PhaseType.TUBER_INITIATION, maxHarvest, 14));
-				phases.put(5, new Phase(PhaseType.TUBER_FILLING, maxHarvest, 40));
-				phases.put(6, new Phase(PhaseType.MATURING, maxHarvest, 27));
-				phases.put(7, new Phase(PhaseType.HARVESTING, maxHarvest *1.5D, 0));
-				phases.put(8, new Phase(PhaseType.FINISHED, 0, 0));
-			}
-			
 */				
-				phases.put(0, new Phase(PhaseType.INCUBATION, 2D, 0));
-				phases.put(1, new Phase(PhaseType.PLANTING, 0.75, 0));
-				phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
-				phases.put(3, new Phase(PhaseType.GROWING, 1D, 95D));
-				phases.put(4, new Phase(PhaseType.HARVESTING, 0.75, 0));
-				phases.put(5, new Phase(PhaseType.FINISHED, 0, 0));
-				
-				
+				//if (cropCategory.equalsIgnoreCase("tubers")) {
+				if (cat == CropCategoryType.TUBERS) {
+					
+					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
+					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
+					phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 14D));
+					phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 5D));
+					phases.put(4, new Phase(PhaseType.TUBER_INITIATION, 1D, 14D));
+					phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 40D));
+					phases.put(6, new Phase(PhaseType.MATURING, 1D, 27D));
+					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
+					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
+					
+				 } else {
+					
+					phases.put(0, new Phase(PhaseType.INCUBATION, 2D, 0));
+					phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0));
+					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+					phases.put(3, new Phase(PhaseType.GROWING, 1D, 95D));
+					phases.put(4, new Phase(PhaseType.HARVESTING, 0.75, 0));
+					phases.put(5, new Phase(PhaseType.FINISHED, 0.1, 0));
+								
+				}
+				 
 				CropType cropType = new CropType(name, growingTime * 1000D, cat,
-						edibleBiomass , edibleWaterContent, inedibleBiomass, dailyPAR, phases);
-
-				cropList.add(cropType);
+							edibleBiomass, edibleWaterContent, inedibleBiomass, 
+							dailyPAR, phases);
+	
+				cropList.add(cropType); 
 			}
-		}
 
+		}
 		return cropList;
 	}
 

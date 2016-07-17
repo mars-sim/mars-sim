@@ -861,10 +861,8 @@ implements Serializable {
             	else if (fatigue < 400) 
             		fatigue = fatigue * 1.5;         	
 */
-            }
-    
-        }
-       
+            }    
+        }      
     }
 
     /**

@@ -567,7 +567,7 @@ implements Serializable {
         // Scott - I used the comparison criteria 00001D rather than 0D
         // because sometimes math anomalies result in workTimeRemaining
         // becoming very small double values and an endless loop occurs.
-        while (((needyCrop = getNeedyCrop()) != null) && (workTimeRemaining > 00001D)) {
+        while (((needyCrop = getNeedyCrop()) != null) && (workTimeRemaining > .00001D)) {
             workTimeRemaining = needyCrop.addWork(workTimeRemaining);
         }
 
@@ -685,6 +685,7 @@ implements Serializable {
             if (crop.getPhaseType() == PhaseType.FINISHED) {
                 remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
                 i.remove();
+                //System.out.println("Farming : " + crop.getCropType().getName() + " is removed.");
                 newCrops++;
                 //System.out.println("Farming timePassing() newCrops++ : remainingGrowingArea is "+ remainingGrowingArea);
             }
@@ -764,11 +765,16 @@ implements Serializable {
         Iterator<Crop> i = crops.iterator();
         while (i.hasNext()) {
             Crop crop = i.next();
-            if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
+            if (crop.getPhaseType() == PhaseType.HARVESTING 
+            		|| crop.getPhaseType() == PhaseType.PLANTING
+            		|| crop.getPhaseType() == PhaseType.INCUBATION)
+            	powerRequired += powerGrowingCrop/2D; // half power is needed just for illumination and crop monitoring only
+            else if (crop.getPhaseType() == PhaseType.FINISHED)
+            	powerRequired += powerGrowingCrop/2D; // half power is needed just for illumination and crop monitoring only
+            else //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
                 //powerRequired += (crop.getMaxHarvest() * powerGrowingCrop + crop.getLightingPower() );
-            	powerRequired += powerGrowingCrop + crop.getLightingPower();
-            else if (crop.getPhaseType() == PhaseType.HARVESTING || crop.getPhaseType() == PhaseType.PLANTING)
-            	powerRequired += powerGrowingCrop;
+            	powerRequired += powerGrowingCrop + crop.getLightingPower();            
+            
         }
 
         // TODO: separate auxiliary power for subsystem, not just lighting power
@@ -806,13 +812,16 @@ implements Serializable {
         Iterator<Crop> i = crops.iterator();
         while (i.hasNext()) {
             Crop crop = i.next();
-            if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
+            if ((crop.getPhaseNum() > 2 && crop.getPhaseNum() < crop.getPhases().size() - 1)
+            		|| crop.getPhaseNum() == 2)
+            //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
                 powerRequired += (crop.getMaxHarvest() * powerSustainingCrop);
         }
 
         return powerRequired;
     }
 
+    
     /**
      * Gets the total growing area for all crops.
      * @return growing area in square meters

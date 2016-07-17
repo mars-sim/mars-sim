@@ -192,7 +192,7 @@ implements Serializable {
             return time;
         }
 
-    	int rand = RandomUtil.getRandomInt(3);
+    	int rand = RandomUtil.getRandomInt(5);
     	
     	if (rand == 0) { 		
        		//System.out.println("0: setPhase(INSPECTING_CROP)");

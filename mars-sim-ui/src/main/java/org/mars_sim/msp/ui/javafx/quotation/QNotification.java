@@ -88,7 +88,7 @@ public class QNotification {
     	private static final double left_indent		= 10;
         private static final double ICON_WIDTH    = 48;//32;//24;
         private static final double ICON_HEIGHT   = 48;//32;//24;
-        private static       double width         = 400;
+        private static       double width         = 440;
         private static       double height        = 80;
         private static       double offsetX       = 7;
         private static       double offsetY       = 32;
@@ -191,12 +191,13 @@ public class QNotification {
         public static void setWidth(final double WIDTH) {
 /*           //Notifier.width = WIDTH * res / 1920 / 1.05 ;
 */
-        	if (MainScene.OS.equals("mac os x"))
-        		Notifier.width = WIDTH/1.35; // 547 - > 438 is optimal
-        	else
-        		 Notifier.width = WIDTH;
-        	
-            System.out.println("adjusted width is " + Math.round(width));// / 1.25));
+        	//if (MainScene.OS.equals("mac os x"))
+        	//	Notifier.width = WIDTH/1.35; // 547 - > 438 is optimal
+        	//else
+        	//	 Notifier.width = WIDTH;
+        	if (Notifier.width < WIDTH/1.35)
+        		Notifier.width = WIDTH/1.35;
+            //System.out.println("adjusted width is " + Math.round(width));// / 1.25));
         }
 
         /**

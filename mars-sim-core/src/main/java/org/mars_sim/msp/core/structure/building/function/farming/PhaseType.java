@@ -15,7 +15,7 @@ public enum PhaseType {
 	//private static Logger logger = Logger.getLogger(Phase.class.getName());
 	
 	
-	/* Default phases of development */
+	/* generic phases of development */
 	INCUBATION("Incubation"),
 	PLANTING("Planting"),
 	GERMINATION("Germination"), //include initial sprouting of a seedling

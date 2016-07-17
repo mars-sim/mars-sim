@@ -76,7 +76,7 @@ implements Serializable {
 	private static final String MAX_TEMPERATURE = "max-temperature";
 	private static final String FREEZING_TIME = "freezing-time";
 	private static final String STRESS_BREAKDOWN_CHANCE = "stress-breakdown-chance";
-	private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
+	private static final String HIGH_FATIGUE_COLLAPSE = "high-fatigue-collapse-chance";
 
 	private static final String GENDER_MALE_PERCENTAGE = "gender-male-percentage";
 	private static final String PERSONALITY_TYPES = "personality-types";

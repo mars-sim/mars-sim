@@ -45,7 +45,7 @@ public class QuotationPopup implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final int SIZE_ICON = 32;
-	private static final int BASE_HEIGHT = 60;
+	private static final int BASE_HEIGHT = 70;
 	private static final int HEIGHT_PER_LINE = 20;
 	//private static final int WIDTH = 510;
 	private static final int CHARS_PER_LINE = 50;
@@ -111,7 +111,7 @@ public class QuotationPopup implements Serializable {
 		
 		int numWhiteSpace = 0;
 		int new_height = 0;
-		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON + 17;
+		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON;// + 17;
 	
 		
 		if (strSize < CHARS_PER_LINE) {

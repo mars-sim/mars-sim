@@ -1447,8 +1447,10 @@ implements Serializable {
 	public static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
 		int result = 0;
 
-		if (settlement == null)
-			throw new NullPointerException();
+		if (settlement == null) 
+			result = 0;
+			//throw new NullPointerException();
+		
 		else {
 			result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);
 
