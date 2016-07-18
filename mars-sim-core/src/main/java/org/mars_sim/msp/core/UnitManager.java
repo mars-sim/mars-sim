@@ -71,14 +71,11 @@ public class UnitManager implements Serializable {
 	public static final int POPULATION_WITH_SUB_COMMANDER = 12;
 	public static final int POPULATION_WITH_MAYOR = 48;
 	public static final int POPULATION_WITH_COMMANDER = 4;
-
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
 	// Data members
 	private int solCache;
-	//private int safetySlot = 0;
-	//private int engrSlot = 0;
-	//private int resourceSlot = 0;
+
 	/** Collection of all units. */
 	private Collection<Unit> units;
 	/** List of possible settlement names. */
@@ -89,26 +86,7 @@ public class UnitManager implements Serializable {
 	private List<String> personMaleNames;
 	/** List of possible female person names. */
 	private List<String> personFemaleNames;
-
-	private List<String> MarsSocietyList;
-/*	
-	//2015-11-29 Added the following 8 Map 
-	private Map<Integer, List<String>> CSAMap = new HashMap<>();
-	private Map<Integer, List<String>> CNSAMap = new HashMap<>();
-	private Map<Integer, List<String>> ESAMap = new HashMap<>();
-	private Map<Integer, List<String>> ISROMap = new HashMap<>();
-	private Map<Integer, List<String>> JAXAMap = new HashMap<>();
-	private Map<Integer, List<String>> NASAMap = new HashMap<>();
-	private Map<Integer, List<String>> RKAMap = new HashMap<>();
-*/
-	
-	//2016-04-06 Added the following 3 Maps 
-	private Map<Integer, List<String>> maleFirstNamesMap = new HashMap<>();
-	private Map<Integer, List<String>> femaleFirstNamesMap = new HashMap<>();
-	private Map<Integer, List<String>> lastNamesMap = new HashMap<>();
-	
-	ReportingAuthorityType[] type = new ReportingAuthorityType[7];
-
+	/** List of possible robot names. */
 	private List<String> robotNameList;
 
 	/** List of unit manager listeners. */
@@ -118,10 +96,18 @@ public class UnitManager implements Serializable {
 	/** Map of vehicle types and their numbers. */
 	private Map<String, Integer> vehicleNumberMap;
 
+	private Map<Integer, List<String>> marsSociety = new HashMap<>();
+	private Map<Integer, List<String>> lastNames = new HashMap<>();
+	private Map<Integer, Map<Integer, List<String>>> firstNames = new HashMap<>();
+	private Map<Integer, List<String>> maleFirstNames = new HashMap<>();	
+	private Map<Integer, List<String>> femaleFirstNames = new HashMap<>();
+	
 	private MasterClock masterClock;
+	private Settlement firstSettlement;	
+	private PersonConfig personConfig;
 
-	private Settlement firstSettlement;
-
+	ReportingAuthorityType[] reportingAuthorityType = new ReportingAuthorityType[7];
+	
 	/**
 	 * Constructor.
 	 */
@@ -135,14 +121,15 @@ public class UnitManager implements Serializable {
 		vehicleNumberMap = new HashMap<String, Integer>();
 
 		masterClock = Simulation.instance().getMasterClock();
-		
-		type[0] = ReportingAuthorityType.CNSA;
-		type[1] =ReportingAuthorityType.CSA;
-		type[2] = ReportingAuthorityType.ESA;
-		type[3] = ReportingAuthorityType.ISRO;
-		type[4] =ReportingAuthorityType.JAXA;
-		type[5] = ReportingAuthorityType.NASA;
-		type[6] = ReportingAuthorityType.RKA;
+		personConfig = SimulationConfig.instance().getPersonConfiguration();
+
+		reportingAuthorityType[0] = ReportingAuthorityType.CNSA;
+		reportingAuthorityType[1] =ReportingAuthorityType.CSA;
+		reportingAuthorityType[2] = ReportingAuthorityType.ESA;
+		reportingAuthorityType[3] = ReportingAuthorityType.ISRO;
+		reportingAuthorityType[4] =ReportingAuthorityType.JAXA;
+		reportingAuthorityType[5] = ReportingAuthorityType.NASA;
+		reportingAuthorityType[6] = ReportingAuthorityType.RKA;
 
 	}
 
@@ -155,15 +142,12 @@ public class UnitManager implements Serializable {
 	void constructInitialUnits() {
 
 		// Initialize name lists
-
+		initializeRobotNames();
 		initializePersonNames();
 		initializeLastNames();
-		initializeFirstNames(true);
-		initializeFirstNames(false);
-		
+		initializeFirstNames();
 		//System.out.println("done with intialializing person names");
 
-		initializeRobotNames();
 		
 		initializeSettlementNames();
 		initializeVehicleNames();
@@ -174,17 +158,14 @@ public class UnitManager implements Serializable {
 		createInitialEquipment();
 		createInitialResources();
 		createInitialParts();
-		
-		
+			
 		// Create pre-configured robots as stated in robots.xml
 		createConfiguredRobots();
 		// Create more robots to fill the settlement(s)
-		createInitialRobots();
-		
+		createInitialRobots();	
 		// Create pre-configured settlers as stated in people.xml
 		createConfiguredPeople();		
 		//System.out.println("done with createConfiguredPeople() in UnitManager");
-		
 		// Create more settlers to fill the settlement(s)
 		createInitialPeople();
 		//System.out.println("done with createInitialPeople() in UnitManager");
@@ -192,19 +173,16 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Initializes the list of possible person names.
-	 *
-	 * @throws Exception
-	 *             if unable to load name list.
+	 * @throws Exception if unable to load name list.
 	 */
 	private void initializePersonNames() {
 		try {
-			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+			//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 			List<String> personNames = personConfig.getPersonNameList();
 
 			personMaleNames = new ArrayList<String>();
 			personFemaleNames = new ArrayList<String>();
 			
-			List<String> MarsSocietyList = new ArrayList<String>();
 /*
 			List<String> CNSAList = new ArrayList<String>();
 			List<String> CSAList = new ArrayList<String>();
@@ -218,23 +196,27 @@ public class UnitManager implements Serializable {
 			Iterator<String> i = personNames.iterator();
 			while (i.hasNext()) {
 				
-				String name = i.next();
-				
-				PersonGender gender = personConfig.getPersonGender(name);
-				if (gender == PersonGender.MALE) {
-					personMaleNames.add(name);
-				} else if (gender == PersonGender.FEMALE) {
-					personFemaleNames.add(name);
-				}
+				String name = i.next();			
 
-				ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);
+				ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);	
 				
-				if (sponsorType.equals(ReportingAuthorityType.MARS_SOCIETY))
-					MarsSocietyList.add(name);				
+				if (sponsorType.equals(ReportingAuthorityType.MARS_SOCIETY)) {
+				
+					PersonGender gender = personConfig.getPersonGender(name);
+					if (gender == PersonGender.MALE) {
+						personMaleNames.add(name);
+					} else if (gender == PersonGender.FEMALE) {
+						personFemaleNames.add(name);					
+					}				
+				
+				}
+				
+				marsSociety.put(0, personMaleNames);
+				marsSociety.put(1, personFemaleNames);								
 			}
 
 		} catch (Exception e) {
-			throw new IllegalStateException("person names could not be loaded: " + e.getMessage(), e);
+			throw new IllegalStateException("The person name list could not be loaded: " + e.getMessage(), e);
 		}
 	}
 
@@ -246,13 +228,7 @@ public class UnitManager implements Serializable {
     // 2016-04-06 Added initializeLastNames()
 	private void initializeLastNames() {
 		try {
-			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-			
-			for (int i=0; i< 7; i++) {
-				List<String> lastNames = personConfig.getLastNameList(type[i]);	
-				lastNamesMap.put(i, lastNames); 
-			}
-
+			lastNames = personConfig.getLastNameList(reportingAuthorityType);	
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
 		}
@@ -264,24 +240,16 @@ public class UnitManager implements Serializable {
 	 * @throws Exception if unable to load the first name list.
 	 */
     // 2016-04-06 Added initializeFirstNames()
-	private void initializeFirstNames(boolean isMale) {
+	private void initializeFirstNames() {
+		
 		try {
-			PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-			
-			for (int i=0; i< 7; i++) {
-				List<String> firstNames = personConfig.getFirstNameList(type[i], isMale);	
-				if (isMale)
-					maleFirstNamesMap.put(i, firstNames); 
-				else
-					femaleFirstNamesMap.put(i, firstNames);
-			}
-
+			firstNames = personConfig.getFirstNameList(reportingAuthorityType);
+			maleFirstNames = firstNames.get(0);	
+			femaleFirstNames = firstNames.get(1);
 		} catch (Exception e) {
 			throw new IllegalStateException("The first names list could not be loaded: " + e.getMessage(), e);
-		}
-		
+		}		
 		//System.out.println("done with initializeFirstNames()");
-
 	}
 
 	
@@ -678,7 +646,7 @@ public class UnitManager implements Serializable {
 	 * @throws Exception if error parsing XML.
 	 */
 	private void createConfiguredPeople() {
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
 
@@ -852,7 +820,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void createInitialPeople() {
 
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 
 		// Randomly create all remaining people to fill the settlements to capacity.
@@ -1473,7 +1441,7 @@ public class UnitManager implements Serializable {
 	 *             if error parsing XML.
 	 */
 	private void createConfiguredRelationships() {
-		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		int size = personConfig.getNumberOfConfiguredPeople();
 		// Create all configured people relationships.

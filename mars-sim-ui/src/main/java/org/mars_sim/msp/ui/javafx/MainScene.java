@@ -1090,7 +1090,7 @@ public class MainScene {
 	
 	/**
 	 * Performs the process of loading a simulation.
-	 * @param type
+	 * @param reportingAuthorityType
 	 
 	public void loadSimulationProcess(int type) {
 		logger.info("MainScene's loadSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");

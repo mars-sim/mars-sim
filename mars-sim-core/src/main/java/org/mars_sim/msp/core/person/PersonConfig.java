@@ -30,16 +30,6 @@ implements Serializable {
 
 	public static final int SIZE_OF_CREW = 4;
 	public static final int ALPHA_CREW = 0; ;
-	
-	//private List<String> alphaCrewName; // = new ArrayList<String>();
-	//private List<String> alphaCrewGender; // = new ArrayList<String>();
-	//private List<String> alphaCrewPersonality; //  = new ArrayList<String>();
-	//private List<String> alphaCrewJob; //  = new ArrayList<String>();
-	//private List<String> alphaCrewDestination;
-	//private List<String> alphaCrewFavoriteMainDish;
-	//private List<String> alphaCrewFavoriteSideDish;
-	//private List<String> alphaCrewFavoriteDessert;
-	//private List<String> alphaCrewFavoriteActivity;
 
 	// 2016-06-25 Added a list of crew 
 	private List<Crew> roster = new ArrayList<>();
@@ -58,8 +48,8 @@ implements Serializable {
 	
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String NOMINAL_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
-	private static final String HIGH_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
-	
+	private static final String HIGH_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";	
+
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String WATER_USAGE_RATE = "water-usage-rate";
 	private static final String	GREY_TO_BLACK_WATER_RATIO = "grey-to-black-water-ratio";
@@ -113,7 +103,7 @@ implements Serializable {
 	private static final String ACTIVITY = "favorite-activity";
 	
 	private Document personDoc;
-	private List<String> nameList;
+	private List<String> personNameList;
 
 	/**
 	 * Constructor
@@ -132,18 +122,18 @@ implements Serializable {
     //@SuppressWarnings("unchecked")
 	public List<String> getPersonNameList() {
 
-		if (nameList == null) {
-			nameList = new ArrayList<String>();
+		if (personNameList == null) {
+			personNameList = new ArrayList<String>();
 			Element root = personDoc.getRootElement();
-			Element personNameList = root.getChild(PERSON_NAME_LIST);
-			List<Element> personNames = personNameList.getChildren(PERSON_NAME);
+			Element personNameEl = root.getChild(PERSON_NAME_LIST);
+			List<Element> personNames = personNameEl.getChildren(PERSON_NAME);
 
 			for (Element nameElement : personNames) {
-				nameList.add(nameElement.getAttributeValue(VALUE));
+				personNameList.add(nameElement.getAttributeValue(VALUE));
 			}
 		}
 
-		return nameList;
+		return personNameList;
 	}
 
 	/**
@@ -166,8 +156,7 @@ implements Serializable {
 			}
 		}
 
-		//System.out.println("done with getFirstNameList()");
-		
+		//System.out.println("done with getFirstNameList()");		
 		return nameList;
 	}
 */
@@ -179,43 +168,47 @@ implements Serializable {
 	 */
     //@SuppressWarnings("unchecked")
     // 2016-04-06 Added getLastNameList()
-	public List<String> getLastNameList(ReportingAuthorityType type) {
+	public Map<Integer, List<String>> getLastNameList(ReportingAuthorityType[] type) {
 
-    	List<String> nameList = new ArrayList<String>();
-		Element root = personDoc.getRootElement();
-		Element lastNameList = root.getChild(LAST_NAME_LIST);
-		List<Element> lastNames = lastNameList.getChildren(LAST_NAME);
+		Map<Integer, List<String>> lastNames = new HashMap<>();
+		List<List<String>> lists = new ArrayList<>();
+		for (int i= 0; i<7; i++){
+	    	List<String> list = new ArrayList<String>();
+			lists.add(list);
+		}
+    	
+    	Element root = personDoc.getRootElement();
+		Element lastNameEl = root.getChild(LAST_NAME_LIST);
+		List<Element> lastNamesEl = lastNameEl.getChildren(LAST_NAME);
 
-		for (Element nameElement : lastNames) {
+		for (Element nameElement : lastNamesEl) {
 			
 			String sponsor = nameElement.getAttributeValue(SPONSOR);
 		
-			if (sponsor.equals("CNSA") && type == ReportingAuthorityType.CNSA)
-				nameList.add(nameElement.getAttributeValue(VALUE));
-			
-			else if (sponsor.equals("CSA") && type == ReportingAuthorityType.CSA)
-				nameList.add(nameElement.getAttributeValue(VALUE));
-			
-			else if (sponsor.equals("ESA") && type == ReportingAuthorityType.ESA)
-				nameList.add(nameElement.getAttributeValue(VALUE));
-				
-			else if (sponsor.equals("ISRO") && type == ReportingAuthorityType.ISRO)
-				nameList.add(nameElement.getAttributeValue(VALUE));
-				
-			else if (sponsor.equals("JAXA") && type == ReportingAuthorityType.JAXA)
-				nameList.add(nameElement.getAttributeValue(VALUE));	
-				
-			else if (sponsor.equals("NASA") && type == ReportingAuthorityType.NASA)
-				nameList.add(nameElement.getAttributeValue(VALUE));
-				
-			else if (sponsor.equals("RKA") && type == ReportingAuthorityType.RKA)
-				nameList.add(nameElement.getAttributeValue(VALUE));
+			for (int i=0; i<7; i++) {
+				if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
+					lists.get(0).add(nameElement.getAttributeValue(VALUE));		
+				else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
+					lists.get(1).add(nameElement.getAttributeValue(VALUE));		
+				else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
+					lists.get(2).add(nameElement.getAttributeValue(VALUE));			
+				else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
+					lists.get(3).add(nameElement.getAttributeValue(VALUE));			
+				else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
+					lists.get(4).add(nameElement.getAttributeValue(VALUE));				
+				else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
+					lists.get(5).add(nameElement.getAttributeValue(VALUE));			
+				else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
+					lists.get(6).add(nameElement.getAttributeValue(VALUE));
+			}
 		}
-	
-
-		//System.out.println("done with getLastNameList()");
 		
-		return nameList;
+		for (int i= 0; i<7; i++){
+			lastNames.put(i, lists.get(i));
+		}
+		
+		//System.out.println("done with getLastNameList()");	
+		return lastNames;
 	}
 
 
@@ -226,68 +219,98 @@ implements Serializable {
 	 */
     //@SuppressWarnings("unchecked")
     // 2016-04-06 Added getFirstNameList()
-	public List<String> getFirstNameList(ReportingAuthorityType type, boolean isMale) {
+	public Map<Integer, Map<Integer, List<String>>> getFirstNameList(ReportingAuthorityType[] type) {//, boolean isMale) {
 
-    	List<String> nameList = new ArrayList<String>();
+		Map<Integer, Map<Integer, List<String>>> firstNames = new HashMap<>();
+		Map<Integer, List<String>> maleFirstNames = new HashMap<>();
+		Map<Integer, List<String>> femaleFirstNames = new HashMap<>();
+
+		List<List<String>> mlists = new ArrayList<>();
+		for (int i= 0; i<7; i++){
+	    	List<String> list = new ArrayList<String>();
+			mlists.add(list);
+		}
+
+		List<List<String>> flists = new ArrayList<>();
+		for (int i= 0; i<7; i++){
+	    	List<String> list = new ArrayList<String>();
+			flists.add(list);
+		}
+		
+    	//List<String> nameList = new ArrayList<String>();
 		Element root = personDoc.getRootElement();
-		Element maleFirstNameList = root.getChild(FIRST_NAME_LIST);
-		List<Element> maleFirstNames = maleFirstNameList.getChildren(FIRST_NAME);
+		Element firstNameEl = root.getChild(FIRST_NAME_LIST);
+		List<Element> firstNamesEl = firstNameEl.getChildren(FIRST_NAME);
 
-		for (Element nameElement : maleFirstNames) {
+		for (Element nameElement : firstNamesEl) {
 
 			String gender = nameElement.getAttributeValue(GENDER);
 			String sponsor = nameElement.getAttributeValue(SPONSOR);
 		
-			if (isMale && gender.equals("male")) {
+			if (gender.equals("male")) {
 				
-				if (sponsor.equals("CNSA") && type == ReportingAuthorityType.CNSA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
+				for (int i=0; i<7; i++) {
+
+					if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
+						mlists.get(0).add(nameElement.getAttributeValue(VALUE));
+					
+					else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
+						mlists.get(1).add(nameElement.getAttributeValue(VALUE));
+					
+					else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
+						mlists.get(2).add(nameElement.getAttributeValue(VALUE));
+						
+					else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
+						mlists.get(3).add(nameElement.getAttributeValue(VALUE));
+						
+					else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
+						mlists.get(4).add(nameElement.getAttributeValue(VALUE));	
+						
+					else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
+						mlists.get(5).add(nameElement.getAttributeValue(VALUE));
+						
+					else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
+						mlists.get(6).add(nameElement.getAttributeValue(VALUE));
 				
-				else if (sponsor.equals("CSA") && type == ReportingAuthorityType.CSA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
+				}
 				
-				else if (sponsor.equals("ESA") && type == ReportingAuthorityType.ESA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
-					
-				else if (sponsor.equals("ISRO") && type == ReportingAuthorityType.ISRO)
-					nameList.add(nameElement.getAttributeValue(VALUE));
-					
-				else if (sponsor.equals("JAXA") && type == ReportingAuthorityType.JAXA)
-					nameList.add(nameElement.getAttributeValue(VALUE));	
-					
-				else if (sponsor.equals("NASA") && type == ReportingAuthorityType.NASA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
-					
-				else if (sponsor.equals("RKA") && type == ReportingAuthorityType.RKA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
-			}
-			
-			else if (!isMale && gender.equals("female")) {
+			} else if (gender.equals("female")) {
 				
-				if (sponsor.equals("CNSA") && type == ReportingAuthorityType.CNSA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
-				
-				else if (sponsor.equals("CSA") && type == ReportingAuthorityType.CSA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
-				
-				else if (sponsor.equals("ESA") && type == ReportingAuthorityType.ESA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
+				for (int i=0; i<7; i++) {
+
+					if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
+						flists.get(0).add(nameElement.getAttributeValue(VALUE));
 					
-				else if (sponsor.equals("ISRO") && type == ReportingAuthorityType.ISRO)
-					nameList.add(nameElement.getAttributeValue(VALUE));
+					else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
+						flists.get(1).add(nameElement.getAttributeValue(VALUE));
 					
-				else if (sponsor.equals("JAXA") && type == ReportingAuthorityType.JAXA)
-					nameList.add(nameElement.getAttributeValue(VALUE));	
-					
-				else if (sponsor.equals("NASA") && type == ReportingAuthorityType.NASA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
-					
-				else if (sponsor.equals("RKA") && type == ReportingAuthorityType.RKA)
-					nameList.add(nameElement.getAttributeValue(VALUE));
+					else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
+						flists.get(2).add(nameElement.getAttributeValue(VALUE));
+						
+					else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
+						flists.get(3).add(nameElement.getAttributeValue(VALUE));
+						
+					else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
+						flists.get(4).add(nameElement.getAttributeValue(VALUE));	
+						
+					else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
+						flists.get(5).add(nameElement.getAttributeValue(VALUE));
+						
+					else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
+						flists.get(6).add(nameElement.getAttributeValue(VALUE));
+				}
 			}
 		}
 
-		return nameList;
+		for (int i= 0; i<7; i++){
+			maleFirstNames.put(i, mlists.get(i));
+			femaleFirstNames.put(i, mlists.get(i));
+		}
+		
+		firstNames.put(0, maleFirstNames);
+		firstNames.put(1, femaleFirstNames);
+		
+		return firstNames;
 	}
     
 	/**
@@ -991,10 +1014,10 @@ implements Serializable {
      */
     public void destroy() {
         personDoc = null;
-        if(nameList != null){
+        if(personNameList != null){
 
-            nameList.clear();
-            nameList = null;
+            personNameList.clear();
+            personNameList = null;
         }
     }
 }
