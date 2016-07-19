@@ -146,11 +146,12 @@ public class CentralRegistry implements Serializable{
     	 String template = st.nextToken().trim();
     	 int pop = Integer.parseInt( st.nextToken().trim() );
     	 int bots = Integer.parseInt( st.nextToken().trim() );
+    	 String sponsor = st.nextToken().trim();
     	 double lat = Double.parseDouble( st.nextToken().trim() );
     	 double lo = Double.parseDouble( st.nextToken().trim() );
     	 // TODO: check if name has been used. If it does, change it to name_x, where x is the next increment digit
     	 // TODO: inform the user of the change and make the change automatically
-    	 settlementList.add(new SettlementRegistry(playerName, clientID, name, template, pop, bots, lat, lo));
+    	 settlementList.add(new SettlementRegistry(playerName, clientID, name, template, pop, bots, sponsor, lat, lo));
     	 //System.out.println("settlementList.size() is now " + settlementList.size());
      }
      catch(Exception e) {
@@ -171,6 +172,7 @@ public class CentralRegistry implements Serializable{
      	 String template = st.nextToken().trim();
      	 int pop = Integer.parseInt( st.nextToken().trim() );
      	 int bots = Integer.parseInt( st.nextToken().trim() );
+     	 String sponsor = st.nextToken().trim();
      	 double lat = Double.parseDouble( st.nextToken().trim() );
      	 double lo = Double.parseDouble( st.nextToken().trim() );
 
@@ -178,7 +180,8 @@ public class CentralRegistry implements Serializable{
      			 String pn = s.getPlayerName();
      			 String sn = s.getName();
      			 if (pn.equals(playerName) && sn.equals(name))
-     					 s.updateRegistry(playerName, clientID, name, template, pop, bots, lat, lo);
+     					 s.updateRegistry(playerName, clientID, name, template,
+     							 pop, bots, sponsor, lat, lo);
      	 });
       }
 

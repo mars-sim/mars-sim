@@ -934,7 +934,7 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 			if (settlementList != null)
 				ClientRegistry.clearSettlementList();
 			StringTokenizer st = new StringTokenizer(line, "&");
-			String playerName, name, template;
+			String playerName, name, template, sponsor;
 			int i = 0;
 			int id, pop, bots;
 			double lat, lo;
@@ -948,10 +948,11 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 					template = st.nextToken().trim();
 					pop = Integer.parseInt(st.nextToken().trim());
 					bots = Integer.parseInt(st.nextToken().trim());
+					sponsor = st.nextToken().trim();
 					lat = Double.parseDouble(st.nextToken().trim());
 					lo = Double.parseDouble(st.nextToken().trim());
 					// Add an entry into the list
-					settlementList.add(new SettlementRegistry(playerName, id, name, template, pop, bots, lat, lo));
+					settlementList.add(new SettlementRegistry(playerName, id, name, template, pop, bots, sponsor, lat, lo));
 					// System.out.println("settlementList.size() is now " +
 					// settlementList.size());
 					int num = i + 1;

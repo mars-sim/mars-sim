@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * SettlementTableView.java
+ * @version 3.08 2016-07-08
+ * @author Manny Kung
+ */
+
 package org.mars_sim.msp.javafx.configEditor;
 
 import java.util.ArrayList;
@@ -28,13 +35,14 @@ import javafx.util.StringConverter;
  
 public class SettlementTableView {
  
-    public static final String Column0MapKey = "0";
-    public static final String Column1MapKey = "1";
-    public static final String Column2MapKey = "2";
-    public static final String Column3MapKey = "3";
-    public static final String Column4MapKey = "4";
-    public static final String Column5MapKey = "5";
-  
+    public static final int Column0MapKey = 0;
+    public static final int Column1MapKey = 1;
+    public static final int Column2MapKey = 2;
+    public static final int Column3MapKey = 3;
+    public static final int Column4MapKey = 4;
+    public static final int Column5MapKey = 5;
+    public static final int Column6MapKey = 6;
+    
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
 	private List<SettlementInfo> settlements = new ArrayList<>();
@@ -49,11 +57,12 @@ public class SettlementTableView {
         TableColumn<Map, String> dataColumn1 = new TableColumn<>("Template");
         TableColumn<Map, String> dataColumn2 = new TableColumn<>("Settlers");
         TableColumn<Map, String> dataColumn3 = new TableColumn<>("Bots");
-        TableColumn<Map, String> dataColumn4 = new TableColumn<>("Latitude");
-        TableColumn<Map, String> dataColumn5 = new TableColumn<>("Longitude");
+        TableColumn<Map, String> dataColumn4 = new TableColumn<>("Sponsor");
+        TableColumn<Map, String> dataColumn5 = new TableColumn<>("Latitude");
+        TableColumn<Map, String> dataColumn6 = new TableColumn<>("Longitude");
         
         dataColumn0.setCellValueFactory(new MapValueFactory(Column0MapKey));
-        dataColumn0.setMinWidth(220);
+        dataColumn0.setMinWidth(200);
         dataColumn1.setCellValueFactory(new MapValueFactory(Column1MapKey));
         dataColumn1.setMinWidth(220);
         dataColumn2.setCellValueFactory(new MapValueFactory(Column2MapKey));
@@ -61,15 +70,17 @@ public class SettlementTableView {
         dataColumn3.setCellValueFactory(new MapValueFactory(Column3MapKey));
         dataColumn3.setMinWidth(80);
         dataColumn4.setCellValueFactory(new MapValueFactory(Column4MapKey));
-        dataColumn4.setMinWidth(90);
+        dataColumn4.setMinWidth(193);
         dataColumn5.setCellValueFactory(new MapValueFactory(Column5MapKey));
         dataColumn5.setMinWidth(90);
-       
+        dataColumn6.setCellValueFactory(new MapValueFactory(Column6MapKey));
+        dataColumn6.setMinWidth(90);
+        
         table_view = new TableView<>(generateDataInMap());
  
         table_view.setEditable(true);
         table_view.getSelectionModel().setCellSelectionEnabled(true);
-        table_view.getColumns().setAll(dataColumn0, dataColumn1, dataColumn2, dataColumn3, dataColumn4, dataColumn5);
+        table_view.getColumns().setAll(dataColumn0, dataColumn1, dataColumn2, dataColumn3, dataColumn4, dataColumn5, dataColumn6);
         Callback<TableColumn<Map, String>, TableCell<Map, String>>
             cellFactoryForMap = new Callback<TableColumn<Map, String>,
                 TableCell<Map, String>>() {
@@ -98,6 +109,7 @@ public class SettlementTableView {
         dataColumn3.setCellFactory(cellFactoryForMap);
         dataColumn4.setCellFactory(cellFactoryForMap);
         dataColumn5.setCellFactory(cellFactoryForMap);
+        dataColumn6.setCellFactory(cellFactoryForMap);
 
         return table_view;
     }
@@ -106,9 +118,7 @@ public class SettlementTableView {
     private ObservableList<Map> generateDataInMap() {
     	
         allData = FXCollections.observableArrayList();
-
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-		
+		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
 		settlements.clear();
 		
 		for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
@@ -118,19 +128,21 @@ public class SettlementTableView {
 			info.template = settlementConfig.getInitialSettlementTemplate(x);
 			info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
 			info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
+			info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
 			info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 			info.longitude = settlementConfig.getInitialSettlementLongitude(x);
 
 			settlements.add(info);			
 			
-            Map<String, String> dataRow = new HashMap<>();
+            Map<Integer, String> dataRow = new HashMap<>();
 
             dataRow.put(Column0MapKey, info.name);
             dataRow.put(Column1MapKey, info.template);
             dataRow.put(Column2MapKey, info.population);
             dataRow.put(Column3MapKey, info.numOfRobots);
-            dataRow.put(Column4MapKey, info.latitude);
-            dataRow.put(Column5MapKey, info.longitude);
+            dataRow.put(Column4MapKey, info.sponsor);
+            dataRow.put(Column5MapKey, info.latitude);
+            dataRow.put(Column6MapKey, info.longitude);
             
             allData.add(dataRow);
 		}
@@ -172,9 +184,7 @@ public class SettlementTableView {
     private void reloadDefaultSettlements() {
     	
         allData = FXCollections.observableArrayList();
-
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
-		
+		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
 		settlements.clear();
 		
 		for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
@@ -184,19 +194,21 @@ public class SettlementTableView {
 			info.template = settlementConfig.getInitialSettlementTemplate(x);
 			info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
 			info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
+			info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
 			info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 			info.longitude = settlementConfig.getInitialSettlementLongitude(x);
 
 			settlements.add(info);			
 			
-            Map<String, String> dataRow = new HashMap<>();
+            Map<Integer, String> dataRow = new HashMap<>();
 
             dataRow.put(Column0MapKey, info.name);
             dataRow.put(Column1MapKey, info.template);
             dataRow.put(Column2MapKey, info.population);
             dataRow.put(Column3MapKey, info.numOfRobots);
-            dataRow.put(Column4MapKey, info.latitude);
-            dataRow.put(Column5MapKey, info.longitude);
+            dataRow.put(Column4MapKey, info.sponsor);
+            dataRow.put(Column5MapKey, info.latitude);
+            dataRow.put(Column6MapKey, info.longitude);
             
             allData.add(dataRow);
 		}
@@ -205,14 +217,15 @@ public class SettlementTableView {
     
     public void addNewSettlement(SettlementInfo s) {
 		
-        Map<String, String> dataRow = new HashMap<>();
+        Map<Integer, String> dataRow = new HashMap<>();
 
         dataRow.put(Column0MapKey, s.name);
         dataRow.put(Column1MapKey, s.template);
         dataRow.put(Column2MapKey, s.population);
         dataRow.put(Column3MapKey, s.numOfRobots);
-        dataRow.put(Column4MapKey, s.latitude);
-        dataRow.put(Column5MapKey, s.longitude);
+        dataRow.put(Column4MapKey, s.sponsor);
+        dataRow.put(Column5MapKey, s.latitude);
+        dataRow.put(Column6MapKey, s.longitude);
         
         allData.add(dataRow);
     }
@@ -244,23 +257,25 @@ public class SettlementTableView {
 		for (int x = 0; x < getRowCount(); x++) {	
 			SettlementInfo info = new SettlementInfo();
 			
-			info.name = (String) allData.get(x).get("0");
-			info.template = (String) allData.get(x).get("1");
-			info.population = (String) allData.get(x).get("2");
-			info.numOfRobots = (String) allData.get(x).get("3");
-			info.latitude = (String) allData.get(x).get("4");
-			info.longitude = (String) allData.get(x).get("5");
+			info.name = (String) allData.get(x).get(0);
+			info.template = (String) allData.get(x).get(1);
+			info.population = (String) allData.get(x).get(2);
+			info.numOfRobots = (String) allData.get(x).get(3);
+			info.sponsor = (String) allData.get(x).get(4);
+			info.latitude = (String) allData.get(x).get(5);
+			info.longitude = (String) allData.get(x).get(6);
 	
 			settlements.add(info);			
 			
-	        Map<String, String> dataRow = new HashMap<>();
+	        Map<Integer, String> dataRow = new HashMap<>();
 	
 	        dataRow.put(Column0MapKey, info.name);
 	        dataRow.put(Column1MapKey, info.template);
 	        dataRow.put(Column2MapKey, info.population);
 	        dataRow.put(Column3MapKey, info.numOfRobots);
-	        dataRow.put(Column4MapKey, info.latitude);
-	        dataRow.put(Column5MapKey, info.longitude);
+	        dataRow.put(Column4MapKey, info.sponsor);
+	        dataRow.put(Column5MapKey, info.latitude);
+	        dataRow.put(Column6MapKey, info.longitude);
 	        
 	        allData.add(dataRow);
 		}

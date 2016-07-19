@@ -833,23 +833,26 @@ public class ScenarioConfigEditorFX {
 	 * Creates a settlement based from each row of choice
 	 */
 	private void createSettlement(int x) {
-		String name = (String) settlementTableView.getAllData().get(x).get("0");
-		String template = (String) settlementTableView.getAllData().get(x).get("1");
-		String population = (String) settlementTableView.getAllData().get(x).get("2");
+		String name = (String) settlementTableView.getAllData().get(x).get(0);
+		String template = (String) settlementTableView.getAllData().get(x).get(1);
+		String population = (String) settlementTableView.getAllData().get(x).get(2);
 		int populationNum = Integer.parseInt(population);
-		String numOfRobotsStr = (String) settlementTableView.getAllData().get(x).get("3");
+		String numOfRobotsStr = (String) settlementTableView.getAllData().get(x).get(3);
 		int numOfRobots = Integer.parseInt(numOfRobotsStr);
-		String latitude = (String) settlementTableView.getAllData().get(x).get("4");
-		String longitude = (String) settlementTableView.getAllData().get(x).get("5");
+		String sponsor = (String) settlementTableView.getAllData().get(x).get(4);
+
+		String latitude = (String) settlementTableView.getAllData().get(x).get(5);
+		String longitude = (String) settlementTableView.getAllData().get(x).get(6);
 		double lat = SettlementRegistry.convertLatLong2Double(latitude);
 		double lo = SettlementRegistry.convertLatLong2Double(longitude);
 		
-		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude, 0);
+		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, 
+				sponsor, latitude, longitude, 0);
 		// Send the newly created settlement to host server
 		if (multiplayerClient != null) {
 			// create an instance of SettlementRegistry
 			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum,
-					numOfRobots, lat, lo);
+					numOfRobots, sponsor, lat, lo);
 			multiplayerClient.sendNew(newS);
 		}
 

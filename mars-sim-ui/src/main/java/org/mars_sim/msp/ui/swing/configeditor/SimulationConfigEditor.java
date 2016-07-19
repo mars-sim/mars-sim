@@ -469,7 +469,7 @@ public class SimulationConfigEditor {
 			//String maxMSDStr = (String) settlementTableModel.getValueAt(x, 6);
 			//int maxMSD = Integer.parseInt(maxMSDStr);
 			int maxMSD = 0;
-			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude, maxMSD);
+			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, null, latitude, longitude, maxMSD);
 		}
 	}
 

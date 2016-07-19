@@ -22,25 +22,28 @@ public class SettlementRegistry implements Serializable{
 	private int population;
 	private String name;
 	private String template;
+	private String sponsor;
 	private double longitude;
 	private double latitude;
 	private int maxMSD;
 
-	public SettlementRegistry(String p, int id, String n, String template, int pop, int bots, double lat, double lo) {
-		playerName = p; clientID = id; name = n; this.template = template; population = pop; numOfRobots = bots; latitude = lat; longitude = lo;
+	public SettlementRegistry(String p, int id, String n, String template, int pop, int bots, 
+			String sponsor, double lat, double lo) {
+		playerName = p; clientID = id; name = n; this.template = template; 
+		population = pop; numOfRobots = bots; 
+		this.sponsor = sponsor;
+		latitude = lat; longitude = lo;
   }
 
-  //public void setID(int id) {
-	//  this.clientID = id;
-  //}
-
-	public void updateRegistry(String pn, int i, String n, String t, int p, int b, double la, double lo){
+	public void updateRegistry(String pn, int i, String n, String t, 
+			int p, int b, String s, double la, double lo){
 		playerName = pn;
 		clientID = i;
 		name = n;
 		template = t;
 		population = p;
 		numOfRobots = b;
+		sponsor = s;
 		latitude = la;
 		longitude = lo;
 	}
@@ -53,6 +56,10 @@ public class SettlementRegistry implements Serializable{
 		name = n;
 	}
 
+	public void setSponsor(String s) {
+		sponsor = s;
+	}
+	
 	public String getPlayerName() {
 		return playerName;
 	}
@@ -69,6 +76,11 @@ public class SettlementRegistry implements Serializable{
 	  return template;
   }
 
+  public String getSponsor() {
+	  return sponsor;
+  }
+
+  
   public int getNumOfRobots() {
 	return numOfRobots ;
   }

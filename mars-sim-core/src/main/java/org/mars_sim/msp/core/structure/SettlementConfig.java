@@ -766,6 +766,23 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets the sponsoring agency for the initial settlement.
+	 * @param index the index of the initial settlement.
+	 * @return the name of the sponsoring agency
+	 */
+	//2016-07-18 Added getInitialSettlementSponsor()
+	public String getInitialSettlementSponsor(int index) {
+	if ((index >= 0) && (index < initialSettlements.size())) {
+		InitialSettlement settlement = initialSettlements.get(index);
+		//if (settlement.randomName) return RANDOM;
+		//else 
+			return settlement.sponsor;
+	}
+	else throw new IllegalArgumentException("index: " + index + "is out of bounds");
+}
+
+	
+	/**
 	 * Gets the maximum number of Mars Society delegates for an initial settlement.
 	 * @param index the index of the initial settlement.
 	 * @return number of delegates.
@@ -802,13 +819,14 @@ implements Serializable {
 	 * @param latitude the settlement latitude (ex. "10.3 S").
 	 * @param longitude the settlement longitude (ex. "47.0 W").
 	 */
-	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, String latitude,
-			String longitude, int maxMSD) {
+	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, 
+			String sponsor, String latitude, String longitude, int maxMSD) {
 	    InitialSettlement settlement = new InitialSettlement();
 	    settlement.name = name;
 	    settlement.template = template;
 	    settlement.populationNumber = populationNum;
 	    settlement.numOfRobots = numOfRobots;
+	    settlement.sponsor = sponsor;	    
 	    //System.out.println("SettmaxMSDg : numOfRobots is " + numOfRobots);
 	    //settlement.scenarioID = scenarioMap.get(template);
 	    settlement.scenarioID = getMapKey(scenarioMap, template);
@@ -857,7 +875,8 @@ implements Serializable {
 		private String latitude;
 		private boolean randomLatitude = false;
 		private int populationNumber;
-		private int numOfRobots;
+		private int numOfRobots;		
+		private String sponsor = "Mars Society";
 		private int maxMSD;
 		private int scenarioID;
 	}
@@ -879,6 +898,7 @@ implements Serializable {
 		private boolean randomLatitude = false;
 		private int populationNumber;
 		private int numOfRobots;
+		private String sponsor = "Mars Society";
 		private int maxMSD;
 		private int scenarioID;
 	}
