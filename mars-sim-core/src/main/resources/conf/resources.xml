@@ -126,11 +126,13 @@
 	<resource name="soybean" type="crop" phase="solid" edible="true">Soybean seeds.</resource>
 	<resource name="strawberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="sugarcane" type="crop" phase="solid" edible="true"></resource>
+	<resource name="sweet potato" type="crop" phase="solid" edible="true"></resource>
 	<resource name="swiss chard" type="crop" phase="solid" edible="true"></resource>
 	<resource name="tomato" type="crop" phase="solid" edible="true"></resource>
 	<resource name="wheat" type="crop" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
 	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
 	<resource name="white onion" type="crop" phase="solid" edible="true"></resource>
+	<resource name="yam" type="crop" phase="solid" edible="true"></resource>
 
 <!-- Crop tissue culture -->
 <!-- see https://en.wiki2.org/wiki/Plant_tissue_culture

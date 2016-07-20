@@ -105,8 +105,9 @@ public class UnitManager implements Serializable {
 	private MasterClock masterClock;
 	private Settlement firstSettlement;	
 	private PersonConfig personConfig;
+	private SettlementConfig settlementConfig;
 
-	ReportingAuthorityType[] reportingAuthorityType = new ReportingAuthorityType[7];
+	private ReportingAuthorityType[] sponsors = new ReportingAuthorityType[7];
 	
 	/**
 	 * Constructor.
@@ -122,14 +123,15 @@ public class UnitManager implements Serializable {
 
 		masterClock = Simulation.instance().getMasterClock();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 
-		reportingAuthorityType[0] = ReportingAuthorityType.CNSA;
-		reportingAuthorityType[1] =ReportingAuthorityType.CSA;
-		reportingAuthorityType[2] = ReportingAuthorityType.ESA;
-		reportingAuthorityType[3] = ReportingAuthorityType.ISRO;
-		reportingAuthorityType[4] =ReportingAuthorityType.JAXA;
-		reportingAuthorityType[5] = ReportingAuthorityType.NASA;
-		reportingAuthorityType[6] = ReportingAuthorityType.RKA;
+		sponsors[0] = ReportingAuthorityType.CNSA;
+		sponsors[1] = ReportingAuthorityType.CSA;
+		sponsors[2] = ReportingAuthorityType.ESA;
+		sponsors[3] = ReportingAuthorityType.ISRO;
+		sponsors[4] = ReportingAuthorityType.JAXA;
+		sponsors[5] = ReportingAuthorityType.NASA;
+		sponsors[6] = ReportingAuthorityType.RKA;
 
 	}
 
@@ -228,7 +230,7 @@ public class UnitManager implements Serializable {
     // 2016-04-06 Added initializeLastNames()
 	private void initializeLastNames() {
 		try {
-			lastNames = personConfig.getLastNameList(reportingAuthorityType);	
+			lastNames = personConfig.getLastNameList(sponsors);	
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
 		}
@@ -243,7 +245,7 @@ public class UnitManager implements Serializable {
 	private void initializeFirstNames() {
 		
 		try {
-			firstNames = personConfig.getFirstNameList(reportingAuthorityType);
+			firstNames = personConfig.getFirstNameList(sponsors);
 			maleFirstNames = firstNames.get(0);	
 			femaleFirstNames = firstNames.get(1);
 		} catch (Exception e) {
@@ -294,7 +296,6 @@ public class UnitManager implements Serializable {
 	 */
 	private void initializeSettlementNames() {
 		try {
-			SettlementConfig settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 			settlementNames = settlementConfig.getSettlementNameList();
 		} catch (Exception e) {
 			throw new IllegalStateException("settlement names could not be loaded: " + e.getMessage(), e);
@@ -449,23 +450,21 @@ public class UnitManager implements Serializable {
 	 * Creates initial settlements
 	 */
 	private void createInitialSettlements() {
-
-		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
-		int size = config.getNumberOfInitialSettlements();
+		int size = settlementConfig.getNumberOfInitialSettlements();
 		try {
 			for (int x = 0; x < size; x++) {
 				// Get settlement name
-				String name = config.getInitialSettlementName(x);
+				String name = settlementConfig.getInitialSettlementName(x);
 				if (name.equals(SettlementConfig.RANDOM)) {
 					name = getNewName(UnitType.SETTLEMENT, null, null, null);
 				}
 
 				// Get settlement template
-				String template = config.getInitialSettlementTemplate(x);
+				String template = settlementConfig.getInitialSettlementTemplate(x);
 
 				// Get settlement longitude
 				double longitude = 0D;
-				String longitudeStr = config.getInitialSettlementLongitude(x);
+				String longitudeStr = settlementConfig.getInitialSettlementLongitude(x);
 				if (longitudeStr.equals(SettlementConfig.RANDOM)) {
 					longitude = Coordinates.getRandomLongitude();
 				} else {
@@ -474,7 +473,7 @@ public class UnitManager implements Serializable {
 
 				// Get settlement latitude
 				double latitude = 0D;
-				String latitudeStr = config.getInitialSettlementLatitude(x);
+				String latitudeStr = settlementConfig.getInitialSettlementLatitude(x);
 				if (latitudeStr.equals(SettlementConfig.RANDOM)) {
 					latitude = Coordinates.getRandomLatitude();
 				} else {
@@ -483,11 +482,11 @@ public class UnitManager implements Serializable {
 
 				Coordinates location = new Coordinates(latitude, longitude);
 
-				int populationNumber = config.getInitialSettlementPopulationNumber(x);
-				int initialNumOfRobots = config.getInitialSettlementNumOfRobots(x);
+				int populationNumber = settlementConfig.getInitialSettlementPopulationNumber(x);
+				int initialNumOfRobots = settlementConfig.getInitialSettlementNumOfRobots(x);
 				// 2014-10-29 Added settlement's id called sid
 				// 2015-01-16 Added scenarioID
-				int scenarioID = config.getInitialSettlementScenarioID(x);
+				int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
 				// System.out.println("in unitManager, scenarioID is " +
 				// scenarioID);
 				addUnit(new Settlement(name, scenarioID, template, location, populationNumber, initialNumOfRobots));
@@ -509,13 +508,11 @@ public class UnitManager implements Serializable {
 	 */
 	private void createInitialVehicles() {
 
-		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
-
 		try {
 			Iterator<Settlement> i = getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
-				SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> vehicleMap = template.getVehicles();
 				Iterator<String> j = vehicleMap.keySet().iterator();
 				while (j.hasNext()) {
@@ -546,13 +543,11 @@ public class UnitManager implements Serializable {
 	 */
 	private void createInitialEquipment() {
 
-		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
-
 		try {
 			Iterator<Settlement> i = getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
-				SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<String, Integer> equipmentMap = template.getEquipment();
 				Iterator<String> j = equipmentMap.keySet().iterator();
 				while (j.hasNext()) {
@@ -580,13 +575,11 @@ public class UnitManager implements Serializable {
 	 */
 	private void createInitialResources() {
 
-		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
-
 		try {
 			Iterator<Settlement> i = getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
-				SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<AmountResource, Double> resourceMap = template.getResources();
 				Iterator<AmountResource> j = resourceMap.keySet().iterator();
 				while (j.hasNext()) {
@@ -620,13 +613,12 @@ public class UnitManager implements Serializable {
 	 *             if error creating parts.
 	 */
 	private void createInitialParts() {
-		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
 
 		try {
 			Iterator<Settlement> i = getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
-				SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+				SettlementTemplate template = settlementConfig.getSettlementTemplate(settlement.getTemplate());
 				Map<Part, Integer> partMap = template.getParts();
 				Iterator<Part> j = partMap.keySet().iterator();
 				while (j.hasNext()) {
@@ -1725,6 +1717,12 @@ public class UnitManager implements Serializable {
 		return result;
 	}
 
+	
+	public ReportingAuthorityType[] getSponsors() {
+		return sponsors;
+	}
+
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

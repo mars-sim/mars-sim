@@ -30,6 +30,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
+import com.jfoenix.controls.JFXButton;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -90,18 +92,16 @@ public class ChatBox extends BorderPane {
     	ObservableList<String> autoCompleteData = createAutoCompleteData();
         
         titleLabel = new Label("   MarsNet");
-  
-           	       
+       	       
         textArea.setEditable(false);
         textArea.setWrapText(true);
         textArea.setStyle("-fx-font: 11pt 'Corbel';");
-        textArea.setStyle("-fx-background-color: transparent" +
-        		"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+        textArea.setStyle("-fx-background-color: transparent"
+        		//+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
         		);
         textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
   		
-
   		// 2016-01-01 Replaced textField with autoFillTextBox
         autoFillTextBox = new AutoFillTextBox(autoCompleteData);
         autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
@@ -120,7 +120,9 @@ public class ChatBox extends BorderPane {
   		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
   		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel"); 			
  
-        MaterialDesignButton button = new MaterialDesignButton("Broadcast");
+  		JFXButton button = new JFXButton("Broadcast".toUpperCase());
+		button.getStyleClass().add("button-raised");
+        //MaterialDesignButton button = new MaterialDesignButton("Broadcast");
         button.setTooltip(new Tooltip ("Click to broadcast"));
         //button.setPadding(new Insets(5, 5, 5, 5));
         button.setStyle("-fx-font: bold 10pt 'Corbel';" +

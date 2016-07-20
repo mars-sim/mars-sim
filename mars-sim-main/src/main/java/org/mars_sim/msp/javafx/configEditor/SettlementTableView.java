@@ -1,19 +1,30 @@
 /**
  * Mars Simulation Project
  * SettlementTableView.java
- * @version 3.08 2016-07-08
+ * @version 3.1.0 2016-07-08
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.javafx.configEditor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.controlsfx.control.spreadsheet.GridBase;
+import org.controlsfx.control.spreadsheet.SpreadsheetCell;
+import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
+import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
+import org.controlsfx.control.spreadsheet.SpreadsheetView;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -21,12 +32,14 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -41,8 +54,12 @@ public class SettlementTableView {
     public static final int Column3MapKey = 3;
     public static final int Column4MapKey = 4;
     public static final int Column5MapKey = 5;
-    public static final int Column6MapKey = 6;
+    public static final int Column6MapKey = 6; 
+    public static final int NUM_COLUMNS = 7;
+    public static final int NUM_SPONSORS = 8;
     
+    private int rowCount = 2; //Will be re-calculated after if incorrect.
+
 	private SimulationConfig simulationConfig = SimulationConfig.instance();
 	
 	private List<SettlementInfo> settlements = new ArrayList<>();
@@ -51,36 +68,80 @@ public class SettlementTableView {
  
 	private TableView table_view;
 	
+    private SpreadsheetView spreadSheetView;
+
+	
+	private ReportingAuthorityType[] sponsors = new ReportingAuthorityType[NUM_SPONSORS];
+	
+	private String[] headers = new String[]{"Settlement","Template","Settlers",
+	                                      "Bots","Sponsor","Latitude","Longitude"};
+	
+	private List<String> settlementNames;
+	private List<SettlementTemplate> templates;
+	
+	
+    private List<String> cityList = Arrays.asList("Shanghai", "Paris", "New York City", "Bangkok",
+            "Singapore", "Johannesburg", "Berlin", "Wellington", "London", "Montreal");
+
+    private final List<String> countryList = Arrays.asList("China", "France", "New Zealand",
+            "United States", "Germany", "Canada");
+
+    private final List<String> companiesList = Arrays.asList("", "ControlsFX", "Aperture Science",
+            "Rapture", "Ammu-Nation", "Nuka-Cola", "Pay'N'Spray", "Umbrella Corporation");
+
+	private int[] col_widths = new int[]{200,220,80,80,194,90,90};
+
+	private List<TableColumn<Map, String>> cols = new ArrayList<>();//TableColumn<>();
+
+	private SimulationConfig sumulationConfig = SimulationConfig.instance();
+	private SettlementConfig settlementConfig;
+	
+	public SettlementTableView() {
+		
+		settlementConfig = sumulationConfig.getSettlementConfiguration();
+		settlementNames = settlementConfig.getSettlementNameList();
+		templates = settlementConfig.getSettlementTemplates();
+		
+		sponsors[0] = ReportingAuthorityType.CNSA;
+		sponsors[1] = ReportingAuthorityType.CSA;
+		sponsors[2] = ReportingAuthorityType.ESA;
+		sponsors[3] = ReportingAuthorityType.ISRO;
+		sponsors[4] = ReportingAuthorityType.JAXA;
+		sponsors[5] = ReportingAuthorityType.MARS_SOCIETY;
+		sponsors[6] = ReportingAuthorityType.NASA;
+		sponsors[7] = ReportingAuthorityType.RKA;
+	}
+	
+/* 
+    public SpreadsheetView createGUI() {
+   	    	 	
+		for (int x = 0; x < NUM_COLUMNS; x++) {
+			TableColumn<Map, String> col = new TableColumn<>(headers[x]);
+			col.setCellValueFactory(new MapValueFactory(x));
+			col.setMinWidth(col_widths[x]);
+			cols.add(col);
+		}
+		
+		return buildSheet();
+	}
+*/ 
+ 
     public TableView createGUI() {
-   	
-        TableColumn<Map, String> dataColumn0 = new TableColumn<>("Settlement");
-        TableColumn<Map, String> dataColumn1 = new TableColumn<>("Template");
-        TableColumn<Map, String> dataColumn2 = new TableColumn<>("Settlers");
-        TableColumn<Map, String> dataColumn3 = new TableColumn<>("Bots");
-        TableColumn<Map, String> dataColumn4 = new TableColumn<>("Sponsor");
-        TableColumn<Map, String> dataColumn5 = new TableColumn<>("Latitude");
-        TableColumn<Map, String> dataColumn6 = new TableColumn<>("Longitude");
-        
-        dataColumn0.setCellValueFactory(new MapValueFactory(Column0MapKey));
-        dataColumn0.setMinWidth(200);
-        dataColumn1.setCellValueFactory(new MapValueFactory(Column1MapKey));
-        dataColumn1.setMinWidth(220);
-        dataColumn2.setCellValueFactory(new MapValueFactory(Column2MapKey));
-        dataColumn2.setMinWidth(80);
-        dataColumn3.setCellValueFactory(new MapValueFactory(Column3MapKey));
-        dataColumn3.setMinWidth(80);
-        dataColumn4.setCellValueFactory(new MapValueFactory(Column4MapKey));
-        dataColumn4.setMinWidth(193);
-        dataColumn5.setCellValueFactory(new MapValueFactory(Column5MapKey));
-        dataColumn5.setMinWidth(90);
-        dataColumn6.setCellValueFactory(new MapValueFactory(Column6MapKey));
-        dataColumn6.setMinWidth(90);
-        
+   	    	 	
+		for (int x = 0; x < NUM_COLUMNS; x++) {
+			TableColumn<Map, String> col = new TableColumn<>(headers[x]);
+			col.setCellValueFactory(new MapValueFactory(x));
+			col.setMinWidth(col_widths[x]);
+			cols.add(col);
+		}
+		
         table_view = new TableView<>(generateDataInMap());
  
         table_view.setEditable(true);
         table_view.getSelectionModel().setCellSelectionEnabled(true);
-        table_view.getColumns().setAll(dataColumn0, dataColumn1, dataColumn2, dataColumn3, dataColumn4, dataColumn5, dataColumn6);
+        table_view.getColumns().setAll(cols.get(0), cols.get(1), cols.get(2), 
+        		cols.get(3), cols.get(4), cols.get(5), cols.get(6));
+        
         Callback<TableColumn<Map, String>, TableCell<Map, String>>
             cellFactoryForMap = new Callback<TableColumn<Map, String>,
                 TableCell<Map, String>>() {
@@ -88,41 +149,163 @@ public class SettlementTableView {
                     public TableCell call(TableColumn p) {
                         return new TextFieldTableCell(new StringConverter() {
                             @Override
-                            public String toString(Object t) {
+                            public String toString(Object o) {
                             	//updateSettlementInfo();
                             	//System.out.println("t.toString() is "+ t.toString());                    	
-                                return t.toString();
+                                return o.toString();
                             }
                             @Override
-                            public Object fromString(String string) {
+                            public Object fromString(String s) {
                             	//updateSettlementInfo();
                             	//System.out.println("string() is "+ string);
-                                return string;
+                                return s;
                             }                                    
                         });
                     }
         };
         
-        dataColumn0.setCellFactory(cellFactoryForMap);
-        dataColumn1.setCellFactory(cellFactoryForMap);
-        dataColumn2.setCellFactory(cellFactoryForMap);
-        dataColumn3.setCellFactory(cellFactoryForMap);
-        dataColumn4.setCellFactory(cellFactoryForMap);
-        dataColumn5.setCellFactory(cellFactoryForMap);
-        dataColumn6.setCellFactory(cellFactoryForMap);
-
+        for (int x = 0; x < NUM_COLUMNS; x++) {
+			cols.get(x).setCellFactory(cellFactoryForMap);
+		}
+        
         return table_view;
     }
  
+
+/*
+    public SpreadsheetView buildSheet() {
+
+        //spreadSheetView = new SpreadsheetView(generateDataInMap());
+        
+        GridBase grid = new GridBase(rowCount, NUM_COLUMNS);
+        grid.setRowHeightCallback(new GridBase.MapBasedRowHeightFactory(generateRowHeight()));
+        buildGrid(grid);
+
+        spreadSheetView = new SpreadsheetView(grid);
+        //spreadSheetView.setShowRowHeader(rowHeader.isSelected());
+        //spreadSheetView.setShowColumnHeader(columnHeader.isSelected());
+        spreadSheetView.setEditable(true);//editable.isSelected());
+        //spreadSheetView.getSelectionModel().setSelectionMode(selectionMode.isSelected() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
+
+        spreadSheetView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        //spreadSheetView.getSelectionModel().setCellSelectionEnabled(true);
+        //spreadSheetView.getColumns().setAll(cols.get(0), cols.get(1), cols.get(2), 
+        //		cols.get(3), cols.get(4), cols.get(5), cols.get(6));
+   
     
+        return spreadSheetView;
+    }
+*/    
+    private Map<Integer, Double> generateRowHeight() {
+        Map<Integer, Double> rowHeight = new HashMap<>();
+        rowHeight.put(1, 100.0);
+        return rowHeight;
+    }
+
+    /**
+     * Build the grid.
+     * @param grid
+    */
+    private void buildGrid(GridBase grid) {
+
+        List<ObservableList<SpreadsheetCell>> cols = new ArrayList<>(grid.getColumnCount());
+        int colIndex = 0;
+        cols.add(createRow(grid, colIndex++));
+        
+        for (int i = colIndex; i < NUM_COLUMNS; ++i) {
+            final ObservableList<SpreadsheetCell> randomCol = FXCollections.observableArrayList();
+            SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(0, i, 1, 1, "Random " + (i + 1));
+            cell.getStyleClass().add("first-cell");
+            randomCol.add(cell);
+
+            for (int column = 1; column < grid.getColumnCount(); column++) {
+                randomCol.add(generateCell(i, column, 1, 1));
+            }
+            cols.add(randomCol);
+        }
+
+        grid.setRows(cols);
+ 
+/*        
+        ArrayList<ObservableList<SpreadsheetCell>> rows = new ArrayList<>(grid.getRowCount());
+        int rowIndex = 0;
+        rows.add(getSettlement(grid, rowIndex++));
+        for (int i = rowIndex; i < rowIndex + 2; ++i) {
+            final ObservableList<SpreadsheetCell> randomRow = FXCollections.observableArrayList();
+            SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(i, 0, 1, 1, "Random " + (i + 1));
+            cell.getStyleClass().add("first-cell");
+            randomRow.add(cell);
+
+            for (int column = 1; column < grid.getColumnCount(); column++) {
+                randomRow.add(generateCell(i, column, 1, 1));
+            }
+            rows.add(randomRow);
+        }
+
+        grid.setRows(rows);
+*/        
+    }
+ 
+    
+
+    /**
+     * Return a List of SpreadsheetCell with settlements
+     * @param grid
+     * @param row
+     * @return
+     */
+    private ObservableList<SpreadsheetCell> createRow(GridBase grid, int row) {
+
+        final ObservableList<SpreadsheetCell> settlementCells = FXCollections.observableArrayList();
+
+        SpreadsheetCell cell = SpreadsheetCellType.STRING.createCell(row, 0, 1, 1, "");
+
+        ((SpreadsheetCellBase) cell).setTooltip("This cell displays a custom toolTip.");
+        cell.setEditable(false);
+        settlementCells.add(cell);
+
+        for (int column = 1; column < grid.getColumnCount(); ++column) {
+
+            cell = SpreadsheetCellType.STRING.createCell(row, column, 1, 1,
+                    settlementNames.get(column));
+            cell.setEditable(false);
+            //cell.getStyleClass().add("company");
+            settlementCells.add(cell);
+        }
+
+        return settlementCells;
+    }
+
+
+    /**
+     * Randomly generate a {@link SpreadsheetCell}.
+     */
+    private SpreadsheetCell generateCell(int row, int column, int rowSpan, int colSpan) {
+
+        SpreadsheetCell cell = SpreadsheetCellType.LIST(countryList).createCell(row, column, rowSpan, colSpan,
+                    countryList.get((int) (Math.random() * 6)));
+            
+            //cell = SpreadsheetCellType.STRING.createCell(row, column, rowSpan, colSpan,
+            //        cityList.get((int) (Math.random() * 10)));
+  
+        // Styling for preview
+        if (row % 5 == 0) {
+            cell.getStyleClass().add("five_rows");
+        }
+        return cell;
+    }
+
     private ObservableList<Map> generateDataInMap() {
     	
         allData = FXCollections.observableArrayList();
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
 		settlements.clear();
-		
-		for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
-			SettlementInfo info = new SettlementInfo();
+
+		SettlementInfo info = new SettlementInfo();
+
+		int size = settlementConfig.getNumberOfInitialSettlements();
+		for (int x = 0; x < size; x++) {
 
 			info.name = settlementConfig.getInitialSettlementName(x);
 			info.template = settlementConfig.getInitialSettlementTemplate(x);
@@ -134,16 +317,35 @@ public class SettlementTableView {
 
 			settlements.add(info);			
 			
-            Map<Integer, String> dataRow = new HashMap<>();
+			List<String> texts = new ArrayList<>();
+			texts.add(info.name);
+			texts.add(info.template);
+			texts.add(info.population);
+			texts.add(info.numOfRobots);
+			texts.add(info.sponsor);
+			texts.add(info.latitude);
+			texts.add(info.longitude);
+						
+            Map<Integer, AutoFillTextBox> dataRow = new HashMap<>();
 
-            dataRow.put(Column0MapKey, info.name);
-            dataRow.put(Column1MapKey, info.template);
-            dataRow.put(Column2MapKey, info.population);
-            dataRow.put(Column3MapKey, info.numOfRobots);
-            dataRow.put(Column4MapKey, info.sponsor);
-            dataRow.put(Column5MapKey, info.latitude);
-            dataRow.put(Column6MapKey, info.longitude);
-            
+			List<AutoFillTextBox> boxes = new ArrayList<>();
+			for (int j = 0; j < NUM_COLUMNS; j++) {
+				AutoFillTextBox b = null;		
+				if (j==4)
+					b = new AutoFillTextBox(createAutoCompleteData());
+				else
+					b = new AutoFillTextBox();
+				b.setFilterMode(false);
+				b.getTextbox().setText(texts.get(j));
+				boxes.add(b);				
+				dataRow.put(j, b);
+			}
+			
+			//Iterator<AutoFillTextBox> i = boxes.iterator();
+			//while (i.hasNext()) {
+			//	AutoFillTextBox b = i.next();
+			//}
+        
             allData.add(dataRow);
 		}
 
@@ -152,7 +354,6 @@ public class SettlementTableView {
     
 	public int getRowCount() {
 		return getTableView().getItems().size();
-		//return settlements.size();
 	}
 	
 	public ObservableList<Map> getAllData() {
@@ -161,7 +362,6 @@ public class SettlementTableView {
 	
 	public void loadDefaultSettlements() {
 		reloadDefaultSettlements();
-		//table_view.refresh();//.set.generateDataInMap();
 		table_view.setItems(allData);
 	}
 	
@@ -186,46 +386,27 @@ public class SettlementTableView {
         allData = FXCollections.observableArrayList();
 		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
 		settlements.clear();
-		
-		for (int x = 0; x < settlementConfig.getNumberOfInitialSettlements(); x++) {
-			SettlementInfo info = new SettlementInfo();
+				
+		SettlementInfo info = new SettlementInfo();
 
-			info.name = settlementConfig.getInitialSettlementName(x);
-			info.template = settlementConfig.getInitialSettlementTemplate(x);
-			info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
-			info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
-			info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
-			info.latitude = settlementConfig.getInitialSettlementLatitude(x);
-			info.longitude = settlementConfig.getInitialSettlementLongitude(x);
-
-			settlements.add(info);			
-			
-            Map<Integer, String> dataRow = new HashMap<>();
-
-            dataRow.put(Column0MapKey, info.name);
-            dataRow.put(Column1MapKey, info.template);
-            dataRow.put(Column2MapKey, info.population);
-            dataRow.put(Column3MapKey, info.numOfRobots);
-            dataRow.put(Column4MapKey, info.sponsor);
-            dataRow.put(Column5MapKey, info.latitude);
-            dataRow.put(Column6MapKey, info.longitude);
-            
-            allData.add(dataRow);
+		int size = settlementConfig.getNumberOfInitialSettlements();
+		for (int x = 0; x < size; x++) {	
+			createDataRow(info, x);
 		}
 
     }
     
-    public void addNewSettlement(SettlementInfo s) {
+    public void addNewSettlement(SettlementInfo info) {
 		
         Map<Integer, String> dataRow = new HashMap<>();
 
-        dataRow.put(Column0MapKey, s.name);
-        dataRow.put(Column1MapKey, s.template);
-        dataRow.put(Column2MapKey, s.population);
-        dataRow.put(Column3MapKey, s.numOfRobots);
-        dataRow.put(Column4MapKey, s.sponsor);
-        dataRow.put(Column5MapKey, s.latitude);
-        dataRow.put(Column6MapKey, s.longitude);
+        dataRow.put(Column0MapKey, info.name);
+        dataRow.put(Column1MapKey, info.template);
+        dataRow.put(Column2MapKey, info.population);
+        dataRow.put(Column3MapKey, info.numOfRobots);
+        dataRow.put(Column4MapKey, info.sponsor);
+        dataRow.put(Column5MapKey, info.latitude);
+        dataRow.put(Column6MapKey, info.longitude);
         
         allData.add(dataRow);
     }
@@ -234,11 +415,7 @@ public class SettlementTableView {
 	 * Remove a set of settlements from the table.
 	 * @param rowIndexes an array of row indexes of the settlements to remove.
 	 */
-	public void removeSettlements(int i) {//int[] rowIndexes) {
-		//int l = rowIndexes.length;
-		//for (int i=0; i<l; i++) {
-			//allData.remove(i);
-		//}	
+	public void removeSettlements(int i) {
 	    //remove selected item from the table list
         allData.remove(table_view.getItems().get(i));  
 		table_view.refresh();
@@ -250,34 +427,50 @@ public class SettlementTableView {
 		return settlements;
 	}
 	
-	public void updateSettlementInfo() {
-		
+	public void updateSettlementInfo() {	
 		settlements.clear();
-	
+		SettlementInfo info = new SettlementInfo();
 		for (int x = 0; x < getRowCount(); x++) {	
-			SettlementInfo info = new SettlementInfo();
-			
-			info.name = (String) allData.get(x).get(0);
-			info.template = (String) allData.get(x).get(1);
-			info.population = (String) allData.get(x).get(2);
-			info.numOfRobots = (String) allData.get(x).get(3);
-			info.sponsor = (String) allData.get(x).get(4);
-			info.latitude = (String) allData.get(x).get(5);
-			info.longitude = (String) allData.get(x).get(6);
-	
-			settlements.add(info);			
-			
-	        Map<Integer, String> dataRow = new HashMap<>();
-	
-	        dataRow.put(Column0MapKey, info.name);
-	        dataRow.put(Column1MapKey, info.template);
-	        dataRow.put(Column2MapKey, info.population);
-	        dataRow.put(Column3MapKey, info.numOfRobots);
-	        dataRow.put(Column4MapKey, info.sponsor);
-	        dataRow.put(Column5MapKey, info.latitude);
-	        dataRow.put(Column6MapKey, info.longitude);
-	        
-	        allData.add(dataRow);
+			createDataRow(info, x);
 		}
 	}
+	
+	public void createDataRow(SettlementInfo info, int x) {
+		info.name = allData.get(x).get(0).toString();
+		info.template = allData.get(x).get(1).toString();
+		info.population =  allData.get(x).get(2).toString();
+		info.numOfRobots = allData.get(x).get(3).toString();
+		info.sponsor = allData.get(x).get(4).toString();
+		info.latitude = allData.get(x).get(5).toString();
+		info.longitude = allData.get(x).get(6).toString();
+	
+		settlements.add(info);			
+	
+		addNewSettlement(info);
+	}
+	
+    /**
+     * Compiles the names of all sponsoring agencies into the autocomplete data list
+     * @return ObservableList<String> 
+     */
+    public ObservableList<String> createAutoCompleteData() {
+        List<String> sponsorList = new ArrayList<>();
+        for (int i= 0; i<NUM_SPONSORS; i++) {
+        	String s = sponsors[i].toString();//.getName();
+        	//System.out.println(s);
+        	sponsorList.add(s);
+        }
+		//List<String> sponsorList = Arrays.asList(sponsors.getName());	
+    	return FXCollections.observableArrayList(sponsorList);
+    } 
+    
+   	public void destroy() {
+   		
+   		simulationConfig = null;
+   		settlements.clear(); 
+   		settlements = null;
+   		allData.clear(); 
+   		allData = null;
+   		table_view = null;
+   	}
 }

@@ -137,9 +137,8 @@
 http://keys.lucidcentral.org/keys/sweetpotato/key/Sweetpotato%20Diagnotes/Media/Html/TheCrop/AboutTheCrop/Botany/Crop%20development.htm		
 		
 		
-15. According to the Food and Agriculture Organization of the United Nation (http://www.fao.org/docrep/X5642E/x5642e06.htm)
-
-	there is only a total of 9 classification of vegetable crops based on edible part:
+15. According to the Food and Agriculture Organization of the United Nation (http://www.fao.org/docrep/X5642E/x5642e06.htm),
+there is 9 types of vegetable crops based on edible part:
 	
 	a. Root vegetables (carrots, beetroot, radish)
 	b. Tuber vegetables (Yam, Irish potato) 
@@ -298,6 +297,24 @@ http://keys.lucidcentral.org/keys/sweetpotato/key/Sweetpotato%20Diagnotes/Media/
      	daily-PAR="34.56"
     	/>
 
+    <crop name="sweet potato"
+    	growing-time="120.0"
+    	crop-category="tubers"
+    	edible-biomass="25"
+    	edible-water-content=".79"
+    	inedible-biomass="10"
+     	daily-PAR="34.56"
+    	/>
+
+    <crop name="yam"
+    	growing-time="200.0"
+    	crop-category="tubers"
+    	edible-biomass="15"
+    	edible-water-content=".79"
+    	inedible-biomass="5"
+     	daily-PAR="34.56"
+    	/>
+    	    	
      <crop name="soybean"
         growing-time="93"
     	crop-category="legumes"

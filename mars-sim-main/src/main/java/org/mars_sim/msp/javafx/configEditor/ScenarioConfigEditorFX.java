@@ -87,6 +87,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
 
 import org.controlsfx.control.MaskerPane;
+import org.controlsfx.control.spreadsheet.SpreadsheetView;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -104,18 +105,13 @@ public class ScenarioConfigEditorFX {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ScenarioConfigEditorFX.class.getName());
-
 	private static final char CVS_SEPARADOR = new DecimalFormatSymbols().getPatternSeparator();
-
 	private static final int HORIZONTAL_SIZE = 1024;
 
 	// Data members.
-	// private String TITLE = Msg.getString("SimulationConfigEditor.title");
-
 	private int clientID = 0;
-
-	double orgSceneX, orgSceneY;
-	double orgTranslateX, orgTranslateY;
+	private double orgSceneX, orgSceneY;
+	private double orgTranslateX, orgTranslateY;
 
 	private boolean hasError;
 	private boolean hasSettlement;
@@ -133,7 +129,7 @@ public class ScenarioConfigEditorFX {
 	private TableCellEditor tableCellEditor;
 
 	@FXML
-	TabPane tabPane;
+	private TabPane tabPane;
 
 	private JFXButton startButton;
 	private JFXButton addButton;
@@ -160,17 +156,12 @@ public class ScenarioConfigEditorFX {
 	private MainMenu mainMenu;
 	private CrewEditorFX crewEditorFX;
 	private MarsProjectFX marsProjectFX;
-
 	private MultiplayerClient multiplayerClient;
 	private SettlementConfig settlementConfig;
-
 	// private WaitIndicator waiti;
-
 	private MainScene mainScene;
-
 	private TableView<?> tableView;
-	private ScrollBar bar;
-	
+	private ScrollBar bar;	
 	private SettlementTableView settlementTableView;
 	
 	private List<SettlementRegistry> settlementList;
@@ -383,47 +374,18 @@ public class ScenarioConfigEditorFX {
 		topVB.getChildren().addAll(topHB, titleLabel); // gameModeLabel
 		borderAll.setTop(topVB);
 
-		// Create settlement scroll panel.
-		// ScrollPane settlementScrollPane = new ScrollPane();
-		// settlementScrollPane.setPreferredSize(new Dimension(585, 200));	
-		// TableView table = new TableView();
-		// table.setEditable(true);
-		// TableColumn col1 = new TableColumn("");
-		// TableColumn col2 = new TableColumn("");
-		// TableColumn col3 = new TableColumn("");
-		// table.getColumns().addAll(col1, col2, col3);
 
-/*		
-		// Create settlement scroll panel.
-		settlementScrollPane = new JScrollPane();
-		settlementScrollPane.setPreferredSize(new Dimension(800, 200));
-		settlementScrollPane.setSize(new Dimension(800, 200));
-
-		StackPane swingPane = new StackPane();
-		swingPane.setMaxSize(HORIZONTAL_SIZE, 200);
-		swingNode = new SwingNode();
-		swingNode.setOpacity(.8);
-		// swingNode.setBlendMode(BlendMode.SRC_OVER);
-		createSwingNode(swingNode);
-		swingPane.getChildren().add(swingNode);
-		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-		swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-		// swingPane.setMaxSize(Region.USE_COMPUTED_SIZE, 200);
-		borderAll.setCenter(swingPane);
-*/
 		// 2016-07-06 Added settlementTableView, tableView
 		settlementTableView = new SettlementTableView();		
 		tableView = settlementTableView.createGUI();	
 		tableView.setMaxHeight(200);
 		tableView.setPrefHeight(200);		
-		//bar = getVerticalScrollbar(tableView);
-		//bar.setMax(300);
-		//bar.setMin(0);
-		//bar.setValue(0);
-		//bar.setUnitIncrement(30);
-		//bar.setBlockIncrement(35);      
-		//bar.setOrientation(Orientation.VERTICAL);
 		borderAll.setCenter(tableView);//bar);
+
+		//SpreadsheetView ssv = settlementTableView.createGUI();	
+		//ssv.setMaxHeight(200);
+		//ssv.setPrefHeight(200);		
+		//borderAll.setCenter(ssv);
 		
 		// Create configuration button outer panel.
 		BorderPane borderButtons = new BorderPane();
@@ -455,8 +417,7 @@ public class ScenarioConfigEditorFX {
 		removeButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.remove"))); //$NON-NLS-1$
 		// removeButton.setId("removeButton");
 		removeButton.getStyleClass().add("button-small");
-	
-        
+   
 		removeButton.setOnAction((event) -> {
 			//ObservableList list = settlementTableView.getTableView().getSelectionModel().getSelectedIndices();
 			int index = -1;
@@ -522,15 +483,6 @@ public class ScenarioConfigEditorFX {
 		vbCenter.setPadding(new Insets(0, 10, 10, 10));
 		borderButtons.setBottom(vbCenter);
 
-		/*
-		 * // Create default button. defaultButton = new
-		 * Button(Msg.getString("SimulationConfigEditor.button.default"));
-		 * //$NON-NLS-1$ //defaultButton.setToolTipText(Msg.getString(
-		 * "SimulationConfigEditor.tooltip.default")); //$NON-NLS-1$
-		 * defaultButton.setOnAction((event) -> { if (multiplayerClient == null)
-		 * setDefaultSettlements(); else setExistingSettlements(); });
-		 * vbCenter.getChildren().add(defaultButton);
-		 */
 		// Create bottom panel.
 		BorderPane bottomPanel = new BorderPane();
 		borderAll.setBottom(bottomPanel);
@@ -611,8 +563,7 @@ public class ScenarioConfigEditorFX {
 		removeButton.setMaxWidth(Double.MAX_VALUE);
 		undoButton.setMaxWidth(Double.MAX_VALUE);
 		crewButton.setMaxWidth(Double.MAX_VALUE);
-		startButton.setMaxWidth(Double.MAX_VALUE);
-		
+		startButton.setMaxWidth(Double.MAX_VALUE);		
 		
 		TilePane tileButtons = new TilePane(Orientation.HORIZONTAL);
 		tileButtons.setPadding(new Insets(5, 5, 5, 5));
@@ -645,7 +596,6 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Swaps the mouse cursor type between DEFAULT and HAND
-	 * 
 	 * @param node
 	 */
 	public void setMouseCursor(Node node) {
@@ -660,11 +610,9 @@ public class ScenarioConfigEditorFX {
 
 	public class SimulationTask implements Runnable {
 		public void run() {
-			// logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run()
-			// is on " + Thread.currentThread().getName() );
+			// logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
 			// mainScene.createProgressCircle();
 			mainMenu.showLoadingStage();
-
 			// boolean isDone = false;
 			Simulation.createNewSimulation();
 			// System.out.println("ScenarioConfigEditorFX : done calling
@@ -675,18 +623,14 @@ public class ScenarioConfigEditorFX {
 			Platform.runLater(() -> {
 				mainMenu.prepareScene();
 				mainMenu.prepareStage();
-				// System.out.println("ScenarioConfigEditorFX : done calling
-				// prepareStage");
+				// System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
 			});
 			if (multiplayerClient != null)
 				multiplayerClient.prepareListeners();
-
 			// logger.info("ScenarioConfigEditorFX : done calling
 			// SimulationTask");
-
 			// JmeCanvas jme = new JmeCanvas();
 			// jme.setupJME();
-
 		}
 	}
 	
@@ -766,6 +710,7 @@ public class ScenarioConfigEditorFX {
 		updateSettlementNames();
 	}
 */
+	
 	/**
 	 * Set the simulation configuration based on dialog choices.
 	 */
@@ -791,58 +736,19 @@ public class ScenarioConfigEditorFX {
 	}
 
 	/**
-	 * Creates a settlement based from each row of choice
-	private void createSettlement(int x) {
-
-		String playerName = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_PLAYER_NAME);
-		String name = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_SETTLEMENT_NAME);
-		String template = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_TEMPLATE);
-		String population = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_POPULATION);
-		int populationNum = Integer.parseInt(population);
-		// System.out.println("populationNum is " + populationNum);
-		String numOfRobotsStr = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_BOTS);
-		int numOfRobots = Integer.parseInt(numOfRobotsStr);
-		// System.out.println("SimulationConfigEditor : numOfRobots is " +
-		// numOfRobots);
-		String latitude = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_LATITUDE);
-		String longitude = (String) settlementTableModel.getValueAt(x, SettlementTable.COLUMN_LONGITUDE);
-		double lat = SettlementRegistry.convertLatLong2Double(latitude);
-		double lo = SettlementRegistry.convertLatLong2Double(longitude);
-		
-		 * Boolean hasMSD = (Boolean) settlementTableModel.getValueAt(x,
-		 * SettlementTable.COLUMN_HAS_MSD); String maxMSDStr = null; int maxMSD
-		 * = 0; // TODO: if hasMSD == 1, how do I load from settlementConfig
-		 * //if (hasMSD) { // maxMSDStr =
-		 * Integer.toString(settlementConfig.getInitialSettlementMaxMSD(x)); //
-		 * maxMSD = Integer.parseInt(maxMSDStr); //}
-		 
-		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, latitude, longitude, 0);
-
-		// Send the newly created settlement to host server
-		if (multiplayerClient != null) {
-			// create an instance of SettlementRegistry
-			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum,
-					numOfRobots, lat, lo);
-			multiplayerClient.sendNew(newS);
-			// settlementConfig.setMultiplayerClient(multiplayerClient);
-		}
-	}
-*/
-
-	/**
-	 * Creates a settlement based from each row of choice
+	 * Creates a settlement
 	 */
 	private void createSettlement(int x) {
-		String name = (String) settlementTableView.getAllData().get(x).get(0);
-		String template = (String) settlementTableView.getAllData().get(x).get(1);
-		String population = (String) settlementTableView.getAllData().get(x).get(2);
-		int populationNum = Integer.parseInt(population);
-		String numOfRobotsStr = (String) settlementTableView.getAllData().get(x).get(3);
-		int numOfRobots = Integer.parseInt(numOfRobotsStr);
-		String sponsor = (String) settlementTableView.getAllData().get(x).get(4);
 
-		String latitude = (String) settlementTableView.getAllData().get(x).get(5);
-		String longitude = (String) settlementTableView.getAllData().get(x).get(6);
+		String name = settlementTableView.getAllData().get(x).get(0).toString();
+		String template = settlementTableView.getAllData().get(x).get(1).toString();
+		String population = settlementTableView.getAllData().get(x).get(2).toString();
+		String numOfRobotsStr = settlementTableView.getAllData().get(x).get(3).toString();
+		String sponsor = settlementTableView.getAllData().get(x).get(4).toString();
+		String latitude = settlementTableView.getAllData().get(x).get(5).toString();
+		String longitude = settlementTableView.getAllData().get(x).get(6).toString();
+		int populationNum = Integer.parseInt(population);
+		int numOfRobots = Integer.parseInt(numOfRobotsStr);
 		double lat = SettlementRegistry.convertLatLong2Double(latitude);
 		double lo = SettlementRegistry.convertLatLong2Double(longitude);
 		
@@ -851,11 +757,10 @@ public class ScenarioConfigEditorFX {
 		// Send the newly created settlement to host server
 		if (multiplayerClient != null) {
 			// create an instance of SettlementRegistry
-			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template, populationNum,
-					numOfRobots, sponsor, lat, lo);
+			SettlementRegistry newS = new SettlementRegistry(playerName, clientID, name, template,
+					populationNum, numOfRobots, sponsor, lat, lo);
 			multiplayerClient.sendNew(newS);
 		}
-
 	}
 	
 	/**
@@ -864,11 +769,9 @@ public class ScenarioConfigEditorFX {
 	private int waitLoading() {
 
 		StackPane stackPane = new StackPane();
-
 		MaskerPane indicator = new MaskerPane();
 		indicator.setScaleX(1.2);
 		indicator.setScaleY(1.2);
-
 		stackPane.getChildren().add(indicator);
 		StackPane.setAlignment(indicator, Pos.CENTER);
 		stackPane.setBackground(Background.EMPTY);
@@ -923,6 +826,7 @@ public class ScenarioConfigEditorFX {
 		settlement.template = determineNewSettlementTemplate();
 		settlement.population = determineNewSettlementPopulation(settlement.template);
 		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
+		settlement.sponsor = determineNewSettlementSponsor();
 		settlement.latitude = determineNewSettlementLatitude();
 		settlement.longitude = determineNewSettlementLongitude();
 		settlement.maxMSD = "0";
@@ -933,7 +837,6 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines a new settlement's name.
-	 * 
 	 * @return name.
 	 */
 	private String determineNewSettlementName() {
@@ -947,7 +850,6 @@ public class ScenarioConfigEditorFX {
 		Iterator<String> i = settlementNames.iterator();
 		while (i.hasNext()) {
 			String name = i.next();
-
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
 			for (int x = 0; x < settlementTableView.getRowCount(); x++) {
@@ -957,9 +859,7 @@ public class ScenarioConfigEditorFX {
 				}
 			}
 
-			// TODO: check if the name is being used in the host server's
-			// settlement registry or not
-
+			// TODO: check if the name is being used in the host server's settlement registry or not
 			// If not being used already, use this settlement name.
 			if (!nameUsed) {
 				result = name;
@@ -990,7 +890,6 @@ public class ScenarioConfigEditorFX {
 			if (!nameUsed) {
 				result = name;
 			}
-
 			count++;
 		}
 
@@ -999,7 +898,6 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines a new settlement's template.
-	 * 
 	 * @return template name.
 	 */
 	private String determineNewSettlementTemplate() {
@@ -1018,9 +916,7 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines the new settlement population.
-	 * 
-	 * @param templateName
-	 *            the settlement template name.
+	 * @param templateName the settlement template name.
 	 * @return the new population number.
 	 */
 	public String determineNewSettlementPopulation(String templateName) {
@@ -1043,15 +939,11 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines the new settlement number of robots.
-	 * 
-	 * @param templateName
-	 *            the settlement template name.
+	 * @param templateName the settlement template name.
 	 * @return number of robots.
 	 */
 	public String determineNewSettlementNumOfRobots(String templateName) {
-
 		String result = "0"; //$NON-NLS-1$
-
 		if (templateName != null) {
 			SettlementConfig settlementConfig = config.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
@@ -1069,6 +961,16 @@ public class ScenarioConfigEditorFX {
 		return result;
 	}
 
+
+	/**
+	 * Determines a new settlement's sponsor.
+	 * @return sponsor name.
+	 */
+	private String determineNewSettlementSponsor() {
+		String result = "Mars Society";
+		return result;
+	}
+	
 	/**
 	 * Determines a new settlement's latitude.
 	 * 
@@ -1207,7 +1109,7 @@ public class ScenarioConfigEditorFX {
     
     void scrolled(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         double value = newValue.doubleValue();
-        System.out.println("Scrolled to " + value);
+        //System.out.println("Scrolled to " + value);
         ScrollBar bar = getVerticalScrollbar(tableView);
         if (value == bar.getMax()) {
             //System.out.println("Adding new persons.");
@@ -1232,6 +1134,11 @@ public class ScenarioConfigEditorFX {
 		// waiti = null;
 		// settlementList.clear();
 		// settlementList = null;
+		startButton = null;
+		addButton = null;
+		removeButton = null;
+		undoButton = null;
+		crewButton = null;
 		config = null;
 		mainMenu = null;
 		mainScene = null;

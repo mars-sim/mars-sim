@@ -38,14 +38,9 @@ public class AutoFillTextBox<T> extends Control implements
     //ATTRIBUTES
     //==========
     private TextField textbox;
-
     private ListView<T> listview;
-
     private ObservableList<T> data = FXCollections.observableArrayList();
-
-    ;
     private boolean filterMode;
-
     private int limit;
 
     /**
@@ -246,4 +241,10 @@ public class AutoFillTextBox<T> extends Control implements
         return Math.max(100.0d, textbox.getPrefWidth());
     }
 
+    @Override
+    public String toString() {
+        return textbox.getText();
+    }
+
+    
 }

@@ -21,7 +21,7 @@ implements Serializable {
 
 	private final ReportingAuthorityType org = ReportingAuthorityType.ESA;
 	
-	private final String toolTipStr = "European Space Agency ";
+	private final String toolTipStr = "European Space Agency";
 
 	public String getToolTipStr() {
 		return toolTipStr;
