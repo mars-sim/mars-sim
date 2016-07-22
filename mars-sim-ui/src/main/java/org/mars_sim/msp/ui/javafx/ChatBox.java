@@ -73,16 +73,7 @@ public class ChatBox extends BorderPane {
     protected final List<String> history = new ArrayList<>();
 
     private Consumer<String> onMessageReceivedHandler;
-/* 
-    private String[] autoCompleteArray = new String[]{ "apple","ball","cat","doll","elephant",
-            "fight","georgeous","height","ice","jug",
-             "aplogize","bank","call","done","ego",
-             "finger","giant","hollow","internet","jumbo",
-             "kilo","lion","for","length","primary","stage",
-             "scene","zoo","jumble","auto","text",
-            "root","box","items","hip-hop","himalaya","nepal",
-            "kathmandu","kirtipur","everest","buddha","epic","hotel"};
-*/    
+
     /**
      * Constructor for ChatBox
      */

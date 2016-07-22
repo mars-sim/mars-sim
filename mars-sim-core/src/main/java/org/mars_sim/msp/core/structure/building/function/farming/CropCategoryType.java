@@ -8,7 +8,6 @@
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.robot.RobotType;
 
 public enum CropCategoryType {

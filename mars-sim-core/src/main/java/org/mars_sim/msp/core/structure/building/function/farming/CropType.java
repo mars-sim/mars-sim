@@ -10,15 +10,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The CropType class is a type of crop.
  */
 //2014-10-05 Added cropCategory
 //2014-10-14 Added edibleBiomass. commented out ppf and photoperiod
-public class CropType
-implements Serializable, Comparable<CropType> {
+public class CropType implements Serializable, Comparable<CropType> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -28,10 +27,6 @@ implements Serializable, Comparable<CropType> {
 	private String name;
 	/** The length of the crop type's growing phase. */
 	private double growingTime;
-	/** The type of crop */
-	//private String cropCategory;
-	private CropCategoryType cropCategoryType;
-	
 	private double edibleBiomass; // the fresh basis Edible Biomass Productivity [ in gram per sq m per day ]
 	private double edibleWaterContent;
 	private double inedibleBiomass;
@@ -39,19 +34,19 @@ implements Serializable, Comparable<CropType> {
 	//private double ppf;
 	/** Note: The Photoperiod is the number of hours of light needed [in hours per day] */
 	//private double photoperiod;
-	
 	private double dailyPAR;
 	/** The average harvest index (from 0 to 1) -- the ratio of the edible over the inedible part of the harvested crop [dimenionsion-less] */
 	//private double harvestIndex;
-
 	private Map<Integer, Phase> phases = new HashMap<>();
+	/** The type of crop */
+	private CropCategoryType cropCategoryType;
 	
 
 	/**
 	 * Constructor.
 	 * @param name - Name of the crop.
 	 * @param growingTime Length of growing phase for crop in millisols.
-	 * @param cropCategory The ntype of crop.
+	 * @param cropCategory The type of crop.
 	 * @param edibleBiomass
 	 * @param edibleWaterContent
 	 * @param inedibleBiomass
@@ -66,7 +61,6 @@ implements Serializable, Comparable<CropType> {
 		this.name = name;
 		this.growingTime = growingTime;
 		this.cropCategoryType = cropCategoryType;
-		//this.cropCategory = cropCategory;
 		this.edibleBiomass = edibleBiomass;
 		this.edibleWaterContent = edibleWaterContent;
 		this.inedibleBiomass = inedibleBiomass;
@@ -81,7 +75,7 @@ implements Serializable, Comparable<CropType> {
 	 * @return name
 	 */
 	public String getName() {
-		return name;
+		return Conversion.capitalize(name);
 	}
 
 	/**
@@ -91,14 +85,6 @@ implements Serializable, Comparable<CropType> {
 	public double getGrowingTime() {
 		return growingTime;
 	}
-
-	/**
-	* Gets the crop's type.
-	* @return cropCategory	
-	public String getCropCategory() {
-		return cropCategory;
-	}
-*/
 	
 	/**
 	* Gets the crop's category type.
@@ -115,6 +101,7 @@ implements Serializable, Comparable<CropType> {
 	public double getEdibleBiomass() {
 		return edibleBiomass;
 	}
+	
 	/**
 	* Gets the edible water content
 	* @return crop's edible water content
@@ -123,6 +110,7 @@ implements Serializable, Comparable<CropType> {
 		//System.out.println(name + "'s water content in getEdibleWaterContent() is " + edibleWaterContent);
 		return edibleWaterContent;
 	}
+	
 	/**
 	* Gets the inedible biomass
 	* @return crop's inedible biomass
@@ -138,13 +126,14 @@ implements Serializable, Comparable<CropType> {
 	public double getDailyPAR() {
 		return dailyPAR;
 	}
+	
 	/**
 	 * String representation of this cropType.
 	 * @return The settlement and cropType's name.
 	 */
 	// 2014-12-09 Added toString()
 	public String toString() {
-		return name;
+		return Conversion.capitalize(name);
 	}
 
 	public Map<Integer, Phase> getPhases() {

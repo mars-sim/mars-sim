@@ -76,7 +76,7 @@ implements Serializable {
     private double powerSustainingCrop;
     private double maxGrowingArea;
     private double remainingGrowingArea;
-    private double totalHarvestinKgPerDay;
+    private double dailyMaxHarvest;
     
     private String cropInQueue;
 
@@ -309,7 +309,7 @@ implements Serializable {
 		//System.out.println("remainingGrowingArea : "+ remainingGrowingArea);
 
 		// 1kg = 1000 g
-		double maxHarvestinKgPerDay = edibleBiomass * cropArea /1000D ;
+		double dailyMaxHarvest = edibleBiomass/1000D * cropArea;
     	//logger.info("max possible harvest on " + cropType.getName() + " : " + Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
 
 		//totalHarvestinKgPerDay = (maxHarvestinKgPerDay + totalHarvestinKgPerDay) /2;
@@ -326,7 +326,7 @@ implements Serializable {
 
 	    }
 
-		crop = new Crop(cropType, cropArea, maxHarvestinKgPerDay, this, settlement, isNewCrop, percentGrowth);
+		crop = new Crop(cropType, cropArea, dailyMaxHarvest, this, settlement, isNewCrop, percentGrowth);
 
     	return crop;
     }
@@ -467,7 +467,7 @@ implements Serializable {
     		    	//System.out.println("Farming.java: deleteCropListInQueue() : i is at " + i);
     				String name = c.getName();
     		    	//System.out.println("Farming.java: deleteCropListInQueue() : c is " + c);
-    	 			if (cropType.getName() != name)
+    	 			if (!cropType.getName().equals(name))
     	 				logger.log(java.util.logging.Level.SEVERE, "The crop queue encounters a problem removing a crop");
     	 			else {
     	 				j.remove();
@@ -840,7 +840,7 @@ implements Serializable {
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000 millisols
 
-        return totalHarvestinKgPerDay / crops.size() * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
+        return dailyMaxHarvest / crops.size() * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
     }
 
     @Override

@@ -103,8 +103,7 @@ implements Serializable {
 					
 				if (!known)
 					throw new IllegalArgumentException("no such crop category : " + cropCategory);
-				
-				
+								
 				// Get ppf
 				//String ppfStr = crop.getAttributeValue(PPF);
 				//double ppf = Double.parseDouble(ppfStr);
@@ -133,20 +132,9 @@ implements Serializable {
 				//String harvestIndexStr = crop.getAttributeValue(HARVEST_INDEX);
 				//double harvestIndex = Double.parseDouble(harvestIndexStr);
 
-				// Create crop type.
-				//CropType cropType = new CropType(name, growingTime * 1000D, cropCategory, ppf * 1D, photoperiod * 1D, harvestIndex);
-
 				// 2016-06-29 Set up the default growth phases of a crop
 				Map<Integer, Phase> phases = new HashMap<>();
-/*				
-				phases.put(0, new Phase(PhaseType.INCUBATION, 0));
-				phases.put(1, new Phase(PhaseType.PLANTING, 0));
-				phases.put(2, new Phase(PhaseType.GERMINATION, 5D));
-				phases.put(3, new Phase(PhaseType.GROWING, 95D));
-				phases.put(4, new Phase(PhaseType.HARVESTING, 0));
-				phases.put(5, new Phase(PhaseType.FINISHED, 0));
-*/				
-				//if (cropCategory.equalsIgnoreCase("tubers")) {
+
 				if (cat == CropCategoryType.TUBERS) {
 					
 					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
@@ -159,7 +147,41 @@ implements Serializable {
 					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
 					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
 					
-				 } else {
+				} else if (cat == CropCategoryType.FRUITS) {
+					
+					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
+					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
+					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+					phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 35D));
+					phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 25D));
+					phases.put(5, new Phase(PhaseType.FRUITING, 1D, 35D));
+					phases.put(6, new Phase(PhaseType.HARVESTING, 0.75, 0));
+					phases.put(7, new Phase(PhaseType.FINISHED, 0.1, 0));
+										
+				} else if (cat == CropCategoryType.LEAVES) {
+					
+					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
+					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
+					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
+					phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 5D));
+					phases.put(4, new Phase(PhaseType.HEAD_DEVELOPMENT, 1D, 40D));
+					phases.put(5, new Phase(PhaseType.FIFTY_PERCENT_HEAD_SIZE_REACHED, 1D, 50D));
+					phases.put(6, new Phase(PhaseType.HARVESTING, 0.75, 0));
+					phases.put(7, new Phase(PhaseType.FINISHED, 0.1, 0));
+					
+				} else if (cat == CropCategoryType.BULBS) {
+		
+					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
+					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
+					phases.put(2, new Phase(PhaseType.CLOVE_SPROUTING, 1D, 5D));
+					phases.put(3, new Phase(PhaseType.POST_EMERGENCE, 1D, 15D));
+					phases.put(4, new Phase(PhaseType.LEAFING, 1D, 25D));
+					phases.put(5, new Phase(PhaseType.BULB_INITIATION, 1D, 25D));
+					phases.put(6, new Phase(PhaseType.MATURATION, 1D, 30D));					
+					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
+					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
+		
+				} else {
 					
 					phases.put(0, new Phase(PhaseType.INCUBATION, 2D, 0));
 					phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0));
@@ -167,9 +189,9 @@ implements Serializable {
 					phases.put(3, new Phase(PhaseType.GROWING, 1D, 95D));
 					phases.put(4, new Phase(PhaseType.HARVESTING, 0.75, 0));
 					phases.put(5, new Phase(PhaseType.FINISHED, 0.1, 0));
-								
+					
 				}
-				 
+
 				CropType cropType = new CropType(name, growingTime * 1000D, cat,
 							edibleBiomass, edibleWaterContent, inedibleBiomass, 
 							dailyPAR, phases);

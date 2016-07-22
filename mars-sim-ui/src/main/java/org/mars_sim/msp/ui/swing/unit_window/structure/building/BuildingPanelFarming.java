@@ -309,7 +309,7 @@ implements Serializable, MouseListener {
 		selectPanel.add(buttonPanel);
 
 		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
-	    balloonToolTip.createBalloonTip(delButton, "<html>Highlight a crop from <br> the queue below to delete </html>");
+	    balloonToolTip.createBalloonTip(delButton, "<html>Highlight a crop in <br> the queue below to delete </html>");
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		//delButton.setOpaque(false);
@@ -469,9 +469,9 @@ implements Serializable, MouseListener {
     	result.append("<br>&nbsp;Growing Days:&emsp;");
     	result.append(time);
     	result.append("<br>&emsp;Edible Mass:&emsp;");
-    	result.append(mass0).append(" kg");
+    	result.append(mass0).append(" g/m2/day");
     	result.append("<br>&nbsp;Inedible Mass:&emsp;");
-    	result.append(mass1).append(" kg");
+    	result.append(mass1).append(" g/m2/day");
     	result.append("<br>&nbsp;Water Content:&emsp;");
     	result.append(water).append(" %");
     	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;");

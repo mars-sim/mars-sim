@@ -14,7 +14,7 @@ public enum PhaseType {
 	/** default logger. */
 	//private static Logger logger = Logger.getLogger(Phase.class.getName());
 
-	/* generic phases of development */
+	/* Default or Generic Phases */
 	INCUBATION("Incubation"),
 	PLANTING("Planting"),
 	GERMINATION("Germination"), //include initial sprouting of a seedling
@@ -29,11 +29,42 @@ public enum PhaseType {
 	LEAF_DEVELOPMENT("Leaf Development"),
 	TUBER_INITIATION("Tuber Initiation"),
 	TUBER_FILLING("Tuber Filling"),
-	MATURING("Maturing");
+	MATURING("Maturing"),
 	//HARVESTING("Harvesting");
 	//FINISHED("Finished"),
 	
+	/* For Fruits */
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	//GERMINATION("Germination"), //include initial sprouting of a seedling
+	VEGETATIVE_DEVELOPMENT("Vegetative Development"),
+	FLOWERING("Flowering"),
+	FRUITING("Fruiting"),
+	//HARVESTING("Harvesting");
+	//FINISHED("Finished"),
+	
+	/* For Leaves */
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	//GERMINATION("Germination"), //include initial sprouting of a seedling
+	POST_EMERGENCE("Post Emergence"),
+	HEAD_DEVELOPMENT("Head Development"),
+	FIFTY_PERCENT_HEAD_SIZE_REACHED("Half Head Size Reached"),
+	//HARVESTING("Harvesting");
+	//FINISHED("Finished"),
 
+	/* For Bulbs */
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	CLOVE_SPROUTING("Clove Sprouting"),
+	//POST_EMERGENCE("Post Emergence"),
+	LEAFING("Leafing"),
+	BULB_INITIATION("Bulb Initiation"),
+	MATURATION("Maturation");
+	//HARVESTING("Harvesting");
+	//FINISHED("Finished"),
+	
+	
 	private String name;
 
 	private PhaseType(String name) {
