@@ -183,7 +183,7 @@ implements Serializable {
 		
 				} else {
 					
-					phases.put(0, new Phase(PhaseType.INCUBATION, 2D, 0));
+					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
 					phases.put(1, new Phase(PhaseType.PLANTING, 0.5, 0));
 					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 5D));
 					phases.put(3, new Phase(PhaseType.GROWING, 1D, 95D));

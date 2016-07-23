@@ -313,12 +313,11 @@ implements Serializable {
     	//logger.info("max possible harvest on " + cropType.getName() + " : " + Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
 
 		//totalHarvestinKgPerDay = (maxHarvestinKgPerDay + totalHarvestinKgPerDay) /2;
-
-		double percentGrowth = 0;
+		double percentAvailable = 0;
 
 	    if (isNewCrop) {
 	        //2015-08-26 Added useSeedlings()
-	    	percentGrowth = useTissueCulture(cropType, cropArea);
+	    	percentAvailable = useTissueCulture(cropType, cropArea);
 	    	// 2015-01-14 Added fertilizer to the soil for the new crop
 	        provideFertilizer(cropArea);
 	        // 2015-02-28 Replaced some amount of old soil with new soil
@@ -326,7 +325,7 @@ implements Serializable {
 
 	    }
 
-		crop = new Crop(cropType, cropArea, dailyMaxHarvest, this, settlement, isNewCrop, percentGrowth);
+		crop = new Crop(cropType, cropArea, dailyMaxHarvest, this, settlement, isNewCrop, percentAvailable);
 
     	return crop;
     }
@@ -368,7 +367,7 @@ implements Serializable {
      * Uses available tissue culture to shorten Germinating Phase when planting the crop
      * @parama cropType
      * @param cropArea
-     * @return percentGrowth
+     * @return percentAvailable
      */
     //2015-08-26 Added useSeedlings()
     //2015-09-18 Changed to useTissueCulture()
@@ -379,7 +378,7 @@ implements Serializable {
 
     	String tissue = cropType.getName()+ " " + Crop.TISSUE_CULTURE;
 
-    	boolean result = false;
+    	boolean available = false;
 
       	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(tissue);
@@ -387,25 +386,24 @@ implements Serializable {
 	    	inv.addAmountDemandTotalRequest(nameAR);
 	    	
 	    	if (amountStored < 0.0000000001) {
-	    		//logger.warning("No more " + name);
+	    		logger.warning("No more " + tissue);
 	    		percent = 0;
 	    	}
 	    	
 	    	else if (amountStored < requestedAmount) {
-	     		//logger.warning("Just ran out of " + name);
-	    		result = true;
+	    		available = true;
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount = amountStored ;
 	    		logger.info(tissue + " is partially available : " + requestedAmount + " kg");
 	    	}
 
 	    	else {
-	    		result = true;
-	    		percent = 100;
+	    		available = true;
+	    		percent = 100D ;
 	    		logger.info(tissue + " is fully available : " + requestedAmount + " kg");
 	    	}
 
-	    	if (result) {
+	    	if (available) {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
 	    		inv.addAmountDemand(nameAR, requestedAmount);
 	    	}

@@ -390,7 +390,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 
 		<functions>
-			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0">
+			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="150.0">
 				<activity>
 					<activity-spot xloc="1.6" yloc="4.9" />
 					<activity-spot xloc="1.6" yloc="2.45" />
@@ -2138,7 +2138,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 
 		<functions>
-			<farming crops="5" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="75.0">
+			<farming crops="4" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="40.0">
 				<activity>
 					<activity-spot xloc="0.0" yloc="3.75" />
 					<activity-spot xloc="0.0" yloc="1.87" />

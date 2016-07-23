@@ -770,10 +770,12 @@ implements Serializable, MouseListener {
 				//	growth = (int) (growingCompleted * 100D);
 				//}
 				//else 
-				if (phaseType == PhaseType.HARVESTING || phaseType == PhaseType.FINISHED)
-					growth = (int) (growingCompleted * 100D);//100;
-				else
+				if (phaseType == PhaseType.HARVESTING)
 					growth = (int) (growingCompleted * 100D);
+				else if (phaseType == PhaseType.FINISHED)
+					growth = 100;
+				else
+					growth = (int) (growingCompleted * 100D);				
 				
 				return String.valueOf(growth) + "%";
 			}
