@@ -82,7 +82,7 @@ public class Flyout extends Region {
     
     /** The default style of the background */
     private String styleString = "-fx-background-color: rgba(0, 0, 0, 0.5);"  +
-                	"-fx-background-radius: 2px;";
+                	"-fx-background-radius: 0px;";
     
     //private MainScene mainScene;
     
@@ -258,7 +258,7 @@ public class Flyout extends Region {
             }else{
                 userNodeContainer.setLayoutX(newY.doubleValue());
             }
-            
+
         });
         tl.statusProperty().addListener((v, o, n) -> {
             if(n == Animation.Status.STOPPED) {
@@ -339,7 +339,7 @@ public class Flyout extends Region {
         
         KeyValue keyValue = new KeyValue(loc, destVal, interpolator);
         // create a keyFrame with duration 500ms
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(500), keyValue);
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(300), keyValue);
         // erase last keyframes: forward & reverse have different frames
         tl.getKeyFrames().clear();
         // add the keyframe to the timeline
@@ -388,8 +388,5 @@ public class Flyout extends Region {
             case RIGHT : return new Pair<>(fp.getX() + anchorBounds.getWidth(), fp.getY());
             default : return null;
         }
-    }
-    
-    
-    
+    }    
 }

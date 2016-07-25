@@ -211,7 +211,8 @@ implements Serializable {
     	}
     	else  { //if (rand == 3) {
     		//System.out.println("3: continue to tend");
-  
+    		setPhase(TENDING);
+    		
 	        double workTime = 0;
 	        double factor = 2D;
 	        

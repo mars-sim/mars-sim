@@ -60,10 +60,35 @@ public enum PhaseType {
 	//POST_EMERGENCE("Post Emergence"),
 	LEAFING("Leafing"),
 	BULB_INITIATION("Bulb Initiation"),
-	MATURATION("Maturation");
+	MATURATION("Maturation"),
 	//HARVESTING("Harvesting");
 	//FINISHED("Finished"),
 	
+	/* For Legumes */
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	//GERMINATION("Germination"),
+	//LEAFING("Leafing"),
+	//FLOWERING("Flowering"),
+	SEED_FILL("Seed Fill"),
+	POD_MATURING("Pod Maturing"),
+	//HARVESTING("Harvesting"),
+	//FINISHED("Finished"),
+	
+	/* For Grains */
+	//INCUBATION("Incubation"),
+	//PLANTING("Planting"),
+	//GERMINATION("Germination"),
+	//LEAFING("Leafing"),
+	TILLERING("Tillering"),
+	// for rice only //PANICLE_INITIATION("Panicle Initiation"),
+	STEM_ELONGATION("Stem Elongation"),
+	//FLOWERING("Flowering"),
+	MILK_DEVELOPMENT("Milk Development"), // or seed fill for wheat
+	DOUGH_DEVELOPING("Dough Development"); // including soft dough and hard dough 
+	//MATURATION("Maturation"), not using RIPENING("Ripening"); // including milk, 
+	//HARVESTING("Harvesting"),
+	//FINISHED("Finished"),
 	
 	private String name;
 

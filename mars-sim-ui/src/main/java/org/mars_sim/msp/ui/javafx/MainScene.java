@@ -227,6 +227,9 @@ public class MainScene {
 	private MessagePopup messagePopup;
 	
 	private BorderSlideBar topFlapBar;
+	
+	private MasterClock masterClock;
+	private EarthClock earthClock;
 
 	/**
 	 * Constructor for MainScene
@@ -237,7 +240,8 @@ public class MainScene {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
-		
+		this.masterClock = Simulation.instance().getMasterClock();
+
 		//stage.setResizable(true);
 		stage.setMinWidth(width);//1024);
 		stage.setMinHeight(height);//480);
@@ -286,7 +290,7 @@ public class MainScene {
 
 		public void handle(KeyEvent t) {
 			if (t.getCode() == KeyCode.ESCAPE) {
-				boolean isOnPauseMode = Simulation.instance().getMasterClock().isPaused();
+				boolean isOnPauseMode = masterClock.isPaused();
 				if (isOnPauseMode) {
 					//System.out.println("ESCHandler : calling unpauseSimulation()");
 					unpauseSimulation();
@@ -359,7 +363,7 @@ public class MainScene {
 		logger.info("MainScene's openTransportWizard() is in " + Thread.currentThread().getName() + " Thread");
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
-		boolean previous = Simulation.instance().getMasterClock().isPaused();
+		boolean previous = masterClock.isPaused();
 		if (!previous) {
 			pauseSimulation();
 	    	//System.out.println("previous is false. Paused sim");
@@ -372,7 +376,7 @@ public class MainScene {
 			//System.out.println("ended transportWizard.deliverBuildings() ");
 		});
 
-		boolean now = Simulation.instance().getMasterClock().isPaused();
+		boolean now = masterClock.isPaused();
 		if (!previous) {
 			if (now) {
 				unpauseSimulation();
@@ -401,7 +405,7 @@ public class MainScene {
 		//logger.info("MainScene's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
-		boolean previous = Simulation.instance().getMasterClock().isPaused();
+		boolean previous = masterClock.isPaused();
 		if (!previous) {
 			pauseSimulation();
 	    	//System.out.println("previous is false. Paused sim");
@@ -412,7 +416,7 @@ public class MainScene {
 				constructionWizard.selectSite(mission);
 			});
 
-		boolean now = Simulation.instance().getMasterClock().isPaused();
+		boolean now = masterClock.isPaused();
 		if (!previous) {
 			if (now) {
 				unpauseSimulation();
@@ -949,22 +953,23 @@ public class MainScene {
 		}
 		
 		statusBar.getRightItems().add(new Separator(VERTICAL));
-		statusBar.getRightItems().add(new Separator(VERTICAL));
+		//statusBar.getRightItems().add(new Separator(VERTICAL));
 
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
 		
-		statusBar.getRightItems().add(new Separator(VERTICAL));
+		statusBar.getRightItems().add(new Separator(VERTICAL));	
 
-		MasterClock master = Simulation.instance().getMasterClock();
-		if (master == null) {
-			throw new IllegalStateException("master clock is null");
+		if (masterClock == null) {
+			//throw new IllegalStateException("master clock is null");
+			masterClock = Simulation.instance().getMasterClock();
 		}
-		EarthClock earthclock = master.getEarthClock();
-		if (earthclock == null) {
-			throw new IllegalStateException("earthclock is null");
+		
+		if (earthClock == null) {
+			earthClock = masterClock.getEarthClock();
+			//throw new IllegalStateException("earthclock is null");
 		}
 
 		timeText = new Label();
@@ -977,7 +982,6 @@ public class MainScene {
 
 		return statusBar;
 	}
-
 
 
 	public NotificationPane getNotificationPane() {
@@ -1018,24 +1022,12 @@ public class MainScene {
 	 */
 	public void updateStatusBarText() {
  
-		String t = Simulation.instance().getMasterClock().getEarthClock().getTimeStamp();
+		String t = earthClock.getTimeStamp();
 		// Check if new simulation is being created or loaded from file.
-		if (Simulation.isUpdating() || Simulation.instance().getMasterClock().isPaused()) {
+		if (Simulation.isUpdating() || masterClock.isPaused()) {
 			timeText.setText(" [ PAUSE ]  ESC to resume  " + t + "  ");		
-		}
-		
-		else { 
-/*
-			MasterClock master = Simulation.instance().getMasterClock();
-			if (master == null) {
-				throw new IllegalStateException("master clock is null");
-			}
-			EarthClock earthclock = master.getEarthClock();
-			if (earthclock == null) {
-				throw new IllegalStateException("earthclock is null");
-			}
-			t = earthclock.getTimeStamp();
-*/				
+		}	
+		else { 	
 			timeText.setText("  " + t + "  ");
 		}
 
@@ -1045,9 +1037,7 @@ public class MainScene {
 		memUsedCache = memTotal - memFree;
 
 		memUsed = (int)((memUsed + memUsedCache)/2D);
-*/
-				
-				
+*/			
 	}
 
 	/**
@@ -1300,7 +1290,7 @@ public class MainScene {
 		showSavingStage();
 		
 		// 2015-12-18 Check if it was previously on pause
-		boolean previous = Simulation.instance().getMasterClock().isPaused();
+		boolean previous = masterClock.isPaused();
 		// Pause simulation.
 		if (!previous) {
 			pauseSave();
@@ -1366,7 +1356,7 @@ public class MainScene {
 */
 
 		// 2015-12-18 Check if it was previously on pause
-		boolean now = Simulation.instance().getMasterClock().isPaused();
+		boolean now = masterClock.isPaused();
 		if (!previous) {
 			if (now) {
 				unpauseSave();
@@ -1421,21 +1411,17 @@ public class MainScene {
 			else
 				return;
 		}
-
 		//showSavingStage();
-		
-		MasterClock clock = Simulation.instance().getMasterClock();
-
+		//MasterClock clock = Simulation.instance().getMasterClock();
 		if (type == AUTOSAVE) {
 			//desktop.disposeAnnouncementWindow();			
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.autosavingSim")); //$NON-NLS-1$
-			clock.autosaveSimulation();
+			masterClock.autosaveSimulation();
 		} else if (type == SAVE_AS || type == DEFAULT) {
 			//desktop.disposeAnnouncementWindow();
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.savingSim")); //$NON-NLS-1$
-			clock.saveSimulation(fileLocn);
+			masterClock.saveSimulation(fileLocn);
 		}
-
 /*
   		// Note: the following Thread.sleep() causes system to hang in MacOSX, but not in Windows
 		while (clock.isSavingSimulation() || clock.isAutosavingSimulation()) {
@@ -1445,11 +1431,8 @@ public class MainScene {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.sleepInterrupt"), e); //$NON-NLS-1$
 			}
 		}
-
 */
-
-		//desktop.disposeAnnouncementWindow();
-		
+		//desktop.disposeAnnouncementWindow();	
 		//hideSavingStage();
 	}
 
@@ -1480,7 +1463,7 @@ public class MainScene {
 		//desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$
 		//autosaveTimeline.pause();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-		Simulation.instance().getMasterClock().setPaused(true);
+		masterClock.setPaused(true);
 		//startPausePopup();
 		//timeText.setText(" [Paused] " + timeStamp + "  ");
 		//desktop.getTimeWindow().enablePauseButton(false);
@@ -1498,7 +1481,7 @@ public class MainScene {
 		stopPausePopup();
 		//desktop.disposeAnnouncementWindow();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
-		Simulation.instance().getMasterClock().setPaused(false);
+		masterClock.setPaused(false);
 		//autosaveTimeline.play();	
 		//desktop.getTimeWindow().enablePauseButton(true);
 	}
@@ -1510,14 +1493,14 @@ public class MainScene {
 	public void pauseSave() {
 		//showSavingStage();
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
-		Simulation.instance().getMasterClock().setPaused(true);
+		masterClock.setPaused(true);
 	}
 
 	/**
 	 * Unpauses the simulation.
 	 */
 	public void unpauseSave() {
-		Simulation.instance().getMasterClock().setPaused(false);
+		masterClock.setPaused(false);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
 		//hideSavingStage();
 	}
@@ -1562,7 +1545,7 @@ public class MainScene {
 		 * e.printStackTrace(System.err); }
 		 */
 
-		Simulation.instance().getMasterClock().exitProgram();
+		masterClock.exitProgram();
 		//Platform.exit();
 	}
 
@@ -1760,11 +1743,11 @@ public class MainScene {
 
 		// Save the simulation.
 		//Simulation sim = Simulation.instance();
-		MasterClock clock = Simulation.instance().getMasterClock();
+		//MasterClock clock = Simulation.instance().getMasterClock();
 		try {
-			clock.saveSimulation(null);
+			masterClock.saveSimulation(null);
 						
-			while (clock.isSavingSimulation())
+			while (masterClock.isSavingSimulation())
 				TimeUnit.MILLISECONDS.sleep(500L);
 			
 		} catch (Exception e) {

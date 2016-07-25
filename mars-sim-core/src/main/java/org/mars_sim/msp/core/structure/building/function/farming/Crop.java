@@ -184,7 +184,7 @@ public class Crop implements Serializable {
 	
 		if (newCrop) {
 			phaseType = PhaseType.INCUBATION; 
-			System.out.println(cropType + " tissuePercent : " + tissuePercent);
+			//System.out.println(cropType + " tissuePercent : " + tissuePercent);
 			if (tissuePercent <= 0) {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				growingTimeCompleted =  1000D * phases.get(0).getWorkRequired() ;
@@ -214,7 +214,7 @@ public class Crop implements Serializable {
 			int size = phases.size();
 			
 			for (int i= 0; i < size; i++) {
-				if ( fractionalGrowthCompleted * 100D <= getTotalPercent(i)) {
+				if (i < size-2 && fractionalGrowthCompleted * 100D <= getTotalPercent(i)) {
 					phaseType = cropType.getPhases().get(i).getPhaseType();
 					break;
 				}
@@ -817,8 +817,8 @@ public class Crop implements Serializable {
 				
 				int size = phases.size();
 				
-				for (int i= 0; i < size; i++) {
-					if (growingTimeCompleted * 100D <= growingTime * getTotalPercent(i)) {
+				for (int i = 0; i < size; i++) {
+					if (i < size-2 && growingTimeCompleted * 100D <= growingTime * getTotalPercent(i)) {
 						phaseType = cropType.getPhases().get(i).getPhaseType();
 						currentPhaseWorkCompleted = 0D;
 						break;

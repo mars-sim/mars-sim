@@ -141,8 +141,6 @@ public class ChatBox extends BorderPane {
         setTop(titleLabel);
         setCenter(textArea);
         setBottom(hbox);
-        
-        //update();
     }
     
     

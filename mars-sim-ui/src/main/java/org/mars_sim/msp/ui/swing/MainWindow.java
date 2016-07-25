@@ -162,7 +162,7 @@ public class MainWindow extends JComponent {
 	// 2015-02-04 Added init()
 	public void init() {
 
-			frame.setTitle(Simulation.WINDOW_TITLE);
+			frame.setTitle(Simulation.title);
 			frame.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosing(WindowEvent event) {

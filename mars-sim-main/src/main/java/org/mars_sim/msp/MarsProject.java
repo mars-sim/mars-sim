@@ -77,7 +77,7 @@ public class MarsProject {
 
 		public void run() {
 		   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
-	    	logger.info("Starting " + Simulation.WINDOW_TITLE);
+	    	logger.info("Starting " + Simulation.title);
 
 	        List<String> argList = Arrays.asList(args);
 	        useGUI = !argList.contains("-headless");

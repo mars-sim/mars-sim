@@ -278,7 +278,7 @@ public class MainMenu {
        //stage.initStyle(StageStyle.UNDECORATED);
        stage.centerOnScreen();
        stage.setResizable(false);
-	   stage.setTitle(Simulation.WINDOW_TITLE);
+	   stage.setTitle(Simulation.title);
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
        //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
        stage.setScene(mainMenuScene);
@@ -380,7 +380,7 @@ public class MainMenu {
 			//waiti = new WaitIndicator(waitStage);		
 			//stage.display(selectedFile);		
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-			logger.info("Restarting " + Simulation.WINDOW_TITLE);
+			logger.info("Restarting " + Simulation.title);
 			Simulation.instance().start(false);
 		}
 		else {			
@@ -416,7 +416,7 @@ public class MainMenu {
 			   
 			mainSceneStage.centerOnScreen();
 			//mainSceneStage.setResizable(false);
-			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+			mainSceneStage.setTitle(Simulation.title);
 			//waitStage.close();		
 			mainSceneStage.show();
 			mainSceneStage.requestFocus();
@@ -464,7 +464,7 @@ public class MainMenu {
 			showLoadingStage();
 	
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-			logger.info("Restarting " + Simulation.WINDOW_TITLE);
+			logger.info("Restarting " + Simulation.title);
 			Simulation.instance().start(false);
 		}
 		else {			
@@ -493,7 +493,7 @@ public class MainMenu {
 			//setMonitor(mainSceneStage);		   
 			mainSceneStage.centerOnScreen();
 			//mainSceneStage.setResizable(false);
-			mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+			mainSceneStage.setTitle(Simulation.title);
 			//waitStage.close();		
 			mainSceneStage.show();
 			mainSceneStage.requestFocus();
@@ -561,7 +561,7 @@ public class MainMenu {
        
        mainSceneStage.centerOnScreen();
        //mainSceneStage.setResizable(false);
-       mainSceneStage.setTitle(Simulation.WINDOW_TITLE);
+       mainSceneStage.setTitle(Simulation.title);
 	   mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
  
        mainSceneStage.show();

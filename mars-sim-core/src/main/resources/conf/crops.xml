@@ -16,165 +16,6 @@
 	<!-- Default: 5.0 -->
 	<water-consumption-rate value="5.0" />
 
-
-<!-- References :
-
-1.	Crop Production for Advanced Life Support Systems, P.18 Table 6, 8-11-2006
-
-2. 	NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 http://ston.jsc.nasa.gov/collections/trs/_techrep/CR-2004-208941.pdf
-
-3. 	Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
-
-4. 	For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
-
-5. 	http://healthyeating.sfgate.com/list-fruits-vegetable-high-water-content-8958.html
- a. Vegetables that contain 92 percent water include
-	cauliflower, eggplant, red cabbage, peppers and spinach.
- b. Broccoli is 91 percent water by weight.
- c. Additional healthy hydrating foods include carrots with 87 percent water and
-	green peas and white potatoes with 79 percent water.
- d. water content:
-	http://www2.ca.uky.edu/enri/pubs/enri129.pdf
-
-6. 	Typical expected yield for food crop:
-	http://www.kzndae.gov.za/Portals/0/Horticulture/Veg%20prod/expected_yields.pdf
-
-7. 	01ICES-307 Design Parameters for Mars Deployable Greenhouses
-	http://www.marshome.org/files2/Bucklin1.pdf
-
-	growing-time : # of sols
-	crop-category : the type of crop
-	edible-biomass : [ gram / m^2 / day ]
-	edible-water-content : in proportion of 1 (1 is 100%)
-	inedible-biomass :  [ gram / m^2 / day ]
-	daily-PAR : [ mol / m^2 / day ]
-
-	Note: 1 metric ton = 1 tonnes
-
-	1 tonnes per hectare = 0.1 kg per m^2
-	Thus, 1/100 tonnes per hectare per day = 1 gram per m^2 per day
-
-8.  Photosynthetically active radiation (PAR) is light with a wavelength between 300/400 nm and 700 nm
-
-	Researchers measure instantaneous light in micro-moles (μmol) per square
-	meter (m-2) per second (s-1), or: μmol·m-2·s-1 of PAR. This “quantum” unit quantifies the number of
-	photons (individual particles of energy) used in photosynthesis that fall on a square meter (10.8
-	square feet) every second.
-
-	This light measurement is an instantaneous reading.
-
-	Daily light integral (DLI) or Daily PAR is the amount of PAR received
-	each day as a function of light intensity (instantaneous light: μmol·m-2·s-1) and duration (day). It is expressed
-	as moles of light (mol) per square meter (m-2) per day (d-1), or: mol·m-2·d-1 (moles per day).
-	The DLI concept is like a rain gauge. Just as a rain gauge collects the total rain in a particular location over
-	a period of time, so DLI measures the total amount of PAR received in a day. Greenhouse growers can use
-	light meters to measure the number of light photons that accumulate in a square meter over a 24-hour period.
-
-10.	Total water use and water requirement:
-	soybean: total: 845 kg, req :  414 kg per gram....
-
-11. MPR Model: a crop model that consists of a set of nonlinear polynomial equations, six for each crop,
-	developed using multivariate polynomial regression (MPR).
-
-	The dependent variables for three of the six MPR equations are the relative growth rates
-	of (a) total dry mass prior to formation of yield bearing organs, (b) total dry mass after the
-	formation of yield bearing organs, and (c) yield dry mass.
-
-	The independent variables used in each equation include the average PPF, T, and CO2 values (averaged from planting date up to
-	the current time increment t), and the total or yield dry mass at t-1.
-
-	The model-based predictive controller adjusts light intensity, atmospheric/elevated atmospheric carbon dioxide concentration,
-	(photosynthetic photon flux (PPF), average daily air temperature (T),
-
-	http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/Publications/fleisher/modelingcontrol2001.pdf
-
-12. E.A. Mitsherlich (1909) proposed a theory of “Law of diminishing returns” states that,
-	‘The increase in any crop produce by a unit increment of a deficient factor is proportional to the
-	decrement of that factor from the maximum and the response is curvilinear instead of linear’.
-	Mitscherlich equation is dy/dx = C (A-Y) where,
-
-		d – increment or change
-		dy – amount of increase in yield
-		dx – amount of increment of the growth factor x.
-		A – Maximum possible yield
-		Y – Yield obtained for the given quantity of factor ‘x’ and
-		C – Proportionality constant that depends on the nature of the growth factor
-
-	In mars-sim, 
-
-		maximum harvest = max harvest mass [Kg per day] * crop's growing day,
-		
-		max harvest mass is affected by the availability of
-		1. fertilizer
-		2. water
-		3. CO2
-		4. O2
-		5. sunlight
-		6. planting/daily tending work required vs. served, 
-		
-		
-		
-13. In Mars-sim, there are 4 standard phases of a food crop:
-
-	a. Planting
-	b. Germination
-	c. Growing
-	d. Harvesting
-
-	In reality, each crop category have various phenological stage
-
-	e.g. 	for onion, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/cebolla.aspx#tabs-2 
-			for lettuce, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/lechuga.aspx#tabs-2
-			for potato, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/papa.aspx#tabs-4
-			for pepper, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pimiento.aspx#tabs-4
-			for garlic, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/ajo.aspx#tabs-2
-			for cucumber, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
-						
-	For definition of Plant Phenology, see
-	https://www.usanpn.org/files/shared/files/Schnelle_PlantPhenology_Ch1_english.pdf					
-						
-14. For "root" crop-category such as sweet potato, 
-	http://keys.lucidcentral.org/keys/sweetpotato/key/Sweetpotato%20Diagnotes/Media/Html/TheCrop/AboutTheCrop/Botany/Crop%20development.htm
-		
-15. According to the Food and Agriculture Organization of the United Nation (http://www.fao.org/docrep/X5642E/x5642e06.htm),
-	there is 9 types of vegetable crops based on edible part:
-	
-	a. Root vegetables (carrots, beetroot, radish)
-	b. Tuber vegetables (Yam, Irish potato) 
-	c. Corm (Taro)
-	d. Stem vegetable (Asparagus)
-	e  Leaf vegetables (Lettuce, Amaranth)
-	f  Bulb vegetable (Onion, garlic)
-	g. Fruit vegetable (Tomato, okra)
-	h. Flower vegetables (Broccoli, Cauliflower)
-	i. Seed vegetable (Berus, Peas)	
-	
-	for root/tuber/corm, see https://en.wikipedia.org/wiki/List_of_root_vegetables
-		
-	In mars-sim, we have 14 categories:
-
-	roots
-	tubers
-	corms
-	stems
-	leaves
-	bulbs
-	fruits
-	flowers
-	seeds
-	legumes
-	grains
-	grasses
-	fungi
-	spices
-		
-16. Tissue Culture – Technology Harnessed for Potato Seed Production
-	http://keaneanjournalofscience.in/?p=131		
-
-17. transplant vs. direct sow
-	http://www.passthepistil.com/transplanting-seedlings-vs-direct-sowing-seeds/
-	
--->
 	
 	<crop-list>
 	
@@ -269,7 +110,7 @@
 	    	inedible-biomass="161.00"
 	     	daily-PAR="25.92"
 	    	/>
-	
+			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
 	
 	    <crop name="peanut"
 	        growing-time="104.0"
@@ -288,6 +129,7 @@
 	    	inedible-biomass="38"
 	     	daily-PAR="34.56"
 	    	/>
+		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf -->
 	
 	    <crop name="wheat"
 	        growing-time="80"
@@ -297,7 +139,8 @@
 	    	inedible-biomass="26"
 	     	daily-PAR="69.12"
 	    	/>
-	
+		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
+		
 	    <crop name="potato"
 	    	growing-time="100.0"
 	    	crop-category="tubers"
@@ -466,7 +309,7 @@
 	    	Production from mature plants is about 11 tonnes per hectare.
 	    	Well-managed bogs should produce 100 to 200 barrels of cranberries per acre,
 	    	-->
-	
+
 	   	<crop name="Cucumber"
 	        growing-time="60"
 	    	crop-category="fruits"
@@ -534,5 +377,212 @@
 	    	 broccoli : http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/brocoli.aspx
 	-->
 	</crop-list>
+
+<!-- References :
+
+1.	Crop Production for Advanced Life Support Systems, P.18 Table 6, 8-11-2006
+
+2. 	NASA Advanced Life Support Baseline Values and Assumptions CR-2004-208941 http://ston.jsc.nasa.gov/collections/trs/_techrep/CR-2004-208941.pdf
+
+3. 	Space Settlements: A Design Study 1975. http://settlement.arc.nasa.gov/75SummerStudy/5appendC.html
+
+4. 	For Roots and tubers, see http://www.fao.org/es/faodef/fdef02e.htm
+
+5. 	http://healthyeating.sfgate.com/list-fruits-vegetable-high-water-content-8958.html
+ a. Vegetables that contain 92 percent water include
+	cauliflower, eggplant, red cabbage, peppers and spinach.
+ b. Broccoli is 91 percent water by weight.
+ c. Additional healthy hydrating foods include carrots with 87 percent water and
+	green peas and white potatoes with 79 percent water.
+ d. water content:
+	http://www2.ca.uky.edu/enri/pubs/enri129.pdf
+
+6. 	Typical expected yield for food crop:
+	http://www.kzndae.gov.za/Portals/0/Horticulture/Veg%20prod/expected_yields.pdf
+
+7. 	01ICES-307 Design Parameters for Mars Deployable Greenhouses
+	http://www.marshome.org/files2/Bucklin1.pdf
+
+	growing-time : # of sols
+	crop-category : the type of crop
+	edible-biomass : [ gram / m^2 / day ]
+	edible-water-content : in proportion of 1 (1 is 100%)
+	inedible-biomass :  [ gram / m^2 / day ]
+	daily-PAR : [ mol / m^2 / day ]
+
+	Note: 1 metric ton = 1 tonnes
+
+	1 tonnes per hectare = 0.1 kg per m^2
+	Thus, 1/100 tonnes per hectare per day = 1 gram per m^2 per day
+
+8.  Photosynthetically active radiation (PAR) is light with a wavelength between 300/400 nm and 700 nm
+
+	Researchers measure instantaneous light in micro-moles (μmol) per square
+	meter (m-2) per second (s-1), or: μmol·m-2·s-1 of PAR. 
+	
+	This “quantum” unit quantifies the number of photons (individual particles of energy) 
+	used in photosynthesis that fall on a square meter (10.8 square feet) every second.
+
+	This light measurement is an instantaneous reading.
+
+	Daily light integral (DLI) or Daily PAR is the amount of PAR received
+	each day as a function of light intensity (instantaneous light: μmol·m-2·s-1) and duration (day). 
+	It is expressed	as moles of light (mol) per square meter (m-2) per day (d-1), or: mol·m-2·d-1 (moles per day).
+	The DLI concept is like a rain gauge. 
+	
+	Just as a rain gauge collects the total rain in a particular location over
+	a period of time, so DLI measures the total amount of PAR received in a day. 
+	
+	Greenhouse growers can use	light meters to measure the number of light photons that accumulate in a square meter over a 24-hour period.
+
+10.	Total water use and water requirement:
+	soybean: total: 845 kg, req :  414 kg per gram....
+
+11. MPR Model: a crop model that consists of a set of nonlinear polynomial equations, six for each crop,
+	developed using multivariate polynomial regression (MPR).
+
+	The dependent variables for three of the six MPR equations are the relative growth rates
+	of (a) total dry mass prior to formation of yield bearing organs, (b) total dry mass after the
+	formation of yield bearing organs, and (c) yield dry mass.
+
+	The independent variables used in each equation include the average PPF, T, and CO2 values (averaged from planting date up to
+	the current time increment t), and the total or yield dry mass at t-1.
+
+	The model-based predictive controller adjusts light intensity, atmospheric/elevated atmospheric carbon dioxide concentration,
+	(photosynthetic photon flux (PPF), average daily air temperature (T),
+
+	http://www.usmarc.usda.gov/sp2UserFiles/ad_hoc/12755100FullTextPublicationspdf/Publications/fleisher/modelingcontrol2001.pdf
+
+12. E.A. Mitsherlich (1909) proposed a theory of “Law of diminishing returns” states that,
+	‘The increase in any crop produce by a unit increment of a deficient factor is proportional to the
+	decrement of that factor from the maximum and the response is curvilinear instead of linear’.
+	Mitscherlich equation is dy/dx = C (A-Y) where,
+
+		d – increment or change
+		dy – amount of increase in yield
+		dx – amount of increment of the growth factor x.
+		A – Maximum possible yield
+		Y – Yield obtained for the given quantity of factor ‘x’ and
+		C – Proportionality constant that depends on the nature of the growth factor
+
+	In mars-sim, 
+
+		maximum harvest = max harvest mass [kg per day] * crop's growing day,
+		
+		max harvest mass is daily modified by the availability of
+		1. fertilizer
+		2. water
+		3. CO2
+		4. O2
+		5. sunlight
+		6. planting/daily tending work required vs. served
+		
+		
+13. Prior to mars-sim version 3.1.0, there are 4 standard phases of a food crop:
+
+	a. Planting
+	b. Germination
+	c. Growing
+	d. Harvesting
+
+	In reality, each crop may have unique growth stages or phenology.
+
+	e.g. 	for onion, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/cebolla.aspx#tabs-2 
+			for lettuce, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/lechuga.aspx#tabs-2
+			for potato, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/papa.aspx#tabs-4
+			for pepper, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pimiento.aspx#tabs-4
+			for garlic, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/ajo.aspx#tabs-2
+			for cucumber, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
+			for apple, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/manzana.aspx#tabs-4
+						
+						
+	For definition of Plant Phenology, see
+	https://www.usanpn.org/files/shared/files/Schnelle_PlantPhenology_Ch1_english.pdf					
+						
+14. For "root" crop-category such as sweet potato, 
+	http://keys.lucidcentral.org/keys/sweetpotato/key/Sweetpotato%20Diagnotes/Media/Html/TheCrop/AboutTheCrop/Botany/Crop%20development.htm
+		
+15. According to the Food and Agriculture Organization of the United Nation (http://www.fao.org/docrep/X5642E/x5642e06.htm),
+	there is 9 types of vegetable crops based on edible part:
+	
+	a. Root vegetables (carrots, beetroot, radish)
+	b. Tuber vegetables (Yam, Irish potato) 
+	c. Corm (Taro)
+	d. Stem vegetable (Asparagus)
+	e  Leaf vegetables (Lettuce, Amaranth)
+	f  Bulb vegetable (Onion, garlic)
+	g. Fruit vegetable (Tomato, okra)
+	h. Flower vegetables (Broccoli, Cauliflower)
+	i. Seed vegetable (Berus, Peas)	
+	
+	for root/tuber/corm, see https://en.wikipedia.org/wiki/List_of_root_vegetables
+		
+	In mars-sim, we have 14 categories:
+
+	roots
+	tubers
+	corms
+	stems
+	leaves
+	bulbs
+	fruits
+	flowers
+	seeds
+	legumes (peanut, peas, soybean, kidney bean)
+	grains ( rice, quinoa, wheat)
+	grasses
+	fungi
+	spices
+		
+16. Tissue Culture – Technology Harnessed for Potato Seed Production
+	http://keaneanjournalofscience.in/?p=131		
+
+17. transplant vs. direct sow
+	http://www.passthepistil.com/transplanting-seedlings-vs-direct-sowing-seeds/
+	
+	 	 
+18. Annuals - Plants that perform their entire life cycle from seed to flower 
+	to seed within a single growing season. All roots, stems and leaves of the plant die annually. 
+	Only the dormant seed bridges the gap between one generation and the next.
+
+19. Perennials - Plants that persist for many growing seasons. Generally the top portion of 
+	the plant dies back each winter and regrows the following spring from the same root system 
+	(e.g. Purple Coneflower). Many perennial plants do keep their leaves year round and offer 
+	attractive borders and groundcover (e.g. Tickseed, Shasta and Ox-Eyed Daisy). 
+	
+	NOTE: WHEN STARTING PERENNIAL PLANTS FROM SEED, BLOOMS WILL BE OBSERVED IN EITHER THE SPRING
+	OR SUMMER OF THE SECOND YEAR AND EACH YEAR THEREAFTER (e.g. Ox-Eyed Daisy planted in the 
+	spring of 1996 will not bloom until the spring of 1997).
+
+20. Biennials - Plants which require two years to complete their life cycle. First season growth 
+	results in a small rosette of leaves near the soil surface. During the second season's 
+	growth stem elongation, flowering and seed formation occur followed by the entire plant's death.
+
+	Carrots, parsley, and onions are biennial crops.	
+	
+21. Annual/Perennial - A plant can behave as an annual or a perennial depending on local climatic 
+	and geographic growing conditions. In the southern portion of the United States, these plants
+	tend to grow much quicker than in the north due to the warmer weather and extended growing season.
+	
+	For example: a Black-Eyed Susan would behave as an annual if grown in Louisiana; whereas, 
+	if grown in Ohio, a Black-Eyed Susan would behave as a perennial.	
+	
+	See http://aggie-horticulture.tamu.edu/wildseed/growing/annual.html
+	
+22. For a variety of vegetable crop fact sheets, 
+	see http://aggie-horticulture.tamu.edu/vegetable/easy-gardening-series/	
+
+	For fruits and nuts,
+	see http://aggie-horticulture.tamu.edu/fruit-nut/
+
+23. For harvesting, handling and Storing vegetables,
+	see http://aggie-horticulture.tamu.edu/vegetable/files/2013/09/EHT-071.pdf
+	
+24. Using Growing Degree Days to Predict Plant Stages
+	see http://store.msuextension.org/publications/AgandNaturalResources/MT200103AG.pdf	
+	
+25. Peach Tree:
+	see http://hortsci.ashspublications.org/content/43/6/1813.full	
+-->
 
 </crop-configuration>

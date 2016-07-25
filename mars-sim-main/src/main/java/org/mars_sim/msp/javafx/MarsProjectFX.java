@@ -176,7 +176,7 @@ public class MarsProjectFX extends Application  {
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
 
-    	logger.info("Starting " + Simulation.WINDOW_TITLE);
+    	logger.info("Starting " + Simulation.title);
     	
 		argList = Arrays.asList(args);
 		

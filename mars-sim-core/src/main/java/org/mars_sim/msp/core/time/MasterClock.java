@@ -100,7 +100,10 @@ public class MasterClock implements Serializable { // Runnable,
 	private ClockThreadTask clockThreadTask;
 
 	private transient ThreadPoolExecutor clockListenerExecutor;
-
+	
+	private Simulation sim; 
+	private SimulationConfig config;
+	
     /**
      * Constructor
      *
@@ -109,8 +112,9 @@ public class MasterClock implements Serializable { // Runnable,
     public MasterClock() {
         //logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
+    	sim = Simulation.instance();
         // Initialize data members
-        SimulationConfig config = SimulationConfig.instance();
+        config = SimulationConfig.instance();
 
         // Create a Martian clock
         marsTime = new MarsClock(config.getMarsStartDateTime());
@@ -128,16 +132,15 @@ public class MasterClock implements Serializable { // Runnable,
         elapsedMilliseconds = 0L;
 
         //setupClockListenerTask();
-
         clockThreadTask = new ClockThreadTask();
 
         // Setting the initial time ratio.
-        setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
+        setTimeRatio(config.getSimulationTimeRatio());
 
         // 2015-10-31 Added loading the 3 values below from SimulationConfig
-        setTimeBetweenUpdates(SimulationConfig.instance().getTimeBetweenUpdates());
-        setNoDelaysPerYield(SimulationConfig.instance().getNoDelaysPerYield());
-        setMaxFrameSkips(SimulationConfig.instance().getMaxFrameSkips());
+        setTimeBetweenUpdates(config.getTimeBetweenUpdates());
+        setNoDelaysPerYield(config.getNoDelaysPerYield());
+        setMaxFrameSkips(config.getMaxFrameSkips());
     }
 
     /**
@@ -557,7 +560,7 @@ public class MasterClock implements Serializable { // Runnable,
         if (saveSimulation) {
             // Save the simulation to a file.
             try {
-                Simulation.instance().saveSimulation(file, false);
+                sim.saveSimulation(file, false);
             } catch (IOException e) {
 
                 logger.log(Level.SEVERE, "Could not save the simulation with file = "
@@ -570,7 +573,7 @@ public class MasterClock implements Serializable { // Runnable,
         else if (autosaveSimulation) {
             // Autosave the simulation to a file.
             try {
-                Simulation.instance().saveSimulation(file, true);
+                sim.saveSimulation(file, true);
             } catch (IOException e) {
 
                 logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
@@ -583,9 +586,9 @@ public class MasterClock implements Serializable { // Runnable,
         else if (loadSimulation) {
             // Load the simulation from a file.
             if (file.exists() && file.canRead()) {
-                Simulation.instance().loadSimulation(file);
+                sim.loadSimulation(file);
                	//logger.info("just done running Simulation's loadSimulation().");
-                Simulation.instance().start(false);
+                sim.start(false);
             }
             else {
                 logger.warning("Cannot access file " + file.getPath() + ", not reading");
@@ -744,9 +747,9 @@ public class MasterClock implements Serializable { // Runnable,
         uptimer.setPaused(isPaused);
 
         if (isPaused)
-        	Simulation.instance().getAutosaveTimeline().pause();
+        	sim.getAutosaveTimeline().pause();
         else
-        	Simulation.instance().getAutosaveTimeline().play();
+        	sim.getAutosaveTimeline().play();
         
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
