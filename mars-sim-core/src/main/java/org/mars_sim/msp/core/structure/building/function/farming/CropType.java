@@ -75,7 +75,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 * @return name
 	 */
 	public String getName() {
-		return Conversion.capitalize(name);
+		return name;//Conversion.capitalize(name);
 	}
 
 	/**
@@ -133,7 +133,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 */
 	// 2014-12-09 Added toString()
 	public String toString() {
-		return Conversion.capitalize(name);
+		return name;//Conversion.capitalize(name);
 	}
 
 	public Map<Integer, Phase> getPhases() {

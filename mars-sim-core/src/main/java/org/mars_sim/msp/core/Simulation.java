@@ -274,9 +274,9 @@ implements ClockListener, Serializable {
      * @throws Exception if transient data could not be loaded.
      */
     private void initializeTransientData() {
-       logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
+       //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
 
-    	eventManager = new HistoricalEventManager();
+       eventManager = new HistoricalEventManager();
     }
 
     /**

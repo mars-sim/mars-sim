@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -77,7 +78,10 @@ public class Sleep extends Task implements Serializable {
     private LivingAccommodations accommodations;
 
     private RoboticStation station;
-    private MarsClock clock;
+
+    private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock = sim.getMasterClock();
+	private static MarsClock marsClock = masterClock.getMarsClock();
 
 
     /**
@@ -92,7 +96,11 @@ public class Sleep extends Task implements Serializable {
 	public Sleep(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true,
                 (250D + RandomUtil.getRandomDouble(80D)));
-
+        
+		if (marsClock == null)
+			if (masterClock != null)
+				marsClock = masterClock.getMarsClock();
+    	
         //boolean walkSite = false;
 
         timeFactor = 3D; // TODO: should vary this factor by person
@@ -170,7 +178,7 @@ public class Sleep extends Task implements Serializable {
 	            	}
 	            	else {
 		            	// Case 5: this designated bed is currently occupied (OD)
-	                	logger.info("Case 5: " + person + " has a designated bed but is currently occupied. Will find a spot to fall asleep wherever he/she likes.");
+	                	logger.info("Case 5: " + person + " has a designated bed but is currently occupied. Will find a spot to fall asleep.");
 	                	// TODO: should allow him/her to sleep in gym or anywhere based on his/her usual preferences
 	                    // Just walk to a random location.
 	                    walkToRandomLocation(true);
@@ -205,30 +213,36 @@ public class Sleep extends Task implements Serializable {
 			                logger.info("Case 6: " + person + " is walking from " + startBuilding + " to use his/her new quarters at " + q6);
 
 		            	} else {
-			            	logger.fine(q7.getNickName() + " has empty, already designated bed (ED) temporarily available for " + person);
+			            	logger.fine(q7.getNickName() + " has an empty, already designated (ED) bed available for " + person);
 			            	// Case 7: the settlement has only empty, designated (ED) bed(s) available
 			            	// Question : will the owner of this bed be coming back soon from duty ?
-	                		// TODO : will split into Case 2a and Case 2b.
-	                		accommodations = (LivingAccommodations) q7.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+	                		//TODO : will split into Case 2a and Case 2b.
+/*
+			            	accommodations = (LivingAccommodations) q7.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 			        		walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);
 			                Building startBuilding = BuildingManager.getBuilding(person);                                  
-			                logger.info("Case 7: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q7);
+			                logger.info("Case 7a: " + person + " is walking from " + startBuilding + " to use someone else's quarters at " + q7);
 			                accommodations.addSleeper(person, false);
+*/
+		                   	logger.info("Case 7b: " + person + " will look for a spot to fall asleep.");
+
+	                        // Walk to random location.
+	                        walkToRandomLocation(true);
 		            	}
 
 
 	                } else {
 	
                 		// Case 8 : no empty bed at all
-                    	logger.info("Case 8: " + person + " couldn't find an empty bed at all. will look for a spot to fall asleep at right where he/she is.");
+                    	logger.info("Case 8: " + person + " couldn't find an empty bed at all. will look for a spot to fall asleep.");
                     	// TODO: should allow him/her to sleep in gym or anywhere.
-                    	//endTask();
                         // Walk to random location.
                         walkToRandomLocation(true);
 	            	}
 	            }
 			}
         }
+        
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             // If person is in rover, walk to passenger activity spot.
             if (person.getVehicle() instanceof Rover) {
@@ -237,7 +251,7 @@ public class Sleep extends Task implements Serializable {
         }
         
 
-        previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+        previousTime = marsClock.getMillisol();
 
         // Initialize phase
         addPhase(SLEEPING);
@@ -284,9 +298,12 @@ public class Sleep extends Task implements Serializable {
                 }
             }
         }
-        if (clock == null)
-        	clock = Simulation.instance().getMasterClock().getMarsClock();
-        previousTime = clock.getMillisol();
+
+		if (marsClock == null)
+			if (masterClock != null)
+				marsClock = masterClock.getMarsClock();
+    	
+        previousTime = marsClock.getMillisol();
 
         // Initialize phase
         addPhase(SLEEP_MODE_PHASE);
@@ -340,9 +357,7 @@ public class Sleep extends Task implements Serializable {
 	        person.getPhysicalCondition().setFatigue(newFatigue);
 
 	        // Check if alarm went off
-	        if (clock == null)
-	        	clock = Simulation.instance().getMasterClock().getMarsClock();
-	        double newTime = clock.getMillisol();
+	        double newTime = marsClock.getMillisol();
 	        double alarmTime = getAlarmTime();
 
 	        if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
@@ -356,7 +371,7 @@ public class Sleep extends Task implements Serializable {
 		}
 		else if (robot != null) {
 			// Check if alarm went off.
-	        double newTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+	        double newTime = marsClock.getMillisol();
 	        double alarmTime = getAlarmTime();
 	        if ((previousTime <= alarmTime) && (newTime >= alarmTime)) {
 	            endTask();

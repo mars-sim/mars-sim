@@ -658,7 +658,7 @@ public class SimulationConfig implements Serializable {
 			// 2016-06-08 Added quotationConfig
 			quotationConfig = new QuotationConfig(parseXMLFileAsJDOMDocument(QUOTATION_FILE, true));
 
-			logger.info("Done loading all xml files");
+			//logger.info("Done loading all xml files");
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error reading the config files: " + e.getMessage());

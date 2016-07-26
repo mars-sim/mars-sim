@@ -61,6 +61,10 @@ public class LivingAccommodations extends Function implements Serializable {
     private Building building;
     private Map<Person, Point2D> bedMap = new HashMap<>();
     
+    private static SimulationConfig simulationConfig = SimulationConfig.instance();
+    
+    private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
+    		
     /**
      * Constructor
      * @param building the building this function is for.
@@ -71,16 +75,15 @@ public class LivingAccommodations extends Function implements Serializable {
         super(FUNCTION, building);
         
         this.building = building;
-
-        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+  
+        //BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
         beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
         
-        PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
+        PersonConfig personconfig = simulationConfig.getPersonConfiguration();
         wasteWaterUsage = personconfig.getWaterUsageRate() / 1000D;
         double grey2BlackWaterRatio = personconfig.getGrey2BlackWaterRatio();
         greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
-
-        
+      
         // Load activity spots
         loadActivitySpots(buildingConfig.getLivingAccommodationsActivitySpots(building.getBuildingType()));
         
@@ -121,9 +124,8 @@ public class LivingAccommodations extends Function implements Serializable {
 
         double bedCapacityValue = demand / (supply + 1D);
 
-        BuildingConfig config = SimulationConfig.instance()
-                .getBuildingConfiguration();
-        double bedCapacity = config.getLivingAccommodationBeds(buildingName);
+        //BuildingConfig config = simulationConfig.getBuildingConfiguration();
+        double bedCapacity = buildingConfig.getLivingAccommodationBeds(buildingName);
 
         return bedCapacity * bedCapacityValue;
     }

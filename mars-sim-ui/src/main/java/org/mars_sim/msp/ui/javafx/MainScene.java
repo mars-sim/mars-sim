@@ -458,9 +458,8 @@ public class MainScene {
 		double scaledHorizontalLines = Screen.getPrimary().getBounds().getHeight();
 		// DPI scale factor.
 		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
-		logger.info("DPI Scale Factor is " + dpiScaleFactor);
-		
-		
+		//logger.info("DPI Scale Factor is " + dpiScaleFactor);
+			
 		// Create group to hold swingNode1 which holds the swing desktop
 		swingPane = new StackPane();
 		swingNode = new SwingNode();

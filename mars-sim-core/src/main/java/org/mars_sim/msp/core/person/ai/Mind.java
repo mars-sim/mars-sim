@@ -60,12 +60,14 @@ implements Serializable {
     /** The person's skill manager. */
     private SkillManager skillManager;
 
-    private MasterClock masterClock;
-
     private MissionManager missionManager;
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
 
+    private static Simulation sim = Simulation.instance();
+    private static MasterClock masterClock = sim.getMasterClock();
+    private static MarsClock marsClock = masterClock.getMarsClock();
+    
     /**
      * Constructor 1.
      * @param person the person owning this mind
@@ -86,12 +88,12 @@ implements Serializable {
         // Construct a task manager
         taskManager = new TaskManager(this);
 
-        missionManager = Simulation.instance().getMissionManager();
+        missionManager = sim.getMissionManager();
 
         // Construct a skill manager.
         skillManager = new SkillManager(person);
 
-        masterClock = Simulation.instance().getMasterClock();
+        //masterClock = sim.getMasterClock();
     }
 
     /**
@@ -118,9 +120,9 @@ implements Serializable {
     		if (jobLock) {
     		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
    	
-    	        MarsClock clock = masterClock.getMarsClock();
+    	        //MarsClock marsClock = masterClock.getMarsClock();
     	        // check for the passing of each day
-    	        int solElapsed = MarsClock.getSolOfYear(clock);
+    	        int solElapsed = MarsClock.getSolOfYear(marsClock);
     	        if (solElapsed != solCache) {
     	        	solCache = solElapsed;
     	        	jobLock = false;
@@ -135,7 +137,7 @@ implements Serializable {
         personality.updateStress(time);
 
         // Update relationships.
-        Simulation.instance().getRelationshipManager().timePassing(person, time);
+        sim.getRelationshipManager().timePassing(person, time);
 
         // Take action as necessary.
         if (taskManager != null)

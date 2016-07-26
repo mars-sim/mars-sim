@@ -20,6 +20,8 @@ import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Meta task for the PlayHoloGame task.
@@ -38,6 +40,10 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
+
+    private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock = sim.getMasterClock();
+	private static MarsClock marsClock = masterClock.getMarsClock();
 
     @Override
     public String getName() {
@@ -95,7 +101,7 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
         if (result < 0) result = 0;
 
         // Modify probability if during person's work shift.
-        int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+        int millisols = (int) marsClock.getMillisol();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
         if (isShiftHour) {
             result*= WORK_SHIFT_MODIFIER;

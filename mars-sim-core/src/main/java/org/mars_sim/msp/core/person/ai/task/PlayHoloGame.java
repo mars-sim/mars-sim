@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -54,6 +56,10 @@ implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.3D;
 
+    private static Simulation sim = Simulation.instance();
+	private static MasterClock masterClock = sim.getMasterClock();
+	private static MarsClock marsClock = masterClock.getMarsClock();
+
 	/**
 	 * Constructor.
 	 * @param person the person to perform the task
@@ -63,7 +69,7 @@ implements Serializable {
 				RandomUtil.getRandomDouble(40D));
 
 		// If during person's work shift, only relax for short period.
-		int millisols = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
+		int millisols = (int) marsClock.getMillisol();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 		if (isShiftHour) {
 		    setDuration(5D);

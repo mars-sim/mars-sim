@@ -23,6 +23,8 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The Mind class represents a person's mind. It keeps track of missions and
@@ -55,6 +57,9 @@ implements Serializable {
 
     private MissionManager missionManager;
 
+    private static Simulation sim = Simulation.instance();
+    private static MasterClock masterClock = sim.getMasterClock();
+    private static MarsClock marsClock = masterClock.getMarsClock();
 
     /**
      * Constructor 1.
@@ -82,7 +87,7 @@ implements Serializable {
         // Construct a task manager
         taskManager = new TaskManager(this);
 
-        missionManager = Simulation.instance().getMissionManager();
+        missionManager = sim.getMissionManager();
 
         // Construct a skill manager.
         skillManager = new SkillManager(robot);
@@ -108,7 +113,7 @@ implements Serializable {
         }
 
         // I don't think robots should be changing jobs on their own. - Scott
-        	 // Check if this robot needs to get a new job or change jobs.
+        // Check if this robot needs to get a new job or change jobs.
 //	        if (!jobLock) {
 //	        	setRobotJob(JobManager.getNewRobotJob(robot), false);
 //	        }
@@ -280,8 +285,6 @@ implements Serializable {
      * @param missions can actions be new missions?
      */
     public void getNewAction(boolean tasks, boolean missions) {
-
-        //MissionManager missionManager = Simulation.instance().getMissionManager();
 
     	if (robot.getPerformanceRating() < 0.5D) {
         	missions = false;

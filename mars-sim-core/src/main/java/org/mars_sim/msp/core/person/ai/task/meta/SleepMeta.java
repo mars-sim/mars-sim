@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * Meta task for the Sleep task.
@@ -44,14 +45,16 @@ public class SleepMeta implements MetaTask, Serializable {
 
     private static final int MAX_SUPPRESSION = 10;
 
-	private MarsClock clock;// = Simulation.instance().getMasterClock().getMarsClock();
+    private Simulation sim = Simulation.instance();
+	private MasterClock masterClock = sim.getMasterClock();
+	private MarsClock marsClock = masterClock.getMarsClock();
 
 	//private int solCache = 0;
 
 	public SleepMeta() {
-		if (clock == null)
-			if (Simulation.instance().getMasterClock() != null)
-				clock = Simulation.instance().getMasterClock().getMarsClock();
+		if (marsClock == null)
+			if (masterClock != null)
+				marsClock = masterClock.getMarsClock();
     	
 	}
 	
@@ -65,7 +68,7 @@ public class SleepMeta implements MetaTask, Serializable {
     	// the person will execute Sleep, increment numSleep;
     	PhysicalCondition pc = person.getPhysicalCondition();
     	pc.setNumSleep(pc.getNumSleep()+1);
-    	pc.updateValueSleepHabit((int) clock.getMillisol(), true);
+    	pc.updateValueSleepHabit((int) marsClock.getMillisol(), true);
         return new Sleep(person);
     }
 
@@ -88,7 +91,7 @@ public class SleepMeta implements MetaTask, Serializable {
 		}
 */
 
-    	int now = (int) clock.getMillisol();
+    	int now = (int) marsClock.getMillisol();
   	  	boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
 
         // Fatigue modifier.
@@ -141,7 +144,7 @@ public class SleepMeta implements MetaTask, Serializable {
 	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
 
 	            // Dark outside modifier.
-	            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+	            SurfaceFeatures surface = sim.getMars().getSurfaceFeatures();
 	            boolean isDark = (surface.getSolarIrradiance(person.getCoordinates()) == 0);
 	            if (isDark && !isAstronomer) {
 	                // Non-astronomers more likely to sleep when it's dark out.
@@ -212,10 +215,12 @@ public class SleepMeta implements MetaTask, Serializable {
                     	logger.fine("SleepMeta : " + person + " is a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
                     	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
                     	quarters = Sleep.getBestAvailableQuarters(person, false);
+                    	
                         if (quarters != null) {
                         	result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
      		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
-                        } else {
+                        } 
+                        else {
                            	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
                         	// TODO: should allow him/her to go sleep in gym or medical station.
     		            }
