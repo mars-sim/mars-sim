@@ -103,7 +103,15 @@ public class HotMeal implements Serializable {
 	public List<Ingredient> getIngredientList() {
 		return ingredientList;
 	}
+	
+	public double getOil() {
+		return oil;
+	}
 
+	public double getSalt() {
+		return salt;
+	}
+	
     public void destroy() {
     	ingredientList.clear();
         ingredientList = null;

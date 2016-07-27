@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -61,7 +62,17 @@ implements Serializable {
 
     /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
     public static final double COOKED_MEAL_WORK_REQUIRED = 8D; // 10 milli-sols is 15 mins
-
+    
+    public static String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
+    public static String FOOD_WASTE = "food waste";
+    public static String GREY_WATER = "grey water"; 
+    public static String TABLE_SALT = "table salt";
+    
+    public static String SOYBEAN_OIL = "Soybean Oil";
+    public static String GARLIC_OIL = "Garlic Oil";
+    public static String SESAME_OIL = "Sesame Oil";
+    public static String PEANUT_OIL = "Peanut Oil";
+		 
     // 2015-01-12 Dynamically adjusted the rate of generating meals
     //public double mealsReplenishmentRate;
     public static double UP = 0.01;
@@ -86,7 +97,8 @@ implements Serializable {
     //private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
     private List<CropType> cropTypeList;
-
+    private List<String> oils = new CopyOnWriteArrayList<>();
+    
     private int cookCapacity;
 	private int mealCounterPerSol = 0;
 	private int solCache = 1;
@@ -109,6 +121,13 @@ implements Serializable {
     private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); //HashMap<String, Integer>();
 
+    private static SimulationConfig simulationConfig = SimulationConfig.instance();
+    private static BuildingConfig config = simulationConfig.getBuildingConfiguration();
+    private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
+    private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
+    private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
+    private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -129,7 +148,7 @@ implements Serializable {
 
         cookingWorkTime = 0D;
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        //config = simulationConfig.instance().getBuildingConfiguration();
         this.cookCapacity = config.getCookCapacity(building.getBuildingType());
 
         // Load activity spots
@@ -137,11 +156,11 @@ implements Serializable {
 
     	// 2014-12-12 Added cropTypeList
         //TODO: make a map of cropName and water content
-		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+		//CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		cropTypeList = cropConfig.getCropList();
 
         // 2014-12-06 Added calling getMealList() from MealConfig
-    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+    	//MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
         mealConfigMealList = mealConfig.getMealList();
 
         // 2016-05-31 Added loading the two parameters from meals.xml
@@ -152,12 +171,17 @@ implements Serializable {
         qualityMap = ArrayListMultimap.create();
     	timeMap = ArrayListMultimap.create();
 
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dryFoodAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupportType.FOOD);
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
        	// 2014-12-12 Added computeDryMass()
         computeDryMass();
+        
+        oils.add(SOYBEAN_OIL);
+        oils.add(GARLIC_OIL);
+        oils.add(SESAME_OIL);
+        oils.add(PEANUT_OIL);
     }
 
     // 2014-12-12 Created computeDryMass(). Called out once only in Cooking.java's constructor
@@ -283,10 +307,8 @@ implements Serializable {
         }
 
         double cookingCapacityValue = demand / (supply + 1D);
-
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        //BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         double cookingCapacity = config.getCookCapacity(buildingName);
-
         return cookingCapacity * cookingCapacityValue;
     }
 
@@ -337,7 +359,7 @@ implements Serializable {
      * Gets the skill level of the best cook using this facility.
      * @return skill level.
      */
-    public int getBestCookSkill() {
+    public int getBestCookSkill(boolean has_oil) {
         int result = 0;
 
         if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
@@ -351,6 +373,8 @@ implements Serializable {
                         int cookingSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
                         if (cookingSkill > result) {
                             result = cookingSkill;
+                            if (has_oil && result < 1)
+                            	result++;
                         }
                     }
                 }
@@ -628,10 +652,16 @@ implements Serializable {
      * @return dessertAvailable
      */
     // 2015-01-02 Modified pickOneOil()
-	public String pickOneOil() {
+	public String pickOneOil(double amount) {
 
 	    	List<String> oilList = new CopyOnWriteArrayList<>();
-
+	    	int size = oils.size();    	
+	    	for (int i=0; i<size; i++) {
+	    		String oil = oils.get(i);
+	    		if (getAmountAvailable(oil) > amount)//AMOUNT_OF_OIL_PER_MEAL)
+		 	    	oilList.add(oil);
+	    	}
+/*
 	 	    if (getAmountAvailable("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Soybean Oil");
 	 	    if (getAmountAvailable("Garlic Oil") > AMOUNT_OF_OIL_PER_MEAL)
@@ -640,23 +670,21 @@ implements Serializable {
 	 	    	oilList.add("Sesame Oil");
 	 	    if (getAmountAvailable("Peanut Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Peanut Oil");
-
+*/
 			int upperbound = oilList.size();
-	    	int lowerbound = 1;
+	    	int lowerbound = 0;
 	    	String selectedOil = "None";
-
-	    	if (upperbound > 1) {
-	    		int index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
+	    	int index = 0;
+	    	if (upperbound > 0) {
+	    		index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
 	    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
 		    	selectedOil = oilList.get(index);
 	    	}
-	    	else if (upperbound == 1) {
-		    	selectedOil = oilList.get(0);
-	    	}
 	    	else if (upperbound == 0) {
-	    		selectedOil = "none";
+	    		//selectedOil = "None";
 	    		logger.info("Running out of oil in " + settlement.getName());
 	    	}
+	    	//logger.info("oil index : "+ index);
 	    	return selectedOil;
 		}
 
@@ -667,8 +695,9 @@ implements Serializable {
      */
     public double getAmountAvailable(String name) {
 	    AmountResource foodAR = AmountResource.findAmountResource(name);
-		double foodAvailable = inv.getAmountResourceStored(foodAR, false);
-		return foodAvailable;
+		//double foodAvailable = inv.getAmountResourceStored(foodAR, false);
+		//return foodAvailable;
+		return inv.getAmountResourceStored(foodAR, false);
 	}
 
     /**
@@ -687,17 +716,21 @@ implements Serializable {
 	        retrieveAnIngredientFromMap(dryMass, ingredientName, true);
 	    }
 
-	    retrieveOil();
-	    retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "table salt", true);
+	    // consume oil
+	    boolean has_oil = consumeOil(hotMeal.getOil());
+	    
+	    // consume salt
+	    retrieveAnIngredientFromMap(hotMeal.getSalt(), TABLE_SALT, true);
 
-	    useWater();
+	    // consume water
+	    consumeWater();
 
 	    String nameOfMeal = hotMeal.getMealName();
 	    //TODO: kitchen equipment and quality of food should affect mealQuality
-	    int mealQuality = getBestCookSkill();
-	    MarsClock expiration = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	    int mealQuality = getBestCookSkill(has_oil);
+	    MarsClock expiration = (MarsClock) marsClock.clone();
 	    CookedMeal meal = new CookedMeal(nameOfMeal, mealQuality, dryMassPerServing, expiration, producerName, this);
-	    logger.finest("a new meal cooked by : " + meal.getName());
+	    logger.finest("A new meal was cooked by : " + meal.getName());
 	    cookedMeals.add(meal);
 	    mealCounterPerSol++;
 
@@ -765,8 +798,8 @@ implements Serializable {
     /**
      * Consumes a certain amount of water for each meal
      */
-    // 2015-01-28 Added useWater()
-    public void useWater() {
+    // 2015-01-28 Added consumeWater()
+    public void consumeWater() {
     	//TODO: need to move the hardcoded amount to a xml file
     	int sign = RandomUtil.getRandomInt(0, 1);
     	double rand = RandomUtil.getRandomDouble(0.2);
@@ -775,20 +808,25 @@ implements Serializable {
     		usage = 1 + rand;
     	else
     		usage = 1 - rand;
-	    retrieveAnIngredientFromMap(usage, org.mars_sim.msp.core.LifeSupportType.WATER, true);
-		double wasteWaterAmount = usage * .95;
-		Storage.storeAnResource(wasteWaterAmount, "grey water", inv);
+	    retrieveAnIngredientFromMap(usage, LifeSupportType.WATER, true);
+		double wasteWaterAmount = usage * .5;
+		Storage.storeAnResource(wasteWaterAmount, GREY_WATER, inv);
     }
 
 
-    // 2015-01-12 Added retrieveOil()
-    public void retrieveOil() {
+    // 2015-01-12 Added consumeOil()
+    public boolean consumeOil(double oilRequired) {
 	    // 2014-12-29 Added pickOneOil()
-	    String oil = pickOneOil();
+	    String oil = pickOneOil(oilRequired);
 
 	    if (!oil.equals("None")) {
-	    	retrieveAnIngredientFromMap(AMOUNT_OF_OIL_PER_MEAL, oil, true);
+		    //may use the default amount of AMOUNT_OF_OIL_PER_MEAL;	    	
+	    	retrieveAnIngredientFromMap(oilRequired, oil, true);
+	    	return true;
 	    }
+	    else
+		    // oil is not available
+	    	return false;
     }
 
     public void setChef(String name) {
@@ -856,22 +894,22 @@ implements Serializable {
             Iterator<CookedMeal> i = cookedMeals.iterator();
             while (i.hasNext()) {
                 CookedMeal meal = i.next();
-                MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-                if (MarsClock.getTimeDiff(meal.getExpirationTime(), currentTime) < 0D) {
+                //MarsClock currentTime = marsClock;
+                if (MarsClock.getTimeDiff(meal.getExpirationTime(), marsClock) < 0D) {
 
                     try {
                         cookedMeals.remove(meal);
 
                         // Check if cooked meal has gone bad and has to be thrown out.
                         double quality = meal.getQuality() / 2D + 1D;
-                        double num = RandomUtil.getRandomDouble(8 * quality);
+                        double num = RandomUtil.getRandomDouble(7 * quality + 1);
                         if (num < 1) {
-                            Storage.storeAnResource(dryMassPerServing, "food waste", inv);
+                            Storage.storeAnResource(dryMassPerServing, FOOD_WASTE, inv);
                             logger.fine(dryMassPerServing  + " kg " + meal.getName()
                                     + " expired, turned bad and discarded at " + getBuilding().getNickName()
                                     + " in " + settlement.getName() );
-                        }
-                        else {
+                        
+                        } else {
                             // Convert the meal into preserved food.
                             preserveFood();
                             logger.fine("Meal Expired. Convert "
@@ -906,9 +944,9 @@ implements Serializable {
     // 2015-01-12 Added checkEndOfDay()
 	public void checkEndOfDay() {
 
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 	    // Added 2014-12-08 : Sanity check for the passing of each day
-		int newSol = currentTime.getSolOfMonth();
+		int newSol = marsClock.getSolOfMonth();
 	    double rate = settlement.getMealsReplenishmentRate();
 	    if (newSol != solCache) {
 	    	// 2015-01-12 Adjust the rate to go up automatically by default
@@ -929,14 +967,14 @@ implements Serializable {
 
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		Storage.retrieveAnResource(cleaningAgentPerSol, "sodium hypochlorite", inv, true);
+		Storage.retrieveAnResource(cleaningAgentPerSol, SODIUM_HYPOCHLORITE, inv, true);
 		//Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 	}
 
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, "table salt", true);
-		Storage.storeAnResource(dryMassPerServing, org.mars_sim.msp.core.LifeSupportType.FOOD, inv);
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, TABLE_SALT, true);
+		Storage.storeAnResource(dryMassPerServing, LifeSupportType.FOOD, inv);
  	}
 
     /**
@@ -960,6 +998,16 @@ implements Serializable {
         return cookCapacity * 10D;
     }
 
+	@Override
+	public double getFullHeatRequired() {
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		return 0;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();
@@ -977,13 +1025,5 @@ implements Serializable {
         cropTypeList = null;
     }
 
-	@Override
-	public double getFullHeatRequired() {
-		return 0;
-	}
 
-	@Override
-	public double getPoweredDownHeatRequired() {
-		return 0;
-	}
 }

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.DailyWeather;
+import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -35,6 +36,7 @@ import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -85,13 +87,9 @@ implements Serializable, LifeSupportType, Objective {
 	// PersonConfig.java?
 	private static final double MIN_TEMP = 0.0D;
 	private static final double MAX_TEMP = 48.0D;
-
 	public static final int SOL_PER_REFRESH = 5;
-
 	private static final int RECORDING_FREQUENCY = 250; // in millisols
-
 	private static final int RADIATION_CHECK_FREQ = 100; // in millisols
-
 	public static final int NUM_CRITICAL_RESOURCES = 9;
 
 	/*
@@ -133,9 +131,7 @@ implements Serializable, LifeSupportType, Objective {
 	private boolean manufactureOverride = false;
 	/** Override flag for resource process at settlement. */
 	private boolean resourceProcessOverride = false;
-	/**
-	 * Override flag for construction/salvage mission creation at settlement.
-	 */
+	/* Override flag for construction/salvage mission creation at settlement.*/
 	private boolean constructionOverride = false;
 
 	private boolean[] exposed = {false, false, false};
@@ -143,9 +139,7 @@ implements Serializable, LifeSupportType, Objective {
 	private ObjectiveType objectiveType;
 	
 	private String objectiveName;
-	
 	//private ObservableList<String> objectivesOList;
-	
 	private final String[] objectiveArray = new String[]{
 			Msg.getString("ObjectiveType.crop")
 			, Msg.getString("ObjectiveType.manu")
@@ -174,8 +168,13 @@ implements Serializable, LifeSupportType, Objective {
 	private Inventory inv;
 	private ChainOfCommand chainOfCommand;
 	private CompositionOfAir compositionOfAir;
-	private MarsClock clock;
+	private Simulation sim = Simulation.instance();
+	private UnitManager unitManager = sim.getUnitManager();
+	private MissionManager missionManager = sim.getMissionManager();
 
+	private Weather weather = sim.getMars().getWeather();
+	private MarsClock clock = sim.getMasterClock().getMarsClock();
+	
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 
@@ -189,11 +188,8 @@ implements Serializable, LifeSupportType, Objective {
 	
 	/**
 	 * Constructor for subclass extension.
-	 *
-	 * @param name
-	 *            the settlement's name
-	 * @param location
-	 *            the settlement's location
+	 * @param name the settlement's name
+	 * @param location the settlement's location
 	 */
 	// constructor 1
 	// TODO: pending for deletion (use constructor 2 instead)
@@ -219,8 +215,7 @@ implements Serializable, LifeSupportType, Objective {
 	// constructor 3
 	// 2014-10-29 Added settlement id
 	// Called by UnitManager.java when users create the initial settlement
-	// Called by ArrivingSettlement.java when users create a brand new
-	// settlement
+	// Called by ArrivingSettlement.java when users create a brand new settlement
 	public Settlement(String name, int id, String template, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
@@ -258,11 +253,9 @@ implements Serializable, LifeSupportType, Objective {
 		// 2015-12-29 Added CompositionOfAir
 		compositionOfAir = new CompositionOfAir(this);
 
-		clock = Simulation.instance().getMasterClock().getMarsClock();
-
-		
+		clock = sim.getMasterClock().getMarsClock();
+	
 		// 2016-01-16 Added setObjective()
-		//
 		objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
 
@@ -601,7 +594,7 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public double getAirPressure() {
 		double result = NORMAL_AIR_PRESSURE;
-		double ambient = Simulation.instance().getMars().getWeather().getAirPressure(getCoordinates());
+		double ambient = sim.getMars().getWeather().getAirPressure(getCoordinates());
 
 		if (result < ambient)
 			return ambient;
@@ -617,7 +610,9 @@ implements Serializable, LifeSupportType, Objective {
 	public double getTemperature() {
 		double result = NORMAL_TEMP;
 		// double result = getLifeSupport().getTemperature();
-		double ambient = Simulation.instance().getMars().getWeather().getTemperature(getCoordinates());
+		if (weather == null)
+			weather = Simulation.instance().getMars().getWeather();
+		double ambient = weather.getTemperature(getCoordinates());
 
 		if (result < ambient)
 			return ambient;
@@ -892,7 +887,7 @@ implements Serializable, LifeSupportType, Objective {
 	public synchronized void performEndOfDayTasks() {
 
 		if (clock == null)
-			clock = Simulation.instance().getMasterClock().getMarsClock();
+			clock = sim.getMasterClock().getMarsClock();
 
 		// check for the passing of each day
 		int solElapsed = MarsClock.getSolOfYear(clock);
@@ -931,8 +926,9 @@ implements Serializable, LifeSupportType, Objective {
 		}
 	}
 
-	public void printWorkShift(String text) {
-		logger.info(text + " " + getName() + " work shift status => A:" + numA + " B:" + numB
+	public void printWorkShift(String sol) {
+		logger.info("Status of work shift for " + getName() + " on " + sol 
+				+  "-> A:" + numA + " B:" + numB
 				+ " X:" + numX + " Y:" + numY + " Z:" + numZ + " OnCall:" + numOnCall);
 				// + " Off:" + numOff);
 	}
@@ -1134,7 +1130,7 @@ implements Serializable, LifeSupportType, Objective {
 			inv.clearAmountDemandMetRequestMap();
 
 			// 2015-03-06 Added clearing of weather data map
-			Simulation.instance().getMars().getWeather().clearMap();
+			weather.clearMap();
 
 			logger.info(name + " : compacted supply demand data & cleared weather data.");
 		}
@@ -1164,7 +1160,7 @@ implements Serializable, LifeSupportType, Objective {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>(getInhabitants());
 
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -1207,7 +1203,7 @@ implements Serializable, LifeSupportType, Objective {
         
         if (allSettlements) {
         	// could be either radio (non face-to-face) conversation, don't care
-        	i = Simulation.instance().getUnitManager().getPeople().iterator(); 
+        	i = unitManager.getPeople().iterator(); 
         	sameBuilding = false;
         }
         else {
@@ -1215,6 +1211,7 @@ implements Serializable, LifeSupportType, Objective {
         	// may be radio or face-to-face conversation
         	i = getInhabitants().iterator(); 
         }
+        
         while (i.hasNext()) {
             Person person = i.next();
             Task task = person.getMind().getTaskManager().getTask();
@@ -1514,7 +1511,7 @@ implements Serializable, LifeSupportType, Objective {
 	public Collection<Person> getAllAssociatedPeople() {
 		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getAssociatedSettlement() == this)
@@ -1958,7 +1955,7 @@ implements Serializable, LifeSupportType, Objective {
 	public Collection<Robot> getAllAssociatedRobots() {
 		Collection<Robot> result = new ConcurrentLinkedQueue<Robot>();
 
-		Iterator<Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
+		Iterator<Robot> i = unitManager.getRobots().iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
 			if (robot.getAssociatedSettlement() == this)
@@ -1978,7 +1975,7 @@ implements Serializable, LifeSupportType, Objective {
 		Collection<Vehicle> result = getParkedVehicles();
 
 		// Also add vehicle mission vehicles not parked at settlement.
-		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(this).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
