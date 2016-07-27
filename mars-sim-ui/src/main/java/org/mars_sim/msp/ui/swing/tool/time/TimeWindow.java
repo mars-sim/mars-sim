@@ -86,8 +86,9 @@ implements ClockListener {
 
 	// Data members
 	private int solElapsedCache = 1;
+	private Simulation sim;
 	/** Master Clock. */
-	private MasterClock master;
+	private MasterClock masterClock;
 	/** Martian Clock. */
 	private MarsClock marsTime;
 	/** Earth Clock. */
@@ -134,11 +135,12 @@ implements ClockListener {
 		setResizable(false);
 
 		// Initialize data members
-		master = Simulation.instance().getMasterClock();
-		master.addClockListener(this);
-		marsTime = master.getMarsClock();
-		earthTime = master.getEarthClock();
-		uptimer = master.getUpTimer();
+		sim = Simulation.instance();
+		masterClock = sim.getMasterClock();
+		masterClock.addClockListener(this);
+		marsTime = masterClock.getMarsClock();
+		earthTime = masterClock.getEarthClock();
+		uptimer = masterClock.getUpTimer();
 		balloonToolTip = new BalloonToolTip();
 
 		// Get content pane
@@ -244,7 +246,7 @@ implements ClockListener {
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				master.setPaused(!master.isPaused());
+				masterClock.setPaused(!masterClock.isPaused());
 			}
 		});
 		pausePane.add(pauseButton);
@@ -261,7 +263,7 @@ implements ClockListener {
 		uptimePane.add(uptimeLabel, BorderLayout.CENTER);
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
-		String pulsePerSecond = formatter.format(master.getPulsesPerSecond());
+		String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
 		pulsespersecondLabel = new JLabel(pulsePerSecond, JLabel.CENTER);
 		pulsespersecondPane.add(pulsespersecondLabel, BorderLayout.CENTER);
 
@@ -278,7 +280,7 @@ implements ClockListener {
 
 		//String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
 		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
-		String s = master.getTimeString(master.getTimeRatio());
+		String s = masterClock.getTimeString(masterClock.getTimeRatio());
 		final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
 		pulsePane.add(pulseCurRatioLabel, BorderLayout.CENTER);
 
@@ -287,16 +289,16 @@ implements ClockListener {
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-					pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio())); //$NON-NLS-1$
+					pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
 				}
 				else {
-					pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));
+					pulseCurRatioLabel.setText(masterClock.getTimeString(masterClock.getTimeRatio()));
 				}
 			}
 		});
 
 		// Create pulse slider
-		int sliderpos = calculateSliderValue(master.getTimeRatio());
+		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
 		pulseSlider = new JSliderMW(1, 100, sliderpos);
 		pulseSlider.setMajorTickSpacing(10);
 		pulseSlider.setMinorTickSpacing(2);
@@ -306,10 +308,10 @@ implements ClockListener {
 				try {
 					setTimeRatioFromSlider(pulseSlider.getValue());
 					if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-					    pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));
+					    pulseCurRatioLabel.setText(masterClock.getTimeString(masterClock.getTimeRatio()));
 					}
 					else {
-					    pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), master.getTimeRatio())); //$NON-NLS-1$
+					    pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
 					}
 				}
 				catch (Exception e2) {
@@ -318,7 +320,7 @@ implements ClockListener {
 			}
 		});
 		pulsePane.add(pulseSlider, BorderLayout.SOUTH);
-		setTimeRatioSlider(master.getTimeRatio());
+		setTimeRatioSlider(masterClock.getTimeRatio());
 
 		// Pack window
 		pack();
@@ -333,10 +335,8 @@ implements ClockListener {
 	 * @param sliderValue the slider value (1 to 100).
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
-
 	    double timeRatio = calculateTimeRatioFromSlider(sliderValue);
-
-		master.setTimeRatio(timeRatio);
+		masterClock.setTimeRatio(timeRatio);
 	}
 
 	/**
@@ -391,9 +391,7 @@ implements ClockListener {
 	 * @param timeRatio the time ratio (simulation time / real time).
 	 */
 	public void setTimeRatioSlider(double timeRatio) {
-
 	    int sliderValue = calculateSliderValue(timeRatio);
-
 	    pulseSlider.setValue(sliderValue);
 	}
 
@@ -480,12 +478,12 @@ implements ClockListener {
 	 */
 	// 2015-01-09 Added updateTime()
 	public void updateTime(double time) {
-		if (master == null)  {
+		if (masterClock == null)  {
 			//System.out.println("TimeWindow : master is null");
-			master = Simulation.instance().getMasterClock();
+			masterClock = sim.getMasterClock();
 		}
 
-    	int solElapsed = MarsClock.getSolOfYear(master.getMarsClock());
+    	int solElapsed = MarsClock.getSolOfYear(masterClock.getMarsClock());
 
 		if (marsTime != null) {
 			SwingUtilities.invokeLater(() -> {
@@ -510,9 +508,9 @@ implements ClockListener {
 				});
 		}
 
-		if (master != null) {
+		if (masterClock != null) {
 			DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
-			String pulsePerSecond = formatter.format(master.getPulsesPerSecond());
+			String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
 			pulsespersecondLabel.setText(pulsePerSecond);
 		}
 
@@ -536,19 +534,18 @@ implements ClockListener {
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$		
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
 			//if (mainScene != null)
-			Simulation.instance().getAutosaveTimeline().pause();
-			if (desktop.getMainScene() != null)
-				Platform.runLater(() -> desktop.getMainScene().startPausePopup());
+			sim.getAutosaveTimeline().pause();
+			if (!masterClock.isPaused() && mainScene != null)
+				Platform.runLater(() -> mainScene.startPausePopup());
 			
-		} else {
-			
+		} else {			
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			//desktop.disposeAnnouncementWindow();
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
 			//if (mainScene != null)
-			Simulation.instance().getAutosaveTimeline().play();
-			if (desktop.getMainScene() != null)
-				Platform.runLater(() -> desktop.getMainScene().stopPausePopup());
+			sim.getAutosaveTimeline().play();
+			if (masterClock.isPaused() && mainScene != null)
+				Platform.runLater(() -> mainScene.stopPausePopup());
 	
 		}
 	}
@@ -562,7 +559,7 @@ implements ClockListener {
 		pauseButton.setEnabled(value);
 		// Note : when a wizard or a dialog box is opened/close,
 		// need to call below to remove/add the ability to use ESC to unpause/pause
-		desktop.getMainScene().setEscapeEventHandler(value);
+		mainScene.setEscapeEventHandler(value);
 	}
 
 	/**
@@ -570,10 +567,10 @@ implements ClockListener {
 	 */
 	@Override
 	public void destroy() {
-		if (master != null) {
-			master.removeClockListener(this);
+		if (masterClock != null) {
+			masterClock.removeClockListener(this);
 		}
-		master = null;
+		masterClock = null;
 		marsTime = null;
 		earthTime = null;
 		uptimer = null;

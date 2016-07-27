@@ -315,7 +315,7 @@ public class PNotification {
          * Creates and shows a popup with the data from the given Notification object
          * @param NOTIFICATION
          */
-        private void showPopup(final PNotification NOTIFICATION) {
+        private synchronized void showPopup(final PNotification NOTIFICATION) {
             //System.out.println("starting showPopup(stage)");
             
             Label title = new Label(NOTIFICATION.TITLE);
@@ -354,9 +354,6 @@ public class PNotification {
             POPUP.setY( getY() );
             POPUP.getContent().add(popupContent);
 
-            if (popups.size() == 0)
-            	popups.add(POPUP);
-
             // Add a timeline for popup fade out
             KeyValue fadeOutBegin = new KeyValue(POPUP.opacityProperty(), 1.0);
             KeyValue fadeOutEnd   = new KeyValue(POPUP.opacityProperty(), 0.0);
@@ -375,10 +372,13 @@ public class PNotification {
 	            }));
             }
             
+            // Note: (NOT WORKING) popups.size() is always zero no matter what.
+            if (popups.size() < 1)
+            	popups.add(POPUP);
+
             // Move popup to the right during fade out
             //POPUP.opacityProperty().addListener((observableValue, oldOpacity, opacity) -> popup.setX(popup.getX() + (1.0 - opacity.doubleValue()) * popup.getWidth()) );
-
-       	 
+   	 
             if (stage.isShowing()) {
             	//stage.toFront();
             } else {
@@ -441,8 +441,15 @@ public class PNotification {
             	return false;
         }
 */
+               
+        public int numPopups() {
+            // Note: (NOT WORKING) popups.size() is always zero no matter what.
+        	return popups.size();   	
+        }
+
     }
     
+
 	public void destroy() {
 
 	    //this = null;

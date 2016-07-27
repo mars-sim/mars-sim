@@ -111,6 +111,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.BorderSlideBar;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
@@ -148,7 +149,7 @@ public class MainScene {
 	private static final int EDGE_DETECTION_PIXELS_X = 200;
 	
 	// Categories of loading and saving simulation
-	public static final int DEFAULT = 1;
+	public static final int SAVE_DEFAULT = 1;
 	public static final int AUTOSAVE = 2;
 	public static final int OTHER = 3; // load other file
 	public static final int SAVE_AS = 3; // save as other file
@@ -182,6 +183,9 @@ public class MainScene {
 
 	private String lookAndFeelTheme = "nimrod";
 
+	private String title = null;
+	private File fileLocn = null;
+	private String dir = null;
 	private Thread newSimThread;
 	private Thread loadSimThread;
 	private Thread saveSimThread;
@@ -228,9 +232,10 @@ public class MainScene {
 	
 	private BorderSlideBar topFlapBar;
 	
-	private MasterClock masterClock;
+    private Simulation sim = Simulation.instance();
+    private MasterClock masterClock = sim.getMasterClock();
 	private EarthClock earthClock;
-
+ 
 	/**
 	 * Constructor for MainScene
 	 *
@@ -240,7 +245,6 @@ public class MainScene {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
-		this.masterClock = Simulation.instance().getMasterClock();
 
 		//stage.setResizable(true);
 		stage.setMinWidth(width);//1024);
@@ -1211,10 +1215,10 @@ public class MainScene {
 			//MasterClock clock = Simulation.instance().getMasterClock();
 			//clock.loadSimulation(fileLocn);
 			
-			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-			Simulation.instance().stop();
+			sim.loadSimulation(fileLocn); // null means loading "default.sim"
+			sim.stop();
 			//Simulation.instance().getMasterClock().removeClockListener(oldListener);
-			Simulation.instance().start(false);
+			sim.start(false);
 			
 			//Simulation.instance().stop();
 			//Simulation.instance().start();
@@ -1284,9 +1288,9 @@ public class MainScene {
 	 *            Should the user be allowed to override location?
 	 */
 	public void saveSimulation(int type) {
-		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
-		showSavingStage();
+		//showSavingStage();
 		
 		// 2015-12-18 Check if it was previously on pause
 		boolean previous = masterClock.isPaused();
@@ -1314,7 +1318,7 @@ public class MainScene {
                  			try {
                  				//while (Simulation.instance().getMasterClock().isSavingSimulation()) {
                     				//FX Stuff done here
-                    				//System.out.println("sleep");
+                    				//System.out.println("sleep(1000L)");
 	                        		showSavingStage();
                     				TimeUnit.MILLISECONDS.sleep(1000L);
                  				//}
@@ -1378,45 +1382,48 @@ public class MainScene {
 	 */
 	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
-		//logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
-
-		//showSavingStage();
-		
-		File fileLocn = null;
-		String dir = null;
-		String title = null;
+		logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+		//showSavingStage();	
+		fileLocn = null;
+		dir = null;
+		title = null;
 		// 2015-01-25 Added autosave
 		if (type == AUTOSAVE) {
 			dir = Simulation.AUTOSAVE_DIR;
 			// title = Msg.getString("MainWindow.dialogAutosaveSim"); don't need
-		} else if (type == DEFAULT || (type == SAVE_AS)) {
+		} else if (type == SAVE_DEFAULT || type == SAVE_AS) {
+			//System.out.println("SAVE_DEFAULT or SAVE_AS");
 			dir = Simulation.DEFAULT_DIR;
 			title = Msg.getString("MainScene.dialogSaveSim");
 		}
 
 		if (type == SAVE_AS) {
-			FileChooser chooser = new FileChooser();
-			File userDirectory = new File(dir);
-			chooser.setTitle(title); // $NON-NLS-1$
-			chooser.setInitialDirectory(userDirectory);
-			// Set extension filter
-			FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter("Simulation files (*.sim)",
-					"*.sim");
-			//FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
-			chooser.getExtensionFilters().add(simFilter); // , allFilter);
-			File selectedFile = chooser.showSaveDialog(stage);
-			if (selectedFile != null)
-				fileLocn = selectedFile; // + Simulation.DEFAULT_EXTENSION;
-			else
-				return;
+			Platform.runLater(() -> {
+				FileChooser chooser = new FileChooser();
+				File userDirectory = new File(dir);
+				chooser.setTitle(title); // $NON-NLS-1$
+				chooser.setInitialDirectory(userDirectory);
+				// Set extension filter
+				FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter("Simulation files (*.sim)",
+						"*.sim");
+				//FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+				chooser.getExtensionFilters().add(simFilter); // , allFilter);
+				File selectedFile = chooser.showSaveDialog(stage);
+				if (selectedFile != null)
+					fileLocn = selectedFile; // + Simulation.DEFAULT_EXTENSION;
+				else
+					return;
+			});
 		}
+		
 		//showSavingStage();
 		//MasterClock clock = Simulation.instance().getMasterClock();
 		if (type == AUTOSAVE) {
 			//desktop.disposeAnnouncementWindow();			
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.autosavingSim")); //$NON-NLS-1$
 			masterClock.autosaveSimulation();
-		} else if (type == SAVE_AS || type == DEFAULT) {
+		} else if (type == SAVE_AS || type == SAVE_DEFAULT) {
+			//System.out.println("SAVE_DEFAULT or SAVE_AS, calling masterClock.saveSimulation(fileLocn)");
 			//desktop.disposeAnnouncementWindow();
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.savingSim")); //$NON-NLS-1$
 			masterClock.saveSimulation(fileLocn);
@@ -1437,9 +1444,11 @@ public class MainScene {
 
 	
 	public void startPausePopup() {
-		//System.out.println("calling startPausePopup()");   
+		System.out.println("calling startPausePopup(): messagePopup.numPopups() is " + messagePopup.numPopups());   
 		//messagePopup.popAMessage("PAUSED", " ESC to resume", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
-		if (!messagePopup.isOn()) {
+		//if (!messagePopup.isOn()) {
+		if (messagePopup.numPopups() < 1) {	
+            // Note: (NOT WORKING) popups.size() is always zero no matter what.
 			Platform.runLater(() -> 
 				messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON)
 			);  		    	
@@ -1501,7 +1510,7 @@ public class MainScene {
 	public void unpauseSave() {
 		masterClock.setPaused(false);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
-		//hideSavingStage();
+		hideSavingStage();
 	}
 
 	/**
@@ -1529,7 +1538,6 @@ public class MainScene {
 	public void exitSimulation() {
 		//logger.info("MainScene's exitSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		//desktop.openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
-
 		logger.info("Exiting simulation");
 
 		//Simulation sim = Simulation.instance();
@@ -1965,15 +1973,18 @@ public class MainScene {
 
  	public void showSavingStage() {
 		Platform.runLater(() -> {
-			setMonitor(savingCircleStage);
-			savingCircleStage.show();
+			if (!masterClock.isPaused()) {
+				setMonitor(savingCircleStage);
+				savingCircleStage.show();
+			}
 			//System.out.println("showSavingStage()");//savingCircleStage.requestFocus();		
 		});		
  	}
  	
  	public void hideSavingStage() {
  		Platform.runLater(() -> {
- 			savingCircleStage.hide();	
+			if (masterClock.isPaused())
+				savingCircleStage.hide();	
 			//System.out.println("hideSavingStage()");
  		});
  	}
@@ -1997,11 +2008,11 @@ public class MainScene {
             stage.setX(xPos);
             stage.setY(yPos);
             stage.centerOnScreen();
-            System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
+            //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
         } else {
             stage.centerOnScreen();
             //System.out.println("calling centerOnScreen()");
-            System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
+            //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
         }  
 		
 	}

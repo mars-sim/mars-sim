@@ -366,7 +366,7 @@ public class MainSceneMenu extends MenuBar  {
         saveItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override
      	   public void handle(ActionEvent e) {
-     		   mainScene.saveSimulation(MainScene.DEFAULT);
+     		   mainScene.saveSimulation(MainScene.SAVE_DEFAULT);
      	   }
      	});
 

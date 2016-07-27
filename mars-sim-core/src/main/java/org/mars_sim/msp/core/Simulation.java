@@ -123,7 +123,8 @@ implements ClockListener, Serializable {
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild = "unknown";
    
-	private Timeline autosaveTimeline;
+    // 2016-07-26 Added transient to avoid serialization error
+	private transient Timeline autosaveTimeline;
 	
     // Transient data members (aren't stored in save file)
     /** All historical info. */
@@ -157,6 +158,7 @@ implements ClockListener, Serializable {
     /** Manages transportation of settlements and resupplies from Earth. */
     private TransportManager transportManager;
 
+    private SimulationConfig simulationConfig = SimulationConfig.instance();
 	//public JConsole jc;
 
     /**
@@ -293,7 +295,7 @@ implements ClockListener, Serializable {
         //if (managerExecutor == null || managerExecutor.isShutdown()) {
         //    managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newSingleThreadExecutor();newFixedThreadPool();
 
-            malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
+            malfunctionFactory = new MalfunctionFactory(simulationConfig.getMalfunctionConfiguration());
             //managerExecutor.execute(malfunctionFactory);
             //logger.info("Done with MalfunctionFactory()");
             
@@ -546,7 +548,7 @@ implements ClockListener, Serializable {
             // Load intransient objects.
             SimulationConfig.setInstance((SimulationConfig) ois.readObject());
 
-            loadBuild = SimulationConfig.instance().getBuild();
+            loadBuild = simulationConfig.getBuild();
         	if (loadBuild == null)
         		loadBuild = "unknown";
         	
@@ -682,7 +684,7 @@ implements ClockListener, Serializable {
             File uncompressed = new File(DEFAULT_DIR, DEFAULT_FILE);            
             oos = new ObjectOutputStream(new FileOutputStream(uncompressed));           
             // Store the intransient objects.
-            oos.writeObject(SimulationConfig.instance());
+            oos.writeObject(simulationConfig);
             oos.writeObject(malfunctionFactory);
             oos.writeObject(mars);
             oos.writeObject(missionManager);
@@ -1004,7 +1006,7 @@ implements ClockListener, Serializable {
     //2016-04-28 Relocated the autosave timer from MainMenu to here
 	public void startAutosaveTimer(boolean useDefaultName) {
 
-		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
+		autosave_minute = simulationConfig.getAutosaveInterval();
 			
 		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock, 
 		// instead of directly call saveSimulation() here in Simulation

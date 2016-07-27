@@ -8,8 +8,13 @@
 
 package org.mars_sim.msp.core.structure.building.function.farming;
 
-public class Transplanting {
+import java.io.Serializable;
 
+public class Transplanting implements Serializable {
+
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	public Transplanting() {
 
 	}

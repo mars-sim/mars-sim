@@ -67,9 +67,14 @@ public class MessagePopup implements Serializable {
     	notifier.stop();
     }
     
-    public boolean isOn() {
-    	return notifier.getIsOn();
+    public int numPopups() {
+        // Note: (NOT WORKING) popups.size() is always zero no matter what.
+    	return notifier.numPopups();   	
     }
+    
+    //public boolean isOn() {
+    //	return notifier.getIsOn();
+    //}
     
     public void popAMessage(String title, String str, String name, Stage stage, Pos location, Image IMAGE) {  
     	//System.out.println("calling popAMessage()");
