@@ -149,9 +149,9 @@ public class MainScene {
 	private static final int EDGE_DETECTION_PIXELS_X = 200;
 	
 	// Categories of loading and saving simulation
+	public static final int OTHER = 0; // load other file
 	public static final int SAVE_DEFAULT = 1;
 	public static final int AUTOSAVE = 2;
-	public static final int OTHER = 3; // load other file
 	public static final int SAVE_AS = 3; // save as other file
 
 	private static int theme = 7; // 7 is the standard nimrod theme
@@ -1387,17 +1387,27 @@ public class MainScene {
 		fileLocn = null;
 		dir = null;
 		title = null;
+		
+		boolean previous = masterClock.isPaused();
+		// Pause simulation.
+		if (!previous) {
+			masterClock.setPaused(true);
+			//System.out.println("previous2 is false. Paused sim");
+		}
+
 		// 2015-01-25 Added autosave
 		if (type == AUTOSAVE) {
 			dir = Simulation.AUTOSAVE_DIR;
 			// title = Msg.getString("MainWindow.dialogAutosaveSim"); don't need
-		} else if (type == SAVE_DEFAULT || type == SAVE_AS) {
+			masterClock.autosaveSimulation();
+		
+		} else if (type == SAVE_DEFAULT) {
 			//System.out.println("SAVE_DEFAULT or SAVE_AS");
 			dir = Simulation.DEFAULT_DIR;
 			title = Msg.getString("MainScene.dialogSaveSim");
-		}
-
-		if (type == SAVE_AS) {
+			masterClock.saveSimulation(fileLocn);
+			
+		} else if (type == SAVE_AS) {
 			Platform.runLater(() -> {
 				FileChooser chooser = new FileChooser();
 				File userDirectory = new File(dir);
@@ -1413,22 +1423,27 @@ public class MainScene {
 					fileLocn = selectedFile; // + Simulation.DEFAULT_EXTENSION;
 				else
 					return;
+				
+				masterClock.saveSimulation(fileLocn);
+
 			});
 		}
-		
+
+/*		
 		//showSavingStage();
 		//MasterClock clock = Simulation.instance().getMasterClock();
 		if (type == AUTOSAVE) {
 			//desktop.disposeAnnouncementWindow();			
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.autosavingSim")); //$NON-NLS-1$
 			masterClock.autosaveSimulation();
-		} else if (type == SAVE_AS || type == SAVE_DEFAULT) {
+			
+		} else if (type == SAVE_DEFAULT) { // type == SAVE_AS
 			//System.out.println("SAVE_DEFAULT or SAVE_AS, calling masterClock.saveSimulation(fileLocn)");
 			//desktop.disposeAnnouncementWindow();
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.savingSim")); //$NON-NLS-1$
 			masterClock.saveSimulation(fileLocn);
 		}
-/*
+
   		// Note: the following Thread.sleep() causes system to hang in MacOSX, but not in Windows
 		while (clock.isSavingSimulation() || clock.isAutosavingSimulation()) {
 			try {
@@ -1438,8 +1453,25 @@ public class MainScene {
 			}
 		}
 */
+
 		//desktop.disposeAnnouncementWindow();	
 		//hideSavingStage();
+
+		boolean now = masterClock.isPaused();
+		
+		if (!previous) {
+			if (now) {
+				masterClock.setPaused(false);
+	    		//System.out.println("previous is false. now is true. Unpaused sim");
+			}
+			
+		} else {
+			if (!now) {
+				masterClock.setPaused(false);
+	    		//System.out.println("previous is true. now is false. Unpaused sim");
+			}
+		}
+		
 	}
 
 	
@@ -1983,7 +2015,7 @@ public class MainScene {
  	
  	public void hideSavingStage() {
  		Platform.runLater(() -> {
-			if (masterClock.isPaused())
+			//if (masterClock.isPaused())
 				savingCircleStage.hide();	
 			//System.out.println("hideSavingStage()");
  		});

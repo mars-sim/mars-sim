@@ -281,6 +281,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public void saveSimulation(File file) {
         saveSimulation = true;
+        //System.out.println("file is "+ file);
         this.file = file;
     }
 

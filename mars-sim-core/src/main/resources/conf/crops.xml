@@ -19,7 +19,7 @@
 	
 	<crop-list>
 	
-		<crop name="cabbage"
+		<crop name="Cabbage"
 	 	  	growing-time="85.0"
 	    	crop-category="leaves"
 	    	edible-biomass="75.78"
@@ -28,7 +28,7 @@
 	    	daily-PAR="17.28"
 	    	/>
 	
-		<crop name="carrot"
+		<crop name="Carrot"
 	    	growing-time="74.83"
 	    	crop-category="roots"
 	    	edible-biomass="40"
@@ -37,7 +37,7 @@
 	    	daily-PAR="32.4"
 	    	/>
 	
-		<crop name="swiss chard"
+		<crop name="Swiss Chard"
 	    	growing-time="45.0"
 	    	crop-category="leaves"
 	    	edible-biomass="87.50"
@@ -46,7 +46,7 @@
 	    	daily-PAR="17.28"
 	    	/>
 	
-		<crop name="celery"
+		<crop name="Celery"
 	    	growing-time="75.0"
 	    	crop-category="stems"
 	    	edible-biomass="103.27"
@@ -55,7 +55,7 @@
 	    	daily-PAR="17.28"
 	    	/>
 	
-	    <crop name="kidney bean"
+	    <crop name="Kidney bean"
 	    	growing-time="85.0"
 	    	crop-category="legumes"
 	    	edible-biomass="11.11"
@@ -64,7 +64,7 @@
 	     	daily-PAR="25.92"
 	    	/>
 	
-	    <crop name="green onion"
+	    <crop name="Green Onion"
 	    	growing-time="70.0"
 	    	crop-category="spices"
 	    	edible-biomass="81.82"
@@ -75,7 +75,7 @@
 	   	<!-- 1. Harvest between 70-90 days
 	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ -->
 	
-	    <crop name="lettuce"
+	    <crop name="Lettuce"
 	    	growing-time="28.0"
 	    	crop-category="leaves"
 	    	edible-biomass="35"
@@ -87,7 +87,7 @@
 	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
 	    	 10 kg / week yield for greenhouse  -->
 	
-	    <crop name="white onion"
+	    <crop name="White Onion"
 	    	growing-time="150.0"
 	    	crop-category="bulbs"
 	    	edible-biomass="81.82"
@@ -102,7 +102,7 @@
 			 3. K_C varies in each growth stage
 			 	ref : http://naldc.nal.usda.gov/download/31109/PDF  -->
 	
-	    <crop name="peas"
+	    <crop name="Peas"
 	        growing-time="75.0"
 	    	crop-category="legumes"
 	    	edible-biomass="12.20"
@@ -112,7 +112,7 @@
 	    	/>
 			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
 	
-	    <crop name="peanut"
+	    <crop name="Peanut"
 	        growing-time="104.0"
 	    	crop-category="legumes"
 	    	edible-biomass="6"
@@ -121,7 +121,7 @@
 	     	daily-PAR="32.4"
 	    	/>
 	
-	     <crop name="rice"
+	     <crop name="Rice"
 	        growing-time="100.0"
 	    	crop-category="grains"
 	    	edible-biomass="10.3"
@@ -131,7 +131,7 @@
 	    	/>
 		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf -->
 	
-	    <crop name="wheat"
+	    <crop name="Wheat"
 	        growing-time="80"
 	    	crop-category="grains"
 	    	edible-biomass="13"
@@ -141,7 +141,7 @@
 	    	/>
 		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 		
-	    <crop name="potato"
+	    <crop name="Potato"
 	    	growing-time="100.0"
 	    	crop-category="tubers"
 	    	edible-biomass="35"
@@ -150,7 +150,7 @@
 	     	daily-PAR="34.56"
 	    	/>
 	
-	    <crop name="sweet potato"
+	    <crop name="Sweet Potato"
 	    	growing-time="120.0"
 	    	crop-category="tubers"
 	    	edible-biomass="25"
@@ -159,7 +159,7 @@
 	     	daily-PAR="34.56"
 	    	/>
 	
-	    <crop name="yam"
+	    <crop name="Yam"
 	    	growing-time="200.0"
 	    	crop-category="tubers"
 	    	edible-biomass="15"
@@ -168,7 +168,7 @@
 	     	daily-PAR="34.56"
 	    	/>
 	    	    	
-	     <crop name="soybean"
+	     <crop name="Soybean"
 	        growing-time="93"
 	    	crop-category="legumes"
 	    	edible-biomass="10"
@@ -177,7 +177,7 @@
 	    	daily-PAR="34.56"
 	    	/>
 	
-	    <crop name="garlic"
+	    <crop name="Garlic"
 	        growing-time="85"
 	    	crop-category="bulbs"
 	    	edible-biomass="5.5"
@@ -323,7 +323,7 @@
 	    	http://teca.fao.org/sites/default/files/technology_files/High%20yielding%20vegetable%20varieties.pdf
 	    	-->
 	
-		<crop name = "Green Bell Pepper"
+		<crop name="Green Bell Pepper"
 			growing-time= "40"
 			crop-category="fruits"
 			edible-biomass= "50"
@@ -466,10 +466,11 @@
 		C – Proportionality constant that depends on the nature of the growth factor
 
 	In mars-sim, 
-
-		maximum harvest = max harvest mass [kg per day] * crop's growing day,
+	
+		Maximum harvest = max harvest mass [kg per day] * crop's growing day,
 		
-		max harvest mass is daily modified by the availability of
+		Max harvest mass is daily modified by the availability of
+		
 		1. fertilizer
 		2. water
 		3. CO2
@@ -494,17 +495,17 @@
 			for garlic, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/ajo.aspx#tabs-2
 			for cucumber, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
 			for apple, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/manzana.aspx#tabs-4
-						
-						
+
+
 	For definition of Plant Phenology, see
 	https://www.usanpn.org/files/shared/files/Schnelle_PlantPhenology_Ch1_english.pdf					
-						
+
 14. For "root" crop-category such as sweet potato, 
 	http://keys.lucidcentral.org/keys/sweetpotato/key/Sweetpotato%20Diagnotes/Media/Html/TheCrop/AboutTheCrop/Botany/Crop%20development.htm
-		
+
 15. According to the Food and Agriculture Organization of the United Nation (http://www.fao.org/docrep/X5642E/x5642e06.htm),
 	there is 9 types of vegetable crops based on edible part:
-	
+
 	a. Root vegetables (carrots, beetroot, radish)
 	b. Tuber vegetables (Yam, Irish potato) 
 	c. Corm (Taro)
@@ -514,9 +515,9 @@
 	g. Fruit vegetable (Tomato, okra)
 	h. Flower vegetables (Broccoli, Cauliflower)
 	i. Seed vegetable (Berus, Peas)	
-	
+
 	for root/tuber/corm, see https://en.wikipedia.org/wiki/List_of_root_vegetables
-		
+
 	In mars-sim, we have 14 categories:
 
 	roots
@@ -539,8 +540,7 @@
 
 17. transplant vs. direct sow
 	http://www.passthepistil.com/transplanting-seedlings-vs-direct-sowing-seeds/
-	
-	 	 
+
 18. Annuals - Plants that perform their entire life cycle from seed to flower 
 	to seed within a single growing season. All roots, stems and leaves of the plant die annually. 
 	Only the dormant seed bridges the gap between one generation and the next.
@@ -549,7 +549,7 @@
 	the plant dies back each winter and regrows the following spring from the same root system 
 	(e.g. Purple Coneflower). Many perennial plants do keep their leaves year round and offer 
 	attractive borders and groundcover (e.g. Tickseed, Shasta and Ox-Eyed Daisy). 
-	
+
 	NOTE: WHEN STARTING PERENNIAL PLANTS FROM SEED, BLOOMS WILL BE OBSERVED IN EITHER THE SPRING
 	OR SUMMER OF THE SECOND YEAR AND EACH YEAR THEREAFTER (e.g. Ox-Eyed Daisy planted in the 
 	spring of 1996 will not bloom until the spring of 1997).
@@ -559,11 +559,11 @@
 	growth stem elongation, flowering and seed formation occur followed by the entire plant's death.
 
 	Carrots, parsley, and onions are biennial crops.	
-	
+
 21. Annual/Perennial - A plant can behave as an annual or a perennial depending on local climatic 
 	and geographic growing conditions. In the southern portion of the United States, these plants
 	tend to grow much quicker than in the north due to the warmer weather and extended growing season.
-	
+
 	For example: a Black-Eyed Susan would behave as an annual if grown in Louisiana; whereas, 
 	if grown in Ohio, a Black-Eyed Susan would behave as a perennial.	
 	

@@ -609,7 +609,7 @@ implements ClockListener, Serializable {
      */
     public void saveSimulation(File file, boolean isAutosave) throws IOException {
         //logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
-
+    	//System.out.println("file is " + file);
     	// 2015-12-18 Check if it was previously on pause
 		boolean previous = masterClock.isPaused();
 		// Pause simulation.
@@ -680,9 +680,10 @@ implements ClockListener, Serializable {
             // See (1) http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
             //     (2) http://tukaani.org/xz/xz-javadoc/
             
-            // STEP 1: combine all objects into one single uncompressed file
-            File uncompressed = new File(DEFAULT_DIR, DEFAULT_FILE);            
-            oos = new ObjectOutputStream(new FileOutputStream(uncompressed));           
+            // STEP 1: combine all objects into one single uncompressed file, namely "default"
+            File default_uncompressed = new File(DEFAULT_DIR, DEFAULT_FILE);            
+        	oos = new ObjectOutputStream(new FileOutputStream(default_uncompressed));           
+ 
             // Store the intransient objects.
             oos.writeObject(simulationConfig);
             oos.writeObject(malfunctionFactory);
@@ -700,12 +701,13 @@ implements ClockListener, Serializable {
             
             // STEP 2: convert the uncompressed file into a fis
             // set up fos and outxz
-            FileInputStream fis = new FileInputStream(uncompressed);          
+            FileInputStream fis = new FileInputStream(default_uncompressed);          
+ 
             //File xzFilename = new File(DEFAULT_DIR, DEFAULT_FILE + ".xz");           
             FileOutputStream fos = new FileOutputStream(file);
 			LZMA2Options options = new LZMA2Options();		
+			// Set to 6. For mid sized archives (>8mb), 7 works better. 		
 			options.setPreset(6); 
-			// play with this number: 6 is default but 7 works better for mid sized archives ( > 8mb)		
 			XZOutputStream xzout = new XZOutputStream(fos, options);
 			
 			// STEP 3: set up buffer and create outxz and save as a .sim file
@@ -721,12 +723,12 @@ implements ClockListener, Serializable {
 
         } catch (IOException e){
             logger.log(Level.WARNING, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
-            throw e;
+            //throw e;
             
-        } finally {
-            if (oos != null) {
-                oos.close();
-            }
+        //} finally {
+        //    if (oos != null) {
+        //        oos.close();
+        //    }
         }
 
         sim.proceed();
