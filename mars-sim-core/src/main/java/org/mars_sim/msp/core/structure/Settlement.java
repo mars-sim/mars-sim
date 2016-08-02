@@ -927,10 +927,9 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	public void printWorkShift(String sol) {
-		logger.info("Status of work shift for " + getName() + " on " + sol 
-				+  "-> A:" + numA + " B:" + numB
+		logger.info(sol 
+				+ " (" + getName() + ") Work Shift " +  "-> A:" + numA + " B:" + numB
 				+ " X:" + numX + " Y:" + numY + " Z:" + numZ + " OnCall:" + numOnCall);
-				// + " Off:" + numOff);
 	}
 
 	/*
@@ -1051,7 +1050,6 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	// 2015-01-15 Added supply data
 	public void getSupplyDemandReport(int solElapsed) {
-
 		logger.info("<<< Sol " + solElapsed + " at " + this.getName()
 				+ " End of Day Report of Amount Resource Supply and Demand Statistics >>>");
 

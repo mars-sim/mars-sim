@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
@@ -52,6 +53,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -60,6 +62,7 @@ import org.mars_sim.msp.core.resource.Phase;
 import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -153,8 +156,16 @@ public class GoodsManager implements Serializable {
 
     private Inventory inv;
 
-    private CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-	
+    private static Simulation sim = Simulation.instance();
+    private static SimulationConfig simulationConfig = SimulationConfig.instance();
+    private static BuildingConfig config = simulationConfig.getBuildingConfiguration();
+    private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
+    private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
+    private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
+    private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+    private static MissionManager missionManager = sim.getMissionManager();
+    private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
+    private static UnitManager unitManager = Simulation.instance().getUnitManager();
     /**
      * Constructor.
      * @param settlement the settlement this manager is for.
@@ -316,7 +327,7 @@ public class GoodsManager implements Serializable {
 
 
         // 2015-01-15 Added solElapsed
-        MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        //MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
         int solElapsed = MarsClock.getSolOfYear(marsClock);
         // System.out.println("GoodManager : solElapsed : "+ solElapsed);
         // Compact and/or clear supply and demand maps every 5 days
@@ -508,16 +519,16 @@ public class GoodsManager implements Serializable {
 
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
-            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+            //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             if (resource.equals(oxygen))
-                amountNeededSol = config.getNominalO2Rate();
+                amountNeededSol = personConfig.getNominalO2Rate();
             AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (resource.equals(water))
-                amountNeededSol = config.getWaterConsumptionRate();
+                amountNeededSol = personConfig.getWaterConsumptionRate();
             AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
             if (resource.equals(food)) {
-                amountNeededSol = config.getFoodConsumptionRate();
+                amountNeededSol = personConfig.getFoodConsumptionRate();
             }
 
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
@@ -536,7 +547,7 @@ public class GoodsManager implements Serializable {
         AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         if (resource.equals(water)) {
             //double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
-        	double amountNeededSol = SimulationConfig.instance().getPersonConfiguration().getWaterUsageRate();
+        	double amountNeededSol = personConfig.getWaterUsageRate();
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getCurrentPopulationNum();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
@@ -571,7 +582,7 @@ public class GoodsManager implements Serializable {
         Collection<Vehicle> vehicles = settlement.getParkedVehicles();
 
         // Add associated vehicles out on missions.
-        Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+        Iterator<Mission> i = sim.getMissionManager().getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
             if (mission instanceof VehicleMission) {
@@ -957,14 +968,14 @@ public class GoodsManager implements Serializable {
         }
 
         // Determine total demand for cooked meal mass for the settlement.
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
         double cookedMealDemandOrbit = cookedMealDemandSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         int numPeople = settlement.getAllAssociatedPeople().size();
         double cookedMealDemand = numPeople * cookedMealDemandOrbit;
 
         // Determine demand for the resource as an ingredient for each cooked meal recipe.
-        MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+        //MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
         int numMeals = mealConfig.getMealList().size();
         Iterator<HotMeal> i = mealConfig.getMealList().iterator();
         while (i.hasNext()) {
@@ -1001,8 +1012,8 @@ public class GoodsManager implements Serializable {
         		hasDessert = true;
 
         if (hasDessert) {
-            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            double amountNeededSol = config.getDessertConsumptionRate() / dessert.length;
+            //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+            double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
             return numPeople * amountNeededOrbit * DESSERT_FACTOR;
@@ -1342,7 +1353,7 @@ public class GoodsManager implements Serializable {
         amount += settlement.getInventory().getAmountResourceStored(resource, false);
 
         // Get amount of resource out on mission vehicles.
-        Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
             if (mission instanceof VehicleMission) {
@@ -1615,12 +1626,12 @@ public class GoodsManager implements Serializable {
     private Map<Part, Number> getVehicleAttachmentParts() {
         Map<Part, Number> result = new HashMap<Part, Number>();
 
-        VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+        //VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
         Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
         while (i.hasNext()) {
             String type = i.next().getDescription().toLowerCase();
-            if (config.hasPartAttachments(type)) {
-                Iterator<Part> j = config.getAttachableParts(type).iterator();
+            if (vehicleConfig.hasPartAttachments(type)) {
+                Iterator<Part> j = vehicleConfig.getAttachableParts(type).iterator();
                 while (j.hasNext()) {
                     Part part = j.next();
                     int demand = 1;
@@ -1866,7 +1877,7 @@ public class GoodsManager implements Serializable {
         number += settlement.getInventory().getItemResourceNum(resource);
 
         // Get number of resources out on mission vehicles.
-        Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
             if (mission instanceof VehicleMission) {
@@ -2102,7 +2113,7 @@ public class GoodsManager implements Serializable {
         number += settlement.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
 
         // Get number of equipment out on mission vehicles.
-        Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
             if (mission instanceof VehicleMission) {
@@ -2348,7 +2359,7 @@ public class GoodsManager implements Serializable {
             demand = getBiologistNum();
         }
         else if (EMERGENCY_SUPPLY_MISSION.equals(missionType)) {
-            demand = Simulation.instance().getUnitManager().getSettlementNum() - 1D;
+            demand = unitManager.getSettlementNum() - 1D;
             if (demand < 0D) {
                 demand = 0D;
             }
@@ -2360,8 +2371,8 @@ public class GoodsManager implements Serializable {
     private double determineMissionVehicleCapacity(String missionType, String vehicleType) {
         double capacity = 0D;
 
-        VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-        VehicleDescription v = config.getVehicleDescription(vehicleType);
+        //VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+        VehicleDescription v = vehicleConfig.getVehicleDescription(vehicleType);
         int crewCapacity = v.getCrewSize();
 
         if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
@@ -2492,7 +2503,7 @@ public class GoodsManager implements Serializable {
         double baseSpeed = v.getBaseSpeed();
         double distancePerSol = baseSpeed / 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         int crewSize = v.getCrewSize();
 
         // Check food capacity as range limit.
@@ -2554,7 +2565,7 @@ public class GoodsManager implements Serializable {
         else {
             double bestTradeValue = 0D;
 
-            Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+            Iterator<Settlement> i = unitManager.getSettlements().iterator();
             while (i.hasNext()) {
                 Settlement tempSettlement = i.next();
                 if (tempSettlement != settlement) {

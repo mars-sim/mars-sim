@@ -408,24 +408,23 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if value is null or empty.
 	 */
 	// 2016-05-02 Added getAutosaveInterval()
-	public double getAutosaveInterval() {
+	public long getAutosaveInterval() {
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element el = timeConfig.getChild(AUTOSAVE_INTERVAL);
 		String str = el.getAttributeValue(VALUE);
 		
-		double d = 0;
+		long d = 0;
 		
 		if ((str == null) || str.trim().length() == 0)
 			throw new IllegalStateException("autosave_interval must not be blank and must be greater than zero.");
 		else {
 			try {
-		         d = Double.valueOf(str.trim()).doubleValue();
+		         d = (long) Double.valueOf(str.trim()).doubleValue();
 		         //System.out.println("double d = " + d);
 		         
 		         if (d < 1 || d > 1440)
-		 			throw new IllegalStateException("autosave_interval must be between 1 and 1440.");
-		         
+		 			throw new IllegalStateException("autosave_interval must be between 1 and 1440.");		         
 		         
 		      } catch (NumberFormatException nfe) {
 		         System.out.println("NumberFormatException found in autosave_interval : " + nfe.getMessage());

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -136,6 +137,9 @@ public class MarsProjectFX extends Application  {
 
     private MarsProjectFX marsProjectFX;
 
+    private static Simulation sim = Simulation.instance();
+    private static SimulationConfig simulationConfig = SimulationConfig.instance();
+    //private static ExecutorService simExecutor;// = sim.getSimExecutor();
     /*
      * Default Constructor
      */
@@ -165,25 +169,18 @@ public class MarsProjectFX extends Application  {
     public void init() throws Exception {
 	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
 	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
-
 		setLogging();
 		setDirectory();
-
         // general text antialiasing
-        System.setProperty("swing.aatext", "true");
-        
+        System.setProperty("swing.aatext", "true");    
         //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
-
     	logger.info("Starting " + Simulation.title);
     	
 		argList = Arrays.asList(args);
-		
-        newSim = argList.contains("-new");
-        
-        loadSim = argList.contains("-load");
-        
+        newSim = argList.contains("-new");      
+        loadSim = argList.contains("-load");     
 		generateHTML = argList.contains("-html");
 		
 		if (generateHTML)
@@ -195,9 +192,9 @@ public class MarsProjectFX extends Application  {
         //System.out.println("newSim is " + newSim); 	
         //System.out.println("loadSim is " + loadSim); 	
         //System.out.println("generateHTML is " + generateHTML); 	  
-        
-	   	Simulation.instance().startSimExecutor();
-	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
+        	
+	   	sim.startSimExecutor();
+	   	sim.getSimExecutor().execute(new SimulationTask());
     }
 
 	public class SimulationTask implements Runnable {
@@ -214,7 +211,8 @@ public class MarsProjectFX extends Application  {
 	   	//INFO: MarsProjectFX's prepare() is on pool-2-thread-1 Thread
 	   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
 
-	    if (!headless) { // Wsing GUI mode
+	    if (!headless) { 
+	    	// Using GUI mode
 	    	logger.info("prepare() : Running MarsProjectFX in GUI mode");
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 	    	//System.setProperty("sun.java2d.ddforcevram", "true");
@@ -222,8 +220,8 @@ public class MarsProjectFX extends Application  {
 	       	// Enable capability of loading of svg image using regular method
 	    	//SvgImageLoaderFactory.install();
 
-		} else { // Using -headless arg (GUI-less)
-			
+		} else { 
+			// Using -headless arg (GUI-less)
 			if (newSim) {
 				logger.info("prepare() : Starting a new MarsProjectFX in headless mode");
 				// Initialize the simulation.
@@ -238,13 +236,12 @@ public class MarsProjectFX extends Application  {
 			    // Start the simulation.
 			    startSimulation(true);
 			}
-            
+
 			// 2016-06-06 Generated html files for in-game help 
 			else if (generateHTML) {
 				logger.info("prepare() : Generating html help files in headless mode");
-                
-				try {
-					
+
+				try {					
 		            SimulationConfig.loadConfig();
 		    	    HelpGenerator.generateHtmlHelpFiles();
 
@@ -302,7 +299,7 @@ public class MarsProjectFX extends Application  {
         
         if (newSim) {
 
-        	SimulationConfig.instance();
+        	//SimulationConfig.instance();
         	SimulationConfig.loadConfig();
 
         	Simulation.createNewSimulation();
@@ -385,7 +382,7 @@ public class MarsProjectFX extends Application  {
 
     	try {
             // Load a the default simulation
-            Simulation.instance().loadSimulation(null);
+            sim.loadSimulation(null);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not load default simulation", e);
             throw e;
@@ -422,7 +419,7 @@ public class MarsProjectFX extends Application  {
             // Get the next argument as the filename.
             File loadFile = new File(argList.get(index + 1));
             if (loadFile.exists() && loadFile.canRead()) {
-                Simulation.instance().loadSimulation(loadFile);
+                sim.loadSimulation(loadFile);
 
 
             } else {
@@ -445,7 +442,7 @@ public class MarsProjectFX extends Application  {
         try {
             SimulationConfig.loadConfig();
             
-           	Simulation.instance().getSimExecutor().submit(new ConfigEditorTask());
+           	sim.getSimExecutor().execute(new ConfigEditorTask());
           	// Warning: cannot load the editor in macosx if it was a JDialog
 
         } catch (Exception e) {
@@ -459,13 +456,12 @@ public class MarsProjectFX extends Application  {
      */
     public void startSimulation(boolean useDefaultName) {
 		//logger.info("MarsProjectFX's startSimulation() is on "+Thread.currentThread().getName() );
-
         // Start the simulation.
-        Simulation.instance().start(useDefaultName);
+        sim.start(useDefaultName);
     }
 
     public void setDirectory() {
-        new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
+        new File(System.getProperty("user.home"), Simulation.MARS_SIM_DIRECTORY + File.separator + "logs").mkdirs();
     }
 
 

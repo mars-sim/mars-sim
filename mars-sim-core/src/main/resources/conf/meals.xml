@@ -14,7 +14,7 @@
 
 	<meal-list>
 		<!--  A MAIN DISH will have dry mass with a total proportion of 0.8 while a SIDE DISH will have the remaining proportion of 0.2 -->
-		<main-dish id="0" name="Kidney Bean Fried Rice" oil="0.05" salt="0.01" category="meal">
+		<main-dish id="0" name="Kidney Bean Fried Rice" oil="0.1" salt="0.01" category="meal">
 			<ingredient id="0" name="Kidney Bean" proportion="0.1"/>
 			<ingredient id="1" name="White Rice" proportion="0.4"/>
 			<ingredient id="2" name="Swiss Chard" proportion="0.1"/>
@@ -41,7 +41,7 @@
 			<ingredient id="4" name="Tomato" proportion="0.1"/>
 		</main-dish>
 
-		<main-dish id="4" name="Bean Sprout Garlic Stir Fry" oil="0.05" salt="0.01" category="meal">
+		<main-dish id="4" name="Bean Sprout Garlic Stir Fry" oil="0.1" salt="0.01" category="meal">
 			<ingredient id="0" name="Soy Sprout" proportion="0.68"/>
 			<ingredient id="1" name="Green Onion" proportion="0.01"/>
 			<ingredient id="2" name="Garlic" proportion="0.1"/>
@@ -55,7 +55,7 @@
 			<ingredient id="3" name="Tomato" proportion="0.1"/>
 		</main-dish>
 
-		<main-dish id="6" name="Sauteed Swiss Chard Fried Rice" oil="0.05" salt="0.01" category="meal">
+		<main-dish id="6" name="Sauteed Swiss Chard Fried Rice" oil="0.1" salt="0.01" category="meal">
 			<ingredient id="0" name="Swiss Chard" proportion="0.2"/>
 			<ingredient id="1" name="White Rice" proportion="0.4"/>
 			<ingredient id="2" name="White Onion" proportion="0.1"/>
@@ -105,7 +105,7 @@
 			<ingredient id="3" name="Soy Sprout" proportion="0.2"/>
 		</main-dish>
 
-		<main-dish id="13" name="Vegetarian Pizza" oil="0.05" salt="0.01" category="meal">
+		<main-dish id="13" name="Vegetarian Pizza" oil="0.1" salt="0.01" category="meal">
 			<ingredient id="0" name="Pizza Dough" proportion="0.5"/>
 			<ingredient id="1" name="Green Bell Pepper" proportion="0.1"/>
 			<ingredient id="2" name="Tomato" proportion="0.05"/>
@@ -124,12 +124,12 @@
 		      each side dish will have dry mass in the total proportion of 0.5
 				TODO: will convert element tag to side dish -->
 
-		<main-dish id="15" name="Garlic Bread" oil="0.05" salt="0.005" category="meal">
+		<main-dish id="15" name="Garlic Bread" oil="0.15" salt="0.005" category="meal">
 			<ingredient id="0" name="White Bread" proportion="0.4"/>
 			<ingredient id="1" name="Garlic" proportion="0.1"/>
 		</main-dish>
 
-		<main-dish id="16" name="French Fries" oil="0.05" salt="0.005" category="meal">
+		<main-dish id="16" name="French Fries" oil="0.25" salt="0.005" category="meal">
 			<ingredient id="0" name="French Fries" proportion="0.5"/>
 		</main-dish>
 

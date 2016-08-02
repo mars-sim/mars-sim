@@ -78,7 +78,8 @@ implements Serializable {
     public static double UP = 0.01;
     public static double DOWN = 0.007;
     public static final int NUMBER_OF_MEAL_PER_SOL = 4;
-
+    public int oil_count = 0;
+    
     public static final double AMOUNT_OF_SALT_PER_MEAL = 0.005D;
     public static final double AMOUNT_OF_OIL_PER_MEAL = 0.01D;
     
@@ -121,12 +122,13 @@ implements Serializable {
     private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); //HashMap<String, Integer>();
 
+    private static Simulation sim = Simulation.instance();
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
     private static BuildingConfig config = simulationConfig.getBuildingConfiguration();
     private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
     private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
     private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
-    private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
 
     /**
      * Constructor.
@@ -682,7 +684,9 @@ implements Serializable {
 	    	}
 	    	else if (upperbound == 0) {
 	    		//selectedOil = "None";
-	    		logger.info("Running out of oil in " + settlement.getName());
+	    		if (oil_count < 10)
+	    			logger.info("Running out of oil in " + settlement.getName());
+	    		oil_count++;
 	    	}
 	    	//logger.info("oil index : "+ index);
 	    	return selectedOil;
@@ -962,6 +966,8 @@ implements Serializable {
 	 		getMealRecipesWithAvailableIngredients();
 
 	 		cleanUpKitchen();
+	 		
+	 		oil_count = 0;
 	    }
 	}
 

@@ -534,7 +534,7 @@ implements ClockListener {
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$		
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
 			//if (mainScene != null)
-			sim.getAutosaveTimeline().pause();
+			//sim.getAutosaveTimer().pause();
 			if (!masterClock.isPaused() && mainScene != null)
 				Platform.runLater(() -> mainScene.startPausePopup());
 			
@@ -543,7 +543,7 @@ implements ClockListener {
 			//desktop.disposeAnnouncementWindow();
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
 			//if (mainScene != null)
-			sim.getAutosaveTimeline().play();
+			//sim.getAutosaveTimer().play();
 			if (masterClock.isPaused() && mainScene != null)
 				Platform.runLater(() -> mainScene.stopPausePopup());
 	

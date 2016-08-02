@@ -276,7 +276,6 @@ public class MasterClock implements Serializable { // Runnable,
     
     /**
      * Sets the save simulation flag and the file to save to.
-     *
      * @param file save to file or null if default file.
      */
     public void saveSimulation(File file) {
@@ -287,18 +286,25 @@ public class MasterClock implements Serializable { // Runnable,
 
     /**
      * Sets the autosave simulation flag and the file to save to.
-     *
      * @param file autosave to file or null if default file.
      */
     // 2015-01-08 Added autosaveSimulation
     public void autosaveSimulation() {
         autosaveSimulation = true;
-        //this.file = file;
+        this.file = null;
     }
 
     /**
+     * Sets the autosave simulation flag and the file to save to.
+     * @param file autosave to file or null if default file.
+     */
+    // 2016-08-01 Added autosaveSimulation
+    public void autosaveSimulation(File file) {
+        autosaveSimulation = true;
+        this.file = file;
+    }
+    /**
      * Checks if in the process of saving a simulation.
-     *
      * @return true if saving simulation.
      */
     public boolean isSavingSimulation() {
@@ -307,7 +313,6 @@ public class MasterClock implements Serializable { // Runnable,
 
     /**
      * Checks if in the process of autosaving a simulation.
-     *
      * @return true if autosaving simulation.
      */
     // 2015-01-08 Added isAutosavingSimulation
@@ -326,7 +331,6 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Gets the time pulse length
      * in other words, the number of realworld seconds that have elapsed since it was last called
-     *
      * @return time pulse length in millisols
      * @throws Exception if time pulse length could not be determined.
      */
@@ -518,26 +522,21 @@ public class MasterClock implements Serializable { // Runnable,
     // 2015-07-03  Relocated codes into statusUpdate()
     private void statusUpdate() {
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
-    	// it's s on pool-5-thread-1 Thread
+    	// Note: it's s on pool-4-thread-1 Thread
 
         long lastTimeDiff;
 
         if (!isPaused) {
-
             // Update elapsed milliseconds.
             updateElapsedMilliseconds();
             // Get the time pulse length in millisols.
             double timePulse = getTimePulse();
-
             // Incrementing total time pulse number.
             totalPulses++;
-
             long startTime = System.nanoTime();
             //System.out.println("resolution : " + (System.nanoTime() - startTime));
-
             // Add time pulse length to Earth and Mars clocks.
             double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
-
             // TODO : if null
             //if (earthTime == null)
             //	earthTime = Simulation.instance().getMasterClock().getEarthClock();
@@ -554,33 +553,42 @@ public class MasterClock implements Serializable { // Runnable,
 
             long endTime = System.nanoTime();
             lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
-
+            // TODO: how to prevent crashing autosaveTimer ? 
+            // will it help by restarting the autosaveTimer ?
+            //sim.getAutosaveTimer().playFromStart();
             logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
         }
 
         if (saveSimulation) {
             // Save the simulation to a file.
             try {
-                sim.saveSimulation(file, false);
+                sim.saveSimulation(file, false);                
             } catch (IOException e) {
-
                 logger.log(Level.SEVERE, "Could not save the simulation with file = "
                         + (file == null ? "null" : file.getPath()), e);
                 e.printStackTrace();
             }
+            
             saveSimulation = false;
         }
 
         else if (autosaveSimulation) {
             // Autosave the simulation to a file.
             try {
-                sim.saveSimulation(file, true);
+            	if (file == null)
+            		sim.saveSimulation(file, false);
+            	else
+                    sim.saveSimulation(file, true);
+            	
             } catch (IOException e) {
 
-                logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
-                        + (file == null ? "null" : file.getPath()), e);
+                //logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
+                //        + (file == null ? "null" : file.getPath()), e);
+                logger.log(Level.SEVERE, "Could not autosave the simulation", e);
+
                 e.printStackTrace();
             }
+            
             autosaveSimulation = false;
         }
 
@@ -594,12 +602,14 @@ public class MasterClock implements Serializable { // Runnable,
             else {
                 logger.warning("Cannot access file " + file.getPath() + ", not reading");
             }
+            
             loadSimulation = false;
         }
 
         // Exit program if exitProgram flag is true.
         if (exitProgram) {
-            exitProgram = false;
+            //exitProgram = false;
+			sim.getAutosaveTimer().stop();
             System.exit(0);
         }
 
@@ -746,12 +756,10 @@ public class MasterClock implements Serializable { // Runnable,
     public void setPaused(boolean isPaused) {
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
-
         if (isPaused)
-        	sim.getAutosaveTimeline().pause();
-        else
-        	sim.getAutosaveTimeline().play();
-        
+			sim.getAutosaveTimer().pause();
+		else
+        	sim.getAutosaveTimer().play();
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.
@@ -774,7 +782,6 @@ public class MasterClock implements Serializable { // Runnable,
     public void firePauseChange() {
 
         listeners.forEach(cl -> cl.pauseChange(isPaused));
-
 /*
         synchronized (listeners) {
             Iterator<ClockListener> i = listeners.iterator();

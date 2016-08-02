@@ -43,6 +43,9 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.time.UpTimer;
+import org.reactfx.EventStreams;
+import org.reactfx.util.FxTimer;
+import org.reactfx.util.Timer;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
@@ -51,8 +54,14 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.util.Duration;
+
+import org.reactfx.util.FxTimer;
+import org.reactfx.util.Timer;
+
 //import mikera.gui.Frames;
 //import mikera.gui.JConsole;
+
+
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
@@ -94,10 +103,12 @@ implements ClockListener, Serializable {
             File.separator +
             Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$
 
-	public static double autosave_minute;// = 15;
-	
+	public static long autosave_minute;// = 15;
+
 	public final static int NUM_THREADS = Runtime.getRuntime().availableProcessors();
-	
+
+	public final static String MARS_SIM_DIRECTORY = ".mars-sim";
+
     @SuppressWarnings("restriction")
     public final static String title = Msg.getString(
             "Simulation.title", VERSION
@@ -122,10 +133,11 @@ implements ClockListener, Serializable {
 
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild = "unknown";
-   
+
     // 2016-07-26 Added transient to avoid serialization error
-	private transient Timeline autosaveTimeline;
-	
+	//private transient Timeline autosaveTimeline;
+	private transient Timeline autosaveTimer;
+		
     // Transient data members (aren't stored in save file)
     /** All historical info. */
     private transient HistoricalEventManager eventManager;
@@ -532,7 +544,7 @@ implements ClockListener, Serializable {
             // limit memory usage to 256 MB
            
             // define a temporary uncompressed file
-            File uncompressed = new File(DEFAULT_DIR, "temp");
+            File uncompressed = new File(DEFAULT_DIR, DEFAULT_FILE);
             FileOutputStream fos = new FileOutputStream(uncompressed);                
 
             int size;
@@ -574,7 +586,8 @@ implements ClockListener, Serializable {
             // Close FileInputStream (directly or indirectly via XZInputStream, it doesn't matter).
             in.close();
             xzin.close();
-            fos.close();                
+            fos.close();     
+            uncompressed.delete();
    
         } catch (FileNotFoundException e) {
             System.err.println("XZDecDemo: Cannot open " + file + ": " + e.getMessage());
@@ -719,6 +732,8 @@ implements ClockListener, Serializable {
 			xzout.finish();				
 			fis.close();
 			xzout.close();
+			default_uncompressed.delete();
+			default_uncompressed = null;
 			oos = null;
 
         } catch (IOException e){
@@ -1014,30 +1029,40 @@ implements ClockListener, Serializable {
 		// instead of directly call saveSimulation() here in Simulation
 		
 		if (useDefaultName) {
-			autosaveTimeline = new Timeline(
+			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
 						ae -> masterClock.saveSimulation(null)));
+			//autosaveTimer = FxTimer.runLater(
+    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
+    		//        () -> masterClock.saveSimulation(null));
+			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+	        //.subscribe(tick -> masterClock.saveSimulation(null));
 		}
 		else {
-			autosaveTimeline = new Timeline(
+			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
 						ae -> masterClock.autosaveSimulation()));
+			//autosaveTimer = FxTimer.runLater(
+    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
+    		//        () -> masterClock.autosaveSimulation());
+			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+	        //.subscribe(tick -> masterClock.autosaveSimulation());
 		}
 		
 		// Note1: Infinite Timeline might result in a memory leak if not stopped properly.
 		// Note2: All the objects with animated properties would NOT be garbage collected.
 		
-		autosaveTimeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
-		autosaveTimeline.play();
+		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		autosaveTimer.play();
 
 	}
 
 	/**
-	 * Gets the timeline instance of the autosave timer.
+	 * Gets the Timer instance of the autosave timer.
 	 * @return autosaveTimeline
 	 */
-	public Timeline getAutosaveTimeline() {
-		return autosaveTimeline;
+	public Timeline getAutosaveTimer() {
+		return autosaveTimer;
 	}
 	
     /**
@@ -1046,7 +1071,7 @@ implements ClockListener, Serializable {
     public void destroyOldSimulation() {
     	//logger.info("starting Simulation's destroyOldSimulation()");
 
-		autosaveTimeline = null;
+		autosaveTimer = null;
 
         if (malfunctionFactory != null) {
             malfunctionFactory.destroy();

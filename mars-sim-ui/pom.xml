@@ -149,11 +149,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>balloontip-examples</artifactId>
 			<version>1.2.4.1</version>
 		</dependency>
-		<dependency>
+		<!-->dependency>
 			<groupId>org.reactfx</groupId>
 			<artifactId>reactfx</artifactId>
 			<version>2.0-M5</version>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>

@@ -74,7 +74,7 @@
 	    	/>
 	   	<!-- 1. Harvest between 70-90 days
 	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ -->
-	
+
 	    <crop name="Lettuce"
 	    	growing-time="28.0"
 	    	crop-category="leaves"
@@ -86,7 +86,7 @@
 	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
 	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
 	    	 10 kg / week yield for greenhouse  -->
-	
+
 	    <crop name="White Onion"
 	    	growing-time="150.0"
 	    	crop-category="bulbs"
@@ -101,7 +101,7 @@
 	    	 	ref : http://alliumnet.com/images/onion%20growth%20stages.pdf
 			 3. K_C varies in each growth stage
 			 	ref : http://naldc.nal.usda.gov/download/31109/PDF  -->
-	
+
 	    <crop name="Peas"
 	        growing-time="75.0"
 	    	crop-category="legumes"
@@ -111,7 +111,7 @@
 	     	daily-PAR="25.92"
 	    	/>
 			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
-	
+
 	    <crop name="Peanut"
 	        growing-time="104.0"
 	    	crop-category="legumes"
@@ -158,7 +158,7 @@
 	    	inedible-biomass="10"
 	     	daily-PAR="34.56"
 	    	/>
-	
+
 	    <crop name="Yam"
 	    	growing-time="200.0"
 	    	crop-category="tubers"
