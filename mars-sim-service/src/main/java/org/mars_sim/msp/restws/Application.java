@@ -33,12 +33,12 @@ public class Application {
 	private Simulation simulation;
 
 	public Application() {
-		log.info("Build simulator");
+		log.info("Building the simulator");
 		
 		// Bootstrap could reload a saved simulation
 		// No auto saving enabled
 		MarsBootstrap bootstrap = new MarsBootstrap();
-		
+
 		simulation = bootstrap.buildSimulation();
 	}
 

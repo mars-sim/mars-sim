@@ -57,7 +57,8 @@ implements Serializable {
 	private transient Map<MetaMission, Double> missionProbCache;
 	private transient Map<MetaMission, Double> robotMissionProbCache;
 	private transient double totalProbCache;
-
+	private transient MarsClock currentTime;// = Simulation.instance().getMasterClock().getMarsClock();
+	
 	/**
 	 * Constructor.
 	 */
@@ -69,6 +70,9 @@ implements Serializable {
 		robotTimeCache = null;
 		totalProbCache = 0D;
 
+		if (Simulation.instance().getMasterClock() != null)
+			currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		
 		// Initialize data members
 		missions = new ArrayList<Mission>(0);
 		listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
@@ -483,7 +487,12 @@ implements Serializable {
 		}
 
 		// Set the time cache to the current time.
-		personTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		//personTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		if (currentTime == null && Simulation.instance().getMasterClock() != null)
+			currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		
+		personTimeCache = (MarsClock) currentTime.clone();
+
 		personCache = person;
 	}
 
@@ -512,7 +521,9 @@ implements Serializable {
 		}
 
 		// Set the time cache to the current time.
-		robotTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		//robotTimeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		robotTimeCache = (MarsClock) currentTime.clone();
+
 		robotCache = robot;
 	}
 
@@ -522,12 +533,14 @@ implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache(Person person) {
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		if (currentTime == null)
+			currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		return currentTime.equals(personTimeCache) && (person == personCache);
 	}
 
 	private boolean useCache(Robot robot) {
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		if (currentTime == null)
+			currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		return currentTime.equals(robotTimeCache) && (robot == robotCache);
 	}
 	/**

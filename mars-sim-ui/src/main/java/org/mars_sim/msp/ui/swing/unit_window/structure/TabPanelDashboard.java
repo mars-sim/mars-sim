@@ -9,6 +9,8 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -42,11 +44,18 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.effect.Reflection;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 
 /**
  * Tab panel displaying general info regarding the settlement <br>
@@ -67,7 +76,8 @@ extends TabPanel {
 	private String[] objectives;
 	//private ComboBox<ObjectiveType> cb;
 	private VBox toggleBox = new VBox();
-
+	private List<ToggleButton> buttons = new ArrayList<>();
+	
 	private Settlement settlement;
 	
 	/**
@@ -93,8 +103,10 @@ extends TabPanel {
 		//this.cb.getItems().setAll(ObjectiveType.values());   
 		//setupChoiceBox();
 		
-		setupToggleGroup();
-              
+		//setupToggleGroup();
+		setupButtonGroup();
+		
+		
 		this.panel = new JFXPanel();
 		
        	int width = 400;
@@ -199,6 +211,107 @@ extends TabPanel {
 	}
 	
 */	
+	public String addSpace(String s) {
+		s = s.replace(" ", System.lineSeparator());
+		return s;
+	}
+	
+	public void setupButtonGroup() {
+
+		String header = "Settlement's Objective";
+/*		
+		String a = addSpace(objectives[0]);
+		String b = addSpace(objectives[1]);
+		String c = addSpace(objectives[2]);
+		String d = addSpace(objectives[3]);
+		String e = addSpace(objectives[4]);
+*/				
+		for (int i=0; i<5; i++) {
+			int num = i;
+			String s = objectives[i];
+			String ss = null;
+			String sss = addSpace(s);
+			ToggleButton btn = new ToggleButton();
+			
+			btn.setOnAction(new EventHandler<ActionEvent>() {
+	            @Override
+	            public void handle(ActionEvent event) {
+	            	
+					for (int j=0; j<5; j++) {
+						if (num != j) {
+							buttons.get(j).setSelected(false);
+						}
+					}
+					
+					ObjectiveType type = null;
+					
+					if (s.equals(ObjectiveType.CROP_FARM.toString()))	
+						type = ObjectiveType.CROP_FARM;
+					else if (s.equals(ObjectiveType.MANUFACTURING.toString()))	
+						type = ObjectiveType.MANUFACTURING;
+					else if (s.equals(ObjectiveType.RESEARCH_CENTER.toString()))	
+						type = ObjectiveType.RESEARCH_CENTER;
+					else if (s.equals(ObjectiveType.TRADE_TOWN.toString()))	
+						type = ObjectiveType.TRADE_TOWN;
+					else if (s.equals(ObjectiveType.TRANSPORTATION_HUB.toString()))	
+						type = ObjectiveType.TRANSPORTATION_HUB;
+					
+					settlement.setObjective(type);
+					
+	            }
+	        });
+			
+			btn.setPadding(new Insets(5, 5, 5, 5));
+			btn.setTooltip(new Tooltip(sss));
+			buttons.add(btn);
+	        //btn.setGraphic(new Rectangle(10,10, Color.BURLYWOOD));
+			if (i == 0)				
+				ss = "/icons/settlement_goals/cropfarm.png";
+			else if (i == 1)				
+				ss = "/icons/settlement_goals/manufacture.png";
+			else if (i == 2)				
+				ss = "/icons/settlement_goals/research.png";
+			else if (i == 3)				
+				ss = "/icons/settlement_goals/transport.png";
+			else if (i == 4)				
+				ss = "/icons/settlement_goals/trade.png";
+			
+			btn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ss))));
+	        //btn.setStyle("-fx-alignment: LEFT;");
+			btn.setAlignment(Pos.BASELINE_CENTER);
+			btn.setMaxHeight(90);
+			btn.setMaxWidth(90);
+	
+			if (settlement.getObjective().toString().equals(s))
+				btn.setSelected(true);
+			else
+				btn.setSelected(false);
+			
+		}
+/*		
+		Button ra = new Button(a);
+		Button rb = new Button(b);
+		Button rc = new Button(c);
+		Button rd = new Button(d);
+		Button re = new Button(e);
+*/	
+		VBox options = new VBox();
+		
+		HBox hbox0 = new HBox();
+		HBox hbox1 = new HBox();
+		
+		hbox0.getChildren().addAll(buttons.get(0),buttons.get(1),buttons.get(2));
+		hbox1.getChildren().addAll(buttons.get(3),buttons.get(4));
+		
+		options.getChildren().addAll(hbox0, hbox1);
+		
+		TitledPane titledPane = new TitledPane(header, options);
+		//titledPane.setId("titledpane");
+	    //titledPane.setPrefSize(100, 100);
+		toggleBox.getChildren().add(titledPane);
+		
+	    
+	}
 	
 	public void setupToggleGroup() {
 		

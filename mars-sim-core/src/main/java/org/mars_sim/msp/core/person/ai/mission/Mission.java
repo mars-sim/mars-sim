@@ -44,11 +44,8 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mission.class.getName());
-
-
 	// Global mission identifier
 	private static int missionIdentifer = 0;
 	// Unique identifier

@@ -111,7 +111,7 @@ public class QuotationPopup implements Serializable {
 		
 		int numWhiteSpace = 0;
 		int new_height = 0;
-		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON;// + 17;
+		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON;
 	
 		
 		if (strSize < CHARS_PER_LINE) {

@@ -13,6 +13,15 @@ import org.mars_sim.msp.core.SimulationConfig;
  */
 public class MarsBootstrap {
 
+	// Location of file holding simulation state
+    private static final String SIM_FILE = "simulation.state";
+
+    // Duration between saves in seconds
+	private static final int SAVE_DURATION = 300; //60 * 5;
+    
+	/** initialized logger for this class. */
+	private static Log log = LogFactory.getLog(MarsBootstrap.class);
+
 	// Saves a simulation periodically
 	private static final class Saver implements Runnable {
 
@@ -50,15 +59,6 @@ public class MarsBootstrap {
 		}
 	}
 	
-	// Location of file holding simulation state
-    private static final String SIM_FILE = "simulation.state";
-
-    // Duration between saves in seconds
-	private static final int SAVE_DURATION = 60 * 5;
-    
-	/** initialized logger for this class. */
-	private static Log log = LogFactory.getLog(MarsBootstrap.class);
-
     /**
      * Loads the simulation from a save file.
      * @param argList the command argument list.
@@ -93,9 +93,12 @@ public class MarsBootstrap {
 		boolean create = (createProp != null ? Boolean.getBoolean(createProp) : false);
 
 		File loadFile = new File(SIM_FILE);
-
 		
 		Simulation created = null;
+		
+		//created = loadNewSimulation();
+		
+		
 		if (create || !loadFile.exists()) {
 			created = loadNewSimulation();
 		}
@@ -107,7 +110,7 @@ public class MarsBootstrap {
 				return null;
 			}
 		}
-		
+	
 		// Set up Thread for background save
 		Thread saver = new Thread(new Saver(SIM_FILE, SAVE_DURATION, created), "SavingThread");
 		saver.start();

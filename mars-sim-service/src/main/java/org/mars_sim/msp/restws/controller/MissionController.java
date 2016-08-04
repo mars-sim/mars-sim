@@ -54,6 +54,7 @@ public class MissionController {
 	
 	@Autowired
 	private PersonSummaryMapper personMapper;
+	//private MemberSummaryMapper memberMapper;
 	
 	/**
 	 * Need a better way to find missions
@@ -139,7 +140,19 @@ public class MissionController {
 		}
         return details;
     }
+
+/*	
+	@ApiOperation(value = "get Mission Members", nickname = "getMissionMembers")
+	@RequestMapping(method = RequestMethod.GET, path="/missions/{id}/members", produces = "application/json")
+    public List<MemberSummary> getMembers(@PathVariable(value="id") int missionId) {
+		
+        Mission found = findMission(missionId);
+        
+        return memberMapper.membersToMemberSummarys(
+        		new ArrayList<Member>(found.getMembers()));
+    }
 	
+*/	
 	@ApiOperation(value = "get Mission Persons", nickname = "getMissionPersons")
 	@RequestMapping(method = RequestMethod.GET, path="/missions/{id}/persons", produces = "application/json")
     public List<PersonSummary> getPersons(@PathVariable(value="id") int missionId) {
@@ -149,4 +162,6 @@ public class MissionController {
         return personMapper.personsToPersonSummarys(
         		new ArrayList<Person>(found.getPeople()));
     }
+
+	
 }

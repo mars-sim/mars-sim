@@ -74,7 +74,7 @@
 		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->
 		<!-- Default: 15.0 -->
 		<autosave-interval value="15.0" />
-		
+
 	</time-configuration>
 
 </simulation-configuration>
