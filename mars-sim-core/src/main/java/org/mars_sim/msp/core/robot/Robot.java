@@ -49,6 +49,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
@@ -122,7 +124,12 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
     private LifeSupportType support ;
 
-
+    private MarsClock marsClock;
+    
+    private EarthClock earthClock;
+    
+    private MasterClock masterClock;
+  
     /**
      * Constructs a robot object at a given settlement.
      * @param name the robot's name
@@ -149,6 +156,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         yLoc = 0D;
         isBuried = false;
 
+        masterClock = Simulation.instance().getMasterClock();
+        marsClock = masterClock.getMarsClock();
+        earthClock = masterClock.getEarthClock();
+        
         config = SimulationConfig.instance().getRobotConfiguration();
         support = getLifeSupportType();
 
@@ -417,10 +428,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @return the robot's age
      */
     public int getAge() {
-        EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
-        int age = simClock.getYear() - birthTimeStamp.getYear() - 1;
-        if (simClock.getMonth() >= birthTimeStamp.getMonth()
-                && simClock.getMonth() >= birthTimeStamp.getMonth()) {
+        //EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
+        int age = earthClock.getYear() - birthTimeStamp.getYear() - 1;
+        if (earthClock.getMonth() >= birthTimeStamp.getMonth()
+                && earthClock.getMonth() >= birthTimeStamp.getMonth()) {
             age++;
         }
 

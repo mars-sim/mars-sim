@@ -92,6 +92,9 @@ implements Serializable, LifeSupportType, Objective {
 	private static final int RADIATION_CHECK_FREQ = 100; // in millisols
 	public static final int NUM_CRITICAL_RESOURCES = 9;
 
+	private AmountResource oxygen;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource water;// = AmountResource.findAmountResource(LifeSupportType.WATER);
+
 	/*
 	 * Amount of time (millisols) required for periodic maintenance. private
 	 * static final double MAINTENANCE_TIME = 1000D;
@@ -172,8 +175,8 @@ implements Serializable, LifeSupportType, Objective {
 	private UnitManager unitManager = sim.getUnitManager();
 	private MissionManager missionManager = sim.getMissionManager();
 
-	private Weather weather = sim.getMars().getWeather();
-	private MarsClock clock = sim.getMasterClock().getMarsClock();
+	private Weather weather;// = sim.getMars().getWeather();
+	private MarsClock clock;// = sim.getMasterClock().getMarsClock();
 	
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -181,6 +184,7 @@ implements Serializable, LifeSupportType, Objective {
 	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
 	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
 
+	
 	// constructor 0
 	public Settlement() {
 		super(null, null);
@@ -191,7 +195,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param name the settlement's name
 	 * @param location the settlement's location
 	 */
-	// constructor 1
+	// constructor 1 for testing
 	// TODO: pending for deletion (use constructor 2 instead)
 	protected Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
@@ -225,11 +229,13 @@ implements Serializable, LifeSupportType, Objective {
 		this.scenarioID = id;
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
-
 		// count++;
 		// logger.info("constructor 3 : count is " + count);
 		this.inv = getInventory();
 
+		this.clock = sim.getMasterClock().getMarsClock();
+		this.weather = sim.getMars().getWeather();
+		
 		//resourceStat = new HashMap<>();
 
 		// Set inventory total mass capacity.
@@ -253,17 +259,17 @@ implements Serializable, LifeSupportType, Objective {
 		// 2015-12-29 Added CompositionOfAir
 		compositionOfAir = new CompositionOfAir(this);
 
-		clock = sim.getMasterClock().getMarsClock();
-	
 		// 2016-01-16 Added setObjective()
 		objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
+
+		oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		water = AmountResource.findAmountResource(LifeSupportType.WATER);
 
 	}
 
 	/**
 	 * Gets the settlement's meals replenishment rate.
-	 *
 	 * @return mealsReplenishmentRate
 	 */
 	// 2015-01-12 Added getMealsReplenishmentRate
@@ -273,7 +279,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Sets the settlement's meals replenishment rate.
-	 *
 	 * @param rate
 	 */
 	// 2015-01-12 Added setMealsReplenishmentRate
@@ -283,7 +288,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the settlement's desserts replenishment rate.
-	 *
 	 * @return DessertsReplenishmentRate
 	 */
 	// 2015-01-12 Added getDessertsReplenishmentRate
@@ -293,7 +297,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Sets the settlement's desserts replenishment rate.
-	 *
 	 * @param rate
 	 */
 	// 2015-01-12 Added setDessertsReplenishmentRate
@@ -303,7 +306,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the settlement template's unique ID.
-	 *
 	 * @return ID number.
 	 */
 	// 2014-10-29 Added settlement id
@@ -313,7 +315,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the population capacity of the settlement
-	 *
 	 * @return the population capacity
 	 */
 	public int getPopulationCapacity() {
@@ -359,7 +360,6 @@ implements Serializable, LifeSupportType, Objective {
 	
 	/**
 	 * Gets the current population number of the settlement
-	 *
 	 * @return the number of inhabitants
 	 */
 	public int getCurrentPopulationNum() {
@@ -368,7 +368,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets a collection of the inhabitants of the settlement.
-	 *
 	 * @return Collection of inhabitants
 	 */
 	public Collection<Person> getInhabitants() {
@@ -377,7 +376,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the current available population capacity of the settlement
-	 *
 	 * @return the available population capacity
 	 */
 	public int getAvailablePopulationCapacity() {
@@ -386,7 +384,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets an array of current inhabitants of the settlement
-	 *
 	 * @return array of inhabitants
 	 */
 	public Person[] getInhabitantArray() {
@@ -403,7 +400,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the robot capacity of the settlement
-	 *
 	 * @return the robot capacity
 	 */
 	public int getRobotCapacity() {
@@ -430,7 +426,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the current number of robots in the settlement
-	 *
 	 * @return the number of robots
 	 */
 	public int getCurrentNumOfRobots() {
@@ -448,7 +443,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the current available robot capacity of the settlement
-	 *
 	 * @return the available robots capacity
 	 */
 	public int getAvailableRobotCapacity() {
@@ -457,7 +451,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets an array of current robots of the settlement
-	 *
 	 * @return array of robots
 	 */
 	public Robot[] getRobotArray() {
@@ -483,7 +476,6 @@ implements Serializable, LifeSupportType, Objective {
 
 	/**
 	 * Gets the number of vehicles parked at the settlement.
-	 *
 	 * @return parked vehicles number
 	 */
 	public int getParkedVehicleNum() {
@@ -491,20 +483,17 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Returns true if life support is working properly and is not out of oxygen
-	 * or water.
-	 *
+	 * Returns true if life support is working properly and is not out of oxygen or water.
 	 * @return true if life support is OK
-	 * @throws Exception
-	 *             if error checking life support.
+	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
 		boolean result = true;
 
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
 			result = false;
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		if (getInventory().getAmountResourceStored(water, false) <= 0D)
 			result = false;
 
@@ -519,10 +508,8 @@ implements Serializable, LifeSupportType, Objective {
 		return result;
 	}
 
-
 	/**
 	 * Gets the number of people the life support can provide for.
-	 *
 	 * @return the capacity of the life support system
 	 */
 	public int getLifeSupportCapacity() {
@@ -594,7 +581,10 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public double getAirPressure() {
 		double result = NORMAL_AIR_PRESSURE;
-		double ambient = sim.getMars().getWeather().getAirPressure(getCoordinates());
+		if (weather == null)
+			weather = sim.getMars().getWeather();
+		//double ambient = sim.getMars().getWeather().getAirPressure(getCoordinates());
+		double ambient = weather.getAirPressure(getCoordinates());
 
 		if (result < ambient)
 			return ambient;
@@ -611,7 +601,7 @@ implements Serializable, LifeSupportType, Objective {
 		double result = NORMAL_TEMP;
 		// double result = getLifeSupport().getTemperature();
 		if (weather == null)
-			weather = Simulation.instance().getMars().getWeather();
+			weather = sim.getMars().getWeather();
 		double ambient = weather.getTemperature(getCoordinates());
 
 		if (result < ambient)

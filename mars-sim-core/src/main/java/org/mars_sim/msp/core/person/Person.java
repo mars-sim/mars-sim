@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -120,7 +121,7 @@ implements VehicleOperator, MissionMember, Serializable {
     private Building diningBuilding;
     private Cooking kitchenWithMeal;
     private PreparingDessert kitchenWithDessert;
-    private PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+    private PersonConfig config;// = SimulationConfig.instance().getPersonConfiguration();
     private Favorite favorite;
     private TaskSchedule taskSchedule;
     private JobHistory jobHistory;
@@ -134,7 +135,11 @@ implements VehicleOperator, MissionMember, Serializable {
     
     private Point2D bed;
     
-    private MarsClock clock;
+    private MarsClock marsClock;
+    
+    private EarthClock earthClock;
+    
+    private MasterClock masterClock;
     
     /**
      * Constructs a Person object at a given settlement.
@@ -145,25 +150,30 @@ implements VehicleOperator, MissionMember, Serializable {
      * @throws Exception if no inhabitable building available at settlement.
      */
     public Person(String name, PersonGender gender, boolean bornOnMars, String birthplace, Settlement settlement) {
-        // Use Unit constructor
-        super(name, settlement.getCoordinates());
-		//logger.info("Person's constructor is in " + Thread.currentThread().getName() + " Thread");
+        //logger.info("Person's constructor is in " + Thread.currentThread().getName() + " Thread");
+    	// Use Unit constructor
+        super(name, settlement.getCoordinates());  
+        super.setDescription(settlement.getName());
 
         // Initialize data members
         this.name = name;
         this.bornOnMars = bornOnMars;
-        xLoc = 0D;
-        yLoc = 0D;
+        this.xLoc = 0D;
+        this.yLoc = 0D;
         this.gender = gender;
         this.birthplace = birthplace;
         this.associatedSettlement = settlement;
-        
-        super.setDescription(associatedSettlement.getName());
 
-        if (Simulation.instance().getMasterClock() != null)
-        	if (clock == null)
-        		clock = Simulation.instance().getMasterClock().getMarsClock();
-    	
+        masterClock = Simulation.instance().getMasterClock();
+        marsClock = masterClock.getMarsClock();
+        earthClock = masterClock.getEarthClock();
+        
+        config = SimulationConfig.instance().getPersonConfiguration();
+
+        //if (Simulation.instance().getMasterClock() != null)
+        //	if (marsClock == null)
+        //		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+ 
         String birthTimeString = createBirthTimeString();
 
         birthTimeStamp = new EarthClock(birthTimeString);
@@ -171,7 +181,6 @@ implements VehicleOperator, MissionMember, Serializable {
 
         // 2015-02-27 Added JobHistory
         jobHistory = new JobHistory(this);
-
         mind = new Mind(this);
         isBuried = false;
         health = new PhysicalCondition(this);
@@ -618,7 +627,7 @@ implements VehicleOperator, MissionMember, Serializable {
         		}         		
 
         		// check for the passing of each day
-        		int solElapsed = MarsClock.getSolOfYear(clock);
+        		int solElapsed = MarsClock.getSolOfYear(marsClock);
 
         		if (solCache != solElapsed) {
         			// 2016-04-20 Added updating a person's age
@@ -718,10 +727,10 @@ implements VehicleOperator, MissionMember, Serializable {
      */
     // 2016-04-20 Corrected the use of the day of month
     public int getAge() {
-        EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
-        int age = simClock.getYear() - birthTimeStamp.getYear() - 1;
-        if (simClock.getMonth() >= birthTimeStamp.getMonth())
-        	if (simClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth()) 
+        //EarthClock earthClock = Simulation.instance().getMasterClock().getEarthClock();
+        int age = earthClock.getYear() - birthTimeStamp.getYear() - 1;
+        if (earthClock.getMonth() >= birthTimeStamp.getMonth())
+        	if (earthClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth()) 
                	age++;
 
         return age;

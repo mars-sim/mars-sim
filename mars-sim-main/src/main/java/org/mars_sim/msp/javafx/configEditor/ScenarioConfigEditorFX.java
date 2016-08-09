@@ -162,7 +162,8 @@ public class ScenarioConfigEditorFX {
 	private MainScene mainScene;
 	private TableView<?> tableView;
 	private ScrollBar bar;	
-	private SettlementTableView settlementTableView;
+	//private SettlementTableView settlementTableView;
+	private TableViewCombo tableViewCombo;
 	
 	private List<SettlementRegistry> settlementList;
 
@@ -374,10 +375,16 @@ public class ScenarioConfigEditorFX {
 		topVB.getChildren().addAll(topHB, titleLabel); // gameModeLabel
 		borderAll.setTop(topVB);
 
-
+		
+		
 		// 2016-07-06 Added settlementTableView, tableView
-		settlementTableView = new SettlementTableView();		
-		tableView = settlementTableView.createGUI();	
+		//settlementTableView = new SettlementTableView();		
+		//tableView = settlementTableView.createGUI();
+		
+		tableViewCombo = new TableViewCombo();		
+		tableView = tableViewCombo.createGUI();
+		
+		
 		tableView.setMaxHeight(200);
 		tableView.setPrefHeight(200);		
 		borderAll.setCenter(tableView);//bar);
@@ -421,7 +428,7 @@ public class ScenarioConfigEditorFX {
 		removeButton.setOnAction((event) -> {
 			//ObservableList list = settlementTableView.getTableView().getSelectionModel().getSelectedIndices();
 			int index = -1;
-			index = settlementTableView.getTableView().getSelectionModel().getSelectedIndex();
+			index = tableViewCombo.getTableView().getSelectionModel().getSelectedIndex();
 			//System.out.println("index is " + index);
 				
 			if (index > -1) {
@@ -650,8 +657,10 @@ public class ScenarioConfigEditorFX {
 	 * Adds a new settlement with default values.
 	 */
 	private void addNewSettlement() {
-		SettlementInfo settlement = determineNewSettlementConfiguration();
-		settlementTableView.addSettlement(settlement);
+		//SettlementInfo settlement = determineNewSettlementConfiguration();
+		//settlementTableView.addSettlement(settlement);
+		SettlementBase base = determineNewSettlementConfiguration();
+		tableViewCombo.addSettlement(base);
 		updateSettlementNames();
 	}
 
@@ -660,7 +669,7 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void removeSelectedSettlements(int i) {
 		//settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
-		settlementTableView.removeSettlements(i);
+		tableViewCombo.removeSettlements(i);
 		updateSettlementNames();
 	}
 
@@ -698,7 +707,7 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void setDefaultSettlements() {
 		//settlementTableModel.loadDefaultSettlements();
-		settlementTableView.loadDefaultSettlements();
+		tableViewCombo.loadDefaultSettlements();
 		updateSettlementNames();
 	}
 
@@ -721,7 +730,7 @@ public class ScenarioConfigEditorFX {
 		//for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
 		//System.out.println("rows : "+ settlementTableView.getRowCount());
 		//System.out.println("rows : "+ settlementTableView.getTableView().getItems().size());
-		for (int x = 0; x < settlementTableView.getRowCount(); x++) {			
+		for (int x = 0; x < tableViewCombo.getRowCount(); x++) {			
 			if (multiplayerClient != null) {
 				if (hasSettlement && x < settlementList.size())
 					; // do nothing to the existing settlements from other
@@ -740,15 +749,15 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void createSettlement(int x) {
 
-		String name = settlementTableView.getAllData().get(x).get(0).toString();
-		String template = settlementTableView.getAllData().get(x).get(1).toString();
-		String population = settlementTableView.getAllData().get(x).get(2).toString();
-		String numOfRobotsStr = settlementTableView.getAllData().get(x).get(3).toString();
-		String sponsor = settlementTableView.getAllData().get(x).get(4).toString();
-		String latitude = settlementTableView.getAllData().get(x).get(5).toString();
-		String longitude = settlementTableView.getAllData().get(x).get(6).toString();
+		String name = tableViewCombo.getAllData().get(x).getName().toString();
+		String template = tableViewCombo.getAllData().get(x).getTemplate().toString();
+		String population = tableViewCombo.getAllData().get(x).getSettler().toString();
+		String robot = tableViewCombo.getAllData().get(x).getBot().toString();
+		String sponsor = tableViewCombo.getAllData().get(x).getSponsor().toString();
+		String latitude = tableViewCombo.getAllData().get(x).getLatitude().toString();
+		String longitude = tableViewCombo.getAllData().get(x).getLongitude().toString();
 		int populationNum = Integer.parseInt(population);
-		int numOfRobots = Integer.parseInt(numOfRobotsStr);
+		int numOfRobots = Integer.parseInt(robot);
 		double lat = SettlementRegistry.convertLatLong2Double(latitude);
 		double lo = SettlementRegistry.convertLatLong2Double(longitude);
 		
@@ -816,22 +825,22 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines the configuration of a new settlement.
-	 * 
-	 * @return settlement configuration.
+	 * @return SettlementBase configuration.
 	 */
-	private SettlementInfo determineNewSettlementConfiguration() {
-		SettlementInfo settlement = new SettlementInfo();
-		settlement.playerName = playerName;
-		settlement.name = determineNewSettlementName();
-		settlement.template = determineNewSettlementTemplate();
-		settlement.population = determineNewSettlementPopulation(settlement.template);
-		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
-		settlement.sponsor = determineNewSettlementSponsor();
-		settlement.latitude = determineNewSettlementLatitude();
-		settlement.longitude = determineNewSettlementLongitude();
-		settlement.maxMSD = "0";
-		// TODO: add maxMSD
-
+	private SettlementBase determineNewSettlementConfiguration() {
+		String template = determineNewSettlementTemplate();
+		
+		SettlementBase settlement = new SettlementBase(
+			//playerName,
+			determineNewSettlementName(),
+			template,
+			determineNewSettlementPopulation(template),
+			determineNewSettlementNumOfRobots(template),
+			determineNewSettlementSponsor(),
+			determineNewSettlementLatitude(),
+			determineNewSettlementLongitude()
+		);
+		
 		return settlement;
 	}
 
@@ -852,9 +861,9 @@ public class ScenarioConfigEditorFX {
 			String name = i.next();
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableView.getRowCount(); x++) {
+			for (int x = 0; x < tableViewCombo.getRowCount(); x++) {
 				//if (name.equals(settlementTableModel.getValueAt(x, SettlementTable.COLUMN_SETTLEMENT_NAME))) {
-				if (name.equals(settlementTableView.getAllData().get(x).get(0))) {
+				if (name.equals(tableViewCombo.getAllData().get(x).getName())) {
 					nameUsed = true;
 				}
 			}
@@ -876,9 +885,9 @@ public class ScenarioConfigEditorFX {
 
 			// Make sure settlement name isn't already being used in table.
 			boolean nameUsed = false;
-			for (int x = 0; x < settlementTableView.getRowCount(); x++) {
+			for (int x = 0; x < tableViewCombo.getRowCount(); x++) {
 				//if (name.equals(settlementTableModel.getValueAt(x, SettlementTable.COLUMN_SETTLEMENT_NAME))) {
-				if (name.equals(settlementTableView.getAllData().get(x).get(0))) {
+				if (name.equals(tableViewCombo.getAllData().get(x).getName())) {
 					nameUsed = true;
 				}
 			}
@@ -1085,8 +1094,13 @@ public class ScenarioConfigEditorFX {
 		return settlementTableModel;
 	}
 */
-	public SettlementTableView getSettlementTableView() {
-		return settlementTableView;
+	
+	//public SettlementTableView getSettlementTableView() {
+	//	return tableViewCombo;
+	//}
+
+	public TableViewCombo getTableViewCombo() {
+		return tableViewCombo;
 	}
 	
 	public MainMenu getMainMenu() {

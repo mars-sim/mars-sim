@@ -93,50 +93,39 @@ public class CrewEditorFX {
 	private static final StackPane layout = new StackPane();
 
 	// Data members
-
-	private boolean[][] personalityArray;// = new boolean [4][SIZE_OF_CREW];
+	private boolean[][] personalityArray;
+	
 	private boolean goodToGo = true;
 
 	private String destinationStr;
 
 	private GridPane gridPane;
 
-	private List<JFXTextField> nameTF;// = new ArrayList<JFXTextField>();
-
-	// private JFXComboBox<String> personalityOListComboBox;
+	private List<JFXTextField> nameTF;
 	private JFXComboBox<String> jobsOListComboBox;
 	private JFXComboBox<String> genderOListComboBox;
 	private JFXComboBox<String> destinationsOListComboBox = new JFXComboBox<String>();
 	private JFXComboBox<String> destinationCB;
 
-	private List<JFXComboBox<String>> genderList;// = new
-												// ArrayList<JFXComboBox<String>>();
-	private List<JFXComboBox<String>> jobsList;// = new
-											// ArrayList<JFXComboBox<String>>();
-	// private List<JFXComboBox<String>> personalityList;// = new
-	// ArrayList<JFXComboBox<String>>();
-	// private List<JFXComboBox<String>> destinationsList;
-
-	private List<SettlementInfo> settlements;
+	private List<JFXComboBox<String>> genderList;
+	private List<JFXComboBox<String>> jobsList;
+	
+	private List<SettlementBase> settlements;
 	private List<String> settlementNames = new ArrayList<String>();
 
 	private ObservableList<String> destinationsOList;
 
 	private Stage stage;
+	
 	// private SimulationConfig config; // needed in the constructor
 	private ScenarioConfigEditorFX scenarioConfigEditorFX;
-	private PersonConfig personConfig;// =
-										// SimulationConfig.instance().getPersonConfiguration();
-
-	// private final SimpleStringProperty nameProp;
+	
+	private PersonConfig personConfig;
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param simulationConfig
-	 *            SimulationConfig
-	 * @param scenarioConfigEditorFX
-	 *            ScenarioConfigEditorFX
+	 * @param simulationConfig SimulationConfig
+	 * @param scenarioConfigEditorFX ScenarioConfigEditorFX
 	 */
 	public CrewEditorFX(SimulationConfig simulationConfig, ScenarioConfigEditorFX scenarioConfigEditorFX) {
 
@@ -148,12 +137,9 @@ public class CrewEditorFX {
 		nameTF = new ArrayList<JFXTextField>();
 		genderList = new ArrayList<JFXComboBox<String>>();
 		jobsList = new ArrayList<JFXComboBox<String>>();
-		// personalityList = new ArrayList<JFXComboBox<String>>();
-		// destinationsList = new ArrayList<JFXComboBox<String>>();
 
 		createGUI();
 
-		// nameProp = new SimpleStringProperty();
 	}
 
 	public void setID(Label l) {
@@ -161,13 +147,11 @@ public class CrewEditorFX {
 	}
 
 	/*
-	 * Creates the stage for displaying and modifying the alpha crew member
-	 * attributes
+	 * Creates the stage for displaying and modifying the alpha crew member attributes
 	 */
 	// 2015-10-07 Added and revised createGUI()
 	@SuppressWarnings("restriction")
 	public void createGUI() {
-
 		/*
 		 * if (!nameTF.isEmpty()) for (int i = 0; i< SIZE_OF_CREW; i++) {
 		 * System.out.println(" i is " + i); String nameStr =
@@ -229,22 +213,18 @@ public class CrewEditorFX {
 		GridPane.setConstraints(gender, 0, 2);
 		GridPane.setConstraints(job, 0, 3);
 		GridPane.setConstraints(personality, 0, 4);
-		// GridPane.setConstraints(destination, 0, 5);
-		gridPane.getChildren().addAll(name, gender, job, personality);// ,
-																		// destination);
-
+		gridPane.getChildren().addAll(name, gender, job, personality);
+		
 		setUpCrewName();
 		setUpCrewGender();
 		setUpCrewJob();
 		for (int col = 1; col < SIZE_OF_CREW + 1; col++) {
 			setUpCrewPersonality(col);
 		}
-		// setUpCrewDestination();
 
 		// Create commit button.
 		JFXButton commitButton = new JFXButton();
 		setMouseCursor(commitButton);
-		//commitButton.getStyleClass().add("button-raised");
 		commitButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
 		commitButton.getStyleClass().add("button-mid");
 		commitButton.setTooltip(new Tooltip(Msg.getString("CrewEditorFX.tooltip.commit")));
@@ -283,7 +263,6 @@ public class CrewEditorFX {
 				}
 
 				// System.out.println("continue ");
-
 				String genderStr = genderList.get(i).getValue();
 				if (genderStr.equals("M"))
 					genderStr = "MALE";
@@ -293,8 +272,7 @@ public class CrewEditorFX {
 				// update PersonConfig with the new gender
 				personConfig.setPersonGender(i, genderStr, ALPHA_CREW);
 
-				String personalityStr = getPersonality(i); // (String)
-															// personalityList.get(i).getValue();
+				String personalityStr = getPersonality(i);
 				// System.out.println(" personality is " + personalityStr);
 				// update PersonConfig with the new personality
 				personConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
@@ -336,7 +314,6 @@ public class CrewEditorFX {
 		String dest = personConfig.getConfiguredPersonDestination(0, ALPHA_CREW);
 		destinationCB = setUpCB(5); // 5 = Destination
 		destinationCB.setValue(dest);
-		// destinationsList.add(destinationCB);
 
 		// Create button pane.
 		HBox destBox = new HBox();
@@ -380,17 +357,13 @@ public class CrewEditorFX {
 		scenarioConfigEditorFX.getMainMenu().setMonitor(stage);
 
 		stage.show();
-
 		stage.setOnCloseRequest(e -> {
 			scenarioConfigEditorFX.setCrewEditorOpen(false);
 			// stage.close(); already implied
 		});
-
 		// makeSmoke(stage);
-
 		// background.setImage(copyBackground(stage));
 		// background.setEffect(frostEffect);
-
 		// makeDraggable(stage, layout);
 	}
 
@@ -478,12 +451,10 @@ public class CrewEditorFX {
 	}
 
 	public JFXComboBox<String> setUpGenderCB() {
-
 		// List<String> genderList = new ArrayList<String>(2);
 		// genderList.add("M");
 		// genderList.add("F");
 		List<String> genderList = Arrays.asList("M", "F");
-
 		ObservableList<String> genderOList = FXCollections.observableArrayList(genderList);
 		genderOListComboBox = new JFXComboBox<String>(genderOList);
 
@@ -646,13 +617,11 @@ public class CrewEditorFX {
 
 	// public FilterJFXComboBox<String> setUpJobCB() {
 	public JFXComboBox<String> setUpJobCB() {
-
 		/*
 		 * ObservableList<String> options = FXCollections.observableArrayList(
 		 * "Option 1", "Option 2", "Option 3" ); final ComboBox comboBox = new
 		 * ComboBox(options);
 		 */
-
 		List<String> jobs = new ArrayList<String>(15);
 		jobs.add("Architect");
 		jobs.add("Areologist");
@@ -701,7 +670,6 @@ public class CrewEditorFX {
 	public JFXComboBox<String> setUpDestinationCB() {
 
 		setupSettlementNames();
-
 		// destinationsOListComboBox = new JFXComboBox<String>(destinationsOList);
 		destinationsOListComboBox.setItems(destinationsOList);
 
@@ -711,7 +679,8 @@ public class CrewEditorFX {
 	public void setupSettlementNames() {
 		// TODO: how to properly sense the change and rebuild the combobox
 		// real-time?
-		settlements = scenarioConfigEditorFX.getSettlementTableView().getSettlementInfo();
+		//settlements = scenarioConfigEditorFX.getSettlementTableView().getSettlementInfo();
+		settlements = scenarioConfigEditorFX.getTableViewCombo().getSettlementBase();
 
 		settlementNames.clear();
 
@@ -730,7 +699,7 @@ public class CrewEditorFX {
 		destinationsOListComboBox.setItems(destinationsOList);
 	}
 
-	/*
+/*
 	 * public void setUpCrewDestination() {
 	 * 
 	 * //List<SettlementInfo> settlements =
@@ -744,7 +713,7 @@ public class CrewEditorFX {
 	 * setUpCB(5); // 5 = Destination //g.setMaximumRowCount(8);
 	 * gridPane.add(destinationCB, i+1, 5); // destination's row = 5
 	 * destinationCB.setValue(n[i]); destinationsList.add(destinationCB); } }
-	 */
+*/
 
 	boolean isGoodToGo() {
 		// System.out.println("calling isGoodToGo(). goodToGo is "+ goodToGo );

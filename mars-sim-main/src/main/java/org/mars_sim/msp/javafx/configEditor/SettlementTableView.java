@@ -19,6 +19,8 @@ import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
@@ -26,6 +28,7 @@ import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
+import javafx.scene.control.TextField;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,6 +36,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -60,7 +64,9 @@ public class SettlementTableView {
     
     private int rowCount = 2; //Will be re-calculated after if incorrect.
 
-	private SimulationConfig simulationConfig = SimulationConfig.instance();
+	private SimulationConfig simulationConfig;
+
+	private SettlementConfig settlementConfig;
 	
 	private List<SettlementInfo> settlements = new ArrayList<>();
 	
@@ -68,48 +74,45 @@ public class SettlementTableView {
  
 	private TableView table_view;
 	
-    private SpreadsheetView spreadSheetView;
-
+    //private SpreadsheetView spreadSheetView;
 	
-	private ReportingAuthorityType[] sponsors = new ReportingAuthorityType[NUM_SPONSORS];
+	private ReportingAuthorityType[] sponsors = new ReportingAuthorityType[]{
+			ReportingAuthorityType.CNSA,
+			ReportingAuthorityType.CSA,
+			ReportingAuthorityType.ESA,
+			ReportingAuthorityType.ISRO,
+			ReportingAuthorityType.JAXA,
+			ReportingAuthorityType.MARS_SOCIETY,
+			ReportingAuthorityType.NASA,
+			ReportingAuthorityType.RKA};
 	
 	private String[] headers = new String[]{"Settlement","Template","Settlers",
 	                                      "Bots","Sponsor","Latitude","Longitude"};
 	
 	private List<String> settlementNames;
+	
 	private List<SettlementTemplate> templates;
-	
-	
+/*	
     private List<String> cityList = Arrays.asList("Shanghai", "Paris", "New York City", "Bangkok",
             "Singapore", "Johannesburg", "Berlin", "Wellington", "London", "Montreal");
-
     private final List<String> countryList = Arrays.asList("China", "France", "New Zealand",
             "United States", "Germany", "Canada");
-
     private final List<String> companiesList = Arrays.asList("", "ControlsFX", "Aperture Science",
             "Rapture", "Ammu-Nation", "Nuka-Cola", "Pay'N'Spray", "Umbrella Corporation");
-
+*/
 	private int[] col_widths = new int[]{200,220,80,80,194,90,90};
 
 	private List<TableColumn<Map, String>> cols = new ArrayList<>();//TableColumn<>();
 
-	private SimulationConfig sumulationConfig = SimulationConfig.instance();
-	private SettlementConfig settlementConfig;
-	
+	private ValidationSupport validationSupport = new ValidationSupport();
+	  
 	public SettlementTableView() {
 		
-		settlementConfig = sumulationConfig.getSettlementConfiguration();
+		simulationConfig = SimulationConfig.instance();
+		settlementConfig = simulationConfig.getSettlementConfiguration();
 		settlementNames = settlementConfig.getSettlementNameList();
 		templates = settlementConfig.getSettlementTemplates();
 		
-		sponsors[0] = ReportingAuthorityType.CNSA;
-		sponsors[1] = ReportingAuthorityType.CSA;
-		sponsors[2] = ReportingAuthorityType.ESA;
-		sponsors[3] = ReportingAuthorityType.ISRO;
-		sponsors[4] = ReportingAuthorityType.JAXA;
-		sponsors[5] = ReportingAuthorityType.MARS_SOCIETY;
-		sponsors[6] = ReportingAuthorityType.NASA;
-		sponsors[7] = ReportingAuthorityType.RKA;
 	}
 	
 /* 
@@ -127,24 +130,22 @@ public class SettlementTableView {
 */ 
  
     public TableView createGUI() {
-   	    	 	
+
 		for (int x = 0; x < NUM_COLUMNS; x++) {
 			TableColumn<Map, String> col = new TableColumn<>(headers[x]);
 			col.setCellValueFactory(new MapValueFactory(x));
 			col.setMinWidth(col_widths[x]);
 			cols.add(col);
 		}
-		
+
         table_view = new TableView<>(generateDataInMap());
- 
         table_view.setEditable(true);
         table_view.getSelectionModel().setCellSelectionEnabled(true);
         table_view.getColumns().setAll(cols.get(0), cols.get(1), cols.get(2), 
         		cols.get(3), cols.get(4), cols.get(5), cols.get(6));
-        
+
         Callback<TableColumn<Map, String>, TableCell<Map, String>>
-            cellFactoryForMap = new Callback<TableColumn<Map, String>,
-                TableCell<Map, String>>() {
+            cellFactoryForMap = new Callback<TableColumn<Map, String>, TableCell<Map, String>>() {
                     @Override
                     public TableCell call(TableColumn p) {
                         return new TextFieldTableCell(new StringConverter() {
@@ -152,7 +153,8 @@ public class SettlementTableView {
                             public String toString(Object o) {
                             	//updateSettlementInfo();
                             	//System.out.println("t.toString() is "+ t.toString());                    	
-                                return o.toString();
+                        		//validationSupport.registerValidator((TextField) o, Validator.createEmptyValidator("Text is required"));
+                            	return o.toString();
                             }
                             @Override
                             public Object fromString(String s) {
@@ -175,8 +177,7 @@ public class SettlementTableView {
 /*
     public SpreadsheetView buildSheet() {
 
-        //spreadSheetView = new SpreadsheetView(generateDataInMap());
-        
+        //spreadSheetView = new SpreadsheetView(generateDataInMap());       
         GridBase grid = new GridBase(rowCount, NUM_COLUMNS);
         grid.setRowHeightCallback(new GridBase.MapBasedRowHeightFactory(generateRowHeight()));
         buildGrid(grid);
@@ -188,25 +189,26 @@ public class SettlementTableView {
         //spreadSheetView.getSelectionModel().setSelectionMode(selectionMode.isSelected() ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);
 
         spreadSheetView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
         //spreadSheetView.getSelectionModel().setCellSelectionEnabled(true);
         //spreadSheetView.getColumns().setAll(cols.get(0), cols.get(1), cols.get(2), 
         //		cols.get(3), cols.get(4), cols.get(5), cols.get(6));
    
-    
         return spreadSheetView;
     }
 */    
+ 
+/*    
     private Map<Integer, Double> generateRowHeight() {
         Map<Integer, Double> rowHeight = new HashMap<>();
         rowHeight.put(1, 100.0);
         return rowHeight;
     }
-
+*/
+    
     /**
      * Build the grid.
      * @param grid
-    */
+    
     private void buildGrid(GridBase grid) {
 
         List<ObservableList<SpreadsheetCell>> cols = new ArrayList<>(grid.getColumnCount());
@@ -227,6 +229,7 @@ public class SettlementTableView {
 
         grid.setRows(cols);
  
+ */
 /*        
         ArrayList<ObservableList<SpreadsheetCell>> rows = new ArrayList<>(grid.getRowCount());
         int rowIndex = 0;
@@ -244,9 +247,9 @@ public class SettlementTableView {
         }
 
         grid.setRows(rows);
-*/        
+        
     }
- 
+ */
     
 
     /**
@@ -254,7 +257,7 @@ public class SettlementTableView {
      * @param grid
      * @param row
      * @return
-     */
+
     private ObservableList<SpreadsheetCell> createRow(GridBase grid, int row) {
 
         final ObservableList<SpreadsheetCell> settlementCells = FXCollections.observableArrayList();
@@ -276,11 +279,11 @@ public class SettlementTableView {
 
         return settlementCells;
     }
-
+*/
 
     /**
      * Randomly generate a {@link SpreadsheetCell}.
-     */
+     
     private SpreadsheetCell generateCell(int row, int column, int rowSpan, int colSpan) {
 
         SpreadsheetCell cell = SpreadsheetCellType.LIST(countryList).createCell(row, column, rowSpan, colSpan,
@@ -295,11 +298,12 @@ public class SettlementTableView {
         }
         return cell;
     }
+*/
 
     private ObservableList<Map> generateDataInMap() {
     	
         allData = FXCollections.observableArrayList();
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
+		//SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
 		settlements.clear();
 
 		SettlementInfo info = new SettlementInfo();
@@ -436,6 +440,7 @@ public class SettlementTableView {
 	}
 	
 	public void createDataRow(SettlementInfo info, int x) {
+
 		info.name = allData.get(x).get(0).toString();
 		info.template = allData.get(x).get(1).toString();
 		info.population =  allData.get(x).get(2).toString();

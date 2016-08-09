@@ -300,49 +300,23 @@ implements ClockListener, Serializable {
     // 2015-02-04 Added threading
     private void initializeIntransientData() {
         //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
-
         if (eventManager == null)
         	eventManager = new HistoricalEventManager();
-        	//logger.info("Done with HistoricalEventManager()");
-        //if (managerExecutor == null || managerExecutor.isShutdown()) {
-        //    managerExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newSingleThreadExecutor();newFixedThreadPool();
-
-            malfunctionFactory = new MalfunctionFactory(simulationConfig.getMalfunctionConfiguration());
-            //managerExecutor.execute(malfunctionFactory);
-            //logger.info("Done with MalfunctionFactory()");
-            
-            mars = new Mars();
-
-            missionManager = new MissionManager();
-
-            relationshipManager = new RelationshipManager();
-            //managerExecutor.execute(relationshipManager);
-
-            medicalManager = new MedicalManager();
-            //managerExecutor.execute(medicalManager);
-            //logger.info("Done with MedicalManager()");
-            
-            masterClock = new MasterClock();
-
-            unitManager = new UnitManager();
-            unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
-
-            creditManager = new CreditManager();
-            //managerExecutor.execute(creditManager);
-
-            scientificStudyManager = new ScientificStudyManager();
-            //managerExecutor.execute(scientificStudyManager);
-
-            transportManager = new TransportManager();
-            //managerExecutor.execute(transportManager);
-
-        //}
-            //logger.info("Done with Simulation's initializeIntransientData()");
-    }
+        malfunctionFactory = new MalfunctionFactory(simulationConfig.getMalfunctionConfiguration());
+        mars = new Mars();
+        missionManager = new MissionManager();
+        relationshipManager = new RelationshipManager();
+        medicalManager = new MedicalManager();
+        masterClock = new MasterClock();
+        unitManager = new UnitManager();
+		unitManager.constructInitialUnits(); // unitManager needs to be on the same thread as masterClock
+		creditManager = new CreditManager();
+		scientificStudyManager = new ScientificStudyManager();
+		transportManager = new TransportManager();
+	}
 
 
     /**
-     *
      * Start the simulation.
      */
     public void start(boolean useDefaultName) {
@@ -359,23 +333,15 @@ implements ClockListener, Serializable {
 
         if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
 	        
-        	if (NUM_THREADS <= 3 )
+        	if (NUM_THREADS <= 3)
         		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);// newSingleThreadExecutor();// newCachedThreadPool(); //
         	else if (NUM_THREADS <= 6)
         		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// newSingleThreadExecutor();// newCachedThreadPool(); //
         	else 
         		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(6);// newSingleThreadExecutor();// newCachedThreadPool(); //
-       
-        	//logger.info("Simulation's instance() is on " + Thread.currentThread().getName() + " Thread");
-
-	        // 2015-06-24 Replaced with PausableThreadPoolExecutor
-        	//clockScheduler =  new PausableThreadPoolExecutor(1, 5);
-        	//clockScheduler = (ThreadPoolExecutor) Executors.newCachedThreadPool(); // newSingleThreadExecutor(); newFixedThreadPool(1); //newScheduledThreadPool(1); // newSingleThreadScheduledExecutor(); //
-        	//clockScheduler.scheduleAtFixedRate(masterClock.getClockThreadTask(), 0, (long) 16.66667, TimeUnit.MILLISECONDS);
-        	//logger.info("Simulation's start() : clockExecutor was null. just made one");
-	        clockScheduler.execute(masterClock.getClockThreadTask());
-	        //logger.info("Simulation : just loading clockExecutor for masterClock");
-        }
+   
+        	clockScheduler.execute(masterClock.getClockThreadTask());
+       }
  
         //2016-04-28 Relocated the autosave timer from MainMenu to here
 		startAutosaveTimer(useDefaultName);
