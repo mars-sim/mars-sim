@@ -87,7 +87,7 @@ public class WalkingStepsTest extends TestCase {
         connectorManager.addBuildingConnection(new BuildingConnector(building1, 
                 -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
         
-        Person person = new Person("test person", PersonGender.MALE, true,"Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, true,"Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -155,7 +155,7 @@ public class WalkingStepsTest extends TestCase {
         building1.setFacing(270D);
         buildingManager.addBuilding(building1, false);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -220,7 +220,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock1 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock1));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -292,7 +292,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -360,7 +360,7 @@ public class WalkingStepsTest extends TestCase {
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -416,7 +416,7 @@ public class WalkingStepsTest extends TestCase {
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -487,7 +487,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -562,7 +562,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -637,7 +637,7 @@ public class WalkingStepsTest extends TestCase {
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -694,7 +694,7 @@ public class WalkingStepsTest extends TestCase {
         Rover rover2 = new Rover("Test Rover 2", "Explorer Rover", settlement);
         rover2.setParkedLocation(-50D, 20D, 15D);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -775,7 +775,7 @@ public class WalkingStepsTest extends TestCase {
         building0.addFunction(garage);
         garage.addVehicle(rover);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(4D);
         person.setYLocation(4D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -847,7 +847,7 @@ public class WalkingStepsTest extends TestCase {
         building0.addFunction(garage);
         garage.addVehicle(rover);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         settlement.getInventory().retrieveUnit(person);
@@ -911,7 +911,7 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(50D);
         person.setYLocation(50D);
         settlement.getInventory().retrieveUnit(person);
@@ -979,7 +979,7 @@ public class WalkingStepsTest extends TestCase {
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         settlement.getInventory().retrieveUnit(person);
@@ -1034,7 +1034,7 @@ public class WalkingStepsTest extends TestCase {
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(20D);
         person.setYLocation(15D);
         settlement.getInventory().retrieveUnit(person);

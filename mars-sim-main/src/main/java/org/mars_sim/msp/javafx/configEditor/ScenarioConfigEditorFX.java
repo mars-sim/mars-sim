@@ -121,13 +121,6 @@ public class ScenarioConfigEditorFX {
 	private String playerName;
 	private String gameMode;
 
-	private JTableHeader header;
-	//private SettlementTableModel settlementTableModel;
-	// private JTable settlementTable;
-	//private SettlementTable settlementTable;
-	//private JScrollPane settlementScrollPane;
-	private TableCellEditor tableCellEditor;
-
 	@FXML
 	private TabPane tabPane;
 
@@ -147,7 +140,7 @@ public class ScenarioConfigEditorFX {
 	private Parent parent;
 	private SwingNode swingNode;
 	private Stage stage;
-	private Stage cstage;// = new Stage();
+	private Stage cstage;
 	private Scene scene;
 
 	private transient ThreadPoolExecutor executor;
@@ -158,21 +151,17 @@ public class ScenarioConfigEditorFX {
 	private MarsProjectFX marsProjectFX;
 	private MultiplayerClient multiplayerClient;
 	private SettlementConfig settlementConfig;
-	// private WaitIndicator waiti;
 	private MainScene mainScene;
 	private TableView<?> tableView;
-	private ScrollBar bar;	
-	//private SettlementTableView settlementTableView;
+	private ScrollBar bar;
 	private TableViewCombo tableViewCombo;
 	
 	private List<SettlementRegistry> settlementList;
 
 	/**
 	 * Constructor
-	 * 
 	 * @param mainMenu
-	 * @param config
-	 *            the simulation configuration.
+	 * @param config the simulation configuration.
 	 */
 	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { // ,																				// {
 		// logger.info("ScenarioConfigEditorFX's constructor is on " +
@@ -224,12 +213,10 @@ public class ScenarioConfigEditorFX {
 
 		try {
 			fxmlLoader = new FXMLLoader();
-			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ConfigEditorFX.fxml")); // ClientArea.fxml"));
-																								// //
+			fxmlLoader.setLocation(getClass().getResource("/fxui/fxml/ConfigEditorFX.fxml")); // ClientArea.fxml"));																// //
 			fxmlLoader.setController(this);
 			parent = (Parent) fxmlLoader.load();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -374,17 +361,10 @@ public class ScenarioConfigEditorFX {
 		topHB.setAlignment(Pos.CENTER);
 		topVB.getChildren().addAll(topHB, titleLabel); // gameModeLabel
 		borderAll.setTop(topVB);
-
-		
-		
-		// 2016-07-06 Added settlementTableView, tableView
-		//settlementTableView = new SettlementTableView();		
-		//tableView = settlementTableView.createGUI();
-		
+	
+		// 2016-08-09 Added TableViewCombo, TableView	
 		tableViewCombo = new TableViewCombo();		
-		tableView = tableViewCombo.createGUI();
-		
-		
+		tableView = tableViewCombo.createGUI();	
 		tableView.setMaxHeight(200);
 		tableView.setPrefHeight(200);		
 		borderAll.setCenter(tableView);//bar);
@@ -534,16 +514,17 @@ public class ScenarioConfigEditorFX {
 			}
 
 			// Make sure any editing cell is completed, then check if error.
-			if (tableCellEditor != null) {
-				tableCellEditor.stopCellEditing();
-			}
+			//if (tableCellEditor != null) {
+			//	tableCellEditor.stopCellEditing();
+			//}
 
 			if (!hasError) {
 				// waiti = new WaitIndicator();
 				setConfiguration();
 				// scene.setCursor(Cursor.WAIT); //Change cursor to wait style
 				cstage = new Stage();
-				CompletableFuture<?> future = CompletableFuture.supplyAsync(() -> submitTask());
+				//CompletableFuture<?> future = 
+				CompletableFuture.supplyAsync(() -> submitTask());
 				// .thenAccept(lr -> waitLoading()); //loadProgress()); //
 				// Platform.runLater(() -> {
 				closeWindow();
@@ -597,7 +578,7 @@ public class ScenarioConfigEditorFX {
 	}
 
 	public int submitTask() {
-		Simulation.instance().getSimExecutor().submit(new SimulationTask());
+		Simulation.instance().getSimExecutor().execute(new SimulationTask());
 		return 1;
 	}
 
@@ -733,14 +714,11 @@ public class ScenarioConfigEditorFX {
 		for (int x = 0; x < tableViewCombo.getRowCount(); x++) {			
 			if (multiplayerClient != null) {
 				if (hasSettlement && x < settlementList.size())
-					; // do nothing to the existing settlements from other
-						// clients
-				else {
+					; // do nothing to the existing settlements from other clients
+				else
 					createSettlement(x);
-				}
-			} else {
+			} else
 				createSettlement(x);
-			}
 		}
 	}
 
@@ -830,7 +808,7 @@ public class ScenarioConfigEditorFX {
 	private SettlementBase determineNewSettlementConfiguration() {
 		String template = determineNewSettlementTemplate();
 		
-		SettlementBase settlement = new SettlementBase(
+		SettlementBase base = new SettlementBase(
 			//playerName,
 			determineNewSettlementName(),
 			template,
@@ -841,7 +819,7 @@ public class ScenarioConfigEditorFX {
 			determineNewSettlementLongitude()
 		);
 		
-		return settlement;
+		return base;
 	}
 
 	/**
@@ -853,7 +831,7 @@ public class ScenarioConfigEditorFX {
 
 		// Try to find unique name in configured settlement name list.
 		// Randomly shuffle settlement name list first.
-		SettlementConfig settlementConfig = config.getSettlementConfiguration();
+		//SettlementConfig settlementConfig = config.getSettlementConfiguration();
 		List<String> settlementNames = settlementConfig.getSettlementNameList();
 		Collections.shuffle(settlementNames);
 		Iterator<String> i = settlementNames.iterator();
@@ -912,7 +890,7 @@ public class ScenarioConfigEditorFX {
 	private String determineNewSettlementTemplate() {
 		String result = null;
 
-		SettlementConfig settlementConfig = config.getSettlementConfiguration();
+		//SettlementConfig settlementConfig = config.getSettlementConfiguration();
 		List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
 		if (templates.size() > 0) {
 			int index = RandomUtil.getRandomInt(templates.size() - 1);
@@ -933,7 +911,7 @@ public class ScenarioConfigEditorFX {
 		String result = "0"; //$NON-NLS-1$
 
 		if (templateName != null) {
-			SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			//SettlementConfig settlementConfig = config.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -954,7 +932,7 @@ public class ScenarioConfigEditorFX {
 	public String determineNewSettlementNumOfRobots(String templateName) {
 		String result = "0"; //$NON-NLS-1$
 		if (templateName != null) {
-			SettlementConfig settlementConfig = config.getSettlementConfiguration();
+			//SettlementConfig settlementConfig = config.getSettlementConfiguration();
 			Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
 			while (i.hasNext()) {
 				SettlementTemplate template = i.next();
@@ -1136,18 +1114,6 @@ public class ScenarioConfigEditorFX {
     
 	public void destroy() {
 
-		// header = null;
-		// settlementTableModel = null;
-		// settlementTable = null;
-		// settlementScrollPane = null;
-		// tableCellEditor = null;
-		// crewEditorFX = null;
-		// marsProjectFX = null;
-		// multiplayerClient = null;
-		// settlementConfig = null;
-		// waiti = null;
-		// settlementList.clear();
-		// settlementList = null;
 		startButton = null;
 		addButton = null;
 		removeButton = null;

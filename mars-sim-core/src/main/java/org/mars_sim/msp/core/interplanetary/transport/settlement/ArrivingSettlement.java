@@ -319,7 +319,9 @@ implements Transportable, Serializable {
 		//List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		//System.out.println("ArrivingSettlement.java : createNewSettlement() : scenarioID is " + scenarioID);
-		Settlement newSettlement = new Settlement(name, scenarioID, template, landingLocation, populationNum, numOfRobots);
+		String sponsor = "Mars Society";
+		
+		Settlement newSettlement = new Settlement(name, scenarioID, template, sponsor, landingLocation, populationNum, numOfRobots);
 		unitManager.addUnit(newSettlement);
 
 		// Add new settlement to credit manager.
@@ -343,7 +345,8 @@ implements Transportable, Serializable {
 			if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = PersonGender.MALE;
 			String birthplace = "Earth"; //TODO: randomize from list of countries/federations
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-			Person immigrant = new Person(immigrantName, gender, false, birthplace, newSettlement);
+			String sponsor = newSettlement.getSponsor();
+			Person immigrant = new Person(immigrantName, gender, false, birthplace, newSettlement, sponsor);
 			
 			// Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();

@@ -116,7 +116,7 @@ implements ActionListener {
         		Msg.getString("LocationTabPanel.tooltip"), unit, desktop);
 
     	if (terrainElevation == null)
-			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getSurfaceTerrain();
+			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
     	mainScene = desktop.getMainScene();
 

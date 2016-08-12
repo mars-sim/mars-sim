@@ -283,7 +283,7 @@ implements Serializable {
 	public double calculateAirPressure(Coordinates location) {
 		// Get local elevation in meters.
 		if (terrainElevation == null)
-			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getSurfaceTerrain();
+			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
 
 		double elevation = terrainElevation.getElevation(location) ; // in km since getElevation() return the value in km
 
@@ -361,7 +361,7 @@ implements Serializable {
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
 		if (terrainElevation == null)
-			terrainElevation = surfaceFeatures.getSurfaceTerrain();
+			terrainElevation = surfaceFeatures.getTerrainElevation();
 
 		if (surfaceFeatures.inDarkPolarRegion(location)){
 			//known temperature for cold days at the pole

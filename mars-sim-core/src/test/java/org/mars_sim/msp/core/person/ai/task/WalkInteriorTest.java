@@ -35,7 +35,7 @@ public class WalkInteriorTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building.addFunction(new EVA(building, airlock0));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
@@ -63,7 +63,7 @@ public class WalkInteriorTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building.addFunction(new EVA(building, airlock0));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building);
@@ -137,7 +137,7 @@ public class WalkInteriorTest extends TestCase {
         connectorManager.addBuildingConnection(new BuildingConnector(building0, -4.5D, 0D, 90D, building2, -4.5D, 0D, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(building1, -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);

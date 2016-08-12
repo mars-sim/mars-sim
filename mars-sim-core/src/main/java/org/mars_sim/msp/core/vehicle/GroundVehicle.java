@@ -59,7 +59,7 @@ implements Serializable {
 
 		setTerrainHandlingCapability(0D); // Default terrain capability
 		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		elevation = surface.getSurfaceTerrain().getElevation(getCoordinates());
+		elevation = surface.getTerrainElevation().getElevation(getCoordinates());
 	}
 
 	/**
@@ -122,7 +122,7 @@ implements Serializable {
 	public double getTerrainGrade(Direction direction) {
 		// Determine the terrain grade in a given direction from the vehicle.
 		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		TerrainElevation terrain = surface.getSurfaceTerrain();
+		TerrainElevation terrain = surface.getTerrainElevation();
 		return terrain.determineTerrainDifficulty(getCoordinates(), direction);
 	}
 

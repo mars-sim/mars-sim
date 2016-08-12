@@ -183,6 +183,7 @@ public class CrewEditorFX {
 		Label slotTwo = new Label("Slot 2");
 		Label slotThree = new Label("Slot 3");
 		Label slotFour = new Label("Slot 4");
+		
 		setID(slotOne);
 		setID(slotTwo);
 		setID(slotThree);
@@ -193,7 +194,6 @@ public class CrewEditorFX {
 		GridPane.setConstraints(slotTwo, 2, 0);
 		GridPane.setConstraints(slotThree, 3, 0);
 		GridPane.setConstraints(slotFour, 4, 0);
-
 		// Note: don't forget to add children to gridpane
 		gridPane.getChildren().addAll(empty, slotOne, slotTwo, slotThree, slotFour);
 

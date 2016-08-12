@@ -36,7 +36,13 @@ import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.FindingLife;
+import org.mars_sim.msp.core.reportingAuthority.FindingMineral;
+import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.SettlingMars;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
@@ -107,8 +113,18 @@ public class UnitManager implements Serializable {
 	private PersonConfig personConfig;
 	private SettlementConfig settlementConfig;
 
-	private ReportingAuthorityType[] sponsors = new ReportingAuthorityType[7];
-	
+	public static ReportingAuthorityType[] sponsors = new ReportingAuthorityType[]{
+			ReportingAuthorityType.CNSA,
+			ReportingAuthorityType.CSA,
+			ReportingAuthorityType.ESA,
+			ReportingAuthorityType.ISRO,
+			ReportingAuthorityType.JAXA,
+			ReportingAuthorityType.MARS_SOCIETY,
+			ReportingAuthorityType.NASA,
+			ReportingAuthorityType.RKA };
+
+	public static int numSponsors = sponsors.length;
+	   
 	/**
 	 * Constructor.
 	 */
@@ -124,14 +140,6 @@ public class UnitManager implements Serializable {
 		masterClock = Simulation.instance().getMasterClock();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
-
-		sponsors[0] = ReportingAuthorityType.CNSA;
-		sponsors[1] = ReportingAuthorityType.CSA;
-		sponsors[2] = ReportingAuthorityType.ESA;
-		sponsors[3] = ReportingAuthorityType.ISRO;
-		sponsors[4] = ReportingAuthorityType.JAXA;
-		sponsors[5] = ReportingAuthorityType.NASA;
-		sponsors[6] = ReportingAuthorityType.RKA;
 
 	}
 
@@ -149,8 +157,7 @@ public class UnitManager implements Serializable {
 		initializeLastNames();
 		initializeFirstNames();
 		//System.out.println("done with intialializing person names");
-
-		
+	
 		initializeSettlementNames();
 		initializeVehicleNames();
 
@@ -461,7 +468,8 @@ public class UnitManager implements Serializable {
 
 				// Get settlement template
 				String template = settlementConfig.getInitialSettlementTemplate(x);
-
+				String sponsor = settlementConfig.getInitialSettlementSponsor(x);
+				
 				// Get settlement longitude
 				double longitude = 0D;
 				String longitudeStr = settlementConfig.getInitialSettlementLongitude(x);
@@ -489,7 +497,7 @@ public class UnitManager implements Serializable {
 				int scenarioID = settlementConfig.getInitialSettlementScenarioID(x);
 				// System.out.println("in unitManager, scenarioID is " +
 				// scenarioID);
-				addUnit(new Settlement(name, scenarioID, template, location, populationNumber, initialNumOfRobots));
+				addUnit(new Settlement(name, scenarioID, template, sponsor, location, populationNumber, initialNumOfRobots));
 
 			}
 		} catch (Exception e) {
@@ -708,6 +716,7 @@ public class UnitManager implements Serializable {
 						newSettlement = tempSettlement;
 					}
 				}
+				
 				if (newSettlement != null) {
 					settlement = newSettlement;
 				} else {
@@ -716,11 +725,14 @@ public class UnitManager implements Serializable {
 				}
 			}
 
+			String sponsor = settlement.getSponsor();
+
 			// Create person and add to the unit manager.
-			Person person = new Person(name, gender, false, "Earth", settlement); 
+			Person person = new Person(name, gender, false, "Earth", settlement, sponsor); 
+			
 			// TODO: read fromfile
 			addUnit(person);
-			
+
 			//System.out.println("done with addUnit() in createConfiguredPeople() in UnitManager");
 			
 			relationshipManager.addInitialSettler(person, settlement);
@@ -806,9 +818,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates initial people based on available capacity at settlements.
-	 *
-	 * @throws Exception
-	 *             if people can not be constructed.
+	 * @throws Exception if people can not be constructed.
 	 */
 	private void createInitialPeople() {
 
@@ -829,8 +839,77 @@ public class UnitManager implements Serializable {
 						gender = PersonGender.MALE;
 					}
 
-					Person person = new Person(getNewName(UnitType.PERSON, null, gender, null), gender, false, "Earth",
-							settlement); // TODO: read from file
+					String sponsor = settlement.getSponsor();
+					String lastN = null;
+					String firstN = null;
+					String name = null;
+					boolean skip = false;
+					Person person = null;
+		
+					List<String> last_list = new ArrayList<>();
+					List<String> male_first_list = new ArrayList<>();
+					List<String> female_first_list = new ArrayList<>();
+	
+					if (sponsor.equals(ReportingAuthorityType.CNSA.toString())) {
+						last_list = lastNames.get(0);
+						male_first_list = maleFirstNames.get(0);
+						female_first_list = femaleFirstNames.get(0);
+		    			
+					} else if (sponsor.equals(ReportingAuthorityType.CSA.toString())) {
+						last_list = lastNames.get(1);
+						male_first_list = maleFirstNames.get(1);
+						female_first_list = femaleFirstNames.get(1);
+
+					} else if (sponsor.equals(ReportingAuthorityType.ESA.toString())) {
+						last_list = lastNames.get(2);
+						male_first_list = maleFirstNames.get(2);
+						female_first_list = femaleFirstNames.get(2);
+
+					} else if (sponsor.equals(ReportingAuthorityType.ISRO.toString())) {
+						last_list = lastNames.get(3);
+						male_first_list = maleFirstNames.get(3);
+						female_first_list = femaleFirstNames.get(3);
+
+					} else if (sponsor.equals(ReportingAuthorityType.JAXA.toString())) {
+						last_list = lastNames.get(4);
+						male_first_list = maleFirstNames.get(4);
+						female_first_list = femaleFirstNames.get(4);
+
+		    		} else if (sponsor.equals(ReportingAuthorityType.NASA.toString())) {
+						last_list = lastNames.get(5);
+						male_first_list = maleFirstNames.get(5);
+						female_first_list = femaleFirstNames.get(5);
+
+					} else if (sponsor.equals(ReportingAuthorityType.RKA.toString())) {
+						last_list = lastNames.get(6);
+						male_first_list = maleFirstNames.get(6);
+						female_first_list = femaleFirstNames.get(6);
+		     	    	
+		    		} else { // if belonging to the Mars Society		    		
+		    			skip = true;
+			    		name = getNewName(UnitType.PERSON, null, gender, null);
+		    		}
+						
+					if (!skip) {
+						
+		    			int rand0 = RandomUtil.getRandomInt(last_list.size()-1);
+		    			lastN = last_list.get(rand0);
+		    			
+		    			if (gender == PersonGender.MALE) {
+			    			int rand1 = RandomUtil.getRandomInt(male_first_list.size()-1);
+		    				firstN = male_first_list.get(rand1);
+		    			}
+		    			else {
+			    			int rand1 = RandomUtil.getRandomInt(female_first_list.size()-1);
+		    				firstN = female_first_list.get(rand1);
+		    			}
+						
+		    			name = firstN + " " + lastN;
+							
+					}
+					
+					person = new Person(name, gender, false, "Earth", settlement, sponsor); // TODO: read from file
+
 					addUnit(person);
 
 					relationshipManager.addInitialSettler(person, settlement);

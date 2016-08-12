@@ -141,6 +141,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	private ObjectiveType objectiveType;
 	
+	private String sponsor;
 	private String objectiveName;
 	//private ObservableList<String> objectivesOList;
 	private final String[] objectiveArray = new String[]{
@@ -220,12 +221,13 @@ implements Serializable, LifeSupportType, Objective {
 	// 2014-10-29 Added settlement id
 	// Called by UnitManager.java when users create the initial settlement
 	// Called by ArrivingSettlement.java when users create a brand new settlement
-	public Settlement(String name, int id, String template, Coordinates location, int populationNumber,
+	public Settlement(String name, int id, String template, String sponsor, Coordinates location, int populationNumber,
 			int initialNumOfRobots) {
 		// Use Structure constructor
 		super(name, location);
 		this.name = name;
 		this.template = template;
+		this.sponsor = sponsor;
 		this.scenarioID = id;
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
@@ -2689,7 +2691,7 @@ implements Serializable, LifeSupportType, Objective {
 		else
 			return null;
 	}
-	
+
 	//public ObservableList<String> getObjectivesOList() {
 	//	return objectivesOList;
 	//}
@@ -2698,6 +2700,9 @@ implements Serializable, LifeSupportType, Objective {
 		return objectiveArray;
 	}
 	
+	public String getSponsor() {
+		return sponsor;
+	}
 	
 	@Override
 	public void destroy() {

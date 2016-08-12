@@ -32,10 +32,19 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
+import org.mars_sim.msp.core.reportingAuthority.AdvancingSpaceKnowledge;
+import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.DevelopingAdvancedTechnology;
+import org.mars_sim.msp.core.reportingAuthority.DevelopingSpaceActivity;
+import org.mars_sim.msp.core.reportingAuthority.ESAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.FindingLife;
+import org.mars_sim.msp.core.reportingAuthority.FindingMineral;
 import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
+import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.ResearchingSpaceApplication;
 import org.mars_sim.msp.core.reportingAuthority.SettlingMars;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -77,12 +86,10 @@ implements VehicleOperator, MissionMember, Serializable {
     private int age;
     
 	private int solCache = 1;
-			
     /** The height of the person (in cm). */
     private double height;
     /** The height of the person (in kg). */ 
     private double weight;
-    
     /** Settlement X location (meters) from settlement center. */
     private double xLoc;
     /** Settlement Y location (meters) from settlement center. */
@@ -91,16 +98,15 @@ implements VehicleOperator, MissionMember, Serializable {
     private String birthplace;
     /** The person's name. */
     private String name;
+    private String sponsor;
     
     private String bloodType;
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
-
     private Map<Integer, Gene> paternal_chromosome;
     private Map<Integer, Gene> maternal_chromosome;
 
     private int[] emotional_states;
-
     private LifeSupportType support;
 
     /** The gender of the person (male or female). */
@@ -111,9 +117,7 @@ implements VehicleOperator, MissionMember, Serializable {
     private Settlement associatedSettlement;
     /** Manager for Person's natural attributes. */
     private NaturalAttributeManager attributes;
-
     private PersonalityManager personalityManager;
-
     /** Person's mind. */
     private Mind mind;
     /** Person's physical condition. */
@@ -128,17 +132,11 @@ implements VehicleOperator, MissionMember, Serializable {
     private Settlement buriedSettlement;
     private Role role;
     private Preference preference;
-
     private ReportingAuthority ra;
-
     private Building quarters;
-    
     private Point2D bed;
-    
     private MarsClock marsClock;
-    
     private EarthClock earthClock;
-    
     private MasterClock masterClock;
     
     /**
@@ -149,7 +147,8 @@ implements VehicleOperator, MissionMember, Serializable {
      * @param settlement {@link Settlement} the settlement the person is at
      * @throws Exception if no inhabitable building available at settlement.
      */
-    public Person(String name, PersonGender gender, boolean bornOnMars, String birthplace, Settlement settlement) {
+    public Person(String name, PersonGender gender, boolean bornOnMars, 
+    		String birthplace, Settlement settlement, String sponsor) {
         //logger.info("Person's constructor is in " + Thread.currentThread().getName() + " Thread");
     	// Use Unit constructor
         super(name, settlement.getCoordinates());  
@@ -163,6 +162,8 @@ implements VehicleOperator, MissionMember, Serializable {
         this.gender = gender;
         this.birthplace = birthplace;
         this.associatedSettlement = settlement;
+        this.sponsor = sponsor;
+        
 
         masterClock = Simulation.instance().getMasterClock();
         marsClock = masterClock.getMarsClock();
@@ -365,15 +366,42 @@ implements VehicleOperator, MissionMember, Serializable {
 
     }
     
-    // 2015-10-05 added setupReportingAuthority()
+    // 2016-08-12 Revised assignReportingAuthority()
     public void assignReportingAuthority() {
 
     	if (ra == null) {
-	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
-	        //ra = new NASAMissionControl();
-	        //ra.setMissionAgenda(new FindingLife());
-    		ra = new MarsSocietyMissionControl();
-    		ra.setMissionAgenda(new SettlingMars());
+
+    		if (sponsor.equals(ReportingAuthorityType.CNSA.toString())) {
+    			ra = new CNSAMissionControl();
+    			ra.setMissionAgenda(new FindingMineral());
+    			
+    		} else if (sponsor.equals(ReportingAuthorityType.CSA.toString())) {
+    	        ra = new CSAMissionControl();
+    	        ra.setMissionAgenda(new AdvancingSpaceKnowledge());   
+
+    		} else if (sponsor.equals(ReportingAuthorityType.ESA.toString())) {
+    			ra = new ESAMissionControl();
+    			ra.setMissionAgenda(new DevelopingSpaceActivity());
+
+    		} else if (sponsor.equals(ReportingAuthorityType.ISRO.toString())) {
+     	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
+    	        ra = new CSAMissionControl();
+    	        ra.setMissionAgenda(new DevelopingAdvancedTechnology());   
+
+    		} else if (sponsor.equals(ReportingAuthorityType.JAXA.toString())) {
+    			ra = new ESAMissionControl();
+    			ra.setMissionAgenda(new ResearchingSpaceApplication());
+     			
+    		} else if (sponsor.equals(ReportingAuthorityType.NASA.toString())) {
+     	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
+    	        ra = new NASAMissionControl();
+    	        ra.setMissionAgenda(new FindingLife());   
+     	        
+    		} else {//if (sponsor.equals(ReportingAuthorityType.MARS_SOCIETY)) 
+	    		ra = new MarsSocietyMissionControl();
+	    		ra.setMissionAgenda(new SettlingMars());
+	    		
+    		}
     	}
     }
 

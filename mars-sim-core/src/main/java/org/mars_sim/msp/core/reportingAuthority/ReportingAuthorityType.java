@@ -16,9 +16,11 @@ public enum ReportingAuthorityType {
 	ESA					(Msg.getString("ReportingAuthorityType.ESA")), //$NON-NLS-1$
 	ISRO				(Msg.getString("ReportingAuthorityType.ISRO")), //$NON-NLS-1$
 	JAXA				(Msg.getString("ReportingAuthorityType.JAXA")), //$NON-NLS-1$
-	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MarsSociety")), //$NON-NLS-1$
 	NASA				(Msg.getString("ReportingAuthorityType.NASA")), //$NON-NLS-1$
-	RKA					(Msg.getString("ReportingAuthorityType.RKA")) //$NON-NLS-1$
+	RKA					(Msg.getString("ReportingAuthorityType.RKA")), //$NON-NLS-1$
+	
+	
+	MARS_SOCIETY		(Msg.getString("ReportingAuthorityType.MarsSociety")) //$NON-NLS-1$
 	;
 
 	private String name;

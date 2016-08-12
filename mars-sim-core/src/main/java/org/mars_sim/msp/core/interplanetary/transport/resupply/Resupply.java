@@ -689,7 +689,8 @@ implements Serializable, Transportable {
 
             String birthplace = "Earth"; //TODO: randomize from list of countries/federations.
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
-            Person immigrant = new Person(immigrantName, gender, false, birthplace, settlement); //TODO: read from file
+			String sponsor = settlement.getSponsor();
+            Person immigrant = new Person(immigrantName, gender, false, birthplace, settlement, sponsor); //TODO: read from file
 
             // Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();

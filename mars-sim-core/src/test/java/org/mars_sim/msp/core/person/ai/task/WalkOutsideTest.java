@@ -57,7 +57,7 @@ extends TestCase {
         building.addFunction(new EVA(building, airlock0));
 
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -124,7 +124,7 @@ extends TestCase {
         building1.addFunction(new EVA(building1, airlock0));
 
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -224,7 +224,7 @@ extends TestCase {
         building1.addFunction(new EVA(building1, airlock0));
 		
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);
@@ -304,7 +304,7 @@ extends TestCase {
         building1.addFunction(new EVA(building1, airlock0));
 		
 		// Create test person.
-		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
 		settlement.getInventory().retrieveUnit(person);
 		person.setXLocation(10D);
 		person.setYLocation(0D);

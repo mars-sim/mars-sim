@@ -68,7 +68,7 @@ extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 		
-		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
 		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);

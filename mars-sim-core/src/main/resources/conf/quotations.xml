@@ -131,7 +131,7 @@
 
 	<quotation name="Albert Einstein" text="I am very smart. But not as strong-hearted as all the workers on earth for he toils endlessly and does it all to feed his family while I do it merely for solving an impossible puzzle." />
 
-	<quotation name="Albert Einstein" text="It is not enough to teach a man a specialty. Through it he may become a kind of useful machine but not a harmoniously developed personality. It is essential...(for him to) acquire an understanding of a lively feeling for values...a vivid sense of the beautiful and of the morally good...a proper relationship to individual fellow-men and to the community." />
+	<quotation name="Albert Einstein" text="It is not enough to teach a man a specialty....It is essential...(for him to) acquire an understanding of a lively feeling for values...a vivid sense of the beautiful and of the morally good...a proper relationship to individual fellow-men and to the community." />
 
    
   
@@ -146,12 +146,24 @@
 	  
 	<quotation name="Alan M. Turing" text="The view that machines cannot give rise to surprises is due...to a fallacy to which philosophers and mathematicians (assumed)--a very useful assumption under many circumstances, but one too easily forgets that it is false." />
  
-	<quotation name="Kurt Gödel" text="I believe that mechanism in biology is a prejudice of our time which will be disproved...in a mathematical theorem...that the formation within geological time of a human body by the laws of physics..., starting from a random distribution of the elementary particles and the field, is as unlikely as the separation by chance of the atmosphere into its components." />
+	<quotation name="Kurt Gödel" text="Mechanism in biology is a prejudice of our time...The formation within geological time of a human body by the laws of physics..., starting from a random distribution of the elementary particles and the field, is as unlikely as the separation by chance of the atmosphere into its components." />
 
 	<quotation name="William Shakespeare" text="All the world's a stage. And all the men and women merely players. They have their exits and their entrances."/>
 	<!-- As You Like It, 1600 -->
 
+	<quotation name="Edwin Powell Hubble" text="Equipped with his five senses, Man explores the universe around him and calls the adventure science."/>
 
+	<quotation name="Isaac Asimov" text="The saddest aspect of life right now is that science gathers knowledge faster than society gathers wisdom."/>
+
+	<quotation name="Isaac Asimov" text="People who think they know everything are a great annoyance to those of us who do."/>
+
+	<quotation name="Isaac Asimov" text="I do not fear computers. I fear the lack of them. "/>
+
+	<quotation name="Carl Sagan" text="Imagination will often carry us to worlds that never were. But without it we go nowhere. "/>
+
+	<quotation name="Carl Sagan" text="For small creatures such as we the vastness is bearable only through love. "/>
+
+	<quotation name="Carl Sagan" text="If you wish to make an apple pie from scratch, you must first invent the universe. "/>
 
 
 </quotation-list>

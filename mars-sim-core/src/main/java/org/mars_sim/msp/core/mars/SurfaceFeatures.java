@@ -52,7 +52,7 @@ public class SurfaceFeatures implements Serializable {
 
     private transient Mars mars;
     private transient OrbitInfo orbitInfo;
-    private transient TerrainElevation surfaceTerrain;
+    private transient TerrainElevation terrainElevation;
     private MineralMap mineralMap;
     private AreothermalMap areothermalMap;
     private MissionManager missionManager;
@@ -73,7 +73,7 @@ public class SurfaceFeatures implements Serializable {
      */
     public SurfaceFeatures() {
 
-        surfaceTerrain = new TerrainElevation();
+        terrainElevation = new TerrainElevation();
         mineralMap = new RandomMineralMap();
         exploredLocations = new CopyOnWriteArrayList<>();
         areothermalMap = new AreothermalMap();
@@ -104,18 +104,18 @@ public class SurfaceFeatures implements Serializable {
     public void initializeTransientData() {
 
         // Initialize surface terrain.
-        surfaceTerrain = new TerrainElevation();
+        terrainElevation = new TerrainElevation();
 
      	if (sunDirection == null)
       		sunDirection = Simulation.instance().getMars().getOrbitInfo().getSunDirection();
 
     }
 
-    /** Returns the surface terrain
-     *  @return surface terrain
+    /** Returns the terrain elevation
+     *  @return terrain elevation
      */
-    public TerrainElevation getSurfaceTerrain() {
-        return surfaceTerrain;
+    public TerrainElevation getTerrainElevation() {
+        return terrainElevation;
     }
 
     /**
@@ -548,7 +548,7 @@ public class SurfaceFeatures implements Serializable {
      * Prepare object for garbage collection.
      */
     public void destroy() {
-        surfaceTerrain = null;
+        terrainElevation = null;
         orbitInfo = null;
         mars = null;
         missionManager = null;;

@@ -15,6 +15,7 @@ import java.util.Map;
 import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -39,27 +40,14 @@ import javafx.util.StringConverter;
 public class TableViewCombo {
 
     public static final int NUM_COLUMNS = 7;
-    public static final int NUM_SPONSORS = 8;
- 
+
 	private String[] headers = new String[]{"Settlement","Template","Settlers",
             "Bots","Sponsor","Latitude","Longitude"};
-/*
-	private String[] templates = new String[]{
-			"Mars Direct Base (Phase 1)",
-			"Mars Direct Base (Phase 2)",
-			"Mars Direct Base (Phase 3)",
-			"Alpha Base (MD Phase 4)"};
-*/
-	private ReportingAuthorityType[] sponsors = new ReportingAuthorityType[]{
-			ReportingAuthorityType.CNSA,
-			ReportingAuthorityType.CSA,
-			ReportingAuthorityType.ESA,
-			ReportingAuthorityType.ISRO,
-			ReportingAuthorityType.JAXA,
-			ReportingAuthorityType.MARS_SOCIETY,
-			ReportingAuthorityType.NASA,
-			ReportingAuthorityType.RKA};
-		
+
+	private static ReportingAuthorityType[] sponsors = UnitManager.sponsors;
+
+    public static int numSponsors = sponsors.length;
+    
 	private TableView<SettlementBase> table_view;
 	
 	private List<SettlementBase> settlements = new ArrayList<>();
@@ -69,7 +57,7 @@ public class TableViewCombo {
 	private ObservableList<SettlementBase> allData;
 	
 	private SettlementConfig settlementConfig;
-
+	
 	private SimulationConfig simulationConfig;
 	
 	public TableViewCombo() {
@@ -180,6 +168,7 @@ public class TableViewCombo {
 		//table_view.refresh();
 		table_view.setItems(allData);
 	}
+	
 	
 	public void addNewSettlement(SettlementBase base) {     
 		allData.add(base);
