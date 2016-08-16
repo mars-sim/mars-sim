@@ -954,7 +954,7 @@ public class ScenarioConfigEditorFX {
 	 * @return sponsor name.
 	 */
 	private String determineNewSettlementSponsor() {
-		String result = "Mars Society";
+		String result = "Mars Society (MS)";
 		return result;
 	}
 	

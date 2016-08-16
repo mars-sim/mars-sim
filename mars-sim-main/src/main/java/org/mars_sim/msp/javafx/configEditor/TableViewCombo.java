@@ -44,9 +44,9 @@ public class TableViewCombo {
 	private String[] headers = new String[]{"Settlement","Template","Settlers",
             "Bots","Sponsor","Latitude","Longitude"};
 
-	private static ReportingAuthorityType[] sponsors = UnitManager.sponsors;
+	private static ReportingAuthorityType[] SPONSORS = UnitManager.SPONSORS;
 
-    public static int numSponsors = sponsors.length;
+    public static int NUM_SPONSORS = SPONSORS.length;
     
 	private TableView<SettlementBase> table_view;
 	
@@ -106,14 +106,14 @@ public class TableViewCombo {
         TableColumn<SettlementBase, String> sponsorCol = new TableColumn<>(headers[4]);
         sponsorCol.setCellValueFactory(cellData -> cellData.getValue().sponsorProperty());
         sponsorCol.setCellFactory(ComboBoxTableCell.forTableColumn(
-        		sponsors[0].toString(),
-        		sponsors[1].toString(), 
-        		sponsors[2].toString(), 
-        		sponsors[3].toString(), 
-        		sponsors[4].toString(),
-        		sponsors[5].toString(),
-        		sponsors[6].toString(),
-        		sponsors[7].toString()));
+        		SPONSORS[0].toString(),
+        		SPONSORS[1].toString(), 
+        		SPONSORS[2].toString(), 
+        		SPONSORS[3].toString(), 
+        		SPONSORS[4].toString(),
+        		SPONSORS[5].toString(),
+        		SPONSORS[6].toString(),
+        		SPONSORS[7].toString()));
         sponsorCol.setMinWidth(250);
     
         TableColumn<SettlementBase, String> latCol = new TableColumn<>(headers[5]);

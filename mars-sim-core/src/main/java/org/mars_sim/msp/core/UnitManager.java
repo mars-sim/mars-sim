@@ -79,6 +79,9 @@ public class UnitManager implements Serializable {
 	public static final int POPULATION_WITH_COMMANDER = 4;
 	public static final int THREE_SHIFTS_MIN_POPULATION = 6;
 
+	public static ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
+	public static int NUM_SPONSORS = SPONSORS.length;
+	   
 	// Data members
 	private int solCache;
 
@@ -112,19 +115,11 @@ public class UnitManager implements Serializable {
 	private Settlement firstSettlement;	
 	private PersonConfig personConfig;
 	private SettlementConfig settlementConfig;
+	private RelationshipManager relationshipManager;// = Simulation.instance().getRelationshipManager();
+	private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
+	private VehicleConfig vehicleConfig;// = SimulationConfig.instance().getVehicleConfiguration();
 
-	public static ReportingAuthorityType[] sponsors = new ReportingAuthorityType[]{
-			ReportingAuthorityType.CNSA,
-			ReportingAuthorityType.CSA,
-			ReportingAuthorityType.ESA,
-			ReportingAuthorityType.ISRO,
-			ReportingAuthorityType.JAXA,
-			ReportingAuthorityType.MARS_SOCIETY,
-			ReportingAuthorityType.NASA,
-			ReportingAuthorityType.RKA };
 
-	public static int numSponsors = sponsors.length;
-	   
 	/**
 	 * Constructor.
 	 */
@@ -140,6 +135,11 @@ public class UnitManager implements Serializable {
 		masterClock = Simulation.instance().getMasterClock();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
+		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+
+		emotionJSONConfig = new EmotionJSONConfig();
+		relationshipManager = Simulation.instance().getRelationshipManager();
+
 
 	}
 
@@ -156,7 +156,7 @@ public class UnitManager implements Serializable {
 		initializePersonNames();
 		initializeLastNames();
 		initializeFirstNames();
-		//System.out.println("done with intialializing person names");
+		//System.out.println("done with initializing person names");
 	
 		initializeSettlementNames();
 		initializeVehicleNames();
@@ -192,16 +192,6 @@ public class UnitManager implements Serializable {
 			personMaleNames = new ArrayList<String>();
 			personFemaleNames = new ArrayList<String>();
 			
-/*
-			List<String> CNSAList = new ArrayList<String>();
-			List<String> CSAList = new ArrayList<String>();
-			List<String> ESAList = new ArrayList<String>();
-			List<String> ISROList = new ArrayList<String>();
-			List<String> JAXAList = new ArrayList<String>();
-			List<String> MarsSocietyList = new ArrayList<String>();
-			List<String> NASAList = new ArrayList<String>();
-			List<String> RKAList = new ArrayList<String>();
-*/
 			Iterator<String> i = personNames.iterator();
 			while (i.hasNext()) {
 				
@@ -237,7 +227,7 @@ public class UnitManager implements Serializable {
     // 2016-04-06 Added initializeLastNames()
 	private void initializeLastNames() {
 		try {
-			lastNames = personConfig.getLastNameList(sponsors);	
+			lastNames = personConfig.getLastNameList(SPONSORS);	
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
 		}
@@ -252,7 +242,7 @@ public class UnitManager implements Serializable {
 	private void initializeFirstNames() {
 		
 		try {
-			firstNames = personConfig.getFirstNameList(sponsors);
+			firstNames = personConfig.getFirstNameList(SPONSORS);
 			maleFirstNames = firstNames.get(0);	
 			femaleFirstNames = firstNames.get(1);
 		} catch (Exception e) {
@@ -264,9 +254,7 @@ public class UnitManager implements Serializable {
 	
 	/**
 	 * Initializes the list of possible robot names.
-	 *
-	 * @throws Exception
-	 *             if unable to load name list.
+	 * @throws Exception if unable to load name list.
 	 */
 	private void initializeRobotNames() {
 		try {
@@ -288,7 +276,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void initializeVehicleNames() {
 		try {
-			VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
+			//VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 			vehicleNames = vehicleConfig.getRoverNameList();
 		} catch (Exception e) {
 			throw new IllegalStateException("rover names could not be loaded: " + e.getMessage(), e);
@@ -345,16 +333,11 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Gets a new name for a unit.
-	 *
-	 * @param unitType
-	 *            {@link UnitType} the type of unit.
-	 * @param baseName
-	 *            the base name or null if none.
-	 * @param gender
-	 *            the gender of the person or null if not a person.
+	 * @param unitType {@link UnitType} the type of unit.
+	 * @param baseName the base name or null if none.
+	 * @param gender the gender of the person or null if not a person.
 	 * @return new name
-	 * @throws IllegalArgumentException
-	 *             if unitType is not valid.
+	 * @throws IllegalArgumentException  if unitType is not valid.
 	 */
 	public String getNewName(UnitType unitType, String baseName, PersonGender gender, RobotType robotType) {
 
@@ -369,6 +352,7 @@ public class UnitManager implements Serializable {
 				usedNames.add(si.next().getName());
 			}
 			unitName = "Settlement";
+			
 		} else if (unitType == UnitType.VEHICLE) {
 			if (baseName != null) {
 				int number = 1;
@@ -377,6 +361,7 @@ public class UnitManager implements Serializable {
 				}
 				vehicleNumberMap.put(baseName, number);
 				return baseName + " " + number;
+				
 			} else {
 				initialNameList = vehicleNames;
 				Iterator<Vehicle> vi = getVehicles().iterator();
@@ -385,6 +370,7 @@ public class UnitManager implements Serializable {
 				}
 				unitName = "Vehicle";
 			}
+			
 		} else if (unitType == UnitType.PERSON) {
 			if (PersonGender.MALE == gender) {
 				initialNameList = personMaleNames;
@@ -419,6 +405,7 @@ public class UnitManager implements Serializable {
 				equipmentNumberMap.put(baseName, number);
 				return baseName + " " + number;
 			}
+			
 		} else {
 			throw new IllegalArgumentException("Improper unitType");
 		}
@@ -647,8 +634,8 @@ public class UnitManager implements Serializable {
 	 */
 	private void createConfiguredPeople() {
 		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
+		//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		//EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
 
 		//Crew crew = new Crew("Alpha");
 		// TODO: will setting a limit on # crew to 7 be easier ?
@@ -823,7 +810,8 @@ public class UnitManager implements Serializable {
 	private void createInitialPeople() {
 
 		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		if (relationshipManager == null)
+			relationshipManager = Simulation.instance().getRelationshipManager();
 
 		// Randomly create all remaining people to fill the settlements to capacity.
 		try {
@@ -1397,9 +1385,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Creates initial Robots based on available capacity at settlements.
-	 *
-	 * @throws Exception
-	 *             if Robots can not be constructed.
+	 * @throws Exception if Robots can not be constructed.
 	 */
 	private void createInitialRobots() {
 
@@ -1424,10 +1410,8 @@ public class UnitManager implements Serializable {
 
 					// System.out.println("robotType is "+robotType.toString());
 					Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars",
-							settlement, settlement.getCoordinates()); // TODO:
-																		// read
-																		// from
-																		// file
+							settlement, settlement.getCoordinates()); 
+					
 					addUnit(robot);
 					// System.out.println("UnitManager : createInitialRobots() :
 					// a robot is added in " + settlement);
@@ -1513,7 +1497,7 @@ public class UnitManager implements Serializable {
 	 */
 	private void createConfiguredRelationships() {
 		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+		//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		int size = personConfig.getNumberOfConfiguredPeople();
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
@@ -1694,7 +1678,6 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get the number of equipment.
-	 *
 	 * @return number
 	 */
 	public int getEquipmentNum() {
@@ -1703,7 +1686,6 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get a collection of equipment.
-	 *
 	 * @return collection
 	 */
 	public Collection<Equipment> getEquipment() {
@@ -1712,7 +1694,6 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * The total number of units
-	 *
 	 * @return the total number of units
 	 */
 	public int getUnitNum() {
@@ -1721,7 +1702,6 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Get all units in virtual Mars
-	 *
 	 * @return Colleciton of units
 	 */
 	public Collection<Unit> getUnits() {
@@ -1730,9 +1710,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Adds a unit manager listener
-	 *
-	 * @param newListener
-	 *            the listener to add.
+	 * @param newListener the listener to add.
 	 */
 	public final void addUnitManagerListener(UnitManagerListener newListener) {
 		if (listeners == null) {
@@ -1745,9 +1723,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Removes a unit manager listener
-	 *
-	 * @param oldListener
-	 *            the listener to remove.
+	 * @param oldListener the listener to remove.
 	 */
 	public final void removeUnitManagerListener(UnitManagerListener oldListener) {
 		if (listeners == null) {
@@ -1760,11 +1736,8 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Fire a unit update event.
-	 *
-	 * @param eventType
-	 *            the event type.
-	 * @param unit
-	 *            the unit causing the event.
+	 * @param eventType the event type.
+	 * @param unit the unit causing the event.
 	 */
 	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
@@ -1779,9 +1752,7 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Finds a unit in the simulation that has the given name.
-	 *
-	 * @param name
-	 *            the name to search for.
+	 * @param name the name to search for.
 	 * @return unit or null if none.
 	 */
 	public Unit findUnit(String name) {
@@ -1798,7 +1769,7 @@ public class UnitManager implements Serializable {
 
 	
 	public ReportingAuthorityType[] getSponsors() {
-		return sponsors;
+		return SPONSORS;
 	}
 
 	
@@ -1827,5 +1798,12 @@ public class UnitManager implements Serializable {
 		equipmentNumberMap = null;
 		vehicleNumberMap.clear();
 		vehicleNumberMap = null;
+		masterClock = null;
+		firstSettlement = null;	
+		personConfig = null;
+		settlementConfig = null;
+		relationshipManager = null;
+		emotionJSONConfig = null;
+		vehicleConfig = null;
 	}
 }

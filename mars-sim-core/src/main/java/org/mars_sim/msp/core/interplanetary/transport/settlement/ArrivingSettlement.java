@@ -319,7 +319,7 @@ implements Transportable, Serializable {
 		//List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		//System.out.println("ArrivingSettlement.java : createNewSettlement() : scenarioID is " + scenarioID);
-		String sponsor = "Mars Society";
+		String sponsor = "Mars Society (MS)";
 		
 		Settlement newSettlement = new Settlement(name, scenarioID, template, sponsor, landingLocation, populationNum, numOfRobots);
 		unitManager.addUnit(newSettlement);

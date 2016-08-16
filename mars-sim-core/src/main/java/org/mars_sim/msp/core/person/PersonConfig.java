@@ -179,27 +179,28 @@ implements Serializable {
     	
     	Element root = personDoc.getRootElement();
 		Element lastNameEl = root.getChild(LAST_NAME_LIST);
-		List<Element> lastNamesEl = lastNameEl.getChildren(LAST_NAME);
+		List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
 
-		for (Element nameElement : lastNamesEl) {
+		for (Element nameElement : lastNamesList) {
 			
 			String sponsor = nameElement.getAttributeValue(SPONSOR);
-		
+			String name = nameElement.getAttributeValue(VALUE);
+			
 			for (int i=0; i<7; i++) {
 				if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
-					lists.get(0).add(nameElement.getAttributeValue(VALUE));		
+					lists.get(0).add(name);		
 				else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
-					lists.get(1).add(nameElement.getAttributeValue(VALUE));		
+					lists.get(1).add(name);		
 				else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
-					lists.get(2).add(nameElement.getAttributeValue(VALUE));			
+					lists.get(2).add(name);			
 				else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
-					lists.get(3).add(nameElement.getAttributeValue(VALUE));			
+					lists.get(3).add(name);			
 				else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
-					lists.get(4).add(nameElement.getAttributeValue(VALUE));				
+					lists.get(4).add(name);				
 				else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
-					lists.get(5).add(nameElement.getAttributeValue(VALUE));			
+					lists.get(5).add(name);			
 				else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
-					lists.get(6).add(nameElement.getAttributeValue(VALUE));
+					lists.get(6).add(name);
 			}
 		}
 		
@@ -240,37 +241,38 @@ implements Serializable {
     	//List<String> nameList = new ArrayList<String>();
 		Element root = personDoc.getRootElement();
 		Element firstNameEl = root.getChild(FIRST_NAME_LIST);
-		List<Element> firstNamesEl = firstNameEl.getChildren(FIRST_NAME);
+		List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
 
-		for (Element nameElement : firstNamesEl) {
+		for (Element nameElement : firstNamesList) {
 
 			String gender = nameElement.getAttributeValue(GENDER);
 			String sponsor = nameElement.getAttributeValue(SPONSOR);
-		
+			String name = nameElement.getAttributeValue(VALUE);
+			
 			if (gender.equals("male")) {
 				
 				for (int i=0; i<7; i++) {
 
 					if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
-						mlists.get(0).add(nameElement.getAttributeValue(VALUE));
+						mlists.get(0).add(name);
 					
 					else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
-						mlists.get(1).add(nameElement.getAttributeValue(VALUE));
+						mlists.get(1).add(name);
 					
 					else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
-						mlists.get(2).add(nameElement.getAttributeValue(VALUE));
+						mlists.get(2).add(name);
 						
 					else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
-						mlists.get(3).add(nameElement.getAttributeValue(VALUE));
+						mlists.get(3).add(name);
 						
 					else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
-						mlists.get(4).add(nameElement.getAttributeValue(VALUE));	
+						mlists.get(4).add(name);	
 						
 					else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
-						mlists.get(5).add(nameElement.getAttributeValue(VALUE));
+						mlists.get(5).add(name);
 						
 					else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
-						mlists.get(6).add(nameElement.getAttributeValue(VALUE));
+						mlists.get(6).add(name);
 				
 				}
 				
@@ -279,32 +281,32 @@ implements Serializable {
 				for (int i=0; i<7; i++) {
 
 					if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
-						flists.get(0).add(nameElement.getAttributeValue(VALUE));
+						flists.get(0).add(name);
 					
 					else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
-						flists.get(1).add(nameElement.getAttributeValue(VALUE));
+						flists.get(1).add(name);
 					
 					else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
-						flists.get(2).add(nameElement.getAttributeValue(VALUE));
+						flists.get(2).add(name);
 						
 					else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
-						flists.get(3).add(nameElement.getAttributeValue(VALUE));
+						flists.get(3).add(name);
 						
 					else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
-						flists.get(4).add(nameElement.getAttributeValue(VALUE));	
+						flists.get(4).add(name);	
 						
 					else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
-						flists.get(5).add(nameElement.getAttributeValue(VALUE));
+						flists.get(5).add(name);
 						
 					else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
-						flists.get(6).add(nameElement.getAttributeValue(VALUE));
+						flists.get(6).add(name);
 				}
 			}
 		}
 
 		for (int i= 0; i<7; i++){
 			maleFirstNames.put(i, mlists.get(i));
-			femaleFirstNames.put(i, mlists.get(i));
+			femaleFirstNames.put(i, flists.get(i));
 		}
 		
 		firstNames.put(0, maleFirstNames);
@@ -348,7 +350,7 @@ implements Serializable {
 				else if (sponsor.equals("JAXA"))				
 					type = ReportingAuthorityType.JAXA;
 */				
-				if (sponsor.equals("Mars Society"))				
+				if (sponsor.equals("Mars Society (MS)"))				
 					type = ReportingAuthorityType.MARS_SOCIETY;
 /*				
 				else if (sponsor.equals("NASA"))

@@ -1,6 +1,6 @@
 package org.mars_sim.msp.core.person.ai;
 
-public class MainApp {
+public class XORNeuronApp {
     public static void main (String [] args) {
         Neuron xor = new Neuron(0.5f);
         Neuron left = new Neuron(1.5f);

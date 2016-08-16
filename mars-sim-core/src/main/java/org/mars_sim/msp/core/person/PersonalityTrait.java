@@ -20,7 +20,7 @@ public enum PersonalityTrait {
 	Extraversion involves going out with friends and being energetic.
 	Agreeableness is, as it says, being agreeable.
 	Neuroticism is the extent to which a person's emotion are sensitive
-			to the individual's environment, if he's worrying or feel vulnerable.
+			to the individual's environment, if he's worrying or feeling vulnerable.
 
 */	
 	OPENNESS (Msg.getString("PersonalityTrait.openness")), //$NON-NLS-1$

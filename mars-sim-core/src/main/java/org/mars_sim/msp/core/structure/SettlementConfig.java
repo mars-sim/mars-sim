@@ -876,7 +876,7 @@ implements Serializable {
 		private boolean randomLatitude = false;
 		private int populationNumber;
 		private int numOfRobots;		
-		private String sponsor = "Mars Society";
+		private String sponsor = "Mars Society (MS)";
 		private int maxMSD;
 		private int scenarioID;
 	}
@@ -898,7 +898,7 @@ implements Serializable {
 		private boolean randomLatitude = false;
 		private int populationNumber;
 		private int numOfRobots;
-		private String sponsor = "Mars Society";
+		private String sponsor = "Mars Society (MS)";
 		private int maxMSD;
 		private int scenarioID;
 	}

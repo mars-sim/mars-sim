@@ -15,7 +15,7 @@ public class SettlementInfo {
 	String template;
 	String population;
 	String numOfRobots;
-	String sponsor = "Mars Society";
+	String sponsor = "Mars Society (MS)";
 	
 	String latitude;
 	String longitude;
