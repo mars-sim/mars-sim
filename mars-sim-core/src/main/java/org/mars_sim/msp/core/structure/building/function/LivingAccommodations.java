@@ -76,7 +76,7 @@ public class LivingAccommodations extends Function implements Serializable {
         
         this.building = building;
   
-        //BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
+        BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
         beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
         
         PersonConfig personconfig = simulationConfig.getPersonConfiguration();

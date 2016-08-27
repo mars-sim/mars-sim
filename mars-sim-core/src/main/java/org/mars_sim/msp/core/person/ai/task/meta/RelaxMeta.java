@@ -40,9 +40,16 @@ public class RelaxMeta implements MetaTask, Serializable {
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());
 
     private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock = masterClock.getMarsClock();
+	private static MasterClock masterClock;// = sim.getMasterClock();
+	private static MarsClock marsClock;// = masterClock.getMarsClock();
 
+	public RelaxMeta() {
+        masterClock = sim.getMasterClock();
+        if (masterClock != null) { // to avoid NullPointerException during maven test
+	        marsClock = masterClock.getMarsClock();
+        }
+	}
+	
     @Override
     public String getName() {
         return NAME;

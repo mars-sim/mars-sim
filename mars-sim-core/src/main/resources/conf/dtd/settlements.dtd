@@ -85,4 +85,5 @@ relative-humidity, ventilation)>
 <!ATTLIST max-MSD number CDATA #REQUIRED>
 <!ELEMENT settlement-name-list (settlement-name*)>
 <!ELEMENT settlement-name EMPTY>
+<!ATTLIST settlement-name sponsor CDATA #REQUIRED>
 <!ATTLIST settlement-name value CDATA #REQUIRED>

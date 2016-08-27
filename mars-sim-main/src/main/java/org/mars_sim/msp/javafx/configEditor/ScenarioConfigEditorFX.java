@@ -807,14 +807,14 @@ public class ScenarioConfigEditorFX {
 	 */
 	private SettlementBase determineNewSettlementConfiguration() {
 		String template = determineNewSettlementTemplate();
-		
+		String sponsor = determineNewSettlementSponsor();
 		SettlementBase base = new SettlementBase(
 			//playerName,
-			determineNewSettlementName(),
+			determineNewSettlementName(sponsor),
 			template,
 			determineNewSettlementPopulation(template),
 			determineNewSettlementNumOfRobots(template),
-			determineNewSettlementSponsor(),
+			sponsor,
 			determineNewSettlementLatitude(),
 			determineNewSettlementLongitude()
 		);
@@ -826,13 +826,13 @@ public class ScenarioConfigEditorFX {
 	 * Determines a new settlement's name.
 	 * @return name.
 	 */
-	private String determineNewSettlementName() {
+	private String determineNewSettlementName(String sponsor) {
 		String result = null;
 
 		// Try to find unique name in configured settlement name list.
 		// Randomly shuffle settlement name list first.
 		//SettlementConfig settlementConfig = config.getSettlementConfiguration();
-		List<String> settlementNames = settlementConfig.getSettlementNameList();
+		List<String> settlementNames = settlementConfig.getSettlementNameList(sponsor);
 		Collections.shuffle(settlementNames);
 		Iterator<String> i = settlementNames.iterator();
 		while (i.hasNext()) {

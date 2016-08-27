@@ -89,6 +89,7 @@ public class UnitManager implements Serializable {
 	private Collection<Unit> units;
 	/** List of possible settlement names. */
 	private List<String> settlementNames;
+	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
 	/** List of possible vehicle names. */
 	private List<String> vehicleNames;
 	/** List of possible male person names. */

@@ -42,9 +42,17 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
     private static Logger logger = Logger.getLogger(PlayHoloGameMeta.class.getName());
 
     private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock = masterClock.getMarsClock();
+	private static MasterClock masterClock;// = sim.getMasterClock();
+	private static MarsClock marsClock;// = masterClock.getMarsClock();
 
+	public PlayHoloGameMeta() {
+        masterClock = sim.getMasterClock();
+        if (masterClock != null) { // to avoid NullPointerException during maven test
+	        marsClock = masterClock.getMarsClock();
+        }
+        
+	}
+	
     @Override
     public String getName() {
         return NAME;

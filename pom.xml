@@ -147,7 +147,7 @@
 		<module>mars-sim-main</module>
 		<module>mars-sim-mapdata</module>
 		<module>mars-sim-network</module>
-		<module>mars-sim-service</module>
+		<!--module>mars-sim-service</module-->
 	</modules>
 	<!-- ************************************************************************************************* -->
 	<!-- * Build Section                                                                                 * -->
@@ -159,6 +159,7 @@
 	  				<groupId>org.bsc.maven</groupId>
 	  				<artifactId>maven-processor-plugin</artifactId>
 	  				<version>2.2.4</version>
+	  				<!--version>3.1.0</version-->
 	            	<configuration>
 	                	<defaultOutputDirectory>
 	                    	${project.build.directory}/generated-sources

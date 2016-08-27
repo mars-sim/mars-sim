@@ -1144,35 +1144,42 @@
 	<!-- List of settlement names -->
 	<settlement-name-list>
 
-		<settlement-name value="Port Zubrin" />
-		<settlement-name value="Sagan Station" />
-		<settlement-name value="Port Braun" />
-		<settlement-name value="Burroughstown" />
-		<settlement-name value="McKay Base" />
-		<settlement-name value="Asimov Base" />
-		<settlement-name value="Clarketown" />
-		<settlement-name value="Sojourner Station" />
-		<settlement-name value="Viking Base" />
-		<settlement-name value="Mariner Settlement" />
-		<settlement-name value="Camp Bradbury" />
-		<settlement-name value="Heinlein Station" />
-		<settlement-name value="Port Kokh" />
-		<settlement-name value="Red Colony" />
-		<settlement-name value="Robinson Camp" />
-		<settlement-name value="Hartmann Base" />
-		<settlement-name value="Shoemaker Base" />
-		<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
-		<settlement-name value="New Zzyzx" />
+		<settlement-name sponsor="NASA" value="Port Braun" />
+		<settlement-name sponsor="NASA" value="Sagan Station" />
+		<settlement-name sponsor="NASA" value="McKay Base" />
 		<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
-		<settlement-name value="Meyer Station" />
+		<settlement-name sponsor="NASA" value="Meyer Station" />
 		<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
-		<settlement-name value="Garvin Station" />
-		<settlement-name value="Pavonis Base" />
-		<settlement-name value="Olympus Scarp" />
-		<settlement-name value="Canyon's End" />
-		<settlement-name value="Lowell Trading Post" />
-		<settlement-name value="Goddard Trading Post" />
+		<settlement-name sponsor="NASA" value="Garvin Station" />
+		<settlement-name sponsor="NASA" value="Goddard Trading Post" />
+		<settlement-name sponsor="NASA" value="Ares One" />
+		
+		<settlement-name sponsor="Mars Society (MS)" value="Port Zubrin" />
+		<settlement-name sponsor="Mars Society (MS)" value="Burroughstown" />
+		<settlement-name sponsor="Mars Society (MS)" value="Asimov Base" />
+		<settlement-name sponsor="Mars Society (MS)" value="Clarketown" />
+		<settlement-name sponsor="Mars Society (MS)" value="Sojourner Station" />
+		<settlement-name sponsor="Mars Society (MS)" value="Viking Base" />
+		<settlement-name sponsor="Mars Society (MS)" value="Mariner Settlement" />
+		<settlement-name sponsor="Mars Society (MS)" value="Camp Bradbury" />
+		<settlement-name sponsor="Mars Society (MS)" value="Heinlein Station" />
+		<settlement-name sponsor="Mars Society (MS)" value="Port Kokh" />
+		<settlement-name sponsor="Mars Society (MS)" value="Red Colony" />
+		<settlement-name sponsor="Mars Society (MS)" value="Robinson Camp" />
+		<settlement-name sponsor="Mars Society (MS)" value="Hartmann Base" />
+		<settlement-name sponsor="Mars Society (MS)" value="Shoemaker Base" />
+		<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
+		<settlement-name sponsor="Mars Society (MS)" value="New Zzyzx" />
 
+		<settlement-name sponsor="Mars Society (MS)" value="Pavonis Base" />
+		<settlement-name sponsor="Mars Society (MS)" value="Olympus Scarp" />
+		<settlement-name sponsor="Mars Society (MS)" value="Canyon's End" />
+		<settlement-name sponsor="Mars Society (MS)" value="Lowell Trading Post" />
+
+		<settlement-name sponsor="Mars Society (MS)" value="Mars One Base" />
+		<settlement-name sponsor="Mars Society (MS)" value="Watney Station" />
+		
+				
 	</settlement-name-list>
 
 </settlement-configuration>

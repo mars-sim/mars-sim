@@ -150,19 +150,19 @@ implements Serializable {
 
         cookingWorkTime = 0D;
 
-        //config = simulationConfig.instance().getBuildingConfiguration();
-        this.cookCapacity = config.getCookCapacity(building.getBuildingType());
+        BuildingConfig buildingConfig = simulationConfig.instance().getBuildingConfiguration(); // need this to pass maven test
+        this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getCookingActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
     	// 2014-12-12 Added cropTypeList
         //TODO: make a map of cropName and water content
-		//CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration(); // need this to pass maven test
 		cropTypeList = cropConfig.getCropList();
 
         // 2014-12-06 Added calling getMealList() from MealConfig
-    	//MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
+    	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration(); // need this to pass maven test
         mealConfigMealList = mealConfig.getMealList();
 
         // 2016-05-31 Added loading the two parameters from meals.xml
@@ -173,7 +173,7 @@ implements Serializable {
         qualityMap = ArrayListMultimap.create();
     	timeMap = ArrayListMultimap.create();
 
-        //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven test
         dryFoodAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupportType.FOOD);
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 

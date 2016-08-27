@@ -65,8 +65,8 @@ implements Serializable {
     private boolean jobLock;
 
     private static Simulation sim = Simulation.instance();
-    private static MasterClock masterClock = sim.getMasterClock();
-    private static MarsClock marsClock = masterClock.getMarsClock();
+    private static MasterClock masterClock;// = sim.getMasterClock();
+    private static MarsClock marsClock;// = masterClock.getMarsClock();
     
     /**
      * Constructor 1.
@@ -82,6 +82,10 @@ implements Serializable {
         job = null;
         jobLock = false;
 
+        masterClock = sim.getMasterClock();
+        if (masterClock != null) { // to avoid NullPointerException during maven test
+	        marsClock = masterClock.getMarsClock();
+        }
         // Set the MBTI personality type.
         personality = new PersonalityType(person);
 

@@ -59,6 +59,8 @@ implements Serializable {
 	private static final String SETTLEMENT_NAME_LIST = "settlement-name-list";
 	private static final String SETTLEMENT_NAME = "settlement-name";
 	private static final String VALUE = "value";
+	//2016-08-23 Added sponsor
+	private static final String SPONSOR = "sponsor";
 	private static final String RESUPPLY = "resupply";
 	private static final String RESUPPLY_MISSION = "resupply-mission";
 	private static final String ARRIVAL_TIME = "arrival-time";
@@ -81,8 +83,8 @@ implements Serializable {
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	//private List<ExistingSettlement> existingSettlements;
-	private List<String> settlementNames;
-	//private Map<String, Integer> scenarioMap = new HashMap<>();
+	//private List<String> settlementNames;
+	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
 	private Map<Integer, String> scenarioMap = new HashMap<>();
 	private Map<Integer, String> settlementMap = new HashMap<>();
 
@@ -97,7 +99,7 @@ implements Serializable {
 		settlementTemplates = new ArrayList<SettlementTemplate>();
 		initialSettlements = new ArrayList<InitialSettlement>();
 		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
-		settlementNames = new ArrayList<String>();
+		//settlementNames = new ArrayList<String>();
 		//existingSettlements = new ArrayList<ExistingSettlement>();
 
 		loadSettlementNames(settlementDoc);
@@ -470,10 +472,26 @@ implements Serializable {
 		List<Element> settlementNameNodes = settlementNameList.getChildren(SETTLEMENT_NAME);
 		for (Element settlementNameElement : settlementNameNodes) {
 			String name = settlementNameElement.getAttributeValue(VALUE);
-			settlementNames.add(name);
+			String sponsor = settlementNameElement.getAttributeValue(SPONSOR);			
+			
+			// (Skipped) match sponsor to the corresponding element in sponsor list			
+			// load names list 
+			List<String> oldlist = settlementNamesMap.get(sponsor);			
+			// add the settlement name
+			if (oldlist == null) { //oldlist.isEmpty() || 
+				List<String> newlist = new ArrayList<>();
+				newlist.add(name);
+				settlementNamesMap.put(sponsor, newlist);
+			}
+			else {
+				oldlist.add(name);
+				settlementNamesMap.put(sponsor, oldlist);
+			}
+			
 			int newID = settlementMap.size() + 1;
 			settlementMap.put(newID, name);
 		}
+
 	}
     
 	/**
@@ -802,9 +820,18 @@ implements Serializable {
 	 * @return list of settlement names as strings
 	 */
 	public List<String> getSettlementNameList() {
-		return new ArrayList<String>(settlementNames);
+		//return new ArrayList<String>(settlementNames);
+		return new ArrayList<String>(settlementNamesMap.get("Mars Society (MS)"));
 	}
 
+	/**
+	 * Gets a list of possible settlement names.
+	 * @return list of settlement names as strings
+	 */
+	public List<String> getSettlementNameList(String sponsor) {
+		return new ArrayList<String>(settlementNamesMap.get(sponsor));
+	}
+	
 	/**
 	 * Clears the list of initial settlements.
 	 */
@@ -856,8 +883,10 @@ implements Serializable {
 	    settlementTemplates = null;
 	    initialSettlements.clear();
 	    initialSettlements = null;
-	    settlementNames.clear();
-	    settlementNames = null;
+	    settlementNamesMap.clear();
+	    settlementNamesMap = null;
+	    //settlementNames.clear();
+	    //settlementNames = null;
 	}
 
 	/**

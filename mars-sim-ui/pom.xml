@@ -271,7 +271,35 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <groupId>de.codecentric.centerdevice</groupId>
 		    <artifactId>centerdevice-nsmenufx</artifactId>
 		    <version>2.1.4</version>
-		</dependency>			
+		</dependency>
+<!--  
+		<dependency>
+			<groupId>org.kordamp.ikonli</groupId>
+			<artifactId>ikonli-core</artifactId>
+			<version>1.6.0</version>
+			<type>pom</type>
+		</dependency>	
+	    <dependency>
+	        <groupId>org.kordamp.ikonli</groupId>
+	        <artifactId>ikonli-javafx</artifactId>
+	        <version>1.6.0</version>
+	    </dependency>
+		<dependency>
+		    <groupId>org.kordamp.ikonli</groupId>
+		    <artifactId>ikonli-fontawesome-pack</artifactId>
+		    <version>1.6.0</version>
+		</dependency>	
+		<dependency>
+		    <groupId>org.kordamp.ikonli</groupId>
+		    <artifactId>ikonli-materialdesign-pack</artifactId>
+		    <version>1.6.0</version>
+		</dependency>	
+		<dependency>
+		    <groupId>org.kordamp.ikonli</groupId>
+		    <artifactId>ikonli-material-pack</artifactId>
+		    <version>1.6.0</version>
+		</dependency>			    					
+-->
 	</dependencies>
 	<repositories>
 		<repository>
@@ -318,6 +346,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	            <enabled>true</enabled>
 	        </snapshots>
 	    </repository> 
-            	    
+	    <repository>
+	        <id>central</id>
+	        <name>jcenter</name>
+	        <url>http://jcenter.bintray.com</url>
+	    </repository>            	    
 	</repositories>
 </project>

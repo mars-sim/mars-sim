@@ -46,15 +46,20 @@ public class SleepMeta implements MetaTask, Serializable {
     private static final int MAX_SUPPRESSION = 10;
 
     private Simulation sim = Simulation.instance();
-	private MasterClock masterClock = sim.getMasterClock();
-	private MarsClock marsClock = masterClock.getMarsClock();
+	private MasterClock masterClock;// = sim.getMasterClock();
+	private MarsClock marsClock;// = masterClock.getMarsClock();
 
 	//private int solCache = 0;
 
 	public SleepMeta() {
-		if (marsClock == null)
-			if (masterClock != null)
-				marsClock = masterClock.getMarsClock();
+        masterClock = sim.getMasterClock();
+        if (masterClock != null) { // to avoid NullPointerException during maven test
+	        marsClock = masterClock.getMarsClock();
+        }
+        
+		//if (marsClock == null)
+		//	if (masterClock != null)
+		//		marsClock = masterClock.getMarsClock();
     	
 	}
 	

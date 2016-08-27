@@ -135,6 +135,7 @@ implements VehicleOperator, MissionMember, Serializable {
     private ReportingAuthority ra;
     private Building quarters;
     private Point2D bed;
+    private static Simulation sim = Simulation.instance();
     private MarsClock marsClock;
     private EarthClock earthClock;
     private MasterClock masterClock;
@@ -164,11 +165,11 @@ implements VehicleOperator, MissionMember, Serializable {
         this.associatedSettlement = settlement;
         this.sponsor = sponsor;
         
-
-        masterClock = Simulation.instance().getMasterClock();
-        marsClock = masterClock.getMarsClock();
-        earthClock = masterClock.getEarthClock();
-        
+        masterClock = sim.getMasterClock();
+        if (masterClock != null) { // to avoid NullPointerException during maven test
+        	marsClock = masterClock.getMarsClock();
+        	earthClock = masterClock.getEarthClock();
+        }
         config = SimulationConfig.instance().getPersonConfiguration();
 
         //if (Simulation.instance().getMasterClock() != null)

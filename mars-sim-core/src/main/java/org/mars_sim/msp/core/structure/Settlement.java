@@ -491,14 +491,30 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public boolean lifeSupportCheck() {
 		boolean result = true;
-
-		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
-			result = false;
-		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		if (getInventory().getAmountResourceStored(water, false) <= 0D)
-			result = false;
-
+		
+		// 2016-08-27 Restructured with if else to avoid NullPointerException during maven test
+		if (oxygen == null) {
+			AmountResource o2 = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+			if (getInventory().getAmountResourceStored(o2, false) <= 0D)
+				result = false;
+		}
+		
+		else {
+			if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
+				result = false;
+		}
+		
+		if (water == null) {
+			AmountResource h2o = AmountResource.findAmountResource(LifeSupportType.WATER);
+			if (getInventory().getAmountResourceStored(h2o, false) <= 0D)
+				result = false;
+		}
+		
+		else {
+			if (getInventory().getAmountResourceStored(water, false) <= 0D)
+				result = false;
+		}
+		
 		// TODO: check against indoor air pressure
 		// if (getAirPressure() != NORMAL_AIR_PRESSURE)
 		// result = false;

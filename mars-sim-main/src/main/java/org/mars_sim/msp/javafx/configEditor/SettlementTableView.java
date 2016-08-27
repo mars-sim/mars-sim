@@ -110,7 +110,7 @@ public class SettlementTableView {
 		
 		simulationConfig = SimulationConfig.instance();
 		settlementConfig = simulationConfig.getSettlementConfiguration();
-		settlementNames = settlementConfig.getSettlementNameList();
+		//settlementNames = settlementConfig.getSettlementNameList();
 		templates = settlementConfig.getSettlementTemplates();
 		
 	}

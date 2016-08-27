@@ -946,23 +946,93 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 
 	<last-name-list>
-		<last-name value="Chen" sponsor="CNSA" />
-		<last-name value="Lee" sponsor="CNSA" />
-		<last-name value="Liang"  sponsor="CNSA" />
-		<last-name value="Liu"  sponsor="CNSA" />
-		<last-name value="Ma"  sponsor="CNSA" />
+		<last-name value="Yee" sponsor="CNSA" />
+		<last-name value="Toy" sponsor="CNSA" />
+		<last-name value="Pun"  sponsor="CNSA" />
 		<last-name value="Tang"  sponsor="CNSA" />
-		<last-name value="Wang"  sponsor="CNSA" />
-		<last-name value="Wu" sponsor="CNSA" />
-		<last-name value="Xu" sponsor="CNSA" />
-		<last-name value="Yang"  sponsor="CNSA" />
+		<last-name value="Tien"  sponsor="CNSA" />
+		<last-name value="Chang"  sponsor="CNSA" />
+	
+		<last-name value="Fung"  sponsor="CNSA" />
+
+		<last-name value="Hui" sponsor="CNSA" />
+		<last-name value="Tse" sponsor="CNSA" />
+		<last-name value="Law"  sponsor="CNSA" />
 		<last-name value="Ye"  sponsor="CNSA" />
+
+		<last-name value="Ting"  sponsor="CNSA" />
+		<last-name value="Sum"  sponsor="CNSA" />
+		<last-name value="So"  sponsor="CNSA" />
+		<last-name value="Yip"  sponsor="CNSA" />
+
+		<last-name value="Wong"  sponsor="CNSA" />
+		<last-name value="Chan"  sponsor="CNSA" />
+		<last-name value="Lee" sponsor="CNSA" />
+
+
+	<!-- https://en.wikipedia.org/wiki/List_of_common_Chinese_surnames
+	  -->
+		<last-name value="Wang"  sponsor="CNSA" />
+		<last-name value="Li"  sponsor="CNSA" />
 		<last-name value="Zhang"  sponsor="CNSA" />
-		<last-name value="Zhao" sponsor="CNSA" />
+		<last-name value="Liu"  sponsor="CNSA" />
+		<last-name value="Chen" sponsor="CNSA" />
+	
+		<last-name value="Yang"  sponsor="CNSA" />
+		<last-name value="Huang"  sponsor="CNSA" />
+		<last-name value="Zhao"  sponsor="CNSA" />
+		<last-name value="Wu"  sponsor="CNSA" />
+		<last-name value="Zhou" sponsor="CNSA" />
+
+		<last-name value="Xu"  sponsor="CNSA" />
+		<last-name value="Sun"  sponsor="CNSA" />
+		<last-name value="Ma"  sponsor="CNSA" />
 		<last-name value="Zhu"  sponsor="CNSA" />
+		<last-name value="Hu" sponsor="CNSA" />
+
+		<last-name value="Guo"  sponsor="CNSA" />
+		<last-name value="He"  sponsor="CNSA" />
+		<last-name value="Gao"  sponsor="CNSA" />
+		<last-name value="Lin"  sponsor="CNSA" />
+		<last-name value="Luo" sponsor="CNSA" />
+
+		<last-name value="Zheng"  sponsor="CNSA" />
+		<last-name value="Liang"  sponsor="CNSA" />
+		<last-name value="Xie"  sponsor="CNSA" />
+		<last-name value="Song"  sponsor="CNSA" />
+		<last-name value="Tang" sponsor="CNSA" />
+
+		<last-name value="Xu"  sponsor="CNSA" />
+		<last-name value="Han"  sponsor="CNSA" />
+		<last-name value="Feng"  sponsor="CNSA" />
+		<last-name value="Deng"  sponsor="CNSA" />
+		<last-name value="Cao" sponsor="CNSA" />
+
+		<last-name value="Peng"  sponsor="CNSA" />
+		<last-name value="Zeng"  sponsor="CNSA" />
+		<last-name value="Xiao"  sponsor="CNSA" />
+		<last-name value="Tian"  sponsor="CNSA" />
+		<last-name value="Dong" sponsor="CNSA" />
+
+		<last-name value="Yuan"  sponsor="CNSA" />
+		<last-name value="Pan"  sponsor="CNSA" />
+		<last-name value="Yu"  sponsor="CNSA" />
+		<last-name value="Jiang"  sponsor="CNSA" />
+		<last-name value="Cai" sponsor="CNSA" />
+
+		<last-name value="Yu"  sponsor="CNSA" />
+		<last-name value="Tu"  sponsor="CNSA" />
+		<last-name value="Yeh"  sponsor="CNSA" />
+		<last-name value="Cheng"  sponsor="CNSA" />
+		<last-name value="Su" sponsor="CNSA" />
+
+		<last-name value="Wei"  sponsor="CNSA" />
+		<last-name value="Lu"  sponsor="CNSA" />
+		<last-name value="Ding"  sponsor="CNSA" />
+		<last-name value="Ren"  sponsor="CNSA" />
+		<last-name value="Shen" sponsor="CNSA" />
 
 		<!-- https://en.wikipedia.org/wiki/List_of_most_common_surnames_in_North_America#Canada  -->
-
 
 		<last-name value="Brown"  sponsor="CSA" />
 		<last-name value="Gagnon"  sponsor="CSA" />
@@ -974,6 +1044,53 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Smith"  sponsor="CSA" />
 		<last-name value="Tremblay"  sponsor="CSA" />
 		<last-name value="Wilson"  sponsor="CSA" />
+
+		<!-- http://www.mesaieux.com/an/Noms.asp  -->
+
+		<last-name value="Cote"  sponsor="CSA" />
+		<last-name value="Gauthier"  sponsor="CSA" />
+		<last-name value="Morin"  sponsor="CSA" />
+		<last-name value="Belanger"  sponsor="CSA" />
+		<last-name value="Bouchard"  sponsor="CSA" />
+
+		<last-name value="Pelletier"  sponsor="CSA" />
+		<last-name value="Gagne"  sponsor="CSA" />
+		<last-name value="Lavoie"  sponsor="CSA" />
+		<last-name value="Fortin"  sponsor="CSA" />
+		<last-name value="Levesque"  sponsor="CSA" />
+
+		<last-name value="Boucher"  sponsor="CSA" />
+		<last-name value="Bergeron"  sponsor="CSA" />
+		<last-name value="Simard"  sponsor="CSA" />
+		<last-name value="Girard"  sponsor="CSA" />
+		<last-name value="Caron"  sponsor="CSA" />
+
+		<last-name value="Ouellet"  sponsor="CSA" />
+		<last-name value="Leblanc"  sponsor="CSA" />
+		<last-name value="Lefebvre"  sponsor="CSA" />
+		<last-name value="Fournier"  sponsor="CSA" />
+		<last-name value="Cloutier"  sponsor="CSA" />
+
+		<last-name value="Dube"  sponsor="CSA" />
+		<last-name value="Poirier"  sponsor="CSA" />
+		<last-name value="Poulin"  sponsor="CSA" />
+		<last-name value="Thibault"  sponsor="CSA" />
+		<last-name value="Martel"  sponsor="CSA" />
+
+
+		<last-name value="Beaulieu"  sponsor="CSA" />
+		<last-name value="Bedard"  sponsor="CSA" />
+		<last-name value="Leclerc"  sponsor="CSA" />
+		<last-name value="Nadeau"  sponsor="CSA" />
+		<last-name value="Grenier"  sponsor="CSA" />
+
+		<last-name value="Lapointe"  sponsor="CSA" />
+		<last-name value="Landry"  sponsor="CSA" />
+		<last-name value="Hebert"  sponsor="CSA" />
+		<last-name value="Demers"  sponsor="CSA" />
+		<last-name value="Richard"  sponsor="CSA" />
+
+		<last-name value="Desjardins"  sponsor="CSA" />
 
 		<!-- https://en.wikipedia.org/wiki/List_of_the_most_common_surnames_in_Europe  -->
 
@@ -1361,6 +1478,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 
 		<!--  http://www.census.gov/topics/population/genealogy/data/2000_surnames.html-->
+		<!-- 1 to 34 -->
 		<last-name value="Allen"  sponsor="NASA" />
 		<last-name value="Anderson"  sponsor="NASA" />
 		<last-name value="Brown"  sponsor="NASA" />
@@ -1384,6 +1502,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Perez"  sponsor="NASA" />
 		<last-name value="Robinson"  sponsor="NASA" />
 		<last-name value="Roriguez"  sponsor="NASA" />
+		<last-name value="Sanchez"  sponsor="NASA" />
 		<last-name value="Smith"  sponsor="NASA" />
 		<last-name value="Taylor"  sponsor="NASA" />
 		<last-name value="Thomas"  sponsor="NASA" />
@@ -1394,7 +1513,64 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Wilson"  sponsor="NASA" />
 		<last-name value="Young"  sponsor="NASA" />
 
+		<!-- 36 to 80 -->
+		<last-name value="Wright"  sponsor="NASA" />
+		<last-name value="King"  sponsor="NASA" />
+		<last-name value="Scott"  sponsor="NASA" />
+		<last-name value="Green"  sponsor="NASA" />
+		<last-name value="Baker"  sponsor="NASA" />
 
+		<last-name value="Adams"  sponsor="NASA" />
+		<last-name value="Nelson"  sponsor="NASA" />
+		<last-name value="Hill"  sponsor="NASA" />
+		<last-name value="Ramirez"  sponsor="NASA" />
+		<last-name value="Campbell"  sponsor="NASA" />
+
+		<last-name value="Mitchell"  sponsor="NASA" />
+		<last-name value="Roberts"  sponsor="NASA" />
+		<last-name value="Carter"  sponsor="NASA" />
+		<last-name value="Phillips"  sponsor="NASA" />
+		<last-name value="Evans"  sponsor="NASA" />
+
+		<last-name value="Turner"  sponsor="NASA" />
+		<last-name value="Torres"  sponsor="NASA" />
+		<last-name value="Parker"  sponsor="NASA" />
+		<last-name value="Collins"  sponsor="NASA" />
+		<last-name value="Edwards"  sponsor="NASA" />
+
+		<last-name value="Stewart"  sponsor="NASA" />
+		<last-name value="Flores"  sponsor="NASA" />
+		<last-name value="Morris"  sponsor="NASA" />
+		<last-name value="Nguyen"  sponsor="NASA" />		
+		<last-name value="Murphy"  sponsor="NASA" />
+
+		<last-name value="Rivera"  sponsor="NASA" />
+		<last-name value="Cook"  sponsor="NASA" />
+		<last-name value="Rogers"  sponsor="NASA" />
+		<last-name value="Morgan"  sponsor="NASA" />
+		<last-name value="Peterson"  sponsor="NASA" />
+		
+		<last-name value="Cooper"  sponsor="NASA" />
+		<last-name value="Reed"  sponsor="NASA" />
+		<last-name value="Bailey"  sponsor="NASA" />
+		<last-name value="Bell"  sponsor="NASA" />
+		<last-name value="Gomez"  sponsor="NASA" />
+
+		<last-name value="Kelly"  sponsor="NASA" />
+		<last-name value="Howard"  sponsor="NASA" />
+		<last-name value="Ward"  sponsor="NASA" />
+		<last-name value="Cox"  sponsor="NASA" />
+		<last-name value="Diaz"  sponsor="NASA" />
+		
+		<last-name value="Richardson"  sponsor="NASA" />
+		<last-name value="Wood"  sponsor="NASA" />
+		<last-name value="Watson"  sponsor="NASA" />
+		<last-name value="Brooks"  sponsor="NASA" />
+		<last-name value="Bennett"  sponsor="NASA" />
+		
+		
+		<!-- Russian last names -->	
+		
 		<last-name value="Afanasyev"  sponsor="RKA" />
 		<last-name value="Aksyonov"  sponsor="RKA" />
 		<last-name value="Aleksandrov"  sponsor="RKA" />
@@ -1418,6 +1594,38 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Filipchenko"  sponsor="RKA" />
 		<last-name value="Gargarin"  sponsor="RKA" />
 		<last-name value="Gidzenko"  sponsor="RKA" />
+		
+		<!-- top 10 http://www.foreigndocuments.com/russian_common.html -->	
+		
+		<last-name value="Smirnov"  sponsor="RKA" />
+		<last-name value="Ivanov"  sponsor="RKA" />
+		<last-name value="Kuznetsov"  sponsor="RKA" />
+		<last-name value="Sokolov"  sponsor="RKA" />
+		<last-name value="Popov"  sponsor="RKA" />
+		
+		<last-name value="Lebedev"  sponsor="RKA" />
+		<last-name value="Kozlov"  sponsor="RKA" />
+		<last-name value="Novikov"  sponsor="RKA" />
+		<last-name value="Morozov"  sponsor="RKA" />
+		<last-name value="Solovyov"  sponsor="RKA" />
+		
+		<!--  http://todiscoverrussia.com/top-20-most-common-russian-family-names-and-their-meaning/-->
+		
+		<last-name value="Vasiliev"  sponsor="RKA" />
+		<last-name value="Petrov"  sponsor="RKA" />
+		<last-name value="Mikhailov"  sponsor="RKA" />
+		<last-name value="Fedorov"  sponsor="RKA" />
+		<last-name value="Volkov"  sponsor="RKA" />
+
+		<last-name value="Alexeev"  sponsor="RKA" />
+		<last-name value="Semenov"  sponsor="RKA" />
+		<last-name value="Egorov"  sponsor="RKA" />
+		<last-name value="Pavlov"  sponsor="RKA" />
+		<last-name value="Stepanov"  sponsor="RKA" />
+
+		<last-name value="Nikolaev"  sponsor="RKA" />
+		<last-name value="Orlov"  sponsor="RKA" />
+		
 	</last-name-list>
 
 	<!-- List of configured people -->

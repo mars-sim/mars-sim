@@ -52,6 +52,8 @@ public class TableViewCombo {
 	
 	private List<SettlementBase> settlements = new ArrayList<>();
 	private List<String> settlementNames;
+	//private Map<String, List<String>> settlementNamesMap = new HashMap<>();
+	
 	private List<SettlementTemplate> templates;
 	
 	private ObservableList<SettlementBase> allData;
