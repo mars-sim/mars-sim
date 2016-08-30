@@ -823,81 +823,116 @@ public class UnitManager implements Serializable {
 
 				// Fill up the settlement by creating more people
 				while (settlement.getCurrentPopulationNum() < initPop) {
-					PersonGender gender = PersonGender.FEMALE;
-					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-						gender = PersonGender.MALE;
-					}
-
+					
 					String sponsor = settlement.getSponsor();
-					String lastN = null;
-					String firstN = null;
-					String name = null;
-					boolean skip = false;
-					Person person = null;
-		
-					List<String> last_list = new ArrayList<>();
-					List<String> male_first_list = new ArrayList<>();
-					List<String> female_first_list = new ArrayList<>();
-	
-					if (sponsor.equals(ReportingAuthorityType.CNSA.toString())) {
-						last_list = lastNames.get(0);
-						male_first_list = maleFirstNames.get(0);
-						female_first_list = femaleFirstNames.get(0);
-		    			
-					} else if (sponsor.equals(ReportingAuthorityType.CSA.toString())) {
-						last_list = lastNames.get(1);
-						male_first_list = maleFirstNames.get(1);
-						female_first_list = femaleFirstNames.get(1);
-
-					} else if (sponsor.equals(ReportingAuthorityType.ESA.toString())) {
-						last_list = lastNames.get(2);
-						male_first_list = maleFirstNames.get(2);
-						female_first_list = femaleFirstNames.get(2);
-
-					} else if (sponsor.equals(ReportingAuthorityType.ISRO.toString())) {
-						last_list = lastNames.get(3);
-						male_first_list = maleFirstNames.get(3);
-						female_first_list = femaleFirstNames.get(3);
-
-					} else if (sponsor.equals(ReportingAuthorityType.JAXA.toString())) {
-						last_list = lastNames.get(4);
-						male_first_list = maleFirstNames.get(4);
-						female_first_list = femaleFirstNames.get(4);
-
-		    		} else if (sponsor.equals(ReportingAuthorityType.NASA.toString())) {
-						last_list = lastNames.get(5);
-						male_first_list = maleFirstNames.get(5);
-						female_first_list = femaleFirstNames.get(5);
-
-					} else if (sponsor.equals(ReportingAuthorityType.RKA.toString())) {
-						last_list = lastNames.get(6);
-						male_first_list = maleFirstNames.get(6);
-						female_first_list = femaleFirstNames.get(6);
-		     	    	
-		    		} else { // if belonging to the Mars Society		    		
-		    			skip = true;
-			    		name = getNewName(UnitType.PERSON, null, gender, null);
-		    		}
-						
-					if (!skip) {
-						
-		    			int rand0 = RandomUtil.getRandomInt(last_list.size()-1);
-		    			lastN = last_list.get(rand0);
-		    			
-		    			if (gender == PersonGender.MALE) {
-			    			int rand1 = RandomUtil.getRandomInt(male_first_list.size()-1);
-		    				firstN = male_first_list.get(rand1);
-		    			}
-		    			else {
-			    			int rand1 = RandomUtil.getRandomInt(female_first_list.size()-1);
-		    				firstN = female_first_list.get(rand1);
-		    			}
-						
-		    			name = firstN + " " + lastN;
-							
+					
+					//2016-08-30 Check for any duplicate full Name
+					List<String> existingfullnames = new ArrayList<>();
+					Iterator<Person> j = getPeople().iterator();
+					while (j.hasNext()) {				
+						String n = j.next().getName();
+						existingfullnames.add(n);
 					}
 					
-					person = new Person(name, gender, false, "Earth", settlement, sponsor); // TODO: read from file
+					//System.out.println("done creating a namelist.");
+					
+					boolean isUniqueName = false;
+					PersonGender gender = null;
+					Person person = null;
+					String fullname = null;
+					
+					// Make sure settlement name isn't already being used.
+					while (!isUniqueName) {
+								
+						isUniqueName = true;
+						
+						gender = PersonGender.FEMALE;
+						if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+							gender = PersonGender.MALE;
+						}
+	
+						String lastN = null;
+						String firstN = null;
+
+						boolean skip = false;
+
+						List<String> last_list = new ArrayList<>();
+						List<String> male_first_list = new ArrayList<>();
+						List<String> female_first_list = new ArrayList<>();
+		
+						if (sponsor.equals(ReportingAuthorityType.CNSA.toString())) {
+							last_list = lastNames.get(0);
+							male_first_list = maleFirstNames.get(0);
+							female_first_list = femaleFirstNames.get(0);
+			    			
+						} else if (sponsor.equals(ReportingAuthorityType.CSA.toString())) {
+							last_list = lastNames.get(1);
+							male_first_list = maleFirstNames.get(1);
+							female_first_list = femaleFirstNames.get(1);
+	
+						} else if (sponsor.equals(ReportingAuthorityType.ESA.toString())) {
+							last_list = lastNames.get(2);
+							male_first_list = maleFirstNames.get(2);
+							female_first_list = femaleFirstNames.get(2);
+	
+						} else if (sponsor.equals(ReportingAuthorityType.ISRO.toString())) {
+							last_list = lastNames.get(3);
+							male_first_list = maleFirstNames.get(3);
+							female_first_list = femaleFirstNames.get(3);
+	
+						} else if (sponsor.equals(ReportingAuthorityType.JAXA.toString())) {
+							last_list = lastNames.get(4);
+							male_first_list = maleFirstNames.get(4);
+							female_first_list = femaleFirstNames.get(4);
+	
+			    		} else if (sponsor.equals(ReportingAuthorityType.NASA.toString())) {
+							last_list = lastNames.get(5);
+							male_first_list = maleFirstNames.get(5);
+							female_first_list = femaleFirstNames.get(5);
+	
+						} else if (sponsor.equals(ReportingAuthorityType.RKA.toString())) {
+							last_list = lastNames.get(6);
+							male_first_list = maleFirstNames.get(6);
+							female_first_list = femaleFirstNames.get(6);
+			     	    	
+			    		} else { // if belonging to the Mars Society		    		
+			    			skip = true;
+				    		fullname = getNewName(UnitType.PERSON, null, gender, null);
+			    		}
+							
+						if (!skip) {
+							
+			    			int rand0 = RandomUtil.getRandomInt(last_list.size()-1);
+			    			lastN = last_list.get(rand0);
+			    			
+			    			if (gender == PersonGender.MALE) {
+				    			int rand1 = RandomUtil.getRandomInt(male_first_list.size()-1);
+			    				firstN = male_first_list.get(rand1);
+			    			}
+			    			else {
+				    			int rand1 = RandomUtil.getRandomInt(female_first_list.size()-1);
+			    				firstN = female_first_list.get(rand1);
+			    			}
+							
+			    			fullname = firstN + " " + lastN;
+								
+						}
+							
+						Iterator<String> k = existingfullnames.iterator();
+						while (k.hasNext()) {				
+							String n = k.next();
+							if (n.equals(fullname)) {
+								isUniqueName = false;
+								System.out.println("UnitManager : " + fullname + " is a duplicate name. Selecting another one...");
+								break;
+							}
+							//else
+							//	isUniqueName = true;
+						}
+						
+					}
+					
+					person = new Person(fullname, gender, false, "Earth", settlement, sponsor); // TODO: read from file
 
 					addUnit(person);
 
@@ -933,6 +968,8 @@ public class UnitManager implements Serializable {
 						cc.set3Divisions(true);
 						cc.assignSpecialiststo3Divisions(person);
 					}
+						
+
 				}
 
 				// 2015-07-02 Added setupShift()
