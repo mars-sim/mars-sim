@@ -172,6 +172,38 @@ implements Serializable, Comparable<Unit> {
 	}
 
 	/**
+	 * Gets the unit's shortened name
+	 * @return the unit's shortened name
+	 */
+	//2016-08-31 Added getShortenedName()
+	public String getShortenedName() {
+		int num = name.length();
+		int space = name.indexOf(" ");
+		String oldFirst = name.substring(0, space);
+		String oldLast = name.substring(space+1, num);
+		
+		String newFirst = oldFirst;
+		String newLast = oldLast;
+		String newName = name;
+		
+		if (num > 20) {
+			
+			if (oldFirst.length() > 10) {
+				newFirst = oldFirst.substring(0, 10);
+			}
+			else if (oldLast.length() > 10) {
+				newLast = oldLast.substring(0, 10);
+			}
+			
+			newName = newFirst + " " + newLast;
+			
+			//System.out.println("oldName : " + name + "    newName : " + newName);
+		}
+		
+		return newName;
+	}
+	
+	/**
 	 * Sets the unit's name
 	 * @param name new name
 	 */

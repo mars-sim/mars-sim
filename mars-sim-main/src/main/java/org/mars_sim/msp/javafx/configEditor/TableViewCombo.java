@@ -117,7 +117,7 @@ public class TableViewCombo {
         		SPONSORS[6].toString(),
         		SPONSORS[7].toString()));
         sponsorCol.setMinWidth(250);
-    
+       
         TableColumn<SettlementBase, String> latCol = new TableColumn<>(headers[5]);
         latCol.setCellValueFactory(cellData -> cellData.getValue().latitudeProperty());
         latCol.setCellFactory(TextFieldTableCell.forTableColumn());

@@ -125,7 +125,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-        JLabel nameLabel = new JLabel(" " + Conversion.capitalize(unit.getName()) + " ", displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel(" " + Conversion.capitalize(unit.getShortenedName()) + " ", displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
         nameLabel.setOpaque(true);
         Font font = new Font("DIALOG", Font.BOLD, 12);
         nameLabel.setFont(font);

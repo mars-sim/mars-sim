@@ -465,7 +465,7 @@ implements TableModelListener, ActionListener {
 
 
     	    //_tableSearchableBar.setVisibleButtons(1);
-    	    _tableSearchableBar.setToolTipText("Type in your search terms. Can use wildcards (*, +, ?)");
+    	    _tableSearchableBar.setToolTipText("Use wildcards (*, +, ?) for searching. e.g. '*DaVinci' ");
 
     	    ((TableSearchable) searchable).setMainIndex(-1); // -1 = search for all columns
     	    _tableSearchableBar.setVisibleButtons(SearchableBar.SHOW_NAVIGATION

@@ -95,7 +95,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.plaf.nimrod</groupId>
 			<artifactId>nimrodlf</artifactId>
-			<version>1.2d</version>
+			<version>1.2c</version>
 		</dependency>		
 		<dependency>
 			<groupId>com.sibvisions.external.jvxfx</groupId>
@@ -157,7 +157,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
-			<version>5.6</version>
+			<version>5.8</version>
 		</dependency>
 		<dependency>
 		    <groupId>eu.hansolo.enzo</groupId>
