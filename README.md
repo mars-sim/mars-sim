@@ -19,13 +19,18 @@ At the base construction phase, most settlers will spend much of their time lear
 Settlers will also go out on rover missions to explore and study surrounding areas, prospect and mine mineral concentrations, and trade with neighboring settlements. 
 
 
-## Contribution and Feedback
+## Summary
 
 Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come face-to-face with accidents, equipment malfunctions, illnesses, injuries, and even death. Survival depends on how well they work together, improve their survival skills and balance individual vs. settlement needs.
 
-We welcome anyone who would like to contribute mars-sim in coding or artwork/sounds or simply drop in your ideas and provide us your feedback. 
 
-see our project web site at at http://mars-sim.sourceforge.net/ or join our facebook community at https://www.facebook.com/groups/125541663548/
+## Contributions and Feedback
+
+We welcome anyone who would like to contribute mars-sim in coding or artwork/sounds or simply drop in your ideas and provide us your feedback at our discussion forum at https://sourceforge.net/p/mars-sim/discussion/ 
+
+You may also join our facebook community at https://www.facebook.com/groups/125541663548/
+
+For a general description of this project, see ourproject web site at at http://mars-sim.sourceforge.net/ 
 
 
 ## Binaries Download 
