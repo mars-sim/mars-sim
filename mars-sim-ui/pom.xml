@@ -110,7 +110,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
-			<version>8.40.11</version>
+			<version>8.40.12</version>
 		</dependency>
 		<dependency>
 			<groupId>com.jidesoft</groupId>
@@ -248,12 +248,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		  <groupId>org.thymeleaf</groupId>
 		  <artifactId>thymeleaf</artifactId>
-		  <version>3.0.1-SNAPSHOT</version>
+		  <version>3.0.1</version>
 		</dependency>		
 		<dependency>
 		    <groupId>org.thymeleaf</groupId>
 		    <artifactId>thymeleaf-spring4</artifactId>
-		  <version>3.0.1-SNAPSHOT</version>
+		  <version>3.0.1</version>
 		  <version>
 		  3.0.0.RELEASE
 		  3.0.1-SNAPSHOT

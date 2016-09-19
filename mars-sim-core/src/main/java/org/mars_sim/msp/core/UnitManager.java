@@ -993,7 +993,7 @@ public class UnitManager implements Serializable {
 		// pop < POPULATION_WITH_MAYOR
 		if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			// electCommanders(settlement, RoleType.SUB_COMMANDER, pop);
-			electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
+			electChief(settlement, RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
 			electChief(settlement, RoleType.CHIEF_OF_ENGINEERING);
 			electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
 		}
@@ -1143,7 +1143,7 @@ public class UnitManager implements Serializable {
 		electChief(settlement, RoleType.CHIEF_OF_MISSION_PLANNING);
 		electChief(settlement, RoleType.CHIEF_OF_SAFETY_N_HEALTH);
 		electChief(settlement, RoleType.CHIEF_OF_SCIENCE);
-		electChief(settlement, RoleType.CHIEF_OF_SUPPLY);
+		electChief(settlement, RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
 		electChief(settlement, RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS);
 
 	}
@@ -1231,7 +1231,7 @@ public class UnitManager implements Serializable {
 			skill_3 = SkillType.CONSTRUCTION;
 			skill_4 = SkillType.EVA_OPERATIONS;
 			specialty = RoleType.MISSION_SPECIALIST;
-		} else if (role == RoleType.CHIEF_OF_SUPPLY) {
+		} else if (role == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
 			skill_1 = SkillType.TRADING;
 			skill_2 = SkillType.MATHEMATICS;
 			skill_3 = SkillType.BOTANY;

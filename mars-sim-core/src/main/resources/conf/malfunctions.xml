@@ -309,6 +309,7 @@
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
 			<part name="suit heating unit" number="1" probability="5" />
+			<part name="heat pipe" number="1" probability="1" />
 		</repair-parts-list>
 	</malfunction>
 
@@ -574,12 +575,13 @@
 			<entity name="cooking" />
 		</entity-list>
 		<repair-parts-list>
-			<part name="electrical wire" number="2" probability="20" />
-			<part name="wire connector" number="2" probability="20" />
-			<part name="small water pump" number="1"  probability="10"/>
-			<part name="electric heating element" number="1" probability="20" />
+			<part name="electrical wire" number="2" probability="5" />
+			<part name="wire connector" number="2" probability="5" />
+			<part name="small water pump" number="1"  probability="5"/>
+			<part name="heating element" number="1" probability="5" />
+			<part name="heat pipe" number="2" probability="1" />			
 			<part name="microcontroller" number="1"  probability="5"/>
-			<part name="ventilation fan" number="1"  probability="10"/>
+			<part name="ventilation fan" number="1"  probability="5"/>
 		</repair-parts-list>
 	</malfunction>
 
@@ -667,15 +669,15 @@
 		</entity-list>
 		<repair-parts-list>
 			<part name="oxygen pump" number="3" probability="10" />
-			<part name="carbon dioxide pump" number="3" probability="10" />
-			<part name="small water pump" number="3" probability="10" />
-			<part name="electric heating element" number="3" probability="10" />
-			<part name="electrical wire" number="3" probability="20" />
-			<part name="wire connector" number="6" probability="20" />
+			<part name="carbon dioxide pump" number="3" probability="5" />
+			<part name="small water pump" number="3" probability="5" />
+			<part name="heating element" number="3" probability="5" />
+			<part name="electrical wire" number="3" probability="5" />
+			<part name="wire connector" number="6" probability="5" />
 			<part name="fiberglass cloth" number="3" probability="5" />
-			<part name="valve" number="10" probability="20"  />
-			<part name="gasket" number="10" probability="20"  />
-			<part name="plastic tubing" number="10" probability="20"  />
+			<part name="valve" number="10" probability="10"  />
+			<part name="gasket" number="10" probability="10"  />
+			<part name="plastic tubing" number="10" probability="3"  />
 		</repair-parts-list>
 	</malfunction>
 
@@ -694,7 +696,8 @@
 			<part name="electrical wire" number="2" probability="2" />
 			<part name="wire connector" number="2" probability="2" />
 			<part name="small water pump" number="1" probability="5" />
-			<part name="electric heating element" number="1" probability="5" />
+			<part name="heating element" number="1" probability="5" />
+			<part name="heat pipe" number="2" probability="1" />
 			<part name="microcontroller" number="1" probability="5" />
 			<part name="ventilation fan" number="1" probability="5" />
 			<part name="carbon dioxide laser" number="1" probability="5" />

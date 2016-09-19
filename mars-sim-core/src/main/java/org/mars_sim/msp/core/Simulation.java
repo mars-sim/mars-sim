@@ -134,6 +134,8 @@ implements ClockListener, Serializable {
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild = "unknown";
 
+    private String lastSave = null;
+    
     // 2016-07-26 Added transient to avoid serialization error
 	//private transient Timeline autosaveTimeline;
 	private transient Timeline autosaveTimer;
@@ -604,9 +606,11 @@ implements ClockListener, Serializable {
         /* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
          * exist */
         if (file == null) {
+			//2016-09-15 Added lastSave
+        	lastSave = new SystemDateTime().getDateTimeStr();
             // 2015-01-08 Added isAutosave
             if (isAutosave) {
-                String autosaveFilename = new SystemDateTime().getDateTimeStr()
+                String autosaveFilename = lastSave
                 		+ "_sol" + masterClock.getMarsClock().getTotalSol() 
                 		+ "_build" + BUILD
                 		+ DEFAULT_EXTENSION;
@@ -1029,6 +1033,22 @@ implements ClockListener, Serializable {
 	 */
 	public Timeline getAutosaveTimer() {
 		return autosaveTimer;
+	}
+	
+	public String getLastSave() {
+		if (lastSave == null || lastSave.equals(""))
+			return "None";
+		else {
+			int l = lastSave.length();
+			String s = lastSave.substring(l-8, l);
+			String new_s = s.substring(0, 2) 
+					+ ":" + s.substring(2, 4) 
+					//+ ":" + s.substring(4, 6) 
+					+ " "
+					+ s.substring(6, 8)
+					+ " (local time)";
+			return new_s;	
+		}
 	}
 	
     /**

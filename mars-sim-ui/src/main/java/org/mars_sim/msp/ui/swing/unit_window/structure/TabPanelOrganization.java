@@ -117,39 +117,39 @@ extends TabPanel {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(settlement.getName());
 
 		DefaultMutableTreeNode commanderStaffNode = new DefaultMutableTreeNode("Command Staff");
-		DefaultMutableTreeNode commanderNode = new DefaultMutableTreeNode("Commander");
-		DefaultMutableTreeNode subCommanderNode = new DefaultMutableTreeNode("Sub-Commander");
+		DefaultMutableTreeNode commanderNode = new DefaultMutableTreeNode(RoleType.COMMANDER.toString());
+		DefaultMutableTreeNode subCommanderNode = new DefaultMutableTreeNode(RoleType.SUB_COMMANDER.toString());
 
 		DefaultMutableTreeNode cabinetNode = new DefaultMutableTreeNode("Cabinet");
-		DefaultMutableTreeNode mayorNode = new DefaultMutableTreeNode("Mayor");
+		DefaultMutableTreeNode mayorNode = new DefaultMutableTreeNode(RoleType.MAYOR.toString());
 
 		DefaultMutableTreeNode agricultureNode = new DefaultMutableTreeNode("Agriculture");
-		DefaultMutableTreeNode agricultureSpecialistNode = new DefaultMutableTreeNode("Agriculture Specialist");
-		DefaultMutableTreeNode agricultureChiefNode = new DefaultMutableTreeNode("Chief of Agriculture");
+		DefaultMutableTreeNode agricultureSpecialistNode = new DefaultMutableTreeNode(RoleType.AGRICULTURE_SPECIALIST.toString());
+		DefaultMutableTreeNode agricultureChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_AGRICULTURE.toString());
 
 		DefaultMutableTreeNode engineeringNode = new DefaultMutableTreeNode("Engineering");
-		DefaultMutableTreeNode engineeringSpecialistNode = new DefaultMutableTreeNode("Engineering Specialist");
-		DefaultMutableTreeNode engineeringChiefNode = new DefaultMutableTreeNode("Chief of Engineering");
+		DefaultMutableTreeNode engineeringSpecialistNode = new DefaultMutableTreeNode(RoleType.ENGINEERING_SPECIALIST.toString());
+		DefaultMutableTreeNode engineeringChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_ENGINEERING.toString());
 
 		DefaultMutableTreeNode logisticNode = new DefaultMutableTreeNode("Logistic");
-		DefaultMutableTreeNode logisticSpecialistNode = new DefaultMutableTreeNode("Logistic Specialist");
-		DefaultMutableTreeNode logisticChiefNode = new DefaultMutableTreeNode("Chief of Logistic and Transportation");
+		DefaultMutableTreeNode logisticSpecialistNode = new DefaultMutableTreeNode(RoleType.LOGISTIC_SPECIALIST.toString());
+		DefaultMutableTreeNode logisticChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS.toString());
 
 		DefaultMutableTreeNode missionNode = new DefaultMutableTreeNode("Mission");
-		DefaultMutableTreeNode missionSpecialistNode = new DefaultMutableTreeNode("Mission Specialist");
-		DefaultMutableTreeNode missionChiefNode = new DefaultMutableTreeNode("Chief of Mission");
+		DefaultMutableTreeNode missionSpecialistNode = new DefaultMutableTreeNode(RoleType.MISSION_SPECIALIST.toString());
+		DefaultMutableTreeNode missionChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_MISSION_PLANNING.toString());
 
 		DefaultMutableTreeNode safetyNode = new DefaultMutableTreeNode("Safety");
-		DefaultMutableTreeNode safetySpecialistNode = new DefaultMutableTreeNode("Safety Specialist");
-		DefaultMutableTreeNode safetyChiefNode = new DefaultMutableTreeNode("Chief of Safety");
+		DefaultMutableTreeNode safetySpecialistNode = new DefaultMutableTreeNode(RoleType.SAFETY_SPECIALIST.toString());
+		DefaultMutableTreeNode safetyChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_SAFETY_N_HEALTH.toString());
 
 		DefaultMutableTreeNode scienceNode = new DefaultMutableTreeNode("Science");
-		DefaultMutableTreeNode scienceSpecialistNode = new DefaultMutableTreeNode("Science Specialist");
-		DefaultMutableTreeNode scienceChiefNode = new DefaultMutableTreeNode("Chief of Science");
+		DefaultMutableTreeNode scienceSpecialistNode = new DefaultMutableTreeNode(RoleType.SCIENCE_SPECIALIST.toString());
+		DefaultMutableTreeNode scienceChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_SCIENCE);
 
 		DefaultMutableTreeNode supplyNode = new DefaultMutableTreeNode("Supply");
-		DefaultMutableTreeNode supplySpecialistNode = new DefaultMutableTreeNode("Resource Specialist");
-		DefaultMutableTreeNode supplyChiefNode = new DefaultMutableTreeNode("Chief of Supply and Resource");
+		DefaultMutableTreeNode supplySpecialistNode = new DefaultMutableTreeNode(RoleType.RESOURCE_SPECIALIST.toString());
+		DefaultMutableTreeNode supplyChiefNode = new DefaultMutableTreeNode(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES);
 
 		int population = settlement.getAllAssociatedPeople().size();
 
@@ -287,7 +287,7 @@ extends TabPanel {
     		else if (p.getRole().getType() == RoleType.SCIENCE_SPECIALIST) {
     			scienceSpecialistNode.add(new DefaultMutableTreeNode(p));
     		}
-       		else if (p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY) {
+       		else if (p.getRole().getType() == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) {
     	    	supplyChiefNode.add(new DefaultMutableTreeNode(p));
     		}
     		else if (p.getRole().getType() == RoleType.RESOURCE_SPECIALIST) {

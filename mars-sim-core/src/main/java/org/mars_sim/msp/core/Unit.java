@@ -732,7 +732,8 @@ implements Serializable, Comparable<Unit> {
 	 */
 	@Override
 	public String toString() {
-		return name  + " (" + identifier + ")";
+		//return name  + " (" + identifier + ")";
+		return name;
 	}
 
 	

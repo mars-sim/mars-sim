@@ -882,7 +882,8 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="7.0">
 		<inputs>
 			<part name="steel sheet" number="1" />
-			<part name="electric heating element" number="1" />
+			<part name="heating element" number="1" />
+			<part name="heat pipe" number="1" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
 		</inputs>
@@ -2293,7 +2294,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="electric heating element manufacturing" tech="4" skill="3" work-time="200" process-time="400"
+	<process name="heating element manufacturing" tech="4" skill="3" work-time="200" process-time="400"
 			power-required="10.0">
 		<inputs>
 			<resource name="magnesium" amount=".25" />
@@ -2304,10 +2305,30 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="2" />
 		</inputs>
 		<outputs>
-			<part name="electric heating element" number="2" />
+			<part name="heating element" number="2" />
 		</outputs>
 	</process>
 
+	<process name="heat pipe manufacturing with copper" tech="2" skill="1" work-time="100" process-time="100"
+			power-required="1.0">
+		<inputs>
+			<part name="copper sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="heat pipe" number="4" />
+		</outputs>
+	</process>
+
+	<process name="heat pipe manufacturing with aluminum" tech="2" skill="1" work-time="100" process-time="100"
+			power-required="1.0">
+		<inputs>
+			<part name="aluminum sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="heat pipe" number="4" />
+		</outputs>
+	</process>
+	
 	<process name="pneumatic drill manufacturing" tech="3" skill="4" work-time="400" process-time="400"
 			power-required="15.0">
 		<inputs>
@@ -2954,7 +2975,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="1" />
-			<part name="electric heating element" number="4" />
+			<part name="heating element" number="4" />
 			<part name="ventilation fan" number="1" />
 		</inputs>
 		<outputs>
@@ -2989,7 +3010,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="6" />
 			<part name="plastic sheet" number="2" />
 			<part name="small water pump" number="4" />
-			<part name="electric heating element" number="4" />
+			<part name="heating element" number="4" />
 			<part name="microcontroller" number="1" />
 			<part name="ventilation fan" number="1" />
 		</inputs>
@@ -3006,7 +3027,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="oxygen pump" number="2" />
 			<part name="carbon dioxide pump" number="2" />
 			<part name="small water pump" number="2" />
-			<part name="electric heating element" number="3" />
+			<part name="heating element" number="3" />
 			<part name="electrical wire" number="3" />
 			<part name="wire connector" number="3" />
 			<part name="fiberglass cloth" number="3" />
@@ -3148,7 +3169,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="wire connector" number="10" />
 			<part name="plastic sheet" number="2" />
 			<part name="small water pump" number="2" />
-			<part name="electric heating element" number="2" />
+			<part name="heating element" number="2" />
+			<part name="heat pipe" number="2" />
 			<part name="microcontroller" number="2" />
 			<part name="ventilation fan" number="1" />
 			<part name="carbon dioxide laser" number="2" />

@@ -437,7 +437,7 @@ public class ChainOfCommand implements Serializable {
      */
     public void reelect(RoleType key) {
 
-    	if (key == RoleType.CHIEF_OF_SUPPLY
+    	if (key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
     		|| key == RoleType.CHIEF_OF_ENGINEERING
     		|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
     		Simulation.instance().getUnitManager().electChief(settlement, key);

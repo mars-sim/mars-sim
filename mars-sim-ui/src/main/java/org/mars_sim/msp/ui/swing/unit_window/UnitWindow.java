@@ -70,7 +70,10 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final String ROLE = Msg.getString("icon.role");
 	private static final String SHIFT = Msg.getString("icon.shift");
 	
-	
+	private String oldRoleString = null, 
+					oldJobString = null,
+					oldTownString = null,
+					oldShiftString = null;
 	private JLabel townLabel;
     private JLabel jobLabel;
     private JLabel roleLabel;
@@ -103,7 +106,6 @@ public abstract class UnitWindow extends JInternalFrame {
         BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
         titlePane.setOpaque(true);
         titlePane.setBackground(new Color(250, 213, 174)); // light pale orange
-
 
         tabPanels = new ArrayList<TabPanel>();
 
@@ -179,23 +181,40 @@ public abstract class UnitWindow extends JInternalFrame {
     
             	Person p = (Person) unit;
                	
-            	String text = Conversion.capitalize(unit.getDescription());
-             	townLabel = new JLabel(text);// , JLabel.CENTER);
+            	String townString = Conversion.capitalize(unit.getDescription());
+                if (townString.length() > 15)
+                	townString = townString.substring(0, 15);
+             	townLabel = new JLabel(townString);// , JLabel.CENTER);
              	townLabel.setFont(font);
-             	
+             	oldTownString = townString;
+  
                 String jobString = p.getMind().getJob().getName(p.getGender());
                 jobLabel = new JLabel(jobString);// , JLabel.CENTER);
                 jobLabel.setFont(font);
+                oldJobString = jobString;
                 
                 String roleString = p.getRole().getType().getName();
+                int l = roleString.length();
+                if (l >= 15) {
+	                if (roleString.substring(0, 15).equals("Chief of Safety")
+	                	|| roleString.substring(0, 15).equals("Chief of Supply"))
+	                	roleString = roleString.substring(0, 15);              
+	                else if (l >= 16 && roleString.substring(0, 16).equals("Chief of Mission"))
+	                	roleString = "Chief of Mission";
+	                else if (l >= 18 && roleString.substring(0, 18).equals("Chief of Logistics"))
+                    	roleString = "Chief of Logistics";
+                }
+                oldRoleString = roleString;
+                //else if (roleString.length() > 22) 
+                //	roleString = roleString.substring(0, 22);
                 roleLabel = new JLabel(roleString);// , JLabel.CENTER);
                 roleLabel.setFont(font);
                 
                 String shiftString = p.getTaskSchedule().getShiftType().getName();
                 shiftLabel = new JLabel(shiftString);// , JLabel.CENTER);
                 shiftLabel.setFont(font);
-                
-                //setAlignment(int align) 
+                oldShiftString = shiftString;
+
                 
                 townPanel.add(townIconLabel);
                 townPanel.add(townLabel);
@@ -283,19 +302,42 @@ public abstract class UnitWindow extends JInternalFrame {
         	
     	Person p = (Person) unit;
    	
-    	String text = Conversion.capitalize(unit.getDescription());
+    	String townString = Conversion.capitalize(unit.getDescription());
     	//System.out.println("Description is : " + text);
-    	townLabel.setText(text);// , JLabel.CENTER);
+        if (!oldTownString.equals(townString)) {
+        	oldJobString = townString;
+        	if (townString.length() > 15)
+        		townString = townString.substring(0, 15);
+        	townLabel.setText(townString);// , JLabel.CENTER);
+        }
         
         String jobString = p.getMind().getJob().getName(p.getGender());
-        jobLabel.setText(jobString);// , JLabel.CENTER);
+        if (!oldJobString.equals(jobString)) {
+        	oldJobString = jobString;
+        	jobLabel.setText(jobString);// , JLabel.CENTER);
+        }
         
         String roleString = p.getRole().getType().getName();
-        roleLabel.setText(roleString);// , JLabel.CENTER);
+        if (!oldRoleString.equals(roleString)) {
+            int l = roleString.length();
+            if (l >= 15) {
+		        if (roleString.substring(0, 15).equals("Chief of Safety")
+		            || roleString.substring(0, 15).equals("Chief of Supply"))
+		            roleString = roleString.substring(0, 15);
+                else if (l >= 16 && roleString.substring(0, 16).equals("Chief of Mission"))
+                	roleString = "Chief of Mission";
+                else if (l >= 18 && roleString.substring(0, 18).equals("Chief of Logistics"))
+                	roleString = "Chief of Logistics";
+           }
+           	oldRoleString = roleString;
+	        roleLabel.setText(roleString);
+        }
         
         String shiftString = p.getTaskSchedule().getShiftType().getName();
-        shiftLabel.setText(shiftString);// , JLabel.CENTER);
-   
+        if (!oldShiftString.equals(shiftString)) {
+        	oldShiftString = shiftString;
+        	shiftLabel.setText(shiftString);
+        }
 
     }
     

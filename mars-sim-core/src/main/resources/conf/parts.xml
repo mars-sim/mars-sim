@@ -390,8 +390,9 @@
 
 	<part name="copper wire" mass="1.0" />
 
-	<part name="electric heating element" mass="1.0" >
-		<description>Ceramic, magnesium and wire heating element.</description>
+	<part name="heating element" mass="1.0" >
+		<description>The heating element is a thermofoil conductive
+		electrical element embedded in a thin Kapton substrate.</description>
 		<maintenance-entity-list>
 			<entity name="life support" probability="10" max-number="1" />
 			<entity name="rover" probability="5" max-number="1" />
@@ -781,11 +782,17 @@
 		</description>
 	</part>
 
-	<part name="turbopump" mass="100.0">
+	<part name="turbopump" mass="50.0">
 		<description>This turbopump is compatible with delivering liquid methane. The purpose of a turbopump is 
 		to produce a high pressure fluid for feeding a combustion chamber. </description>
 	</part>
 
+	<part name="heat pipe" mass="0.2">
+		<description>Heat pipe is a passive heat transfer device with an extremely 
+		high effective thermal conductivity. Its two-phase heat transfer mechanism
+		results in heat transfer capabilities from one hundred to several thousand 
+		times that of an equivalent piece of copper.</description>
+	</part>
 	
 <!-- Future:
 	1. work glove

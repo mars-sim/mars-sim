@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.08 2016-06-15
+ * @version 3.1.0 2016-09-15
  * @author Lars Næsbye Christensen
  */
 
@@ -144,7 +144,6 @@ public class MainScene {
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
-
 	private static final int EDGE_DETECTION_PIXELS_Y = 35;
 	private static final int EDGE_DETECTION_PIXELS_X = 200;
 	
@@ -153,15 +152,7 @@ public class MainScene {
 	public static final int SAVE_DEFAULT = 1;
 	public static final int AUTOSAVE = 2;
 	public static final int SAVE_AS = 3; // save as other file
-
 	private static int theme = 7; // 7 is the standard nimrod theme
-
-    private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
-    private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
-    private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
-    private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
-    private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
-    private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
 
 	private int memMax;
 	private int memTotal;
@@ -178,19 +169,28 @@ public class MainScene {
 	private double width = 1286;//1366-80;
 	private double height = 688; //768-80;
 
+	private String lookAndFeelTheme = "nimrod";
+	private String title = null;
+	private String dir = null;
+	private String oldLastSaveStamp = null;
+
 	private StringProperty timeStamp;
     private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
-	private String lookAndFeelTheme = "nimrod";
-
-	private String title = null;
 	private File fileLocn = null;
-	private String dir = null;
+	
 	private Thread newSimThread;
 	private Thread loadSimThread;
 	private Thread saveSimThread;
 
-	private Label timeText; //Text timeText	
+    private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
+    private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
+    private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
+    private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
+    private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
+    private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
+
+	private Label timeText, lastSaveText; //Text timeText	
 	private Text memUsedText;
 
 	private Button memBtn, clkBtn;//, cpuBtn;
@@ -789,6 +789,7 @@ public class MainScene {
 		//memUsedText.setTextFill(txtColor);
 		//memMaxText.setFill(txtColor);
 		timeText.setTextFill(txtColor);
+		lastSaveText.setTextFill(txtColor);
 		
 		//systemCpuLoadText.setFill(txtColor);
 		//processCpuLoadText.setFill(txtColor);
@@ -955,6 +956,15 @@ public class MainScene {
 			statusBar.setText("");
 		}
 		
+		//2016-09-15 Added oldLastSaveStamp
+		oldLastSaveStamp = sim.instance().getLastSave();
+		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
+		lastSaveText = new Label();
+		lastSaveText.setText("Last Saved : " + oldLastSaveStamp + " ");
+		lastSaveText.setStyle("-fx-text-inner-color: orange;");
+		lastSaveText.setTooltip(new Tooltip ("Time last saved/autosaved on your machine"));
+		statusBar.getLeftItems().add(lastSaveText);
+		
 		statusBar.getRightItems().add(new Separator(VERTICAL));
 		//statusBar.getRightItems().add(new Separator(VERTICAL));
 
@@ -1041,6 +1051,12 @@ public class MainScene {
 
 		memUsed = (int)((memUsed + memUsedCache)/2D);
 */			
+		//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
+		String newLastSaveStamp = sim.instance().getLastSave();
+		if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
+			oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
+			lastSaveText.setText("Last Saved : " + oldLastSaveStamp + " ");
+		}
 	}
 
 	/**

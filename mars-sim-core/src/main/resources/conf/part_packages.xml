@@ -100,7 +100,8 @@
 		<part type="rover fuel tank" number="2" />
 		<part type="rover oxygen tank" number="2" />
 		<part type="rover water tank" number="2" />
-		<part type="electric heating element" number="26" />
+		<part type="heating element" number="26" />
+		<part type="heat pipe" number="26" />
 		<part type="pneumatic drill" number="2" />
 		<part type="backhoe" number="2" />
 		<part type="bulldozer blade" number="2" />
@@ -203,7 +204,8 @@
 		<part type="rover fuel tank" number="2" />
 		<part type="rover oxygen tank" number="2" />
 		<part type="rover water tank" number="2" />
-		<part type="electric heating element" number="46" />
+		<part type="heating element" number="46" />
+		<part type="heat pipe" number="46" />
 		<part type="pneumatic drill" number="2" />
 		<part type="backhoe" number="2" />
 		<part type="bulldozer blade" number="2" />
@@ -307,7 +309,8 @@
 		<part type="rover fuel tank" number="4" />
 		<part type="rover oxygen tank" number="4" />
 		<part type="rover water tank" number="4" />
-		<part type="electric heating element" number="72" />
+		<part type="heating element" number="72" />
+		<part type="heat pipe" number="72" />
 		<part type="pneumatic drill" number="4" />
 		<part type="backhoe" number="4" />
 		<part type="bulldozer blade" number="4" />
@@ -411,7 +414,8 @@
 		<part type="rover fuel tank" number="8" />
 		<part type="rover oxygen tank" number="8" />
 		<part type="rover water tank" number="8" />
-		<part type="electric heating element" number="100" />
+		<part type="heating element" number="100" />
+		<part type="heat pipe" number="100" />		
 		<part type="pneumatic drill" number="6" />
 		<part type="backhoe" number="6" />
 		<part type="bulldozer blade" number="6" />

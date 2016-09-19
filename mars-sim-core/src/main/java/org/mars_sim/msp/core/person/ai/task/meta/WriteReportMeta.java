@@ -84,7 +84,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 	            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
 	            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
 	            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-	            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) )
+	            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) )
 	            	result += 20D;
 
 	            // Effort-driven task modifier.

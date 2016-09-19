@@ -18,7 +18,7 @@
 	<min-air-pressure value="500" />
 
 	<!-- Minimum temperature (degrees celsius) a robot can withstand without harm -->
-	<min-temperature value="-20.0" />
+	<min-temperature value="-30.0" />
 
 	<!-- Maximum temperature (degrees celsius) a robot can withstand without harm -->
 	<max-temperature value="78.0" />

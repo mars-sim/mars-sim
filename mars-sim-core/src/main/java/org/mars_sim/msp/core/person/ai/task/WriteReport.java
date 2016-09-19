@@ -74,7 +74,7 @@ implements Serializable {
             	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
             	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
             	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY) ) {
+            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) ) {
 
 	            // If person is in a settlement, try to find an office building.
 	            Building officeBuilding = getAvailableOffice(person);
