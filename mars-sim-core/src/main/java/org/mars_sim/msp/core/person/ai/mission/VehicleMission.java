@@ -69,6 +69,8 @@ implements UnitListener {
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
 	private VehicleOperator lastOperator;
+	
+	private MissionMember startingMember;
 	/** True if vehicle has been loaded. */
 	protected boolean loadedFlag = false;
 	/** Vehicle traveled distance at start of mission. */
@@ -123,6 +125,7 @@ implements UnitListener {
 
 //		Person person = null;
 //		Robot robot = null;
+		this.startingMember = startingMember;
 		
 		// Add mission phases.
 		addPhase(EMBARKING);
@@ -186,6 +189,8 @@ implements UnitListener {
 		// Use TravelMission constructor.
 		super(name, startingMember, minPeople);
 
+		this.startingMember = startingMember;
+		
 		// Add mission phases.
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
@@ -239,6 +244,7 @@ implements UnitListener {
 	 * Leaves the mission's vehicle and unreserves it.
 	 */
 	protected final void leaveVehicle() {
+		//logger.info("starting firing vehicle event");
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
 			vehicle.removeUnitListener(this);
@@ -399,20 +405,36 @@ implements UnitListener {
 	 * Finalizes the mission
 	 * @param reason the reason of ending the mission.
 	 */
+	//2016-09-19 Revised endMission() to check if user aborted the mission and if the vehicle has been disembarked.
 	public void endMission(String reason) {
-
-		// Set emergency beacon if vehicle is not at settlement.
+		//logger.info("Reason : " + reason);
 		if (hasVehicle()) {
-			if (vehicle.getSettlement() == null) {
-				//if (person != null) 
-					setEmergencyBeacon(null, vehicle, true);
-				//else if (robot != null)
-				//	setEmergencyBeacon(null, vehicle, true);
+			// if user hit the "End Mission" button to abort the mission
+			if (reason.equals("User aborting the mission")) {
+				logger.info("Aborting the mission, switching to emergency mode to go to the nearest settlement.");	
+				determineEmergencyDestination(startingMember);	
+			}
+			
+			else {
+				// Set emergency beacon if vehicle is not at settlement.
+				if (vehicle.getSettlement() == null) {
+					//if (person != null) 
+						setEmergencyBeacon(null, vehicle, true);
+					//else if (robot != null)
+					//	setEmergencyBeacon(null, vehicle, true);
+				}
+				
+				leaveVehicle();
+				super.endMission(reason);
 			}
 		}
-
-		leaveVehicle();
-		super.endMission(reason);
+		
+		else if (reason.equals("Successfully disembarked.")) {
+			logger.info("Returning the control of vehicle to the settlement");
+            setPhaseEnded(true);
+			leaveVehicle();
+			super.endMission(reason);
+		}
 	}
 
 	/**
@@ -852,8 +874,8 @@ implements UnitListener {
 	}
 
 	/**
-	 * Determines the emergency destination settlement for the mission if one is reachable, otherwise sets the emergency
-	 * beacon and ends the mission.
+	 * Determines the emergency destination settlement for the mission if one is reachable, 
+	 * otherwise sets the emergency beacon and ends the mission.
 	 * @param member the mission member performing the mission.
 	 */
 	protected final void determineEmergencyDestination(MissionMember member) {
@@ -893,6 +915,8 @@ implements UnitListener {
 							newDestination, "emergency destination: "
 									+ newDestination.getName()));
 					associateAllMembersWithSettlement(newDestination);
+					
+					updateTravelDestination();
 				}
 			} else {
 				endMission("Not enough resources to continue.");

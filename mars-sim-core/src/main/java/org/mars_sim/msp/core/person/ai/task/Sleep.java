@@ -114,7 +114,7 @@ public class Sleep extends Task implements Serializable {
 			// check to see if a person is a trader or on a trading mission
 			if (!s1.equals(s2)) {
         		// yes he is a trader/guest (Case 1-3)
-            	logger.info(person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
+            	//logger.info(person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
 				// find a best empty (EU, ED) bed
 				Building q2 = getBestAvailableQuarters(person, false); 
 
@@ -126,7 +126,7 @@ public class Sleep extends Task implements Serializable {
 		            	accommodations = (LivingAccommodations) q1.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 		        		walkToActivitySpotInBuilding(q1, BuildingFunction.LIVING_ACCOMODATIONS, false);
 		                Building startBuilding = BuildingManager.getBuilding(person);                                  
-		                logger.fine("Case 1: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q1);
+		                //logger.fine("Case 1: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q1);
 
                 	}
                 	else {
@@ -136,7 +136,7 @@ public class Sleep extends Task implements Serializable {
                 		accommodations = (LivingAccommodations) q2.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 		        		walkToActivitySpotInBuilding(q2, BuildingFunction.LIVING_ACCOMODATIONS, false);
 		                Building startBuilding = BuildingManager.getBuilding(person);                                  
-		                logger.fine("Case 2: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q2);
+		                //logger.fine("Case 2: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q2);
 
                 	}            	
 		
@@ -145,7 +145,7 @@ public class Sleep extends Task implements Serializable {
                 
 				} else {
                 	// Case 3 : the settlement has NO empty bed(s). OU and/or OD only
-                	logger.info("Case 3: " + person + " couldn't find an empty bed at all. Will find a spot to fall asleep wherever he/she likes.");
+                	//logger.info("Case 3: " + person + " couldn't find an empty bed at all. Will find a spot to fall asleep wherever he/she likes.");
                 	// TODO: should allow him/her to sleep in gym or anywhere based on his/her usual preferences
                 	// endTask();
                     // Just walk to a random location.
@@ -160,7 +160,7 @@ public class Sleep extends Task implements Serializable {
 	            
 	            if (pq != null) {
 	            	// This person has his quarters assigned with a designated bed
-	            	logger.fine(person + " does have a designated bed at " + pq.getNickName());
+	            	//logger.fine(person + " does have a designated bed at " + pq.getNickName());
 	
 		            // check if this bed is currently empty or occupied (either ED or OD)  
 	                Point2D bed = person.getBed();  
@@ -178,7 +178,7 @@ public class Sleep extends Task implements Serializable {
 	            	}
 	            	else {
 		            	// Case 5: this designated bed is currently occupied (OD)
-	                	logger.info("Case 5: " + person + " has a designated bed but is currently occupied. Will find a spot to fall asleep.");
+	                	//logger.info("Case 5: " + person + " has a designated bed but is currently occupied. Will find a spot to fall asleep.");
 	                	// TODO: should allow him/her to sleep in gym or anywhere based on his/her usual preferences
 	                    // Just walk to a random location.
 	                    walkToRandomLocation(true);
@@ -187,7 +187,7 @@ public class Sleep extends Task implements Serializable {
 
 	            } else {
 	            	// this inhabitant has never been assigned a quarter and does not have a designated bed so far
-	            	logger.fine(person + " has never been designated a bed so far");
+	            	//logger.fine(person + " has never been designated a bed so far");
 	            	
 	            	// find an empty (either marked or unmarked) bed
 	            	Building q7 = getBestAvailableQuarters(person, false);
@@ -201,7 +201,7 @@ public class Sleep extends Task implements Serializable {
 		            	if (q6 != null) {
 			            	// Case 6: an empty unmarked bed is available for assigning to the person
 		              	
-			            	logger.info(q6.getNickName() + " has empty, unmarked bed (ED) that can be assigned to " + person);
+			            	//logger.info(q6.getNickName() + " has empty, unmarked bed (ED) that can be assigned to " + person);
   			            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
 			            	//person.setQuarters(q6);
 			                //Point2D bed = person.getBed();   		            	
@@ -210,7 +210,7 @@ public class Sleep extends Task implements Serializable {
 			            	walkToBed(accommodations, person, false);
 			        		//walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);
 			                Building startBuilding = BuildingManager.getBuilding(person);                                  
-			                logger.info("Case 6: " + person + " is walking from " + startBuilding + " to use his/her new quarters at " + q6);
+			                //logger.info("Case 6: " + person + " is walking from " + startBuilding + " to use his/her new quarters at " + q6);
 
 		            	} else {
 			            	logger.fine(q7.getNickName() + " has an empty, already designated (ED) bed available for " + person);
@@ -224,7 +224,7 @@ public class Sleep extends Task implements Serializable {
 			                logger.info("Case 7a: " + person + " is walking from " + startBuilding + " to use someone else's quarters at " + q7);
 			                accommodations.addSleeper(person, false);
 */
-		                   	logger.info("Case 7b: " + person + " will look for a spot to fall asleep.");
+		                   	//logger.info("Case 7b: " + person + " will look for a spot to fall asleep.");
 
 	                        // Walk to random location.
 	                        walkToRandomLocation(true);

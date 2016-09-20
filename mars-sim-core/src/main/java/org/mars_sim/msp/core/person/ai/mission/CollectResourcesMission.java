@@ -140,7 +140,7 @@ implements Serializable {
 
             // Check if vehicle can carry enough supplies for the mission.
             if (hasVehicle() && !isVehicleLoadable()) {
-                endMission("Vehicle is not loadable. (CollectingResourcesMission)");
+                endMission("Vehicle is not loadable at CollectingResourcesMission");
             }
         }
 
@@ -233,7 +233,7 @@ implements Serializable {
 
         // Check if vehicle can carry enough supplies for the mission.
         if (hasVehicle() && !isVehicleLoadable())
-            endMission("Vehicle is not loadable. (CollectingResourcesMission)");
+            endMission("Vehicle is not loadable at CollectingResourcesMission");
     }
 
     /**
@@ -338,7 +338,7 @@ implements Serializable {
             setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase()))
-            endMission("Successfully disembarked.");
+        	endMission("Successfully disembarked.");
     }
 
     @Override

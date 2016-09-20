@@ -801,11 +801,13 @@ implements Serializable {
 	 * Mission can override this to perform necessary finalizing operations.
 	 */
 	public void endMission(String reason) {
-		logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
-
-		if (!done) {
+		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
+		//logger.info("Reason : " + reason);
+		
+		if (!done || reason.equals("Successfully disembarked.")) {
 			done = true;
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
+			//logger.info("done firing End Mission Event");
 
 			if (members != null) {
 			    Object[] p = members.toArray();
@@ -843,7 +845,7 @@ implements Serializable {
 //				}
 //			}
 
-			logger.info(description + " ending at " + phase + " due to " + reason);
+			logger.info(description + " ending at the " + phase + " phase due to " + reason);
 		}
 	}
 

@@ -34,6 +34,7 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -127,7 +128,13 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-        JLabel nameLabel = new JLabel(" " + Conversion.capitalize(unit.getShortenedName()) + " ", displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
+        String name = "";
+        //if (unit instanceof Vehicle)
+        	name = " " + Conversion.capitalize(unit.getShortenedName()) + " ";
+        //else
+        //	name = " " + Conversion.capitalize(unit.getName()) + " ";
+        
+        JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
         nameLabel.setOpaque(true);
         Font font = new Font("DIALOG", Font.BOLD, 12);
         nameLabel.setFont(font);

@@ -991,7 +991,8 @@ extends VehicleMission {
 
 	@Override
 	public void endMission(String reason) {
-		// If at a settlement, associate all members with the settlement.
+		//logger.info("Reason : " + reason);
+		// If at a settlement, "associate" all members with this settlement.
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {
 			MissionMember member = i.next();

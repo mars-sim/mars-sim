@@ -170,7 +170,7 @@ public class LivingAccommodations extends Function implements Serializable {
             else {         	
 	        	if (!bedMap.containsKey(person)) {
 	        		// if a person has never been assigned a bed
-	        		logger.info(person + " does not have a designated bed yet.");
+	        		//logger.info(person + " does not have a designated bed yet.");
 	        		Point2D bed = designateABed(person);
 	        		if (bed == null) {
 	                    sleepers--;
@@ -203,8 +203,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	            	bedMap.put(person, bed);
 	        		person.setBed(bed);
 	        		person.setQuarters(building);
-	            	logger.info(person + " has been designated a bed at (" + bed.getX() + ", " + bed.getY() 
-	            		+ ") in " + person.getQuarters());
+	            	//logger.info(person + " has been designated a bed at (" + bed.getX() + ", " + bed.getY() 	+ ") in " + person.getQuarters());
 	            	break;
 	            }
 	        }

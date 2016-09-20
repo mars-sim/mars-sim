@@ -437,6 +437,11 @@ extends Mission {
     public abstract void updateTravelDestination();
 
     @Override
+    public void endMission(String reason) {
+    	super.endMission(reason);
+    }
+    
+    @Override
     public void destroy() {
         super.destroy();
 

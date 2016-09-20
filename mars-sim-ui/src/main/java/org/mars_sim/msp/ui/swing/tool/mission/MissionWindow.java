@@ -132,7 +132,7 @@ extends ToolWindow {
 		buttonPane.add(editButton);
 
 		// Create the end mission button.
-		final JButton endButton = new JButton("End Mission");
+		final JButton endButton = new JButton("Abort Mission");
 		endButton.setEnabled(false);
 		endButton.addActionListener(
 				new ActionListener() {
@@ -243,9 +243,9 @@ extends ToolWindow {
 	 * @param mission the mission to end.
 	 */
 	private void endMission(Mission mission) {
-		// logger.info("End mission: " + mission.getName());
+		//logger.info("End mission: " + mission.getName());
 
-		mission.endMission("User ending mission.");
+		mission.endMission("User aborting the mission");
 	}
 
 	public CreateMissionWizard getCreateMissionWizard() {

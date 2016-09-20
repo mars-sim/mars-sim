@@ -177,30 +177,37 @@ implements Serializable, Comparable<Unit> {
 	 */
 	//2016-08-31 Added getShortenedName()
 	public String getShortenedName() {
+		name = name.trim();
 		int num = name.length();
-		int space = name.indexOf(" ");
-		String oldFirst = name.substring(0, space);
-		String oldLast = name.substring(space+1, num);
 		
-		String newFirst = oldFirst;
-		String newLast = oldLast;
-		String newName = name;
+		boolean hasSpace = name.matches("^\\s*$");
 		
-		if (num > 20) {
+		if (hasSpace) {
+			int space = name.indexOf(" ");
 			
-			if (oldFirst.length() > 10) {
-				newFirst = oldFirst.substring(0, 10);
+			String oldFirst = name.substring(0, space);
+			String oldLast = name.substring(space+1, num);		
+			String newFirst = oldFirst;
+			String newLast = oldLast;
+			String newName = name;
+			
+			if (num > 20) {
+				
+				if (oldFirst.length() > 10) {
+					newFirst = oldFirst.substring(0, 10);
+				}
+				else if (oldLast.length() > 10) {
+					newLast = oldLast.substring(0, 10);
+				}			
+				newName = newFirst + " " + newLast;				
+				//System.out.println("oldName : " + name + "    newName : " + newName);
 			}
-			else if (oldLast.length() > 10) {
-				newLast = oldLast.substring(0, 10);
-			}
 			
-			newName = newFirst + " " + newLast;
-			
-			//System.out.println("oldName : " + name + "    newName : " + newName);
+			return newName;
 		}
 		
-		return newName;
+		else
+			return name;
 	}
 	
 	/**
