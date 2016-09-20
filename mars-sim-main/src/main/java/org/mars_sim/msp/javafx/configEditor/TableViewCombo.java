@@ -22,7 +22,9 @@ import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.javafx.configEditor.SettlementBase;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
-import io.swagger.models.properties.IntegerProperty;
+//import io.swagger.models.properties.IntegerProperty;
+
+
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

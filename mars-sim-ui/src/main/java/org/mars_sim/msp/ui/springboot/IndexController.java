@@ -7,6 +7,8 @@
  */
 package org.mars_sim.msp.ui.springboot;
 
+/* need to enable spring boot artifact in pom.xml
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -48,12 +50,12 @@ public class IndexController {
         model.addAttribute("message", "[Note : loaded via a thymeleaf template]");
         return "hello";
     }
-/*
-    @RequestMapping(value="/main", method=RequestMethod.GET)
-    public String loadMain(ModelMap map) {
-        return "main";
-    }
-*/    
+
+    //@RequestMapping(value="/main", method=RequestMethod.GET)
+    //public String loadMain(ModelMap map) {
+    //    return "main";
+    //}
+   
     @RequestMapping(value="/starter", method=RequestMethod.GET)
     public String starter(Model model) {
         model.addAttribute("message", "[Note : loaded via a thymeleaf template]");
@@ -78,3 +80,4 @@ public class IndexController {
     //    return "hello";
     //}
 }
+*/ 

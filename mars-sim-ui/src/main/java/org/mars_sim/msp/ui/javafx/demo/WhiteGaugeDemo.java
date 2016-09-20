@@ -16,6 +16,9 @@
 
 package org.mars_sim.msp.ui.javafx.demo;
 
+/* need to enable medusa artifact in pom.xml
+
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -31,11 +34,11 @@ import javafx.scene.Scene;
 import java.util.Random;
 
 
-/**
- * User: hansolo
- * Date: 26.04.16
- * Time: 18:46
- */
+
+ // User: hansolo
+ // Date: 26.04.16
+ // Time: 18:46
+ //
 public class WhiteGaugeDemo extends Application {
     private static final Random RND = new Random();
     private Color[]        colors   = { Color.rgb(65,170,227), Color.rgb(242,72,45), Color.rgb(185,216,64), Color.rgb(232,75,159) };
@@ -85,3 +88,4 @@ public class WhiteGaugeDemo extends Application {
         launch(args);
     }
 }
+*/

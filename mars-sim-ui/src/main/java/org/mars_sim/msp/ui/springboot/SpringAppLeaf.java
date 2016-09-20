@@ -8,6 +8,8 @@
 
 package org.mars_sim.msp.ui.springboot;
 
+/* need to enable spring boot artifact in pom.xml
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 //import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,3 +34,5 @@ public class SpringAppLeaf {
     }
 
 }
+
+*/ 

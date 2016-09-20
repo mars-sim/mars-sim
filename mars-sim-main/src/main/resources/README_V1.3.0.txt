@@ -6,9 +6,14 @@ http://mars-sim.sourceforge.net/
 
 ** Installation **
 
-This Java application requires a Java Runtime Environment (JRE) of 
-version 8 or later.  The latest JVM can be freely downloaded from Oracle at:
-http://java.com/en/download/index.jsp
+This Java application requires a Java Runtime Environment (JRE) or 
+Java SE Development Kit (JDK) of version 8. 
+
+Note that mars-sim currently does not work with OpenJDK 8 in linux. 
+Install oracle-java8 instead. 
+
+The latest JVM can be freely downloaded from Oracle at:
+http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ---------------------------------------------------------------------
 
@@ -17,25 +22,30 @@ http://java.com/en/download/index.jsp
 1. For most operating systems you can simply double click on the 
 mars-sim-main-[version number].jar file since it is an executable jar.
 
-2. Alternatively, you can also start mars-sim manually from a command console or command line. In doing so, you will see mars-sim's its internal logging statements while running mars-sim.
+2. Alternatively, you can also start mars-sim manually from a command 
+console or command line which will allow users to see mars-sim's 
+internal logging statements while running mars-sim.
 
-First, go to the directory containing mars-sim-main-[version number].jar in the command line,
+First, go to the directory containing the jar file in the command line,
 
-Second, type:
+Second, type in:
 
-java -jar mars-sim-main-[version number].jar 
+java -jar mars-sim-main-[version/build number].jar 
 
-(replacing the [version number] with jar file's version number).
+(replacing the [version number] with jar file's version/build number).
 
 ---------------------------------------------------------------------
 
 ** Memory Allocation **
 
-The maximum memory allocation for mars-sim is tunnable prior to the start of the simulation. 
+The maximum memory allocation for mars-sim is tunnable prior to the 
+start of the simulation. 
 
 By default, mars-sim uses up to 1 GB maximum memory.
 
-If your machine has less than 1 GB or more than 1 GB, you may customize mars-sim to run at one of the configuration by adding a numeral after the jar file as shown below :
+If your machine has less than 1 GB or more than 1 GB, you may 
+customize mars-sim to run at one of the configuration by adding a 
+numeral after the jar file as shown below :
 
 java -jar mars-sim-main-[version number].jar 4
 
@@ -53,7 +63,12 @@ java -jar mars-sim-main-[version number].jar 4
 
 ** Headless Mode **
 
-mars-sim is designed with a level of A.I. capable of running the entire simulation on its own. If you simply want it to run in headless mode for hours without your input and/or want to save some precious CPU resources from creating the GUI, start in headless mode by typing :
+mars-sim is designed with a level of A.I. capable of running the 
+entire simulation on its own. 
+
+If you simply want it to run in headless mode for hours without 
+your input and/or want to save some precious CPU resources from 
+creating the GUI, start in headless mode by typing :
 
 java -jar mars-sim.jar 1 headless new
 
@@ -61,11 +76,15 @@ OR
 
 java -jar mars-sim.jar 0 headless
 
-Note 1: '0' or a numeral is for setting up mars-sim to use a memory configuration different from the default. It is optional.
+Note 1: '0' or a numeral is for setting up mars-sim to use a
+ memory configuration different from the default. It is optional.
 
-Note 2: if the 'new' switch is not provided, it will be added automatically.
+Note 2: if the 'new' switch is not provided, it will be added 
+automatically.
 
-Note 3: by default, the simulation will be saved automatically (as default.sim) once every 15 minutes, as dictated by the following attribute value found in the simulation.xml :  
+Note 3: by default, the simulation will be saved automatically
+(as default.sim) once every 15 minutes, as dictated by the 
+following attribute value found in the simulation.xml :  
 
 <autosave-interval value="15.0" /> 
 

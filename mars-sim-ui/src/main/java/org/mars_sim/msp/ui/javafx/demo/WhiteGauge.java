@@ -16,6 +16,10 @@
 
 package org.mars_sim.msp.ui.javafx.demo;
 
+
+/* need to enable medusa artifact in pom.xml
+ 
+ 
 import eu.hansolo.medusa.Fonts;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
@@ -42,12 +46,10 @@ import javafx.scene.text.Text;
 
 import java.util.Locale;
 
+// User: hansolo
+// Date: 26.04.16
+// Time: 18:44
 
-/**
- * User: hansolo
- * Date: 26.04.16
- * Time: 18:44
- */
 public class WhiteGauge extends Region {
     private static final double PREFERRED_WIDTH  = 320;
     private static final double PREFERRED_HEIGHT = 320;
@@ -267,3 +269,4 @@ public class WhiteGauge extends Region {
         bar.setLength(-model.getAngleStep() * model.getCurrentValue());
     }
 }
+*/

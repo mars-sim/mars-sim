@@ -413,7 +413,7 @@ implements ClockListener, Serializable {
         }
         else{
         	logger.info("Encountering an error when loading the simulation!");
-        	logger.info("Note : you are running Build " + Simulation.BUILD + "but is loading a sim saved in Build " + loadBuild);
+        	logger.info("Note : you are running Build " + Simulation.BUILD + " but is loading a sim saved in Build " + loadBuild);
             throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
                     f.getPath() + " is not accessible");
         }

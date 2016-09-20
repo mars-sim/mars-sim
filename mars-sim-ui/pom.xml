@@ -154,11 +154,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>reactfx</artifactId>
 			<version>2.0-M5</version>
 		</dependency-->
-		<dependency>
+		<!--dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
 			<version>5.8</version>
-		</dependency>
+		</dependency-->
 		<dependency>
 		    <groupId>eu.hansolo.enzo</groupId>
 		    <artifactId>Enzo</artifactId>
@@ -179,6 +179,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>LibFX</artifactId>
 		    <version>0.3.0</version>
 		</dependency>	
+
+<!--	NEEDED for spring boot			
 	  <dependency>
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-cli</artifactId>
@@ -209,18 +211,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 			<version>${springboot.version}</version>
 		</dependency>
-       <!--dependency>
-        	<groupId>org.springframework</groupId>
-        	<artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <dependency>
-        	<groupId>org.springframework</groupId>
-        	<artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-        </dependency -->
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
@@ -243,7 +233,23 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         	<artifactId>mapstruct</artifactId>
         	<version>${org.mapstruct.version}</version>
     	</dependency>		
+-->				
 		
+<!--	NOT NEEDED for spring boot	
+       <dependency>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring-webmvc</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+-->
+
 <!--
 		<dependency>
 		  <groupId>org.thymeleaf</groupId>
