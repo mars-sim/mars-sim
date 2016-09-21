@@ -45,6 +45,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -166,8 +167,9 @@ implements InternalFrameListener, ActionListener {
 
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
-		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+	    if (!MainScene.OS.equals("linux")) {
+	    	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    }
 		topPanel.add(scrollPanel, BorderLayout.CENTER);
 
 		// 2015-06-08 Added setTableStyle()

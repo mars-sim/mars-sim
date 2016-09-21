@@ -338,10 +338,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		//table.setAutoCreateRowSorter(true);
-		//table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
-		// 2015-06-08 Added setTableStyle()
-		TableStyle.setTableStyle(table);
+	    //if (!MainScene.OS.equals("linux")) {
+	    //	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    //}
 
 		update();
 	}

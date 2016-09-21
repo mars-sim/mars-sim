@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -127,10 +128,12 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		studyTable.setAutoCreateRowSorter(true);
-		studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    if (!MainScene.OS.equals("linux")) {
+	    	studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    }
 
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(studyTable);
+		TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -190,10 +193,11 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		achievementTable.setAutoCreateRowSorter(true);
-		achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+	    if (!MainScene.OS.equals("linux")) {
+	    	achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    }
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(achievementTable);
+		TableStyle.setTableStyle(achievementTable);
 	}
 
 	@Override

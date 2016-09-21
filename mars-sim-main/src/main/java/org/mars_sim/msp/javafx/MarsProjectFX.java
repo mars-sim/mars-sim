@@ -119,6 +119,8 @@ public class MarsProjectFX extends Application  {
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
 
+	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+	
     static String[] args;
 
     /** true if displaying graphic user interface. */
@@ -176,7 +178,7 @@ public class MarsProjectFX extends Application  {
         //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
-    	logger.info("Starting " + Simulation.title);
+    	logger.info(Simulation.title);
     	
 		argList = Arrays.asList(args);
         newSim = argList.contains("-new");      
@@ -213,7 +215,7 @@ public class MarsProjectFX extends Application  {
 
 	    if (!headless) { 
 	    	// Using GUI mode
-	    	logger.info("prepare() : Running MarsProjectFX in GUI mode");
+	    	//logger.info("Running " + OS + " in GUI mode");
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 	    	//System.setProperty("sun.java2d.ddforcevram", "true");
 
@@ -223,14 +225,14 @@ public class MarsProjectFX extends Application  {
 		} else { 
 			// Using -headless arg (GUI-less)
 			if (newSim) {
-				logger.info("prepare() : Starting a new MarsProjectFX in headless mode");
+				logger.info("Starting a new sim (headless mode) in " + OS);
 				// Initialize the simulation.
 			    initializeSimulation();
 			    // Start the simulation.
 			    startSimulation(true);
 			}
 			else if (loadSim) {
-				logger.info("prepare() : Loading a saved sim and running MarsProjectFX in headless mode");
+				logger.info("Loading a sim (headless mode) in " + OS);
 				// Initialize the simulation.
 			    initializeSimulation();
 			    // Start the simulation.
@@ -239,7 +241,7 @@ public class MarsProjectFX extends Application  {
 
 			// 2016-06-06 Generated html files for in-game help 
 			else if (generateHTML) {
-				logger.info("prepare() : Generating html help files in headless mode");
+				logger.info("Generating help files (headless mode) in " + OS);
 
 				try {					
 		            SimulationConfig.loadConfig();
@@ -247,7 +249,7 @@ public class MarsProjectFX extends Application  {
 
 		        } catch (Exception e) {
 		            e.printStackTrace();
-		            exitWithError("Could not create a new simulation, startup cannot continue", e);
+		            exitWithError("Could not generate help files ", e);
 		        }
 			}
 			
@@ -269,17 +271,19 @@ public class MarsProjectFX extends Application  {
 	   		mainMenu = new MainMenu(this);
 	   			   		
 	   		if (newSim) {
+	   	    	logger.info("Starting a new sim (GUI mode) in " + OS);
 	   			mainMenu.initAndShowGUI(primaryStage);
 		   		mainMenu.setupMainSceneStage();
 	   		}
 	   		else {
+				logger.info("Loading a sim (GUI mode) in " + OS);
 		   		mainMenu.setupMainSceneStage();		   		
 	   			mainMenu.loadSim();
 	   		}
 		    	    
 		}
 		else {
-		   	logger.info("start() : in headless mode, not loading the Main Menu");			
+		   	logger.info("Skip loading the Main Menu");			
 		}
 	}
 
@@ -301,9 +305,7 @@ public class MarsProjectFX extends Application  {
 
         	//SimulationConfig.instance();
         	SimulationConfig.loadConfig();
-
-        	Simulation.createNewSimulation();
-        	
+        	Simulation.createNewSimulation();       	
             result = true;
 
         } else if (loadSim) {
@@ -421,11 +423,11 @@ public class MarsProjectFX extends Application  {
             if (loadFile.exists() && loadFile.canRead()) {
                 sim.loadSimulation(loadFile);
 
-
             } else {
-                exitWithError("Problem loading simulation. " + argList.get(index + 1) +
+                exitWithError("Could not load the simulation. " + argList.get(index + 1) +
                         " not found.", null);
             }
+            
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Problem loading existing simulation", e);
             throw e;
@@ -447,7 +449,7 @@ public class MarsProjectFX extends Application  {
 
         } catch (Exception e) {
             e.printStackTrace();
-            exitWithError("Could not create a new simulation, startup cannot continue", e);
+            exitWithError("Could not create a new simulation ", e);
         }
     }
 

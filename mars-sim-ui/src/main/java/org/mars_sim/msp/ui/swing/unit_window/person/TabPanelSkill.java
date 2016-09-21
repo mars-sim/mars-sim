@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -128,10 +129,11 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		skillTable.setAutoCreateRowSorter(true);
-		skillTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+	    if (!MainScene.OS.equals("linux")) {
+	    	skillTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    }
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(skillTable);
+		TableStyle.setTableStyle(skillTable);
 	}
 
 	/**

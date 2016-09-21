@@ -521,14 +521,15 @@ public final class DisplaySingle extends JComponent implements Lcd, ActionListen
         } else {
             // Draw text instead of numbers
             G2.setFont(lcdValueFont);
-            if (!lcdText.isEmpty()) {
-                valueLayout = new TextLayout(lcdText, G2.getFont(), RENDER_CONTEXT);
-                VALUE_BOUNDARY.setFrame(valueLayout.getBounds());
-                if (!TEXT_SCROLLER.isRunning()) {
-                    lcdTextX = (float) VALUE_BOUNDARY.getWidth();
-                }
-                G2.drawString(lcdText, lcdImage.getWidth() - lcdTextX  - lcdImage.getHeight() * 0.15f, (lcdImage.getHeight() * 0.76f));
-            }
+            if (lcdText != null) // 09-21-2016 Added this to avoid NullPointerException
+	            if (!lcdText.isEmpty()) {
+	                valueLayout = new TextLayout(lcdText, G2.getFont(), RENDER_CONTEXT);
+	                VALUE_BOUNDARY.setFrame(valueLayout.getBounds());
+	                if (!TEXT_SCROLLER.isRunning()) {
+	                    lcdTextX = (float) VALUE_BOUNDARY.getWidth();
+	                }
+	                G2.drawString(lcdText, lcdImage.getWidth() - lcdTextX  - lcdImage.getHeight() * 0.15f, (lcdImage.getHeight() * 0.76f));
+	            }
         }
 
         // Draw lcd threshold indicator

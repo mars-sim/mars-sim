@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
@@ -125,20 +126,21 @@ extends TabPanel {
 		attributeTable.setCellSelectionEnabled(false);
 		// attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
-		// 2015-06-08 Added setTableStyle()
-		//attributeTable = TableStyle.setTableStyle(attributeTable);
-
 		attributeScrollPanel.setViewportView(attributeTable);
 
 		// 2015-06-08 Added sorting
 		attributeTable.setAutoCreateRowSorter(true);
-		attributeTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+        if (!MainScene.OS.equals("linux")) {
+        	attributeTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-09-24 Align the content to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		attributeTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+
+		// 2015-06-08 Added setTableStyle()
+		attributeTable = TableStyle.setTableStyle(attributeTable);
 
 	}
 

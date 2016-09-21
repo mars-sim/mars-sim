@@ -665,7 +665,7 @@ public class Crop implements Serializable {
 				Storage.storeAnResource(lastHarvest, cropName, inv);
 				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(lastHarvest * 1000.0)/1000.0 + " kg. All Done.");
 				remainingWorkTime = overWorkTime;
-				logger.info("addWork() : harvest is done on " + cropName);
+				logger.info("Harvest done on " + cropName);
 				
 				phaseType = PhaseType.FINISHED;
 				generateCropWaste(lastHarvest);

@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -179,13 +180,11 @@ extends TabPanel {
 
 		DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
 			//private Font font;
-
             @Override
             public Component getTableCellRendererComponent(JTable table, Object
                 value, boolean isSelected, boolean hasFocus, int row, int column) {
-
                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
+            	// Align the preference score to the center of the cell
                 setHorizontalAlignment(JLabel.CENTER);
                 //String s = EmojiParser.parseToUnicode(value.toString());
                 String s = value.toString();
@@ -196,19 +195,14 @@ extends TabPanel {
         		Component c = getTableCellRendererComponent(
         				table, value, isSelected, hasFocus,
         				row, column);
-
         		if (c instanceof JLabel) {
-
         			JLabel cell = (JLabel) c;
         			cell.setText((String) value);
-
         		}
         		                return c;
-
 */
 /*
     			InputStream is = getClass().getResourceAsStream("/fxui/fonts/fontawesome-webfont.ttf");
-
 				try {
 					font = Font.createFont(Font.TRUETYPE_FONT, is);
 		            font = font.deriveFont(Font.PLAIN, 12f);
@@ -226,7 +220,6 @@ extends TabPanel {
                 //setIcon(value);
 				return this;
 */
-
             }
         };
         table.getColumnModel().getColumn(1).setCellRenderer(r);
@@ -239,8 +232,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
-		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+        if (!MainScene.OS.equals("linux")) {
+        	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(table);
 

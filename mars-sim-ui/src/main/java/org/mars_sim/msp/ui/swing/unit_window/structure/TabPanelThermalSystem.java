@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -203,10 +204,11 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		//heatTable.setAutoCreateRowSorter(true);
-		//heatTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+        //if (!MainScene.OS.equals("linux")) {
+        //	heatTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(heatTable);
+		TableStyle.setTableStyle(heatTable);
 
 		heatScrollPane.setViewportView(heatTable);
 

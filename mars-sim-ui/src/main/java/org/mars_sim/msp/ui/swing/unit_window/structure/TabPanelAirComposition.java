@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -173,8 +174,10 @@ extends TabPanel {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.setAutoCreateRowSorter(true);
-		//table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+		if (!MainScene.OS.equals("linux")) {
+			table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
+		
 		TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);

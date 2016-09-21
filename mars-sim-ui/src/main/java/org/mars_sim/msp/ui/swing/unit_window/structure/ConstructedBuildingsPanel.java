@@ -18,6 +18,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -84,10 +85,11 @@ extends JPanel {
 
 		// 2015-06-08 Added sorting
 		constructedTable.setAutoCreateRowSorter(true);
-		constructedTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+		if (!MainScene.OS.equals("linux")) {
+			constructedTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(constructedTable);
+		TableStyle.setTableStyle(constructedTable);
 
 	}
 

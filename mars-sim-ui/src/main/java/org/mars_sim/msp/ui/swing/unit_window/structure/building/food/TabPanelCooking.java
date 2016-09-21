@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
@@ -289,8 +290,10 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
-		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+		if (!MainScene.OS.equals("linux")) {
+			table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
+		
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(table);
 

@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -112,10 +113,11 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		goodsTable.setAutoCreateRowSorter(true);
-		goodsTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+	    if (!MainScene.OS.equals("linux")) {
+	    	goodsTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    }
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(goodsTable);
+		TableStyle.setTableStyle(goodsTable);
 
      	// 2015-06-17 Added goodsSearchable
      	TableSearchable searchable = SearchableUtils.installSearchable(goodsTable);

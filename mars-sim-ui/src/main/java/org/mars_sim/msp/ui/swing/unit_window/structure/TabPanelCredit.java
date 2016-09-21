@@ -28,12 +28,14 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditEvent;
 import org.mars_sim.msp.core.structure.goods.CreditListener;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
@@ -107,8 +109,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		creditTable.setAutoCreateRowSorter(true);
-		creditTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+		if (!MainScene.OS.equals("linux")) {
+			creditTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-09-28 Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -116,7 +119,7 @@ extends TabPanel {
 
 
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(creditTable);
+		TableStyle.setTableStyle(creditTable);
 
 	}
 
@@ -138,30 +141,29 @@ extends TabPanel {
 		private static final long serialVersionUID = 1L;
 
 		// Data members
-		private CreditManager manager;
+		private CreditManager creditManager = Simulation.instance().getCreditManager();
+
 		private Collection<Settlement> settlements;
 		private Settlement thisSettlement;
-
+		private UnitManager unitManager = Simulation.instance().getUnitManager();
 		/**
 		 * hidden constructor.
 		 * @param thisSettlement {@link Settlement}
 		 */
 		private CreditTableModel(Settlement thisSettlement) {
 			this.thisSettlement = thisSettlement;
-			manager = Simulation.instance().getCreditManager();
 
 			// Get collection of all other settlements.
 			settlements = new ConcurrentLinkedQueue<Settlement>();
-			Iterator<Settlement> i = CollectionUtils
-			.sortByName(Simulation.instance().getUnitManager().getSettlements()).iterator();
+			Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.getSettlements()).iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
 				if (settlement != thisSettlement) settlements.add(settlement);
 			}
 
-			manager.addListener(this);
+			creditManager.addListener(this);
 
-			Simulation.instance().getUnitManager().addUnitManagerListener(this);
+			unitManager.addUnitManagerListener(this);
 		}
 
 		@Override
@@ -199,7 +201,7 @@ extends TabPanel {
 				else {
 					double credit = 0D;
 					try {
-						credit = manager.getCredit(thisSettlement, settlement);
+						credit = creditManager.getCredit(thisSettlement, settlement);
 					}
 					catch (Exception e) {
 						e.printStackTrace(System.err);

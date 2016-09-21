@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
@@ -108,8 +109,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		// 2015-06-08 Added sorting
         resourcesTable.setAutoCreateRowSorter(true);
-        resourcesTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+        if (!MainScene.OS.equals("linux")) {
+        	resourcesTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-09-28 Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -150,8 +152,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		// 2015-06-08 Added sorting
         equipmentTable.setAutoCreateRowSorter(true);
-        equipmentTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+        if (!MainScene.OS.equals("linux")) {
+        	equipmentTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(equipmentTable);
 

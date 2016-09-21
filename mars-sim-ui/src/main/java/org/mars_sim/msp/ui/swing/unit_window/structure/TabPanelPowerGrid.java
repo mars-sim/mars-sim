@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -252,10 +253,12 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		//powerTable.setAutoCreateRowSorter(true);
-		//powerTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+        //if (!MainScene.OS.equals("linux")) {
+        //	powerTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
+        
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(powerTable);
+		TableStyle.setTableStyle(powerTable);
 
 		powerScrollPane.setViewportView(powerTable);
 

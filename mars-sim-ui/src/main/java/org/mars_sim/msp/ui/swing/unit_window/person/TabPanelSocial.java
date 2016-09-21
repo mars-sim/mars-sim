@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
@@ -99,8 +100,9 @@ implements ListSelectionListener {
 
 		// 2015-06-08 Added sorting
 		//relationshipTable.setAutoCreateRowSorter(true); // not working if clicking on a person
-		//relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+	    //if (!MainScene.OS.equals("linux")) {
+	    //	relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    //}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(relationshipTable);
 	}

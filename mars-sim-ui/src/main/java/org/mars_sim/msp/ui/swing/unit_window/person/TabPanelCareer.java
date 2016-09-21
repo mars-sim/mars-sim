@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -349,8 +350,9 @@ implements ActionListener {
 
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
-		table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+		if (!MainScene.OS.equals("linux")) {
+        	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(table);
 

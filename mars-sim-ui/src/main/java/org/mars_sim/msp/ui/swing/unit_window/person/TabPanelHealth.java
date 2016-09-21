@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.Medication;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
@@ -207,12 +208,11 @@ extends TabPanel {
 		//radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
 		// 2015-06-08 Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
-		radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
-
+        if (!MainScene.OS.equals("linux")) {
+        	radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(radiationTable);
-
 
 		// Prepare table panel.
 		JPanel tablePanel = new JPanel(new GridLayout(2, 1));
@@ -242,8 +242,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		medicationTable.setAutoCreateRowSorter(true);
-		medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+       if (!MainScene.OS.equals("linux")) {
+        	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(medicationTable);
 
@@ -271,10 +272,11 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		healthProblemTable.setAutoCreateRowSorter(true);
-		healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-
+       if (!MainScene.OS.equals("linux")) {
+        	healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		}
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(healthProblemTable);
+		TableStyle.setTableStyle(healthProblemTable);
 	}
 
 

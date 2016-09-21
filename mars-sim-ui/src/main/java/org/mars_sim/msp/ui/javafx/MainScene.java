@@ -246,6 +246,8 @@ public class MainScene {
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
 
+		//logger.info("OS is " + OS);
+
 		//stage.setResizable(true);
 		stage.setMinWidth(width);//1024);
 		stage.setMinHeight(height);//480);

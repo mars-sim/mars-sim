@@ -70,18 +70,22 @@ public class TableStyle extends ZebraJTable{
 	 * Sets theme color for JTable headers and rows and columns
 	 */
     public static JTable setTableStyle(JTable table) {
+	   	//logger.info("setTableStyle() is on " + Thread.currentThread().getName() );
 
+    	//JTable t = table;
 		//SwingUtilities.invokeLater(() -> {	
 			// 2016-06-17 Added checking for OS. 
 			// Note: NIMROD theme lib doesn't work on linux 
 			if (MainScene.OS.equals("linux")) {
-			   	ZebraJTable z = new ZebraJTable(table.getModel());
-				return (JTable) z;
+			   	//ZebraJTable z = new ZebraJTable(table.getModel());
+				//table = (JTable) z;
+				;
 			}
 			else 
-				return editHeader(table);
+				table = editHeader(table);
 		//});
 		
+		return table;
     }
 	
     public static JTable editHeader(JTable table) {

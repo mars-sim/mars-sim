@@ -150,8 +150,12 @@ public class SpinningGlobe {
 	 * Creates a spinning Mars Globe
 	 */
    public Parent createMarsGlobe() {
-	   logger.info("createMarsGlobe() : ConditionalFeature.SCENE3D supported is " + Platform.isSupported(ConditionalFeature.SCENE3D));
-
+	   boolean support = Platform.isSupported(ConditionalFeature.SCENE3D);
+	   if (support)
+		   logger.info("3D features supported");
+	   else
+		   logger.info("3D features not supported");
+	   
        globe = new Mars3DGlobe();
        rotateGlobe();
        
