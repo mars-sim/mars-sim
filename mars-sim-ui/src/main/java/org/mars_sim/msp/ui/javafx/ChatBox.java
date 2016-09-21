@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -54,6 +55,9 @@ public class ChatBox extends BorderPane {
 
     protected boolean hasPerson = false;
 
+
+    protected String image = MainScene.class.getResource("/images/starfield.png").toExternalForm();
+    
     protected Label titleLabel;
     
     protected Person personCache;
@@ -66,7 +70,8 @@ public class ChatBox extends BorderPane {
     protected Equipment equipment;
     protected MainScene mainScene;
     
-    protected final TextArea textArea = new TextArea();
+    protected final TextArea textArea;
+    protected final JFXButton button;
     //protected final TextField textField = new TextField();
     protected final AutoFillTextBox autoFillTextBox;
     
@@ -82,22 +87,31 @@ public class ChatBox extends BorderPane {
     	// 2016-01-01 Added autoCompleteData
     	ObservableList<String> autoCompleteData = createAutoCompleteData();
         
-        titleLabel = new Label("   MarsNet");
+        titleLabel = new Label("  " + Msg.getString("ChatBox.title")); //$NON-NLS-1$
        	       
+        textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        textArea.setStyle("-fx-font: 11pt 'Corbel';");
-        textArea.setStyle("-fx-background-color: transparent"
+        textArea.setStyle("-fx-font: 11pt 'Corbel';"
+        		+ "-fx-background-color: black;" 
         		//+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+        		+ "-fx-text-fill: orange;"
         		);
+        
+        textArea.setStyle("-fx-background-image: url('" + image + "'); " +
+                   "-fx-background-position: center center; " +
+                   "-fx-background-repeat: stretch;");
         textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
   		
   		// 2016-01-01 Replaced textField with autoFillTextBox
         autoFillTextBox = new AutoFillTextBox(autoCompleteData);
         autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
-        autoFillTextBox.setStyle(//"-fx-background-color: transparent" +
-        		"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);");          
+        autoFillTextBox.setStyle(
+        		"-fx-background-color: grey" 
+        		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+        		+ "-fx-text-fill: white;"
+        		);          
 
         autoFillTextBox.setFilterMode(false);
         autoFillTextBox.getTextbox().addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
@@ -111,19 +125,23 @@ public class ChatBox extends BorderPane {
   		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
   		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel"); 			
  
-  		JFXButton button = new JFXButton("Broadcast".toUpperCase());
-		button.getStyleClass().add("button-raised");
+  		
+  		button = new JFXButton("Broadcast".toUpperCase());
         //MaterialDesignButton button = new MaterialDesignButton("Broadcast");
-        button.setTooltip(new Tooltip ("Click to broadcast"));
         //button.setPadding(new Insets(5, 5, 5, 5));
-        button.setStyle("-fx-font: bold 10pt 'Corbel';" +
+/*        button.setStyle("-fx-font: bold 10pt 'Corbel';" +
      		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
      		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
-     		   //"-fx-inner-border : transparent;" +  // if you don't want a button border.
+     		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
      		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
      		   "-fx-faint-focus-color : transparent;"  // if you don't want any focus ring.
      		   //"-fx-background-radius: 2px;"
      		   );
+*/
+		//button.getStyleClass().add("button-raised");
+		
+        button.setTooltip(new Tooltip ("Click or hit enter to broadcast"));
+
         button.setOnAction(e -> {
           	String text = autoFillTextBox.getTextbox().getText();
             if (text != "" && text != null && !text.trim().isEmpty()) {
@@ -141,6 +159,24 @@ public class ChatBox extends BorderPane {
         setTop(titleLabel);
         setCenter(textArea);
         setBottom(hbox);
+        
+        connect();
+    }
+     
+    
+    public void connect() {
+        textArea.appendText("<< Connection to MarsNet established >>" + System.lineSeparator());
+  		
+  		int rand = RandomUtil.getRandomInt(2);
+  		
+  		if (rand == 0)
+  			textArea.appendText("System : how can I help you ? h for help");
+  		else if (rand == 1)
+  			textArea.appendText("System : how may I assist you ? h for help");
+  		else if (rand == 2)
+  			textArea.appendText("System : Is there anything I can help ? h for help");
+
+  		textArea.appendText(System.lineSeparator() + System.lineSeparator());
     }
     
     
@@ -150,34 +186,69 @@ public class ChatBox extends BorderPane {
     // 2016-06-17 Added update() 
     public void update() {   
 
-        int theme = mainScene.getTheme();
-        if (theme == 6)
-        	titleLabel.setStyle("-fx-text-fill: white;"
+    	int theme = MainScene.getTheme();
+        if (theme == 6) {
+        	button.getStylesheets().clear();
+        	button.setStyle("-fx-text-fill: #3291D2;");
+        	titleLabel.getStylesheets().clear();
+        	titleLabel.setStyle("-fx-text-fill: #3291D2;"
         			+ " -fx-font: bold 12pt 'Corbel';"
-        			+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
+        			//+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
         			);
-        else if (theme == 7)
-            titleLabel.setStyle("-fx-text-fill: white;"
+        	textArea.getStylesheets().clear();
+            textArea.setStyle("-fx-background-image: url('" + image + "'); " +
+                    "-fx-background-position: center center; " +
+                    "-fx-background-repeat: stretch;");
+            textArea.setStyle("-fx-text-fill: #3291D2;"
+            			+ "-fx-background-color: #000000;" );
+        }
+        else if (theme == 7) {
+        	button.getStylesheets().clear();
+        	button.setStyle("-fx-text-fill: #E5AB00;");
+        	titleLabel.getStylesheets().clear();
+            titleLabel.setStyle("-fx-text-fill: #E5AB00;"
             		+ " -fx-font: bold 12pt 'Corbel';"
-            		+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
+            		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
             		);
-        else 
-            titleLabel.setStyle("-fx-text-fill: white;"
+        	textArea.getStylesheets().clear();
+            textArea.setStyle("-fx-background-image: url('" + image + "'); " +
+                    "-fx-background-position: center center; " +
+                    "-fx-background-repeat: stretch;");
+            textArea.setStyle("-fx-text-fill: #E5AB00;"
+        			+ "-fx-background-color: #000000;" );
+        }
+        else {
+        	button.getStylesheets().clear();
+        	button.setStyle("-fx-text-fill: #E5AB00;");
+        	titleLabel.getStylesheets().clear();
+            titleLabel.setStyle("-fx-text-fill: #E5AB00;"
             		+ " -fx-font: bold 12pt 'Corbel';"
-            		+ " -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 0 );"
+            		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
             		);
+        	textArea.getStylesheets().clear();
+            textArea.setStyle("-fx-background-image: url('" + image + "'); " +
+                    "-fx-background-position: center center; " +
+                    "-fx-background-repeat: stretch;");
+            textArea.setStyle("-fx-text-fill: #E5AB00;"
+        			+ "-fx-background-color: #000000;" );
+        }
         
+/*        
         textArea.appendText("<< Connection to MarsNet established >>" + System.lineSeparator());
   		
   		int rand = RandomUtil.getRandomInt(2);
+  		
   		if (rand == 0)
-  			textArea.appendText("System : how can I help you ? " + System.lineSeparator());
+  			textArea.appendText("System : how can I help you ? h for help");
   		else if (rand == 1)
-  			textArea.appendText("System : how may I assist you ? " + System.lineSeparator());
+  			textArea.appendText("System : how may I assist you ? h for help");
   		else if (rand == 2)
-  			textArea.appendText("System : Is there anything I can help ? " + System.lineSeparator());
+  			textArea.appendText("System : Is there anything I can help ? h for help");
 
+  		textArea.appendText(System.lineSeparator() + System.lineSeparator());
+*/
         
+  		textArea.positionCaret(textArea.getText().length());
     }
 
     public void closeChatBox() {
@@ -249,19 +320,24 @@ public class ChatBox extends BorderPane {
 	    //}
 	    return autoCompleteData;
 	}
-	   // public String checkGreetings(String text) {
+    
+	// public String checkGreetings(String text) {
     //	String result = null;
     //	return result;
 
     //2016-01-01 Added isInteger()
     public static boolean isInteger(String s, int radix) {
-        if(s.isEmpty()) return false;
-        for(int i = 0; i < s.length(); i++) {
-            if(i == 0 && s.charAt(i) == '-') {
-                if(s.length() == 1) return false;
-                else continue;
+        if (s.isEmpty()) 
+        	return false;
+        for (int i = 0; i < s.length(); i++) {
+            if (i == 0 && s.charAt(i) == '-') {
+                if(s.length() == 1) 
+                	return false;
+                else 
+                	continue;
             }
-            if(Character.digit(s.charAt(i),radix) < 0) return false;
+            if  (Character.digit(s.charAt(i),radix) < 0) 
+            	return false;
         }
         return true;
     }

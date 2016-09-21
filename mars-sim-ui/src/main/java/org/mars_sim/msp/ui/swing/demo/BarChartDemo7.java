@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.swing;
+package org.mars_sim.msp.ui.swing.demo;
 
 /* ===========================================================
 * JFreeChart : a free chart library for the Java(tm) platform
@@ -38,6 +38,8 @@ package org.mars_sim.msp.ui.swing;
 * 27-Jan-2004 : Version 1, based on BarChartDemo.java (DG);
 *
 */
+
+// enable maven jfreechart artifact
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -107,6 +109,7 @@ public class BarChartDemo7 extends ApplicationFrame {
        setContentPane(chartPanel);
    }
 
+
    /**
     * Returns a sample dataset.
     * 
@@ -151,13 +154,14 @@ public class BarChartDemo7 extends ApplicationFrame {
        
    }
    
+
    /**
     * Creates a sample chart.
     * 
     * @param dataset  the dataset.
     * 
     * @return The chart.
-    */
+ */
    private JFreeChart createChart(final CategoryDataset dataset) {
        
        // create the chart...
@@ -239,7 +243,8 @@ public class BarChartDemo7 extends ApplicationFrame {
        return chart;
        
    }
-   
+ 
+
    // ****************************************************************************
    // * JFREECHART DEVELOPER GUIDE                                               *
    // * The JFreeChart Developer Guide, written by David Gilbert, is available   *
@@ -268,3 +273,4 @@ public class BarChartDemo7 extends ApplicationFrame {
    }
 
 }
+

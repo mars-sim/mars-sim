@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.mars_sim.msp.ui.javafx;
-
-import org.mars_sim.msp.ui.javafx.demo.Dash;
+package org.mars_sim.msp.ui.javafx.demo;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.SnapshotParameters;

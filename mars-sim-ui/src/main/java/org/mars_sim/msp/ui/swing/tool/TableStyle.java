@@ -15,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -70,7 +71,22 @@ public class TableStyle extends ZebraJTable{
 	 */
     public static JTable setTableStyle(JTable table) {
 
-	   	ZebraJTable z = null;
+		//SwingUtilities.invokeLater(() -> {	
+			// 2016-06-17 Added checking for OS. 
+			// Note: NIMROD theme lib doesn't work on linux 
+			if (MainScene.OS.equals("linux")) {
+			   	ZebraJTable z = new ZebraJTable(table.getModel());
+				return (JTable) z;
+			}
+			else 
+				return editHeader(table);
+		//});
+		
+    }
+	
+    public static JTable editHeader(JTable table) {
+
+	   	ZebraJTable z = new ZebraJTable(table.getModel());
 
     	JTableHeader header = null;
     	if (table.getTableHeader() != null)
@@ -218,11 +234,8 @@ public class TableStyle extends ZebraJTable{
 		table.setGridColor(grid);
 		table.setBorder(BorderFactory.createLineBorder(border, 1));
 
-		z = new ZebraJTable(table.getModel());
-
 		return (JTable) z;
     }
-
 
 }
 

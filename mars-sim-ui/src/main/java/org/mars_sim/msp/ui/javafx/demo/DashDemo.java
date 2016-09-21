@@ -5,8 +5,6 @@
  */
 package org.mars_sim.msp.ui.javafx.demo;
 
-import org.mars_sim.msp.ui.javafx.FrostedPanel;
-
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

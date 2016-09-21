@@ -68,7 +68,7 @@ public class Flyout extends Region {
     private Timeline tl = new Timeline();
     private DoubleProperty loc = new SimpleDoubleProperty();
     private ReadOnlyObjectWrapper<Flyout.Status> flyOutStatus = new ReadOnlyObjectWrapper<>();
-    private Interpolator interpolator = Interpolator.SPLINE(0.5, 0.1, 0.1, 0.5);
+    private Interpolator interpolator = Interpolator.SPLINE(0.8, 0.1, 0.1, 0.8);
     
     private Node anchor;
     private Node flyoutContents;
@@ -81,8 +81,8 @@ public class Flyout extends Region {
     private boolean flyoutShowing;
     
     /** The default style of the background */
-    private String styleString = "-fx-background-color: rgba(0, 0, 0, 0.5);"  +
-                	"-fx-background-radius: 0px;";
+    private String userNodeContainerStyle = "-fx-background-color: rgba(0, 0, 0, 0.5);"  +
+                	"-fx-background-radius: 1px;";
     
     //private MainScene mainScene;
     
@@ -167,13 +167,13 @@ public class Flyout extends Region {
         if(!shownOnce) {
             clipContainer = new StackPane();
             
-            userNodeContainer.setStyle(styleString);
+            userNodeContainer.setStyle(userNodeContainerStyle);
             userNodeContainer.setManaged(false);
             userNodeContainer.setVisible(true);
             userNodeContainer.getChildren().add(flyoutContents);
             
             clipContainer.getChildren().add(userNodeContainer);
-            clipContainer.setStyle("-fx-background-color: rgba(0, 0, 0, 0.0)");
+            clipContainer.setStyle("-fx-background-color: rgba(0, 0, 0, 0.5)");
             clipContainer.layoutBoundsProperty().addListener((v, o, n) -> {
                 userNodeContainer.resize(n.getWidth(), n.getHeight());
             });
@@ -217,7 +217,7 @@ public class Flyout extends Region {
      * @param s
      */
     public void setFlyoutStyle(String s) {
-        this.styleString = s;
+        this.userNodeContainerStyle = s;
     }
     
     /**

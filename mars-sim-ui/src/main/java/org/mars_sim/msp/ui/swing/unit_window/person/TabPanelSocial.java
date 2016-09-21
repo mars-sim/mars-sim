@@ -84,13 +84,14 @@ implements ListSelectionListener {
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		relationshipTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(70);
+		
 		relationshipTable.setCellSelectionEnabled(true);
 		relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		relationshipTable.getSelectionModel().addListSelectionListener(this);
 
 		// 2015-09-24 Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		//relationshipTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		//relationshipTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
@@ -177,9 +178,11 @@ implements ListSelectionListener {
 			Collection<?> newKnownPeople = manager.getAllKnownPeople(person);
 			if (!knownPeople.equals(newKnownPeople)) {
 				knownPeople = newKnownPeople;
-				fireTableDataChanged();
+				//fireTableDataChanged();
 			}
-			else fireTableDataChanged();
+			//else fireTableDataChanged();
+			
+			fireTableDataChanged();
 		}
 
 		private String getRelationshipString(double opinion) {

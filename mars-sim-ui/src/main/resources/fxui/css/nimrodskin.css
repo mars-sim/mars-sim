@@ -27,6 +27,22 @@
 }
 
 
+.button-raised{
+    -fx-padding: 0.7em 0.57em;
+    -fx-font-size: 14px;
+    -fx-button-type: RAISED;
+    -fx-background-color: #F9BF00;
+    -fx-pref-width: 200;
+    -fx-text-fill: WHITE;
+    -fx-font: bold 10pt 'Corbel'; 
+    -fx-shadow-highlight-color : transparent; 
+    -fx-outer-border : transparent;
+    -fx-inner-border : transparent; 
+    -fx-focus-color: transparent; 
+    -fx-faint-focus-color : transparent;  
+}
+
+
 .menu-bar,
 .menu-bar:focused,
 .menu-bar:selected:focused {
@@ -65,64 +81,6 @@
 
 .tab {
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
-}
-/*
-.tool-bar:horizontal {
-	-fx-font-weight: normal;
-	-fx-font-family: "Noto";
-	-fx-font-size: 9pt;
-	-fx-background-color: transparent, transparent, transparent, transparent;
-	-fx-border-width: 1;
-	-fx-border-style: dotted;
-	-fx-padding: 4px 4px 4px 4px;
-}
-
-.toggle-button,
-.toggle-button:focused,
-.toggle-button:selected:focused {
-	-fx-base: #E5AB00;
-    -fx-background-color: linear-gradient(#E5AB00, #F9BF00);
-    -fx-text-fill: white;
-    -fx-border-color: #ADAB89;
-    -fx-padding: 1 1 1 1;
-   	-fx-font-weight: normal;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
-}
-
-.toggle-button:selected{
-    -fx-background-color: grey;
-    -fx-text-fill: #E5AB00;
-}
-
-.toggle-button .text {
-    -fx-text-fill: white; /* text color inside the button 
-   	-fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
-}
-
-.button {
-	-fx-background-color: linear-gradient(#F9BF00, #E5AB00);
-    -fx-text-fill: white;  text color inside the button 
-    -fx-border-color: #ADAB89;
-    -fx-border-radius: 2;
-    -fx-padding: 1 1 1 1;
-   	-fx-font-weight: normal;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
-
-}
-*/
-
-.button .text {
-    -fx-text-fill: white; /* text color inside the button */
-   	-fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
-}
-
-.button:selected{
-    -fx-background-color: white;
-    -fx-text-fill: #E5AB00;
-}
-
-.button:armed {
-/*    -fx-background-color: transparent, rgba(0,0,0,.1), rgba(0,0,0,.1), rgba(0,0,0,.2); */
 }
 
 .table-view {

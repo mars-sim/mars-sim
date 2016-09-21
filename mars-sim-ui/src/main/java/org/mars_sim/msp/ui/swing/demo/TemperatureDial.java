@@ -1,6 +1,7 @@
 
-package org.mars_sim.msp.ui.swing.tool;
+package org.mars_sim.msp.ui.swing.demo;
 
+// enable maven jfreechart artifact
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -120,3 +121,4 @@ public class TemperatureDial  extends JPanel  {
 		dataset.setValue(new Double(value));
 	}
 }
+

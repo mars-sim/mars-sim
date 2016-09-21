@@ -138,7 +138,6 @@ import org.reactfx.util.Timer;
  * housing desktop swing node, javaFX UI, pull-down menu and icons for tools.
  */
 public class MainScene {
-
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
@@ -161,6 +160,7 @@ public class MainScene {
 	private int processCpuLoad;
 	//private int systemCpuLoad;
 
+	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	public static boolean menuBarVisible = false;
 	private boolean isMarsNetOpen = false;
@@ -475,6 +475,8 @@ public class MainScene {
 
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
+        flag = false;
+        
         EffectUtilities.makeDraggable(flyout.getStage(), chatBox);
 					
 		// Create ControlFX's StatusBar
@@ -726,7 +728,6 @@ public class MainScene {
 			//notificationPane.getStyleClass().add(getClass().getResource("/fxui/css/oliveskin.css").toExternalForm());
 			lookAndFeelTheme = "LightTabaco";
 			
-
 		} else if (theme == 2) { // burgundy red
 			cssColor = "/fxui/css/burgundyskin.css";
 			updateThemeColor(2, Color.rgb(140,0,26), Color.YELLOW, cssColor); // ORANGERED
@@ -774,44 +775,13 @@ public class MainScene {
 		menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		
 		// Note : menu bar color
-		//orange theme : F4BA00
-		//blue theme : 3291D2
+		// orange theme : F4BA00
+		// blue theme : 3291D2
 		
 		String color = txtColor.toString().replace("0x", "");
-		//System.out.println("txtColor is " + txtColor.toString());
-		//System.out.println("btnTxtColor is " + btnTxtColor.toString());
-		//System.out.println("cssFile is " + cssFile);
-		//System.out.println("color is " + color);
-
-		
-		//marsNode.getFXDesktopPane().getStylesheets().add(getClass().getResource(cssColor).toExternalForm());
-		
-		//memUsedText.setTextFill(txtColor);
-		//memMaxText.setFill(txtColor);
 		timeText.setTextFill(txtColor);
 		lastSaveText.setTextFill(txtColor);
-		
-		//systemCpuLoadText.setFill(txtColor);
-		//processCpuLoadText.setFill(txtColor);
-
 		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-
-		//memBtn.setTextFill(btnTxtColor);
-		//clkBtn.setTextFill(btnTxtColor);
-		//cpuBtn.setTextFill(btnTxtColor);
-		//marsNetButton.setTextFill(btnTxtColor);
-
-		//memBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
-		//clkBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
-		//cpuBtn.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
-		//marsNetButton.setStyle("-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );");
-		
-		chatBox.getTitleLabel().setStyle("-fx-text-fill: white;" +
-				" -fx-font: bold 12pt 'Corbel';" + 
-        		//+ " -fx-effect: dropshadow( one-pass-box , " + cssColor + " , 8 , 0.0 , 2 , 0 );"
-        		"-fx-background-color: transparent;" //+
-				//"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
-        		);
 
 		if (theme == 6) {
 			menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
@@ -822,41 +792,10 @@ public class MainScene {
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_36.png"))));
 		}
 		
+		chatBox.update();    
 		
-/*		
-        menubarButton.setStyle(
-        		"-fx-background-color: transparent;" +
-      		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
-      		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
-      		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
-      		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
-      		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
-      		   //"-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-     		   "-fx-base : derive(#" + color + ", 80%);" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-      		   // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
-      		   //"-fx-font-size: 80px;"
-            	"-fx-background-radius: 2px;"
- //           	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
-      		   );
-        
-        marsNetButton.setStyle(
-        		"-fx-background-color: transparent;" +
-       		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
-       		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
-       		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
-       		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
-       		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
-       		   //"-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-    		   "-fx-base : derive(#" + color + ", 80%);" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-    		   // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
-       		   //"-fx-font-size: 80px;"
-             	"-fx-background-radius: 2px;"
-            	//"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );"
-  //          	"-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"           	
-       		   );
-*/        
-        
 	}
+	
 	/**
 	 * Creates and starts the earth timer
 	 */
@@ -902,24 +841,20 @@ public class MainScene {
         marsNetButton.setTooltip(new Tooltip ("Toggle on and off MarsNet"));
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
         marsNetButton.setOnAction(e -> {
+            if (!flag) 
+            	chatBox.update();
             if (marsNetButton.isSelected()) {
                 flyout.flyout();
                 // 2016-06-17 Added update() to show the initial system greeting
-                chatBox.update();
                 chatBox.getAutoFillTextBox().getTextbox().clear();
                 chatBox.getAutoFillTextBox().getTextbox().requestFocus();
             } else {
             	// 2016-06-17 Added closeChatBox() to display a disconnection msg 
-            	chatBox.closeChatBox();
+            	//chatBox.closeChatBox();
                 flyout.dismiss();
                 ToggleMarsNetButton(false);
             }
-            //if (!isMarsNetOpen) {
-            //    flyout.flyout();
-            //    isMarsNetOpen = true;
-            //} else {
-            //    flyout.dismiss();
-            //}
+
         });
        
         return flyout;

@@ -181,8 +181,7 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(person);
 
 		// Create radiation table
-		radiationTable = new ZebraJTable(radiationTableModel){
-		
+		radiationTable = new ZebraJTable(radiationTableModel) {	
 		    //2016-04-15 Implemented radiation table header tool tips
 		    protected JTableHeader createDefaultTableHeader() {
 		        return new JTableHeader(columnModel) {
@@ -201,15 +200,15 @@ extends TabPanel {
 		        };
 		    }
 		};
-		
 		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
-
-		
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
 		//radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
-		
+		// 2015-06-08 Added sorting
+		radiationTable.setAutoCreateRowSorter(true);
+		radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+
 
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(radiationTable);

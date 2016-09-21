@@ -26,6 +26,15 @@
 	-fx-font-family: "Noto";
 }
 
+.button-raised{
+    -fx-padding: 0.7em 0.57em;
+    -fx-font-size: 14px;
+    -fx-button-type: RAISED;
+    -fx-background-color: rgb(77,102,204);
+    -fx-pref-width: 200;
+    -fx-font: bold 10pt 'Corbel'; 
+ }
+
 .tab {
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
 }
@@ -73,37 +82,6 @@
     -fx-background-color: #3291D2;
 }
 
-
-.toggle-button,
-.toggle-button:focused,
-.toggle-button:selected:focused {
-    -fx-background-color: #3291D2;
-	-fx-text-fill: white; /* #178aff; text color inside the button */
-    -fx-border-color: transparent; /* #663300; */
-    -fx-border-radius: 2;
-    -fx-padding: 1 1 1 1;
-	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
-}
-
-.toggle-button:selected{
-    -fx-background-color: white;
-    -fx-text-fill: #3291D2;
-}
-
-.button{
-	-fx-background-color: #3291D2;
-	-fx-text-fill: white; /* #178aff; text color inside the button */
-    -fx-border-color: transparent; /* #663300; */
-    -fx-border-radius: 2;
-    -fx-padding: 1 1 1 1;
-   	-fx-font-weight: normal;
-   	-fx-effect: innershadow( three-pass-box , rgba(0,0,0,0.7) , 6, 0.0 , 0 , 2 );
-}
-
-.button:selected{
-    -fx-background-color: white;
-    -fx-text-fill: #3291D2;
-}
 
 .table-view {
 	-fx-table-cell-border-color:derive(-fx-base,+10%);
