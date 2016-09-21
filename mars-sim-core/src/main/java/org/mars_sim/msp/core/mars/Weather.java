@@ -96,11 +96,13 @@ implements Serializable {
 	private static Map<Integer, DustStorm> localDustStormMap = new ConcurrentHashMap<>();
 	private static Map<Integer, DustStorm> dustDevilMap = new ConcurrentHashMap<>();
 
+	private Simulation sim = Simulation.instance();
 	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
 	private TerrainElevation terrainElevation;
 	private MasterClock masterClock;
 	private OrbitInfo orbitInfo;
+	private Mars mars;
 
 
 	/** Constructs a Weather object */
@@ -124,8 +126,8 @@ implements Serializable {
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;
 
 		if (masterClock == null) {
-			if (Simulation.instance().getMasterClock() != null)
-				masterClock = Simulation.instance().getMasterClock();
+			if (sim.getMasterClock() != null)
+				masterClock = sim.getMasterClock();
 		}
 		//orbitInfo = Simulation.instance().getMars().getOrbitInfo();
 	}
@@ -283,7 +285,7 @@ implements Serializable {
 	public double calculateAirPressure(Coordinates location) {
 		// Get local elevation in meters.
 		if (terrainElevation == null)
-			terrainElevation = Simulation.instance().getMars().getSurfaceFeatures().getTerrainElevation();
+			terrainElevation = sim.getMars().getSurfaceFeatures().getTerrainElevation();
 
 		double elevation = terrainElevation.getElevation(location) ; // in km since getElevation() return the value in km
 
@@ -358,7 +360,7 @@ implements Serializable {
 	public double calculateTemperature(Coordinates location) {
 
 		if (surfaceFeatures == null)
-			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+			surfaceFeatures = sim.getMars().getSurfaceFeatures();
 
 		if (terrainElevation == null)
 			terrainElevation = surfaceFeatures.getTerrainElevation();
@@ -560,8 +562,11 @@ implements Serializable {
 	    int newSol = MarsClock.getSolOfYear(marsClock);
 		if (newSol != solCache) {
 
+			if (mars == null)
+				mars = sim.getMars();
 			if (orbitInfo == null)
-				orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+				orbitInfo = mars.getOrbitInfo();
+			
 			double L_s = orbitInfo.getL_s();
 			// When L_s = 250, Mars is at perihelion--when the sun is closed to Mars.
 			// Mars has the highest liklihood of producing a global dust storm

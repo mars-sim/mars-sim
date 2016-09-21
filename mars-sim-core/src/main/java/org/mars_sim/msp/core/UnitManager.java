@@ -117,7 +117,7 @@ public class UnitManager implements Serializable {
 	private PersonConfig personConfig;
 	private SettlementConfig settlementConfig;
 	private RelationshipManager relationshipManager;// = Simulation.instance().getRelationshipManager();
-	private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
+	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
 	private VehicleConfig vehicleConfig;// = SimulationConfig.instance().getVehicleConfiguration();
 
 
@@ -138,7 +138,7 @@ public class UnitManager implements Serializable {
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 
-		emotionJSONConfig = new EmotionJSONConfig();
+		//emotionJSONConfig = new EmotionJSONConfig();
 		relationshipManager = Simulation.instance().getRelationshipManager();
 
 
@@ -795,7 +795,7 @@ public class UnitManager implements Serializable {
 			person.getPreference().initializePreference();
 
 			// 2015-12-12 Added setEmotionalStates()
-			person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
+			//person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
 
 		}
 		//System.out.println("b4 calling createConfiguredRelationships() in UnitManager");
@@ -1841,7 +1841,7 @@ public class UnitManager implements Serializable {
 		personConfig = null;
 		settlementConfig = null;
 		relationshipManager = null;
-		emotionJSONConfig = null;
+		//emotionJSONConfig = null;
 		vehicleConfig = null;
 	}
 }

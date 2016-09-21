@@ -65,6 +65,9 @@ public class BrowserJFX {
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(BrowserJFX.class.getName());
 
+    public static final String MAP_FILE = "map";
+    public static final String GLOBE_FILE = "globe";
+			
     public static final String EVENT_TYPE_CLICK = "click";
     public static final String EVENT_TYPE_MOUSEOVER = "mouseover";
     public static final String EVENT_TYPE_MOUSEOUT = "mouseclick";
@@ -175,8 +178,8 @@ public class BrowserJFX {
     		textInputCache = input; 
 
     		if (input.equals("ticket") 
-    				|| input.equals("map1")
-    				|| input.equals("globe1")) {
+    				|| input.equals(MAP_FILE)
+    				|| input.equals(GLOBE_FILE)) {
     			parseInput(input, 0);
     		}
     		else if (input.contains("file:/")) {

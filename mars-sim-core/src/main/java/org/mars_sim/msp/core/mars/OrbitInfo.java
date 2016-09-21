@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -77,8 +78,9 @@ implements Serializable {
 
 	/** The point on the surface of Mars perpendicular to the Sun as Mars rotates. */
 	private Coordinates sunDirection;
-
+	private Simulation sim = Simulation.instance();
 	private MarsClock marsClock;
+	private EarthClock earthClock;// = sim.getMasterClock().getEarthClock();
 	//private cosineSolarZenithAngleMapCacheTime;
 
 	/** Constructs an {@link OrbitInfo} object */
@@ -95,7 +97,10 @@ implements Serializable {
 		//if (cosineSolarZenithAngleMap == null) {
         //	cosineSolarZenithAngleMap = new ConcurrentHashMap<>();
         //}
+		
+		
 	}
+	
 
 	/**
 	 * Adds time to the orbit.
@@ -159,7 +164,10 @@ implements Serializable {
 	}
 
 	public double computePerihelion() {
-		L_s_perihelion = 251D + 0.00645 * (Simulation.instance().getMasterClock().getEarthClock().getYear() - 2000);
+		if (earthClock == null)
+			earthClock = sim.getMasterClock().getEarthClock();
+		
+		L_s_perihelion = 251D + 0.00645 * (earthClock.getYear() - 2000);
 		L_s_aphelion = L_s_perihelion - 180D;
 		return L_s_perihelion;
 	}
@@ -221,7 +229,7 @@ implements Serializable {
 	public double getCosineSolarZenithAngle(Coordinates location) {
 
 		if (marsClock == null)
-			marsClock = Simulation.instance().getMasterClock().getMarsClock();
+			marsClock = sim.getMasterClock().getMarsClock();
 
         //if (!marsClock.equals(cosineSolarZenithAngleMapCacheTime)) {
         //    cosineSolarZenithAngleMap.clear();

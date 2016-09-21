@@ -82,6 +82,7 @@ implements ClockListener, Serializable {
 
     /** Default save filename. */
     public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
+    public final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
 
     /** Default save filename extension. */
     public final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
@@ -602,14 +603,16 @@ implements ClockListener, Serializable {
         Simulation sim = instance();
         sim.halt();
 
+		//2016-09-15 Added lastSave
+    	lastSave = new SystemDateTime().getDateTimeStr();
+
         // Use default file path if file is null.
         /* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
          * exist */
         if (file == null) {
-			//2016-09-15 Added lastSave
-        	lastSave = new SystemDateTime().getDateTimeStr();
             // 2015-01-08 Added isAutosave
             if (isAutosave) {
+            	// case 1: autosave
                 String autosaveFilename = lastSave
                 		+ "_sol" + masterClock.getMarsClock().getTotalSol() 
                 		+ "_build" + BUILD
@@ -618,21 +621,31 @@ implements ClockListener, Serializable {
                 logger.info("Autosaving " + autosaveFilename);
             }
 
-            else {         	
+            else {  
+            	// case 2: default save
                 file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
                 logger.info("Saving " + DEFAULT_FILE + DEFAULT_EXTENSION);
             }
                 
-            // if the autosave directory does not exist, create one now
+            // if the autosave/default save directory does not exist, create one now
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
 
         }
+        
+        else {
+        	// case 3: save_as
+        	logger.info("Saving as " + file);
+        }
 
         //ObjectOutputStream p = null;
         ObjectOutputStream oos = null;
-
+        FileInputStream fis = null;
+        FileOutputStream fos = new FileOutputStream(file);
+        XZOutputStream xzout = null;
+        File uncompressed = null;
+        
         try {
  /*
         	//oos = new ObjectOutputStream(new FileOutputStream(file));
@@ -664,8 +677,8 @@ implements ClockListener, Serializable {
             //     (2) http://tukaani.org/xz/xz-javadoc/
             
             // STEP 1: combine all objects into one single uncompressed file, namely "default"
-            File default_uncompressed = new File(DEFAULT_DIR, DEFAULT_FILE);            
-        	oos = new ObjectOutputStream(new FileOutputStream(default_uncompressed));           
+            uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
+        	oos = new ObjectOutputStream(new FileOutputStream(uncompressed));           
  
             // Store the intransient objects.
             oos.writeObject(simulationConfig);
@@ -684,14 +697,15 @@ implements ClockListener, Serializable {
             
             // STEP 2: convert the uncompressed file into a fis
             // set up fos and outxz
-            FileInputStream fis = new FileInputStream(default_uncompressed);          
+            fis = new FileInputStream(uncompressed);          
  
             //File xzFilename = new File(DEFAULT_DIR, DEFAULT_FILE + ".xz");           
-            FileOutputStream fos = new FileOutputStream(file);
+            //fos = new FileOutputStream(file);
+            
 			LZMA2Options options = new LZMA2Options();		
 			// Set to 6. For mid sized archives (>8mb), 7 works better. 		
 			options.setPreset(6); 
-			XZOutputStream xzout = new XZOutputStream(fos, options);
+			xzout = new XZOutputStream(fos, options);
 			
 			// STEP 3: set up buffer and create outxz and save as a .sim file
 			byte[] buf = new byte[8192];
@@ -700,22 +714,28 @@ implements ClockListener, Serializable {
 			   xzout.write(buf, 0, size);	
 			
 			xzout.finish();				
-			fis.close();
-			xzout.close();
-			default_uncompressed.delete();
-			default_uncompressed = null;
-			oos = null;
+			
 
         } catch (IOException e){
             logger.log(Level.WARNING, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
-            //throw e;
+            throw e;
             
         //} finally {
         //    if (oos != null) {
         //        oos.close();
         //    }
+        //}
         }
 
+        uncompressed.delete(); // cannot be deleted;
+		uncompressed = null;
+        //fis.close(); // fis closed automatically
+        //fos.close(); // fos closed automatically
+        if (oos != null) {
+            oos.close();
+        } 
+		xzout.close();
+		 
         sim.proceed();
 
 		// 2015-12-18 Check if it was previously on pause       

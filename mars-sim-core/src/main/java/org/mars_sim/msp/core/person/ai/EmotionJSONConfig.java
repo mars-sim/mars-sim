@@ -7,12 +7,11 @@
 
 package org.mars_sim.msp.core.person.ai;
 
-
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
  
@@ -22,7 +21,10 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
  
-public class EmotionJSONConfig {
+public class EmotionJSONConfig implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
  
     public static final String JSON_FILE="/json/emotions.json";
     
@@ -55,9 +57,9 @@ public class EmotionJSONConfig {
     
     private Settler settler;
     
-    public static void main(String[] args) {
-			new EmotionJSONConfig();
-    }
+    //public static void main(String[] args) {
+	//		new EmotionJSONConfig();
+    //}
     
     public EmotionJSONConfig(){
     	

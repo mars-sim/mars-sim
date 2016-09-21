@@ -1239,7 +1239,7 @@ public class MainScene {
 	 *            Should the user be allowed to override location?
 	 */
 	public void saveSimulation(int type) {
-		logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's saveSimulation() is on " + Thread.currentThread().getName() + " Thread");
 
 		//showSavingStage();
 		
@@ -1333,7 +1333,7 @@ public class MainScene {
 	 */
 	// 2015-01-08 Added autosave
 	private void saveSimulationProcess(int type) {
-		logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's saveSimulationProcess() is on " + Thread.currentThread().getName() + " Thread");
 		//showSavingStage();	
 		fileLocn = null;
 		dir = null;
@@ -1361,6 +1361,7 @@ public class MainScene {
 		} else if (type == SAVE_AS) {
 			Platform.runLater(() -> {
 				FileChooser chooser = new FileChooser();
+				dir = Simulation.DEFAULT_DIR;
 				File userDirectory = new File(dir);
 				chooser.setTitle(title); // $NON-NLS-1$
 				chooser.setInitialDirectory(userDirectory);
@@ -1371,7 +1372,7 @@ public class MainScene {
 				chooser.getExtensionFilters().add(simFilter); // , allFilter);
 				File selectedFile = chooser.showSaveDialog(stage);
 				if (selectedFile != null)
-					fileLocn = selectedFile; // + Simulation.DEFAULT_EXTENSION;
+					fileLocn = selectedFile;// + Simulation.DEFAULT_EXTENSION;
 				else
 					return;
 				
