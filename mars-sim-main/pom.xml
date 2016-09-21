@@ -56,7 +56,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 					</sign>
 					<jnlp>
 						<outputFile>mars-sim.jnlp</outputFile>
-						<mainClass>org.mars_sim.msp.MarsProject</mainClass>
+						<mainClass>org.mars_sim.msp.javafx.MarsProjectFX</mainClass>
 						
 <!--					<resources>
 							<property name="jnlp.packEnabled" value="true"/>
@@ -79,6 +79,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
         		</configuration>
       		</plugin>
             <plugin>
+            <!-- https://maven.apache.org/plugins/maven-assembly-plugin/ -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.5</version>
@@ -103,9 +104,10 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>jdeb</artifactId>
-                <groupId>org.vafer</groupId>
-                <version>1.4</version>
+            <!-- see https://github.com/tcurdt/jdeb -->
+				<groupId>org.vafer</groupId>
+				<artifactId>jdeb</artifactId>
+				<version>1.5</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -214,7 +216,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>0.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>		    
 	</dependencies>
 	
