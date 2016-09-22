@@ -71,10 +71,10 @@ public class MasterClock implements Serializable { // Runnable,
 
 	/** Flag for loading a new simulation. */
 	private transient volatile boolean loadSimulation;
-	/** Flag for saving a simulation. */
-	private transient volatile boolean saveSimulation;
+	/** Mode for saving a simulation. */
+	private transient volatile int saveType;
 	/** Flag for auto-saving a simulation. */
-	private transient volatile boolean autosaveSimulation;
+	//private transient volatile boolean autosaveSimulation;
 	/** Flag for ending the simulation program. */
 	private transient volatile boolean exitProgram;
 
@@ -278,8 +278,8 @@ public class MasterClock implements Serializable { // Runnable,
      * Sets the save simulation flag and the file to save to.
      * @param file save to file or null if default file.
      */
-    public void saveSimulation(File file) {
-        saveSimulation = true;
+    public void saveSimulation(int type, File file) {
+        saveType = type;
         //System.out.println("file is "+ file);
         this.file = file;
     }
@@ -289,26 +289,30 @@ public class MasterClock implements Serializable { // Runnable,
      * @param file autosave to file or null if default file.
      */
     // 2015-01-08 Added autosaveSimulation
-    public void autosaveSimulation() {
-        autosaveSimulation = true;
-        this.file = null;
-    }
+    //public void autosaveSimulation() {
+    //    autosaveSimulation = true;
+    //    this.file = null;
+    //}
 
     /**
      * Sets the autosave simulation flag and the file to save to.
      * @param file autosave to file or null if default file.
      */
     // 2016-08-01 Added autosaveSimulation
-    public void autosaveSimulation(File file) {
-        autosaveSimulation = true;
-        this.file = file;
-    }
+    //public void autosaveSimulation(File file) {
+    //    autosaveSimulation = true;
+    //    this.file = file;
+    //}
     /**
      * Checks if in the process of saving a simulation.
      * @return true if saving simulation.
      */
     public boolean isSavingSimulation() {
-        return saveSimulation || autosaveSimulation;
+    	if (saveType != 0)
+    		return true;
+    	else
+    		return false;
+        //return saveSimulation || autosaveSimulation;
     }
 
     /**
@@ -316,9 +320,9 @@ public class MasterClock implements Serializable { // Runnable,
      * @return true if autosaving simulation.
      */
     // 2015-01-08 Added isAutosavingSimulation
-    public boolean isAutosavingSimulation() {
-        return autosaveSimulation;
-    }
+    //public boolean isAutosavingSimulation() {
+    //    return autosaveSimulation;
+    //}
 
     /**
      * Sets the exit program flag.
@@ -559,37 +563,17 @@ public class MasterClock implements Serializable { // Runnable,
             logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
         }
 
-        if (saveSimulation) {
-            // Save the simulation to a file.
+        if (saveType != 0) {
+            // Save the simulation as default.sim
             try {
-                sim.saveSimulation(file, false);                
+                sim.saveSimulation(saveType, file);                
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Could not save the simulation with file = "
+                logger.log(Level.SEVERE, "Could not save the simulation as " 
                         + (file == null ? "null" : file.getPath()), e);
                 e.printStackTrace();
             }
             
-            saveSimulation = false;
-        }
-
-        else if (autosaveSimulation) {
-            // Autosave the simulation to a file.
-            try {
-            	if (file == null)
-            		sim.saveSimulation(file, false);
-            	else
-                    sim.saveSimulation(file, true);
-            	
-            } catch (IOException e) {
-
-                //logger.log(Level.SEVERE, "Could not autosave the simulation with file = "
-                //        + (file == null ? "null" : file.getPath()), e);
-                logger.log(Level.SEVERE, "Could not autosave the simulation", e);
-
-                e.printStackTrace();
-            }
-            
-            autosaveSimulation = false;
+            saveType = 0;
         }
 
         else if (loadSimulation) {

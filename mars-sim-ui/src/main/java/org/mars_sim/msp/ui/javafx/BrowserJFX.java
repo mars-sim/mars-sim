@@ -120,7 +120,7 @@ public class BrowserJFX {
             engine = view.getEngine();          
             history = engine.getHistory();
             
-        	logger.info("Web Engine supported : " + engine.getUserAgent());
+        	//logger.info("Web Engine supported : " + engine.getUserAgent());
 
         });
         

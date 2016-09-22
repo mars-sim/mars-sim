@@ -146,11 +146,7 @@ public class MainScene {
 	private static final int EDGE_DETECTION_PIXELS_Y = 35;
 	private static final int EDGE_DETECTION_PIXELS_X = 200;
 	
-	// Categories of loading and saving simulation
-	public static final int OTHER = 0; // load other file
-	public static final int SAVE_DEFAULT = 1;
-	public static final int AUTOSAVE = 2;
-	public static final int SAVE_AS = 3; // save as other file
+
 	private static int theme = 7; // 7 is the standard nimrod theme
 
 	private int memMax;
@@ -1349,18 +1345,18 @@ public class MainScene {
 		}
 
 		// 2015-01-25 Added autosave
-		if (type == AUTOSAVE) {
+		if (type == Simulation.AUTOSAVE) {
 			dir = Simulation.AUTOSAVE_DIR;
 			// title = Msg.getString("MainWindow.dialogAutosaveSim"); don't need
-			masterClock.autosaveSimulation();
+			masterClock.saveSimulation(Simulation.AUTOSAVE, null);
 		
-		} else if (type == SAVE_DEFAULT) {
+		} else if (type == Simulation.SAVE_DEFAULT) {
 			//System.out.println("SAVE_DEFAULT or SAVE_AS");
 			dir = Simulation.DEFAULT_DIR;
 			title = Msg.getString("MainScene.dialogSaveSim");
-			masterClock.saveSimulation(fileLocn);
+			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
 			
-		} else if (type == SAVE_AS) {
+		} else if (type == Simulation.SAVE_AS) {
 			Platform.runLater(() -> {
 				FileChooser chooser = new FileChooser();
 				dir = Simulation.DEFAULT_DIR;
@@ -1378,7 +1374,7 @@ public class MainScene {
 				else
 					return;
 				
-				masterClock.saveSimulation(fileLocn);
+				masterClock.saveSimulation(Simulation.SAVE_AS, fileLocn);
 
 			});
 		}
@@ -1735,10 +1731,8 @@ public class MainScene {
 		UIConfig.INSTANCE.saveFile(this);
 
 		// Save the simulation.
-		//Simulation sim = Simulation.instance();
-		//MasterClock clock = Simulation.instance().getMasterClock();
 		try {
-			masterClock.saveSimulation(null);
+			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
 						
 			while (masterClock.isSavingSimulation())
 				TimeUnit.MILLISECONDS.sleep(500L);

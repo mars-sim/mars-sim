@@ -292,8 +292,22 @@ implements ActionListener {
 
 			// 2015-10-30 Added checking if user already submitted rating or submitted a job reassignment that's still not being reviewed
 			checkingJobRating(list);
-			// 2015-10-30 Added checking for the status of Job Reassignment
-			checkingJobReassignment(person, list);
+			
+			dead = person.getPhysicalCondition().isDead();
+			deathInfo = person.getPhysicalCondition().getDeathDetails();
+
+			// 2016-09-21 Checked if the person is dead
+			if (dead) {
+				jobCache = deathInfo.getJob();
+				jobComboBox.setEnabled(false);
+				roleTF.setText("N/A");
+				starRater.setSelection(0);
+				starRater.setEnabled(false);
+
+			}
+			else 
+				// 2015-10-30 Added checking for the status of Job Reassignment
+				checkingJobReassignment(person, list);
 		}
 
 

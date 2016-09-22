@@ -596,15 +596,15 @@ public class MainWindow extends JComponent {
 		if (isAutosave) {
 			desktop.disposeAnnouncementWindow();
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.autosavingSim")); //$NON-NLS-1$
-			clock.autosaveSimulation();
+			clock.saveSimulation(Simulation.AUTOSAVE, null);
 		}
 		else {
 			//desktop.disposeAnnouncementWindow();
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
-			clock.saveSimulation(fileLocn);
+			clock.saveSimulation(Simulation.SAVE_DEFAULT, fileLocn);
 		}
 
-		while (clock.isSavingSimulation() || clock.isAutosavingSimulation()) {
+		while (clock.isSavingSimulation()) {// || clock.isAutosavingSimulation()) {
 			try {
 				Thread.sleep(100L);
 			} catch (InterruptedException e) {
@@ -656,7 +656,7 @@ public class MainWindow extends JComponent {
 		// Save the simulation.
 		Simulation sim = Simulation.instance();
 		try {
-			sim.getMasterClock().saveSimulation(null);
+			sim.getMasterClock().saveSimulation(Simulation.SAVE_DEFAULT, null);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
 			e.printStackTrace(System.err);

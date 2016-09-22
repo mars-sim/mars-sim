@@ -222,6 +222,7 @@ extends TabPanel {
 */
             }
         };
+        
         table.getColumnModel().getColumn(1).setCellRenderer(r);
 
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));

@@ -106,6 +106,14 @@ implements ClockListener, Serializable {
 
 	public static long autosave_minute;// = 15;
 
+	// Categories of loading and saving simulation
+	public static final int OTHER = 0; // load other file
+	public static final int SAVE_DEFAULT = 1; // save as default.sim
+	public static final int SAVE_AS = 2; // save with other name
+	public static final int AUTOSAVE_DEFAULT = 3; // save as default.sim
+	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
+	
+	
 	public final static int NUM_THREADS = Runtime.getRuntime().availableProcessors();
 
 	public final static String MARS_SIM_DIRECTORY = ".mars-sim";
@@ -589,9 +597,10 @@ implements ClockListener, Serializable {
      * @param file the file to be saved to.
      * @throws Exception if simulation could not be saved.
      */
-    public void saveSimulation(File file, boolean isAutosave) throws IOException {
-        //logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
+    public void saveSimulation(int type, File file) throws IOException {
+        logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
     	//System.out.println("file is " + file);
+        
     	// 2015-12-18 Check if it was previously on pause
 		boolean previous = masterClock.isPaused();
 		// Pause simulation.
@@ -606,40 +615,39 @@ implements ClockListener, Serializable {
 		//2016-09-15 Added lastSave
     	lastSave = new SystemDateTime().getDateTimeStr();
 
-        // Use default file path if file is null.
-        /* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
-         * exist */
-        if (file == null) {
-            // 2015-01-08 Added isAutosave
-            if (isAutosave) {
-            	// case 1: autosave
-                String autosaveFilename = lastSave
-                		+ "_sol" + masterClock.getMarsClock().getTotalSol() 
-                		+ "_build" + BUILD
-                		+ DEFAULT_EXTENSION;
-                file = new File(AUTOSAVE_DIR, autosaveFilename);
-                logger.info("Autosaving " + autosaveFilename);
-            }
-
-            else {  
-            	// case 2: default save
-                file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
-                logger.info("Saving " + DEFAULT_FILE + DEFAULT_EXTENSION);
-            }
-                
-            // if the autosave/default save directory does not exist, create one now
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-
+        // 2016-09-22 Use type to differentiate in what name/dir it is saved
+        if (type == 1) {
+            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+            logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
+ 
         }
         
-        else {
-        	// case 3: save_as
+        else if (type == 2) {
         	logger.info("Saving as " + file);
+        	
+        }
+        
+        else if (type == 3) {
+            file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
+            logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
+        	
         }
 
-        //ObjectOutputStream p = null;
+        else if (type == 4) {
+            String autosaveFilename = lastSave
+            		+ "_sol" + masterClock.getMarsClock().getTotalSol() 
+            		+ "_r" + BUILD
+            		+ DEFAULT_EXTENSION;
+            file = new File(AUTOSAVE_DIR, autosaveFilename);
+            logger.info("Autosaving as " + autosaveFilename);
+        	
+        }
+
+        // if the autosave/default save directory does not exist, create one now
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        
         ObjectOutputStream oos = null;
         FileInputStream fis = null;
         FileOutputStream fos = new FileOutputStream(file);
@@ -647,30 +655,6 @@ implements ClockListener, Serializable {
         File uncompressed = null;
         
         try {
- /*
-        	//oos = new ObjectOutputStream(new FileOutputStream(file));
-            FileOutputStream fos = new FileOutputStream(file);
-            GZIPOutputStream gz = new GZIPOutputStream(fos);
-            oos = new ObjectOutputStream(gz);
-			oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(file)));
-
-            // Store the intransient objects.
-            oos.writeObject(SimulationConfig.instance());
-            oos.writeObject(malfunctionFactory);
-            oos.writeObject(mars);
-            oos.writeObject(missionManager);
-            oos.writeObject(relationshipManager);
-            oos.writeObject(medicalManager);
-            oos.writeObject(scientificStudyManager);
-            oos.writeObject(transportManager);
-            oos.writeObject(creditManager);
-            oos.writeObject(unitManager);
-            oos.writeObject(masterClock);
-
-            oos.flush();
-            oos.close();
-            oos = null;
- */
         	
             // 2016-03-22 Replace gzip with xz compression (based on LZMA2)
             // See (1) http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
@@ -680,7 +664,7 @@ implements ClockListener, Serializable {
             uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
         	oos = new ObjectOutputStream(new FileOutputStream(uncompressed));           
  
-            // Store the intransient objects.
+            // Store the in-transient objects.
             oos.writeObject(simulationConfig);
             oos.writeObject(malfunctionFactory);
             oos.writeObject(mars);
@@ -696,12 +680,7 @@ implements ClockListener, Serializable {
             oos.close();
             
             // STEP 2: convert the uncompressed file into a fis
-            // set up fos and outxz
-            fis = new FileInputStream(uncompressed);          
- 
-            //File xzFilename = new File(DEFAULT_DIR, DEFAULT_FILE + ".xz");           
-            //fos = new FileOutputStream(file);
-            
+            fis = new FileInputStream(uncompressed);           
 			LZMA2Options options = new LZMA2Options();		
 			// Set to 6. For mid sized archives (>8mb), 7 works better. 		
 			options.setPreset(6); 
@@ -1021,7 +1000,7 @@ implements ClockListener, Serializable {
 		if (useDefaultName) {
 			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.saveSimulation(null)));
+						ae -> masterClock.saveSimulation(AUTOSAVE_DEFAULT, null)));
 			//autosaveTimer = FxTimer.runLater(
     		//		java.time.Duration.ofMinutes(60 * autosave_minute),
     		//        () -> masterClock.saveSimulation(null));
@@ -1031,7 +1010,7 @@ implements ClockListener, Serializable {
 		else {
 			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.autosaveSimulation()));
+						ae -> masterClock.saveSimulation(AUTOSAVE, null)));
 			//autosaveTimer = FxTimer.runLater(
     		//		java.time.Duration.ofMinutes(60 * autosave_minute),
     		//        () -> masterClock.autosaveSimulation());
