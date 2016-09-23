@@ -212,7 +212,7 @@
 		<!-- long, however. (See "stress-breakdown-chance" in people.xml.) -->
 		<medical-complaint name="Panic Attack">
 			<seriousness value="30" />
-			<recovery-time value="2.0" />
+			<recovery-time value="1.0" />
 			<probability value="0.0" />
 			<performance-percent value="40.0" />
 			<bed-rest-recovery value="false" />
@@ -268,7 +268,7 @@
 
 <!-- Future:
 	1. Medium cut ?
-	2. Ex;osion ?
+	2. 
 	3.
 	4.
 -->

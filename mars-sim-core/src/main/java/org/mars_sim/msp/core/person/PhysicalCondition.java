@@ -113,6 +113,8 @@ implements Serializable {
     /** Performance factor 0,0 to 1.0. */
     private double performance;
 
+    private double inclination_factor;
+    
     private double personStarvationTime;
 
     // 2015-02-23 Added hygiene
@@ -803,19 +805,21 @@ implements Serializable {
             int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
             int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
             
-            double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 50D;
+            // 0 (strong) to 1 (weak)
+            double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
             
             double chance = 0;
             
-            try {              
+            try {    
+            	// 0 to 100
             	chance = personConfig.getStressBreakdownChance();                
             } 
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
             }
             
-            // If random breakdown, add panic attack.
-            if (RandomUtil.lessThanRandPercent(chance * time * resilienceModifier)) {
+            //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
+            if (RandomUtil.lessThanRandPercent(chance / 5D * resilienceModifier)) {
 /*            	
                	if (fatigue < 200) 
             		fatigue = fatigue * 4;
@@ -824,17 +828,21 @@ implements Serializable {
             	else if (fatigue < 600) 
             		fatigue = fatigue * 1.2;
 */           	               	                	
-            	int rand = RandomUtil.getRandomInt(1);
+            	double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
             	
-            	if (rand == 0) {
+            	if (rand < 0.5) {
             		                               				
             		//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
                     if (panicAttack != null) {
-                        addMedicalComplaint(panicAttack);
+                    	if (inclination_factor > -.5)
+                    		inclination_factor = inclination_factor - .05;
+                        
+                    	addMedicalComplaint(panicAttack);
                         //illnessEvent = true;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         logger.info(person.getName() + " has a panic attack.");
                         //System.out.println(person.getName() + " has a panic attack.");
+                                           
                     }
                     else 
                     	logger.log(Level.SEVERE, "Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
@@ -843,7 +851,9 @@ implements Serializable {
             		
                     //Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
                     if (depression != null) {
-                        addMedicalComplaint(depression);
+                    	if (inclination_factor < .5)
+                    		inclination_factor = inclination_factor + .05;
+                    	addMedicalComplaint(depression);
                         //illnessEvent = true;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         logger.info(person.getName() + " has an episode of depression.");
@@ -880,7 +890,7 @@ implements Serializable {
             int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
             
             // a person with high endurance will be less likely to be collapse
-            double modifier = (double) (100 - endurance * .6 - strength *.4) / 10D;
+            double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
 
             double chance = 0;
             
@@ -891,7 +901,7 @@ implements Serializable {
                 logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
             }
             
-            if (RandomUtil.lessThanRandPercent(chance * time * modifier)) {
+            if (RandomUtil.lessThanRandPercent(chance /5D * modifier)) {
             //Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 /*                                	
              	if (stress < 10) 

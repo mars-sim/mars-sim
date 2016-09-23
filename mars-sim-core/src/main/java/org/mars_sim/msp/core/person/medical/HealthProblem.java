@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.medical;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.EventType;
@@ -248,6 +249,22 @@ public class HealthProblem implements Serializable {
         if ((state == DEGRADING) || (state == TREATMENT)) {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
+            
+            // 2016-09-22 Randomized the duration and varied it according to the complaint type
+            if (illness.getType() == ComplaintType.COLD
+            		|| illness.getType() == ComplaintType.FEVER)
+            	duration = duration + duration * RandomUtil.getRandomDouble(.5)
+            				- duration * RandomUtil.getRandomDouble(.5);
+            else if (illness.getType() == ComplaintType.HEARTBURN)
+            	duration = duration + duration * RandomUtil.getRandomDouble(.4)
+							- duration * RandomUtil.getRandomDouble(.4);
+            else if (illness.getType() == ComplaintType.FLU)
+            	duration = duration + duration * RandomUtil.getRandomDouble(.3)
+							- duration * RandomUtil.getRandomDouble(.3);
+            else
+            	duration = duration + duration * RandomUtil.getRandomDouble(.2)
+							- duration * RandomUtil.getRandomDouble(.2);
+            
             timePassed = 0D;
             if (duration > 0D) {
             	setState(RECOVERING);
