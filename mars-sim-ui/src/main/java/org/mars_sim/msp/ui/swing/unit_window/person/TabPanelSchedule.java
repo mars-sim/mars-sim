@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Box;
@@ -82,7 +83,7 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
 	//private int sol;
-	private int todayCache;
+	private int todayCache = 1;
 	private int today;
 	private int start;
 	private int end;
@@ -110,7 +111,7 @@ extends TabPanel {
 	//private ModernBalloonStyle style;
 
 	private List<OneTask> tasks;
-	private List<Object> solList;
+	private List<Integer> solList;
 	private Map <Integer, List<OneTask>> schedules;
 
 	private Person person;
@@ -238,13 +239,28 @@ extends TabPanel {
 
     	today = taskSchedule.getSolCache();
     	todayInteger = (Integer) today ;
-    	solList = new CopyOnWriteArrayList<Object>();
-
+    	solList = new CopyOnWriteArrayList<Integer>();
+    		
+		//solList.clear();
+		//int max = todayCache;
+		for (int key : schedules.keySet() ) {
+			System.out.println("key is " + key);
+			//if (key > max)
+			//	max = key;
+			solList.add(key);
+		}
+		//OptionalInt max = solList.stream().mapToInt((x) -> x).max();
+		//solList.add(max + 1);
+       	if (!solList.contains(today))
+       		solList.add(today);
+       	
+/*
 		int size = schedules.size();
 		for (int i = 0 ; i < size + 1; i++ )
 			// size + 1 is needed to add today into solList
 			solList.add(i + 1);
-
+*/
+		
     	// Create comboBoxModel
     	Collections.sort(solList, Collections.reverseOrder());
     	comboBoxModel = new DefaultComboBoxModel<Object>();
@@ -278,7 +294,7 @@ extends TabPanel {
 		comboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	selectedSol = (Integer) comboBox.getSelectedItem();
-            	if ( selectedSol != null ) // e.g. when first loading up
+            	if (selectedSol != null) // e.g. when first loading up
             		scheduleTableModel.update(hideRepeated, (int) selectedSol);
             	if (selectedSol == todayInteger)
             		// Binds comboBox with realTimeUpdateCheckBox
@@ -379,22 +395,41 @@ extends TabPanel {
 				desktop.updateToolWindowLF();
 			}
 */
+    		
+    		
 		}
 
     	today = taskSchedule.getSolCache();
     	todayInteger = (Integer) today ;
+		//System.out.println("today is " + today);
        	selectedSol = (Integer) comboBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
 
-       	// Update the sol box at the beginning of a new sol
-    	if (today != todayCache) {
-    		int size = schedules.size();
-			solList.clear();
-    		for (int i = 0 ; i < size + 1; i++ ) {
-        		// size + 1 is needed for starting on sol 1
-    			solList.add(i + 1);
+       	// Update the sol combobox at the beginning of a new sol
+    	if (today != todayCache) { 
+    		solList.clear();
+           	if (!solList.contains(today))
+           		solList.add(today);         	
+    		//int max = todayCache;
+    		for (int key : schedules.keySet() ) {
+    			//System.out.println("key is " + key);
+    			//if (key > max) max = key;
+    			solList.add(key);
     		}
-
-	    	Collections.sort(solList, Collections.reverseOrder());
+    		//OptionalInt max = solList.stream().mapToInt((x) -> x).max();
+    		//solList.add(max + 1);
+           	if (!solList.contains(today))
+           		solList.add(today);
+/*
+ * 			// Inserting and deleting is not working below           	
+    		int size = solList.size();
+    		//System.out.println("size is " + size);
+    		int max = TaskSchedule.NUM_SOLS;
+    		if (size > max) {
+    			//System.out.println("Removing a Sol ");	
+    			solList.remove(0); // remove the first item at index 0
+    		}
+*/    				    	
+           	Collections.sort(solList, Collections.reverseOrder());            
 	    	DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
 			solList.forEach(s -> newComboBoxModel.addElement(s));
 
@@ -420,7 +455,7 @@ extends TabPanel {
        		isRealTimeUpdate = false;
        		realTimeBox.setSelected(false);
        	}
-
+       	
 		// Detects if the Hide Repeated box has changed. If yes, call for update
 		if (hideRepeatedCache != hideRepeated) {
 			hideRepeatedCache = hideRepeated;
@@ -429,6 +464,7 @@ extends TabPanel {
 
 		if (isRealTimeUpdate)
 			scheduleTableModel.update(hideRepeated, todayInteger);
+
 	}
 
     public void setViewer(PlannerWindow w) {
@@ -470,7 +506,7 @@ extends TabPanel {
 		        //Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		        //component.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 				if (value == null) {
-					setText( prompt );
+					setText(prompt);
 					//this.setForeground(Color.orange);
 			        //this.setBackground(new Color(184,134,11));
 					return this;
@@ -640,5 +676,35 @@ extends TabPanel {
 		}
 
 	}
+	
+	/**
+	 * Prepares for deletion.
+	 */
+	public void destroy() {
+		if (comboBox != null) 
+			comboBox.removeAllItems();
+		if (comboBoxModel != null) 
+			comboBoxModel.removeAllElements();
+        if (tasks != null) 
+        	tasks.clear();
+        if (solList != null) 
+        	solList.clear();  
+        if (schedules != null) 
+        	schedules.clear(); 
+        table = null;
+        hideBox = null;
+    	realTimeBox = null;
+    	shiftTF = null;
+    	shiftLabel = null;
+		scheduleTableModel = null;
+		fillColorCache = null;
+		person = null;
+		robot = null;
+		taskSchedule = null;
+		plannerWindow = null;
+		desktop = null;
+		balloonToolTip = null;
+	}
+	
 
 }

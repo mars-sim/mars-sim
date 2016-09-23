@@ -725,10 +725,11 @@ implements Serializable {
         	logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                 " due to zero performance rating (fatigue, stress, hunger, etc.)");
         
-            // 2016-02-28 Calling getNewAction(true, false)
+            // 2016-02-28 Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
             try {
             	logger.info(person.getName() + " is abandoning the action of exiting the airlock.");
             	person.getMind().getNewAction(true, false);
+            	
             } catch (Exception e) {
                 logger.log(Level.WARNING, person + " could not get new action", e);
                 e.printStackTrace(System.err);

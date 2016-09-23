@@ -216,7 +216,7 @@ implements Serializable {
 		else if (newSiteProfit > 0D) {
 
 		    if (Simulation.getUseGUI())  { // false) { //
-				//System.out.println("Case 1 : the site has not been picked yet and the construction was started by settlement with a starting member");
+				logger.info("Case 1 : the site has not been picked yet and the construction was started by settlement with a starting member");
 		    	// if GUI is in use
 		    	constructionSite = new ConstructionSite(settlement);//, manager);
 		    	constructionSite.setSkill(constructionSkill);
@@ -405,7 +405,7 @@ implements Serializable {
 
             if (Simulation.getUseGUI())  {
 	        	// if GUI is in use
-            	//System.out.println("Case 2 : the site has been picked and the construction is started by users");
+            	logger.info("Case 2 : the site has been picked and the construction is started by users");
 		    	constructionSite.setSkill(bestConstructionSkill);
 		    	constructionSite.setSitePicked(true);
 		    	constructionSite.setStageInfo(stageInfo);
@@ -419,7 +419,7 @@ implements Serializable {
 
         else {
             logger.log(Level.INFO, "New construction site added at " + settlement.getName());
-			//System.out.println("Case 3 : site has NOT been picked yet and the construction is manually started by users");
+            logger.info("Case 3 : site has NOT been picked yet and the construction is manually started by users");
 
             //boolean check = false;
             //if (check) {

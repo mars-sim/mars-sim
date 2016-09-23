@@ -130,7 +130,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                             int numPeople = person.getSettlement().getCurrentPopulationNum();
                             int limit = (int)(numSites - numPeople/24);
                            
-                            result/= Math.pow(10, 2 + limit);
+                            result = result/Math.pow(10, 2 + limit) /5D;
 /*                            
                             if (numPeople < 24)
                             	result/= Math.pow(10, numSites)/50;

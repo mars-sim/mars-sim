@@ -26,6 +26,11 @@ public class TaskSchedule implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/*
+	 * Set the number of Sols to be logged (to limit the memory usage & saved file size)
+	 */
+	public static final int NUM_SOLS = 100;
+	
 	public static final int ON_CALL_START = 0;
 	public static final int ON_CALL_END = 999;
 	public static final int A_START = 0;
@@ -92,16 +97,20 @@ public class TaskSchedule implements Serializable {
 
 		int startTime = (int) clock.getMillisol();
 		int solElapsed = clock.getTotalSol();
-		if (solElapsed != solCache) {
-        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
-        	// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
+		if (solElapsed != solCache) {   
+    		//2016-09-22 Removed the sol log from LAST_SOL ago 
+        	if (solElapsed > NUM_SOLS)
+        		schedules.remove(solElapsed - NUM_SOLS);	
+			// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
         	schedules.put(solCache, todaySchedule);
+        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed); 
+        	solCache = solElapsed;
         	// create a new schedule for the new day
     		todaySchedule = new CopyOnWriteArrayList<OneTask>();
-
-        	solCache = solElapsed;
     		// 2015-10-21 Added recordYestersolTask()
         	recordYestersolLastTask();
+        	
+
 		}
 
 		// add this task
@@ -122,22 +131,7 @@ public class TaskSchedule implements Serializable {
      */
     // 2015-10-21 Added recordYestersolLastTask()
     public void recordYestersolLastTask() {
- /*
-		Task currentTask = null;
 
-		if (person != null) {
-			currentTask = person.getMind().getTaskManager().getTask();
-		}
-		else if (robot != null) {
-			currentTask = robot.getBotMind().getTaskManager().getTask();
-		}
-
-		if (currentTask != null) {
-			//String doAction = currentTask.getDescription();
-			//String name = currentTask.getName();
-			//recordTask(name, doAction, 1);
-		}
-*/
     	if (solCache > 1) {
     		// Load the last task from yestersol's schedule
     		List<OneTask> yesterSolschedule = schedules.get(solCache-1);
@@ -145,11 +139,12 @@ public class TaskSchedule implements Serializable {
     		int size = yesterSolschedule.size();
 	    		if (size != 0) {
 	    			OneTask lastTask = yesterSolschedule.get(yesterSolschedule.size()-1);
-	    			// Save this yestersol task as the first task on today's schedule
+	    			// Carry over and save the last yestersol task as the first task on today's schedule
 	    			todaySchedule.add(new OneTask(0, lastTask.getTaskName(), lastTask.getDescription(), lastTask.getPhase()));
 	    		}
     		}
     	}
+
     }
 
 	/**
@@ -377,4 +372,10 @@ public class TaskSchedule implements Serializable {
 		}
 	}
 */
+	
+    public void destroy() {
+    	person = null;
+    	clock  = null;
+    	robot  = null;
+    }
 }

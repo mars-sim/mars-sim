@@ -503,6 +503,11 @@ public abstract class UnitWindow extends JInternalFrame {
 	/**
 	 * Prepares unit window for deletion.
 	 */
-	public void destroy() {}
-
+	public void destroy() {
+		namePanel = null;
+        if (tabPanels != null) 
+        	tabPanels.clear();
+		tabPanels = null;
+		centerPanel = null;
+	}
 }

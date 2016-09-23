@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * The JobHistory class stores a person's a list of job types/positions over time
@@ -26,7 +27,9 @@ public class JobHistory implements Serializable  {
     private int solCache;
 	private Person person;
 	private MarsClock clock;
-
+	private MasterClock masterClock;
+	
+	
     /** The person's job history. */
     //private Map<MarsClock, JobAssignment> jobHistoryMap;
 
@@ -40,6 +43,7 @@ public class JobHistory implements Serializable  {
 
 		//jobAssignmentList.add(new JobAssignment(startClock, newJobStr, initiator, status, approvedBy));
 
+		masterClock = Simulation.instance().getMasterClock();
 	}
 
 	//public Map<MarsClock, JobAssignment> getJobHistoryMap() {
@@ -82,7 +86,7 @@ public class JobHistory implements Serializable  {
         	//System.out.println("JobHistory.java : status is Pending");
 
         	if (clock == null)
-        		clock = Simulation.instance().getMasterClock().getMarsClock();
+        		clock = masterClock.getMarsClock();
 			jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
         	jobAssignmentList.get(last).setSolSubmitted();
 			//System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
@@ -101,7 +105,7 @@ public class JobHistory implements Serializable  {
     	   	//System.out.println("JobHistory.java : addJob() : jobAssignmentList was empty. Adding the first job");
     		//MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
         	if (clock == null)
-        		clock = Simulation.instance().getMasterClock().getMarsClock();
+        		clock = masterClock.getMarsClock();
     		jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
       		//System.out.println("JobHistory.java : newJobStr = " + newJobStr);
     		//System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
@@ -114,7 +118,7 @@ public class JobHistory implements Serializable  {
     		String lastJobStr = jobAssignmentList.get(last).getJobType();
     		//System.out.println("JobHistory.java : newJobStr = " + newJobStr + "   lastJobStr = " + lastJobStr);
         	if (clock == null)
-        		clock = Simulation.instance().getMasterClock().getMarsClock();
+        		clock = masterClock.getMarsClock();
     		jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
         	jobAssignmentList.get(last).setSolSubmitted();
     		//System.out.println("JobHistory.java : newJobStr = " + newJobStr);
@@ -133,7 +137,7 @@ public class JobHistory implements Serializable  {
         	   	//System.out.println("JobHistory.java : addJob() : approving the job reassignment as dictated by settlement's need ");
         		//MarsClock startClock = Simulation.instance().getMasterClock().getInitialMarsTime();
             	if (clock == null)
-            		clock = Simulation.instance().getMasterClock().getMarsClock();
+            		clock = masterClock.getMarsClock();
         	   	jobAssignmentList.add(new JobAssignment(MarsClock.getDateTimeStamp(clock), newJobStr, initiator, status, approvedBy));
             	jobAssignmentList.get(last).setSolSubmitted();
         	   	//System.out.println("JobHistory.java : jobAssignmentList's size is now " + jobAssignmentList.size());
@@ -145,7 +149,7 @@ public class JobHistory implements Serializable  {
             	//System.out.println("JobHistory.java : set status to approved");
         		jobAssignmentList.get(last).setStatus(JobAssignmentType.APPROVED);
             	if (clock == null)
-            		clock = Simulation.instance().getMasterClock().getMarsClock();
+            		clock = masterClock.getMarsClock();
             	//jobAssignmentList.get(last).setTimeAuthorized(clock);
             	//System.out.println("JobHistory.java : Just approved by " + approvedBy);
             	//System.out.println("JobHistory : addJob() : new status is " + jobAssignmentList.get(last).getStatus());
@@ -161,5 +165,13 @@ public class JobHistory implements Serializable  {
     
     public void setSolCache(int value) {
     	solCache = value;
+    }
+    
+    public void destroy() {
+    	person = null;
+    	clock  = null;
+    	masterClock  = null;
+        if (jobAssignmentList != null) 
+        	jobAssignmentList.clear();
     }
 }

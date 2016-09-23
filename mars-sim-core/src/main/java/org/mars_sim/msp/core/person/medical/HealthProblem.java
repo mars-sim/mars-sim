@@ -183,15 +183,15 @@ public class HealthProblem implements Serializable {
     public String getStateString() {
         switch(state) {
             case DEGRADING: 
-                return "degrading";
+                return "Degrading";
             case TREATMENT:
-                return "treatment";
+                return "Treatment";
             case RECOVERING:
-                return "recovering";
+                return "Recovering";
             case CURED:
-                return "cured";
+                return "Cured";
             case DEAD:
-                return "dead";
+                return "Dead";
             default:
                 return "";
         }
@@ -395,5 +395,11 @@ public class HealthProblem implements Serializable {
      */
     public boolean isEnvironmentalProblem() {
         return Simulation.instance().getMedicalManager().isEnvironmentalComplaint(illness);
+    }
+    
+
+    public void destroy() {
+    	illness = null;
+        sufferer = null;
     }
 }
