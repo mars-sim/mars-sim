@@ -372,36 +372,38 @@ implements VehicleOperator, MissionMember, Serializable {
 
     	if (ra == null) {
 
-    		if (sponsor.equals(ReportingAuthorityType.CNSA.toString())) {
+    		if (ReportingAuthorityType.CNSA.toString().equals(sponsor)) {
     			ra = new CNSAMissionControl();
     			ra.setMissionAgenda(new FindingMineral());
     			
-    		} else if (sponsor.equals(ReportingAuthorityType.CSA.toString())) {
+    		} else if (ReportingAuthorityType.CSA.toString().equals(sponsor)) {
     	        ra = new CSAMissionControl();
     	        ra.setMissionAgenda(new AdvancingSpaceKnowledge());   
 
-    		} else if (sponsor.equals(ReportingAuthorityType.ESA.toString())) {
+    		} else if (ReportingAuthorityType.ESA.toString().equals(sponsor)) {
     			ra = new ESAMissionControl();
     			ra.setMissionAgenda(new DevelopingSpaceActivity());
 
-    		} else if (sponsor.equals(ReportingAuthorityType.ISRO.toString())) {
-     	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
+    		} else if (ReportingAuthorityType.ISRO.toString().equals(sponsor)) {
     	        ra = new CSAMissionControl();
     	        ra.setMissionAgenda(new DevelopingAdvancedTechnology());   
 
-    		} else if (sponsor.equals(ReportingAuthorityType.JAXA.toString())) {
+    		} else if (ReportingAuthorityType.JAXA.toString().equals(sponsor)) {
     			ra = new ESAMissionControl();
     			ra.setMissionAgenda(new ResearchingSpaceApplication());
      			
-    		} else if (sponsor.equals(ReportingAuthorityType.NASA.toString())) {
+    		} else if (ReportingAuthorityType.NASA.toString().equals(sponsor)) {
      	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
     	        ra = new NASAMissionControl();
     	        ra.setMissionAgenda(new FindingLife());   
      	        
-    		} else {//if (sponsor.equals(ReportingAuthorityType.MARS_SOCIETY)) 
+    		} else if (ReportingAuthorityType.MARS_SOCIETY.toString().equals(sponsor)) { 
 	    		ra = new MarsSocietyMissionControl();
 	    		ra.setMissionAgenda(new SettlingMars());
-	    		
+    		}
+    		else {
+    		    // No reporting authority.
+    		    ra = null;
     		}
     	}
     }

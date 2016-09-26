@@ -72,12 +72,18 @@ extends TabPanel {
 		infoPanel.add(sponsorNameLabel);
 
 		// Prepare sponsor label
-		ReportingAuthorityType sponsor = person.getReportingAuthority().getOrg();
-		JTextField sponsorTF = new JTextField(sponsor+""); // Conversion.capitalize(sponsor)
+		JTextField sponsorTF = new JTextField();
+		ReportingAuthorityType sponsor = null;
+		if (person.getReportingAuthority() != null) {
+		    sponsor = person.getReportingAuthority().getOrg();
+		    sponsorTF.setText(sponsor+""); // Conversion.capitalize(sponsor)
+		}
 		sponsorTF.setEditable(false);
 		sponsorTF.setColumns(16);
 		sponsorTF.setCaretPosition(0);
-		sponsorTF.setToolTipText(person.getReportingAuthority().getToolTipStr());
+		if (person.getReportingAuthority() != null) {
+		    sponsorTF.setToolTipText(person.getReportingAuthority().getToolTipStr());
+		}
 		//JLabel sponsorLabel = new JLabel(sponsor, JLabel.RIGHT);
 		infoPanel.add(sponsorTF);
 
