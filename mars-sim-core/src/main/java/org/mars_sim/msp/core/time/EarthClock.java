@@ -43,7 +43,7 @@ implements Serializable {
 	private final GregorianCalendar cal;
 
 	// Data members
-	private final SimpleDateFormat formatter;
+	private final SimpleDateFormat formatter, formatter2;
 	private final DateFormat formatter_millis;
 	//private final DateTimeFormatter dtFormatter_millis;
 
@@ -65,7 +65,9 @@ implements Serializable {
 		// Initialize formatter
 		formatter = new SimpleDateFormat("yyyy-MMM-dd  HH:mm:ss '(UT)'");
 		formatter.setTimeZone(zone);
-
+		formatter2 = new SimpleDateFormat("yyyy-MMM-dd  HH:mm '(UT)'");
+		formatter2.setTimeZone(zone);
+		
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
 		cal.clear();
@@ -265,6 +267,17 @@ implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Returns the date/time formatted in a string
+	 * @return date/time formatted in a string. ex "2055-May-06 03:37 (UT)"
+	 */
+	//2016-09-24 Added getTimeStamp2()
+	public synchronized String getTimeStamp2() {
+		String result = formatter2.format(cal.getTime());// + " (UT)";
+		if (result == null) result = "0";
+		return result;
+	}
+	
 	/**
 	 * Returns the date formatted in a string
 	 * @return date formatted in a string. ex "2055-May-06"

@@ -50,6 +50,8 @@ implements Serializable {
     /** default serial id. */
     private static Logger logger = Logger.getLogger(Walk.class.getName());
 
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = -.2D;
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.walk"); //$NON-NLS-1$
@@ -80,7 +82,7 @@ implements Serializable {
      * @param person the person performing the task.
      */
     public Walk(Person person) {
-        super(NAME, person, false, false, 0D, false, 0D);
+        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
         //this.person = person;
 
         // Initialize data members.

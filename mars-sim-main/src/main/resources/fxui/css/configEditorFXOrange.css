@@ -21,12 +21,14 @@
 	-fx-arc-height:20px;
 }
 */
+/*
 .button {
+	
     -fx-button-type: RAISED;	
     -fx-padding: 2 15 2 15;
 	-fx-font-size: 15.0px;
 	-fx-base: white;
-	-fx-background: orange;
+	-fx-background: white;
 	-fx-focus-color: #f78e3d;
 	-fx-control-inner-background: #FFFFFF;
 	-fx-text-base-color: #FFFFFF;
@@ -38,11 +40,11 @@
 .button:focused {
 	-fx-background-color: orange;
 }
-
+*/
 .button:hover {
 	-fx-focus-color: #f78e3d;
 	-fx-stroke-width: 5;
-	-fx-background-color: orange;
+	-fx-background-color: #E9D66B;
 }
 
 .button:pressed {
@@ -105,7 +107,7 @@
 #startButton:hover {
 	-fx-focus-color: #f78e3d;
 	-fx-stroke-width: 5;
-	-fx-background-color: white;
+	-fx-background-color: #E9D66B;
 }
 
 #startButton:focused {

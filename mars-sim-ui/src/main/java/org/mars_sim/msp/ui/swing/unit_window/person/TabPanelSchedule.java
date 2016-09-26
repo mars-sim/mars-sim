@@ -244,7 +244,7 @@ extends TabPanel {
 		//solList.clear();
 		//int max = todayCache;
 		for (int key : schedules.keySet() ) {
-			System.out.println("key is " + key);
+			//System.out.println("key is " + key);
 			//if (key > max)
 			//	max = key;
 			solList.add(key);

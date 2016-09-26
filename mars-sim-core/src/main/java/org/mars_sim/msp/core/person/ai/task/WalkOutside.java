@@ -62,7 +62,7 @@ implements Serializable {
     private static final double VERY_SMALL_DISTANCE = .00001D;
 
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .5D;
+    private static final double STRESS_MODIFIER = .3D;
 
     /** The base chance of an accident per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .001;

@@ -520,6 +520,7 @@ implements Serializable, LocalBoundedObject {
 		this.manual = manual;
 	}
 
+	// for triggering the alertDialog()
 	public boolean getSitePicked() {
 		return isSitePicked;
 	}

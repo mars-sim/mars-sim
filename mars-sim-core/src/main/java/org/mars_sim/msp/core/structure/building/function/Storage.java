@@ -268,12 +268,15 @@ implements Serializable {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);
+	    	
 	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
+	     		// TODO: how to report it only 3 times and quit the reporting ?
 	    		//logger.warning("No more " + name);
 	    		result = false;
 	    	}
 	    	else if (amountStored < requestedAmount) {
 	     		//requestedAmount = amountStored;
+	     		// TODO: how to report it only 3 times and quit the reporting ?
 	    		//logger.warning("Just ran out of " + name);
 	    		result = false;
 	    	}

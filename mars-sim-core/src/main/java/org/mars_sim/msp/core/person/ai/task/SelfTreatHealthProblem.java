@@ -52,7 +52,7 @@ public class SelfTreatHealthProblem extends Task implements Serializable {
             "Task.phase.treatingHealthProblem")); //$NON-NLS-1$
     
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = 1D;
+    private static final double STRESS_MODIFIER = .5D;
     
     // Data members.
     private MedicalAid medicalAid;

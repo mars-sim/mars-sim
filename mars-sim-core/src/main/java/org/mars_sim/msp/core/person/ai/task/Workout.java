@@ -41,7 +41,7 @@ implements Serializable {
 
     // Static members
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -1D;
+    private static final double STRESS_MODIFIER = -.75D;
 
     // Data members
     /** The exercise building the person is using. */

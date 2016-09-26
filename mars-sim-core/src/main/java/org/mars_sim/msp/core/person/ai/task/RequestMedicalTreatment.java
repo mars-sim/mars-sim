@@ -34,6 +34,10 @@ public class RequestMedicalTreatment extends Task implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    // Static members
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .3D;
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(RequestMedicalTreatment.class.getName());
     
@@ -59,7 +63,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
      * @param person the person to perform the task
      */
     public RequestMedicalTreatment(Person person) {
-        super(NAME, person, false, false, 0D, false, 0D);
+        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
         
         // Choose available medical aid for treatment.
         medicalAid = determineMedicalAid();

@@ -36,7 +36,7 @@ implements Serializable {
             "Task.phase.doingYoga")); //$NON-NLS-1$
 
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.3D;
+    private static final double STRESS_MODIFIER = -.5D;
 
     /**
      * constructor.

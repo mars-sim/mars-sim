@@ -52,7 +52,7 @@ implements ResearchScientificStudy, Serializable {
             "Task.description.performLaboratoryResearch"); //$NON-NLS-1$
 
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.1D;
+    private static final double STRESS_MODIFIER = .2D;
 
     /** Task phases. */
     private static final TaskPhase RESEARCHING = new TaskPhase(Msg.getString(

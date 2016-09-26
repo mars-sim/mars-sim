@@ -53,7 +53,7 @@ implements Serializable, Comparable<Task> {
 	/** default logger. */
     private static Logger logger = Logger.getLogger(Task.class.getName());
 
-	private static final double JOB_STRESS_MODIFIER = .5D;
+	private static final double JOB_STRESS_MODIFIER = .5D; // if that task is an a.i. task within a person's job, then the stress effect is 1/2
 	private static final double SKILL_STRESS_MODIFIER = .1D;
 
 	// Data members

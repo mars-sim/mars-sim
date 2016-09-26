@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class AntiStressMedication extends Medication implements Serializable {
 
     // The name of the medication.
-    public static final String NAME = "anti-stress medication";
+    public static final String NAME = "Anti-stress Medication";
     
     // Stress reduction amount.
     private static final double STRESS_REDUCTION = -1.0D;

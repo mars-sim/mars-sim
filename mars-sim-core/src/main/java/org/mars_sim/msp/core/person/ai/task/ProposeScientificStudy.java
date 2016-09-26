@@ -47,7 +47,7 @@ implements Serializable {
             "Task.description.proposeScientificStudy"); //$NON-NLS-1$
 	
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = 0D;
+	private static final double STRESS_MODIFIER = .2D;
 
 	/** Task phases. */
     private static final TaskPhase PROPOSAL_PHASE = new TaskPhase(Msg.getString(

@@ -428,7 +428,6 @@ implements Serializable {
 	private void checkForEmergency() {
 
 		if (person != null) {
-
 			// Check for emergency malfunction.
 			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
 
@@ -489,6 +488,7 @@ implements Serializable {
 			                clearTask();
 			                addTask(new RepairEmergencyMalfunctionEVA(robot));
 			            }
+			            
 					}
 					else {
 					    logger.fine(robot + " cancelling task " + currentTask +

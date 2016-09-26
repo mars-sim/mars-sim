@@ -61,14 +61,16 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
 
         if (bedRestNeeded) {
 
+            result = 200D;
+            
             // Determine if any available medical aids can be used for bed rest.
             if (hasUsefulMedicalAids(person)) {
 
-                result = 300D;
+                result+= 100D;
 
                 // 2015-06-07 Added Preference modifier
                 if (result > 0)
-                	result += person.getPreference().getPreferenceScore(this);
+                	result += 5 * person.getPreference().getPreferenceScore(this);
                 if (result < 0) result = 0;
             }
         }

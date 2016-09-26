@@ -27,7 +27,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /**
  * A wizard panel for selecting mission type.
  */
-class TypePanel extends WizardPanel implements ItemListener {
+public class TypePanel extends WizardPanel implements ItemListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -41,6 +41,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 	private JLabel descriptionLabel;
 	private JTextField descriptionField;
 	
+	private CreateMissionWizard wizard;
 	/**
 	 * Constructor.
 	 * @param wizard {@link CreateMissionWizard} the create mission wizard.
@@ -48,6 +49,8 @@ class TypePanel extends WizardPanel implements ItemListener {
 	TypePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
+		
+		this.wizard = wizard;
 		
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -140,7 +143,8 @@ class TypePanel extends WizardPanel implements ItemListener {
 	 */
 	public void itemStateChanged(ItemEvent e) {
 		String selectedMission = (String) typeSelect.getSelectedItem();
-		descriptionField.setText(MissionDataBean.getMissionDescription(selectedMission));
+		// 2015-12-15 Added "..."
+		descriptionField.setText(MissionDataBean.getMissionDescription(selectedMission) + "...");
 		boolean enableDescription = (typeSelect.getSelectedIndex() != 0);
 		descriptionInfoLabel.setEnabled(enableDescription);
 		descriptionLabel.setEnabled(enableDescription);
@@ -179,5 +183,10 @@ class TypePanel extends WizardPanel implements ItemListener {
 	 */
 	void updatePanel() {
 		// No previous panel to this one.
+	}
+	
+	public String getDescription() {
+		return getWizard().getMissionData().getDescription();
+		//return descriptionField.getText();
 	}
 }

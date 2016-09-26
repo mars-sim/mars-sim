@@ -63,6 +63,7 @@ import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.tool.Conversion;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -102,17 +103,19 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	private CardLayout customPanelLayout;
 	private JPanel missionCustomPane;
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
-
+	private MissionWindow missionWindow;
+	
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
 	 */
-	public MainDetailPanel(MainDesktopPane desktop) {
+	public MainDetailPanel(MainDesktopPane desktop, MissionWindow missionWindow) {
 		// User JPanel constructor.
 		super();
-
 		// Initialize data members.
 		this.desktop = desktop;
+        //2016-09-24 Added missionWindow param
+		this.missionWindow = missionWindow;
 
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -132,12 +135,20 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		//descriptionLabel = new JLabel(Msg.getString("MainDetailPanel.description", ""),SwingConstants.LEFT); //$NON-NLS-1$
 		descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(descriptionLabel);
-
+		// 2015-12-15 Implemented the missing descriptionLabel
+		if (missionWindow.getCreateMissionWizard() != null) {
+			String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription(); 
+			//System.out.println("Mission Description : " + s);
+			descriptionLabel.setText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
+			descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
+		}
+		
 		// Create the type label.
 		typeLabel = new JLabel(Msg.getString("MainDetailPanel.type", "")); //$NON-NLS-1$
 		typeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		descriptionPane.add(typeLabel);
-
+		typeLabel.setToolTipText(Msg.getString("MainDetailPanel.type", ""));
+				
 		// Create the phase label.
 		phaseLabel = new JLabel(Msg.getString("MainDetailPanel.phase", "")); //$NON-NLS-1$
 		phaseLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -247,18 +258,20 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				else if (currentMission instanceof BuildingConstructionMission) {
 				    BuildingConstructionMission constructionMission = (BuildingConstructionMission) currentMission;
 	                List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-	                if (constVehicles.size() > 0) {
-	                    Vehicle vehicle = constVehicles.get(0);
-	                    getDesktop().openUnitWindow(vehicle, false);
-	                }
+				    if (constVehicles != null)
+				    	if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
+		                    Vehicle vehicle = constVehicles.get(0);
+		                    getDesktop().openUnitWindow(vehicle, false);
+		                }
 				}
 				else if (currentMission instanceof BuildingSalvageMission) {
 				    BuildingSalvageMission salvageMission = (BuildingSalvageMission) currentMission;
                     List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-                    if (constVehicles.size() > 0) {
-                        Vehicle vehicle = constVehicles.get(0);
-                        getDesktop().openUnitWindow(vehicle, false);
-                    }
+    			    if (constVehicles != null)
+    			    	if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
+	                        Vehicle vehicle = constVehicles.get(0);
+	                        getDesktop().openUnitWindow(vehicle, false);
+	                    }
                 }
 			}
 		});
@@ -379,23 +392,40 @@ implements ListSelectionListener, MissionListener, UnitListener {
 
 		if (mission != null) {
 			// Update mission info in UI.
-			descriptionLabel.setText(Msg.getString(
-				"MainDetailPanel.description", //$NON-NLS-1$
-				mission.getDescription()
-			));
+			
+			if (mission.getDescription() != null) {
+				descriptionLabel.setText(Msg.getString(
+					"MainDetailPanel.description", //$NON-NLS-1$
+					Conversion.capitalize(mission.getDescription())
+				));
+			}			
+			//2016-09-25 Used getTypePanel().getDescription()
+			else if (missionWindow.getCreateMissionWizard().getTypePanel().getDescription() != null) {
+				String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription(); 
+				//System.out.println("Mission Description : " + s);
+				descriptionLabel.setText(Msg.getString("MainDetailPanel.description", s));
+			}		
+
+			
 			typeLabel.setText(Msg.getString("MainDetailPanel.type",mission.getName())); //$NON-NLS-1$
 			String phaseText = mission.getPhaseDescription();
-			if (phaseText.length() > 40) phaseText = phaseText.substring(0, 40) + "...";
-			phaseLabel.setText(Msg.getString("MainDetailPanel.phase",phaseText)); //$NON-NLS-1$
+			
+			phaseLabel.setToolTipText(phaseText);
+			if (phaseText.length() > 45) phaseText = phaseText.substring(0, 45) + "...";
+			phaseLabel.setText(Msg.getString("MainDetailPanel.phase", phaseText)); //$NON-NLS-1$
+
+			
 			int memberNum = mission.getMembersNumber();
 			int minMembers = mission.getMinMembers();
 			String maxMembers = ""; //$NON-NLS-1$
+			
 			if (mission instanceof VehicleMission) {
 				maxMembers = "" + mission.getMissionCapacity(); //$NON-NLS-1$
 			}
 			else {
 				maxMembers = Msg.getString("MainDetailPanel.unlimited"); //$NON-NLS-1$
 			}
+			
 			memberNumLabel.setText(Msg.getString("MainDetailPanel.missionMembersMinMax",memberNum,minMembers,maxMembers)); //$NON-NLS-1$
 			memberTableModel.setMission(mission);
 			centerMapButton.setEnabled(true);
@@ -431,8 +461,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			    // Display first of mission's list of construction vehicles.
 			    BuildingConstructionMission constructionMission = (BuildingConstructionMission) mission;
 			    List<GroundVehicle> constVehicles = constructionMission.getConstructionVehicles();
-			    if (!constVehicles.isEmpty())
-				    if (constVehicles.size() > 0) {
+			    if (constVehicles != null)
+			    	if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
 				        Vehicle vehicle = constVehicles.get(0);
 				        isVehicle = true;
 				        vehicleButton.setText(vehicle.getName());
@@ -449,8 +479,8 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	            // Display first of mission's list of construction vehicles.
 			    BuildingSalvageMission salvageMission = (BuildingSalvageMission) mission;
                 List<GroundVehicle> constVehicles = salvageMission.getConstructionVehicles();
-                if (!constVehicles.isEmpty())
-	                if (constVehicles.size() > 0) {
+			    if (constVehicles != null)
+			    	if (!constVehicles.isEmpty() || constVehicles.size() > 0) {
 	                    Vehicle vehicle = constVehicles.get(0);
 	                    isVehicle = true;
 	                    vehicleButton.setText(vehicle.getName());
@@ -575,11 +605,21 @@ implements ListSelectionListener, MissionListener, UnitListener {
 			// Update UI based on mission event type.
 			if (type == MissionEventType.NAME_EVENT) 
 				typeLabel.setText(Msg.getString("MainDetailPanel.type",mission.getName())); //$NON-NLS-1$
-			else if (type == MissionEventType.DESCRIPTION_EVENT) 
-				descriptionLabel.setText(Msg.getString("MainDetailPanel.description",mission.getDescription())); //$NON-NLS-1$
+			else if (type == MissionEventType.DESCRIPTION_EVENT) {
+				// 2015-12-15 Implemented the missing descriptionLabel
+				if (missionWindow.getCreateMissionWizard() != null) {
+					String s = missionWindow.getCreateMissionWizard().getTypePanel().getDescription(); 
+					//System.out.println("Mission Description : " + s);
+					descriptionLabel.setText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
+					descriptionLabel.setToolTipText(Msg.getString("MainDetailPanel.description", Conversion.capitalize(s)));
+				}
+				else {
+					descriptionLabel.setText(Msg.getString("MainDetailPanel.description",mission.getDescription())); //$NON-NLS-1$
+				}
+			}
 			else if (type == MissionEventType.PHASE_DESCRIPTION_EVENT) {
 				String phaseText = mission.getPhaseDescription();
-				if (phaseText.length() > 40) phaseText = phaseText.substring(0, 40) + "...";
+				if (phaseText.length() > 45) phaseText = phaseText.substring(0, 45) + "...";
 				phaseLabel.setText(Msg.getString("MainDetailPanel.phase",phaseText)); //$NON-NLS-1$
 			}
 			else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT || 
@@ -877,5 +917,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 				}
 			}
 		}
+	}
+	
+	// 2016-09-24 Added getMissionWindow()
+	public MissionWindow getMissionWindow() {
+		return missionWindow;
 	}
 }

@@ -27,6 +27,9 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.FXUtilities;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -188,7 +191,7 @@ public class TransportWizard {
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
-    	logger.info("deliverBuildings() is in " + Thread.currentThread().getName() + " Thread");
+    	logger.info("deliverBuildings() is in " + Thread.currentThread().getName());
     	if (settlementWindow == null)
     		settlementWindow = desktop.getSettlementWindow();
     	if (mapPanel == null)
@@ -244,9 +247,28 @@ public class TransportWizard {
         }
 
         // 2015-11-12 Deliver the rest of the supplies and add people.
-        mgr.getResupply().deliverOthers();
+	    // 2016-09-24 Needed to get back to the original thread that started the resupply event
+	    Simulation.instance().getMasterClock().getClockListenerExecutor()
+	    .execute(new DeliverTask(mgr));
     }
 
+
+	//2016-09-24 Added DeliverTask
+	class DeliverTask implements Runnable {
+
+		private BuildingManager mgr;
+		
+		DeliverTask(BuildingManager mgr) {
+			this.mgr = mgr;
+		}
+
+		public void run() {
+		   	logger.info("DeliverTask's run() is on " + Thread.currentThread().getName() + " Thread");
+			// it's now on pool-3-thread-1 Thread
+			mgr.getResupply().deliverOthers();
+		}
+    }
+    
     /**
      * Asks user if all arrival buildings use the default template positions
 
@@ -847,7 +869,7 @@ public class TransportWizard {
 	public void placementDialog(String title, String header, Building newBuilding, BuildingManager mgr) {
     	// Platform.runLater(() -> {
 		// FXUtilities.runAndWait(() -> {
-			String msg = "Keyboard Control :\t(1) Press up/down/left/right arrow keys to move the building" + System.lineSeparator()
+			String msg = "Keyboard Control :\t(1) Press w/a/s/d, arrows, or num pad keys to move" + System.lineSeparator()
 					+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise" + System.lineSeparator()
 					+ "   Mouse Control :\t(1) Press & Hold the left button on the building" + System.lineSeparator()
 					+ "\t\t\t\t(2) Move the cursor to the destination" + System.lineSeparator()
@@ -1248,25 +1270,33 @@ public class TransportWizard {
 		double y = b.getYLocation();
 
 	    if (c == java.awt.event.KeyEvent.VK_UP // 38
-	    	|| c == java.awt.event.KeyEvent.VK_KP_UP) {
+	    	|| c == java.awt.event.KeyEvent.VK_KP_UP
+	    	|| c == java.awt.event.KeyEvent.VK_W
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("up");
 			b.setYLocation(y + 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
 	    } else if(c == java.awt.event.KeyEvent.VK_DOWN // 40
-	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN) {
+	    	|| c == java.awt.event.KeyEvent.VK_KP_DOWN	    	
+	    	|| c == java.awt.event.KeyEvent.VK_S
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD2) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("down");
 			b.setYLocation(y - 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
 	    } else if(c == java.awt.event.KeyEvent.VK_LEFT // 37
-	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT) {
+	    	|| c == java.awt.event.KeyEvent.VK_KP_LEFT
+	    	|| c == java.awt.event.KeyEvent.VK_A
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD4) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("left");
 			b.setXLocation(x + 1);
 	    	//System.out.println("x : " + s.getXLocation() + "  y : " + s.getYLocation());
 	    } else if(c == java.awt.event.KeyEvent.VK_RIGHT // 39
-	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT) {
+	    	|| c == java.awt.event.KeyEvent.VK_KP_RIGHT
+	    	|| c == java.awt.event.KeyEvent.VK_W
+	    	|| c == java.awt.event.KeyEvent.VK_NUMPAD8) {
 	    	//System.out.println("x : " + x + "  y : " + y);
 	    	//System.out.println("right");
 			b.setXLocation(x - 1);

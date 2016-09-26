@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.person.ai.task.meta.HaveConversationMeta;
 import org.mars_sim.msp.core.person.ai.task.meta.TaskProbabilityUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -57,7 +58,7 @@ implements Serializable {
 
     // Static members
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.5D;
+    private static final double STRESS_MODIFIER = -.2D;
 
     private List<Person> invitees = new ArrayList<Person>();
     
@@ -84,7 +85,7 @@ implements Serializable {
     // 2016-03-01 Added 8 situations for having a conversation
     public HaveConversation(Person person) {
         // Use Task constructor.
-        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(3), true, 5D + RandomUtil.getRandomDouble(10));
+        super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
@@ -171,8 +172,10 @@ implements Serializable {
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-            int time = person.getPreference().getPreferenceScore(Preference.convertTask2MetaTask(this));
-            super.setDuration(5 + time);
+            int score = person.getPreference().getPreferenceScore(new HaveConversationMeta());
+            super.setDuration(5 + score);
+            //2016-09-24 Factored in a person's preference for the new stress modifier 
+            super.setStressModifier(score/10D + STRESS_MODIFIER);
 
 	        // set the boolean to true so that it won't be done again today
         	//person.getPreference().setTaskStatus(this, false);

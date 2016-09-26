@@ -177,7 +177,7 @@ extends ToolWindow {
 			    public void actionPerformed(ActionEvent evt) {
 			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			    	marsDateString = marsClock.getDateString();
-			    	marsTimeString = marsClock.getTimeString(); //getMillisolString(marsClock);
+			    	marsTimeString = marsClock.getTrucatedTimeString();
 			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0
 			    	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
 					dateLabel.setText("Martian Date : " + marsDateString + " ");
@@ -197,7 +197,8 @@ extends ToolWindow {
     		marsTimer.start();
     	}
 	}
-
+	
+	
 	/**
 	 * Gets the settlement map panel.
 	 * @return the settlement map panel.

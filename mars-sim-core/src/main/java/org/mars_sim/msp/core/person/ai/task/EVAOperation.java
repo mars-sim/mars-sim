@@ -548,6 +548,15 @@ implements Serializable {
         return getClosestWalkableAvailableAirlock(robot, robot.getXLocation(), robot.getYLocation());
     }
 
+   /**
+    * Set the task's stress modifier.
+    * Stress modifier can be positive (increase in stress) or negative (decrease in stress).
+    * @param newStressModifier stress modification per millisol.
+    */
+   protected void setStressModifier(double newStressModifier) {
+       super.setStressModifier(stressModifier);
+   }
+   
     @Override
     public void destroy() {
         super.destroy();

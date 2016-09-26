@@ -69,7 +69,7 @@ class ConstructionProjectPanel extends WizardPanel {
     private JList<ConstructionStageInfo> projectList;
     private MaterialsTableModel materialsTableModel;
     private JTable materialsTable;
-
+    private CreateMissionWizard wizard;
     /**
      * Constructor.
      * @param wizard the create mission wizard.
@@ -77,7 +77,8 @@ class ConstructionProjectPanel extends WizardPanel {
     public ConstructionProjectPanel(final CreateMissionWizard wizard) {
         // Use WizardPanel constructor.
         super(wizard);
-
+        this.wizard  = wizard;
+        
         // Set the layout.
         setLayout(new BorderLayout(0, 0));
 
@@ -285,7 +286,7 @@ class ConstructionProjectPanel extends WizardPanel {
                     getWizard().setButtons(true);
                     errorMessageTextPane.setText(" ");
                 }
-            } 
+            }
             else {
                 try {
                     if (!hasConstructionVehicles(stageInfo)) {
@@ -345,6 +346,9 @@ class ConstructionProjectPanel extends WizardPanel {
                 .getSelectedValue();
         getWizard().getMissionData().setConstructionStageInfo(selectedInfo);
 
+        // 2016-09-24 Added setDescription()
+        getWizard().getMissionData().setDescription(selectedInfo.getName());
+        
         return true;
     }
 
@@ -454,47 +458,61 @@ class ConstructionProjectPanel extends WizardPanel {
                     e.printStackTrace(System.err);
                 }
             } else if (selectedSite.indexOf(" - Under Construction") >= 0) {
-                errorMessageTextPane.setText("Cannot start mission on a site already undergoing construction.");
-                // Do nothing.
+            	if (wizard.getMissionBean().getMixedMembers() == null)
+            		if (wizard.getMissionBean().getMixedMembers().isEmpty()) {
+            			// 2016-09-24 Added checking if members of an on-going site were departed
+            			loadSite(selectedSite, selectedSiteIndex);
+            			wizard.getMissionWindow().update();
+            		}
+            	else {            	
+	                errorMessageTextPane.setText("Cannot start mission on a site already undergoing construction.");             
+	                // Do nothing.
+            	}
             } else if (selectedSite.indexOf(" - Under Salvage") >= 0) {
                 errorMessageTextPane.setText("Cannot start mission on a site already undergoing salvage.");
                 // Do nothing.
             } else {
-                Settlement settlement = getConstructionSettlement();
-                if (settlement != null) {
-                    ConstructionManager manager = settlement
-                            .getConstructionManager();
-                    int siteNum = selectedSiteIndex - 1;
-                    ConstructionSite site = manager.getConstructionSites().get(
-                            siteNum);
-                    if (site != null) {
-                        if (selectedSite.indexOf(" Unfinished") >= 0) {
-                            // Show current construction stage.
-                            projectListModel.addElement(site
-                                    .getCurrentConstructionStage().getInfo());
-                        } else {
-                            try {
-                                // Show all possible stage infos.
-                                ConstructionStageInfo info = site
-                                        .getCurrentConstructionStage()
-                                        .getInfo();
-                                Iterator<ConstructionStageInfo> i = ConstructionUtil
-                                        .getNextPossibleStages(info).iterator();
-                                while (i.hasNext()) {
-                                    ConstructionStageInfo stageInfo = i.next();
-                                    if (stageInfo.isConstructable())
-                                        projectListModel.addElement(stageInfo);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace(System.err);
-                            }
-                        }
-                    }
-                }
+            	loadSite(selectedSite, selectedSiteIndex);
             }
         }
     }
 
+	// 2016-09-24 Added loadSite()
+    public void loadSite(String selectedSite, int selectedSiteIndex) {
+        Settlement settlement = getConstructionSettlement();
+        if (settlement != null) {
+            ConstructionManager manager = settlement
+                    .getConstructionManager();
+            int siteNum = selectedSiteIndex - 1;
+            ConstructionSite site = manager.getConstructionSites().get(
+                    siteNum);
+            if (site != null) {
+                if (selectedSite.indexOf(" Unfinished") >= 0) {
+                    // Show current construction stage.
+                    projectListModel.addElement(site
+                            .getCurrentConstructionStage().getInfo());
+                } else {
+                    try {
+                        // Show all possible stage infos.
+                        ConstructionStageInfo info = site
+                                .getCurrentConstructionStage()
+                                .getInfo();
+                        Iterator<ConstructionStageInfo> i = ConstructionUtil
+                                .getNextPossibleStages(info).iterator();
+                        while (i.hasNext()) {
+                            ConstructionStageInfo stageInfo = i.next();
+                            if (stageInfo.isConstructable())
+                                projectListModel.addElement(stageInfo);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace(System.err);
+                    }
+                }
+            }
+        }	
+    }
+    
+    
     /**
      * Gets the construction settlement.
      * 

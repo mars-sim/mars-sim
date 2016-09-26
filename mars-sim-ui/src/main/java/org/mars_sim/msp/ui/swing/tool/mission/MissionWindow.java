@@ -51,6 +51,7 @@ extends ToolWindow {
 	private MainScene ms;
 	private CreateMissionWizard createMissionWizard;
 	private EditMissionDialog editMissionDialog;
+	private Mission mission;
 
 	/**
 	 * Constructor.
@@ -86,7 +87,7 @@ extends ToolWindow {
 		mainPane.add(infoPane, BorderLayout.CENTER);
 
 		// Create the main detail panel.
-		MainDetailPanel mainDetailPane = new MainDetailPanel(desktop);
+		MainDetailPanel mainDetailPane = new MainDetailPanel(desktop, this);
 		missionList.addListSelectionListener(mainDetailPane);
 		infoPane.add("Info", mainDetailPane);
 
@@ -117,7 +118,7 @@ extends ToolWindow {
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// Edit the mission.
-						Mission mission = (Mission) missionList.getSelectedValue();
+						mission = (Mission) missionList.getSelectedValue();
 						if (mission != null) editMission(mission);
 					}
 				});
@@ -138,7 +139,7 @@ extends ToolWindow {
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// End the mission.
-						Mission mission = (Mission) missionList.getSelectedValue();
+						mission = (Mission) missionList.getSelectedValue();
 						if (mission != null) endMission(mission);
 					}
 				});
@@ -177,7 +178,7 @@ extends ToolWindow {
 			}
 			desktop.getTimeWindow().enablePauseButton(false);
 
-			createMissionWizard = new CreateMissionWizard(desktop);
+			createMissionWizard = new CreateMissionWizard(desktop, this);
 
 			boolean now = Simulation.instance().getMasterClock().isPaused();
 			if (!previous) {
@@ -195,7 +196,7 @@ extends ToolWindow {
 
 		} else
 
-			createMissionWizard = new CreateMissionWizard(desktop);
+			createMissionWizard = new CreateMissionWizard(desktop, this);
 
 
 	}
@@ -215,7 +216,7 @@ extends ToolWindow {
 			}
 			desktop.getTimeWindow().enablePauseButton(false);
 
-			editMissionDialog = new EditMissionDialog(desktop, mission);
+			editMissionDialog = new EditMissionDialog(desktop, mission, this);
 
 			boolean now = Simulation.instance().getMasterClock().isPaused();
 			if (!previous) {
@@ -233,7 +234,7 @@ extends ToolWindow {
 
 		} else
 
-			editMissionDialog = new EditMissionDialog(desktop, mission);
+			editMissionDialog = new EditMissionDialog(desktop, mission, this);
 
 
 	}
@@ -244,8 +245,8 @@ extends ToolWindow {
 	 */
 	private void endMission(Mission mission) {
 		//logger.info("End mission: " + mission.getName());
-
-		mission.endMission("User aborting the mission");
+		mission.endMission("User aborted mission");
+		repaint();
 	}
 
 	public CreateMissionWizard getCreateMissionWizard() {

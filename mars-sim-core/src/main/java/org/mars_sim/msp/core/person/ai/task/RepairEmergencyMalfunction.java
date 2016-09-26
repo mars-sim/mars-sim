@@ -22,8 +22,10 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -52,7 +54,7 @@ implements Repair, Serializable {
 
     // Static members
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = 2D;
+    private static final double STRESS_MODIFIER = 1D;
 
     // Data members
     /** The entity being repaired. */
@@ -71,6 +73,10 @@ implements Repair, Serializable {
 
         if (unit instanceof Person) {
          	this.person = (Person) unit;
+         	
+         	int score = person.getPreference().getPreferenceScore(new RepairMalfunctionMeta());
+            //2016-09-24 Factored in a person's preference for the new stress modifier 
+            super.setStressModifier(score/10D + STRESS_MODIFIER);
         }
         else if (unit instanceof Robot) {
         	//this.robot = (Robot) unit;

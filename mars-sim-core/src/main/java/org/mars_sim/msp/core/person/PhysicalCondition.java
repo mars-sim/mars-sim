@@ -71,7 +71,7 @@ implements Serializable {
     
     public static final double MENTAL_BREAKDOWN = 90D;
     
-    private static final double COLLAPSE_IMMINENT = 2500D;
+    private static final double COLLAPSE_IMMINENT = 3000D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     private static final String PANIC_ATTACK = "Panic Attack";
@@ -96,7 +96,7 @@ implements Serializable {
     private static final double FATIGUE_PERFORMANCE_MODIFIER = .001D;
 
     /** Performance modifier for stress. */
-    private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
+    private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
 
 
     // Data members

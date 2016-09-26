@@ -37,7 +37,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
-    private static int FIRST_AVAILABLE_SOL = 14;
+    private static int FIRST_AVAILABLE_SOL = 1;
     
     @Override
     public String getName() {
@@ -53,7 +53,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     public double getProbability(Person person) {
 
         double result = 0D;
-
+/*
         // Check if person is in a settlement.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
@@ -128,23 +128,10 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                             
                             // 2016-06-06 Added considering the size of the settlement population
                             int numPeople = person.getSettlement().getCurrentPopulationNum();
-                            int limit = (int)(numSites - numPeople/24);
+                            int limit = (int)(2D * numSites - numPeople/24D);
                            
                             result = result/Math.pow(10, 2 + limit) /5D;
-/*                            
-                            if (numPeople < 24)
-                            	result/= Math.pow(10, numSites)/50;
-                            else if (numPeople < 48)
-                            	result/= Math.pow(10, numSites-1)/50;
-                            else if (numPeople < 72)
-                            	result/= Math.pow(10, numSites-2)/50;
-                            else if (numPeople < 96)
-                            	result/= Math.pow(10, numSites-3)/50;
-                            else if (numPeople < 120)
-                            	result/= Math.pow(10, numSites-4)/50;
-                            else 
-                            	result/= Math.pow(10, numSites-5)/50;
-*/                            
+                           
                             
                         }
 
@@ -162,7 +149,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
                 result *= job.getStartMissionProbabilityModifier(BuildingConstructionMission.class);
             }
         }
-
+*/
         //if (result > 1.1) System.out.println("result : "+ result);
         return result;
     }

@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -79,7 +80,7 @@ public class LivingAccommodations extends Function implements Serializable {
         BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
         beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
         
-        PersonConfig personconfig = simulationConfig.getPersonConfiguration();
+        PersonConfig personconfig = simulationConfig.getPersonConfiguration(); 
         wasteWaterUsage = personconfig.getWaterUsageRate() / 1000D;
         double grey2BlackWaterRatio = personconfig.getGrey2BlackWaterRatio();
         greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
@@ -238,15 +239,19 @@ public class LivingAccommodations extends Function implements Serializable {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);  	
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);  
-	        if (amountStored < requestedAmount) {
-	     		requestedAmount = amountStored;
-	    		logger.warning("Just used up all " + name);
-	        }
-	    	else if (amountStored < 0.00001) {
+
+	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
 	            Settlement settlement = getBuilding().getBuildingManager()
 	                    .getSettlement();
-	    		logger.warning("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
+	     		// TODO: how to report it only 3 times and quit the reporting ?
+	            //logger.info("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
 	    	}
+	    	else if (amountStored < requestedAmount) {
+	     		requestedAmount = amountStored;
+	     		// Note: option to stop withdrawing requestedAmount
+	     		// TODO: how to report it only 3 times and quit the reporting ?
+	    		//logger.info("Just used up all " + name);
+	        }
 	    	else {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
 	    		inv.addAmountDemand(nameAR, requestedAmount);
@@ -298,7 +303,7 @@ public class LivingAccommodations extends Function implements Serializable {
      */
     //2015-12-04 Modified and renamed to generateWaste()
     public void generateWaste(double time) {
-
+    	double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
 /*    	
         double waterUsageSettlement = washWaterUsagePerPersonPerTime  * time * settlement.getCurrentPopulationNum();
         double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
@@ -314,7 +319,7 @@ public class LivingAccommodations extends Function implements Serializable {
     	
     	// computes water waste -- grey water and black water
     	double waterUsed = toiletUsagefactor * sleepers * wasteWaterUsage  * time;
-        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed);    
+        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed * random_factor);    
         
         double greyWaterProduced = waterUsed * greyWaterFraction;
         double blackWaterProduced = waterUsed * (1 - greyWaterFraction);             
@@ -324,7 +329,7 @@ public class LivingAccommodations extends Function implements Serializable {
     	
     	// computes toxic waste        
         double toiletTissueUsed = toiletUsagefactor * (1 - greyWaterFraction) * sleepers * TOILET_WASTE_PERSON_SOL * time;
-        retrieveAnResource("toilet tissue", toiletTissueUsed);
+        retrieveAnResource("toilet tissue", toiletTissueUsed * random_factor);
         storeAnResource(toiletTissueUsed, "toxic waste");
 
     }

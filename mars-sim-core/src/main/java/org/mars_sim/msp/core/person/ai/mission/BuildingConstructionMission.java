@@ -86,18 +86,18 @@ implements Serializable {
 	private static final int MAX_PEOPLE = 10;
 
 	/** Time (millisols) required to prepare construction site for stage. */
-	private static final double SITE_PREPARE_TIME = 500D;
+	public static final double SITE_PREPARE_TIME = 500D;
 
 	// Default distance between buildings for construction.
-	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
-	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
+	public static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
+	public static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
 
 	// Default width and length for variable size buildings if not otherwise determined.
-    private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
-    private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+    public static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
+    public static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
 
     /** Minimum length of a building connector (meters). */
-    private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
+    public static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 
 	// Data members
 	private Settlement settlement;
@@ -110,7 +110,8 @@ implements Serializable {
 	private List<Part> luvAttachmentParts;
 
 	/**
-	 * Constructor 1
+	 * Constructor 1 for Case 1
+	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
 	public BuildingConstructionMission(MissionMember startingMember) {
@@ -152,39 +153,30 @@ implements Serializable {
             init_case_1_step_1(constructionSkill);
         }
 
-        //init_case_1_step_3();
+        if (!isDone()) {
+	        // Set initial mission phase.
+	        if (Simulation.getUseGUI()) {
+		        // Add phases.
+		        addPhase(SELECT_SITE_PHASE);
+		        addPhase(PREPARE_SITE_PHASE);
+		        addPhase(CONSTRUCTION_PHASE);
+		        
+		        setPhase(SELECT_SITE_PHASE);
+		        setPhaseDescription(Msg.getString(
+		        		"Mission.phase.selectConstructionSite.description" //$NON-NLS-1$
+		                , settlement.getName()));
+	        }
+	        else {
 
-        // Add phases.
-        addPhase(SELECT_SITE_PHASE);
-        addPhase(PREPARE_SITE_PHASE);
-        addPhase(CONSTRUCTION_PHASE);
-
-        // Set initial mission phase.
-        if (Simulation.getUseGUI()) {
-	        setPhase(SELECT_SITE_PHASE);
-	        setPhaseDescription(Msg.getString(
-	        		"Mission.phase.selectConstructionSite.description" //$NON-NLS-1$
-	                , settlement.getName()));
+	        	init_case_1_step_3();
+	        	    	        
+	        	setPhase(PREPARE_SITE_PHASE);
+	            setPhaseDescription(Msg.getString(
+	            		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
+	                    , settlement.getName()));
+	        }
         }
-        else {
-        	init_case_1_step_3();
-        	setPhase(PREPARE_SITE_PHASE);
-            setPhaseDescription(Msg.getString(
-            		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-                    , settlement.getName()));
-        }
-/*
-        // Add phases.
-        addPhase(PREPARE_SITE_PHASE);
-        addPhase(CONSTRUCTION_PHASE);
-        // Set initial mission phase.
-        setPhase(PREPARE_SITE_PHASE);
 
-        setPhaseDescription(Msg.getString(
-        		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-                , settlement.getName()));
-
-*/
     }
 
 	@SuppressWarnings("unused")
@@ -216,15 +208,15 @@ implements Serializable {
 		else if (newSiteProfit > 0D) {
 
 		    if (Simulation.getUseGUI())  { // false) { //
-				logger.info("Case 1 : the site has not been picked yet and the construction was started by settlement with a starting member");
+				logger.info("Case 1 : Construction initiated by a starting member. Building picked by settlement. Site to be 'automatically' picked.");
 		    	// if GUI is in use
 		    	constructionSite = new ConstructionSite(settlement);//, manager);
 		    	constructionSite.setSkill(constructionSkill);
-		    	constructionSite.setManual(false);
 		    	constructionSite.setSitePicked(false);
+		    	constructionSite.setManual(false);
+		    	//constructionSite.setManual(true);	    	
 		    	//constructionSite.setStageInfo(stageInfo);
 				manager.getSites().add(constructionSite);
-				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
 				settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
 
 	        } else {
@@ -236,32 +228,26 @@ implements Serializable {
 			    stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
 
 			    if (stageInfo != null) {
-
 			        // Set construction site size.
-			        if (stageInfo.getWidth() > 0D) {
+			        if (stageInfo.getWidth() > 0D)
 			            constructionSite.setWidth(stageInfo.getWidth());
-			        }
-			        else {
+			        else
 			            // Set initial width value that may be modified later.
 			            constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
-			        }
 
-			        if (stageInfo.getLength() > 0D) {
+			        if (stageInfo.getLength() > 0D)
 			            constructionSite.setLength(stageInfo.getLength());
-			        }
-			        else {
+			        else
 			            // Set initial length value that may be modified later.
 			            constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
-			        }
 
 			        positionNewConstructionSite(constructionSite, stageInfo, constructionSkill);
 
 			        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
 			    }
-			    else {
+			    else
 			    	System.out.println("New construction stage could not be determined.");
-			        endMission("New construction stage could not be determined.");
-			    }
+			        //endMission("New construction stage could not be determined.");
 
 			    init_case_1_step_2(constructionSite, stageInfo, constructionSkill, values); //ConstructionSite constructionSite, ConstructionStageInfo stageInfo,
 			    //init_case_1_step_3();
@@ -272,9 +258,9 @@ implements Serializable {
 
 	}
 
-	public void init_case_1_step_2(ConstructionSite modSite, ConstructionStageInfo info, int constructionSkill, ConstructionValues values) {
+	public void init_case_1_step_2(ConstructionSite modSite, ConstructionStageInfo stageInfo, int constructionSkill, ConstructionValues values) {
     	this.constructionSite = modSite;
-    	ConstructionStageInfo stageInfo = info;
+    	//ConstructionStageInfo stageInfo = info;
 		//System.out.println("init_1b");
 
         //System.out.println("constructionSite is " + constructionSite.getDescription()
@@ -290,10 +276,11 @@ implements Serializable {
 		        logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
 		    }
 		    else {
+		    	
 		        if (stageInfo == null) {
 		            stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
 		        }
-
+		        
 		        if (stageInfo != null) {
 		            constructionStage = new ConstructionStage(stageInfo, constructionSite);
 		            constructionSite.addNewStage(constructionStage);
@@ -317,39 +304,19 @@ implements Serializable {
 
 	}
 
-
 	public void init_case_1_step_3() {
-		//System.out.println("starting init_case_1_step_3");
-		if (!isDone()) {
-		    // Reserve construction vehicles.
-		    reserveConstructionVehicles();
-		}
+	    // Reserve construction vehicles.
+	    reserveConstructionVehicles();
+	    // Retrieve construction LUV attachment parts.
+	    retrieveConstructionLUVParts();
 
-		if (!isDone()) {
-		    // Retrieve construction LUV attachment parts.
-		    retrieveConstructionLUVParts();
-		}
-
-/*
-        // Add phases.
-        addPhase(SELECT_SITE_PHASE);
         addPhase(PREPARE_SITE_PHASE);
         addPhase(CONSTRUCTION_PHASE);
-        // Set initial mission phase.
-        setPhase(SELECT_SITE_PHASE);
-        setPhaseDescription(Msg.getString(
-        		"ission.phase.selectConstructionSite.description" //$NON-NLS-1$
-                , settlement.getName()));
-*/
-        //setPhase(PREPARE_SITE_PHASE);
-        //setPhaseDescription(Msg.getString(
-        //		"Mission.phase.prepareConstructionSite.description" //$NON-NLS-1$
-        //        , settlement.getName()));
+
 	}
-
-
+	
 	/**
-	 * Constructor 2
+	 * Constructor 2 for Case 2 and Case 3
 	 *
 	 * @param members
 	 * @param settlement
@@ -411,9 +378,26 @@ implements Serializable {
 		    	constructionSite.setStageInfo(stageInfo);
 		    	constructionSite.setManual(true);
 				manager.getSites().add(constructionSite);
-				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, constructionSite);
-				settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
-
+				
+				// Note : Should NOT invoke construction wizard to allow user to pick the site again.
+				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
+ 	
+			    if (stageInfo != null) {
+			    	System.out.println("BuildingConstructionMission : Case 2. stageInfo is " + stageInfo.getName() );
+			    }
+			    else {
+			        System.out.println("BuildingConstructionMission : Case 2. new construction stageInfo could not be determined.");
+			    }
+			    
+				init_2(constructionSite, stageInfo);	        
+				if (!isDone()) {
+				    // Reserve construction vehicles.
+				    //reserveConstructionVehicles();
+			    	// Retrieve construction LUV attachment parts.
+				    retrieveConstructionLUVParts();
+					useTwoPhases();
+				}
+				
 	        }
         }
 
@@ -426,35 +410,26 @@ implements Serializable {
             if (Simulation.getUseGUI())  {
 	        	// if GUI is in use
 		    	constructionSite = new ConstructionSite(settlement);//, manager);
-
 		    	constructionSite.setSkill(bestConstructionSkill);
 		    	constructionSite.setSitePicked(false);
 		    	constructionSite.setManual(true);
 		    	//constructionSite.setMembers(members);
 		    	//constructionSite.setVehicles(vehicles);
-
-
 		    	constructionSite.setStageInfo(stageInfo);
                 // Set construction site size.
-                if (stageInfo.getWidth() > 0D) {
+                if (stageInfo.getWidth() > 0D)
                     constructionSite.setWidth(stageInfo.getWidth());
-                }
-                else {
+                else
                     // Set initial width value that may be modified later.
                     constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
-                }
-
-                if (stageInfo.getLength() > 0D) {
+                if (stageInfo.getLength() > 0D)
                     constructionSite.setLength(stageInfo.getLength());
-                }
-                else {
+                else
                     // Set initial length value that may be modified later.
                     constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
-                }
 
 				manager.getSites().add(constructionSite);
 				//System.out.println("# of sites : " + settlement.getConstructionManager().getSites().size());
-				//settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, constructionSite);
 				settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_WIZARD_EVENT, this);
 
 	        } else { // if GUI is NOT in use
@@ -462,34 +437,33 @@ implements Serializable {
 	            constructionSite = manager.createNewConstructionSite();
 
 	            if (constructionSite != null) {
-
 	                // Set construction site size.
-	                if (stageInfo.getWidth() > 0D) {
+	                if (stageInfo.getWidth() > 0D)
 	                    constructionSite.setWidth(stageInfo.getWidth());
-	                }
-	                else {
+	                else
 	                    // Set initial width value that may be modified later.
 	                    constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
-	                }
 
-	                if (stageInfo.getLength() > 0D) {
+	                if (stageInfo.getLength() > 0D)
 	                    constructionSite.setLength(stageInfo.getLength());
-	                }
-	                else {
+	                else
 	                    // Set initial length value that may be modified later.
 	                    constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
-	                }
 
 	                positionNewConstructionSite(constructionSite, stageInfo, bestConstructionSkill);
-
 	            }
 
-	            else {
+	            else
 	                endMission("Construction site could not be created.");
-	            }
 
 	            init_2(constructionSite, stageInfo);//, vehicles, members);
-	            setPhases_2();
+	            if (!isDone()) {
+	        	    // Reserve construction vehicles.
+	        	    //reserveConstructionVehicles();
+	            	// Retrieve construction LUV attachment parts.
+	        	    retrieveConstructionLUVParts();
+	            	useTwoPhases();
+	            }
 	        }
 
         }
@@ -498,9 +472,8 @@ implements Serializable {
 
     public void init_2(ConstructionSite modSite, ConstructionStageInfo info) {
     	this.constructionSite = modSite;
+	    System.out.println("init_2() : stageInfo is " + info.toString());
     	ConstructionStageInfo stageInfo = info;
-
-	    //System.out.println("init_2() : stageInfo is " + stageInfo.toString());
         //System.out.println("x is " + constructionSite.getXLocation()
 	    //	+ "  y is " + constructionSite.getYLocation()
         //	+ "  w is " + constructionSite.getWidth()
@@ -563,10 +536,7 @@ implements Serializable {
         }
     }
 
-    public void setPhases_2() {
-    	// Retrieve construction LUV attachment parts.
-	    retrieveConstructionLUVParts();
-
+    public void useTwoPhases() {
 	    // Add phases.
 	    addPhase(PREPARE_SITE_PHASE);
 	    addPhase(CONSTRUCTION_PHASE);
@@ -581,7 +551,8 @@ implements Serializable {
     /**
      * Reserve construction vehicles for the mission.
      */
-    private void reserveConstructionVehicles() {
+    public void reserveConstructionVehicles() {
+    	//System.out.println("calling reserveConstructionVehicles()");
         if (constructionStage != null) {
             constructionVehicles = new ArrayList<GroundVehicle>();
             Iterator<ConstructionVehicleType> j = constructionStage.getInfo().getVehicles().iterator();
@@ -595,6 +566,7 @@ implements Serializable {
                     }
                     else {
                         endMission("Light utility vehicle not available.");
+                    	System.out.println("calling reserveConstructionVehicles() : Light utility vehicle not available");
                     }
                 }
             }
@@ -604,7 +576,8 @@ implements Serializable {
     /**
      * Retrieve LUV attachment parts from the settlement.
      */
-    private void retrieveConstructionLUVParts() {
+    public void retrieveConstructionLUVParts() {
+    	System.out.println("calling retrieveConstructionLUVParts()");
         if (constructionStage != null) {
             luvAttachmentParts = new ArrayList<Part>();
             int vehicleIndex = 0;
@@ -748,7 +721,10 @@ implements Serializable {
     }
 
     public void selectSitePhase() {
-    	//init_case_1_step_3();
+	    // Reserve construction vehicles.
+	    //reserveConstructionVehicles();
+	    // Retrieve construction LUV attachment parts.
+	    retrieveConstructionLUVParts();
     	//System.out.println("starting selectSitePhase() and calling setPhaseEnded(true);");
         setPhaseEnded(true);
     }
@@ -892,35 +868,27 @@ implements Serializable {
 	            settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, building);
 	            logger.log(Level.INFO, "New " + constructionSite.getBuildingName() +
 	                    " building constructed at " + settlement.getName());
+	            
+	        	//setDone(true);
 	        }
+	        
 	    }
+	    
     }
 
     @Override
     public void endMission(String reason) {
-    	logger.info("BuildingConstructionMission's endMission() is in " + Thread.currentThread().getName() + " Thread");
-    	//System.out.println("starting endMission()");
-        super.endMission(reason);
+    	//logger.info("BuildingConstructionMission's endMission() is in " + Thread.currentThread().getName() + " Thread");  	
+    	//logger.info("reason : " + reason);
+           
+      	// Mark site as not undergoing construction.
+      	if (constructionSite != null) 
+      		constructionSite.setUndergoingConstruction(false);
 
-        // Mark site as not undergoing construction.
-        if (constructionSite != null) constructionSite.setUndergoingConstruction(false);
-
-        // Unreserve all mission construction vehicles.
-        unreserveConstructionVehicles();
-
-        // Store all LUV attachment parts in settlement.
-        if (luvAttachmentParts != null) {
-            Iterator<Part> i = luvAttachmentParts.iterator();
-            while (i.hasNext()) {
-                Part part = i.next();
-                try {
-                    settlement.getInventory().storeItemResources(part, 1);
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error storing attachment part " + part.getName());
-                }
-            }
-        }
+        // Unreserve all LUV attachment parts for this mission.
+        unreserveLUVparts();
+           
+      	super.endMission(reason);
     }
 
     @Override
@@ -1032,6 +1000,26 @@ implements Serializable {
         }
     }
 
+    /*
+     * Unreserve and store back all LUV attachment parts in settlement.
+     */
+    //2016-09-25 unreserveLUVparts()
+    public void unreserveLUVparts() {
+
+        if (luvAttachmentParts != null) {
+            Iterator<Part> i = luvAttachmentParts.iterator();
+            while (i.hasNext()) {
+                Part part = i.next();
+                try {
+                    settlement.getInventory().storeItemResources(part, 1);
+                }
+                catch (Exception e) {
+                    logger.log(Level.SEVERE, "Error storing attachment part " + part.getName());
+                }
+            }
+        }
+    }
+    
     /**
      * Gets a list of all construction vehicles used by the mission.
      * @return list of construction vehicles.

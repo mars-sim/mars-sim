@@ -255,7 +255,8 @@ public class HealthProblem implements Serializable {
             		|| illness.getType() == ComplaintType.FEVER)
             	duration = duration + duration * RandomUtil.getRandomDouble(.5)
             				- duration * RandomUtil.getRandomDouble(.5);
-            else if (illness.getType() == ComplaintType.HEARTBURN)
+            else if (illness.getType() == ComplaintType.HEARTBURN
+            		|| illness.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
             	duration = duration + duration * RandomUtil.getRandomDouble(.4)
 							- duration * RandomUtil.getRandomDouble(.4);
             else if (illness.getType() == ComplaintType.FLU)

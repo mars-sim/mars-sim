@@ -968,7 +968,7 @@ public class MainScene {
 	 */
 	public void updateStatusBarText() {
  
-		String t = earthClock.getTimeStamp();
+		String t = earthClock.getTimeStamp2();
 		// Check if new simulation is being created or loaded from file.
 		if (Simulation.isUpdating() || masterClock.isPaused()) {
 			timeText.setText(" [ PAUSE ]  ESC to resume  " + t + "  ");		
@@ -1353,7 +1353,6 @@ public class MainScene {
 		} else if (type == Simulation.SAVE_DEFAULT) {
 			//System.out.println("SAVE_DEFAULT or SAVE_AS");
 			dir = Simulation.DEFAULT_DIR;
-			title = Msg.getString("MainScene.dialogSaveSim");
 			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
 			
 		} else if (type == Simulation.SAVE_AS) {
@@ -1361,13 +1360,14 @@ public class MainScene {
 				FileChooser chooser = new FileChooser();
 				dir = Simulation.DEFAULT_DIR;
 				File userDirectory = new File(dir);
+				title = Msg.getString("MainScene.dialogSaveSim");
 				chooser.setTitle(title); // $NON-NLS-1$
 				chooser.setInitialDirectory(userDirectory);
 				// Set extension filter
 				FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter("Simulation files (*.sim)",
 						"*.sim");
-				//FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
-				chooser.getExtensionFilters().add(simFilter); // , allFilter);
+				FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter("all files (*.*)", "*.*");
+				chooser.getExtensionFilters().addAll(simFilter, allFilter);
 				File selectedFile = chooser.showSaveDialog(stage);
 				if (selectedFile != null)
 					fileLocn = selectedFile;// + Simulation.DEFAULT_EXTENSION;

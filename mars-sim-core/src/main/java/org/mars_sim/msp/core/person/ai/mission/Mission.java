@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.EventType;
@@ -33,6 +34,7 @@ import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The Mission class represents a large multi-person task
@@ -396,22 +398,24 @@ implements Serializable {
      * @param member to be removed
      */
     public final void removeMember(MissionMember member) {
-        if (members.contains(member)) {
+    	if (members.contains(member)) {
             members.remove(member);
+			//logger.info("done removing " + member);
 
             // Creating missing finishing event.
-            HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
-            Simulation.instance().getEventManager().registerNewEvent(newEvent);
-
+            //HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH);
+            Simulation.instance().getEventManager().registerNewEvent(new MissionHistoricalEvent(member, this, EventType.MISSION_FINISH));
             fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 
-            if ((members.size() == 0) && !done) {
-                endMission("Not enough members.");
-            }
-
+        	if ((members.size() == 0) && !done) {
+            	endMission("Not enough members.");
+        	}
+        	
             // 2015-11-01 Added codes in reassigning a work shift
             if (member instanceof Person) {
             	Person person = (Person) member;
+            	person.getMind().setMission(null);
+            	
             	ShiftType shift = null;
             	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
             	if (person.getSettlement() != null) {
@@ -426,7 +430,7 @@ implements Serializable {
 
             }
 
-            logger.finer(member.getName() + " removed from mission: " + name);
+            logger.info(member.getName() + " removed from mission : " + name);
         }
     }
 
@@ -588,6 +592,13 @@ implements Serializable {
 	}
 
 	/**
+	 * Set mission as done.
+	 */
+	public void setDone(boolean value) {
+		done = value;
+	}
+	
+	/**
 	 * Gets the name of the mission.
 	 * @return name of mission
 	 */
@@ -670,10 +681,10 @@ implements Serializable {
 	 */
 	public final String getPhaseDescription() {
 		if (phaseDescription != null) {
-			return phaseDescription;
+			return Conversion.capitalize(phaseDescription);
 		}
 		else {
-			return phase.toString();
+			return Conversion.capitalize(phase.toString());
 		}
 	}
 
@@ -804,48 +815,21 @@ implements Serializable {
 		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
 		//logger.info("Reason : " + reason);
 		
-		if (!done || reason.equals("Successfully disembarked.")) {
-			done = true;
+		if (reason.equals("Successfully ended construction") // Note: !done is very important to keep !
+				|| reason.equals("Successfully disembarked.")
+				|| reason.equals("User aborted mission")) {
+			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
-			//logger.info("done firing End Mission Event");
+			//logger.info("done firing End_Mission_Event");
 
 			if (members != null) {
 			    Object[] p = members.toArray();
                 for (Object aP : p) {
-/*
-                    // 2015-11-01 Added codes in reassigning a work shift
-                    if (aP instanceof Person) {
-                    	Person person = (Person) aP;
-                    	System.out.println("person : " + person + "   name : " + person.getName() + "   Settlement : " + person.getSettlement());
-                    	ShiftType shift = person.getSettlement().assignShift(-1);
-                        person.getSettlement().decrementAShift(ShiftType.ON_CALL);
-                        person.getTaskSchedule().setShiftType(shift);
-                    }
-                    else if (aP instanceof Robot) {
-                    	Robot robot = (Robot) aP;
-                    	ShiftType shift = robot.getSettlement().assignShift(-1);
-                        ((Robot) aP).getSettlement().decrementAShift(ShiftType.ON_CALL);
-                        ((Robot) aP).getTaskSchedule().setShiftType(shift);
-                    }
-*/
                     removeMember((MissionMember) aP);
-
                 }
 			}
 
-//			if (people != null) {
-//				Object p[] = people.toArray();
-//				for (Object aP : p) {
-//					removePerson((Person) aP);
-//				}
-//			} else if (robots != null) {
-//				Object p[] = robots.toArray();
-//				for (Object aP : p) {
-//					removeRobot((Robot) aP);
-//				}
-//			}
-
-			logger.info(description + " ending at the " + phase + " phase due to " + reason);
+			//logger.info(description + " ending at the " + phase + " phase due to " + reason);
 		}
 	}
 

@@ -396,7 +396,7 @@ implements Serializable {
     public void setMission(Mission newMission) {
         if (newMission != mission) {
 
-        	//if (person != null) {
+        	if (person != null) {
         		if (mission != null) {
                     mission.removeMember(person);
                 }
@@ -408,7 +408,7 @@ implements Serializable {
                 }
 
                 person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
-        	//}
+        	}
 
         }
     }

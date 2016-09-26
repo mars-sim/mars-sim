@@ -358,4 +358,11 @@ extends JPanel {
 		
 		return result;
 	}
+	
+	// 2016-09-24 Added getParent()
+	public JInternalFrame getParent() {
+		return parent;
+	}
+	
+	
 }

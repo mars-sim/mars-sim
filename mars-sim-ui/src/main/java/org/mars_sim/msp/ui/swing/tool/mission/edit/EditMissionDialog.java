@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 
 import javax.swing.*;
 
@@ -39,15 +40,18 @@ public class EditMissionDialog extends ModalInternalFrame {
 	private Mission mission;
 	private InfoPanel infoPane;
 	protected MainDesktopPane desktop;
+	private MissionWindow missionWindow;
 	
 	/**
 	 * Constructor
 	 * @param owner the owner frame.
 	 * @param mission the mission to edit.
 	 */
-	public EditMissionDialog(MainDesktopPane desktop, Mission mission) {
+	public EditMissionDialog(MainDesktopPane desktop, Mission mission, MissionWindow missionWindow) {
 		// Use ModalInternalFrame constructor
         super("Edit Mission");
+        //2016-09-24 Added missionWindow param
+        this.missionWindow = missionWindow;
         
 		// Initialize data members.
 		this.mission = mission;
@@ -199,5 +203,15 @@ public class EditMissionDialog extends ModalInternalFrame {
 			    member.setMission(null);
 			}
 		}
+	}
+	
+	// 2016-09-24 Added getInfoPanel()
+	public InfoPanel getInfoPanel() {
+		return infoPane;
+	}
+	
+	// 2016-09-24 Added getMissionWindow()
+	public MissionWindow getMissionWindow() {
+		return missionWindow;
 	}
 }

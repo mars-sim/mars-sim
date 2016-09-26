@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.meta.ReadMeta;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -43,7 +44,7 @@ implements Serializable {
 
     // Static members
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.1D;
+    private static final double STRESS_MODIFIER = .1D;
 
     //private int randomTime;
 
@@ -58,9 +59,12 @@ implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
         		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-            int time = person.getPreference().getPreferenceScore(Preference.convertTask2MetaTask(this));
-            super.setDuration(5 + time);
-
+        	
+            int score = person.getPreference().getPreferenceScore(new ReadMeta());
+            super.setDuration(5 + score);
+            //2016-09-24 Factored in a person's preference for the new stress modifier 
+            super.setStressModifier(score/10D + STRESS_MODIFIER);
+            
 	        // set the boolean to true so that it won't be done again today
         	//person.getPreference().setTaskStatus(this, false);
 

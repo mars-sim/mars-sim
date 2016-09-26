@@ -426,10 +426,11 @@ public class ScenarioConfigEditorFX {
 
 		// Create refresh/defaultButton button.
 		undoButton = new JFXButton();//Msg.getString("SimulationConfigEditor.button.default")); //$NON-NLS-1$
-		undoButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/orange_undo_32.png"))));//button-undo.png"))));
+		undoButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));//button-undo.png"))));
 		undoButton.getStyleClass().add("button-mid");//-sign");
 		setMouseCursor(undoButton);
-		//undoButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.default"))); //$NON-NLS-1$
+		undoButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.undo"))); //$NON-NLS-1$
+
 		undoButton.setOnAction((event) -> {
 			if (multiplayerClient != null && hasSettlement) {
 				boolean isYes = confirmDeleteDialog(
@@ -646,11 +647,11 @@ public class ScenarioConfigEditorFX {
 	}
 
 	/**
-	 * Removes the settlements selected on the table.
+	 * Removes the settlement selected on the table.
 	 */
 	private void removeSelectedSettlements(int i) {
 		//settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
-		tableViewCombo.removeSettlements(i);
+		tableViewCombo.removeSettlement(i);
 		updateSettlementNames();
 	}
 
@@ -688,7 +689,11 @@ public class ScenarioConfigEditorFX {
 	 */
 	private void setDefaultSettlements() {
 		//settlementTableModel.loadDefaultSettlements();
-		tableViewCombo.loadDefaultSettlements();
+		//tableViewCombo.loadDefaultSettlements();
+		tableView = tableViewCombo.createGUI();
+		tableView.setMaxHeight(200);
+		tableView.setPrefHeight(200);		
+		borderAll.setCenter(tableView);//bar);
 		updateSettlementNames();
 	}
 
@@ -1008,11 +1013,20 @@ public class ScenarioConfigEditorFX {
 		dialog.setHeaderText(header);
 		dialog.setContentText(text);
 		dialog.getDialogPane().setPrefSize(300, 180);
-		ButtonType buttonTypeYes = new ButtonType("Yes");
-		ButtonType buttonTypeNo = new ButtonType("No");
-		dialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+		//ButtonType buttonTypeYes = new ButtonType("Yes");
+		//ButtonType buttonTypeNo = new ButtonType("No");
+		//dialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+		dialog.getButtonTypes().clear();
+		dialog.getButtonTypes().addAll(ButtonType.YES, ButtonType.NO);
+	    //Deactivate Defaultbehavior for yes-Button:
+	    Button yesButton = (Button) dialog.getDialogPane().lookupButton( ButtonType.YES );
+	    yesButton.setDefaultButton(false);
+	    //Activate Defaultbehavior for no-Button:
+	    Button noButton = (Button) dialog.getDialogPane().lookupButton( ButtonType.NO );
+	    noButton.setDefaultButton(true);
 		final Optional<ButtonType> result = dialog.showAndWait();
-		return result.get() == buttonTypeYes;
+		//return result.get() == buttonTypeYes;
+		return result.get() == ButtonType.YES;
 	}
 
 	public boolean getHasSettlement() {

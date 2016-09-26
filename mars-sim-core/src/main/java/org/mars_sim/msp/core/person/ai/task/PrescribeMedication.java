@@ -50,13 +50,14 @@ implements Serializable {
             "Task.description.prescribeMedication"); //$NON-NLS-1$
 
 	private static final double AVERAGE_MEDICAL_WASTE = .1;
-    
+	private static final String TOXIC_WASTE = "toxic waste";
+	
     /** Task phases. */
     private static final TaskPhase MEDICATING = new TaskPhase(Msg.getString(
             "Task.phase.medicating")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = 0D;
+	private static final double STRESS_MODIFIER = .2D;
 
 	// Data members.
 	private Person patient = null;
@@ -254,7 +255,7 @@ implements Serializable {
         
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
-            storeAnResource(AVERAGE_MEDICAL_WASTE, "Toxic Waste", inv);
+            storeAnResource(AVERAGE_MEDICAL_WASTE, TOXIC_WASTE, inv);
             //System.out.println("PrescribeMedication.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);  
 	     }
 	}
@@ -268,10 +269,10 @@ implements Serializable {
 			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
 			
 			if (remainingCapacity < amount) {
-			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+			    // if the remaining capacity is smaller than the amount, set remaining capacity to full
 				amount = remainingCapacity;
 				result = false;
-			    //logger.info("addHarvest() : storage is full!");
+
 			}
 			else {
 				inv.storeAmountResource(ar, amount, true);

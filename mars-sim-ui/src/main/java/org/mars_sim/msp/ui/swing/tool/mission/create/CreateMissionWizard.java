@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.swing.tool.mission.create;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.ModalInternalFrame;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+import org.mars_sim.msp.ui.swing.tool.mission.edit.InfoPanel;
 
 import javax.swing.*;
 
@@ -37,16 +39,19 @@ implements ActionListener {
 	private MissionDataBean missionBean;
 	private List<WizardPanel> wizardPanels;
 	private int displayPanelIndex;
-
+	private TypePanel typePanel;
+	private MissionWindow missionWindow;
+	
 	/**
 	 * Constructor.
 	 * @param owner The owner frame.
 	 */
-	public CreateMissionWizard(MainDesktopPane desktop) {
-
+	public CreateMissionWizard(MainDesktopPane desktop, MissionWindow missionWindow) {
 		// Use ModalInternalFrame constructor
         super("Create Mission Wizard");
-
+        //2016-09-24 Added missionWindow param
+        this.missionWindow = missionWindow;
+        
 		// Set mission data bean.
 		missionBean = new MissionDataBean();
 
@@ -63,7 +68,8 @@ implements ActionListener {
 		displayPanelIndex = 0;
 
 		// Create initial set of wizard panels.
-		addWizardPanel(new TypePanel(this));
+		typePanel = new TypePanel(this);
+		addWizardPanel(typePanel);
 
         // Note: This panel is added so that next and final buttons are
         // enabled/disabled properly initially.
@@ -303,4 +309,21 @@ implements ActionListener {
 			dispose();
 		}
 	}
+	
+	
+	// 2016-09-24 Added getTypePanel()
+	public TypePanel getTypePanel() {
+		return typePanel;
+	}
+	
+	// 2016-09-24 Added getMissionWindow()
+	public MissionWindow getMissionWindow() {
+		return missionWindow;
+	}
+	
+	// 2016-09-24 Added getMissionBean() 
+	public MissionDataBean getMissionBean() {
+		return missionBean;
+	}
+	
 }

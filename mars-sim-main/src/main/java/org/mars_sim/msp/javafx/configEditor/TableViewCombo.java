@@ -236,10 +236,10 @@ public class TableViewCombo {
     }
 
 	/**
-	 * Remove a set of settlements from the table.
-	 * @param rowIndexes an array of row indexes of the settlements to remove.
+	 * Remove a settlement from the table.
+	 * @param rowIndex the row index of the settlement to be removed.
 	 */
-	public void removeSettlements(int i) {
+	public void removeSettlement(int i) {
 	    //remove selected item from the table list
         allData.remove(table_view.getItems().get(i));  
 		table_view.refresh();
@@ -267,6 +267,7 @@ public class TableViewCombo {
 		SettlementBase base = new SettlementBase();
 
 		int size = settlementConfig.getNumberOfInitialSettlements();
+		System.out.println("size : " + size);
 		for (int x = 0; x < size; x++) {	
 			createRow(base, x);
 		}
@@ -277,14 +278,16 @@ public class TableViewCombo {
     /*
      * Create each settlement row
      */
-	public void createRow(SettlementBase base, int x) {
-		base.setName(allData.get(x).getName().toString());
-		base.setTemplate(allData.get(x).getTemplate().toString());
-		base.setSettler(allData.get(x).getSettler().toString());
-		base.setBot(allData.get(x).getBot().toString());
-		base.setSponsor(allData.get(x).getSponsor().toString());
-		base.setLatitude(allData.get(x).getLatitude().toString());
-		base.setLongitude(allData.get(x).getLongitude().toString());
+	public void createRow(SettlementBase base, int r) {
+		//System.out.println("allData.get(r) : " + allData.get(r));
+		//System.out.println("allData.get(r).getName() : " + allData.get(r).getName());
+		base.setName(allData.get(r).getName().toString());
+		base.setTemplate(allData.get(r).getTemplate().toString());
+		base.setSettler(allData.get(r).getSettler().toString());
+		base.setBot(allData.get(r).getBot().toString());
+		base.setSponsor(allData.get(r).getSponsor().toString());
+		base.setLatitude(allData.get(r).getLatitude().toString());
+		base.setLongitude(allData.get(r).getLongitude().toString());
 	
 		settlements.add(base);			
 	

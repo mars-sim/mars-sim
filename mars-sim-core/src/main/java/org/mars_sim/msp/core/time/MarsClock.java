@@ -377,8 +377,29 @@ public class MarsClock implements Serializable {
         return result.toString();
     }
 
+    
     /** Returns the current time string.
-     *  ex. "05:056.349"
+     *  ex. "056"
+     */
+	public String getTrucatedTimeString() {
+        StringBuilder b = new StringBuilder();
+        int tb = (int)millisol;
+//        String result = "" + tb;
+        b.append(tb);
+        if (millisol < 100D) {
+            b.insert(0,"0");
+//            result = "0" + result;
+        }
+        if (millisol < 10D) {
+            b.insert(0,"0");
+//            result = "0" + result;
+        }
+
+        return b.toString();
+	}
+	
+    /** Returns the current time string.
+     *  ex. "056.349"
      */
     public String getTimeString() {
         StringBuilder b = new StringBuilder();

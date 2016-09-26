@@ -1046,7 +1046,7 @@ implements Serializable, LifeSupportType, Objective {
 			else if (p.getMind().getMission() != null || p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 				ShiftType oldShift = p.getTaskSchedule().getShiftType();
 				if (oldShift != ShiftType.ON_CALL) {
-					System.out.println(p + " old shift : " + oldShift + " new shift : " + ShiftType.ON_CALL);
+					//System.out.println(p + " old shift : " + oldShift + " new shift : " + ShiftType.ON_CALL);
 					p.setShiftType(ShiftType.ON_CALL);
 				}
 			}
@@ -2690,20 +2690,27 @@ implements Serializable, LifeSupportType, Objective {
 		
 		// TODO: check if a particular building has existed, if yes, build the next relevant building
 		if (objectiveType == ObjectiveType.CROP_FARM) 
-			return "Inflatable Greenhouse";
+			return "inground greenhouse";//"Inflatable Greenhouse";
 		// alternatives : "Large Greenhouse"
 		else if (objectiveType == ObjectiveType.MANUFACTURING)
-			return "Workshop";
+			return "manufacturing shed" ;//"Workshop";
 		// alternatives : "Manufacturing Shed", MD1, MD4
 		else if (objectiveType == ObjectiveType.RESEARCH_CENTER)
-			return "Laboratory";
+			return "mining lab"; //Laboratory";
 		// alternatives : "Mining Lab", "Astronomy Observatory"
 		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
-			return "Loading Dock Garage";
+			return "loading dock garage"; 
 		// alternatives :"Garage";
 		else if (objectiveType == ObjectiveType.TRADE_TOWN)
-			return "Storage Shed";
-		// alternatives : 
+			return "storage shed";
+		
+		// Future alternatives : 
+		
+		//else if (objectiveType == ObjectiveType.POWER_HUB)
+		//	return "";
+		//else if (objectiveType == ObjectiveType.RESIDENTIAL_DISTRICT)
+		//	return "bunkhouse" or "outpost hub";
+
 		else
 			return null;
 	}

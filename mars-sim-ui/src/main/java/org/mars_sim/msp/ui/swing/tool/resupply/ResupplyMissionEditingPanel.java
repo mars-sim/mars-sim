@@ -955,7 +955,7 @@ extends TransportItemEditingPanel {
 						errorString = null;
 						errorLabel.setText(errorString);
 						enableButton(true);	
-						System.out.println("Sols " + inputSols + " is good to go.");						
+						//System.out.println("inputSols is " + inputSols);						
 						MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 						marsCurrentTime = (MarsClock) currentTime.clone();
 						if (inputSols == 0)

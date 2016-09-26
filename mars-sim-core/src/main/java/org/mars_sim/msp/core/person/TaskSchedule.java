@@ -99,8 +99,13 @@ public class TaskSchedule implements Serializable {
 		int solElapsed = clock.getTotalSol();
 		if (solElapsed != solCache) {   
     		//2016-09-22 Removed the sol log from LAST_SOL ago 
-        	if (solElapsed > NUM_SOLS)
-        		schedules.remove(solElapsed - NUM_SOLS);	
+        	if (solElapsed > NUM_SOLS) {
+        		int diff = solElapsed - NUM_SOLS;
+        		schedules.remove(diff);	
+        		if (schedules.containsKey(diff-1))
+        			schedules.remove(diff-1);
+        	}
+
 			// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
         	schedules.put(solCache, todaySchedule);
         	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed); 

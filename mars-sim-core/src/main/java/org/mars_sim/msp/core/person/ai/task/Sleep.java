@@ -64,7 +64,7 @@ public class Sleep extends Task implements Serializable {
 
     // Static members
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.3D;
+    private static final double STRESS_MODIFIER = -1D;
     /** The base alarm time (millisols) at 0 degrees longitude. */
     private static final double BASE_ALARM_TIME = 300D;
 

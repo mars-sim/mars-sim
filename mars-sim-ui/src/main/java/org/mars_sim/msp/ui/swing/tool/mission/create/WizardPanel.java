@@ -20,7 +20,7 @@ extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members.
-	private CreateMissionWizard wizard;
+	protected CreateMissionWizard wizard;
 	
 	/**
 	 * Constructor.

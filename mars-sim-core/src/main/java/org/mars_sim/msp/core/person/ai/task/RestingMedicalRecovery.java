@@ -50,7 +50,7 @@ public class RestingMedicalRecovery extends Task implements Serializable {
     private static final double RESTING_DURATION = 300D;
     
     /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.3D;
+    private static final double STRESS_MODIFIER = -1.2D;
     
     // Data members
     private MedicalAid medicalAid;

@@ -95,7 +95,8 @@
 			</vehicle>
 		</foundation>
 		
-		<!-- Surface foundation with a variable width and length that is dynamically set. -->
+		<!-- Surface foundation with a variable width and length is dynamically set. -->
+		<!-- (Used for hallway construction) -->
 		<foundation name="surface foundation variable size" width="-1.0" length="-1.0" base-level="0" 
 		 constructable="true" salvagable="true" work-time="5.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
@@ -105,6 +106,7 @@
 		</foundation>
 
 		<!-- Subsurface foundation with a variable width and length that is dynamically set. -->
+		<!-- (Used for tunnel construction)	-->
 		<foundation name="subsurface foundation variable size" width="-1.0" length="-1.0" base-level="-1" 
 		 constructable="true" salvagable="true" work-time="15.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >

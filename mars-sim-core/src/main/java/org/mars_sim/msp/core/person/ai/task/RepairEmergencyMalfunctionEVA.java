@@ -28,8 +28,11 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairEVAMalfunctionMeta;
+import org.mars_sim.msp.core.person.ai.task.meta.RepairMalfunctionMeta;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -47,6 +50,10 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
+
+    // Static members
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = 1.2D;
 
     /** Task name */
     private static final String NAME = Msg.getString(
@@ -69,6 +76,11 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
     public RepairEmergencyMalfunctionEVA(Person person) {
         super(NAME, person, false, 0D);
 
+        //2016-09-24 Factored in a person's preference for the new stress modifier 
+      	int score = person.getPreference().getPreferenceScore(new RepairEVAMalfunctionMeta());
+        //2016-09-24 Overrode the stress modifier of EVAOperation since it's a very serious EVA op
+        super.setStressModifier(score/10D + STRESS_MODIFIER);
+        
         init();
 
         // Create starting task event if needed.
@@ -370,7 +382,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
      * @return the time remaining after performing this phase (in millisols)
      */
     private double repairMalfunctionPhase(double time) {
-
+        
         if (shouldEndEVAOperation() || addTimeOnSite(time)) {
             setPhase(WALK_BACK_INSIDE);
             return time;
