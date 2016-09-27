@@ -277,7 +277,7 @@ extends VehicleMission {
 		else if (getVehicle().getSettlement() == null)
 			throw new NullPointerException("getVehicle().getSettlement() is null");
 		
-		else { 
+		else {
 				
 			Settlement settlement = getVehicle().getSettlement();
 			if (settlement == null)

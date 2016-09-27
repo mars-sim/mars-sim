@@ -290,7 +290,7 @@ implements Serializable {
             setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase())) {
-            endMission("Successfully disembarked.");
+            endMission(SUCCESSFULLY_DISEMBARKED);
         }
     }
     

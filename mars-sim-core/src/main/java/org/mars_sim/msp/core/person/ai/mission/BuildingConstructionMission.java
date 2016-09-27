@@ -693,7 +693,7 @@ implements Serializable {
                     ,constructionStage.getInfo().getName()));
         }
         else if (CONSTRUCTION_PHASE.equals(getPhase())) {
-            endMission("Successfully ended construction");
+            endMission(SUCCESSFULLY_ENDED_CONSTRUCTION);
         }
     }
 

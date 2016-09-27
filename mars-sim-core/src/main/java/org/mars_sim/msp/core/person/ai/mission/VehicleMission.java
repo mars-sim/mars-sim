@@ -101,7 +101,7 @@ implements UnitListener {
 
 		// Reserve a vehicle.
 		if (!reserveVehicle(startingPerson)) {
-			endMission("No reservable vehicles.");
+			endMission(NO_RESERVABLE_VEHICLES);
 		}
 	}
 	protected VehicleMission(String name, Robot robot, int minPeople) {
@@ -115,7 +115,7 @@ implements UnitListener {
 
 		// Reserve a vehicle.
 		if (!reserveVehicle(robot)) {
-			endMission("No reservable vehicles.");
+			endMission(NO_RESERVABLE_VEHICLES);
 		}
 	}
 	*/
@@ -135,17 +135,17 @@ implements UnitListener {
 
 		// Reserve a vehicle.	 
 		if (!reserveVehicle(startingMember)) {
-		    endMission("No reservable vehicles.");
+		    endMission(NO_RESERVABLE_VEHICLES);
 		}
 //		if (unit instanceof Person) {
 //			person = (Person) unit;   
 //			if (!reserveVehicle(person)) 
-//				endMission("No reservable vehicles.");		
+//				endMission(NO_RESERVABLE_VEHICLES);		
 //		}
 //		else if (unit instanceof Robot) {
 //			robot = (Robot) unit;
 //			if (!reserveVehicle(robot)) 
-//				endMission("No reservable vehicles.");		
+//				endMission(NO_RESERVABLE_VEHICLES);		
 //		}
 	}
 	
@@ -244,7 +244,7 @@ implements UnitListener {
 	 * Leaves the mission's vehicle and unreserves it.
 	 */
 	protected final void leaveVehicle() {
-		//logger.info("starting firing vehicle event");
+		logger.info("starting firing vehicle event");
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
 			vehicle.removeUnitListener(this);
@@ -410,26 +410,30 @@ implements UnitListener {
 		//logger.info("Reason : " + reason);
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
-			if (reason.equals("User aborting the mission")) {
-				logger.info("Aborting the mission, switching to emergency mode to go to the nearest settlement.");	
+			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
+				logger.info("User just aborted the mission. Switching to emergency mode to go to the nearest settlement.");	
 				determineEmergencyDestination(startingMember);	
+				
 			}
 			
-			else {
+			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES_TO_CONTINUE)
+					|| reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
+					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)) {
 				// Set emergency beacon if vehicle is not at settlement.
+				// TODO: find out all the matching reasons for setting emergency beacon.
+				// instead of using if (vehicle.getSettlement() == null)
 				if (vehicle.getSettlement() == null) {
-					//if (person != null) 
-						setEmergencyBeacon(null, vehicle, true);
-					//else if (robot != null)
-					//	setEmergencyBeacon(null, vehicle, true);
+					setEmergencyBeacon(null, vehicle, true);
+				}	
+				else { // for all other reasons
+		            setPhaseEnded(true);
+					leaveVehicle();
+					super.endMission(reason);
 				}
-				
-				leaveVehicle();
-				super.endMission(reason);
 			}
 		}
 		
-		else if (reason.equals("Successfully disembarked.")) {
+		else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
 			logger.info("Returning the control of vehicle to the settlement");
             setPhaseEnded(true);
 			leaveVehicle();
@@ -517,7 +521,7 @@ implements UnitListener {
 						getCurrentNavpoint().getDescription())); //$NON-NLS-1$
 			}
 		} else if (DISEMBARKING.equals(getPhase())) {
-			endMission("Successfully disembarked.");
+			endMission(SUCCESSFULLY_DISEMBARKED);
 		}
 	}
 
@@ -597,7 +601,7 @@ implements UnitListener {
 
 		// If vehicle has unrepairable malfunction, end mission.
 		if (hasUnrepairableMalfunction()) {
-			endMission("unrepairable malfunction");
+			endMission(UNREPAIRABLE_MALFUNCTION);
 		}
 	}
 //	protected final void performTravelPhase(Robot robot) {
@@ -652,7 +656,7 @@ implements UnitListener {
 //
 //		// If vehicle has unrepairable malfunction, end mission.
 //		if (hasUnrepairableMalfunction()) {
-//			endMission("unrepairable malfunction");
+//			endMission(UNREPAIRABLE_MALFUNCTION);
 //		}
 //	}
 	/**
@@ -915,14 +919,15 @@ implements UnitListener {
 							newDestination, "emergency destination: "
 									+ newDestination.getName()));
 					associateAllMembersWithSettlement(newDestination);
-					
+					// 2016-09-19 Added updateTravelDestination() below
 					updateTravelDestination();
 				}
 			} else {
-				endMission("Not enough resources to continue.");
+				endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
+
 			}
 		} else {
-			endMission("No emergency settlement destination found.");
+			endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
 		}
 	}
 	
@@ -965,10 +970,10 @@ implements UnitListener {
 //					associateAllMembersWithSettlement(newDestination);
 //				}
 //			} else {
-//				endMission("Not enough resources to continue.");
+//				endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
 //			}
 //		} else {
-//			endMission("No emergency settlement destination found.");
+//			endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
 //		}
 //	}
 	

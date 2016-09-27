@@ -50,6 +50,15 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Mission.class.getName());
 	// Global mission identifier
 	private static int missionIdentifer = 0;
+	
+	public static String SUCCESSFULLY_ENDED_CONSTRUCTION = "Successfully ended construction";
+	public static String SUCCESSFULLY_DISEMBARKED = "Successfully disembarked";
+	public static String USER_ABORTED_MISSION = "User aborted mission";
+	public static String UNREPAIRABLE_MALFUNCTION = "unrepairable malfunction";
+	public static String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
+	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
+	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found.";
+	
 	// Unique identifier
 	private int identifier;
 	
@@ -430,7 +439,7 @@ implements Serializable {
 
             }
 
-            logger.info(member.getName() + " removed from mission : " + name);
+            //logger.fine(member.getName() + " removed from mission : " + name);
         }
     }
 
@@ -815,9 +824,9 @@ implements Serializable {
 		//logger.info("Mission's endMission() is in " + Thread.currentThread().getName() + " Thread");
 		//logger.info("Reason : " + reason);
 		
-		if (reason.equals("Successfully ended construction") // Note: !done is very important to keep !
-				|| reason.equals("Successfully disembarked.")
-				|| reason.equals("User aborted mission")) {
+		if (!done & reason.equals(SUCCESSFULLY_ENDED_CONSTRUCTION) // Note: !done is very important to keep !
+				|| reason.equals(SUCCESSFULLY_DISEMBARKED)
+				|| reason.equals(USER_ABORTED_MISSION)) {
 			done = true; // Note: done = true is very important to keep !
 			fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
 			//logger.info("done firing End_Mission_Event");

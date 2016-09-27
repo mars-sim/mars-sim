@@ -245,7 +245,7 @@ extends ToolWindow {
 	 */
 	private void endMission(Mission mission) {
 		//logger.info("End mission: " + mission.getName());
-		mission.endMission("User aborted mission");
+		mission.endMission(Mission.USER_ABORTED_MISSION);
 		repaint();
 	}
 

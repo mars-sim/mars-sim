@@ -424,7 +424,7 @@ implements Serializable {
 					"Mission.phase.travelling.description" //$NON-NLS-1$
 					,getNextNavpoint().getDescription()));
 		}
-		else if (DISEMBARKING.equals(getPhase())) endMission("Successfully disembarked.");
+		else if (DISEMBARKING.equals(getPhase())) endMission(SUCCESSFULLY_DISEMBARKED);
 	}
 
 	@Override
