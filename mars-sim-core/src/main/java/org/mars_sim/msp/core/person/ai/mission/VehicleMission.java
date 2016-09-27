@@ -73,6 +73,9 @@ implements UnitListener {
 	private MissionMember startingMember;
 	/** True if vehicle has been loaded. */
 	protected boolean loadedFlag = false;
+	/** True if vehicle's emergency beacon has been turned on */
+    //private boolean isBeaconOn = false;
+    
 	/** Vehicle traveled distance at start of mission. */
 	private double startingTravelledDistance;
 
@@ -244,7 +247,7 @@ implements UnitListener {
 	 * Leaves the mission's vehicle and unreserves it.
 	 */
 	protected final void leaveVehicle() {
-		logger.info("starting firing vehicle event");
+		//logger.info("Calling leaveVehicle()");
 		if (hasVehicle()) {
 			vehicle.setReservedForMission(false);
 			vehicle.removeUnitListener(this);
@@ -412,6 +415,7 @@ implements UnitListener {
 			// if user hit the "End Mission" button to abort the mission
 			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
 				logger.info("User just aborted the mission. Switching to emergency mode to go to the nearest settlement.");	
+				// will recursively call endMission() with a brand new "reason"
 				determineEmergencyDestination(startingMember);	
 				
 			}
@@ -420,23 +424,33 @@ implements UnitListener {
 					|| reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
 					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)) {
 				// Set emergency beacon if vehicle is not at settlement.
-				// TODO: find out all the matching reasons for setting emergency beacon.
-				// instead of using if (vehicle.getSettlement() == null)
+				// TODO: need to find out if there are other matching reasons for setting emergency beacon.
 				if (vehicle.getSettlement() == null) {
-					setEmergencyBeacon(null, vehicle, true);
+					if (!vehicle.isEmergencyBeacon())
+						if (!vehicle.isBeingTowed())
+							setEmergencyBeacon(null, vehicle, true);
+					
 				}	
-				else { // for all other reasons
-		            setPhaseEnded(true);
-					leaveVehicle();
-					super.endMission(reason);
-				}
+
+			}
+			
+			else { // for all other reasons
+	            setPhaseEnded(true);
+				leaveVehicle();
+				super.endMission(reason);
 			}
 		}
 		
 		else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
-			logger.info("Returning the control of vehicle to the settlement");
+			logger.info("Returning the control of " + vehicle + "  to the settlement");
             setPhaseEnded(true);
 			leaveVehicle();
+			super.endMission(reason);
+		}
+		
+		else { // for all other reasons
+            setPhaseEnded(true);
+			//leaveVehicle();
 			super.endMission(reason);
 		}
 	}
@@ -931,88 +945,6 @@ implements UnitListener {
 		}
 	}
 	
-//	protected final void determineEmergencyDestination(Robot robot) {
-//
-//		// Determine closest settlement.
-//		Settlement newDestination = findClosestSettlement();
-//		if (newDestination != null) {
-//
-//			// Check if enough resources to get to settlement.
-//			double distance = getCurrentMissionLocation().getDistance(
-//					newDestination.getCoordinates());
-//			if (hasEnoughResources(getResourcesNeededForTrip(false, distance))
-//					&& !hasEmergencyAllCrew()) {
-//
-//				// Check if closest settlement is already the next navpoint.
-//				boolean sameDestination = false;
-//				NavPoint nextNav = getNextNavpoint();
-//				if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
-//					sameDestination = true;
-//				}
-//
-//				if (!sameDestination) {
-//					logger.severe(vehicle.getName()
-//							+ " setting emergency destination to "
-//							+ newDestination.getName() + ".");
-//
-//					// Creating emergency destination mission event.
-//					HistoricalEvent newEvent = new MissionHistoricalEvent(
-//							robot, this,
-//							EventType.MISSION_EMERGENCY_DESTINATION);
-//					Simulation.instance().getEventManager().registerNewEvent(
-//							newEvent);
-//
-//					// Set the new destination as the travel mission's next and final navpoint.
-//					clearRemainingNavpoints();
-//					addNavpoint(new NavPoint(newDestination.getCoordinates(),
-//							newDestination, "emergency destination: "
-//									+ newDestination.getName()));
-//					associateAllMembersWithSettlement(newDestination);
-//				}
-//			} else {
-//				endMission(NOT_ENOUGH_RESOURCES_TO_CONTINUE);
-//			}
-//		} else {
-//			endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
-//		}
-//	}
-	
-	/**
-	 * Sets the vehicle's emergency beacon on or off.
-	 * @param person the person performing the mission.
-	 * @param vehicle the vehicle on the mission.
-	 * @param beaconOn true if beacon is on, false if not.
-	 */
-	/*
-	public void setEmergencyBeacon(Person person, Vehicle vehicle,
-			boolean beaconOn) {
-		// Creating mission emergency beacon event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_EMERGENCY_BEACON);
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-		if (beaconOn) {
-			logger.info("Emergency beacon activated on " + vehicle.getName());
-		}
-		else {
-			logger.info("Emergency beacon deactivated on " + vehicle.getName());
-		}
-
-		vehicle.setEmergencyBeacon(beaconOn);
-	}
-	public void setEmergencyBeacon(Robot robot, Vehicle vehicle,
-			boolean beaconOn) {
-		// Creating mission emergency beacon event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_EMERGENCY_BEACON);
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-		if (beaconOn) {
-			logger.info("Emergency beacon activated on " + vehicle.getName());
-		}
-		else {
-			logger.info("Emergency beacon deactivated on " + vehicle.getName());
-		}
-
-		vehicle.setEmergencyBeacon(beaconOn);
-	}
-	*/
 	/**
      * Sets the vehicle's emergency beacon on or off.
      * @param member the mission member performing the mission.
@@ -1033,6 +965,7 @@ implements UnitListener {
 		}
 
 		vehicle.setEmergencyBeacon(beaconOn);
+
 	}
 	
 	/**

@@ -338,14 +338,16 @@ implements Serializable {
             }
         }
 
-        // Turn off vehicle's emergency beacon.
-        setEmergencyBeacon(member, vehicleTarget, false);
 
         // Hook vehicle up for towing.
         getRover().setTowedVehicle(vehicleTarget);
         vehicleTarget.setTowingVehicle(getRover());
 
         setPhaseEnded(true);
+
+        // Turn off vehicle's emergency beacon.
+        if (vehicleTarget.isEmergencyBeacon())
+        	setEmergencyBeacon(member, vehicleTarget, false);
 
         // Set mission event.
         HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_RENDEZVOUS);

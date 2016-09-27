@@ -444,6 +444,18 @@ public abstract class Vehicle extends Unit implements Serializable,
     	return towingVehicle;
     }
 
+    /**
+     * Check if this vehicle is being towed (by another vehicle).
+     * @return true if it is being towed
+     */
+    // 2016-09-27 Added isBeingTowed()
+    public boolean isBeingTowed() {
+    	if (towingVehicle == null)
+    		return false;
+    	else
+    		return true;
+    }
+
     /** 
      * Gets the speed of vehicle
      * @return the vehicle's speed (in km/hr)
