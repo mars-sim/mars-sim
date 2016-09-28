@@ -322,7 +322,14 @@ public class MainScene {
 		//createProgressCircle();
 		//showLoadingStage();
 		//logger.info("MainScene's prepareMainScene() is in " + Thread.currentThread().getName() + " Thread");
-		Simulation.instance().getSimExecutor().submit(new MainSceneTask());
+		
+		
+		//SwingUtilities.invokeLater(() -> {
+			// Set look and feel of UI.
+			UIConfig.INSTANCE.useUIDefault();
+		//});
+		
+		//Simulation.instance().getSimExecutor().submit(new MainSceneTask());
 	}
 
 	/**
@@ -333,7 +340,7 @@ public class MainScene {
 			//logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
-			//SwingUtilities.invokeLater(() -> {	
+				//SwingUtilities.invokeLater(() -> {	
 				// 2016-06-17 Added checking for OS. 
 				// Note: NIMROD theme lib doesn't work on linux 
 			//	if (OS.equals("linux"))

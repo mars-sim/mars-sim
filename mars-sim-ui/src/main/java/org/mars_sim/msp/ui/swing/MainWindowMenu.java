@@ -504,8 +504,8 @@ implements ActionListener, MenuListener {
 		//notificationItem.setSelected(desktop.getMainWindow().getNotification());
 
 		volumeItem.setValue(Math.round(desktop.getSoundPlayer().getVolume() * 10F));
-		volumeItem.setEnabled(!desktop.getSoundPlayer().isMute());
-		muteItem.setSelected(desktop.getSoundPlayer().isMute());
+		volumeItem.setEnabled(!desktop.getSoundPlayer().isMute(false));
+		muteItem.setSelected(desktop.getSoundPlayer().isMute(false));
 	}
 
 

@@ -66,6 +66,7 @@ import org.mars_sim.msp.ui.astroarts.OrbitViewer;
 import org.mars_sim.msp.ui.javafx.BrowserJFX;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
+import org.mars_sim.msp.ui.swing.sound.OGGSoundClip;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.FXInSwing;
 import org.mars_sim.msp.ui.swing.tool.JFXPannableView;
@@ -186,11 +187,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	// 2015-02-04 Added init()
 	public void init() {
-	   	//logger.info("MainDesktopPane's init() is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Initialize data members
-		soundPlayer = new AudioPlayer();
-		soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_MUSIC1); // play our intro music
+		soundPlayer = new AudioPlayer(this);
+		soundPlayer.playInBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_MUSIC1); // play our intro music
 
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
@@ -542,7 +543,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	@SuppressWarnings("restriction")
 	public void openToolWindow(String toolName) {
-		//System.out.println("starting openToolWindow()");
+        logger.info("openToolWindow() is on " + Thread.currentThread().getName());
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
 			if (window.isClosed()) {
@@ -710,7 +711,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		openUnitWindow(unit, true);
 		UnitWindow w = findUnitWindow(unit);
 		disposeUnitWindow(w);
-		System.out.println("MainDesktopPane : done with refreshTheme()");
+		logger.info("done with refreshTheme()");
 	}
 
 	/**
@@ -720,6 +721,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param initialWindow true if window is opened at UI startup.
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
+		logger.info("openUnitWindow is on " + Thread.currentThread().getName());
 
 		UnitWindow tempWindow = null;
 
@@ -775,12 +777,43 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			tempWindow.moveToFront();
 		} catch (java.beans.PropertyVetoException e) {}
 
-		// Play sound for window.
-		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
-		if ((soundFilePath != null) && soundFilePath.length() != 0) {
-			soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+		
+		playSound(unit);
+		
+	}
+	
+	/**
+	 * Set up playing a sound clip for the unit
+	 * @param unit the unit the window is for.
+	 */
+	// 2016-09-28 Added playSound()
+	public void playSound(Unit unit) {
+		
+		if (mainScene != null) {
+			Platform.runLater(() -> {
+				logger.info("playSound() is on " + Thread.currentThread().getName());
+				// Play sound for window.
+				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+				if ((soundFilePath != null) && soundFilePath.length() != 0) {
+					soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+				}
+				soundPlayer.play(soundFilePath);
+			});
 		}
-		soundPlayer.play(soundFilePath);
+		
+		else {
+			SwingUtilities.invokeLater(() -> {
+				logger.info("playSound() is on " + Thread.currentThread().getName());
+				// Play sound for window.
+				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+				if ((soundFilePath != null) && soundFilePath.length() != 0) {
+					soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
+				}
+				soundPlayer.play(soundFilePath);	
+			});
+		}
+		
+		
 	}
 
 	/**
@@ -1252,10 +1285,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-	
-		//browserJFX = new BrowserJFX();
-
-	   	//logger.info("MainDesktopPane's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("openInitialWindows() is on " + Thread.currentThread().getName() );
 /*
 		JFXPannableView v = new JFXPannableView(this);
 		if (mainScene != null ) {

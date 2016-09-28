@@ -87,6 +87,7 @@ public class UIConfig {
      * Private singleton constructor.
      */
     private UIConfig() {
+        logger.info("constructor is on " + Thread.currentThread().getName());
     }
 
     /**
@@ -146,7 +147,7 @@ public class UIConfig {
 
             AudioPlayer player = mainWindow.getDesktop().getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getVolume()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute()));
+            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute(false)));
 
             Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
             uiElement.addContent(internalWindowsElement);
@@ -243,7 +244,7 @@ public class UIConfig {
 
             AudioPlayer player = mainScene.getDesktop().getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getVolume()));
-            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute()));
+            volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute(false)));
 
             Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
             uiElement.addContent(internalWindowsElement);

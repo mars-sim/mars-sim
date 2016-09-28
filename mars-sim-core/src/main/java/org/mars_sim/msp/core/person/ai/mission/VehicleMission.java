@@ -441,12 +441,12 @@ implements UnitListener {
 			}
 		}
 		
-		else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
-			logger.info("Returning the control of " + vehicle + "  to the settlement");
-            setPhaseEnded(true);
-			leaveVehicle();
-			super.endMission(reason);
-		}
+		//else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
+			//logger.info("Returning the control of " + vehicle + " to the settlement");
+       //     setPhaseEnded(true);
+			//leaveVehicle();
+		//	super.endMission(reason);
+		//}
 		
 		else { // for all other reasons
             setPhaseEnded(true);
@@ -618,61 +618,7 @@ implements UnitListener {
 			endMission(UNREPAIRABLE_MALFUNCTION);
 		}
 	}
-//	protected final void performTravelPhase(Robot robot) {
-//
-//		NavPoint destination = getNextNavpoint();
-//
-//		// If vehicle has not reached destination and isn't broken down, travel to destination.
-//		boolean reachedDestination = vehicle.getCoordinates().equals(
-//				destination.getLocation());
-//		boolean malfunction = vehicle.getMalfunctionManager().hasMalfunction();
-//		if (!reachedDestination && !malfunction) {
-//			// Don't operate vehicle if robot was the last operator.
-//			if (robot != lastOperator) {
-//				// If vehicle doesn't currently have an operator, set this robot as the operator.
-//				if (vehicle.getOperator() == null) {
-//					if (operateVehicleTask != null) {
-//						operateVehicleTask = getOperateVehicleTask(robot,
-//								operateVehicleTask.getTopPhase());
-//					} else {
-//						operateVehicleTask = getOperateVehicleTask(robot, null);
-//					}
-//					assignTask(robot, operateVehicleTask);
-//					lastOperator = robot;
-//				} else {
-//					// If emergency, make sure current operate vehicle task is pointed home.
-//					if (!operateVehicleTask.getDestination().equals(
-//							destination.getLocation())) {
-//						operateVehicleTask.setDestination(destination
-//								.getLocation());
-//						setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
-//								getNextNavpoint().getDescription())); //$NON-NLS-1$
-//					}
-//				}
-//			} else {
-//				lastOperator = null;
-//			}
-//		}
-//
-//		// If the destination has been reached, end the phase.
-//		if (reachedDestination) {
-//			reachedNextNode();
-//			setPhaseEnded(true);
-//		}
-//
-//		// Check if enough resources for remaining trip
-//		// or if there is an emergency medical problem.
-//		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
-//
-//			// If not, determine an emergency destination.
-//			determineEmergencyDestination(robot);
-//		}
-//
-//		// If vehicle has unrepairable malfunction, end mission.
-//		if (hasUnrepairableMalfunction()) {
-//			endMission(UNREPAIRABLE_MALFUNCTION);
-//		}
-//	}
+	
 	/**
 	 * Gets a new instance of an OperateVehicle task for the person.
 	 * @param member the mission member operating the vehicle.
