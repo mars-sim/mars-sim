@@ -31,7 +31,9 @@ import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
+import org.mars_sim.msp.core.structure.building.function.HeatSourceType;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
+import org.mars_sim.msp.core.structure.building.function.PowerSourceType;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
 import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
@@ -152,9 +154,9 @@ public class BuildingConfig implements Serializable {
 	private static final String THERMAL_GENERATION = "thermal-generation";
     private static final String THERMAL_STORAGE = "thermal-storage";
 
-	private static final String ELECTRIC_HEAT_SOURCE = "Electric Heat Source";
-	private static final String SOLAR_HEAT_SOURCE = "Solar Heat Source";
-	private static final String FUEL_HEAT_SOURCE = "Fuel Heat Source";
+	private static final String ELECTRIC_HEAT_SOURCE = HeatSourceType.ELECTRIC_HEATING.toString();
+	private static final String SOLAR_HEAT_SOURCE = HeatSourceType.SOLAR_HEATING.toString();
+	private static final String FUEL_HEAT_SOURCE = HeatSourceType.FUEL_HEATING.toString();
 
 
 	// Power source types
@@ -162,12 +164,12 @@ public class BuildingConfig implements Serializable {
 	private static final String POWER_SOURCE = "power-source";
     private static final String POWER_STORAGE = "power-storage";
 
-	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
-	private static final String SOLAR_POWER_SOURCE = "Solar Power Source";
-    private static final String SOLAR_THERMAL_POWER_SOURCE = "Solar Thermal Power Source";
-	private static final String FUEL_POWER_SOURCE = "Fuel Power Source";
-    private static final String WIND_POWER_SOURCE = "Wind Power Source";
-    private static final String AREOTHERMAL_POWER_SOURCE = "Areothermal Power Source";
+	private static final String STANDARD_POWER_SOURCE = PowerSourceType.STANDARD_POWER.toString();
+	private static final String SOLAR_POWER_SOURCE = PowerSourceType.SOLAR_POWER.toString();
+    private static final String SOLAR_THERMAL_POWER_SOURCE = PowerSourceType.SOLAR_THERMAL.toString();
+	private static final String FUEL_POWER_SOURCE = PowerSourceType.FUEL_POWER.toString();
+    private static final String WIND_POWER_SOURCE = PowerSourceType.WIND_POWER.toString();
+    private static final String AREOTHERMAL_POWER_SOURCE = PowerSourceType.AREOTHERMAL_POWER.toString();
 
 	private Document buildingDoc;
 	private Set<String> buildingTypes;
@@ -834,6 +836,7 @@ public class BuildingConfig implements Serializable {
 			double heat = Double.parseDouble(heatSourceElement.getAttributeValue(CAPACITY));
 				//logger.info("getHeatSources() : finished reading capacity");
 			HeatSource heatSource = null;
+			//System.out.println("ELECTRIC_HEAT_SOURCE is " + ELECTRIC_HEAT_SOURCE);
 			if (type.equalsIgnoreCase(ELECTRIC_HEAT_SOURCE)) {
 				heatSource = new ElectricHeatSource(heat);
 				//logger.info("getHeatSources() : just called ElectricHeatSource");
@@ -841,10 +844,10 @@ public class BuildingConfig implements Serializable {
 				heatSource = new SolarHeatSource(heat);
 				//logger.info("getHeatSources() : just called SolarHeatSource");
 			} else if (type.equalsIgnoreCase(FUEL_HEAT_SOURCE)) {
-				    boolean toggleStafe = Boolean.parseBoolean(heatSourceElement.getAttributeValue(TOGGLE));
-				    String fuelType = heatSourceElement.getAttributeValue(FUEL_TYPE);
-				    double consumptionSpeed = Double.parseDouble(heatSourceElement.getAttributeValue(COMSUMPTION_RATE));
-				    heatSource = new FuelHeatSource(heat ,toggleStafe, fuelType, consumptionSpeed);
+			    boolean toggleStafe = Boolean.parseBoolean(heatSourceElement.getAttributeValue(TOGGLE));
+			    String fuelType = heatSourceElement.getAttributeValue(FUEL_TYPE);
+			    double consumptionSpeed = Double.parseDouble(heatSourceElement.getAttributeValue(COMSUMPTION_RATE));
+			    heatSource = new FuelHeatSource(heat ,toggleStafe, fuelType, consumptionSpeed);
 			} else throw new IllegalStateException("Heat source: " + type + " not a valid heat source.");
 				//logger.info("getHeatSources() : finished reading electric heat source and solar heat source");
 			heatSourceList.add(heatSource);

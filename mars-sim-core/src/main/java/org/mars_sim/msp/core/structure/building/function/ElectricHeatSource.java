@@ -34,7 +34,7 @@ implements Serializable {
 
 	public ElectricHeatSource(double maxHeat) {
 		// Call HeatSource constructor.
-		super(HeatSourceType.ELECTRIC, maxHeat);
+		super(HeatSourceType.ELECTRIC_HEATING, maxHeat);
 		//logger.info("constructor : maxHeat is " + maxHeat);
 		//count++;
 		//logger.info("constructor : count is " + count);
@@ -50,7 +50,7 @@ implements Serializable {
 	 * Called by ThermalGeneration.java
 	 */
 	public double getCurrentHeat(Building building) {
-		double HeatGenerated;
+		//double HeatGenerated;
 		// TODO: adjust secPerTick according to the MarsClock
 		//double secPerTick;
 		// Note: 1/60/60 =.000277778 hr
@@ -64,11 +64,13 @@ implements Serializable {
 		// maxCapacity is the capacity of the Electric Furnace [in kW]
 		// HeatGenerated is the Heat Gain of a room [in BTU]
 		// Note: 1 kW = 3413 BTU / hr
-		HeatGenerated =  maxCapacity * efficiency_electric_heat ;
+		//HeatGenerated =  maxCapacity * efficiency_electric_heat ;
 
 		//logger.info("getCurrentHeat() : HeatGenerated is "+  fmt.format(HeatGenerated));
 
-		return HeatGenerated;
+		//return HeatGenerated;
+		
+		return maxCapacity * efficiency_electric_heat ;
 	}
 
 	public static double getEfficiency() {
@@ -82,6 +84,6 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-	    return getMaxHeat() * 2D;
+	    return getMaxHeat() * 1D;
 	}
 }

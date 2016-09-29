@@ -649,7 +649,7 @@ public class MainScene {
         //Label labelRight = new Label("Right");
 
 		//final String os = System.getProperty ("os.name");
-		if (OS.equals("mac os x")) {
+		if (OS.contains("mac")) {
 		//if (os != null && os.startsWith ("Mac"))
 		  //menuBar.useSystemMenuBarProperty().set(true);		
 		}
@@ -1754,7 +1754,7 @@ public class MainScene {
 		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		//String OS = System.getProperty("os.name").toLowerCase();
 		//System.out.println("OS is " + OS);
-		if (OS.equals("mac os x")) {
+		if (OS.contains("mac")) {
 		// SwingUtilities needed below for MacOSX
 			SwingUtilities.invokeLater(() -> {
 				desktop.openInitialWindows();

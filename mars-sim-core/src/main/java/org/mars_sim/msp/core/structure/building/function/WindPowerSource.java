@@ -29,7 +29,7 @@ implements Serializable {
 	 */
 	public WindPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(PowerSourceType.WIND, maxPower);
+		super(PowerSourceType.WIND_POWER, maxPower);
 	}
 
 	@Override

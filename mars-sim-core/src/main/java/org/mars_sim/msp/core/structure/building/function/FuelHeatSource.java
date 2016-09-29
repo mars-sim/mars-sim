@@ -46,7 +46,7 @@ implements Serializable {
 	 */
 	public FuelHeatSource(double _maxHeat, boolean _toggle, String fuelType,
 			double _consumptionSpeed) {
-		super(HeatSourceType.FUEL, _maxHeat);
+		super(HeatSourceType.FUEL_HEATING, _maxHeat);
 		consumptionSpeed = _consumptionSpeed;
 		toggle = _toggle;
 		resource = AmountResource.findAmountResource(fuelType);

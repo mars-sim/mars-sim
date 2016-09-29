@@ -57,7 +57,7 @@ implements Serializable {
 	 */
 	public FuelPowerSource(double _maxPower, boolean _toggle, String fuelType,
 			double _consumptionSpeed) {
-		super(PowerSourceType.FUEL, _maxPower);
+		super(PowerSourceType.FUEL_POWER, _maxPower);
 		consumptionSpeed = _consumptionSpeed;
 		toggle = _toggle;
 		this._maxPower = _maxPower;

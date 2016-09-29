@@ -26,7 +26,7 @@ extends PowerSource {
 	 */
 	public AreothermalPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(PowerSourceType.AREAOTHERMAL, maxPower);
+		super(PowerSourceType.AREOTHERMAL_POWER, maxPower);
 	}
 
 	@Override

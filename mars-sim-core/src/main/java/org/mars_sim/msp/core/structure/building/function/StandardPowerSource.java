@@ -26,7 +26,7 @@ implements Serializable {
 	
 	public StandardPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(PowerSourceType.STANDARD, maxPower);
+		super(PowerSourceType.STANDARD_POWER, maxPower);
 	}
 
 	/**

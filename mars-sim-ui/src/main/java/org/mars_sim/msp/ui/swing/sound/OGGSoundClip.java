@@ -30,6 +30,7 @@ import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
 
 public class OGGSoundClip {
+	
 	private final int BUFSIZE = 4096 * 2;
 	private int convsize = BUFSIZE * 2;
 	private byte[] convbuffer = new byte[convsize];
@@ -50,12 +51,12 @@ public class OGGSoundClip {
 	private Thread player = null;
 
 	private float balance;
-	private float gain = -1;
-	private boolean paused;
+	private float gain = .8f;
 	private float oldGain;
+	private float volume = .8f;
 
 	private boolean mute;
-
+	private boolean paused;
 	/**
 	 * Create a new clip based on a reference into the class path
 	 * 
@@ -89,9 +90,13 @@ public class OGGSoundClip {
 	 * Set the default gain value (default volume)
 	 */
 	public void setDefaultGain() {
-		setGain(-1);
+		setGain(.8f);
 	}
 
+	public float getGain() {
+		return gain;
+	}
+	
 	/**
 	 * Attempt to set the global gain for the playback. If the control is not
 	 * supported this method has no effect. 1.0 will set maximum gain, 0.0
@@ -99,7 +104,7 @@ public class OGGSoundClip {
 	 * 
 	 * @param gain
 	 *            The gain value
-	 */
+	           
 	public void setGain(float gain) {
 		if (gain != -1) {
 			if ((gain < 0) || (gain > 1)) {
@@ -130,7 +135,96 @@ public class OGGSoundClip {
 			e.printStackTrace();
 		}
 	}
+ */ 
+	
+	
+	/**
+	 * Compute the gain value for the playback--based on the new value of volume in the increment or decrement of 0.05f.
+	 * @param volume the volume
+	 */
+	public void setGain(float volume) {
+		System.out.println("OGGSoundClip's setGain() is on " + Thread.currentThread().getName());
 
+		if (volume > 1)
+			volume = 1;
+		else if (volume < 0)
+			volume = 0;
+	
+		this.volume = volume;
+		
+		System.out.println("volume : " + volume);
+		
+		if (outputLine == null) {
+			return;
+		}
+
+		try {
+			// Note: control is supposed to be in decibel (dB)
+			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+
+			//  A positive gain amplifies (boosts) the signal's volume, 
+			//  A negative gain attenuates (cuts) it. 
+			// The gain setting defaults to a value of 0.0 dB, meaning the signal's loudness is unaffected. 
+			// Note that gain measures dB, not amplitude.
+			float max = control.getMaximum();
+			float min = control.getMinimum(); 
+											
+			float range = max - min;
+			float step = range/20f;
+			float num = volume/0.05f;			
+			float value = min + num * step;
+			
+			if (value < min)
+				value = min;
+			else if (value > max)
+				value = max;
+			
+			control.setValue(value);
+			
+			System.out.println("max : " + max);
+			System.out.println("min : " + min);
+			System.out.println("range : " + range);
+			System.out.println("step : " + step);
+			System.out.println("value : " + value);
+
+			
+		} catch (IllegalArgumentException e) {
+			// gain not supported
+			e.printStackTrace();
+		}
+		
+	}
+
+	public float getVolume() {
+		return volume;
+	}
+
+	/*	
+	public void setVolume() {	
+		try {
+		// use FloatControl.Type.VOLUME
+			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
+			float max = control.getMaximum();
+			float min = control.getMinimum(); 											
+			float range = max - min;
+			float value = min + (range * gain);
+			if (value < min)
+				value = min;
+			else if (value > max)
+				value = max;
+			
+			control.setValue(value);
+			
+			System.out.println("max : " + max);
+			System.out.println("min : " + min);
+			System.out.println("range : " + range);
+			System.out.println("value : " + value);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
+	}
+*/
+	
 	/**
 	 * Attempt to set the balance between the two speakers. -1.0 is full left
 	 * speak, 1.0 if full right speaker. Anywhere in between moves between the
@@ -241,6 +335,7 @@ public class OGGSoundClip {
 	 * Play the clip once - for sound effects
 	 */
 	public void play() {
+		//System.out.println("OGGSoundClip's play() is on " + Thread.currentThread().getName());
 		stop();
 
 		try {
@@ -351,7 +446,7 @@ public class OGGSoundClip {
 			this.channels = channels;
 
 			setBalance(balance);
-			setGain(gain);
+			setGain(volume);
 		} catch (Exception ee) {
 			System.out.println(ee);
 		}
@@ -615,7 +710,10 @@ public class OGGSoundClip {
 		// Set mute value.
 		this.mute = mute;
 
-		if (outputLine.isControlSupported(BooleanControl.Type.MUTE)) {
+		if (outputLine == null) {
+			return;
+		}
+		else if (outputLine.isControlSupported(BooleanControl.Type.MUTE)) {
 			BooleanControl muteControl = (BooleanControl) outputLine.getControl(BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
 		}

@@ -187,7 +187,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	// 2015-02-04 Added init()
 	public void init() {
-	   	logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
+	   	//logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
@@ -543,7 +543,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	@SuppressWarnings("restriction")
 	public void openToolWindow(String toolName) {
-        logger.info("openToolWindow() is on " + Thread.currentThread().getName());
+        //logger.info("openToolWindow() is on " + Thread.currentThread().getName());
+		// either on JavaFX Application Thread or on AWT-EventQueue-0 Thread
 		ToolWindow window = getToolWindow(toolName);
 		if (window != null) {
 			if (window.isClosed()) {
@@ -1285,7 +1286,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Opens all initial windows based on UI configuration.
 	 */
 	public void openInitialWindows() {
-	   	logger.info("openInitialWindows() is on " + Thread.currentThread().getName() );
+		//logger.info("openInitialWindows() is on " + Thread.currentThread().getName() );
+		// on JavaFX Application Thread
 /*
 		JFXPannableView v = new JFXPannableView(this);
 		if (mainScene != null ) {

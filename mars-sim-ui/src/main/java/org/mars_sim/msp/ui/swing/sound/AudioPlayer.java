@@ -31,10 +31,11 @@ public class AudioPlayer {
 	private MainDesktopPane desktop;
 	
 	/** The volume of the audio player (0.0 to 1.0) */
-	private float volume = .5F;
+	private float volume = .8f;
+
 
 	public AudioPlayer(MainDesktopPane desktop) {
-		logger.info("constructor is on " + Thread.currentThread().getName());
+		//logger.info("constructor is on " + Thread.currentThread().getName());
 		this.desktop = desktop;
 		
 		currentOGGSoundClip = null;
@@ -43,34 +44,32 @@ public class AudioPlayer {
 	
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
-			setVolume(.5F);
+			setVolume(.8f);
 		} else {
 			setMute(UIConfig.INSTANCE.isMute());
-			setVolume(UIConfig.INSTANCE.getVolume());
+			//setVolume(UIConfig.INSTANCE.getVolume());
 		}
 	}
 
 	/**
 	 * Play a clip once.
-	 * 
-	 * @param filepath
-	 *            the file path to the sound file.
+	 * @param filepath the file path to the sound file.
 	 */
 	@SuppressWarnings("restriction")
 	public void play(String filepath) {
-		logger.info("play() is on " + Thread.currentThread().getName());
+		//logger.info("play() is on " + Thread.currentThread().getName());
 		// 2016-09-27 Adde checking if it's set to mute.
 		
 		//if (!isMute()) {
 			if (desktop.getMainScene() != null) {
 					Platform.runLater(() -> {
-						logger.info("play() is on " + Thread.currentThread().getName());
+						//logger.info("play() is on " + Thread.currentThread().getName());
 						try {
 							currentOGGSoundClip = new OGGSoundClip(filepath);
 							if (!isMute(false)) {
 								// Use the state of the background sound track to determine if the sound effect should be played. 
 								currentOGGSoundClip.play();
-								logger.info("Just currentOGGSoundClip.play()");
+								//logger.info("Just currentOGGSoundClip.play()");
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -80,13 +79,13 @@ public class AudioPlayer {
 			
 			else {
 				SwingUtilities.invokeLater(() -> {
-						logger.info("play() is on " + Thread.currentThread().getName());
+						//logger.info("play() is on " + Thread.currentThread().getName());
 						try {
 							currentOGGSoundClip = new OGGSoundClip(filepath);
 							if (!isMute(false)) {
 								// Use the state of the background sound track to determine if the sound effect should be played. 
 								currentOGGSoundClip.play();
-								logger.info("Just currentOGGSoundClip.play()");
+								//logger.info("Just currentOGGSoundClip.play()");
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -102,15 +101,15 @@ public class AudioPlayer {
 	 */
 	@SuppressWarnings("restriction")
 	public void playInBackground(String filepath) {
-		logger.info("play() is on " + Thread.currentThread().getName());
+		//logger.info("play() is on " + Thread.currentThread().getName());
 		// 2016-09-28 Added checking if it's set to mute.
 			if (desktop.getMainScene() != null) {
 					Platform.runLater(() -> {
-						logger.info("playInBackground() is on " + Thread.currentThread().getName());
+						//logger.info("playInBackground() is on " + Thread.currentThread().getName());
 						try {
 							backgroundSoundTrack = new OGGSoundClip(filepath);
 							if (!isMute(false))
-								backgroundSoundTrack.play();
+								backgroundSoundTrack.loop();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -119,11 +118,11 @@ public class AudioPlayer {
 			
 			else {
 				SwingUtilities.invokeLater(() -> {
-						logger.info("playInBackground() is on " + Thread.currentThread().getName());
+						//logger.info("playInBackground() is on " + Thread.currentThread().getName());
 						try {
 							backgroundSoundTrack = new OGGSoundClip(filepath);
 							if (!isMute(false)) 
-								backgroundSoundTrack.play();
+								backgroundSoundTrack.loop();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}	
@@ -168,35 +167,87 @@ public class AudioPlayer {
 
 	/**
 	 * Gets the volume of the audio player.
-	 * 
 	 * @return volume (0.0 to 1.0)
 	 */
 	public float getVolume() {
 		return volume;
 	}
 
+	// 2016-09-28 volumeUp()
+	public void volumeUp() {
+		Platform.runLater(() -> {
+			volume = backgroundSoundTrack.getVolume() + .05f;
+			if (volume > 1f)
+				volume = 1f;
+			setVolume();
+		});
+	}
+	
+	// 2016-09-28 volumeDown()
+	public void volumeDown() {
+		Platform.runLater(() -> {
+			volume = backgroundSoundTrack.getVolume() - .05f;
+			if (volume < -1f)
+				volume = -1f;
+			setVolume();
+		});
+	}
+	
+	public void setVolume() {	
+		if(!isMute(false)) {
+			//logger.info("!isMute(false) is " + !isMute(false));
+			// 2016-09-28 Added backgroundSoundTrack
+			if (backgroundSoundTrack != null)
+				if (!backgroundSoundTrack.isMute())	{
+					backgroundSoundTrack.setGain(volume);
+					//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
+					//backgroundSoundTrack.resume();//.play();
+				}
+		}
+		else {
+			if (currentOGGSoundClip != null)
+				if (!currentOGGSoundClip.isMute()) {
+					currentOGGSoundClip.setGain(volume);
+					//currentOGGSoundClip.resume();
+				}
+			
+		}
+	}
+	
 	/**
 	 * Sets the volume of the audio player.
-	 * 
-	 * @param volume
-	 *            (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
+	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
 	 */
 	public void setVolume(float volume) {
+		//logger.info("setVolume() is on " + Thread.currentThread().getName());
 		if (volume < 0F)
 			volume = 0F;
 		if (volume > 1F)
 			volume = 1F;
 
 		this.volume = volume;
-		if (currentOGGSoundClip != null) {
-			currentOGGSoundClip.setGain(volume);
+		
+		if(!isMute(false)) {
+			//logger.info("!isMute(false) is " + !isMute(false));
+			// 2016-09-28 Added backgroundSoundTrack
+			if (backgroundSoundTrack != null)
+				if (!backgroundSoundTrack.isMute())	{
+					backgroundSoundTrack.setGain(volume);
+					System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
+					backgroundSoundTrack.resume();
+					backgroundSoundTrack.setMute(false);
+				}
 		}
-		// 2016-09-28 Added backgroundSoundTrack
-		if (backgroundSoundTrack != null) {
-			backgroundSoundTrack.setGain(volume);
+		else {
+			if (currentOGGSoundClip != null)
+				if (!currentOGGSoundClip.isMute())
+					currentOGGSoundClip.setGain(volume);
+			
 		}
+		
 	}
 
+	
 	/**
 	 * Checks if the audio player is muted.
 	 * @return true if muted.
@@ -222,13 +273,16 @@ public class AudioPlayer {
 	 * @param mute is audio player mute?
 	 */
 	public void setMute(boolean mute) {
-		//if (currentOGGSoundClip != null) {
-		//	currentOGGSoundClip.setMute(mute);
-		//}
+		if (currentOGGSoundClip != null) {
+			currentOGGSoundClip.setMute(mute);
+		}
 		// 2016-09-28 Added backgroundSoundTrack
 		if (backgroundSoundTrack != null) {
 			backgroundSoundTrack.setMute(mute);
+			if (backgroundSoundTrack.isPaused()) 
+				backgroundSoundTrack.loop();
 		}
+
 		
 	}
 

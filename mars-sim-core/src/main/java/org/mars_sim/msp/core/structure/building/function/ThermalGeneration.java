@@ -125,10 +125,14 @@ implements Serializable {
 		while (j.hasNext()) {
 			HeatSource source = j.next();
 			result += source.getAverageHeat(settlement);
-			if (source instanceof ElectricHeatSource)
+			if (source instanceof ElectricHeatSource) {
 				result += source.getMaxHeat();
-			 else if (source instanceof SolarHeatSource) {
-				result += source.getMaxHeat() / 2D;
+			}
+			else if (source instanceof SolarHeatSource) {
+				result += source.getMaxHeat();
+			}
+			else if (source instanceof FuelHeatSource) {
+				result += source.getMaxHeat();
 			}
 		}
 
@@ -222,7 +226,15 @@ implements Serializable {
 			Iterator<HeatSource> i = heatSources.iterator();
 			while (i.hasNext()) {
 				HeatSource heatSource = i.next();
-			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEAT)) {
+			    if (heatSource.getType().equals(HeatSourceType.SOLAR_HEATING)) {
+			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+			    	result += heatSource.getCurrentPower(getBuilding());
+			    }
+			    else if (heatSource.getType().equals(HeatSourceType.ELECTRIC_HEATING)) {
+			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
+			    	result += heatSource.getCurrentPower(getBuilding());
+			    }
+			    else if (heatSource.getType().equals(HeatSourceType.FUEL_HEATING)) {
 			    	//System.out.println(heatSource.toString() + " at building "+ building.getNickName() + " is HEAT_OFF");
 			    	result += heatSource.getCurrentPower(getBuilding());
 			    }
@@ -263,7 +275,27 @@ implements Serializable {
 				solarHeatSource.setEfficiency(new_eff);
 				//System.out.println("new_eff is " + new_eff);
 			}
-
+			else if (source instanceof ElectricHeatSource) {
+				//ElectricHeatSource electricHeatSource = (ElectricHeatSource) source;
+				//System.out.println("solarHeatSource.getMaxHeat() is "+ solarHeatSource.getMaxHeat());
+				//double factor = electricHeatSource.getCurrentHeat(getBuilding()) / electricHeatSource.getMaxHeat();
+				//double d_factor = ElectricHeatSource.DEGRADATION_RATE_PER_SOL * time/1000D;
+				//double eff = electricHeatSource.getEfficiency() ;
+				//double new_eff = eff - eff * d_factor * factor;
+				//electricHeatSource.setEfficiency(new_eff); // at 70% flat
+				//System.out.println("new_eff is " + new_eff);
+			}
+			else if (source instanceof FuelHeatSource) {
+				//FuelHeatSource fuelHeatSource = (FuelHeatSource) source;
+				//System.out.println("solarHeatSource.getMaxHeat() is "+ solarHeatSource.getMaxHeat());
+				//double factor = fuelHeatSource.getCurrentHeat(getBuilding()) / fuelHeatSource.getMaxHeat();
+				//double d_factor = FuelHeatSource.DEGRADATION_RATE_PER_SOL * time/1000D;
+				//double eff = fuelHeatSource.getEfficiency() ;
+				//double new_eff = eff - eff * d_factor * factor;
+				//fuelHeatSource.setEfficiency(5new_eff);
+				//System.out.println("new_eff is " + new_eff);
+			}
+		
 		heating.timePassing(time);
 	}
 

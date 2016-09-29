@@ -293,8 +293,8 @@ implements ActionListener, MenuListener {
 		volumeItem.setToolTipText(Msg.getString("mainMenu.tooltip.volumeslider")); //$NON-NLS-1$
 		volumeItem.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
-				float newVolume = (float) volumeItem.getValue() / 10F;
-				soundPlayer.setVolume(newVolume);
+				float newVolume = (float) volumeItem.getValue()/10F;
+				soundPlayer.setVolume(newVolume);			
 			}
 			});
 		settingsMenu.add(volumeItem);
@@ -449,12 +449,12 @@ implements ActionListener, MenuListener {
 
 		if (selectedItem == volumeUpItem) {
 			float oldvolume = desktop.getSoundPlayer().getVolume();
-			desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
+			desktop.getSoundPlayer().setVolume(oldvolume+0.05F);
 		}
 
 		if (selectedItem == volumeDownItem) {
 			float oldvolume = desktop.getSoundPlayer().getVolume();
-			desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
+			desktop.getSoundPlayer().setVolume(oldvolume-0.05F);
 		}
 
 		if (selectedItem == muteItem) {

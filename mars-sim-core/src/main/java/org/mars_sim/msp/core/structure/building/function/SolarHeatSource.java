@@ -35,25 +35,21 @@ implements Serializable {
 	private Coordinates location ;
 	private SurfaceFeatures surface ;
 	private BuildingManager manager;
+	
+	private double actual = -1;
 	/**
 	 * Constructor.
 	 * @param maxHeat the maximum generated power.
 	 */
 	public SolarHeatSource(double maxHeat) {
 		// Call HeatSource constructor.
-		super(HeatSourceType.SOLAR_HEAT, maxHeat);
+		super(HeatSourceType.SOLAR_HEATING, maxHeat);
 	}
 
 	public double getCurrentHeat(Building building) {
-		if (manager == null)
-			manager = building.getBuildingManager();
-		//TODO: calculate the amount of heat produced by passive solar heat
-		if (location == null)
-			location = manager.getSettlement().getCoordinates();
-		if (surface == null)
-			surface = Simulation.instance().getMars().getSurfaceFeatures();
-		//double sunlight = surface.getSurfaceSunlight(location);
-		double actual = surface.getSolarIrradiance(location) * area ;
+		if (actual == -1) 
+			computeActual(building);
+		
 		double effective = getMaxHeat() * efficiency_solar_heat;
 		double result = 0;
 		if (actual < effective)
@@ -64,7 +60,7 @@ implements Serializable {
 		return result ;
 	}
 
-	public double getCurrentPower(Building building) {
+	public void computeActual(Building building) {
 		if (manager == null)
 			manager = building.getBuildingManager();
 		//TODO: calculate the amount of heat produced by passive solar heat
@@ -73,7 +69,13 @@ implements Serializable {
 		if (surface == null)
 			surface = Simulation.instance().getMars().getSurfaceFeatures();
 		//double sunlight = surface.getSurfaceSunlight(location);
-		double actual = surface.getSolarIrradiance(location) * area ;
+		actual = surface.getSolarIrradiance(location) * area ;
+	}
+	
+	public double getCurrentPower(Building building) {
+		if (actual == -1) 
+			computeActual(building);
+		
 		double effective = getMaxHeat() * efficiency_solar_heat_to_electricity ;
 		double result = 0;
 		if (actual < effective)
@@ -103,6 +105,7 @@ implements Serializable {
 
 	@Override
 	public double getAverageHeat(Settlement settlement) {
+		// NOTE: why divide by 2 ?
 		return getMaxHeat() / 2D;
 	}
 

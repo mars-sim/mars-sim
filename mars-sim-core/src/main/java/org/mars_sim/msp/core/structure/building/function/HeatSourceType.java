@@ -9,11 +9,10 @@ package org.mars_sim.msp.core.structure.building.function;
 
 public enum HeatSourceType {
 
-	//SOLAR ("Solar Power Source"),
-	//AREAOTHERMAL ("Areothermal Power Source"),
-	ELECTRIC ("Electric Heat Source"),
-	FUEL ("Fuel Heat Source"),
-	SOLAR_HEAT ("Solar Heat Source");
+	ELECTRIC_HEATING ("Electric Heating Source"),
+	FUEL_HEATING ("Fuel Heating Source"),
+	SOLAR_HEATING ("Solar Heating Source");
+	//AREOTHERMAL ("Areothermal Heating Source"),
 
 	private String string;
 
@@ -29,5 +28,14 @@ public enum HeatSourceType {
 	 */
 	public String getString() {
 		return this.string;
+	}
+	
+	public final String getName() {
+		return this.string;
+	}
+
+	@Override
+	public final String toString() {
+		return getName();
 	}
 }

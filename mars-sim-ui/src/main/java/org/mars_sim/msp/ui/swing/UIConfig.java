@@ -87,7 +87,8 @@ public class UIConfig {
      * Private singleton constructor.
      */
     private UIConfig() {
-        logger.info("constructor is on " + Thread.currentThread().getName());
+        //logger.info("constructor is on " + Thread.currentThread().getName());
+    	// on JavaFX Application Thread
     }
 
     /**

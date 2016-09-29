@@ -34,6 +34,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.HeatSource;
 import org.mars_sim.msp.core.structure.building.function.SolarHeatSource;
@@ -153,8 +154,8 @@ extends TabPanel {
 		heatInfoPanel.add(powerGenLabel);
 
 
-		double eff_electric_heat = getAverageEfficiencyElectricHeating();
-		eff_electric_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency", formatter2.format(eff_electric_heat*100D)), JLabel.CENTER); //$NON-NLS-1$
+		double eff_electric_Heating = getAverageEfficiencyElectricHeat();
+		eff_electric_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency", formatter2.format(eff_electric_Heating*100D)), JLabel.CENTER); //$NON-NLS-1$
 		heatInfoPanel.add(eff_electric_heat_Label);
 
 		double eff_solar_heat =  getAverageEfficiencySolarHeating();
@@ -238,8 +239,8 @@ extends TabPanel {
 		return eff_solar_heat;
 	}
 
-	public double getAverageEfficiencyElectricHeating() {
-		double eff_solar_electric = 0;
+	public double getAverageEfficiencyElectricHeat() {
+		double eff_electric_heating = 0;
 		int i = 0;
 		Iterator<Building> iHeat = manager.getBuildingsWithThermal().iterator();
 		while (iHeat.hasNext()) {
@@ -249,16 +250,16 @@ extends TabPanel {
 			Iterator<HeatSource> j = heatSources.iterator();
 			while (j.hasNext()) {
 				HeatSource heatSource = j.next();
-				if (heatSource instanceof SolarHeatSource) {
+				if (heatSource instanceof ElectricHeatSource) {
 					i++;
-					SolarHeatSource solarHeatSource = (SolarHeatSource) heatSource;
-					eff_solar_electric += solarHeatSource.getEfficiencyElectric();
+					ElectricHeatSource electricHeatSource = (ElectricHeatSource) heatSource;
+					eff_electric_heating += electricHeatSource.getEfficiency();
 				}
 			}
 		}
 		// get the average eff
-		eff_solar_electric = eff_solar_electric / i;
-		return eff_solar_electric;
+		eff_electric_heating = eff_electric_heating / i;
+		return eff_electric_heating;
 	}
 
 	/**
@@ -287,7 +288,7 @@ extends TabPanel {
 				));
 		}
 
-		double eheat = getAverageEfficiencyElectricHeating()*100D;
+		double eheat = getAverageEfficiencyElectricHeat()*100D;
 		if (eheatCache != eheat) {
 			eheatCache = eheat;
 			eff_electric_heat_Label.setText(

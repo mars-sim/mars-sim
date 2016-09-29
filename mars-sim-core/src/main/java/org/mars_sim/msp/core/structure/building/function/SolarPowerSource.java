@@ -48,7 +48,7 @@ implements Serializable {
 	 */
 	public SolarPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(PowerSourceType.SOLAR, maxPower);
+		super(PowerSourceType.SOLAR_POWER, maxPower);
 	}
 
 	/**

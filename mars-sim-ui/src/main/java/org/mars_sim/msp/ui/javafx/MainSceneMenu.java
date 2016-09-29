@@ -299,7 +299,7 @@ public class MainSceneMenu extends MenuBar  {
 
         menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem7, userGuideItem);
 
-		if (MainScene.OS.equals("mac os x")) {
+		if (MainScene.OS.contains("mac")) {
 			
 			Platform.runLater(() -> {
 
@@ -460,16 +460,19 @@ public class MainSceneMenu extends MenuBar  {
         volumeUpItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-            	float oldvolume = desktop.getSoundPlayer().getVolume();
-    			desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
+            	//float oldvolume = desktop.getSoundPlayer().getVolume();
+    			//desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
+    			desktop.getSoundPlayer().volumeUp();
+    			
             }
         });
 
         volumeDownItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-            	float oldvolume = desktop.getSoundPlayer().getVolume();
-    			desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
+            	//float oldvolume = desktop.getSoundPlayer().getVolume();
+    			//desktop.getSoundPlayer().setVolume(oldvolume-0.1F);
+    			desktop.getSoundPlayer().volumeDown();
             }
         });
 

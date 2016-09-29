@@ -6,11 +6,11 @@ package org.mars_sim.msp.core.structure.building.function;
  */
 public enum PowerSourceType {
 
-	SOLAR ("Solar Power Source"),
-	AREAOTHERMAL ("Areothermal Power Source"),
-	WIND ("Wind Power Source"),
-	STANDARD ("Standard Power Source"),
-	FUEL ("Fuel Power Source"),
+	SOLAR_POWER ("Solar Power Source"),
+	AREOTHERMAL_POWER ("Areothermal Power Source"),
+	WIND_POWER ("Wind Power Source"),
+	STANDARD_POWER ("Standard Power Source"),
+	FUEL_POWER ("Fuel Power Source"),
 	SOLAR_THERMAL ("Solar Thermal Power Source");
 
 	private String string;
@@ -24,8 +24,18 @@ public enum PowerSourceType {
 	 * use internationalized strings or no strings at all.
 	 * @return {@link String}
 	 * @deprecated
-	 */
+	 */	
+	// use getType().getString() 
 	public String getString() {
 		return this.string;
+	}
+	
+	public final String getName() {
+		return this.string;
+	}
+
+	@Override
+	public final String toString() {
+		return getName();
 	}
 }
