@@ -81,9 +81,11 @@ public class UnitManager implements Serializable {
 
 	public static ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
 	public static int NUM_SPONSORS = SPONSORS.length;
+
+	public static String build;
 	   
 	// Data members
-	private int solCache;
+	//private int solCache;
 
 	/** Collection of all units. */
 	private Collection<Unit> units;
@@ -112,7 +114,7 @@ public class UnitManager implements Serializable {
 	private Map<Integer, List<String>> maleFirstNames = new HashMap<>();	
 	private Map<Integer, List<String>> femaleFirstNames = new HashMap<>();
 	
-	private MasterClock masterClock;
+	//private MasterClock masterClock;
 	private Settlement firstSettlement;	
 	private PersonConfig personConfig;
 	private SettlementConfig settlementConfig;
@@ -126,14 +128,14 @@ public class UnitManager implements Serializable {
 	 */
 	public UnitManager() {
 		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
-		solCache = 1;
+		//solCache = 1;
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 
-		masterClock = Simulation.instance().getMasterClock();
+		//masterClock = Simulation.instance().getMasterClock();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
@@ -1810,6 +1812,13 @@ public class UnitManager implements Serializable {
 		return SPONSORS;
 	}
 
+	//public String getBuild() {
+	//	return build;
+	//}
+	
+	//public static void setBuild(String value) {
+	//	build = value;
+	//}
 	
 	/**
 	 * Prepare object for garbage collection.
@@ -1836,7 +1845,7 @@ public class UnitManager implements Serializable {
 		equipmentNumberMap = null;
 		vehicleNumberMap.clear();
 		vehicleNumberMap = null;
-		masterClock = null;
+		//masterClock = null;
 		firstSettlement = null;	
 		personConfig = null;
 		settlementConfig = null;

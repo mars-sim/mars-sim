@@ -136,7 +136,7 @@ implements Serializable {
 	 * Returns the date/time formatted in a string
 	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 01212"
 	 */
-	public synchronized String getCurrentDateTimeString(EarthClock clock) {
+	public String getCurrentDateTimeString(EarthClock clock) {
 		String result = formatter_millis.format(cal.getTime());
 		//System.out.println("getCurrentDateTimeString() is " + result);
 		return result;
@@ -261,7 +261,7 @@ implements Serializable {
 	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 (UT)"
 	 */
 	//2015-01-08 Added if clause
-	public synchronized String getTimeStamp() {
+	public String getTimeStamp() {
 		String result = formatter.format(cal.getTime());// + " (UT)";
 		if (result == null) result = "0";
 		return result;
@@ -272,7 +272,7 @@ implements Serializable {
 	 * @return date/time formatted in a string. ex "2055-May-06 03:37 (UT)"
 	 */
 	//2016-09-24 Added getTimeStamp2()
-	public synchronized String getTimeStamp2() {
+	public String getTimeStamp2() {
 		String result = formatter2.format(cal.getTime());// + " (UT)";
 		if (result == null) result = "0";
 		return result;
@@ -283,7 +283,7 @@ implements Serializable {
 	 * @return date formatted in a string. ex "2055-May-06"
 	 */
 	// Kung: why do we want to deprecate this method with @deprecated tag?
-	public synchronized String getDateString() {
+	public String getDateString() {
 		return getTimeStamp().substring(0,11);
 	}
 
@@ -291,7 +291,7 @@ implements Serializable {
 	 * Adds time to the calendar
 	 * @param seconds seconds added to the calendar
 	 */
-	public synchronized void addTime(double seconds) {
+	public void addTime(double seconds) {
 		cal.add(Calendar.MILLISECOND, (int) (seconds * 1000D));
 	}
 
@@ -300,7 +300,7 @@ implements Serializable {
 	 * @return time stamp string.
 	 * @deprecated
 	 */
-	public synchronized String toString() {
+	public String toString() {
 		return getTimeStamp();
 	}
 

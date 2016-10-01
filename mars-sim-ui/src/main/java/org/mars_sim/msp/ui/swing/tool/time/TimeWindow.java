@@ -478,17 +478,11 @@ implements ClockListener {
 	 */
 	// 2015-01-09 Added updateTime()
 	public void updateTime(double time) {
-		if (masterClock == null)  {
-			//System.out.println("TimeWindow : master is null");
-			masterClock = sim.getMasterClock();
-		}
-
-    	int solElapsed = MarsClock.getSolOfYear(masterClock.getMarsClock());
-
 		if (marsTime != null) {
 			SwingUtilities.invokeLater(() -> {
 				martianTimeLabel.setText(marsTime.getDateTimeStamp());
 			});
+	    	int solElapsed = marsTime.getSolElapsedFromStart();
 			// 2015-02-24 Added solElapsedCache
 			if (solElapsed != solElapsedCache) {
 

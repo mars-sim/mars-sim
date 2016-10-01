@@ -443,9 +443,8 @@ implements Serializable {
 
 			// (4). Seasonal variation
 			double lat_adjustment = TEMPERATURE_DELTA_PER_DEG_LAT * lat_degree; // an educated guess
-			//marsClock = masterClock.getMarsClock();
 			//System.out.println(marsClock);
-			int solElapsed = MarsClock.getSolOfYear(marsClock);
+			int solElapsed = marsClock.getSolElapsedFromStart();
 			double seasonal_dt = lat_adjustment * Math.sin( 2 * Math.PI/1000D * ( solElapsed - 142));
 			seasonal_dt = Math.round (seasonal_dt * 100.0)/ 100.0;
 			//System.out.println("  seasonal_dt: " + seasonal_dt );
@@ -559,7 +558,7 @@ implements Serializable {
 	    }
 
 	    // check for the passing of each day
-	    int newSol = MarsClock.getSolOfYear(marsClock);
+	    int newSol = marsClock.getSolElapsedFromStart();
 		if (newSol != solCache) {
 
 			if (mars == null)

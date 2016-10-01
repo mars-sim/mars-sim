@@ -165,6 +165,7 @@ implements VehicleOperator, MissionMember, Serializable {
         this.associatedSettlement = settlement;
         this.sponsor = sponsor;
         
+        sim = Simulation.instance();
         masterClock = sim.getMasterClock();
         if (masterClock != null) { // to avoid NullPointerException during maven test
         	marsClock = masterClock.getMarsClock();
@@ -658,7 +659,7 @@ implements VehicleOperator, MissionMember, Serializable {
         		}         		
 
         		// check for the passing of each day
-        		int solElapsed = MarsClock.getSolOfYear(marsClock);
+        		int solElapsed = marsClock.getSolElapsedFromStart();
 
         		if (solCache != solElapsed) {
         			// 2016-04-20 Added updating a person's age

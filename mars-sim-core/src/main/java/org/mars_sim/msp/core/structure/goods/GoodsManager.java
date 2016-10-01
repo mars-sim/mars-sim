@@ -162,7 +162,7 @@ public class GoodsManager implements Serializable {
     private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
     private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
     private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
-    private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+    private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
     private static MissionManager missionManager = sim.getMissionManager();
     private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
     private static UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -175,7 +175,13 @@ public class GoodsManager implements Serializable {
         inv = settlement.getInventory();
        	//count++;
     	//System.out.println(" calling GoodsManager.java " + count + " times");
-
+         
+        sim = Simulation.instance();
+    	if (Simulation.instance().getMasterClock() != null) // for passing maven test
+    		marsClock = sim.getMasterClock().getMarsClock();
+        //marsClock = sim.getMasterClock().getMarsClock();
+    	missionManager = sim.getMissionManager();
+    	
         populateGoodsValues();
     }
 
@@ -325,10 +331,10 @@ public class GoodsManager implements Serializable {
         double totalSupply = 0;
         double tradeDemand = 0;
 
-
         // 2015-01-15 Added solElapsed
-        //MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-        int solElapsed = MarsClock.getSolOfYear(marsClock);
+		if (marsClock == null) 
+			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
+        int solElapsed = marsClock.getSolElapsedFromStart();
         // System.out.println("GoodManager : solElapsed : "+ solElapsed);
         // Compact and/or clear supply and demand maps every 5 days
         solElapsed = solElapsed % SOL_PER_REFRESH + 1;
@@ -1352,6 +1358,8 @@ public class GoodsManager implements Serializable {
         // Get amount of resource in settlement storage.
         amount += settlement.getInventory().getAmountResourceStored(resource, false);
 
+        if (missionManager == null)
+        	missionManager = sim.getMissionManager(); // needed for loading a saved sim
         // Get amount of resource out on mission vehicles.
         Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
@@ -2565,6 +2573,8 @@ public class GoodsManager implements Serializable {
         else {
             double bestTradeValue = 0D;
 
+            if (unitManager == null)
+            	unitManager = sim.getUnitManager(); // needed for loading a saved sim    
             Iterator<Settlement> i = unitManager.getSettlements().iterator();
             while (i.hasNext()) {
                 Settlement tempSettlement = i.next();

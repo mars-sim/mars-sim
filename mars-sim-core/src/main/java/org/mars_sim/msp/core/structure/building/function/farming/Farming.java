@@ -95,6 +95,7 @@ implements Serializable {
     //private BeeGrowing beeGrowing;
 	//private GoodsManager goodsManager;
 
+    private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -109,6 +110,7 @@ implements Serializable {
         this.settlement = building.getBuildingManager().getSettlement();
 		//this.goodsManager = settlement.getGoodsManager();
 
+        marsClock = Simulation.instance().getMasterClock().getMarsClock();
         BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         powerGrowingCrop = buildingConfig.getPowerForGrowingCrop(building.getBuildingType());
         powerSustainingCrop = buildingConfig.getPowerForSustainingCrop(building.getBuildingType());
@@ -658,9 +660,9 @@ implements Serializable {
      */
 	public void timePassing(double time) {
 		//System.out.println("timePassing() : time is " + time);
-	    MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+	    //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 	    // check for the passing of each day
-	    int solElapsed = MarsClock.getSolOfYear(clock);
+	    int solElapsed = marsClock.getSolElapsedFromStart();
 	    if ( solElapsed != solCache) {
 	    	solCache = solElapsed;
 	        produceDailyTendingCropWaste();

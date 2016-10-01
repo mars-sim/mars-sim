@@ -121,8 +121,7 @@ implements Serializable {
 
 	            // 2015-01-15 Added solElapsed
 	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	            int solElapsed = MarsClock.getSolOfYear(marsClock);
-
+	            int solElapsed = marsClock.getSolElapsedFromStart();
 	            if (solElapsed != solElapsedCache) {
 	            	counter = 0;
 	            	solElapsedCache = solElapsed;
@@ -190,9 +189,9 @@ implements Serializable {
 	            		+ " because none of the ingredients of any meals are available ");
 
 	            // 2015-01-15 Added solElapsed
-	            MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
-	            int solElapsed = MarsClock.getSolOfYear(marsClock);
-
+	        	
+	        	MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	            int solElapsed = marsClock.getSolElapsedFromStart();
 	            if (solElapsed != solElapsedCache) {
 	            	counter = 0;
 	            	solElapsedCache = solElapsed;

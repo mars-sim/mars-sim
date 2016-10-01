@@ -365,9 +365,7 @@ public class MainMenu {
 				"all files (*.*)", "*.*");
 
 	   chooser.getExtensionFilters().addAll(simFilter, allFilter);
-
-		// Show open file dialog
-		
+		// Show open file dialog		
 		File selectedFile = chooser.showOpenDialog(stage);
 
 		if (selectedFile != null) {
@@ -376,20 +374,16 @@ public class MainMenu {
 			showLoadingStage();		
 			stage.setIconified(true);
 			stage.hide();		
-			//waitStage = new Stage();
-			//waiti = new WaitIndicator(waitStage);		
-			//stage.display(selectedFile);		
+
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-			logger.info("Restarting " + Simulation.title);
+			//logger.info("Restarting " + Simulation.title);
 			Simulation.instance().start(false);
 		}
 		else {			
 			logger.info("No file was selected. Loading is cancelled");
 			return;		
 		}
-					
-		//waiti = new WaitIndicator();
-		
+
 		//Future future = 
 		//Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
 	   	//CompletableFuture future = (CompletableFuture) Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
@@ -438,7 +432,7 @@ public class MainMenu {
 	   String dir = Simulation.DEFAULT_DIR;
 	   String title = null;
 	   File fileLocn = null;
-		
+
 	   FileChooser chooser = new FileChooser();
 		// chooser.setInitialFileName(dir);
 		// Set to user directory or go to default if cannot access
@@ -464,7 +458,7 @@ public class MainMenu {
 			showLoadingStage();
 	
 			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-			logger.info("Restarting " + Simulation.title);
+			//logger.info("Restarting " + Simulation.title);
 			Simulation.instance().start(false);
 		}
 		else {			
@@ -695,8 +689,8 @@ public class MainMenu {
 		//2016-02-07 Added calling setMonitor()
 		setMonitor(loadingCircleStage);
 		
- 		loadingCircleStage.hide();	
-		//loadingCircleStage.show();
+		hideLoadingStage();
+		
 	}
 
 	public void chooseScreen(int num) {
@@ -714,6 +708,13 @@ public class MainMenu {
 		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
 
+		if (root == null) {
+	       root = new StackPane();//starfield);
+
+	       root.setPrefHeight(WIDTH);
+	       root.setPrefWidth(HEIGHT);
+		}
+		
 		StartUpLocation startUpLoc = new StartUpLocation(root.getPrefWidth(), root.getPrefHeight());
         double xPos = startUpLoc.getXPos();
         double yPos = startUpLoc.getYPos();
@@ -761,10 +762,17 @@ public class MainMenu {
 			setMonitor(loadingCircleStage);
 			loadingCircleStage.show();
 			//loadingCircleStage.requestFocus();
+			
+			try {
+				TimeUnit.MILLISECONDS.sleep(500L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		});		
  	}
  	
  	public void hideLoadingStage() {
+
  		Platform.runLater(() -> {
 			loadingCircleStage.hide();	 
  		});

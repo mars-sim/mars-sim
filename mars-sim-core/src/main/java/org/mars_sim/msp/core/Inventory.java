@@ -134,7 +134,7 @@ implements Serializable {
 
 
  	// 2015-01-15 addAmountSupplyAmount()
-   	public synchronized void addAmountSupplyAmount(AmountResource resource, double amount) {
+   	public void addAmountSupplyAmount(AmountResource resource, double amount) {
    		String r = resource.getName();
 
     	if (amountSupplyMap.containsKey(r)) {
@@ -152,7 +152,7 @@ implements Serializable {
    	}
 
 	// 2015-01-15 addAmountSupplyRequest()
-   	public synchronized void addAmountSupplyRequest(AmountResource resource, double amount) {
+   	public void addAmountSupplyRequest(AmountResource resource, double amount) {
    		String r = resource.getName();
 
     	if (amountSupplyRequestMap.containsKey(r)) {
@@ -228,22 +228,22 @@ implements Serializable {
     }
 
  	// 2015-01-15 Added compactSupplyAmountMap()
-    public synchronized void compactAmountSupplyAmountMap(int sol) {
+    public void compactAmountSupplyAmountMap(int sol) {
     	compactMap(amountSupplyMap, sol);
     }
 
    	// 2015-01-15 Added clearAmountSupplyRequestMap()
-    public synchronized void clearAmountSupplyRequestMap() {
+    public void clearAmountSupplyRequestMap() {
     	amountSupplyRequestMap.clear();
     }
 
   	// 2015-01-15 Added clearAmountDemandAmountMap()
-    public synchronized void clearAmountDemandAmountMap() {
+    public void clearAmountDemandAmountMap() {
     	amountDemandMap.clear();
     }
 
 	// 2015-01-15 Added compactAmountDemandAmountMap()
-    public synchronized void compactAmountDemandAmountMap(int sol) {
+    public void compactAmountDemandAmountMap(int sol) {
     	compactMap(amountDemandMap, sol);
     }
 
@@ -261,17 +261,17 @@ implements Serializable {
     }
 
    	// 2015-01-09 Added clearAmountDemandTotalRequestMap()
-    public synchronized void clearAmountDemandTotalRequestMap() {
+    public void clearAmountDemandTotalRequestMap() {
     	amountDemandTotalRequestMap.clear();
     }
 
    	// 2015-01-09 Added clearAmountDemandRequestMap()
-    public synchronized void clearAmountDemandMetRequestMap() {
+    public void clearAmountDemandMetRequestMap() {
     	amountDemandMetRequestMap.clear();
     }
 
  	// 2015-01-09 addAmountDemandTotalRequest()
-	public synchronized void addAmountDemandTotalRequest(AmountResource resource) {
+	public void addAmountDemandTotalRequest(AmountResource resource) {
    		String r = resource.getName();
 
 		if (amountDemandTotalRequestMap.containsKey(r)) {
@@ -285,7 +285,7 @@ implements Serializable {
 	}
 
  	// 2015-01-09 addAmountDemand()
-   	public synchronized void addAmountDemand(AmountResource resource, double amount) {
+   	public void addAmountDemand(AmountResource resource, double amount) {
    		String r = resource.getName();
 
     	if (amountDemandMap.containsKey(r)) {
@@ -303,7 +303,7 @@ implements Serializable {
    	}
 
  	// 2015-01-26 addItemDemand()
-   	public synchronized void addItemDemand(ItemResource resource, int number) {
+   	public void addItemDemand(ItemResource resource, int number) {
    		String r = resource.getName();
 
     	if (itemDemandMap.containsKey(r)) {
@@ -321,7 +321,7 @@ implements Serializable {
    	}
 
 	// 2015-01-09 addAmountDemandMetRequest()
-   	public synchronized void addAmountDemandMetRequest(AmountResource resource, double amount) {
+   	public void addAmountDemandMetRequest(AmountResource resource, double amount) {
    		String r = resource.getName();
 
     	if (amountDemandMetRequestMap.containsKey(r)) {
@@ -336,7 +336,7 @@ implements Serializable {
 	}
 
 	// 2015-01-09 addItemDemandMetRequest()
-   	public synchronized void addItemDemandMetRequest(ItemResource resource, double number) {
+   	public void addItemDemandMetRequest(ItemResource resource, double number) {
    		String r = resource.getName();
 
     	if (itemDemandMetRequestMap.containsKey(r)) {

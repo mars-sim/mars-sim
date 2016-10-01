@@ -148,7 +148,7 @@ implements Serializable {
     // 2015-04-29 Added RadiationExposure
     private RadiationExposure radiation;
 
-	private MarsClock clock;// = Simulation.instance().getMasterClock().getMarsClock();
+	private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
 
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepHabitMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
@@ -163,8 +163,8 @@ implements Serializable {
 
         alive = true;
         
-    	if (Simulation.instance().getMasterClock() != null) //.getMasterClock().getMarsClock() != null)
-    		clock = Simulation.instance().getMasterClock().getMarsClock();
+    	if (Simulation.instance().getMasterClock() != null) // for passing maven test
+    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
         
     	radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
@@ -233,7 +233,7 @@ implements Serializable {
 
     	if (alive) {
 	      	// 2015-12-05 check for the passing of each day
-	    	int solElapsed = MarsClock.getSolOfYear(clock);
+	    	int solElapsed = marsClock.getSolElapsedFromStart();
 	    	if (solCache != solElapsed) {
 	    		// 2015-12-05 reset numSleep back to zero at the beginning of each sol
 	    		numSleep = 0;

@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class CollectionUtils {
 
-	public synchronized static Collection<Equipment> getEquipment(
+	public static Collection<Equipment> getEquipment(
 		Collection<Unit> units
 	) {
 		ConcurrentLinkedQueue<Equipment> equipment = new ConcurrentLinkedQueue<Equipment>();
@@ -47,7 +47,7 @@ public class CollectionUtils {
 		}
 	}
 
-	public synchronized static Collection<Vehicle> getVehicle(
+	public static Collection<Vehicle> getVehicle(
 		Collection<Unit> units
 	) {
 		ConcurrentLinkedQueue<Vehicle> vehicles = new ConcurrentLinkedQueue<Vehicle>();
@@ -69,7 +69,7 @@ public class CollectionUtils {
 		}
 	}
 
-	public synchronized static Collection<Robot> getRobot(
+	public static Collection<Robot> getRobot(
 		Collection<Unit> units
 	) {
 		ConcurrentLinkedQueue<Robot> robots = new ConcurrentLinkedQueue<Robot>();
@@ -80,7 +80,7 @@ public class CollectionUtils {
 		return robots;
 	}
 
-	public synchronized static void mergeRobots(Collection<Unit> units, 
+	public static void mergeRobots(Collection<Unit> units, 
 		Collection<Robot> robots
 	) {
 		for (Robot robotUnit : robots) {
@@ -90,7 +90,7 @@ public class CollectionUtils {
 	}
 
 
-	public synchronized static Collection<Person> getPerson(
+	public static Collection<Person> getPerson(
 		Collection<Unit> units
 	) {
 		ConcurrentLinkedQueue<Person> persons = new ConcurrentLinkedQueue<Person>();
@@ -110,7 +110,7 @@ public class CollectionUtils {
 		}
 	}
 	
-	public synchronized static Collection<Settlement> getSettlement(
+	public static Collection<Settlement> getSettlement(
 		Collection<Unit> units
 	) {
 		ConcurrentLinkedQueue<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
@@ -131,7 +131,7 @@ public class CollectionUtils {
 		}
 	}
 
-	public synchronized static Settlement getRandomSettlement(
+	public static Settlement getRandomSettlement(
 		Collection<Settlement> collection
 	) {
 	    Settlement result = null;
@@ -144,7 +144,7 @@ public class CollectionUtils {
 		return result;
 	}
 
-	public synchronized static Settlement getRandomRegressionSettlement(
+	public static Settlement getRandomRegressionSettlement(
 		Collection<Settlement> collection
 	) {
 		Settlement result = null;
@@ -158,7 +158,7 @@ public class CollectionUtils {
 		return result;
 	}
 
-	public synchronized static Settlement getSettlement(
+	public static Settlement getSettlement(
 		Collection<Settlement> collection, 
 		String name
 	) {
@@ -172,7 +172,7 @@ public class CollectionUtils {
 		return result;
 	}
 
-	public synchronized static <T extends Unit> Collection<T> sortByName(
+	public static <T extends Unit> Collection<T> sortByName(
 		Collection<T> collection
 	) {
 		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<T>(
@@ -187,7 +187,7 @@ public class CollectionUtils {
 		return sorted;
 	}
 
-	public synchronized static <T extends Unit> Collection<T> sortByProximity(
+	public static <T extends Unit> Collection<T> sortByProximity(
 		Collection<T> collection,
 		final Coordinates location
 	) {

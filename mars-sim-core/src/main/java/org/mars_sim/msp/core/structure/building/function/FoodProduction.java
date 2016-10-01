@@ -59,6 +59,8 @@ implements Serializable {
     private int concurrentProcesses;
     private List<FoodProductionProcess> processes;
 
+    private static BuildingConfig config;
+    
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -68,7 +70,7 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        config = SimulationConfig.instance().getBuildingConfiguration();
 
         techLevel = config.getFoodProductionTechLevel(building.getBuildingType());
         concurrentProcesses = config.getFoodProductionConcurrentProcesses(building.getBuildingType());
@@ -92,7 +94,8 @@ implements Serializable {
 
         double result = 0D;
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        if (config == null)
+        config = SimulationConfig.instance().getBuildingConfiguration();
         int buildingTech = config.getFoodProductionTechLevel(buildingName);
 
         double demand = 0D;

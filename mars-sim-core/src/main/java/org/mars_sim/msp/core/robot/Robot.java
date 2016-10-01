@@ -35,6 +35,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
@@ -129,6 +131,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     private EarthClock earthClock;
     
     private MasterClock masterClock;
+    
   
     /**
      * Constructs a robot object at a given settlement.
@@ -732,6 +735,19 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 		//taskSchedule.setShiftType(shiftType);
 	}
 
+	public int getProduceFoodSkill() {
+		//SkillManager skillManager = robot.getBotMind().getSkillManager();
+		int skill = getSkillManager().getEffectiveSkillLevel(SkillType.COOKING) * 5;
+	    skill += getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+	    skill = (int) Math.round(skill / 7D);
+	    return skill;
+	}
+    
+	public SkillManager getSkillManager() {
+		return botMind.getSkillManager();
+	}
+	
+	
     @Override
     public void destroy() {
         super.destroy();

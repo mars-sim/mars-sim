@@ -74,6 +74,10 @@ public class MarsClock implements Serializable {
     private double millisol;
 
     private OrbitInfo orbitInfo;
+    
+    private Simulation sim = Simulation.instance();
+
+    private int solElapsed = 1;
 
     /**
      * Constructor with date string parameter.
@@ -104,8 +108,9 @@ public class MarsClock implements Serializable {
         if (millisol < 0D) throw new IllegalStateException("Invalid millisol number: " + millisol);
 
         if (orbitInfo == null)
-        	orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+        	orbitInfo = sim.getMars().getOrbitInfo();
 
+        solElapsed = 1;
     }
 
     /** Constructs a MarsClock object with a given time
@@ -124,7 +129,7 @@ public class MarsClock implements Serializable {
         this.millisol = millisol;
 
         if (orbitInfo == null)
-        	orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+        	orbitInfo = sim.getMars().getOrbitInfo();
 
     }
 
@@ -172,27 +177,38 @@ public class MarsClock implements Serializable {
 
     /** Returns the number of sols of that given year
      *  @return the number of sol as an integer
-     */
+     
     // 2015-01-28 Added getSolOfYear()
-    public static int getSolOfYear(MarsClock time) {
+    public static int getSolOfYear() {//MarsClock time) {
     	int result = 0;
 
         // Add sols up to current month
-        for (int x = 1; x < time.month; x++)
-            result += MarsClock.getSolsInMonth(x, time.orbit) ;
+        for (int x = 1; x < month; x++)
+            result += MarsClock.getSolsInMonth(x, orbit) ;
 
         // Add sols up to current sol
-        result += time.sol  ;
+        result += sol  ;
 
+        if (newSol != result) {
+        	newSol = result;
+        	System.out.println("sol of year : " + result);
+        }
         return result;
     }
-
+*/
+    
     /** Returns the total number of sols since the start of the simulation
      *  @return the total number of sol as an integer
      */
-    // 2015-02-09 Added getTotalSol
-    public int getTotalSol() {
-
+    // 2015-02-09 Added getSolElapsedFromStart
+    public int getSolElapsedFromStart() {
+        if (solElapsed != sol) {
+        	solElapsed = sol;
+        //	System.out.println("sol from start : " + solElapsed);
+        }
+    	return solElapsed;
+    
+/*
     	int result = 0;
 
         // Add sols up to current orbit
@@ -210,12 +226,17 @@ public class MarsClock implements Serializable {
 
         result = result - THE_FIRST_SOL;
 
+        if (newSol != result) {
+        	newSol = result;
+        	System.out.println("total sol : " + result);
+        }
         return result;
+*/
     }
     
     /** Returns the total number of sols since the start of the simulation
      *  @return the total number of sol as an integer
-     */
+     
     // 2015-02-09 Added getTotalSol
     public static int getTotalSol(MarsClock time) {
 
@@ -238,7 +259,8 @@ public class MarsClock implements Serializable {
 
         return result;
     }
-
+*/
+    
     /** Returns the number of sols for a given month and orbit.
      *  @param month the month number
      *  @param orbit the orbit number
@@ -286,6 +308,7 @@ public class MarsClock implements Serializable {
 
         if (addedMillisols > 0D) {
             while (millisol >= 1000D) {
+            	//System.out.println("MarsClock : millisol >= 1000D");
                 millisol -= 1000D;
                 sol += 1;
                 if (sol > getSolsInMonth(month, orbit)) {
@@ -299,6 +322,7 @@ public class MarsClock implements Serializable {
             }
         }
         else if (addedMillisols < 0D) {
+        	//System.out.println("MarsClock : addedMillisols < 0D");
             while (millisol < 0D) {
                 millisol += 1000D;
                 sol -= 1;
@@ -545,7 +569,7 @@ public class MarsClock implements Serializable {
     public String getSeason(int hemisphere) {
     	String season = "";
     	if (orbitInfo == null)
-			orbitInfo = Simulation.instance().getMars().getOrbitInfo();
+			orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();
     	//System.out.println("    L_s  :" +  L_s );
     	String modifier = "";

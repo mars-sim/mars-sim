@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.08 2016-06-08
+ * @version 3.1.0 2016-09-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -95,8 +95,6 @@ public class SimulationConfig implements Serializable {
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
 	 * ---------------------------------------------------------------------------------------------------- */
-
-	public String build;
 
 	/** DOM documents. */
 	private Document simulationDoc;
@@ -195,9 +193,14 @@ public class SimulationConfig implements Serializable {
 		SimulationConfig.instance = instance;
 	}
 
-	public String getBuild(){
-		return build;
-	}
+
+	//public String getBuildVersion() {
+	//	return build;
+	//}
+	
+	//public String getBuild(){
+	//	return build;
+	//}
 
 	/**
 	 * Reloads all of the configuration files.
@@ -597,10 +600,6 @@ public class SimulationConfig implements Serializable {
 	}
 
 
-	public String getBuildVersion() {
-		return build;
-	}
-
 	/**
 	 * Parses an XML file into a DOM document.
 	 * @param filename the path of the file.
@@ -626,9 +625,9 @@ public class SimulationConfig implements Serializable {
 
 	private void loadDefaultConfiguration() {
 		try {
-			// Set or reset the build version to Simulation.BUILD
-			this.build = Simulation.BUILD;
-			//logger.info("Setting SimulationConfig.build to Build " + build);
+
+			//System.out.println("Setting SimulationConfig.build to Build " + build);
+			
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 

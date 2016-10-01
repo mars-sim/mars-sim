@@ -128,7 +128,7 @@ implements Serializable {
     private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
     private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
     private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
-    private static MarsClock marsClock = sim.getMasterClock().getMarsClock();
+    private static MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 
     /**
      * Constructor.
@@ -150,6 +150,8 @@ implements Serializable {
 
         cookingWorkTime = 0D;
 
+        marsClock = sim.getMasterClock().getMarsClock();
+        
         BuildingConfig buildingConfig = simulationConfig.instance().getBuildingConfiguration(); // need this to pass maven test
         this.cookCapacity = buildingConfig.getCookCapacity(building.getBuildingType());
 
@@ -947,14 +949,14 @@ implements Serializable {
 
     // 2015-01-12 Added checkEndOfDay()
 	public void checkEndOfDay() {
-
-		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		if (marsClock == null) 
+			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
 	    // Added 2014-12-08 : Sanity check for the passing of each day
-		int newSol = marsClock.getSolOfMonth();
-	    double rate = settlement.getMealsReplenishmentRate();
+		int newSol = marsClock.getSolElapsedFromStart();
 	    if (newSol != solCache) {
 	    	// 2015-01-12 Adjust the rate to go up automatically by default
 	       	solCache = newSol;
+		    double rate = settlement.getMealsReplenishmentRate();
 	    	rate += UP;
 	        settlement.setMealsReplenishmentRate(rate);
 	        // reset back to zero at the beginning of a new day.

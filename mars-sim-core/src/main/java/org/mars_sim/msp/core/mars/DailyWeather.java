@@ -29,7 +29,7 @@ public class DailyWeather implements Serializable {
 			double airDensity, double windSpeed,
 			double solarIrradiance, double opticalDepth) {
 
-		this.clock = clock; //(MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		this.clock = clock;
 		//this.location = location;
 		this.temperature = temperature;
 		this.pressure = pressure;
@@ -52,7 +52,7 @@ public class DailyWeather implements Serializable {
 		return pressure;
 	}
 
-	public int getSol() {
-		return MarsClock.getTotalSol(clock);
-	}
+	//public int getSol() {
+	//	return marsClock.getSolElapsedFromStart();
+	//}
 }

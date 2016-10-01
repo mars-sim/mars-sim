@@ -58,7 +58,7 @@ implements Serializable {
 
     private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock = masterClock.getMarsClock();
+	private static MarsClock marsClock;// = masterClock.getMarsClock();
 
 	/**
 	 * Constructor.
@@ -68,6 +68,12 @@ implements Serializable {
 		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D +
 				RandomUtil.getRandomDouble(40D));
 
+        if (masterClock == null)
+        	masterClock = sim.getMasterClock();
+        
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
+		
 		// If during person's work shift, only relax for short period.
 		int millisols = (int) marsClock.getMillisol();
         boolean isShiftHour = person.getTaskSchedule().isShiftHour(millisols);

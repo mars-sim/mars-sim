@@ -881,13 +881,12 @@ public class Crop implements Serializable {
 					
 				} else { // still in phase.equals(GROWING)|| phase.equals(GERMINATION)
 
-					if (masterClock == null)
-						masterClock = Simulation.instance().getMasterClock();
+					//if (masterClock == null)
+					//	masterClock = Simulation.instance().getMasterClock();
 					// get the current time
-					MarsClock clock = masterClock.getMarsClock();
+					//MarsClock clock = masterClock.getMarsClock();
 					// check for the passing of each day
-					int newSol = MarsClock.getSolOfYear(clock); 
-					// getSolOfMonth() is unreliable for some reason. use MarsClock.getSolOfYear(clock) instead
+					int newSol = marsClock.getSolElapsedFromStart();
 					if (newSol != currentSol) {
 						// Compute health condition
 						getCondition();						
@@ -1050,7 +1049,7 @@ public class Crop implements Serializable {
 
 	    }
 	        // check for the passing of each day
-	    int newSol = MarsClock.getSolOfYear(marsClock);
+	    int newSol = marsClock.getSolElapsedFromStart();
 		if (newSol != solCache) {
 			//logger.info("Crop.java : calculateHarvestModifier() : instantaneousPAR is "+instantaneousPAR);
 			// the crop has memory of the past lighting condition

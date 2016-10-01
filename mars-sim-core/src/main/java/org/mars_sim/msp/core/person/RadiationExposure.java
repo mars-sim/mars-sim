@@ -97,7 +97,7 @@ public class RadiationExposure implements Serializable {
 	// randomize dose at the start of the sim when a settler arrives on Mars
 	private double [][] dose;
 
-	private MarsClock clock;
+	private MarsClock marsClock;
 	private MasterClock masterClock;
 	private RadiationEvent event;
 
@@ -112,6 +112,16 @@ public class RadiationExposure implements Serializable {
 		this.person = condition.getPerson();
 		this.condition = condition;
 		dose = new double[3][3];
+		
+		
+    	if (Simulation.instance().getMasterClock() != null) // for passing maven test
+    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	
+		//if (masterClock == null)
+		//	masterClock = Simulation.instance().getMasterClock();
+
+		//if (marsClock == null)
+		//	marsClock = masterClock.getMarsClock(); // cannot pass maven test
 	}
 
 	//public List<RadiationEvent> getRadiationEventList() {
@@ -130,10 +140,6 @@ public class RadiationExposure implements Serializable {
 		dose[bodyRegion][ANNUAL] = dose[bodyRegion][ANNUAL] + amount;
 		dose[bodyRegion][CAREER] = dose[bodyRegion][CAREER] + amount;
 
-		if (masterClock == null )
-			masterClock = Simulation.instance().getMasterClock();
-
-		clock = masterClock.getMarsClock();
 
 		BodyRegionType region = null;
 
@@ -144,7 +150,7 @@ public class RadiationExposure implements Serializable {
 		else if (bodyRegion == 2)
 			region = BodyRegionType.SKIN;
 
-		event = new RadiationEvent(clock, region, amount);
+		event = new RadiationEvent(marsClock, region, amount);
 		eventMap.put(event, solCache);
 
 	}
@@ -176,13 +182,8 @@ public class RadiationExposure implements Serializable {
 
 	public void timePassing(double time) {
 
-		if (masterClock == null )
-			masterClock = Simulation.instance().getMasterClock();
-
-		clock = masterClock.getMarsClock();
-
         // check for the passing of each day
-        int solElapsed = MarsClock.getSolOfYear(clock);
+        int solElapsed = marsClock.getSolElapsedFromStart();
         if (solElapsed != solCache) {
         	solCache = solElapsed;
         	counter30++;
@@ -192,7 +193,7 @@ public class RadiationExposure implements Serializable {
         }
 
 		//System.out.println("millisol : " + clock.getMillisol());
-        if (!isExposureChecked && clock.getMillisol() > 100 && clock.getMillisol() < 110) {
+        if (!isExposureChecked && marsClock.getMillisol() > 100 && marsClock.getMillisol() < 110) {
         	// check on the effect of the exposure once a day at between 100 & 110 millisols
             // Note: at fastest simulation speed, it can skip as much as ~5 millisols
         	checkExposure();

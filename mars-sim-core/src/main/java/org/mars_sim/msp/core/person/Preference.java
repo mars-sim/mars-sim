@@ -433,12 +433,12 @@ public class Preference implements Serializable {
      */
 	// 2015-06-29 Added timePassing()
     public void timePassing(double time) {
-	    if (clock == null)
-	    	clock = Simulation.instance().getMasterClock().getMarsClock();
+	    //if (clock == null)
+	    //	clock = Simulation.instance().getMasterClock().getMarsClock();
 
-		int solElapsed = MarsClock.getSolOfYear(clock);
-		if (solElapsed != solCache) {
-
+		//int solElapsed = MarsClock.getSolOfYear();//clock);
+		//if (solElapsed != solCache) {
+			//TODO change of preference occus when ....
 /*
 			Iterator<Entry<MarsClock, MetaTask>> i = futureTaskMap.entrySet().iterator();
 			while (i.hasNext()) {
@@ -455,8 +455,8 @@ public class Preference implements Serializable {
 			//scheduleTask("WriteReportMeta", 500, 800, true, 750);
 			//scheduleTask("ConnectWithEarthMeta", 700, 900, true, 950);
 
-			solCache = solElapsed;
-		}
+			//solCache = solElapsed;
+		//}
 
     }
 

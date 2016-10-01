@@ -72,6 +72,8 @@ implements Serializable {
     /** The greenhouse the person is tending. */
     private Farming greenhouse;
 
+    //private SkillManager skillManager;
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -90,6 +92,8 @@ implements Serializable {
             endTask();
         }
 
+		//skillManager = person.getMind().getSkillManager();
+
         // Get available greenhouse if any.
         Building farmBuilding = getAvailableGreenhouse(person);
         if (farmBuilding != null) {
@@ -101,6 +105,7 @@ implements Serializable {
         else {
             endTask();
         }
+
 
         // Initialize phase
         addPhase(TENDING);
@@ -119,6 +124,7 @@ implements Serializable {
         super(NAME, robot, false, false, 0, true, 
                 10D + RandomUtil.getRandomDouble(50D));
 
+        
         // Initialize data members
         if (robot.getSettlement() != null) {
             setDescription(Msg.getString("Task.description.tendGreenhouse.detail", 
@@ -128,6 +134,8 @@ implements Serializable {
             endTask();
         }
 
+		//skillManager = robot.getBotMind().getSkillManager();
+        
         // Get available greenhouse if any.
         Building farmBuilding = getAvailableGreenhouse(robot);
         if (farmBuilding != null) {
@@ -139,7 +147,7 @@ implements Serializable {
         else {
             endTask();
         }
-
+        
         // Initialize phase
         addPhase(TENDING);
         addPhase(INSPECTING_CROP);
@@ -397,9 +405,9 @@ implements Serializable {
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
 		if (person != null) 
-	        person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
+			person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
 		else if (robot != null) 
-	        robot.getBotMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
+			robot.getBotMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
 
     }
 
@@ -448,13 +456,14 @@ implements Serializable {
         Building result = null;
         Person person = null;
         Robot robot = null;
+        BuildingManager buildingManager;
         
         if (unit instanceof Person) {
          	person = (Person) unit;
             LocationSituation location = person.getLocationSituation();
             if (location == LocationSituation.IN_SETTLEMENT) {
-                BuildingManager manager = person.getSettlement().getBuildingManager();
-                List<Building> farmBuildings = manager.getBuildings(BuildingFunction.FARMING);
+                buildingManager = person.getSettlement().getBuildingManager();
+                List<Building> farmBuildings = buildingManager.getBuildings(BuildingFunction.FARMING);
                 farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
                 farmBuildings = getFarmsNeedingWork(farmBuildings);
                 farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
@@ -470,8 +479,8 @@ implements Serializable {
         	robot = (Robot) unit;
             LocationSituation location = robot.getLocationSituation();
             if (location == LocationSituation.IN_SETTLEMENT) {
-                BuildingManager manager = robot.getSettlement().getBuildingManager();
-                List<Building> buildings = manager.getBuildings(BuildingFunction.FARMING);
+            	buildingManager = robot.getSettlement().getBuildingManager();
+                List<Building> buildings = buildingManager.getBuildings(BuildingFunction.FARMING);
                 buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
                 buildings = getFarmsNeedingWork(buildings);
                 //buildings = BuildingManager.getLeastCrowdedBuildings(buildings);
@@ -540,15 +549,16 @@ implements Serializable {
 
     @Override
     //TODO: get agility score of a person/robot
-    public int getEffectiveSkillLevel() {
-    	SkillManager manager = null;
-    
+    public int getEffectiveSkillLevel() { 
+    	SkillManager skillManager = null;
+//    	if (skillManager == null) 
+//    		System.out.println("skillManager is null"); 
 		if (person != null) 
-			manager = person.getMind().getSkillManager();
+			skillManager = person.getMind().getSkillManager();
 		else if (robot != null) 
-			manager = robot.getBotMind().getSkillManager();
-        
-        return manager.getEffectiveSkillLevel(SkillType.BOTANY);
+			skillManager = robot.getBotMind().getSkillManager();
+
+        return skillManager.getEffectiveSkillLevel(SkillType.BOTANY);
     }  
 
     @Override

@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
+import org.mars_sim.msp.core.robot.ai.job.Makerbot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -60,6 +61,8 @@ implements Serializable {
 	// Data members
 	/** The manufacturing workshop the person is using. */
 	private Manufacture workshop;
+	
+	private SkillManager skillManager;
 
 	/**
 	 * Constructor.
@@ -78,6 +81,8 @@ implements Serializable {
 			endTask();
 		}
 
+		skillManager = person.getMind().getSkillManager();
+		
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
 		if (manufactureBuilding != null) {
@@ -107,6 +112,8 @@ implements Serializable {
 		else {
 			endTask();
 		}
+
+		skillManager = robot.getBotMind().getSkillManager();
 
 		// Get available manufacturing workshop if any.
 		Building manufactureBuilding = getAvailableManufacturingBuilding(robot);
@@ -146,28 +153,34 @@ implements Serializable {
 		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
 			int highestSkillLevel = 0;
+			SkillManager skillManager = null;
 			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 			while (i.hasNext()) {
 				Person tempPerson = i.next();
-				SkillManager skillManager = tempPerson.getMind().getSkillManager();
+				//if (skillManager == null)
+					skillManager = tempPerson.getMind().getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
 				if (skill > highestSkillLevel) {
 					highestSkillLevel = skill;
 				}
 			}
 			
+			skillManager = null;
 			Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
             while (l.hasNext()) {
                 Robot tempRobot = l.next();
-                SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
-                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-                if (skill > highestSkillLevel) {
-                    highestSkillLevel = skill;
+                if (tempRobot.getBotMind().getRobotJob() instanceof Makerbot) {
+                	//if (skillManager == null)
+                		skillManager = tempRobot.getBotMind().getSkillManager();
+	                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+	                if (skill > highestSkillLevel) {
+	                    highestSkillLevel = skill;
+	                }
                 }
             }
 
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			Iterator<Building> j = manager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
+			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+			Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
 				Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
@@ -191,28 +204,35 @@ implements Serializable {
 		Settlement settlement = robot.getSettlement();
 		if (settlement != null) {
 			int highestSkillLevel = 0;
+			SkillManager skillManager = null;
 			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
             while (i.hasNext()) {
                 Person tempPerson = i.next();
-                SkillManager skillManager = tempPerson.getMind().getSkillManager();
+                if (skillManager == null)
+                	skillManager = tempPerson.getMind().getSkillManager();
                 int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
                 if (skill > highestSkillLevel) {
                     highestSkillLevel = skill;
                 }
             }
             
+            skillManager = null;
+            
             Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
             while (l.hasNext()) {
                 Robot tempRobot = l.next();
-                SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
-                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
-                if (skill > highestSkillLevel) {
-                    highestSkillLevel = skill;
-                }
+                if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
+                    if (skillManager == null) 
+                    	skillManager = tempRobot.getBotMind().getSkillManager();
+	                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+	                if (skill > highestSkillLevel) {
+	                    highestSkillLevel = skill;
+	                }
+                }                
             }
 
-			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			Iterator<Building> j = manager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
+			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
+			Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
 				Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
@@ -487,12 +507,12 @@ implements Serializable {
 
 	@Override
 	public int getEffectiveSkillLevel() {
-		SkillManager manager = null;
-		if (person != null)
-			 manager =	person.getMind().getSkillManager();
-		else if (robot != null)
-			 manager =	robot.getBotMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		//SkillManager manager = null;
+		//if (person != null)
+		//	 manager =	person.getMind().getSkillManager();
+		//else if (robot != null)
+		//	 manager =	robot.getBotMind().getSkillManager();
+		return skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 	}
 
 	@Override

@@ -82,6 +82,7 @@ implements Serializable {
         job = null;
         jobLock = false;
 
+        sim = Simulation.instance();
         masterClock = sim.getMasterClock();
         if (masterClock != null) { // to avoid NullPointerException during maven test
 	        marsClock = masterClock.getMarsClock();
@@ -122,11 +123,15 @@ implements Serializable {
 
      	else {
     		if (jobLock) {
+    	        if (masterClock == null)
+    	        	masterClock = sim.getMasterClock();
+    	        
+    			if (marsClock == null)
+    				marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
+
     		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
-   	
-    	        //MarsClock marsClock = masterClock.getMarsClock();
     	        // check for the passing of each day
-    	        int solElapsed = MarsClock.getSolOfYear(marsClock);
+    	        int solElapsed = marsClock.getSolElapsedFromStart();
     	        if (solElapsed != solCache) {
     	        	solCache = solElapsed;
     	        	jobLock = false;

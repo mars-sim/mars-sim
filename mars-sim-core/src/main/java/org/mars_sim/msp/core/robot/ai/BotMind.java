@@ -27,8 +27,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
 /**
- * The Mind class represents a person's mind. It keeps track of missions and
- * tasks which the person is involved.
+ * The BotMind class represents a robot's mind. It keeps track of missions and
+ * tasks which the robot is involved.
  */
 public class BotMind
 implements Serializable {
@@ -42,24 +42,22 @@ implements Serializable {
     // Data members
     /** Is the job locked so another can't be chosen? */
     private boolean jobLock;
-    /** The person owning this mind. */
+    /** The robot owning this mind. */
     private Robot robot = null;
-    /** The person's task manager. */
+    /** The robot's task manager. */
     private TaskManager taskManager;
-    /** The person's current mission (if any). */
+    /** The robot's current mission (if any). */
     private Mission mission;
     /** The robot's job. */
     private RobotJob robotJob;
-    /** The person's personality. */
+    /** The robot's personality. */
     private PersonalityType personality;
-    /** The person's skill manager. */
-    private SkillManager skillManager;
+    /** The robot's skill manager. */
+    private static SkillManager skillManager;
 
-    private MissionManager missionManager;
+    private static MissionManager missionManager;
 
-    private static Simulation sim = Simulation.instance();
-    private static MasterClock masterClock = sim.getMasterClock();
-    private static MarsClock marsClock = masterClock.getMarsClock();
+    private Simulation sim = Simulation.instance();
 
     /**
      * Constructor 1.
@@ -81,16 +79,14 @@ implements Serializable {
         // SPA is used in iterations: After the acting phase, the sensing phase, and the entire cycle, is repeated.
         // https://en.wikipedia.org/wiki/Sense_Plan_Act
         
-        // Set the MBTI personality type.
-        //personality = new PersonalityType(person);
-
+        // Construct a skill manager.
+        skillManager = new SkillManager(robot);
+        
         // Construct a task manager
         taskManager = new TaskManager(this);
 
         missionManager = sim.getMissionManager();
 
-        // Construct a skill manager.
-        skillManager = new SkillManager(robot);
     }
 
     /**
@@ -171,12 +167,8 @@ implements Serializable {
                 if (taskManager.hasActiveTask() || hasActiveMission()) {
                     takeAction(time);
                 }
-
             }
-
         }
-
-
     }
 
 
@@ -184,7 +176,7 @@ implements Serializable {
         return robot;
     }
     /**
-     * Returns the person's task manager
+     * Returns the robot's task manager
      * @return task manager
      */
     public TaskManager getTaskManager() {
@@ -192,7 +184,7 @@ implements Serializable {
     }
 
     /**
-     * Returns the person's current mission. Returns null if there is no current mission.
+     * Returns the robot's current mission. Returns null if there is no current mission.
      * @return current mission
      */
     public Mission getMission() {
@@ -201,7 +193,7 @@ implements Serializable {
 
 
     /**
-     * Gets the person's job
+     * Gets the robot's job
      * @return job or null if none.
      */
     public RobotJob getRobotJob() {
@@ -209,7 +201,7 @@ implements Serializable {
     }
 
     /**
-     * Checks if the person's job is locked and can't be changed.
+     * Checks if the robot's job is locked and can't be changed.
      * @return true if job lock.
      */
     public boolean getJobLock() {
@@ -233,7 +225,7 @@ implements Serializable {
     }
 
     /**
-     * Returns true if person has an active mission.
+     * Returns true if robot has an active mission.
      * @return true for active mission
      */
     public boolean hasActiveMission() {
@@ -256,7 +248,7 @@ implements Serializable {
     }
 
     /**
-     * Sets the person's current mission.
+     * Sets the robot's current mission.
      * @param newMission the new mission
      */
     public void setMission(Mission newMission) {
@@ -280,7 +272,7 @@ implements Serializable {
     }
 
     /**
-     * Determines a new action for the person based on available tasks, missions and active missions.
+     * Determines a new action for the robot based on available tasks, missions and active missions.
      * @param tasks can actions be tasks?
      * @param missions can actions be new missions?
      */
@@ -303,6 +295,8 @@ implements Serializable {
         }
 
         if (missions) {
+        	if (missionManager == null)
+        		missionManager = sim.getMissionManager();
         	missionWeights = missionManager.getTotalMissionProbability(robot);
         	weightSum += missionWeights;
 	   }
@@ -367,7 +361,7 @@ implements Serializable {
     }
 
     /**
-     * Gets the person's personality type.
+     * Gets the robot's personality type.
      * @return personality type.
      */
     public PersonalityType getPersonalityType() {
@@ -375,8 +369,8 @@ implements Serializable {
     }
 
     /**
-     * Returns a reference to the Person's skill manager
-     * @return the person's skill manager
+     * Returns a reference to the robot's skill manager
+     * @return the robot's skill manager
      */
     public SkillManager getSkillManager() {
         return skillManager;
@@ -388,12 +382,15 @@ implements Serializable {
     public void destroy() {
         robot = null;
         taskManager.destroy();
+        taskManager = null;
         if (mission != null) mission.destroy();
         mission = null;
         robotJob = null;
         if (personality !=null) personality.destroy();
         personality = null;
-        skillManager.destroy();
-        skillManager = null;
+        //skillManager.destroy(); // not working for maven test
+        //skillManager = null;
+        //missionManager.destroy(); // not working for maven test
+        //missionManager = null;
     }
 }

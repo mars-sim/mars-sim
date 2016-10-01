@@ -928,7 +928,7 @@ public class MainScene {
 		timeText = new Label();
 		timeText.setText("  " + timeStamp + "  ");
 		timeText.setStyle("-fx-text-inner-color: orange;");
-		timeText.setTooltip(new Tooltip ("Earth Time"));
+		timeText.setTooltip(new Tooltip ("Earth Date & Time in sim"));
 
 		statusBar.getRightItems().add(timeText);		
 		statusBar.getRightItems().add(new Separator(VERTICAL));

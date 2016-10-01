@@ -86,48 +86,10 @@ implements UnitListener {
 	/** Caches */
 	protected Map<Class, Integer> equipmentNeededCache;
 
-	/**
-	 * Constructor.
-	 * @param name the name of the mission.
-	 * @param startingPerson the person starting the mission
-	 * @param minPeople the minimum number of mission members allowed
-	 * @throws MissionException if error constructing mission.
-	 
-	protected VehicleMission(String name, Person startingPerson, int minPeople) {
-		// Use TravelMission constructor.
-		super(name, startingPerson, minPeople);
-
-		// Add mission phases.
-		addPhase(EMBARKING);
-		addPhase(TRAVELLING);
-		addPhase(DISEMBARKING);
-
-		// Reserve a vehicle.
-		if (!reserveVehicle(startingPerson)) {
-			endMission(NO_RESERVABLE_VEHICLES);
-		}
-	}
-	protected VehicleMission(String name, Robot robot, int minPeople) {
-		// Use TravelMission constructor.
-		super(name, robot, minPeople);
-
-		// Add mission phases.
-		addPhase(EMBARKING);
-		addPhase(TRAVELLING);
-		addPhase(DISEMBARKING);
-
-		// Reserve a vehicle.
-		if (!reserveVehicle(robot)) {
-			endMission(NO_RESERVABLE_VEHICLES);
-		}
-	}
-	*/
 	protected VehicleMission(String name, MissionMember startingMember, int minPeople) {
 		// Use TravelMission constructor.
 		super(name, startingMember, minPeople);
 
-//		Person person = null;
-//		Robot robot = null;
 		this.startingMember = startingMember;
 		
 		// Add mission phases.
@@ -140,53 +102,10 @@ implements UnitListener {
 		if (!reserveVehicle(startingMember)) {
 		    endMission(NO_RESERVABLE_VEHICLES);
 		}
-//		if (unit instanceof Person) {
-//			person = (Person) unit;   
-//			if (!reserveVehicle(person)) 
-//				endMission(NO_RESERVABLE_VEHICLES);		
-//		}
-//		else if (unit instanceof Robot) {
-//			robot = (Robot) unit;
-//			if (!reserveVehicle(robot)) 
-//				endMission(NO_RESERVABLE_VEHICLES);		
-//		}
+
 	}
 	
-	/**
-	 * Constructor with vehicle.
-	 * @param name the name of the mission.
-	 * @param startingPerson the person starting the mission
-	 * @param minPeople the minimum number of mission members allowed
-	 * @param vehicle the vehicle to use on the mission.
-	 * @throws MissionException if error constructing mission.
-	
-	protected VehicleMission(String name, Person startingPerson, int minPeople,
-			Vehicle vehicle) {
-		// Use TravelMission constructor.
-		super(name, startingPerson, minPeople);
 
-		// Add mission phases.
-		addPhase(EMBARKING);
-		addPhase(TRAVELLING);
-		addPhase(DISEMBARKING);
-
-		// Set the vehicle.
-		setVehicle(vehicle);
-	}
-	protected VehicleMission(String name, Robot robot, int minPeople,
-			Vehicle vehicle) {
-		// Use TravelMission constructor.
-		super(name, robot, minPeople);
-
-		// Add mission phases.
-		addPhase(EMBARKING);
-		addPhase(TRAVELLING);
-		addPhase(DISEMBARKING);
-
-		// Set the vehicle.
-		setVehicle(vehicle);
-	}
-	 */
 	protected VehicleMission(String name, MissionMember startingMember, int minPeople,
 			Vehicle vehicle) {
 		// Use TravelMission constructor.

@@ -29,9 +29,7 @@ public class JobAssignment implements Serializable {
     private int sol;
 	private int solRatingSubmitted = -1; //no rating has ever been submitted
 
-	//private static Simulation sim = Simulation.instance();
-	//private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
+	private static MarsClock marsClock;
 
 	public JobAssignment(String timeSubmitted, String jobType, String initiator, JobAssignmentType status, String authorizedBy) {
 		// 2015-09-23 Changed the first parameter of JobAssignment.java from MarsClock to String.
@@ -40,6 +38,7 @@ public class JobAssignment implements Serializable {
 		this.initiator = initiator;
 		this.status = status;
 		this.authorizedBy = authorizedBy;
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	public String getTimeSubmitted() {
@@ -52,7 +51,7 @@ public class JobAssignment implements Serializable {
 
 	public void setSolSubmitted() {
 		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		sol = MarsClock.getTotalSol(marsClock);
+		sol = marsClock.getSolElapsedFromStart();//marsClock);
 	}
 
 	//public MarsClock getTimeAuthorized() {

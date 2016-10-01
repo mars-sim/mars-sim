@@ -47,10 +47,6 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Cancel any manufacturing processes that's beyond the skill of any people
-        // associated with the settlement.
-        ManufactureGood.cancelDifficultManufacturingProcesses(person);
-
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // the person has to be inside the settlement to check for manufacture override
@@ -102,6 +98,12 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
                 }
             }
+            
+            // Cancel any manufacturing processes that's beyond the skill of any people
+            // associated with the settlement.
+            if (result > 0)
+            	ManufactureGood.cancelDifficultManufacturingProcesses(person);
+
         }
 
         return result;
@@ -117,47 +119,52 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Cancel any manufacturing processes that's beyond the skill of any people
-        // associated with the settlement.
-        ManufactureGood.cancelDifficultManufacturingProcesses(robot);
+        if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
 
-	        if (robot.getBotMind().getRobotJob() instanceof Makerbot)
+	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            // If settlement has manufacturing override, no new
+	            // manufacturing processes can be created.
+	            if (!robot.getSettlement().getManufactureOverride()) {
+	        	// the person has to be inside the settlement to check for manufacture override
 
-		        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
-		            // If settlement has manufacturing override, no new
-		            // manufacturing processes can be created.
-		            if (!robot.getSettlement().getManufactureOverride()) {
-		        	// the person has to be inside the settlement to check for manufacture override
+		            // See if there is an available manufacturing building.
+		            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(robot);
+		            if (manufacturingBuilding != null) {
+		                result = 100D;
 
-			            // See if there is an available manufacturing building.
-			            Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(robot);
-			            if (manufacturingBuilding != null) {
-			                result = 100D;
+		                // Crowding modifier.
+		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, manufacturingBuilding);
+		                //result *= TaskProbabilityUtil.getRelationshipModifier(robot, manufacturingBuilding);
 
-			                // Crowding modifier.
-			                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, manufacturingBuilding);
-			                //result *= TaskProbabilityUtil.getRelationshipModifier(robot, manufacturingBuilding);
+		                // Manufacturing good value modifier.
+		                result *= ManufactureGood.getHighestManufacturingProcessValue(robot, manufacturingBuilding);
 
-			                // Manufacturing good value modifier.
-			                result *= ManufactureGood.getHighestManufacturingProcessValue(robot, manufacturingBuilding);
+		                if (result > 100D) {
+		                    result = 100D;
+		                }
 
-			                if (result > 100D) {
-			                    result = 100D;
-			                }
+		                // If manufacturing building has process requiring work, add
+		                // modifier.
+		                SkillManager skillManager = robot.getBotMind().getSkillManager();
+		                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+		                if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
+		                    result += 10D;
+		                }
 
-			                // If manufacturing building has process requiring work, add
-			                // modifier.
-			                SkillManager skillManager = robot.getBotMind().getSkillManager();
-			                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-			                if (ManufactureGood.hasProcessRequiringWork(manufacturingBuilding, skill)) {
-			                    result += 10D;
-			                }
+			            // Effort-driven task modifier.
+			            result *= robot.getPerformanceRating();
+		            }
 
-				            // Effort-driven task modifier.
-				            result *= robot.getPerformanceRating();
-			            }
+		        }
+	            
+		        // Cancel any manufacturing processes that's beyond the skill of any people
+		        // associated with the settlement.
+		        if (result > 0)
+		        	ManufactureGood.cancelDifficultManufacturingProcesses(robot);
 
-			        }
+	        }      
+
+        }
 
         return result;
     }

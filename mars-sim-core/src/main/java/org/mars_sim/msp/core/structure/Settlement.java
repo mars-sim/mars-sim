@@ -177,7 +177,7 @@ implements Serializable, LifeSupportType, Objective {
 	private MissionManager missionManager = sim.getMissionManager();
 
 	private Weather weather;// = sim.getMars().getWeather();
-	private MarsClock clock;// = sim.getMasterClock().getMarsClock();
+	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
 	
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -235,7 +235,7 @@ implements Serializable, LifeSupportType, Objective {
 		// logger.info("constructor 3 : count is " + count);
 		this.inv = getInventory();
 
-		this.clock = sim.getMasterClock().getMarsClock();
+		this.marsClock = sim.getMasterClock().getMarsClock();
 		this.weather = sim.getMars().getWeather();
 		
 		//resourceStat = new HashMap<>();
@@ -679,7 +679,7 @@ implements Serializable, LifeSupportType, Objective {
 		performEndOfDayTasks(); // NOTE: also update solCache in makeDailyReport()
 
 		// Sample a data point every RECORDING_FREQUENCY (in millisols)
-	    int millisols =  (int) clock.getMillisol();
+	    int millisols =  (int) marsClock.getMillisol();
 	    int quotient = millisols / RECORDING_FREQUENCY ;
 
 	    if (quotientCache != quotient && quotient != 4) {
@@ -872,7 +872,7 @@ implements Serializable, LifeSupportType, Objective {
 	 *
 	 */
 	// 2015-01-09 Added getFoodEnergyIntakeReport()
-	public synchronized void getFoodEnergyIntakeReport() {
+	public void getFoodEnergyIntakeReport() {
 		// System.out.println("\n<<< Sol " + solCache + " End of Day Food Energy
 		// Intake Report at " + this.getName() + " >>>");
 		// System.out.println("** An settler on Mars is estimated to consume
@@ -892,18 +892,11 @@ implements Serializable, LifeSupportType, Objective {
 	 * Provides the daily reports for the settlement
 	 */
 	// 2015-01-09 Added makeDailyReport()
-	public synchronized void performEndOfDayTasks() {
-
-		if (clock == null)
-			clock = sim.getMasterClock().getMarsClock();
-
+	public void performEndOfDayTasks() {
 		// check for the passing of each day
-		int solElapsed = MarsClock.getSolOfYear(clock);
-
+		int solElapsed = marsClock.getSolElapsedFromStart();
 		if (solElapsed != solCache) {
-
 			// getFoodEnergyIntakeReport();
-
 			//printWorkShift("Sol "+ solCache);
 			reassignWorkShift();
 			//printWorkShift("Sol "+ solElapsed);
@@ -911,7 +904,6 @@ implements Serializable, LifeSupportType, Objective {
 			// Remove the resourceStat map data from 12 days ago
 			if (resourceStat.size() > 11)
 				resourceStat.remove(0);
-
 			//if (counter30 == 31) {
 			//	resourceStat.remove(0);
 				//resourceStat.clear();
@@ -928,7 +920,6 @@ implements Serializable, LifeSupportType, Objective {
 			}
 
 			solCache = solElapsed;
-
 			// getSupplyDemandReport(solElapsed);
 			refreshDataMap(solElapsed);
 		}
@@ -936,8 +927,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	public void printWorkShift(String sol) {
 		logger.info(sol 
-				+ " (" + getName() + ") Work Shift " +  "-> A:" + numA + " B:" + numB
-				+ " X:" + numX + " Y:" + numY + " Z:" + numZ + " OnCall:" + numOnCall);
+				+ " " + getName() + "'s Work Shift " +  "-- A:" + numA + " B:" + numB
+				+ ", X:" + numX + " Y:" + numY + " Z:" + numZ + ", OnCall:" + numOnCall);// + " Off:" + off);
 	}
 
 	/*

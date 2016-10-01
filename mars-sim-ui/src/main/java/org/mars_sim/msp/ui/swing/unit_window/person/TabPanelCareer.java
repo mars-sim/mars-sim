@@ -92,7 +92,7 @@ implements ActionListener {
 	private JobHistoryTableModel jobHistoryTableModel;
 
 	private StarRater starRater, aveRater;
-	private MarsClock clock;
+	private MarsClock marsClock;
 
 	private BalloonToolTip balloonToolTip = new BalloonToolTip();
 
@@ -111,7 +111,7 @@ implements ActionListener {
 		);
 
 		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		clock = Simulation.instance().getMasterClock().getMarsClock();
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		//int solElapsed = MarsClock.getSolOfYear(clock);
 
 	    Person person = null;
@@ -246,9 +246,9 @@ implements ActionListener {
 					public void handleSelection(int selection) {
 	                	if (starRater.isEnabled()) {
 		                    //System.out.println(selection);
-		            		MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
-		            		int sol = MarsClock.getSolOfYear(clock);
-		            		dateTimeRatingSubmitted =  MarsClock.getDateTimeStamp(clock);
+		            		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+		            		int sol = marsClock.getSolElapsedFromStart();
+		            		dateTimeRatingSubmitted =  MarsClock.getDateTimeStamp(marsClock);
 		                	ratingLabel.setText("Job rating submitted on " + dateTimeRatingSubmitted);
 		                	ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			        		starRater.setRating(selection);
@@ -380,9 +380,7 @@ implements ActionListener {
 	 * Checks a job rating is submitted or a job reassignment is submitted and is still not being reviewed
 	 */
 	public void checkingJobRating(List<JobAssignment> list) {
-		int solElapsed = MarsClock.getSolOfYear(clock);
 		int size = list.size();
-
     	if (solRatingSubmitted == -1) {
     		// the TabPanelCareer was closed and retrieve the saved value of solRatingSubmitted from JobAssignment
         	if (list.get(size-1).getStatus().equals(JobAssignmentType.PENDING)) {
@@ -402,6 +400,7 @@ implements ActionListener {
         	ratingLabel.setText("");
         }
         else {
+    		int solElapsed = marsClock.getSolElapsedFromStart();
         	if (solElapsed > solRatingSubmitted + RATING_DAYS) {
 	        	starRater.setEnabled(true);
 				starRater.setSelection(0);
@@ -567,29 +566,21 @@ implements ActionListener {
 
 			} else {
 
-				if (clock == null)
-					clock = Simulation.instance().getMasterClock().getMarsClock();
-		        // check for the passing of each day
-		        int solElapsed = MarsClock.getSolOfYear(clock);
-
 	        	List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
-
 		        //System.out.println("solCache is " + solCache);
-
 				// 2015-10-30 Added checking if user already submitted rating or submitted a job reassignment that's still not being reviewed
 				checkingJobRating(list);
 
 				// 2015-10-30 Added checking for the status of Job Reassignment
 				checkingJobReassignment(person, list);
 
+		        // check for the passing of each day
+		        int solElapsed = marsClock.getSolElapsedFromStart();
+
 	        	// If the rating or job reassignment request is at least one day ago
 		        if (solElapsed != solCache) {
-
 		        	solCache = solElapsed;
 		    		person.getJobHistory().setSolCache(solCache);
-
-
-
 		        } // end of if (solElapsed != solCache)
 			} // end of else if not dead)
 
@@ -655,11 +646,11 @@ implements ActionListener {
 				    	//System.out.println("\n< " + person.getName() + " > ");
 			        	//System.out.println("TabPanelCareer : actionPerformed() : pop > 4");
 
-			        	if (clock == null)
-			        		clock = Simulation.instance().getMasterClock().getMarsClock();
+			        	//if (clock == null)
+			        	//	clock = Simulation.instance().getMasterClock().getMarsClock();
 
 						jobChangeLabel.setForeground(Color.BLUE);
-			        	jobChangeLabel.setText("Job reassignment submitted on " + MarsClock.getDateTimeStamp(clock));
+			        	jobChangeLabel.setText("Job reassignment submitted on " + MarsClock.getDateTimeStamp(marsClock));
 
 			        	JobHistory jh = person.getJobHistory();
 
@@ -818,7 +809,7 @@ implements ActionListener {
 		jobComboBox = null;
 		jobHistoryTableModel = null;
 		starRater = null;
-		clock = null;
+		marsClock = null;
 		balloonToolTip = null;
 	}
 

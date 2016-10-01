@@ -64,7 +64,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient volatile boolean isPaused = false;
 	/** Simulation/real-time ratio. */
 	private volatile double timeRatio = 0D;
-
+	//private int count = 0;	
 	private long timeBetweenUpdates = 0L;
 	private int noDelaysPerYield = 0;
 	private int maxFrameSkips = 0;
@@ -527,7 +527,9 @@ public class MasterClock implements Serializable { // Runnable,
     private void statusUpdate() {
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
     	// Note: it's s on pool-4-thread-1 Thread
-
+    	//count++; 
+   		//System.out.println("count : " + count);
+    	
         long lastTimeDiff;
 
         if (!isPaused) {
@@ -544,11 +546,11 @@ public class MasterClock implements Serializable { // Runnable,
             // TODO : if null
             //if (earthTime == null)
             //	earthTime = Simulation.instance().getMasterClock().getEarthClock();
-            if (keepRunning)
+            if (keepRunning) {
             	earthTime.addTime(earthTimeDiff);
-
-            marsTime.addTime(timePulse);
-
+            	if (timePulse > 0)
+            		marsTime.addTime(timePulse);
+            }
 		  	if (!isPaused 
 		  			|| !clockListenerExecutor.isTerminating() 
 		  			|| !clockListenerExecutor.isTerminated() 

@@ -86,6 +86,9 @@ extends ToolWindow {
 		super(NAME, desktop);
 		this.desktop = desktop;
 
+    	if (marsClock == null)
+    		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+    	
         balloonToolTip = new BalloonToolTip();
 
         init();
@@ -175,14 +178,13 @@ extends ToolWindow {
 			timeListener = new ActionListener() {
 			    @Override
 			    public void actionPerformed(ActionEvent evt) {
-			    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 			    	marsDateString = marsClock.getDateString();
 			    	marsTimeString = marsClock.getTrucatedTimeString();
 			    	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0
 			    	// see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
 					dateLabel.setText("Martian Date : " + marsDateString + " ");
 					timeLabel.setText("Time : " + marsTimeString + " millisols (UMST)");
-					statusText = "" + MarsClock.getTotalSol(marsClock);
+					statusText = "" + marsClock.getSolElapsedFromStart();
 				    populationText = mapPanel.getSettlement().getAllAssociatedPeople().size() + "   Cap : " + mapPanel.getSettlement().getPopulationCapacity();
 				    // 2015-02-09 Added leftLabel
 				    solLabel.setText("Sol : " + statusText);

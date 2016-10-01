@@ -38,7 +38,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
     public RoleType roleType;
 
-    public MarsClock clock;
+    public MarsClock marsClock;
 
     @Override
     public String getName() {
@@ -117,10 +117,10 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 			                    	//result = result + result * preference / 10D ;
 			                    	
 			                    	// 2015-09-24 Added adjustment based on how many sol the request has since been submitted
-		                            if (clock == null)
-		                                clock = Simulation.instance().getMasterClock().getMarsClock();
+		                            if (marsClock == null)
+		                               marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		                            // if the job assignment submitted date is > 1 sol
-		                            int sol = MarsClock.getTotalSol(clock);
+		                            int sol = marsClock.getSolElapsedFromStart();
 		                            int solRequest = list.get(list.size()-1).getSolSubmitted();
 		                            if (sol == solRequest+1)
 		                                result += 1000D;

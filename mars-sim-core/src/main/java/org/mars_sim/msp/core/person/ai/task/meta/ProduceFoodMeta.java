@@ -48,10 +48,6 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Cancel any foodProduction processes that's beyond the skill of any people
-        // associated with the settlement.
-        ProduceFood.cancelDifficultFoodProductionProcesses(person);
-
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 	        // If settlement has foodProduction override, no new foodProduction processes can be created.
@@ -105,7 +101,13 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 	    	        if (result < 0) result = 0;
 	            }
 	        }
+	        // Cancel any foodProduction processes that's beyond the skill of any people
+	        // associated with the settlement.
+	        if (result > 0)
+	        	ProduceFood.cancelDifficultFoodProductionProcesses(person);
+
         }
+        
         return result;
     }
 
@@ -119,9 +121,9 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Chefbot || robot.getBotMind().getRobotJob() instanceof Makerbot)
+        if (robot.getBotMind().getRobotJob() instanceof Chefbot || robot.getBotMind().getRobotJob() instanceof Makerbot){
 
-			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 		        // If settlement has foodProduction override, no new
 		        // foodProduction processes can be created.
@@ -151,6 +153,13 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 		            }
 
 		        }
+		        // Cancel any foodProduction processes that's beyond the skill of any people
+		        // associated with the settlement.
+		        if (result > 0)
+		        	ProduceFood.cancelDifficultFoodProductionProcesses(robot);
+
+			}
+        }
 
         return result;
 	}

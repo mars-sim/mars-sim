@@ -152,8 +152,8 @@ LocalBoundedObject, InsidePathLocation {
 	protected LifeSupport lifeSupport;
 	private EVA eva;
     private Inventory itemInventory;
-	private MarsClock marsClock;
-	private MasterClock masterClock;
+	private static MarsClock marsClock;
+	private static MasterClock masterClock;
 
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
@@ -944,12 +944,10 @@ LocalBoundedObject, InsidePathLocation {
 	public void checkForMeteoriteImpact() {
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-
 		marsClock = masterClock.getMarsClock();
 
         // check for the passing of each day
-        int solElapsed = MarsClock.getSolOfYear(marsClock);
-
+        int solElapsed = marsClock.getSolElapsedFromStart();
         int impactTimeInMillisol = 0;
 
         if (solElapsed != solCache) {

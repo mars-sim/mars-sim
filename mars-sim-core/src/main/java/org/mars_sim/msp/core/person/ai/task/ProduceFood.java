@@ -61,6 +61,8 @@ implements Serializable {
 	/** The foodProduction foodFactory the person is using. */
 	private FoodProduction foodFactory;
 
+	private SkillManager skillManager;
+	
 	/**
 	 * Constructor.
 	 * @param person the person to perform the task
@@ -90,6 +92,8 @@ implements Serializable {
 			endTask();
 		}
 
+		skillManager = person.getMind().getSkillManager();			
+		
 		// Initialize phase
 		addPhase(PRODUCE_FOOD);
 		setPhase(PRODUCE_FOOD);
@@ -120,6 +124,8 @@ implements Serializable {
 			endTask();
 		}
 
+		skillManager = robot.getBotMind().getSkillManager();
+		
 		// Initialize phase
 		addPhase(PRODUCE_FOOD);
 		setPhase(PRODUCE_FOOD);
@@ -171,8 +177,8 @@ implements Serializable {
 		if (settlement != null) {
 			int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
-			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			Iterator<Building> j = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
+			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
+			Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
 				FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
@@ -199,12 +205,14 @@ implements Serializable {
 	private static int getHighestSkillAtSettlement(Settlement settlement) {
 	    
 	    int highestSkillLevel = 0;
+	    SkillManager skillManager = null;
 	    
 	    // Get highest person skill level.
 	    Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
         while (i.hasNext()) {
             Person tempPerson = i.next();
-            SkillManager skillManager = tempPerson.getMind().getSkillManager();
+            //if (skillManager == null)
+				skillManager = tempPerson.getMind().getSkillManager();
             int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
             skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
             skill = (int) Math.round(skill / 7D);
@@ -213,11 +221,14 @@ implements Serializable {
             }
         }
 	    
+        skillManager = null;
         // Get highest robot skill level.
         Iterator<Robot> j = settlement.getAllAssociatedRobots().iterator();
+        
         while (j.hasNext()) {
             Robot tempRobot = j.next();
-            SkillManager skillManager = tempRobot.getBotMind().getSkillManager();
+            //if (skillManager == null)
+            	skillManager = tempRobot.getBotMind().getSkillManager();
             int skill = skillManager.getSkillLevel(SkillType.COOKING) * 5;
             skill += skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
             skill = (int) Math.round(skill / 7D);
@@ -245,8 +256,8 @@ implements Serializable {
         skill = (int) Math.round(skill / 7D);
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> foodProductionBuildings = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
+			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
+			List<Building> foodProductionBuildings = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
@@ -266,15 +277,15 @@ implements Serializable {
 	public static Building getAvailableFoodProductionBuilding(Robot robot) {
 
 		Building result = null;
-
-		SkillManager skillManager = robot.getBotMind().getSkillManager();
-		int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
-        skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
-        skill = (int) Math.round(skill / 7D);
+		int skill = robot.getProduceFoodSkill();
+		//SkillManager skillManager = robot.getBotMind().getSkillManager();
+		//int skill = skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+        //skill += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
+        //skill = (int) Math.round(skill / 7D);
 
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = robot.getSettlement().getBuildingManager();
-			List<Building> foodProductionBuildings = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
+			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
+			List<Building> foodProductionBuildings = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
@@ -466,18 +477,18 @@ implements Serializable {
 			int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-	        person.getMind().getSkillManager().addExperience(
+	        skillManager.addExperience(
 	                SkillType.COOKING, newPoints * 5 / 7D);
-	        person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
+	        skillManager.addExperience(SkillType.MATERIALS_SCIENCE,
 	                newPoints *2 / 7D);
 		}
 		else if (robot != null) {
 			int experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
 			newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 			newPoints *= getTeachingExperienceModifier();
-	        robot.getBotMind().getSkillManager().addExperience(
+	        skillManager.addExperience(
 	                SkillType.COOKING, newPoints * 5 / 7D);
-	        robot.getBotMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE,
+	        skillManager.addExperience(SkillType.MATERIALS_SCIENCE,
 	                newPoints *2 / 7D);
 		}
 	}
@@ -493,14 +504,14 @@ implements Serializable {
 	@Override
 	public int getEffectiveSkillLevel() {
         double result = 0;
-        SkillManager manager = null;
-		if (person != null) 
-			manager = person.getMind().getSkillManager();			
-		else if (robot != null)
-			manager = robot.getBotMind().getSkillManager();
+        //SkillManager manager = null;
+		//if (person != null) 
+		//	manager = person.getMind().getSkillManager();			
+		//else if (robot != null)
+		//	manager = robot.getBotMind().getSkillManager();	
+		result += skillManager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
+		result += skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
 		
-		result += manager.getEffectiveSkillLevel(SkillType.COOKING) * 5;
-		result += manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE) * 2;
         return (int) Math.round(result / 7D);
 	}
 

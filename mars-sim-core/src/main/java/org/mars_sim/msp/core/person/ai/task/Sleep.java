@@ -80,9 +80,8 @@ public class Sleep extends Task implements Serializable {
     private RoboticStation station;
 
     private static Simulation sim = Simulation.instance();
-	private static MasterClock masterClock = sim.getMasterClock();
-	private static MarsClock marsClock = masterClock.getMarsClock();
-
+	private static MasterClock masterClock;// = sim.getMasterClock();
+	private static MarsClock marsClock; 
 
     /**
      * Constructor.
@@ -97,9 +96,11 @@ public class Sleep extends Task implements Serializable {
         super(NAME, person, false, false, STRESS_MODIFIER, true,
                 (250D + RandomUtil.getRandomDouble(80D)));
         
+        if (masterClock == null)
+        	masterClock = sim.getMasterClock();
+        
 		if (marsClock == null)
-			if (masterClock != null)
-				marsClock = masterClock.getMarsClock();
+			marsClock = masterClock.getMarsClock();
     	
         //boolean walkSite = false;
 
@@ -299,10 +300,12 @@ public class Sleep extends Task implements Serializable {
             }
         }
 
+        if (masterClock == null)
+        	masterClock = sim.getMasterClock();
+        
 		if (marsClock == null)
-			if (masterClock != null)
-				marsClock = masterClock.getMarsClock();
-    	
+			marsClock = masterClock.getMarsClock();
+
         previousTime = marsClock.getMillisol();
 
         // Initialize phase
@@ -347,7 +350,12 @@ public class Sleep extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double sleepingPhase(double time) {
-
+        if (masterClock == null)
+        	masterClock = sim.getMasterClock();
+        
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
+		
 		if (person != null) {
 	        // Reduce person's fatigue
 	        double newFatigue = person.getPhysicalCondition().getFatigue() - (timeFactor * time);
