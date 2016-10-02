@@ -524,22 +524,26 @@ implements ClockListener {
 		//System.out.println("TimeWindow : calling pauseChange()");
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
+			//if (!masterClock.isPaused() && 
+			if (mainScene != null && !masterClock.isSavingSimulation())
+				//Platform.runLater(() -> mainScene.startPausePopup());
+				mainScene.showWaitStage(MainScene.PAUSING);
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$		
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
 			//if (mainScene != null)
 			//sim.getAutosaveTimer().pause();
-			if (!masterClock.isPaused() && mainScene != null)
-				Platform.runLater(() -> mainScene.startPausePopup());
-			
+
 		} else {			
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
 			//desktop.disposeAnnouncementWindow();
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
 			//if (mainScene != null)
 			//sim.getAutosaveTimer().play();
-			if (masterClock.isPaused() && mainScene != null)
-				Platform.runLater(() -> mainScene.stopPausePopup());
+			//if (masterClock.isPaused() && 
+			if (mainScene != null)
+				//Platform.runLater(() -> mainScene.stopPausePopup());
+				mainScene.hideWaitStage(MainScene.PAUSING);
 	
 		}
 	}
@@ -553,7 +557,7 @@ implements ClockListener {
 		pauseButton.setEnabled(value);
 		// Note : when a wizard or a dialog box is opened/close,
 		// need to call below to remove/add the ability to use ESC to unpause/pause
-		mainScene.setEscapeEventHandler(value);
+		mainScene.setEscapeEventHandler(value, mainScene.getStage());
 	}
 
 	/**

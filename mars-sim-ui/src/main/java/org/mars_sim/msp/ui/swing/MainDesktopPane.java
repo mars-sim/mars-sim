@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.07 2015-01-30
+ * @version 3.1.0 2016-10-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -1227,15 +1227,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * Removes the popup announcement window from the desktop.
 	 */
 	public void disposeAnnouncementWindow() {
-		if (mainScene != null) {
-			//mainScene.hideLoadingStage();
-			mainScene.hideSavingStage();
-			//mainScene.hidePausedStage();
-		}
-		else {
-			announcementWindow.dispose();
-			
-		}
+		announcementWindow.dispose();
 	}
 
 

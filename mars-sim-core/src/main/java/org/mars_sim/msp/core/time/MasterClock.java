@@ -740,6 +740,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @param isPaused true if simulation is paused.
      */
     public void setPaused(boolean isPaused) {
+        //logger.info("MasterClock's setPaused() is on " + Thread.currentThread().getName());
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
         if (isPaused)

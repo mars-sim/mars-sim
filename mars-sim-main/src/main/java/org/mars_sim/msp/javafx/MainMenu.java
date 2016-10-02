@@ -161,6 +161,8 @@ public class MainMenu {
 
 	public SpinningGlobe spinningGlobe;
 	
+	private Simulation sim = Simulation.instance();
+	
 	//private WaitIndicator waiti;
 
     public MainMenu(MarsProjectFX marsProjectFX) {
@@ -456,10 +458,12 @@ public class MainMenu {
 			fileLocn = selectedFile;
 	
 			showLoadingStage();
-	
-			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+				
+			sim.getSimExecutor().execute(new LoadSimulationTask(fileLocn));
+			
+			//Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
 			//logger.info("Restarting " + Simulation.title);
-			Simulation.instance().start(false);
+			//Simulation.instance().start(false);
 		}
 		else {			
 			logger.info("No file was selected. Loading is cancelled");
@@ -475,8 +479,7 @@ public class MainMenu {
 				e.printStackTrace();
 			}
 		}
-		
-		
+			
 		Platform.runLater(() -> {
 			//mainScene = new MainScene(mainSceneStage);	   
 			prepareScene();
@@ -498,16 +501,24 @@ public class MainMenu {
 			
    }
 
-   
+
    /*
-    * Loads settlement data from a default saved sim
+    * Loads settlement data from a saved sim
+    * @param fileLocn user's sim filename
     */
 	public class LoadSimulationTask implements Runnable {
-		public void run() {			
-			//logger.info("MainMenu's LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
-			//fileSize = 1;
-			logger.info("Loading settlement data from the default saved simulation...");
+		File fileLocn;
 		
+		LoadSimulationTask(File fileLocn){
+			this.fileLocn = fileLocn;
+		}
+		
+		public void run() {
+			logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
+			logger.info("Loading settlement data from the default saved simulation...");
+			sim.loadSimulation(fileLocn); // null means loading "default.sim"
+			//sim.stop();
+			sim.start(false);		
 		}
 	}
 
@@ -537,19 +548,7 @@ public class MainMenu {
 	   //mainScene.getMarsNode().createJMEWindow(stage);
 
 	   mainScene.initializeTheme();
-/*
-	   while (!mainScene.isMainSceneDone())
-	   {
-		   try {
-			TimeUnit.MILLISECONDS.sleep(200L);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	   }
-*/
-
-	   //stage.setIconified(false);
-	   
+ 
        //2016-02-07 Added calling setMonitor()
        setMonitor(mainSceneStage);
        
@@ -559,10 +558,6 @@ public class MainMenu {
 	   mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
  
        mainSceneStage.show();
-
-	   //Platform.runLater(() -> {
-	   //   circleStage.close();
-	   //});
 
 	   mainScene.openInitialWindows();
 
@@ -637,32 +632,15 @@ public class MainMenu {
 	public void createProgressCircle(String title) {
 
 		StackPane stackPane = new StackPane();
-
-		//BorderPane controlsPane = new BorderPane();
-		//controlsPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-		//stackPane.getChildren().add(controlsPane);
-		//controlsPane.setCenter(new TableView<Void>());
-
 		MaskerPane indicator = new MaskerPane();
  		indicator.setText(title);
  		indicator.setScaleX(1.5);
  		indicator.setScaleY(1.5);
-
-		//indicator.setMaxSize(200, 200);
-/*
-		ProgressIndicator indicator = new ProgressIndicator();
-		indicator.setMaxSize(120, 120);
-		//indicator.setProgress(50);
-		ColorAdjust adjust = new javafx.scene.effect.ColorAdjust();
-		adjust.setHue(-0.07); // -.07, -0.1 cyan; 3, 17 = red orange; -0.4 = bright green
-		indicator.setEffect(adjust);
-*/
+ 		
 		stackPane.getChildren().add(indicator);
 		StackPane.setAlignment(indicator, Pos.CENTER);
-		//StackPane.setMargin(indicator, new Insets(5));
+
 		stackPane.setBackground(Background.EMPTY);
-		//stackPane.setScaleX(1.2);
-		//stackPane.setScaleY(1.2);
  		stackPane.setStyle(
       		   //"-fx-border-style: none; "
       		   //"-fx-background-color: #231d12; "
@@ -710,7 +688,6 @@ public class MainMenu {
 
 		if (root == null) {
 	       root = new StackPane();//starfield);
-
 	       root.setPrefHeight(WIDTH);
 	       root.setPrefWidth(HEIGHT);
 		}
@@ -759,10 +736,11 @@ public class MainMenu {
 	
  	public void showLoadingStage() {
 		Platform.runLater(() -> {
-			setMonitor(loadingCircleStage);
-			loadingCircleStage.show();
-			//loadingCircleStage.requestFocus();
-			
+			if (loadingCircleStage != null) {
+				setMonitor(loadingCircleStage);
+				loadingCircleStage.show();
+			}
+			//loadingCircleStage.requestFocus();			
 			try {
 				TimeUnit.MILLISECONDS.sleep(500L);
 			} catch (InterruptedException e) {
@@ -774,6 +752,7 @@ public class MainMenu {
  	public void hideLoadingStage() {
 
  		Platform.runLater(() -> {
+ 			if (loadingCircleStage != null)
 			loadingCircleStage.hide();	 
  		});
  	}

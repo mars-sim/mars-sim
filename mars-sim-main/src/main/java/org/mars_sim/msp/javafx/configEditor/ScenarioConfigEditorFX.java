@@ -148,7 +148,7 @@ public class ScenarioConfigEditorFX {
 	private SimulationConfig config;
 	private MainMenu mainMenu;
 	private CrewEditorFX crewEditorFX;
-	private MarsProjectFX marsProjectFX;
+	//private MarsProjectFX marsProjectFX;
 	private MultiplayerClient multiplayerClient;
 	private SettlementConfig settlementConfig;
 	private MainScene mainScene;
@@ -163,7 +163,7 @@ public class ScenarioConfigEditorFX {
 	 * @param mainMenu
 	 * @param config the simulation configuration.
 	 */
-	public ScenarioConfigEditorFX(MarsProjectFX marsProjectFX, MainMenu mainMenu) { // ,																				// {
+	public ScenarioConfigEditorFX(MainMenu mainMenu) { // ,	MarsProjectFX marsProjectFX, 																			// {
 		// logger.info("ScenarioConfigEditorFX's constructor is on " +
 		// Thread.currentThread().getName() );
 
@@ -1137,7 +1137,7 @@ public class ScenarioConfigEditorFX {
 		mainMenu = null;
 		mainScene = null;
 		crewEditorFX = null;
-		marsProjectFX = null;
+		//marsProjectFX = null;
 		multiplayerClient = null;
 		settlementConfig = null;
 

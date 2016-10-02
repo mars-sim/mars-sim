@@ -1709,31 +1709,37 @@ implements Serializable, LifeSupportType, Objective {
 				}
 			}
 			else {
-				String first = null;
-				String last = null;
+				String first = "";
+				String last = "";
 				String full = person.getName();
 				int len1 = full.length();
 				//int index1 = 0;
 
-				for (int j = 0 ; j < len1 ; j++) {
+				for (int j = len1-1 ; j > 0 ; j--) {
+					// Note: finding the whitespace from the end to 0 (from right to left) works better than from left to right
+					// e.g. Mary L. Smith (last name should be "Smith", not "L. Smith"
 			        if (full.charAt(j) == ' ') {
 			        	//index1 = j;
 				        first = full.substring(0, j);
 				        last = full.substring(j+1, len1);
 				        break;
 			        }
+			        else {
+			        	first = full;
+			        }
 				}
 
-
-				// Case 4: if aName is a last name
+				// Case 4: if aName is a last name		
 				if (first.equalsIgnoreCase(aName)) {
 					//found++;
 					personList.add(person);
 				}
+				
 				// Case 5: if aName is a first name
-				else if (last.equalsIgnoreCase(aName)) {
-					//found++;
-					personList.add(person);
+				else if (last != null)
+					if (last.equalsIgnoreCase(aName)) {
+						//found++;
+						personList.add(person);
 				}
 			}
 		}

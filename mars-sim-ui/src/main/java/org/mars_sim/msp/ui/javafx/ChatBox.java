@@ -287,15 +287,45 @@ public class ChatBox extends BorderPane {
 			Iterator<Person> j = s.getAllAssociatedPeople().iterator();
 			while (j.hasNext()) {
 				Person p = j.next();
-				
-				// 2016-06-15 Added names in both orders, namely, "first last" or "last, and first"
+			
+				String first = "";
+				String last = "";
+				// 2016-06-15 Added names in both orders, namely, "first last" or "last, first"
 				String firstLast = p.getName();
-				int index = firstLast.indexOf(" ");
-				String first = firstLast.substring(0, index);
-				String last = firstLast.substring(index+1, firstLast.length());
-				String lastFirst = last + ", " + first;
-				nameList.add(lastFirst);				
-				nameList.add(firstLast);
+				String lastFirst = "";
+				int len1 = firstLast.length();
+				// 2016-10-01 Used for loop to find the last is the best approach instead of int index = firstLast.indexOf(" ");
+				int index = 0;
+				
+				for (int k = len1-1 ; k > 0 ; k--) {
+					// Note: finding the whitespace from the end to 0 (from right to left) works better than from left to right
+					// e.g. Mary L. Smith (last name should be "Smith", not "L. Smith"
+			        if (firstLast.charAt(k) == ' ') {
+			        	index = k;
+				        first = firstLast.substring(0, k);
+				        last = firstLast.substring(k+1, len1);
+				        break;
+			        }
+			        else 
+			        	first = firstLast;		        
+				}
+				
+
+				if (index == -1) {
+					// the person has no last name
+					first = firstLast;
+					//last = "";
+					//lastFirst = first;
+					nameList.add(first);	
+				}
+				else {
+					first = firstLast.substring(0, index);
+					last = firstLast.substring(index+1, firstLast.length());
+					lastFirst = last + ", " + first;			
+					nameList.add(firstLast);
+					nameList.add(lastFirst);
+				}
+
 			}
 			
 			Iterator<Robot> k = s.getAllAssociatedRobots().iterator();

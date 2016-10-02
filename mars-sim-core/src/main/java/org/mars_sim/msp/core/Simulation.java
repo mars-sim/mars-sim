@@ -446,25 +446,10 @@ implements ClockListener, Serializable {
      * Ends the current simulation
      */
     public void endSimulation() {
-        Simulation sim = instance();
-        sim.defaultLoad = false;
-        sim.stop();
-
+        instance().defaultLoad = false;
+        instance().stop();
         masterClock.endClockListenerExecutor();
         clockScheduler.shutdownNow();
-        
-        //if (managerExecutor != null) {
-        //    managerExecutor.shutdownNow();
-        //}
-        
-        // Wait until current time pulse runs its course
-        // we have no idea how long it will take it to
-        // run its course. But this might be enough.
-        //Thread.yield();
-        //worker.shutdown();
-        //masterClock = null; // not an option
-        //masterClock.exitProgram(); // not exiting main menu
-
     }
 
     public void endMasterClock() {
@@ -477,50 +462,9 @@ implements ClockListener, Serializable {
      * @throws ClassNotFoundException if error reading serialized classes.
      * @throws IOException if error reading from file.
      */
+   	// 2016-03-22 Replace gzip with xz compression (based on LZMA2)
     private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
-    	//logger.info("Simulation : running readFromFile()");
-/*
-        //ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
-        FileInputStream fin = new FileInputStream(file);
-        GZIPInputStream gis = new GZIPInputStream(fin);
-        ObjectInputStream ois = new ObjectInputStream(gis);
-
-        // Destroy old simulation.
-        if (instance().initialSimulationCreated) {
-            destroyOldSimulation();
-        }
-
-        // Load intransient objects.
-        SimulationConfig.setInstance((SimulationConfig) ois.readObject());
-        //SimulationConfig instance = (SimulationConfig) ois.readObject();
-    	//SimulationConfig.setInstance(instance);
-
-        loadBuild = SimulationConfig.instance().getBuild();
-    	if (loadBuild == null)
-    		loadBuild = "unknown";
-    	logger.info("Running MSP Build " + Simulation.BUILD + ". Loading a sim saved in Build " + loadBuild);
-
-        malfunctionFactory = (MalfunctionFactory) ois.readObject();
-        mars = (Mars) ois.readObject();
-        mars.initializeTransientData();
-        missionManager = (MissionManager) ois.readObject();
-        relationshipManager = (RelationshipManager) ois.readObject();
-        medicalManager = (MedicalManager) ois.readObject();
-        scientificStudyManager = (ScientificStudyManager) ois.readObject();
-        transportManager = (TransportManager) ois.readObject();
-        creditManager = (CreditManager) ois.readObject();
-        unitManager = (UnitManager) ois.readObject();
-        masterClock = (MasterClock) ois.readObject();
-        ois.close();
-*/
-    	
-        // Destroy old simulation.
-        //if (instance().initialSimulationCreated)
-        //   destroyOldSimulation();
-
-        
-    	// 2016-03-22 Replace gzip with xz compression (based on LZMA2)
-        // Decompress a xz compressed file       
+    	//logger.info("Simulation : running readFromFile()");      
         byte[] buf = new byte[8192];
         ObjectInputStream ois = null;
         FileInputStream in = null;
@@ -538,6 +482,7 @@ implements ClockListener, Serializable {
            
             // define a temporary uncompressed file
             File uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
+            // Decompress a xz compressed file 
             FileOutputStream fos = new FileOutputStream(uncompressed);                
 
             int size;
@@ -1002,6 +947,7 @@ implements ClockListener, Serializable {
 	//2015-01-07 Added startAutosaveTimer()
     //2016-04-28 Relocated the autosave timer from MainMenu to here
 	public void startAutosaveTimer(boolean useDefaultName) {
+        logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
 
 		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
 			
