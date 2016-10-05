@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -48,6 +49,7 @@ implements Serializable {
 
 	// Data members
 	private String taskNameCache, taskDescriptionCache, taskPhaseCache;
+	private String oldJob = "";
 	/** The current task the person/robot is doing. */
 	private Task currentTask;//, lastTask;
 	/** The mind of the person the task manager is responsible for. */
@@ -59,7 +61,8 @@ implements Serializable {
 	private transient double totalProbCache;
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
-
+	private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
+	
 	private Person person = null;
 	private Robot robot = null;
 	//private MarsClock clock;
@@ -596,37 +599,124 @@ implements Serializable {
 		    boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
 		    boolean isShiftHour = true;
 
+/*		    
+		    //2016-10-04 Checked if the job is changed
+		    List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
+		    String newJob = "";
+		    boolean jobChanged = false;
+		    int num = list.size();
+		    if (num == 0) {
+		    	System.out.println(" list is zero");
+		    }
+		    else {
+			    newJob = person.getJobHistory().getJobAssignmentList().get(num-1).getJobType();
+			    //System.out.println("newJob is " + newJob);
+			    if (!oldJob.equals(newJob)) {
+			    	jobChanged = true;
+			    	oldJob = newJob;
+			    }
+		    }
+
+		    List<MetaTask> newAnyHourTasks, newNonWorkTasks, newWorkTasks;
+		    // if there's a job change, do the following
+		    //if (jobChanged) {
+		    //	newAllWorkTasks = MetaTaskUtil.getAllWorkHourTasks();
+		    //	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
+		    //	oldAllWorkTasks = newAllWorkTasks;
+		    //	oldNonWorkTasks = newNonWorkTasks;
+		    //}		    	
+		    //else {	    	
+		    //}
+		    
 		    if (isOnCall) {
-		    	mtList = MetaTaskUtil.getAllWorkHourTasks();
+		    	if (jobChanged) {
+			    	newAnyHourTasks = MetaTaskUtil.getAnyHourTasks();
+		    		if (newAnyHourTasks != null)
+		    			oldAnyHourTasks = newAnyHourTasks;
+		    	}
+		    	mtList = oldAnyHourTasks;
+		    	//mtList = MetaTaskUtil.getAllWorkHourTasks();
+		    }
+		    else if (isOff) {
+		    	if (jobChanged) {
+			    	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
+		    		if (newNonWorkTasks != null)
+		    			oldNonWorkTasks = newNonWorkTasks;
+		    	}
+		    	mtList = oldNonWorkTasks;
+		    	//mtList = MetaTaskUtil.getNonWorkHourTasks();
+		    }
+		    else {
+		    	// is the person off the shift ?
+		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+
+			    if (isShiftHour) {
+			    	if (jobChanged) {
+				    	newWorkTasks = MetaTaskUtil.getWorkHourTasks();
+			    		if (newWorkTasks != null)
+			    			oldWorkTasks = newWorkTasks;
+			    	}
+			    	mtList = oldWorkTasks;
+			    	//mtList = MetaTaskUtil.getWorkHourTasks();
+			    }
+			    else {
+			    	if (jobChanged) {
+				    	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
+			    		if (newNonWorkTasks != null)
+			    			oldNonWorkTasks = newNonWorkTasks;
+			    	}
+			    	mtList = oldNonWorkTasks;
+			    	//mtList = MetaTaskUtil.getNonWorkHourTasks();
+			    }
+		    }
+*/		    
+		    
+		    if (isOnCall) {
+		    	mtList = MetaTaskUtil.getAnyHourTasks();
 		    }
 		    else if (isOff) {
 		    	mtList = MetaTaskUtil.getNonWorkHourTasks();
 		    }
 		    else {
+		    	// is the person off the shift ?
 		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
 
 			    if (isShiftHour) {
 			    	mtList = MetaTaskUtil.getWorkHourTasks();
 			    }
 			    else {
-			    	mtList = MetaTaskUtil.getNonWorkHourTasks();
+			    	mtList = MetaTaskUtil.getNonWorkHourTasks();		    	
 			    }
 		    }
-
+		    
+		    //if (mtList == null)
+		    	//System.out.println("mtList is null");
+	    	
+		    if (mtListCache != mtList && mtList != null) {
+		    	//System.out.println("mtListCache : " + mtListCache);
+		    	//System.out.println("mtList : " + mtList);
+		    	mtListCache = mtList;
+		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
+		    }
+/*		    
 			if (taskProbCache == null) {
+		    	System.out.println("mtListCache : " + mtListCache);
+		    	System.out.println("mtList : " + mtList);
 		    	taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
 			}
 
 
+			// Note: one cannot compare the difference between two lists with .equals() 
 		    if (mtListCache == null || !mtListCache.equals(mtList)) {
-		    	//System.out.println("!mtListCache.equals(mtList)");
+		    	System.out.println("mtListCache : " + mtListCache);
+		    	System.out.println("mtList : " + mtList);
 		    	taskProbCache = null;
 		    	mtListCache = mtList;
 		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
 		    }
 
 		    //System.out.println("mtListCache is "+ mtListCache);
-
+*/
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.

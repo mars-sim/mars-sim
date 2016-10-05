@@ -39,6 +39,7 @@ public enum UnitEventType {
 	PERFORMANCE_EVENT				("performance event"),
 	ILLNESS_EVENT					("illness event"),
 	DEATH_EVENT						("death event"),
+	RADIATION_EVENT					("radiation event"),
 
 	// from Person.java
 	ASSOCIATED_SETTLEMENT_EVENT		("associated settlement"),
@@ -112,8 +113,14 @@ public enum UnitEventType {
 	STORED_HEAT_EVENT				("stored heat"),
 	STORED_HEAT_CAPACITY_EVENT		("stored heat capacity"),
 	REQUIRED_HEAT_EVENT				("required heat"),
-	HEAT_VALUE_EVENT				("heat value");
-
+	HEAT_VALUE_EVENT				("heat value"),
+	
+	// 2016-10-03 for settlement sensor detection grid
+	LOW_DOSE_EVENT					("radiation event"),
+	SEP_EVENT						("SEP event"),	
+	GCR_EVENT						("GCR event"),
+	;
+	
 	private String name;
 
 	private UnitEventType(String name) {

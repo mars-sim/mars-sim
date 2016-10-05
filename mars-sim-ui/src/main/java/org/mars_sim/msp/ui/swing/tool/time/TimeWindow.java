@@ -527,7 +527,7 @@ implements ClockListener {
 			//if (!masterClock.isPaused() && 
 			if (mainScene != null && !masterClock.isSavingSimulation())
 				//Platform.runLater(() -> mainScene.startPausePopup());
-				mainScene.showWaitStage(MainScene.PAUSING);
+				mainScene.showWaitStage(MainScene.PAUSED);
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$		
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
@@ -543,7 +543,7 @@ implements ClockListener {
 			//if (masterClock.isPaused() && 
 			if (mainScene != null)
 				//Platform.runLater(() -> mainScene.stopPausePopup());
-				mainScene.hideWaitStage(MainScene.PAUSING);
+				mainScene.hideWaitStage(MainScene.PAUSED);
 	
 		}
 	}

@@ -1132,7 +1132,7 @@ public class UnitManager implements Serializable {
 			p.setShiftType(shiftType);
 		}
 
-		settlement.printWorkShift("Sol 1");
+		//settlement.printWorkShift("Sol 1");
 	}
 
 

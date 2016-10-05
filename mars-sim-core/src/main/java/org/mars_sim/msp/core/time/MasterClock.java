@@ -578,12 +578,13 @@ public class MasterClock implements Serializable { // Runnable,
             saveType = 0;
         }
 
+/*        
         else if (loadSimulation) {
             // Load the simulation from a file.
             if (file.exists() && file.canRead()) {
                 sim.loadSimulation(file);
                	//logger.info("just done running Simulation's loadSimulation().");
-                sim.start(false);
+                //sim.start(false);
             }
             else {
                 logger.warning("Cannot access file " + file.getPath() + ", not reading");
@@ -592,10 +593,13 @@ public class MasterClock implements Serializable { // Runnable,
             loadSimulation = false;
         }
 
+*/
+        
         // Exit program if exitProgram flag is true.
         if (exitProgram) {
             //exitProgram = false;
-			sim.getAutosaveTimer().stop();
+        	if (sim.getAutosaveTimer() != null)
+        		sim.getAutosaveTimer().stop();
             System.exit(0);
         }
 
@@ -744,9 +748,9 @@ public class MasterClock implements Serializable { // Runnable,
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
         if (isPaused)
-			sim.getAutosaveTimer().pause();
+			Simulation.instance().getAutosaveTimer().pause();
 		else
-        	sim.getAutosaveTimer().play();
+			Simulation.instance().getAutosaveTimer().play();
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.

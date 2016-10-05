@@ -722,7 +722,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param initialWindow true if window is opened at UI startup.
 	 */
 	public void openUnitWindow(Unit unit, boolean initialWindow) {
-		logger.info("openUnitWindow is on " + Thread.currentThread().getName());
+		//logger.info("openUnitWindow is on " + Thread.currentThread().getName());
 
 		UnitWindow tempWindow = null;
 

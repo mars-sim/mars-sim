@@ -188,19 +188,19 @@ public class Crop implements Serializable {
 			if (tissuePercent <= 0) {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				growingTimeCompleted =  1000D * phases.get(0).getWorkRequired() ;
-				logger.info(cropType + " tissue culture needs " + growingTimeCompleted + " millisols to incubate and restock before planting.");
+				logger.info(cropType + " tissue culture needs " + (int) growingTimeCompleted + " millisols to incubate and restock before planting.");
 
 			}
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
 				growingTimeCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				logger.info(cropType + " is fully available. Proceed to planting.");
+				logger.info(cropType + "'s tissue culture is fully available. Proceed to planting.");
 			}
 			else {
 				growingTimeCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
 				//growingTimeCompleted = tissuePercent /100D * PERCENT_IN_INCUBATION_PHASE /100D * cropGrowingTime;
-				logger.info(cropType + " needs " + growingTimeCompleted + " millisols to incubate enough to restock before planting.");
+				logger.info(cropType + " needs " + (int) growingTimeCompleted + " millisols to incubate enough to restock before planting.");
 
 			}
 	

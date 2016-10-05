@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -39,6 +40,9 @@ public class TradeMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(TradeMeta.class.getName());
     
+    private Person person;
+    private Robot robot;
+    
     @Override
     public String getName() {
         return NAME;
@@ -60,14 +64,33 @@ public class TradeMeta implements MetaMission {
             // Check if mission is possible for person based on their circumstance.           
             Settlement settlement = person.getSettlement();
 
-            missionProbability = checkMission(settlement);
+            if (person.getMind().getJob() instanceof Trader) {
+
+            	// 2016-10-04 checkMission() gives rise to a NULLPOINTEREXCEPTION that points to Inventory
+            	// It happens only when this sim is a loaded saved sim.
+            	try {
+            		missionProbability = checkMission(settlement);
+            	} catch (Exception e) {      	    	
+        	    	logger.log(Level.SEVERE, person + " can't compute the exact need for trading now at " + settlement + ". ", e);        
+        	    	e.printStackTrace();
+        	    	
+        	    	missionProbability = 200D;
+        	    }
+                
+            }
+            else {
+            	missionProbability = 0;
+            }
+            
+/*
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                missionProbability *= job.getStartMissionProbabilityModifier(Trade.class);
+            }
+*/            
         }
 
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            missionProbability *= job.getStartMissionProbabilityModifier(Trade.class);
-        }
         
         return missionProbability;
     }
@@ -132,6 +155,10 @@ public class TradeMeta implements MetaMission {
 	            // Note: this method is very CPU intensive.
 	            boolean useCache = false;
 	            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+	            if (currentTime == null) {
+	            	throw new NullPointerException("currentTime == null");
+	            }
+	            
 	            if (Trade.TRADE_PROFIT_CACHE.containsKey(settlement)) {
 	                TradeProfitInfo profitInfo = Trade.TRADE_PROFIT_CACHE.get(settlement);
 	                double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
@@ -158,7 +185,11 @@ public class TradeMeta implements MetaMission {
 	            }
 	        }
 	    } catch (Exception e) {
-	        logger.log(Level.SEVERE, "Error finding vehicles at settlement.", e);
+	    	if (person != null)
+	    		logger.log(Level.SEVERE, person + "can't find vehicles at settlement.", e);
+	    	else if (robot != null)
+	    		logger.log(Level.SEVERE, robot + "can't find vehicles at settlement.", e);	    		
+	        e.printStackTrace();
 	    }
 	
 	    // Check for embarking missions.

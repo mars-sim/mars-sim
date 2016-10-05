@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.DailyWeather;
 import org.mars_sim.msp.core.mars.Weather;
@@ -88,8 +89,7 @@ implements Serializable, LifeSupportType, Objective {
 	private static final double MIN_TEMP = 0.0D;
 	private static final double MAX_TEMP = 48.0D;
 	public static final int SOL_PER_REFRESH = 5;
-	private static final int RECORDING_FREQUENCY = 250; // in millisols
-	private static final int RADIATION_CHECK_FREQ = 100; // in millisols
+	private static final int SAMPLING_FREQ = 250; // in millisols
 	public static final int NUM_CRITICAL_RESOURCES = 9;
 
 	private AmountResource oxygen;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
@@ -115,9 +115,7 @@ implements Serializable, LifeSupportType, Objective {
 	private int numY; // number of people with work shift Y
 	private int numZ; // number of people with work shift Z
 	private int numOnCall;
-	private int quotientCache;
-	private int quotient1Cache;
-
+	
 	/**
 	 * Amount of time (millisols) that the settlement has had zero population.
 	 */
@@ -678,28 +676,23 @@ implements Serializable, LifeSupportType, Objective {
 		// 2015-01-09 Added makeDailyReport()
 		performEndOfDayTasks(); // NOTE: also update solCache in makeDailyReport()
 
-		// Sample a data point every RECORDING_FREQUENCY (in millisols)
+		// Sample a data point every SAMPLE_FREQ (in millisols)
 	    int millisols =  (int) marsClock.getMillisol();
-	    int quotient = millisols / RECORDING_FREQUENCY ;
+	    
+	    int remainder = millisols % SAMPLING_FREQ ;
+	    if (remainder == 0)
+	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulatio load 
+	    		// take a sample for each critical resource
+	    		sampleAllResources();
 
-	    if (quotientCache != quotient && quotient != 4) {
-		    //System.out.println("Yes sampling at millisols : " + millisols + " quotient : " + quotient);
-	    	// take a sample for each critical resource
-	    	sampleAllResources();
-	    	quotientCache = quotient;
-	    }
+		// Check every RADIATION_CHECK_FREQ (in millisols)
+	    // Compute whether a baseline, GCR, or SEP event has occurred
+	    remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
+	    if (remainder == 0)
+	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulatio load 
+	    		checkRadiationProbability(time);
 
-		// Check every RECORDING_FREQUENCY (in millisols)
-	    int quotient1 = millisols / RECORDING_FREQUENCY ;
-
-	    if (quotient1Cache != quotient1 && quotient1 != 10) {
-	    	// Compute whether a baseline, GCR, or SEP event has occurred
-	    	checkRadiationProbability(time);
-	    	quotient1Cache = quotient1;
-	    }
-
-	    // Updates the goodsManager once per sol at random time.
-	    // Why random time?
+	    // Updates the goodsManager twice per sol at random time.
 	    updateGoodsManager(time);
 
 		// 2015-04-18 Added updateRegistry();
@@ -926,8 +919,7 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	public void printWorkShift(String sol) {
-		logger.info(sol 
-				+ " " + getName() + "'s Work Shift " +  "-- A:" + numA + " B:" + numB
+		logger.info(sol+ " " + getName() + "'s Work Shift " +  "-- A:" + numA + " B:" + numB
 				+ ", X:" + numX + " Y:" + numY + " Z:" + numZ + ", OnCall:" + numOnCall);// + " Off:" + off);
 	}
 
@@ -1135,14 +1127,16 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Updates the GoodsManager
+	 * Updates the GoodsManager twice per day
 	 *
 	 * @param time
 	 */
 	private void updateGoodsManager(double time) {
 
-		// Randomly update goods manager 1 time per Sol.
-		if (!goodsManager.isInitialized() || (time >= RandomUtil.getRandomDouble(1000D))) {
+		// Randomly update goods manager twice per Sol.
+		if (!goodsManager.isInitialized() 
+				|| (time >= 250 + RandomUtil.getRandomDouble(249D))
+						|| (time >= 750 + RandomUtil.getRandomDouble(249D))) {
 			goodsManager.timePassing(time);
 		}
 	}
@@ -2626,45 +2620,50 @@ implements Serializable, LifeSupportType, Objective {
 	public void checkRadiationProbability(double time) {
    	    //boolean[] exposed = {false, false, false};
    	    double exposure = 0;
- 		// chance is in %
-		double chance0 = Math.round(RadiationExposure.BASELINE_CHANCE_PER_100MSOL_DURING_EVA
-	    		* time/100D * 100.0)/100.0;
-   	    //double rand0 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
-
-	    //if (rand0 < chance0) {
-	    if (RandomUtil.lessThanRandPercent(chance0)) {
+   	    double ratio = time / RadiationExposure.RADIATION_CHECK_FREQ ;
+	    double variation1 = 0.5 + RandomUtil.getRandomDouble(RadiationExposure.GCR_CHANCE_SWING);
+	    double variation2 = 0.3 + RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING);
+   	    
+		// Baseline radiation event 
+		double chance0 = RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2); // average 3.53%
+	    // Galactic cosmic rays (GCRs) event
+  		double chance1 = RadiationExposure.GCR_PERCENT * ratio * variation1; // normally 1.22% 
+	    // Solar energetic particles (SEPs) event
+		double chance2 = RadiationExposure.SEP_PERCENT * ratio * variation2; // 0.122 %
+ 		
+		// Baseline radiation event 
+   	    // Note: RadiationExposure.BASELINE_CHANCE_PER_100MSOL_DURING_EVA * time / 100D
+		if (RandomUtil.lessThanRandPercent(chance0)) {
+	    	//System.out.println("chance0 : " + chance0); 
 	    	exposed[0] = true;
+	    	//logger.info("An unspecified low-dose radiation event is detected by the sensor grid on " + getName());
+	    	this.fireUnitUpdate(UnitEventType.LOW_DOSE_EVENT);
 	    }
-		//System.out.print(chance + " ");
+	    else
+	    	exposed[0] = false;
+	    
+	    // Galactic cosmic rays (GCRs) event
+	    //double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
+	   	//System.out.println("chance1 : " + chance1); 
+	    if (RandomUtil.lessThanRandPercent(chance1)) {
+	    	exposed[1] = true;
+	    	logger.info("An GCR event is detected by the sensor grid on " + getName());
+	    	this.fireUnitUpdate(UnitEventType.GCR_EVENT);
+	    }
+	    else
+	    	exposed[1] = false;
+
 
 	    // ~ 300 milli Sieverts for a 500-day mission
 	    // Solar energetic particles (SEPs) event
-		// chance is in %
-		double chance1 = Math.round(RadiationExposure.SEP_CHANCE_PER_100MSOL_DURING_EVA
-	    		* time/100D * 100.0)/100.0;
-
-	    // rand is in %
-	    //double rand1 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
-
-	    if (RandomUtil.lessThanRandPercent(chance1)) {
-	    //if (rand1 < chance1) {
-	    	exposed[1] = true;
-	    	logger.info("An SEP event is detected by the sensor grid on " + getName());
-	    }
-	    // Galactic cosmic rays (GCRs) event
-  		double chance2 = Math.round(RadiationExposure.SEP_CHANCE_PER_100MSOL_DURING_EVA
-	    		* time/100D * 100.0)/100.0;
-
-	    // rand is in %
-	    //double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
-
+    	//System.out.println("chance2 : " + chance2);
 	    if (RandomUtil.lessThanRandPercent(chance2)) {
-	    //if (rand2 < chance2) {
 	    	exposed[2] = true;
-	    	logger.info("An GCR event is detected by the sensor grid on " + getName());
+	    	logger.info("An SEP event is detected by the sensor grid on " + getName());
+	    	this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 	    }
-
-	    //return exposed;
+	    else
+	    	exposed[2] = false;
 	}
 
 	public CompositionOfAir getCompositionOfAir() {

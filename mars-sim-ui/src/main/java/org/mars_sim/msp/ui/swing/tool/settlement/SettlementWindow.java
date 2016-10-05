@@ -240,10 +240,10 @@ extends ToolWindow {
 
 	@Override
 	public void destroy() {
-		mapPanel.destroy();
-		mapPanel = null;
 		marsTimer.stop();
 		marsTimer = null;
+		mapPanel.destroy();
+		mapPanel = null;
 		desktop = null;
 
 	}

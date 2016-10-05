@@ -52,7 +52,7 @@ implements ActionListener, MenuListener {
 	/** The main window frame. */
 	private MainWindow mainWindow;
 	/** New menu item. */
-	private JMenuItem newItem;
+	//private JMenuItem newItem;
 	/** Load menu item. */
 	private JMenuItem loadItem;
 	/** Load Autosave menu item. */
@@ -126,14 +126,14 @@ implements ActionListener, MenuListener {
 		add(fileMenu);
 
 		// Create new menu item
-		ImageIcon newicon = new ImageIcon(getClass().getResource(Msg.getString("img.new"))); //$NON-NLS-1$
-		newItem = new JMenuItem(Msg.getString("mainMenu.new"), newicon); //$NON-NLS-1$
-		newItem.addActionListener(this);
-		newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
-		newItem.setToolTipText(Msg.getString("mainMenu.tooltip.new")); //$NON-NLS-1$
-		fileMenu.add(newItem);
+		//ImageIcon newicon = new ImageIcon(getClass().getResource(Msg.getString("img.new"))); //$NON-NLS-1$
+		//newItem = new JMenuItem(Msg.getString("mainMenu.new"), newicon); //$NON-NLS-1$
+		//newItem.addActionListener(this);
+		//newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
+		//newItem.setToolTipText(Msg.getString("mainMenu.tooltip.new")); //$NON-NLS-1$
+		//fileMenu.add(newItem);
 
-		fileMenu.add(new JSeparator());
+		//fileMenu.add(new JSeparator());
 
 		// Create load menu item
 		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
@@ -381,7 +381,7 @@ implements ActionListener, MenuListener {
 		MainDesktopPane desktop = mainWindow.getDesktop();
 
 		if (selectedItem == exitItem) mainWindow.exitSimulation();
-		else if (selectedItem == newItem) mainWindow.newSimulation();
+		//else if (selectedItem == newItem) mainWindow.newSimulationProcess();
 		else if (selectedItem == saveItem) mainWindow.saveSimulation(true, false);
 		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false, false);
 		else if (selectedItem == loadItem) mainWindow.loadSimulation(false);

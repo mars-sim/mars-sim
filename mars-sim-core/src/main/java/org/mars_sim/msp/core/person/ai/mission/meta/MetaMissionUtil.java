@@ -66,8 +66,10 @@ public class MetaMissionUtil {
         }
 
         // Return copy of meta mission list.
-        return new ArrayList<MetaMission>(metaMissions);
+        //return new ArrayList<MetaMission>(metaMissions);
+        return metaMissions;
     }
+    
     public static List<MetaMission> getRobotMetaMissions() {
 
         // Lazy initialize meta missions list if necessary.
@@ -76,6 +78,7 @@ public class MetaMissionUtil {
         }
 
         // Return copy of meta mission list.
-        return new ArrayList<MetaMission>(robotMetaMissions);
+        //return new ArrayList<MetaMission>(robotMetaMissions);
+        return robotMetaMissions;
     }
 }

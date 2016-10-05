@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 /**
  * This class represents the task schedule of a person.
@@ -25,6 +26,8 @@ public class TaskSchedule implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+    private static Logger logger = Logger.getLogger(TaskSchedule.class.getName());
 
 	/*
 	 * Set the number of Sols to be logged (to limit the memory usage & saved file size)
@@ -237,7 +240,7 @@ public class TaskSchedule implements Serializable {
 			this.shiftType = shiftType;
 		}
 		else
-			System.err.println("TaskSchedule: setShiftType() : the new shiftType is null");
+			logger.warning("setShiftType() : " + person + "'s new shiftType is null");
 	}
 
 	/*

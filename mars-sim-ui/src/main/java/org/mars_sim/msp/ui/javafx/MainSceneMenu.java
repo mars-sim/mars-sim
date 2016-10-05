@@ -299,15 +299,17 @@ public class MainSceneMenu extends MenuBar  {
 
         menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem7, userGuideItem);
 
+		Platform.runLater(() -> {
+
+        // 2016-07-06 Added nsmenufx.
 		if (MainScene.OS.contains("mac")) {
 			
-			Platform.runLater(() -> {
+			//Platform.runLater(() -> {
 
 				MenuToolkit tk = MenuToolkit.toolkit(Locale.getDefault());
 				tk.setApplicationMenu(tk.createDefaultApplicationMenu("mars-sim"));
 
-				MenuBar menuBar = (MenuBar)this;		
-	
+				MenuBar menuBar = (MenuBar)this;
 				// Add the default application menu
 				//getMenus().add(tk.createDefaultApplicationMenu("mars-sim"));
 				// Create default application menu with app name "test"
@@ -328,11 +330,13 @@ public class MainSceneMenu extends MenuBar  {
 		
 				tk.setMenuBar(stage, menuBar);
 
-			});
+			//});
 		}
 		else
 			super.getMenus().addAll(menuFile, menuTools, menuSettings, menuHelp); // menuNotification,
     
+	});
+	
         newItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override
      	   public void handle(ActionEvent e) {

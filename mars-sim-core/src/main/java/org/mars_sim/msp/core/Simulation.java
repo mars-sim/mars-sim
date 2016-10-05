@@ -300,7 +300,7 @@ implements ClockListener, Serializable {
      * Initialize transient data in the simulation.
      * @throws Exception if transient data could not be loaded.
      */
-    private void initializeTransientData() {
+    public void initializeTransientData() {
        //logger.info("Simulation's initializeTransientData() is on " + Thread.currentThread().getName() + " Thread");
        eventManager = new HistoricalEventManager();
     }
@@ -310,7 +310,7 @@ implements ClockListener, Serializable {
      * @throws Exception if intransient data could not be loaded.
      */
     // 2015-02-04 Added threading
-    private void initializeIntransientData() {
+    public void initializeIntransientData() {
         //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
         //if (eventManager == null)
         //	eventManager = new HistoricalEventManager();
@@ -328,10 +328,42 @@ implements ClockListener, Serializable {
 	}
 
 
+    public void runLoadConfigTask() { 	
+    	startSimExecutor();
+    	simExecutor.execute(new LoadConfigTask());
+   	
+    }
+
+	public class LoadConfigTask implements Runnable {		
+		LoadConfigTask() {}	
+		public void run() {
+		   	//logger.info("SimConfigTask's run() is on " + Thread.currentThread().getName());
+			SimulationConfig.loadConfig();
+		}
+	}
+	
+	
+	public void runStartTask(boolean autosaveDefault) { 	
+    	simExecutor.execute(new StartTask(autosaveDefault));
+    }
+
+	public class StartTask implements Runnable {
+		boolean autosaveDefault;
+	
+		StartTask(boolean autosaveDefault) {
+			this.autosaveDefault = autosaveDefault;
+		}
+		
+		public void run() {
+		   	//logger.info("StartTask's run() is on " + Thread.currentThread().getName());
+			start(autosaveDefault);
+		}
+	}
+		
     /**
      * Start the simulation.
      */
-    public void start(boolean useDefaultName) {
+    public void start(boolean autosaveDefault) {
         //logger.info("Simulation's start() -- where clockScheduler is initialized -- is on " + Thread.currentThread().getName());
         //nonJavaFX : Simulation's start() is on AWT-EventQueue-0 Thread
         //JavaFX: Simulation's start() is on pool-2-thread-1 Thread
@@ -358,22 +390,10 @@ implements ClockListener, Serializable {
        }
  
         //2016-04-28 Relocated the autosave timer from MainMenu to here
-		startAutosaveTimer(useDefaultName);
+		startAutosaveTimer(autosaveDefault);
 		
     }
 
-
-    /**
-     * Stop the simulation.
-     */
-    // called when loading a sim
-    public void stop() {
-        if (masterClock != null) {
-            //executor.shutdown();
-            masterClock.stop();
-            masterClock.removeClockListener(this);
-        }
-    }
 
     /*
      * Obtains the size of the file
@@ -389,7 +409,7 @@ implements ClockListener, Serializable {
      * @throws Exception if simulation could not be loaded.
      */
     public void loadSimulation(final File file) {
-        logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
+        //logger.info("Simulation's loadSimulation() is on " + Thread.currentThread().getName());
         isUpdating = true;
 
         File f = file;
@@ -421,7 +441,7 @@ implements ClockListener, Serializable {
     				fileStr = Math.round(fileSize*10.0)/10.0 + " KB";
     			else
     				fileStr = Math.round(fileSize)/10.0 + " MB";
-    			logger.info("Size of the saved sim : "+ fileStr);
+    			logger.info("The saved sim has a size of "+ fileStr);
     			//logger.info("  Build : " + loadBuild + "   Size : "+ fileStr);
                 sim.readFromFile(f);
 
@@ -439,21 +459,6 @@ implements ClockListener, Serializable {
         }
 
         isUpdating = false;
-    }
-
-
-    /**
-     * Ends the current simulation
-     */
-    public void endSimulation() {
-        instance().defaultLoad = false;
-        instance().stop();
-        masterClock.endClockListenerExecutor();
-        clockScheduler.shutdownNow();
-    }
-
-    public void endMasterClock() {
-    	masterClock = null;
     }
 
     /**
@@ -512,8 +517,8 @@ implements ClockListener, Serializable {
             // Close FileInputStream (directly or indirectly via XZInputStream, it doesn't matter).
             in.close();
             xzin.close();
-            //fos.close();     
-            //uncompressed.delete();
+            fos.close();     
+            uncompressed.delete();
    
   
         } catch (FileNotFoundException e) {
@@ -535,8 +540,8 @@ implements ClockListener, Serializable {
     	if (loadBuild == null)
     		loadBuild = "unknown";
         
-    	if (Simulation.BUILD.equals(loadBuild))
-    		logger.info("both running mars-sim and loading a saved sim in Build " + loadBuild);
+    	if (instance().BUILD.equals(loadBuild))
+    		logger.info("Running mars-sim and loading a saved sim in Build " + loadBuild);
     	else
     		logger.warning("Running mars-sim in Build " + Simulation.BUILD + " but loading a saved sim in Build " + loadBuild);
 
@@ -572,24 +577,31 @@ implements ClockListener, Serializable {
     	lastSave = new SystemDateTime().getDateTimeStr();
 
         // 2016-09-22 Use type to differentiate in what name/dir it is saved
-        if (type == 1) {
+        if (type == SAVE_DEFAULT) {
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
             logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
  
         }
         
-        else if (type == 2) {
+        else if (type == SAVE_AS) {
+        	//System.out.println("file is " + file);
+        	String f = file.getName();
+        	//System.out.println("f is " + f);
+        	String dir = file.getParentFile().getAbsolutePath();
+        	//System.out.println("dir is " + dir);
+        	if (!f.contains(".sim"))
+        		file = new File(dir, f + DEFAULT_EXTENSION);
+        	//System.out.println("file is " + file);
         	logger.info("Saving as " + file);
-        	
         }
         
-        else if (type == 3) {
+        else if (type == AUTOSAVE_DEFAULT) {
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
             logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
         	
         }
 
-        else if (type == 4) {
+        else if (type == AUTOSAVE) {
             String autosaveFilename = lastSave
             		+ "_sol" + masterClock.getMarsClock().getSolElapsedFromStart() 
             		+ "_r" + BUILD
@@ -633,7 +645,7 @@ implements ClockListener, Serializable {
             oos.writeObject(unitManager);
             oos.writeObject(masterClock);
             oos.flush();
-            oos.close();
+            //oos.close();
             
             // STEP 2: convert the uncompressed file into a fis
             fis = new FileInputStream(uncompressed);           
@@ -663,13 +675,13 @@ implements ClockListener, Serializable {
         }
 
         //uncompressed.delete(); // cannot be deleted;
-		//uncompressed = null;
+		uncompressed = null;
         //fis.close(); // fis closed automatically
         //fos.close(); // fos closed automatically
         if (oos != null) {
             oos.close();
         } 
-		//xzout.close();
+		xzout.close();
 		 
         sim.proceed();
 
@@ -689,6 +701,35 @@ implements ClockListener, Serializable {
 
     }
 
+
+
+    /**
+     * Ends the current simulation
+     */
+    public void endSimulation() {
+        instance().defaultLoad = false;
+        instance().stop();
+        masterClock.endClockListenerExecutor();
+        clockScheduler.shutdownNow();
+    }
+
+    public void endMasterClock() {
+    	masterClock = null;
+    }
+
+    /**
+     * Stop the simulation.
+     */
+    // called when loading a sim
+    public void stop() {
+        if (masterClock != null) {
+            //simExecutor.shutdown();
+            masterClock.stop();
+            masterClock.removeClockListener(this);
+        }
+    }
+
+    
     /*
      * Stops and removes the master clock and pauses the simulation
      */
@@ -946,15 +987,18 @@ implements ClockListener, Serializable {
 	
 	//2015-01-07 Added startAutosaveTimer()
     //2016-04-28 Relocated the autosave timer from MainMenu to here
-	public void startAutosaveTimer(boolean useDefaultName) {
-        logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
-
+	public void startAutosaveTimer(boolean autosaveDefault) {
+        //logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
 		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
-			
 		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock, 
 		// instead of directly call saveSimulation() here in Simulation
 		
-		if (useDefaultName) {
+		if (autosaveTimer != null) {
+			autosaveTimer.stop();
+			autosaveTimer = null;
+		}
+		
+		if (autosaveDefault) {
 			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
 						ae -> masterClock.saveSimulation(AUTOSAVE_DEFAULT, null)));
@@ -1010,6 +1054,7 @@ implements ClockListener, Serializable {
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
+	
     public void destroyOldSimulation() {
     	//logger.info("starting Simulation's destroyOldSimulation()");
 

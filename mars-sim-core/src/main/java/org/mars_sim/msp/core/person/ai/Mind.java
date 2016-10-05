@@ -65,8 +65,8 @@ implements Serializable {
     private boolean jobLock;
 
     private static Simulation sim = Simulation.instance();
-    private static MasterClock masterClock;// = sim.getMasterClock();
-    private static MarsClock marsClock;// = masterClock.getMarsClock();
+    //private static MasterClock masterClock;// = sim.getMasterClock();
+    //private static MarsClock marsClock;// = masterClock.getMarsClock();
     
     /**
      * Constructor 1.
@@ -83,10 +83,10 @@ implements Serializable {
         jobLock = false;
 
         sim = Simulation.instance();
-        masterClock = sim.getMasterClock();
-        if (masterClock != null) { // to avoid NullPointerException during maven test
-	        marsClock = masterClock.getMarsClock();
-        }
+        //masterClock = sim.getMasterClock();
+        //if (masterClock != null) { // to avoid NullPointerException during maven test
+	    //    marsClock = masterClock.getMarsClock();
+        //}
         // Set the MBTI personality type.
         personality = new PersonalityType(person);
 
@@ -123,15 +123,15 @@ implements Serializable {
 
      	else {
     		if (jobLock) {
-    	        if (masterClock == null)
-    	        	masterClock = sim.getMasterClock();
+    	        //if (masterClock == null)
+    	        //	masterClock = sim.getMasterClock();
     	        
-    			if (marsClock == null)
-    				marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
+    			//if (marsClock == null)
+    			//	marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
 
     		   	// Note: for non-manager, the new job will be locked in until the beginning of the next day
     	        // check for the passing of each day
-    	        int solElapsed = marsClock.getSolElapsedFromStart();
+    	        int solElapsed = sim.getMasterClock().getMarsClock().getSolElapsedFromStart();
     	        if (solElapsed != solCache) {
     	        	solCache = solElapsed;
     	        	jobLock = false;

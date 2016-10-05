@@ -63,51 +63,33 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        double result = 3D;
-
+        double result = 1D;
         // TODO: Probability affected by the person's stress and fatigue.
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            // Check if there is a local dining building.
-            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
-
             Set<Person> pool = new HashSet<Person>();
             Settlement s = person.getSettlement();
 
-            if (diningBuilding != null) {
-            	// Walk to that building.
-            	//pool.addAll(p_same_bldg_talking);
-            }
-            
             // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
             Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
                  	      	              
             pool.addAll(p_talking_all); 
             
-            // pool doesn't include the one who starts the conversation
+            // pool doesn't include this person
             pool.remove((Person)person);
             
+            int num = pool.size();
         	// check if someone is idling somewhere and ready for a chat 
-            if (pool.size() != 0) {
-                
-                int num = pool.size();
+            if (num > 0) {         
             	// Note: having people who are already chatting will increase the probability of having this person to join
-                if (num == 0) {
-                	// no one is chatting to yet
-                	// but he could the first person to start the chat 
-                }
-                else if (num == 1) {
-            		double rand = RandomUtil.getRandomDouble(2);
-                	result = rand*result;
-                }
-                else if (num > 1) {
-            		double rand = RandomUtil.getRandomDouble(num+1);
-                	result = rand*result;
-                }
+                double rand = RandomUtil.getRandomDouble(num) + 1;
+                result = rand*result;
             }
-
+            else
+            	result = 0; // if there is no one else in the settlement, set result to 0
             
+            // get a list of "idle" people
             Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);  
             
             pool.clear();
@@ -115,28 +97,32 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         	         
         	// Note: having idling people will somewhat increase the chance of starting conversations,
         	// though at a low probability 
-        	if (pool.size() != 0) {
-                int num = pool.size();
+        	if (pool.size() > 0) {
+                num = pool.size();
 
-                if (num == 0) {
-                }
-                else if (num == 1) {
+                if (num == 1) {
             		double rand = RandomUtil.getRandomDouble(.3);
                 	result = result + rand*result;
                 }
-                else if (num > 1) {
+                else {
             		double rand = RandomUtil.getRandomDouble(.3*(num+1));
                 	result = result + rand*result;
                 }
         	}
- 
-            if (diningBuilding != null) {
-            	// having a dining hall will increase the base chance of conversation by 1.2 times 
-            	result = result * 1.2;
-            	// modified by his relationship with those already there
-                result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
-            }
 
+ 
+        	if (result > 0) {
+	            // Check if there is a local dining building.
+	            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
+	            if (diningBuilding != null) {
+	            	// Walk to that building.
+	            	//pool.addAll(p_same_bldg_talking);
+	            	// having a dining hall will increase the base chance of conversation by 1.2 times 
+	            	result = result * 1.2;
+	            	// modified by his relationship with those already there
+	                result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
+	            }
+        	}
         }
 
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
@@ -159,18 +145,18 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             //System.out.println("talking folks : " + talking);
             //TODO: get some candidates to switch their tasks to HaveConversation       
             // need to have at least two people to have a social conversation
-            if (num == 0) {
+            //if (num == 0) {
             	// no one is chatting to yet
             	// but he could the first person to start the chat 
+            //}
+            if (num == 1) {
+        		double rand = RandomUtil.getRandomDouble(1);
+            	result = result + rand*result;
             }
-            else if (num == 1) {
-        		double rand = RandomUtil.getRandomDouble(2);
-            	result = rand*result;
-            }
-            else if (num > 1) {
+            else {
         		//result = (num + 1)*result;
-        		double rand = RandomUtil.getRandomDouble(num+1);
-            	result = rand*result;
+        		double rand = RandomUtil.getRandomDouble(num)+ 1;
+            	result = result + rand*result;
             }
         }
 
@@ -181,7 +167,8 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-        if (result < 0) result = 0;
+        if (result < 0) 
+        	result = 0;
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();

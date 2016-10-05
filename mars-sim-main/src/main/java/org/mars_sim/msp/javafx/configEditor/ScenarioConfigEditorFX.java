@@ -519,30 +519,22 @@ public class ScenarioConfigEditorFX {
 			//	tableCellEditor.stopCellEditing();
 			//}
 
-			if (!hasError) {
-				// waiti = new WaitIndicator();
+			if (!hasError) {				
+				// create wait indicators
+				Platform.runLater(() -> {
+					mainScene.createIndicator();
+					mainScene.showWaitStage(MainScene.LOADING);
+				});
+
 				setConfiguration();
+				
 				// scene.setCursor(Cursor.WAIT); //Change cursor to wait style
-				cstage = new Stage();
-				//CompletableFuture<?> future = 
+
 				CompletableFuture.supplyAsync(() -> submitTask());
-				// .thenAccept(lr -> waitLoading()); //loadProgress()); //
-				// Platform.runLater(() -> {
+
 				closeWindow();
-				// });
-				/*
-				 * while (//Simulation.instance().getMasterClock() == null //&&
-				 * !mainMenu.getMainScene().isMainSceneDone()) {// ||
-				 * Simulation.instance().getMasterClock().isLoadingSimulation())
-				 * { System.out.print("."); //MainMenu : the master clock
-				 * instance is not ready yet. Wait for another 1/2 secs"); try {
-				 * TimeUnit.MILLISECONDS.sleep(500L); } catch
-				 * (InterruptedException e) { e.printStackTrace(); } }
-				 *  
-				 * waiti.getStage().close();
-				 */
-				// scene.setCursor(Cursor.DEFAULT); //Change cursor to default
-				// style
+
+				// scene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 
 			} // end of if (!hasError)
 
@@ -571,18 +563,38 @@ public class ScenarioConfigEditorFX {
 		// return borderAll;
 	}
 
-	public int loadProgress() {
-		Platform.runLater(() -> {
-			waitLoading();
-		});
-		return 1;
-	}
-
+	
 	public int submitTask() {
 		Simulation.instance().getSimExecutor().execute(new SimulationTask());
 		return 1;
 	}
 
+	public class SimulationTask implements Runnable {
+		public void run() {
+			// logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
+			// boolean isDone = false;
+			Simulation.createNewSimulation();
+			// System.out.println("ScenarioConfigEditorFX : done calling
+			// Simulation.instance().createNewSimulation()");
+			Simulation.instance().start(false);
+			// System.out.println("ScenarioConfigEditorFX : done calling
+			// Simulation.instance().start()");
+			Platform.runLater(() -> {
+				//mainMenu.prepareScene();
+				//mainMenu.prepareStage();
+				mainMenu.finalizeMainScene();
+				mainScene.hideWaitStage(MainScene.LOADING);
+				// System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
+			});
+			if (multiplayerClient != null)
+				multiplayerClient.prepareListeners();
+			// logger.info("ScenarioConfigEditorFX : done calling
+			// SimulationTask");
+			// JmeCanvas jme = new JmeCanvas();
+			// jme.setupJME();
+		}
+	}
+	
 	/**
 	 * Swaps the mouse cursor type between DEFAULT and HAND
 	 * @param node
@@ -597,31 +609,6 @@ public class ScenarioConfigEditorFX {
 		});
 	}
 
-	public class SimulationTask implements Runnable {
-		public void run() {
-			// logger.info("ScenarioConfigEditorFX's LoadSimulationTask's run() is on " + Thread.currentThread().getName() );
-			// mainScene.createProgressCircle();
-			mainMenu.showLoadingStage();
-			// boolean isDone = false;
-			Simulation.createNewSimulation();
-			// System.out.println("ScenarioConfigEditorFX : done calling
-			// Simulation.instance().createNewSimulation()");
-			Simulation.instance().start(false);
-			// System.out.println("ScenarioConfigEditorFX : done calling
-			// Simulation.instance().start()");
-			Platform.runLater(() -> {
-				mainMenu.prepareScene();
-				mainMenu.prepareStage();
-				// System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
-			});
-			if (multiplayerClient != null)
-				multiplayerClient.prepareListeners();
-			// logger.info("ScenarioConfigEditorFX : done calling
-			// SimulationTask");
-			// JmeCanvas jme = new JmeCanvas();
-			// jme.setupJME();
-		}
-	}
 	
 /*
 	@SuppressWarnings("serial")

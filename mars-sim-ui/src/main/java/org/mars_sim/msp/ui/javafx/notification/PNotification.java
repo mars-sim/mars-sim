@@ -201,6 +201,11 @@ public class PNotification {
 
         public void stop() {
             isOn = false;
+            
+            for (int i = 0 ; i < popups.size() ; i++) {
+            	popups.get(i).hide();
+            }
+            
             popups.clear();
             stage.close();
         }

@@ -349,7 +349,7 @@ implements UnitListener {
 						if (!vehicle.isBeingTowed())
 							setEmergencyBeacon(null, vehicle, true);
 					
-				}	
+				}
 
 			}
 			
@@ -367,9 +367,8 @@ implements UnitListener {
 		//	super.endMission(reason);
 		//}
 		
-		else { // for all other reasons
-            setPhaseEnded(true);
-			//leaveVehicle();
+		else { // if vehicles are NOT available 
+            setPhaseEnded(true); // TODO: is it important ?
 			super.endMission(reason);
 		}
 	}

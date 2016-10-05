@@ -97,6 +97,7 @@ public final class TradeUtil {
 
 				if (!hasCurrentTradeMission && withinRange) {
 					// double startTime = System.currentTimeMillis();
+					
 					double profit = getEstimatedTradeProfit(startingSettlement, rover, settlement);
 					// double endTime = System.currentTimeMillis();
 					// logger.info("getEstimatedTradeProfit " + (endTime - startTime));

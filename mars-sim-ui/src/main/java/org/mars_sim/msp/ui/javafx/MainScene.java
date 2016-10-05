@@ -149,9 +149,13 @@ public class MainScene {
 	private static final int EDGE_DETECTION_PIXELS_Y = 35;
 	private static final int EDGE_DETECTION_PIXELS_X = 200;
 	
-	private static final int LOADING = 0;
-	private static final int SAVING = 1;
-	public static final int PAUSING = 2; 
+	public static final int LOADING = 0;
+	public static final int SAVING = 1;
+	public static final int PAUSED = 2; 
+	
+	private static final String PAUSE_MSG = " [ PAUSE ]  ESC to resume  ";
+	private static final String LAST_SAVED = "Last Saved : ";
+	
 	
 	private static int theme = 7; // 7 is the standard nimrod theme
 
@@ -275,9 +279,16 @@ public class MainScene {
 		esc = new ESCHandler();
 		setEscapeEventHandler(true, stage);
 		
-		//createProgressCircle();		
 	}
 
+	public void createIndicator() {
+		// 2016-10-01 Added mainSceneExecutor for executing wait stages
+		startMainSceneExecutor();
+		createProgressCircle(LOADING);
+		createProgressCircle(SAVING);
+		createProgressCircle(PAUSED);
+	}
+	
 	// 2015-12-28 Added setEscapeEventHandler()
 	public void setEscapeEventHandler(boolean value, Stage stage) {
 		if (value) {
@@ -979,11 +990,18 @@ public class MainScene {
  
 		String t = earthClock.getTimeStamp2();
 		// Check if new simulation is being created or loaded from file.
-		if (Simulation.isUpdating() || masterClock.isPaused()) {
-			timeText.setText(" [ PAUSE ]  ESC to resume  " + t + "  ");		
+		if (sim.isUpdating() || masterClock.isPaused()) {
+			timeText.setText(PAUSE_MSG + t + "  ");		
 		}	
 		else { 	
 			timeText.setText("  " + t + "  ");
+			
+			//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
+			String newLastSaveStamp = sim.instance().getLastSave();
+			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
+				oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
+				lastSaveText.setText(LAST_SAVED + oldLastSaveStamp + " ");
+			}
 		}
 
 	/*
@@ -993,12 +1011,7 @@ public class MainScene {
 
 		memUsed = (int)((memUsed + memUsedCache)/2D);
 */			
-		//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
-		String newLastSaveStamp = sim.instance().getLastSave();
-		if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
-			oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
-			lastSaveText.setText("Last Saved : " + oldLastSaveStamp + " ");
-		}
+
 	}
 
 	/**
@@ -1188,7 +1201,7 @@ public class MainScene {
 		alert.setTitle("Starting new sim");
 		alert.setHeaderText(Msg.getString("MainScene.new.header"));
 		alert.setContentText(Msg.getString("MainScene.new.content"));
-		ButtonType buttonTypeOne = new ButtonType("Save & Exit");
+		ButtonType buttonTypeOne = new ButtonType("Save on Exit");
 		//ButtonType buttonTypeTwo = new ButtonType("End Sim");
 		ButtonType buttonTypeCancel = new ButtonType("Back to Sim");//, ButtonData.CANCEL_CLOSE);
 		alert.getButtonTypes().setAll(buttonTypeOne, 
@@ -1198,12 +1211,7 @@ public class MainScene {
 
 		if (result.get() == buttonTypeOne) {
 			saveOnExit();
-			//desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
-			endSim();
-			exitSimulation();
-			Platform.exit();
 		//} else if (result.get() == buttonTypeTwo) {
-		//	desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 		//	endSim();
 		} else if (result.get() == buttonTypeCancel) {//!result.isPresent())
 			return;
@@ -1225,9 +1233,29 @@ public class MainScene {
 		if (!previous) {
 			pauseSimulation();
 			//System.out.println("previous2 is false. Paused sim");
-		}
+		}			
 		desktop.getTimeWindow().enablePauseButton(false);
+
+		hideWaitStage(PAUSED);
+		showWaitStage(SAVING);
+	
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                saveSimulationProcess(type);
+        		while (masterClock.isSavingSimulation())
+        			TimeUnit.MILLISECONDS.sleep(200L);
+                return null;
+            }
+            @Override
+            protected void succeeded(){
+                super.succeeded();
+                hideWaitStage(SAVING);
+            }
+        };
+        new Thread(task).start();
 		
+/*		
 		//2016-06-20 Added Service Worker for calling up the saving indicator
 		Service<Void> service = new Service<Void>() {
 	        @Override
@@ -1265,6 +1293,7 @@ public class MainScene {
 	        }
 	    };
 	    service.start();
+*/	    
 /*		
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread(Msg.getString("MainWindow.thread.saveSim")) { //$NON-NLS-1$
@@ -1298,6 +1327,7 @@ public class MainScene {
 			}
 		}
 		desktop.getTimeWindow().enablePauseButton(true);
+		
 	}
 
 	/**
@@ -1310,14 +1340,17 @@ public class MainScene {
 		fileLocn = null;
 		dir = null;
 		title = null;
-		
+/*		
 		boolean previous = masterClock.isPaused();
 		// Pause simulation.
 		if (!previous) {
 			masterClock.setPaused(true);
 			//System.out.println("previous2 is false. Paused sim");
 		}
+*/		
 
+		hideWaitStage(PAUSED);
+		
 		// 2015-01-25 Added autosave
 		if (type == Simulation.AUTOSAVE) {
 			dir = Simulation.AUTOSAVE_DIR;
@@ -1330,7 +1363,11 @@ public class MainScene {
 			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
 			
 		} else if (type == Simulation.SAVE_AS) {
+			
+			masterClock.setPaused(true);
+			
 			Platform.runLater(() -> {
+				
 				FileChooser chooser = new FileChooser();
 				dir = Simulation.DEFAULT_DIR;
 				File userDirectory = new File(dir);
@@ -1348,8 +1385,33 @@ public class MainScene {
 				else
 					return;
 				
-				masterClock.saveSimulation(Simulation.SAVE_AS, fileLocn);
+				hideWaitStage(PAUSED);
+				showWaitStage(SAVING);
 
+		        Task task = new Task<Void>() {
+		            @Override
+		            protected Void call() throws Exception {
+		        		try {
+		    				masterClock.saveSimulation(Simulation.SAVE_AS, fileLocn);
+		    				
+		        			while (masterClock.isSavingSimulation())
+		        				TimeUnit.MILLISECONDS.sleep(200L);
+		        			
+		        		} catch (Exception e) {
+		        			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
+		        			e.printStackTrace(System.err);
+		        		}	
+		        		
+		                return null;
+		            }
+		            @Override
+		            protected void succeeded(){
+		                super.succeeded();
+		                hideWaitStage(SAVING);
+		            }
+		        };
+		        new Thread(task).start();
+				
 			});
 		}
 
@@ -1381,6 +1443,7 @@ public class MainScene {
 		//desktop.disposeAnnouncementWindow();	
 		//hideSavingStage();
 
+/*		
 		boolean now = masterClock.isPaused();
 		
 		if (!previous) {
@@ -1395,18 +1458,19 @@ public class MainScene {
 	    		//System.out.println("previous is true. now is false. Unpaused sim");
 			}
 		}
+*/
 		
 	}
 
 	
 	public void startPausePopup() {
-		System.out.println("calling startPausePopup(): messagePopup.numPopups() is " + messagePopup.numPopups());   
+		//System.out.println("calling startPausePopup(): messagePopup.numPopups() is " + messagePopup.numPopups());   
 		//messagePopup.popAMessage("PAUSED", " ESC to resume", null, stage, Pos.CENTER, PNotification.PAUSE_ICON);  		    	
 		//if (!messagePopup.isOn()) {
-		if (messagePopup.numPopups() < 1) {	
+		if (messagePopup.numPopups() == 0) {	
             // Note: (NOT WORKING) popups.size() is always zero no matter what.
 			Platform.runLater(() -> 
-				messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.CENTER, PNotification.PAUSE_ICON)
+				messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
 			);  		    	
 			//System.out.println("popping up pause"); 
 		}
@@ -1443,7 +1507,7 @@ public class MainScene {
 	public void unpauseSimulation() {	
 		//System.out.println("unpauseSimulation() "); 
 		//stopPausePopup();
-		//hideWaitStage(PAUSING);
+		//hideWaitStage(PAUSED);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 		masterClock.setPaused(false);
 	}
@@ -1489,7 +1553,7 @@ public class MainScene {
 	public void exitSimulation() {
 		//logger.info("MainScene's exitSimulation() is on " + Thread.currentThread().getName() + " Thread");
 		//desktop.openAnnouncementWindow(Msg.getString("MainScene.exitSim"));
-		logger.info("Exiting simulation");
+		logger.info("Exiting the simulation. Bye!");
 
 		// Save the UI configuration. 
 		UIConfig.INSTANCE.saveFile(this);
@@ -1660,10 +1724,8 @@ public class MainScene {
 		if (result.get() == buttonTypeOne) {
 			//desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
 			saveOnExit();
-			endSim();
-			exitSimulation();
-			Platform.exit();
-			System.exit(0);
+			//endSim();
+			//exitSimulation();
 			return true;
 		//} else if (result.get() == buttonTypeTwo) {
 		//	desktop.openAnnouncementWindow(Msg.getString("MainScene.endSim"));
@@ -1685,12 +1747,42 @@ public class MainScene {
 	 */
 	public void saveOnExit() {
 		//logger.info("MainScene's saveOnExit() is on " + Thread.currentThread().getName() + " Thread");
-		//desktop.disposeAnnouncementWindow();
-		//desktop.openAnnouncementWindow(Msg.getString("MainScene.defaultSaveSim"));
-		// Save the UI configuration.
-		UIConfig.INSTANCE.saveFile(this);
+		showWaitStage(SAVING);
+		
+		desktop.getTimeWindow().enablePauseButton(false);
 
-		// Save the simulation.
+		// Save the simulation as default.sim
+		masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
+
+        Task task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+        		try {
+        			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
+        						
+        			while (masterClock.isSavingSimulation())
+        				TimeUnit.MILLISECONDS.sleep(200L);
+        			
+        		} catch (Exception e) {
+        			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
+        			e.printStackTrace(System.err);
+        		}	
+        		
+                return null;
+            }
+            @Override
+            protected void succeeded(){
+                super.succeeded();
+                hideWaitStage(SAVING);
+                endSim();
+                exitSimulation();
+    			Platform.exit();
+    			System.exit(0);
+            }
+        };
+        new Thread(task).start();
+		
+/*		
 		try {
 			masterClock.saveSimulation(Simulation.SAVE_DEFAULT, null);
 						
@@ -1700,7 +1792,9 @@ public class MainScene {
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, Msg.getString("MainWindow.log.saveError") + e); //$NON-NLS-1$
 			e.printStackTrace(System.err);
-		}
+		}		
+*/
+        
 	}
 
 	public void openInitialWindows() {
@@ -1744,15 +1838,13 @@ public class MainScene {
 		//marsNode.createMarsMap();
 		//marsNode.createChatBox();
 
-		messagePopup = new MessagePopup();
 		quote = new QuotationPopup(this);
-
 		popAQuote();	
 
 /*		
 		// 2016-06-15 Added top edge mouse cursor detection for sliding down the menu bar
 		anchorPane.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
-		
+	
 			boolean onMenuBar = (e.getSceneX() <= EDGE_DETECTION_PIXELS_X) && (e.getSceneY() <= EDGE_DETECTION_PIXELS_Y);
 				
 			if (!menubarButton.isSelected()) {
@@ -1767,9 +1859,7 @@ public class MainScene {
 					//FxTimer.runLater(
 		    		//		java.time.Duration.ofMillis(2000),
 		    		 //       () -> menuBarVisible = true);
-					
-					
-					
+				
 				} else if (!onMenuBar && onMenuBarCache && menuBarVisible) {// || menubarButton.isSelected()) 
 					//System.out.println("slide close");
 					topFlapBar.slide();
@@ -1783,21 +1873,10 @@ public class MainScene {
 				//else {
 				//	menuBarVisible = false;
 				//}
-
-			}
-			
-
-			
-			onMenuBarCache = onMenuBar;
-		
+			}	
+			onMenuBarCache = onMenuBar;		
         });	
 */
-
-		// 2016-10-01 Added mainSceneExecutor for executing wait stages
-		startMainSceneExecutor();
-		createProgressCircle(LOADING);
-		createProgressCircle(SAVING);
-		createProgressCircle(PAUSING);
 
 		isMainSceneDoneLoading = true;
 		
@@ -1863,7 +1942,6 @@ public class MainScene {
      */
  	public void createProgressCircle(int type) {
 
-
  		MaskerPane indicator = new MaskerPane();
  		indicator.setScaleX(1.5);
  		indicator.setScaleY(1.5);
@@ -1888,8 +1966,7 @@ public class MainScene {
      		   //"-fx-background-color: #231d12; "
         		"-fx-background-color: transparent; "
         		//+ "-fx-background-radius: 1px;"
-        		);     
-		
+        		);     		
 		
  		Scene scene = new Scene(stackPane, 150, 150);
  		scene.setFill(Color.TRANSPARENT);
@@ -1905,6 +1982,7 @@ public class MainScene {
  			loadingCircleStage.setScene(scene);
  			loadingCircleStage.hide();
 	 	}
+ 		
  		else if (type == SAVING) {
  	 		indicator.setText("Saving");
  			savingCircleStage = new Stage();
@@ -1915,8 +1993,12 @@ public class MainScene {
  			savingCircleStage.setScene(scene);
  			savingCircleStage.hide();
 	 	}
- 		else if (type == PAUSING) {
- 	 		indicator.setText("Pausing");
+ 		
+ 		else if (type == PAUSED) {
+ 			messagePopup = new MessagePopup();
+/* 			
+ 	 		indicator.setText("Paused");//. ESC to resume.");
+ 			indicator.setProgress(100);
  			pausingCircleStage = new Stage();
  			setEscapeEventHandler(true, pausingCircleStage);
  			pausingCircleStage.initOwner(stage);
@@ -1925,6 +2007,7 @@ public class MainScene {
  			pausingCircleStage.initStyle (StageStyle.TRANSPARENT);
  			pausingCircleStage.setScene(scene);
  			pausingCircleStage.hide();
+*/
 	 	}
 		else
 			System.out.println("MainScene's createProgressCircle() : type is invalid");
@@ -1936,24 +2019,66 @@ public class MainScene {
  		mainSceneExecutor.execute(new LoadWaitStageTask(type));	
  	}
  	
+    /*
+     * Set up a wait stage
+     * @param type
+     */
+ 	class LoadWaitStageTask implements Runnable {
+ 		int type;
+ 		
+ 		LoadWaitStageTask(int type){
+ 			this.type = type;
+ 		}
+ 		
+ 		public void run() {
+ 			//logger.info("LoadWaitStageTask is on " + Thread.currentThread().getName());
+ 			//if (!masterClock.isPaused()) {
+ 				Platform.runLater(() -> {
+ 					//FXUtilities.runAndWait(() -> {}) does NOT work
+ 					if (type == LOADING) {
+ 						setMonitor(loadingCircleStage);
+ 						loadingCircleStage.show();
+ 					}
+ 					else if (type == SAVING) {
+ 						//pausingCircleStage.hide();
+ 						//hideWaitStage(PAUSED);
+ 						stopPausePopup();
+ 						setMonitor(savingCircleStage);
+ 						savingCircleStage.show();
+ 					}
+ 					else if (type == PAUSED) {
+ 						//hideWaitStage(PAUSED);	
+ 						stopPausePopup();
+ 						startPausePopup();
+ 						//setMonitor(pausingCircleStage);
+ 						//pausingCircleStage.show();
+ 					}
+ 				});
+ 			//}
+ 		}
+ 	}
+ 	
  	public void hideWaitStage(int type) {
 		//if (masterClock.isPaused()) {
-			try {
-				FXUtilities.runAndWait(() -> {
+			//try {
+				//FXUtilities.runAndWait(() -> { // not working for loading sim
 				if (type == LOADING)
 					loadingCircleStage.hide();
 				else if (type == SAVING)
 					savingCircleStage.hide();
-				else if (type == PAUSING)
-					pausingCircleStage.hide();
+				else if (type == PAUSED) {
+					//pausingCircleStage.hide();
+					//if (messagePopup.numPopups() > 0)
+						stopPausePopup();	
+				}
 				else
 					System.out.println("MainScene's hideWaitStage() : type is invalid");
-				});
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
+				//});
+			//} catch (InterruptedException e) {
+			//	e.printStackTrace();
+			//} catch (ExecutionException e) {
+			//	e.printStackTrace();
+			//}
 		//}
 		//System.out.println("hideWaitStage()");
  	}
@@ -1965,25 +2090,33 @@ public class MainScene {
 		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
 
-		StartUpLocation startUpLoc = new StartUpLocation(anchorPane.getPrefWidth(), anchorPane.getPrefHeight());
-        double xPos = startUpLoc.getXPos();
-        double yPos = startUpLoc.getYPos();
-        // Set Only if X and Y are not zero and were computed correctly
-     	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
-     	//ObservableList<Screen> screens = Screen.getScreens();	
-    	//System.out.println("# of monitors : " + screens.size());
-
-        if (xPos != 0 && yPos != 0) {
-            stage.setX(xPos);
-            stage.setY(yPos);
-            stage.centerOnScreen();
-            //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
-        } else {
-            stage.centerOnScreen();
-            //System.out.println("calling centerOnScreen()");
-            //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
-        }  
-		
+		if (anchorPane == null) {
+			StackPane root = new StackPane();//starfield);
+			root.setPrefHeight(width);
+			root.setPrefWidth(height);
+			StartUpLocation startUpLoc = new StartUpLocation(root.getPrefWidth(), root.getPrefHeight());
+			 
+		}
+		else {
+			StartUpLocation startUpLoc = new StartUpLocation(anchorPane.getPrefWidth(), anchorPane.getPrefHeight());
+	        double xPos = startUpLoc.getXPos();
+	        double yPos = startUpLoc.getYPos();
+	        // Set Only if X and Y are not zero and were computed correctly
+	     	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
+	     	//ObservableList<Screen> screens = Screen.getScreens();	
+	    	//System.out.println("# of monitors : " + screens.size());
+	
+	        if (xPos != 0 && yPos != 0) {
+	            stage.setX(xPos);
+	            stage.setY(yPos);
+	            stage.centerOnScreen();
+	            //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
+	        } else {
+	            stage.centerOnScreen();
+	            //System.out.println("calling centerOnScreen()");
+	            //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
+	        }  
+		}
 	}
 	
 /*	
@@ -2026,41 +2159,6 @@ public class MainScene {
  	}
  */	
  	
-
-
-   /*
-    * Set up a wait stage
-    * @param type
-    */
-	class LoadWaitStageTask implements Runnable {
-		int type;
-		
-		LoadWaitStageTask(int type){
-			this.type = type;
-		}
-		
-		public void run() {
-			//logger.info("LoadWaitStageTask is on " + Thread.currentThread().getName());
-			//if (!masterClock.isPaused()) {
-				Platform.runLater(() -> {
-					//FXUtilities.runAndWait(() -> {}) does NOT work
-					if (type == LOADING) {
-						setMonitor(loadingCircleStage);
-						loadingCircleStage.show();
-					}
-					else if (type == SAVING) {
-						pausingCircleStage.hide();
-						setMonitor(savingCircleStage);
-						savingCircleStage.show();
-					}
-					else if (type == PAUSING) {
-						setMonitor(pausingCircleStage);
-						pausingCircleStage.show();
-					}
-					});
-			//}
-		}
-	}
 
 	// 2016-10-01 Added mainSceneExecutor for executing wait stages		
     public void startMainSceneExecutor() {

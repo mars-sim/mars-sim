@@ -143,7 +143,7 @@ public class OGGSoundClip {
 	 * @param volume the volume
 	 */
 	public void setGain(float volume) {
-		System.out.println("OGGSoundClip's setGain() is on " + Thread.currentThread().getName());
+		//System.out.println("OGGSoundClip's setGain() is on " + Thread.currentThread().getName());
 
 		if (volume > 1)
 			volume = 1;
@@ -152,7 +152,7 @@ public class OGGSoundClip {
 	
 		this.volume = volume;
 		
-		System.out.println("volume : " + volume);
+		//System.out.println("volume : " + volume);
 		
 		if (outputLine == null) {
 			return;
@@ -181,11 +181,11 @@ public class OGGSoundClip {
 			
 			control.setValue(value);
 			
-			System.out.println("max : " + max);
-			System.out.println("min : " + min);
-			System.out.println("range : " + range);
-			System.out.println("step : " + step);
-			System.out.println("value : " + value);
+			//System.out.println("max : " + max);
+			//System.out.println("min : " + min);
+			//System.out.println("range : " + range);
+			//System.out.println("step : " + step);
+			//System.out.println("value : " + value);
 
 			
 		} catch (IllegalArgumentException e) {

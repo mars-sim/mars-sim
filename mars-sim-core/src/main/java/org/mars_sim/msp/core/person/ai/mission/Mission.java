@@ -99,65 +99,6 @@ implements Serializable {
 		return missionIdentifer++;
 	}
 	
-	/**
-	 * Constructor.
-	 * @param name the name of the mission
-	 * @param startingPerson the person starting the mission.
-	 * @param minPeople the minimum number of people required for mission.
-
-	public Mission(String name, Person startingPerson, int minPeople) {
-
-		// Initialize data members
-		this.name = name;
-		description = name;
-		people = new ConcurrentLinkedQueue<Person>();
-		robots = new ConcurrentLinkedQueue<Robot>();
-		done = false;
-		phase = null;
-		phaseDescription = null;
-		phases = new ArrayList<MissionPhase>();
-		phaseEnded = false;
-		this.minPeople = minPeople;
-		missionCapacity = Integer.MAX_VALUE;
-		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
-
-		// Created mission starting event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(startingPerson, this, EventType.MISSION_START);
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-
-		// Log mission starting.
-		logger.info(description + " started by " + startingPerson.getName() + " at "  + startingPerson.getSettlement());
-
-		// Add starting person to mission.
-		startingPerson.getMind().setMission(this);
-	}
-	public Mission(String name, Robot robot, int minPeople) {
-
-		// Initialize data members
-		this.name = name;
-		description = name;
-		people = new ConcurrentLinkedQueue<Person>();
-		robots = new ConcurrentLinkedQueue<Robot>();
-		done = false;
-		phase = null;
-		phaseDescription = null;
-		phases = new ArrayList<MissionPhase>();
-		phaseEnded = false;
-		this.minPeople = minPeople;
-		missionCapacity = Integer.MAX_VALUE;
-		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
-
-		// Created mission starting event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_START);
-		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-
-		// Log mission starting.
-		logger.info(description + " started by " + robot.getName() + " at "  + robot.getSettlement());
-
-		// Add starting person to mission.
-		robot.getBotMind().setMission(this);
-	}
-	*/
 	public Mission(String name, MissionMember startingMember, int minMembers) {
 		// Initialize data members
 		this.identifier = getNextIdentifier();
@@ -176,16 +117,6 @@ implements Serializable {
 		missionCapacity = Integer.MAX_VALUE;
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
-//		Person person = null;
-//		Robot robot = null;
-//
-//		if (unit instanceof Person) {
-//			person = (Person) unit;
-//		}
-//		else if (unit instanceof Robot) {
-//			robot = (Robot) unit;
-//		}
-
 		// Created mission starting event.
 		HistoricalEvent newEvent = null;
 
@@ -201,41 +132,6 @@ implements Serializable {
         startingMember.setMission(this);
         if (startingMember instanceof Person)
         	startingMember.setShiftType(ShiftType.ON_CALL);
-
-/*
-        if (startingMember instanceof Person) {
-            ((Person) startingMember).getMind().setMission(this);
-            ((Person) startingMember).getTaskSchedule().setShiftType("None");
-        }
-        else if (startingMember instanceof Robot) {
-            ((Robot) startingMember).getBotMind().setMission(this);
-            ((Robot) startingMember).getTaskSchedule().setShiftType("None");
-        }
-*/
-//		if (unit instanceof Person) {
-//			person = (Person) unit;
-//			newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_START);
-//
-//			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-//
-//			// Log mission starting.
-//			logger.info(description + " started by " + person.getName() + " at "  + person.getSettlement());
-//
-//			// Add starting person to mission.
-//			person.getMind().setMission(this);
-//		}
-//		else if (unit instanceof Robot) {
-//			robot = (Robot) unit;
-//			newEvent = new MissionHistoricalEvent(robot, this, EventType.MISSION_START);
-//
-//			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-//
-//			// Log mission starting.
-//			logger.info(description + " started by " + robot.getName() + " at "  + robot.getSettlement());
-//
-//			// Add starting person to mission.
-//			robot.getBotMind().setMission(this);
-//		}
 
 	}
 

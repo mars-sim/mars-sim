@@ -37,7 +37,7 @@ public class BuildingConstructionMissionMeta implements MetaMission {
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());
 
-    private static int FIRST_AVAILABLE_SOL = 1;
+    private static int FIRST_AVAILABLE_SOL = 30;
     
     @Override
     public String getName() {

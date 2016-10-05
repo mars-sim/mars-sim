@@ -94,7 +94,9 @@ public class CollectionUtils {
 		Collection<Unit> units
 	) {
 		ConcurrentLinkedQueue<Person> persons = new ConcurrentLinkedQueue<Person>();
-		for (Unit unit : units) {
+		Iterator<Unit> i = units.iterator(); // switch to iterator to avoid concurrent modification exception
+		while (i.hasNext()) {
+			Unit unit = i.next();
 			if (unit instanceof Person)
 				persons.add((Person) unit);
 		}

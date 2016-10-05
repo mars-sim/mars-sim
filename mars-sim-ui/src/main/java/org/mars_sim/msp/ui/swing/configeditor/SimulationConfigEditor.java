@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfigEditor.java
- * @version 3.08 2015-03-26
+ * @version 3.1.0 2016-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -275,6 +275,7 @@ public class SimulationConfigEditor {
 					// 1. Simulation.createNewSimulation();
 					// 2. MainWindow mw = new MainWindow(true);
 					// 3. Simulation.instance().start();
+					Simulation.instance().destroyOldSimulation();
 					Simulation.createNewSimulation();
 					new MainWindow(true);
 					Simulation.instance().start(false);

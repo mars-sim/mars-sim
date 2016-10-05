@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProject.java
- * @version 3.08 2015-04-14
+* @version 3.1.0 2016-10-03
  * @author Scott Davis
  * $LastChangedDate$
  * $LastChangedRevision$
@@ -57,7 +57,7 @@ public class MarsProject {
     /** true if help documents should be generated from config xml files. */
     private boolean generateHelp = false;
 
-    private ExecutorService worker;
+    //private ExecutorService worker;
 
     /**
      * Constructor 1.
@@ -69,9 +69,9 @@ public class MarsProject {
 	   	Simulation.instance().getSimExecutor().submit(new SimulationTask());
     }
 
-    public void submitWork(Runnable task) {
-        worker.submit(task);
-    }
+    //public void submitWork(Runnable task) {
+    //    worker.submit(task);
+    //}
 
 	public class SimulationTask implements Runnable {
 
@@ -100,6 +100,7 @@ public class MarsProject {
 	            splashWindow.remove();
 	        }
 	        else {
+	        	// headless mode
 	            // Initialize the simulation.
 	            initializeSimulation(args);
 	        }
@@ -132,14 +133,23 @@ public class MarsProject {
         } else if (argList.contains("-load")) {
             // If load argument, load simulation from file.
             try {
+				// Initialize the simulation.
+                SimulationConfig.loadConfig();
+	        	Simulation.createNewSimulation();         	
                 handleLoadSimulation(argList);
+                
+                //FIXME : make it work
             } catch (Exception e) {
                 showError("Could not load the desired simulation, trying to create a new Simulation...", e);
                 handleNewSimulation();
                 result = true;
             }
         } else {
+        	// if there is no args, load default.sim
             try {
+				// Initialize the simulation.
+                SimulationConfig.loadConfig();
+	        	Simulation.createNewSimulation(); 	     	
                 handleLoadDefaultSimulation();
             } catch (Exception e) {
 //                showError("Could not load the default simulation, trying to create a new Simulation...", e);
@@ -198,6 +208,7 @@ public class MarsProject {
                 startSimulation(true);
             }
             else {
+            	// go headless
             	// Start simulation.
             	startSimulation(false);
             }

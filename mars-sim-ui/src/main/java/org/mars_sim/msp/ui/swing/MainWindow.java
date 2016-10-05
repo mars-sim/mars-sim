@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.08 2015-02-04
+* @version 3.1.0 2016-10-03
  * @author Scott Davis
  */
 
@@ -402,13 +402,13 @@ public class MainWindow extends JComponent {
 	// 2015-01-25 Added autosave
 	public void loadSimulation(boolean autosave) {
 		final boolean ans = autosave;
-        if (earthTimer != null)
-            earthTimer.stop();
-        earthTimer = null;
+        //if (earthTimer != null)
+         //   earthTimer.stop();
+        //earthTimer = null;
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
-				public void run() {
+				public void run() { 					
 					loadSimulationProcess(ans);
 				}
 			};
@@ -417,19 +417,26 @@ public class MainWindow extends JComponent {
 			loadSimThread.interrupt();
 		}
 
+/*
 		// 2015-01-19 Added using delayLaunchTimer to launch earthTime
 		if (earthTimer == null) {
 			delayLaunchTimer = new Timer();
 			int seconds = 1;
 			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);
 		}
+*/
+		
 	}
 
 	/**
 	 * Performs the process of loading a simulation.
 	 */
 	private void loadSimulationProcess(boolean autosave) {
+		
+		Simulation.instance().stop();
+        
 		String dir = null;
+
 		String title = null;
 		// 2015-01-25 Added autosave
 		if (autosave) {
@@ -444,20 +451,37 @@ public class MainWindow extends JComponent {
 		chooser.setDialogTitle(title); //$NON-NLS-1$
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
-			desktop.clearDesktop();
 
-			MasterClock masterClock = Simulation.instance().getMasterClock();
-			Simulation.instance().getClockScheduler().submit(masterClock.getClockThreadTask());
-			//masterClock.loadSimulation(chooser.getSelectedFile());
+			// Break up the creation of the new simulation, to allow interfering with the single steps.
+			Simulation.instance().endSimulation();
+		
+			try {
+			    desktop.clearDesktop();
 
+			    if (earthTimer != null) {
+                    earthTimer.stop();
+			    }
+                earthTimer = null;
 
+			}
+			catch (Exception e) {
+			    // New simulation process should continue even if there's an exception in the UI.
+			    logger.severe(e.getMessage());
+			    e.printStackTrace(System.err);
+			}
+			
+        	//Simulation.createNewSimulation();
+			Simulation.instance().loadSimulation(chooser.getSelectedFile());
+			
 			while (Simulation.instance().getMasterClock() == null) {//while (masterClock.isLoadingSimulation()) {
 				try {
-					Thread.sleep(500L);
+					Thread.sleep(300L);
 				} catch (InterruptedException e) {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
 				}
 			}
+			
+			desktop.disposeAnnouncementWindow();
 
 			try {
                 desktop.resetDesktop();
@@ -467,13 +491,17 @@ public class MainWindow extends JComponent {
                 logger.severe(e.getMessage());
                 e.printStackTrace(System.err);
             }
+			
+			Simulation.instance().start(false);
 
-			desktop.disposeAnnouncementWindow();
+			startEarthTimer();
 
-	        desktop.openToolWindow(GuideWindow.NAME);
-	        GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-	        ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+	        //desktop.openToolWindow(GuideWindow.NAME);
+	        //GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+	        //ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
+		
+
 	}
 
 	/**
@@ -484,7 +512,8 @@ public class MainWindow extends JComponent {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
 				@Override
 				public void run() {
-					newSimulationProcess();
+					newSimulationProcess();				
+					//Simulation.instance().runStartTask(false);
 				}
 			};
 			newSimThread.start();
@@ -498,12 +527,16 @@ public class MainWindow extends JComponent {
 		//	int seconds = 1;
 		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);
 		//}
+			
+        //earthTimer.start();			
 	}
 
 	/**
 	 * Performs the process of creating a new simulation.
 	 */
-	private void newSimulationProcess() {
+	void newSimulationProcess() {
+		logger.info("newSimulationProces() is on " + Thread.currentThread().getName());
+		  
 		if (
 			JOptionPane.showConfirmDialog(
 				desktop,
@@ -514,9 +547,15 @@ public class MainWindow extends JComponent {
 		) {
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.creatingNewSim")); //$NON-NLS-1$
 
+			//Simulation.instance().stop();
+
 			// Break up the creation of the new simulation, to allow interfering with the single steps.
 			Simulation.instance().endSimulation();
-
+			Simulation.instance().endMasterClock();
+			
+			desktop.closeAllToolWindow();
+			desktop.disposeAnnouncementWindow();
+			
 			try {
 			    desktop.clearDesktop();
 
@@ -525,29 +564,44 @@ public class MainWindow extends JComponent {
 			    }
                 earthTimer = null;
 
-                //desktop.resetDesktop(); causing issues
 			}
 			catch (Exception e) {
 			    // New simulation process should continue even if there's an exception in the UI.
 			    logger.severe(e.getMessage());
 			    e.printStackTrace(System.err);
 			}
+			
+/*
+			while (Simulation.instance().getMasterClock() == null) {//while (masterClock.isLoadingSimulation()) {
+				try {
+					Thread.sleep(300L);
+				} catch (InterruptedException e) {
+					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
+				}
+			}
+*/			
 
-			SimulationConfig.loadConfig();
-
-			SimulationConfigEditor editor = new SimulationConfigEditor(
-				SimulationConfig.instance(), this); // frame.getOwner()
-			//editor.setVisible(true);
-
-			//Simulation.createNewSimulation();
-
-			// Start the simulation.
-			//Simulation.instance().start();
-
-			//startEarthTimer();
-
-			//desktop.disposeAnnouncementWindow();
-
+			
+	        try {
+	        	Simulation.instance().startSimExecutor();
+	        	//Simulation.instance().runLoadConfigTask();
+	        	Simulation.instance().getSimExecutor().submit(new SimConfigTask(this));
+	        	
+	        } catch (Exception e) {
+	        	logger.warning("error in restarting a new sim.");
+	            e.printStackTrace();
+	        }
+	
+	        
+			try {
+                desktop.resetDesktop();
+            }
+            catch (Exception e) {
+                // New simulation process should continue even if there's an exception in the UI.
+                logger.severe(e.getMessage());
+                e.printStackTrace(System.err);
+            }
+			
 			// Open user guide tool.
             //desktop.openToolWindow(GuideWindow.NAME);
             //GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
@@ -555,6 +609,23 @@ public class MainWindow extends JComponent {
 		}
 	}
 
+	public class SimConfigTask implements Runnable {	
+		MainWindow win;
+		SimConfigTask(MainWindow win) {
+			this.win = win;
+		}
+		
+		public void run() {
+		   	//logger.info("SimConfigTask's run() is on " + Thread.currentThread().getName());
+			SimulationConfig.loadConfig();
+        	//Simulation.instance().initializeIntransientData();
+        	//Simulation.instance().initializeTransientData();
+            //SwingUtilities.invokeLater(() -> {
+                new SimulationConfigEditor(SimulationConfig.instance(), null);
+          //});
+		}
+	}
+	
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
@@ -599,9 +670,12 @@ public class MainWindow extends JComponent {
 			clock.saveSimulation(Simulation.AUTOSAVE, null);
 		}
 		else {
-			//desktop.disposeAnnouncementWindow();
+			desktop.disposeAnnouncementWindow();
 			desktop.openAnnouncementWindow(Msg.getString("MainWindow.savingSim")); //$NON-NLS-1$
-			clock.saveSimulation(Simulation.SAVE_DEFAULT, fileLocn);
+			if (fileLocn == null)
+				clock.saveSimulation(Simulation.SAVE_DEFAULT, null);
+			else
+				clock.saveSimulation(Simulation.SAVE_AS, fileLocn);
 		}
 
 		while (clock.isSavingSimulation()) {// || clock.isAutosavingSimulation()) {
@@ -776,7 +850,7 @@ public class MainWindow extends JComponent {
 		transportWizard.deliverBuildings(buildingManager);
 
 	}
-
+	
 	public void openConstructionWizard(BuildingConstructionMission mission) { // ConstructionManager constructionManager,
 		logger.info("MainWindow's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
 		constructionWizard.selectSite(mission);

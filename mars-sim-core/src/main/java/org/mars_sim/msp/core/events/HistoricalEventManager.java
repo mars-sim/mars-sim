@@ -36,7 +36,7 @@ public class HistoricalEventManager {
 
 	private List<HistoricalEventListener> listeners = new ArrayList<HistoricalEventListener>();
 	private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();
-	private MarsClock mainClock;
+	//private MarsClock mainClock;
 	//private static int count;
 	/**
 	 * Create a new EventManager that represents a particular simulation.
@@ -44,7 +44,7 @@ public class HistoricalEventManager {
 	public HistoricalEventManager() {
 		//System.out.println("HistoricalEventManager's constructor is on " + Thread.currentThread().getName() + " Thread");
 		// The main clock is not initialized until the simulation start
-		this.mainClock = null;
+		//this.mainClock = null;
 		//count++;
 		//System.out.println("HistoricalEventManager.java : constructor : count is " + count);
 	}
@@ -98,10 +98,10 @@ public class HistoricalEventManager {
 			removeEvents(events.size() - excess, excess);
 		}
 
-		MasterClock masterClock = Simulation.instance().getMasterClock();
-		if (masterClock != null) {
-			if (mainClock == null) mainClock = masterClock.getMarsClock();
-			 timestamp = (MarsClock) mainClock.clone();
+		//MasterClock masterClock = Simulation.instance().getMasterClock();
+		//if (masterClock != null) {
+			//if (mainClock == null) mainClock = masterClock.getMarsClock();
+			 timestamp =  (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 
 			// TODO: for debugging the NullPointerException at newEvent.setTimestamp(timestamp);
 			 if (timestamp == null) {
@@ -109,7 +109,7 @@ public class HistoricalEventManager {
 		        }
 
 			newEvent.setTimestamp(timestamp);
-		}
+		//}
 
 
 		events.add(0, newEvent);
@@ -151,6 +151,6 @@ public class HistoricalEventManager {
 		listeners = null;
 		events.clear();
 		events = null;
-		mainClock = null;
+		//mainClock = null;
 	}
 }
