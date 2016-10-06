@@ -271,11 +271,13 @@ extends VehicleMission {
 	 */
 	protected void performEmbarkFromSettlementPhase(MissionMember member) {
 
-		if (getVehicle() == null)
-			throw new NullPointerException("getVehicle() is null");
-		
-		else if (getVehicle().getSettlement() == null)
-			throw new NullPointerException("getVehicle().getSettlement() is null");
+		if (getVehicle() == null) {
+			//throw new NullPointerException("getVehicle() is null");
+			logger.info("getVehicle() is null");
+			endMission("getVehicle() is null");
+		}
+		//else if (getVehicle().getSettlement() == null)
+		//	throw new NullPointerException("getVehicle().getSettlement() is null");
 		
 		else {
 				

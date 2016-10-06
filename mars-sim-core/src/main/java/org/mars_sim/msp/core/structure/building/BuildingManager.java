@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.08 2016-03-01
+ * @version 3.1.0 2016-10-05
  * @author Scott Davis
  */
 
@@ -75,6 +75,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -94,7 +95,9 @@ public class BuildingManager implements Serializable {
     private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
 
     // Data members
+	private int solCache = 0;
 	private double probabilityOfImpactPerSQMPerSol;
+	private double wallPenetrationThicknessAL;
 
     private List<Building> buildings;
     // 2014-10-29 Added buildingsNickNames
@@ -105,16 +108,19 @@ public class BuildingManager implements Serializable {
 
     //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
 
-
     private Settlement settlement; // The manager's settlement.
     private MarsClock lastBuildingValuesUpdateTime;
-
+	private static MarsClock marsClock;
+	private static MasterClock masterClock;
+	
     // 2014-12-23 Added resupply
     private Resupply resupply;
     private BuildingConfig buildingConfig;
     private Meteorite meteorite;
-    //private MeteoriteImpact meteoriteImpact;
+    //private MeteoriteImpact meteoriteImpact;  
+    //private Injector injector;
 
+    
     /**
      * Constructor to construct buildings from settlement config template.
      * @param settlement the manager's settlement.
@@ -155,22 +161,31 @@ public class BuildingManager implements Serializable {
 
         // 2015-06-04 Made use of Guice for Meteorite
         Injector injector = Guice.createInjector(new MeteoriteModule());
-        Meteorite meteorite = injector.getInstance(Meteorite.class);
-        meteorite.startMeteoriteImpact(this);
-        //meteoriteImpact = new MeteoriteImpact(this);
-        //meteoriteImpact.calculateMeteoriteProbability();
+        meteorite = injector.getInstance(Meteorite.class);
 
     }
 
+	// This method is called by MeteoriteImpactImpl
 	public void setProbabilityOfImpactPerSQMPerSol(double value) {
 		probabilityOfImpactPerSQMPerSol = value;
 	}
 
+	// Called by each building once a sol to see if an impact is imminent
 	public double getProbabilityOfImpactPerSQMPerSol() {
 		return probabilityOfImpactPerSQMPerSol;
 	}
 
-
+	// 2016-10-05 Added setWallPenetration()
+	public void setWallPenetration(double value) {
+		wallPenetrationThicknessAL = value;
+	}
+	
+	// 2016-10-05 Added getWallPenetration()
+	public double getWallPenetration() {
+		return wallPenetrationThicknessAL;
+	}
+	
+	
     //public MeteoriteImpact getMeteoriteImpact() {
     //	return meteoriteImpact;
     //}
@@ -246,8 +261,9 @@ public class BuildingManager implements Serializable {
      */
     // 2014-12-19 Added addOneBuilding(). Called by confirmBuildingLocation() in Resupply.java
     public Building addOneBuilding(BuildingTemplate template, Resupply resupply, boolean createBuildingConnections) {
-		logger.info("BuildingManager's addOneBuilding() is on " + Thread.currentThread().getName() + " Thread");
-    	this.resupply = resupply;
+		//logger.info("BuildingManager's addOneBuilding() is on " + Thread.currentThread().getName() + " Thread");
+    	// normally on JavaFX Application Thread
+		this.resupply = resupply;
     	Building newBuilding = new Building(template, this);
 		//System.out.println("BuildingManager.java : addBuilding() : newBuilding is " + newBuilding.getBuildingType());
         //settlement.fireUnitUpdate(UnitEventType.PLACE_BUILDING_EVENT, newBuilding);
@@ -260,10 +276,12 @@ public class BuildingManager implements Serializable {
     public Resupply getResupply() {
     	return resupply;
     }
+    
     // 2014-12-23 Added setResupply()
     public void setResupply(Resupply resupply) {
     	this.resupply= resupply;
     }
+    
     /**
      * Gets a copy of settlement's collection of buildings.
      * @return collection of buildings
@@ -458,6 +476,21 @@ public class BuildingManager implements Serializable {
      * @throws Exception if error.
      */
     public void timePassing(double time) {
+		if (masterClock == null)
+			masterClock = Simulation.instance().getMasterClock();
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
+
+        // check for the passing of each day
+        int solElapsed = marsClock.getSolElapsedFromStart();
+ 
+        if (solElapsed != solCache) {
+        	solCache = solElapsed;
+        	  
+        	// Update the impact probability for each settlement based on the size and speed of the new meteorite
+        	meteorite.startMeteoriteImpact(this);
+        }
+    	
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             i.next().timePassing(time);

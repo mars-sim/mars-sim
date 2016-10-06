@@ -365,12 +365,16 @@ implements ActionListener {
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();
-						else result = "none";
+						else result = "None";
 					}
 					else if (column == 3) 
 						result = (int) (robot.getPerformanceRating() * 100D) + "%";
-					else if (column == 4)
-						result = robot.getSystemCondition().getHealthSituation();
+					else if (column == 4){			
+						if (robot.getSystemCondition().isInoperable())
+							result = "Inoperable";
+						else 
+							result = "Operable";
+					}
 				}
 				catch (Exception e) {}
 			}
@@ -485,12 +489,17 @@ implements ActionListener {
 					else if (column == 2) {
 						Mission mission = robot.getBotMind().getMission();
 						if (mission != null) result = mission.getName();
-						else result = "none";
+						else result = "None";
 					}
 					else if (column == 3) 
 						result = (int) (robot.getPerformanceRating() * 100D) + "%";
-					else if (column == 4)
-						result = robot.getSystemCondition().getHealthSituation();
+					else if (column == 4) {			
+						if (robot.getSystemCondition().isInoperable())
+							result = "Inoperable";
+						else 
+							result = "Operable";
+					}
+
 				}
 				catch (Exception e) {}
 			}

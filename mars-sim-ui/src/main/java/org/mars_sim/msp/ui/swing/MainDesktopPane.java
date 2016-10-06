@@ -792,7 +792,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		
 		if (mainScene != null) {
 			Platform.runLater(() -> {
-				logger.info("playSound() is on " + Thread.currentThread().getName());
+				//logger.info("playSound() is on " + Thread.currentThread().getName());
 				// Play sound for window.
 				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
 				if ((soundFilePath != null) && soundFilePath.length() != 0) {
@@ -804,7 +804,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		
 		else {
 			SwingUtilities.invokeLater(() -> {
-				logger.info("playSound() is on " + Thread.currentThread().getName());
+				//logger.info("playSound() is on " + Thread.currentThread().getName());
 				// Play sound for window.
 				String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
 				if ((soundFilePath != null) && soundFilePath.length() != 0) {

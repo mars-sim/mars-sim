@@ -201,44 +201,38 @@ implements Serializable {
         // Check if mission creation at settlement (if any) is overridden.
         boolean overrideMission = false;
 
-        //if (person != null) {
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                overrideMission = person.getSettlement().getMissionCreationOverride();
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            overrideMission = person.getSettlement().getMissionCreationOverride();
+        }
+
+        // Perform a task if the person has one, or determine a new task/mission.
+        if (taskManager.hasActiveTask()) {
+            double remainingTime = taskManager.performTask(time, person
+                    .getPerformanceRating());
+            if (remainingTime > 0D) {
+                takeAction(remainingTime);
+            }
+        }
+        else {
+            if (activeMission) {
+                mission.performMission(person);
             }
 
-            // Perform a task if the person has one, or determine a new task/mission.
-            if (taskManager.hasActiveTask()) {
-                double remainingTime = taskManager.performTask(time, person
-                        .getPerformanceRating());
-                if (remainingTime > 0D) {
-                    takeAction(remainingTime);
-                }
-            }
-            else {
-                if (activeMission) {
-                    mission.performMission(person);
-                }
-
-                if (!taskManager.hasActiveTask()) {
-                    try {
-                        getNewAction(true, (!activeMission && !overrideMission));
-                        // 2015-10-22 Added recordTask()
-                        //taskManager.recordTask();
-                    } catch (Exception e) {
-                        logger.log(Level.WARNING, person + " could not get new action", e);
-                        e.printStackTrace(System.err);
-                    }
-                }
-
-                if (taskManager.hasActiveTask() || hasActiveMission()) {
-                    takeAction(time);
+            if (!taskManager.hasActiveTask()) {
+                try {
+                    getNewAction(true, (!activeMission && !overrideMission));
+                    // 2015-10-22 Added recordTask()
+                    //taskManager.recordTask();
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, person + " could not get new action", e);
+                    e.printStackTrace(System.err);
                 }
             }
 
-
-       // }
-
-
+            if (taskManager.hasActiveTask() || hasActiveMission()) {
+                takeAction(time);
+            }
+        }
     }
 
 

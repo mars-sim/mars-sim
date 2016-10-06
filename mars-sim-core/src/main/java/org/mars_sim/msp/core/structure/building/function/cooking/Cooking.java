@@ -63,16 +63,18 @@ implements Serializable {
     /** The base amount of work time (cooking skill 0) to produce one single cooked meal. */
     public static final double COOKED_MEAL_WORK_REQUIRED = 8D; // 10 milli-sols is 15 mins
     
-    public static String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
-    public static String FOOD_WASTE = "food waste";
-    public static String GREY_WATER = "grey water"; 
-    public static String TABLE_SALT = "table salt";
+    public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
+    public static final String FOOD_WASTE = "food waste";
+    public static final String GREY_WATER = "grey water"; 
+    public static final String TABLE_SALT = "table salt";
     
-    public static String SOYBEAN_OIL = "Soybean Oil";
-    public static String GARLIC_OIL = "Garlic Oil";
-    public static String SESAME_OIL = "Sesame Oil";
-    public static String PEANUT_OIL = "Peanut Oil";
+    public static final String SOYBEAN_OIL = "Soybean Oil";
+    public static final String GARLIC_OIL = "Garlic Oil";
+    public static final String SESAME_OIL = "Sesame Oil";
+    public static final String PEANUT_OIL = "Peanut Oil";
 		 
+    public static final int RECHECKING_FREQ = 250; // in millisols
+    
     // 2015-01-12 Dynamically adjusted the rate of generating meals
     //public double mealsReplenishmentRate;
     public static double UP = 0.01;
@@ -92,13 +94,14 @@ implements Serializable {
     private double waterUsagePerMeal;
 
     private boolean cookNoMore = false;
+    private boolean no_oil_last_time = false;
 
     // Data members
     private List<CookedMeal> cookedMeals = new CopyOnWriteArrayList<>();//<CookedMeal>();
     //private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
     private List<CropType> cropTypeList;
-    private List<String> oils = new CopyOnWriteArrayList<>();
+    private List<String> oilMenu = new CopyOnWriteArrayList<>();
     
     private int cookCapacity;
 	private int mealCounterPerSol = 0;
@@ -182,10 +185,10 @@ implements Serializable {
        	// 2014-12-12 Added computeDryMass()
         computeDryMass();
         
-        oils.add(SOYBEAN_OIL);
-        oils.add(GARLIC_OIL);
-        oils.add(SESAME_OIL);
-        oils.add(PEANUT_OIL);
+        oilMenu.add(SOYBEAN_OIL);
+        oilMenu.add(GARLIC_OIL);
+        oilMenu.add(SESAME_OIL);
+        oilMenu.add(PEANUT_OIL);
     }
 
     // 2014-12-12 Created computeDryMass(). Called out once only in Cooking.java's constructor
@@ -658,12 +661,12 @@ implements Serializable {
     // 2015-01-02 Modified pickOneOil()
 	public String pickOneOil(double amount) {
 
-	    	List<String> oilList = new CopyOnWriteArrayList<>();
-	    	int size = oils.size();    	
+	    	List<String> available_oils = new CopyOnWriteArrayList<>();
+	    	int size = oilMenu.size();    	
 	    	for (int i=0; i<size; i++) {
-	    		String oil = oils.get(i);
+	    		String oil = oilMenu.get(i);
 	    		if (getAmountAvailable(oil) > amount)//AMOUNT_OF_OIL_PER_MEAL)
-		 	    	oilList.add(oil);
+		 	    	available_oils.add(oil);
 	    	}
 /*
 	 	    if (getAmountAvailable("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
@@ -675,14 +678,15 @@ implements Serializable {
 	 	    if (getAmountAvailable("Peanut Oil") > AMOUNT_OF_OIL_PER_MEAL)
 	 	    	oilList.add("Peanut Oil");
 */
-			int upperbound = oilList.size();
+/*	    	
+			int upperbound = available_oils.size();
 	    	int lowerbound = 0;
 	    	String selectedOil = "None";
 	    	int index = 0;
 	    	if (upperbound > 0) {
 	    		index = ThreadLocalRandom.current().nextInt(lowerbound, upperbound);
 	    		//int number = (int)(Math.random() * ((upperbound - lowerbound) + 1) + lowerbound);
-		    	selectedOil = oilList.get(index);
+		    	selectedOil = available_oils.get(index);
 	    	}
 	    	else if (upperbound == 0) {
 	    		//selectedOil = "None";
@@ -690,6 +694,26 @@ implements Serializable {
 	    			logger.info("Running out of oil in " + settlement.getName());
 	    		oil_count++;
 	    	}
+*/
+	    	
+	    	int s = available_oils.size();
+	    	String selectedOil = null;
+	    	int index = 0;
+	    	if (s > 0) { 
+	    		index = RandomUtil.getRandomInt(s-1);
+	    		//System.out.println("index is " + index);
+	    		selectedOil = available_oils.get(index);
+	    	}
+	    	else {
+	    		no_oil_last_time = true;
+	    		int rand = RandomUtil.getRandomInt(size-1);
+	    		
+		    	inv.addAmountDemand(AmountResource.findAmountResource(oilMenu.get(rand)), amount);
+	    		oil_count++;
+	    		if (oil_count < 1)
+	    			logger.info("Running out of oil in " + getBuilding().getNickName() + " at "+ settlement.getName());
+	    	}
+	    	
 	    	//logger.info("oil index : "+ index);
 	    	return selectedOil;
 		}
@@ -700,10 +724,11 @@ implements Serializable {
      * @return foodAvailable
      */
     public double getAmountAvailable(String name) {
-	    AmountResource foodAR = AmountResource.findAmountResource(name);
+	    //AmountResource foodAR = AmountResource.findAmountResource(name);
 		//double foodAvailable = inv.getAmountResourceStored(foodAR, false);
 		//return foodAvailable;
-		return inv.getAmountResourceStored(foodAR, false);
+		//return inv.getAmountResourceStored(foodAR, false);
+		return inv.getAmountResourceStored(AmountResource.findAmountResource(name), false);
 	}
 
     /**
@@ -723,7 +748,10 @@ implements Serializable {
 	    }
 
 	    // consume oil
-	    boolean has_oil = consumeOil(hotMeal.getOil());
+	    boolean has_oil = false;
+	    		
+	    if (!no_oil_last_time)
+	    	has_oil = consumeOil(hotMeal.getOil());
 	    
 	    // consume salt
 	    retrieveAnIngredientFromMap(hotMeal.getSalt(), TABLE_SALT, true);
@@ -825,7 +853,7 @@ implements Serializable {
 	    // 2014-12-29 Added pickOneOil()
 	    String oil = pickOneOil(oilRequired);
 
-	    if (!oil.equals("None")) {
+	    if (oil != null) {
 		    //may use the default amount of AMOUNT_OF_OIL_PER_MEAL;	    	
 	    	retrieveAnIngredientFromMap(oilRequired, oil, true);
 	    	return true;
@@ -893,6 +921,12 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
+	    int millisols =  (int) marsClock.getMillisol();
+	    if (millisols % RECHECKING_FREQ == 0) {
+	    	// reset 
+	    	no_oil_last_time = false;
+	    }
+    	
         if (hasCookedMeal()) {
             double rate = settlement.getMealsReplenishmentRate();
 

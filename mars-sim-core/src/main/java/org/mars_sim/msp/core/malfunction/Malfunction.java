@@ -29,10 +29,11 @@ import java.util.logging.Logger;
  */
 public class Malfunction implements Serializable {
     
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
-	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    //private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.Malfunction";
+    //private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(Malfunction.class.getName());
 
+    
     // Data members
     private String name; 
     private int severity;
@@ -173,7 +174,9 @@ public class Malfunction implements Serializable {
         if (emergencyWorkTimeCompleted >= emergencyWorkTime) {
             double remaining = emergencyWorkTimeCompleted - emergencyWorkTime;
             emergencyWorkTimeCompleted = emergencyWorkTime;
-            logger.info(name + "@" + Integer.toHexString(hashCode()) + " emergency fixed.");
+            logger.info(name 
+            		+ " (Code: " + Integer.toHexString(hashCode()) 
+            		+ ") Emergency repaired finished.");
             return remaining;
         }
         return 0D;
@@ -267,7 +270,9 @@ public class Malfunction implements Serializable {
             workTime, EVAWorkTime, scope, resourceEffects, lifeSupportEffects, medicalComplaints);
 
         if (emergencyWorkTime > 0D) 
-            logger.info(name + "@" + Integer.toHexString(clone.hashCode()) + " emergency starts");
+            logger.info(name 
+            		+ " (Code: " + Integer.toHexString(clone.hashCode()) 
+            		+ ") Commencing emergency repair.");
 	
         return clone;
     }
@@ -284,7 +289,8 @@ public class Malfunction implements Serializable {
                 int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
                 Part part = (Part) ItemResource.findItemResource(partName);               
                 repairParts.put(part, number);
-                logger.info("New Malfunction: " + name + " - required part: " + part.getName() + " - number: " + number);
+                logger.info(name 
+                		+ " - the repair requires the part(s) " + part.getName() + " (quantity: " + number + ")");
             }
         }
     }

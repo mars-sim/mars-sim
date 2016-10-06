@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.tool.Conversion;
 
 
 /**
@@ -106,7 +107,7 @@ public class Crop implements Serializable {
 
 	/** Current phase of crop. */
 	private PhaseType phaseType;
-	private String cropName;
+	private String cropName, capitalizedCropName;
 	private CropType cropType;
 	private CropCategoryType cropCategoryType;
 	private Inventory inv;
@@ -156,6 +157,7 @@ public class Crop implements Serializable {
 		// 2015-04-08  Added dailyPARRequired
 		dailyPARRequired = cropType.getDailyPAR();
 		cropName = cropType.getName();
+		capitalizedCropName = Conversion.capitalize(cropType.getName());
 		// growingTime in millisols
 		growingTime = cropType.getGrowingTime();
 		// growingDay in sols
@@ -188,24 +190,29 @@ public class Crop implements Serializable {
 			if (tissuePercent <= 0) {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				growingTimeCompleted =  1000D * phases.get(0).getWorkRequired() ;
-				logger.info(cropType + " tissue culture needs " + (int) growingTimeCompleted + " millisols to incubate and restock before planting.");
-
+				logger.info(capitalizedCropName 
+						+ " has no tissue culture left. Will require " 
+						+ (int) growingTimeCompleted + " millisols to restock by incubation.");
 			}
+			
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
 				growingTimeCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				logger.info(cropType + "'s tissue culture is fully available. Proceed to planting.");
+				logger.info("Proceeds to transferring plantflets from " 
+						+ capitalizedCropName + "'s tissue culture into the field.");
 			}
+			
 			else {
 				growingTimeCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
 				//growingTimeCompleted = tissuePercent /100D * PERCENT_IN_INCUBATION_PHASE /100D * cropGrowingTime;
-				logger.info(cropType + " needs " + (int) growingTimeCompleted + " millisols to incubate enough to restock before planting.");
-
+				logger.info(capitalizedCropName + " needs " 
+						+ (int) growingTimeCompleted + " millisols to clone more tissues before planting.");
 			}
 	
-		} else {
-
+		} 
+		
+		else {
 			// At the start of the sim, set up a crop's "initial" percentage of growth randomly 
 			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime);
 			
@@ -478,11 +485,11 @@ public class Crop implements Serializable {
 		// Check on the health of a >25% grown crop
 		if ( fractionalGrowthCompleted > .25D && healthCondition < .1D ) {
 			phaseType = PhaseType.FINISHED;
-			logger.info("Crop " + cropName + " at " + settlement.getName() + " died of poor health.");
+			logger.info("Crop " + capitalizedCropName + " at " + settlement.getName() + " died of poor health.");
 			// 2015-02-06 Added Crop Waste
 			double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
 			Storage.storeAnResource(amountCropWaste, CROP_WASTE, inv);
-			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ cropName);
+			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 			//actualHarvest = 0;
 			//growingTimeCompleted = 0;
 		}
@@ -490,11 +497,11 @@ public class Crop implements Serializable {
 		// Seedling (<10% grown crop) is less resilient and more prone to environmental factors
 		if ( (fractionalGrowthCompleted > 0) && (fractionalGrowthCompleted < .1D) && (healthCondition < .15D) ) {
 			phaseType = PhaseType.FINISHED;
-			logger.info("The seedlings of " + cropName + " at " + settlement.getName() + " did not survive.");
+			logger.info("The seedlings of " + capitalizedCropName + " at " + settlement.getName() + " did not survive.");
 			// 2015-02-06 Added Crop Waste
 			double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
 			Storage.storeAnResource(amountCropWaste, CROP_WASTE, inv);
-			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ cropName);
+			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 			//actualHarvest = 0;
 			//growingTimeCompleted = 0;
 		}
@@ -665,7 +672,9 @@ public class Crop implements Serializable {
 				Storage.storeAnResource(lastHarvest, cropName, inv);
 				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(lastHarvest * 1000.0)/1000.0 + " kg. All Done.");
 				remainingWorkTime = overWorkTime;
-				logger.info("Harvest done on " + cropName);
+				logger.info("Finished harvesting " + capitalizedCropName 
+						+ " in " + farm.getBuilding().getNickName() 
+						+ " at " + settlement.getName());
 				
 				phaseType = PhaseType.FINISHED;
 				generateCropWaste(lastHarvest);
@@ -770,12 +779,13 @@ public class Crop implements Serializable {
 
 		// 2015-10-13 if no dedicated research space is available, work can still be performed but productivity is cut half
 		if (hasSpace) {
-			logger.info(amount + " kg " + tissue + " extracted & cryo-preserved in " 
+			logger.info(amount + " kg " + capitalizedCropName + " " + TISSUE_CULTURE + " extracted & cryo-preserved in " 
 					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 		}
 		else {
 			amount = amount / 2D;
-			logger.info("Not enough botany research space. Only " + amount + " kg (at reduced capacity) " + tissue 
+			logger.info("Not enough botany research space. Only " + amount + " kg (at reduced capacity) " 
+					+ capitalizedCropName + " " + TISSUE_CULTURE
 					+ " extracted & cryo-preserved in " 
 					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 		}

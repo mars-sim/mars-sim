@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.08 2015-04-07
+ * @version 3.1.0 2016-10-05
  * @author Scott Davis
  */
 
@@ -28,15 +28,19 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionEvent;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.Administration;
@@ -86,14 +90,20 @@ LocalBoundedObject, InsidePathLocation {
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
 
+	// Assuming 20% chance for each person in an affected building to witness or be beware of the meteorite impact 
+	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20; 
 	// The influx of meteorites entering Mars atmosphere can be estimated as
 	// log N = -0.689* log(m) + 4.17
-	// N is the number of meteorites per year having masses greater than m grams incident on an area of 10^6 km2 (Bland and Smith, 2000).
-	public static final double PROBABILITY_IMPACT_PER_SQM_PER_YR = .007;
-	public static final double PROBABILITY_IMPACT = PROBABILITY_IMPACT_PER_SQM_PER_YR/365.24; // not 668.6 ?;
+	// N is the number of meteorites per year having masses greater than m grams incident 
+	// on an area of 10^6 km2 (Bland and Smith, 2000).
+	// see initial implementation in MeteoriteImpactImpl class
+	
+	// Note: typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
 	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; //in meters
 	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211; //in meters
 
+	
+	
 	// Source: Inflatable Transparent Structures for Mars Greenhouse Applications 2005-01-2846. SAE International.
 	// Assumptions:
 	// a. Meteorites having a spherical sphere with 8 um radius
@@ -117,7 +127,7 @@ LocalBoundedObject, InsidePathLocation {
     // 2015-12-30 Added inhabitable_id
 	protected int inhabitable_id = -1;
 	protected int baseLevel;
-	private int solCache;
+	private int solCache = 0;
 
 	protected double width;
 	protected double length;
@@ -152,6 +162,8 @@ LocalBoundedObject, InsidePathLocation {
 	protected LifeSupport lifeSupport;
 	private EVA eva;
     private Inventory itemInventory;
+    private Settlement settlement;
+    
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 
@@ -174,6 +186,7 @@ LocalBoundedObject, InsidePathLocation {
 	    //logger.info("Building's constructor 1 is on " + Thread.currentThread().getName() + " Thread");
 
 		this.manager = manager;
+		this.settlement = manager.getSettlement();
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
 
@@ -223,6 +236,8 @@ LocalBoundedObject, InsidePathLocation {
 		this.buildingType = buildingType;
 		this.nickName = nickName;
 		this.manager = manager;
+		this.settlement = manager.getSettlement();
+
 		this.xLoc = xLoc;
 		this.yLoc = yLoc;
 		this.facing = facing;
@@ -257,6 +272,8 @@ LocalBoundedObject, InsidePathLocation {
 			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
 		}
 
+		floorArea = length * width;
+		
 		baseLevel = config.getBaseLevel(buildingType);
 		description = config.getDescription(buildingType);
 
@@ -574,6 +591,10 @@ LocalBoundedObject, InsidePathLocation {
 		return length;
 	}
 
+	public double getFloorArea() {
+		return floorArea;
+	}
+	
 	@Override
 	public double getXLocation() {
 		return xLoc;
@@ -941,85 +962,111 @@ LocalBoundedObject, InsidePathLocation {
 		return itemMap;
 	}
 
+	/*
+	 * Checks for possible meteorite impact for this building
+	 */
 	public void checkForMeteoriteImpact() {
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
-		marsClock = masterClock.getMarsClock();
+		if (marsClock == null)
+			marsClock = masterClock.getMarsClock();
 
         // check for the passing of each day
         int solElapsed = marsClock.getSolElapsedFromStart();
-        int impactTimeInMillisol = 0;
+        int moment_of_impact = 0;
 
         if (solElapsed != solCache) {
         	solCache = solElapsed;
-			double probability  = width * length * getBuildingManager().getProbabilityOfImpactPerSQMPerSol();
+        	  
+			double probability  = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
 
-			// add randomness
-			probability = probability
-					+ probability * RandomUtil.getRandomDouble(1D)
-					- probability * RandomUtil.getRandomDouble(1D);
+			// assume a degree of randomness centered at the probability can be 5 times as much
+			//probability = probability * ( 1 + RandomUtil.getRandomDouble(4) - RandomUtil.getRandomDouble(4));
+
+			// assume a gauissan profile 
+			probability = probability * ( 1 + RandomUtil.getGaussianDouble());
+
+			if (probability < 0)
+				probability = 0;
+			
 			// probability is in percentage unit between 0% and 100%
-
-			double rand = RandomUtil.getRandomDouble(100D);
-
-			//System.out.println("probability : "+ probability + "    rand : "+ rand);
-
-			if (rand <= probability) {
+			if (RandomUtil.getRandomDouble(100D) <= probability) {
+				System.out.println(this.getNickName() + "'s probability of impact : "+ probability);// + "    rand : "+ rand);
 				isImpactImminent = true;
 	        	// set a time for the impact to happen any time between 0 and 1000 milisols
-				impactTimeInMillisol = RandomUtil.getRandomInt(1000);
+				moment_of_impact = RandomUtil.getRandomInt(1000);
 			}
 		}
 
-        if (isImpactImminent)
-            // Note: at the fastest sim speed, ~5 millisols may be skipped. need to set up detection of the impactTimeInMillisol with a +/- 5 range.
-        	if (marsClock.getMillisol() > impactTimeInMillisol - 5 && marsClock.getMillisol() < impactTimeInMillisol + 5) {
+        if (isImpactImminent) {
+        	
+        	int now = (int) marsClock.getMillisol();
+            // Note: at the fastest sim speed, up to ~5 millisols may be skipped. 
+        	// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
+        	if (now > moment_of_impact - 3 && now < moment_of_impact + 3) {
+	
+	        	// reset the boolean immmediately. This is for keeping track of whether the impact has occurred at msols
+				isImpactImminent = false;
+	
+				// find the length this meteorite can penetrate
+				double penetrated_length = manager.getWallPenetration();
+				
+				double wallThickness = 0;
+				
+				if (this.getNickName().toLowerCase().contains("greenhouse"))
+					// if it's a greenhouse
+					wallThickness = WALL_THICKNESS_INFLATABLE;
+				else
+					wallThickness = WALL_THICKNESS_ALUMINUM;
 
-        	// reset the boolean
-			isImpactImminent = false;
-
-			// TODO: still need to build a credible model in relating HOW the size of the meteorites and its speed of impact would damage a building.
-
-			// e.g. if the mass of a single meteorite is .001 gram, at 1km/s, would it cause any damage?
-
-        	Malfunction item = getMeteoriteImpactMalfunction();
-
-        	// Simulate the meteorite impact as a malfunction event for now
-			try {
-				malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
+				//System.out.println(getNickName() + "'s penetrated_length : " + penetrated_length);
+				//System.out.println(getNickName() + "'s WALL_THICKNESS_INFLATABLE : " + WALL_THICKNESS_INFLATABLE);
+				//System.out.println(getNickName() + "'s WALL_THICKNESS_ALUMINUM : " + WALL_THICKNESS_ALUMINUM);
+				
+				if (penetrated_length >= wallThickness) {
+					// Yes it's breached !			
+	
+		        	Malfunction item = MalfunctionFactory.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
+		
+		        	// Simulate the meteorite impact as a malfunction event for now
+					try {
+						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
+					}
+					catch (Exception e) {
+						e.printStackTrace(System.err);
+					}
+					
+					HistoricalEvent newEvent = new MalfunctionEvent(this, item, true);
+					Simulation.instance().getEventManager().registerNewEvent(newEvent);
+		
+					//check if someone under this roof may have seen/affected by the impact
+					Iterator<Person> i = getInhabitants().iterator();
+					while (i.hasNext()) {
+						Person person = i.next();
+						if (RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
+							
+							// TODO: someone got hurt, declare medical emergency
+							// TODO: delineate the accidents from those listed in malfunction.xml
+							// currently, malfunction whether a person gets hurt is handled by Malfunction above						
+							
+							PhysicalCondition pc = person.getPhysicalCondition();
+				            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
+				            int courage = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.COURAGE);
+				            double factor = 1 + RandomUtil.getRandomDouble(1) - resilience/100 - courage/100D;
+							if (factor > 1)
+								pc.setStress(person.getStress() * factor);						
+							
+							logger.info(person.getName() + " witnessed the latest meteorite impact in " + this + " at " + settlement);
+						}
+						else {
+							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
+						}
+						
+					}
+        	}
 			}
-			catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
-			HistoricalEvent newEvent = new MalfunctionEvent(this, item, true);
-			Simulation.instance().getEventManager().registerNewEvent(newEvent);
-
-			//check if someone under this roof may get hurt by the impact
-			double probabilityGettingHurt = 0.1; // assuming 10% chance getting hurt for each person
-			Iterator<Person> i = getInhabitants().iterator();
-			while (i.hasNext()) {
-				Person person = i.next();
-				if (RandomUtil.getRandomDouble(1D) < probabilityGettingHurt) {
-					// TODO: someone got hurt, declare medical emergency
-					// TODO: delineate the accidents from those listed in malfunction.xml
-				}
-			}
-
 		}
 	}
-
-	public Malfunction getMeteoriteImpactMalfunction() {
-		Malfunction item = null;
-		List<Malfunction> list = SimulationConfig.instance().getMalfunctionConfiguration().getMalfunctionList() ;
-		Iterator<Malfunction> i = list.iterator();
-		while (i.hasNext()) {
-			Malfunction m = i.next();
-			if (m.getName().equals("meteorite impact damage"))
-				item = m;
-		}
-		return item;
-	}
-
 
 	public Coordinates getLocation() {
 		return location;

@@ -71,6 +71,7 @@ public class CollectRegolithMeta implements MetaMission {
 	            result *= value;
 	            if (result > 1D) {
 	                result = 1D;
+	                // TODO : why setting result to 1D ? 
 	            }
             }
             

@@ -59,8 +59,8 @@ public class RadiationExposure implements Serializable {
 
 	public static final int RADIATION_CHECK_FREQ = 50; // in millisols
 	
-	public static final double SEP_CHANCE_SWING = 1.5D; // from 1/2 to twice as much. probability of occurrence modifier (arbitrary)
-	public static final double GCR_CHANCE_SWING = 2.7D; // from 1/3 to three times as much. probability of occurrence modifier (arbitrary)
+	public static final double SEP_CHANCE_SWING = 2D; // can be twice as much. probability of occurrence modifier (arbitrary)
+	public static final double GCR_CHANCE_SWING = 3D; // can be three times as much. probability of occurrence modifier (arbitrary)
 	        
     // Baseline radiation
     public static final double BASELINE_PERCENT = 72.5; //[in %] calculated

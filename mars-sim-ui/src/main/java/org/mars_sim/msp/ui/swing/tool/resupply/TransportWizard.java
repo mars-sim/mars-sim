@@ -191,7 +191,8 @@ public class TransportWizard {
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
-    	logger.info("deliverBuildings() is in " + Thread.currentThread().getName());
+    	//logger.info("deliverBuildings() is on " + Thread.currentThread().getName());
+    	// normally on JavaFX Application Thread
     	if (settlementWindow == null)
     		settlementWindow = desktop.getSettlementWindow();
     	if (mapPanel == null)
@@ -359,8 +360,8 @@ public class TransportWizard {
 	 */
     // 2015-12-07 Added determineEachBuildingPosition()
 	public synchronized void determineEachBuildingPosition(BuildingManager mgr) {
-		logger.info("determineEachBuildingPosition() is in " + Thread.currentThread().getName() + " Thread");
-
+		//logger.info("determineEachBuildingPosition() is in " + Thread.currentThread().getName() + " Thread");
+		// normally on JavaFX Application Thread
         List<BuildingTemplate> orderedBuildings = mgr.getResupply().orderNewBuildings();
         //System.out.println("orderedBuildings.size() : " + orderedBuildings.size());
         //if (orderedBuildings.size() > 0) {
@@ -867,9 +868,16 @@ public class TransportWizard {
 	// 2015-12-25 Added mouseDialog()
 	@SuppressWarnings("restriction")
 	public void placementDialog(String title, String header, Building newBuilding, BuildingManager mgr) {
-    	// Platform.runLater(() -> {
+    	
+		//SwingUtilities.invokeLater(() -> {
+			mapPanel.setFocusable(true);
+			mapPanel.requestFocusInWindow();
+		//});
+
+		// Platform.runLater(() -> {
 		// FXUtilities.runAndWait(() -> {
-			String msg = "Keyboard Control :\t(1) Press w/a/s/d, arrows, or num pad keys to move" + System.lineSeparator()
+			String msg = "Keyboard Control :\t(1) Highlight the Settlement Map Tool" + System.lineSeparator()
+					+ "\t\t\t\t(2) Use w/a/s/d, num pad keys arrows to move" + System.lineSeparator()
 					+ "\t\t\t\t(2) Press 'r' or 'f' to rotate 45 degrees clockwise" + System.lineSeparator()
 					+ "   Mouse Control :\t(1) Press & Hold the left button on the building" + System.lineSeparator()
 					+ "\t\t\t\t(2) Move the cursor to the destination" + System.lineSeparator()
@@ -903,6 +911,7 @@ public class TransportWizard {
 
 			mainScene.getStage().requestFocus();
 
+			
 			//final KeyboardDetection kb = new KeyboardDetection(newBuilding, mgr);
 			
 			// 2016-03-08 Added keyboard mapping and key bindings
@@ -1068,12 +1077,12 @@ public class TransportWizard {
 				  for (KeyboardDirection dir : KeyboardDirection.values()) {
 	    		  					    
     				  if (enumMap.get(dir)) {
-    					  System.out.println("dir.getIncrX() : " + dir.getIncrX());	
+    					  //System.out.println("dir.getIncrX() : " + dir.getIncrX());	
     					  //boolean ok1 = checkCollisionMoveVehicle(b, mgr);
     					  boolean ok2 = checkCollisionImmovable(b, mgr);
     					  
     					  if (ok2) {
-    						  System.out.println("ok2 : "+ ok2);
+    						  //System.out.println("ok2 : "+ ok2);
 			    			  xLoc += dir.getIncrX();
 			    			  yLoc += dir.getIncrY();
 			    			  
@@ -1118,6 +1127,7 @@ public class TransportWizard {
 			  if (repaint) {
 				  mapPanel.repaint();
 			  }
+
 	      }
 	}
 		   
@@ -1144,7 +1154,16 @@ public class TransportWizard {
 		}
 
 		@Override
-		public void mouseMoved(MouseEvent evt) {}
+		public void mouseMoved(MouseEvent evt) {
+			if (evt.getButton() == MouseEvent.BUTTON1) {
+				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+			    // Check for collision here
+			    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
+			    boolean ok2 = checkCollisionImmovable(newBuilding, mgr);
+			    if (ok1 && ok2) 			
+			    	moveNewBuildingTo(newBuilding,  evt.getX(), evt.getY());
+			}
+		}
 	}
 
 	// 2015-12-25 Added KeyboardDetection
@@ -1167,16 +1186,26 @@ public class TransportWizard {
 		    if (ok1 && ok2) 
 		    	handleKeyboardInput(newBuilding, c);
 		    mapPanel.repaint();
+			e.consume();
 		}
 
 		@Override
 		public void keyTyped(java.awt.event.KeyEvent e) {
 			// TODO Auto-generated method stub
+			e.consume();
 		}
 
 		@Override
 		public void keyReleased(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub
+		    int c = e.getKeyCode();
+		    //System.out.println("c is " + c);
+		    // Check for collision here
+		    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
+		    boolean ok2 = checkCollisionImmovable(newBuilding, mgr);
+		    if (ok1 && ok2) 
+		    	handleKeyboardInput(newBuilding, c);
+		    mapPanel.repaint();
+			e.consume();
 		}
 	}
 

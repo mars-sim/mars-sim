@@ -382,7 +382,8 @@ public class MainScene {
 	 * @param buildingManager
 	 */
 	public synchronized void openTransportWizard(BuildingManager buildingManager) {
-		logger.info("MainScene's openTransportWizard() is in " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's openTransportWizard() is on " + Thread.currentThread().getName() + " Thread");
+		// normally on pool-4-thread-3 Thread
 		// Note: make sure pauseSimulation() doesn't interfere with resupply.deliverOthers();
 		// 2015-12-16 Track the current pause state
 		boolean previous = masterClock.isPaused();

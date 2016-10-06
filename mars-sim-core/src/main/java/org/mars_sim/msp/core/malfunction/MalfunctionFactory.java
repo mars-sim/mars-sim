@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -42,6 +43,8 @@ implements Serializable {
 	
 	private static final Logger logger = Logger.getLogger(MalfunctionFactory.class.getName());
 
+	public static final String METEORITE_IMPACT_DAMAGE = "Meteorite Impact Damage";
+	
 	// Data members
 	/** The possible malfunctions in the simulation. */
 	private Collection<Malfunction> malfunctions;
@@ -318,6 +321,18 @@ implements Serializable {
 		return result;
 	}
 
+	public static Malfunction getMeteoriteImpactMalfunction(String malfunctionName) {
+		Malfunction item = null;
+		List<Malfunction> list = SimulationConfig.instance().getMalfunctionConfiguration().getMalfunctionList() ;
+		Iterator<Malfunction> i = list.iterator();
+		while (i.hasNext()) {
+			Malfunction m = i.next();
+			if (m.getName().equals(malfunctionName))
+				item = m;
+		}
+		return item;
+	}
+	
 	/**
 	 * Prepares the object for garbage collection.
 	 */

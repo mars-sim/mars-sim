@@ -88,13 +88,16 @@ implements Serializable, LifeSupportType, Objective {
 	// PersonConfig.java?
 	private static final double MIN_TEMP = 0.0D;
 	private static final double MAX_TEMP = 48.0D;
+	
 	public static final int SOL_PER_REFRESH = 5;
 	private static final int SAMPLING_FREQ = 250; // in millisols
 	public static final int NUM_CRITICAL_RESOURCES = 9;
+	private static final int RESOURCE_STAT_SOLS = 12;
+	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
-	private AmountResource oxygen;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	private AmountResource water;// = AmountResource.findAmountResource(LifeSupportType.WATER);
-
+	private AmountResource oxygen;
+	private AmountResource water;
+	private AmountResource carbonDioxide;
 	/*
 	 * Amount of time (millisols) required for periodic maintenance. private
 	 * static final double MAINTENANCE_TIME = 1000D;
@@ -265,7 +268,8 @@ implements Serializable, LifeSupportType, Objective {
 
 		oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		water = AmountResource.findAmountResource(LifeSupportType.WATER);
-
+		carbonDioxide = AmountResource.findAmountResource(LifeSupportType.CO2);
+		
 	}
 
 	/**
@@ -491,27 +495,16 @@ implements Serializable, LifeSupportType, Objective {
 		boolean result = true;
 		
 		// 2016-08-27 Restructured with if else to avoid NullPointerException during maven test
-		if (oxygen == null) {
-			AmountResource o2 = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-			if (getInventory().getAmountResourceStored(o2, false) <= 0D)
-				result = false;
-		}
+		if (oxygen == null)
+			oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
+			result = false;	
 		
-		else {
-			if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
-				result = false;
-		}
-		
-		if (water == null) {
-			AmountResource h2o = AmountResource.findAmountResource(LifeSupportType.WATER);
-			if (getInventory().getAmountResourceStored(h2o, false) <= 0D)
-				result = false;
-		}
-		
-		else {
-			if (getInventory().getAmountResourceStored(water, false) <= 0D)
-				result = false;
-		}
+		if (water == null)
+			water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		if (getInventory().getAmountResourceStored(water, false) <= 0D)
+			result = false;
+	
 		
 		// TODO: check against indoor air pressure
 		// if (getAirPressure() != NORMAL_AIR_PRESSURE)
@@ -542,7 +535,7 @@ implements Serializable, LifeSupportType, Objective {
 	 *             if error providing oxygen.
 	 */
 	public double provideOxygen(double amountRequested) {
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenTaken = amountRequested;
 		double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
 		if (oxygenTaken > oxygenLeft)
@@ -553,7 +546,7 @@ implements Serializable, LifeSupportType, Objective {
 		// 2015-01-09 addDemandRealUsage()
 		inv.addAmountDemand(oxygen, oxygenTaken);
 
-		AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+		//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
 		double carbonDioxideProvided = oxygenTaken;
 		double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxide, true, false);
 		if (carbonDioxideProvided > carbonDioxideCapacity)
@@ -575,7 +568,7 @@ implements Serializable, LifeSupportType, Objective {
 	 *             if error providing water.
 	 */
 	public double provideWater(double amountRequested) {
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterTaken = amountRequested;
 		double waterLeft = getInventory().getAmountResourceStored(water, false);
 		if (waterTaken > waterLeft)
@@ -609,13 +602,29 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Gets the temperature of the life support system.
+	 * Gets the average temperature in the settlement (from the life support system of all buildings)
 	 *
 	 * @return temperature (degrees C)
 	 */
 	public double getTemperature() {
-		double result = NORMAL_TEMP;
-		// double result = getLifeSupport().getTemperature();
+		List<Building> buildings = buildingManager.getBuildingsWithThermal();
+		
+		double total_t_area = 0;
+		double total_area = 0;
+        Iterator<Building> i = buildings.iterator();
+        
+        while (i.hasNext()) {
+            Building b = i.next();
+            double a = b.getFloorArea();
+            double t = b.getCurrentTemperature();
+            total_area = total_area + a;
+            total_t_area = total_t_area + a*t;
+        }
+		
+        return total_t_area / total_area;
+/*
+		double result = NORMAL_TEMP; // (malfunctionManager.getTemperatureModifier() / 100D);
+		//double result = getLifeSupport().getTemperature();
 		if (weather == null)
 			weather = sim.getMars().getWeather();
 		double ambient = weather.getTemperature(getCoordinates());
@@ -624,8 +633,10 @@ implements Serializable, LifeSupportType, Objective {
 			return ambient;
 		else
 			return result;
-
-		// return result;
+					
+		return result;
+*/
+   
 	}
 
 	/**
@@ -890,34 +901,49 @@ implements Serializable, LifeSupportType, Objective {
 		int solElapsed = marsClock.getSolElapsedFromStart();
 		if (solElapsed != solCache) {
 			// getFoodEnergyIntakeReport();
-			//printWorkShift("Sol "+ solCache);
+
 			reassignWorkShift();
-			//printWorkShift("Sol "+ solElapsed);
 
-			// Remove the resourceStat map data from 12 days ago
-			if (resourceStat.size() > 11)
-				resourceStat.remove(0);
-			//if (counter30 == 31) {
-			//	resourceStat.remove(0);
-				//resourceStat.clear();
-				//resourceStat = new HashMap<>();
-				//counter30--;
-			//}
-			//else
-			//	counter30++;
+			refreshResourceStat();
 
-			// 2015-12-05 Called inflateSleepHabit()
+			refreshSleepMap(solElapsed);
+			
+			//getSupplyDemandSampleReport(solElapsed);
+			
+			refreshDataMap(solElapsed);
+			
+			solCache = solElapsed;
+
+		}
+	}
+
+
+	public void refreshResourceStat() {
+		// Remove the resourceStat map data from 12 days ago
+		if (resourceStat.size() > RESOURCE_STAT_SOLS)
+			resourceStat.remove(0);
+		//if (counter30 == 31) {
+		//	resourceStat.remove(0);
+			//resourceStat.clear();
+			//resourceStat = new HashMap<>();
+			//counter30--;
+		//}
+		//else
+		//	counter30++;		
+	}
+	
+	public void refreshSleepMap(int solElapsed) {
+		// 2015-12-05 Called inflateSleepHabit()
+		// Update the sleep pattern once every x number of days
+		if (solElapsed % SOL_SLEEP_PATTERN_REFRESH == 0) {
 			Collection<Person> people = getInhabitants();
 			for (Person p : people) {
 				p.getPhysicalCondition().inflateSleepHabit();
 			}
-
-			solCache = solElapsed;
-			// getSupplyDemandReport(solElapsed);
-			refreshDataMap(solElapsed);
 		}
 	}
-
+	
+	
 	public void printWorkShift(String sol) {
 		logger.info(sol+ " " + getName() + "'s Work Shift " +  "-- A:" + numA + " B:" + numB
 				+ ", X:" + numX + " Y:" + numY + " Z:" + numZ + ", OnCall:" + numOnCall);// + " Off:" + off);
@@ -1040,7 +1066,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * Provides the daily demand statistics on sample amount resources
 	 */
 	// 2015-01-15 Added supply data
-	public void getSupplyDemandReport(int solElapsed) {
+	public void getSupplyDemandSampleReport(int solElapsed) {
 		logger.info("<<< Sol " + solElapsed + " at " + this.getName()
 				+ " End of Day Report of Amount Resource Supply and Demand Statistics >>>");
 
@@ -1094,36 +1120,25 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Refreshes the supply and demand data and weather data
+	 * Refreshes and clears settlement's data on the supply/demand and weather
+	 * @param solElapsed # of sols since the start of the sim
 	 */
 	// 2015-02-13 Added refreshMapDaily()
 	public void refreshDataMap(int solElapsed) {
-
-		boolean clearNow;
-
-		// clearNow = true if solElapsed is an exact multiple of x
 		// Clear maps once every x number of days
-		if (solElapsed % SOL_PER_REFRESH == 0)
-			clearNow = true;
-		else
-			clearNow = false;
-
-		// Should clear only once and at the beginning of the day
-		if (clearNow) {
-			// carry out the daily average of the previous 5 days
+		if (solElapsed % SOL_PER_REFRESH == 0) {
+			// True if solElapsed is an exact multiple of x		
+			// Carry out the daily average of the previous 5 days
 			inv.compactAmountSupplyAmountMap(SOL_PER_REFRESH);
 			inv.clearAmountSupplyRequestMap();
-
+			// Carry out the daily average of the previous 5 days
 			inv.compactAmountDemandAmountMap(SOL_PER_REFRESH);
 			inv.clearAmountDemandTotalRequestMap();
 			inv.clearAmountDemandMetRequestMap();
-
 			// 2015-03-06 Added clearing of weather data map
 			weather.clearMap();
-
-			logger.info(name + " : compacted supply demand data & cleared weather data.");
+			//logger.info(name + " : Compacted the settlement's supply demand data & cleared weather data.");
 		}
-
 	}
 
 	/**
@@ -2619,24 +2634,30 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public void checkRadiationProbability(double time) {
    	    //boolean[] exposed = {false, false, false};
-   	    double exposure = 0;
+   	    //double exposure = 0;
    	    double ratio = time / RadiationExposure.RADIATION_CHECK_FREQ ;
-	    double variation1 = 0.5 + RandomUtil.getRandomDouble(RadiationExposure.GCR_CHANCE_SWING);
-	    double variation2 = 0.3 + RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING);
-   	    
-		// Baseline radiation event 
-		double chance0 = RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2); // average 3.53%
+	    double mag_variation1 = 1 + RandomUtil.getRandomDouble(RadiationExposure.GCR_CHANCE_SWING) - RandomUtil.getRandomDouble(RadiationExposure.GCR_CHANCE_SWING);
+	    if (mag_variation1 < 0)
+	    	mag_variation1 = 0;
+	    double mag_variation2 = 1 + RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING) - RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING);
+	    if (mag_variation2 < 0)
+	    	mag_variation2 = 0;
+	    
 	    // Galactic cosmic rays (GCRs) event
-  		double chance1 = RadiationExposure.GCR_PERCENT * ratio * variation1; // normally 1.22% 
+  		double chance1 = RadiationExposure.GCR_PERCENT * ratio * mag_variation1; // normally 1.22% 
 	    // Solar energetic particles (SEPs) event
-		double chance2 = RadiationExposure.SEP_PERCENT * ratio * variation2; // 0.122 %
- 		
+		double chance2 = RadiationExposure.SEP_PERCENT * ratio * mag_variation2; // 0.122 %
+		// Baseline radiation event 
+		double chance0 = 100 - chance1 - chance2; //RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2); // average 3.53%
+ 		if (chance0 < 0)
+ 			chance0 = 0;
+		
 		// Baseline radiation event 
    	    // Note: RadiationExposure.BASELINE_CHANCE_PER_100MSOL_DURING_EVA * time / 100D
 		if (RandomUtil.lessThanRandPercent(chance0)) {
 	    	//System.out.println("chance0 : " + chance0); 
 	    	exposed[0] = true;
-	    	//logger.info("An unspecified low-dose radiation event is detected by the sensor grid on " + getName());
+	    	//logger.info("An unspecified low-dose radiation event is detected by the radiation sensor grid on " + getName());
 	    	this.fireUnitUpdate(UnitEventType.LOW_DOSE_EVENT);
 	    }
 	    else
@@ -2647,7 +2668,7 @@ implements Serializable, LifeSupportType, Objective {
 	   	//System.out.println("chance1 : " + chance1); 
 	    if (RandomUtil.lessThanRandPercent(chance1)) {
 	    	exposed[1] = true;
-	    	logger.info("An GCR event is detected by the sensor grid on " + getName());
+	    	logger.info("An GCR event is detected by the radiation sensor grid on " + getName());
 	    	this.fireUnitUpdate(UnitEventType.GCR_EVENT);
 	    }
 	    else
@@ -2659,7 +2680,7 @@ implements Serializable, LifeSupportType, Objective {
     	//System.out.println("chance2 : " + chance2);
 	    if (RandomUtil.lessThanRandPercent(chance2)) {
 	    	exposed[2] = true;
-	    	logger.info("An SEP event is detected by the sensor grid on " + getName());
+	    	logger.info("An SEP event is detected by the radiation sensor grid on " + getName());
 	    	this.fireUnitUpdate(UnitEventType.SEP_EVENT);
 	    }
 	    else

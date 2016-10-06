@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * This class represents the Physical Condition of a Person.
@@ -378,7 +379,12 @@ implements Serializable {
                     double chance = RandomUtil.getRandomDouble(100D);
                     double timeModifier = time / RANDOM_AILMENT_PROBABILITY_TIME;
                     if (chance <= (probability) * timeModifier) {
-                        logger.info(person + " comes down with ailment " + complaint);
+                    	String ailment = complaint.toString();
+                    	if (Conversion.checkVowel(ailment))
+                    		ailment = "an " + ailment.toLowerCase();
+                    	else
+                    		ailment = "a " + ailment.toLowerCase();
+                        logger.info(person + " came down with " + ailment);
                         addMedicalComplaint(complaint);
                         result.add(complaint);
                     }

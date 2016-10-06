@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The Farming class is a building function for greenhouse farming.
@@ -379,7 +380,8 @@ implements Serializable {
     	double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
     	String tissue = cropType.getName()+ " " + Crop.TISSUE_CULTURE;
-
+    	String name = Conversion.capitalize(cropType.getName()) + " " + Crop.TISSUE_CULTURE;
+    	
     	boolean available = false;
 
       	try {
@@ -388,7 +390,7 @@ implements Serializable {
 	    	inv.addAmountDemandTotalRequest(nameAR);
 	    	
 	    	if (amountStored < 0.0000000001) {
-	    		logger.warning("No more " + tissue);
+	    		logger.warning("No more " + name);
 	    		percent = 0;
 	    	}
 	    	
@@ -396,19 +398,20 @@ implements Serializable {
 	    		available = true;
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount = amountStored ;
-	    		logger.info(tissue + " is partially available : " + requestedAmount + " kg");
+	    		logger.info(name + " is partially available : " + requestedAmount + " kg");
 	    	}
 
 	    	else {
 	    		available = true;
 	    		percent = 100D ;
-	    		logger.info(tissue + " is fully available : " + requestedAmount + " kg");
+	    		logger.info(name + " is fully available : " + requestedAmount + " kg");
 	    	}
 
 	    	if (available) {
 	    		inv.retrieveAmountResource(nameAR, requestedAmount);
-	    		inv.addAmountDemand(nameAR, requestedAmount);
 	    	}
+	    	
+	    	inv.addAmountDemand(nameAR, requestedAmount);	    	
 
 	    }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());

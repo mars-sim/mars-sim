@@ -65,7 +65,7 @@ public class HealthProblem implements Serializable {
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
         
-        logger.finest(person.getName() + " has new health problem : " + complaint.getType().toString());
+        logger.finest(person.getName() + " has a new health problem of " + complaint.getType().toString());
     }
     
     /**
@@ -209,11 +209,11 @@ public class HealthProblem implements Serializable {
         timePassed = 0D;
         setState(TREATMENT);
         
-        logger.info("Starting treatment: " + getSufferer().getName() + " - " + toString());
-        
         // Create medical event for treatment.
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
+        
+		logger.info("Begins treating " + getSufferer().getName() + " for " + toString());
     }
     
     /**
@@ -368,23 +368,23 @@ public class HealthProblem implements Serializable {
     public String toString() {
         StringBuilder buffer = new StringBuilder();
         if (state == RECOVERING) {
-            buffer.append("Recovering from ");
+            buffer.append("recovering from ");
             buffer.append(illness.getType().toString());
         }
         else if (state == TREATMENT) {
-            buffer.append("Treatment (");
+            buffer.append(illness.getType());
+            buffer.append(" with ");
             Treatment treatment = illness.getRecoveryTreatment();
             if (treatment != null) {
                 buffer.append(treatment.getName());
             }
-            buffer.append(") ");
-            buffer.append(illness.getType());
+
         }
         else buffer.append(illness.getType());
 
-        buffer.append(' ');
+        buffer.append(" (");
         buffer.append(getHealthRating());
-        buffer.append('%');
+        buffer.append("%)");
 
         return buffer.toString();
     }

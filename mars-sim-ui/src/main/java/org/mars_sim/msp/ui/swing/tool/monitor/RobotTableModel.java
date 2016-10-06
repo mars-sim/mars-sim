@@ -346,8 +346,12 @@ extends UnitTableModel {
 			} break;
 */
 			case HEALTH : {
-
-				result = robot.getSystemCondition().getHealthSituation();
+				{			
+					if (robot.getSystemCondition().isInoperable())
+						result = "Inoperable";
+					else 
+						result = "Operable";
+				}
 			} break;
 
 			case LOCATION : {
@@ -364,7 +368,7 @@ extends UnitTableModel {
 			case JOB : {
 				// If robot is dead, get job from death info.
 				if (robot.getSystemCondition().isInoperable())
-					result = robot.getSystemCondition().getDeathDetails().getRobotJob();
+					result = "None";
 				else {
 					RobotJob robotJob = robot.getBotMind().getRobotJob();
 					if (robotJob != null)

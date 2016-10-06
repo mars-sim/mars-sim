@@ -119,8 +119,8 @@ implements Serializable {
 		// Spirit Rover landed at 14.57 degrees south latitude and 175.47 degrees east longitude.
 		// From the chart, it has an average of 25 C temperature variation on the maximum and minimum temperature curves
 
-		double del_latitude = 14.57-1.95;
-		int del_temperature = 25 - 8;
+		double del_latitude = 12.62; // =14.57-1.95;
+		int del_temperature = 17; // = 25-8;
 
 		// assuming a linear relationship
 		TEMPERATURE_DELTA_PER_DEG_LAT = del_temperature / del_latitude;

@@ -131,7 +131,7 @@ implements ActionListener {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			dead = robot.getSystemCondition().isInoperable();
-			deathInfo = robot.getSystemCondition().getDeathDetails();
+			//deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 		// Prepare label panel
@@ -588,7 +588,7 @@ implements ActionListener {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			dead = robot.getSystemCondition().isInoperable();
-			deathInfo = robot.getSystemCondition().getDeathDetails();
+			//deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 	}

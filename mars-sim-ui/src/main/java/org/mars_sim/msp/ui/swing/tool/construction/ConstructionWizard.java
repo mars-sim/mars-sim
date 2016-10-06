@@ -679,6 +679,7 @@ public class ConstructionWizard {
 		    //System.out.println("c is " + c);
 		    moveConstructionSite(site, c);
 		    mapPanel.repaint();
+			e.consume();
 		}
 
 		@Override
@@ -689,6 +690,7 @@ public class ConstructionWizard {
 		@Override
 		public void keyReleased(java.awt.event.KeyEvent e) {
 			// TODO Auto-generated method stub
+			e.consume();
 		}
 	}
 /*

@@ -336,7 +336,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 
     // TODO: allow parts to be recycled
-    public void buryBody() {
+    public void toBeSalvaged() {
         Unit containerUnit = getContainerUnit();
         if (containerUnit != null) {
             containerUnit.getInventory().retrieveUnit(this);
@@ -347,9 +347,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 
     // TODO: allow robot parts to be stowed in storage
-    void setDead() {
+    void setInoperable() {
         botMind.setInactive();
-        buryBody();
+        toBeSalvaged();
     }
 
     /**
@@ -357,9 +357,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @param time amount of time passing (in millisols).
      */
     public void timePassing(double time) {
-
 /*
-
     	// convert to using owner
 
 		Unit container = getContainerUnit();
@@ -372,10 +370,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 		malfunctionManager.timePassing(time);
 */
         // If robot is dead, then skip
-        if (health.getDeathDetails() == null) {
+        if (!health.isInoperable()) {
 
         	support = getLifeSupportType();
-
             // Pass the time in the physical condition first as this may
             // result in death.
             if (health.timePassing(time, support, config)) {
@@ -385,7 +382,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
             }
             else {
                 // robot has died as a result of physical condition
-                setDead();
+                setInoperable();
             }
         }
     }

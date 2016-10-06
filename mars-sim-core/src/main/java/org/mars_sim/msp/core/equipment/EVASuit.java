@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 3.07 2015-01-09
+ * @version 3.1.0 2016-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -55,7 +55,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
 	private Weather weather ;
-
+	private AmountResource oxygenResource;
+	private AmountResource waterResource;
+	
 	/**
 	 * Constructor.
 	 * @param location the location of the EVA suit.
@@ -73,12 +75,14 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
-
+	
+		oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);	
+		waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
+		
 		// Set the resource capacities of the EVA suit.
-		getInventory().addAmountResourceTypeCapacity(AmountResource.findAmountResource(LifeSupportType.OXYGEN),
-				OXYGEN_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(AmountResource.findAmountResource(LifeSupportType.WATER),
-				WATER_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(oxygenResource,OXYGEN_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(waterResource,WATER_CAPACITY);
+
 	}
 
 	/**
@@ -98,32 +102,33 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public boolean lifeSupportCheck() {
 		boolean result = true;
 
-		if (getInventory().getAmountResourceStored(
-				AmountResource.findAmountResource(LifeSupportType.OXYGEN), false) <= 0D) {
-			logger.info("bad oxygen");
+		if (getInventory().getAmountResourceStored(oxygenResource, false) <= 0D) {
+			logger.info(this.getName() + " ran out of oxygen.");
 			result = false;
 		}
-		if (getInventory().getAmountResourceStored(
-				AmountResource.findAmountResource(LifeSupportType.WATER), false) <= 0D) {
-			logger.info("bad water");
+		if (getInventory().getAmountResourceStored(waterResource, false) <= 0D) {
+			logger.info(this.getName() + " ran out of water.");
 			result = false;
 		}
 		if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-			logger.info("bad oxygen flow");
+			logger.info(this.getName() + "'s oxygen flow sensor detected malfunction.");
 			result = false;
 		}
 		if (malfunctionManager.getWaterFlowModifier() < 100D) {
-			logger.info("bad water flow");
+			logger.info(this.getName() + "'s water flow sensor detected malfunction.");
 			result = false;
 		}
-		if (getAirPressure() != NORMAL_AIR_PRESSURE) {
-			logger.info("bad air pressure - " + getAirPressure());
+		double p = getAirPressure();
+		if (p > NORMAL_AIR_PRESSURE * 1.05 || p < NORMAL_AIR_PRESSURE * .95) {
+			logger.info(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
 			result = false;
 		}
-		if (getTemperature() != NORMAL_TEMP) {
-			logger.info("bad temperature - " + getTemperature());
+		double t = getTemperature();
+		if (t > NORMAL_TEMP + 3 || t < NORMAL_TEMP - 3) {
+			logger.info(this.getName() + " detected improper temperature at " + Math.round(t *10D)/10D);
 			result = false;
 		}
+		
 
 		return result;
 	}
@@ -138,51 +143,49 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 	/**
 	 * Gets oxygen from system.
-	 * @param amountRequested the amount of oxygen requested from system (kg)
+	 * @param oxygenTaken the amount of oxygen requested from system (kg)
 	 * @return the amount of oxygen actually received from system (kg)
 	 * @throws Exception if error providing oxygen.
 	 */
-	public double provideOxygen(double amountRequested) {
-		double oxygenTaken = amountRequested;
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
+	public double provideOxygen(double oxygenTaken) {
+		//double oxygenTaken = oxygenTaken;
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		double oxygenLeft = getInventory().getAmountResourceStored(oxygenResource, false);
 
 
 		if (oxygenTaken > oxygenLeft) {
 			oxygenTaken = oxygenLeft;
 		}
 
-		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
-
+		getInventory().retrieveAmountResource(oxygenResource, oxygenTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(oxygen);
+		getInventory().addAmountDemandTotalRequest(oxygenResource);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(oxygen, oxygenTaken);
+		getInventory().addAmountDemand(oxygenResource, oxygenTaken);
 
 		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
 
 	/**
 	 * Gets water from the system.
-	 * @param amountRequested the amount of water requested from system (kg)
+	 * @param waterTaken the amount of water requested from system (kg)
 	 * @return the amount of water actually received from system (kg)
 	 * @throws Exception if error providing water.
 	 */
-	public double provideWater(double amountRequested)  {
-		double waterTaken = amountRequested;
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double waterLeft = getInventory().getAmountResourceStored(water, false);
+	public double provideWater(double waterTaken)  {
+		//double waterTaken = waterTaken;
+		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
+		double waterLeft = getInventory().getAmountResourceStored(waterResource, false);
 
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
 
-		getInventory().retrieveAmountResource(water, waterTaken);
-
+		getInventory().retrieveAmountResource(waterResource, waterTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(water);
+		getInventory().addAmountDemandTotalRequest(waterResource);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(water, waterTaken);
+		getInventory().addAmountDemand(waterResource, waterTaken);
 
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
@@ -194,7 +197,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public double getAirPressure() {
 		double result = NORMAL_AIR_PRESSURE
 				* (malfunctionManager.getAirPressureModifier() / 100D);
-		double ambient = Simulation.instance().getMars().getWeather().getAirPressure(getCoordinates());
+		if (weather == null)
+			weather = Simulation.instance().getMars().getWeather();
+		double ambient = weather.getAirPressure(getCoordinates());
 		if (result < ambient) {
 			return ambient;
 		} else {
@@ -243,13 +248,13 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public boolean isFullyLoaded() {
 		boolean result = true;
 
-		AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		//AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygen = getInventory().getAmountResourceStored(oxygenResource, false);
 		if (oxygen != OXYGEN_CAPACITY) {
 			result = false;
 		}
 
-		AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
+		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double water = getInventory().getAmountResourceStored(waterResource, false);
 		if (water != WATER_CAPACITY) {
 			result = false;

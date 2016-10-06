@@ -27,6 +27,20 @@ public class Conversion {
 
 	}
 */
+	
+	
+	public static boolean checkVowel(String name) {
+		if (name.toLowerCase().startsWith("a")
+				|| name.startsWith("e")
+				|| name.startsWith("i")
+				|| name.startsWith("o")
+				|| name.startsWith("u"))
+			return true;
+		else
+			return false;
+	}
+	
+	
 	public static String capitalize(String input) {
 	    StringBuilder titleCase = new StringBuilder();
 	    boolean nextTitleCase = true;

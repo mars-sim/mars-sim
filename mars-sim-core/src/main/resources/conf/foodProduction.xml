@@ -10,7 +10,7 @@
 	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="Package Cabbage into preserved food"
+	<process name="Package Cabbage into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50" 
@@ -31,7 +31,7 @@
 		</outputs>
 	</process>
 
-	<process name="Package Carrot into preserved food"
+	<process name="Package Carrot into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50" 
@@ -47,7 +47,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Package Swiss Chard into preserved food"
+	<process name="Package Swiss Chard into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50" 
@@ -63,7 +63,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Package potatoes into preserved food"
+	<process name="Package Potatoes into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
 			process-time="50" 
@@ -203,7 +203,7 @@
 	</process>
 	
 	
-	<process name="Press and refine Peanut Oil from Peanuts" 
+	<process name="Press and Refine Peanut Oil from Peanuts" 
 		tech="2" skill="2" work-time="50" process-time="400" 
 			power-required="2.0">
 			
@@ -259,7 +259,7 @@
 	</process>
 	
 	
-	<process name="Package Roast Peanuts into dry food " 
+	<process name="Package Roast Peanuts into Dry Food " 
 		tech="0" skill="0" work-time="50" process-time="50" 
 			power-required="1.0">
 			
@@ -559,7 +559,7 @@
 	</process>
 		
 	
-	<process name="Derive Sugar and sugarcane juice from Sugarcane" 
+	<process name="Derive Sugar and Sugarcane Juice from Sugarcane" 
 		tech="1" skill="2" work-time="50" process-time="100" 
 			power-required="1.0">		
 		<description>Derive Sugar from Sugarcane. The juice is obtained by 
@@ -590,8 +590,7 @@
 	</process>
 
 
-	<process name="Extract minerals from Soybean Ash. 
-	" tech="3" skill="4" work-time="100" process-time="500" 
+	<process name="Extract Minerals from Soybean Ash" tech="3" skill="4" work-time="100" process-time="500" 
 			power-required="1.0">
 		<description>Extract minerals from Soybean Ash. </description>
 		<inputs>
@@ -682,7 +681,7 @@
 	</process>
 	
 		
-	<process name="Make Pizza Dough " 
+	<process name="Make Pizza Dough" 
 		tech="1" skill="2" work-time="50" process-time="60" 
 			power-required="0">			
 		<description> Make round pizza dough from three types of flours </description>

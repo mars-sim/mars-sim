@@ -93,8 +93,13 @@ implements Serializable {
 
         // Check that destination location is within destination building.
         if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-            throw new IllegalStateException(
-                    "Given destination walking location not within destination building.");
+        	logger.warning(person + " is unable to walk to the destination in " + person.getBuildingLocation() + " at "+ person.getSettlement());       	
+        	//throw new IllegalStateException(
+            //        "Given destination walking location not within destination building.");
+        	// 
+        	// TODO: determine if a mfalfunction within this building can cause this IllegalStateException 
+        	// if that's the case, there is no need to throw IllegalStateException
+        	//endTask();
         }
 
         // Check that the person is currently inside a building.
@@ -110,7 +115,6 @@ implements Serializable {
             //logger.severe(person.getName() + " is not currently in a building.");
         	//endTask();
             throw new IllegalStateException(person.getName() + " is not currently in a building.");
-
         }
 
         // Determine the walking path to the destination.

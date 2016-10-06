@@ -84,8 +84,9 @@ implements Serializable {
                 walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
             
-            logger.info(person.getName() + " prescribing " + medication.getName() + 
-                    " to " + patient.getName());
+            logger.info(person.getName() + " is prescribing " + medication.getName()
+                    + " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName() 
+                    + " at " + patient.getSettlement());
         }
         else {
             endTask();

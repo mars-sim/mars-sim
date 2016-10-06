@@ -623,7 +623,7 @@
 	</malfunction>
 	
 	<!-- 2015-02-16 Added solar parabolic mirror failure. -->
-	<malfunction name="solar parabolic mirror failure">
+	<malfunction name="Solar Parabolic Mirror Failure">
 		<severity value="40" />
 		<probability value="3.0" />
 		<repair-time value="200.0" />
@@ -638,8 +638,8 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- 2015-02-16 Added light emitting diode Kit failure. -->
-	<malfunction name="light emitting diode Lighting Kit failure">
+	<!-- 2015-02-16 Added LED Lighting Kit failure. -->
+	<malfunction name="LED Lighting Kit Failure">
 		<severity value="10" />
 		<probability value="3.0" />
 		<repair-time value="50.0" />
@@ -659,7 +659,7 @@
 	</malfunction>
 
 	<!-- 2015-02-16 Added mushroom containment kit failure. -->
-	<malfunction name="mushroom containment kit failure">
+	<malfunction name="Mushroom Containment Kit Failure">
 		<severity value="30" />
 		<probability value="3.0" />
 		<repair-time value="20.0" />
@@ -683,7 +683,7 @@
 
 
 	<!-- 2015-05-31 Added ls 3d printer failure. -->
-	<malfunction name="ls 3d printer failure">
+	<malfunction name="Laser Sintering 3D Printer Failure">
 		<severity value="30" />
 		<probability value="3.0" />
 		<repair-time value="200.0" />
@@ -693,11 +693,11 @@
 		</entity-list>
 		<repair-parts-list>
 			<part name="aluminum wire" number="2" probability="2"  />
-			<part name="electrical wire" number="2" probability="2" />
-			<part name="wire connector" number="2" probability="2" />
+			<part name="electrical wire" number="2" probability="10" />
+			<part name="wire connector" number="2" probability="10" />
 			<part name="small water pump" number="1" probability="5" />
 			<part name="heating element" number="1" probability="5" />
-			<part name="heat pipe" number="2" probability="1" />
+			<part name="heat pipe" number="2" probability="5" />
 			<part name="microcontroller" number="1" probability="5" />
 			<part name="ventilation fan" number="1" probability="5" />
 			<part name="carbon dioxide laser" number="1" probability="5" />
@@ -708,7 +708,7 @@
 	</malfunction>
 
 	<!-- Meteorite Impact -->
-	<malfunction name="meteorite impact damage">
+	<malfunction name="Meteorite Impact Damage">
 		<severity value="100" />
 		<probability value="0.0002547" /> <!-- 0.0002547 or = 0.7% per year per sq m (assuming a 50 m^2 roof)  -->
 		<repair-time value="80.0" />
@@ -732,15 +732,22 @@
 		<repair-parts-list>
 			<part name="co2 extinguisher" number="2" probability="30" />
 			<part name="airleak patch" number="5" probability="80" />
-			<part name="aluminum sheet" number="3" probability="30" />
-			<part name="polycarbonate roofing" number="5" probability="20" />
+			<part name="aluminum sheet" number="2" probability="30" />
+			<part name="polycarbonate roofing" number="2" probability="20" />
+			<part name="plastic sheet" number="2" probability="20" />
+			<part name="fiberglass" number="2" probability="20" />
+			<part name="plastic pipe" number="2" probability="20" />
+			<part name="valve" number="2" probability="20" />
+			<part name="electrical wire" number="5" probability="20" />
+			<part name="wire connector" number="5" probability="20" />						
+						
 		</repair-parts-list>
 
 	</malfunction>
 
 
 	<!-- 2015-09-28 Added fuel cell stack failure. -->
-	<malfunction name="fuel cell stack failure">
+	<malfunction name="Fuel Cell Stack Failure">
 		<severity value="30" />
 		<probability value="1.0" />
 		<repair-time value="200.0" />
@@ -754,6 +761,8 @@
 			<medical-complaint name="Laceration" probability="2.0" />			
 		</medical-complaint-list>
 		<repair-parts-list>
+			<part name="co2 extinguisher" number="1" probability="30" />		
+			<part name="aluminum sheet" number="2" probability="30" />
 			<part name="electrical wire" number="5" probability="10"/>
 			<part name="wire connector" number="5" probability="30"/>
 			<part name="steel pipe" number="2" probability="30"/>

@@ -48,7 +48,16 @@ public class HelpGenerator {
 	 * line argument -generateHelp only when needed.
 	 *
 	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
+	// In windows os : 
+	
+	// Eclipse's htmls at 
+	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\src\main\resources\docs\help
+	//
+	// newly generated htmls at 
+	// e.g. C:\java-neon2\workspace\mars-sim\mars-sim-ui\target\classes\docs\help
+
 */
+	
 	private static final String DIR = "\\docs\\help\\";
 	private static final String SUFFIX = ".html";
 

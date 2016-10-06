@@ -336,8 +336,8 @@ implements Serializable, Transportable {
      * Generates START_BUILDING_PLACEMENT_EVENT and test if GUI is in use
      */
     public synchronized void startDeliveryEvent() {
-        logger.info("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread");
-    	//System.out.println("Resupply : running deliverBuildings()");
+        //logger.info("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread");
+    	// normally on pool-4-thread-3 Thread
 
         BuildingManager buildingManager = settlement.getBuildingManager();
         // 2014-12-23 Added setBuildingManager() and setResupply()

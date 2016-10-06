@@ -100,7 +100,7 @@ implements ActionListener {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			dead = robot.getSystemCondition().isInoperable();
-			deathInfo = robot.getSystemCondition().getDeathDetails();
+			//deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
 		// Prepare activity label panel
@@ -313,7 +313,7 @@ implements ActionListener {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
 			dead = robot.getSystemCondition().isInoperable();
-			deathInfo = robot.getSystemCondition().getDeathDetails();
+			//deathInfo = robot.getSystemCondition().getDeathDetails();
 		}		
 		
 		TaskManager taskManager = null;
@@ -412,7 +412,7 @@ implements ActionListener {
 		        robot = (Robot) unit;
 				botMind = robot.getBotMind();
 				dead = robot.getSystemCondition().isInoperable();
-				deathInfo = robot.getSystemCondition().getDeathDetails();
+				//deathInfo = robot.getSystemCondition().getDeathDetails();
 				
 				if (!robot.getSystemCondition().isInoperable()) {
 					botMind = robot.getBotMind();

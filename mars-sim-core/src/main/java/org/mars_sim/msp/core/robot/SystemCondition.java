@@ -53,7 +53,7 @@ implements Serializable {
     /** Sleep Habit maximum value. */
     private static int MAX_WEIGHT = 30;
     /** Sleep Habit Map resolution. */
-    private static int SLEEP_MAP_RESOLUTION = 20;
+    //private static int SLEEP_MAP_RESOLUTION = 20;
 
     private static double INFLATION = 1.15;
 
@@ -65,86 +65,35 @@ implements Serializable {
     private static int MAX_VALUE = 1;
 
     /** Stress jump resulting from being in an accident. */
-    public static final double ACCIDENT_STRESS = 40D;
+    //public static final double ACCIDENT_STRESS = 40D;
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
     
-    public static final double MENTAL_BREAKDOWN = 80D;
-    
-    private static final double COLLAPSE_IMMINENT = 2500D;
-
-    /** TODO The anxiety attack health complaint should be an enum or smth. */
-    private static final String ANXIETY_ATTACK = "Anxiety Attack";
-
-    private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
-
-    /** Period of time (millisols) over which random ailments may happen. */
-    private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
-
     // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
-    public static double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
+    public static double FUEL_COMPOSITION_ENERGY_RATIO = 16290.323;
     //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
 
     public static double ENERGY_FACTOR = 0.8D;
 
-    /** Performance modifier for hunger. */
-    private static final double HUNGER_PERFORMANCE_MODIFIER = .001D;
-
-    /** Performance modifier for fatigue. */
-    private static final double FATIGUE_PERFORMANCE_MODIFIER = .001D;
-
-    /** Performance modifier for stress. */
-    private static final double STRESS_PERFORMANCE_MODIFIER = .02D;
-
-
     // Data members
-	private int numSleep = 0;
-	private int suppressHabit = 0;
-	private int spaceOut = 0;
-
-    /** Person's fatigue level. */
-    private double fatigue;
-    /** Person's hunger level. */
+    /** Robot's fatigue level. */
+    private double mechanicalFatigue;
+    /** Robot's power discharge level. */
     private double powerDischarge;
-    /** Person's stress level (0.0 - 100.0). */
-    private double stress;
+    /** Robot's stress level (0.0 - 100.0). */
+    private double systemLoad;
     /** Performance factor. */
     private double performance;
-
-    private double personStarvationTime;
-
-    // 2015-02-23 Added hygiene
-    private double hygiene; /** Person's hygiene factor (0.0 - 100.0 */
-
-    // 2015-01-12 Person's energy level
+    // 2015-01-12 Energy level
     private double kJoules;
-    private double foodDryMassPerServing;
     private double robotBatteryDrainTime;
 
-
-    /** True if person is alive. */
     private boolean operable;
     private boolean isLowPowerMode;
     private boolean isBatteryDepleting;
 
-    /** List of medication affecting the person. */
-    private List<Medication> medicationList;
-    /** Injury/Illness effecting person. */
-    private HashMap<Complaint, HealthProblem> problems;
-
     private Robot robot;
-    /** Details of persons death. */
-    private DeathInfo deathDetails;
-    /** Most serious problem. */
-    private HealthProblem serious;
-
-    // 2015-04-29 Added RadiationExposure
-    private RadiationExposure radiation;
-
-	private MarsClock clock;// = Simulation.instance().getMasterClock().getMarsClock();
-
-    // 2015-12-05 Added sleepHabitMap
-    private Map<Integer, Integer> sleepHabitMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
+	private MarsClock marsClock;
 
 
     /**
@@ -152,11 +101,8 @@ implements Serializable {
      * @param robot The robot requiring a physical presence.
      */
     public SystemCondition(Robot newRobot) {
-    	clock = Simulation.instance().getMasterClock().getMarsClock();
-    	
-        deathDetails = null;
+    	marsClock = Simulation.instance().getMasterClock().getMarsClock();
         robot = newRobot;
-        problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
         powerDischarge = RandomUtil.getRandomDouble(400D);
         operable = true;
@@ -170,15 +116,6 @@ implements Serializable {
         catch (Exception e) {
             e.printStackTrace(System.err);
         }
-    }
-
-    public RadiationExposure getRadiationExposure() {
-    	return radiation;
-    }
-
-
-    public double getMassPerServing() {
-        return foodDryMassPerServing;
     }
 
     /**
@@ -235,12 +172,9 @@ implements Serializable {
     }
 
 
-    public void checkStarvation(double hunger) {
-
+    public void checkDischarged(double hunger) {
         // TODO: need a different method and different terminology to account for the drain on the robot's battery
-        if (robot != null) {
 
-        }
     }
         
     /**
@@ -268,11 +202,11 @@ implements Serializable {
         else {
             //Is the person suffering from the illness, if so recovery
             // as the amount has been provided
-            HealthProblem illness = problems.get(complaint);
-            if (illness != null) {
-                illness.startRecovery();
+            //HealthProblem illness = problems.get(complaint);
+            //if (illness != null) {
+            //    illness.startRecovery();
                 //person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-            }
+            //}
         }
         return newProblem;
     }
@@ -305,35 +239,30 @@ implements Serializable {
     }
 
     /**
-     * Get the details of this Person's death.
+     * Get the details of this robot's death.
      * @return Detail of the death, will be null if person is still alive.
-     */
+     
     public DeathInfo getDeathDetails() {
         return deathDetails;
     }
-
+*/
+    
     /**
-     * Gets the person's caloric energy.
-     * @return person's caloric energy in kilojoules
-     * Note: one large calorie is about 4.2 kilojoules
+     * Gets the robot's energy level.
+     * @return robot's energy level in kilojoules
      */
     public double getEnergy() {
         return kJoules;
     }
 
-    /** Reduces the person's caloric energy.
+    /** Reduces the robot's caloric energy.
      *  @param time the amount of time (millisols).
      */
     public void reduceEnergy(double time) {
         double dailyEnergyIntake = 10100D;
-        // Changing this to a more linear reduction of energy.
-        // We may want to change it back to exponential. - Scott
+
         double xdelta = (time / 1000D) * dailyEnergyIntake;
-    	// TODO: re-tune the experimental FACTOR to work in most situation
-//    	double xdelta =  4 * time / FOOD_COMPOSITION_ENERGY_RATIO;
-        //System.out.println("PhysicalCondition : ReduceEnergy() : time is " + Math.round(time*100.0)/100.0);
-        //System.out.println("PhysicalCondition : ReduceEnergy() : xdelta is " + Math.round(xdelta*10000.0)/10000.0);
-//        kJoules = kJoules / exponential(xdelta);
+
         kJoules -= xdelta;
 
         if (kJoules < 100D) {
@@ -344,14 +273,8 @@ implements Serializable {
         //System.out.println("PhysicalCondition : ReduceEnergy() : kJ is " + Math.round(kJoules*100.0)/100.0);
     }
 
-//    public double exponential(double x) {
-//    	  x = 1d + x / 256d;
-//    	  x *= x; x *= x; x *= x; x *= x;
-//    	  x *= x; x *= x; x *= x; x *= x;
-//    	  return x;
-//    	}
 
-    /** Sets the person's energy level
+    /** Sets the robot's energy level
      *  @param kilojoules
      */
     public void setEnergy(double kJ) {
@@ -359,18 +282,12 @@ implements Serializable {
         //System.out.println("PhysicalCondition : SetEnergy() : " + Math.round(kJoules*100.0)/100.0 + " kJoules");
     }
 
-    /** Adds to the person's energy intake by eating
-     *  @param person's energy level in kilojoules
+    /** Adds to the robot's energy intake by eating
+     *  @param robot's energy level in kilojoules
      */
-    public void addEnergy(double foodAmount) {
+    public void addEnergy(double amount) {
     	// TODO: vary MAX_KJ according to the individual's physical profile strength, endurance, etc..
-        // double FOOD_COMPOSITION_ENERGY_RATIO = 16290;  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
-        // double FACTOR = 0.8D;
-		// Each meal (.155 kg = .62/4) has an average of 2525 kJ
-        // Note: changing this to a more linear addition of energy.
-        // We may want to change it back to exponential. - Scott
-        double xdelta = foodAmount * FOOD_COMPOSITION_ENERGY_RATIO;
-//        kJoules += foodAmount * xdelta * Math.log(FOOD_COMPOSITION_ENERGY_RATIO / kJoules) / ENERGY_FACTOR;
+         double xdelta = amount * FUEL_COMPOSITION_ENERGY_RATIO;
         kJoules += xdelta;
 
         double dailyEnergyIntake = 10100D;
@@ -407,8 +324,8 @@ implements Serializable {
      * @param newFatigue New fatigue.
      */
     public void setFatigue(double newFatigue) {
-        if (fatigue != newFatigue) {
-            fatigue = newFatigue;
+        if (mechanicalFatigue != newFatigue) {
+            mechanicalFatigue = newFatigue;
 			if (robot != null)
 				robot.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
 
@@ -439,7 +356,7 @@ implements Serializable {
      * @return stress (0.0 to 100.0)
      */
     public double getStress() {
-        return stress;
+        return systemLoad;
     }
 
 
@@ -448,21 +365,9 @@ implements Serializable {
      * @param illness The compliant that makes person dead.
      */
     public void setInoperable(HealthProblem illness) {
-
         setBatteryPower(0D);
         setPerformanceFactor(0D);
         operable = false;
-
-        //deathDetails = new DeathInfo(person);
-
-        //logger.severe(person + " dies due to " + illness);
-
-        // Create medical event for death.
-        //MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
-        //Simulation.instance().getEventManager().registerNewEvent(event);
-
-        // Throw unit event.
-        //person.fireUnitUpdate(UnitEventType.DEATH_EVENT);
     }
 
     /**
@@ -493,52 +398,16 @@ implements Serializable {
     }
 
     /**
-     * Get a string description of the most serious health situation.
-     * @return A string containing the current illness if any.
-     */
-    public String getHealthSituation() {
-        String situation = "Operable";
-        if (serious != null) {
-            if (isInoperable()) {
-                situation = "Inoperable : " + serious.getIllness().getType().toString();
-            }
-            else {
-                situation = serious.getSituation();
-            }
-            //else situation = "Not Well";
-        }
-        return situation;
-    }
-
-    /**
-     * Gets the most serious illness.
-     * @return most serious illness
-     */
-    public Complaint getMostSerious() {
-        return serious.getIllness();
-    }
-
-    /**
-     * The collection of known Medical Problems.
-     */
-    public Collection<HealthProblem> getProblems() {
-        return problems.values();
-    }
-
-    /**
-     * Calculate the most serious problem and the person's performance.
+     * Calculate the most serious problem and the robot's performance.
      */
     private void recalculate() {
 
         double tempPerformance = 1.0D;
-
-        if (robot != null) {
-
-             if (kJoules < 200D) {
-                tempPerformance = kJoules / 200D;
-            }
-
+        
+        if (kJoules < 200D) {
+        	tempPerformance = kJoules / 200D;
         }
+
 
         if (tempPerformance < 0D) {
             tempPerformance = 0D;
@@ -547,20 +416,6 @@ implements Serializable {
         setPerformanceFactor(tempPerformance);
     }
 
-    /**
-     * Checks if the person has any serious medical problems.
-     * @return true if serious medical problems
-     
-    public boolean hasSeriousMedicalProblems() {
-        boolean result = false;
-        Iterator<HealthProblem> meds = getProblems().iterator();
-        while (meds.hasNext()) {
-            if (meds.next().getIllness().getSeriousness() >= 50) result = true;
-        }
-        return result;
-    }
-*/
-    
 
     /**
      * Gets the power consumption rate per Sol.
@@ -584,55 +439,9 @@ implements Serializable {
 
     
     /**
-     * Gets a list of medication affecting the person.
-     * @return list of medication.
-     
-    public List<Medication> getMedicationList() {
-        return new ArrayList<Medication>(medicationList);
-    }
-*/
-    /**
-     * Checks if the person is affected by the given medication.
-     * @param medicationName the name of the medication.
-     * @return true if person is affected by it.
-     
-    public boolean hasMedication(String medicationName) {
-        if (medicationName == null)
-            throw new IllegalArgumentException("medicationName is null");
-
-        boolean result = false;
-
-        Iterator<Medication> i = medicationList.iterator();
-        while (i.hasNext()) {
-            if (medicationName.equals(i.next().getName())) result = true;
-        }
-
-        return result;
-    }
-*/
-    
-    /**
-     * Adds a medication that affects the person.
-     * @param medication the medication to add.
-     
-    public void addMedication(Medication medication) {
-        if (medication == null)
-            throw new IllegalArgumentException("medication is null");
-        medicationList.add(medication);
-    }
-*/
-    
-
-    /**
      * Prepare object for garbage collection.
      */
     public void destroy() {
-        deathDetails = null;
-        problems.clear();
-        problems = null;
-        serious = null;
         robot = null;
-        if (medicationList != null) medicationList.clear();
-        medicationList = null;
     }
 }
