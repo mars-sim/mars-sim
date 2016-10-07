@@ -325,15 +325,47 @@ public class MarsProjectFX extends Application  {
 				logger.info("Loading a sim in headless mode in " + OS);
 				// Initialize the simulation.
 	        	Simulation.createNewSimulation(); 
-	            try {      	
-	            	handleLoadDefaultSimulation();
-	                //handleLoadSimulation(argList); // not working for some unknown reason
-	            } catch (Exception e) {
-	                showError("Could not load the saved simulation",e);//, trying to create a new Simulation...", e);
-	                //handleNewSimulation();
-	            }
-			    // Start the simulation.
-			    startSimulation(true);
+	        	
+	        	
+	        	int index = argList.indexOf("-load");
+	        	int size = argList.size();
+	        	//String fileName = null;
+	        	// Test how many arguments are in argList
+	        	if (size > index + 1) { 
+	        	// TODO : will it help to catch IndexOutOfBoundsException ?
+	            // Get the next argument as the filename.
+	        		//fileName = argList.get(index + 1);
+		            try {     	
+		            	// try to see if user enter his own saved sim after the "load" argument
+		                handleLoadSimulation(argList); 
+
+		            } catch (Exception e) {
+		                showError("Could not load the user defined saved sim", e);
+		                
+		                try {
+		                	// try loading default.sim instead
+		                	handleLoadDefaultSimulation();
+
+			            } catch (Exception e2) {
+			                showError("Could not load the default saved sim. Starting a new sim now. ", e2);
+		                
+			                handleNewSimulation();
+			            }   
+		            }
+	        	}
+	        	
+	        	else {
+	        		
+	        		try {
+	                	// try loading default.sim instead
+	                	handleLoadDefaultSimulation();
+
+		            } catch (Exception e2) {
+		                showError("Could not load the default saved sim. Starting a new sim now. ", e2);
+	                
+		                handleNewSimulation();
+		            }
+	        	}
 			}
 
 			// 2016-06-06 Generated html files for in-game help 
@@ -411,6 +443,9 @@ public class MarsProjectFX extends Application  {
     	try {	
             // Load the default saved file "default.sim"
             sim.loadSimulation(null);
+		    // Start the simulation.
+		    startSimulation(true);
+		    
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not load default simulation", e);
             throw e;
@@ -432,8 +467,11 @@ public class MarsProjectFX extends Application  {
             File loadFile = new File(argList.get(index + 1));
             
             if (loadFile.exists() && loadFile.canRead()) {
+            	
                 sim.loadSimulation(loadFile);
-
+			    // Start the simulation.
+			    startSimulation(true);
+			    
             } else {         	
                 exitWithError("Could not load the simulation. The sim file " + argList.get(index + 1) +
                         " could not be found.", null);
@@ -503,7 +541,8 @@ public class MarsProjectFX extends Application  {
         }
 
         if (!headless) {
-            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        	if (!OS.contains("mac"))
+        		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         	// Warning: cannot load the editor in macosx if it was a JDialog
         }
     }

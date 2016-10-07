@@ -368,7 +368,7 @@ public class HealthProblem implements Serializable {
     public String toString() {
         StringBuilder buffer = new StringBuilder();
         if (state == RECOVERING) {
-            buffer.append("recovering from ");
+            buffer.append("Recovering from ");
             buffer.append(illness.getType().toString());
         }
         else if (state == TREATMENT) {

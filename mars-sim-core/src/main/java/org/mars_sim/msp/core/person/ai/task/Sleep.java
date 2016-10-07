@@ -175,7 +175,7 @@ public class Sleep extends Task implements Serializable {
 		                //logger.info("Case 4: " + person + " is walking from " + startBuilding + " to his private quarters at " + pq);
 		            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
 		                accommodations.addSleeper(person, false);
-		                walkToBed(accommodations, person, false);
+		                walkToBed(accommodations, person, true); // can cause StackOverflowError from excessive log or calling ExitAirlock
 	            	}
 	            	else {
 		            	// Case 5: this designated bed is currently occupied (OD)
@@ -208,7 +208,7 @@ public class Sleep extends Task implements Serializable {
 			                //Point2D bed = person.getBed();   		            	
 			            	accommodations = (LivingAccommodations) q6.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 			            	accommodations.addSleeper(person, false);
-			            	walkToBed(accommodations, person, false);
+			            	walkToBed(accommodations, person, true);
 			        		//walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);
 			                Building startBuilding = BuildingManager.getBuilding(person);                                  
 			                //logger.info("Case 6: " + person + " is walking from " + startBuilding + " to use his/her new quarters at " + q6);

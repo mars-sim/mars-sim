@@ -345,16 +345,38 @@ implements UnitListener {
 				// Set emergency beacon if vehicle is not at settlement.
 				// TODO: need to find out if there are other matching reasons for setting emergency beacon.
 				if (vehicle.getSettlement() == null) {
-					if (!vehicle.isEmergencyBeacon())
-						if (!vehicle.isBeingTowed())
+					// if the vehicle somewhere on Mars and is outside the settlement 
+					if (!vehicle.isEmergencyBeacon()) {
+						//if the emergency beacon is off
+						// Question: could the emergency beacon itself be broken ?
+						if (!vehicle.isBeingTowed()) {
 							setEmergencyBeacon(null, vehicle, true);
-					
-				}
+							//don't end the mission yet 
+						}
+						
+						else {
+							// is being towed,  wait till the journey is over
+							//don't end the mission yet
+							logger.info(vehicle + " is currently being towed by " + vehicle.getTowingVehicle());
+						}
+					}
 
+					else {
+						// if the emergency beacon is on, 
+						//don't end the mission yet
+						logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
+					}
+				}
+				
+				else {
+					// if the vehicle is still somewhere inside the settlement when it got broken down
+					// wait till the repair is done and the mission may resume ?!?
+				}
 			}
 			
-			else { // for all other reasons
-	            setPhaseEnded(true);
+			else {
+				// for ALL OTHER REASONS 
+	            //setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
 				leaveVehicle();
 				super.endMission(reason);
 			}
@@ -368,7 +390,9 @@ implements UnitListener {
 		//}
 		
 		else { // if vehicles are NOT available 
-            setPhaseEnded(true); // TODO: is it important ?
+			//Questions : what are the typical cases here ?
+			logger.info("No vehicle is available. reason for ending the mission : " + reason); 			
+            //setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
 			super.endMission(reason);
 		}
 	}

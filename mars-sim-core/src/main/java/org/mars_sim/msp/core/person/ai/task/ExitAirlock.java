@@ -711,31 +711,37 @@ implements Serializable {
         }
 
         // Check if EVA suit is available.
-        if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+        else if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
             result = false;
             logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " since no EVA suit is available.");
         }
 
+        //double performance = person.getPerformanceRating();
         // Check if person is incapacitated.
         // TODO: if incapacitated, should someone else help this person to get out?
-        if (person.getPerformanceRating() == 0D) {
-            result = false;
+        else if (person.getPerformanceRating() == 0) {
+        	
+        	result = false;
         	// TODO: how to prevent the logger statement below from being repeated multiple times?
         	logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
-                " due to zero performance rating (fatigue, stress, hunger, etc.)");
+                " due to crippling performance rating");
         
             // 2016-02-28 Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
             try {
-            	logger.info(person.getName() + " is abandoning the action of exiting the airlock.");
+            	logger.info(person.getName() + " is nearly abandoning the action of exiting the airlock and switching to a new task");
+            	// 2016-10-07 Note: calling getNewAction() below is still considered "experimental" 
+            	// It may have caused StackOverflowError if a very high fatigue person is stranded in the airlock and cannot go outside.
+            	// Intentionally add a 5% performance boost
+            	person.getPhysicalCondition().setPerformanceFactor(.05);
             	person.getMind().getNewAction(true, false);
             	
             } catch (Exception e) {
                 logger.log(Level.WARNING, person + " could not get new action", e);
                 e.printStackTrace(System.err);
+
             }
         }
-
 
         return result;
     }
@@ -759,7 +765,7 @@ implements Serializable {
         //}
 
         // Check if robot is incapacitated.
-        if (robot.getPerformanceRating() == 0D) {
+        else if (robot.getPerformanceRating() == 0D) {
             result = false;
             logger.severe(robot.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                     " due to performance rating is 0 (low battery, malfunctioned, etc.).");

@@ -91,10 +91,10 @@ implements Serializable {
     public static double ENERGY_FACTOR = 0.8D;
 
     /** Performance modifier for hunger. */
-    private static final double HUNGER_PERFORMANCE_MODIFIER = .001D;
+    private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
 
     /** Performance modifier for fatigue. */
-    private static final double FATIGUE_PERFORMANCE_MODIFIER = .001D;
+    private static final double FATIGUE_PERFORMANCE_MODIFIER = .0001D;
 
     /** Performance modifier for stress. */
     private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
@@ -111,7 +111,7 @@ implements Serializable {
     private double hunger;
     /** Person's stress level (0.0 - 100.0). */
     private double stress;
-    /** Performance factor 0,0 to 1.0. */
+    /** Performance factor 0.0 to 1.0. */
     private double performance;
 
     private double inclination_factor;
@@ -175,12 +175,13 @@ implements Serializable {
 
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
-
-        fatigue = RandomUtil.getRandomRegressionInteger(1000) * .5 + RandomUtil.getRandomInt(1000) * .5;
-        stress = RandomUtil.getRandomRegressionInteger(90) * .5 + RandomUtil.getRandomInt(100) * .5;
-        hunger = RandomUtil.getRandomRegressionInteger(1000) * .5 + RandomUtil.getRandomInt(1000) * .5;
-        kJoules = 500D + RandomUtil.getRandomRegressionInteger(4000) * .5 + RandomUtil.getRandomInt(4000) * .5;
-        // 2015-02-23 Added hygiene
+        
+        fatigue = RandomUtil.getRandomRegressionInteger(1000) * .5;
+        stress = RandomUtil.getRandomRegressionInteger(100) * .2;
+        hunger = RandomUtil.getRandomRegressionInteger(1000) * .5;
+        kJoules = 500D + RandomUtil.getRandomRegressionInteger(2000);
+        
+        // 2015-02-23 Added hygiene (not used yet)
         hygiene = RandomUtil.getRandomDouble(100D);
 
         medicationList = new ArrayList<Medication>();
@@ -695,7 +696,7 @@ implements Serializable {
      * Sets the performance factor.
      * @param newPerformance new performance (between 0 and 1).
      */
-    private void setPerformanceFactor(double newPerformance) {
+    public void setPerformanceFactor(double newPerformance) {
         if (newPerformance != performance) {
             performance = newPerformance;
 			if (person != null)
@@ -989,10 +990,10 @@ implements Serializable {
         String situation = "Well";
         if (serious != null) {
             if (isDead()) {
-                situation = "Dead : " + serious.getIllness().getType().toString();
+                situation = "DEAD : " + serious.getIllness().getType().toString();
             }
             else {
-                situation = "Ill : " + serious.getSituation();
+                situation = "ILL : " + serious.getSituation();
             }
             //else situation = "Not Well";
         }
@@ -1042,20 +1043,30 @@ implements Serializable {
             }
 
             // High hunger reduces performance.
-            if (hunger > 1000D) {
-                tempPerformance -= (hunger - 1000D) * HUNGER_PERFORMANCE_MODIFIER;
+            if (hunger > 1200D) {
+                tempPerformance -= (hunger - 1200D) * HUNGER_PERFORMANCE_MODIFIER /2;
+            }
+            else if (hunger > 800D) {
+                tempPerformance -= (hunger - 800D) * HUNGER_PERFORMANCE_MODIFIER /4;
             }
 
             // High fatigue reduces performance.
-            if (fatigue > 1000D) {
-                tempPerformance -= (fatigue - 1000D) * FATIGUE_PERFORMANCE_MODIFIER;
+            if (fatigue > 1400D) {
+                tempPerformance -= (fatigue - 1400D) * FATIGUE_PERFORMANCE_MODIFIER /2;
+            }
+            else if (fatigue > 800D) {
+                tempPerformance -= (fatigue - 800D) * FATIGUE_PERFORMANCE_MODIFIER /4; 
+                // e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 -> reduces by 1.25% on each frame  
             }
 
             // High stress reduces performance.
-            if (stress >= 80D) {
-                tempPerformance -= (stress - 80D) * STRESS_PERFORMANCE_MODIFIER;
+            if (stress > 90D) {
+                tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER/2;
             }
-
+            if (stress > 70D) {
+                tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER/4; 
+                //e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125  or  1.25%  on each frame
+            }
         }
         
 

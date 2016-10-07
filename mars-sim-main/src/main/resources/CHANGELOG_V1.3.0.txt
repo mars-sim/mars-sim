@@ -1,14 +1,63 @@
 Mars Simulation Project v3.1.0
-
 Copyright (C) 2016 Scott Davis
 http://mars-sim.sourceforge.net/
 
+------------------------------------------------------
 
---------------------------------------------------------------------------------------------------
-v3.1.0 (build 3729) Snapshot Preview 2
+## v3.1.0 (build 3737) Snapshot Preview 3 - 2016-10-07
+
+### NEW FEATURES :
+
+1. Added user's option to change the height of the MarsNet chat box with the command '/y1', '/y2', '/y3', and '/y4' to suit user's monitor height.
+/y1 --> 256 pixels (by default)
+/y2 --> 512 pixels
+/y3 --> 768 pixels
+/y4 --> 1024 pixels 
+
+2. Added new user's keyword "settlement"/"vehicle"/"rover" in the chat box for reporting # of settlements in total and their names and to query the total # and types of vehicles/rovers (parked and/or on mission). 
+
+### FIXES :
+
+1. Fixed volume control with the ability to mute both the background music and sound effects.
+
+2. Fixed NullPointerException/other bugs when loading a saved sim in either the Main Menu or the command prompt.
+
+3. Added animated loading/saving/paused indicators.
 
 
-NEW FEATURES :
+
+### IMPROVEMENTS:
+
+1. Refactored the meteorite impact calculation in MeteoriteImpactImpl.java and completed Part I and II below. (Part III still in-work). 
+
+Note: any observable impact will increase the stress level of the settlers on that building if his/her natural attribute of courage and emotional stability are not high enough.
+ 
+Part I : Calculate the probability of impact per square meter per sol on the settlement, assuming the meteorite has an average impact velocity of 1km/s, critical diameter of .0016 cm and average density of 1 g/cm^3, per NASA study.
+
+Part II: Calculate how far the incoming meteorite may penetrate the wall of a building
+
+Part III: Implement equations of the probability distribution of different sizes of the meteorites. This no longer assumes the size and impact speed of the meteorites are homogeneous as in Part I and II.
+
+Source 1: Inflatable Transparent Structures for Mars Greenhouse Applications 2005-01-2846. SAE International.
+http://data.spaceappschallenge.org/ICES.pdf
+
+Source 2: 1963 NASA Technical Note D-1463 Meteoroid Hazard
+http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19630002110.pdf
+		
+
+2. Minimized or prevented EVA operations during intense Galactic Cosmic Rays (GCR) and Solar Energetic Particles (SEP) events for reducing radiation exposure. Refactored probability of exposure to conform better to NASA study. 
+
+See Curiosity's Radiation Assessment Detector (RAD) http://www.boulder.swri.edu/~hassler/rad/
+http://www.swri.org/3pubs/ttoday/Winter13/pdfs/MarsRadiation.pdf
+http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to
+
+
+
+------------------------------------------------------
+
+## v3.1.0 (build 3729) Snapshot Preview 2 - 2016-09-27
+
+### NEW FEATURES :
 
 1. Added codes to abort an on-going vehicle mission without activating the emergency beacon. Vehicle will drive to the settlement if fuel and consumables are still available.
 
@@ -19,8 +68,7 @@ NEW FEATURES :
 4. Added new part "heat pipe" and used it throught the sim.
 
 
-
-FIXES :
+### FIXES :
 
 1. Temporarily disabled the ability for settlers to start a construction mission on his own (bug fixes still in-work).
 
@@ -34,7 +82,7 @@ FIXES :
 
 
 
-IMPROVEMENTS/OTHERS :
+### IMPROVEMENTS/OTHERS :
 
 1. Added Description, Type and Phase of an on-going mission to the top right of the panel in Mission Tool.
 
@@ -50,12 +98,12 @@ IMPROVEMENTS/OTHERS :
 
 
 
+------------------------------------------------------
 
---------------------------------------------------------------------------------------------------
-v3.1.0 (build 3713) Snapshot Preview 1
+## v3.1.0 (build 3713) Snapshot Preview 1 - 2016-08-27
 
 
-NEW FEATURES :
+### NEW FEATURES :
 
 1. Added several new crops. 
 
@@ -109,7 +157,7 @@ NEW FEATURES :
 
 
 
-UI CHANGES : 
+### UI CHANGES : 
 
 1. Added detection of the 2nd monitor/LCD.
 
@@ -143,7 +191,7 @@ UI CHANGES :
 
 
 
-FIXES/IMPROVEMENTS/OTHER CHANGES :
+### FIXES/IMPROVEMENTS/OTHER CHANGES :
 
 1. Fixed temperation fluctuation with better algorithm for HVAC calculation.
 
@@ -170,4 +218,3 @@ FIXES/IMPROVEMENTS/OTHER CHANGES :
 12. More internationalization.
 
 13. Improved multithreading.
-

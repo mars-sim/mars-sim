@@ -17,7 +17,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
-				<version>1.0-beta-6</version>
+				<version>1.0-beta-8</version>
 <!--  for compiling with Java 8 
 
 see http://stackoverflow.com/questions/31209479/maven-webstart-and-java-8-headaches
@@ -27,7 +27,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>webstart-pack200-impl</artifactId>
-                        <version>1.0-beta-8-SNAPSHOT</version>
+                        <version>1.0-beta-6</version>
 					</dependency>
 <!--  see http://www.mojohaus.org/webstart/webstart-maven-plugin/upgrade.html                      
  

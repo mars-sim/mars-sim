@@ -115,20 +115,8 @@ public class MainMenu {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainMenu.class.getName());
 
-	/** Logger for the class */
-	//private static final Logger logger;
-
-
-    // -------------------------- STATIC METHODS --------------------------
-    //static {
-    //    SLF4JBridgeHandler.removeHandlersForRootLogger();
-   //     SLF4JBridgeHandler.install();
-    //    logger = LoggerFactory.getLogger(MainMenu.class);
-    //}
-
     private static final int WIDTH = 1024;//768-20;
     private static final int HEIGHT = 768-20;
-
 
 	// Data members
     private double fileSize;
@@ -145,9 +133,6 @@ public class MainMenu {
 
     private boolean isDone;
 
-    //private boolean cleanUI = true;
-
-    //private Group root;
     private StackPane root;
 	private Stage stage, mainSceneStage, circleStage, loadingCircleStage;//, waitStage;
 	public Scene mainMenuScene, mainSceneScene;
@@ -163,10 +148,6 @@ public class MainMenu {
 
 	public SpinningGlobe spinningGlobe;
 	
-	//private Simulation sim = Simulation.instance();
-	
-	//private WaitIndicator waiti;
-
     public MainMenu(MarsProjectFX marsProjectFX) {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	this.marsProjectFX = marsProjectFX;
@@ -204,12 +185,7 @@ public class MainMenu {
 			System.out.println("Warning: menu option box is not found");
 
        VBox menuOptionBox = ((VBox) screen.lookup("#menuOptionBox"));
-/*
-       if (mouseEvent.getSource().equals(menuOptionBox)){
-    	   System.out.println("hovering over menu option box");
-    	   mainMenuScene.setCursor(Cursor.HAND);
-       }
-*/
+
        Rectangle rect = new Rectangle(WIDTH, HEIGHT);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
        rect.setArcWidth(40);
        rect.setArcHeight(40);
@@ -224,7 +200,6 @@ public class MainMenu {
        root.setPrefWidth(HEIGHT);
        root.setStyle(
     		   //"-fx-border-style: none; "
-    		   //"-fx-background-color: #231d12; "
        			"-fx-background-color: transparent; "
        			+ "-fx-background-radius: 1px;"
     		   );
@@ -246,7 +221,6 @@ public class MainMenu {
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
        mainMenuScene.setCursor(Cursor.HAND);
 
-       //mainMenuScene.setCamera(spinningGlobe.getMarsGlobe().getCamera(root));
        spinningGlobe.getMarsGlobe().handleMouse(mainMenuScene);
        spinningGlobe.getMarsGlobe().handleKeyboard(mainMenuScene);
 
@@ -272,12 +246,6 @@ public class MainMenu {
            }
        });
 
-       // Enable dragging on the undecorated stage
-       //EffectUtilities.makeDraggable(mainMenuStage, screen);
-
-       //mstage.initStyle(StageStyle.UTILITY);
-       //stage.initStyle(StageStyle.TRANSPARENT);
-       //stage.initStyle(StageStyle.UNDECORATED);
        stage.centerOnScreen();
        stage.setResizable(false);
 	   stage.setTitle(Simulation.title);
@@ -287,8 +255,7 @@ public class MainMenu {
        //2016-02-07 Added calling setMonitor()
        setMonitor(stage);   
        stage.show();
-       //createProgressCircle();
-		
+
    }
 
 	
@@ -297,20 +264,7 @@ public class MainMenu {
 	       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
 
 	}
-/*
-	public void switchScene(Scene scene) {
-		// Starts a new stage for MainScene
-		//mainSceneStage = new Stage();
-		stage.setIconified(true);
-		stage.hide();
-		stage.setScene(scene);
-	}
 
-	public void switchStage(Scene scene) {
-		stage.setScene(scene);
-		stage.show();
-	}
-*/
 	public Stage getStage() {
 		return stage;
 	}
@@ -326,8 +280,7 @@ public class MainMenu {
    public void runOne() {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName());
 	   stage.setIconified(true);
-	   stage.hide();
-   
+	   stage.hide(); 
 	   // creates a mainScene instance
 	   mainScene = new MainScene(mainSceneStage);
 	   // goes to scenario config editor
@@ -344,134 +297,6 @@ public class MainMenu {
 	   loadSim(false);
 	   
        mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
-
-/*	   
-	   Platform.runLater(() -> mainScene = new MainScene(mainSceneStage));
-
-	   String dir = Simulation.DEFAULT_DIR;
-	   String title = null;
-	   File fileLocn = null;
-		
-	   FileChooser chooser = new FileChooser();
-		// chooser.setInitialFileName(dir);
-		// Set to user directory or go to default if cannot access
-		// String userDirectoryString = System.getProperty("user.home");
-	   File userDirectory = new File(dir);
-	   chooser.setInitialDirectory(userDirectory);
-	   chooser.setTitle(title); // $NON-NLS-1$
-
-		// Set extension filter
-	   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
-				"Simulation files (*.sim)", "*.sim");
-	   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
-				"all files (*.*)", "*.*");
-
-	   chooser.getExtensionFilters().addAll(simFilter, allFilter);
-		// Show open file dialog		
-		File selectedFile = chooser.showOpenDialog(stage);
-
-		if (selectedFile != null) {
-			fileLocn = selectedFile;
-		
-			Platform.runLater(() -> {
-				mainScene.createIndicator();
-				mainScene.showWaitStage(MainScene.LOADING);
-			});
-			
-			stage.setIconified(true);
-			stage.hide();		
-			
-			Simulation.createNewSimulation();
-			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-			//logger.info("Restarting " + Simulation.title);
-			Simulation.instance().start(false);
-
-		}
-		else {			
-			logger.info("No file was selected. Loading is cancelled");
-			return;		
-		}
-		
-		while (Simulation.instance().getMasterClock() == null)
-			try {
-				TimeUnit.MILLISECONDS.sleep(300L);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	
-*/	
-/*
-	//Future future = 
-	//Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());		
-   	//CompletableFuture future = (CompletableFuture) Simulation.instance().getSimExecutor().submit(new LoadSimulationTask());
-*/		
-
-    	//finalizeMainScene();
-/*    	
-		while (!mainScene.isMainSceneDone())
-			try {
-				TimeUnit.MILLISECONDS.sleep(300L);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-*/		
-        //mainScene.hideWaitStage(MainScene.LOADING);
-        
-/*        
-        Task task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-        		while (Simulation.instance().getMasterClock() == null)
-        			TimeUnit.MILLISECONDS.sleep(300L);
-                return null;
-            }
-            @Override
-            protected void succeeded(){
-                super.succeeded();
-                mainScene.hideWaitStage(MainScene.LOADING);
-            }
-        };
-        new Thread(task).start();
-*/
-        
-/*     		
-		//2016-06-20 Added Service Worker for calling up the saving indicator
-		Service<Void> service = new Service<Void>() {
-	        @Override
-	        protected Task<Void> createTask() {
-	            return new Task<Void>() {           
-	                @Override
-	                protected Void call() throws Exception {
-	                    //Note : Background work               
-	                	finalizeMainScene();
-	            		
-	                    final CountDownLatch latch = new CountDownLatch(1);
-	                    //FXUtilities.runAndWait(() -> {                      
-                 			try {
-                    			//FX Stuff done here
-	                        	while (Simulation.instance().getMasterClock() == null)
-	                        		TimeUnit.MILLISECONDS.sleep(300L);
-
-                			} catch (InterruptedException e) {
-                				e.printStackTrace();
-                			} finally{
-                                latch.countDown();
-                                mainScene.hideWaitStage(MainScene.LOADING);
-                            }
-	                    //});
-	                    latch.await();  
-	                    
-	                    //Keep with the background work
-
-	                    return null;
-	                }
-	            };
-	        }
-	    };
-	    service.start();
-*/        
 	   
    }
 
@@ -515,35 +340,15 @@ public class MainMenu {
 				mainScene.showWaitStage(MainScene.LOADING);
 			});
 			
-			
-			//Simulation.instance().getSimExecutor().execute(new LoadSimulationTask(fileLocn, autosaveDefaultName));
 			CompletableFuture.supplyAsync(() -> submitTask(fileLocn, autosaveDefaultName));
 
-			//finalizeMainScene();
-/*	    	
-	        Task task = new Task<Void>() {
-	            @Override
-	            protected Void call() throws Exception {
-
-	    	    	finalizeMainScene();
-	    	    	
-	        		while (Simulation.instance().getMasterClock() == null)
-	        			TimeUnit.MILLISECONDS.sleep(300L);
-	                return null;
-	            }
-	            @Override
-	            protected void succeeded(){
-	                super.succeeded();
-	                Platform.runLater(() -> mainScene.hideWaitStage(MainScene.LOADING));
-	            }
-	        };
-	        new Thread(task).start();
-*/				
 	        
 		}
 		else {			
 			logger.info("No file was selected. Loading is cancelled");
-			return;		
+	        Platform.exit();
+	        System.exit(1);
+			//return;		
 		}
 
    }
@@ -564,8 +369,6 @@ public class MainMenu {
 			
 			mainScene.initializeTheme();						
 			mainScene.prepareOthers();
-			//mainScene.getMarsNode().createSettlementWindow();
-			//mainScene.getMarsNode().createJMEWindow(stage);
 			//2016-02-07 Added calling setMonitor() for screen detection
 			// Note: setMonitor is needed for placing quotation pop at top right corner
 			setMonitor(mainSceneStage);
@@ -632,33 +435,6 @@ public class MainMenu {
 
 	}
 
-	/*
-	 * Sets up the stage for the main scene
-	 
-	public void prepareStage() {
-	   //logger.info("MainMenu's prepareStage() is on " + Thread.currentThread().getName());
-
-	   mainScene.prepareOthers();
-	   //mainScene.getMarsNode().createSettlementWindow();
-	   //mainScene.getMarsNode().createJMEWindow(stage);
-	   mainScene.initializeTheme();
- 
-       //2016-02-07 Added calling setMonitor()
-       setMonitor(mainSceneStage);
-       
-       mainSceneStage.centerOnScreen();
-       //mainSceneStage.setResizable(false);
-       mainSceneStage.setTitle(Simulation.title);
-	   mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
-       mainSceneStage.show();
-
-	   mainScene.openInitialWindows();
-       mainSceneStage.requestFocus();
-       // Note: if starting a new sim, after loading up the main scene, one must hide the loading indicator
-       //mainScene.hideWaitStage(MainScene.LOADING);
-	   //logger.info("done with mainSceneStage.show() in MainMenu's prepareStage()");
-	}
-*/
 	
    public void runThree() {
 	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");

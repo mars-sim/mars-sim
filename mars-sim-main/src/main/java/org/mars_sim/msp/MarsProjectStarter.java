@@ -103,10 +103,21 @@ public class MarsProjectStarter {
 		        
 		        if (argList.contains("new"))
 		        	command.append(" -new");
-		        else if (argList.contains("load"))
+		        else if (argList.contains("load")) {
 		        	command.append(" -load");
+		        
+		        	// 2016-10-06 Appended the name of loadFile to the end of the command stream so that MarsProjectFX can read it.
+		        	int index = argList.indexOf("-load");
+		        	int size = argList.size();
+		        	String fileName = null;
+		        	if (size > index + 1) { // TODO : will it help to catch IndexOutOfBoundsException
+		            // Get the next argument as the filename.
+		        		fileName = argList.get(index + 1);
+		        		command.append(" " + fileName);
+		        	}
+		        }
 		        else {
-		        	System.out.println("Note: it's missing 'new' or 'load'. Assume you want to start a new sim now.");
+		        	//System.out.println("Note: it's missing 'new' or 'load'. Assume you want to start a new sim now.");
 		        	command.append(" -new");
 		        }
 	        
