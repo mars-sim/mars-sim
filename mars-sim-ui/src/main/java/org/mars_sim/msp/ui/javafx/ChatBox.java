@@ -1,6 +1,6 @@
 /* Mars Simulation Project
  * ChatBox.java
- * @version 3.08 2015-12-02
+ * @version 3.1.0 2016-10-06
  * @author Manny Kung
  */
 
@@ -13,7 +13,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.mars_sim.msp.core.Msg;
@@ -34,6 +36,7 @@ import org.mars_sim.msp.ui.swing.tool.Conversion;
 import com.jfoenix.controls.JFXButton;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -51,10 +54,37 @@ import javafx.scene.control.*;
 @SuppressWarnings("restriction")
 public class ChatBox extends BorderPane {
 
+
+	public final static String SYSTEM_PROMPT = "System : ";
+	public final static String YOU_PROMPT = "You : ";
+	public final static String REQUEST_HEIGHT_CHANGE = YOU_PROMPT + "I'd like to change the chat box height to ";
+	public final static String REQUEST_HELP = YOU_PROMPT + "I need some help! What are the available keywords/commands ? ";
+	public final static int[] box_height = new int[]{0,0,0,0};
+	
+	public final static String INSTRUCTION = " ***** INSTRUCTIONS ***** " + System.lineSeparator()
+	+ "(1) First, type in the name of a person, bot, or settlement to connect with." + System.lineSeparator()
+	+ "(2) OR, type 'settlement' to get an overview of the established settlements." + System.lineSeparator() 
+	+ "(2) Next, type in 1 to 15 (specific questions on a person/bot/settlement) or a keyword ['/k' or 'key']." + System.lineSeparator()
+	+ "(3) 'bye', 'exit', 'quit', '/q', '/x', to close chat box" + System.lineSeparator()
+	+ "(4) 'help', '/h' for guidance/help" + System.lineSeparator()	
+	+ "(5) '/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels" + System.lineSeparator();
+	
+	public final static String HELP_TEXT = " ***** KEYWORDS ***** " + System.lineSeparator()
+	+ "(1) 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "+ System.lineSeparator()
+	+ "(2) 'bed', 'quarters', 'building', 'inside', 'outside',"+ System.lineSeparator()
+	+ "(3) 'settlement', 'settlements', 'associated settlement', 'buried settlement', " + System.lineSeparator()
+	+ "(4) 'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement'," + System.lineSeparator()
+	+ "(5) 'vehicle container', 'vehicle top container'" + System.lineSeparator()
+	+ " ***** NUMERAL ***** " + System.lineSeparator()
+	+ " 1 to 15 are specific questions on a person/bot/settlement" + System.lineSeparator()
+	+ " *****  MISCS  ***** " + System.lineSeparator()
+	+ "'bye', 'exit', 'quit', '/q', '/x', to close chat box" + System.lineSeparator()
+	+ "'help', '/h' for guidance/help" + System.lineSeparator()	
+	+ "'/y1' to reset height to 256 pixels (by default) after closing chat box. '/y2'->512 pixels, '/y3'->768 pixels, '/y4'->1024 pixels" + System.lineSeparator();
+	
     protected int historyPointer = 0;
 
-    protected boolean hasPerson = false;
-
+    protected boolean hasPerson = false, reset = false;
 
     protected String image = MainScene.class.getResource("/images/starfield.png").toExternalForm();
     
@@ -84,6 +114,14 @@ public class ChatBox extends BorderPane {
      */
     public ChatBox(MainScene mainScene) {
     	this.mainScene = mainScene;
+    	//this.setHeight(height);
+    	//super.setHeight(height);
+    	
+       	box_height[0] = 256; //mainScene.getFlyout().getContainerHeight();
+    	box_height[1] = 512;//box_height[0] * 1.5D;
+    	box_height[2] = 768;//box_height[0] * 3D;
+    	box_height[3] = 1024;//box_height[0] * 4D;
+    	
     	// 2016-01-01 Added autoCompleteData
     	ObservableList<String> autoCompleteData = createAutoCompleteData();
         
@@ -92,10 +130,10 @@ public class ChatBox extends BorderPane {
         textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        textArea.setStyle("-fx-font: 11pt 'Corbel';"
+        textArea.setStyle("-fx-font: 13pt 'Corbel';"
         		+ "-fx-background-color: black;" 
         		//+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
-        		+ "-fx-text-fill: orange;"
+        		+ "-fx-text-fill: #b85c01;"
         		);
         
         textArea.setStyle("-fx-background-image: url('" + image + "'); " +
@@ -146,6 +184,9 @@ public class ChatBox extends BorderPane {
           	String text = autoFillTextBox.getTextbox().getText();
             if (text != "" && text != null && !text.trim().isEmpty()) {
             	hitEnter();
+                //if (reset)
+             	//	mainScene.fireMarsNetButton();
+                //reset = false;
             }
             else {
             	 autoFillTextBox.getTextbox().clear();
@@ -170,13 +211,13 @@ public class ChatBox extends BorderPane {
   		int rand = RandomUtil.getRandomInt(2);
   		
   		if (rand == 0)
-  			textArea.appendText("System : how can I help you ? h for help");
+  			textArea.appendText("System : how can I help you ? /h for help");
   		else if (rand == 1)
-  			textArea.appendText("System : how may I assist you ? h for help");
+  			textArea.appendText("System : how may I assist you ? /h for help");
   		else if (rand == 2)
-  			textArea.appendText("System : Is there anything I can help ? h for help");
+  			textArea.appendText("System : Is there anything I can help ? /h for help");
 
-  		textArea.appendText(System.lineSeparator() + System.lineSeparator());
+  		textArea.appendText(System.lineSeparator());
     }
     
     
@@ -184,8 +225,9 @@ public class ChatBox extends BorderPane {
      * Display the initial system greeting and update the css style
      */
     // 2016-06-17 Added update() 
-    public void update() {   
-
+    public void update() {
+    	//System.out.println((int)box_height[0] + "," + (int)box_height[1] + "," + (int)box_height[2] + "," + (int)box_height[3]);
+    	
     	int theme = MainScene.getTheme();
         if (theme == 6) {
         	button.getStylesheets().clear();
@@ -196,10 +238,11 @@ public class ChatBox extends BorderPane {
         			//+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
         			);
         	textArea.getStylesheets().clear();
-            textArea.setStyle("-fx-background-image: url('" + image + "'); " +
+            textArea.setStyle("-fx-font: 13pt 'Corbel';" +
+            		"-fx-background-image: url('" + image + "'); " +
                     "-fx-background-position: center center; " +
                     "-fx-background-repeat: stretch;");
-            textArea.setStyle("-fx-text-fill: #3291D2;"
+            textArea.setStyle("-fx-text-fill: #065185;"
             			+ "-fx-background-color: #000000;" );
         }
         else if (theme == 7) {
@@ -211,14 +254,15 @@ public class ChatBox extends BorderPane {
             		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
             		);
         	textArea.getStylesheets().clear();
-            textArea.setStyle("-fx-background-image: url('" + image + "'); " +
+            textArea.setStyle("-fx-font: 13pt 'Corbel';" + 
+            		"-fx-background-image: url('" + image + "'); " +
                     "-fx-background-position: center center; " +
                     "-fx-background-repeat: stretch;");
-            textArea.setStyle("-fx-text-fill: #E5AB00;"
+            textArea.setStyle("-fx-text-fill: #b85c01;"
         			+ "-fx-background-color: #000000;" );
         }
         else {
-        	button.getStylesheets().clear();
+           	button.getStylesheets().clear();
         	button.setStyle("-fx-text-fill: #E5AB00;");
         	titleLabel.getStylesheets().clear();
             titleLabel.setStyle("-fx-text-fill: #E5AB00;"
@@ -226,10 +270,11 @@ public class ChatBox extends BorderPane {
             		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
             		);
         	textArea.getStylesheets().clear();
-            textArea.setStyle("-fx-background-image: url('" + image + "'); " +
+            textArea.setStyle("-fx-font: 13pt 'Corbel';" + 
+            		"-fx-background-image: url('" + image + "'); " +
                     "-fx-background-position: center center; " +
                     "-fx-background-repeat: stretch;");
-            textArea.setStyle("-fx-text-fill: #E5AB00;"
+            textArea.setStyle("-fx-text-fill: #b85c01;"
         			+ "-fx-background-color: #000000;" );
         }
         
@@ -251,14 +296,17 @@ public class ChatBox extends BorderPane {
   		textArea.positionCaret(textArea.getText().length());
     }
 
-    public void closeChatBox() {
+    public void closeChatBox(boolean disconnected) {
     			
-    	textArea.appendText("You : farewell!" + System.lineSeparator() + "<< Disconnected from MarsNet >>" + System.lineSeparator() + System.lineSeparator());    	
-  
-    	personCache = null; 
-    	robotCache = null;
-    	settlementCache = null;
+    	if (disconnected) {
+    		textArea.appendText(YOU_PROMPT + "Farewell!" + System.lineSeparator() + "<< Disconnected from MarsNet >>" + System.lineSeparator() + System.lineSeparator());    	  
+	    	personCache = null; 
+	    	robotCache = null;
+	    	settlementCache = null;
+    	}
     	
+        mainScene.getFlyout().dismiss();
+        mainScene.ToggleMarsNetButton(false);
     }
     
     /**
@@ -279,6 +327,15 @@ public class ChatBox extends BorderPane {
 	
 	   	// Creates an array with the names of all of people and robots
 		List<String> nameList = new ArrayList<>();
+		
+		// 2016-10-06 Added misc keywords
+		nameList.add("settlement");
+		nameList.add("settlements");
+		nameList.add("vehicle");
+		nameList.add("vehicles");
+		nameList.add("rover");
+		nameList.add("rovers");
+		
 		Iterator<Settlement> i = settlementList.iterator();
 		while (i.hasNext()) {
 			Settlement s = i.next();
@@ -378,7 +435,9 @@ public class ChatBox extends BorderPane {
      */
     //2015-12-21 askQuestion()
     public void askQuestion(String text) {
-    	String theOtherParty = "System";
+    	String the_other_party = "";
+    	//String SYSTEM = "System ";
+    	
     	String responseText = null;
     	String questionText = null;
     	Unit cache = null;
@@ -399,49 +458,51 @@ public class ChatBox extends BorderPane {
     	}	
 
     	// Case 0 : exit the conversation
-    	if (text.equalsIgnoreCase("exit") || text.equalsIgnoreCase("x") || text.equalsIgnoreCase("/x")
-    			|| text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("q") || text.equalsIgnoreCase("/q") 
-    			|| text.equalsIgnoreCase("bye")) {
+    	if (text.equalsIgnoreCase("quit")
+    			|| text.equalsIgnoreCase("/quit") 
+    			|| text.equalsIgnoreCase("\\quit")
+    			|| text.equalsIgnoreCase("\\q")
+    			|| text.equalsIgnoreCase("/q")
+    			
+    			|| text.equalsIgnoreCase("exit") 
+    			|| text.equalsIgnoreCase("/exit") 
+    			|| text.equalsIgnoreCase("\\exit")
+    			|| text.equalsIgnoreCase("\\x")
+    			|| text.equalsIgnoreCase("/x")
+    			
+       			|| text.equalsIgnoreCase("bye")
+       			|| text.equalsIgnoreCase("/bye")
+      			|| text.equalsIgnoreCase("\\bye")
+    			) {
     		// set personCache and robotCache to null so as to quit the conversation
    		
-    		int r0 = RandomUtil.getRandomInt(5);
+    		String[] txt = farewell();
+    		questionText = txt[0];
+    		responseText = txt[1];
 
-			if (r0 == 0)
-				questionText = "You : bye!";
-			else if (r0 == 1)
-				questionText = "You : farewell!";
-			else if (r0 == 2)
-				questionText = "You : bye now!";
-			else if (r0 == 3)
-				questionText = "You : have a nice sol!";
-			else if (r0 == 4)
-				questionText = "You : Take it easy!";
-			else 
-				questionText = "You : Take care!";
-			    
     		
     		if (settlementCache != null)
-    			// it's a settlement 
-    			responseText = "disconnected.";
+    			// you were asking about a settlement earlier
+    			;//responseText = "disconnected.";
     		
     		else {
     			
     			int rand = RandomUtil.getRandomInt(6);
 
     			if (rand == 0)
-    				responseText = "bye!" + System.lineSeparator() + "System : disconnected. "; //" + sys + " had left the conversation.";
+    				responseText = "bye!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " is disconnected. "; //" + sys + " had left the conversation.";
     			else if (rand == 1)
-    				responseText = "farewell!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    				responseText = "farewell!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
     			else if (rand == 2)
-    				responseText = "bye now" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    				responseText = "bye now" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
     			else if (rand == 3)
-    				responseText = "have a nice sol!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    				responseText = "have a nice sol!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
     			else if (rand == 4)
-    				responseText = "Take it easy!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    				responseText = "Take it easy!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
     			else if (rand == 5)
-    				responseText = "Take care!" + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    				responseText = "Take care!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
     			else
-    				responseText = "oh well! " + System.lineSeparator() + "System : " + theOtherParty + " had left the conversation.";
+    				responseText = "oh well! " + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
     		    
     		}
     		
@@ -449,8 +510,39 @@ public class ChatBox extends BorderPane {
 	    	robotCache = null;
 	    	settlementCache = null;
     	}
- 	
-    	// Case 1: ask about a settlement
+    	
+    	
+     	// 2016-10-06 Added changing the height of the chat box
+     	else if (text.equalsIgnoreCase("/y1")) {
+     		questionText = REQUEST_HEIGHT_CHANGE + box_height[0] + " pixels.";
+     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
+     		mainScene.setChatBoxPaneHeight(box_height[0]);
+     		closeChatBox(false);    	
+     	}
+    	
+     	else if (text.equalsIgnoreCase("/y2")) {
+     		questionText = REQUEST_HEIGHT_CHANGE + box_height[1] + " pixels.";
+     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
+     		mainScene.setChatBoxPaneHeight(box_height[1]);
+            closeChatBox(false);
+     	}
+
+     	else if (text.equalsIgnoreCase("/y3")) {
+     		questionText = REQUEST_HEIGHT_CHANGE + box_height[2] + " pixels.";
+     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
+     		mainScene.setChatBoxPaneHeight(box_height[2]);
+            closeChatBox(false);
+     	}
+
+     	else if (text.equalsIgnoreCase("/y4")) {
+     		questionText = REQUEST_HEIGHT_CHANGE + box_height[3] + " pixels.";
+     		mainScene.setChatBoxPaneHeight(box_height[3]);
+     		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
+            closeChatBox(false);
+			
+	    }
+    	
+    	// Case 1: ask about a particular settlement
     	else if (settlementCache != null) {
     		
     		if (isInteger(text, 10)) {
@@ -460,7 +552,7 @@ public class ChatBox extends BorderPane {
     	    	if (num == 0) {
     	    		// exit
     	    		sys = name;
-    	    		questionText = "You : have a nice sol. Bye!";
+    	    		questionText = YOU_PROMPT + "have a nice sol. Bye!";
     	    		responseText = "Bye! " + System.lineSeparator() + "System : exit the inquiry regarding " + name;
     	    		
     	    		personCache = null; 
@@ -469,76 +561,121 @@ public class ChatBox extends BorderPane {
     		    }
 */    	
     	    	if (num == 1) {
-    	    		questionText = "You : how many beds are there in total ? ";
+    	    		questionText = YOU_PROMPT + "how many beds are there in total ? ";
     	    		responseText = "The total number of beds is " + settlementCache.getPopulationCapacity();
     	    		
     	    	}
 
     	    	else if (num == 2) {
-    	    		questionText = "You : how many beds that have already been designated to a person ? ";
+    	    		questionText = YOU_PROMPT + "how many beds that have already been designated to a person ? ";
     	    		responseText = "There are " + settlementCache.getTotalNumDesignatedBeds() + " designated beds. ";
     	    		
     	    	}
 
     	    	else if (num == 3) {
-    	    		questionText = "You : how many beds that are currently NOT occupied ? ";
+    	    		questionText = YOU_PROMPT + "how many beds that are currently NOT occupied ? ";
     	    		responseText = "There are " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers()) + " unoccupied beds. ";
     	    		
     	    	}
 
     	    	else if (num == 4) {
-    	    		questionText = "You : how many beds are currently occupied ? ";
+    	    		questionText = YOU_PROMPT + "how many beds are currently occupied ? ";
     	    		responseText = "There are " + settlementCache.getSleepers() + " occupied beds with people sleeping on it at this moment. ";
     	    		
     	    	}
 	
     	    	else {
-    	    		questionText = "You : You entered '" + num + "'.";
+    	    		questionText = YOU_PROMPT + "You entered '" + num + "'.";
     	    		responseText = "Sorry. This number is not assigned to a valid question.";
     	    	}
     	    	
     	    // if it's not a integer input	
-    		} else if (text.contains("bed")
+    		}
+    		
+    		else if (text.contains("bed")
     				|| text.contains("sleep") 
     				|| text.equalsIgnoreCase("lodging") 
     				|| text.contains("quarters")) {
     			  			
-    			questionText = "You : how well are the beds utilized ? ";
+    			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
 	    		responseText = "Total number of beds : " + settlementCache.getPopulationCapacity() + System.lineSeparator() +
 	    				"Desginated beds : " + settlementCache.getTotalNumDesignatedBeds() + System.lineSeparator() +
 	    				"Unoccupied beds : " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers())  + System.lineSeparator() +
 	    				"Occupied beds : " + settlementCache.getSleepers() + System.lineSeparator();
     		} 
     		
-        	else if (text.contains("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("h")){
+    		else if (text.equalsIgnoreCase("vehicle")
+    				|| text.equalsIgnoreCase("rover") 
+    				|| text.contains("rover") 
+    				|| text.contains("vehicle")) {
+    			  			
+    			questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
+	    		responseText = 
+	    				" ** Rovers/Vehicles Inventory **" + System.lineSeparator() +
+	    				"(1). Total # of Rovers/Vehicles : " + settlementCache.getAllAssociatedVehicles().size() + System.lineSeparator() +
+	    				"(2). Total # of Rovers/Vehicles on Mission : " + settlementCache.getMissionVehicles().size() + System.lineSeparator() +
+	    				"(3). Total # of Parked Rovers/Vehicles (NOT on Mission) : " + settlementCache.getParkedVehicleNum() + System.lineSeparator() +
+	    				
+	    				"(4). # Cargo Rovers on Mission : " + settlementCache.getCargoRovers(2).size() + System.lineSeparator() +
+	    				"(5). # Transport Rovers on Mission : " + settlementCache.getTransportRovers(2).size() + System.lineSeparator() +
+	    				"(6). # Explorer Rovers on Mission : " + settlementCache.getExplorerRovers(2).size()  + System.lineSeparator() +
+	    				"(7). # Light Utility Vehicles (LUVs) on Mission : " + settlementCache.getLUVs(2).size() + System.lineSeparator() +
+	    				"(8). # Parked Cargo Rovers : " + settlementCache.getCargoRovers(1).size() + System.lineSeparator() +
+	    				"(9). # Parked Transport Rovers : " + settlementCache.getTransportRovers(1).size() + System.lineSeparator() +
+	    				"(10). # Parked Explorer Rovers : " + settlementCache.getExplorerRovers(1).size()  + System.lineSeparator() +
+	    				"(11). # Parked Light Utility Vehicles (LUVs) : " + settlementCache.getLUVs(1).size() + System.lineSeparator();
+    		} 
+    		
+        	else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")
+	    			|| text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
+	       			|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")
+	       			){
     	    	
         		help = true;
-    	    	questionText = "You : I need some help. What are the available commands ? ";
-    			responseText = "Keywords are 'bed', 'lodging', 'sleep', 'quarters" + System.lineSeparator()
-						+ "Specific questions from 1 to 4" + System.lineSeparator()
-    					+ "To quit, enter 'quit', 'exit', 'bye', 'q', or 'x'" + System.lineSeparator()
-    					+ "For help, enter 'help', or 'h'" + System.lineSeparator();	    	
-    	    		    		
-    	    } else {    	    	
+    	    	questionText = REQUEST_HELP;
+    			responseText = HELP_TEXT;    	
+    		
+    	    }  	
+        	
+	     	// 2016-10-06 Added changing the height of the chat box
+	     	else if (text.equalsIgnoreCase("/y1")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[0] + " pixels.";
+	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[0]);
+	     		closeChatBox(false);    	
+	     	}
+	    	
+	     	else if (text.equalsIgnoreCase("/y2")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[1] + " pixels.";
+	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[1]);
+	            closeChatBox(false);
+	     	}
 
-        		questionText = "You : you were mumbling something about....";
-	    		int rand0 = RandomUtil.getRandomInt(4);
-	    		if (rand0 == 0)
-	        		responseText = "could you repeat that?";
-	    		else if (rand0 == 1)
-	           		responseText = "pardon me?";
-	    		else if (rand0 == 2)
-	           		responseText = "what did you say?";
-	        	else if (rand0 == 3)
-	        		responseText = "I beg your pardon?"; 
-	        	else
-	        		responseText = "Can you be more specific ?";
-        		
-        	}
+	     	else if (text.equalsIgnoreCase("/y3")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[2] + " pixels.";
+	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[2]);
+	            closeChatBox(false);
+	     	}
+
+	     	else if (text.equalsIgnoreCase("/y4")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[3] + " pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[3]);
+	     		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
+	            closeChatBox(false);
+				
+		    }
+	     	
+	     	else {    	    	
+    	    	String[] txt = clarify();   	    	
+    	    	questionText = txt[0];
+    			responseText = txt[1]; 
+    		}
  		
     	}	
     	// Case 2: ask to talk to a person or robot
-    	else if (settlementCache == null) {
+    	else if (settlementCache == null) { // better than personCache != null || robotCache != null since it can incorporate help and other commands
 	
     		int num = 0;
   
@@ -546,7 +683,7 @@ public class ChatBox extends BorderPane {
     			num = Integer.parseUnsignedInt(text, 10);
     		
     		if (num == 1 || text.equalsIgnoreCase("where") || text.equalsIgnoreCase("location")) {// || text.contains("location")) {
-	    		questionText = "You : where are you ? "; //what is your Location State [Expert Mode only] ?";
+	    		questionText = YOU_PROMPT + "Where are you ? "; //what is your Location State [Expert Mode only] ?";
 	    		LocationState state = cache.getLocationState();
 	    		if (state != null) {
 	    			if (personCache != null) {
@@ -565,12 +702,13 @@ public class ChatBox extends BorderPane {
 	    	}
 	
 	    	else if (num == 2 || text.contains("located") || text.contains("location") && text.contains("situation")) {
-	    		questionText = "You : where are you located ? "; //what is your Location Situation [Expert Mode only] ?";
+	    		questionText = YOU_PROMPT + "Where are you located ? "; //what is your Location Situation [Expert Mode only] ?";
 	       		responseText = "I'm located at " + Conversion.capitalize(cache.getLocationSituation().getName());
 	    	}
     		
-	       	else if (num == 3 || text.equalsIgnoreCase("task") || text.equalsIgnoreCase("activity") || text.equalsIgnoreCase("action")) {
-	    		questionText = "You : what are you doing ?";
+	       	else if (num == 3 || text.equalsIgnoreCase("task") || text.equalsIgnoreCase("activity") 
+	       			|| text.equalsIgnoreCase("action")) {
+	    		questionText = YOU_PROMPT + "What are you doing ?";
 	    		if (personCache != null) {
 	    			responseText = personCache.getTaskDescription();
     	    	}
@@ -583,7 +721,7 @@ public class ChatBox extends BorderPane {
 	       	else if (num == 4 || text.equalsIgnoreCase("mission")) {
     		
     			//sys = name;
-	    		questionText = "You : are you involved in a particular mission at this moment?";
+	    		questionText = YOU_PROMPT + "Are you involved in a particular mission at this moment?";
 	    		Mission mission = null;
 	    		if (personCache != null) {
 	    			mission = personCache.getMind().getMission();
@@ -600,7 +738,7 @@ public class ChatBox extends BorderPane {
     		}
     		
 	    	else if (num == 5 || text.equalsIgnoreCase("bed") || text.equalsIgnoreCase("quarter") || text.equalsIgnoreCase("quarters")) {
-	    		questionText = "You : where is your designated quarters/bed ? ";
+	    		questionText = YOU_PROMPT + "Where is your designated quarters/bed ? ";
 	    		Point2D bed = personCache.getBed();
 	    		if (bed == null)
 	    			responseText = "I don't have my own private quarters/bed.";
@@ -631,7 +769,7 @@ public class ChatBox extends BorderPane {
 	    	}
 	
 	    	else if (num == 6 || text.equalsIgnoreCase("inside") || text.equalsIgnoreCase("container")) {
-	    		questionText = "You : are you inside?"; //what is your Container unit [Expert Mode only] ?";
+	    		questionText = YOU_PROMPT + "Are you inside?"; //what is your Container unit [Expert Mode only] ?";
 	    		Unit c = cache.getContainerUnit();
 	    		if (c != null)
 	    			responseText = "I'm at/in " + c.getName();
@@ -640,7 +778,7 @@ public class ChatBox extends BorderPane {
 	    	}
 	
 	    	else if (num == 7 ||text.equalsIgnoreCase("outside") || text.contains("top") && text.contains("container")) {	
-	    		questionText = "You : are you inside?"; //"You : what is your Top Container unit [Expert Mode only] ?";
+	    		questionText = YOU_PROMPT + "Are you inside?"; //YOU_PROMPT + "what is your Top Container unit [Expert Mode only] ?";
 	    		Unit tc = cache.getTopContainerUnit();
 	    		if (tc != null)
 	    			responseText = "I'm in " + tc.getName();
@@ -650,7 +788,7 @@ public class ChatBox extends BorderPane {
 	    	}
 	
 	    	else if (num == 8 || text.equalsIgnoreCase("building") ) {
-	    		questionText = "You : what building are you at ?";
+	    		questionText = YOU_PROMPT + "What building are you at ?";
 	    		Settlement s = cache.getSettlement();
 	    		if (s != null) {
 		    		//Building b1 = s.getBuildingManager().getBuilding(cache);
@@ -668,7 +806,7 @@ public class ChatBox extends BorderPane {
 	
     		
 	    	else if (num == 9 || text.equalsIgnoreCase("settlement")) {
-	    		questionText = "You : what is the settlement that you are at ?";
+	    		questionText = YOU_PROMPT + "What is the settlement that you are at ?";
 	    		Settlement s = cache.getSettlement();
 	   			if (s != null)
 	   				responseText = "My settlement is " + s.getName();
@@ -678,7 +816,7 @@ public class ChatBox extends BorderPane {
 	    	}
 	
 	    	else if (num == 10 || text.equalsIgnoreCase("associated settlement")) {
-	    		questionText = "You : what is your associated settlement ?";
+	    		questionText = YOU_PROMPT + "What is your associated settlement ?";
 	    		Settlement s = cache.getAssociatedSettlement();
 	    		if (s  != null) {
 	    			responseText = "My associated settlement is " + s.getName();
@@ -689,7 +827,7 @@ public class ChatBox extends BorderPane {
 
 /*    		
 	    	else if (num == 9 || text.equalsIgnoreCase("buried settlement")) {
-	    		questionText = "You : what is his/her buried settlement ?";
+	    		questionText = YOU_PROMPT + "What is his/her buried settlement ?";
 	    		if personCache.
 	    		Settlement s = cache.getBuriedSettlement();
 	    		if (s == null) {
@@ -702,7 +840,7 @@ public class ChatBox extends BorderPane {
 */	
        		
 	       	else if (num == 11 || text.equalsIgnoreCase("vehicle") ) {
-	       		questionText = "You : what vehicle are you in and where is it ?";
+	       		questionText = YOU_PROMPT + "What vehicle are you in and where is it ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	           		String d = cache.getVehicle().getDescription();
@@ -715,7 +853,7 @@ public class ChatBox extends BorderPane {
 	       	}
     		
 	    	else if (num == 12 || text.equalsIgnoreCase("vehicle inside") || text.equalsIgnoreCase("vehicle container") || text.contains("vehicle") && text.contains("container")) {
-	    		questionText = "You : where is your vehicle at?";//'s container unit ?";
+	    		questionText = YOU_PROMPT + "Where is your vehicle at?";//'s container unit ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Unit c = v.getContainerUnit();
@@ -730,7 +868,7 @@ public class ChatBox extends BorderPane {
 	       	}
 	
 	    	else if (num == 13 || text.equalsIgnoreCase("vehicle outside") || text.equalsIgnoreCase("vehicle top container") || text.contains("vehicle") && text.contains("top") && text.contains("container")) {
-	    		questionText = "You : what is your vehicle located?";//'s top container unit ?";
+	    		questionText = YOU_PROMPT + "What is your vehicle located?";//'s top container unit ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Unit tc = v.getTopContainerUnit();
@@ -744,7 +882,7 @@ public class ChatBox extends BorderPane {
 	       	}
 	
 	    	else if (num == 14  || text.contains("vehicle") && text.contains("park")) {
-	    		questionText = "You : what building does your vehicle park at ?";
+	    		questionText = YOU_PROMPT + "What building does your vehicle park at ?";
 	    		Vehicle v = cache.getVehicle();
 		       	if (v != null) {
 		       		Settlement s = v.getSettlement();
@@ -763,7 +901,7 @@ public class ChatBox extends BorderPane {
 	       	}
 	
 	    	else if (num == 15 || text.contains("vehicle") && text.contains("settlement")) {
-	    		questionText = "You : what settlement is your vehicle located at ?";
+	    		questionText = YOU_PROMPT + "What settlement is your vehicle located at ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Settlement s = v.getSettlement();
@@ -776,61 +914,68 @@ public class ChatBox extends BorderPane {
 	       			responseText = "I'm not on a vehicle.";
 	    	}
 	
-	    	else if (text.contains("help") || text.equalsIgnoreCase("/h") || text.equalsIgnoreCase("h")){
+	    	else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")
+	    			|| text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
+	       			|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")
+	    			){
 		    	
         		help = true;
-		    	questionText = "You : I need some help. What are the available keywords/commands ? ";
-				responseText = "Keywords are 'where', 'location', 'located', 'task', 'activity', 'action', 'mission', "
-						+ "'bed', 'quarters', 'building', 'inside', 'outside',"
-						+ "'settlement', 'assocated settlement', 'buried settlement', "
-						+ "'vehicle inside', 'vehicle outside', 'vehicle park', 'vehicle settlement', 'vehicle container', "
-						+ "'vehicle top container'" + System.lineSeparator()
-						+ "Specific questions from 1 to 15" + System.lineSeparator()
-						+ "To quit, enter 'quit', 'exit', 'bye', '/q', 'q', '/x', or 'x'" + System.lineSeparator()
-						+ "For help, enter 'help', '/h', or 'h'" + System.lineSeparator();	    	
+		    	questionText = REQUEST_HELP;
+				responseText = HELP_TEXT;    	
 				
-		    } else {
-	    		
-	    		questionText = "You : you were mumbling something about....";
-	    		int rand0 = RandomUtil.getRandomInt(4);
-	    		if (rand0 == 0)
-	        		responseText = "could you repeat that?";
-	    		else if (rand0 == 1)
-	           		responseText = "pardon me?";
-	    		else if (rand0 == 2)
-	           		responseText = "what did you say?";
-	        	else if (rand0 == 3)
-	        		responseText = "I beg your pardon?"; 
-	        	else
-	        		responseText = "Can you be more specific ?";
+	    	}
+    		
+	     	// 2016-10-06 Added changing the height of the chat box
+	     	else if (text.equalsIgnoreCase("/y1")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[0] + " pixels.";	     		
+	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[0]);
+	     		closeChatBox(false);    	
+	     	}
+	    	
+	     	else if (text.equalsIgnoreCase("/y2")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[1] + " pixels.";
+	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[1]);
+	            closeChatBox(false);
+	     	}
+
+	     	else if (text.equalsIgnoreCase("/y3")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[2] + " pixels.";
+	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[2]);
+	            closeChatBox(false);
+	     	}
+
+	     	else if (text.equalsIgnoreCase("/y4")) {
+	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[3] + " pixels.";
+	     		mainScene.setChatBoxPaneHeight(box_height[3]);
+	     		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
+	            closeChatBox(false);
+				
+		    } else {	    		
+    	    	String[] txt = clarify();   	    	
+    	    	questionText = txt[0];
+    			responseText = txt[1]; 
 	    	}
 	    	
     	}
    	
     	else {
     		// set personCache and robotCache to null only if you want to quit the conversation
-    		questionText = "You : you were mumbling something about....";
-    		int rand0 = RandomUtil.getRandomInt(4);
-    		if (rand0 == 0)
-        		responseText = "could you repeat that?";
-    		else if (rand0 == 1)
-           		responseText = "pardon me?";
-    		else if (rand0 == 2)
-           		responseText = "what did you say?";
-        	else if (rand0 == 3)
-        		responseText = "I beg your pardon?"; 
-        	else
-        		responseText = "Can you be more specific ?";		
+	    	String[] txt = clarify();   	    	
+	    	questionText = txt[0];
+			responseText = txt[1]; 
     	}
     	
     	textArea.appendText(questionText + System.lineSeparator());	
     	
     	if (help)
-			theOtherParty = "System";
+			the_other_party = "System";
     	else
-    		theOtherParty = name;
+    		the_other_party = name;
     	
-   		textArea.appendText(theOtherParty + " : " + responseText + System.lineSeparator());
+   		textArea.appendText(the_other_party + " : " + responseText + System.lineSeparator());
     }
 
     /*
@@ -842,7 +987,7 @@ public class ChatBox extends BorderPane {
     	//System.out.println("starting parseText()");
     	Unit unit = null;
     	String responseText = null;
-    	String name = "System";
+    	//String SYSTEM_PROMPT = "System : ";
     	boolean available = true;
     	int nameCase = 0;
     	boolean proceed = false;
@@ -858,26 +1003,19 @@ public class ChatBox extends BorderPane {
     	// Part 1 //
 
     	// 2015-12-17 detect "\" backslash and the name that follows
-    	if (len >= 3 && text.substring(0,1).equalsIgnoreCase("\\")) {
+     	if (len >= 3 && text.substring(0,1).equalsIgnoreCase("\\")) {
 
     		text = text.substring(1, len).trim();
     		proceed = true;
     	}
 
-    	else if (text.equalsIgnoreCase("\\h")
-    			|| text.equalsIgnoreCase("/h")
-    			//|| text.equalsIgnoreCase("h")
-    			|| text.equalsIgnoreCase("help")
-    			|| text.equalsIgnoreCase("/help") 
-    			|| text.equalsIgnoreCase("\\help")
-    			|| text.equals("\\?")
-    			|| text.equals("?")
-    			|| text.equals("/?")
+    	else if (
+    			text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")
+    			|| text.equalsIgnoreCase("help") || text.equalsIgnoreCase("/h") 
+       			|| text.equalsIgnoreCase("/?") || text.equalsIgnoreCase("?")
     			) {
 
-    		responseText = name + " : (1) type in the name of a person, bot, or settlement to connect with." + System.lineSeparator()
-    				+ "(2) type in a numeral question or a keyword ['/h' or 'help' for a list of keywords]." + System.lineSeparator()
-    				+ "(3) type '/q', 'quit', 'bye', '/x' or 'exit' to close the chat box" + System.lineSeparator();	
+    		responseText = INSTRUCTION;	
     		
     	}
     	
@@ -885,14 +1023,12 @@ public class ChatBox extends BorderPane {
     			|| text.equalsIgnoreCase("/quit") 
     			|| text.equalsIgnoreCase("\\quit")
     			|| text.equalsIgnoreCase("\\q")
-    			//|| text.equalsIgnoreCase("q")
     			|| text.equalsIgnoreCase("/q")
     			
     			|| text.equalsIgnoreCase("exit") 
     			|| text.equalsIgnoreCase("/exit") 
     			|| text.equalsIgnoreCase("\\exit")
     			|| text.equalsIgnoreCase("\\x")
-    			//|| text.equalsIgnoreCase("x")
     			|| text.equalsIgnoreCase("/x")
     			
        			|| text.equalsIgnoreCase("bye")
@@ -900,13 +1036,105 @@ public class ChatBox extends BorderPane {
       			|| text.equalsIgnoreCase("\\bye")
      			){
 
-     		responseText = System.lineSeparator();
-            closeChatBox();
-            mainScene.getFlyout().dismiss();
-            mainScene.ToggleMarsNetButton(false);
+    		String[] txt = farewell();
+    		//questionText = txt[0];
+    		responseText = txt[1];
     		
+            closeChatBox(true);
+		
     	}
 
+     	// 2016-10-06 Added changing the height of the chat box
+     	else if (text.equalsIgnoreCase("/y1")) {
+     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
+     		mainScene.setChatBoxPaneHeight(box_height[0]);
+     		closeChatBox(false);
+     		mainScene.ToggleMarsNetButton(true);
+     		mainScene.getFlyout().flyout();
+     		
+/*     		
+     		System.out.println("1. is it selected : " + mainScene.isToggleMarsNetButtonSelected());
+     		mainScene.ToggleMarsNetButton(true);
+     		System.out.println("2. is it selected : " + mainScene.isToggleMarsNetButtonSelected());
+       		mainScene.fireMarsNetButton();
+    		System.out.println("3. is it selected : " + mainScene.isToggleMarsNetButtonSelected());
+     		mainScene.getFlyout().dismiss();
+    		System.out.println("4. is it selected : " + mainScene.isToggleMarsNetButtonSelected());
+     		mainScene.getFlyout().flyout();
+    		System.out.println("5. is it selected : " + mainScene.isToggleMarsNetButtonSelected());
+     		mainScene.ToggleMarsNetButton(true);
+    		System.out.println("6. is it selected : " + mainScene.isToggleMarsNetButtonSelected());
+*/  		
+     		//try {
+			//	TimeUnit.MILLISECONDS.sleep(1000L);
+			//} catch (InterruptedException e) {
+			//}
+     		//mainScene.getFlyout().flyout();
+     		//mainScene.ToggleMarsNetButton(false);
+     		//mainScene.fireMarsNetButton();
+     		//mainScene.ToggleMarsNetButton(true);
+     		//mainScene.fireMarsNetButton();
+     		//mainScene.ToggleMarsNetButton(false);
+	        //IntStream.range(0, 1).forEach(i -> mainScene.fireMarsNetButton());
+     	}
+    	
+     	else if (text.equalsIgnoreCase("/y2")) {
+     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
+     		mainScene.setChatBoxPaneHeight(box_height[1]);
+            closeChatBox(false);
+     		//mainScene.ToggleMarsNetButton(true);
+     		//mainScene.getFlyout().flyout();
+     	}
+
+     	else if (text.equalsIgnoreCase("/y3")) {
+     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
+     		mainScene.setChatBoxPaneHeight(box_height[2]);
+            closeChatBox(false);
+     	}
+
+     	else if (text.equalsIgnoreCase("/y4")) {
+     		mainScene.setChatBoxPaneHeight(box_height[3]);
+     		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
+            closeChatBox(false);
+     	}
+     	
+    	// 2016-10-06 Added asking about settlements in general
+    	else if (text.toLowerCase().equals("settlement")
+    			 || text.toLowerCase().equals("settlements")) {
+    		
+    		//questionText = YOU_PROMPT + "What are the names of the settlements ?";
+    		
+    		// Creates an array with the names of all of settlements
+    		List<Settlement> settlementList = new ArrayList<Settlement>(Simulation.instance().getUnitManager().getSettlements());
+    	
+    		int num = settlementList.size();
+    		String s = "";
+
+    		if (num > 2) {
+	    		for (int i = 0; i < num ; i++) {
+	    			if (i == num - 2)
+	    				s = s + settlementList.get(i) + ", and ";
+	    			else if (i == num - 1)
+	    				s = s + settlementList.get(i) + ".";
+	    			else
+	    				s = s + settlementList.get(i) + ", ";
+	    		}
+	    		responseText = SYSTEM_PROMPT + "There is a total of " + num + " settlements : " + s;
+    		}
+  	
+    		else if (num == 2) {
+	    		s = settlementList.get(0) + " and " + settlementList.get(1);
+	    		responseText = SYSTEM_PROMPT + "There is a total of " + num + " settlements : " + s;
+    		}
+    		
+    		else if (num == 1) {
+    			responseText = SYSTEM_PROMPT + "There is just one settlement : " + settlementList.get(0);
+    		}
+    		
+    		else
+    			responseText = SYSTEM_PROMPT + "Currently, there is no settlement established on Mars.";			
+    		
+    	}
 
     	else if (len >= 5 && text.substring(0,5).equalsIgnoreCase("hello")
     			|| len >= 4 && text.substring(0,4).equalsIgnoreCase("helo")) {
@@ -922,7 +1150,7 @@ public class ChatBox extends BorderPane {
     		   	proceed = true;
     		}
     		else {
-     	   		responseText = name + " : Hello Earth Control, how can I help?";
+     	   		responseText = SYSTEM_PROMPT + "Hello, how can I help? /h for guidance/help";
     		}
     	}
 
@@ -934,7 +1162,7 @@ public class ChatBox extends BorderPane {
     		   	proceed = true;
     		}
     		else {
-     	   		responseText = name + " : Hey Earth Control, how can I help?";
+     	   		responseText = SYSTEM_PROMPT + "Hey, how can I help? /h for guidance/help";
     		}
     	}
 
@@ -946,7 +1174,7 @@ public class ChatBox extends BorderPane {
     		   	proceed = true;
     		}
     		else {
-     	   		responseText = name + " : Hi Earth Control, how can I help?";
+     	   		responseText = SYSTEM_PROMPT + "Hi, how can I help? /h for guidance/help";
     		}
     	}
     	
@@ -959,18 +1187,23 @@ public class ChatBox extends BorderPane {
 
     	if (len == 0 || text == null || text.length() == 1) {
     		
+    		responseText = clarify()[1];
+/*    		
     		int rand = RandomUtil.getRandomInt(2);
 			if (rand == 0)
-				responseText = name + " : I'm not sure if I understand. Can you say it again?";
+				responseText = SYSTEM_PROMPT + "I'm not sure if I understand. Can you say it again?";
 			else if (rand == 1)
-				responseText = name + " : I'm sorry. Would you say it again?";
+				responseText = SYSTEM_PROMPT + "I'm sorry. Can you say that again?";
 			else
-				responseText = name + " : I'm afraid I don't understand. Would you repeat that?";
+				responseText = SYSTEM_PROMPT + "I'm afraid I don't understand. Would you repeat that?";
+*/
     	}
 
 
     	else if (proceed) { // && text.length() > 1) {
 	    	//System.out.println("B: text is " + text);
+    		
+    		// person and robot
     		Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
 			while (i.hasNext()) {
 				Settlement settlement = i.next();
@@ -1000,7 +1233,7 @@ public class ChatBox extends BorderPane {
 
     		// Case 1: more than one person with that name
 			if (nameCase >= 2) {
-				responseText = name + " : there are more than one \"" + text + "\". Would you be more specific?";
+				responseText = SYSTEM_PROMPT + "There are more than one \"" + text + "\". Would you be more specific?";
 	        	//System.out.println(responseText);
 
 			// Case 2: there is one person
@@ -1008,7 +1241,7 @@ public class ChatBox extends BorderPane {
 
 				if (!available){
 					// TODO: check if the person is available or not (e.g. if on a mission and comm broke down)
-	    			responseText = name + " : I'm sorry. " + text + " is unavailable at this moment";
+	    			responseText = SYSTEM_PROMPT + "I'm sorry. " + text + " is unavailable at this moment";
 
 	    		} else {
 
@@ -1018,9 +1251,9 @@ public class ChatBox extends BorderPane {
 						    // Case 4: passed away
 							int rand = RandomUtil.getRandomInt(1);
 							if (rand == 0)
-								responseText = name + " : I'm sorry. " + text + " has passed away and is buried at " + person.getBuriedSettlement();
+								responseText = SYSTEM_PROMPT + "I'm sorry. " + text + " has passed away and is buried at " + person.getBuriedSettlement();
 							else
-								responseText = name + " : I'm sorry. " + text + " is dead and is buried at " + person.getBuriedSettlement();
+								responseText = SYSTEM_PROMPT + "I'm sorry. " + text + " is dead and is buried at " + person.getBuriedSettlement();
 						}
 						else
 							unit = person;
@@ -1030,32 +1263,34 @@ public class ChatBox extends BorderPane {
 						robot = robotList.get(0);
 						if (robot.getSystemCondition().isInoperable()) {
 						    // Case 4: decomissioned
-							responseText = name + " : I'm sorry. " + text + " has been decomissioned.";
+							responseText = SYSTEM_PROMPT + "I'm sorry. " + text + " has been decomissioned.";
 						}
 						else
 							unit = robot;
 					}
 
 					if (unit != null) {
+
+/*						
 		    			// construct a reply in 4 variations
 			    		int rand0 = RandomUtil.getRandomInt(3);
 			    		if (rand0 == 0)
-			        		responseText = "how can I help?";
+			        		responseText = "How can I help? /h for guidance/help";
 			    		else if (rand0 == 1)
-			           		responseText = "I'm listening.";
+			           		responseText = "I'm listening. /h for guidance/help";
 			    		else if (rand0 == 2)
-			           		responseText = "I'm all ears.";
+			           		responseText = "I'm all ears. /h for guidance/help";
 			        	else if (rand0 == 3)
-			        		responseText = "Is there something I can help?";
+			        		responseText = "Is there something I can help? /h for guidance/help";
 			        	else if (rand0 == 4)
 			        		responseText = "";
-
+*/
 			    		// may add "over" at the end of a sentence
-			    		int rand1 = RandomUtil.getRandomInt(2);
-			    		if (rand1 > 0 && (rand0 == 1 || rand0 == 3))
-			    			responseText += " Over.";
+			    		//int rand1 = RandomUtil.getRandomInt(2);
+			    		//if (rand1 > 0 && (rand0 == 1 || rand0 == 3))
+			    		//	responseText += " Over.";
 
-			    		responseText = unit.getName() + " : This is " + text + ". " + responseText;
+			    		responseText = unit.getName() + " : This is " + text + ". ";// + responseText;
 			        	//System.out.println(responseText);
 					}
 	    		}
@@ -1074,7 +1309,7 @@ public class ChatBox extends BorderPane {
 
 						if (s_name.equalsIgnoreCase(text)) {
 							//name = "System";
-							responseText = name + " : yes, what would like to know about \"" + s_name + "\" ?";
+							responseText = SYSTEM_PROMPT + "Yes, what would like to know about \"" + s_name + "\" ?";
 							
 							settlementCache = settlement;
 							//System.out.println("matching settlement name " + s_name);
@@ -1082,29 +1317,29 @@ public class ChatBox extends BorderPane {
 						}
 
 						else if (s_name.toLowerCase().contains(text.toLowerCase()) || text.toLowerCase().contains(s_name.toLowerCase())) {
-							responseText = name + " : do you mean \"" + s_name + "\" ?";
+							responseText = SYSTEM_PROMPT + "Do you mean \"" + s_name + "\" ?";
 							//System.out.println("partially matching settlement name " + s_name);
 							break;
 						}
 						else
-				    		responseText = name + " : I do not recognize anyone or any settlements by \"" + text + "\"." ;
+				    		responseText = SYSTEM_PROMPT + "I do not recognize anyone or any settlements by \"" + text + "\"." ;
 
 						
-						// check vehicle names
+						// TODO: check vehicle names
 						
 						
-						// check commander's name
+						// TODO: check commander's name
 						
 						
 					}
 		    	}
 		    	else
-		    		responseText = name + " : I do not recognize anyone or any settlements by \"" + text + "\"." ;
+		    		responseText = SYSTEM_PROMPT + "I do not recognize anyone or any settlements by \"" + text + "\"." ;
 
 			}
 
 			else
-				responseText = name + " : I do not recognize anyone or any settlements by \"" + text + "\"." ;
+				responseText = SYSTEM_PROMPT + "I do not recognize anyone or any settlements by \"" + text + "\"." ;
 
     	}
 
@@ -1114,6 +1349,49 @@ public class ChatBox extends BorderPane {
 		return unit;
     }
 
+    
+    public String[] clarify() {
+		String questionText = YOU_PROMPT + "You were mumbling something about....";
+		String responseText = null;
+		int rand0 = RandomUtil.getRandomInt(4);
+		if (rand0 == 0)
+			responseText = SYSTEM_PROMPT + "Could you repeat that? /h for guidance/help";
+		else if (rand0 == 1)
+	   		responseText = SYSTEM_PROMPT + "Pardon me? /h for guidance/help";
+		else if (rand0 == 2)
+	   		responseText = SYSTEM_PROMPT + "What did you say? /h for guidance/help";
+		else if (rand0 == 3)
+			responseText = SYSTEM_PROMPT + "I beg your pardon? /h for guidance/help"; 
+		else
+			responseText = SYSTEM_PROMPT + "Can you be more specific? /h for guidance/help";
+		
+		return new String[]{questionText, responseText};
+    }
+    
+    public String[] farewell() {
+		String questionText = YOU_PROMPT + farewellText();// + System.lineSeparator();
+		String responseText = SYSTEM_PROMPT + farewellText();// + System.lineSeparator();
+		return new String[]{questionText, responseText};
+    }
+
+    public String farewellText() {
+
+    	int r0 = RandomUtil.getRandomInt(5);
+    	if (r0 == 0)
+    		return "Bye!";
+    	else if (r0 == 1)
+    		return "Farewell!";
+    	else if (r0 == 2)
+    		return "Bye now!";
+    	else if (r0 == 3)
+    		return "Have a nice sol!";
+    	else if (r0 == 4)
+    		return "Take it easy!";
+    	else 
+    		return "Take care!";
+    }
+    
+	    
     /**
      * Processes the textfield input
      */
@@ -1123,7 +1401,7 @@ public class ChatBox extends BorderPane {
        	String text = autoFillTextBox.getTextbox().getText();
     	
         if (text != "" && text != null && !text.trim().isEmpty()) {
-            textArea.appendText("You : " + text + System.lineSeparator());
+            textArea.appendText(YOU_PROMPT + text + System.lineSeparator());
             Unit unit = null;
 
             if (personCache == null && robotCache == null && settlementCache == null) {
@@ -1141,8 +1419,6 @@ public class ChatBox extends BorderPane {
             		robotCache = (Robot) unit;
             	else if (unit instanceof Settlement)
             		settlementCache = (Settlement) unit;
-            
-
 
         	// Checks if the text already exists
         	if (history.contains(text)) {
@@ -1157,8 +1433,6 @@ public class ChatBox extends BorderPane {
             if (onMessageReceivedHandler != null) {
                 onMessageReceivedHandler.accept(text);
             }
-            
-            //textField.clear();
         }
         
         autoFillTextBox.getTextbox().clear();
@@ -1252,9 +1526,6 @@ public class ChatBox extends BorderPane {
     	return textArea;
     }
 
-    //public TextField getTextField() {
-    //	return textField;
-    //}
     
     public AutoFillTextBox getAutoFillTextBox() {
     	return autoFillTextBox;
@@ -1268,24 +1539,16 @@ public class ChatBox extends BorderPane {
      * Prepare object for garbage collection.
      */
     public void destroy() {
-
         personCache = null;
         robotCache = null;
-        settlementCache = null;
-        
+        settlementCache = null;      
         vehicle = null;
         settlement = null;
         building = null;
         equipment = null;
         mainScene = null;
-        
-        //textArea = null;
-        //autoFillTextBox = null;
-        
-        if (history != null) history.clear();
-        //history = null;
-
-        //if (onMessageReceivedHandler != null) onMessageReceivedHandler.clear();
+        if (history != null) 
+        	history.clear();
         onMessageReceivedHandler = null;
     }
     

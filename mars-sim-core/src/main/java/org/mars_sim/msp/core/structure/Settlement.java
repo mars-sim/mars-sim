@@ -62,7 +62,10 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleType;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -1978,15 +1981,13 @@ implements Serializable, LifeSupportType, Objective {
 	}
 
 	/**
-	 * Gets all vehicles associated with this settlement, even if they are out
-	 * on missions.
+	 * Gets all vehicles currently on mission and are associated with this settlement.
 	 *
-	 * @return collection of associated vehicles.
+	 * @return collection of vehicles on mission.
 	 */
-	public Collection<Vehicle> getAllAssociatedVehicles() {
-		Collection<Vehicle> result = getParkedVehicles();
+	public Collection<Vehicle> getMissionVehicles() {
+		Collection<Vehicle> result = new ArrayList<Vehicle>();
 
-		// Also add vehicle mission vehicles not parked at settlement.
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
@@ -2000,6 +2001,158 @@ implements Serializable, LifeSupportType, Objective {
 		return result;
 	}
 
+	/**
+	 * Gets all vehicles associated with this settlement, even if they are out
+	 * on missions.
+	 *
+	 * @return collection of associated vehicles.
+	 */
+	public Collection<Vehicle> getAllAssociatedVehicles() {
+		Collection<Vehicle> result = getParkedVehicles();
+
+		
+		// Also add vehicle mission vehicles not parked at settlement.
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
+		while (i.hasNext()) {
+			Mission mission = i.next();
+			if (mission instanceof VehicleMission) {
+				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
+					result.add(vehicle);
+			}
+		}
+
+		return result;
+	}
+	
+	// 2016-10-06 Created getLUVs()
+	public Collection<Vehicle> getLUVs(int mode) {
+		Collection<Vehicle> LUVs = new ArrayList<Vehicle>();
+
+		if (mode == 0 || mode == 1) {
+			Collection<Vehicle> parked = getParkedVehicles();
+			Iterator<Vehicle> i = parked.iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				if (vehicle instanceof LightUtilityVehicle) {
+					LUVs.add(vehicle);
+				}
+			}
+		}
+
+		if (mode == 0 || mode == 2) {
+			Collection<Vehicle> onMission = getMissionVehicles();
+			Iterator<Vehicle> j = onMission.iterator();
+			while (j.hasNext()) {
+				Vehicle vehicle = j.next();
+				if (vehicle instanceof LightUtilityVehicle) {
+					LUVs.add(vehicle);
+				}
+			}
+		}
+		return LUVs;
+	}
+	
+	// 2016-10-06 Created getCargoRovers()
+	public List<Vehicle> getCargoRovers(int mode) {
+
+		List<Vehicle> rovers = new ArrayList<Vehicle>();
+		
+		if (mode == 0 || mode == 1) {
+			Collection<Vehicle> parked = getParkedVehicles();
+			Iterator<Vehicle> i = parked.iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				//if (vehicle instanceof Rover) {
+					String d = vehicle.getVehicleType();
+					//System.out.println("type is " + d);
+					if (d.equals(VehicleType.CARGO_ROVER.getName()))
+						rovers.add(vehicle);
+				//}
+			}
+		}
+		
+		if (mode == 0 || mode == 2) {
+			Collection<Vehicle> onMission = getMissionVehicles();
+			Iterator<Vehicle> j = onMission.iterator();
+			while (j.hasNext()) {
+				Vehicle vehicle = j.next();
+				//if (vehicle instanceof Rover) {
+					String d = vehicle.getVehicleType();
+					if (d.equals(VehicleType.CARGO_ROVER.getName()))
+						rovers.add(vehicle);
+				//}
+			}
+		}
+		return rovers;
+	}
+	
+	// 2016-10-06 Created getTransportRovers()
+	public List<Vehicle> getTransportRovers(int mode) {
+		List<Vehicle> rovers = new ArrayList<Vehicle>();
+
+		if (mode == 0 || mode == 1) {
+			Collection<Vehicle> parked = getParkedVehicles();
+			Iterator<Vehicle> i = parked.iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				//if (vehicle instanceof Rover) {
+					String d = vehicle.getVehicleType();
+					//System.out.println("type is " + d);
+					if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
+						rovers.add(vehicle);
+				//}
+			}
+		}
+		
+		if (mode == 0 || mode == 2) {
+			Collection<Vehicle> onMission = getMissionVehicles();
+			Iterator<Vehicle> j = onMission.iterator();
+			while (j.hasNext()) {
+				Vehicle vehicle = j.next();
+				//if (vehicle instanceof Rover) {
+					String d = vehicle.getVehicleType();
+					if (d.equals(VehicleType.TRANSPORT_ROVER.getName()))
+						rovers.add(vehicle);
+				//}
+			}
+		}
+		return rovers;
+	}
+	
+	// 2016-10-06 Created getExplorerRovers()
+	public List<Vehicle> getExplorerRovers(int mode) {
+		List<Vehicle> rovers = new ArrayList<Vehicle>();
+
+		if (mode == 0 || mode == 1) {
+			Collection<Vehicle> parked = getParkedVehicles();
+			Iterator<Vehicle> i = parked.iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				//if (vehicle instanceof Rover) {
+					String d = vehicle.getVehicleType();
+					//System.out.println("type is " + d);
+					if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
+						rovers.add(vehicle);
+				//}
+			}
+		}
+		
+		if (mode == 0 || mode == 2) {
+			Collection<Vehicle> onMission = getMissionVehicles();	
+			Iterator<Vehicle> j = onMission.iterator();
+			while (j.hasNext()) {
+				Vehicle vehicle = j.next();
+				//if (vehicle instanceof Rover) {
+					String d = vehicle.getVehicleType();
+					if (d.equals(VehicleType.EXPLORER_ROVER.getName()))
+						rovers.add(vehicle);
+				//}
+			}
+		}
+		return rovers;
+	}
+	
 	/**
 	 * Sets the mission creation override flag.
 	 *

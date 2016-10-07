@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.sound;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
@@ -72,7 +73,8 @@ public class AudioPlayer {
 								//logger.info("Just currentOGGSoundClip.play()");
 							}
 						} catch (IOException e) {
-							e.printStackTrace();
+							//e.printStackTrace();
+							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
 						}
 					});
 			}
@@ -88,7 +90,9 @@ public class AudioPlayer {
 								//logger.info("Just currentOGGSoundClip.play()");
 							}
 						} catch (IOException e) {
-							e.printStackTrace();
+							//e.printStackTrace();
+							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
+
 						}	
 				});
 			}
@@ -111,7 +115,8 @@ public class AudioPlayer {
 							if (!isMute(false))
 								backgroundSoundTrack.loop();
 						} catch (IOException e) {
-							e.printStackTrace();
+							//e.printStackTrace();
+							logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
 						}
 					});
 			}
@@ -124,7 +129,8 @@ public class AudioPlayer {
 							if (!isMute(false)) 
 								backgroundSoundTrack.loop();
 						} catch (IOException e) {
-							e.printStackTrace();
+							//e.printStackTrace();
+							logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
 						}	
 				});
 			}
@@ -144,7 +150,8 @@ public class AudioPlayer {
 			backgroundSoundTrack.loop();
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			logger.log(Level.SEVERE, "IOException in AudioPlayer's loop()", e.getMessage());
 		}
 
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RadiationExposure.java
- * @version 3.08 2015-04-29
+ * @version 3.1.0 2016-10-05
  * @author Manny Kung
  */
 

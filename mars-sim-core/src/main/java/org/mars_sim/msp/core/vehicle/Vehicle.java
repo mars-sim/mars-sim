@@ -51,7 +51,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         Malfunctionable, Salvagable, LocalBoundedObject {
 
     private static Logger logger = Logger.getLogger(Vehicle.class.getName());
-	
+
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
     public final static String MOVING = "Moving";

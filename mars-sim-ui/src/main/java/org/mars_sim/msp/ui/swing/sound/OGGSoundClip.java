@@ -11,6 +11,8 @@ package org.mars_sim.msp.ui.swing.sound;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -31,6 +33,8 @@ import com.jcraft.jorbis.Info;
 
 public class OGGSoundClip {
 	
+	private static Logger logger = Logger.getLogger(OGGSoundClip.class.getName());
+
 	private final int BUFSIZE = 4096 * 2;
 	private int convsize = BUFSIZE * 2;
 	private byte[] convbuffer = new byte[convsize];
@@ -70,7 +74,8 @@ public class OGGSoundClip {
 		try {
 			init(Thread.currentThread().getContextClassLoader().getResourceAsStream(ref));
 		} catch (IOException e) {
-			throw new IOException("Couldn't find: " + ref);
+			//throw new IOException("Couldn't find: " + ref);
+			logger.log(Level.SEVERE, "Couldn't find: " + ref);
 		}
 	}
 
@@ -325,7 +330,8 @@ public class OGGSoundClip {
 	 */
 	private void init(InputStream in) throws IOException {
 		if (in == null) {
-			throw new IOException("Couldn't find input source");
+			//throw new IOException("Couldn't find input source");
+			logger.log(Level.SEVERE, "Couldn't find input source");
 		}
 		bitStream = new BufferedInputStream(in);
 		bitStream.mark(Integer.MAX_VALUE);
@@ -342,20 +348,23 @@ public class OGGSoundClip {
 			bitStream.reset();
 		} catch (IOException e) {
 			// ignore if no mark
+			logger.log(Level.SEVERE, "IOException", e.getMessage());
 		}
 
 		player = new Thread() {
 			public void run() {
-				try {
+				//try {
 					playStream(Thread.currentThread());
-				} catch (InternalException e) {
-					e.printStackTrace();
-				}
+				//} catch (InternalException e) {
+					//e.printStackTrace();
+				//	logger.log(Level.SEVERE, "InternalException", e.getMessage());
+				//}
 
 				try {
 					bitStream.reset();
 				} catch (IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
+					logger.log(Level.SEVERE, "IOException", e.getMessage());
 				}
 			};
 		};
@@ -380,8 +389,10 @@ public class OGGSoundClip {
 				while (player == Thread.currentThread()) {
 					try {
 						playStream(Thread.currentThread());
-					} catch (InternalException e) {
-						e.printStackTrace();
+					} catch (Exception e) {
+					//	logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a speaker/headphone? "
+					//			+ "Please check your audio source.", e.getMessage());
+						//e.printStackTrace();
 						player = null;
 					}
 
@@ -429,7 +440,10 @@ public class OGGSoundClip {
 			);
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
 			if (!AudioSystem.isLineSupported(info)) {
-				throw new Exception("Line " + info + " not supported.");
+				//throw new Exception("Line " + info + " not supported.");
+				logger.log(Level.SEVERE, "Troubleshooting audio : have you plugged in a speaker/headphone? "
+						+ "Please check your audio source.");
+
 			}
 
 			try {
@@ -437,9 +451,12 @@ public class OGGSoundClip {
 				// outputLine.addLineListener(this);
 				outputLine.open(audioFormat);
 			} catch (LineUnavailableException ex) {
-				throw new Exception("Unable to open the sourceDataLine: " + ex);
+				//throw new Exception("Unable to open the sourceDataLine: " + ex);
+				logger.log(Level.SEVERE, "Unable to open the sourceDataLine: " + ex);
 			} catch (IllegalArgumentException ex) {
-				throw new Exception("Illegal Argument: " + ex);
+				//throw new Exception("Illegal Argument: " + ex);
+				logger.log(Level.SEVERE, "Illegal Argument: " + ex);
+				logger.log(Level.SEVERE, "Will continue to run the sim without audio");
 			}
 
 			this.rate = rate;
@@ -491,7 +508,7 @@ public class OGGSoundClip {
 	/*
 	 * Taken from the JOrbis Player
 	 */
-	private void playStream(Thread me) throws InternalException {
+	private void playStream(Thread me) {//throws InternalException {
 		boolean chained = false;
 
 		initJOrbis();
@@ -508,8 +525,11 @@ public class OGGSoundClip {
 			try {
 				bytes = bitStream.read(buffer, index, BUFSIZE);
 			} catch (Exception e) {
-				throw new InternalException(e);
+				//throw new InternalException(e);
+				logger.log(Level.SEVERE, "Audio Troubleshooting : have a speaker/headphone been plugged in ? "
+						+ "Please check your audio source.", e.getMessage());
 			}
+			
 			oy.wrote(bytes);
 
 			if (chained) {
@@ -518,7 +538,8 @@ public class OGGSoundClip {
 				if (oy.pageout(og) != 1) {
 					if (bytes < BUFSIZE)
 						break;
-					throw new InternalException("Input does not appear to be an Ogg bitstream.");
+					//throw new InternalException("Input does not appear to be an Ogg bitstream.");
+					logger.log(Level.SEVERE, "Input does not appear to be an Ogg bitstream.");
 				}
 			}
 			os.init(og.serialno());
@@ -529,17 +550,20 @@ public class OGGSoundClip {
 
 			if (os.pagein(og) < 0) {
 				// error; stream version mismatch perhaps
-				throw new InternalException("Error reading first page of OGG bitstream data.");
+				//throw new InternalException("Error reading first page of OGG bitstream data.");
+				logger.log(Level.SEVERE, "Error reading first page of OGG bitstream data.");
 			}
 
 			if (os.packetout(op) != 1) {
 				// no page? must not be vorbis
-				throw new InternalException("Error reading initial header packet.");
+				//throw new InternalException("Error reading initial header packet.");
+				logger.log(Level.SEVERE, "Error reading initial header packet.");
 			}
 
 			if (vi.synthesis_headerin(vc, op) < 0) {
 				// error case; not a vorbis header
-				throw new InternalException("This Ogg bitstream does not contain Vorbis audio data.");
+				//throw new InternalException("This Ogg bitstream does not contain Vorbis audio data.");
+				logger.log(Level.SEVERE, "This Ogg bitstream does not contain Vorbis audio data.");
 			}
 
 			int i = 0;
@@ -560,7 +584,8 @@ public class OGGSoundClip {
 							if (result == 0)
 								break;
 							if (result == -1) {
-								throw new InternalException("Corrupt secondary header. Exiting.");
+								//throw new InternalException("Corrupt secondary header. Exiting.");
+								logger.log(Level.SEVERE, "Corrupt secondary header. Exiting.");
 							}
 							vi.synthesis_headerin(vc, op);
 							i++;
@@ -573,10 +598,12 @@ public class OGGSoundClip {
 				try {
 					bytes = bitStream.read(buffer, index, BUFSIZE);
 				} catch (Exception e) {
-					throw new InternalException(e);
+					//throw new InternalException(e);
+					logger.log(Level.SEVERE, "Exception", e.getMessage());
 				}
 				if (bytes == 0 && i < 2) {
-					throw new InternalException("End of file before finding all Vorbis headers!");
+					//throw new InternalException("End of file before finding all Vorbis headers!");
+					logger.log(Level.SEVERE, "End of file before finding all Vorbis headers!");
 				}
 				oy.wrote(bytes);
 			}
@@ -682,7 +709,8 @@ public class OGGSoundClip {
 					try {
 						bytes = bitStream.read(buffer, index, BUFSIZE);
 					} catch (Exception e) {
-						throw new InternalException(e);
+						//throw new InternalException(e);
+						logger.log(Level.SEVERE, "Exception", e.getMessage());
 					}
 					if (bytes == -1) {
 						break;
@@ -719,7 +747,7 @@ public class OGGSoundClip {
 		}
 
 	}
-
+/*
 	private class InternalException extends Exception {
 
 		private static final long serialVersionUID = 1L;
@@ -732,4 +760,5 @@ public class OGGSoundClip {
 			super(msg);
 		}
 	}
+*/	
 }

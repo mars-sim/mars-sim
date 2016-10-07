@@ -1,3 +1,11 @@
+/**
+ * Mars Simulation Project
+ * BorderSlideBar.java
+ * @version 3.1.0 2016-10-06
+ * @author Manny Kung
+ */
+// Adapted from http://physalix.com/javafx2-borderpane-which-slides-in-and-out-on-command/
+	
 package org.mars_sim.msp.ui.javafx;
 
 import javafx.animation.Animation;
@@ -13,12 +21,13 @@ import javafx.scene.control.ToggleButton;
 
 /**
  * Animates a node on and off screen to the top, right, bottom or left side.
+ * 
  */
 public class BorderSlideBar extends VBox {
     private final String CSS = this.getClass().getResource("/slide/BorderSlideBar.css").toExternalForm();
     // "/" + this.getClass().getSimpleName() + ".css";
     
-    private final static int DELAY = 300; // in milliseconds
+    private final static int DELAY = 100; // in milliseconds
     
     private double expandedSize;
     private Pos flapbarLocation;

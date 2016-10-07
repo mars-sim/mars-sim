@@ -59,11 +59,13 @@ import javafx.util.Pair;
  * @author cogmission
  */
 public class Flyout extends Region {
-    public enum Side { TOP, BOTTOM, LEFT, RIGHT }
+    public enum Side { TOP, BOTTOM, LEFT, RIGHT, TOP_RIGHT }
     public enum Status { RUNNING, COMPLETE };
     
+    public final static int DELAY = 10;
+    
     //private Side flyoutSide = Side.BOTTOM;
-    private Side flyoutSide = Side.TOP;
+    private Side flyoutSide = Side.TOP_RIGHT;
     
     private Timeline tl = new Timeline();
     private DoubleProperty loc = new SimpleDoubleProperty();
@@ -118,6 +120,7 @@ public class Flyout extends Region {
         getChildren().add(anchor);
         
         popup = new Stage();
+        popup.setResizable(true);
         
     }
     
@@ -166,7 +169,7 @@ public class Flyout extends Region {
         
         if(!shownOnce) {
             clipContainer = new StackPane();
-            
+
             userNodeContainer.setStyle(userNodeContainerStyle);
             userNodeContainer.setManaged(false);
             userNodeContainer.setVisible(true);
@@ -253,7 +256,7 @@ public class Flyout extends Region {
     private void defineFlyout() {
         tl.setCycleCount(1);
         loc.addListener((obs, oldY, newY) -> {
-            if(flyoutSide == Side.TOP || flyoutSide == Side.BOTTOM) {
+            if(flyoutSide == Side.TOP || flyoutSide == Side.TOP_RIGHT || flyoutSide == Side.BOTTOM) {
                 userNodeContainer.setLayoutY(newY.doubleValue());
             }else{
                 userNodeContainer.setLayoutX(newY.doubleValue());
@@ -300,13 +303,17 @@ public class Flyout extends Region {
                 userNodeContainer.setLayoutX(isReverse ? 0 : -userNodeContainer.getWidth());
                 break;
             }
+            case TOP_RIGHT: {
+                userNodeContainer.setLayoutY(isReverse ? 0 : userNodeContainer.getHeight());
+                break;
+            }
         }
         
         // still invisible because user contain is outside clip area
         popup.show();
         
         // set the current and destination y locations
-        double currentVal = flyoutSide == Side.TOP || flyoutSide == Side.BOTTOM ? 
+        double currentVal = flyoutSide == Side.TOP || flyoutSide == Side.TOP_RIGHT || flyoutSide == Side.BOTTOM ? 
             userNodeContainer.getLayoutY() : userNodeContainer.getLayoutX();
         double destVal = 0;
         switch(flyoutSide) {
@@ -332,6 +339,13 @@ public class Flyout extends Region {
                 destVal = isReverse ? 
                     currentVal - userNodeContainer.getWidth() : 
                         currentVal + userNodeContainer.getWidth();
+                    //userNodeContainer.setLayoutX(isReverse ? 0 : -userNodeContainer.getWidth());
+                break;
+            }
+            case TOP_RIGHT: {
+                destVal = isReverse ? 
+                        currentVal + userNodeContainer.getHeight() : 
+                            currentVal - userNodeContainer.getHeight();
                 break;
             }
         }
@@ -339,7 +353,7 @@ public class Flyout extends Region {
         
         KeyValue keyValue = new KeyValue(loc, destVal, interpolator);
         // create a keyFrame with duration 500ms
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(300), keyValue);
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(DELAY), keyValue);
         // erase last keyframes: forward & reverse have different frames
         tl.getKeyFrames().clear();
         // add the keyframe to the timeline
@@ -386,7 +400,17 @@ public class Flyout extends Region {
             case TOP : return new Pair<>(fp.getX(), fp.getY() - userNodeContainer.getHeight());
             case LEFT : return new Pair<>(fp.getX() - userNodeContainer.getWidth(), fp.getY());
             case RIGHT : return new Pair<>(fp.getX() + anchorBounds.getWidth(), fp.getY());
+            case TOP_RIGHT : return new Pair<>(fp.getX() + anchorBounds.getWidth(), fp.getY() - userNodeContainer.getHeight());
             default : return null;
         }
-    }    
+    }
+    
+    public void setContainerHeight(double value) {
+    	userNodeContainer.setPrefHeight(value);
+    	popup.setHeight(value);
+    }  
+    
+    public double getContainerHeight() {
+        return userNodeContainer.getHeight();	
+    }
 }
