@@ -1,6 +1,6 @@
 /* Mars Simulation Project
  * BrowserJFX.java
- * @version 3.08 2016-06-15
+ * @version 3.1.0 2016-10-07
  * @author Manny Kung
  */
 
@@ -82,13 +82,11 @@ public class BrowserJFX {
     public String textInputCache;
     
     private static final String CSS = 
-    		"a, a:link, a:visited, a:hover{color:rgb(184, 134, 11); text-decoration:none;}"
-    		
+    		"a, a:link, a:visited, a:hover{color:rgb(184, 134, 11); text-decoration:none;}"    		
           + "body {"
           + "    background-color: rgb(50, 50, 50); "
           + "    font-family: Arial, Helvetica, san-serif;"
           + "}"
-          
           + "body, h3{font-size:14pt;line-height:1.1em; color:white;}"
           + "h2{font-size:14pt; font-weight:700; line-height:1.2em; text-align:center; color:white;}"
           + "h3{font-weight:700; color:white;}"
@@ -97,11 +95,14 @@ public class BrowserJFX {
 		 
     
 	private boolean isLocalHtml = false, isInternal = false;
-
+	private String urlCache = "";
+	
     private final JFXPanel jfxPanel = new JFXPanel();
     private JPanel panel = new JPanel(new BorderLayout());
     private final JLabel statusBarLbl = new JLabel();
     private final JButton btnGo = new JButton("Go");
+    private final JButton btnForward = new JButton(">");
+    private final JButton btnBack = new JButton("<");
     private final JTextField urlTF = new JTextField();
     private final JProgressBar progressBar = new JProgressBar();
 
@@ -149,6 +150,26 @@ public class BrowserJFX {
             }
         };
         
+        ActionListener bl = new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Platform.runLater(() -> {                           
+                    goBack();                   
+                });	
+            }
+        };
+
+        ActionListener fl = new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                Platform.runLater(() -> {                           
+                    goForward();                   
+                });	
+            }
+        };
+        
+        btnBack.addActionListener(bl);
+        btnForward.addActionListener(fl);
         btnGo.addActionListener(al);
         urlTF.addActionListener(al);			
 
@@ -158,7 +179,12 @@ public class BrowserJFX {
         JPanel topBar = new JPanel(new BorderLayout(5, 0));
         topBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         topBar.add(urlTF, BorderLayout.CENTER);
-        topBar.add(btnGo, BorderLayout.EAST);
+        
+        JPanel buttonPane = new JPanel(new FlowLayout());
+        buttonPane.add(btnBack);
+        buttonPane.add(btnGo);
+        buttonPane.add(btnForward);
+        topBar.add(buttonPane, BorderLayout.EAST);
 
         JPanel statusBar = new JPanel(new BorderLayout(5, 0));
         statusBar.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
@@ -281,7 +307,7 @@ public class BrowserJFX {
                 		+ " -fx-font-color: white;"
                 		+ " -fx-border-color: #00a7c8");
 
-
+/*
                 Button reloadB = new Button("Refresh");
                 reloadB.setMaxWidth(110);
 
@@ -311,7 +337,7 @@ public class BrowserJFX {
                 	getURLType(input);
                 	System.out.println("calling history.forward()");
                 });
-                
+ */               
 /*
                 engine.titleProperty().addListener(new ChangeListener<String>() {
                     @Override
@@ -344,7 +370,13 @@ public class BrowserJFX {
                             	}
                             	else
                             		// this is a remote link or internal link
-                            		statusBarLbl.setText(content);
+                            		statusBarLbl.setText(content);                  	
+                            }
+                            
+                            else {
+                            	// if the mouse pointer is not on any hyperlink
+                            	statusBarLbl.setText(textInputCache);
+                            	
                             }
                         });
                     }
@@ -515,18 +547,21 @@ public class BrowserJFX {
 		
 			if (status) {
 				engine.load(input);
+				textInputCache = input;
 			}
 			else {
 				status = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
 			
 				if (status) {
 					engine.load(input);
+					textInputCache = input;
 				}
 				else {
 					
 					if (input != null && !input.isEmpty()) {
 						//System.out.println("BrowserJFX's loadRemoteURL() : input is [" + input +"]");
 						engine.load(HTTP_HEADER + input);
+						textInputCache = HTTP_HEADER + input;
 						//System.out.println("input is " + HTTP_HEADER + input);
 					}
 					// TODO: should it try https as well ?					
@@ -545,6 +580,7 @@ public class BrowserJFX {
        	isLocalHtml = true;      	  	
         Platform.runLater(()-> {
             engine.load(content);
+            textInputCache = content;
             if (content != null && !content.isEmpty()) {
        	     
             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
@@ -598,6 +634,65 @@ public class BrowserJFX {
     public JLabel getStatusBarLabel() {
     	return statusBarLbl;
     }
+    
+    @SuppressWarnings("restriction")
+    public void goBack() { 
+    	final WebHistory history = engine.getHistory();
+    	ObservableList<WebHistory.Entry> entryList = history.getEntries();
+    	int currentIndex = history.getCurrentIndex();
+
+    	Platform.runLater(() -> {
+    		history.go(entryList.size() > 1 
+    				&& currentIndex > 0
+    				? -1
+    				: 0); 
+    		
+       		setURLText();
+       		
+            String content = textInputCache;
+            if (content != null && !content.isEmpty()) {
+            	     
+            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
+            	if (content.contains("docs")) {                            	
+            		int i = content.indexOf("docs")-1;
+            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
+            	}
+            	else
+            		// this is a remote link or internal link
+            		statusBarLbl.setText(content);
+            }
+    	});        
+	}
+
+    @SuppressWarnings("restriction")
+    public void goForward() {
+    	final WebHistory history = engine.getHistory();   
+    	ObservableList<WebHistory.Entry> entryList = history.getEntries();
+    	int currentIndex = history.getCurrentIndex();
+
+    	Platform.runLater(() -> {
+    		history.go(entryList.size() > 1
+    				&& currentIndex < entryList.size() - 1
+    				? 1
+    				: 0); 
+    		
+       		setURLText();
+       		
+            String content = textInputCache;
+            if (content != null && !content.isEmpty()) {
+            	     
+            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
+            	if (content.contains("docs")) {                            	
+            		int i = content.indexOf("docs")-1;
+            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
+            	}
+            	else
+            		// this is a remote link or internal link
+            		statusBarLbl.setText(content);
+            }
+    	});    
+	}
+    
 }
 
 class TicketSubmission {

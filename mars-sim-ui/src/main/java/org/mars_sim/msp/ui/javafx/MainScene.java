@@ -242,7 +242,7 @@ public class MainScene {
 		//logger.info("OS is " + OS);
 		stage.setMinWidth(width);//1024);
 		stage.setMinHeight(height);//480);
-		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in Mac) to toggle full screen mode");
+		stage.setFullScreenExitHint("Use Ctrl+F (or Meta+C in macOS) to toggle full screen mode");
 		stage.setFullScreenExitKeyCombination(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN));
          
 		// Detect if a user hits the top-right close button
@@ -429,27 +429,36 @@ public class MainScene {
         AnchorPane.setRightAnchor(borderPane, 0.0);
         AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
         
-        menubarButton = new ToggleButton();
-        menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/menubar_36.png"))));
-        menubarButton.setStyle(
-        		"-fx-background-color: transparent;" +     		    		
-     		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
-     		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
-     		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
-     		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
-     		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
-     		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-     		  // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
-     		   //"-fx-font-size: 80px;"
-           		"-fx-background-radius: 2px;"
-     		   );
-    
+        borderPane.setBottom(statusBar);
+
  
 		if (OS.contains("mac")) {
-	        AnchorPane.setLeftAnchor(menubarButton, 45.0);
-	        AnchorPane.setBottomAnchor(menubarButton, 35.0);       	
+	        //menubarButton = new ToggleButton();
+	        
+	        AnchorPane.setLeftAnchor(marsNetButton, 5.0);
+	        AnchorPane.setBottomAnchor(marsNetButton, 35.0);    
+	        
+	        anchorPane.getChildren().addAll(borderPane, marsNetButton);
+
+	        //borderPane.setTop(topFlapBar);  
 		}
 		else {
+			
+			menubarButton = new ToggleButton();
+	        menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/menubar_36.png"))));
+	        menubarButton.setStyle(
+	        		"-fx-background-color: transparent;" +     		    		
+	     		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
+	     		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
+	     		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
+	     		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
+	     		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
+	     		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
+	     		  // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
+	     		   //"-fx-font-size: 80px;"
+	           		"-fx-background-radius: 2px;"
+	     		   );
+	    
 	        AnchorPane.setLeftAnchor(marsNetButton, 45.0);
 	        AnchorPane.setBottomAnchor(marsNetButton, 35.0);       
 	        AnchorPane.setLeftAnchor(menubarButton, 5.0);
@@ -458,13 +467,12 @@ public class MainScene {
 	         * Instantiate a BorderSlideBar for each child layouts
 	         */
 	        topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
-	        borderPane.setTop(topFlapBar);
+	        borderPane.setTop(topFlapBar);        
+	        
+	        anchorPane.getChildren().addAll(borderPane, marsNetButton, menubarButton);//toolbar);
+
 		}
 		
-        borderPane.setBottom(statusBar);
-
-        anchorPane.getChildren().addAll(borderPane, marsNetButton, menubarButton);//toolbar);
-
     	Scene scene = new Scene(anchorPane, width, height);//, Color.BROWN);
 		anchorPane.prefHeightProperty().bind(scene.heightProperty());
 		anchorPane.prefWidthProperty().bind(scene.widthProperty());
@@ -558,7 +566,8 @@ public class MainScene {
 	// 2015-08-29 Added updateThemeColor()
 	public void updateThemeColor(int theme, Color txtColor, Color btnTxtColor, String cssFile) {
 		swingPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		if (!OS.contains("mac"))
+			menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		
 		// Note : menu bar color
 		// orange theme : F4BA00
@@ -570,11 +579,13 @@ public class MainScene {
 		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 
 		if (theme == 6) {
-			menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
+			if (!OS.contains("mac"))
+				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_chat_36.png"))));
 		}
 		else if (theme == 7) {
-			menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menubar_36.png"))));
+			if (!OS.contains("mac"))
+				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menubar_36.png"))));
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_36.png"))));
 		}
 		
