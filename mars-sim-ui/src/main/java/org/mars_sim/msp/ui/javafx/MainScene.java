@@ -1302,22 +1302,49 @@ public class MainScene {
      * Create the progress circle animation while waiting for loading the main scene
      */
  	public void createProgressCircle(int type) {
-
- 		MaskerPane indicator = new MaskerPane();
- 		indicator.setScaleX(1.5);
- 		indicator.setScaleY(1.5);
+/*
+ 		ProgressIndicator indicator = new ProgressIndicator();
+ 		//MaskerPane indicator = new MaskerPane();
+ 		indicator.setSkin(null);
+ 		//indicator.setOpacity(.5);
+ 		indicator.setStyle("-fx-background-color: transparent; ");  
+ 		//indicator.setScaleX(1.5);
+ 		//indicator.setScaleY(1.5);
  		StackPane stackPane = new StackPane();
+ 		//stackPane.setOpacity(0.5);
  		stackPane.getChildren().add(indicator);
  		StackPane.setAlignment(indicator, Pos.CENTER);
  		stackPane.setBackground(Background.EMPTY);
- 		stackPane.setStyle("-fx-background-color: transparent; ");     		
-		
+ 		//stackPane.setStyle("-fx-background-color: transparent; ");     		
+ 		stackPane.setStyle(
+ 	    		   //"-fx-border-style: none; "
+ 	       			"-fx-background-color: transparent; "
+ 	       			//+ "-fx-background-radius: 3px;"
+ 	    		   );
+ 		
  		Scene scene = new Scene(stackPane, 150, 150);
  		scene.setFill(Color.TRANSPARENT);
-
+ 		//scene.setStyle("-fx-background-color: transparent; ");  
+*/
  		if (type == LOADING) {
- 	 		indicator.setText("Loading");
+ 	 		ProgressIndicator indicator = new ProgressIndicator();
+ 	 		indicator.setSkin(null);
+ 	 		//indicator.setOpacity(.5);
+ 	 		indicator.setStyle("-fx-background-color: transparent; ");  
+ 	 		StackPane stackPane = new StackPane();
+ 	 		//stackPane.setOpacity(0.5);
+ 	 		stackPane.getChildren().add(indicator);
+ 	 		StackPane.setAlignment(indicator, Pos.CENTER);
+ 	 		stackPane.setBackground(Background.EMPTY);   		
+ 	 		stackPane.setStyle(
+ 	 	    		   //"-fx-border-style: none; "
+ 	 	       			"-fx-background-color: transparent; "
+ 	 	       			//+ "-fx-background-radius: 3px;"
+ 	 	    		   );	 		
+ 	 		Scene scene = new Scene(stackPane, 100, 100);
+ 	 		scene.setFill(Color.TRANSPARENT);
  			loadingCircleStage = new Stage();
+ 			//loadingCircleStage.setOpacity(1);
  			setEscapeEventHandler(true, loadingCircleStage);
  			loadingCircleStage.initOwner(stage);
  			loadingCircleStage.initModality(Modality.WINDOW_MODAL); // Modality.NONE is by default if initModality() is NOT specified.
@@ -1328,6 +1355,27 @@ public class MainScene {
 	 	}
  		
  		else if (type == SAVING) {
+ 	 		//ProgressIndicator indicator = new ProgressIndicator();
+ 	 		MaskerPane indicator = new MaskerPane();
+ 	 		indicator.setSkin(null);
+ 	 		//indicator.setOpacity(.5);
+ 	 		indicator.setStyle("-fx-background-color: transparent; ");  
+ 	 		//indicator.setScaleX(1.5);
+ 	 		//indicator.setScaleY(1.5);
+ 	 		StackPane stackPane = new StackPane();
+ 	 		//stackPane.setOpacity(0.5);
+ 	 		stackPane.getChildren().add(indicator);
+ 	 		StackPane.setAlignment(indicator, Pos.CENTER);
+ 	 		stackPane.setBackground(Background.EMPTY);
+ 	 		//stackPane.setStyle("-fx-background-color: transparent; ");     		
+ 	 		stackPane.setStyle(
+ 	 	    		   //"-fx-border-style: none; "
+ 	 	       			"-fx-background-color: transparent; "
+ 	 	       			//+ "-fx-background-radius: 3px;"
+ 	 	    		   );
+ 	 		
+ 	 		Scene scene = new Scene(stackPane);//, 150, 150);
+ 	 		scene.setFill(Color.TRANSPARENT);
  	 		indicator.setText("Saving");
  			savingCircleStage = new Stage();
  			savingCircleStage.initOwner(stage);

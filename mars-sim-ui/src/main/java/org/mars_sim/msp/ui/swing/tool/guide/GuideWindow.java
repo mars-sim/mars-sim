@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2016-10-08
  * @author Lars Naesbye Christensen
  */
 
@@ -68,17 +67,16 @@ ComponentListener {
 
 	/** The view port for the text pane. */
 	private JViewport viewPort;
-	/** our HTML content pane. */
-	//private HTMLContentPane htmlPane;
 	//private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator +
 	//        "help" + File.separator + "userguide.html");
 	/* [landrus, 27.11.09]: load the url in the constructor. */
 	private URL guideURL;
+	private String discussionURLstring, projectsiteURLstring;
 
-	private JButton homeButton = new JButton(Msg.getString("GuideWindow.button.home")); //$NON-NLS-1$
-	//private JButton backButton = new JButton(Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
-	//private JButton forwardButton = new JButton(Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
-
+	private JButton userguideButton = new JButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
+	private JButton projectsiteButton = new JButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
+	private JButton discussionButton = new JButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
+	
 	private BrowserJFX browser;
 	private JPanel browserPanel;
 	/**
@@ -86,12 +84,13 @@ ComponentListener {
 	 * @param desktop the desktop pane
 	 */
 	public GuideWindow(MainDesktopPane desktop) {
-		// Use TableWindow constructor
 		super(NAME, desktop);
 	   	//logger.info("GuideWindow's constructor is on " + Thread.currentThread().getName() + " Thread");
 
 		/* [landrus, 27.11.09]: use classloader compliant paths */
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
+		discussionURLstring = Msg.getString("url.discussion"); //$NON-NLS-1$
+		projectsiteURLstring = Msg.getString("url.projectsite"); //$NON-NLS-1$
 
 		browser = desktop.getBrowserJFX();
 		browserPanel = browser.getPanel();//.init();
@@ -101,51 +100,24 @@ ComponentListener {
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
-		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
-		homeButton.addActionListener(this);
-/*
-		backButton.setToolTipText(Msg.getString("GuideWindow.tooltip.back")); //$NON-NLS-1$
-		backButton.addActionListener(this);
-		forwardButton.setToolTipText(Msg.getString("GuideWindow.tooltip.forward")); //$NON-NLS-1$
-		forwardButton.addActionListener(this);
-*/
+		userguideButton.setToolTipText(Msg.getString("GuideWindow.tooltip.userguide")); //$NON-NLS-1$
+		userguideButton.addActionListener(this);
+
+		projectsiteButton.setToolTipText(Msg.getString("GuideWindow.tooltip.projectsite")); //$NON-NLS-1$
+		projectsiteButton.addActionListener(this);
+
+		discussionButton.setToolTipText(Msg.getString("GuideWindow.tooltip.discussion")); //$NON-NLS-1$
+		discussionButton.addActionListener(this);
+
 		// A toolbar to hold all our buttons
 		JPanel toolPanel = new JPanel();
-		toolPanel.add(homeButton);
-		//toolPanel.add(backButton);
-		//toolPanel.add(forwardButton);
-
-		//browser.addHyperlinkListener(this);
-		
-		//goToURL(guideURL);
-		
-		
-	   	//logger.info("GuideWindow's constructor: initialize buttons and toolPanel");
-/*
-		htmlPane = new HTMLContentPane();
-		htmlPane.addHyperlinkListener(this);
-		htmlPane.goToURL(guideURL);
-		htmlPane.setBackground(Color.lightGray); (65,65,65)
-		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
-		JScrollPane scrollPane = new JScrollPane(htmlPane);
-
-	   	//logger.info("GuideWindow's constructor: initialize htmlPane");
-*/
-		//JScrollPane scrollPane = new JScrollPane(browserPanel);
-		//scrollPane.setBorder(new MarsPanelBorder());
-		//viewPort = scrollPane.getViewport();
-		//viewPort.addComponentListener(this);
-		//viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);	
-		//mainPane.add(scrollPane, BorderLayout.CENTER);
-		
+		toolPanel.add(userguideButton);
+		toolPanel.add(projectsiteButton);
+		toolPanel.add(discussionButton);
+	
 		mainPane.add(browserPanel, BorderLayout.CENTER);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
-
-	   	//logger.info("GuideWindow's constructor: initialize mainPane");
-		// We have to define a starting size
-		//setSize(new Dimension(575, 475));
 		setSize(new Dimension(1024, 600));
-	   	//logger.info("GuideWindow's constructor: setSize");
 		// Allow the window to be resized by the user.
 		//setResizable(true);
 		setMaximizable(true);
@@ -156,25 +128,12 @@ ComponentListener {
 		updateButtons();
 	}
 
-	/**
-	 * Handles a click on a link.
-	 * @param event the HyperlinkEvent
-	 
-	public void hyperlinkUpdate(HyperlinkEvent event) {
-		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			goToURL(event.getURL());
-			updateButtons();
-		}
-	}
-*/
+	
 	/**
 	 * Updates navigation buttons.
 	 */
 	public void updateButtons() {
-		//System.out.println("GuideWindow: Calling updateButtons(). historyIndex is " + historyIndex);
-		homeButton.setEnabled(true);
-		//backButton.setEnabled(!isFirst());
-		//forwardButton.setEnabled(!isLast());
+		userguideButton.setEnabled(true);
 	}
 
 	/**
@@ -182,43 +141,50 @@ ComponentListener {
 	 */
 	// 2016-06-07 Added displaying the hyperlink's path and html filename.
 	public void setURL(String fileloc) {
-		//String path = getClass().getResource(fileloc).toExternalForm();
-		//browser.loadLocalURL(path);
-		//browser.loadLocalURL(getClass().getResource(fileloc).toExternalForm());
-		//System.out.println("GuideWindow's setURL() : fileloc is " + fileloc);
-		//System.out.println("GuideWindow's setURL() : URL is " + getClass().getResource(fileloc));
 		goToURL(getClass().getResource(fileloc));
 		browser.getStatusBarLabel().setText(fileloc);
 	}
 
 	/** Implementing ActionListener method. */
+	@SuppressWarnings("restriction")
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
-		if (source == this.homeButton) {
-			//browser.loadLocalURL(guideURL.toExternalForm());
-			goToURL(guideURL);
-			updateButtons();
-			browser.getStatusBarLabel().setText(guideURL.toExternalForm());
+		if (source == this.userguideButton) {
+			Platform.runLater(()-> {
+				browser.setTextInputCache(guideURL.toExternalForm());
+				browser.inputURLType(guideURL.toExternalForm());//, BrowserJFX.REMOTE_HTML);
+				browser.setURLText();
+			});
+			goToURL(guideURL);			
+			//updateButtons();
+			//browser.getStatusBarLabel().setText(guideURL.toExternalForm());
 		} 
 		
-/*		else if (source == this.backButton) {
-			back();
+		else if (source == this.projectsiteButton) {
+			Platform.runLater(()-> {
+				browser.setTextInputCache(projectsiteURLstring);
+				browser.inputURLType(projectsiteURLstring);//, BrowserJFX.REMOTE_HTML);
+				browser.setURLText();
+			});
 			updateButtons();
-		} else if (source == this.forwardButton) {
-			forward();
+
+			
+		} else if (source == this.discussionButton) {
+			Platform.runLater(()-> {
+				browser.setTextInputCache(discussionURLstring);
+				browser.inputURLType(discussionURLstring);//, BrowserJFX.REMOTE_HTML);
+				browser.setURLText();
+			});
 			updateButtons();
+
 		}
-*/		
+		
 	}
 
 
 	public void goToURL(URL url) {
-		//System.out.println("GuideWindow's goToURL()");
-		//URL new_url = 
 		displayPage(url);
-		//System.out.println("goToURL(). new_url is "+ new_url);
-		//updateHistory(new_url);
 	}
 	
 
@@ -226,20 +192,13 @@ ComponentListener {
 	private URL displayPage(URL pageURL) {
 		//System.out.println("displayPage() : pageURL is " + pageURL);
 		String input = pageURL.toExternalForm();
-		
+		//System.out.println("displayPage(). input is " + input);
 		SwingUtilities.invokeLater(()->{
-			//browser.getURLType(input);
 			browser.loadLocalURL(input);
-			//Platform.runLater(()-> {
-				//browser.addCSS();
-			//	});
-			
 		});
 /*		
-	    //SwingUtilities.invokeLater(() -> {
-	    	    	
+	    //SwingUtilities.invokeLater(() -> {	    	    	
     	String fileString = "file:/";
-
 		boolean status = input.toLowerCase().contains(fileString);          	
 		//int pos = input.toLowerCase().indexOf(fileString);
     			
@@ -289,53 +248,7 @@ ComponentListener {
 			return null;
 		}
 	}
-/*
-	// 2016-04-18 Added updateHistory()
-	public void updateHistory(URL url) {
-		//System.out.println("calling updateHistory(URL url). url is "+ url);
-		if (historyIndex < history.size() - 1) {
-			historyIndex++;
-			history.set(historyIndex, url);
-			while (historyIndex < history.size() - 1) {
-				history.remove(historyIndex + 1);
-			}
-		}
-		else {
-			history.add(url);
-			historyIndex = history.size() - 1;
-		}
-	}
 
-	public URL forward() {
-		historyIndex++;
-		if (historyIndex >= history.size()) {
-			historyIndex = history.size() - 1;
-		}
-		URL url = history.get(historyIndex);
-		displayPage(url);
-
-		return url;
-	}
-
-	public URL back() {
-		historyIndex--;
-		if (historyIndex < 0) {
-			historyIndex = 0;
-		}
-		URL url = history.get(historyIndex);
-		displayPage(url);
-
-		return url;
-	}
-
-	public boolean isFirst() {
-		return (historyIndex == 0);
-	}
-
-	public boolean isLast() {
-		return (historyIndex == history.size() - 1);
-	}
-*/
 	/**
 	 * Implement ComponentListener interface.
 	 * Make sure the text is scrolled to the top.

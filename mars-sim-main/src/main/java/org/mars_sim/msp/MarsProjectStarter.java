@@ -107,7 +107,7 @@ public class MarsProjectStarter {
 		        	command.append(" -load");
 		        
 		        	// 2016-10-06 Appended the name of loadFile to the end of the command stream so that MarsProjectFX can read it.
-		        	int index = argList.indexOf("-load");
+		        	int index = argList.indexOf("load");
 		        	int size = argList.size();
 		        	String fileName = null;
 		        	if (size > index + 1) { // TODO : will it help to catch IndexOutOfBoundsException

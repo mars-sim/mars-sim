@@ -445,6 +445,8 @@ implements ClockListener, Serializable {
     			//logger.info("  Build : " + loadBuild + "   Size : "+ fileStr);
                 sim.readFromFile(f);
 
+                isUpdating = false;
+                
             } catch (ClassNotFoundException ex) {
             	logger.warning("ClassNotFoundException when loading the simulation! " + ex.getMessage());
             } catch (IOException ex) {
@@ -453,12 +455,14 @@ implements ClockListener, Serializable {
         }
         
         else{
-        	logger.warning("cannot read the saved sim !");
-            throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
-                    f.getPath() + " is not accessible");
+        	logger.warning("The saved sim cannot be read or found. ");
+            //throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
+            //        f.getPath() + " is not accessible");
+            Platform.exit();
+            System.exit(1);
+            
         }
 
-        isUpdating = false;
     }
 
     /**
@@ -520,36 +524,36 @@ implements ClockListener, Serializable {
             fos.close();     
             uncompressed.delete();
    
+            loadBuild = UnitManager.build;
+        	if (loadBuild == null)
+        		loadBuild = "unknown";
+            
+        	if (instance().BUILD.equals(loadBuild))
+        		logger.info("Running mars-sim and loading a saved sim in Build " + loadBuild);
+        	else
+        		logger.warning("Running mars-sim in Build " + Simulation.BUILD + " but loading a saved sim in Build " + loadBuild);
+
+            // Initialize transient data.
+            initializeTransientData();
+
+            instance().initialSimulationCreated = true;
   
         } catch (FileNotFoundException e) {
-            System.err.println("XZDecDemo: Cannot open " + file + ": " + e.getMessage());
+            System.err.println("File " + file + " cannot be found : " + e.getMessage());
+            Platform.exit();
             System.exit(1);
 
         } catch (EOFException e) {
-            System.err.println("XZDecDemo: Unexpected end of input on " + file);
+            System.err.println("Unexpected end of file (EOF) error on " + file);
+            Platform.exit();
             System.exit(1);
 
         } catch (IOException e) {
-            System.err.println("XZDecDemo: Error decompressing from " + file + ": " + e.getMessage());
-            System.exit(1);
- 
-	    } finally {     
-	    }
-	        
-        loadBuild = UnitManager.build;
-    	if (loadBuild == null)
-    		loadBuild = "unknown";
-        
-    	if (instance().BUILD.equals(loadBuild))
-    		logger.info("Running mars-sim and loading a saved sim in Build " + loadBuild);
-    	else
-    		logger.warning("Running mars-sim in Build " + Simulation.BUILD + " but loading a saved sim in Build " + loadBuild);
-
-        // Initialize transient data.
-        initializeTransientData();
-
-        instance().initialSimulationCreated = true;
-           	
+            System.err.println("Error decompressing " + file + ": " + e.getMessage());
+            Platform.exit();
+            System.exit(1);           
+	    } 
+        	
 	}
 
 
@@ -630,6 +634,12 @@ implements ClockListener, Serializable {
             
             // STEP 1: combine all objects into one single uncompressed file, namely "default"
             uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
+            
+            // if the default save directory does not exist, create one now
+            if (!uncompressed.getParentFile().exists()) {
+            	uncompressed.getParentFile().mkdirs();
+            }
+                     
         	oos = new ObjectOutputStream(new FileOutputStream(uncompressed));           
  
             // Store the in-transient objects.

@@ -76,10 +76,16 @@ public class BrowserJFX {
     public static final String HTTP_HEADER = "http://";
     public static final String HTTPS_HEADER = "https://";
     
+    public static final int INTERNAL_COMMAND = 0;
+    public static final int LOCAL_HTML = 1;
+    public static final int REMOTE_HTML = 2;
+    public static final int UNKNOWN = 3;
+
+    
     public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
     public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
 
-    public String textInputCache;
+    public String textInputCache, addressURLText, statusBarURLText;
     
     private static final String CSS = 
     		"a, a:link, a:visited, a:hover{color:rgb(184, 134, 11); text-decoration:none;}"    		
@@ -95,7 +101,7 @@ public class BrowserJFX {
 		 
     
 	private boolean isLocalHtml = false, isInternal = false;
-	private String urlCache = "";
+	private String inputCache;
 	
     private final JFXPanel jfxPanel = new JFXPanel();
     private JPanel panel = new JPanel(new BorderLayout());
@@ -111,18 +117,14 @@ public class BrowserJFX {
     private WebEngine engine;
     
     private WebHistory history;
-    
-    //private GuideWindow guideWindow;
-    
-    public BrowserJFX(){ //GuideWindow gw) {
-    	//this.guideWindow = gw;
+
+    public BrowserJFX() {
+
         Platform.runLater(() -> {       
             view = new WebView();
             engine = view.getEngine();          
-            history = engine.getHistory();
-            
+            history = engine.getHistory();    
         	//logger.info("Web Engine supported : " + engine.getUserAgent());
-
         });
         
         initJFX();
@@ -142,9 +144,14 @@ public class BrowserJFX {
         		String input = urlTF.getText().trim();        		
             	//System.out.println("BrowserJFX's actionPerformed() : input is [" + input + "]");          	
 
-        		if (input != null && !input.isEmpty()) {
-        			// if the address bar is not empty
-        			getURLType(input);
+        		if (inputCache != input) {
+        			inputCache = input;
+	        		if (input != null && !input.isEmpty()) {
+	        			// if the address bar is not empty
+	        			Platform.runLater(() -> {
+	        				inputURLType(input);
+	        			});
+	        		}
         		}
         		
             }
@@ -199,25 +206,45 @@ public class BrowserJFX {
     }
 
     
-    public void getURLType(String input) {
+    public void inputURLType(String input) {
     	if (input != null && !input.isEmpty()) {
     		textInputCache = input; 
 
     		if (input.equals("ticket") 
     				|| input.equals(MAP_FILE)
     				|| input.equals(GLOBE_FILE)) {
-    			parseInput(input, 0);
+    			parseInput(input, INTERNAL_COMMAND);
     		}
-    		else if (input.contains("file:/")) {
-    				parseInput(input, 1); //or 3   			
+    		else if (input.contains("/docs/help")) { //"file:/")) {
+    				parseInput(input, LOCAL_HTML);   			
     		}
-    		else {
-    			parseInput(input, 2);
+ 
+    		else if (input.contains("https://") 
+    				|| input.contains("http://")
+    				//|| input.contains("www")
+    				//|| input.contains(".html") 
+    				//|| input.contains(".htm") 
+    				//|| input.contains(".asp") 
+    				//|| input.contains(".aspx") 
+    				) {
+    			parseInput(input, REMOTE_HTML);
+        	}
+    		else 
+    			//if (input.contains("www")
+    			//	|| input.contains("http") 
+    			//	|| input.contains(".html") 
+    			//	|| input.contains(".htm") 
+    			//	|| input.contains(".asp") 
+    			//	|| input.contains(".aspx") 
+    			//	) 
+    		{
+    			parseInput(input, UNKNOWN);
         	}
 		}
-    	else {
-			parseInput(input, 1); //or 3 
-    	}
+    	//else {
+    	//	System.out.println("input is null");
+		//	parseInput(input, LOCAL_HTML); //or UNKNOWN ?!?
+    	//}
 	
     }
     
@@ -225,19 +252,25 @@ public class BrowserJFX {
     public void parseInput(String input, int URL_type) {
 		
 		// Type 0 is internal command
-		if (URL_type == 0)  {
+		if (URL_type == INTERNAL_COMMAND)  {
 			isInternal = true;
 			isLocalHtml = true;
 			//System.out.println("BrowserJFX : input is " + input);
-			updateURL(input + ".html", 0);
+			determineURL(input + ".html", INTERNAL_COMMAND);
 			//addCSS();
 	    }
 		// Type 1 is local html file 
-		else if (URL_type == 1) {
+		else if (URL_type == LOCAL_HTML) {
 			isLocalHtml = true;	
 			isInternal = false;
-			updateURL(input, 1);
+			determineURL(input, LOCAL_HTML);
 			addCSS();
+		}
+
+		else if (URL_type == REMOTE_HTML) {
+			isInternal = false;
+			isLocalHtml = false;
+			determineURL(input, REMOTE_HTML);
 		}
 		
 		else {
@@ -249,7 +282,7 @@ public class BrowserJFX {
 			// Type 2 is a remote url 
 			if (status) {
 				isLocalHtml = false;
-				updateURL(input, 2);
+				determineURL(input, REMOTE_HTML);
 			}
 			else {
 				status = input.toLowerCase().contains(HTTP_HEADER);          	
@@ -258,15 +291,15 @@ public class BrowserJFX {
 				// Type 2 is a remote url 
 				if (status) {
 					isLocalHtml = false;
-					updateURL(input, 2);
+					determineURL(input, REMOTE_HTML);
 				}
 				else {
-					
-					// Type 3 is a remote url that has no "http://"
+		    		System.out.println("parseInput() : URL_type is " + URL_type);
+					// Type 3 could be a remote url that has no "http://" or an invalid input
 					// e.g. type in google.com
 					isLocalHtml = false;
 					// will need to add http://
-					updateURL(input, 3);									
+					determineURL(input, UNKNOWN);									
 				}				
 			}
 			
@@ -364,19 +397,22 @@ public class BrowserJFX {
                             if (content != null && !content.isEmpty()) {
                             	     
                             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-                            	if (content.contains("docs")) {                            	
+                            	if (content.contains("/docs/help")) {                            	
                             		int i = content.indexOf("docs")-1;
+                            		//System.out.println("shortened content is " + content.substring(i, content.length()-1));
                             		statusBarLbl.setText(content.substring(i, content.length()-1));          		
                             	}
-                            	else
+                            	else {
+                            		//System.out.println("content is " + content);
                             		// this is a remote link or internal link
-                            		statusBarLbl.setText(content);                  	
+                            		statusBarLbl.setText(content);  
+                            	}
                             }
                             
                             else {
                             	// if the mouse pointer is not on any hyperlink
-                            	statusBarLbl.setText(textInputCache);
-                            	
+                           		//System.out.println("The null content is " + content);                           	 
+                            	statusBarLbl.setText(content);                    	
                             }
                         });
                     }
@@ -436,23 +472,29 @@ public class BrowserJFX {
         				jsobj.setMember("JavaBridge", new TicketSubmission());  	
                     }
                 });
-*/            
+*/   
+/*                
                 // process page loading
                 engine.getLoadWorker().stateProperty().addListener(
                     new ChangeListener<State>() {
                         @Override
                         public void changed(ObservableValue<? extends State> ov,
                             State oldState, State newState) {                           
-                                if (newState == State.SUCCEEDED) {
+                                //if (newState == State.SUCCEEDED) {
+                                if (newState != oldState) {	
                                 	//System.out.println("BrowserJFX : clicking on a hyperlink, calling stateProperty()");                              	
-                                	getURLType(getCurrentURL());                             	
-                                	if (!isLocalHtml)                                		
-	                                	SwingUtilities.invokeLater(() ->setURLText());
+                                	String input = getCurrentURL();
+                            		if (inputCache != input) {
+                            			inputCache = input;
+	                                	getURLType(input);                             	
+	                                	if (!isLocalHtml)                                		
+		                                	SwingUtilities.invokeLater(() ->setURLText());
+                            		}
                                 }
                             }
                         }
                 );
-                
+*/                
                 jfxPanel.setScene(new Scene(view));
         });
     }
@@ -461,8 +503,23 @@ public class BrowserJFX {
      * Set the url text in the address textfield 
      */
     public void setURLText() {
+    	String content = textInputCache;
+    	if (content.contains("/docs/help")) {                            	
+    		int i = content.indexOf("docs")-1;
+            String shortened = content.substring(i, content.length()-1);
+            urlTF.setText(shortened);
+    		statusBarURLText = shortened;
+    		statusBarLbl.setText(shortened);          		
+    	}
+    	else {
+    		// this is a remote link or internal link
+            urlTF.setText(content);
+    		statusBarURLText = content;
+    		statusBarLbl.setText(content);
+    	}
+/*    	
 		//System.out.println("isLocalHtml : " + isLocalHtml + "   isInternal : " + isInternal);
-    	if (isLocalHtml) {
+ 		if (isLocalHtml) {
      		if (isInternal){
         		;//urlTF.setText(urlTF.getText());
      		}
@@ -474,7 +531,8 @@ public class BrowserJFX {
      	}
     	else {
      		urlTF.setText(textInputCache);
-     	} 	
+     	} 
+*/     		
     }
     
     public void addCSS() { 	
@@ -483,54 +541,40 @@ public class BrowserJFX {
 	    Element styleNode = doc.createElement("style");
 	    Text styleContent = doc.createTextNode(CSS);
 	    styleNode.appendChild(styleContent);
-	    doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
+	    //if (doc.getDocumentElement().getElementsByTagName("head").item(0) != null)
+	    	doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
+	    //if (doc.getDocumentElement().getElementsByTagName("HEAD").item(0) != null)
+	    //	doc.getDocumentElement().getElementsByTagName("HEAD").item(0).appendChild(styleNode);
+	    
     }
     
 	// 2016-04-18 Added updateURL()
-    public void updateURL(String href, int URL_type) {
+    public void determineURL(String href, int URL_type) {
     	if (href != null && !href.isEmpty()) {
-	    	if (URL_type == 0) {
+	    	if (URL_type == INTERNAL_COMMAND) {
 		    	URL url = getClass().getResource(Msg.getString("doc.help") + href);
-		    	//System.out.println("BrowserJFX : updateHistory(). Type " + URL_type + ". url is " + href);
-		    	loadLocalURL(url.toExternalForm());
+		    	addressURLText = url.toExternalForm();
+		    	loadLocalURL(addressURLText);
 	    	}
-	    	else if (URL_type == 1) {
-		    	//URL url = getClass().getResource(Msg.getString("doc.help") + href);
-		    	//System.out.println("BrowserJFX : updateHistory(). Type " + URL_type + ". url is " + href);
-		    	//guideWindow.updateHistory(url);
-		    	//guideWindow.updateButtons(); 
-		    	//loadLocalURL(url.toExternalForm());
-		    	//loadLocalURL(href);
-				//isLocalHtml = true;	
-				//isInternal = false;
+	    	else if (URL_type == LOCAL_HTML) {
+		    	addressURLText = href;
+		    	loadLocalURL(href);
+
 	    	}
-	    	else if (URL_type == 2) {
-	    		//e.g. if user types in "hi", url is "http://hi/", it will trip off exceptionProperty()
-	    		//try {
-	    			//URL url = new URL(href);
-	    	    	//System.out.println("BrowserJFX : updateHistory(). Type 2. url is " + href);
-					//guideWindow.updateHistory(url);
-			    	//guideWindow.updateButtons();
-			    	//loadRemoteURL(url.toExternalForm());
-			    	//loadRemoteURL(href);
-				//} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
-				//	e.printStackTrace();
-				//}
-				//isLocalHtml = true;	
-				//isInternal = false;
+	    	else if (URL_type == REMOTE_HTML) {
+       			addressURLText = href;
+			    loadRemoteURL(href);
 	    	}
-	    	else if (URL_type == 3) {
+	    	else if (URL_type == UNKNOWN) {
 	    		try {
-	    			URL url = new URL(HTTP_HEADER + href);
-	    	    	//System.out.println("BrowserJFX : updateHistory(). Type 3. url is [" + url + "]");
-					//guideWindow.updateHistory(url);
-			    	//guideWindow.updateButtons();
-			    	loadRemoteURL(url.toExternalForm());
-					//isLocalHtml = true;	
-					//isInternal = false;
+	    			if (!href.contains("/docs/help")) { 
+		    			// assume the text in the address bar has no 'http://'
+		    			URL url = new URL(HTTP_HEADER + href);		
+		    			addressURLText = url.toExternalForm();
+				    	loadRemoteURL(addressURLText);
+	    			}
+
 				} catch (MalformedURLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 	    	}
@@ -538,39 +582,23 @@ public class BrowserJFX {
     }
    
     @SuppressWarnings("restriction")
-	public void loadRemoteURL(final String input) {
+	public void loadRemoteURL(final String content) {
     	isLocalHtml = false;
     	isInternal = false;
     	
-        Platform.runLater(()-> {    				
-			boolean status = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
+        Platform.runLater(()-> {
+			boolean status = content.toLowerCase().contains(HTTPS_HEADER) || content.toLowerCase().contains(HTTP_HEADER);          	
 		
 			if (status) {
-				engine.load(input);
-				textInputCache = input;
+				engine.load(content);
+				textInputCache = content;
+				statusBarURLText = content;
+        		statusBarLbl.setText(content);
 			}
-			else {
-				status = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
 			
-				if (status) {
-					engine.load(input);
-					textInputCache = input;
-				}
-				else {
-					
-					if (input != null && !input.isEmpty()) {
-						//System.out.println("BrowserJFX's loadRemoteURL() : input is [" + input +"]");
-						engine.load(HTTP_HEADER + input);
-						textInputCache = HTTP_HEADER + input;
-						//System.out.println("input is " + HTTP_HEADER + input);
-					}
-					// TODO: should it try https as well ?					
-					// TODO: how to handle the case when the remote url is bad ?
-					// should delete this bad url and its history index, instead of saving it
-					
-				}				
-			}		
-            // TODO: how to check if the url is valid or if it's loaded successfully?
+			else {
+				System.out.println("loadRemoteURL()'s content is " + content);		
+			}
         });
         
     }
@@ -578,19 +606,23 @@ public class BrowserJFX {
     @SuppressWarnings("restriction")
 	public void loadLocalURL(String content) {
        	isLocalHtml = true;      	  	
+    	isInternal = false;
         Platform.runLater(()-> {
             engine.load(content);
             textInputCache = content;
-            if (content != null && !content.isEmpty()) {
-       	     
+            if (content != null && !content.isEmpty()) {       	     
             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-            	if (content.contains("docs")) {                            	
+            	if (content.contains("/docs/help")) {                            	
             		int i = content.indexOf("docs")-1;
-            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
+                    addressURLText = content;
+            		statusBarURLText = content.substring(i, content.length()-1);
+            		statusBarLbl.setText(statusBarURLText);          		
             	}
-            	else
-            		// this is a remote link or internal link
-            		statusBarLbl.setText(content);
+            	else {
+            		// this is a remote link or internal link, is this condition needed ?
+            		statusBarURLText = content;
+            		statusBarLbl.setText(statusBarURLText);
+            	}
             }
         });
         
@@ -620,10 +652,12 @@ public class BrowserJFX {
         //history = engine.getHistory();
         ObservableList<WebHistory.Entry> entryList = history.getEntries();
         int currentIndex = history.getCurrentIndex();
-
-        String txt = entryList.get(currentIndex).getUrl();
-        //System.out.println("currentIndex is " + currentIndex + " url is " + txt);       
-        //Platform.runLater(() -> { history.go(0);} );           
+        String txt = null;
+        if (currentIndex != 0) {
+        	txt = entryList.get(currentIndex).getUrl();
+        	//System.out.println("currentIndex is " + currentIndex + " url is " + txt);       
+        	//Platform.runLater(() -> { history.go(0);} );   
+        }
         return txt;
       }
     
@@ -650,10 +684,9 @@ public class BrowserJFX {
        		setURLText();
        		
             String content = textInputCache;
-            if (content != null && !content.isEmpty()) {
-            	     
+            if (content != null && !content.isEmpty()) {         	     
             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-            	if (content.contains("docs")) {                            	
+            	if (content.contains("/docs/help")) {                            	
             		int i = content.indexOf("docs")-1;
             		statusBarLbl.setText(content.substring(i, content.length()-1));          		
             	}
@@ -679,10 +712,10 @@ public class BrowserJFX {
        		setURLText();
        		
             String content = textInputCache;
-            if (content != null && !content.isEmpty()) {
-            	     
-            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-            	if (content.contains("docs")) {                            	
+            if (content != null && !content.isEmpty()) {         	     
+            	// 2016-06-07 Truncated off the initial portion of the path to 
+            	// make the link to look more "user-friendly", improving the viewing comfort.
+            	if (content.contains("/docs/help")) {                            	
             		int i = content.indexOf("docs")-1;
             		statusBarLbl.setText(content.substring(i, content.length()-1));          		
             	}
@@ -693,6 +726,13 @@ public class BrowserJFX {
     	});    
 	}
     
+    public String getTextInputCache() {
+    	return textInputCache;
+    }
+    
+    public void setTextInputCache(String value) {
+    	textInputCache = value;
+    }
 }
 
 class TicketSubmission {

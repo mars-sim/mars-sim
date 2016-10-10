@@ -17,20 +17,67 @@ http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ---------------------------------------------------------------------
 
-** Running **
+** Starting a new sim **
 
-- For most operating systems you can simply double click on the 
-mars-sim-main-[version number].jar file since it is an executable jar.
+A. GUI Interface
+
+- For most operating systems, simply double-click on the jar file
+called 'mars-sim-main-[version/build].jar' to begin a new simulation
+in GUI mode as It is an executable file. Then choose 'New Sim' in the 
+Main Menu to start a new simulation.
 
 - Alternatively, you can also start mars-sim manually from a terminal 
-or command prompt which will allow users to see mars-sim's 
-internal logging statements while running mars-sim.
+or command prompt which will display mars-sim's internal logging
+ statements while running mars-sim.
 
-- Go to the directory containing the jar file and type :
+- To start the GUI via a terminal, go to the directory containing 
+the jar file and type :
 
-	java -jar mars-sim-main-[version/build].jar 
+> java -jar mars-sim-main-[version/build].jar 
 
-Replacing the [version/build] with jar file's current version/build #.
+	OR 
+
+> java -jar mars-sim-main-[version/build].jar new
+
+Note a : replacing [version/build] with the current version/build.
+
+Note b : the argument 'new' is optional. If the argument 'load' 
+is not provided for, it will assume that the user is interested in 
+starting a new simulation and 'new' will be added automatically.
+
+Note c: by default, the simulation will be saved automatically
+with a new filename with a date/time stamp, the # of sol and 
+the build # once every 15 minutes. It's located in the 
+\[HOME]\.mars-sim\autosave\ directory, as dictated by the 
+following attribute value in simulation.xml :
+
+	<autosave-interval value="15.0" /> 
+
+B. Headless Mode
+
+- mars-sim is designed with a level of A.I. capable of running the 
+entire simulation on its own. Therefore, you may prefer to run it
+in a terminal for hours without your input to lower the CPU resources.
+To start without GUI, type the arguments as follows :
+
+> java -jar mars-sim-main-[version/build].jar 2 headless new
+
+	OR 
+
+> java -jar mars-sim-main-[version/build].jar 2 headless
+
+Note a: the '2' numeral argument is for setting up mars-sim to use 
+a memory configuration (see below) different from the default. 
+It is optional.
+
+Note b: the 'new' argument is optional. 
+
+Note c: by default, the simulation will be saved automatically
+(as default.sim in the \.mars-sim\saved\ directory) once every 
+15 minutes, as dictated by the following attribute value in 
+simulation.xml :
+
+	<autosave-interval value="15.0" /> 
 
 ---------------------------------------------------------------------
 
@@ -45,70 +92,73 @@ start of the simulation.
 customize mars-sim to run at one of the configuration by adding a 
 numeral argument after the jar file as shown below :
 
-  java -jar mars-sim-main-[version/build].jar 4
+> java -jar mars-sim-main-[version/build].jar 4
 
-// no numerical --> 256 Min, 1024MB Max (by default)
-// 0 --> 256 Min, 1024MB Max
+// no numerical --> 256MB Min, 1024MB Max (by default)
+// 0 --> 256MB Min, 1024MB Max
 
-// 1 --> 256 Min, 512MB Max
-// 2 --> 256 Min, 768MB Max
-// 3 --> 256 Min, 1024MB Max
-// 4 --> 256 Min, 1536MB Max
-// 5 --> 256 Min, 2048MB Max
-
-
----------------------------------------------------------------------
-
-** Headless Mode **
-
-- mars-sim is designed with a level of A.I. capable of running the 
-entire simulation on its own. 
-
-- If you want it to run in headless mode for hours without 
-your input and/or want to save precious CPU resources from 
-creating the GUI, type the arguments as follows :
-
-  java -jar mars-sim-main-[version/build].jar 2 headless new
-
-		OR 
-
-  java -jar mars-sim-main-[version/build].jar 2 headless
-
-Note 1: '2' or a numeral argument is for setting up mars-sim to use a
- memory configuration different from the default. It is optional.
-
-Note 2: in this case, the 'new' argument is optional. If 'new' is not 
-provided for , it will be added automatically.
-
-Note 3: by default, the simulation will be saved automatically
-(as default.sim in the \.mars-sim\saved\ directory) once every 
-15 minutes, as dictated by the following attribute value in 
-simulation.xml :
-
-<autosave-interval value="15.0" /> 
+// 1 --> 256MB Min, 512MB Max
+// 2 --> 256MB Min, 768MB Max
+// 3 --> 256MB Min, 1024MB Max
+// 4 --> 256MB Min, 1536MB Max
+// 5 --> 256MB Min, 2048MB Max
 
 
 ---------------------------------------------------------------------
 
 ** Load Saved Simulation **
 
-1. If you want to load a previously saved simulation in GUI mode, 
-type and choose your saved sim file:
+A. GUI Interface
 
- java -jar mars-sim-main-[version/build no].jar 3 load
+- If you want to load a previously saved simulation, the quickest way
+is clicking the jar file to start the Main Menu, then choose 'Load Sim'.
+In the FileChooser, select the saved sim you want to load.  
+
+- alternatively, you may use the terminal to type : 
+
+> java -jar mars-sim-main-[version/build].jar 3 load
+
+This will load 'default.sim' located inside \.mars-sim\saved\
+
+Note 1 : the order of the arguments is not important.
+
+Note 2 : by default, it is assumed the user is interested in 
+loading the default saved sim file. Do NOT type 'default.sim' 
+as an argument. 
+
+	OR
+
+> java -jar mars-sim-main-[version/build].jar 3 load 123.sim
+
+This will load '123.sim', instead of the default saved sim.
+
+Note 3 : the order of the arguments is not important.
+
+Note 4 : '123.sim' must be present in the same directory 
+where the jar file is at.
 
 
-2. For loading a particular saved sim in headless mode, type the 
-arguments in the following order :
+B. Headless mode
 
-  java -jar mars-sim-main-[version/build].jar 3 headless load 123.sim
+- To load the default saved sim without the GUI interface, type :
 
-Note: 'headless' must be in front of 'load' and the user sim file 
-must be right after 'load'.
+> java -jar mars-sim-main-[version/build].jar 3 headless load 
 
-3. For loading the default saved sim (namely default.sim), type :
+Note 1 : the order of the arguments is not important.
 
-  java -jar mars-sim-main-[version/build].jar 3 headless load 
+Note 2 : by default, it is assumed the user is interested in 
+loading the default saved sim file. Do NOT type 'default.sim' 
+as an argument. 
+
+- To load a particular saved sim without the GUI interface, type :
+
+> java -jar mars-sim-main-[version/build].jar 3 headless load 123.sim
+
+Note 3 : the order of the arguments is not important.
+
+Note 4 : '123.sim' must be present in the same directory 
+where the jar file is at.
+
 
 ---------------------------------------------------------------------
 

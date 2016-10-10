@@ -294,7 +294,7 @@ public class MainMenu {
 	   stage.setIconified(true);
 	   stage.hide();
 		
-	   loadSim(false);
+	   loadSim(null);
 	   
        mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
 	   
@@ -302,37 +302,45 @@ public class MainMenu {
 
 
    /*
-    * Loads the simulation file by running the jar directly with "-load" switch
-    * @param autosaveDefaultName does it use the default name for autosave
+    * Loads the simulation file via the terminal or FileChooser.
+    *  
+    * @param selectedFile the saved sim
     */
-   public void loadSim(boolean autosaveDefaultName) {
+   public void loadSim(File selectedFile) {
 	   //logger.info("MainMenu's loadSim() is on " + Thread.currentThread().getName());
 	   Platform.runLater(() -> mainScene = new MainScene(mainSceneStage));
 	
 	   String dir = Simulation.DEFAULT_DIR;
 	   String title = null;
-	   //File fileLocn = null;
 
-	   FileChooser chooser = new FileChooser();
-		// chooser.setInitialFileName(dir);
-		// Set to user directory or go to default if cannot access
-		// String userDirectoryString = System.getProperty("user.home");
-	   File userDirectory = new File(dir);
-	   chooser.setInitialDirectory(userDirectory);
-	   chooser.setTitle(title); // $NON-NLS-1$
+	   if (selectedFile == null) {
+		   
+		   FileChooser chooser = new FileChooser();
+			// chooser.setInitialFileName(dir);
+			// Set to user directory or go to default if cannot access
+			// String userDirectoryString = System.getProperty("user.home");
+		   File userDirectory = new File(dir);
+		   chooser.setInitialDirectory(userDirectory);
+		   chooser.setTitle(title); // $NON-NLS-1$
 
-		// Set extension filter
-	   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
-				"Simulation files (*.sim)", "*.sim");
-	   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
-				"all files (*.*)", "*.*");
+			// Set extension filter
+		   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
+					"Simulation files (*.sim)", "*.sim");
+		   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
+					"all files (*.*)", "*.*");
 
-	   chooser.getExtensionFilters().addAll(simFilter, allFilter);
+		   chooser.getExtensionFilters().addAll(simFilter, allFilter);
 
-		// Show open file dialog
-		File selectedFile = chooser.showOpenDialog(stage);
+			// Show open file dialog
+			selectedFile = chooser.showOpenDialog(stage); 
+	   }
+	   else {
+   			// if user wants to load the default saved sim
+		   
+	   }
 
-		if (selectedFile != null) {
+	   if (selectedFile != null) {
+			
 			final File fileLocn = selectedFile;
 		
 			Platform.runLater(() -> {
@@ -340,10 +348,10 @@ public class MainMenu {
 				mainScene.showWaitStage(MainScene.LOADING);
 			});
 			
-			CompletableFuture.supplyAsync(() -> submitTask(fileLocn, autosaveDefaultName));
-
+			CompletableFuture.supplyAsync(() -> submitTask(fileLocn, false));
 	        
 		}
+	   
 		else {			
 			logger.info("No file was selected. Loading is cancelled");
 	        Platform.exit();

@@ -206,13 +206,15 @@ public class MarsProjectFX extends Application  {
     static String[] args;
 
     /** true if displaying graphic user interface. */
-    private boolean headless = false, newSim = false, loadSim = false;
+    private boolean headless = false, newSim = false, loadSim = false, savedSim = false;
 
     /** true if help documents should be generated from config xml files. */
     private boolean generateHTML = false;
 
     private boolean isDone;
 
+    private String loadFileString;
+    
     private MainMenu mainMenu;
 
     private List<String> argList;
@@ -266,17 +268,30 @@ public class MarsProjectFX extends Application  {
         newSim = argList.contains("-new");      
         loadSim = argList.contains("-load");     
 		generateHTML = argList.contains("-html");
+		//savedSim = argList.contains(".sim");
 		
 		if (generateHTML)
 			headless = true;
 		else
 			headless = argList.contains("-headless");
 
-        //System.out.println("headless is " + headless);
-        //System.out.println("newSim is " + newSim); 	
-        //System.out.println("loadSim is " + loadSim); 	
-        //System.out.println("generateHTML is " + generateHTML); 	  
-       	
+    	int size = argList.size();   	
+    	boolean flag = true;
+		for (int i= 0; i<size; i++) {
+			if (argList.get(i).contains(".sim")) {
+				if (flag) {
+					loadFileString = argList.get(i);
+					savedSim = true;
+					flag = false;
+				}
+				else {
+					logger.info("Cannot load more than one saved sim. ");
+			        Platform.exit();
+			        System.exit(1);
+				}
+			}
+		}
+  	
 	   	sim.startSimExecutor();
 	   	sim.getSimExecutor().execute(new SimulationTask());
     }
@@ -322,52 +337,47 @@ public class MarsProjectFX extends Application  {
 			}
 			else if (loadSim) {
 		   		// CASE B //
-				logger.info("Loading a sim in headless mode in " + OS);
 				// Initialize the simulation.
 	        	Simulation.createNewSimulation(); 
 	        	
-	        	
-	        	int index = argList.indexOf("-load");
-	        	int size = argList.size();
-	        	//String fileName = null;
-	        	// Test how many arguments are in argList
-	        	if (size > index + 1) { 
-	        	// TODO : will it help to catch IndexOutOfBoundsException ?
-	            // Get the next argument as the filename.
-	        		//fileName = argList.get(index + 1);
+	        	if (savedSim) {
+	        		
+	                File loadFile = new File(loadFileString);
+		                
 		            try {     	
 		            	// try to see if user enter his own saved sim after the "load" argument
-		                handleLoadSimulation(argList); 
+		                handleLoadSimulation(loadFile); 
 
 		            } catch (Exception e) {
-		                showError("Could not load the user defined saved sim", e);
-		                
+		                e.printStackTrace();
+		                showError("Could not load the user's saved sim.", e);
+/*		                
 		                try {
 		                	// try loading default.sim instead
 		                	handleLoadDefaultSimulation();
 
 			            } catch (Exception e2) {
-			                showError("Could not load the default saved sim. Starting a new sim now. ", e2);
-		                
+			                showError("Could not load the default saved sim. Starting a new sim now. ", e2);		                
 			                handleNewSimulation();
-			            }   
+			            }
+*/			               
 		            }
 	        	}
 	        	
 	        	else {
-	        		
+	        		// if user wants to load the default saved sim
 	        		try {
 	                	// try loading default.sim instead
 	                	handleLoadDefaultSimulation();
 
 		            } catch (Exception e2) {
-		                showError("Could not load the default saved sim. Starting a new sim now. ", e2);
-	                
-		                handleNewSimulation();
-		            }
+		                e2.printStackTrace();
+		            	exitWithError("Could not load the default saved sim.", e2);	            	
+		                //showError("Could not load the default saved sim. Starting a new sim now. ", e2);           
+		                //handleNewSimulation();
+		            }     		
 	        	}
 			}
-
 			// 2016-06-06 Generated html files for in-game help 
 			else if (generateHTML) {
 		   		// CASE C //
@@ -407,14 +417,48 @@ public class MarsProjectFX extends Application  {
 	   		else if (loadSim) {
 		   		// CASE E //
 				logger.info("Loading a saved sim in GUI mode in " + OS);
-		   		mainMenu.setupMainSceneStage();	
-		   		// Note: if setting autosaveTimer to true --> use default.sim for autosaving.
-	   			mainMenu.loadSim(false);
-	   			
-	   			// Then wait for user to select a saved sim to load in loadSim();
-	   		}
-		    	    
+		   		mainMenu.setupMainSceneStage();		   		
+		   		
+	        	if (savedSim) {
+	                
+	        		File loadFile = new File(loadFileString);
+	                
+		            try {     	
+		            	// load loadFile directly without opening the FileChooser
+		            	mainMenu.loadSim(loadFile);
+		                
+		            } catch (Exception e) {
+		                e.printStackTrace();
+		                showError("Could not load the user's saved sim. ", e);
+/*		                
+		                try {
+		                	// load FileChooser instead
+				   			mainMenu.loadSim(null);			   			
+				   			// Then wait for user to select a saved sim to load in loadSim();
+				   			
+			            } catch (Exception e2) {
+			            	exitWithError("Could not load the default saved sim. ", e2);                		            	
+			            }   
+*/			            
+		            }
+	        	} 
+	        	
+	        	else { 
+	        		// if user wants to load the default saved sim
+	        		try {
+	                	// load FileChooser instead
+			   			mainMenu.loadSim(null);			   			
+			   			// Then wait for user to select a saved sim to load in loadSim();
+			   			
+		            } catch (Exception e2) {
+		                e2.printStackTrace();
+		            	exitWithError("Could not load the default saved sim. ", e2);                
+		            	
+		            }   
+	        	}
+	   		}		    	    
 		}
+	   	
 		else {
 		   	logger.info("loading default.sim in headless mode and skip loading the Main Menu");	
 		   	if (newSim) {
@@ -439,16 +483,17 @@ public class MarsProjectFX extends Application  {
      */
     private void handleLoadDefaultSimulation() {
 		//logger.info("MarsProjectFX's handleLoadDefaultSimulation() is on "+Thread.currentThread().getName());
-		//System.out.println("sim is " + sim);
+		logger.info("Loading the default saved sim in headless mode in " + OS);	
+
     	try {	
             // Load the default saved file "default.sim"
             sim.loadSimulation(null);
 		    // Start the simulation.
 		    startSimulation(true);
-		    
+
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Could not load default simulation", e);
-            throw e;
+            e.printStackTrace();
+            exitWithError("Could not load default simulation", e);
         }
     }
 
@@ -458,28 +503,27 @@ public class MarsProjectFX extends Application  {
      * @param argList the command argument list.
      * @throws Exception if error loading the saved simulation.
      */
-    void handleLoadSimulation(List<String> argList) throws Exception {
+    void handleLoadSimulation(File loadFile) throws Exception {
 		//logger.info("MarsProjectFX's handleLoadSimulation() is on "+Thread.currentThread().getName() );
     	// INFO: MarsProjectFX's handleLoadSimulation() is in JavaFX Application Thread Thread
-        try {
-            int index = argList.indexOf("-load");
-            // Get the next argument as the filename.
-            File loadFile = new File(argList.get(index + 1));
-            
+		logger.info("Loading user's saved sim in headless mode in " + OS);	
+    	try {
+
             if (loadFile.exists() && loadFile.canRead()) {
-            	
+
                 sim.loadSimulation(loadFile);
 			    // Start the simulation.
 			    startSimulation(true);
-			    
+
             } else {         	
-                exitWithError("Could not load the simulation. The sim file " + argList.get(index + 1) +
-                        " could not be found.", null);
+                exitWithError("Could not load the simulation. The sim file " + loadFile +
+                        " could not be read or found.", null);
             }
-            
+
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Problem loading existing simulation", e);
-            throw e;
+            e.printStackTrace();
+            exitWithError("Error : problem loading the simulation ", e);
+            //logger.log(Level.SEVERE, "Problem loading existing simulation", e);
         }
     }
 
@@ -490,9 +534,11 @@ public class MarsProjectFX extends Application  {
 		//logger.info("MarsProjectFX's handleNewSimulation() is on "+Thread.currentThread().getName() );
 		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
 		//isDone = true;
+		logger.info("Creating a new sim in " + OS);	
         try {
             //SimulationConfig.loadConfig(); // located to prepare()
            	sim.getSimExecutor().execute(new ConfigEditorTask());
+           	
         } catch (Exception e) {
             e.printStackTrace();
             exitWithError("Error : could not create a new simulation ", e);

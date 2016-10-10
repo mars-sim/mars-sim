@@ -4,11 +4,11 @@ http://mars-sim.sourceforge.net/
 
 ------------------------------------------------------
 
-## v3.1.0 (build 3737) Snapshot Preview 3 - 2016-10-07
+## v3.1.0 (build 3739) Snapshot Preview 3 - 2016-10-08
 
 ### NEW FEATURES :
 
-1. Added user's option to change the height of the MarsNet chat box with the command '/y1', '/y2', '/y3', and '/y4' to suit user's monitor height.
+1. Added user's option to change the height of the MarsNet chat box with the command '/y1', '/y2', '/y3', and '/y4' to suit the resolution of user's monitor.
 /y1 --> 256 pixels (by default)
 /y2 --> 512 pixels
 /y3 --> 768 pixels
