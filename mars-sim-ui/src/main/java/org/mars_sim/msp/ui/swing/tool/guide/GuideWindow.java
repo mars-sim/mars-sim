@@ -158,8 +158,9 @@ ComponentListener {
 				browser.setTextInputCache(input);
 				browser.inputURLType(input);//, BrowserJFX.REMOTE_HTML);
 				browser.showURL();
+				//browser.addCSS();
 			});
-			browser.fireButtonGo(input);
+			//browser.fireButtonGo(input);
 
 			//goToURL(guideURL);	
 			//updateButtons();
@@ -173,7 +174,7 @@ ComponentListener {
 				browser.showURL();
 
 			});
-			browser.fireButtonGo(projectsiteURLstring);
+			//browser.fireButtonGo(projectsiteURLstring);
 			
 		} else if (source == this.discussionButton) {
 			Platform.runLater(()-> {
@@ -182,7 +183,7 @@ ComponentListener {
 				browser.showURL();
 
 			});
-			browser.fireButtonGo(discussionURLstring);
+			//browser.fireButtonGo(discussionURLstring);
 
 		}
 		

@@ -275,14 +275,14 @@ public class BrowserJFX {
 			isLocalHtml = true;
 			//System.out.println("BrowserJFX : input is " + input);
 			determineURL(input + ".html", INTERNAL_COMMAND);
-			addCSS();
+			//addCSS();
 	    }
 		// Type 1 is local html file 
 		else if (URL_type == LOCAL_HTML) {
 			isLocalHtml = true;	
 			isInternal = false;
 			determineURL(input, LOCAL_HTML);
-			addCSS();
+			//addCSS();
 			//btnGo.doClick();
 		}
 
@@ -494,28 +494,34 @@ public class BrowserJFX {
                     }
                 });
 */   
-/*                
+               
                 // process page loading
                 engine.getLoadWorker().stateProperty().addListener(
                     new ChangeListener<State>() {
                         @Override
                         public void changed(ObservableValue<? extends State> ov,
                             State oldState, State newState) {                           
-                                //if (newState == State.SUCCEEDED) {
-                                if (newState != oldState) {	
-                                	//System.out.println("BrowserJFX : clicking on a hyperlink, calling stateProperty()");                              	
+                                if (newState == State.SUCCEEDED) {
+                                //if (newState != oldState) {	
                                 	String input = getCurrentURL();
-                            		if (inputCache != input) {
-                            			inputCache = input;
-	                                	getURLType(input);                             	
-	                                	if (!isLocalHtml)                                		
-		                                	SwingUtilities.invokeLater(() ->setURLText());
+                                	//System.out.println("BrowserJFX's stateProperty()");                         	
+                            		if (input.contains("/docs/help")) {  
+                            			go_flag = true;
+                            			isLocalHtml = true;
+                                    	// Note: after hours of experiments, it's found that the only "safe" way 
+                            			// (without causing NullPointerException) is to call addCSS() 
+                            			// through stateProperty() here.                              	
+                            			addCSS();
+                            			go_flag = false;
+	                                	//getURLType(input);                             	
+	                                	//if (!isLocalHtml)                                		
+		                                //	SwingUtilities.invokeLater(() ->setURLText());
                             		}
                                 }
                             }
                         }
                 );
-*/                
+                
                 jfxPanel.setScene(new Scene(view));
         });
     }
@@ -532,7 +538,7 @@ public class BrowserJFX {
     	if (content.contains("/docs/help")) {  
     		isLocalHtml = true;
     		//isInternal = false;
-        	addCSS();
+        	//addCSS();
     		int i = content.indexOf("docs")-1;
             String shortened = content.substring(i, content.length());
             //System.out.println("shortened is " + shortened);
@@ -565,7 +571,7 @@ public class BrowserJFX {
     }
 	@SuppressWarnings("restriction")
     public void addCSS() { 
-    	//logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );  		
+    	logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );  		
     	if (go_flag && isLocalHtml) {// && !isInternal) {
 		   	//System.out.println("adding css");
 			Document doc = engine.getDocument() ;
