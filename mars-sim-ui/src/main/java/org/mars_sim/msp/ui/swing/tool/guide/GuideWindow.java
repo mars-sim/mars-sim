@@ -125,24 +125,25 @@ ComponentListener {
 		setVisible(true);
 	   	//logger.info("GuideWindow's constructor: done!");
 
-		updateButtons();
+		//userguideButton.doClick(); // not useful
 	}
 
 	
-	/**
-	 * Updates navigation buttons.
-	 */
-	public void updateButtons() {
-		userguideButton.setEnabled(true);
-	}
 
 	/**
 	 * Set a display URL .
 	 */
 	// 2016-06-07 Added displaying the hyperlink's path and html filename.
 	public void setURL(String fileloc) {
-		goToURL(getClass().getResource(fileloc));
-		browser.getStatusBarLabel().setText(fileloc);
+		//goToURL(getClass().getResource(fileloc));
+		//browser.getStatusBarLabel().setText(fileloc);
+		String fullLink = getClass().getResource(fileloc).toExternalForm();
+		Platform.runLater(()-> {
+			browser.setTextInputCache(fullLink);
+			browser.inputURLType(fullLink);//, BrowserJFX.REMOTE_HTML);
+			browser.showURL();
+		});
+		browser.fireButtonGo(fullLink);
 	}
 
 	/** Implementing ActionListener method. */
@@ -151,12 +152,16 @@ ComponentListener {
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
 		if (source == this.userguideButton) {
+			String input = guideURL.toExternalForm();
+			//System.out.println("guideURL.toExternalForm() is "+ input);
 			Platform.runLater(()-> {
-				browser.setTextInputCache(guideURL.toExternalForm());
-				browser.inputURLType(guideURL.toExternalForm());//, BrowserJFX.REMOTE_HTML);
-				browser.setURLText();
+				browser.setTextInputCache(input);
+				browser.inputURLType(input);//, BrowserJFX.REMOTE_HTML);
+				browser.showURL();
 			});
-			goToURL(guideURL);			
+			browser.fireButtonGo(input);
+
+			//goToURL(guideURL);	
 			//updateButtons();
 			//browser.getStatusBarLabel().setText(guideURL.toExternalForm());
 		} 
@@ -165,37 +170,41 @@ ComponentListener {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(projectsiteURLstring);
 				browser.inputURLType(projectsiteURLstring);//, BrowserJFX.REMOTE_HTML);
-				browser.setURLText();
-			});
-			updateButtons();
+				browser.showURL();
 
+			});
+			browser.fireButtonGo(projectsiteURLstring);
 			
 		} else if (source == this.discussionButton) {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(discussionURLstring);
 				browser.inputURLType(discussionURLstring);//, BrowserJFX.REMOTE_HTML);
-				browser.setURLText();
+				browser.showURL();
+
 			});
-			updateButtons();
+			browser.fireButtonGo(discussionURLstring);
 
 		}
 		
 	}
 
 
-	public void goToURL(URL url) {
-		displayPage(url);
-	}
+	//public void goToURL(URL url) {
+	//	displayPage(url);
+	//}
 	
-
+/*
 	//2016-04-22 Revised displayPage() to discern between a local or a remote href
 	private URL displayPage(URL pageURL) {
 		//System.out.println("displayPage() : pageURL is " + pageURL);
 		String input = pageURL.toExternalForm();
 		//System.out.println("displayPage(). input is " + input);
-		SwingUtilities.invokeLater(()->{
+        Platform.runLater(()-> {
+		//SwingUtilities.invokeLater(()->{
 			browser.loadLocalURL(input);
 		});
+		
+*/        
 /*		
 	    //SwingUtilities.invokeLater(() -> {	    	    	
     	String fileString = "file:/";
@@ -239,7 +248,7 @@ ComponentListener {
 			}			
 		}
 		//});
-*/	    
+	    
 	    try {
 			return new URL(input);
 		} catch (MalformedURLException e) {
@@ -248,7 +257,8 @@ ComponentListener {
 			return null;
 		}
 	}
-
+*/
+	
 	/**
 	 * Implement ComponentListener interface.
 	 * Make sure the text is scrolled to the top.

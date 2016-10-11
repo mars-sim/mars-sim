@@ -7,7 +7,6 @@
 package org.mars_sim.msp.javafx.configEditor;
 
 import org.mars_sim.msp.javafx.MainMenu;
-import org.mars_sim.msp.javafx.MarsProjectFX;
 //import org.mars_sim.msp.javafx.WaitIndicator;
 import org.mars_sim.msp.javafx.MainMenu.LoadSimulationTask;
 //import org.mars_sim.msp.javafx.undecorator.Undecorator;
@@ -148,7 +147,6 @@ public class ScenarioConfigEditorFX {
 	private SimulationConfig config;
 	private MainMenu mainMenu;
 	private CrewEditorFX crewEditorFX;
-	//private MarsProjectFX marsProjectFX;
 	private MultiplayerClient multiplayerClient;
 	private SettlementConfig settlementConfig;
 	private MainScene mainScene;
@@ -163,7 +161,7 @@ public class ScenarioConfigEditorFX {
 	 * @param mainMenu
 	 * @param config the simulation configuration.
 	 */
-	public ScenarioConfigEditorFX(MainMenu mainMenu) { // ,	MarsProjectFX marsProjectFX, 																			// {
+	public ScenarioConfigEditorFX(MainMenu mainMenu) {																		// {
 		// logger.info("ScenarioConfigEditorFX's constructor is on " +
 		// Thread.currentThread().getName() );
 
@@ -1124,7 +1122,6 @@ public class ScenarioConfigEditorFX {
 		mainMenu = null;
 		mainScene = null;
 		crewEditorFX = null;
-		//marsProjectFX = null;
 		multiplayerClient = null;
 		settlementConfig = null;
 

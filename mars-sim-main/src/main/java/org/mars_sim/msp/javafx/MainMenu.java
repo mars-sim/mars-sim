@@ -18,10 +18,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
 
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCode;
@@ -98,6 +101,8 @@ import org.controlsfx.control.MaskerPane;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.javafx.MarsProjectFX.ConfigEditorTask;
+import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX;
 import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX.SimulationTask;
 import org.mars_sim.msp.javafx.controller.MainMenuController;
 import org.mars_sim.msp.networking.MultiplayerMode;
@@ -115,6 +120,8 @@ public class MainMenu {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MainMenu.class.getName());
 
+	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+	
     private static final int WIDTH = 1024;//768-20;
     private static final int HEIGHT = 768-20;
 
@@ -141,16 +148,16 @@ public class MainMenu {
 	public MainScene mainScene;
 	public ScreensSwitcher screen;
 
-	private MarsProjectFX marsProjectFX;
+	//private MarsProjectFX marsProjectFX;
 	private transient ThreadPoolExecutor executor;
 	private MultiplayerMode multiplayerMode;
 	public MainMenuController mainMenuController;
 
 	public SpinningGlobe spinningGlobe;
 	
-    public MainMenu(MarsProjectFX marsProjectFX) {
+    public MainMenu() {//MarsProjectFX marsProjectFX) {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
-    	this.marsProjectFX = marsProjectFX;
+    	//this.marsProjectFX = marsProjectFX;
     	mainMenu = this;
  	}
 
@@ -284,9 +291,26 @@ public class MainMenu {
 	   // creates a mainScene instance
 	   mainScene = new MainScene(mainSceneStage);
 	   // goes to scenario config editor
-	   marsProjectFX.handleNewSimulation();
+	   
+	   //marsProjectFX.handleNewSimulation();
+		logger.info("Creating a new sim in " + OS);	
+        try {
+            //SimulationConfig.loadConfig(); // located to prepare()
+           	Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
+           	
+        } catch (Exception e) {
+            e.printStackTrace();
+            exitWithError("Error : could not create a new simulation ", e);
+        }
    }
 
+	public class ConfigEditorTask implements Runnable { 	
+		  public void run() {
+			  //logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
+			  new ScenarioConfigEditorFX(mainMenu); //marsProjectFX, 
+		  }
+	}
+	
    public void runTwo() {
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName());
 	   mainMenuScene.setCursor(Cursor.WAIT);
@@ -313,32 +337,46 @@ public class MainMenu {
 	   String dir = Simulation.DEFAULT_DIR;
 	   String title = null;
 
-	   if (selectedFile == null) {
+	   try {
 		   
-		   FileChooser chooser = new FileChooser();
-			// chooser.setInitialFileName(dir);
-			// Set to user directory or go to default if cannot access
-			// String userDirectoryString = System.getProperty("user.home");
-		   File userDirectory = new File(dir);
-		   chooser.setInitialDirectory(userDirectory);
-		   chooser.setTitle(title); // $NON-NLS-1$
-
-			// Set extension filter
-		   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
-					"Simulation files (*.sim)", "*.sim");
-		   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
-					"all files (*.*)", "*.*");
-
-		   chooser.getExtensionFilters().addAll(simFilter, allFilter);
-
-			// Show open file dialog
-			selectedFile = chooser.showOpenDialog(stage); 
-	   }
-	   else {
-   			// if user wants to load the default saved sim
+		   if (selectedFile == null) {
+			   
+			   FileChooser chooser = new FileChooser();
+				// chooser.setInitialFileName(dir);
+				// Set to user directory or go to default if cannot access
+				// String userDirectoryString = System.getProperty("user.home");
+			   File userDirectory = new File(dir);
+			   chooser.setInitialDirectory(userDirectory);
+			   chooser.setTitle(title); // $NON-NLS-1$
+	
+				// Set extension filter
+			   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
+						"Simulation files (*.sim)", "*.sim");
+			   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
+						"all files (*.*)", "*.*");
+	
+			   chooser.getExtensionFilters().addAll(simFilter, allFilter);
+	
+			   // Show open file dialog
+			   selectedFile = chooser.showOpenDialog(stage); 
+		   }
 		   
-	   }
-
+		   else {
+	   			// if user wants to load the default saved sim
+			   
+		   }
+  
+	   } catch (NullPointerException e) {
+	       System.err.println("NullPointerException in loading sim. " + e.getMessage());
+	       Platform.exit();
+	       System.exit(1); 	  
+	       
+	   } catch (Exception e) {
+	       System.err.println("Exception in loading sim. " + e.getMessage());
+	       Platform.exit();
+	       System.exit(1); 
+	   }	   
+	   
 	   if (selectedFile != null) {
 			
 			final File fileLocn = selectedFile;
@@ -412,8 +450,14 @@ public class MainMenu {
    			// Initialize the simulation.
 			Simulation.instance().createNewSimulation(); 
 			
-			// Loading settlement data from the default saved simulation
-			Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+			try {
+				// Loading settlement data from the default saved simulation
+				Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
+			
+	        } catch (Exception e) {
+	            //e.printStackTrace();
+	            exitWithError("Error : could not create a new simulation ", e);
+	        }
 			
 			Simulation.instance().start(autosaveDefaultName);
 			
@@ -561,6 +605,36 @@ public class MainMenu {
 		return spinningGlobe;
 	}
 
+    /**
+     * Exit the simulation with an error message.
+     * @param message the error message.
+     * @param e the thrown exception or null if none.
+     */
+    private void exitWithError(String message, Exception e) {
+        showError(message, e);
+        Platform.exit();
+        System.exit(1);
+    }
+
+    /**
+     * Show a modal error message dialog.
+     * @param message the error message.
+     * @param e the thrown exception or null if none.
+     */
+    private void showError(String message, Exception e) {
+        if (e != null) {
+            logger.log(Level.SEVERE, message, e);
+        }
+        else {
+            logger.log(Level.SEVERE, message);
+        }
+
+        //if (!headless) {
+        //	if (!OS.contains("mac"))
+        //		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        	// Warning: cannot load the editor in macosx if it was a JDialog
+        //}
+    }
  	
 	public void destroy() {
 
@@ -572,7 +646,7 @@ public class MainMenu {
 		mainMenuScene = null;
 		mainMenu = null;
 		mainScene = null;
-		marsProjectFX = null;
+		//marsProjectFX = null;
 		executor = null;
 		multiplayerMode = null;
 		mainMenuController = null;

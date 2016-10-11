@@ -110,21 +110,21 @@ numeral argument after the jar file as shown below :
 
 A. GUI Interface
 
-- If you want to load a previously saved simulation, the quickest way
-is clicking the jar file to start the Main Menu, then choose 'Load Sim'.
-In the FileChooser, select the saved sim you want to load.  
+- If you want to load a previously saved simulation, 
+a. Double-click the jar file to start
+b. Choose 'Load Sim' in the Main Menu
+c. select the default.sim or or a *.sim in the FileChooser 
 
 - alternatively, you may use the terminal to type : 
 
 > java -jar mars-sim-main-[version/build].jar 3 load
 
-This will load 'default.sim' located inside \.mars-sim\saved\
+This will load the FileChooser and open up \.mars-sim\saved\
 
 Note 1 : the order of the arguments is not important.
 
-Note 2 : by default, it is assumed the user is interested in 
-loading the default saved sim file. Do NOT type 'default.sim' 
-as an argument. 
+Note 2 : do NOT type 'default.sim' as an argument since default.sim
+is located at \.mars-sim\saved\
 
 	OR
 
@@ -148,7 +148,7 @@ Note 1 : the order of the arguments is not important.
 
 Note 2 : by default, it is assumed the user is interested in 
 loading the default saved sim file. Do NOT type 'default.sim' 
-as an argument. 
+as an argument since default.sim is located at \.mars-sim\saved\
 
 - To load a particular saved sim without the GUI interface, type :
 

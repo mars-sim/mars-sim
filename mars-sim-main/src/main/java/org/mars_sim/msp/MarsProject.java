@@ -199,23 +199,24 @@ public class MarsProject {
     	try {
             // Load the default simulation
             Simulation.instance().loadSimulation(null);
-
-            if (useGUI) {
-                // Create the main desktop window.
-                new MainWindow(false);
-                
-             // Start simulation.
-                startSimulation(true);
-            }
-            else {
-            	// go headless
-            	// Start simulation.
-            	startSimulation(false);
-            }
             
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Could not load default simulation", e);
-            throw e;
+            //logger.log(Level.WARNING, "Could not load default simulation", e);
+            //throw e;
+            exitWithError("Problem loading the default simulation.", e);
+        }
+    	
+        if (useGUI) {
+            // Create the main desktop window.
+            new MainWindow(false);
+            
+         // Start simulation.
+            startSimulation(true);
+        }
+        else {
+        	// go headless
+        	// Start simulation.
+        	startSimulation(false);
         }
     }
 
@@ -234,20 +235,22 @@ public class MarsProject {
             if (loadFile.exists() && loadFile.canRead()) {
                 Simulation.instance().loadSimulation(loadFile);
 
-                // Create the main desktop window.
-                new MainWindow(false);
-
-                // Start simulation.
-                startSimulation(false);
             }
             else {
                 exitWithError("Problem loading simulation. " + argList.get(index + 1) +
                         " not found.", null);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Problem loading existing simulation", e);
-            throw e;
+            //logger.log(Level.SEVERE, "Problem loading existing simulation", e);
+            exitWithError("Problem loading the default simulation.", e);
         }
+    	
+        // Create the main desktop window.
+        new MainWindow(false);
+
+        // Start simulation.
+        startSimulation(false);
+    	
     }
 
     /**

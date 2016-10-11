@@ -82,7 +82,7 @@ public class UnitManager implements Serializable {
 	public static ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
 	public static int NUM_SPONSORS = SPONSORS.length;
 
-	public static String build;
+	//public static String build;
 	   
 	// Data members
 	//private int solCache;

@@ -292,7 +292,7 @@ implements ClockListener, Serializable {
         isUpdating = false;
         
         //2016-09-30 Copied build version. Usable for comparison when loading a saved sim
-        UnitManager.build = Simulation.BUILD;
+        SimulationConfig.instance().build = Simulation.BUILD;
     }
 
 
@@ -433,29 +433,29 @@ implements ClockListener, Serializable {
             logger.info(Msg.getString("Simulation.log.loadSimFrom", f)); //$NON-NLS-1$
 
             try {
-            	// Compute the size of the saved sim
-    			fileSize = (f.length() / 1000D);
-    			String fileStr = "";
-    			//System.out.println("file size is " + fileSize);
-    			if (fileSize < 1000)
-    				fileStr = Math.round(fileSize*10.0)/10.0 + " KB";
-    			else
-    				fileStr = Math.round(fileSize)/10.0 + " MB";
-    			logger.info("The saved sim has a size of "+ fileStr);
-    			//logger.info("  Build : " + loadBuild + "   Size : "+ fileStr);
-                sim.readFromFile(f);
 
-                isUpdating = false;
-                
-            } catch (ClassNotFoundException ex) {
-            	logger.warning("ClassNotFoundException when loading the simulation! " + ex.getMessage());
-            } catch (IOException ex) {
-            	logger.warning("IOException when loading the simulation! "+ ex.getMessage());
-            }
+                sim.readFromFile(f);
+                             
+            } catch (ClassNotFoundException e2) {
+            	logger.log(Level.SEVERE, "Quitting mars-sim with Class Not Found Exception when loading the simulation! " + " : " + e2.getMessage());
+    	        Platform.exit();
+    	        System.exit(1);  
+    	        
+            } catch (IOException e1) {
+            	logger.log(Level.SEVERE, "Quitting mars-sim with I/O error when loading the simulation! " + " : " + e1.getMessage());
+    	        Platform.exit();
+    	        System.exit(1);
+
+	        } catch (Exception e0) {
+	        	logger.log(Level.SEVERE, "Quitting mars-sim. Could not create a new simulation " + " : " + e0.getMessage());
+    	        Platform.exit();
+    	        System.exit(1);
+	        }
+            
         }
         
         else{
-        	logger.warning("The saved sim cannot be read or found. ");
+        	logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read or found. ");
             //throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
             //        f.getPath() + " is not accessible");
             Platform.exit();
@@ -478,6 +478,8 @@ implements ClockListener, Serializable {
         ObjectInputStream ois = null;
         FileInputStream in = null;
 
+        boolean no_go = false;
+        
         try {
         	//System.out.println("Simulation : inside try. starting decompressing");
             in = new FileInputStream(file);
@@ -524,36 +526,63 @@ implements ClockListener, Serializable {
             fos.close();     
             uncompressed.delete();
    
-            loadBuild = UnitManager.build;
+        	// Compute the size of the saved sim
+			fileSize = (file.length() / 1000D);
+			String fileStr = "";
+			//System.out.println("file size is " + fileSize);
+			if (fileSize < 1000)
+				fileStr = Math.round(fileSize*10.0)/10.0 + " KB";
+			else
+				fileStr = Math.round(fileSize)/10.0 + " MB";
+			
+			//logger.info("The saved sim has a size of "+ fileStr);
+		
+            loadBuild = SimulationConfig.instance().build;
         	if (loadBuild == null)
         		loadBuild = "unknown";
             
+			logger.info("  Build : " + loadBuild + "   Size : "+ fileStr);
+        	
         	if (instance().BUILD.equals(loadBuild))
         		logger.info("Running mars-sim and loading a saved sim in Build " + loadBuild);
         	else
         		logger.warning("Running mars-sim in Build " + Simulation.BUILD + " but loading a saved sim in Build " + loadBuild);
-
-            // Initialize transient data.
-            initializeTransientData();
-
-            instance().initialSimulationCreated = true;
-  
+ 
         } catch (FileNotFoundException e) {
-            System.err.println("File " + file + " cannot be found : " + e.getMessage());
+        	logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());
             Platform.exit();
             System.exit(1);
 
         } catch (EOFException e) {
-            System.err.println("Unexpected end of file (EOF) error on " + file);
+        	logger.log(Level.SEVERE, "Quitting mars-sim with Unexpected End of File error on " + file + " : " + e.getMessage());
             Platform.exit();
             System.exit(1);
 
         } catch (IOException e) {
-            System.err.println("Error decompressing " + file + ": " + e.getMessage());
+        	logger.log(Level.SEVERE, "Quitting mars-sim with I/O rrror when decompressing " + file + " : " + e.getMessage());
             Platform.exit();
             System.exit(1);           
-	    } 
         	
+	    } catch (NullPointerException e) {
+	    	logger.log(Level.SEVERE, "Quitting mars-sim with null pointer error when loading " + file + " : " + e.getMessage());
+	        Platform.exit();
+	        System.exit(1);           
+
+	    } catch (Exception e) {
+	    	no_go = true;
+	    	logger.log(Level.SEVERE, "Quitting mars-sim with errors when loading " + file + " : " + e.getMessage());
+	        Platform.exit();
+	        System.exit(1);           
+	    } 
+        
+        if (!no_go) {
+	        // Initialize transient data.
+	        instance().initializeTransientData();
+	
+	        instance().initialSimulationCreated = true;
+	        
+	        isUpdating = false;        
+        }
 	}
 
 
@@ -674,7 +703,7 @@ implements ClockListener, Serializable {
 			
 
         } catch (IOException e){
-            logger.log(Level.WARNING, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
+            logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
             throw e;
             
         //} finally {

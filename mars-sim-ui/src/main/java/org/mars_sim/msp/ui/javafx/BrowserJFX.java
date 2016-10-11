@@ -64,7 +64,7 @@ public class BrowserJFX {
 
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(BrowserJFX.class.getName());
-
+    
     public static final String MAP_FILE = "map";
     public static final String GLOBE_FILE = "globe";
 			
@@ -85,8 +85,7 @@ public class BrowserJFX {
     public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
     public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
 
-    public String textInputCache, addressURLText, statusBarURLText;
-    
+ 
     private static final String CSS = 
     		"a, a:link, a:visited, a:hover{color:rgb(184, 134, 11); text-decoration:none;}"    		
           + "body {"
@@ -100,9 +99,10 @@ public class BrowserJFX {
           + "hr{width:90%;}";
 		 
     
-	private boolean isLocalHtml = false, isInternal = false;
-	private String inputCache;
-	
+	private boolean isLocalHtml = true, isInternal = false, go_flag = false;
+
+    public volatile String textInputCache, addressURLText, statusBarURLText, inputCache;
+    
     private final JFXPanel jfxPanel = new JFXPanel();
     private JPanel panel = new JPanel(new BorderLayout());
     private final JLabel statusBarLbl = new JLabel();
@@ -118,20 +118,46 @@ public class BrowserJFX {
     
     private WebHistory history;
 
+	private ObservableList<WebHistory.Entry> entryList; 
+	
     public BrowserJFX() {
 
         Platform.runLater(() -> {       
             view = new WebView();
             engine = view.getEngine();          
             history = engine.getHistory();    
+            entryList = history.getEntries();
         	//logger.info("Web Engine supported : " + engine.getUserAgent());
         });
         
         initJFX();
         panel = init();
+        
+
+        
+        Platform.runLater(() -> {     
+            btnGo.doClick(); // not useful
+            //btnGo.doClick();
+        	//history.go(0);
+        	updateButtons();
+        });
     }
 
     
+    public void fireButtonGo(String input) {
+
+		//if (inputCache != input) { // cannot use this. need to be able to reload
+		//	inputCache = input;
+			if (input != null && !input.isEmpty()) {
+				// if the address bar is not empty
+				Platform.runLater(() -> {
+					inputURLType(input);
+					//showURL();
+					//addCSS();
+				});
+			}
+		//}
+    }
     // 2016-04-22 Added ability to interpret internal commands
     public JPanel init() {
         
@@ -139,21 +165,12 @@ public class BrowserJFX {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
             	
-            	highlight();
-            	
-        		String input = urlTF.getText().trim();        		
-            	//System.out.println("BrowserJFX's actionPerformed() : input is [" + input + "]");          	
-
-        		if (inputCache != input) {
-        			inputCache = input;
-	        		if (input != null && !input.isEmpty()) {
-	        			// if the address bar is not empty
-	        			Platform.runLater(() -> {
-	        				inputURLType(input);
-	        			});
-	        		}
-        		}
-        		
+            	highlight();          	
+             	//System.out.println("BrowserJFX's actionPerformed() : input is [" + input + "]");          	
+        		String input = urlTF.getText().trim();
+    			go_flag = true;
+            	fireButtonGo(input);
+     		    go_flag = false;
             }
         };
         
@@ -179,7 +196,7 @@ public class BrowserJFX {
         btnForward.addActionListener(fl);
         btnGo.addActionListener(al);
         urlTF.addActionListener(al);			
-
+        
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
 
@@ -207,6 +224,7 @@ public class BrowserJFX {
 
     
     public void inputURLType(String input) {
+    	
     	if (input != null && !input.isEmpty()) {
     		textInputCache = input; 
 
@@ -257,7 +275,7 @@ public class BrowserJFX {
 			isLocalHtml = true;
 			//System.out.println("BrowserJFX : input is " + input);
 			determineURL(input + ".html", INTERNAL_COMMAND);
-			//addCSS();
+			addCSS();
 	    }
 		// Type 1 is local html file 
 		else if (URL_type == LOCAL_HTML) {
@@ -265,6 +283,7 @@ public class BrowserJFX {
 			isInternal = false;
 			determineURL(input, LOCAL_HTML);
 			addCSS();
+			//btnGo.doClick();
 		}
 
 		else if (URL_type == REMOTE_HTML) {
@@ -318,7 +337,7 @@ public class BrowserJFX {
                 WebViewHyperlinkListener eventPrintingListener = event -> {
                 	
                 	if (event.getEventType() == EventType.ACTIVATED) {
-	                	String input = event.getURL().toString();
+	                	String input = event.getURL().toString(); // can get NullPointerException on some links.
 	                     
 	                    boolean status0 = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
 	                    boolean status1 = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
@@ -329,6 +348,8 @@ public class BrowserJFX {
 	    				else {
 	    					isLocalHtml = true;
 	    				}
+	                    
+	                    updateButtons();
                 	}
 
                     return false;
@@ -399,8 +420,8 @@ public class BrowserJFX {
                             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
                             	if (content.contains("/docs/help")) {                            	
                             		int i = content.indexOf("docs")-1;
-                            		//System.out.println("shortened content is " + content.substring(i, content.length()-1));
-                            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
+                            		//System.out.println("shortened content is " + content.substring(i, content.length()));
+                            		statusBarLbl.setText(content.substring(i, content.length()));          		
                             	}
                             	else {
                             		//System.out.println("content is " + content);
@@ -427,10 +448,10 @@ public class BrowserJFX {
 	        				jsobj.setMember("JavaBridge", new TicketSubmission());  
                     	});
                     	                   	
-                    	SwingUtilities.invokeLater(() ->{
+                    	//SwingUtilities.invokeLater(() ->{
                     		textInputCache = newValue;
-                       		setURLText();
-                    	});
+                       		//showURL();
+                    	//});
                     }
                 });
 
@@ -500,16 +521,24 @@ public class BrowserJFX {
     }
 
     /*
-     * Set the url text in the address textfield 
+     * Show the url text in both the status bar and the address textfield 
      */
-    public void setURLText() {
+    public void showURL() {
+    	//logger.info("BrowserJFX's showURL() is on " + Thread.currentThread().getName() );    	
     	String content = textInputCache;
-    	if (content.contains("/docs/help")) {                            	
+        //System.out.println("urlTF is " + urlTF.getText());
+        //System.out.println("textInputCache is " + textInputCache);
+
+    	if (content.contains("/docs/help")) {  
+    		isLocalHtml = true;
+    		//isInternal = false;
+        	addCSS();
     		int i = content.indexOf("docs")-1;
-            String shortened = content.substring(i, content.length()-1);
+            String shortened = content.substring(i, content.length());
+            //System.out.println("shortened is " + shortened);
             urlTF.setText(shortened);
     		statusBarURLText = shortened;
-    		statusBarLbl.setText(shortened);          		
+    		statusBarLbl.setText(shortened);   		
     	}
     	else {
     		// this is a remote link or internal link
@@ -534,18 +563,22 @@ public class BrowserJFX {
      	} 
 */     		
     }
-    
-    public void addCSS() { 	
-	   	//System.out.println("adding css");
-    	Document doc = engine.getDocument() ;
-	    Element styleNode = doc.createElement("style");
-	    Text styleContent = doc.createTextNode(CSS);
-	    styleNode.appendChild(styleContent);
-	    //if (doc.getDocumentElement().getElementsByTagName("head").item(0) != null)
-	    	doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
-	    //if (doc.getDocumentElement().getElementsByTagName("HEAD").item(0) != null)
-	    //	doc.getDocumentElement().getElementsByTagName("HEAD").item(0).appendChild(styleNode);
-	    
+	@SuppressWarnings("restriction")
+    public void addCSS() { 
+    	//logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );  		
+    	if (go_flag && isLocalHtml) {// && !isInternal) {
+		   	//System.out.println("adding css");
+			Document doc = engine.getDocument() ;
+			//SwingUtilities.invokeLater(() -> {
+			    Element styleNode = doc.createElement("style");
+			    Text styleContent = doc.createTextNode(CSS);
+			    styleNode.appendChild(styleContent);
+			    if (doc.getDocumentElement().getElementsByTagName("head").item(0) != null)
+			    	doc.getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
+			    if (doc.getDocumentElement().getElementsByTagName("HEAD").item(0) != null)
+			    	doc.getDocumentElement().getElementsByTagName("HEAD").item(0).appendChild(styleNode);
+			//});
+	   }
     }
     
 	// 2016-04-18 Added updateURL()
@@ -587,10 +620,12 @@ public class BrowserJFX {
     	isInternal = false;
     	
         Platform.runLater(()-> {
-			boolean status = content.toLowerCase().contains(HTTPS_HEADER) || content.toLowerCase().contains(HTTP_HEADER);          	
+			boolean status = content.toLowerCase().contains(HTTPS_HEADER) 
+					|| content.toLowerCase().contains(HTTP_HEADER);          	
 		
 			if (status) {
 				engine.load(content);
+				updateButtons();
 				textInputCache = content;
 				statusBarURLText = content;
         		statusBarLbl.setText(content);
@@ -609,13 +644,14 @@ public class BrowserJFX {
     	isInternal = false;
         Platform.runLater(()-> {
             engine.load(content);
+            updateButtons();
             textInputCache = content;
             if (content != null && !content.isEmpty()) {       	     
             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
             	if (content.contains("/docs/help")) {                            	
             		int i = content.indexOf("docs")-1;
                     addressURLText = content;
-            		statusBarURLText = content.substring(i, content.length()-1);
+            		statusBarURLText = content.substring(i, content.length());
             		statusBarLbl.setText(statusBarURLText);          		
             	}
             	else {
@@ -628,7 +664,8 @@ public class BrowserJFX {
         
     }
 
-    private void highlight() {
+    @SuppressWarnings("restriction")
+	public void highlight() {
         //System.out.println("highlight()");
         Platform.runLater(() -> {        
                 engine.setJavaScriptEnabled(true);
@@ -653,7 +690,7 @@ public class BrowserJFX {
         ObservableList<WebHistory.Entry> entryList = history.getEntries();
         int currentIndex = history.getCurrentIndex();
         String txt = null;
-        if (currentIndex != 0) {
+        if (currentIndex >=0 ) {
         	txt = entryList.get(currentIndex).getUrl();
         	//System.out.println("currentIndex is " + currentIndex + " url is " + txt);       
         	//Platform.runLater(() -> { history.go(0);} );   
@@ -669,61 +706,111 @@ public class BrowserJFX {
     	return statusBarLbl;
     }
     
+    public void updateButtons() {
+    	//final WebHistory history = engine.getHistory();
+    	//ObservableList<WebHistory.Entry> entryList = history.getEntries();
+    	int currentIndex = history.getCurrentIndex();
+       	//System.out.println("updateButtons()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
+           	
+    	if (entryList.size() > 1) {
+    		if (currentIndex > 0)
+    			btnBack.setEnabled(true);
+    		else
+    			btnBack.setEnabled(false);
+    		
+    		if  (currentIndex < entryList.size() - 1)
+    			btnForward.setEnabled(true);
+    		else
+    			btnForward.setEnabled(false);
+    	}
+    	else {
+    		btnBack.setEnabled(false);
+    		btnForward.setEnabled(false);
+    	}
+    	
+/*    	
+    	if (entryList.size() > 1 
+				&& currentIndex > 0)
+    		btnBack.setEnabled(true);
+    	else
+    		btnBack.setEnabled(false);
+    	
+    	if (entryList.size() > 1
+				&& currentIndex < entryList.size() - 1)
+    		btnForward.setEnabled(true);
+    	else
+    		btnForward.setEnabled(false);
+*/
+    	
+    }
+    
+    
+    
     @SuppressWarnings("restriction")
     public void goBack() { 
-    	final WebHistory history = engine.getHistory();
-    	ObservableList<WebHistory.Entry> entryList = history.getEntries();
-    	int currentIndex = history.getCurrentIndex();
-
     	Platform.runLater(() -> {
+        	int currentIndex = history.getCurrentIndex();
+        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
     		history.go(entryList.size() > 1 
     				&& currentIndex > 0
     				? -1
     				: 0); 
     		
-       		setURLText();
+       		showURL();
        		
-            String content = textInputCache;
-            if (content != null && !content.isEmpty()) {         	     
-            	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-            	if (content.contains("/docs/help")) {                            	
-            		int i = content.indexOf("docs")-1;
-            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
-            	}
-            	else
-            		// this is a remote link or internal link
-            		statusBarLbl.setText(content);
-            }
-    	});        
+        	currentIndex = history.getCurrentIndex();
+        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());        	
+        	if (entryList.size() > 1) {
+        		if (currentIndex > 0)
+        			btnBack.setEnabled(true);
+        		else
+        			btnBack.setEnabled(false);
+        		
+        		if  (currentIndex < entryList.size() - 1)
+        			btnForward.setEnabled(true);
+        		else
+        			btnForward.setEnabled(false);
+        	}
+        	else {
+        		btnBack.setEnabled(false);
+        		btnForward.setEnabled(false);
+        	}
+       	});
+     
 	}
 
     @SuppressWarnings("restriction")
     public void goForward() {
-    	final WebHistory history = engine.getHistory();   
-    	ObservableList<WebHistory.Entry> entryList = history.getEntries();
-    	int currentIndex = history.getCurrentIndex();
-
     	Platform.runLater(() -> {
+        	int currentIndex = history.getCurrentIndex();
+        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());
+        	
     		history.go(entryList.size() > 1
     				&& currentIndex < entryList.size() - 1
     				? 1
     				: 0); 
     		
-       		setURLText();
-       		
-            String content = textInputCache;
-            if (content != null && !content.isEmpty()) {         	     
-            	// 2016-06-07 Truncated off the initial portion of the path to 
-            	// make the link to look more "user-friendly", improving the viewing comfort.
-            	if (content.contains("/docs/help")) {                            	
-            		int i = content.indexOf("docs")-1;
-            		statusBarLbl.setText(content.substring(i, content.length()-1));          		
-            	}
-            	else
-            		// this is a remote link or internal link
-            		statusBarLbl.setText(content);
-            }
+        	currentIndex = history.getCurrentIndex();
+        	//System.out.println("goBack()'s currentIndex : " + currentIndex + "  size : " + entryList.size());      	
+        	if (entryList.size() > 1) {
+        		if (currentIndex > 0)
+        			btnBack.setEnabled(true);
+        		else
+        			btnBack.setEnabled(false);
+        		
+        		if  (currentIndex < entryList.size() - 1)
+        			btnForward.setEnabled(true);
+        		else
+        			btnForward.setEnabled(false);
+        	}
+        	else {
+        		btnBack.setEnabled(false);
+        		btnForward.setEnabled(false);
+        	}    
+        	
     	});    
+    	
+	
 	}
     
     public String getTextInputCache() {

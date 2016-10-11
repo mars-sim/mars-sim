@@ -402,7 +402,7 @@ public class MarsProjectFX extends Application  {
 	   	if (!headless) {
 		   //logger.info("start() : in GUI mode, loading the Main Menu");			
 		    
-	   		mainMenu = new MainMenu(this);
+	   		mainMenu = new MainMenu();//this);
 	   			   		
 	   		if (newSim) {
 		   		// CASE D1 and D2//
@@ -416,11 +416,13 @@ public class MarsProjectFX extends Application  {
 	   		}
 	   		else if (loadSim) {
 		   		// CASE E //
-				logger.info("Loading a saved sim in GUI mode in " + OS);
+
 		   		mainMenu.setupMainSceneStage();		   		
 		   		
 	        	if (savedSim) {
-	                
+	        		
+					logger.info("Loading user's saved sim in GUI mode in " + OS);
+					
 	        		File loadFile = new File(loadFileString);
 	                
 		            try {     	
@@ -429,7 +431,7 @@ public class MarsProjectFX extends Application  {
 		                
 		            } catch (Exception e) {
 		                e.printStackTrace();
-		                showError("Could not load the user's saved sim. ", e);
+		                exitWithError("Could not load the user's saved sim. ", e);
 /*		                
 		                try {
 		                	// load FileChooser instead
@@ -445,13 +447,15 @@ public class MarsProjectFX extends Application  {
 	        	
 	        	else { 
 	        		// if user wants to load the default saved sim
+					logger.info("Loading a saved sim with FileChooser in GUI mode in " + OS);
+
 	        		try {
 	                	// load FileChooser instead
 			   			mainMenu.loadSim(null);			   			
 			   			// Then wait for user to select a saved sim to load in loadSim();
 			   			
 		            } catch (Exception e2) {
-		                e2.printStackTrace();
+		                //e2.printStackTrace();
 		            	exitWithError("Could not load the default saved sim. ", e2);                
 		            	
 		            }   
@@ -488,13 +492,14 @@ public class MarsProjectFX extends Application  {
     	try {	
             // Load the default saved file "default.sim"
             sim.loadSimulation(null);
-		    // Start the simulation.
-		    startSimulation(true);
 
         } catch (Exception e) {
             e.printStackTrace();
             exitWithError("Could not load default simulation", e);
         }
+    	
+	    // Start the simulation.
+	    startSimulation(true);
     }
 
  
