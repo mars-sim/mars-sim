@@ -33,6 +33,7 @@ import netscape.javascript.JSObject;
 import org.codefx.libfx.control.webview.WebViewHyperlinkListener;
 import org.codefx.libfx.control.webview.WebViews;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -99,7 +100,7 @@ public class BrowserJFX {
           + "hr{width:90%;}";
 		 
     
-	private boolean isLocalHtml = true, isInternal = false, go_flag = false;
+	private boolean isLocalHtml = true, isInternal = false;
 
     public volatile String textInputCache, addressURLText, statusBarURLText, inputCache;
     
@@ -112,16 +113,17 @@ public class BrowserJFX {
     private final JTextField urlTF = new JTextField();
     private final JProgressBar progressBar = new JProgressBar();
 
+    private MainDesktopPane desktop;
     private WebView view;
-    
-    private WebEngine engine;
-    
+    private WebEngine engine;  
     private WebHistory history;
 
 	private ObservableList<WebHistory.Entry> entryList; 
 	
-    public BrowserJFX() {
+    public BrowserJFX(MainDesktopPane desktop) {
 
+    	this.desktop = desktop;
+    	
         Platform.runLater(() -> {       
             view = new WebView();
             engine = view.getEngine();          
@@ -145,19 +147,14 @@ public class BrowserJFX {
 
     
     public void fireButtonGo(String input) {
-
-		//if (inputCache != input) { // cannot use this. need to be able to reload
-		//	inputCache = input;
-			if (input != null && !input.isEmpty()) {
-				// if the address bar is not empty
-				Platform.runLater(() -> {
-					inputURLType(input);
-					//showURL();
-					//addCSS();
-				});
-			}
-		//}
+		if (input != null && !input.isEmpty()) {
+			// if the address bar is not empty
+			Platform.runLater(() -> {
+				inputURLType(input);
+			});
+		}
     }
+    
     // 2016-04-22 Added ability to interpret internal commands
     public JPanel init() {
         
@@ -166,11 +163,17 @@ public class BrowserJFX {
             public void actionPerformed(java.awt.event.ActionEvent e) {
             	
             	highlight();          	
-             	//System.out.println("BrowserJFX's actionPerformed() : input is [" + input + "]");          	
+      	
         		String input = urlTF.getText().trim();
-    			go_flag = true;
-            	fireButtonGo(input);
-     		    go_flag = false;
+        		
+        		if (input.contains("/docs/help/") && input.contains(".html")) {
+        			GuideWindow ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+        			ourGuide.setURL(input); //$NON-NLS-1$        			
+        		}
+        		else {
+                	fireButtonGo(input);
+        		}
+
             }
         };
         
@@ -506,16 +509,11 @@ public class BrowserJFX {
                                 	String input = getCurrentURL();
                                 	//System.out.println("BrowserJFX's stateProperty()");                         	
                             		if (input.contains("/docs/help")) {  
-                            			go_flag = true;
                             			isLocalHtml = true;
                                     	// Note: after hours of experiments, it's found that the only "safe" way 
                             			// (without causing NullPointerException) is to call addCSS() 
                             			// through stateProperty() here.                              	
                             			addCSS();
-                            			go_flag = false;
-	                                	//getURLType(input);                             	
-	                                	//if (!isLocalHtml)                                		
-		                                //	SwingUtilities.invokeLater(() ->setURLText());
                             		}
                                 }
                             }
@@ -537,8 +535,6 @@ public class BrowserJFX {
 
     	if (content.contains("/docs/help")) {  
     		isLocalHtml = true;
-    		//isInternal = false;
-        	//addCSS();
     		int i = content.indexOf("docs")-1;
             String shortened = content.substring(i, content.length());
             //System.out.println("shortened is " + shortened);
@@ -572,7 +568,7 @@ public class BrowserJFX {
 
     public void addCSS() { 
     	//logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );
-    	if (go_flag && isLocalHtml) {// && !isInternal) {
+    	if (isLocalHtml) {// && go_flag && !isInternal) {
 		   	//System.out.println("adding css");
 			Document doc = engine.getDocument() ;
 			//SwingUtilities.invokeLater(() -> {

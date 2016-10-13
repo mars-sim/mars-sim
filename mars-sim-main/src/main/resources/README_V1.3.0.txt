@@ -19,19 +19,20 @@ http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 ** Starting a new sim **
 
-A. GUI Interface
+A. Graphic Mode
 
-- For most operating systems, simply double-click on the jar file
-called 'mars-sim-main-[version/build].jar' to begin a new simulation
-in GUI mode as It is an executable file. Then choose 'New Sim' in the 
-Main Menu to start a new simulation.
+-  Double-click on 'mars-sim-main-[version/build].jar' to begin 
+a new simulation in GUI mode since the jar file is executable 
+in most operating systems.
 
-- Alternatively, you can also start mars-sim manually from a terminal 
+- in the Main Menu, choose 'New Sim' to start a new simulation.
+
+- Alternatively, one may start the simulation manually from a terminal 
 or command prompt which will display mars-sim's internal logging
  statements while running mars-sim.
 
-- To start the GUI via a terminal, go to the directory containing 
-the jar file and type :
+- To start the graphic mode via a terminal, go to the directory 
+containing the jar file and type :
 
 > java -jar mars-sim-main-[version/build].jar 
 
@@ -43,7 +44,7 @@ Note a : replacing [version/build] with the current version/build.
 
 Note b : the argument 'new' is optional. If the argument 'load' 
 is not provided for, it will assume that the user is interested in 
-starting a new simulation and 'new' will be added automatically.
+starting a new simulation and 'new' will be appended automatically.
 
 Note c: by default, the simulation will be saved automatically
 with a new filename with a date/time stamp, the # of sol and 
@@ -55,10 +56,10 @@ following attribute value in simulation.xml :
 
 B. Headless Mode
 
-- mars-sim is designed with a level of A.I. capable of running the 
+- mars-sim is designed with a level of autonomy capable of running the 
 entire simulation on its own. Therefore, you may prefer to run it
-in a terminal for hours without your input to lower the CPU resources.
-To start without GUI, type the arguments as follows :
+in a terminal for hours/days in the least intrusive manner with lowest 
+CPU resources in headless mode. Type in the terminal as follows :
 
 > java -jar mars-sim-main-[version/build].jar 2 headless new
 
@@ -96,7 +97,6 @@ numeral argument after the jar file as shown below :
 
 // no numerical --> 256MB Min, 1024MB Max (by default)
 // 0 --> 256MB Min, 1024MB Max
-
 // 1 --> 256MB Min, 512MB Max
 // 2 --> 256MB Min, 768MB Max
 // 3 --> 256MB Min, 1024MB Max
@@ -108,18 +108,22 @@ numeral argument after the jar file as shown below :
 
 ** Load Saved Simulation **
 
-A. GUI Interface
+A. Graphic Mode
 
-- If you want to load a previously saved simulation, 
-a. Double-click the jar file to start
-b. Choose 'Load Sim' in the Main Menu
-c. select the default.sim or or a *.sim in the FileChooser 
+- If you want to load a previously saved simulation in graphic mode,
 
-- alternatively, you may use the terminal to type : 
+-- Double-click the jar file to start
+
+-- Choose 'Load Sim' in the Main Menu
+
+-- Select the default.sim or or a *.sim in the FileChooser 
+
+
+- Alternatively, you may use the terminal to type : 
 
 > java -jar mars-sim-main-[version/build].jar 3 load
 
-This will load the FileChooser and open up \.mars-sim\saved\
+- This will load the FileChooser and open up \.mars-sim\saved\
 
 Note 1 : the order of the arguments is not important.
 
@@ -130,7 +134,7 @@ is located at \.mars-sim\saved\
 
 > java -jar mars-sim-main-[version/build].jar 3 load 123.sim
 
-This will load '123.sim', instead of the default saved sim.
+- This will load '123.sim', instead of the default saved sim.
 
 Note 3 : the order of the arguments is not important.
 
@@ -138,7 +142,7 @@ Note 4 : '123.sim' must be present in the same directory
 where the jar file is at.
 
 
-B. Headless mode
+B. Headless Mode
 
 - To load the default saved sim without the GUI interface, type :
 
@@ -181,8 +185,7 @@ mars-sim-developers@lists.sourceforge.net
 
 - A full list of contributors is available from the Help menu within 
 the application. The credits can also be viewed by opening the file 
-source/mars-sim-ui/src/main/resources/docs/help/about.html in a web 
-browser.
+ /docs/help/about.html in mars-sim's built-in web browser.
 
 ---------------------------------------------------------------------
 

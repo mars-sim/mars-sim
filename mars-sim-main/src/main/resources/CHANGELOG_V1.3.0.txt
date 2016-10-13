@@ -4,7 +4,7 @@ http://mars-sim.sourceforge.net/
 
 ------------------------------------------------------
 
-## v3.1.0 (build 3739) Snapshot Preview 3 - 2016-10-08
+## v3.1.0 (build 3743) Snapshot Preview 3 - 2016-10-13
 
 ### NEW FEATURES :
 
@@ -16,13 +16,19 @@ http://mars-sim.sourceforge.net/
 
 2. Added new user's keyword "settlement"/"vehicle"/"rover" in the chat box for reporting # of settlements in total and their names and to query the total # and types of vehicles/rovers (parked and/or on mission). 
 
+3. Added animated loading/saving/paused indicators.
+
+
+
 ### FIXES :
 
 1. Fixed volume control with the ability to mute both the background music and sound effects.
 
 2. Fixed NullPointerException/other bugs when loading a saved sim in either the Main Menu or the command prompt.
 
-3. Added animated loading/saving/paused indicators.
+3. Enabled inline web browser to load quicker.
+
+4. Fixed tracking the availability and usage of lighting for illuminating the food crop in greenhouses
 
 
 

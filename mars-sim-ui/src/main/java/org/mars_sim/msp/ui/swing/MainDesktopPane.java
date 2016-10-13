@@ -197,7 +197,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		toolWindows = new ArrayList<ToolWindow>();
 
 		
-		browserJFX = new BrowserJFX();
+		browserJFX = new BrowserJFX(this);
 
 		prepareToolWindows();
 
