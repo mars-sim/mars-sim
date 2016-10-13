@@ -235,7 +235,7 @@ public final class FoodProductionUtil {
         // Check to see if process tech level is above kitchen tech level.
         if (kitchen.getTechLevel() < process.getTechLevelRequired()) result = false;
 
-        Inventory inv = kitchen.getBuilding().getInventory();
+        Inventory inv = kitchen.getBuilding().getSettlementInventory();
 
         // Check to see if process input items are available at settlement.
         if (!areProcessInputsAvailable(process, inv)) result = false;

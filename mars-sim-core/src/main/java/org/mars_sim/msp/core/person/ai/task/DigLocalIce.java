@@ -295,7 +295,7 @@ implements Serializable {
 
         person.getInventory().storeAmountResource(ice, iceCollected, true);
 		// 2015-01-15 Add addSupplyAmount()
-        // Not calling person.getInventory().addSupplyAmount(ice, iceCollected);
+        // Not calling person.getSettlementInventory().addSupplyAmount(ice, iceCollected);
 
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);

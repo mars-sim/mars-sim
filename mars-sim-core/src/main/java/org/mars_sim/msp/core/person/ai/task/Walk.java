@@ -272,8 +272,8 @@ implements Serializable {
 
                     // Check if robot has a good EVA suit available if in a rover.
                     //boolean goodEVASuit = true;
-                   // boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
-                    //boolean wearingSuit = robot.getInventory().containsUnitClass(EVASuit.class);
+                   // boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getSettlementInventory());
+                    //boolean wearingSuit = robot.getSettlementInventory().containsUnitClass(EVASuit.class);
                     //goodEVASuit = roverSuit || wearingSuit;
                     //if (goodEVASuit) {
 
@@ -1151,7 +1151,7 @@ implements Serializable {
             logger.finer(person + " walking exiting rover garage phase.");
 
             rover.getInventory().retrieveUnit(person);
-            garageBuilding.getInventory().storeUnit(person);
+            garageBuilding.getSettlementInventory().storeUnit(person);
             BuildingManager.addPersonOrRobotToBuildingSameLocation(person, garageBuilding);
 
         }
@@ -1159,7 +1159,7 @@ implements Serializable {
             logger.finer(robot + " walking exiting rover garage phase.");
 
             rover.getInventory().retrieveUnit(robot);
-            garageBuilding.getInventory().storeUnit(robot);
+            garageBuilding.getSettlementInventory().storeUnit(robot);
             BuildingManager.addPersonOrRobotToBuildingSameLocation(robot, garageBuilding);
 
         }
@@ -1193,7 +1193,7 @@ implements Serializable {
             logger.finer(person + " walking entering rover garage phase.");
 
             logger.finer(person + " location situation: " + person.getLocationSituation());
-            garageBuilding.getInventory().retrieveUnit(person);
+            garageBuilding.getSettlementInventory().retrieveUnit(person);
             BuildingManager.removePersonOrRobotFromBuilding(person, garageBuilding);
             rover.getInventory().storeUnit(person);
 
@@ -1202,7 +1202,7 @@ implements Serializable {
             logger.finer(robot + " walking entering rover garage phase.");
 
             logger.finer(robot + " location situation: " + robot.getLocationSituation());
-            garageBuilding.getInventory().retrieveUnit(robot);
+            garageBuilding.getSettlementInventory().retrieveUnit(robot);
             BuildingManager.removePersonOrRobotFromBuilding(robot, garageBuilding);
             rover.getInventory().storeUnit(robot);
 

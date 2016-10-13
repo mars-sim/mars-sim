@@ -414,7 +414,7 @@ extends BuildingFunctionPanel {
 	private Vector<SalvageProcessInfo> getAvailableSalvageProcesses() {
 	    Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
 
-	    if (foodFactory.getProcesses().size() < foodFactory.getConcurrentProcesses()) {
+	    if (foodFactory.getProcesses().size() < foodFactory.getSupportingProcesses()) {
             try {
                 Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
                         FoodProductionUtil.getSalvageProcessesForTechLevel(

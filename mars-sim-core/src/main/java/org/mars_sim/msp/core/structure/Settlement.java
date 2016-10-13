@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.mars.DailyWeather;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -47,7 +46,6 @@ import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Workout;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -63,12 +61,8 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleType;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  * f The Settlement class represents a settlement unit on virtual Mars. It
@@ -121,7 +115,8 @@ implements Serializable, LifeSupportType, Objective {
 	private int numY; // number of people with work shift Y
 	private int numZ; // number of people with work shift Z
 	private int numOnCall;
-	
+	private int sumOfCurrentManuProcesses = 0;
+
 	/**
 	 * Amount of time (millisols) that the settlement has had zero population.
 	 */
@@ -2896,7 +2891,15 @@ implements Serializable, LifeSupportType, Objective {
 	public String getSponsor() {
 		return sponsor;
 	}
-	
+
+	public int getSumOfManuProcesses() {
+		return sumOfCurrentManuProcesses;
+	}
+
+	public void addManuProcesses(int value) {
+		sumOfCurrentManuProcesses = sumOfCurrentManuProcesses + value;
+	}
+
 	@Override
 	public void destroy() {
 		super.destroy();

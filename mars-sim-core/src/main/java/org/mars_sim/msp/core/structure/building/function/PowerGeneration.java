@@ -183,7 +183,7 @@ implements Serializable {
 			if (source instanceof FuelPowerSource) {
 				FuelPowerSource fuelSource = (FuelPowerSource) source;
 				if (fuelSource.isToggleON()) {
-					fuelSource.consumeFuel(time, getBuilding().getInventory());
+					fuelSource.consumeFuel(time, getBuilding().getSettlementInventory());
 				}
 			}
 

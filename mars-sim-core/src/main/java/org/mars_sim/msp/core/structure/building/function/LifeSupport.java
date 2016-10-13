@@ -10,7 +10,6 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -65,7 +64,6 @@ implements Serializable {
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.
-	 * @throws BuildingException if error in constructing function.
 	 */
 	public LifeSupport(Building building) {
 		// Call Function constructor.
@@ -78,7 +76,7 @@ implements Serializable {
 		occupants = new ConcurrentLinkedQueue<Person>();
 		//robotOccupants = new ConcurrentLinkedQueue<Robot>();
 
-		inv = getBuilding().getInventory();
+		inv = building.getSettlementInventory();
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -87,20 +85,19 @@ implements Serializable {
 
 		powerRequired = config.getLifeSupportPowerRequirement(building.getBuildingType());
 
-		length = getBuilding().getLength();
-		width = getBuilding().getWidth() ;
-		buildingType =  getBuilding().getBuildingType();
+		length = building.getLength();
+		width = building.getWidth() ;
+		buildingType =  building.getBuildingType();
 		floorArea = length * width ;
 
 		this.buildingType = building.getBuildingType();
 	}
 
 	/**
-	 * Alternate constructor with given occupant capacity and power required.
+	 * Alternate constructor (for use by Mock Building in Unit testing) with given occupant capacity and power required
 	 * @param building the building this function is for.
 	 * @param occupantCapacity the number of occupants this building can hold.
 	 * @param powerRequired the power required (kW)
-	 * @throws BuildingException if error constructing function.
 	 */
 	public LifeSupport(Building building, int occupantCapacity, double powerRequired) {
 		// Use Function constructor
@@ -114,9 +111,9 @@ implements Serializable {
 
 		this.building = building;
 
-		length = getBuilding().getLength();
-		width = getBuilding().getWidth() ;
-		buildingType =  getBuilding().getBuildingType();
+		length = building.getLength();
+		width = building.getWidth() ;
+		buildingType =  building.getBuildingType();
 		floorArea = length * width ;
 
 		this.buildingType = building.getBuildingType();
@@ -235,12 +232,11 @@ implements Serializable {
 	 * in the building will increase.
 	 * (todo: add stress later)
 	 * @param person new person to add to building.
-	 * @throws BuildingException if person is already building occupant.
 	 */
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
 			// Remove person from any other inhabitable building in the settlement.
-			Iterator<Building> i = getBuilding().getBuildingManager().getACopyOfBuildings().iterator();
+			Iterator<Building> i = building.getBuildingManager().getACopyOfBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(FUNCTION)) {
@@ -249,7 +245,7 @@ implements Serializable {
 			}
 
 			// Add person to this building.
-			logger.finest("Adding " + person + " to " + getBuilding() + " life support.");
+			logger.finest("Adding " + person + " to " + building + " life support.");
 			occupants.add(person);
 		}
 		else {
@@ -260,12 +256,11 @@ implements Serializable {
 	/**
 	 * Removes a person from the building.
 	 * @param occupant the person to remove from building.
-	 * @throws BuildingException if person is not building occupant.
 	 */
 	public void removePerson(Person occupant) {
 		if (occupants.contains(occupant)) {
 		    occupants.remove(occupant);
-		    logger.finest("Removing " + occupant + " from " + getBuilding() + " life support.");
+		    logger.finest("Removing " + occupant + " from " + building + " life support.");
 		}
 		else {
 			throw new IllegalStateException("Person does not occupy building.");
@@ -276,7 +271,6 @@ implements Serializable {
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
 	 */
 	// 2014-10-25 Currently skip calling for thermal control for Hallway
 	public void timePassing(double time) {
@@ -284,7 +278,7 @@ implements Serializable {
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
 		if (inv == null)
-			inv = getBuilding().getInventory();
+			inv = building.getSettlementInventory();
 
 		if (occupants != null)
 			if (occupants.size() > 0) {
@@ -309,7 +303,7 @@ implements Serializable {
 		if (overcrowding > 0) {
 
 			if(logger.isLoggable(Level.FINEST)){
-				logger.finest("Overcrowding at " + getBuilding());
+				logger.finest("Overcrowding at " + building);
 			}
 			double stressModifier = .1D * overcrowding * time;
 

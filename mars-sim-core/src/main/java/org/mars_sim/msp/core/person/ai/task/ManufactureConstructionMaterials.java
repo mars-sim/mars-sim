@@ -554,7 +554,7 @@ implements Serializable {
         ManufactureProcess result = null;
 
         if (workshop.getTotalProcessNumber() < workshop
-                .getConcurrentProcesses()) {
+                .getSupportingProcesses()) {
 
             int skillLevel = getEffectiveSkillLevel();
             int techLevel = workshop.getTechLevel();

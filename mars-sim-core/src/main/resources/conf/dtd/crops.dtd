@@ -1,10 +1,12 @@
-<!ELEMENT crop-configuration (carbon-dioxide-consumption-rate, oxygen-consumption-rate, water-consumption-rate, crop-list)>
+<!ELEMENT crop-configuration (carbon-dioxide-consumption-rate, oxygen-consumption-rate, water-consumption-rate, watt-to-photon-conversion-ratio, crop-list)>
 <!ELEMENT carbon-dioxide-consumption-rate EMPTY>
 <!ATTLIST carbon-dioxide-consumption-rate value CDATA #REQUIRED>
 <!ELEMENT oxygen-consumption-rate EMPTY>
 <!ATTLIST oxygen-consumption-rate value CDATA #REQUIRED>
 <!ELEMENT water-consumption-rate EMPTY>
 <!ATTLIST water-consumption-rate value CDATA #REQUIRED>
+<!ELEMENT watt-to-photon-conversion-ratio EMPTY>
+<!ATTLIST watt-to-photon-conversion-ratio value CDATA #REQUIRED>
 <!ELEMENT crop-list (crop*)>
 <!ELEMENT crop EMPTY>
 <!ATTLIST crop name CDATA #REQUIRED>

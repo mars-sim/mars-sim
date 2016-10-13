@@ -410,7 +410,7 @@ implements Serializable {
 //    // 2014-11-28 Added consumeDessert()
 //    @SuppressWarnings("unused")
 //	public void consumeDessert(double amount, Unit container) {
-//        Inventory inv = container.getInventory();
+//        Inventory inv = container.getSettlementInventory();
 //
 //    	if (container == null) throw new IllegalArgumentException("container is null");
 //

@@ -110,7 +110,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 				
 		// TODO: can I call .addAmountResourceTypeCapacity() later after the chosen dessert is known?
 		// In RoverMission.java's getResourcesNeededForTrip() we add the storage space for the desserts
-    	// getRover().getInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
+    	// getRover().getSettlementInventory().addAmountResourceTypeCapacity(dessert, config.getCargoCapacity(getRover().getVehicleType(), "dessert"));
 		
 		
         //String dessertName = PreparingDessert.getADessert(dessertList);		
@@ -467,7 +467,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	// Check dessert capacity as range limit.
     	AmountResource dessert = AmountResource.findAmountResource("Soymilk");
     	double dessertConsumptionRate = config.getDessertConsumptionRate();
-    	double dessertCapacity = getInventory().getAmountResourceCapacity(dessert, false);
+    	double dessertCapacity = getSettlementInventory().getAmountResourceCapacity(dessert, false);
     	double dessertSols = dessertCapacity / (dessertConsumptionRate * crewCapacity);
     	double dessertRange = distancePerSol * dessertSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (dessertRange < range) range = dessertRange;

@@ -163,7 +163,7 @@ implements Serializable {
 		// Run each resource process.
 		Iterator<ResourceProcess> i = resourceProcesses.iterator();
 		while (i.hasNext()) {
-			i.next().processResources(time, productionLevel, getBuilding().getInventory());
+			i.next().processResources(time, productionLevel, getBuilding().getSettlementInventory());
 		}
 	}
 

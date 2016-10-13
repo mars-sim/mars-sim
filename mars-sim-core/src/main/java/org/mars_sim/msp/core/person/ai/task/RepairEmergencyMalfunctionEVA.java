@@ -197,7 +197,7 @@ public class RepairEmergencyMalfunctionEVA extends EVAOperation implements
                 // Perform EVA emergency repair on outside vehicles that the robot isn't inside.
                 Vehicle vehicle = (Vehicle) entity;
                 boolean outsideVehicle = BuildingManager.getBuilding(vehicle) == null;
-                boolean robotNotInVehicle = !vehicle.getInventory().containsUnit(robot);
+                boolean robotNotInVehicle = !vehicle.getSettlementInventory().containsUnit(robot);
                 if (outsideVehicle && robotNotInVehicle) {
                     result = true;
                 }

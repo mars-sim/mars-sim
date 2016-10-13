@@ -33,6 +33,10 @@ implements Serializable {
 	private static final String OXYGEN_CONSUMPTION_RATE = "oxygen-consumption-rate";
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CARBON_DIOXIDE_CONSUMPTION_RATE = "carbon-dioxide-consumption-rate";
+	private static final String WATT_TO_PHOTON_CONVERSION_RATIO = "watt-to-photon-conversion-ratio";
+
+
+
 	private static final String VALUE= "value";
 	
 	private static final String CROP_LIST = "crop-list";
@@ -238,6 +242,14 @@ implements Serializable {
 	public double getCarbonDioxideConsumptionRate() {
 		return getValueAsDouble(CARBON_DIOXIDE_CONSUMPTION_RATE);
 	}
+
+	/**
+	 * Gets the watt to photon energy conversion ratio
+	 * @return ratio [in u mol / m2 /s / W m-2]
+	 * @throws Exception if the ratio could not be found.
+	 */
+	// 2016-10-11 Added getWattToPhotonConversionRatio()
+	public double getWattToPhotonConversionRatio() { return getValueAsDouble(WATT_TO_PHOTON_CONVERSION_RATIO); }
 
 	/**
 	 * Gets the oxygen consumption rate.

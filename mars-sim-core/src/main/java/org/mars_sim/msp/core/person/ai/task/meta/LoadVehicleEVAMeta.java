@@ -173,7 +173,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
                 }
 
                 if (LoadVehicleEVA.getRoversNeedingEVASuits(robot.getSettlement()).size() > 0) {
-                    int numEVASuits = robot.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+                    int numEVASuits = robot.getSettlement().getSettlementInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
                     if (numEVASuits >= 2) {
                         result += 100D;
                     }

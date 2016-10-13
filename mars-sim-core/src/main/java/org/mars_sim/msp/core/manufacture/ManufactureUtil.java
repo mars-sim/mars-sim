@@ -9,10 +9,8 @@ package org.mars_sim.msp.core.manufacture;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeMap;
 
 import org.mars_sim.msp.core.Inventory;
@@ -52,7 +50,7 @@ public final class ManufactureUtil {
 
     /** Private constructor. */
     private ManufactureUtil() {
-        printerItem = ItemResource.findItemResource("laser sintering 3d printer");
+        printerItem = ItemResource.findItemResource(Manufacture.LASER_SINTERING_3D_PRINTER);
     }
 
     /**
@@ -101,7 +99,7 @@ public final class ManufactureUtil {
 
     /**
      * gets manufacturing processes with given output.
-     * @param item {@link String} name of desired output
+     * @param {@link String} name of desired output
      * @return {@link List}<{@link ManufactureProcessItem}> list of processes
      */
     public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(
@@ -346,7 +344,7 @@ public final class ManufactureUtil {
         Inventory inv = workshop.getBuilding().getBuildingManager().getSettlement().getInventory();
 
         // Check to see if workshop is full of processes.
-        if (workshop.getTotalProcessNumber() >= workshop.getConcurrentProcesses()) {
+        if (workshop.getTotalProcessNumber() >= workshop.getSupportingProcesses()) {
         	return false;
         }
 
@@ -373,12 +371,18 @@ public final class ManufactureUtil {
 
 	/**
 	 * Check to see if there is an available printer in this building
-	 * @param inv
 	 * @param workshop
 	 * @return true if there is an available 3D Printer.
 	 */
     //2015-06-01 isAn3DPrinterAvailable()
     public static synchronized boolean isAn3DPrinterAvailable(Manufacture workshop) {
+
+        if(workshop.getSupportingProcesses() > 0)
+            return true;
+        else
+            return false;
+
+/*
     	boolean result = false;
     	int inBldg = 0;
     	Building building = workshop.getBuilding();
@@ -387,14 +391,12 @@ public final class ManufactureUtil {
         //if (workshop.getNumPrinterInUse() == 0)
         //	workshop.set3DPrinterLocation(building);
 
-    	if (building.getItemInventory() != null) {
-	        Inventory itemInventory = building.getItemInventory();
-	        //System.out.println("ManufactureUtil. itemInventory is " + itemInventory);
+    	if (building.getBuildingInventory() != null) {
+	        Inventory b_inv = building.getBuildingInventory();
 
-	        printerItem = ItemResource.findItemResource("laser sintering 3d printer");
-	        if (itemInventory.hasItemResource(printerItem))
-		        if (itemInventory.getItemResourceNum(printerItem)>0) {
-		        	inBldg = itemInventory.getItemResourceNum(printerItem);
+	        if (b_inv.hasItemResource(printerItem))
+		        if (b_inv.getItemResourceNum(printerItem)>0) {
+		        	inBldg = b_inv.getItemResourceNum(printerItem);
 
 			        int inUse = workshop.getNumPrinterInUse();
 			        //System.out.println("ManufactureUtil.  " + inBldg + " : inBldg    " + inUse + " : inUse ");
@@ -403,12 +405,12 @@ public final class ManufactureUtil {
 			        	result = true;
 			        	//System.out.println("ManufactureUtil.java isAn3DPrinterAvailable() : Yes");
 			        }
-
 		        }
 	        // TODO: check if one of them is not malfunction or down for maintenance
     	}
         //System.out.println("ManufactureUtil : isAn3DPrinterAvailable() : "+ result);
         return result;
+*/
     }
 
     /**
@@ -423,7 +425,7 @@ public final class ManufactureUtil {
         boolean result = true;
 
         // Check to see if workshop is full of processes.
-        if (workshop.getTotalProcessNumber() >= workshop.getConcurrentProcesses()) result = false;
+        if (workshop.getTotalProcessNumber() >= workshop.getSupportingProcesses()) result = false;
 
         // Check to see if process tech level is above workshop tech level.
         if (workshop.getTechLevel() < process.getTechLevelRequired()) result = false;

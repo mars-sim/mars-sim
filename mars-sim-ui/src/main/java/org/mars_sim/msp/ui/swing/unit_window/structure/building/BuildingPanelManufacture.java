@@ -45,7 +45,6 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -119,7 +118,7 @@ extends BuildingFunctionPanel {
         labelPane.add(techLabel);
 
         // Prepare processCapacity label
-        JLabel processCapacityLabel = new JLabel("Process Capacity: " + workshop.getConcurrentProcesses(), JLabel.CENTER);
+        JLabel processCapacityLabel = new JLabel("Process Capacity: " + workshop.getSupportingProcesses(), JLabel.CENTER);
         labelPane.add(processCapacityLabel);
 
         // Create scroll pane for manufacturing processes
@@ -369,7 +368,7 @@ extends BuildingFunctionPanel {
 	private Vector<ManufactureProcessInfo> getAvailableProcesses() {
 		Vector<ManufactureProcessInfo> result = new Vector<ManufactureProcessInfo>();
 
-		if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
+		if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 
 		    // Determine highest materials science skill level at settlement.
 		    Settlement settlement = workshop.getBuilding().getBuildingManager().getSettlement();
@@ -407,7 +406,7 @@ extends BuildingFunctionPanel {
 	private Vector<SalvageProcessInfo> getAvailableSalvageProcesses() {
 	    Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
 
-	    if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
+	    if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
             try {
                 Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
                         ManufactureUtil.getSalvageProcessesForTechLevel(

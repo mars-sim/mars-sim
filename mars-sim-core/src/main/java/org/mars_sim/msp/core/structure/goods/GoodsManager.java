@@ -2016,7 +2016,7 @@ public class GoodsManager implements Serializable {
 //    private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) {
 //        int result = 0;
 //
-//        Inventory inv = settlement.getInventory();
+//        Inventory inv = settlement.getSettlementInventory();
 //        Collection<Unit> equipmentList = inv.findAllUnitsOfClass(equipmentClass);
 //        MissionManager missionManager = Simulation.instance().getMissionManager();
 //        Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -2025,7 +2025,7 @@ public class GoodsManager implements Serializable {
 //            if (mission instanceof VehicleMission) {
 //                Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 //                if ((vehicle != null) && (vehicle.getSettlement() == null)) {
-//                    Inventory vehicleInv = vehicle.getInventory();
+//                    Inventory vehicleInv = vehicle.getSettlementInventory();
 //                    Iterator <Unit> j = vehicleInv.findAllUnitsOfClass(equipmentClass).iterator();
 //                    while (j.hasNext()) {
 //                        Unit equipment = j.next();
@@ -2037,7 +2037,7 @@ public class GoodsManager implements Serializable {
 //
 //        Iterator<Unit> k = equipmentList.iterator();
 //        while (k.hasNext()) {
-//            if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D) result++;
+//            if (k.next().getSettlementInventory().getAllAmountResourcesStored(false).size() > 0D) result++;
 //        }
 //
 //        return result;

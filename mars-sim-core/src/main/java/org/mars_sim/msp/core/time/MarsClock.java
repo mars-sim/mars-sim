@@ -54,7 +54,7 @@ public class MarsClock implements Serializable {
 	private static final int SPRING_EQUINOX = 643; // or on the -25th sols
 
     // Martian/Gregorian calendar conversion
-    public static final double SECONDS_IN_MILLISOL = 88.775244;
+    public static final double SECONDS_IN_MILLISOL = 88.775244; // 1 millisol = 88.775244 sec
 
     public static final int THE_FIRST_SOL = 9353;
 

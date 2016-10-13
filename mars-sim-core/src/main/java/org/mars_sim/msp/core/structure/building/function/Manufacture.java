@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.07 2014-10-10
+ * @version 3.1.0 2016-10-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -41,14 +41,17 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A building function for manufacturing.
@@ -67,20 +70,27 @@ implements Serializable {
 
     private static final double PROCESS_MAX_VALUE = 100D;
 
+    public static final String LASER_SINTERING_3D_PRINTER = "laser sintering 3d printer";
+
     // Data members.
+    private int solCache = 0;
     private int techLevel;
-    private int concurrentProcesses;
-    private int numPrinterInUse;
-    private int cacheNumPrinters;
-    private boolean checkNumPrinter;
+    private int supportingProcesses, maxProcesses;
+    //private boolean checkNumPrinter;
+
 
     private List<ManufactureProcess> processes;
     private List<SalvageProcess> salvages;
 
-    private Building bldg;
-    private Inventory inv;
-    private ItemResource printerItem;
-    private Inventory itemInventory;
+    private Building building;
+    private Settlement settlement;
+    private static BuildingConfig buildingConfig;
+    private Inventory s_inv, b_inv;
+    private static ItemResource printerItem;
+    private static MarsClock marsClock;
+    private static BuildingManager buildingManager;
+    private static GoodsManager goodsManager;
+    private static UnitManager manager;
 
     /**
      * Constructor.
@@ -91,64 +101,35 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
-        this.bldg = building;
-        inv = bldg.getInventory();
-        itemInventory = building.getItemInventory();
+        this.building = building;
+        //settlement = buildingManager.getSettlement(); // note: building.getSettlement() will return null
+        //settlement = getBuilding().getBuildingManager().getSettlement();
+        buildingManager = getBuilding().getBuildingManager();
+        settlement = buildingManager.getSettlement();
+        goodsManager = settlement.getGoodsManager();
+        manager = Simulation.instance().getUnitManager();
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        if (marsClock == null)
+            marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
-        techLevel = config.getManufactureTechLevel(building.getBuildingType());
-        concurrentProcesses = config.getManufactureConcurrentProcesses(building.getBuildingType());
+        s_inv = building.getSettlementInventory();
+        b_inv = building.getBuildingInventory();
+
+        printerItem = ItemResource.findItemResource(LASER_SINTERING_3D_PRINTER);
+
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+
+        techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
+        maxProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getManufactureActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getManufactureActivitySpots(building.getBuildingType()));
 
         processes = new ArrayList<ManufactureProcess>();
         salvages = new ArrayList<SalvageProcess>();
 
-        printerItem = ItemResource.findItemResource("laser sintering 3d printer");
-
-		numPrinterInUse = 0;
-		checkNumPrinter = true;
+		//checkNumPrinter = true;
         //System.out.println("Manufacture : done with Manufacture constructor");
-    }
-
-    /**
-     * Retrieves 3D printer(s) from the settlement and moves them to the building
-     * @param building
-     */
-    public void move3DPrinterToBuilding(Building building, int av) {
-        //System.out.println("Manufacture : starting set3DPrinterLocation()");
-        int processes = concurrentProcesses;
-
-        // TODO: do the following two statement differently to save effort
-        itemInventory = building.getItemInventory(); //
-        //printerItem = ItemResource.findItemResource("laser sintering 3d printer");
-        int inBldg = itemInventory.getItemResourceNum(printerItem);
-        //int av = inv.getItemResourceNum(printerItem);
-
-        if (inBldg == 0) {
-	        if (av <= processes) {  // if there is not enough printers
-	        	inv.retrieveItemResources(printerItem, av);
-	            itemInventory.storeItemResources(printerItem, av);
-	        } else {
-	        	inv.retrieveItemResources(printerItem, processes);
-	            itemInventory.storeItemResources(printerItem, processes);
-	        }
-        } else {
-        	 if (av + inBldg <= processes) {  // if there is not enough printers
- 	        	inv.retrieveItemResources(printerItem, av);
- 	        	itemInventory.storeItemResources(printerItem, av);
-        	 } else {
- 	        	inv.retrieveItemResources(printerItem, processes-inBldg);
- 	        	itemInventory.storeItemResources(printerItem, processes-inBldg);
-        	 }
-        }
-        checkNumPrinter = false;
-    }
-
-    public int getNumPrinterInUse() {
-    	return numPrinterInUse;
     }
 
     /**
@@ -164,8 +145,7 @@ implements Serializable {
 
         double result = 0D;
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        int buildingTech = config.getManufactureTechLevel(buildingName);
+        int buildingTech = buildingConfig.getManufactureTechLevel(buildingName);
 
         double demand = 0D;
         Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -176,7 +156,7 @@ implements Serializable {
         double supply = 0D;
         int highestExistingTechLevel = 0;
         boolean removedBuilding = false;
-        Iterator<Building> j = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        Iterator<Building> j = buildingManager.getBuildings(FUNCTION).iterator();
         while (j.hasNext()) {
             Building building = j.next();
             if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
@@ -185,7 +165,7 @@ implements Serializable {
             else {
                 Manufacture manFunction = (Manufacture) building.getFunction(FUNCTION);
                 int tech = manFunction.techLevel;
-                double processes = manFunction.concurrentProcesses;
+                double processes = manFunction.supportingProcesses;
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 supply += (tech * tech) * processes * wearModifier;
 
@@ -197,7 +177,7 @@ implements Serializable {
 
         double baseManufactureValue = demand / (supply + 1D);
 
-        double processes = config.getManufactureConcurrentProcesses(buildingName);
+        double processes = buildingConfig.getManufactureConcurrentProcesses(buildingName);
         double manufactureValue = (buildingTech * buildingTech) * processes;
 
         result = manufactureValue * baseManufactureValue;
@@ -262,8 +242,8 @@ implements Serializable {
      * Gets the maximum concurrent manufacturing processes supported by the building.
      * @return maximum concurrent processes.
      */
-    public int getConcurrentProcesses() {
-        return concurrentProcesses;
+    public int getSupportingProcesses() {
+        return supportingProcesses;
     }
 
     /**
@@ -291,7 +271,7 @@ implements Serializable {
         if (process == null) {
             throw new IllegalArgumentException("process is null");
         }
-        if (getTotalProcessNumber() >= concurrentProcesses) {
+        if (getTotalProcessNumber() >= supportingProcesses) {
             throw new IllegalStateException("No space to add new manufacturing process.");
         }
         processes.add(process);
@@ -301,14 +281,14 @@ implements Serializable {
         for (ManufactureProcessItem item : process.getInfo().getInputList()) {
             if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());
-                inv.retrieveAmountResource(resource, item.getAmount());
+                s_inv.retrieveAmountResource(resource, item.getAmount());
 
 				// 2015-02-13 addAmountDemand()
-				inv.addAmountDemand(resource, item.getAmount());
+				s_inv.addAmountDemand(resource, item.getAmount());
             }
             else if (Type.PART.equals(item.getType())) {
                 Part part = (Part) ItemResource.findItemResource(item.getName());
-                inv.retrieveItemResources(part, (int) item.getAmount());
+                s_inv.retrieveItemResources(part, (int) item.getAmount());
             }
             else throw new IllegalStateException(
                     "Manufacture process input: " +
@@ -317,16 +297,20 @@ implements Serializable {
                     );
 
             // Recalculate settlement good value for input item.
-            GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+            //GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+            if (goodsManager == null)  {
+                //System.out.println("goodsManager is null");
+                goodsManager = settlement.getGoodsManager();
+            }
             goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
         }
 
 
         // Log manufacturing process starting.
         if (logger.isLoggable(Level.FINEST)) {
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             logger.finest(
-                    getBuilding() + " at "
+                    building + " at "
                             + settlement
                             + " starting manufacturing process: "
                             + process.getInfo().getName()
@@ -350,26 +334,26 @@ implements Serializable {
     public void addSalvageProcess(SalvageProcess process) {
         if (process == null) throw new IllegalArgumentException("process is null");
 
-        if (getTotalProcessNumber() >= concurrentProcesses)
+        if (getTotalProcessNumber() >= supportingProcesses)
             throw new IllegalStateException("No space to add new salvage process.");
 
         salvages.add(process);
 
 
         // Retrieve salvaged unit from inventory and remove from unit manager.
-        Inventory inv = getBuilding().getInventory();
+        //Inventory inv = getBuilding().getSettlementInventory();
         Unit salvagedUnit = process.getSalvagedUnit();
         if (salvagedUnit != null) {
-            inv.retrieveUnit(salvagedUnit);
+            s_inv.retrieveUnit(salvagedUnit);
         }
         else throw new IllegalStateException("Salvaged unit is null");
 
         // Set the salvage process info for the salvaged unit.
-        Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+        //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
         ((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement);
 
         // Recalculate settlement good value for salvaged unit.
-        GoodsManager goodsManager = settlement.getGoodsManager();
+        //GoodsManager goodsManager = settlement.getGoodsManager();
         Good salvagedGood = null;
         if (salvagedUnit instanceof Equipment) {
             salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
@@ -382,9 +366,9 @@ implements Serializable {
 
         // Log salvage process starting.
         if (logger.isLoggable(Level.FINEST)) {
-            Settlement stl = getBuilding().getBuildingManager().getSettlement();
+            //Settlement stl = getBuilding().getBuildingManager().getSettlement();
             logger.finest(getBuilding() + " at "
-                    + stl
+                    + settlement
                     + " starting salvage process: "
                     + process.toString());
         }
@@ -417,16 +401,18 @@ implements Serializable {
     @Override
     public void timePassing(double time) {
 
-    	int updatedNumPrinters = inv.getItemResourceNum(printerItem);
-    	if (updatedNumPrinters != cacheNumPrinters) {
-    		checkNumPrinter = true;
-    		cacheNumPrinters = updatedNumPrinters;
-    	}
+        checkPrinters();
 
-    	if (checkNumPrinter) {
-			// 2015-06-01 Configure the location of 3D printer
-	        move3DPrinterToBuilding(bldg, updatedNumPrinters);
-    	}
+    	//int updatedNumPrinters = s_inv.getItemResourceNum(printerItem);
+    	//if (updatedNumPrinters != cacheNumPrinters) {
+    	//	checkNumPrinter = true;
+    	//	cacheNumPrinters = updatedNumPrinters;
+    	//}
+
+    	//if (checkNumPrinter) {
+			// 2015-06-01 Assign where the 3D printers will go
+	    //    checkPrinters(updatedNumPrinters);
+    	//}
 
         List<ManufactureProcess> finishedProcesses = new ArrayList<ManufactureProcess>();
 
@@ -456,7 +442,7 @@ implements Serializable {
     public boolean requiresManufacturingWork(int skill) {
         boolean result = false;
 
-        if (concurrentProcesses > getTotalProcessNumber()) result = true;
+        if (supportingProcesses > getTotalProcessNumber()) result = true;
         else {
             Iterator<ManufactureProcess> i = processes.iterator();
             while (i.hasNext()) {
@@ -478,7 +464,7 @@ implements Serializable {
     public boolean requiresSalvagingWork(int skill) {
         boolean result = false;
 
-        if (concurrentProcesses > getTotalProcessNumber()) result = true;
+        if (supportingProcesses > getTotalProcessNumber()) result = true;
         else {
             Iterator<SalvageProcess> i = salvages.iterator();
             while (i.hasNext()) {
@@ -502,9 +488,9 @@ implements Serializable {
 
         if (!premature) {
             // Produce outputs.
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            UnitManager manager = Simulation.instance().getUnitManager();
-            Inventory inv = getBuilding().getInventory();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            //UnitManager manager = Simulation.instance().getUnitManager();
+            //Inventory inv = getBuilding().getSettlementInventory();
 
             Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
             while (j.hasNext()) {
@@ -514,7 +500,7 @@ implements Serializable {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
-                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+                        double capacity = s_inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) {
                             double overAmount = item.getAmount() - capacity;
                             logger.fine("Not enough storage capacity to store " + overAmount + " of " +
@@ -522,17 +508,17 @@ implements Serializable {
                                     settlement.getName());
                             amount = capacity;
                         }
-                        inv.storeAmountResource(resource, amount, true);
+                        s_inv.storeAmountResource(resource, amount, true);
                         // 2015-01-15 Add addSupplyAmount()
-                        inv.addAmountSupplyAmount(resource, amount);
+                        s_inv.addAmountSupplyAmount(resource, amount);
                     }
                     else if (Type.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
-                        double capacity = inv.getGeneralCapacity();
+                        double capacity = s_inv.getGeneralCapacity();
                         if (mass <= capacity) {
-                            inv.storeItemResources(part, (int) item.getAmount());
+                            s_inv.storeItemResources(part, (int) item.getAmount());
                         }
                     }
                     else if (Type.EQUIPMENT.equals(item.getType())) {
@@ -542,7 +528,7 @@ implements Serializable {
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
                             equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
-                            inv.storeUnit(equipment);
+                            s_inv.storeUnit(equipment);
                         }
                     }
                     else if (Type.VEHICLE.equals(item.getType())) {
@@ -564,7 +550,7 @@ implements Serializable {
                             item.getType() + " not a valid type.");
 
                     // Recalculate settlement good value for output item.
-                    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+                    //GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
                     goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
                 }
             }
@@ -572,9 +558,9 @@ implements Serializable {
         else {
 
             // Premature end of process.  Return all input materials.
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            UnitManager manager = Simulation.instance().getUnitManager();
-            Inventory inv = getBuilding().getInventory();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            //UnitManager manager = Simulation.instance().getUnitManager();
+            //Inventory inv = getBuilding().getSettlementInventory();
 
             Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
             while (j.hasNext()) {
@@ -584,7 +570,7 @@ implements Serializable {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
-                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+                        double capacity = s_inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) {
                             double overAmount = item.getAmount() - capacity;
                             logger.severe("Not enough storage capacity to store " + overAmount + " of " +
@@ -592,15 +578,15 @@ implements Serializable {
                                     settlement.getName());
                             amount = capacity;
                         }
-                        inv.storeAmountResource(resource, amount, true);
+                        s_inv.storeAmountResource(resource, amount, true);
                     }
                     else if (Type.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
-                        double capacity = inv.getGeneralCapacity();
+                        double capacity = s_inv.getGeneralCapacity();
                         if (mass <= capacity) {
-                            inv.storeItemResources(part, (int) item.getAmount());
+                            s_inv.storeItemResources(part, (int) item.getAmount());
                         }
                     }
                     else if (Type.EQUIPMENT.equals(item.getType())) {
@@ -610,7 +596,7 @@ implements Serializable {
                         for (int x = 0; x < number; x++) {
                             Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
                             equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null, null));
-                            inv.storeUnit(equipment);
+                            s_inv.storeUnit(equipment);
                         }
                     }
                     else if (Type.VEHICLE.equals(item.getType())) {
@@ -632,7 +618,7 @@ implements Serializable {
                             item.getType() + " not a valid type.");
 
                     // Recalculate settlement good value for output item.
-                    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+                    //GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
                     goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
                 }
             }
@@ -641,8 +627,8 @@ implements Serializable {
         processes.remove(process);
 
         // 2015-06-01 Untag an 3D Printer (upon the process is ended or discontinued)
-        if (numPrinterInUse >= 1)
-        	numPrinterInUse--;
+        //if (numPrinterInUse >= 1)
+        //	numPrinterInUse--;
 
 
         // Log process ending.
@@ -665,9 +651,11 @@ implements Serializable {
 
         if (!premature) {
             // Produce salvaged parts.
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            GoodsManager goodsManager = settlement.getGoodsManager();
-            Inventory inv = getBuilding().getInventory();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            if (goodsManager == null)
+                goodsManager = settlement.getGoodsManager();
+            goodsManager = settlement.getGoodsManager();
+            //Inventory inv = getBuilding().getSettlementInventory();
 
             // Determine the salvage chance based on the wear condition of the item.
             double salvageChance = 50D;
@@ -697,9 +685,11 @@ implements Serializable {
                     partsSalvaged.put(part, totalNumber);
 
                     double mass = totalNumber * part.getMassPerItem();
-                    double capacity = inv.getGeneralCapacity();
-                    if (mass <= capacity) inv.storeItemResources(part, totalNumber);
+                    double capacity = s_inv.getGeneralCapacity();
+                    if (mass <= capacity) s_inv.storeItemResources(part, totalNumber);
 
+                    if (goodsManager == null)
+                        goodsManager = settlement.getGoodsManager();
                     // Recalculate settlement good value for salvaged part.
                     goodsManager.updateGoodValue(GoodsUtil.getResourceGood(part), false);
                 }
@@ -713,7 +703,7 @@ implements Serializable {
 
         // Log salvage process ending.
         if (logger.isLoggable(Level.FINEST)) {
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             logger.finest(getBuilding() + " at " + settlement + " ending salvage process: " +
                     process.toString());
         }
@@ -727,14 +717,14 @@ implements Serializable {
         result += techLevel * 10D;
 
         // Add maintenance for concurrect process capacity.
-        result += concurrentProcesses * 10D;
+        result += supportingProcesses * 10D;
 
         return result;
     }
 
-    public void setCheckNumPrinter(boolean value) {
-    	checkNumPrinter = value;
-    }
+    //public void setCheckNumPrinter(boolean value) {
+    //	checkNumPrinter = value;
+    //}
 
 	@Override
 	public double getFullHeatRequired() {
@@ -747,6 +737,59 @@ implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+    /**
+     * Check once a sol if enough 3D printer(s) are supporting the manufacturing processes
+     */
+    // 2016-10-11 Replaced with checkPrinters()
+    public void checkPrinters() {
+        //System.out.println("Manufacture : checkPrinters()");
+
+        if (marsClock == null)
+            marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
+        // check for the passing of each day
+        int solElapsed = marsClock.getSolElapsedFromStart();
+        if (solElapsed != solCache) {
+            solCache = solElapsed;
+            supportingProcesses = b_inv.getItemResourceNum(printerItem);
+            if (supportingProcesses < maxProcesses) {
+                distributePrinters();
+            } else {
+                // push for building new 3D printers
+            }
+        }
+    }
+
+    /**
+     * Takes 3D printer(s) from settlement's inventory and assigns them to this building's inventory
+     */
+    // 2016-10-11 Created distributePrinters()
+    public void distributePrinters() {
+
+        int s_available = s_inv.getItemResourceNum(printerItem);
+        int s_needed = settlement.getSumOfManuProcesses();
+        int surplus = s_available - s_needed;
+        int b_needed = maxProcesses;
+
+        if (surplus > 0 ) {
+            if (surplus >= b_needed) {
+                s_inv.retrieveItemResources(printerItem, b_needed);
+                b_inv.storeItemResources(printerItem, b_needed);
+                settlement.addManuProcesses(b_needed);
+            } else {
+                s_inv.retrieveItemResources(printerItem, surplus);
+                b_inv.storeItemResources(printerItem, surplus);
+                settlement.addManuProcesses(surplus);
+            }
+        }
+
+    }
+
+    public int getNumPrinterInUse() {
+        return supportingProcesses;
+    }
+
 
     @Override
     public void destroy() {

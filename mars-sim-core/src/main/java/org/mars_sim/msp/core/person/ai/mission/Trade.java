@@ -632,7 +632,7 @@ implements Serializable {
 //        // If rover is not parked at settlement, park it.
 //        if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
 //
-//            tradingSettlement.getInventory().storeUnit(getVehicle());
+//            tradingSettlement.getSettlementInventory().storeUnit(getVehicle());
 //            getVehicle().determinedSettlementParkedLocationAndFacing();
 //
 //            // Add vehicle to a garage if available.
@@ -815,7 +815,7 @@ implements Serializable {
 //        unloadTowedVehicle();
 //
 //        // Unload rover if necessary.
-//        boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
+//        boolean roverUnloaded = getRover().getSettlementInventory().getTotalInventoryMass(false) == 0D;
 //        if (!roverUnloaded) {
 //            if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 //                // Random chance of having robot unload (this allows robot to do other things sometimes)
@@ -1049,11 +1049,11 @@ implements Serializable {
 //            if (!isDone() && isRoverInAGarage()) {
 //
 //                // Store one EVA suit for robot (if possible).
-//                if (tradingSettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
-//                    EVASuit suit = (EVASuit) tradingSettlement.getInventory().findUnitOfClass(EVASuit.class);
-//                    if (getVehicle().getInventory().canStoreUnit(suit, false)) {
-//                        tradingSettlement.getInventory().retrieveUnit(suit);
-//                        getVehicle().getInventory().storeUnit(suit);
+//                if (tradingSettlement.getSettlementInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
+//                    EVASuit suit = (EVASuit) tradingSettlement.getSettlementInventory().findUnitOfClass(EVASuit.class);
+//                    if (getVehicle().getSettlementInventory().canStoreUnit(suit, false)) {
+//                        tradingSettlement.getSettlementInventory().retrieveUnit(suit);
+//                        getVehicle().getSettlementInventory().storeUnit(suit);
 //                    }
 //                    else {
 //                        endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
@@ -1074,7 +1074,7 @@ implements Serializable {
 //            }
 //
 //            // Embark from settlement
-//            tradingSettlement.getInventory().retrieveUnit(getVehicle());
+//            tradingSettlement.getSettlementInventory().retrieveUnit(getVehicle());
 //            setPhaseEnded(true);
 //        }
 //    }
@@ -1108,7 +1108,7 @@ implements Serializable {
 //                    sellVehicle.setReservedForMission(true);
 //                    getRover().setTowedVehicle(sellVehicle);
 //                    sellVehicle.setTowingVehicle(getRover());
-//                    getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
+//                    getStartingSettlement().getSettlementInventory().retrieveUnit(sellVehicle);
 //                } else {
 //                    endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
 //                }
@@ -1139,7 +1139,7 @@ implements Serializable {
 //            towed.setReservedForMission(false);
 //            getRover().setTowedVehicle(null);
 //            towed.setTowingVehicle(null);
-//            disembarkSettlement.getInventory().storeUnit(towed);
+//            disembarkSettlement.getSettlementInventory().storeUnit(towed);
 //            towed.determinedSettlementParkedLocationAndFacing();
 //        }
 //

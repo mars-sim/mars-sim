@@ -351,20 +351,21 @@ implements UnitListener {
 						// Question: could the emergency beacon itself be broken ?
 						if (!vehicle.isBeingTowed()) {
 							setEmergencyBeacon(null, vehicle, true);
+							logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
 							//don't end the mission yet 
 						}
 						
 						else {
 							// is being towed,  wait till the journey is over
 							//don't end the mission yet
-							logger.info(vehicle + " is currently being towed by " + vehicle.getTowingVehicle());
+							//logger.info(vehicle + " is currently being towed by " + vehicle.getTowingVehicle());
 						}
 					}
 
 					else {
 						// if the emergency beacon is on, 
 						//don't end the mission yet
-						logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
+						//logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
 					}
 				}
 				

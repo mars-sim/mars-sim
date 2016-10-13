@@ -53,7 +53,7 @@ implements Serializable {
     	this.beeGrowing = hive.getBeeGrowing();
         this.farm = beeGrowing.getFarming();      
         this.building = farm.getBuilding();		
-        this.inv = building.getInventory();
+        this.inv = building.getSettlementInventory();
         this.settlement = building.getBuildingManager().getSettlement();
    
 	}

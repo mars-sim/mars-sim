@@ -295,7 +295,7 @@ implements Serializable {
         else if (robot != null)
         	robot.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
 		// 2015-01-15 Add addSupplyAmount()
-        // not calling person.getInventory().addSupplyAmount(mineralType, mineralsCollected);
+        // not calling person.getSettlementInventory().addSupplyAmount(mineralType, mineralsCollected);
         mission.collectMineral(mineralType, mineralsCollected);
         if (((mineralsExcavated - mineralsCollected) <= 0D) ||
                 (mineralsCollected >= remainingPersonCapacity)) {
@@ -399,7 +399,7 @@ implements Serializable {
 //        boolean medical = robot.getPerformanceRating() < .5D;
 //
 //        // Checks if available bags with remaining capacity for resource.
-//        Bag bag = findMostFullBag(rover.getInventory(), mineralType);
+//        Bag bag = findMostFullBag(rover.getSettlementInventory(), mineralType);
 //        boolean bagAvailable = (bag != null);
 //
 //        // Check if bag and full EVA suit can be carried by person or is too heavy.
@@ -408,16 +408,16 @@ implements Serializable {
 //            carryMass += bag.getMass();
 //        }
 //        /*
-//        EVASuit suit = (EVASuit) rover.getInventory().findUnitOfClass(EVASuit.class);
+//        EVASuit suit = (EVASuit) rover.getSettlementInventory().findUnitOfClass(EVASuit.class);
 //        if (suit != null) {
 //            carryMass += suit.getMass();
 //            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupport.OXYGEN);
-//            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
+//            carryMass += suit.getSettlementInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
 //            AmountResource waterResource = AmountResource.findAmountResource(LifeSupport.WATER);
-//            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
+//            carryMass += suit.getSettlementInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
 //        }
 //        */
-//        double carryCapacity = robot.getInventory().getGeneralCapacity();
+//        double carryCapacity = robot.getSettlementInventory().getGeneralCapacity();
 //        boolean canCarryEquipment = (carryCapacity >= carryMass);
 //
 //        return (exitable && (sunlight || darkRegion) && !medical && bagAvailable && canCarryEquipment);

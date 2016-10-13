@@ -229,7 +229,7 @@ implements Serializable {
         processes.add(process);
 
         // Consume inputs.
-        Inventory inv = getBuilding().getInventory();
+        Inventory inv = getBuilding().getSettlementInventory();
         for (FoodProductionProcessItem item : process.getInfo().getInputList()) {
             if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                 AmountResource resource = AmountResource.findAmountResource(item.getName());               
@@ -349,7 +349,7 @@ implements Serializable {
             // Produce outputs.
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             UnitManager manager = Simulation.instance().getUnitManager();
-            Inventory inv = getBuilding().getInventory();
+            Inventory inv = getBuilding().getSettlementInventory();
 
             Iterator<FoodProductionProcessItem> j = process.getInfo().getOutputList().iterator();
             while (j.hasNext()) {
@@ -419,7 +419,7 @@ implements Serializable {
             // Premature end of process.  Return all input materials.
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             UnitManager manager = Simulation.instance().getUnitManager();
-            Inventory inv = getBuilding().getInventory();
+            Inventory inv = getBuilding().getSettlementInventory();
 
             Iterator<FoodProductionProcessItem> j = process.getInfo().getInputList().iterator();
             while (j.hasNext()) {

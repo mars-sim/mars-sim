@@ -921,8 +921,8 @@ implements Serializable {
         }
 
         boolean enoughSupplies = true;
-        Inventory inv = settlement.getInventory();
-        Inventory vInv = vehicle.getInventory();
+        Inventory inv = settlement.getSettlementInventory();
+        Inventory vInv = vehicle.getSettlementInventory();
 
         boolean roverInSettlement = false;
         if (inv.containsUnit(vehicle)) {

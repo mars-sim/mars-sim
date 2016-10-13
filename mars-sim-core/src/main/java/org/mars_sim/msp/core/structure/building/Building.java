@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
@@ -90,7 +91,7 @@ LocalBoundedObject, InsidePathLocation {
 	// default logger.
 	private static Logger logger = Logger.getLogger(Building.class.getName());
 
-	// Assuming 20% chance for each person in an affected building to witness or be beware of the meteorite impact 
+	// Assuming 20% chance for each person to witness or be conscious of the meteorite impact in an affected building
 	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20; 
 	// The influx of meteorites entering Mars atmosphere can be estimated as
 	// log N = -0.689* log(m) + 4.17
@@ -99,19 +100,8 @@ LocalBoundedObject, InsidePathLocation {
 	// see initial implementation in MeteoriteImpactImpl class
 	
 	// Note: typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
-	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; //in meters
-	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211; //in meters
-
-	
-	
-	// Source: Inflatable Transparent Structures for Mars Greenhouse Applications 2005-01-2846. SAE International.
-	// Assumptions:
-	// a. Meteorites having a spherical sphere with 8 um radius
-	// b. velocity of impact < 1 km/s -- Atmospheric entry simulations indicate that particles from 10 to 1000 mm in diameter are slowed
-	// below 1 km/s before impacting the surface of the planet (Flynn and McKay, 1990).
-
-
-	DecimalFormat fmt = new DecimalFormat("###.####");
+	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; // typically between 10^-5 (.00001) and 10^-2 (.01) [in meters]
+	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211;// [in meters]
 
 	// 2015-03-12 Loaded wearLifeTime, maintenanceTime, roomTemperature from buildings.xml
 	/** Default : 3340 Sols (5 orbits). */
@@ -132,13 +122,11 @@ LocalBoundedObject, InsidePathLocation {
 	protected double width;
 	protected double length;
 	protected double floorArea;
-
 	protected double xLoc;
 	protected double yLoc;
 	protected double facing;
 	protected double basePowerRequirement;
 	protected double basePowerDownPowerRequirement;
-
 	protected double powerNeededForEVAheater;
 
 	boolean isImpactImminent = false;
@@ -161,8 +149,9 @@ LocalBoundedObject, InsidePathLocation {
 	protected MalfunctionManager malfunctionManager;
 	protected LifeSupport lifeSupport;
 	private EVA eva;
-    private Inventory itemInventory;
+    private Inventory b_inv, s_inv;
     private Settlement settlement;
+	private BuildingConfig config;
     
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -172,6 +161,8 @@ LocalBoundedObject, InsidePathLocation {
 	protected HeatMode heatMode;
 	// 2014-11-02 Added HeatModeCache
 	protected HeatMode heatModeCache;
+
+	DecimalFormat fmt = new DecimalFormat("###.####");
 
 	/** Constructor 1
 	 * Constructs a Building object.
@@ -190,14 +181,21 @@ LocalBoundedObject, InsidePathLocation {
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
 
-		//if (!buildingType.equals("Hallway") || !buildingType.equals("Tunnel")) {
-			itemInventory = new Inventory(this);
-			itemInventory.addGeneralCapacity(100000);
-		//}
+		if (s_inv == null)
+			s_inv = settlement.getInventory();
+		if (b_inv == null) {
+			b_inv = getInventory();//new Inventory(this);
+			if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
+				//b_inv = new Inventory(this);
+				b_inv.addGeneralCapacity(100);
+			} else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
+				b_inv.addGeneralCapacity(10000);
+			else
+				b_inv.addGeneralCapacity(1000);
+		}
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.ONLINE;
-
 
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 			if (lifeSupport == null) {
@@ -243,13 +241,27 @@ LocalBoundedObject, InsidePathLocation {
 		this.facing = facing;
 		this.location = manager.getSettlement().getCoordinates();
 
+		config = SimulationConfig.instance().getBuildingConfiguration();
+
+		if (s_inv == null)
+			s_inv = settlement.getInventory();
+		if (b_inv == null) {
+			b_inv = getInventory();
+			if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
+				//b_inv = new Inventory(this);
+				b_inv.addGeneralCapacity(100);
+			} else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
+				b_inv.addGeneralCapacity(10000);
+			else
+				b_inv.addGeneralCapacity(1000);
+		}
+
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
 
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.ONLINE;
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Get building's dimensions.
 		if (width != -1D) {
@@ -314,15 +326,26 @@ LocalBoundedObject, InsidePathLocation {
 		}
 	}
 
-	//Constructor 3
-	/** Empty constructor. */
+	/** Constructor 3 (for use by Mock Building in Unit testing) */
 	protected Building(BuildingManager manager) {
 		super("Mock Building", new Coordinates(0D, 0D));
 	}
 
-    public Inventory getItemInventory() {
-    	return itemInventory;
+	/**
+	 * Gets the building inventory of this building.
+	 * @return inventory
+	 */
+    public Inventory getBuildingInventory() {
+    	return b_inv;
     }
+
+	/**
+	 * Gets the settlement inventory of this building.
+	 * @return inventory
+	 */
+	public Inventory getSettlementInventory() {
+		return s_inv;
+	}
 
 	/**
      * Gets the description of a building.
@@ -385,8 +408,6 @@ LocalBoundedObject, InsidePathLocation {
 	private List<Function> determineFunctions() {
 		//System.out.println("Building's determineFunctions");
 		List<Function> buildingFunctions = new ArrayList<Function>();
-
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
 		// Set power generation function.
 		if (config.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
@@ -554,7 +575,7 @@ LocalBoundedObject, InsidePathLocation {
 	}
 
 	/**
-	 * Gets the building type.
+	 * Gets the building type, not building's nickname
 	 * @return building type as a String.
 	 * @deprecated
 	 * TODO internationalize building names for display in user interface.
@@ -566,10 +587,17 @@ LocalBoundedObject, InsidePathLocation {
 	public String getName() {
 		return buildingType;
 	}
+
+	/**
+	 * Gets the building type.
+	 * @return building type as a String.
+	 * TODO internationalize building names for display in user interface.
+	 */
 	//2014-11-02  Added getBuildingType()
 	public String getBuildingType() {
 		return buildingType;
 	}
+
 	/**
 	 * Sets the building's type (formerly name)
 	 * @return none
@@ -897,13 +925,6 @@ LocalBoundedObject, InsidePathLocation {
 
 		return robots;
 	}
-	/**
-	 * Gets the inventory associated with this entity.
-	 * @return inventory
-	 */
-	public Inventory getInventory() {
-		return manager.getSettlement().getInventory();
-	}
 
 	/**
 	 * String representation of this building.
@@ -931,7 +952,6 @@ LocalBoundedObject, InsidePathLocation {
 	/**
 	 * Time passing for building.
 	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
 		// Check for valid argument.
@@ -1013,7 +1033,7 @@ LocalBoundedObject, InsidePathLocation {
 				
 				double wallThickness = 0;
 				
-				if (this.getNickName().toLowerCase().contains("greenhouse"))
+				if (this.getBuildingType().toLowerCase().contains("greenhouse"))
 					// if it's a greenhouse
 					wallThickness = WALL_THICKNESS_INFLATABLE;
 				else

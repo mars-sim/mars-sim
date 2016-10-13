@@ -656,6 +656,15 @@
 		<description>Solid State Light bulb</description>
 	</part>
 
+	<part name="high pressure sodium lamp" mass="0.3">
+		<description>High Intensity Discharge (HID), and more specifically, High Pressure Sodium (HPS)
+			lights have long been used as indoor grow lights, particularly for the late vegetative
+			and flowering/fruiting stages of growth.</description>
+		<maintenance-entity-list>
+			<entity name="farming" probability="3" max-number="2" />
+		</maintenance-entity-list>
+	</part>
+
 	<part name="mushroom containment kit" mass="1.0">
 		<maintenance-entity-list>
 			<entity name="farming" probability="1" max-number="1" />
@@ -722,8 +731,8 @@
 	<part name="fuel cell stack" mass="3">
 		<description>Each fuel cell stack comprises 5 solid oxide fuel cell (SOFC), totalling 1kWe</description>
 	    <maintenance-entity-list>
-			<entity name="vehicle" probability="2" max-number="2" />
-			<entity name="methane power generator" probability="2" max-number="15" />
+			<entity name="vehicle" probability="2" max-number="1" />
+			<entity name="methane power generator" probability="1" max-number="15" />
 		</maintenance-entity-list>
 	</part>
 

@@ -17,6 +17,19 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+	// Assumptions:
+	// a. Meteorites having a spherical sphere with 8 um radius
+	// b. velocity of impact < 1 km/s -- Atmospheric entry simulations indicate that particles from 10 to 1000 mm in diameter are slowed
+	// below 1 km/s before impacting the surface of the planet (Flynn and McKay, 1990).
+
+	// Source 1: Inflatable Transparent Structures for Mars Greenhouse Applications 2005-01-2846. SAE International.
+	// data.spaceappschallenge.org/ICES.pdf
+
+	// Source 2: 1963 NASA Technical Note D-1463 Meteoroid Hazard
+	// http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19630002110.pdf
+
+	// Source 3: Meteorite Accumulations on Mars
+	// https://www.researchgate.net/publication/222568152_Meteorite_Accumulations_on_Mars
 
 	private static final double CRITICAL_DIAMETER = .0016; // in cm
 	private static final double AVERAGE_DENSITY = 1D; // in gram/cm^3
@@ -42,13 +55,7 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 		// log N = -0.689* log(m) + 4.17
 
 		// N is the number of meteorites per year having masses greater than m grams incident on an area of 10^6 km2 (Bland and Smith, 2000).
-		
-		// Source 1: Inflatable Transparent Structures for Mars Greenhouse Applications 2005-01-2846. SAE International.
-		// data.spaceappschallenge.org/ICES.pdf
 
-		// Source 2: 1963 NASA Technical Note D-1463 Meteoroid Hazard
-		// http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19630002110.pdf
-		
 		// Part I
 		// Assuming size and penetration speed of the meteorites are homogeneous,
 		// Find the probability of impact per square meter per sol on the settlement	

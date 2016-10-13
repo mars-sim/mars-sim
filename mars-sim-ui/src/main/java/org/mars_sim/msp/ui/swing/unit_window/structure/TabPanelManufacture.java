@@ -513,7 +513,7 @@ extends TabPanel {
 	            }
 
 				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
-				if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
+				if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 					Iterator<ManufactureProcessInfo> j =
 							ManufactureUtil.getManufactureProcessesForTechSkillLevel(
 									workshop.getTechLevel(), highestSkillLevel).iterator();
@@ -539,7 +539,7 @@ extends TabPanel {
 		try {
 			if (manufactureBuilding != null) {
 				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
-				if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
+				if (workshop.getProcesses().size() < workshop.getSupportingProcesses()) {
 					Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
 							ManufactureUtil.getSalvageProcessesForTechLevel(
 									workshop.getTechLevel())).iterator();

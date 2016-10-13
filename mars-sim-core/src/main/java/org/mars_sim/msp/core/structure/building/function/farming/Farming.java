@@ -1,17 +1,15 @@
 /**
 * Mars Simulation Project
  * Farming.java
- * @version 3.08 2015-04-08
+ * @version 3.1.0 2016-10-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,10 +19,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -34,7 +32,6 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -65,11 +62,22 @@ implements Serializable {
     private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
  
     private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
-    
-    /** amount of crop tissue culture needed for each square meter of growing area */
+
+	public static final String LED_KIT = "light emitting diode kit";
+	public static final String HPS_LAMP = "high pressure sodium lamp";
+
+	/** amount of crop tissue culture needed for each square meter of growing area */
     private static final double TISSUE_PER_SQM = .0005D; // 1/2 gram (arbitrary)
     //private static final double TISSUE_CULTURE_FACTOR = 100D;
-    
+
+	private static ItemResource LED_Item;
+	private static ItemResource HPS_Item;
+
+	private int numLEDInUse;
+	private int cacheNumLED;
+	private boolean checkLED;
+	private int numHPSinNeed;
+
     private int cropNum;
 	private int solCache = 1;
 
@@ -77,7 +85,7 @@ implements Serializable {
     private double powerSustainingCrop;
     private double maxGrowingArea;
     private double remainingGrowingArea;
-    private double dailyMaxHarvest;
+    private double totalMaxHarvest = 0;
     
     private String cropInQueue;
 
@@ -90,7 +98,8 @@ implements Serializable {
 
     //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
 
-    private Inventory inv;
+    private Inventory b_inv, s_inv;
+
     private Settlement settlement;
     private Building building;
     //private BeeGrowing beeGrowing;
@@ -106,9 +115,13 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
 
+		LED_Item = ItemResource.findItemResource(LED_KIT);
+		HPS_Item = ItemResource.findItemResource(HPS_LAMP);
+
         this.building = building;
-        this.inv = building.getInventory();
         this.settlement = building.getBuildingManager().getSettlement();
+		this.b_inv = building.getBuildingInventory();
+		this.s_inv = settlement.getInventory();
 		//this.goodsManager = settlement.getGoodsManager();
 
         marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -313,6 +326,7 @@ implements Serializable {
 
 		// 1kg = 1000 g
 		double dailyMaxHarvest = edibleBiomass/1000D * cropArea;
+		totalMaxHarvest = totalMaxHarvest + dailyMaxHarvest;
     	//logger.info("max possible harvest on " + cropType.getName() + " : " + Math.round(maxHarvestinKgPerDay*100.0)/100.0 + " kg per day");
 
 		//totalHarvestinKgPerDay = (maxHarvestinKgPerDay + totalHarvestinKgPerDay) /2;
@@ -344,10 +358,10 @@ implements Serializable {
     	double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea *rand;
 
     	// TODO: adjust how much old soil should be turned to crop waste
-    	Storage.storeAnResource(amount, Crop.CROP_WASTE, inv);
+    	Storage.storeAnResource(amount, Crop.CROP_WASTE, s_inv);
 
     	// TODO: adjust how much new soil is needed to replenish the soil bed
-    	Storage.retrieveAnResource(amount, Crop.SOIL, inv, true );
+    	Storage.retrieveAnResource(amount, Crop.SOIL, s_inv, true );
 
     }
 
@@ -362,7 +376,7 @@ implements Serializable {
     public void provideFertilizer(double cropArea) {
     	double rand = RandomUtil.getRandomDouble(2);
     	double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
-    	Storage.retrieveAnResource(amount, Crop.FERTILIZER, inv, true);
+    	Storage.retrieveAnResource(amount, Crop.FERTILIZER, s_inv, true);
 		//System.out.println("fertilizer used in planting a new crop : " + amount);
     }
 
@@ -386,8 +400,8 @@ implements Serializable {
 
       	try {
 	    	AmountResource nameAR = AmountResource.findAmountResource(tissue);
-	        double amountStored = inv.getAmountResourceStored(nameAR, false);
-	    	inv.addAmountDemandTotalRequest(nameAR);
+	        double amountStored = s_inv.getAmountResourceStored(nameAR, false);
+			s_inv.addAmountDemandTotalRequest(nameAR);
 	    	
 	    	if (amountStored < 0.0000000001) {
 	    		logger.warning("No more " + name);
@@ -408,10 +422,10 @@ implements Serializable {
 	    	}
 
 	    	if (available) {
-	    		inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		s_inv.retrieveAmountResource(nameAR, requestedAmount);
 	    	}
-	    	
-	    	inv.addAmountDemand(nameAR, requestedAmount);	    	
+
+			s_inv.addAmountDemand(nameAR, requestedAmount);
 
 	    }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
@@ -438,7 +452,7 @@ implements Serializable {
     //2014-12-09 Added getCropListInQueue()
     public List<CropType> getCropListInQueue() {
         return cropListInQueue;
-      //CollectionUtils.getPerson(getInventory().getContainedUnits());
+      //CollectionUtils.getPerson(getSettlementInventory().getContainedUnits());
     }
 
     /**
@@ -639,9 +653,9 @@ implements Serializable {
     public int getFarmerNum() {
         int result = 0;
 
-        if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+        if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
             try {
-                LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
@@ -663,18 +677,23 @@ implements Serializable {
      */
 	public void timePassing(double time) {
 		//System.out.println("timePassing() : time is " + time);
-	    //MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
+
+		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 	    // check for the passing of each day
 	    int solElapsed = marsClock.getSolElapsedFromStart();
 	    if ( solElapsed != solCache) {
-	    	solCache = solElapsed;
-	        produceDailyTendingCropWaste();
-	    }
+			solCache = solElapsed;
+			// 2016-10-12 reset cumulativeDailyPAR
+			Iterator<Crop> i = crops.iterator();
+			while (i.hasNext()) {
+				i.next().resetPAR();
+			}
+		}
 
         // Determine the production level.
         double productionLevel = 0D;
-        if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
-        else if (getBuilding().getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
+        if (building.getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
+        else if (building.getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
 		//System.out.println("timePassing() : productionLevel  is " + productionLevel );
 
         // Add time to each crop.
@@ -695,7 +714,6 @@ implements Serializable {
         }
 
         // Add any new crops.
-        //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
         for (int x = 0; x < newCrops; x++) {
            	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
         	//CropType cropType = Crop.getNewCrop();
@@ -718,7 +736,7 @@ implements Serializable {
           	Crop crop = plantACrop(cropType, true, 0);
             crops.add(crop);
 
-            getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+            settlement.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
         }
 
         // 2015-02-18 Added beeGrowing.timePassing()
@@ -735,7 +753,7 @@ implements Serializable {
 		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		Storage.storeAnResource(amountCropWaste, Crop.CROP_WASTE, inv);
+		Storage.storeAnResource(amountCropWaste, Crop.CROP_WASTE, s_inv);
 	}
 
 /*
@@ -768,19 +786,15 @@ implements Serializable {
         Iterator<Crop> i = crops.iterator();
         while (i.hasNext()) {
             Crop crop = i.next();
-            if (crop.getPhaseType() == PhaseType.HARVESTING 
-            		|| crop.getPhaseType() == PhaseType.PLANTING
-            		|| crop.getPhaseType() == PhaseType.INCUBATION)
-            	powerRequired += powerGrowingCrop/2D; // half power is needed just for illumination and crop monitoring only
-            else if (crop.getPhaseType() == PhaseType.FINISHED)
-            	powerRequired += powerGrowingCrop/2D; // half power is needed just for illumination and crop monitoring only
+            if (crop.getPhaseType() == PhaseType.PLANTING || crop.getPhaseType() == PhaseType.INCUBATION)
+            	powerRequired += powerGrowingCrop/2D; // half power is needed for illumination and crop monitoring
+            else if (crop.getPhaseType() == PhaseType.HARVESTING || crop.getPhaseType() == PhaseType.FINISHED)
+            	powerRequired += powerGrowingCrop/5D;
             else //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
-                //powerRequired += (crop.getMaxHarvest() * powerGrowingCrop + crop.getLightingPower() );
-            	powerRequired += powerGrowingCrop + crop.getLightingPower();            
-            
+            	powerRequired += powerGrowingCrop + crop.getLightingPower();
         }
 
-        // TODO: separate auxiliary power for subsystem, not just lighting power
+        // TODO: add separate auxiliary power for subsystem, not just lighting power
 
         return powerRequired;
     }
@@ -817,8 +831,7 @@ implements Serializable {
             Crop crop = i.next();
             if ((crop.getPhaseNum() > 2 && crop.getPhaseNum() < crop.getPhases().size() - 1)
             		|| crop.getPhaseNum() == 2)
-            //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
-                powerRequired += (crop.getMaxHarvest() * powerSustainingCrop);
+				powerRequired += powerSustainingCrop;
         }
 
         return powerRequired;
@@ -843,7 +856,7 @@ implements Serializable {
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000 millisols
 
-        return dailyMaxHarvest / crops.size() * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
+        return totalMaxHarvest / crops.size() * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
     }
 
     @Override
@@ -851,11 +864,29 @@ implements Serializable {
         return maxGrowingArea * 5D;
     }
 
+
+	public void addNumLamp(int num) {
+		numHPSinNeed = numHPSinNeed + num;
+	}
+
+	@Override
+	public double getFullHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getPoweredDownHeatRequired() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
     @Override
     public void destroy() {
         super.destroy();
 
-        inv = null;
+        s_inv = null;
+		b_inv = null;
         settlement = null;
         building = null;
 
@@ -879,15 +910,4 @@ implements Serializable {
 
     }
 
-	@Override
-	public double getFullHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getPoweredDownHeatRequired() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

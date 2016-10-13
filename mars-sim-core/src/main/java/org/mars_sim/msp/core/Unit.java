@@ -142,7 +142,7 @@ implements Serializable, Comparable<Unit> {
 	
 	/**
 	 * Change the unit's name
-	 * @param name new name
+	 * @param newName new name
 	 */
 	//2015-12-13 Modified changeName() to call changeSettlementName()
 	public final void changeName(String newName) {

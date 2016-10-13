@@ -448,7 +448,7 @@ implements Serializable {
 	private SalvageProcess createNewSalvageProcess() {
 		SalvageProcess result = null;
 
-		if (workshop.getTotalProcessNumber() < workshop.getConcurrentProcesses()) {
+		if (workshop.getTotalProcessNumber() < workshop.getSupportingProcesses()) {
 
 			int skillLevel = getEffectiveSkillLevel();
 			int techLevel = workshop.getTechLevel();

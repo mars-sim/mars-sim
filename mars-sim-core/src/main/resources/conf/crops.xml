@@ -2,6 +2,8 @@
 
 <!DOCTYPE crop-configuration SYSTEM "conf/dtd/crops.dtd">
 
+<!-- Read References 1 to 25 at the bottom -->
+
 <crop-configuration>
 
 	<!-- The average amount of carbon dioxide (kg) needed by a crop per square meter area in each Martian Sol -->
@@ -16,9 +18,23 @@
 	<!-- Default: 5.0 -->
 	<water-consumption-rate value="5.0" />
 
-	
+	<!-- The ratio of measured irradiance [ Wm^-2 to PPF on Mars. Useful for calculate the instantaneous PAR in Crop.java -->
+	<!-- see http://physics.stackexchange.com/questions/52487/photometer-measured-irradiance-l-converted-to-photon-rate -->
+    <!-- Default: 4.568 on Mar [in u mol / m2 /s / (W m^2)] (vs. 4.609 on Earth-->
+	<watt-to-photon-conversion-ratio value="4.568" />
+
 	<crop-list>
-	
+
+<!--	Note : see Reference 7
+
+			growing-time : # of sols
+			crop-category : the type of crop
+			edible-biomass : [ gram / m^2 / day ]
+			edible-water-content : in proportion of 1 (1 is 100%)
+			inedible-biomass :  [ gram / m^2 / day ]
+			daily-PAR : [ mol / m^2 / day ]
+-->
+
 		<crop name="Cabbage"
 	 	  	growing-time="85.0"
 	    	crop-category="leaves"
@@ -247,14 +263,7 @@
 	    	3.  TODO: making ginger Tea
 	
 	    	 -->
-	    <crop name="Quinoa"
-	        growing-time="89"
-	    	crop-category="grains"
-	    	edible-biomass="5"
-	    	edible-water-content=".1"
-	    	inedible-biomass="7"
-	    	daily-PAR="34.56"
-	    	/>
+
 	    	<!-- http://en.wiki2.org/wiki/Quinoa
 	    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
 	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html

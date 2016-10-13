@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -60,7 +59,7 @@ public class RoboticStation extends Function implements Serializable {
         // System.out.println("Calling RoboticStation's constructor");
 		this.building = building;
 
-		inv = getBuilding().getInventory();
+		inv = getBuilding().getSettlementInventory();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -170,7 +169,7 @@ public class RoboticStation extends Function implements Serializable {
         double energyUsageBuilding = energyUsageSettlement * buildingProportionCap;
 
         /*
-        Inventory inv = getBuilding().getInventory();
+        Inventory inv = getBuilding().getSettlementInventory();
         AmountResource water = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupport.WATER);
         double waterUsed = powerUsageBuilding;
         double waterAvailable = inv.getAmountResourceStored(water, false);
@@ -203,7 +202,7 @@ public class RoboticStation extends Function implements Serializable {
     public void timePassing(double time) {
 
     	if (inv == null)
-    		inv = getBuilding().getInventory();
+    		inv = getBuilding().getSettlementInventory();
 
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.

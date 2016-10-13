@@ -35,12 +35,15 @@ implements Serializable {
 
 	/** default logger. */
 	//private static Logger logger = Logger.getLogger(Heating.class.getName());
-
-	DecimalFormat fmt = new DecimalFormat("#.#######");
-
 	private static final BuildingFunction FUNCTION = BuildingFunction.LIFE_SUPPORT;
-	// Data members
 
+	// Heat gain and heat loss calculation
+	// Source 1: Engineering concepts for Inflatable Mars Surface Greenhouses
+	// http://ntrs.nasa.gov/search.jsp?R=20050193847
+	// Full ver at http://www.marshome.org/files2/Hublitz2.pdf
+	// Revised ver at https://www.researchgate.net/publication/7890528_Engineering_concepts_for_inflatable_Mars_surface_greenhouses
+
+	// Data members
 	private static final double BTU_PER_HOUR_PER_kW = 3412.14; // 1 kW = 3412.14 BTU/hr
 	private static final double C_TO_K = 273.15;
 	//2015-02-19 Added MILLISOLS_PER_UPDATE
@@ -49,15 +52,13 @@ implements Serializable {
 	private static final double EMISSIVITY_DAY = 0.8 ;
 	private static final double EMISSIVITY_NIGHT = 1.0 ;
 	private static final double EMISSIVITY_INSULATED = 0.05 ;
-
 	private static final double STEFAN_BOLTZMANN_CONSTANT = 0.0000000567 ; // in W / (m^2 K^4)
-
 	//private static final double ROOM_TEMPERATURE = 22.5D;
     //public static final double GREENHOUSE_TEMPERATURE = 24D;
     // Thermostat's temperature allowance
     private static final double T_UPPER_SENSITIVITY = 1D;
     private static final double T_LOWER_SENSITIVITY = 1D;
-    private static final int HEAT_CAP = 200;
+    //private static final int HEAT_CAP = 200;
     private static final double HEAT_GAIN_FROM_EQUIPMENT = 2000D;
     private static final double HEAT_DISSIPATED_PER_PERSON = 350D;
     //private static final double kPASCAL_PER_ATM = 1D/0.00986923267 ; // 1 kilopascal = 0.00986923267 atm
@@ -84,7 +85,6 @@ implements Serializable {
 	private double hullArea; // underbody and sidewall
 	private double transmittance;
 	private double heat_gain_from_HPS = Crop.LOSS_AS_HEAT_HPS;
-
 	//private double baseHeatRequirement;
 	private double basePowerDownHeatRequirement = 0;
 	private double meter2Feet = 10.764;
@@ -102,9 +102,7 @@ implements Serializable {
     private double U_value_area_crack_length;
     private double q_H_factor = 21.4D/10/2.23694; // 1 m per sec = 2.23694 miles per hours
     private double airChangePerHr = .5;
-
 	//private double factor_heatLoss; // = U_value * floorArea * meter2Feet ;
-
 	// 2014-11-02 Added heatGenerated
 	private double heatGenerated = 0; // the initial value is zero
 	private double heatGeneratedCache = 0; // the initial value is zero
@@ -113,7 +111,6 @@ implements Serializable {
 	private double deltaTemperature;
 	private double currentTemperature;
     //private double heatLossEachEVA;
-
 	private double storedHeat;
 	//double interval = Simulation.instance().getMasterClock().getTimePulse() ;
 	// 1 hour = 3600 sec , 1 sec = (1/3600) hrs
@@ -133,13 +130,13 @@ implements Serializable {
 	private Weather weather;
 	private Coordinates location;
 	private MasterClock masterClock;
-	private MarsClock clock;
+	private MarsClock marsClock;
 	private SurfaceFeatures surfaceFeatures;
+	private DecimalFormat fmt = new DecimalFormat("#.#######");
 
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.
-	 * @throws BuildingException if error in constructing function.
 	 */
 	public Heating(Building building) {
 		// Call Function constructor.
@@ -181,7 +178,7 @@ implements Serializable {
 		//t_factor = vol / R_GAS_CONSTANT / n;
 
 		masterClock = Simulation.instance().getMasterClock();
-		clock = masterClock.getMarsClock();
+		marsClock = masterClock.getMarsClock();
 		weather = Simulation.instance().getMars().getWeather();
 
 		//coordinates = building.getBuildingManager().getSettlement().getCoordinates();
@@ -210,9 +207,10 @@ implements Serializable {
 	//2015-06-21  Added isGreenhouse()
     public boolean isGreenhouse() {
 		//if (config.hasFarming(buildingType))
-		if (buildingType.equals("Inflatable Greenhouse")
-				|| buildingType.equals("Large Greenhouse")
-				||	buildingType.equals("Inground Greenhouse") )
+		//if (buildingType.equals("Inflatable Greenhouse")
+		//		|| buildingType.equals("Large Greenhouse")
+		//		||	buildingType.equals("Inground Greenhouse") )
+		if (buildingType.toLowerCase().contains("greenhouse"))
 			return true;
 		else
 			return false;
@@ -373,7 +371,7 @@ implements Serializable {
 		// 1. stabilize the temperature calculation
 		// 2. smoothen out any abrupt temperature variation(*) in the settlement unit window
 		// 3. reduce the frequency of the more intensive computation of heat gain and heat loss in determineDeltaTemperature()
-		// Note*:  MSP is set to run at a much faster pace than the real time clock and the temperature change inside a room is time-dependent.
+		// Note*:  MSP is set to run at a much faster pace than the real time marsClock and the temperature change inside a room is time-dependent.
 		//double factor = t;
 		if (t > 2) { // && storedHeat >= -30  && storedHeat <= 30) {
 			// Arbitrarily select to "trap" the amount heat so as to reduce "t" to half of its value
@@ -431,7 +429,6 @@ implements Serializable {
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
 	 */
 	public void timePassing(double time) {
 
@@ -444,11 +441,10 @@ implements Serializable {
 			// if time < 1 millisols, may skip calling adjustThermalControl() for several cycle to reduce CPU utilization.
 			if (masterClock == null)
 				masterClock = Simulation.instance().getMasterClock();
+			if (marsClock == null)
+				marsClock = masterClock.getMarsClock();
 
-			if (clock == null)
-				clock = masterClock.getMarsClock();
-
-			int oneTenthmillisols =  (int) (clock.getMillisol() * 10);
+			int oneTenthmillisols =  (int) (marsClock.getMillisol() * 10);
 			//System.out.println(" oneTenthmillisols : " + oneTenthmillisols);
 			if (oneTenthmillisols % ONE_TENTH_MILLISOLS_PER_UPDATE == 0) {
 				//System.out.println(" oneTenthmillisols % 10 == 0 ");
@@ -464,9 +460,9 @@ implements Serializable {
 	}
 
 	/**
-	 * Notify thermal control subsystem for the temperature change and power up and power down
+	 * Notifies thermal control subsystem for the temperature change and power up and power down
 	 * via 3 steps (this method houses the main thermal control codes)
-	 * @return power (kW)
+	 * @param time in millisols
 	 */
 	// 2014-10-25 Added adjustThermalControl()
 	public void adjustThermalControl(double time) {
@@ -514,6 +510,7 @@ implements Serializable {
 		weather = null;
 		location = null;
 	}
+
 	/**
 	 * Gets the heat this building currently requires for full-power mode.
 	 * @return heat in kJ/s.

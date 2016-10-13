@@ -569,9 +569,9 @@ public class BrowserJFX {
      	} 
 */     		
     }
-	@SuppressWarnings("restriction")
+
     public void addCSS() { 
-    	logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );  		
+    	//logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );
     	if (go_flag && isLocalHtml) {// && !isInternal) {
 		   	//System.out.println("adding css");
 			Document doc = engine.getDocument() ;

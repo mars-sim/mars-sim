@@ -71,7 +71,7 @@ public class ExplorationMeta implements MetaMission {
             
             // Check if there are enough specimen containers at the settlement for collecting rock samples.
             //boolean enoughContainers = false;
-            //int numContainers = settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
+            //int numContainers = settlement.getSettlementInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
             else if (!(settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false) >= Exploration.REQUIRED_SPECIMEN_CONTAINERS))
             	go = false;
             

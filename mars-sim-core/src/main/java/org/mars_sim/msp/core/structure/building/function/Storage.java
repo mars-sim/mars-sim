@@ -56,7 +56,7 @@ implements Serializable {
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		//Inventory inventory = building.getInventory();
+		//Inventory inventory = building.getSettlementInventory();
 		Inventory inv = building.getBuildingManager().getSettlement().getInventory();
 
 		// 2015-03-07 Added stockCapacity
@@ -76,7 +76,7 @@ implements Serializable {
 		}
 
 		// Get initial resources in building.
-		//Inventory inv = building.getBuildingManager().getSettlement().getInventory();
+		//Inventory inv = building.getBuildingManager().getSettlement().getSettlementInventory();
 		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getBuildingType());
 		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 		while (i2.hasNext()) {
@@ -185,7 +185,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
 			double storageCapacityAmount = storageCapacity.get(resource);
-			Inventory inv = getBuilding().getInventory();
+			Inventory inv = getBuilding().getSettlementInventory();
 			double totalStorageCapacityAmount = inv.getAmountResourceCapacity(resource, false);
 			double remainingStorageCapacityAmount = totalStorageCapacityAmount - storageCapacityAmount;
 			double totalStoredAmount = inv.getAmountResourceStored(resource, false);
@@ -200,7 +200,7 @@ implements Serializable {
 		while (j.hasNext()) {
 			AmountResource resource = j.next();
 			double storageCapacityAmount = storageCapacity.get(resource);
-			Inventory inv = getBuilding().getInventory();
+			Inventory inv = getBuilding().getSettlementInventory();
 			inv.removeAmountResourceTypeCapacity(resource, storageCapacityAmount);
 		}
 	}

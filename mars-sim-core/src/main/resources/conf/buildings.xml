@@ -301,7 +301,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		has an aluminized Mylar reflector curtain. It also houses one workbench with instruments for botany research.
 		</description>
 
-		<power-required base-power="0.0" base-power-down-power="0.0"/>
+		<power-required base-power="1.0" base-power-down-power="0.2"/>
 
 		<functions>
 			<!-- The building is capable of growing plant crops. -->
@@ -309,7 +309,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- power-growing-crop: the power (kW) required per kg harvest biomass per crop to grow an flourish. -->
 			<!-- power-sustaining-crop: the minimum power (kW) required per kg harvest biomass per crop just to keep it alive. -->
 			<!-- growing-area: the max growing area (square meters) of all crops. -->
-			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".025" growing-area="50.0" >
+			<farming crops="5" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="50.0" >
 				<activity>
 					<activity-spot xloc="1.5" yloc="2.25" />
 					<activity-spot xloc="-1.5" yloc="2.25" />
@@ -387,10 +387,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a botany research lab with instruments. It has a spacious interior
 			for high volume crop cultivation and has a high resource storage capability.
 		</description>
-		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<power-required base-power="10.0" base-power-down-power="1.0" />
 
 		<functions>
-			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="150.0">
+			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="150.0">
 				<activity>
 					<activity-spot xloc="1.6" yloc="4.9" />
 					<activity-spot xloc="1.6" yloc="2.45" />
@@ -479,7 +479,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 
 		<functions>
-			<farming crops="0" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
+			<farming crops="0" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="200.0" />
 			<life-support capacity="10" power-required="20.0" />
 			<research tech-level="2" capacity="2">
 				<research-specialty name="BIOLOGY" />
@@ -2144,10 +2144,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			vaulted flber glass roof which is less suceptible to meteor damage.
 			It grows crops as food for the settlement.
 		</description>
-		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<power-required base-power="1.0" base-power-down-power="0.2" />
 
 		<functions>
-			<farming crops="4" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="40.0">
+			<farming crops="4" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="40.0">
 				<activity>
 					<activity-spot xloc="0.0" yloc="3.75" />
 					<activity-spot xloc="0.0" yloc="1.87" />

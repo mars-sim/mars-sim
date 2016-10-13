@@ -273,7 +273,7 @@ extends VehicleMission {
 
 		if (getVehicle() == null) {
 			//throw new NullPointerException("getVehicle() is null");
-			logger.info(member.getName() + " can't find any vehicles in " + member.getSettlement());
+			//logger.info(member.getName() + " can't find any vehicles in " + member.getSettlement());
 			endMission("no vehicle is available");
 		}
 		//else if (getVehicle().getSettlement() == null)
@@ -790,7 +790,7 @@ extends VehicleMission {
 
 	@Override
 	public void endMission(String reason) {
-		logger.info("endMission()'s reason : " + reason);
+		//logger.info("endMission()'s reason : " + reason);
 		// If at a settlement, "associate" all members with this settlement.
 		Iterator<MissionMember> i = getMembers().iterator();
 		while (i.hasNext()) {

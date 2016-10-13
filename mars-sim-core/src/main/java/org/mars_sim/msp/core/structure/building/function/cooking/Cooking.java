@@ -144,7 +144,7 @@ implements Serializable {
         super(FUNCTION, building);
 
         // 2014-12-30 Changed inv to include the whole settlement
-        //inv = getBuilding().getInventory();
+        //inv = getBuilding().getSettlementInventory();
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
 
         settlement = getBuilding().getBuildingManager().getSettlement();

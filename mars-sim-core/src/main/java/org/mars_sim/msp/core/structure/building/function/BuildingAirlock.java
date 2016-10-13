@@ -64,7 +64,7 @@ public class BuildingAirlock extends Airlock {
     }   
 
     protected void exitAirlock(Person person) {
-        Inventory inv = building.getInventory();
+        Inventory inv = building.getSettlementInventory();
 
         if (inAirlock(person)) {
 
@@ -110,7 +110,7 @@ public class BuildingAirlock extends Airlock {
     }
 
     protected void exitAirlock(Robot robot) {
-        Inventory inv = building.getInventory();
+        Inventory inv = building.getSettlementInventory();
 
         if (inAirlock(robot)) {
 
@@ -169,7 +169,7 @@ public class BuildingAirlock extends Airlock {
 
     @Override
     public Inventory getEntityInventory() {
-        return building.getInventory();
+        return building.getSettlementInventory();
     }
     
     @Override

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.08 2015-04-08
+ * @version 3.1.0 2016-10-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -45,13 +45,17 @@ public class Crop implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
 
-	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
-	public static final double TISSUE_EXTRACTED_PERCENT = .1D;
 	public static final String CARBON_DIOXIDE = "carbon dioxide";
 	public static final String CROP_WASTE = "crop waste";
-	public static final String TISSUE_CULTURE = "tissue culture"; 
+	public static final String TISSUE_CULTURE = "tissue culture";
 	public static final String FERTILIZER = "fertilizer";
 	public static final String SOIL = "soil";
+
+	// 2016-10-12 Added the limiting factor that determines how fast and how much PAR can be absorbed in one frame.
+	public static final double PHYSIOLOGICAL_LIMIT = 0.05;
+	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
+	public static final double TISSUE_EXTRACTED_PERCENT = .1D;
+
 	/** Amount of carbon dioxide needed per harvest mass. */
 	public static final double CARBON_DIOXIDE_NEEDED = 2D;
 	public static final double NEW_SOIL_NEEDED_PER_SQM = .2D;
@@ -63,18 +67,19 @@ public class Crop implements Serializable {
 	public static final double CO2_GENERATION_RATE = .9D;
 	// public static final double SOLAR_IRRADIANCE_TO_PAR_RATIO = .42; // only 42% are EM within 400 to 700 nm
 	// see http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm#_top
-	public static final double WATT_TO_PHOTON_CONVERSION_RATIO = 4.609; // in u mol / m2 /s / W m-2 for Mars only
-	public static final double kW_PER_HPS = .4;
-	public static final double VISIBLE_RADIATION_HPS = .4; // high pressure sodium (HPS) lamps efficiency
-	public static final double BALLAST_LOSS_HPS = .1; // for high pressure sodium (HPS)
-	public static final double NON_VISIBLE_RADIATION_HPS = .37; // for high pressure sodium (HPS)
-	public static final double CONDUCTION_CONVECTION_HPS = .13; // for high pressure sodium (HPS)
+	//public static final double WATT_TO_PHOTON_CONVERSION_RATIO = 4.609; // in u mol / m2 /s / W m-2 for Mars only
+	public static final double kW_PER_HPS = .4; // using 400W HPS_LAMP
+	public static final double VISIBLE_RADIATION_HPS = .4; // high pressure sodium (HPS_LAMP) lamps efficiency
+	public static final double BALLAST_LOSS_HPS = .1; // for high pressure sodium (HPS_LAMP)
+	public static final double NON_VISIBLE_RADIATION_HPS = .37; // for high pressure sodium (HPS_LAMP)
+	public static final double CONDUCTION_CONVECTION_HPS = .13; // for high pressure sodium (HPS_LAMP)
 	public static final double LOSS_AS_HEAT_HPS = NON_VISIBLE_RADIATION_HPS*.75 + CONDUCTION_CONVECTION_HPS/2D;
 	//public static final double MEAN_DAILY_PAR = 237.2217D ; // in [mol/m2/day]
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
     private static final double T_TOLERANCE = 3D;
 
 	// Data members
+	private int numLampCache;
     /** Current sol since the start of sim. */
 	private int solCache = 1;
 	/** Current sol of month. */
@@ -96,14 +101,16 @@ public class Crop implements Serializable {
 	private double fractionalGrowthCompleted;
 	private double t_initial;
 	private double dailyPARRequired;
-	private double dailyPARCache = 0;
-	private double sunlightModifierCache = 1;
+	private double cumulativeDailyPAR = 0;
+	private double lightMemoryCache = 1;
 	private double lightingPower = 0; // in kW
 	private double healthCondition = 0;
     private double averageWaterNeeded;
     private double averageOxygenNeeded;
     private double averageCarbonDioxideNeeded;
-    private double diseaseIndex = 0;
+	private double wattToPhotonConversionRatio;
+	private double uPAR;
+	private double diseaseIndex = 0;
 
 	/** Current phase of crop. */
 	private PhaseType phaseType;
@@ -120,16 +127,17 @@ public class Crop implements Serializable {
 	   
 	private Map<Integer, Phase> phases = new HashMap<>();
 	
-	DecimalFormat fmt = new DecimalFormat("0.000");
+	DecimalFormat fmt = new DecimalFormat("0.00000");
 
 	/**
 	 * Constructor.
 	 * @param cropType the type of crop.
-	 * @param maxHarvest - Maximum possible food harvest for crop. (kg)
+	 * @param growingArea the area occupied by the crop
+	 * @param dailyMaxHarvest - Maximum possible food harvest for crop. (kg)
 	 * @param farm - Farm crop being grown in.
 	 * @param settlement - the settlement the crop is located at.
 	 * @param newCrop - true if this crop starts in it's planting phase.
-	 * @param tissuePercent
+	 * @param tissuePercent the percentage of tissue culture available based on the requested amount
 	 */
 	// Called by Farming.java constructor and timePassing()
 	// 2015-08-26 Added new param percentGrowth
@@ -146,9 +154,12 @@ public class Crop implements Serializable {
 	    averageWaterNeeded = cropConfig.getWaterConsumptionRate();
 	    averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
 	    averageCarbonDioxideNeeded = cropConfig.getCarbonDioxideConsumptionRate();
+		wattToPhotonConversionRatio = cropConfig.getWattToPhotonConversionRatio();
 
 		surface = Simulation.instance().getMars().getSurfaceFeatures();
-        masterClock = Simulation.instance().getMasterClock();
+		uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
+
+		masterClock = Simulation.instance().getMasterClock();
 		marsClock = masterClock.getMarsClock();
 
 		inv = settlement.getInventory();
@@ -888,8 +899,11 @@ public class Crop implements Serializable {
 					
 				} else if (growingTimeCompleted == 0) {				
 					;//System.out.println("Crop.java : growingTimeCompleted == 0");
-					
-				} else { // still in phase.equals(GROWING)|| phase.equals(GERMINATION)
+
+				//} else if (phaseType != PhaseType.INCUBATION) {
+					; // do nothing
+
+				} else {// still in phase.equals(GROWING)|| phase.equals(GERMINATION)
 
 					//if (masterClock == null)
 					//	masterClock = Simulation.instance().getMasterClock();
@@ -910,6 +924,8 @@ public class Crop implements Serializable {
 						currentSol = newSol;
 						// reset the daily work counter currentPhaseWorkCompleted back to zero
 						currentPhaseWorkCompleted = 0D;
+
+						cumulativeDailyPAR = 0;
 					}
 
 					// max possible harvest within this period of time
@@ -992,7 +1008,6 @@ public class Crop implements Serializable {
 
 		// Determine harvest modifier according to amount of light.
 		// TODO: Modify harvest modifier by amount of artificial light available to the whole greenhouse
-		double sunlightModifier = 0;
 		if (surface == null)
 			surface = Simulation.instance().getMars().getSurfaceFeatures();
 
@@ -1003,81 +1018,112 @@ public class Crop implements Serializable {
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 
-	    int currentMillisols = (int) marsClock.getMillisol();
+	    double currentMillisols = marsClock.getMillisol();
+
 		// 2015-04-09 Add instantaneous PAR from solar irradiance
-		//double uPAR = SOLAR_IRRADIANCE_TO_PAR_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
-		double uPAR = WATT_TO_PHOTON_CONVERSION_RATIO * surface.getSolarIrradiance(settlement.getCoordinates());
+		//double uPAR = wattToPhotonConversionRatio * surface.getSolarIrradiance(settlement.getCoordinates());
+		// [umol /m^2 /s] = [u mol /m^2 /s /(Wm^-2)]  * [Wm^-2]
 
-		double instantaneousPAR	= 0;
-		if (uPAR > 10)
-			instantaneousPAR = uPAR * time * MarsClock.SECONDS_IN_MILLISOL / 1_000_000D; // in mol / m2 within this period of time
+		double delta_PAR_sunlight = 0;
+		//if (uPAR > 20)
+		delta_PAR_sunlight = uPAR / 1_000_000D * time * MarsClock.SECONDS_IN_MILLISOL ; // in mol / m^2 within this period of time
+		// [mol /m^2] = [umol /m^2 /s] / u  * [millisols] * [s /millisols]
 
+		// 1 u = 1/1_000_000
+		// Note : daily-PAR has the unit of [mol /m^2 /day]
 	    // Gauge if there is enough sunlight
-	    double progress = dailyPARCache / dailyPARRequired;
-	    double ruler = currentMillisols / 1000D;
-		//System.out.println("uPAR : "+ fmt.format(uPAR) + "\tinstantaneousPAR : " + fmt.format(instantaneousPAR)
+	    double progress = cumulativeDailyPAR / dailyPARRequired; //[max is 1]
+	    double ruler = currentMillisols / 1000D; //[max is 1]
+		//System.out.println("uPAR : "+ fmt.format(uPAR) + "\tdelta_PAR_sunlight : " + fmt.format(delta_PAR_sunlight)
 		//		+ "\tprogress : "+ fmt.format(progress) + "\truler : " + fmt.format(ruler));
 
-	    // When enough PAR have been administered to the crop, the HPS will turn off.
+	    // When enough PAR have been administered to the crop, the HPS_LAMP will turn off.
 	    // TODO: what if the time zone of a settlement causes sunlight to shine at near the tail end of the currentMillisols time ?
 
-	    // 2015-04-09 Compare dailyPARCache / dailyPARRequired  vs. current time / 1000D
-	    if (progress < ruler) {
+	    // 2015-04-09 Compared cumulativeDailyPAR / dailyPARRequired  vs. current time / 1000D
+		// 2016-10-12 Modified the if-else condition to reduce the frequent toggling on and off of lamp
+		// // and to check on the time of day to anticipate the need of sunlight.
+	    if (0.8 * progress < ruler && currentMillisols <= 333
+			|| 0.9 * progress < ruler && currentMillisols > 333 && currentMillisols <= 666
+			|| progress < ruler && currentMillisols > 666
+			) {
 	    	// TODO: also compare also how much more sunlight will still be available
-	    	// if sunlight is available
-	    	if (uPAR > 10) {
-	    		dailyPARCache = dailyPARCache + instantaneousPAR ;
-	 		    //System.out.print("\tdailyPARCache : " + fmt.format(dailyPARCache));
+	    	if (uPAR > 20) { // if sunlight is available
+				turnOffLighting();
+	    		cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_sunlight ;
 	    	}
-	    	else {
-		    	//if no sunlight, turn on artificial lighting
-	    		double d_PAR = dailyPARRequired - dailyPARCache; // in mol / m2 / d
-	    		double d_PAR_area = d_PAR / (1000 - currentMillisols) / MarsClock.SECONDS_IN_MILLISOL * growingArea; // in mol / msol
-		    	double d_kW_area = d_PAR_area * 1000 *  WATT_TO_PHOTON_CONVERSION_RATIO ;
-		    	//double d_Joules_now = d_kWatt * time * MarsClock.SECONDS_IN_MILLISOL;
+
+	    	else { //if no sunlight, turn on artificial lighting
+	    		double PAR_outstanding_today = dailyPARRequired - cumulativeDailyPAR; // in mol / m2
+	    		//double delta_PAR_outstanding = PAR_outstanding_today / (1000 - currentMillisols) / MarsClock.SECONDS_IN_MILLISOL * growingArea; // in mol / millisols
+				//System.out.println("PAR_outstanding_today : " + fmt.format(PAR_outstanding_today) + "\ttime : " + fmt.format(time) + "\tgrowingArea : " + growingArea);
+				double delta_PAR_outstanding = PAR_outstanding_today * (time / 1000D) * growingArea; // in mol needed at this delta time
+				//[mol] = [mol /m^2 /day] * [millisol] / [millisols /day] * m^2
+				//System.out.println("delta_PAR_outstanding : " + fmt.format(delta_PAR_outstanding));
+				//double delta_kW = delta_PAR_outstanding / 1000D / wattToPhotonConversionRatio * 1000D * PHYSIOLOGICAL_LIMIT;
+				//double delta_kW = delta_PAR_outstanding / wattToPhotonConversionRatio / time / MarsClock.SECONDS_IN_MILLISOL  * 1_000_000 / 1_000 ;
+				double delta_kW = delta_PAR_outstanding / wattToPhotonConversionRatio / time / MarsClock.SECONDS_IN_MILLISOL  * 1_000 ;
+				// [kW] =  [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols] = [W /u ]
 		    	// TODO: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
 
-		    	int numLamp = (int) (d_kW_area / kW_PER_HPS / VISIBLE_RADIATION_HPS);
-		    	// each HPS lamp supplies 400W with 40% visible radiation efficiency
+				// 2016-10-12 Added PHYSIOLOGICAL_LIMIT sets a realistic limit to tune how fast and how much PAR can be absorbed.
+				// Note : PHYSIOLOGICAL_LIMIT prevents too many light turned on all of a sudden.
+				int numLamp = (int) (Math.ceil(delta_kW / kW_PER_HPS / VISIBLE_RADIATION_HPS * PHYSIOLOGICAL_LIMIT));
+				// TODO: how to minimize frequently toggle on and off
+
+				//System.out.println(cropType.getName() + "'s numLamp : " + numLamp);
+
+				// TODO: should also allow the use of LED_KIT for lighting
+
+				//2016-10-11 Add Checking num of lamps in use by the greenhouse
+				//if (numLampCache != numLamp) {
+				//	farm.addNumLamp(numLamp - numLampCache);
+				//	numLampCache = numLamp;
+				//}
+
+		    	// each HPS_LAMP lamp supplies 400W with 40% visible radiation efficiency
 		    	double supplykW = numLamp * kW_PER_HPS;
-		    	// TODO: should also allow the use of LED for lighting
+				turnOnLighting(supplykW);
+
 		    	//System.out.println("time : "+ time);
-		    	double supplyIntantaneousPAR = supplykW * time * MarsClock.SECONDS_IN_MILLISOL /1000 / WATT_TO_PHOTON_CONVERSION_RATIO / growingArea ; // in mol / m2
+		    	double delta_PAR_supplied = supplykW * wattToPhotonConversionRatio / growingArea ; // in mol / m2
+				// [ mol / m^2]  = [kW]   *   [u mol /m^2 /s /(Wm^-2)]   /   [m^2]
 
-		    	turnOnLighting(supplykW);
-
-			    dailyPARCache = dailyPARCache + supplyIntantaneousPAR;
-			    //System.out.println("\td_kW_area : "+ fmt.format(d_kW_area) + "\tsupplykW : "+ fmt.format(supplykW)
-			    //+ "\tsPAR : "+ fmt.format(supplyIntantaneousPAR) + "\tdailyPARCache : " + fmt.format(dailyPARCache));
+			    cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_supplied + delta_PAR_sunlight;
+				// [mol /m^2 /d]
+			    //System.out.println("\tcumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR)
+				//		+ "\tdelta_PAR_supplied : "+ fmt.format(delta_PAR_supplied)
+				//		+ "\tdelta_PAR_sunlight : "+ fmt.format(delta_PAR_sunlight)
+				//		+  "\tdelta_kW : "+ fmt.format(delta_kW)
+				//		+ "\tsupplykW : "+ fmt.format(supplykW));
 	    	}
-
 	    }
+
 	    else {
+			// TODO: move the curtain out to block excessive sunlight ?!?
 	    	turnOffLighting();
-			dailyPARCache = dailyPARCache + instantaneousPAR;
-			//System.out.println("\tdailyPARCache : " + fmt.format(dailyPARCache));
-
+			cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_sunlight;
 	    }
+
+	    //if (cumulativeDailyPAR > dailyPARRequired)
+		//	System.out.println(cropType.getName() + "'s cumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR));
+		//System.out.println();
+
+
 	        // check for the passing of each day
 	    int newSol = marsClock.getSolElapsedFromStart();
 		if (newSol != solCache) {
-			//logger.info("Crop.java : calculateHarvestModifier() : instantaneousPAR is "+instantaneousPAR);
 			// the crop has memory of the past lighting condition
-			sunlightModifier = 0.5 * sunlightModifierCache  + 0.5 * dailyPARCache / dailyPARRequired;
-			if (sunlightModifier > 1.5)
-				sunlightModifier = 1.5;
+			double lightMemory = 0.5 * lightMemoryCache + 0.5 * cumulativeDailyPAR / dailyPARRequired;
+			if (lightMemory > 1.5)
+				lightMemory = 1.5;
 			// TODO: If too much light, the crop's health may suffer unless a person comes to intervene
 			solCache = newSol;
-			//logger.info("dailyPARRequired is " + dailyPARRequired);
-			//logger.info("dailyPARCache is " + dailyPARCache);
-			//logger.info("sunlightModifier is " + sunlightModifier);
-			dailyPARCache = 0;
-			//logger.info("timeCache is "+ timeCache);
-			//timeCache = 0;
+			lightMemoryCache = lightMemory;
 		}
 		else {
 			//System.out.println(" currentSol : newSol   " + currentSol + " : " + newSol);
-			sunlightModifier = sunlightModifierCache;
+			//lightMemory = lightMemoryCache;
 		}
 
 		double T_NOW = farm.getBuilding().getCurrentTemperature();
@@ -1140,7 +1186,7 @@ public class Crop implements Serializable {
 		// Calculate O2 and CO2 usage
 		double o2Modifier = 0, co2Modifier = 0;
 
-		if (sunlightModifier <= .5) {
+		if (lightMemoryCache <= .5) {
 			AmountResource o2ar = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 			double o2Required = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageOxygenNeeded;
 			double o2Available = inv.getAmountResourceStored(o2ar, false);
@@ -1163,7 +1209,7 @@ public class Crop implements Serializable {
 			Storage.storeAnResource(co2Amount, CARBON_DIOXIDE, inv);
 		}
 
-		else if (sunlightModifier > .5) {
+		else if (lightMemoryCache > .5) {
 			// TODO: gives a better modeling of how the amount of light available will trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
 			AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
@@ -1194,14 +1240,14 @@ public class Crop implements Serializable {
 		if (phaseNum > 2 && phaseNum < length - 2) {
 		//if (phaseType == PhaseType.GROWING) {
 			// 2015-08-26 Tuned harvestModifier
-			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * sunlightModifier;
+			harvestModifier = .6 * harvestModifier + .4 * harvestModifier * lightMemoryCache;
 			//System.out.println("Farming.java: sunlight harvestModifier is " + harvestModifier);
 		}
 		else if (phaseNum == 2)
 		//else if (phaseType == PhaseType.GERMINATION)
-			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * sunlightModifier;
+			harvestModifier = .8 * harvestModifier + .2 * harvestModifier * lightMemoryCache;
 
-		if (sunlightModifier < .5) {
+		if (lightMemoryCache < .5) {
 			// 2015-08-26 Tuned harvestModifier
 			harvestModifier = .7 * harvestModifier
 					+ .1 * harvestModifier * temperatureModifier
@@ -1306,7 +1352,12 @@ public class Crop implements Serializable {
 	public Map<Integer, Phase> getPhases() {
 		return phases;
 	}
-	
+
+
+	// 2016-10-12 reset cumulativeDailyPAR
+	public void resetPAR() {
+		cumulativeDailyPAR = 0;
+	}
 	/**
 	 * Prepare object for garbage collection.
 	 */

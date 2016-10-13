@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -16,11 +15,9 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.time.MarsClock;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -89,7 +86,7 @@ public class LivingAccommodations extends Function implements Serializable {
         loadActivitySpots(buildingConfig.getLivingAccommodationsActivitySpots(building.getBuildingType()));
         
         settlement = building.getBuildingManager().getSettlement();
-        inv = building.getInventory();
+        inv = building.getSettlementInventory();
 
     }
 

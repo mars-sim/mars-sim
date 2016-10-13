@@ -56,7 +56,7 @@ implements Serializable {
 	public double getCurrentHeat(Building building) {
 
 		if (toggle) {
-			double fuelStored = building.getInventory().getAmountResourceStored(resource, false);
+			double fuelStored = building.getSettlementInventory().getAmountResourceStored(resource, false);
 			if (fuelStored > 0) {
 				return getMaxHeat();
 			} else {

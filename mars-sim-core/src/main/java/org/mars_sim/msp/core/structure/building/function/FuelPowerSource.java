@@ -73,17 +73,17 @@ implements Serializable {
 /*
 		// 2015-09-28 Retrieved of 3 fuel cell stacks
 		if (!installed) {
-			double numCellStack = building.getInventory().getItemResourceNum(cellStack);
+			double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
 			numFuelCellStackinUse = (int)Math.round(this._maxPower/kW_PER_FUEL_CELL_STACK); //
 			if (numCellStack >= numFuelCellStackinUse) {
-				building.getInventory().retrieveItemResources(cellStack, numFuelCellStackinUse);
+				building.getSettlementInventory().retrieveItemResources(cellStack, numFuelCellStackinUse);
 				installed = true;
 				logger.info("getCurrentPower() : just installed " + numFuelCellStackinUse + " fuel cell stack(s) on the Methane Power Generator Building");
 			}
 		}
 */
 		if (toggle) {
-			double fuelStored = building.getInventory().getAmountResourceStored(resource, false);
+			double fuelStored = building.getSettlementInventory().getAmountResourceStored(resource, false);
 			if (fuelStored > 0) {
 				return getMaxPower();
 			} else {
@@ -176,8 +176,8 @@ implements Serializable {
 	 public void removeFromSettlement() {
 /*
 		//if (installed) {
-			//double numCellStack = building.getInventory().getItemResourceNum(cellStack);
-			building.getInventory().storeItemResources(cellStack, numFuelCellStackinUse);
+			//double numCellStack = building.getSettlementInventory().getItemResourceNum(cellStack);
+			building.getSettlementInventory().storeItemResources(cellStack, numFuelCellStackinUse);
 			installed = false;
 			logger.info("getCurrentPower() : just returned the " + numFuelCellStackinUse + " fuel cell stack(s) used by the Methane Power Generator Building");
 		//}
