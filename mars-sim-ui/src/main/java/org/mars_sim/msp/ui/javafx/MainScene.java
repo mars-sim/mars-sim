@@ -119,6 +119,7 @@ import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
@@ -228,7 +229,9 @@ public class MainScene {
     private Simulation sim = Simulation.instance();
     private MasterClock masterClock = sim.getMasterClock();
 	private EarthClock earthClock;
- 
+	
+	private SettlementWindow settlementWindow; 
+	
 	/**
 	 * Constructor for MainScene
 	 *
@@ -517,42 +520,42 @@ public class MainScene {
 		if (menuBar.getStylesheets() != null) menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();	
 
-		String cssColor;
+		String cssFile;
 	
 		//logger.info("MainScene's changeTheme()");
 		if (theme == 1) { // olive green
-			cssColor = "/fxui/css/oliveskin.css";
-			updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssColor); //DARKOLIVEGREEN
+			cssFile = "/fxui/css/oliveskin.css";
+			updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssFile); //DARKOLIVEGREEN
 			lookAndFeelTheme = "LightTabaco";
 			
 		} else if (theme == 2) { // burgundy red
-			cssColor = "/fxui/css/burgundyskin.css";
-			updateThemeColor(2, Color.rgb(140,0,26), Color.YELLOW, cssColor); // ORANGERED
+			cssFile = "/fxui/css/burgundyskin.css";
+			updateThemeColor(2, Color.rgb(140,0,26), Color.YELLOW, cssFile); // ORANGERED
 			lookAndFeelTheme = "Burdeos";
 
 		} else if (theme == 3) { // dark chocolate
-			cssColor = "/fxui/css/darkTabaco.css";
-			updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssColor);
+			cssFile = "/fxui/css/darkTabaco.css";
+			updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssFile);
 			lookAndFeelTheme = "DarkTabaco";
 
 		} else if (theme == 4) { // grey
-			cssColor = "/fxui/css/darkGrey.css";
-			updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssColor);
+			cssFile = "/fxui/css/darkGrey.css";
+			updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssFile);
 			lookAndFeelTheme = "DarkGrey";
 
 		} else if (theme == 5) { // + purple
-			cssColor = "/fxui/css/nightViolet.css";
-			updateThemeColor(5, Color.rgb(73,55,125), Color.rgb(73,55,125), cssColor); // DARKMAGENTA, SLATEBLUE
+			cssFile = "/fxui/css/nightViolet.css";
+			updateThemeColor(5, Color.rgb(73,55,125), Color.rgb(73,55,125), cssFile); // DARKMAGENTA, SLATEBLUE
 			lookAndFeelTheme = "Night";
 
 		} else if (theme == 6) { // + skyblue
-			cssColor = "/fxui/css/snowBlue.css";
-			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssColor); // CADETBLUE // Color.rgb(23,138,255)
+			cssFile = "/fxui/css/snowBlue.css";
+			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
 
 		} else if (theme == 7) { // standard
-			cssColor = "/fxui/css/nimrodskin.css";
-			updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(156,77,0), cssColor); //DARKORANGE, CORAL
+			cssFile = "/fxui/css/nimrodskin.css";
+			updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(156,77,0), cssFile); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
 
 		}
@@ -577,7 +580,20 @@ public class MainScene {
 		timeText.setTextFill(txtColor);
 		lastSaveText.setTextFill(txtColor);
 		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-
+		
+		if (settlementWindow == null) {
+			settlementWindow = (SettlementWindow)(desktop.getToolWindow(SettlementWindow.NAME));
+			if (settlementWindow != null) {
+				settlementWindow.setTheme(txtColor);
+				settlementWindow.setStatusBarTheme(cssFile);				
+			}
+		}
+		
+		else {
+			settlementWindow.setTheme(txtColor);
+			settlementWindow.setStatusBarTheme(cssFile);				
+		}
+		
 		if (theme == 6) {
 			if (!OS.contains("mac"))
 				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
@@ -711,13 +727,15 @@ public class MainScene {
 		//2016-09-15 Added oldLastSaveStamp
 		oldLastSaveStamp = sim.instance().getLastSave();
 		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
+		
 		lastSaveText = new Label();
 		lastSaveText.setText("Last Saved : " + oldLastSaveStamp + " ");
 		lastSaveText.setStyle("-fx-text-inner-color: orange;");
 		lastSaveText.setTooltip(new Tooltip ("Time last saved/autosaved on your machine"));
 
+		statusBar.getLeftItems().add(new Separator(VERTICAL));
 		statusBar.getLeftItems().add(lastSaveText);		
-		statusBar.getRightItems().add(new Separator(VERTICAL));
+		statusBar.getLeftItems().add(new Separator(VERTICAL));
 
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
@@ -737,7 +755,7 @@ public class MainScene {
 		timeText = new Label();
 		timeText.setText("  " + timeStamp + "  ");
 		timeText.setStyle("-fx-text-inner-color: orange;");
-		timeText.setTooltip(new Tooltip ("Earth Date & Time in sim"));
+		timeText.setTooltip(new Tooltip ("Earth Date/Time"));
 
 		statusBar.getRightItems().add(timeText);		
 		statusBar.getRightItems().add(new Separator(VERTICAL));

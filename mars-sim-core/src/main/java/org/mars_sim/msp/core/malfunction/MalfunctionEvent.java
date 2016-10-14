@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.malfunction;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.person.EventType;
@@ -9,7 +11,10 @@ import org.mars_sim.msp.core.person.EventType;
  * being resolved.
  */
 public class MalfunctionEvent
-extends HistoricalEvent {
+extends HistoricalEvent implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create an event associated to a Malfunction.

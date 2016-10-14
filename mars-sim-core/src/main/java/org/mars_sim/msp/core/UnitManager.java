@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -127,6 +128,7 @@ public class UnitManager implements Serializable {
 	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
 	private VehicleConfig vehicleConfig;// = SimulationConfig.instance().getVehicleConfiguration();
 
+    //private transient ExecutorService settlementExecutor;
 	//private transient ThreadPoolExecutor personExecutor, settlementExecutor;
 	
 	/**
@@ -134,21 +136,18 @@ public class UnitManager implements Serializable {
 	 */
 	public UnitManager() {
 		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
-		//solCache = 1;
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
-
-		//masterClock = Simulation.instance().getMasterClock();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-
 		//emotionJSONConfig = new EmotionJSONConfig();
 		relationshipManager = Simulation.instance().getRelationshipManager();
 
+		//settlementExecutor = Executors.newSingleThreadExecutor();
 		//personExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 		//settlementExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
 	}
@@ -1637,7 +1636,7 @@ public class UnitManager implements Serializable {
 			//else if (unit instanceof Settlement) {				
 			//	Settlement s = (Settlement) unit;
 				//final long time0 = System.nanoTime();
-				//settlementExecutor.execute(new SettlementTask(s, time));
+			//	settlementExecutor.execute(new SettlementTask(s, time));
 			//	s.timePassing(time);
 				//final long time1 = System.nanoTime();
 				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + s.getName());	
@@ -1678,16 +1677,14 @@ public class UnitManager implements Serializable {
 */
 	}
 	
-/*
-	public class SettlementTask implements Runnable {
 
+	public class SettlementTask implements Runnable {
 		Settlement s;
 		double time;
 		private SettlementTask(Settlement s, double time) {
 			this.s = s;
 			this.time = time;
 		}
-
 		@Override
 		public void run() {
 			try {
@@ -1695,16 +1692,15 @@ public class UnitManager implements Serializable {
 			} catch (ConcurrentModificationException e) {} //Exception e) {}
 		}
 	}
-	
-	public class PersonTask implements Runnable {
 
+/*
+	public class PersonTask implements Runnable {
 		Person p;
 		double time;
 		private PersonTask(Person p, double time) {
 			this.p = p;
 			this.time = time;
 		}
-
 		@Override
 		public void run() {
 			try {

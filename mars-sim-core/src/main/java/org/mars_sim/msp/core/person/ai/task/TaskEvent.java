@@ -7,6 +7,8 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventCategory;
@@ -16,7 +18,10 @@ import org.mars_sim.msp.core.person.EventType;
  * This class represents the historical actions involving tasks.
  */
 public class TaskEvent
-extends HistoricalEvent {
+extends HistoricalEvent implements Serializable {
+
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor.

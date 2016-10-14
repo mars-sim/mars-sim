@@ -68,7 +68,7 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private JFXPanel panel;
+	private JFXPanel jfxpanel;
 	private Scene scene;
 	private StackPane stack;
 	private Label objLabel;
@@ -98,7 +98,7 @@ extends TabPanel {
 
 		// Initialize data members.
 		this.settlement = settlement;
-		this.objectives = settlement.getObjectiveArray();
+		objectives = settlement.getObjectiveArray();
 		//this.cb = new ComboBox<ObjectiveType>();//FXCollections.observableArrayList(objArray)); 
 		//this.cb.getItems().setAll(ObjectiveType.values());   
 		//setupChoiceBox();
@@ -107,7 +107,7 @@ extends TabPanel {
 		setupButtonGroup();
 		
 		
-		this.panel = new JFXPanel();
+		jfxpanel = new JFXPanel();
 		
        	int width = 400;
 		int height = 500;
@@ -125,7 +125,7 @@ extends TabPanel {
                 
                 scene = new Scene(stack, width, height);
                 scene.setFill(Color.TRANSPARENT);//.BLACK);
-                panel.setScene(scene);
+                jfxpanel.setScene(scene);
 
                 Label title = new Label(Msg.getString("TabPanelDashboard.title"));
                 Reflection reflection = new Reflection();
@@ -169,7 +169,7 @@ extends TabPanel {
             }
         });
   
-        centerContentPanel.add(panel);   
+        centerContentPanel.add(jfxpanel);   
  		this.setSize(new Dimension(width, height));
         this.setVisible(true);
         

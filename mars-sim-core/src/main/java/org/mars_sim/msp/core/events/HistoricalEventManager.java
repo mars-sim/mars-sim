@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,7 +27,10 @@ import java.util.List;
  * It should be noted that the throughput of new events of the manager can be
  * in the order of 100 event per simulation tick.
  */
-public class HistoricalEventManager {
+public class HistoricalEventManager implements Serializable {
+
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
 	/**
 	 * This defines the maximum number of events that are stored.

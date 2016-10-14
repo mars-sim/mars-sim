@@ -312,7 +312,7 @@ implements ClockListener, Serializable {
         //logger.info("Simulation's initializeIntransientData() is on " + Thread.currentThread().getName() + " Thread");
         //if (eventManager == null)
         //	eventManager = new HistoricalEventManager();
-        malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
+    	malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
         mars = new Mars();
         missionManager = new MissionManager();
         relationshipManager = new RelationshipManager();
@@ -323,6 +323,8 @@ implements ClockListener, Serializable {
 		creditManager = new CreditManager();
 		scientificStudyManager = new ScientificStudyManager();
 		transportManager = new TransportManager();
+		//eventManager = new HistoricalEventManager();
+
 	}
 
 
@@ -505,6 +507,7 @@ implements ClockListener, Serializable {
             // Load intransient objects.
             SimulationConfig.setInstance((SimulationConfig) ois.readObject());	
            	//System.out.println("Simulation : inside try. starting loading objects");
+
             malfunctionFactory = (MalfunctionFactory) ois.readObject();
             mars = (Mars) ois.readObject();
             mars.initializeTransientData();
@@ -516,7 +519,8 @@ implements ClockListener, Serializable {
             creditManager = (CreditManager) ois.readObject();
             unitManager = (UnitManager) ois.readObject();
             masterClock = (MasterClock) ois.readObject();
-  
+            //eventManager = (HistoricalEventManager) ois.readObject();
+            
 	        if (ois != null) {
 	            ois.close();
 	        }
@@ -673,6 +677,7 @@ implements ClockListener, Serializable {
  
             // Store the in-transient objects.
             oos.writeObject(SimulationConfig.instance());
+            //oos.writeObject(eventManager);
             oos.writeObject(malfunctionFactory);
             oos.writeObject(mars);
             oos.writeObject(missionManager);
@@ -683,6 +688,7 @@ implements ClockListener, Serializable {
             oos.writeObject(creditManager);
             oos.writeObject(unitManager);
             oos.writeObject(masterClock);
+
             oos.flush();
             //oos.close();
             
