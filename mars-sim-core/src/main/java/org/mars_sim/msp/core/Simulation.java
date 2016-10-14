@@ -151,9 +151,7 @@ implements ClockListener, Serializable {
     // Transient data members (aren't stored in save file)
     /** All historical info. */
     private transient HistoricalEventManager eventManager;
-    //private transient Thread clockThread;
-    //private transient ThreadPoolExecutor clockExecutor;
-    //private transient ThreadPoolExecutor clockScheduler; //
+
     private transient ThreadPoolExecutor clockScheduler;
     //private transient ThreadPoolExecutor managerExecutor;
     private transient ExecutorService simExecutor;
@@ -379,13 +377,15 @@ implements ClockListener, Serializable {
 
         if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
 	        
+        	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+/*        	
         	if (NUM_THREADS <= 3)
         		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);// newSingleThreadExecutor();// newCachedThreadPool(); //
         	else if (NUM_THREADS <= 6)
         		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// newSingleThreadExecutor();// newCachedThreadPool(); //
         	else 
         		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(6);// newSingleThreadExecutor();// newCachedThreadPool(); //
-   
+*/   
         	clockScheduler.execute(masterClock.getClockThreadTask());
        }
  

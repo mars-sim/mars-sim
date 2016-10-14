@@ -64,14 +64,8 @@ implements Serializable, Comparable<Unit> {
 	/** Unit location coordinates. */
 	private Coordinates location;
 
-	private LocationState insideBuilding;
-	private LocationState insideVehicle;
-	private LocationState insideSettlement;
-	private LocationState outsideOnMars;
-	private LocationState settlementVicinity;
-	private LocationState onAPerson;
-
-	private LocationState currentState;
+	// 2015-12-20 Added LocationState class
+	private LocationState currentState, insideBuilding, insideVehicle, insideSettlement, outsideOnMars, settlementVicinity, onAPerson;
 
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());

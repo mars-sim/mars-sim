@@ -180,7 +180,7 @@ implements Serializable {
     public void endTask() {
         super.endTask();
 
-        teachingTask.setTeacher(null);
+        //teachingTask.setTeacher(null);
     }
 
     /**

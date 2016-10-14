@@ -632,9 +632,10 @@ implements VehicleOperator, MissionMember, Serializable {
      * @param time amount of time passing (in millisols).
      */
     public void timePassing(double time) {
-    	//System.out.println("Container Unit : " + this.getContainerUnit());
 		//logger.info("Person's timePassing() is in " + Thread.currentThread().getName() + " Thread");
-
+    	//System.out.println("Container Unit : " + this.getContainerUnit());
+		//final long time0 = System.nanoTime();
+			
        	// 2015-06-29 Added calling taskSchedule
     	//taskSchedule.timePassing(time);
 
@@ -679,6 +680,8 @@ implements VehicleOperator, MissionMember, Serializable {
             }
         }
 
+		//final long time1 = System.nanoTime();
+		//logger.info((time1-time0)/1.0e3 + " ms to process " + name);
     }
 
     /**

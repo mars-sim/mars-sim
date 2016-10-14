@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.MoreMath;
 
 /**
  * The OrbitInfo class keeps track of the orbital position of Mars
@@ -45,6 +46,8 @@ implements Serializable {
 	/** The area of Mars' orbit in au squared. */
 	private static final double ORBIT_AREA = 9.5340749D;
 
+	private static final double HALF_PI = Math.PI / 2D;
+	
 	// Data members
 	/** The total time in the current orbit (in seconds). */
 	private double orbitTime;
@@ -156,6 +159,25 @@ implements Serializable {
 
 		// Determine Sun phi
 		double sunPhi = (Math.PI / 2D) + (Math.sin(theta + (Math.PI / 2D)) * TILT);
+		
+/*		
+		final long start = System.nanoTime();
+		double sunPhi = (HALF_PI) + (MoreMath.sin(theta + (HALF_PI)) * TILT);
+		final long end = System.nanoTime();
+		final float result0 = end - start;
+		//System.out.println("Time taken by MoreMath.sin() " + (end - start)/1.0e9 + " seconds");
+		System.out.print("Time taken by MoreMath.sin() " + result0 + " nano seconds       ");
+		
+		final long start1 = System.nanoTime();
+		double sunPhi1 = (HALF_PI) + (Math.sin(theta + (HALF_PI)) * TILT);
+		final long end1 = System.nanoTime();
+		final float result1 = end1 - start1;
+		//System.out.println("Time taken by Math.sin() " + (end1 - start1)/1.0e9 + " seconds");
+		System.out.println("Time taken by Math.sin() " + result1 + " nano seconds");
+*/		
+		
+		
+		
 		sunDirection.setPhi(sunPhi);
 		//System.out.println("sunPhi is " + sunPhi);
 

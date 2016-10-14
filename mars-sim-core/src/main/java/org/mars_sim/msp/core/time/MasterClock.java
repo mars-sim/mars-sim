@@ -874,6 +874,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public void endClockListenerExecutor() {
     	clockListenerExecutor.shutdownNow();
+    	//sim.getUnitManager().getPersonExecutor().shutdownNow();
 /*
     	if ( clockListenerExecutor.isTerminating() )
 			try {

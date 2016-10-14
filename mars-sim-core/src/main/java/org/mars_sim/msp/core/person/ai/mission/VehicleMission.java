@@ -392,7 +392,7 @@ implements UnitListener {
 		
 		else { // if vehicles are NOT available 
 			//Questions : what are the typical cases here ?
-			logger.info("No vehicle is available. reason for ending the mission : " + reason); 			
+			//logger.info("No vehicle is available. reason for ending the mission : " + reason); 			
             //setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
 			super.endMission(reason);
 		}

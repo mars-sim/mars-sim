@@ -35,7 +35,7 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 	private static final double AVERAGE_DENSITY = 1D; // in gram/cm^3
 	private static final double IMPACT_VELOCITY = 1D; // in km/s
 
-	private Meteorite meteorite;
+	//private Meteorite meteorite;
 	//private BuildingManager buildingManager;
 
 	//public MeteoriteImpactImpl(BuildingManager buildingManager) {
@@ -119,8 +119,8 @@ public class MeteoriteImpactImpl implements MeteoriteImpact, Serializable {
 	//	return probabilityOfImpactPerSQMPerSol;
 	//}
 
-	public Meteorite getMeteorite() {
-		return meteorite;
-	}
+	//public Meteorite getMeteorite() {
+	//	return meteorite;
+	//}
 
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Conversion.java
- * @version 3.08 2015-09-30
+ * @version 3.1.0 2016-10-13
  * @author Manny Kung
  */
 

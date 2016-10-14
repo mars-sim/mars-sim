@@ -340,19 +340,24 @@ public class BrowserJFX {
                 WebViewHyperlinkListener eventPrintingListener = event -> {
                 	
                 	if (event.getEventType() == EventType.ACTIVATED) {
-	                	String input = event.getURL().toString(); // can get NullPointerException on some links.
-	                     
-	                    boolean status0 = input.toLowerCase().contains(HTTP_HEADER.toLowerCase());          	
-	                    boolean status1 = input.toLowerCase().contains(HTTPS_HEADER.toLowerCase());          	
-	
-	                    if (status0 || status1) {    					
-	    					isLocalHtml = false;    					
-	        			}
-	    				else {
-	    					isLocalHtml = true;
-	    				}
-	                    
-	                    updateButtons();
+	                	
+                		String input = null; 
+	                	
+	                	if (event.getURL() != null) {
+	                		
+		                	input = event.getURL().toString(); // can get NullPointerException on some links.
+		                     
+		                	if (input.toLowerCase().contains(HTTP_HEADER.toLowerCase())          	
+		                			||input.toLowerCase().contains(HTTPS_HEADER.toLowerCase())) {  
+		                		
+		    					isLocalHtml = false;    					
+		        			}
+		    				else {
+		    					isLocalHtml = true;
+		    				}
+		                    
+		                    updateButtons();
+	                	}
                 	}
 
                     return false;

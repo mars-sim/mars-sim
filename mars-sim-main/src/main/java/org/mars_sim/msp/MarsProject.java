@@ -91,13 +91,13 @@ public class MarsProject {
 	    		SvgImageLoaderFactory.install();
 
 	            // Create a splash window
-	            SplashWindow splashWindow = new SplashWindow();
-	            splashWindow.display();
+	            //SplashWindow splashWindow = new SplashWindow();
+	            //splashWindow.display();
 
 	            initializeSimulation(args);
 
 	            // Dispose the splash window.
-	            splashWindow.remove();
+	            //splashWindow.remove();
 	        }
 	        else {
 	        	// headless mode

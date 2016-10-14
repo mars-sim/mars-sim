@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
@@ -92,6 +93,8 @@ implements Serializable, Comparable<Task> {
 	private Person teacher;
 	/** A collection of the task's phases. */
 	private Collection<TaskPhase> phases;
+	
+	private HistoricalEventManager eventManager;
 
 	/**
 	 * Constructs a Task object.
@@ -123,6 +126,8 @@ implements Serializable, Comparable<Task> {
 		effortDriven = effort;
 		phases = new ArrayList<TaskPhase>();
 
+		eventManager = Simulation.instance().getEventManager();
+		
         Person person = null;
         Robot robot = null;
 
@@ -168,7 +173,7 @@ implements Serializable, Comparable<Task> {
 	            endingEvent = new TaskEvent(robot, this, EventType.TASK_FINISH, "");
 			}
 
-            Simulation.instance().getEventManager().registerNewEvent(endingEvent);
+            eventManager.registerNewEvent(endingEvent);
         }
     }
 

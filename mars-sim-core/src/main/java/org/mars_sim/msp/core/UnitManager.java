@@ -10,11 +10,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,6 +57,8 @@ import org.mars_sim.msp.core.structure.ChainOfCommand;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -122,7 +127,8 @@ public class UnitManager implements Serializable {
 	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
 	private VehicleConfig vehicleConfig;// = SimulationConfig.instance().getVehicleConfiguration();
 
-
+	//private transient ThreadPoolExecutor personExecutor, settlementExecutor;
+	
 	/**
 	 * Constructor.
 	 */
@@ -143,7 +149,8 @@ public class UnitManager implements Serializable {
 		//emotionJSONConfig = new EmotionJSONConfig();
 		relationshipManager = Simulation.instance().getRelationshipManager();
 
-
+		//personExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+		//settlementExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
 	}
 
 	/**
@@ -1612,11 +1619,48 @@ public class UnitManager implements Serializable {
 	 *             if error during time passing.
 	 */
 	void timePassing(double time) {
-		//logger.info("UnitManager's timePassing() is in " + Thread.currentThread().getName() + " Thread");
-		// it's pool-4-thread-3 Thread
+		//logger.info("UnitManager's timePassing() is in " + Thread.currentThread().getName());
+		// it's in pool-5-thread-1
+
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
-			i.next().timePassing(time);
+	
+			Unit unit = i.next();
+			if (unit instanceof Building) {
+				//Building b = (Building) unit;
+				//final long time0 = System.nanoTime();
+				//settlementExecutor.execute(new SettlementTask(s, time));
+				//b.timePassing(time);
+				//final long time1 = System.nanoTime();
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());	
+			}
+			//else if (unit instanceof Settlement) {				
+			//	Settlement s = (Settlement) unit;
+				//final long time0 = System.nanoTime();
+				//settlementExecutor.execute(new SettlementTask(s, time));
+			//	s.timePassing(time);
+				//final long time1 = System.nanoTime();
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + s.getName());	
+			//}
+			//else if (unit instanceof Person) {
+			//	Person p = (Person) unit;
+				//final long time0 = System.nanoTime();
+				//personExecutor.execute(new PersonTask(p, time));
+			//	p.timePassing(time);
+				//final long time1 = System.nanoTime();
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());	
+			//}
+			//else if (unit instanceof Robot) {
+			//	Robot r = (Robot) unit;
+				//final long time0 = System.nanoTime();
+				//personExecutor.execute(new PersonTask(p, time));
+			//	r.timePassing(time);
+				//final long time1 = System.nanoTime();
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());	
+			//}
+			else	
+				unit.timePassing(time);
+			
 		}
 /*
 		if (masterClock == null)
@@ -1633,7 +1677,43 @@ public class UnitManager implements Serializable {
 		}
 */
 	}
+	
+/*
+	public class SettlementTask implements Runnable {
 
+		Settlement s;
+		double time;
+		private SettlementTask(Settlement s, double time) {
+			this.s = s;
+			this.time = time;
+		}
+
+		@Override
+		public void run() {
+			try {
+				s.timePassing(time);
+			} catch (ConcurrentModificationException e) {} //Exception e) {}
+		}
+	}
+	
+	public class PersonTask implements Runnable {
+
+		Person p;
+		double time;
+		private PersonTask(Person p, double time) {
+			this.p = p;
+			this.time = time;
+		}
+
+		@Override
+		public void run() {
+			try {
+				p.timePassing(time);
+			} catch (ConcurrentModificationException e) {} //Exception e) {}
+		}
+	}
+*/
+	
 	/**
 	 * Get number of settlements
 	 *
@@ -1812,6 +1892,10 @@ public class UnitManager implements Serializable {
 		return SPONSORS;
 	}
 
+	//public ThreadPoolExecutor getPersonExecutor() {;
+	//	return personExecutor;
+	//}
+	
 	//public String getBuild() {
 	//	return build;
 	//}
@@ -1841,6 +1925,8 @@ public class UnitManager implements Serializable {
 		personFemaleNames = null;
 		listeners.clear();
 		listeners = null;
+		//personExecutor = null;
+		//settlementExecutor = null;
 		equipmentNumberMap.clear();
 		equipmentNumberMap = null;
 		vehicleNumberMap.clear();

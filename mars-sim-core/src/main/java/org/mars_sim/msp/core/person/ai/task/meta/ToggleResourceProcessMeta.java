@@ -50,6 +50,22 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                //result = 0D;
+                return 0;
+            }
+        }
+        
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+            //result = 0D;
+            return 0;
+        }
+        
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             boolean isEVA = false;
 
@@ -82,18 +98,6 @@ public class ToggleResourceProcessMeta implements MetaTask, Serializable {
             }
 
             if (isEVA) {
-                // Check if an airlock is available
-                if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                    result = 0D;
-                }
-
-                // Check if it is night time.
-                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-                    if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                        result = 0D;
-                    }
-                }
 
                 // Crowded settlement modifier
                 if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

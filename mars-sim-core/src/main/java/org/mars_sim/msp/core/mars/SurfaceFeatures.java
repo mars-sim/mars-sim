@@ -38,6 +38,8 @@ public class SurfaceFeatures implements Serializable {
 	// At perihelion (1.382 AU), the maximum available irradiance is S = 717 Wm-2, while at apohelion (1.666 AU) the maximum is S = 493 Wm-2.
 	// see http://ccar.colorado.edu/asen5050/projects/projects_2001/benoit/solar_irradiance_on_mars.htm
 
+	//private static final float HALF_PI = (float) Math.PI / 2f;
+	private static final double HALF_PI = Math.PI / 2d;
 
 	// Data members
 	private int dataset = 0;
@@ -142,12 +144,12 @@ public class SurfaceFeatures implements Serializable {
 
         double twilightzone = .2D; // or ~6 deg // Angle width of twilight border (radians)
 
-        if (angleFromSun < (Math.PI / 2D) - (twilightzone / 2D)) {
+        if (angleFromSun < (HALF_PI) - (twilightzone / 2D)) {
             result = 1D;
-        } else if (angleFromSun > (Math.PI / 2D) + (twilightzone / 2D)) {
+        } else if (angleFromSun > (HALF_PI) + (twilightzone / 2D)) {
             result = 0D;
         } else {
-            double twilightAngle = angleFromSun - ((Math.PI / 2D) - (twilightzone / 2D));
+            double twilightAngle = angleFromSun - ((HALF_PI) - (twilightzone / 2D));
             result = 1D - (twilightAngle / twilightzone);
         }
 
@@ -432,13 +434,13 @@ public class SurfaceFeatures implements Serializable {
         double sunPhi = sunDirection.getPhi();
         double darkPhi = 0D;
 
-        if (sunPhi < (Math.PI / 2D)) {
-            darkPhi = Math.PI - ((Math.PI / 2D) - sunPhi);
+        if (sunPhi < (HALF_PI)) {
+            darkPhi = Math.PI - ((HALF_PI) - sunPhi);
             if (location.getPhi() >= darkPhi) {
                 result = true;
             }
         } else {
-            darkPhi = sunPhi - (Math.PI / 2D);
+            darkPhi = sunPhi - (HALF_PI);
             if (location.getPhi() < darkPhi) {
                 result = true;
             }

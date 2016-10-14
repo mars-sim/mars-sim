@@ -718,9 +718,9 @@ implements Serializable {
 
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			if (person != null) 
-				logger.info(person.getName() + " has accident while performing food production.");				
+				logger.info(person.getName() + " has an accident while performing food production.");				
 			else if (robot != null)
-				logger.info(robot.getName() + " has accident while performing food production.");
+				logger.info(robot.getName() + " has an accident while performing food production.");
 			
 			foodFactory.getBuilding().getMalfunctionManager().accident();
 		}

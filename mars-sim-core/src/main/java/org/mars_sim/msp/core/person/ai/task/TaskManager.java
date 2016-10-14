@@ -58,6 +58,7 @@ implements Serializable {
 
 	// Cache variables.
 	private transient MarsClock timeCache;
+	private static MarsClock marsClock;
 	private transient double totalProbCache;
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
@@ -83,6 +84,7 @@ implements Serializable {
 		timeCache = null;
 		taskProbCache = new HashMap<MetaTask, Double>();
 		totalProbCache = 0D;
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
 	public TaskManager(BotMind botMind) {
@@ -97,6 +99,7 @@ implements Serializable {
 		timeCache = null;
 		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
+		marsClock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 	
 	/**
@@ -534,6 +537,7 @@ implements Serializable {
 		double r = RandomUtil.getRandomDouble(totalProbability);
 		// Determine which task is selected.
 		MetaTask selectedMetaTask = null;
+		//System.out.println("size of metaTask : " + taskProbCache.size());
 		Iterator<MetaTask> i = taskProbCache.keySet().iterator();
 		while (i.hasNext() && (selectedMetaTask == null)) {
 			MetaTask metaTask = i.next();
@@ -773,7 +777,7 @@ implements Serializable {
 		}
 
 		// Set the time cache to the current time.
-		timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+		timeCache = (MarsClock) marsClock.clone();
 	}
 
 	/**
@@ -781,8 +785,9 @@ implements Serializable {
 	 * @return true if cache should be used.
 	 */
 	private boolean useCache() {
-		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-		return currentTime.equals(timeCache);
+		//MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		//return currentTime.equals(timeCache);
+		return marsClock.equals(timeCache);
 	}
 
 	/**
