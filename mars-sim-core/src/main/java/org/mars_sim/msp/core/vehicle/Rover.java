@@ -49,7 +49,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	/** The amount of work time to perform maintenance (millisols) */
     public static final double MAINTENANCE_WORK_TIME = 500D;
 	
-	public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 3.0D;
+	private static double life_support_range_error_margin = 0;//3.0D;
 
 	// Data members
 	/** The rover's capacity for crew members. */
@@ -78,6 +78,8 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         // Use GroundVehicle constructor
         super(name, description, settlement, MAINTENANCE_WORK_TIME);
 		
+        life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
+        
 		// Get vehicle configuration.
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		
@@ -459,7 +461,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double foodConsumptionRate = config.getFoodConsumptionRate();
     	double foodCapacity = getInventory().getAmountResourceCapacity(food, false);
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
-    	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	double foodRange = distancePerSol * foodSols / life_support_range_error_margin;
     	if (foodRange < range) range = foodRange;
     		
     	/*
@@ -469,7 +471,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double dessertConsumptionRate = config.getDessertConsumptionRate();
     	double dessertCapacity = getSettlementInventory().getAmountResourceCapacity(dessert, false);
     	double dessertSols = dessertCapacity / (dessertConsumptionRate * crewCapacity);
-    	double dessertRange = distancePerSol * dessertSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	double dessertRange = distancePerSol * dessertSols / life_support_range_error_margin;
     	if (dessertRange < range) range = dessertRange;
     	*/
     	
@@ -478,7 +480,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double waterConsumptionRate = config.getWaterConsumptionRate();
     	double waterCapacity = getInventory().getAmountResourceCapacity(water, false);
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
-    	double waterRange = distancePerSol * waterSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	double waterRange = distancePerSol * waterSols / life_support_range_error_margin;
     	if (waterRange < range) range = waterRange;
     		
     	// Check oxygen capacity as range limit.
@@ -486,7 +488,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	double oxygenConsumptionRate = config.getNominalO2Rate();
     	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygen, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
-    	double oxygenRange = distancePerSol * oxygenSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+    	double oxygenRange = distancePerSol * oxygenSols / life_support_range_error_margin;
     	if (oxygenRange < range) range = oxygenRange;
     	
     	return range;
@@ -527,6 +529,16 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         }
     }
     
+	@Override
+	public Collection<Unit> getUnitCrew() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static double getErrorMargin() {
+		return life_support_range_error_margin;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();
@@ -539,11 +551,5 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         sickbay = null;
         towedVehicle = null;
     }
-
-	@Override
-	public Collection<Unit> getUnitCrew() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

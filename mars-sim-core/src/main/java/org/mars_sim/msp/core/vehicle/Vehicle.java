@@ -60,7 +60,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public final static String TOWED = "Towed";
     
     // The error margin for determining vehicle range. (actual distance / safe distance)
-    public final static double RANGE_ERROR_MARGIN = 1.7D;
+    private static double fuel_range_error_margin = 0; //1.7D
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
@@ -99,50 +99,8 @@ public abstract class Vehicle extends Unit implements Serializable,
     private VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 
     
-    /**
-     * Constructor to be used for testing.
-     * @param name the vehicle's name
-     * @param vehicleType the configuration description of the vehicle.
-     * @param settlement the settlement the vehicle is parked at.
-     * @param baseSpeed the base speed of the vehicle (kph)
-     * @param baseMass the base mass of the vehicle (kg)
-     * @param fuelEfficiency the fuel efficiency of the vehicle (km/kg)
-     * @param maintenanceWorkTime the work time required for maintenance (millisols)
-     */
-    protected Vehicle(String name, String vehicleType, Settlement settlement, 
-    		double baseSpeed, double baseMass, double fuelEfficiency, 
-    		double maintenanceWorkTime) {
-    	
-    	// Use Unit constructor
-        super(name, settlement.getCoordinates());
-        
-        this.vehicleType = vehicleType;
-        		
-        settlement.getInventory().storeUnit(this);
-
-        // Initialize vehicle data
-        setDescription(vehicleType);
-        direction = new Direction(0);
-	    trail = new ArrayList<Coordinates>();
-	    setBaseSpeed(baseSpeed);
-	    setBaseMass(baseMass);
-	    this.fuelEfficiency = fuelEfficiency;
-	    status = PARKED;
-	    isSalvaged = false;
-	    salvageInfo = null;
-	    width = 0D;
-	    length = 0D;
-	    xLocParked = 0D;
-	    yLocParked = 0D;
-	    facingParked = 0D;
-	    
-	    // Initialize malfunction manager.
-	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
-	    malfunctionManager.addScopeString("Vehicle");
-    }
-    
     /** 
-     * Constructs a Vehicle object with a given settlement
+     * Constructor 1 : prepares a Vehicle object with a given settlement
      * @param name the vehicle's name
      * @param vehicleType the configuration description of the vehicle.
      * @param settlement the settlement the vehicle is parked at.
@@ -154,6 +112,8 @@ public abstract class Vehicle extends Unit implements Serializable,
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
         
+        fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
+    
         settlement.getInventory().storeUnit(this);
 
         // Initialize vehicle data
@@ -189,6 +149,50 @@ public abstract class Vehicle extends Unit implements Serializable,
         // Initialize passenger activity spots.
         passengerActivitySpots = new ArrayList<Point2D>(config.getPassengerActivitySpots(vehicleType));
     }
+    
+    /**
+     * Constructor 2 : prepares a Vehicle object for testing (called by MockVehicle)
+     * @param name the vehicle's name
+     * @param vehicleType the configuration description of the vehicle.
+     * @param settlement the settlement the vehicle is parked at.
+     * @param baseSpeed the base speed of the vehicle (kph)
+     * @param baseMass the base mass of the vehicle (kg)
+     * @param fuelEfficiency the fuel efficiency of the vehicle (km/kg)
+     * @param maintenanceWorkTime the work time required for maintenance (millisols)
+     */
+    protected Vehicle(String name, String vehicleType, Settlement settlement, 
+    		double baseSpeed, double baseMass, double fuelEfficiency, 
+    		double maintenanceWorkTime) {
+    	
+    	// Use Unit constructor
+        super(name, settlement.getCoordinates());   
+        this.vehicleType = vehicleType;
+        
+        fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
+        
+        settlement.getInventory().storeUnit(this);
+
+        // Initialize vehicle data
+        setDescription(vehicleType);
+        direction = new Direction(0);
+	    trail = new ArrayList<Coordinates>();
+	    setBaseSpeed(baseSpeed);
+	    setBaseMass(baseMass);
+	    this.fuelEfficiency = fuelEfficiency;
+	    status = PARKED;
+	    isSalvaged = false;
+	    salvageInfo = null;
+	    width = 0D;
+	    length = 0D;
+	    xLocParked = 0D;
+	    yLocParked = 0D;
+	    facingParked = 0D;
+	    
+	    // Initialize malfunction manager.
+	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
+	    malfunctionManager.addScopeString("Vehicle");
+    }
+  
     
     public String getDescription(String vehicleType) {
     	return config.getDescription(vehicleType);
@@ -498,7 +502,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public double getRange() {
     	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType(), false);
-        return fuelCapacity * fuelEfficiency / RANGE_ERROR_MARGIN;
+        return fuelCapacity * fuelEfficiency / fuel_range_error_margin;
     }
 
     /**
@@ -836,6 +840,10 @@ public abstract class Vehicle extends Unit implements Serializable,
     	typeOfDessertLoaded = dessertName;
     }    
     
+	public static double getErrorMargin() {
+		return fuel_range_error_margin;
+	}
+	
     @Override
     public void destroy() {
         super.destroy();

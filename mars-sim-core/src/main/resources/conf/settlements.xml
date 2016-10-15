@@ -4,7 +4,22 @@
 
 <settlement-configuration>
 
-	<!-- Typical atmospheric requirements for a closed-loop habitat  -->
+	<!-- Typical mission control parameters for a settlement  -->
+	<mission-control>
+	
+		<!-- This vehicle range Error margin imposed on the life support/consumable. --> 
+		<!-- The lower the value, the farther a rover can go  -->
+		<!-- default value : 5.0  Valid from 1.0 to 15.0 -->
+		<rover-life-support-range-error-margin value="5.0" />
+		
+		<!-- This vehicle range Error margin imposed on the fuel of the vehicle. -->
+		<!-- The lower the value, the farther a rover can go  -->		
+		<!-- default value : 3.0  Valid from 1.0 to 10.0 -->
+		<rover-fuel-range-error-margin value="3.0" />
+    
+	</mission-control>
+
+	<!-- (NOT IMPLEMENTED YET) Typical atmospheric requirements for a closed-loop habitat  -->
 	<life-support-requirements>
 
 		<!-- all pressures in kPa-->

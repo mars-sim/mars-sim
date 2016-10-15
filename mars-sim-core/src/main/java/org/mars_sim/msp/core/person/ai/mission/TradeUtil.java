@@ -714,21 +714,21 @@ public final class TradeUtil {
 
 		// Get oxygen amount.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
-				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+				Rover.getErrorMargin();
 		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		Good oxygenGood = GoodsUtil.getResourceGood(oxygen);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
-				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+				Rover.getErrorMargin();
 		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		Good waterGood = GoodsUtil.getResourceGood(water);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
-				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+				Rover.getErrorMargin();
 		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		Good foodGood = GoodsUtil.getResourceGood(food);
 		neededResources.put(foodGood, (int) foodAmount);
@@ -736,7 +736,7 @@ public final class TradeUtil {
 /*
 		// Get dessert amount.
 		double dessertAmount = PhysicalCondition.getDessertConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
-				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+				Rover.getErrorMargin();
 		AmountResource dessert = AmountResource.findAmountResource("Soymilk");
 		Good dessertGood = GoodsUtil.getResourceGood(dessert);
 		neededResources.put(dessertGood, (int) dessertAmount);

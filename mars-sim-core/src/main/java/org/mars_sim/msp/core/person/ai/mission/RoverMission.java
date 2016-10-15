@@ -698,21 +698,21 @@ extends VehicleMission {
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
-			oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+			oxygenAmount *= Rover.getErrorMargin();
 		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		result.put(oxygen, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
-			waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+			waterAmount *= Rover.getErrorMargin();
 		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		result.put(water, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() 
 				* timeSols * crewNum; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
-			foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+			foodAmount *= Rover.getErrorMargin();
 		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		result.put(food, foodAmount);
 		

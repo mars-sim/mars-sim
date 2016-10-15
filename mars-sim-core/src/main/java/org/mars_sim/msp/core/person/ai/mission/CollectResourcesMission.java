@@ -130,7 +130,8 @@ implements Serializable {
             recruitMembersForMission(startingPerson);
 
             // Determine collection sites
-            if (hasVehicle()) determineCollectionSites(getVehicle().getRange(),
+            if (hasVehicle()) 
+            	determineCollectionSites(getVehicle().getRange(),
                     getTotalTripTimeLimit(getRover(), getPeopleNumber(),
                     true), numSites);
 
@@ -816,7 +817,7 @@ implements Serializable {
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);
         if (useBuffer)
-            timeLimit /= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+            timeLimit /= Rover.getErrorMargin();
 
         return timeLimit;
     }

@@ -1,5 +1,11 @@
-<!ELEMENT settlement-configuration (life-support-requirements, settlement-template-list,
+<!ELEMENT settlement-configuration (mission-control, life-support-requirements, settlement-template-list,
 initial-settlement-list, new-arriving-settlement-list, settlement-name-list)>
+
+<!ELEMENT mission-control (rover-life-support-range-error-margin, rover-fuel-range-error-margin)>
+<!ELEMENT rover-life-support-range-error-margin EMPTY>
+<!ATTLIST rover-life-support-range-error-margin value CDATA #REQUIRED>
+<!ELEMENT rover-fuel-range-error-margin EMPTY>
+<!ATTLIST rover-fuel-range-error-margin value CDATA #REQUIRED>
 
 <!ELEMENT life-support-requirements (total-pressure, partial-pressure-of-oxygen, 
 partial-pressure-of-nitrogen, partial-pressure-of-carbon-dioxide, temperature,

@@ -588,9 +588,11 @@ implements Serializable {
 		if (phaseDescription != null) {
 			return Conversion.capitalize(phaseDescription);
 		}
-		else {
+		else if (phase.toString() != null){
 			return Conversion.capitalize(phase.toString());
 		}
+		else
+			return "";
 	}
 
 	/**

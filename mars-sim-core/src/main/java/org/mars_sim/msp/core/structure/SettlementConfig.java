@@ -30,6 +30,9 @@ implements Serializable {
 	private static final long serialVersionUID = 2L;
 
 	// Element names
+	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
+	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
+	private static final String MISSION_CONTROL = "mission-control";
 	private static final String SETTLEMENT_TEMPLATE_LIST = 	"settlement-template-list";
 	private static final String TEMPLATE = "template";
 	private static final String NAME = "name";
@@ -87,6 +90,8 @@ implements Serializable {
 	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
 	private Map<Integer, String> scenarioMap = new HashMap<>();
 	private Map<Integer, String> settlementMap = new HashMap<>();
+	
+	private Document settlementDoc;
 
 	//private MultiplayerClient multiplayerClient;
 	/**
@@ -96,12 +101,14 @@ implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
+		this.settlementDoc = settlementDoc;
 		settlementTemplates = new ArrayList<SettlementTemplate>();
 		initialSettlements = new ArrayList<InitialSettlement>();
 		newArrivingSettlements = new ArrayList<NewArrivingSettlement>();
 		//settlementNames = new ArrayList<String>();
 		//existingSettlements = new ArrayList<ExistingSettlement>();
 
+		//loadMissionControl(settlementDoc);
 		loadSettlementNames(settlementDoc);
 		loadSettlementTemplates(settlementDoc, partPackageConfig);
 		loadInitialSettlements(settlementDoc);
@@ -128,6 +135,37 @@ implements Serializable {
 	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 	}
 
+
+	/**
+	 * Load the rover range margin error from the mission control parameters of a settlement from the XML document.
+	 * @return range margin.
+	 * @throws Exception if error reading XML document.
+	 */
+	// 2016-10-14 loadMissionControl()
+    @SuppressWarnings("unchecked")
+	public double[] loadMissionControl() {
+
+		Element root = settlementDoc.getRootElement();
+		Element missionControlElement = root.getChild(MISSION_CONTROL);
+		Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
+		Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
+		
+		double[] results = new double[]{0.0, 0.0};
+		results[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
+		//System.out.println("results[0] : " + results[0]);
+		if (results[0] < 1.0 || results[0] > 15.0 )
+			results[0] = 5.0;
+		
+		
+		results[1]= Double.parseDouble(fuelRange.getAttributeValue(VALUE));
+		//System.out.println("results[1] : " + results[1]);
+		if (results[1] < 1.0 || results[1] > 10.0 )
+			results[1] = 3.0;
+		return results;
+		
+    }
+    
+		
 	/**
 	 * Load the settlement templates from the XML document.
 	 * @param settlementDoc DOM document with settlement configuration.

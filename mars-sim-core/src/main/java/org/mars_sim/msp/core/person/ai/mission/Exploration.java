@@ -730,7 +730,7 @@ implements Serializable {
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);
         if (useBuffer)
-            timeLimit /= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+            timeLimit /= Rover.getErrorMargin();
 
         return timeLimit;
     }

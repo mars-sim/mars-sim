@@ -455,7 +455,7 @@ implements UnitListener {
 			double fuelEfficiency, boolean useBuffer) {
 		double result = tripDistance / fuelEfficiency;
 		if (useBuffer) {
-			result *= Vehicle.RANGE_ERROR_MARGIN;
+			result *= Vehicle.getErrorMargin();
 		}
 
 		return result;
