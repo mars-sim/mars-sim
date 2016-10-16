@@ -290,7 +290,8 @@ implements Serializable {
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getBuildingsWithProcessesRequiringWork(foodProductionBuildings, skill);
 			foodProductionBuildings = getHighestFoodProductionTechLevelBuildings(foodProductionBuildings);
-			foodProductionBuildings = BuildingManager.getLeastCrowdedBuildings(foodProductionBuildings);
+			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
+				foodProductionBuildings = BuildingManager.getLeastCrowded4BotBuildings(foodProductionBuildings);
 
 			if (foodProductionBuildings.size() > 0) {
 				//Map<Building, Double> foodProductionBuildingProbs = BuildingManager.getBestRelationshipBuildings(

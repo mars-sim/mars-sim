@@ -29,27 +29,8 @@
 
 	<!-- List of robot type -->
 	<robot-list>
-		<robot name="ChefBot 001" type="ChefBot" settlement="Schiaparelli Point" job="Cook">
-			<robotic-attribute-list>
-				<robotic-attribute name="Strength" value="95"/>
-				<robotic-attribute name="Endurance" value="95"/>
-				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
-				<robotic-attribute name="Experience Aptitude" value="95"/>
-				<robotic-attribute name="Conversation" value="10"/>
-			</robotic-attribute-list>
-			<skill-list>
-				<skill name="Botany" level="1"/>
-				<skill name="Mechanics" level="1"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Trading" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="2"/>
-				<skill name="Construction" level="1"/>
-			</skill-list>
-		</robot>
 		
-		<robot name="GardenBot 002" type="GardenBot" settlement="Schiaparelli Point" job="Gardener">
+		<robot name="GardenBot A1" type="GardenBot" settlement="Schiaparelli Point" job="Gardener">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -69,7 +50,27 @@
 			</skill-list>
 		</robot>
 		
-		<robot name="RepairBot 003" type="RepairBot" settlement="Schiaparelli Point" job="Handyman">
+		<robot name="MakerBot A2" type="MakerBot" settlement="Schiaparelli Point" job="Maker">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Materials Science" level="2"/>
+				<skill name="EVA Operations" level="1"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="2"/>				
+				<skill name="Construction" level="1"/>
+			</skill-list>
+		</robot>				
+		
+		<robot name="RepairBot A3" type="RepairBot" settlement="Schiaparelli Point" job="Handyman">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -88,8 +89,8 @@
 				<skill name="Construction" level="1"/>
 			</skill-list>
 		</robot>
-		
-		<robot name="ConstructionBot 004" type="ConstructionBot" settlement="Schiaparelli Point" job="Builder">
+			
+		<robot name="ChefBot A4" type="ChefBot" settlement="Schiaparelli Point" job="Cook">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -100,36 +101,16 @@
 			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
-				<skill name="Construction" level="2"/>
-				<skill name="EVA Operations" level="2"/>
 				<skill name="Mechanics" level="1"/>
-				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="1"/>				
+				<skill name="EVA Operations" level="2"/>
 				<skill name="Trading" level="1"/>
-			</skill-list>
-		</robot>
-
-		<robot name="DeliveryBot 005" type="DeliveryBot" settlement="Schiaparelli Point" job="Postman">
-			<robotic-attribute-list>
-				<robotic-attribute name="Strength" value="95"/>
-				<robotic-attribute name="Endurance" value="95"/>
-				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="10"/>
-				<robotic-attribute name="Experience Aptitude" value="95"/>
-				<robotic-attribute name="Conversation" value="10"/>
-			</robotic-attribute-list>
-			<skill-list>
-				<skill name="Botany" level="1"/>
-				<skill name="Trading" level="2"/>
-				<skill name="EVA Operations" level="2"/>
-				<skill name="Mechanics" level="1"/>
 				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="2"/>
 				<skill name="Construction" level="1"/>
-				<skill name="Cooking" level="1"/>				
 			</skill-list>
 		</robot>	
 
-		<robot name="MedicBot 006" type="MedicBot" settlement="Schiaparelli Point" job="Medic">
+		<robot name="MedicBot A5" type="MedicBot" settlement="Schiaparelli Point" job="Medic">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -149,7 +130,7 @@
 			</skill-list>
 		</robot>				
 		
-		<robot name="MakerBot 007" type="MakerBot" settlement="Schiaparelli Point" job="Maker">
+		<robot name="ConstructionBot A6" type="ConstructionBot" settlement="Schiaparelli Point" job="Builder">
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
@@ -160,15 +141,37 @@
 			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
-				<skill name="Materials Science" level="2"/>
-				<skill name="EVA Operations" level="1"/>
+				<skill name="Construction" level="2"/>
+				<skill name="EVA Operations" level="2"/>
 				<skill name="Mechanics" level="1"/>
 				<skill name="Medicine" level="1"/>
-				<skill name="Cooking" level="2"/>				
-				<skill name="Construction" level="1"/>
+				<skill name="Cooking" level="1"/>				
+				<skill name="Trading" level="1"/>
 			</skill-list>
-		</robot>				
-	
+		</robot>
+
+		
+		<robot name="DeliveryBot A7" type="DeliveryBot" settlement="Schiaparelli Point" job="Postman">
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="40"/>
+				<robotic-attribute name="Teaching" value="10"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="10"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Botany" level="1"/>
+				<skill name="Trading" level="2"/>
+				<skill name="EVA Operations" level="2"/>
+				<skill name="Mechanics" level="1"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Construction" level="1"/>
+				<skill name="Cooking" level="1"/>				
+			</skill-list>
+		</robot>	
+
+
 	</robot-list>
 
 </robot-configuration>

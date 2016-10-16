@@ -73,6 +73,7 @@ public class EatMealMeta implements MetaTask, Serializable {
                     if (!EatMeal.isPreservedFoodAvailable(person)) {
                         // If no preserved food, person can't eat a meal.
                         result = 0D;
+                        return 0;
                     }
                 }
 
@@ -85,8 +86,10 @@ public class EatMealMeta implements MetaTask, Serializable {
                 }
 
                 // 2015-06-07 Added Preference modifier
-                if (result > 0)
-                	result += person.getPreference().getPreferenceScore(this);
+                if (result > 0D) {
+                    result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                }
+             
                 if (result < 0) result = 0;
 
             }

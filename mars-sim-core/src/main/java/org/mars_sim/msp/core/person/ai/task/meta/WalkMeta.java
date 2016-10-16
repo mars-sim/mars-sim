@@ -58,6 +58,7 @@ public class WalkMeta implements MetaTask, Serializable {
         // 2015-06-07 Added Preference modifier
         if (result > 0)
         	result = result + result*person.getPreference().getPreferenceScore(this)/5D;
+        
         if (result < 0) result = 0;
 
         return result;
@@ -74,9 +75,9 @@ public class WalkMeta implements MetaTask, Serializable {
         double result = 0D;
 
         // If robot is outside, give high probability to walk to emergency airlock location.
-        if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
-            result = 2000D;
-        }
+        //if (LocationSituation.OUTSIDE == robot.getLocationSituation()) {
+        //    result = 2000D;
+        //}
 
         return result;
 	}

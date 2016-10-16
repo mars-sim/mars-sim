@@ -105,8 +105,10 @@ public class CookMealMeta implements MetaTask, Serializable {
                     }
 
                     // 2015-06-07 Added Preference modifier
-                    if (result > 0)
-                    	result += person.getPreference().getPreferenceScore(this);
+                    if (result > 0D) {
+                        result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                    }
+                    
                     if (result < 0) result = 0;
 
                 }
@@ -128,8 +130,8 @@ public class CookMealMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (CookMeal.isMealTime(robot)) {
+        	
             if (robot.getBotMind().getRobotJob() instanceof Chefbot) {
-
                 // See if there is an available kitchen.
                 Building kitchenBuilding = CookMeal.getAvailableKitchen(robot);
 
@@ -150,8 +152,6 @@ public class CookMealMeta implements MetaTask, Serializable {
                     		// check again to reset the value once in a while
                     		numGoodRecipes = kitchen.getMealRecipesWithAvailableIngredients().size();
                     }
-
-
                     // Check if enough meals have been cooked at kitchen for this meal time.
                     boolean enoughMeals = kitchen.getCookNoMore();
 

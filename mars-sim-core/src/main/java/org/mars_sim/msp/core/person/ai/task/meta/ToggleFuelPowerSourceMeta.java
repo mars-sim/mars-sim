@@ -48,9 +48,41 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
+    	double result = 0D;
+        
+    	boolean[] exposed = new boolean[]{false, false, false};
+        
+        // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement 
+        // and if he has to do a EVA to repair a broken vehicle.
+
+        if (person.getSettlement() != null) {
+        	//2016-10-04 Checked for radiation events
+    		exposed = person.getSettlement().getExposed();
+        }
+    	
+		if (exposed[2]) {
+			// SEP can give lethal dose of radiation, out won't go outside
+            return 0;
+		}
+
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+ 
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+                result = 0D;
+                return 0;
+            }
+            
+            // Check if it is night time.
+            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                    result = 0D;
+                    return 0;
+                }
+            }
+            
             boolean isEVA = false;
 
             Settlement settlement = person.getSettlement();
@@ -79,18 +111,6 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
             }
 
             if (isEVA) {
-                // Check if an airlock is available
-                if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                    result = 0D;
-                }
-
-                // Check if it is night time.
-                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-                    if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                        result = 0D;
-                    }
-                }
 
                 // Crowded settlement modifier
                 if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -116,7 +136,17 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
 
 	        // 2015-06-07 Added Preference modifier
 	        if (result > 0)
-	        	result += person.getPreference().getPreferenceScore(this);
+	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+         
+        	if (exposed[0]) {
+    			result = result/1.2;// Baseline can give lethal dose of radiation, out won't go outside
+    		}
+        	
+        	if (exposed[1]) {
+    			// GCR can give lethal dose of radiation, out won't go outside
+    			result = result/2D;
+    		}
+	        
 	        if (result < 0) result = 0;
         }
 

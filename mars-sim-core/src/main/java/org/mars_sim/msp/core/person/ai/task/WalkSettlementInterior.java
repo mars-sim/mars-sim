@@ -54,7 +54,7 @@ implements Serializable {
 
 	// Static members
 	private static final double PERSON_WALKING_SPEED = 5D; // km / hr.
-	private static final double ROBOT_WALKING_SPEED = 2D; // km / hr.
+	private static final double ROBOT_WALKING_SPEED = .5D; // km / hr.
 
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 	private static final double STRESS_MODIFIER = -.1D;

@@ -54,6 +54,17 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+	        // Check if person is in a moving rover.
+	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
+	            result = -50D;
+	            return 0;
+	        }
+	        else
+	        // the penalty for performing experiment inside a vehicle
+	        	result = -20D;
+        }
+        
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
             	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
@@ -128,11 +139,6 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	            }
 	        }
 
-	        // Check if person is in a moving rover.
-	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
-	            result = 0D;
-	        }
-
 	        // Effort-driven task modifier.
 	        result *= person.getPerformanceRating();
 
@@ -148,8 +154,9 @@ public class PerformMathematicalModelingMeta implements MetaTask, Serializable {
 	        }
 
 	        // 2015-06-07 Added Preference modifier
-	        if (result > 0)
-	        	result += person.getPreference().getPreferenceScore(this);
+            if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
 	        if (result < 0) result = 0;
 
         }

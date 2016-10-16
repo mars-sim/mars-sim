@@ -80,14 +80,16 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
         // Modify if tinkering is the person's favorite activity.
         if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
-            result *= 2D;
+            result *= 1.5D;
         }
 
         // 2015-06-07 Added Preference modifier
-        if (result > 0)
-        	result += person.getPreference().getPreferenceScore(this);
+        if (result > 0D) {
+            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        }
+        
         if (result < 0) result = 0;
-
+        
         return result;
     }
 
@@ -101,36 +103,33 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (robot.getBotMind().getRobotJob() instanceof Repairbot)
-
-	        if (result != 0 )  { // if task penalty is not zero
-
-		        // Add probability for all malfunctionable entities in robot's local.
-		        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
-		        while (i.hasNext()) {
-		            Malfunctionable entity = i.next();
-		            if (!RepairMalfunction.requiresEVA(robot, entity)) {
-		                MalfunctionManager manager = entity.getMalfunctionManager();
-		                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
-		                while (j.hasNext()) {
-		                    Malfunction malfunction = j.next();
-		                    try {
-		                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
-		                            result += 100D;
-		                        }
-		                    }
-		                    catch (Exception e) {
-		                        e.printStackTrace(System.err);
-		                    }
-		                }
-		            }
-		        }
-
-		        // Effort-driven task modifier.
-		        result *= robot.getPerformanceRating();
-
+        if (robot.getBotMind().getRobotJob() instanceof Repairbot) {
+	        // Add probability for all malfunctionable entities in robot's local.
+	        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
+	        while (i.hasNext()) {
+	            Malfunctionable entity = i.next();
+	            if (!RepairMalfunction.requiresEVA(robot, entity)) {
+	                MalfunctionManager manager = entity.getMalfunctionManager();
+	                Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
+	                while (j.hasNext()) {
+	                    Malfunction malfunction = j.next();
+	                    try {
+	                        if (RepairMalfunction.hasRepairPartsForMalfunction(robot, malfunction)) {
+	                            result += 200D;
+	                        }
+	                    }
+	                    catch (Exception e) {
+	                        e.printStackTrace(System.err);
+	                    }
+	                }
+	            }
 	        }
 
+	        // Effort-driven task modifier.
+	        result *= robot.getPerformanceRating();
+
+        }
+        
         return result;
 	}
 }

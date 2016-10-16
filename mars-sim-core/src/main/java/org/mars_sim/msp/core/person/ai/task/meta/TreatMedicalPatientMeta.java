@@ -55,26 +55,31 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // Get the local medical aids to use.
-        if (hasNeedyMedicalAids(person)) {
-            result = 300D;
-
+        
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	        // Get the local medical aids to use.
+	        if (hasNeedyMedicalAids(person)) {
+	            result = 300D;
+	
+	        }
+	
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	
+	        // Job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null) {
+	            result *= job.getStartTaskProbabilityModifier(TreatMedicalPatient.class);
+	        }
+	
             // 2015-06-07 Added Preference modifier
-            result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
+            result = result + result * person.getPreference().getPreferenceScore(this) / 5D;
 
+	        if (result < 0) result = 0;
+	        
         }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(TreatMedicalPatient.class);
-        }
-
-        if (result < 0) result = 0;
-
+        
         return result;
     }
 

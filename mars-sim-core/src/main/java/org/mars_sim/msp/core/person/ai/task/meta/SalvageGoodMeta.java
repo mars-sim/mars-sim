@@ -59,6 +59,7 @@ public class SalvageGoodMeta implements MetaTask, Serializable {
 	        double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 	        if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
 	            result = 0D;
+	            return 0;
 	        }
 
 	        if (result != 0) {
@@ -102,7 +103,8 @@ public class SalvageGoodMeta implements MetaTask, Serializable {
 
         	        // 2015-06-07 Added Preference modifier
         	        if (result > 0)
-        	        	result += person.getPreference().getPreferenceScore(this);
+                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
         	        if (result < 0) result = 0;
 	            }
 	        }

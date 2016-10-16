@@ -403,7 +403,7 @@ implements Transportable, Serializable {
 	    for (int x = 0; x < numOfRobots; x++) {
 	        
 	        // Get a robotType randomly
-            RobotType robotType = unitManager.getABot();
+            RobotType robotType = unitManager.getABot(numOfRobots);
 
             // Create arriving robot.
             Robot robot = new Robot(unitManager.getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Earth",

@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -62,57 +63,84 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
+        
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-            Inventory inv = settlement.getInventory();
+        	
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+                result = 0D;
+                return 0;
+            }
 
-            try {
-                // Factor the value of ice at the settlement.
-                GoodsManager manager = settlement.getGoodsManager();
-                AmountResource iceResource = AmountResource.findAmountResource("ice");
-                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
-                result = value * ICE_VALUE_MODIFIER;
-
-                if (result > 100D) {
-                    result = 100D;
+            // Check if it is night time.
+            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                    result = 0D;
+                    return 0;
                 }
             }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error checking good value of ice.");
-            }
-
-            // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
-            if (numEmptyBags == 0) {
-                result = 0D;
-            }
+            
+            
+            Settlement settlement = person.getSettlement();
+            Inventory inv = settlement.getInventory();
 
             // Check at least one EVA suit at settlement.
             int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
             if (numSuits == 0) {
                 result = 0D;
+                return 0;
             }
+            
+            // Check if at least one empty bag at settlement.
+            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
+            if (numEmptyBags == 0) {
+                result = 0D;
+                return 0;
+            }
+            
+            try {
+                // Factor the value of ice at the settlement.
+                GoodsManager manager = settlement.getGoodsManager();
+                AmountResource iceResource = AmountResource.findAmountResource("ice");
+                AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
+                double ice_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
+                ice_value = ice_value * ICE_VALUE_MODIFIER;
+            	if (ice_value > 300)
+            		ice_value = 300;
+
+                double water_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
+                water_value = water_value * ICE_VALUE_MODIFIER;
+                if (water_value > 300)
+            		water_value = 300;
+                
+                // 2016-10-14 Compare the available amount of water and ice reserve
+                double ice_available = inv.getAmountResourceStored(iceResource, false);
+                double water_available = inv.getAmountResourceStored(waterResource, false);
+                
+                int size = settlement.getAllAssociatedPeople().size();
+                
+                // TODO: create a task to find local ice and simulate the probability of finding local ice and its quantity
+                
+                if (water_available < 100D*size && ice_available < 50D*size ) {
+                	result = water_value + ice_value;
+                }
+                else {
+                    result = 0;
+                    return 0;
+                }
+                
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error checking good value of ice.");
+            }
+
 
             // Crowded settlement modifier
             if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                 result *= 2D;
             }
 
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                result = 0D;
-            }
-
-            // Check if it is night time.
-            if (surface == null) {
-                surface = Simulation.instance().getMars().getSurfaceFeatures();
-            }
-            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                    result = 0D;
-                }
-            }
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
@@ -123,10 +151,9 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
                 result *= job.getStartTaskProbabilityModifier(DigLocalIce.class);
             }
 
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result += person.getPreference().getPreferenceScore(this);
-            }
+            if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
             
             if (result < 0D) {
                 result = 0D;

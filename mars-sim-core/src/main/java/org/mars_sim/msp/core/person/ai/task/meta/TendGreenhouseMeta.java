@@ -80,7 +80,8 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 
         	        // 2015-06-07 Added Preference modifier
         	        if (result > 0)
-        	        	result += person.getPreference().getPreferenceScore(this);
+         	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        	        
         	        if (result < 0) result = 0;
                 }
             }

@@ -59,22 +59,64 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        double result = 0D;
-        
+        double result = 0D;   
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        	
+
+            // Check if an airlock is available
+            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+                result = 0D;
+                return 0;
+            }
+
+            // Check if it is night time.
+            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                    result = 0D;
+                    return 0;
+                }
+            }
+            
             Settlement settlement = person.getSettlement();
             Inventory inv = settlement.getInventory();
 
+
+            // Check at least one EVA suit at settlement.
+            int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
+            if (numSuits == 0) {
+                result = 0D;
+                return 0;
+            }
+
+            // Check if at least one empty bag at settlement.
+            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
+            if (numEmptyBags == 0) {
+                result = 0D;
+                return 0;
+            }
+            
             try {
                 // Factor the value of regolith at the settlement.
                 GoodsManager manager = settlement.getGoodsManager();
                 AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+                double available = inv.getAmountResourceStored(regolithResource, false);
                 double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-                result = value * REGOLITH_VALUE_MODIFIER;
 
-                if (result > 100D) {
-                    result = 100D;
+                int size = settlement.getAllAssociatedPeople().size();
+                
+                if (available < 10D*size)
+                    result = value * REGOLITH_VALUE_MODIFIER;
+                else {
+                	;
                 }
+                
+                // TODO: simulate the probability of finding local regolith and its quantity
+                if (result > 200D) {
+                    result = 200D;
+                }
+                
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error checking good value of regolith.");
@@ -85,30 +127,6 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
                 result *= 2D;
             }
 
-            // Check at least one EVA suit at settlement.
-            int numSuits = inv.findNumUnitsOfClass(EVASuit.class);
-            if (numSuits == 0) {
-                result = 0D;
-            }
-
-            // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
-            if (numEmptyBags == 0) {
-                result = 0D;
-            }
-
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                result = 0D;
-            }
-
-            // Check if it is night time.
-            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-                if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                    result = 0D;
-                }
-            }
 
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
@@ -124,10 +142,8 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
                 result *= 2D;
             }
 
-            // 2015-06-07 Added Preference modifier
-            if (result > 0D) {
-                result += person.getPreference().getPreferenceScore(this);
-            }
+            if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
             if (result < 0D) {
                 result = 0D;

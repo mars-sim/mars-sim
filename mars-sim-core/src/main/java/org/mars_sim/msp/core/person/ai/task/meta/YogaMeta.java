@@ -11,6 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Yoga;
 import org.mars_sim.msp.core.robot.Robot;
@@ -46,15 +47,20 @@ public class YogaMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Stress modifier
-            result += person.getPhysicalCondition().getStress() / 2D;
-
+        	PhysicalCondition condition = person.getPhysicalCondition();
+        	// doing yoga is less popular than doing a regular workout
+            result = condition.getStress() * 1.5D + (condition.getFatigue() / 20D);
+            if (result < 0D) {
+                result = 0D;
+            }
+            
 	        // Modify if working out is the person's favorite activity.
 	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Workout")) {
-	            result *= 2D;
+	            result *= 1.5D;
 	        }
 
 	        // 2015-06-07 Added Preference modifier
-	        result += person.getPreference().getPreferenceScore(this);
+         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 	        if (result < 0) result = 0;
 
         }

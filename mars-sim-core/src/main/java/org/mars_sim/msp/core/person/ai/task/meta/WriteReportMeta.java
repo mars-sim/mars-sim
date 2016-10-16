@@ -48,54 +48,58 @@ public class WriteReportMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        || person.getLocationSituation() == LocationSituation.IN_VEHICLE)
-        	if (!person.getPreference().getTaskStatus(this)) {
-
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-
-	            // Get an available office space.
-	            Building building = WriteReport.getAvailableOffice(person);
-
-	            // Note: if an office space is not available such as in a vehicle, one can still write reports!
-	            if (building != null) {
-	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE)
+        	
+        	// check if he has this meta task done
+        	if (!person.getPreference().isTaskDue(this)) {
+	
+	            // Probability affected by the person's stress and fatigue.
+	            PhysicalCondition condition = person.getPhysicalCondition();
+	            
+	            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
+	
+		            // Get an available office space.
+		            Building building = WriteReport.getAvailableOffice(person);
+	
+		            // Note: if an office space is not available such as in a vehicle, one can still write reports!
+		            if (building != null) {
+		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
+		                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
+		            }
+	
+		            if (roleType == null)
+		            	roleType = person.getRole().getType();
+	
+		            if (roleType.equals(RoleType.PRESIDENT)
+		                	|| roleType.equals(RoleType.MAYOR)
+		            		|| roleType.equals(RoleType.COMMANDER) )
+		            	result += 50D;
+	
+		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
+		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
+		            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+		            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
+		            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
+		            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
+		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) )
+		            	result += 20D;
+	
+		            // Effort-driven task modifier.
+		            result *= person.getPerformanceRating();
+	
+		            // Modify if working out is the person's favorite activity.
+		            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Administration")) {
+		                result *= 2D;
+		            }
+		            
+			        // 2015-06-07 Added Preference modifier
+			        if (result > 0)
+			         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	
+			        if (result < 0) result = 0;
 	            }
-
-
-	            // Modify if working out is the person's favorite activity.
-	            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Administration")) {
-	                result += 10D;
-	            }
-
-	            if (roleType == null)
-	            	roleType = person.getRole().getType();
-
-	            if (roleType.equals(RoleType.PRESIDENT)
-	                	|| roleType.equals(RoleType.MAYOR)
-	            		|| roleType.equals(RoleType.COMMANDER) )
-	            	result += 50D;
-
-	            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
-	            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
-	            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
-	            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
-	            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
-	            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-	            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) )
-	            	result += 20D;
-
-	            // Effort-driven task modifier.
-	            result *= person.getPerformanceRating();
-
-		        // 2015-06-07 Added Preference modifier
-		        if (result > 0)
-		        	result += person.getPreference().getPreferenceScore(this);
-		        if (result < 0) result = 0;
-            }
-        }
+        	}
+        
         //System.out.println("result : " + result);
         return result;
     }

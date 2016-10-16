@@ -295,7 +295,7 @@ implements Serializable {
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
 			manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
-			manufacturingBuildings = BuildingManager.getEvenNumOfBotsForBuildings(manufacturingBuildings);
+			manufacturingBuildings = BuildingManager.getLeastCrowded4BotBuildings(manufacturingBuildings);
 
 			if (manufacturingBuildings.size() > 0) {
 				//Map<Building, Double> manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings(

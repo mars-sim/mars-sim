@@ -57,6 +57,9 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        if (person.getPhysicalCondition().getProblems().size() == 0)
+        	return 0;
+        
         // Get person's medical skill level.
         int personMedicalSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
 
@@ -124,8 +127,9 @@ public class RequestMedicalTreatmentMeta implements MetaTask, Serializable {
 
 
 	        // 2015-06-07 Added Preference modifier
-	        if (result > 0)
-	        	result += person.getPreference().getPreferenceScore(this);
+            if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
 	        if (result < 0) result = 0;
 
         }

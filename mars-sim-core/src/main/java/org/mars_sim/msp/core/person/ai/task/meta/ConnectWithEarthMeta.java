@@ -49,10 +49,11 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		&& !person.getPreference().getTaskStatus(this)) {
+        		&& !person.getPreference().isTaskDue(this)) {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
+            
             if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
 
 	            // Get an available office space.
@@ -68,9 +69,11 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
 		            // Effort-driven task modifier.
 		            result *= person.getPerformanceRating();
 
-			        // 2015-06-07 Added Preference modifier
-			        if (result > 0)
-			        	result += person.getPreference().getPreferenceScore(this);
+		            // 2015-06-07 Added Preference modifier
+		            if (result > 0D) {
+		                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+		            }
+		         
 			        if (result < 0) result = 0;
 
 	            }

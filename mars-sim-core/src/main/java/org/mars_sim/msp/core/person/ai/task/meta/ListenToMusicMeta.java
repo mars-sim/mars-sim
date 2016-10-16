@@ -54,28 +54,24 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
         double result = 0D;
+        
+    	// Stress modifier
+        double stress = person.getPhysicalCondition().getStress();
+        result += stress * 3; // 0 to 100%
+        
+        /*
+        // TODO: listening to music is driven by boredom, not so much fatigue
+        // Fatigue modifier.
+        double fatigue = person.getPhysicalCondition().getFatigue();
+    	result = fatigue;
+
+        if (fatigue > 800D) {
+            result += (fatigue - 800D) / 4D;
+        }
+*/
 
         // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0)
-            	result += person.getPreference().getPreferenceScore(this);
-            if (result < 0) result = 0;
-
-            // Stress modifier
-            result += person.getPhysicalCondition().getStress()/2D;
-
-/*
-            // TODO: listening to music is driven by boredom, not so much fatigue
-            // Fatigue modifier.
-            double fatigue = person.getPhysicalCondition().getFatigue();
-        	result = fatigue;
-
-            if (fatigue > 800D) {
-                result += (fatigue - 800D) / 4D;
-            }
-*/
 
             try {
             	// 2016-01-10 Added checking if a person has a designated bed
@@ -100,12 +96,8 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             }
             
         }
+        
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-
-            // 2015-06-07 Added Preference modifier
-            if (result > 0)
-            	result += person.getPreference().getPreferenceScore(this);
-            if (result < 0) result = 0;
 
             if (result > 0)
             	result *= RandomUtil.getRandomDouble(2); // more likely to listen to music than not if on a vehicle
@@ -120,6 +112,14 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
             result*= WORK_SHIFT_MODIFIER;
         }
 
+        // 2015-06-07 Added Preference modifier
+        if (result > 0D) {
+            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        }
+        
+        if (result < 0) result = 0;
+
+
         return result;
     }
 
@@ -130,7 +130,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
 
 	@Override
 	public double getProbability(Robot robot) {
-        double result = 0D;
-        return result;
+        return 0;
 	}
 }

@@ -41,7 +41,7 @@ implements Serializable {
         jobTasks.add(LoadVehicleGarage.class);
         //jobTasks.add(UnloadVehicleEVA.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
         jobTasks.add(UnloadVehicleGarage.class);
-        // jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
+        jobTasks.add(ConsolidateContainers.class); //determine to what extend the walking bug is affecting the outdoor portion of this task
 
 		//jobMissionStarts.add(Trade.class);
 		//jobMissionJoins.add(Trade.class);

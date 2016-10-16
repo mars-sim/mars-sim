@@ -64,13 +64,15 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
     	
 		if (exposed[2]) {
 			noGo = true;// SEP can give lethal dose of radiation, out won't go outside
+            return 0;
 		}
 			
         // Check if an airlock is available
         if (!noGo)
     		if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
                 result = 0D;
-                noGo = true;	
+                noGo = true;
+                return 0;
             }
 
         if (!noGo) {
@@ -82,6 +84,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
                 if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                     result = 0D;
                     noGo = true;
+                    return 0;
                 }
         }
         
@@ -141,7 +144,7 @@ public class RepairEVAMalfunctionMeta implements MetaTask, Serializable {
 	
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {
-                result = result + result * person.getPreference().getPreferenceScore(this)/4D;
+                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
             
         	if (exposed[0]) {

@@ -44,15 +44,18 @@ public class WorkoutMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        // one can work out inside the vehicle
+        
+        // Probability affected by the person's stress and fatigue.
+        PhysicalCondition condition = person.getPhysicalCondition();
+        result = condition.getStress() * 2D + (condition.getFatigue() / 10D)
+                + 20D;
+        if (result < 0D) {
+            result = 0D;
+        }
+        
+        
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // Probability affected by the person's stress and fatigue.
-            PhysicalCondition condition = person.getPhysicalCondition();
-            result = condition.getStress() - (condition.getFatigue() / 10D)
-                    + 20D;
-            if (result < 0D) {
-                result = 0D;
-            }
 
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
@@ -74,9 +77,11 @@ public class WorkoutMeta implements MetaTask, Serializable {
 
         // 2015-06-07 Added Preference modifier
         if (result > 0)
-        	result += person.getPreference().getPreferenceScore(this);
+         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
         if (result < 0) result = 0;
 
+    
         return result;
     }
 

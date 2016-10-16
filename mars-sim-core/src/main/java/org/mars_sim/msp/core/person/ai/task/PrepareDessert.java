@@ -377,7 +377,8 @@ implements Serializable {
             List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
-            kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
+			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
+				kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings); 
 
             if (kitchenBuildings.size() > 0) {
                // Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(

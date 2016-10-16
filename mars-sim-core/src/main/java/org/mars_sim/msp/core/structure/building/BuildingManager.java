@@ -570,74 +570,110 @@ public class BuildingManager implements Serializable {
         	robot = (Robot) unit;
         	// find robot type
         	RobotType robotType = robot.getRobotType();
-        	RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
+        	//RobotJob robotJob = JobManager.getRobotJob(robotType.getName());
         	BuildingFunction function = null;
-        	//List<BuildingFunction> functionLists = new ArrayList<>();
-        	//functionLists.add(BuildingFunction.ROBOTIC_STATION);
 
-    		if (robotJob.equals(RobotType.CHEFBOT)){
+    		if (robotType == RobotType.CHEFBOT) {//robotJob.equals(RobotType.CHEFBOT)){
     			function = BuildingFunction.COOKING;
             	//functionLists.add(BuildingFunction.FOOD_PRODUCTION);
     		}
-			else if (robotJob.equals(RobotType.CONSTRUCTIONBOT)){
+			else if (robotType == RobotType.CONSTRUCTIONBOT) {//robotJob.equals(RobotType.CONSTRUCTIONBOT)){
 				function = BuildingFunction.MANUFACTURE;
       		}
-			else if (robotJob.equals(RobotType.DELIVERYBOT)){
+			else if (robotType == RobotType.DELIVERYBOT) {//robotJob.equals(RobotType.DELIVERYBOT)){
 				function =BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
     		}
-			else if (robotJob.equals(RobotType.GARDENBOT)){
+			else if (robotType == RobotType.GARDENBOT) {//robotJob.equals(RobotType.GARDENBOT)){
 				function = BuildingFunction.FARMING;
     		}
-			else if (robotJob.equals(RobotType.MAKERBOT)){
+			else if (robotType == RobotType.MAKERBOT) {//robotJob.equals(RobotType.MAKERBOT)){
 				//functionLists.add(BuildingFunction.RESOURCE_PROCESSING);
 				function = BuildingFunction.MANUFACTURE;
     		}
-			else if (robotJob.equals(RobotType.MEDICBOT)){
+			else if (robotType == RobotType.MEDICBOT) {//robotJob.equals(RobotType.MEDICBOT)){
 				function = BuildingFunction.MEDICAL_CARE;
     		}
-			else if (robotJob.equals(RobotType.REPAIRBOT)){
+			else if (robotType == RobotType.REPAIRBOT) {//robotJob.equals(RobotType.REPAIRBOT)){
+				//function = BuildingFunction.MANUFACTURE;
 				function = BuildingFunction.ROBOTIC_STATION;
+				// TODO: create another building function to house repairbot ?
     		}
 
-        	List<Building> buildings = settlement.getBuildingManager().getBuildings(function);
+        	List<Building> functionBuildings = settlement.getBuildingManager().getBuildings(function);
 
-            Building building = null;
+            Building destination = null;
 
             // Note: if the function is robotic-station, go through the list and remove hallways
             // since we don't want robots to stay in a hallway
-            List<Building> functionBuildings = new ArrayList<Building>();
-            Iterator<Building> i = buildings.iterator();
+            List<Building> validBuildings = new ArrayList<Building>();
+            Iterator<Building> i = functionBuildings.iterator();
             while (i.hasNext()) {
-                Building bldg = i.next();
+                Building bldg = i.next();         
             	RoboticStation roboticStation = (RoboticStation) bldg.getFunction(BuildingFunction.ROBOTIC_STATION);
+    			// remove hallway, tunnel, observatory
             	if (roboticStation != null) {
-            		if (bldg.getBuildingType().equals("Hallway")
-            				|| bldg.getBuildingType().equals("Tunnel"))
-            			// remove all hallways
-            			i.remove();
+            		if (bldg.getBuildingType().toLowerCase().contains("hallway")
+            				|| bldg.getBuildingType().toLowerCase().contains("tunnel")
+            				|| bldg.getBuildingType().toLowerCase().contains("observatory")){
+            			//functionBuildings.remove(bldg); // will cause ConcurrentModificationException
+            		}
+            		else if (function == BuildingFunction.COOKING) {
+            			if (bldg.getBuildingType().toLowerCase().contains("lounge")) {
+            				validBuildings.add(bldg);
+            			}
+            		}
+            		else if (function == BuildingFunction.MANUFACTURE) {
+            			if (bldg.getBuildingType().toLowerCase().contains("workshop")
+            					|| bldg.getBuildingType().toLowerCase().contains("manufacturing shed")
+            					|| bldg.getBuildingType().toLowerCase().contains("machinery hab")) {
+            				validBuildings.add(bldg);
+            			}
+            		}
+            		else if (function == BuildingFunction.MEDICAL_CARE) {
+            			if (bldg.getBuildingType().toLowerCase().contains("infirmary")
+            					|| bldg.getBuildingType().toLowerCase().contains("medical")) {
+            				validBuildings.add(bldg);
+            			}
+            		}
+            		else { // if there is no specialized buildings, 
+            			//then add general purpose buildings like "Lander Hab"
+            			validBuildings.add(bldg);
+            		}
             	}
             }
 
             // Randomly pick one of the buildings
-            if (functionBuildings.size() >= 1) {
-                int rand = RandomUtil.getRandomInt(functionBuildings.size() - 1);
-                building = functionBuildings.get(rand);
-                System.out.println("BuildingManager : " + unit.getName() + " is being added to " + building.getNickName());
-                addPersonOrRobotToBuildingRandomLocation(robot, building);
+            if (validBuildings.size() >= 1) {
+                int rand = RandomUtil.getRandomInt(validBuildings.size() - 1);
+                destination = validBuildings.get(rand);
+                //System.out.println("BuildingManager : " + unit.getName() + " is added to " + destination.getNickName() + " in " + settlement);
+                addPersonOrRobotToBuildingRandomLocation(robot, destination);
             }
 
             else {
-
-            	List<Building> list1 = settlement.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
-
+                List<Building> validBuildings1 = new ArrayList<Building>();
+            	List<Building> stations = settlement.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+                Iterator<Building> j = stations.iterator();
+                while (j.hasNext()) {
+                    Building bldg = j.next();         
+         			// remove hallway, tunnel, observatory
+             		if (bldg.getBuildingType().toLowerCase().contains("hallway")
+            				|| bldg.getBuildingType().toLowerCase().contains("tunnel")
+            				|| bldg.getBuildingType().toLowerCase().contains("observatory")){
+             			//stations.remove(bldg);// will cause ConcurrentModificationException
+            		}
+            		else {
+            			validBuildings1.add(bldg); // do nothing
+            		}
+                 }
                 // Randomly pick one of the buildings
-                if (list1.size() >= 1) {
-                    int rand = RandomUtil.getRandomInt(list1.size() - 1);
-                    building = list1.get(rand);
-                    //System.out.println("BuildingManager : " + unit.getName() + " is in building " + building.toString());
+                if (validBuildings1.size() >= 1) {
+                    int rand = RandomUtil.getRandomInt(validBuildings1.size() - 1);
+                    destination = validBuildings1.get(rand);
+                    //System.out.println("BuildingManager : " + unit.getName() + " is added to " + destination.getNickName() + " in " + settlement);
                 }
 
-                addPersonOrRobotToBuildingRandomLocation(robot, building);
+                addPersonOrRobotToBuildingRandomLocation(robot, destination);
                 //throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
             }
 
@@ -842,7 +878,7 @@ public class BuildingManager implements Serializable {
         return result;
     }
 
-    public static List<Building> getEvenNumOfBotsForBuildings(List<Building> buildingList) {
+    public static List<Building> getLeastCrowded4BotBuildings(List<Building> buildingList) {
 
         List<Building> result = new ArrayList<Building>();
         // Find least crowded population.
@@ -850,7 +886,7 @@ public class BuildingManager implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
         	RoboticStation roboticStation = (RoboticStation)  i.next().getFunction(BuildingFunction.ROBOTIC_STATION);
-        	if (roboticStation == null) System.out.println("roboticStation is null");
+        	//if (roboticStation == null) System.out.println("roboticStation is null");
             int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded < leastCrowded) leastCrowded = crowded;

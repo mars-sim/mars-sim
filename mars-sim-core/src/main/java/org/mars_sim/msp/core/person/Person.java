@@ -671,12 +671,13 @@ implements VehicleOperator, MissionMember, Serializable {
             else {
                 // Person has died as a result of physical condition
                 setDead();
-                LivingAccommodations accommodations = (LivingAccommodations) quarters.getFunction(
-                        BuildingFunction.LIVING_ACCOMODATIONS);        
-                accommodations.getBedMap().remove(this);
-                quarters = null;
-                bed = null;
-                
+                if (quarters != null) {
+	                LivingAccommodations accommodations = (LivingAccommodations) quarters.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);        
+	                accommodations.getBedMap().remove(this);
+	                quarters = null;
+                }
+                if (bed != null)
+                	bed = null;              
             }
         }
 

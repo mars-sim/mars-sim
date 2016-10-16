@@ -65,7 +65,8 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
             result = 300D;
 
             // 2015-06-07 Added Preference modifier
-            result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
+            //result = result + result * person.getPreference().getPreferenceScore(this) / 8D;
+        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
         }
 

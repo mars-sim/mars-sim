@@ -45,8 +45,8 @@ public class TeachMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // If teacher is in a settlement, use crowding modifier.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
 	        // Find potential students.
 	        Collection<Person> potentialStudents = Teach.getBestStudents(person);
@@ -59,16 +59,18 @@ public class TeachMeta implements MetaTask, Serializable {
 
                 if (building != null) {
 
-        	        // 2015-06-07 Added Preference modifier
-        	        if (result > 0)
-        	        	result += person.getPreference().getPreferenceScore(this);
-        	        if (result < 0) result = 0;
-
                     result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person,
                             building);
                     result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 
                 }
+                
+    	        // 2015-06-07 Added Preference modifier
+    	        if (result > 0)
+    	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+    	    	
+    	        if (result < 0) result = 0;
+
             }
         }
 

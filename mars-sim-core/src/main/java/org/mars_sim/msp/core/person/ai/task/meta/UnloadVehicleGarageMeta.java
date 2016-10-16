@@ -63,6 +63,10 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
                 logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
                 e.printStackTrace(System.err);
             }
+            
+            // 2015-06-07 Added Preference modifier
+            if (result > 0)
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
         }
 
         // Effort-driven task modifier.
@@ -79,9 +83,6 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
             result *= 2D;
         }
 
-        // 2015-06-07 Added Preference modifier
-        if (result > 0)
-        	result += person.getPreference().getPreferenceScore(this);
         if (result < 0) result = 0;
 
         return result;

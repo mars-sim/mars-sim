@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -45,8 +46,20 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+	        // Check if person is in a moving rover.
+	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
+	            result = 0D;
+	            return 0;
+	        } 	       
+	        else
+	        // the penalty for performing experiment inside a vehicle
+	        	result = -20D;
+        }
+        
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 	        // Find potential researchers.
 	        Collection<Person> potentialResearchers = AssistScientificStudyResearcher.getBestResearchers(person);
 	        if (potentialResearchers.size() > 0) {
@@ -73,8 +86,9 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 	            }
 
                 // 2015-06-07 Added Preference modifier
-                if (result > 0)
-                	result += person.getPreference().getPreferenceScore(this);
+	            if (result > 0)
+	            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
                 if (result < 0) result = 0;
 
 	        }

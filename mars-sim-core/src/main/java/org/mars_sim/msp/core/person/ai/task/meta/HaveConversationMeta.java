@@ -86,9 +86,10 @@ public class HaveConversationMeta implements MetaTask, Serializable {
                 double rand = RandomUtil.getRandomDouble(num) + 1;
                 result = rand*result;
             }
-            else
+            else {
             	result = 0; // if there is no one else in the settlement, set result to 0
-            
+            	return 0;
+            }
             // get a list of "idle" people
             Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);  
             
@@ -160,6 +161,10 @@ public class HaveConversationMeta implements MetaTask, Serializable {
             }
         }
 
+
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
+
     	int now = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
@@ -167,12 +172,11 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
+
         if (result < 0) 
         	result = 0;
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
+        
         return result;
     }
 

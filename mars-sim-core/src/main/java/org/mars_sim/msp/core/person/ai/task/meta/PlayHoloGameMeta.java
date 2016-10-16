@@ -68,10 +68,10 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
         double result = 5D;
 
         // Stress modifier
-    	double stress = person.getPhysicalCondition().getStress();
+    	double stress = person.getPhysicalCondition().getStress(); //0.0 to 100.0
 
-        if (stress > 1000D) {
-            result += (stress - 1000D) / 4D;
+        if (stress > 50D) {
+            result += (stress - 50D) * 2;
         }
 
         // Crowding modifier
@@ -87,12 +87,12 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
 			                if (recBuilding != null) {
 			                    result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, recBuilding);
 			                    result *= TaskProbabilityUtil.getRelationshipModifier(person, recBuilding);
-			                    result *= RandomUtil.getRandomDouble(3);
+			                    result *= RandomUtil.getRandomDouble(2);
 			                    // TODO: find other players using 0-3 makes it more likely to do multiplayer
 			                }
 	            	}
 	            	else
-	            		result *= RandomUtil.getRandomDouble(2);
+	            		result *= RandomUtil.getRandomDouble(1.5);
 	            }
 	
             } catch (Exception e) {
@@ -105,7 +105,8 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
 
         // 2015-06-07 Added Preference modifier
         if (result > 0)
-        	result += person.getPreference().getPreferenceScore(this);
+        	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
         if (result < 0) result = 0;
 
         // Modify probability if during person's work shift.

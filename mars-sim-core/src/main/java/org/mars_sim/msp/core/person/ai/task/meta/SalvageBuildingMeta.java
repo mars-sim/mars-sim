@@ -57,6 +57,23 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
+        // Check if an airlock is available
+        if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+            return 0;
+        }
+
+        // Check if it is night time.
+        if (surface == null)
+            surface = Simulation.instance().getMars().getSurfaceFeatures();
+
+        if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
+                result = 0D;
+                return 0;
+            }
+        }
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check all building salvage missions occurring at the settlement.
@@ -75,20 +92,6 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
                 result *= 2D;
             }
 
-            // Check if an airlock is available
-            if (EVAOperation.getWalkableAvailableAirlock(person) == null) {
-                result = 0D;
-            }
-
-            // Check if it is night time.
-            if (surface == null)
-                surface = Simulation.instance().getMars().getSurfaceFeatures();
-
-            if (surface.getSolarIrradiance(person.getCoordinates()) == 0D) {
-                if (!surface.inDarkPolarRegion(person.getCoordinates()))
-                    result = 0D;
-            }
-
             // Effort-driven task modifier.
             result *= person.getPerformanceRating();
 
@@ -105,8 +108,9 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
 
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {
-                result += person.getPreference().getPreferenceScore(this);
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
+            
             if (result < 0D) {
                 result = 0D;
             }

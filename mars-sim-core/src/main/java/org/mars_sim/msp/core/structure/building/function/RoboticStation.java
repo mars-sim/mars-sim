@@ -331,6 +331,10 @@ public class RoboticStation extends Function implements Serializable {
 		}
 	}
 
+	public Building getBuilding() {
+		return building;
+	}
+	
     /**
      * Prepare object for garbage collection.
      */

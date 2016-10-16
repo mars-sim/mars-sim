@@ -81,10 +81,6 @@ public class RelaxMeta implements MetaTask, Serializable {
             }
         }
 
-        // 2015-06-07 Added Preference modifier
-        if (result > 0)
-        	result += person.getPreference().getPreferenceScore(this);
-        if (result < 0) result = 0;
 
         // Modify probability if during person's work shift.
         int millisols = (int) marsClock.getMillisol();
@@ -92,6 +88,13 @@ public class RelaxMeta implements MetaTask, Serializable {
         if (isShiftHour) {
             result*= WORK_SHIFT_MODIFIER;
         }
+
+        // 2015-06-07 Added Preference modifier
+        if (result > 0D) {
+            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+        }
+        
+        if (result < 0) result = 0;
 
         return result;
     }

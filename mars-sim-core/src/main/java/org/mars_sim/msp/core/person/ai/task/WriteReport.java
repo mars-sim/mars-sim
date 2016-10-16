@@ -91,7 +91,7 @@ implements Serializable {
 	            //}
 
                 // set the boolean to true so that it won't be done again today
-                person.getPreference().setTaskStatus(this, true);
+                person.getPreference().setTaskDue(this, true);
             }
         }
         else {

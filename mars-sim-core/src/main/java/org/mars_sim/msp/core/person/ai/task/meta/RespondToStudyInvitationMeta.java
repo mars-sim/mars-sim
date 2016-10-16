@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -47,8 +48,19 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
 
         double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {	
+	        // Check if person is in a moving rover.
+	        if (PerformLaboratoryExperiment.inMovingRover(person)) {
+	            result = 0D;
+	            return 0;
+	        }
+	        else
+	        // the penalty for performing experiment inside a vehicle
+	        	result = -20D;
+        }
+        
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
             // Check if person has been invited to collaborate on any scientific studies.
 	        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
@@ -76,8 +88,9 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
 	        }
 
 	        // 2015-06-07 Added Preference modifier
-	        if (result > 0)
-	        	result += person.getPreference().getPreferenceScore(this);
+	           if (result > 0)
+	            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
 	        if (result < 0) result = 0;
         }
 

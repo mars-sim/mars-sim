@@ -101,11 +101,11 @@ public class Preference implements Serializable {
 	private List<MetaTask> metaTaskList;
 	//private List<MetaMission> metaMissionList;
 
-	private Map<MetaTask, Integer> scorekMap;
+	private Map<MetaTask, Integer> scoreMap;
 	private Map<String, Integer> stringNameMap;
 	private List<String> metaTaskStringList;
 	private Map<MarsClock, MetaTask> futureTaskMap;
-	private Map<MetaTask, Boolean> statusMap; // true if the activity has been accomplished
+	private Map<MetaTask, Boolean> taskDueMap; // true if the activity has been accomplished
 	private Map<MetaTask, Integer> priorityMap;
 	private Map<MetaTask, Boolean> frequencyMap; // true if the activity can only be done once a day
 
@@ -119,11 +119,11 @@ public class Preference implements Serializable {
 
 		//metaMissionList = MetaMissionUtil.getMetaMissions();
 
-		scorekMap = new ConcurrentHashMap<>();
+		scoreMap = new ConcurrentHashMap<>();
 		stringNameMap = new ConcurrentHashMap<>();
 
 		futureTaskMap = new ConcurrentHashMap<>();
-		statusMap = new ConcurrentHashMap<>();
+		taskDueMap = new ConcurrentHashMap<>();
 		priorityMap = new ConcurrentHashMap<>();
 		frequencyMap = new ConcurrentHashMap<>();
 
@@ -275,13 +275,13 @@ public class Preference implements Serializable {
 				stringNameMap.put(s, result);
 			}
 
-			if (!scorekMap.containsKey(metaTask)) {
-				scorekMap.put(metaTask, result);
+			if (!scoreMap.containsKey(metaTask)) {
+				scoreMap.put(metaTask, result);
 			}
 
 		}
 
-        for (MetaTask key : scorekMap.keySet()) {
+        for (MetaTask key : scoreMap.keySet()) {
         	metaTaskStringList.add(getStringName(key));
         }
 
@@ -324,16 +324,16 @@ public class Preference implements Serializable {
 	public int getPreferenceScore(MetaTask metaTask) {
 		int result = 0;
 		//String s = getStringName(metaTask);
-		if (scorekMap.containsKey(metaTask))
-			result = scorekMap.get(metaTask);
+		if (scoreMap.containsKey(metaTask))
+			result = scoreMap.get(metaTask);
 		else {
-			scorekMap.put(metaTask, 0);
+			scoreMap.put(metaTask, 0);
 			result = 0;
 		}
 
 		if (futureTaskMap.containsValue(metaTask)
-				&& (statusMap.get(metaTask) != null)
-				&& !statusMap.get(metaTask)
+				&& (taskDueMap.get(metaTask) != null)
+				&& !taskDueMap.get(metaTask)
 				&& frequencyMap.get(metaTask)) {
 			result += checkScheduledTask(metaTask);
 		}
@@ -368,7 +368,7 @@ public class Preference implements Serializable {
 	}
 
 	public Map<MetaTask, Integer> getMetaTaskMap(){
-		return scorekMap;
+		return scoreMap;
 	}
 
 	public Map<String, Integer> getMetaTaskStringMap(){
@@ -421,7 +421,7 @@ public class Preference implements Serializable {
 		if (!futureTaskMap.containsKey(marsClock)) {
 			// TODO: need to compare the clock better
 			futureTaskMap.put(marsClock, metaTask);
-			statusMap.put(metaTask, false);
+			taskDueMap.put(metaTask, false);
 			return true;
 		}
 		return false;
@@ -460,19 +460,29 @@ public class Preference implements Serializable {
 
     }
 
-    public boolean getTaskStatus(MetaTask mt) { //Task task) {
+    /**
+     * Checks if this task is due 
+     * @param MetaTask
+     * @return true if it does
+     */
+    public boolean isTaskDue(MetaTask mt) { //Task task) {
     	//MetaTask mt = convertTask2MetaTask(task);
-    	if (statusMap.isEmpty()) {
+    	if (taskDueMap.isEmpty()) {
     		// if it does not exist (either it is not scheduled or it have been accomplished), the status is true
     		return true;
     	}
-    	else if (statusMap.get(mt) == null)
+    	else if (taskDueMap.get(mt) == null)
     		return true;
     	else
-    		return statusMap.get(mt);
+    		return taskDueMap.get(mt);
     }
 
-    public void setTaskStatus(Task task, boolean value) {
+    /**
+     * Flag this task as being due or not due 
+     * @param MetaTask
+     * @param true if it is due
+     */
+    public void setTaskDue(Task task, boolean value) {
       	MetaTask mt = convertTask2MetaTask(task);
 
 		// if this accomplished meta task is onceOnly task, remove it.
@@ -480,14 +490,18 @@ public class Preference implements Serializable {
 			if (frequencyMap.get(mt) != null && frequencyMap.get(mt)) {
 				futureTaskMap.remove(mt);
 				frequencyMap.remove(mt);
-				statusMap.remove(mt);
+				taskDueMap.remove(mt);
 				priorityMap.remove(mt);
 			}
 		else
-			statusMap.put(mt, value);
+			taskDueMap.put(mt, value);
 
     }
 
+    /**
+     * Converts a task to its corresponding meta task
+     * @param a task
+     */
     public static MetaTask convertTask2MetaTask(Task task) {
     	MetaTask result = null;
     	String name = task.getTaskName();

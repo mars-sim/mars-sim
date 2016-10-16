@@ -287,7 +287,7 @@ extends ToolWindow {
 
 		statusBar.getLeftItems().add(xyLabel);
 		//statusBar.getLeftItems().add(yLabel);
-		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));	
+		//statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));	
 
     	marsDateString = marsClock.getDateString();
     	marsTimeString = marsClock.getTrucatedTimeString();

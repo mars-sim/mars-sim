@@ -484,7 +484,8 @@ public class Sleep extends Task implements Serializable {
             List<Building> buildings = manager.getBuildings(BuildingFunction.ROBOTIC_STATION);
             buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
             buildings = getRoboticStationsWithEmptySlots(buildings);
-            buildings = BuildingManager.getLeastCrowdedBuildings(buildings);
+			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
+				buildings = BuildingManager.getLeastCrowded4BotBuildings(buildings);
             int size = buildings.size();
             //System.out.println("size is "+size);
             int selected = 0;

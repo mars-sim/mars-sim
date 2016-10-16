@@ -511,7 +511,7 @@ implements Serializable {
             List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
-            kitchenBuildings = BuildingManager.getEvenNumOfBotsForBuildings(kitchenBuildings);
+            kitchenBuildings = BuildingManager.getLeastCrowded4BotBuildings(kitchenBuildings);
 
             if (kitchenBuildings.size() > 0) {
                 //Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(

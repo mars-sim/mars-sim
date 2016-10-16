@@ -63,9 +63,9 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
 
         // Desserts should be prepared during meal times.
         if (CookMeal.isMealTime(person.getCoordinates())) {
-
             // See if there is an available kitchen.
             Building kitchenBuilding = PrepareDessert.getAvailableKitchen(person);
+            
             if (kitchenBuilding != null) {
 
                 PreparingDessert kitchen = (PreparingDessert) kitchenBuilding.getFunction(BuildingFunction.PREPARING_DESSERT);
@@ -99,8 +99,10 @@ public class PrepareDessertMeta implements MetaTask, Serializable {
                     }
 
                     // 2015-06-07 Added Preference modifier
-                    if (result > 0)
-                    	result += person.getPreference().getPreferenceScore(this);
+                    if (result > 0D) {
+                        result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+                    }
+                    
         	        if (result < 0) result = 0;
                 }
             }

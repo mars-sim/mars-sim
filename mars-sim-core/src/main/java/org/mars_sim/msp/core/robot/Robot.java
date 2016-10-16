@@ -509,10 +509,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         return result;
     }
 
-    //public void consumeFood(double amount, boolean takeFromInv) {}
-
-    //public void consumeDessert(double amount, boolean takeFromInv) {}
-
     /**
      * robot consumes given amount of power.
      * @param amount the amount of power to consume (in kg)
@@ -526,11 +522,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     }
 */
 
-    //public PersonGender getGender() {return null;}
-
     /**
-     * Gets the gender of the robot.
-     * @return the gender
+     * Gets the type of the robot.
+     * @return RobotType
      */
     public RobotType getRobotType() {
        return robotType;
@@ -545,8 +539,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     public String getBirthplace() {
         return birthplace;
     }
-
-    //public Collection<Person> getLocalGroup() {return null;}
 
     /**
      * Gets the robot's local group (in building or rover)

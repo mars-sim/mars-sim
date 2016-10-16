@@ -141,7 +141,8 @@ public class SleepMeta implements MetaTask, Serializable {
 
             if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                 
-            	
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+
             }
             else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
@@ -206,72 +207,70 @@ public class SleepMeta implements MetaTask, Serializable {
 		        	//result = result * 1.2D;
 		        }
 
-	            // 2015-06-07 Added Preference modifier
-		        if (result > 0)
-		        	result += person.getPreference().getPreferenceScore(this);
+	        	Building quarters = null;
+            	Settlement s1 = person.getSettlement();
+            	Settlement s2 = person.getAssociatedSettlement();
+            	
+    			// check to see if a person is a trader or on a trading mission
+            	if (!s1.equals(s2)) {
+            		// yes he is a trader/guest
+                	logger.fine("SleepMeta : " + person + " is a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
+                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+                	quarters = Sleep.getBestAvailableQuarters(person, false);
                 	
-		        	Building quarters = null;
-                	Settlement s1 = person.getSettlement();
-                	Settlement s2 = person.getAssociatedSettlement();
-                	
-        			// check to see if a person is a trader or on a trading mission
-                	if (!s1.equals(s2)) {
-                		// yes he is a trader/guest
-                    	logger.fine("SleepMeta : " + person + " is a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
-                    	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-                    	quarters = Sleep.getBestAvailableQuarters(person, false);
-                    	
-                        if (quarters != null) {
-                        	result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
-     		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
-                        } 
-                        else {
-                           	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
-                        	// TODO: should allow him/her to go sleep in gym or medical station.
-    		            }
-        			}
-        			
-        			else {
-    
-    			        // 2016-01-10 Added checking if a person has a designated bed
-    	                quarters = person.getQuarters();    
-    	                if (quarters != null) {
-    		            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
-    	                	// he should be "more" inclined to fall asleep this way
-    	                	result *= 1.2D; 	
-      		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+                    if (quarters != null) {
+                    	result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+ 		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+                    } 
+                    else {
+                       	//logger.fine("SleepMeta : " + person + " couldn't find an empty bed at all. Falling asleep at any spot if being too tired.");
+                    	// TODO: should allow him/her to go sleep in gym or medical station.
+		            }
+    			}
+    			
+    			else {
+
+			        // 2016-01-10 Added checking if a person has a designated bed
+	                quarters = person.getQuarters();    
+	                if (quarters != null) {
+		            	// if this person has already been assigned a quarter and a bed, not a shared/guest bed
+	                	// he should be "more" inclined to fall asleep this way
+	                	result *= 1.2D; 	
+  		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
+	                }
+	                else {
+		            	// if this person has never been assigned a quarter and a bed so far
+    	            	logger.fine("SleepMeta : " + person + " has never been designated a bed");
+
+           				quarters = Sleep.getBestAvailableQuarters(person, true);
+
+    		            if (quarters != null) {
+    	            		logger.fine("SleepMeta : " + person + " will be designated a bed in " + quarters.getNickName());
+    	                    // set it as his quarters
+    		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
     		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
-    	                }
-    	                else {
-    		            	// if this person has never been assigned a quarter and a bed so far
-        	            	logger.fine("SleepMeta : " + person + " has never been designated a bed");
-
-               				quarters = Sleep.getBestAvailableQuarters(person, true);
-
-        		            if (quarters != null) {
-        	            		logger.fine("SleepMeta : " + person + " will be designated a bed in " + quarters.getNickName());
-        	                    // set it as his quarters
-        		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
+    		            } 
+    		            else {
+    	              		// There are no undesignated beds left in any quarters
+    	                	logger.fine("SleepMeta : " + person + " cannot find any empty, undesignated beds in any quarters. Will use an unoccupied bed randomly.");
+    	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
+    	                	quarters = Sleep.getBestAvailableQuarters(person, false);
+    	                	if (quarters != null) {
+          		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
         		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
-        		            } 
-        		            else {
-        	              		// There are no undesignated beds left in any quarters
-        	                	logger.fine("SleepMeta : " + person + " cannot find any empty, undesignated beds in any quarters. Will use an unoccupied bed randomly.");
-        	                	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
-        	                	quarters = Sleep.getBestAvailableQuarters(person, false);
-        	                	if (quarters != null) {
-              		                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, quarters);
-            		                result *= TaskProbabilityUtil.getRelationshipModifier(person, quarters);
-        	                	}
-        	                    else {
-        	                    	logger.fine("Sleep : " + person + " couldn't find an empty bed. Falling asleep at right where he/she is.");
-        	                    	// TODO: should allow him/her to sleep in gym or anywhere.
-            	                	// he should be "less" inclined to fall asleep this way
-        	                    	result /= 1.2D;
-        	                    }       		            
-        	                }
+    	                	}
+    	                    else {
+    	                    	logger.fine("Sleep : " + person + " couldn't find an empty bed. Falling asleep at right where he/she is.");
+    	                    	// TODO: should allow him/her to sleep in gym or anywhere.
+        	                	// he should be "less" inclined to fall asleep this way
+    	                    	result /= 1.2D;
+    	                    }       		            
     	                }
-        			}
+	                }
+    			}
+            	
+            	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
 	        }
 

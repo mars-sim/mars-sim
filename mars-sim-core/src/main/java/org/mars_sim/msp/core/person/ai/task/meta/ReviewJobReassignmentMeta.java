@@ -56,7 +56,8 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
         double result = 0D;
         //System.out.println("ReviewJobReassignmentMeta : getProbability()");
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            	|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         	//if (roleType == null)
         	//NOTE: sometimes enum is null. sometimes it is NOT. why?
@@ -151,7 +152,8 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 
 	                    // 2015-06-07 Added Preference modifier
 	                    if (result > 0)
-	                        result += result / 8D * person.getPreference().getPreferenceScore(this);
+	                        //result += result / 8D * person.getPreference().getPreferenceScore(this);
+	                    	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
 
 	                    // Effort-driven task modifier.
 	                    result *= person.getPerformanceRating();

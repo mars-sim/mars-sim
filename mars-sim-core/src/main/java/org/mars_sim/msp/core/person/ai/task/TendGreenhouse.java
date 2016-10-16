@@ -483,7 +483,8 @@ implements Serializable {
                 List<Building> buildings = buildingManager.getBuildings(BuildingFunction.FARMING);
                 buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
                 buildings = getFarmsNeedingWork(buildings);
-                //buildings = BuildingManager.getLeastCrowdedBuildings(buildings);
+    			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
+    				buildings = BuildingManager.getLeastCrowded4BotBuildings(buildings);
 
                 // TODO: add person's good/bad feeling toward robots
                 int size = buildings.size();
