@@ -137,11 +137,17 @@ implements Serializable {
 			double currentStorageDemand = resourceDemand - existingStorage;
 			if (currentStorageDemand < 0D) currentStorageDemand = 0D;
 
-			double buildingStorageNeeded = currentStorageDemand;
+			// Determine amount of this building's resource storage is useful to the settlement.
+			double buildingStorageNeeded = storageAmount;
+			if (currentStorageDemand < storageAmount) {
+			    buildingStorageNeeded = currentStorageDemand;
+			}
+			
+			double storageValue = buildingStorageNeeded / 1000D;
 
-			result += buildingStorageNeeded / 10000D;
+			result += storageValue;
 		}
-
+		
 		return result;
 	}
 

@@ -263,7 +263,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial resource="water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
 				<resource-initial resource="Food" amount="300.0" />
-				<resource-initial resource="regolith" amount="500.0" />
+				<!-- <resource-initial resource="regolith" amount="500.0" />  -->
 
 			</storage>
 
@@ -309,7 +309,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- power-growing-crop: the power (kW) required per kg harvest biomass per crop to grow an flourish. -->
 			<!-- power-sustaining-crop: the minimum power (kW) required per kg harvest biomass per crop just to keep it alive. -->
 			<!-- growing-area: the max growing area (square meters) of all crops. -->
-			<farming crops="5" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="50.0" >
+			<farming crops="5" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="75.0" >
 				<activity>
 					<activity-spot xloc="1.5" yloc="2.25" />
 					<activity-spot xloc="-1.5" yloc="2.25" />
@@ -390,7 +390,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="10.0" base-power-down-power="1.0" />
 
 		<functions>
-			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="150.0">
+			<farming crops="15" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="225.0">
 				<activity>
 					<activity-spot xloc="1.6" yloc="4.9" />
 					<activity-spot xloc="1.6" yloc="2.45" />
@@ -1091,7 +1091,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Laboratory is a modest facility furnished with workbench,
 		instruments, computers and tablets and peer collaboration communication
-		suites of equipment that enables making scientific inquiries on the froniter of Mars.
+		suites of equipment that enables making scientific inquiries on the frontier of Mars.
 		</description>
 		<power-required base-power="30.0" base-power-down-power="10.0" />
 
@@ -2141,13 +2141,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="Inground Greenhouse" width="5.0" length="10.0" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5">
 		<description> The Inground Greenhouse is a semi underground structure with a
-			vaulted flber glass roof which is less suceptible to meteor damage.
+			vaulted fiber glass roof which is less susceptible to meteor damage.
 			It grows crops as food for the settlement.
 		</description>
 		<power-required base-power="1.0" base-power-down-power="0.2" />
 
 		<functions>
-			<farming crops="4" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="40.0">
+			<farming crops="4" power-growing-crop=".10" power-sustaining-crop=".05" growing-area="100.0">
 				<activity>
 					<activity-spot xloc="0.0" yloc="3.75" />
 					<activity-spot xloc="0.0" yloc="1.87" />

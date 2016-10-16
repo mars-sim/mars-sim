@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
@@ -67,7 +68,7 @@ implements Serializable {
 	public static final String HPS_LAMP = "high pressure sodium lamp";
 
 	/** amount of crop tissue culture needed for each square meter of growing area */
-    private static final double TISSUE_PER_SQM = .0005D; // 1/2 gram (arbitrary)
+    public static final double TISSUE_PER_SQM = .0005D; // 1/2 gram (arbitrary)
     //private static final double TISSUE_CULTURE_FACTOR = 100D;
 
 	private static ItemResource LED_Item;
@@ -504,19 +505,18 @@ implements Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
-     * @throws Exception if error getting function value.
-     * Called by BuildingManager.java getBUildingValue()
+     * Called by BuildingManager.java getBuildingValue()
      */
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
 
-        // Demand is value of estimated food needed by population per orbit.
-        double foodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
-        int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-        double foodPerOrbit = foodPerSol * solsInOrbit;
-        double demand = foodPerOrbit * settlement.getAllAssociatedPeople().size();
+        double result = 0D;
+        
+        // Demand is farming area (m^2) needed to produce food for settlement population.
+        double requiredFarmingAreaPerPerson = getFarmingAreaNeededPerPerson();
+        double demand = requiredFarmingAreaPerPerson * settlement.getAllAssociatedPeople().size();
 
-        // Supply is total estimate harvest per orbit.
+        // Supply is total farming area (m^2) of all farming buildings at settlement.
         double supply = 0D;
         boolean removedBuilding = false;
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
@@ -528,28 +528,44 @@ implements Serializable {
             else {
                 Farming farmingFunction = (Farming) building.getFunction(FUNCTION);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += farmingFunction.getEstimatedHarvestPerOrbit() * wearModifier;
+                supply += farmingFunction.getGrowingArea() * wearModifier;
             }
         }
 
+        // Modify result by value (VP) of food at the settlement.
+        Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("food"));
+        double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
+        
+        result = (demand / (supply + 1D)) * foodValue;
+        
         // TODO: investigating if other food group besides food should be added as well
-        return  addSupply(supply, demand, settlement, buildingName);
+        
+        return result;
     }
-
-    public static double addSupply(double supply, double demand, Settlement settlement, String buildingName) {
-        AmountResource food = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupportType.FOOD);
-        supply += settlement.getInventory().getAmountResourceStored(food, false);
-
-        double growingAreaValue = demand / (supply + 1D);
-
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double growingArea = config.getCropGrowingArea(buildingName);
-        //logger.info("addSupply() : growingArea is " + growingArea);
-        //logger.info("addSupply() : growingAreaValue is " + growingAreaValue);
-
-        return growingArea * growingAreaValue;
+    
+    /**
+     * Gets the average area (m^2) of farming surface required to sustain one person.
+     * @return area (m^2) of farming surface.
+     */
+    public static double getFarmingAreaNeededPerPerson() {
+        
+        // Determine average amount (kg) of food required per person per orbit.
+        double neededFoodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
+        
+        // Determine average amount (kg) of food produced per farm area (m^2).
+        CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+        double totalFoodPerSolPerArea = 0D;
+        List<CropType> cropList = cropConfig.getCropList();
+        Iterator<CropType> i = cropList.iterator();
+        while (i.hasNext()) {
+            CropType cropType = i.next();
+            // Crop type average edible biomass (kg) per Sol.
+            totalFoodPerSolPerArea += cropType.getEdibleBiomass() / 1000D;
+        }
+        double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropList.size();
+        
+        return neededFoodPerSol / producedFoodPerSolPerArea;
     }
-
 
     /**
      * Gets the farm's current crops.
@@ -847,16 +863,33 @@ implements Serializable {
     }
 
     /**
-     * Gets the estimated maximum harvest for one orbit.
-     * @return max harvest (kg)
-     * @throws Exception if error determining harvest.
+     * Gets the average number of growing cycles for a crop
+     * per orbit.
      */
-    public double getEstimatedHarvestPerOrbit() {
+    public double getAverageGrowingCyclesPerOrbit() {
+        
         double aveGrowingTime = Crop.getAverageCropGrowingTime();
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000 millisols
+        
+        return aveGrowingCyclesPerOrbit;
+    }
+    
+    /**
+     * Gets the estimated maximum harvest for one orbit.
+     * @return max harvest (kg)
+     */
+    public double getEstimatedHarvestPerOrbit() {
 
-        return totalMaxHarvest / crops.size() * aveGrowingCyclesPerOrbit; // 40 kg * 668 sols / 50
+        // Add max harvest for each crop.
+        double totalMaxHarvest = 0D;
+        Iterator<Crop> i = crops.iterator();
+        while (i.hasNext()) {
+            Crop crop = i.next();
+            totalMaxHarvest += crop.getMaxHarvest();
+        }
+            
+        return totalMaxHarvest * getAverageGrowingCyclesPerOrbit(); // 40 kg * 668 sols / 50
     }
 
     @Override

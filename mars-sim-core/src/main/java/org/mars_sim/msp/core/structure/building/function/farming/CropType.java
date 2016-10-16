@@ -96,7 +96,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	
 	/**
 	* Gets the edible biomass
-	* @return crop's edible biomass
+	* @return crop's edible biomass (grams per m^2 per day)
 	*/
 	public double getEdibleBiomass() {
 		return edibleBiomass;
@@ -104,7 +104,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	
 	/**
 	* Gets the edible water content
-	* @return crop's edible water content
+	* @return crop's edible water content (grams per m^2 per day)
 	*/
 	public double getEdibleWaterContent() {
 		//System.out.println(name + "'s water content in getEdibleWaterContent() is " + edibleWaterContent);
@@ -113,7 +113,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	
 	/**
 	* Gets the inedible biomass
-	* @return crop's inedible biomass
+	* @return crop's inedible biomass (grams per m^2 per day)
 	*/
 	public double getInedibleBiomass() {
 		return inedibleBiomass;

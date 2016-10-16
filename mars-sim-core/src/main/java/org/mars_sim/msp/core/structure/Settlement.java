@@ -117,6 +117,9 @@ implements Serializable, LifeSupportType, Objective {
 	private int numOnCall;
 	private int sumOfCurrentManuProcesses = 0;
 
+	/** Goods manager update time. */
+	private double goodsManagerUpdateTime = 0D;
+	
 	/**
 	 * Amount of time (millisols) that the settlement has had zero population.
 	 */
@@ -690,7 +693,7 @@ implements Serializable, LifeSupportType, Objective {
 	    
 	    int remainder = millisols % SAMPLING_FREQ ;
 	    if (remainder == 0)
-	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulatio load 
+	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load 
 	    		// take a sample for each critical resource
 	    		sampleAllResources();
 
@@ -698,7 +701,7 @@ implements Serializable, LifeSupportType, Objective {
 	    // Compute whether a baseline, GCR, or SEP event has occurred
 	    remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
 	    if (remainder == 0)
-	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulatio load 
+	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load 
 	    		checkRadiationProbability(time);
 
 	    // Updates the goodsManager twice per sol at random time.
@@ -1146,12 +1149,14 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param time
 	 */
 	private void updateGoodsManager(double time) {
-
+	    
+	    goodsManagerUpdateTime += time;
+	    
 		// Randomly update goods manager twice per Sol.
-		if (!goodsManager.isInitialized() 
-				|| (time >= 250 + RandomUtil.getRandomDouble(249D))
-						|| (time >= 750 + RandomUtil.getRandomDouble(249D))) {
-			goodsManager.timePassing(time);
+	    double timeThreshold = 250D + RandomUtil.getRandomDouble(250D);
+		if (!goodsManager.isInitialized() || (goodsManagerUpdateTime > timeThreshold)) {
+		    goodsManager.timePassing(time);
+		    goodsManagerUpdateTime = 0D;
 		}
 	}
 

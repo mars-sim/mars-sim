@@ -102,7 +102,7 @@
 			<!-- Resources -->
 			<!-- type: the type of resource (see resources.txt) -->
 			<!-- amount: the amount of the resource (kg) -->
-			<resource type="food" amount="500.0" />
+			<resource type="food" amount="1657.0" />
 
 			<!-- Crop -->
 			<!-- No starting crops for this template. -->
@@ -238,8 +238,9 @@
 
 
 			<!-- Resources -->
-			<resource type="food" amount="1000.0" />
+			<resource type="food" amount="3314.0" />
 			<resource type="grey water" amount="300.0" />
+			<resource type="black water" amount="75.0" />
 			<resource type="carbon dioxide" amount="2000.0" />
 			<resource type="Fertilizer" amount="50.0" />
 
@@ -438,8 +439,9 @@
 			<equipment type="Specimen Box" number="140" />
 
 			<!-- Resources -->
-			<resource type="food" amount="1500.0" />
+			<resource type="food" amount="4970.0" />
 			<resource type="grey water" amount="400.0" />
+			<resource type="black water" amount="100.0" />
 			<resource type="carbon dioxide" amount="3000.0" />
 			<resource type="Fertilizer" amount="50.0" />
 
@@ -737,8 +739,9 @@
 			<equipment type="Specimen Box" number="260" />
 
 			<!-- Resources -->
-			<resource type="food" amount="3000.0" />
+			<resource type="food" amount="9940.0" />
 			<resource type="grey water" amount="1000.0" />
+			<resource type="black water" amount="250.0" />
 			<resource type="carbon dioxide" amount="5000.0" />
 			<resource type="Fertilizer" amount="50.0" />
 
@@ -967,9 +970,9 @@
 			<equipment type="Barrel" number="100" />
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
-			<resource type="oxygen" amount="10688.0" />
-			<resource type="water" amount="42752.0" />
-			<resource type="food" amount="16512.0" />
+			<resource type="oxygen" amount="2245.0" />
+			<resource type="water" amount="69472.0" />
+			<resource type="food" amount="1656.0" />
 			<resource type="methane" amount="16000.0" />
 
 			<!-- Food Resources -->
@@ -1113,9 +1116,9 @@
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
 			<equipment type="Specimen Box" number="100" />
-			<resource type="oxygen" amount="10688.0" />
-			<resource type="water" amount="42752.0" />
-			<resource type="food" amount="16512.0" />
+			<resource type="oxygen" amount="2245.0" />
+			<resource type="water" amount="69472.0" />
+			<resource type="food" amount="1656.0" />
 			<resource type="methane" amount="16000.0" />
 
 			<!-- Food Resources -->

@@ -1176,8 +1176,8 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Gets the value of a named building at the settlement.
-     * @param buildingType the building name.
+     * Gets the value of a building at the settlement.
+     * @param buildingType the building type.
      * @param newBuilding true if adding a new building.
      * @return building value (VP).
      */
@@ -1306,12 +1306,10 @@ public class BuildingManager implements Serializable {
      * Gets the value of a building at the settlement.
      * @param building the building.
      * @return building value (VP).
-     * @throws Exception if error getting building value.
      */
-    // TODO: change getName() to getNickName() ?
     public double getBuildingValue(Building building) {
         double result = 0D;
-        // 2014-10-29 TODO: Should we change getName() to getNickName()?
+        
         result = getBuildingValue(building.getBuildingType(), false);
 
         // Modify building value by its wear condition.
@@ -1373,7 +1371,7 @@ public class BuildingManager implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             // 2014-10-29 TODO: determine if getName() needed to be changed to getNickName()
-            ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(building.getName());
+            ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(building.getBuildingType());
             if (buildingStageInfo != null) {
                 ConstructionStageInfo frameStageInfo = ConstructionUtil.getPrerequisiteStage(buildingStageInfo);
                 if (frameStageInfo != null) {
@@ -1499,11 +1497,11 @@ public class BuildingManager implements Serializable {
 		return buildingNickName;
     }
 
-	// 2014-10-29 Added getCharForNumber()
-	private String getCharForNumber(int i) {
-		// NOTE: i must be > 1, if i = 0, return null
-	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
-	}
+//	// 2014-10-29 Added getCharForNumber()
+//	private String getCharForNumber(int i) {
+//		// NOTE: i must be > 1, if i = 0, return null
+//	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
+//	}
 
 
     /**

@@ -65,7 +65,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	 */
 	public EVASuit(Coordinates location) {
 
-		// User Equipment constructor.
+		// Use Equipment constructor.
 		super(TYPE, location);
 
 		// Add scope to malfunction manager.

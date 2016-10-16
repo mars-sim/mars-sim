@@ -1144,7 +1144,7 @@ public class Crop implements Serializable {
 		int length = phases.size();
 				
 		double needFactor = 0;
-		// amount of wastewater/water needed is also based on % of growth
+		// amount of grey water/water needed is also based on % of growth
 		if (phaseNum == 2) 
 		// if (phaseType == PhaseType.GERMINATION)
 			needFactor = .1;
@@ -1157,28 +1157,70 @@ public class Crop implements Serializable {
 		else if (phaseNum > 2 && phaseNum < length - 2)
 		//else if (phaseType == PhaseType.GROWING)
 			needFactor = fractionalGrowthCompleted;
-
+		
+		AmountResource waterAr = AmountResource.findAmountResource(LifeSupportType.WATER);
+		AmountResource greyWaterAr = AmountResource.findAmountResource("grey water");
+		AmountResource fertilizerAr = AmountResource.findAmountResource(FERTILIZER);
+		
 		// Calculate water usage
 		double waterRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageWaterNeeded;
-		AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double waterAvailable = inv.getAmountResourceStored(waterAR, false);		
-
-		double waterUsed = waterRequired;
-		if (waterRequired > waterAvailable) {
-			// 2015-01-25 Added diff, waterUsed and consumeWater() when grey water is not available
-			double diff = waterUsed - waterAvailable;
-			waterUsed = waterAvailable;
-		}	
-			
-		Storage.retrieveAnResource(FERTILIZER_NEEDED_WATERING, FERTILIZER, inv, true);
-		Storage.retrieveAnResource(waterRequired, LifeSupportType.WATER, inv, true);
+		double greyWaterAvailable = inv.getAmountResourceStored(greyWaterAr, false);
+		
+		// First water crops with grey water if it is available.
+		double greyWaterUsed = waterRequired;
+		if (greyWaterUsed > greyWaterAvailable) {
+		    greyWaterUsed = greyWaterAvailable;
+		}
+		if (greyWaterUsed > 0D) {
+		    Storage.retrieveAnResource(greyWaterUsed, "grey water", inv, true);
+		}
+		
+		// If not enough grey water, use water mixed with fertilizer.
+		double waterUsed = 0D;
+		if (greyWaterUsed < waterRequired) {
+		    double waterAvailable = inv.getAmountResourceStored(waterAr, false);
+		    waterUsed = waterRequired - greyWaterUsed;
+		    if (waterUsed > waterAvailable) {
+		        waterUsed = waterAvailable;
+		    }
+		    if (waterUsed > 0D) {
+		        Storage.retrieveAnResource(waterUsed, LifeSupportType.WATER, inv, true);
+		    }
+		    
+		    double fertilizerAvailable = inv.getAmountResourceStored(fertilizerAr, false);
+		    double fertilizerRequired = FERTILIZER_NEEDED_WATERING * growingArea * time;
+		    double fertilizerUsed = fertilizerRequired;
+		    if (fertilizerUsed > fertilizerAvailable) {
+		        fertilizerUsed = fertilizerAvailable;
+		    }
+		    if (fertilizerUsed > 0D) {
+		        Storage.retrieveAnResource(fertilizerUsed, FERTILIZER, inv, true);
+		    }
+		}
+		
+		double totalWaterUsed = greyWaterUsed + waterUsed;
+		
+//		double waterAvailable = inv.getAmountResourceStored(waterAR, false);		
+//
+//		double waterUsed = waterRequired;
+//		if (waterRequired > waterAvailable) {
+//			// 2015-01-25 Added diff, waterUsed and consumeWater() when grey water is not available
+//			double diff = waterUsed - waterAvailable;
+//			waterUsed = waterAvailable;
+//		}	
+//		
+//		// Determine watering fertilizer needed when grey water isn't available.
+//		double wateringFertilizer = FERTILIZER_NEEDED_WATERING * growingArea * time;
+//			
+//		Storage.retrieveAnResource(wateringFertilizer, FERTILIZER, inv, true);
+//		Storage.retrieveAnResource(waterRequired, LifeSupportType.WATER, inv, true);
 	
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
 		// TODO: need more work
 		double waterReclaimed = waterRequired * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
 		Storage.storeAnResource(waterReclaimed, LifeSupportType.WATER, inv);
 
-		double waterModifier = waterUsed / waterRequired * .5D + .5D;
+		double waterModifier = totalWaterUsed / waterRequired * .5D + .5D;
 		if (waterModifier > 1.1)
 			waterModifier = 1.1;
 			
@@ -1326,7 +1368,7 @@ public class Crop implements Serializable {
 		double totalGrowingTime = 0D;
 		List<CropType> cropTypes = cropConfig.getCropList();
 		Iterator<CropType> i = cropTypes.iterator();
-		while (i.hasNext()) totalGrowingTime += i.next().getGrowingTime()*1000D;
+		while (i.hasNext()) totalGrowingTime += i.next().getGrowingTime();
 		return totalGrowingTime / cropTypes.size();
 	}
 
