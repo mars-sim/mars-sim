@@ -31,9 +31,44 @@ public class RadiationExposure implements Serializable {
 
     /* Curiosity's Radiation Assessment Detector (RAD). see http://www.boulder.swri.edu/~hassler/rad/
      * http://www.swri.org/3pubs/ttoday/Winter13/pdfs/MarsRadiation.pdf
-     * Note: Mars rover Curiosity received an average dose of 300 mSv over the 180-day journey.
-     * 300 milli-sieverts is equivalent to 24 CAT scans, or more than 15x
+     * Note: Mars rover Curiosity received an average dose of 300 milli-sieverts (mSv) over the 180-day journey.
+     * 300 mSv is equivalent to 24 CAT scans, or more than 15x
      * the annual radiation limit for a worker in a nuclear power plant.
+     * 
+     * 
+     * 1000 millirem = 1 rem
+     * 1 Sievert (Sv) is 100 rem
+     * 1000 mSv = 1 Sv
+     * 500 mSv = 50 rem
+     * 10 mSv = 1 rem
+     * 
+     * GRAY UNIT (Gy)
+     * 
+     * Exposure from x-rays or gamma rays is measured in units of roentgens. For example:
+     * Total body exposure of 100 roentgens/rad or 1 Gray unit (Gy) causes radiation sickness.
+     * Total body exposure of 400 roentgens/rad (or 4 Gy) causes radiation sickness and death in half of the individuals who are exposed. 
+     * Without medical treatment, nearly everyone who receives more than this amount of radiation will die within 30 days. 
+     * 100,000 roentgens/rad (1,000 Gy) causes almost immediate unconsciousness and death within an hour.
+     * 
+     * 
+     * REM
+     *     
+     * A prompt dose of up to 75 rem result in no apparent health effects.
+     * Between 75 and 200 rem, radiation sickness results (symptoms are vomiting, fatigue, loss of appetite.
+     * Almost everyone recovers within a few weeks.
+     * At 300 rem, some fatalities start to appear, rising to 50% at 450 rem and 80% at 600 rem
+     * Almost no one survives dose of 1,000 rem or more.
+     * 
+     * Living at sea level receives an annual dose of 150 millirem (or .15 rem), 
+     * versus 300 millirem (or .3 rem) on top of a mountain.
+     *   
+     * According to one study, for every 100 rem received, the likelihood of fatal cancer is 1.8% within 30 years. 
+     * 
+     * If a Mars Direct mission uses Conjunction trajectory, the estimated round trip mission radiation dose 
+     * varies between 41 and 62 rem, depending upon whether the Sun is at solar min or solar max phase of its 11-year cycle.
+     * 
+     * If an astronaut gets a typical dose of 50 rem over the course of a 2.5 years Mars mission, 
+     * the chance of getting a fatal cancer due to that exposure is 50/100 * 1.81% = .905%.   
      */
 
     /* Probability of getting hit by GCG/SPE radiation within an interval of 100 milliSol

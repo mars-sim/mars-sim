@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -51,6 +52,7 @@ import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.EarthReturn;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.ThermalGeneration;
@@ -95,7 +97,11 @@ public class BuildingManager implements Serializable {
     private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
 
     // Data members
+    //private boolean flag_buildings_done = false;
+    //private int numBuildingsCache = 0;
+    private int count = 0;
 	private int solCache = 0;
+    private double sum = 0;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
@@ -105,6 +111,7 @@ public class BuildingManager implements Serializable {
     private List<Building> buildingsNickNames;
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
+    private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
 
     //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
 
@@ -130,7 +137,6 @@ public class BuildingManager implements Serializable {
         this(settlement, SimulationConfig.instance().getSettlementConfiguration().
                 getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
 
-        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
     }
 
     /**
@@ -140,9 +146,11 @@ public class BuildingManager implements Serializable {
      * @throws Exception if buildings cannot be constructed.
      */
     public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
-
+        //logger.info("'s constructor 2 for " + settlement.getName() + " is on " + Thread.currentThread().getName());
         this.settlement = settlement;
 
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        
         // Construct all buildings in the settlement.
         buildings = new ArrayList<Building>();
         if (buildingTemplates != null) {
@@ -151,7 +159,30 @@ public class BuildingManager implements Serializable {
                 BuildingTemplate template = i.next();
                 addBuilding(template, false);
             }
+        }  
+        
+        //logger.info("In " + settlement.getName() + "  # of bldgs : " + buildings.size());
+        //flag_buildings_done = true; 
+        //buildingFunctionsMap = new HashMap<>();//ConcurrentHashMap<BuildingFunction, List<Building>>();
+    	//if (buildingFunctionsMap == null) {
+        //    logger.info("Calling setupBuildingFunctionsMap() within BuildingManager constructor");
+    	setupBuildingFunctionsMap();
+    	//} 
+        //numBuildingsCache = getBuildingNum();
+ 
+/*        
+        // 2016-10-16 Create buildingFunctionsMap
+        List<BuildingFunction> functions = buildingConfig.getBuildingFunctions();
+        for (BuildingFunction f : functions) {
+        	List<Building> list = new ArrayList<Building>();
+	        for (Building b : buildings) {
+	        	if (b.hasFunction(f))
+	        		list.add(b);
+	        }
+			buildingFunctionsMap.put(f, list); 
         }
+*/
+        
         // Initialize building value caches.
         buildingValuesNewCache = new HashMap<String, Double>();
         buildingValuesOldCache = new HashMap<String, Double>();
@@ -232,14 +263,29 @@ public class BuildingManager implements Serializable {
     public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
         if (!buildings.contains(newBuilding)) {
             buildings.add(newBuilding);
-    		//logger.info("addBuilding() : a new building has just been added");
+       		//logger.info("addBuilding() : a new building has just been added");
+            
+            // 2016-10-17 Insert this new building into buildingFunctionsMap
+            if (buildingFunctionsMap != null) {
+            	// use this only after buildingFunctionsMap has been created
+	            for (BuildingFunction f : buildingConfig.getBuildingFunctions()) {
+	            	// if this building has this function
+	            	if (newBuilding.hasFunction(f)) {
+	            		List<Building> list = buildingFunctionsMap.get(f);
+	            		if (!list.contains(newBuilding))
+	            			list.add(newBuilding);           	
+	            	}
+	            }
+            }
+            
+            settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
+            //unitManager.fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
+            //unitManager.addUnit(newBuilding);
+            
             // Create new building connections if needed.
             if (createBuildingConnections) {
                 settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
-            }
-             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
-            //unitManager.fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
-            //unitManager.addUnit(newBuilding);
+            }     
         }
     }
 
@@ -259,8 +305,8 @@ public class BuildingManager implements Serializable {
      * @param createBuildingConnections true if automatically create building connections.
      * @return newBuilding
      */
-    // 2014-12-19 Added addOneBuilding(). Called by confirmBuildingLocation() in Resupply.java
-    public Building addOneBuilding(BuildingTemplate template, Resupply resupply, boolean createBuildingConnections) {
+    // 2014-12-19 Added prepareToAddBuilding-- called by confirmBuildingLocation() in Resupply.java
+    public Building prepareToAddBuilding(BuildingTemplate template, Resupply resupply, boolean createBuildingConnections) {
 		//logger.info("BuildingManager's addOneBuilding() is on " + Thread.currentThread().getName() + " Thread");
     	// normally on JavaFX Application Thread
 		this.resupply = resupply;
@@ -299,35 +345,68 @@ public class BuildingManager implements Serializable {
     }
 
     /**
+     * Gets a list of settlement's buildings with Robotic Station function
+     * @return list of buildings
+     */
+	//2016-10-16 Added getBuildingsWithRoboticStation()
+    public List<Building> getBuildingsWithRoboticStation() {
+
+    	return getBuildings(BuildingFunction.ROBOTIC_STATION);
+    	
+/*    	
+    	// Using JavaFX/8 Stream  	
+		List<Building> buildings = getACopyOfBuildings();
+    	List<Building> buildingsWithRoboticStation =
+            	buildings.stream()	
+        		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
+    	        .filter(s -> buildingConfig.hasRoboticStation(s.getBuildingType()) == true)
+    	        .collect(Collectors.toList());
+
+    	return buildingsWithRoboticStation;
+ */   	
+    }
+    
+    /**
      * Gets a list of settlement's buildings with Life Supportfunction
      * @return list of buildings
      */
-	//2015-12-30 Added getBuildingsWithPLifeSupport()
+	//2015-12-30 Added getBuildingsWithLifeSupport()
     public List<Building> getBuildingsWithLifeSupport() {
+    	
+    	return getBuildings(BuildingFunction.LIFE_SUPPORT);
+/*    			
     	// Using JavaFX/8 Stream
 		List<Building> buildings = getACopyOfBuildings();
     	List<Building> buildingsWithLifeSupport =
-    		buildings.parallelStream()
+            	buildings.stream()	
+        		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
     	        .filter(s -> buildingConfig.hasLifeSupport(s.getBuildingType()) == true)
     	        .collect(Collectors.toList());
 
     	return buildingsWithLifeSupport;
+*/    	
+    	
     }
 
     /**
-     * Gets a list of settlement's buildings with power function
+     * Gets a list of settlement's buildings with power generation function
      * @return list of buildings
      */
-	//2015-05-08 Added getBuildingsWithPower()
-    public List<Building> getBuildingsWithPower() {
+	//2015-05-08 Added getBuildingsWithPowerGeneration()
+    public List<Building> getBuildingsWithPowerGeneration() {
+    	
+    	return getBuildings(BuildingFunction.POWER_GENERATION);
+/*   	
     	// Using JavaFX/8 Stream
 		List<Building> buildings = getACopyOfBuildings();
     	List<Building> buildingsWithPower =
-    		buildings.parallelStream()
+            	buildings.stream()	
+        		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
     	        .filter(s -> buildingConfig.hasPowerGeneration(s.getBuildingType()) == true)
     	        .collect(Collectors.toList());
 
     	return buildingsWithPower;
+*/    	
     }
 
     /**
@@ -336,13 +415,17 @@ public class BuildingManager implements Serializable {
      */
 	//2015-04-02 Added getBuildingsWithThermal()
     public List<Building> getBuildingsWithThermal() {
+    	
+    	return getBuildings(BuildingFunction.THERMAL_GENERATION);
+ /*   	
     	// Using JavaFX/8 Stream
 		List<Building> buildings = getACopyOfBuildings();
     	List<Building> buildingsWithThermal =
-    		buildings.parallelStream()
+        	buildings.stream()	
+    		//buildings.parallelStream() // parallelStream makes it 3x slower than sequential stream
     	        .filter(s -> buildingConfig.hasThermalGeneration(s.getBuildingType()) == true)
     	        .collect(Collectors.toList());
-/*
+
     	//List<Building> buildings = getBuildings();
     	//List<Building> buildingsWithThermal = new ArrayList<Building>();
     	Iterator<Building> i = buildings.iterator();
@@ -355,7 +438,7 @@ public class BuildingManager implements Serializable {
 			}
 		}
 */
-/*		// Using internal iterator in lambda expression
+/*		//Using Lambda Expression with internal iterator
     	buildings.forEach(b -> {
 			String buildingType = b.getBuildingType();
 			if (config.hasThermalGeneration(buildingType)) {
@@ -363,7 +446,7 @@ public class BuildingManager implements Serializable {
 			}
 		});
 */
-    	return buildingsWithThermal;
+//    	return buildingsWithThermal;
     }
 
 
@@ -396,21 +479,132 @@ public class BuildingManager implements Serializable {
         return result;
     }
 
+    // 2016-10-16 Create buildingFunctionsMap
+	public void setupBuildingFunctionsMap() {
+    	//long start = System.nanoTime();
+		buildingFunctionsMap = new ConcurrentHashMap<BuildingFunction, List<Building>>(); //  HashMap<>();
+	    List<BuildingFunction> functions = buildingConfig.getBuildingFunctions();
+	    for (BuildingFunction f : functions) {
+	    	List<Building> l = new ArrayList<Building>();
+	        for (Building b : buildings) {
+	        	if (b.hasFunction(f))
+	        		l.add(b);
+	        }
+			buildingFunctionsMap.put(f, l); 
+	    }
+	    
+        //long end = System.nanoTime();
+        //count++;
+        //sum+= (end-start)/1e3;
+        //logger.info("time : " + (end-start)/1e3 + " milliseconds");
+        //if (count == 10000) {
+        //	logger.info("\tcount : " + count + "\taverage : " + Math.round(sum/count*100.00)/100.00 + " milliseconds");
+        //	count = 0;
+        //	sum = 0;
+        //}
+  
+	}
+
+   
     /**
      * Gets the buildings in a settlement that has a given function.
      * @param function {@link BuildingFunction} the function of the building.
      * @return list of buildings.
      */
     public List<Building> getBuildings(BuildingFunction function) {
-        List<Building> functionBuildings = new ArrayList<Building>();
-        Iterator<Building> i = buildings.iterator();
+        //logger.info("getBuildings() is on " + Thread.currentThread().getName());
+        //logger.info("getBuildings() : function is " + function);
+        
+     	//long start = System.nanoTime();		
+       		
+    	if (buildingFunctionsMap.containsKey(function)) {		
+    		return buildingFunctionsMap.get(function);
+    		
+            //long end = System.nanoTime();
+            //count++;
+            //sum+= (end-start)/1e3;
+            //System.out.println("time : " + (end-start)/1e3 + " milliseconds");
+            //if (count == 10000) {
+            //	System.out.println("\tcount : " + count + "\taverage : " + Math.round(sum/count*100.00)/100.00 + " milliseconds");
+            //	count = 0;
+            //	sum = 0;
+           // }
+            
+    		//return buildingFunctions.get(function);
+    		//return list;
+    	}
+    	
+    	else {
+    		System.out.println("can't find " + function + " in buildingFunctionsMap");
+          	List<Building> list = new ArrayList<Building>();
+
+            for (Building b : buildings) {
+            	if (b.hasFunction(function))
+            		list.add(b);
+            }
+    		buildingFunctionsMap.put(function, list); 
+ /*   		
+            long end = System.nanoTime();
+            count++;
+            sum+= (end-start)/1e3;
+            //System.out.println("time : " + (end-start)/1e3 + " milliseconds");
+            if (count == 10000) {
+            	System.out.println("\tcount : " + count + "\taverage : " + Math.round(sum/count*100.00)/100.00 + " milliseconds");
+            	count = 0;
+            	sum = 0;
+            }
+ */           
+    		return list;
+    	}
+    	
+/*   	
+    	int numBuildings = getBuildingNum();
+        if (numBuildingsCache != numBuildings) {
+            numBuildingsCache = numBuildings; 
+            for (Building b : buildings) {
+            	if (b.hasFunction(function))
+            		list.add(b);
+            }
+    		buildingFunctionsMap.put(function, list);
+    		return list;
+        }
+*/       
+		//return list;
+
+/*
+ * 
+ *         	//Using Lambda Expression with internal iterator
+        	buildings.forEach(b -> {
+            	if (b.hasFunction(function))
+            		list.add(b);
+    		});
+    		
+    	Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
             if (building.hasFunction(function)) {
                 functionBuildings.add(building);
             }
         }
-        return functionBuildings;
+*/
+/*
+        for (Building b : buildings) {
+        	if (b.hasFunction(function))
+        		functionBuildings.add(b);
+        }
+*/
+/*	
+		//List<Building> buildings = getACopyOfBuildings();
+    	List<Building> list =
+    		buildings.stream()
+    	        //.filter(s -> s.hasFunction(function) == true)
+    	        .filter(s -> buildingConfig.hasFunction(function) == true)
+    	        .collect(Collectors.toList());
+		//return list;
+*/  
+
+
+		//return list;
     }
 
     /**
@@ -617,8 +811,8 @@ public class BuildingManager implements Serializable {
             				|| bldg.getBuildingType().toLowerCase().contains("observatory")){
             			//functionBuildings.remove(bldg); // will cause ConcurrentModificationException
             		}
-            		else if (function == BuildingFunction.COOKING) {
-            			if (bldg.getBuildingType().toLowerCase().contains("lounge")) {
+            		else if (function == BuildingFunction.FARMING) {
+            			if (bldg.getBuildingType().toLowerCase().contains("greenhouse")) {
             				validBuildings.add(bldg);
             			}
             		}
@@ -629,9 +823,19 @@ public class BuildingManager implements Serializable {
             				validBuildings.add(bldg);
             			}
             		}
+            		else if (function == BuildingFunction.COOKING) {
+            			if (bldg.getBuildingType().toLowerCase().contains("lounge")) {
+            				validBuildings.add(bldg);
+            			}
+            		}
             		else if (function == BuildingFunction.MEDICAL_CARE) {
             			if (bldg.getBuildingType().toLowerCase().contains("infirmary")
             					|| bldg.getBuildingType().toLowerCase().contains("medical")) {
+            				validBuildings.add(bldg);
+            			}
+            		}
+               		else if (function == BuildingFunction.GROUND_VEHICLE_MAINTENANCE) {
+            			if (bldg.getBuildingType().toLowerCase().contains("garage")) {
             				validBuildings.add(bldg);
             			}
             		}
@@ -672,7 +876,10 @@ public class BuildingManager implements Serializable {
                     destination = validBuildings1.get(rand);
                     //System.out.println("BuildingManager : " + unit.getName() + " is added to " + destination.getNickName() + " in " + settlement);
                 }
-
+                else {
+                	
+                }
+                //System.out.println("BuildingManager : " + unit.getName() + " is being added");// to " + destination.getNickName() + " in " + settlement);                
                 addPersonOrRobotToBuildingRandomLocation(robot, destination);
                 //throw new IllegalStateException("No inhabitable buildings available for " + unit.getName());
             }
@@ -1507,16 +1714,25 @@ public class BuildingManager implements Serializable {
     // 2015-12-30 Added getNextInhabitableID()
     public int getNextInhabitableID() {
 
-        int largestID = -1;
+        int nextNum = -1;
+        for (Building b : buildings) {
+        	if (b.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                int id = b.getInhabitable_id();
+                if (id > nextNum)
+                	nextNum++;
+            }
+        		
+        }
+/*        
         Iterator<Building> i = getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
         while (i.hasNext()) {
             Building b = i.next();
             int id = b.getInhabitable_id();
-            if (id > largestID)
-            	largestID++;
+            if (id > nextNum)
+            	nextNum++;
         }
-
-        return largestID + 1;
+*/
+        return nextNum + 1;
     }
 
     /**

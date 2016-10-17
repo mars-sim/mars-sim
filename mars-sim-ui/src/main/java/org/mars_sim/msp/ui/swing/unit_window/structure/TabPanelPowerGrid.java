@@ -272,7 +272,7 @@ extends TabPanel {
 	public double getAverageEfficiency() {
 		double eff = 0;
 		int i = 0;
-		Iterator<Building> iPower = manager.getBuildingsWithPower().iterator();
+		Iterator<Building> iPower = manager.getBuildingsWithPowerGeneration().iterator();
 		while (iPower.hasNext()) {
 			Building building = iPower.next();
 			powerSources = config.getPowerSources(building.getBuildingType());

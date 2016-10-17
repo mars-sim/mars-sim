@@ -97,7 +97,6 @@ public class UnitManager implements Serializable {
 	private Collection<Unit> units;
 	/** List of possible settlement names. */
 	private List<String> settlementNames;
-	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
 	/** List of possible vehicle names. */
 	private List<String> vehicleNames;
 	/** List of possible male person names. */
@@ -113,6 +112,8 @@ public class UnitManager implements Serializable {
 	private Map<String, Integer> equipmentNumberMap;
 	/** Map of vehicle types and their numbers. */
 	private Map<String, Integer> vehicleNumberMap;
+	/** Map of settlment names. */	
+	//private Map<String, List<String>> settlementNamesMap;
 
 	private Map<Integer, List<String>> marsSociety = new HashMap<>();
 	private Map<Integer, List<String>> lastNames = new HashMap<>();
@@ -120,13 +121,13 @@ public class UnitManager implements Serializable {
 	private Map<Integer, List<String>> maleFirstNames = new HashMap<>();	
 	private Map<Integer, List<String>> femaleFirstNames = new HashMap<>();
 	
-	//private MasterClock masterClock;
 	private Settlement firstSettlement;	
 	private PersonConfig personConfig;
 	private SettlementConfig settlementConfig;
-	private RelationshipManager relationshipManager;// = Simulation.instance().getRelationshipManager();
+	private RelationshipManager relationshipManager;
+	private VehicleConfig vehicleConfig;
+	//private MasterClock masterClock;
 	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
-	private VehicleConfig vehicleConfig;// = SimulationConfig.instance().getVehicleConfiguration();
 
     //private transient ExecutorService settlementExecutor;
 	//private transient ThreadPoolExecutor personExecutor, settlementExecutor;
@@ -139,6 +140,7 @@ public class UnitManager implements Serializable {
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
+		//settlementNamesMap = new HashMap<>();
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
@@ -159,14 +161,8 @@ public class UnitManager implements Serializable {
 	 *             in unable to load names.
 	 */
 	void constructInitialUnits() {
-
-		// Initialize name lists
-		initializeRobotNames();
-		initializePersonNames();
-		initializeLastNames();
-		initializeFirstNames();
-		//System.out.println("done with initializing person names");
-	
+		
+		// Initialize settlement and vehicle name lists
 		initializeSettlementNames();
 		initializeVehicleNames();
 
@@ -176,17 +172,21 @@ public class UnitManager implements Serializable {
 		createInitialEquipment();
 		createInitialResources();
 		createInitialParts();
-			
+		
+		// Initialize name lists
+		initializeRobotNames();
+		initializePersonNames();
+		initializeLastNames();
+		initializeFirstNames();
+		
 		// Create pre-configured robots as stated in robots.xml
-		createConfiguredRobots();
+		createPreconfiguredRobots();
 		// Create more robots to fill the settlement(s)
 		createInitialRobots();	
 		// Create pre-configured settlers as stated in people.xml
-		createConfiguredPeople();		
-		//System.out.println("done with createConfiguredPeople() in UnitManager");
+		createPreconfiguredPeople();		
 		// Create more settlers to fill the settlement(s)
 		createInitialPeople();
-		//System.out.println("done with createInitialPeople() in UnitManager");
 	}
 
 	/**
@@ -642,7 +642,7 @@ public class UnitManager implements Serializable {
 	 * Creates all pre-configured people as listed in people.xml.
 	 * @throws Exception if error parsing XML.
 	 */
-	private void createConfiguredPeople() {
+	private void createPreconfiguredPeople() {
 		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 		//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		//EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
@@ -1302,7 +1302,7 @@ public class UnitManager implements Serializable {
 	 * @throws Exception
 	 *             if error parsing XML.
 	 */
-	private void createConfiguredRobots() {
+	private void createPreconfiguredRobots() {
 		RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
 		int size = robotConfig.getNumberOfConfiguredRobots();
 		// Create all configured robot.
@@ -1450,16 +1450,16 @@ public class UnitManager implements Serializable {
 				Settlement settlement = i.next();
 				int initial = settlement.getInitialNumOfRobots();
 				while (settlement.getCurrentNumOfRobots() < initial) {
-					System.out.println("Settlement : " + settlement.getName());
-					System.out.println("getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
-					System.out.println("initial : " + initial);
+					//System.out.println("Settlement : " + settlement.getName());
+					//System.out.println("getCurrentNumOfRobots() : " + settlement.getCurrentNumOfRobots());
+					//System.out.println("initial : " + initial);
 					// System.out.println(" getInitialNumOfRobots() : " +
 					// settlement.getInitialNumOfRobots());
 
 					// Get a robotType randomly
 					RobotType robotType = getABot(settlement, initial);
 
-					System.out.println("robotType is "+robotType.toString());
+					//System.out.println("robotType is "+robotType.toString());
 					Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars",
 							settlement, settlement.getCoordinates()); 
 					

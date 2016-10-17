@@ -114,7 +114,7 @@ LocalBoundedObject, InsidePathLocation {
 
     // Data members
 	protected int id;
-    // 2015-12-30 Added inhabitable_id
+    // 2015-12-30 Add inhabitable_id for tracking composition of air
 	protected int inhabitable_id = -1;
 	protected int baseLevel;
 	private int solCache = 0;
@@ -132,6 +132,7 @@ LocalBoundedObject, InsidePathLocation {
 	boolean isImpactImminent = false;
 	boolean inTransportMode = true;
 
+	// 2014-10-28  Changed from "name" to "buildingType"
 	protected String buildingType;
 	protected String nickName;
 	// 2014-11-27 Added description for each building
@@ -142,17 +143,19 @@ LocalBoundedObject, InsidePathLocation {
 	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();
 
 	/** Unit location coordinates. */
-	private Coordinates location;// = manager.getSettlement().getCoordinates();
+	private Coordinates location;
 	protected BuildingManager manager;
-	// 2014-10-28  changed variable's name from "name" to "buildingType"
-	protected ThermalGeneration furnace;
 	protected MalfunctionManager malfunctionManager;
-	protected LifeSupport lifeSupport;
-	private EVA eva;
+
     private Inventory b_inv, s_inv;
     private Settlement settlement;
-	private BuildingConfig config;
+	private static BuildingConfig config;
     
+	protected ThermalGeneration furnace;
+	protected LifeSupport lifeSupport;
+	protected RoboticStation roboticStation; 
+	//private EVA eva;
+	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 
@@ -180,7 +183,8 @@ LocalBoundedObject, InsidePathLocation {
 		this.settlement = manager.getSettlement();
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
-
+/*
+ * Duplicate 
 		if (s_inv == null)
 			s_inv = settlement.getInventory();
 		if (b_inv == null) {
@@ -193,22 +197,31 @@ LocalBoundedObject, InsidePathLocation {
 			else
 				b_inv.addGeneralCapacity(1000);
 		}
-
+		
 		powerMode = PowerMode.FULL_POWER;
 		heatMode = HeatMode.ONLINE;
+*/
 
+
+		// Set the instance of life support
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 			if (lifeSupport == null) {
 				lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
-			    // 2015-12-30 Added setting up an inhabitable_id
+			    // 2015-12-30 Set up an inhabitable_building id for tracking composition of air	
 				int id = manager.getNextInhabitableID();
-				setInhabitable_id(id);
+				setInhabitableID(id);
 			}
 		}
+		
+		// Set the instance of thermal generation function.
 		if (hasFunction(BuildingFunction.THERMAL_GENERATION))
 			if (furnace == null)
 				furnace = (ThermalGeneration) getFunction(BuildingFunction.THERMAL_GENERATION);
 
+		// Set the instance of robotic station function.
+		if (hasFunction(BuildingFunction.ROBOTIC_STATION))
+			if (roboticStation == null)
+				roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
 	}
 
 	/** Constructor 2
@@ -224,7 +237,7 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param manager the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	//2014-10-27  changed variable "name" to "buildingType"
+	//2014-10-27  Changed "name" to "buildingType"
 	public Building(int id, String buildingType, String nickName, double width, double length,
 	        double xLoc, double yLoc, double facing, BuildingManager manager) {
 		super(nickName, manager.getSettlement().getCoordinates());
@@ -411,8 +424,8 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set power generation function.
 		if (config.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
-		//2014-10-17 mkung
-		// Added thermal generation function.
+
+		//2014-10-17 Set thermal generation function.
 		if (config.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
 
 		// Set life support function.
@@ -458,6 +471,8 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set cooking function.
 		if (config.hasCooking(buildingType)) buildingFunctions.add(new Cooking(this));
+		
+		// Set preparing dessert function.
 		if (config.hasCooking(buildingType)) buildingFunctions.add(new PreparingDessert(this));
 
 		// Set manufacture function.
@@ -501,11 +516,19 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	public boolean hasFunction(BuildingFunction function) {
 		boolean result = false;
+        for (Function f : functions) {
+        	if (f.getFunction() == function) {
+        		return true;		
+        	}
+		}
+/*		
+
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			if (i.next().getFunction() == function)
-				result = true;
+				return true;
 		}
+*/		
 		return result;
 	}
 
@@ -517,12 +540,20 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	public Function getFunction(BuildingFunction functionType) {
 		Function result = null;
+		
+        for (Function f : functions) {
+        	if (f.getFunction() == functionType) {		
+        		return f;		
+        	}
+		}
+/*        
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			Function function = i.next();
 			if (function.getFunction() == functionType)
 				result = function;
 		}
+*/		
 		//if (result != null) return result;
 		//else throw new IllegalStateException(buildingType + " does not have " + functionType);
 		return result;
@@ -832,6 +863,12 @@ LocalBoundedObject, InsidePathLocation {
     public Collection<Person> getInhabitants() {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
+		if (lifeSupport != null) {
+			for (Person occupant : lifeSupport.getOccupants()) {
+				if (!people.contains(occupant)) people.add(occupant);
+			}
+		}
+/*		
 		// If building has life support, add all occupants of the building.
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 			LifeSupport lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -841,7 +878,7 @@ LocalBoundedObject, InsidePathLocation {
 				if (!people.contains(occupant)) people.add(occupant);
 			}
 		}
-
+*/
 		return people;
     }
 
@@ -893,6 +930,12 @@ LocalBoundedObject, InsidePathLocation {
 	public Collection<Robot> getAffectedRobots() {
 		Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 
+		if (roboticStation != null) {
+			for (Robot occupant : roboticStation.getRobotOccupants()) {
+				if (!robots.contains(occupant)) robots.add(occupant);
+			}
+		}
+/*		
 		if (hasFunction(BuildingFunction.ROBOTIC_STATION)) {
 	       	RoboticStation roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
 			Iterator<Robot> i = roboticStation.getRobotOccupants().iterator();
@@ -901,7 +944,7 @@ LocalBoundedObject, InsidePathLocation {
 				if (!robots.contains(occupant)) robots.add(occupant);
 			}
 		}
-
+*/
 		// Check all robots in settlement.
 		Iterator<Robot> i = manager.getSettlement().getRobots().iterator();
 		while (i.hasNext()) {
@@ -1096,7 +1139,7 @@ LocalBoundedObject, InsidePathLocation {
 		return inhabitable_id;
 	}
 
-	public void setInhabitable_id(int id) {
+	public void setInhabitableID(int id) {
 		this.inhabitable_id = id;
 	}
 

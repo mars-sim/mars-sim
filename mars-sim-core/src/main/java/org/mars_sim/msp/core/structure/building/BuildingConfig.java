@@ -27,6 +27,7 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.ElectricHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelHeatSource;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
@@ -173,6 +174,7 @@ public class BuildingConfig implements Serializable {
 
 	private Document buildingDoc;
 	private Set<String> buildingTypes;
+	private List<BuildingFunction> functions;
 
 	/**
 	 * Constructor
@@ -180,8 +182,47 @@ public class BuildingConfig implements Serializable {
 	 */
 	public BuildingConfig(Document buildingDoc) {
 		this.buildingDoc = buildingDoc;
+		
+		generateBuildingFunctions();
 	}
 
+	public List<BuildingFunction> getBuildingFunctions() {
+		return functions;
+	}
+	
+	public void generateBuildingFunctions() {
+
+		functions = new ArrayList<>();
+		functions.add(BuildingFunction.ADMINISTRATION);
+		functions.add(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+		functions.add(BuildingFunction.BUILDING_CONNECTION);
+		functions.add(BuildingFunction.COMMUNICATION);
+		functions.add(BuildingFunction.COOKING);
+		functions.add(BuildingFunction.DINING);
+		functions.add(BuildingFunction.EARTH_RETURN);
+		functions.add(BuildingFunction.EVA);
+		functions.add(BuildingFunction.EXERCISE);
+		functions.add(BuildingFunction.FARMING);
+		functions.add(BuildingFunction.FOOD_PRODUCTION);
+		functions.add(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+		functions.add(BuildingFunction.LIFE_SUPPORT);
+		functions.add(BuildingFunction.LIVING_ACCOMODATIONS);
+		functions.add(BuildingFunction.MANAGEMENT);
+		functions.add(BuildingFunction.MANUFACTURE);
+		functions.add(BuildingFunction.MEDICAL_CARE);
+		functions.add(BuildingFunction.POWER_GENERATION);
+		functions.add(BuildingFunction.POWER_STORAGE);
+		functions.add(BuildingFunction.PREPARING_DESSERT);
+		functions.add(BuildingFunction.RECREATION);
+		functions.add(BuildingFunction.RESEARCH);
+		functions.add(BuildingFunction.RESOURCE_PROCESSING);
+		functions.add(BuildingFunction.ROBOTIC_STATION);
+		functions.add(BuildingFunction.STORAGE);
+		functions.add(BuildingFunction.THERMAL_GENERATION);
+		functions.add(BuildingFunction.WASTE_DISPOSAL);
+	}
+	
+	
 	/**
 	 * Gets a set of all building types.
 	 * @return set of building types.

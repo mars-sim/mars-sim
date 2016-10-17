@@ -692,7 +692,7 @@ public class TransportWizard {
 		Building newBuilding = null;
 
 		if (isAtPreDefinedLocation || isNewTemplate) {
-			newBuilding = mgr.addOneBuilding(template, mgr.getResupply(), true);
+			newBuilding = mgr.prepareToAddBuilding(template, mgr.getResupply(), true);
 		}
 
         // Determine location and facing for the new building.

@@ -477,15 +477,17 @@ public class BuildingConnectorManager implements Serializable {
         if (hasLifeSupport) {
             
             // If building connector, determine end connections first.
-            if (isBuildingConnector) {
-                
+            if (isBuildingConnector) {             
                 // Try to create connections at North and South ends.
                 createBuildingConnectorEndConnections(newBuilding);
+                
             }
             
             // Determine connections at points along each of the building's four sides.
             createBuildingConnectionsAlongSides(newBuilding);
         }
+        
+        
     }
     
     /**
