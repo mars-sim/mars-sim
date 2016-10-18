@@ -2,6 +2,33 @@ Mars Simulation Project v3.1.0
 Copyright (C) 2016 Scott Davis
 http://mars-sim.sourceforge.net/
 
+
+
+------------------------------------------------------
+
+## v3.1.0 (build 37__) Snapshot Preview 4 - 2016-10-__
+
+### NEW FEATURES :
+
+1.
+
+### FIXES :
+
+1. Reduce the likelihood of bots moving from one building to another. 
+
+2. Remove duplicate building update in a frame.
+
+
+### IMPROVEMENTS:
+
+1. Code optimization for less cpu utilization.
+
+2. Better looking status bar in Settlement Window.
+
+3. Re-enable doing various scientific research tasks while inside a moving/non-moving vehicle (albeit with penalty).
+ 
+4. Allow tweaking the error margins for rovers going on a mission via xml. 
+ 
 ------------------------------------------------------
 
 ## v3.1.0 (build 3743) Snapshot Preview 3 - 2016-10-13

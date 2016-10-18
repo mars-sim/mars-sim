@@ -558,7 +558,7 @@ public class MasterClock implements Serializable { // Runnable,
 		  		fireClockPulse(timePulse);
 
             long endTime = System.nanoTime();
-            lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
+            lastTimeDiff = (long) ((endTime - startTime) / 1_000_000D);
             // TODO: how to prevent crashing autosaveTimer ? 
             // will it help by restarting the autosaveTimer ?
             //sim.getAutosaveTimer().playFromStart();

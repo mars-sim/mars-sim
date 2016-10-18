@@ -206,28 +206,13 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 	    	<groupId>net.sf.mars-sim</groupId>
 	    	<artifactId>mars-sim-network</artifactId>
 	    	<version>${project.version}</version>
-	    </dependency>
-		<dependency>
-			<groupId>insidefx.undecorator</groupId>
-			<artifactId>undecorator</artifactId>
-			<version>0.1.0</version>
-		</dependency>
-<!-- load jfoenix from mars-sim's maven-repo-snapshot --> 
-		<dependency>
-			<groupId>com.jfoenix</groupId>
-			<artifactId>jfoenix</artifactId>
-			<version>1.0.0</version>
-		</dependency>		    
+	    </dependency>	    
 	</dependencies>
 	
 	<repositories>
 	    <repository>
 	        <id>jcenter</id>
 	        <url>http://jcenter.bintray.com/</url>
-	    </repository>
-	    <repository>
-	        <id>in-sidefx</id>
-	        <url>https://dl.bintray.com/in-sidefx/maven/</url>
 	    </repository>
 	</repositories>
 </project>

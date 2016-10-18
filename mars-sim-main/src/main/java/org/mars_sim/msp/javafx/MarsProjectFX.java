@@ -31,7 +31,8 @@ import org.mars_sim.msp.MarsProject;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.javafx.MarsProjectUtility.AppLaunch;
-import org.mars_sim.msp.javafx.configEditor.ScenarioConfigEditorFX;
+import org.mars_sim.msp.ui.javafx.config.ScenarioConfigEditorFX;
+import org.mars_sim.msp.ui.javafx.mainmenu.MainMenu;
 import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
@@ -553,7 +554,7 @@ public class MarsProjectFX extends Application  {
 	public class ConfigEditorTask implements Runnable { 	
 		  public void run() {
 			  //logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
-			  new ScenarioConfigEditorFX(mainMenu); //marsProjectFX, 
+			  new ScenarioConfigEditorFX(mainMenu);
 		  }
 	}
 

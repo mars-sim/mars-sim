@@ -267,6 +267,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  </version>
 		</dependency>		
 -->
+		<dependency>
+			<groupId>insidefx.undecorator</groupId>
+			<artifactId>undecorator</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 <!-- load jfoenix from mars-sim's maven-repo-snapshot --> 
 		<dependency>
 			<groupId>com.jfoenix</groupId>
@@ -356,6 +361,10 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <id>central</id>
 	        <name>jcenter</name>
 	        <url>http://jcenter.bintray.com</url>
-	    </repository>            	    
+	    </repository>   
+		<repository>
+	        <id>in-sidefx</id>
+	        <url>https://dl.bintray.com/in-sidefx/maven/</url>
+	    </repository>         	    
 	</repositories>
 </project>
