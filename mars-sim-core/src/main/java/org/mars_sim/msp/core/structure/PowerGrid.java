@@ -35,26 +35,30 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PowerGrid.class.getName());
-
+	private static double EFFICIENCY_ENERGY_TRANSFER = .95D;
+	
 	// Data members
-	private PowerMode powerMode;
 	private double powerGenerated;
-	private double powerStored;
-	private double powerStorageCapacity;
+	private double totalEnergyStored;
+	private double energyStorageCapacity;
 	private double powerRequired;
 	private boolean sufficientPower;
-	private Settlement settlement;
 	private double powerValue;
+
+	private Settlement settlement;
+	private BuildingManager manager;
+	private PowerMode powerMode;
 
 	/**
 	 * Constructor.
 	 */
 	public PowerGrid(Settlement settlement) {
 		this.settlement = settlement;
+		manager = settlement.getBuildingManager();
 		powerMode = PowerMode.POWER_UP;
 		powerGenerated = 0D;
-		powerStored = 0D;
-		powerStorageCapacity = 0D;
+		totalEnergyStored = 0D;
+		energyStorageCapacity = 0D;
 		powerRequired = 0D;
 		sufficientPower = true;
 	}
@@ -103,7 +107,7 @@ implements Serializable {
 	 * @return stored power in kW hr.
 	 */
 	public double getStoredPower() {
-		return powerStored;
+		return totalEnergyStored;
 	}
 
 	/**
@@ -111,8 +115,8 @@ implements Serializable {
 	 * @param newPowerStored the new stored power (kW hr).
 	 */
 	public void setStoredPower(double newPowerStored) {
-		if (powerStored != newPowerStored) {
-			powerStored = newPowerStored;
+		if (totalEnergyStored != newPowerStored) {
+			totalEnergyStored = newPowerStored;
 			settlement.fireUnitUpdate(UnitEventType.STORED_POWER_EVENT);
 		}
 	}
@@ -122,7 +126,7 @@ implements Serializable {
 	 * @return stored power capacity in kW hr.
 	 */
 	public double getStoredPowerCapacity() {
-		return powerStorageCapacity;
+		return energyStorageCapacity;
 	}
 
 	/**
@@ -130,8 +134,8 @@ implements Serializable {
 	 * @param newPowerStorageCapacity the new stored power capacity (kW hr).
 	 */
 	public void setStoredPowerCapacity(double newPowerStorageCapacity) {
-		if (powerStorageCapacity != newPowerStorageCapacity) {
-			powerStorageCapacity = newPowerStorageCapacity;
+		if (energyStorageCapacity != newPowerStorageCapacity) {
+			energyStorageCapacity = newPowerStorageCapacity;
 			settlement.fireUnitUpdate(UnitEventType.STORED_POWER_CAPACITY_EVENT);
 		}
 	}
@@ -182,37 +186,59 @@ implements Serializable {
 		// update the total power generated in the grid.
 		updateTotalPowerGenerated();
 
+		// Determine total power required in the grid.
+		updateTotalRequiredPower();
+
 		// Update the total power stored in the grid.
 		updateTotalStoredPower();
 
 		// Update the total power storage capacity in the grid.
 		updateTotalPowerStorageCapacity();
 
-		// Determine total power required in the grid.
-		updateTotalRequiredPower();
+		// 2016-10-18 Update the power flow
+		updatePowerFlow(time);
+	
+		// Update power value.
+		determinePowerValue();
+	}
 
+	/**
+	 * Calculate the flow of power/energy taking place due to the supply and demand of power
+	 * @param time
+	 */
+	public void updatePowerFlow(double time) {
+		
 		// Check if there is enough power generated to fully supply each building.
-		if (powerRequired <= powerGenerated) {
+		if (powerRequired < powerGenerated) {
 			sufficientPower = true;
-
+	
 			// Store excess power in power storage buildings.
 			double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
-			double excessPower = (powerGenerated - powerRequired) * timeHr;
-			storeExcessPower(excessPower);
+			double excessEnergy = (powerGenerated - powerRequired) * timeHr;
+			storeExcessPower(excessEnergy);
 		}
+		
 		else {
 			sufficientPower = false;
 			double neededPower = powerRequired - powerGenerated;
-
-			// Retrieve power from power storage buildings.
 			double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
 			double neededPowerHr = neededPower * timeHr;
-			neededPowerHr = retrieveStoredPower(neededPowerHr);
-			neededPower = neededPowerHr / timeHr;
-
-			BuildingManager manager = settlement.getBuildingManager();
+			// Retrieve power from power storage buildings.			
+			double storedPowerHr = retrieveStoredPower();//neededPowerHr);
+			//double storedPower = storedPowerHr / timeHr;
+			
+			// NOTE : assume the energy flow is instantaneous and 
+			// the gauge of the cable is very low and 
+			if (storedPowerHr * EFFICIENCY_ENERGY_TRANSFER > neededPowerHr) {
+				
+			}
+			else {
+				;// nothing
+			}
+			
+			//BuildingManager manager = settlement.getBuildingManager();
 			List<Building> buildings = manager.getACopyOfBuildings();
-
+	
 			// Reduce each building's power mode to low power until
 			// required power reduction is met.
 			if (powerMode != PowerMode.POWER_DOWN) {
@@ -226,7 +252,7 @@ implements Serializable {
 					}
 				}
 			}
-
+	
 			// If power needs are still not met, turn off the power to each
 			// uninhabitable building until required power reduction is met.
 			if (neededPower > 0D) {
@@ -234,13 +260,14 @@ implements Serializable {
 				while (iNoPower.hasNext() && (neededPower > 0D)) {
 					Building building = iNoPower.next();
 					if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
+							// turn off the power to each uninhabitable building
 							!(building.hasFunction(BuildingFunction.LIFE_SUPPORT))) {
 						building.setPowerMode(PowerMode.NO_POWER);
 						neededPower -= building.getPoweredDownPowerRequired();
 					}
 				}
 			}
-
+	
 			// If power needs are still not met, turn off the power to each inhabitable building
 			// until required power reduction is met.
 			if (neededPower > 0D) {
@@ -248,6 +275,7 @@ implements Serializable {
 				while (iNoPower.hasNext() && (neededPower > 0D)) {
 					Building building = iNoPower.next();
 					if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
+							// turn off the power to each inhabitable building
 							building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 						building.setPowerMode(PowerMode.NO_POWER);
 						neededPower -= building.getPoweredDownPowerRequired();
@@ -255,11 +283,7 @@ implements Serializable {
 				}
 			}
 		}
-
-		// Update power value.
-		determinePowerValue();
 	}
-
 	/**
 	 * Updates the total power generated in the grid.
 	 * @throws BuildingException if error determining total power generated.
@@ -268,7 +292,7 @@ implements Serializable {
 		double tempPowerGenerated = 0D;
 
 		// Add the power generated by all power generation buildings.
-		BuildingManager manager = settlement.getBuildingManager();
+		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iPow = manager.getBuildings(BuildingFunction.POWER_GENERATION).iterator();
 		while (iPow.hasNext()) {
 			Building building = iPow.next();
@@ -294,12 +318,12 @@ implements Serializable {
 	 */
 	private void updateTotalStoredPower() {
 		double tempPowerStored = 0D;
-		BuildingManager manager = settlement.getBuildingManager();
+		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iStore = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
 		while (iStore.hasNext()) {
 			Building building = iStore.next();
 			PowerStorage store = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
-			tempPowerStored += store.getPowerStored();
+			tempPowerStored += store.getEnergyStored();
 		}
 		setStoredPower(tempPowerStored);
 
@@ -307,7 +331,7 @@ implements Serializable {
 			logger.fine(
 				Msg.getString(
 					"PowerGrid.log.totalPowerStored", //$NON-NLS-1$
-					Double.toString(powerStored)
+					Double.toString(totalEnergyStored)
 				)
 			);
 		}
@@ -320,7 +344,7 @@ implements Serializable {
 	private void updateTotalRequiredPower() {
 		double tempPowerRequired = 0D;
 		boolean powerUp = powerMode == PowerMode.POWER_UP;
-		BuildingManager manager = settlement.getBuildingManager();
+		//BuildingManager manager = settlement.getBuildingManager();
 		List<Building> buildings = manager.getACopyOfBuildings();
 		Iterator<Building> iUsed = buildings.iterator();
 		while (iUsed.hasNext()) {
@@ -371,12 +395,12 @@ implements Serializable {
 	 */
 	private void updateTotalPowerStorageCapacity() {
 		double tempPowerStorageCapacity = 0D;
-		BuildingManager manager = settlement.getBuildingManager();
+		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iStore = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
 		while (iStore.hasNext()) {
 			Building building = iStore.next();
 			PowerStorage store = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
-			tempPowerStorageCapacity += store.getPowerStorageCapacity();
+			tempPowerStorageCapacity += store.getEnergyStorageCapacity();
 		}
 		setStoredPowerCapacity(tempPowerStorageCapacity);
 
@@ -384,7 +408,7 @@ implements Serializable {
 			logger.fine(
 				Msg.getString(
 					"PowerGrid.log.totalPowerStorageCapacity", //$NON-NLS-1$
-					Double.toString(powerStorageCapacity)
+					Double.toString(energyStorageCapacity)
 				)
 			);
 		}
@@ -415,22 +439,41 @@ implements Serializable {
 	}
 
 	/**
-	 * Stores any excess grid power in power storage buildings if possible.
-	 * @param excessPower excess grid power (in kW hr).
-	 * @throws BuildingException if error storing excess power.
+	 * Stores any excess grid energy in power storage buildings if possible.
+	 * @param excessEnergy excess grid energy (in kW hr).
+	 * @throws BuildingException if error storing excess energy.
 	 */
-	private void storeExcessPower(double excessPower) {
-		BuildingManager manager = settlement.getBuildingManager();
+	private void storeExcessPower(double excessEnergy) {
+		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
-			double remainingCapacity = storage.getPowerStorageCapacity() - storage.getPowerStored();
+			double remainingCapacity = storage.getEnergyStorageCapacity() - storage.getEnergyStored();
 			if (remainingCapacity > 0D) {
-				double powerToStore = excessPower;
-				if (remainingCapacity < powerToStore) powerToStore = remainingCapacity;
-				storage.setPowerStored(storage.getPowerStored() + powerToStore);
-				excessPower -= powerToStore;
+				double energyToStore = excessEnergy;
+				if (remainingCapacity < energyToStore) {
+					energyToStore = remainingCapacity;
+					excessEnergy = excessEnergy - energyToStore;
+				}
+				else {
+					;//powerToStore = excessPower;
+				}
+				
+				if (totalEnergyStored + energyToStore < energyStorageCapacity)
+					totalEnergyStored = totalEnergyStored + energyToStore;
+				else
+					totalEnergyStored = energyStorageCapacity;
+				
+				// TODO: calculate how much power can be rejected via radiators 
+				// raise settlement temperature (or capture the excess power as heat)
+				// or turn down some modules in the power plant to conserve resources
+				
+				storage.setEnergyStored(totalEnergyStored);
+				
+			}
+			else {
+				;// energy is wasted
 			}
 		}
 	}
@@ -441,12 +484,19 @@ implements Serializable {
 	 * @return stored power retrieved (kW hr).
 	 * @throws BuildingException if error retrieving power.
 	 */
-	private double retrieveStoredPower(double neededPower) {
-		BuildingManager manager = settlement.getBuildingManager();
+	private double retrieveStoredPower() {//double neededPower) {
+		double retrievedPower = 0;
+		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
+			if (storage.getEnergyStored() > 0)
+				retrievedPower = retrievedPower + storage.getEnergyStored();
+		}
+		return retrievedPower;
+		
+/*		
 			if ((storage.getPowerStored() > 0D) && (neededPower > 0D)) {
 				double retrievedPower = neededPower;
 				if (storage.getPowerStored() < retrievedPower) retrievedPower = storage.getPowerStored();
@@ -455,6 +505,8 @@ implements Serializable {
 			}
 		}
 		return neededPower;
+*/		
+		
 	}
 
 	/**
@@ -470,7 +522,7 @@ implements Serializable {
 	 */
 	private void determinePowerValue() {
 		double demand = powerRequired;
-		double supply = powerGenerated + (powerStored / 2D);
+		double supply = powerGenerated + (totalEnergyStored / 2D);
 
 		double newPowerValue = demand / (supply + 1.0D);
 

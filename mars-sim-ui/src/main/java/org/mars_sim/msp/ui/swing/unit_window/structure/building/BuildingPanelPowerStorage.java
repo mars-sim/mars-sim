@@ -50,13 +50,13 @@ extends BuildingFunctionPanel {
 		DecimalFormat formatter = new DecimalFormat("0.0");
 
 		// Create capacity label.
-		capacityCache = storage.getPowerStorageCapacity();
+		capacityCache = storage.getEnergyStorageCapacity();
 		capacityLabel = new JLabel("Power Capacity: " + formatter.format(capacityCache) + 
 				" kW hr", JLabel.CENTER);
 		add(capacityLabel);
 
 		// Create stored label.
-		storedCache = storage.getPowerStored();
+		storedCache = storage.getEnergyStored();
 		storedLabel = new JLabel("Power Stored: " + formatter.format(storedCache) + 
 				" kW hr", JLabel.CENTER);
 		add(storedLabel);
@@ -68,7 +68,7 @@ extends BuildingFunctionPanel {
 		DecimalFormat formatter = new DecimalFormat("0.0");
 
 		// Update capacity label if necessary.
-		double newCapacity = storage.getPowerStorageCapacity();
+		double newCapacity = storage.getEnergyStorageCapacity();
 		if (capacityCache != newCapacity) {
 			capacityCache = newCapacity;
 			capacityLabel.setText("Power Capacity: " + formatter.format(capacityCache) + 
@@ -76,7 +76,7 @@ extends BuildingFunctionPanel {
 		}
 
 		// Update stored label if necessary.
-		double newStored = storage.getPowerStored();
+		double newStored = storage.getEnergyStored();
 		if (storedCache != newStored) {
 			storedCache = newStored;
 			storedLabel.setText("Power Stored: " + formatter.format(storedCache) + " kW hr");

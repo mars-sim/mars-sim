@@ -69,9 +69,9 @@ extends TabPanel {
 	/** The total power used label. */
 	private JLabel powerUsedLabel;
 	/** The total power storage capacity label. */
-	private JLabel powerStorageCapacityLabel;
+	private JLabel energyStorageCapacityLabel;
 	/** The total power stored label. */
-	private JLabel powerStoredLabel;
+	private JLabel energyStoredLabel;
 	/** Table model for power info. */
 	private PowerTableModel powerTableModel;
 	/** The settlement's power grid. */
@@ -80,7 +80,7 @@ extends TabPanel {
 	private JLabel electricEfficiencyLabel;
 
 	// 2015-09-20 Added the use of uneditable JTextField
-	private JTextField powerGeneratedTF, powerUsedTF, powerStorageCapacityTF, powerStoredTF, solarCellEfficiencyTF, degradRateTF ;
+	private JTextField powerGeneratedTF, powerUsedTF, energyStorageCapacityTF, energyStoredTF, solarCellEfficiencyTF, degradRateTF ;
 
 	// Data cache
 	/** The total power generated cache. */
@@ -88,9 +88,9 @@ extends TabPanel {
 	/** The total power used cache. */
 	private double powerUsedCache;
 	/** The total power storage capacity cache. */
-	private double powerStorageCapacityCache;
+	private double energyStorageCapacityCache;
 	/** The total power stored cache. */
-	private double powerStoredCache;
+	private double energyStoredCache;
 	/** The total solar cell efficiency cache. */
 	private double solarCellEfficiencyCache;
 
@@ -166,27 +166,27 @@ extends TabPanel {
 		powerInfoPanel.add(wrapper2);
 
 		// Prepare power storage capacity label.
-		powerStorageCapacityCache = powerGrid.getStoredPowerCapacity();
-		powerStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.powerStorageCapacity"), JLabel.RIGHT); //$NON-NLS-1$
-		powerInfoPanel.add(powerStorageCapacityLabel);
+		energyStorageCapacityCache = powerGrid.getStoredPowerCapacity();
+		energyStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.powerStorageCapacity"), JLabel.RIGHT); //$NON-NLS-1$
+		powerInfoPanel.add(energyStorageCapacityLabel);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerStorageCapacityTF = new JTextField(formatter.format(powerStorageCapacityCache));
-		powerStorageCapacityTF.setEditable(false);
-		powerStorageCapacityTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
-		wrapper3.add(powerStorageCapacityTF);
+		energyStorageCapacityTF = new JTextField(formatter.format(energyStorageCapacityCache));
+		energyStorageCapacityTF.setEditable(false);
+		energyStorageCapacityTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		wrapper3.add(energyStorageCapacityTF);
 		powerInfoPanel.add(wrapper3);
 
 		// Prepare power stored label.
-		powerStoredCache = powerGrid.getStoredPower();
-		powerStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored"), JLabel.RIGHT); //$NON-NLS-1$
-		powerInfoPanel.add(powerStoredLabel);
+		energyStoredCache = powerGrid.getStoredPower();
+		energyStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored"), JLabel.RIGHT); //$NON-NLS-1$
+		powerInfoPanel.add(energyStoredLabel);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerStoredTF = new JTextField(formatter.format(powerStoredCache));
-		powerStoredTF.setEditable(false);
-		powerStoredTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
-		wrapper4.add(powerStoredTF);
+		energyStoredTF = new JTextField(formatter.format(energyStoredCache));
+		energyStoredTF.setEditable(false);
+		energyStoredTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		wrapper4.add(energyStoredTF);
 		powerInfoPanel.add(wrapper4);
 
 		// 2015-05-08 Added eff_electric_label
@@ -314,16 +314,16 @@ extends TabPanel {
 
 		// Update power storage capacity TF.
 		double cap = powerGrid.getStoredPowerCapacity();
-		if (powerStorageCapacityCache != cap) {
-			powerStorageCapacityCache = cap;
-			powerStorageCapacityTF.setText(formatter.format(powerStorageCapacityCache));
+		if (energyStorageCapacityCache != cap) {
+			energyStorageCapacityCache = cap;
+			energyStorageCapacityTF.setText(formatter.format(energyStorageCapacityCache));
 		}
 
 		// Update power stored TF.
 		double store = powerGrid.getStoredPower();
-		if (powerStoredCache != store ) {
-			powerStoredCache = store;
-			powerStoredTF.setText(formatter.format(powerStoredCache));
+		if (energyStoredCache != store ) {
+			energyStoredCache = store;
+			energyStoredTF.setText(formatter.format(energyStoredCache));
 		}
 
 		// Update solar cell efficiency TF

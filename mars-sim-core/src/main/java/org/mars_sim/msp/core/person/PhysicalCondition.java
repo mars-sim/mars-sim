@@ -152,7 +152,7 @@ implements Serializable {
 	private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
 
     // 2015-12-05 Added sleepHabitMap
-    private Map<Integer, Integer> sleepHabitMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
+    private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
 
 
     /**
@@ -1178,17 +1178,17 @@ implements Serializable {
     }
 
     /**
-     * Gets the key of the Sleep Habit Map with the highest weight
+     * Gets the key of the Sleep Cycle Map with the highest weight
      * @return int[] the two best times in integer
      */
-    // 2015-12-05 Added getBestKeySleepHabit()
-    public int[] getBestKeySleepHabit() {
+    // 2015-12-05 Added getBestKeySleepCycle()
+    public int[] getBestKeySleepCycle() {
     	int largest[] = {0,0};
 
-    	Iterator<Integer> i = sleepHabitMap.keySet().iterator();
+    	Iterator<Integer> i = sleepCycleMap.keySet().iterator();
     	while (i.hasNext()) {
             int key = i.next();
-    		int value = sleepHabitMap.get(key);
+    		int value = sleepCycleMap.get(key);
             if (value > largest[0]) {
             	largest[1] = largest[0];
             	largest[0] = key;
@@ -1202,12 +1202,12 @@ implements Serializable {
     }
 
     /**
-     * Updates the weight of the Sleep Habit Map
+     * Updates the weight of the Sleep Cycle Map
      * @param millisols the time
      * @param updateType increase or reduce
      */
-    // 2015-12-05 Added updateValueSleepHabit()
-    public void updateValueSleepHabit(int millisols, boolean updateType) {
+    // 2015-12-05 Added updateValueSleepCycle()
+    public void updateValueSleepCycle(int millisols, boolean updateType) {
     	// set HEAT_MAP_RESOLUTION of discrete sleep periods
     	millisols = (millisols / SLEEP_MAP_RESOLUTION )* SLEEP_MAP_RESOLUTION;
     	int currentValue = 0;
@@ -1231,48 +1231,48 @@ implements Serializable {
 		if (a2 > 1000)
 			a2 = millisols + 2*SLEEP_MAP_RESOLUTION - 1000;
 
-    	if (sleepHabitMap.containsKey(millisols)) {
-    		currentValue = sleepHabitMap.get(millisols);
+    	if (sleepCycleMap.containsKey(millisols)) {
+    		currentValue = sleepCycleMap.get(millisols);
 
     		if (updateType) {
         		// Increase the central weight value by 30%
-    			sleepHabitMap.put(millisols, (int) (currentValue *.7 + MAX_WEIGHT * .3));
+    			sleepCycleMap.put(millisols, (int) (currentValue *.7 + MAX_WEIGHT * .3));
 
     			int c2 = (int) (currentValue *.95 + MAX_WEIGHT * .075);
     			int c = (int) (currentValue *.85 + MAX_WEIGHT * .15);
 
-   				sleepHabitMap.put(d2, c2);
-    			sleepHabitMap.put(d, c);
-    			sleepHabitMap.put(a, c);
-       			sleepHabitMap.put(a2, c2);
+   				sleepCycleMap.put(d2, c2);
+    			sleepCycleMap.put(d, c);
+    			sleepCycleMap.put(a, c);
+       			sleepCycleMap.put(a2, c2);
 
     		}
     		else {
 
         		// Reduce the central weight value by 10%
-    			sleepHabitMap.put(millisols, (int) (currentValue/1.1));
+    			sleepCycleMap.put(millisols, (int) (currentValue/1.1));
 
     			int b = (int) (currentValue/1.05);
     			int b2 = (int) (currentValue/1.025);
 
-    			sleepHabitMap.put(d2, b2);
-    			sleepHabitMap.put(d, b);
-    			sleepHabitMap.put(a, b);
-    			sleepHabitMap.put(a2, b2);
+    			sleepCycleMap.put(d2, b2);
+    			sleepCycleMap.put(d, b);
+    			sleepCycleMap.put(a, b);
+    			sleepCycleMap.put(a2, b2);
 
     		}
     	}
     	else {
     		// For the first time, create the central weight value with 10% of MAX_WEIGHT
-			sleepHabitMap.put(millisols, (int) (MAX_WEIGHT * .1));
+			sleepCycleMap.put(millisols, (int) (MAX_WEIGHT * .1));
 
 			int e = (int) (MAX_WEIGHT * .05);
 			int e2 = (int) (MAX_WEIGHT * .025);
 
-    		sleepHabitMap.put(d2, e2);
-    		sleepHabitMap.put(d, e);
-			sleepHabitMap.put(a, e);
-			sleepHabitMap.put(a2, e2);
+    		sleepCycleMap.put(d2, e2);
+    		sleepCycleMap.put(d, e);
+			sleepCycleMap.put(a, e);
+			sleepCycleMap.put(a2, e2);
     	}
 
 		//System.out.println(person + "'s sleepHabitMap : " + sleepHabitMap);
@@ -1283,25 +1283,25 @@ implements Serializable {
      */
     // 2015-12-05 Added inflateSleepHabit()
     public void inflateSleepHabit() {
-    	Iterator<Integer> i = sleepHabitMap.keySet().iterator();
+    	Iterator<Integer> i = sleepCycleMap.keySet().iterator();
     	while (i.hasNext()) {
             int key = i.next();
-    		int value = sleepHabitMap.get(key);
+    		int value = sleepCycleMap.get(key);
 
     		if (value > MAX_WEIGHT) {
     			value = MAX_WEIGHT;
     			// need to scale down all values, just in case
-    			Iterator<Integer> j = sleepHabitMap.keySet().iterator();
+    			Iterator<Integer> j = sleepCycleMap.keySet().iterator();
     	    	while (j.hasNext()) {
     	            int key1 = j.next();
-    	    		int value1 = sleepHabitMap.get(key1);
+    	    		int value1 = sleepCycleMap.get(key1);
     	    		value1 = (int) (value1/INFLATION/INFLATION);
-    	            sleepHabitMap.put(key1, value1);
+    	            sleepCycleMap.put(key1, value1);
     	        }
     		}
 
     		value = (int) (value/INFLATION);
-            sleepHabitMap.put(key, value);
+            sleepCycleMap.put(key, value);
         }
     }
 

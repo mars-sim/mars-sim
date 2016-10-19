@@ -12,9 +12,11 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -138,6 +140,7 @@ LocalBoundedObject, InsidePathLocation {
 	// 2014-11-27 Added description for each building
 	protected String description = "Stay tuned";
 
+	//protected Set<Function> functions;
 	protected List<Function> functions;
 	//private List<BuildingKit> buildingKit;
 	private Map<Integer, ItemResource> itemMap = new HashMap<Integer, ItemResource>();
@@ -421,6 +424,7 @@ LocalBoundedObject, InsidePathLocation {
 	private List<Function> determineFunctions() {
 		//System.out.println("Building's determineFunctions");
 		List<Function> buildingFunctions = new ArrayList<Function>();
+		//Set<Function> buildingFunctions = new HashSet<Function>();
 
 		// Set power generation function.
 		if (config.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
@@ -514,14 +518,23 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param function the name of the function.
 	 * @return true if function.
 	 */
-	public boolean hasFunction(BuildingFunction function) {
+	public boolean hasFunction(BuildingFunction functionType) {
 		boolean result = false;
         for (Function f : functions) {
-        	if (f.getFunction() == function) {
+        	if (f.getFunction() == functionType) {
         		return true;		
         	}
 		}
+		
+
+	
 /*		
+		functions.stream()
+		.filter((f) -> f.getFunction() == functionType)
+		.forEach((f) -> {
+        		return true;	
+		});
+		
 
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
@@ -546,7 +559,13 @@ LocalBoundedObject, InsidePathLocation {
         		return f;		
         	}
 		}
-/*        
+/*		
+		functions.forEach(f -> {
+			if (f.getFunction() == functionType)
+        		return f;	
+		});
+		
+        
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			Function function = i.next();

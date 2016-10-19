@@ -553,22 +553,22 @@ implements ClockListener, Serializable {
         		logger.warning("Running mars-sim in Build " + Simulation.BUILD + " but loading a saved sim in Build " + loadBuild);
  
         } catch (FileNotFoundException e) {
-        	logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());
+        	logger.log(Level.SEVERE, "Quitting mars-sim. " + file + " cannot be found : ", e.getMessage());
             Platform.exit();
             System.exit(1);
 
         } catch (EOFException e) {
-        	logger.log(Level.SEVERE, "Quitting mars-sim with Unexpected End of File error on " + file + " : " + e.getMessage());
+        	logger.log(Level.SEVERE, "Quitting mars-sim. Unexpected End of File error on " + file + " : " + e.getMessage());
             Platform.exit();
             System.exit(1);
 
         } catch (IOException e) {
-        	logger.log(Level.SEVERE, "Quitting mars-sim with I/O rrror when decompressing " + file + " : " + e.getMessage());
+        	logger.log(Level.SEVERE, "Quitting mars-sim. I/O error when decompressing " + file + " : " + e.getMessage());
             Platform.exit();
             System.exit(1);           
         	
 	    } catch (NullPointerException e) {
-	    	logger.log(Level.SEVERE, "Quitting mars-sim with null pointer error when loading " + file + " : " + e.getMessage());
+	    	logger.log(Level.SEVERE, "Quitting mars-sim. Uull pointer error when loading " + file + " : " + e.getMessage());
 	        Platform.exit();
 	        System.exit(1);           
 

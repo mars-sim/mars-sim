@@ -140,6 +140,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 
+			<!-- power storage capacity in the energy unit of kW hr. -->
+			<power-storage capacity="20.0" />
+
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation population-support="4">
 				<activity>
@@ -322,6 +325,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="3" power-required="6.0" />
 
+			<power-storage capacity="5.0" />
+
 			<research tech-level="1" capacity="2">
 				<research-specialty name="BOTANY" />
 				<activity>
@@ -404,7 +409,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.6" yloc="-4.9" />
 				</activity>
 			</farming>
+			
 			<life-support capacity="10" power-required="20.0" />
+			
+			<power-storage capacity="20.0" />
+			
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BOTANY" />
 				<activity>
@@ -627,8 +636,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="150.0" />
+				<power-source type="Standard Power Source" power="100.0" />
 			</power-generation>
+			
+			<power-storage capacity="20.0" />
+			
 			<!--thermal-generation>
 				<heat-source type="Electric Heating Source" capacity="20.0" />
 			</thermal-generation-->
@@ -646,8 +658,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Standard Power Source" power="600.0" />
+				<power-source type="Standard Power Source" power="300.0" />
 			</power-generation>
+			
+			<power-storage capacity="40.0" />
+			
 			<!--thermal-generation>
 				<heat-source type="Electric Heating Source" capacity="80.0" />
 			</thermal-generation-->			
@@ -1550,7 +1565,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 
 		<functions>
-			<!-- power storage capacity in kW hr. -->
+			<!-- power storage capacity in the energy unit of kW hr. -->
 			<power-storage capacity="500.0" />
 		</functions>
 	</building>
@@ -2156,7 +2171,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.0" yloc="-3.75" />
 				</activity>
 			</farming>
+			
 			<life-support capacity="3" power-required="6.0" />
+			
+			<power-storage capacity="5.0" />
+			
 			<research tech-level="1" capacity="2">
 				<research-specialty name="BOTANY" />
 				<activity>

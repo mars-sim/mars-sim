@@ -90,7 +90,7 @@ public class SimulationConfig implements Serializable {
 
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
 
-	public static String build;
+	public String build;
 	
 
 	/* ---------------------------------------------------------------------------------------------------- *

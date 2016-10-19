@@ -48,10 +48,10 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
 	// Data members
-	private String taskNameCache, taskDescriptionCache, taskPhaseCache;
+	private String taskNameCache = "", taskDescriptionCache = "", taskPhaseCache = "";
 	private String oldJob = "";
 	/** The current task the person/robot is doing. */
-	private Task currentTask;//, lastTask;
+	private Task currentTask, lastTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
 	private BotMind botMind;
@@ -262,6 +262,7 @@ implements Serializable {
 			currentTask.addSubTask(newTask);
 
 		} else {
+			lastTask = currentTask;
 			currentTask = newTask;
 			taskNameCache = currentTask.getTaskName();
 			taskDescriptionCache = currentTask.getDescription();

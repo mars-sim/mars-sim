@@ -1104,12 +1104,12 @@ implements VehicleOperator, MissionMember, Serializable {
 		return health.getStress();
 	}
 
-	public int[] getBestKeySleepHabit() {
-		return health.getBestKeySleepHabit();
+	public int[] getBestKeySleepCycle() {
+		return health.getBestKeySleepCycle();
 	}
 
-	public void updateValueSleepHabit(int millisols, boolean updateType) {
-		health.updateValueSleepHabit(millisols, updateType);
+	public void updateValueSleepCycle(int millisols, boolean updateType) {
+		health.updateValueSleepCycle(millisols, updateType);
 	}
 
 	//2015-12-12 Added setEmotionalStates()

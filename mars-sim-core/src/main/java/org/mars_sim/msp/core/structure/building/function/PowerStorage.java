@@ -31,9 +31,12 @@ implements Serializable {
 	private static final BuildingFunction FUNCTION = BuildingFunction.POWER_STORAGE;
 
 	// Data members.
-	private double powerStorageCapacity;
-	private double powerStored;
+	private double energyStorageCapacity;
+	private double energyStored;
 
+	private static BuildingConfig config;
+	//private PowerGrid grid;
+	
 	/**
 	 * Constructor.
 	 * @param building the building with the function.
@@ -43,9 +46,10 @@ implements Serializable {
 		// Call Function constructor.
 		super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-
-		powerStorageCapacity = config.getPowerStorageCapacity(building.getBuildingType());
+		config = SimulationConfig.instance().getBuildingConfiguration();
+		//grid = building.getSettlement().getPowerGrid();
+		
+		energyStorageCapacity = config.getPowerStorageCapacity(building.getBuildingType());
 	}
 
 	/**
@@ -70,12 +74,12 @@ implements Serializable {
 			Building building = iStore.next();
 			PowerStorage store = (PowerStorage) building.getFunction(PowerStorage.FUNCTION);
 			double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-			supply += store.powerStorageCapacity * wearModifier;
+			supply += store.energyStorageCapacity * wearModifier;
 		}
 
 		double existingPowerStorageValue = demand / (supply + 1D);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		double powerStorage = config.getPowerStorageCapacity(buildingName);
 
 		double value = powerStorage * existingPowerStorageValue / hrInSol;
@@ -85,29 +89,29 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets the building's power storage capacity.
+	 * Gets the building's energy storage capacity.
 	 * @return capacity (kW hr).
 	 */
-	public double getPowerStorageCapacity() {
-		return powerStorageCapacity;
+	public double getEnergyStorageCapacity() {
+		return energyStorageCapacity;
 	}
 
 	/**
-	 * Gets the building's stored power.
-	 * @return power (kW hr).
+	 * Gets the building's stored energy.
+	 * @return energy (kW hr).
 	 */
-	public double getPowerStored() {
-		return powerStored;
+	public double getEnergyStored() {
+		return energyStored;
 	}
 
 	/**
-	 * Sets the power stored in the building.
-	 * @param powerStored the stored power (kW hr).
+	 * Sets the energy stored in the building.
+	 * @param energyStored the stored energy (kW hr).
 	 */
-	public void setPowerStored(double powerStored) {
-		if (powerStored > powerStorageCapacity) powerStored = powerStorageCapacity;
-		else if (powerStored < 0D) powerStored = 0D;
-		this.powerStored = powerStored;
+	public void setEnergyStored(double energyStored) {
+		if (energyStored > energyStorageCapacity) energyStored = energyStorageCapacity;
+		else if (energyStored < 0D) energyStored = 0D;
+		this.energyStored = energyStored;
 	}
 
 	@Override
@@ -127,7 +131,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return powerStorageCapacity / 5D;
+		return energyStorageCapacity / 5D;
 	}
 
 	@Override

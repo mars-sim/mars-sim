@@ -1,6 +1,7 @@
 package org.mars_sim.msp.core.structure.building;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -19,6 +20,7 @@ public class MockBuilding extends Building {
 		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
+		//functions = new HashSet<Function>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
 	public MockBuilding(BuildingTemplate template, BuildingManager manager)  {
@@ -27,6 +29,7 @@ public class MockBuilding extends Building {
 		this.manager = manager;
 		malfunctionManager = new MalfunctionManager(this, 0D, 0D);
 		functions = new ArrayList<Function>();
+		//functions = new HashSet<Function>();
 		functions.add(new LifeSupport(this, 10, 1));
 	}
 	

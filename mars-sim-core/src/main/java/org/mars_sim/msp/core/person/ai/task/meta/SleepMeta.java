@@ -73,7 +73,7 @@ public class SleepMeta implements MetaTask, Serializable {
     	// the person will execute Sleep, increment numSleep;
     	PhysicalCondition pc = person.getPhysicalCondition();
     	pc.setNumSleep(pc.getNumSleep()+1);
-    	pc.updateValueSleepHabit((int) marsClock.getMillisol(), true);
+    	pc.updateValueSleepCycle((int) marsClock.getMillisol(), true);
         return new Sleep(person);
     }
 
@@ -115,7 +115,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
         if (!proceed && pc.getNumSleep() <= maxNumSleep) {
         	// 2015-12-05 checks the current time against the sleep habit heat map
-	    	int bestSleepTime[] = person.getBestKeySleepHabit();
+	    	int bestSleepTime[] = person.getBestKeySleepCycle();
 	    	// check the two sleep time
 	    	for (int time : bestSleepTime) {
 		    	int diff = time - now;
@@ -171,7 +171,7 @@ public class SleepMeta implements MetaTask, Serializable {
 			           	// limit adjustment to 10 times and space it out to at least 50 millisols apart
 		           		if (spaceOut < now && habit < MAX_SUPPRESSION) {
 			           		// Discourage the person from forming the sleep habit at this time
-				  	  		person.updateValueSleepHabit(now, false);
+				  	  		person.updateValueSleepCycle(now, false);
 				        	// shouldn't be zero since it's possible a person did not have enough sleep at other time and now fall asleep
 					    	result = result / 5D;
 
