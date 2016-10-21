@@ -311,7 +311,7 @@ extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = String.class;//Integer.class;
+			if (columnIndex == 1) dataType = Double.class;//Integer.class;
 			return dataType;
 		}
 

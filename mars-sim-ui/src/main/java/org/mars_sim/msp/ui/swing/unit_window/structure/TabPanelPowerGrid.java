@@ -252,7 +252,7 @@ extends TabPanel {
 		powerTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		// 2015-06-08 Added sorting
-		//powerTable.setAutoCreateRowSorter(true);
+		powerTable.setAutoCreateRowSorter(true);
         //if (!MainScene.OS.equals("linux")) {
         //	powerTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
@@ -369,7 +369,7 @@ extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = ImageIcon.class;
-			else if (columnIndex == 1) dataType = String.class;
+			else if (columnIndex == 1) dataType = Object.class;
 			else if (columnIndex == 2) dataType = Double.class;
 			else if (columnIndex == 3) dataType = Double.class;
 			return dataType;

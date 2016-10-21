@@ -337,6 +337,14 @@ public class BuildingManager implements Serializable {
     }
 
     /**
+     * Gets a collection of buildings.
+     * @return collection of buildings
+     */
+    public List<Building> getBuildings() {
+        return buildings;
+    }
+    
+    /**
      * Gets the settlement's collection of buildings (in their nicknames)
      * @return collection of buildings (in their nicknames)
      */

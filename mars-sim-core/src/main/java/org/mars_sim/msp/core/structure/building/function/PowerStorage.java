@@ -32,6 +32,8 @@ implements Serializable {
 	// Building function name.
 	private static final BuildingFunction FUNCTION = BuildingFunction.POWER_STORAGE;
 
+	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
+	
 	public static final double SECONDARY_LINE_VOLTAGE = 480D;
 
 	public static double MAX_KW_HR_NAMEPLATE;
@@ -48,6 +50,8 @@ implements Serializable {
 	private double batteryHealth = 1D; 	
 	/** energy storage capacity in kWh */
 	private double energyStorageCapacity; // in kilo Watt hour, not Watt-hour
+	/** energy last stored in the battery */
+	private double kWattHoursCache;
 	/** energy currently stored in the battery */
 	private double kWattHoursStored; // in kilo watt hour 
 	// Note: Watt-hours signifies that a battery can supply an amount of watts for an hour
@@ -63,6 +67,8 @@ implements Serializable {
 	
 	private static BuildingConfig config;
 	private static MarsClock marsClock;
+	
+	private double time;
 	
 	/**
 	 * Constructor.
@@ -147,6 +153,7 @@ implements Serializable {
 			kWh = energyStorageCapacity;			
 		}
 		
+		kWattHoursCache = kWattHoursStored;
 		kWattHoursStored = kWh;		
 		updateVoltage();		
 		
@@ -167,9 +174,10 @@ implements Serializable {
     	if (energyStorageCapacity > MAX_KW_HR_NAMEPLATE)
     		energyStorageCapacity = MAX_KW_HR_NAMEPLATE;
 		ampHoursRating = 1000D * energyStorageCapacity/SECONDARY_LINE_VOLTAGE; 
-		if (kWattHoursStored > energyStorageCapacity)
-			kWattHoursStored = energyStorageCapacity;
-		
+		if (kWattHoursStored > energyStorageCapacity) {
+			kWattHoursCache = kWattHoursStored;
+			kWattHoursStored = energyStorageCapacity;		
+		}
 		updateVoltage();
 
 	}
@@ -183,7 +191,7 @@ implements Serializable {
 
 	@Override
 	public void timePassing(double time) {
-		
+		this.time = time;
         // check for the passing of each day
         int solElapsed = marsClock.getSolElapsedFromStart();
         
@@ -213,7 +221,13 @@ implements Serializable {
 	
 	@Override
 	public double getFullPowerRequired() {
-		return 0;
+		double delta = kWattHoursStored - kWattHoursCache;
+		if (delta > 0 && time > 0) {
+			kWattHoursCache = kWattHoursStored;
+			return delta/time/HOURS_PER_MILLISOL; 
+		}
+		else
+			return 0;
 	}
 
 	@Override

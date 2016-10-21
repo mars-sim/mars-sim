@@ -190,14 +190,15 @@ implements Serializable {
 		// Determine total power required in the grid.
 		updateTotalRequiredPower();
 
+		// 2016-10-18 Update the power flow
+		updatePowerFlow(time);
+		
 		// Update the total power storage capacity in the grid.
 		updateTotalEnergyStorageCapacity();
 
 		// Update the total power stored in the grid.
 		updateTotalStoredEnergy();
 
-		// 2016-10-18 Update the power flow
-		updatePowerFlow(time);
 	
 		// Update power value.
 		determinePowerValue();
@@ -238,7 +239,7 @@ implements Serializable {
 			}
 			
 			//BuildingManager manager = settlement.getBuildingManager();
-			List<Building> buildings = manager.getACopyOfBuildings();
+			List<Building> buildings = manager.getBuildings();//getACopyOfBuildings();
 	
 			// Reduce each building's power mode to low power until
 			// required power reduction is met.
@@ -339,14 +340,14 @@ implements Serializable {
 	}
 
 	/**
-	 * Updates the toal power required in the grid.
+	 * Updates the total power required in the grid.
 	 * @throws BuildingException if error determining total power required.
 	 */
 	private void updateTotalRequiredPower() {
 		double tempPowerRequired = 0D;
 		boolean powerUp = powerMode == PowerMode.POWER_UP;
 		//BuildingManager manager = settlement.getBuildingManager();
-		List<Building> buildings = manager.getACopyOfBuildings();
+		List<Building> buildings = manager.getBuildings();//getACopyOfBuildings();
 		Iterator<Building> iUsed = buildings.iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();
@@ -440,7 +441,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Stores any excess grid energy in power storage buildings if possible.
+	 * Stores any excess power grid in energy storage buildings if possible.
 	 * @param excessEnergy excess grid energy (in kW hr).
 	 * @throws BuildingException if error storing excess energy.
 	 */
@@ -457,9 +458,11 @@ implements Serializable {
 				// see https://www.mathworks.com/help/physmod/elec/ref/genericbattery.html?requestedDomain=www.mathworks.com
 				double Ah = storage.getAmpHourRating();
 				double hr = time * HOURS_PER_MILLISOL;
-				// Note: set to 4C charging rate at max for long term charging. Tesla runs its batteries up to 4C charging rate
+				// Note: Set max charging rate as 3C as Tesla runs its batteries up to 4C charging rate
 				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
-				double ampere = 4 * Ah * hr * storage.getBatteryHealth();
+				double chargeRate = 3D - 2.9D * storage.getCurrentVoltage() / PowerStorage.BATTERY_MAX_VOLTAGE ;
+				// make min charging rate as 0.1C;
+				double ampere = chargeRate * Ah * hr * storage.getBatteryHealth();
 				double energyToStore = ampere /1000D * (PowerStorage.SECONDARY_LINE_VOLTAGE - storage.getCurrentVoltage());
 				//logger.info("Ah : " + Math.round(Ah * 100D)/100D
 				//		+ "    hr : " + Math.round(hr * 10000D)/10000D
@@ -488,6 +491,7 @@ implements Serializable {
 				// or turn down some modules in the power plant to conserve resources
 				
 				storage.setEnergyStored(storage.getEnergyStored() + energyToStore);
+				
 
 /*		
 				if (totalEnergyStored + energyToStore < energyStorageCapacity)

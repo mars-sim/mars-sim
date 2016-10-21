@@ -153,15 +153,15 @@ implements Serializable {
 	 * @return heat generated in kJ/s (heat flow rate)
 	 */
 	// get heat from HeatSource.java
-	//2014-10-24 mkung: added getGeneratedCapacity()
+	//2014-10-24 Added getHeatGenerationCapacity()
 	// Note: NOT affected by HeatMode.POWER_DOWN
-	public double getGeneratedCapacity() {
+	public double getHeatGenerationCapacity() {
 		double result = 0D;
-			Iterator<HeatSource> i = heatSources.iterator();
-			while (i.hasNext()) {
-				result += i.next().getCurrentHeat(getBuilding());
-			}
-			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
+		Iterator<HeatSource> i = heatSources.iterator();
+		while (i.hasNext()) {
+			result += i.next().getCurrentHeat(getBuilding());
+		}
+		//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
 		return result;
 	}
 
@@ -172,10 +172,10 @@ implements Serializable {
 	// get heat from HeatSource.java
 	// 2014-10-24 Modified getGeneratedHeat()
 	public double getGeneratedHeat() {
-		if ( heatGeneratedCache != heatGenerated) {
+		if (heatGeneratedCache != heatGenerated) {
 			// if heatGeneratedCache is different from the its last value
 			heatGeneratedCache = heatGenerated;
-		logger.info("heatGenerated is " + heatGenerated);
+			//logger.info("heatGenerated is " + heatGenerated);
 			//logger.info("getGeneratedHeat() : total heat gain is " + fmt.format(result) );
 		}
 		return heatGenerated; // = 0.0 if heatMode == HeatMode.POWER_DOWN
