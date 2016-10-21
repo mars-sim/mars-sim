@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGrid.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2016-10-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -35,7 +34,9 @@ implements Serializable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PowerGrid.class.getName());
-	private static double EFFICIENCY_ENERGY_TRANSFER = .95D;
+	private static double PSUEDO_PERCENT_VOLTAGE_DROP = .95D;
+	//private static double PSUEDO_CHARGING_RATE = 5D;
+	public static double HOURS_PER_MILLISOL = 0.0247 ; //MarsClock.SECONDS_IN_MILLISOL / 3600D;
 	
 	// Data members
 	private double powerGenerated;
@@ -106,26 +107,26 @@ implements Serializable {
 	 * Gets the stored power in the grid.
 	 * @return stored power in kW hr.
 	 */
-	public double getStoredPower() {
+	public double getStoredEnergy() {
 		return totalEnergyStored;
 	}
 
 	/**
 	 * Sets the stored power in the grid.
-	 * @param newPowerStored the new stored power (kW hr).
+	 * @param newEnergyStored the new stored power (kW hr).
 	 */
-	public void setStoredPower(double newPowerStored) {
-		if (totalEnergyStored != newPowerStored) {
-			totalEnergyStored = newPowerStored;
+	public void setStoredEnergy(double newEnergyStored) {
+		if (totalEnergyStored != newEnergyStored) {
+			totalEnergyStored = newEnergyStored;
 			settlement.fireUnitUpdate(UnitEventType.STORED_POWER_EVENT);
 		}
 	}
 
 	/**
-	 * Gets the stored power capacity in the grid.
-	 * @return stored power capacity in kW hr.
+	 * Gets the stored energy capacity in the grid.
+	 * @return stored energy capacity in kW hr.
 	 */
-	public double getStoredPowerCapacity() {
+	public double getStoredEnergyCapacity() {
 		return energyStorageCapacity;
 	}
 
@@ -189,11 +190,11 @@ implements Serializable {
 		// Determine total power required in the grid.
 		updateTotalRequiredPower();
 
-		// Update the total power stored in the grid.
-		updateTotalStoredPower();
-
 		// Update the total power storage capacity in the grid.
-		updateTotalPowerStorageCapacity();
+		updateTotalEnergyStorageCapacity();
+
+		// Update the total power stored in the grid.
+		updateTotalStoredEnergy();
 
 		// 2016-10-18 Update the power flow
 		updatePowerFlow(time);
@@ -213,15 +214,15 @@ implements Serializable {
 			sufficientPower = true;
 	
 			// Store excess power in power storage buildings.
-			double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+			double timeHr = time * HOURS_PER_MILLISOL; //MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
 			double excessEnergy = (powerGenerated - powerRequired) * timeHr;
-			storeExcessPower(excessEnergy);
+			storeExcessPower(excessEnergy, time);
 		}
 		
 		else {
 			sufficientPower = false;
 			double neededPower = powerRequired - powerGenerated;
-			double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
+			double timeHr = time * HOURS_PER_MILLISOL; //MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
 			double neededPowerHr = neededPower * timeHr;
 			// Retrieve power from power storage buildings.			
 			double storedPowerHr = retrieveStoredPower();//neededPowerHr);
@@ -229,7 +230,7 @@ implements Serializable {
 			
 			// NOTE : assume the energy flow is instantaneous and 
 			// the gauge of the cable is very low and 
-			if (storedPowerHr * EFFICIENCY_ENERGY_TRANSFER > neededPowerHr) {
+			if (storedPowerHr * PSUEDO_PERCENT_VOLTAGE_DROP > neededPowerHr) {
 				
 			}
 			else {
@@ -313,10 +314,10 @@ implements Serializable {
 	}
 
 	/**
-	 * Updates the total power stored in the grid.
-	 * @throws BuildingException if error determining total power stored.
+	 * Updates the total energy stored in the grid.
+	 * @throws BuildingException if error determining total energy stored.
 	 */
-	private void updateTotalStoredPower() {
+	private void updateTotalStoredEnergy() {
 		double tempPowerStored = 0D;
 		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iStore = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
@@ -325,7 +326,7 @@ implements Serializable {
 			PowerStorage store = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
 			tempPowerStored += store.getEnergyStored();
 		}
-		setStoredPower(tempPowerStored);
+		setStoredEnergy(tempPowerStored);
 
 		if(logger.isLoggable(Level.FINE)) {
 			logger.fine(
@@ -390,10 +391,10 @@ implements Serializable {
 	}
 
 	/**
-	 * Updates the total power storage capacity in the grid.
-	 * @throws BuildingException if error determining total power storage capacity.
+	 * Updates the total energy storage capacity in the grid.
+	 * @throws BuildingException if error determining total energy storage capacity.
 	 */
-	private void updateTotalPowerStorageCapacity() {
+	private void updateTotalEnergyStorageCapacity() {
 		double tempPowerStorageCapacity = 0D;
 		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> iStore = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
@@ -443,7 +444,8 @@ implements Serializable {
 	 * @param excessEnergy excess grid energy (in kW hr).
 	 * @throws BuildingException if error storing excess energy.
 	 */
-	private void storeExcessPower(double excessEnergy) {
+	private void storeExcessPower(double excessEnergy, double time) {
+		//System.out.println("time : "+ time);
 		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
 		while (i.hasNext()) {
@@ -451,29 +453,53 @@ implements Serializable {
 			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
 			double remainingCapacity = storage.getEnergyStorageCapacity() - storage.getEnergyStored();
 			if (remainingCapacity > 0D) {
-				double energyToStore = excessEnergy;
-				if (remainingCapacity < energyToStore) {
+				// TODO: need to come up with a better battery model that has a number of battery charge capacity parameter
+				// see https://www.mathworks.com/help/physmod/elec/ref/genericbattery.html?requestedDomain=www.mathworks.com
+				double Ah = storage.getAmpHourRating();
+				double hr = time * HOURS_PER_MILLISOL;
+				// Note: set to 4C charging rate at max for long term charging. Tesla runs its batteries up to 4C charging rate
+				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
+				double ampere = 4 * Ah * hr * storage.getBatteryHealth();
+				double energyToStore = ampere /1000D * (PowerStorage.SECONDARY_LINE_VOLTAGE - storage.getCurrentVoltage());
+				//logger.info("Ah : " + Math.round(Ah * 100D)/100D
+				//		+ "    hr : " + Math.round(hr * 10000D)/10000D
+				//		+ "    ampere : " + Math.round(ampere * 100D)/100D
+				//		+ "    energyToStore : " + Math.round(energyToStore * 100D)/100D
+				//		+ " in " + building.getNickName());
+				
+				//double amp = excessEnergy/PowerStorage.SECONDARY_LINE_VOLTAGE;
+				//double percent_charged = Ah * PSUEDO_CHARGING_RATE * time;
+				//double energyToStore = excessEnergy * percent_charged;
+	
+				if (remainingCapacity < energyToStore ) {
+					// if the max cap of this building's battery has been reached, look for another building's battery to store the excess energy					
 					energyToStore = remainingCapacity;
-					excessEnergy = excessEnergy - energyToStore;
+					logger.info("The battery is fully charged at " + Math.round(storage.getEnergyStored() * 100D)/100D + " kWh at " + building.getNickName() + " in " + settlement.getName());
 				}
-				else {
-					;//powerToStore = excessPower;
+				else { // remainingCapacity >= energyToStore
+					;
 				}
 				
-				if (totalEnergyStored + energyToStore < energyStorageCapacity)
-					totalEnergyStored = totalEnergyStored + energyToStore;
-				else
-					totalEnergyStored = energyStorageCapacity;
-				
+				// the excessEnergy will be split into many chunks and stored at an array of batteries across the settlement
+				excessEnergy = excessEnergy - energyToStore;
+
 				// TODO: calculate how much power can be rejected via radiators 
 				// raise settlement temperature (or capture the excess power as heat)
 				// or turn down some modules in the power plant to conserve resources
 				
-				storage.setEnergyStored(totalEnergyStored);
-				
+				storage.setEnergyStored(storage.getEnergyStored() + energyToStore);
+
+/*		
+				if (totalEnergyStored + energyToStore < energyStorageCapacity)
+					totalEnergyStored = totalEnergyStored + energyToStore;
+				else
+					totalEnergyStored = energyStorageCapacity;
+*/		
 			}
+
 			else {
-				;// energy is wasted
+				// if there is no more capacity to store on this building's battery
+				// iterate to the next building
 			}
 		}
 	}

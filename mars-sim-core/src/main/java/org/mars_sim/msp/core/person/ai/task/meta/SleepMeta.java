@@ -296,11 +296,11 @@ public class SleepMeta implements MetaTask, Serializable {
 	@Override
 	public double getProbability(Robot robot) {
 
-        double result = 0D;
+        double result = 1D;
 
         // No sleeping outside.
         if (robot.getLocationSituation() == LocationSituation.OUTSIDE)
-            result = 0D;
+            result+=1D;
 
 
         // TODO: in what case should a bot "relax" or slow down its pace?
@@ -321,7 +321,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
         // Crowding modifier.
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        	result += 2;
+        	result += 2D;
 
 
         	// TODO: stay at the work location
@@ -329,7 +329,7 @@ public class SleepMeta implements MetaTask, Serializable {
 
             Building building = Sleep.getAvailableRoboticStationBuilding(robot);
             if (building != null) {
-            	result += 2;
+            	result += 2D;
 
                 //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, building);
                 //result *= TaskProbabilityUtil.getRelationshipModifier(robot, building);

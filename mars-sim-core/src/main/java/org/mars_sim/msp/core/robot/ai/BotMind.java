@@ -305,11 +305,11 @@ implements Serializable {
 	        try {
 				TimeUnit.MILLISECONDS.sleep(1000L);
 			} catch (InterruptedException e) {
+				logger.severe("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
 				e.printStackTrace();
 			}
-	        throw new IllegalStateException("BotMind.getNewAction(): weight sum: "
-	    			+ weightSum);
-	        }
+	        //throw new IllegalStateException("BotMind.getNewAction() " + robot.getName() + " has weight sum of " + weightSum);
+        }
         
 
         // Select randomly across the total weight sum.

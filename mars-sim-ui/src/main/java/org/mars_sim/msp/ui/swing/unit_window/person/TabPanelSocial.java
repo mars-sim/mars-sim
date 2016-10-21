@@ -10,6 +10,9 @@ package org.mars_sim.msp.ui.swing.unit_window.person;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import javax.swing.JLabel;
@@ -87,9 +90,27 @@ implements ListSelectionListener {
 		relationshipTable.getColumnModel().getColumn(1).setPreferredWidth(70);
 		
 		relationshipTable.setCellSelectionEnabled(true);
-		relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		relationshipTable.getSelectionModel().addListSelectionListener(this);
+		
+		// For single clicking on a person to pop up his person window.
+		//relationshipTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);	
+		//relationshipTable.getSelectionModel().addListSelectionListener(this); 
 
+		// 2016-10-19 Add a mouse listener to hear for double-clicking a person (rather than single click using valueChanged()
+		relationshipTable.addMouseListener(new MouseAdapter() {
+		    public void mousePressed(MouseEvent me) {
+		        JTable table =(JTable) me.getSource();
+		        Point p = me.getPoint();
+		        int row = table.rowAtPoint(p);
+		        int col = table.columnAtPoint(p);
+		        if (me.getClickCount() == 2) {
+		            if (row > 0 && col == 0) {
+		    			Person selectedPerson = (Person) relationshipTable.getValueAt(row, 0);
+		    			if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
+		    	    }
+		        }
+		    }
+		});
+		
 		// 2015-09-24 Align the content to the center of the cell
 		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -99,7 +120,7 @@ implements ListSelectionListener {
 		relationshipScrollPanel.setViewportView(relationshipTable);
 
 		// 2015-06-08 Added sorting
-		//relationshipTable.setAutoCreateRowSorter(true); // not working if clicking on a person
+		relationshipTable.setAutoCreateRowSorter(true); // in conflict with valueChanged(), throw exception if clicking on a person
 	    //if (!MainScene.OS.equals("linux")) {
 	    //	relationshipTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 	    //}
@@ -120,11 +141,13 @@ implements ListSelectionListener {
 	 * @param e the event that characterizes the change.
 	 */
 	public void valueChanged(ListSelectionEvent e) {
-		int index = relationshipTable.getSelectedRow();
-        if (index > 0) {
-			Person selectedPerson = (Person) relationshipTable.getValueAt(index, 0);
-			if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
-	    }
+		TableStyle.setTableStyle(relationshipTable);
+		relationshipTableModel.update();
+		//int index = relationshipTable.getSelectedRow();
+        //if (index > 0) {
+		//	Person selectedPerson = (Person) relationshipTable.getValueAt(index, 0);
+		//	if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
+	    //}
 	}
 
 	/**
@@ -155,8 +178,8 @@ implements ListSelectionListener {
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = String.class;
+			if (columnIndex == 0) dataType = Object.class;
+			if (columnIndex == 1) dataType = Object.class;
 			return dataType;
 		}
 

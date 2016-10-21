@@ -166,7 +166,7 @@ extends TabPanel {
 		powerInfoPanel.add(wrapper2);
 
 		// Prepare power storage capacity label.
-		energyStorageCapacityCache = powerGrid.getStoredPowerCapacity();
+		energyStorageCapacityCache = powerGrid.getStoredEnergyCapacity();
 		energyStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.powerStorageCapacity"), JLabel.RIGHT); //$NON-NLS-1$
 		powerInfoPanel.add(energyStorageCapacityLabel);
 
@@ -178,7 +178,7 @@ extends TabPanel {
 		powerInfoPanel.add(wrapper3);
 
 		// Prepare power stored label.
-		energyStoredCache = powerGrid.getStoredPower();
+		energyStoredCache = powerGrid.getStoredEnergy();
 		energyStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored"), JLabel.RIGHT); //$NON-NLS-1$
 		powerInfoPanel.add(energyStoredLabel);
 
@@ -313,14 +313,14 @@ extends TabPanel {
 		}
 
 		// Update power storage capacity TF.
-		double cap = powerGrid.getStoredPowerCapacity();
+		double cap = powerGrid.getStoredEnergyCapacity();
 		if (energyStorageCapacityCache != cap) {
 			energyStorageCapacityCache = cap;
 			energyStorageCapacityTF.setText(formatter.format(energyStorageCapacityCache));
 		}
 
 		// Update power stored TF.
-		double store = powerGrid.getStoredPower();
+		double store = powerGrid.getStoredEnergy();
 		if (energyStoredCache != store ) {
 			energyStoredCache = store;
 			energyStoredTF.setText(formatter.format(energyStoredCache));
