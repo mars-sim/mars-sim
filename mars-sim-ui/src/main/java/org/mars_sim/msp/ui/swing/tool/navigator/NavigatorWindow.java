@@ -143,13 +143,6 @@ implements ActionListener {
 		// use ToolWindow constructor
 		super(NAME, desktop);
 
-		//setSize(1024,1024);
-		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
-
-		// Set window resizable to false.
-		setResizable(false);
-		//setResizable(true);
-
 		// Prepare content pane
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
@@ -335,7 +328,16 @@ implements ActionListener {
 		positionPane.add(goThere);
 
 		// Pack window
-		pack();
+		//pack();
+		
+		setSize(new Dimension(HORIZONTAL, VERTICAL));
+		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
+		//setSize(new Dimension(1024, 512));
+		setResizable(false);
+
+		//setClosable(false);
+		//setMaximizable(true);
+		setVisible(true);
 	}
 
 	/** Update coordinates in map, buttons, and globe

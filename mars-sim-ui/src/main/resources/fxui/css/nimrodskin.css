@@ -27,22 +27,6 @@
 }
 
 
-.button-raised{
-    -fx-padding: 0.7em 0.57em;
-    -fx-font-size: 14px;
-    -fx-button-type: RAISED;
-    -fx-background-color: #F9BF00;
-    -fx-pref-width: 200;
-    -fx-text-fill: WHITE;
-    -fx-font: bold 10pt 'Corbel'; 
-    -fx-shadow-highlight-color : transparent; 
-    -fx-outer-border : transparent;
-    -fx-inner-border : transparent; 
-    -fx-focus-color: transparent; 
-    -fx-faint-focus-color : transparent;  
-}
-
-
 .menu-bar,
 .menu-bar:focused,
 .menu-bar:selected:focused {
@@ -97,3 +81,60 @@
 .separator {
 	-fx-text-fill: -fx-accent;
 }
+
+
+.button-broadcast{
+    -fx-background-color: 
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 10;
+    -fx-background-insets: 0,5,0,5,0;
+    -fx-text-fill: #654b00;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 5 5 5 5;
+
+}
+
+.text-area {
+	-fx-font: 13pt 'Corbel';
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch;
+    -fx-text-fill: #b85c01;
+    -fx-background-color: #000000;
+}
+
+.label-large {
+    -fx-background-color: 
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
+        linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
+    -fx-background-insets: 0,1,4,5;
+    -fx-background-radius: 9,8,5,4;
+    -fx-padding: 15 30 15 30;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #b85c01;
+    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
+}
+
+.label-small {
+    -fx-background-color: 
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
+        linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
+    -fx-padding: 15 30 15 30;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #b85c01;
+    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
+}
+
+

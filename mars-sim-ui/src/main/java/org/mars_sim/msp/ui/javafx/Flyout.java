@@ -16,6 +16,9 @@
 package org.mars_sim.msp.ui.javafx;
 
 import javafx.scene.control.ToggleButton;
+
+import com.jfoenix.controls.JFXButton;
+
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -86,7 +89,7 @@ public class Flyout extends Region {
     private String userNodeContainerStyle = "-fx-background-color: rgba(0, 0, 0, 0.5);"  +
                 	"-fx-background-radius: 1px;";
     
-    //private MainScene mainScene;
+    private MainScene mainScene;
     
     /**
      * Constructs a new {@code Flyout} using the specified "anchor"
@@ -97,8 +100,8 @@ public class Flyout extends Region {
      * @param contents      Node containing the "control" to fly out
      */
     @SuppressWarnings("restriction")
-	public Flyout(Node anchor, Node contents) { // MainScene mainScene, 
-    	//this.mainScene = mainScene;
+	public Flyout(Node anchor, Node contents, MainScene mainScene) {
+    	this.mainScene = mainScene;
     	this.anchor = anchor;
         this.flyoutContents = contents;
         userNodeContainer = new Pane();
@@ -169,7 +172,8 @@ public class Flyout extends Region {
         
         if(!shownOnce) {
             clipContainer = new StackPane();
-
+            //clipContainer.setPadding(new Insets(0, 0, 0, 0));
+            
             userNodeContainer.setStyle(userNodeContainerStyle);
             userNodeContainer.setManaged(false);
             userNodeContainer.setVisible(true);
@@ -185,14 +189,22 @@ public class Flyout extends Region {
             popup.initStyle(StageStyle.TRANSPARENT);
             popup.initOwner(anchor.getScene().getWindow());
             popup.setScene(popupScene);
-            //popup.setOnShowing(new Insets(0, 0, 0, 0));
+/* 
+            popup.initStyle(StageStyle.UTILITY);
+            popup.setTitle("MarsNet");
+            popup.setHeight(clipContainer.getHeight());
+            popup.setWidth(clipContainer.getWidth());
+*/
+            //popup.setPadding(new Insets(0, 0, 0, 0));
             
             defineFlyout();
-            
+
             popup.setOnShown(e -> {
                 configureChildrenBounding();
             });
         }
+        
+        //setButtonStyle();
         
         popup.show();
         doFlyOut(false);
@@ -211,6 +223,15 @@ public class Flyout extends Region {
 */	   	
     }
     
+    
+    public void setButtonStyle() {
+	    JFXButton b = mainScene.getChatBox().getBroadcastButton();//((ChatBox)flyoutContents).getBroadcastButton();
+		b.getStyleClass().clear();
+		b.getStyleClass().add("button-broadcast");
+		String cssFile = "/fxui/css/nimrodskin.css";
+		b.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+    }
+	
     public Stage getStage() {
     	return popup;
     }

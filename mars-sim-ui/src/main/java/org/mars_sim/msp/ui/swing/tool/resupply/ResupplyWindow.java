@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -140,6 +141,14 @@ implements ListSelectionListener {
 		});
 		buttonPane.add(cancelButton);
 
+		if (desktop.getMainScene() != null)
+			setClosable(false);
+
+		setMinimumSize(new Dimension(512, 512));
+		setResizable(false);
+		setMaximizable(true);
+		setVisible(true);
+		
 		pack();
 	}
 

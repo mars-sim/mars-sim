@@ -11,8 +11,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JInternalFrame;
+import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
@@ -67,6 +69,13 @@ extends JInternalFrame {
 		this.desktop = desktop;
 		this.mainScene = desktop.getMainScene();
 	      
+		// 2016-10-21 Remove title bar
+	    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
+	    getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+	    BasicInternalFrameUI bi = (BasicInternalFrameUI)super.getUI();
+	    bi.setNorthPane(null);
+	    setBorder(null);
+	    
 	    //getRootPane().setOpaque(false);
 	    //getRootPane().setBackground(new Color(0,0,0,128));
 	    //setOpaque(false);

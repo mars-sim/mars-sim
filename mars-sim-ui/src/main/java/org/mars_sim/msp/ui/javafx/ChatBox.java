@@ -101,9 +101,9 @@ public class ChatBox extends BorderPane {
     protected MainScene mainScene;
     
     protected final TextArea textArea;
-    protected final JFXButton button;
+    protected final JFXButton broadcastButton;
     //protected final TextField textField = new TextField();
-    protected final AutoFillTextBox autoFillTextBox;
+    protected final AutoFillTextBox<String> autoFillTextBox;
     
     protected final List<String> history = new ArrayList<>();
 
@@ -128,25 +128,20 @@ public class ChatBox extends BorderPane {
         titleLabel = new Label("  " + Msg.getString("ChatBox.title")); //$NON-NLS-1$
        	       
         textArea = new TextArea();
+        //textArea.setPadding(new Insets(2, 0, 2, 0));
+        //textArea.setPrefWidth(560);
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        textArea.setStyle("-fx-font: 13pt 'Corbel';"
-        		+ "-fx-background-color: black;" 
-        		//+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
-        		+ "-fx-text-fill: #b85c01;"
-        		);
-        
-        textArea.setStyle("-fx-background-image: url('" + image + "'); " +
-                   "-fx-background-position: center center; " +
-                   "-fx-background-repeat: stretch;");
+
         textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
   		
   		// 2016-01-01 Replaced textField with autoFillTextBox
-        autoFillTextBox = new AutoFillTextBox(autoCompleteData);
+        autoFillTextBox = new AutoFillTextBox<String>(autoCompleteData);
+        autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
         autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
         autoFillTextBox.setStyle(
-        		"-fx-background-color: grey" 
+        		"-fx-background-color: white;" 
         		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
         		+ "-fx-text-fill: white;"
         		);          
@@ -154,33 +149,21 @@ public class ChatBox extends BorderPane {
         autoFillTextBox.setFilterMode(false);
         autoFillTextBox.getTextbox().addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
         	keyHandler(keyEvent);
-        });
-        
- 
-        autoFillTextBox.getTextbox().setPrefWidth(560);
+        });       
+
+        autoFillTextBox.getTextbox().setMaxWidth(565);
+        autoFillTextBox.getTextbox().setMinWidth(565);
+        autoFillTextBox.getTextbox().setPrefWidth(565);
         //autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
-        //autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
-  		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
+  		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll history."));
   		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel"); 			
  
   		
-  		button = new JFXButton("Broadcast".toUpperCase());
-        //MaterialDesignButton button = new MaterialDesignButton("Broadcast");
-        //button.setPadding(new Insets(5, 5, 5, 5));
-/*        button.setStyle("-fx-font: bold 10pt 'Corbel';" +
-     		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
-     		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
-     		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
-     		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
-     		   "-fx-faint-focus-color : transparent;"  // if you don't want any focus ring.
-     		   //"-fx-background-radius: 2px;"
-     		   );
-*/
-		//button.getStyleClass().add("button-raised");
-		
-        button.setTooltip(new Tooltip ("Click or hit enter to broadcast"));
-
-        button.setOnAction(e -> {
+  		broadcastButton = new JFXButton(" Broadcast ".toUpperCase());
+  		broadcastButton.getStyleClass().clear();
+		broadcastButton.getStyleClass().add("button-broadcast");	
+        broadcastButton.setTooltip(new Tooltip ("Click or hit enter to broadcast"));
+        broadcastButton.setOnAction(e -> {
           	String text = autoFillTextBox.getTextbox().getText();
             if (text != "" && text != null && !text.trim().isEmpty()) {
             	hitEnter();
@@ -194,8 +177,9 @@ public class ChatBox extends BorderPane {
         });
   
         HBox hbox = new HBox();
+        hbox.setSpacing(1);
         hbox.setPadding(new Insets(0, 0, 0, 0));
-        hbox.getChildren().addAll(button, autoFillTextBox);//.getTextbox());
+        hbox.getChildren().addAll(broadcastButton, autoFillTextBox);//.getTextbox());
 
         setTop(titleLabel);
         setCenter(textArea);
@@ -226,72 +210,55 @@ public class ChatBox extends BorderPane {
      */
     // 2016-06-17 Added update() 
     public void update() {
-    	//System.out.println((int)box_height[0] + "," + (int)box_height[1] + "," + (int)box_height[2] + "," + (int)box_height[3]);
-    	
+
     	int theme = MainScene.getTheme();
         if (theme == 6) {
-        	button.getStylesheets().clear();
-        	button.setStyle("-fx-text-fill: #3291D2;");
+    		String cssFile = "/fxui/css/snowBlue.css";
+        	broadcastButton.getStylesheets().clear();
+        	//broadcastButton.setStyle("-fx-text-fill: #3291D2;");
+    		broadcastButton.getStyleClass().clear();
+    		broadcastButton.getStyleClass().add("button-broadcast");
+    		broadcastButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         	titleLabel.getStylesheets().clear();
         	titleLabel.setStyle("-fx-text-fill: #3291D2;"
         			+ " -fx-font: bold 12pt 'Corbel';"
         			//+ " -fx-effect: dropshadow( one-pass-box , blue , 8 , 0.0 , 2 , 0 );"
         			);
         	textArea.getStylesheets().clear();
-            textArea.setStyle("-fx-font: 13pt 'Corbel';" +
-            		"-fx-background-image: url('" + image + "'); " +
-                    "-fx-background-position: center center; " +
-                    "-fx-background-repeat: stretch;");
-            textArea.setStyle("-fx-text-fill: #065185;"
-            			+ "-fx-background-color: #000000;" );
+            textArea.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         }
         else if (theme == 7) {
-        	button.getStylesheets().clear();
-        	button.setStyle("-fx-text-fill: #E5AB00;");
+    		String cssFile = "/fxui/css/nimrodskin.css";
+        	broadcastButton.getStylesheets().clear();
+        	//broadcastButton.setStyle("-fx-text-fill: #E5AB00;");
+    		broadcastButton.getStyleClass().clear();
+    		broadcastButton.getStyleClass().add("button-broadcast");
+    		broadcastButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+
         	titleLabel.getStylesheets().clear();
             titleLabel.setStyle("-fx-text-fill: #E5AB00;"
             		+ " -fx-font: bold 12pt 'Corbel';"
             		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
             		);
         	textArea.getStylesheets().clear();
-            textArea.setStyle("-fx-font: 13pt 'Corbel';" + 
-            		"-fx-background-image: url('" + image + "'); " +
-                    "-fx-background-position: center center; " +
-                    "-fx-background-repeat: stretch;");
-            textArea.setStyle("-fx-text-fill: #b85c01;"
-        			+ "-fx-background-color: #000000;" );
+            textArea.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         }
         else {
-           	button.getStylesheets().clear();
-        	button.setStyle("-fx-text-fill: #E5AB00;");
-        	titleLabel.getStylesheets().clear();
+    		String cssFile = "/fxui/css/nimrodskin.css";
+           	broadcastButton.getStylesheets().clear();
+        	//broadcastButton.setStyle("-fx-text-fill: #E5AB00;");
+    		broadcastButton.getStyleClass().clear();
+    		broadcastButton.getStyleClass().add("button-broadcast");
+    		broadcastButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+    		titleLabel.getStylesheets().clear();
             titleLabel.setStyle("-fx-text-fill: #E5AB00;"
             		+ " -fx-font: bold 12pt 'Corbel';"
             		//+ " -fx-effect: dropshadow( one-pass-box , orange , 8 , 0.0 , 2 , 0 );"
             		);
         	textArea.getStylesheets().clear();
-            textArea.setStyle("-fx-font: 13pt 'Corbel';" + 
-            		"-fx-background-image: url('" + image + "'); " +
-                    "-fx-background-position: center center; " +
-                    "-fx-background-repeat: stretch;");
-            textArea.setStyle("-fx-text-fill: #b85c01;"
-        			+ "-fx-background-color: #000000;" );
+            textArea.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         }
-        
-/*        
-        textArea.appendText("<< Connection to MarsNet established >>" + System.lineSeparator());
-  		
-  		int rand = RandomUtil.getRandomInt(2);
-  		
-  		if (rand == 0)
-  			textArea.appendText("System : how can I help you ? h for help");
-  		else if (rand == 1)
-  			textArea.appendText("System : how may I assist you ? h for help");
-  		else if (rand == 2)
-  			textArea.appendText("System : Is there anything I can help ? h for help");
-
-  		textArea.appendText(System.lineSeparator() + System.lineSeparator());
-*/
+       
         
   		textArea.positionCaret(textArea.getText().length());
     }
@@ -1527,12 +1494,16 @@ public class ChatBox extends BorderPane {
     }
 
     
-    public AutoFillTextBox getAutoFillTextBox() {
+    public AutoFillTextBox<String> getAutoFillTextBox() {
     	return autoFillTextBox;
     }
     
     public Label getTitleLabel() {
     	return titleLabel;
+    }
+    
+    public JFXButton getBroadcastButton() {
+    	return broadcastButton;
     }
     
     /**

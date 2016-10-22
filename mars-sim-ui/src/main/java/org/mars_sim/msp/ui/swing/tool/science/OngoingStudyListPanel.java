@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * A panel showing a selectable list of ongoing scientific studies.
@@ -84,6 +85,10 @@ extends JPanel {
 				}
 			}
 		});
+		
+		
+		studyTable.setAutoCreateRowSorter(true);
+		
 		listScrollPane.setViewportView(studyTable);
 	}
 
@@ -182,8 +187,8 @@ extends JPanel {
 			String result = ""; //$NON-NLS-1$
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
-				if (columnIndex == 0) result = study.toString();
-				else if (columnIndex == 1) result = study.getPhase();
+				if (columnIndex == 0) result = Conversion.capitalize(study.toString());
+				else if (columnIndex == 1) result = Conversion.capitalize(study.getPhase());
 			}
 			return result;
 		}

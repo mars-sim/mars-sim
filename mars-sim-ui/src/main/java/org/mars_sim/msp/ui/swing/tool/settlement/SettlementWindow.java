@@ -79,7 +79,7 @@ extends ToolWindow {
 	public static final int TIME_DELAY = 200;
 
 	public static final int HORIZONTAL = 800;
-	public static final int VERTICAL = 600;
+	public static final int VERTICAL = 512;
 
 	private double xCoor, yCoor;
 
@@ -131,17 +131,7 @@ extends ToolWindow {
 	@SuppressWarnings("restriction")
 	public void init() {
 
-		//setMaximizable(true); // not compatible with day night map layer
-		setResizable(true);
-
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-
-		// 2014-12-27 Added preferred size and initial location
-		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
-		setMinimumSize(new Dimension(500, 400));
-		setMaximizable(true);
-//		setMaximumSize(new Dimension(HORIZONTAL, VERTICAL));
-		setLocation(600,600);
 
 	    //getRootPane().setOpaque(false);
 	    //getRootPane().setBackground(new Color(0,0,0,128));
@@ -235,9 +225,19 @@ extends ToolWindow {
   
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
  
-		pack();
+
+		if (desktop.getMainScene() != null)
+			setClosable(false);
+
+		// 2014-12-27 Added preferred size and initial location
+		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
+		//setMinimumSize(new Dimension(500, 400));
+		setMaximizable(true);
+		//setResizable(false);
 		setVisible(true);
 
+		pack();
+		
 	}
 
 	

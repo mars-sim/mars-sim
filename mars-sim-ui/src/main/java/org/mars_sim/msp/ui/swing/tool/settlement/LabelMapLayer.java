@@ -53,7 +53,7 @@ implements SettlementMapLayer {
 	private static final Color HAB_LABEL_COLOR = new Color (92, 23, 0); // BURGUNDY
 	private static final Color REACTOR_LABEL_COLOR = Color.red; // red
 	private static final Color GARAGE_LABEL_COLOR = Color.yellow;//new Color (255, 222, 122); // pale yellow
-	private static final Color GREENHOUSE_LABEL_COLOR = new Color (69, 92, 0); // dark sage // (79, 108, 44); // dull sage green // new Color(0, 255, 64); //bright green;//
+	private static final Color GREENHOUSE_LABEL_COLOR = new Color (79, 108, 44); // dull sage green //(69, 92, 0); // dark sage //  // new Color(0, 255, 64); //bright green;//
 	private static final Color MEDICAL_LABEL_COLOR = new Color (0, 69, 92); // dull blue
 	private static final Color LIVING_LABEL_COLOR = new Color (236, 255, 179); // pale yellow
 	private static final Color RESOURCE_LABEL_COLOR = new Color (182, 201, 255); // pale blue

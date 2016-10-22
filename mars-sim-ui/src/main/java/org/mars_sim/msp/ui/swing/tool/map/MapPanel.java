@@ -84,7 +84,7 @@ implements Runnable {
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
 
-		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT ));
+		//setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT ));
 		setBackground(Color.BLACK);
 		setOpaque(true);
 	}

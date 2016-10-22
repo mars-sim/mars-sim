@@ -61,9 +61,10 @@ public class MainSceneMenu extends MenuBar  {
 	
 	private boolean fMenuVisible = false;
 	
-	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,
-							monitorToolItem, missionToolItem,settlementMapToolItem,
-							scienceToolItem, resupplyToolItem;//, marsViewerItem, webToolItem;
+	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem;
+							//monitorToolItem, missionToolItem, settlementMapToolItem,
+							//scienceToolItem, resupplyToolItem;
+							//marsViewerItem, webToolItem;
 
 	private CheckMenuItem showFullScreenItem, notificationItem; 
 
@@ -141,6 +142,7 @@ public class MainSceneMenu extends MenuBar  {
         timeToolItem = createMenuItem("Time Tool", TimeWindow.NAME);
         timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
 
+/*        
         monitorToolItem = createMenuItem("Monitor Tool", MonitorWindow.NAME);
         monitorToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
 
@@ -155,7 +157,7 @@ public class MainSceneMenu extends MenuBar  {
 
         resupplyToolItem = createMenuItem("Resupply Tool", ResupplyWindow.NAME);
         resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
-
+*/
         //marsViewerItem = createMenuItem("Mars Viewer", MarsViewer.NAME);
         //marsViewerItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
@@ -163,9 +165,10 @@ public class MainSceneMenu extends MenuBar  {
         //webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
 
-        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem,
-        		monitorToolItem, missionToolItem,settlementMapToolItem,
-        		scienceToolItem, resupplyToolItem);//, marsViewerItem, webToolItem);
+        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem);
+        		//monitorToolItem, missionToolItem,settlementMapToolItem,
+        		//scienceToolItem, resupplyToolItem);
+        		//, marsViewerItem, webToolItem);
 
 
         // --- Menu Settings
@@ -288,6 +291,7 @@ public class MainSceneMenu extends MenuBar  {
         menuNotification.getItems().addAll(newsPaneItem); // , messageTypeItem,displayTimeItem,queueSizeItem);
 */
 
+/*        
         // --- Menu Help
         Menu menuHelp = new Menu("Help");
         MenuItem aboutItem = new MenuItem("About");
@@ -298,7 +302,7 @@ public class MainSceneMenu extends MenuBar  {
         userGuideItem.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
 
         menuHelp.getItems().addAll(aboutItem, tutorialItem,SeparatorMenuItem7, userGuideItem);
-
+*/
 		Platform.runLater(() -> {
 
         // 2016-07-06 Added nsmenufx.
@@ -326,14 +330,14 @@ public class MainSceneMenu extends MenuBar  {
 				MenuItem quit = tk.createQuitMenuItem("mars-sim");
 				java.getItems().addAll(quit);
 	
-				menuBar.getMenus().addAll(java, menuFile, menuTools, menuSettings, menuHelp); // menuNotification,
+				menuBar.getMenus().addAll(java, menuFile, menuTools, menuSettings);//, menuHelp); // menuNotification,
 		
 				tk.setMenuBar(stage, menuBar);
 
 			//});
 		}
 		else
-			super.getMenus().addAll(menuFile, menuTools, menuSettings, menuHelp); // menuNotification,
+			super.getMenus().addAll(menuFile, menuTools, menuSettings);//, menuHelp); // menuNotification,
     
 	});
 	
@@ -486,7 +490,7 @@ public class MainSceneMenu extends MenuBar  {
     			desktop.getSoundPlayer().setMute(muteItem.isSelected());
             }
         });
-
+/*
         aboutItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
@@ -516,6 +520,7 @@ public class MainSceneMenu extends MenuBar  {
     			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
     		}
         });
+*/        
 	}
 
 
@@ -536,7 +541,7 @@ public class MainSceneMenu extends MenuBar  {
 	public CheckMenuItem getTimeToolItem() {
 		return timeToolItem;
 	}
-
+/*
 	public CheckMenuItem getMonitorToolItem() {
 		return monitorToolItem;
 	}
@@ -556,7 +561,7 @@ public class MainSceneMenu extends MenuBar  {
 	public CheckMenuItem getResupplyToolItem() {
 		return resupplyToolItem;
 	}
-
+*/
 	//public CheckMenuItem getMarsViewerItem() {
 	//	return marsViewerItem;
 	//}
@@ -611,7 +616,7 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(TimeWindow.NAME)) {
 			getTimeToolItem().setSelected(false);
 		}
-
+/*
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			getMonitorToolItem().setSelected(false);
 			//System.out.println(toolName + " is unchecked");
@@ -636,7 +641,7 @@ public class MainSceneMenu extends MenuBar  {
 		//else if (toolName.equals(MarsViewer.NAME)) {
 		//	getMarsViewerItem().setSelected(false);
 		//}
-
+*/
     }
 
     public CheckMenuItem getCheckMenuItem(String toolName) {
@@ -652,7 +657,7 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(TimeWindow.NAME)) {
 			return getTimeToolItem();
 		}
-
+/*
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			return getMonitorToolItem();
 		}
@@ -676,7 +681,7 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(MarsNode.NAME)) {
 			return getSettlementMapToolItem();
 		}
-
+*/
 		//else if (toolName.equals(Browser.NAME)) {
 		//	return getResupplyToolItem();
 		//}

@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.javafx;
 
 import static javafx.geometry.Orientation.VERTICAL;
 
+import com.jfoenix.controls.JFXTabPane;
 //import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
@@ -119,8 +120,12 @@ import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
+import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
@@ -201,13 +206,15 @@ public class MainScene {
 
 	private ChatBox chatBox;
 	private StackPane chatBoxPane;
-	private StackPane swingPane;
-	private Tab swingTab;
+	private StackPane desktopPane;
 	private Tab nodeTab;
 	private BorderPane borderPane;
 	private DndTabPane dndTabPane;
 	private ESCHandler esc = null;
 
+	private JFXTabPane jfxTabPane;
+	private Tab desktopTab;
+	
 	private Timeline timeline;
 	private static NotificationPane notificationPane;
 
@@ -393,13 +400,13 @@ public class MainScene {
 		//logger.info("DPI Scale Factor is " + dpiScaleFactor);
 			
 		// Create group to hold swingNode1 which holds the swing desktop
-		swingPane = new StackPane();
+		desktopPane = new StackPane();
 		swingNode = new SwingNode();
 		
 		createSwingNode();
-		swingPane.getChildren().add(swingNode);
-		swingPane.setPrefWidth(width);
-		swingPane.setPrefHeight(height);
+		desktopPane.getChildren().add(swingNode);
+		desktopPane.setPrefWidth(width);
+		desktopPane.setPrefHeight(height);
 
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
@@ -414,10 +421,12 @@ public class MainScene {
 		menuBar = new MainSceneMenu(this, desktop);
 		((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
   
+		createFXTabs();
+		
 		// Create BorderPane
 		borderPane = new BorderPane();
-
-		borderPane.setCenter(swingPane);
+		//borderPane.setCenter(swingPane);
+		borderPane.setCenter(jfxTabPane);
 		borderPane.setMinWidth(width);//1024);
 
 		anchorPane = new AnchorPane();
@@ -484,6 +493,88 @@ public class MainScene {
 		return scene;
 	}
 
+	public void createFXTabs() {
+		jfxTabPane = new JFXTabPane();
+		
+		//String cssFile = "/fxui/css/nimrodskin.css";
+		//jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		//jfxTabPane.getStyleClass().add("jfx-tab-pane");
+		
+		//jfxTabPane.setPrefSize(300, 200);
+				
+		desktopTab = new Tab();
+		desktopTab.setText("Desktop");
+		desktopTab.setContent(desktopPane);
+		
+		//StackPane settlementPane = new StackPane();
+		//Tab settlementTab = new Tab();
+		//settlementTab.setText("Settlements");
+		//settlementTab.setContent(settlementPane);
+/*
+		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
+		SwingNode navNode = new SwingNode();
+		navNode.setContent(navWin); 
+		StackPane navPane = new StackPane(navNode);
+		Tab navTab = new Tab();
+		navTab.setText("Navigator");
+		navTab.setContent(navPane);
+*/
+
+		MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
+		SwingNode monNode = new SwingNode();
+		monNode.setContent(monWin); 
+		StackPane monPane = new StackPane(monNode);
+		Tab monTab = new Tab();
+		monTab.setText("Monitor");
+		monTab.setContent(monPane);
+
+		MissionWindow missionWin = (MissionWindow) desktop.getToolWindow(MissionWindow.NAME);
+		SwingNode missionNode = new SwingNode();
+		missionNode.setContent(missionWin); 
+		StackPane missionPane = new StackPane(missionNode);
+		Tab missionTab = new Tab();
+		missionTab.setText("Mission");
+		missionTab.setContent(missionPane);
+
+		SettlementWindow settlementWin = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
+		SwingNode settlementNode = new SwingNode();
+		settlementNode.setContent(settlementWin); 
+		StackPane settlementPane = new StackPane(settlementNode);
+		Tab settlementTab = new Tab();
+		settlementTab.setText("Settlements");
+		settlementTab.setContent(settlementPane);
+		
+		ResupplyWindow resupplyWin = (ResupplyWindow) desktop.getToolWindow(ResupplyWindow.NAME);
+		SwingNode resupplyNode = new SwingNode();
+		resupplyNode.setContent(resupplyWin); 
+		StackPane resupplyPane = new StackPane(resupplyNode);
+		Tab resupplyTab = new Tab();
+		resupplyTab.setText("Resupply");
+		resupplyTab.setContent(resupplyPane);
+
+		ScienceWindow scienceWin = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
+		SwingNode scienceNode = new SwingNode();
+		scienceNode.setContent(scienceWin); 
+		StackPane sciencePane = new StackPane(scienceNode);
+		Tab scienceTab = new Tab();
+		scienceTab.setText("Science");
+		scienceTab.setContent(sciencePane);
+	
+		
+		GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+		SwingNode helpNode = new SwingNode();
+		helpNode.setContent(ourGuide); // desktop.getBrowserJFX()
+		StackPane helpPane = new StackPane(helpNode);
+		Tab helpTab = new Tab();
+		helpTab.setText("Help");
+		helpTab.setContent(helpPane);
+
+		
+		jfxTabPane.getTabs().addAll(desktopTab, monTab, settlementTab, missionTab, resupplyTab, scienceTab, helpTab);	
+
+	}
+	
+	
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
 	 */
@@ -516,7 +607,7 @@ public class MainScene {
 	 */
 	public void changeTheme(int theme) {
 		this.theme = theme;
-		swingPane.getStylesheets().clear();
+		desktopPane.getStylesheets().clear();
 		if (menuBar.getStylesheets() != null) menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();	
 
@@ -568,7 +659,7 @@ public class MainScene {
 	 */
 	// 2015-08-29 Added updateThemeColor()
 	public void updateThemeColor(int theme, Color txtColor, Color btnTxtColor, String cssFile) {
-		swingPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		desktopPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		if (!OS.contains("mac"))
 			menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		
@@ -580,6 +671,7 @@ public class MainScene {
 		timeText.setTextFill(txtColor);
 		lastSaveText.setTextFill(txtColor);
 		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		//jfxTabPane.getStylesheets().clear();
 		
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow)(desktop.getToolWindow(SettlementWindow.NAME));
@@ -597,12 +689,16 @@ public class MainScene {
 		if (theme == 6) {
 			if (!OS.contains("mac"))
 				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
+			
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_chat_36.png"))));
+			//jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		}
 		else if (theme == 7) {
 			if (!OS.contains("mac"))
 				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menubar_36.png"))));
+			
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_36.png"))));
+			//jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		}
 		
 		chatBox.update();    
@@ -645,7 +741,7 @@ public class MainScene {
         		   );
         
         
-        flyout = new Flyout(marsNetButton, createChatBox());
+        flyout = new Flyout(marsNetButton, createChatBox(), this);
         marsNetButton.setId("marsNetButton");
         marsNetButton.setTooltip(new Tooltip ("Toggle on and off MarsNet"));
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
@@ -707,6 +803,10 @@ public class MainScene {
   	
   	public StackPane getChatBoxPane() {
   		return chatBoxPane;
+  	}
+  	
+  	public ChatBox getChatBox() {
+  		return chatBox;
   	}
   	
   	public void setChatBoxPaneHeight(double value) {
@@ -1521,7 +1621,7 @@ public class MainScene {
 		flyout = null;
 		marsNetButton = null;
 		chatBox = null;
-		swingPane = null;
+		desktopPane = null;
 		anchorPane = null;
 		borderPane = null;
 		newSimThread = null;
@@ -1529,7 +1629,7 @@ public class MainScene {
 		loadingCircleStage = null;
 		savingCircleStage = null;
 		pausingCircleStage = null;
-		swingTab = null;
+		desktopTab = null;
 		nodeTab = null;
 		dndTabPane = null;
 		timeline = null;

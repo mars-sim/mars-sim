@@ -74,7 +74,7 @@ public class FlyoutDemo extends Application {
             }
         });
         
-        Flyout retVal = new Flyout(stuffChooserTrigger, getStuffControl());
+        Flyout retVal = new Flyout(stuffChooserTrigger, getStuffControl(), null);
         
         return retVal;
     }

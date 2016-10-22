@@ -26,14 +26,6 @@
 	/*-fx-font-family: "Noto"; */
 }
 
-.button-raised{
-    -fx-padding: 0.7em 0.57em;
-    -fx-font-size: 14px;
-    -fx-button-type: RAISED;
-    -fx-background-color: rgb(77,102,204);
-    -fx-pref-width: 200;
-    -fx-font: bold 10pt 'Corbel'; 
- }
 
 .tab {
 	-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
@@ -97,3 +89,62 @@
 .separator {
 	-fx-text-fill: -fx-accent;
 }
+
+.button-broadcast{
+    -fx-background-color: 
+        linear-gradient(#7ebcea, #2f4b8f),
+        linear-gradient(#426ab7, #263e75),
+        linear-gradient(#395cab, #223768);
+    -fx-background-radius: 10;
+    -fx-background-insets: 0,5,0,5,0;
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 5 5 5 5;
+}
+
+.text-area {
+	-fx-font: 13pt 'Corbel';
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch;
+    -fx-text-fill: #065185;
+    -fx-background-color: #000000;
+}
+
+.label-large {
+    -fx-background-color: 
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
+        linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
+    -fx-background-insets: 0,1,4,5;
+    -fx-background-radius: 9,8,5,4;
+    -fx-padding: 15 30 15 30;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #065185;
+    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
+}
+
+.label-small {
+    -fx-background-color: 
+        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+        linear-gradient(#020b02, #3a3a3a),
+        linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
+        linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
+    -fx-padding: 15 30 15 30;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #065185;
+}
+
+.borderpane {
+	-fx-border-color: grey;
+    -fx-border-insets: 5;
+    -fx-border-width: 2;
+}
+
+

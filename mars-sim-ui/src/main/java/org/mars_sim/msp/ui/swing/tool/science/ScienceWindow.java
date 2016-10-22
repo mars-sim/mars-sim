@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.science;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
@@ -68,6 +69,14 @@ extends ToolWindow {
 		studyDetailPane = new StudyDetailPanel(this);
 		mainPane.add(studyDetailPane, BorderLayout.CENTER);
 
+		if (desktop.getMainScene() != null)
+			setClosable(false);
+
+		setMinimumSize(new Dimension(480, 480));
+		setMaximizable(true);
+		setResizable(false);
+		setVisible(true);
+		
 		// Pack window.
 		pack();
 	}

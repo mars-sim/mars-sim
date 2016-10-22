@@ -66,6 +66,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
@@ -203,56 +204,31 @@ public class PopUpUnitMenu extends JPopupMenu {
 			name = Conversion.capitalize(site.getDescription());
 	    }
 
-		double num = description.length() * 1.3D + 130D;
+		double num = description.length() * 1.3D ;
 		if (num > 450)
 			num = 450;
 		int frameHeight = (int) num;
 
 
-		UnitInfoPanel unitInfoPanel = new UnitInfoPanel(desktop);
-		unitInfoPanel.init(name, type, description);
-		//unitInfoPanel.setBackground(null);
-		//unitInfoPanel.setOpaque(false);
-		//unitInfoPanel.setBackground(new Color(0,0,0,128));
+		UnitInfoStage unitInfo = new UnitInfoStage(desktop);
+		BorderPane pane = (BorderPane) unitInfo.init(name, type, description);
 
-		Rectangle rect = new Rectangle(350+20, frameHeight+20);//, Color.rgb(179,53,0));//rgb(69, 56, 35));//rgb(86,70,44));//SADDLEBROWN);
-		rect.setArcWidth(10);
-		rect.setArcHeight(10);
-		//rect.setEffect(new javafx.scene.effect.DropShadow(10,5,5, javafx.scene.paint.Color.TAN)); // rgb(27,8,0)));// for bottom right edge
-
-    	SwingNode swingNode  = new SwingNode();
-    	//swingNode.setStyle("-fx-background-color: transparent;");
-
-		StackPane swingPane = new StackPane();
-    	swingPane.setStyle("-fx-background-radius:5px; -fx-background-color: transparent;");
-
-		swingPane.getChildren().add(swingNode);
-		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-		//swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-
-		SwingUtilities.invokeLater(() -> {
-			swingNode.setContent(unitInfoPanel);
-	    });
-
-	   	Scene scene = new Scene(swingPane, 350, frameHeight, javafx.scene.paint.Color.TRANSPARENT);
+	   	Scene scene = new Scene(pane, 350, frameHeight, javafx.scene.paint.Color.TRANSPARENT);
 	   	//scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
 	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
     	//Popup stage = new Popup();
 	 	Stage stage = new Stage();
 	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-
-	   	stage.requestFocus();
-
-	   	addDraggableNode(swingNode);
-
-	   	//stage.setTitle("Building Detail");
+	   	//addDraggableNode(unitInfo);
+	   	stage.setTitle("Description");
 		stage.setOpacity(.8);
 	   	//stage.initStyle(StageStyle.TRANSPARENT);
-	    stage.initStyle(StageStyle.UNDECORATED);
+	    stage.initStyle(StageStyle.DECORATED);
 		stage.setResizable(false);
 	   	stage.setScene(scene);
         stage.show();
+	   	stage.requestFocus();
 
 
 	   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
@@ -445,52 +421,26 @@ public class PopUpUnitMenu extends JPopupMenu {
 	 */
     public void createBuildingPanelFX(Building building) {
     	Stage stage = new Stage();
-    	StackPane swingPane = new StackPane();
+    	
+		BuildingStage buildingPanel = new BuildingStage("Building Detail", building, desktop);
+    	StackPane swingPane = new StackPane(buildingPanel.init());
 
-        
-    	//Popup stage = new Popup();
-    	SwingNode swingNode  = new SwingNode();
-    	swingPane.setStyle("-fx-background-radius:5; -fx-background-color: transparent;");
-		swingPane.getChildren().add(swingNode);
+		
     	Scene scene = new Scene(swingPane, 400, 400, javafx.scene.paint.Color.TRANSPARENT);
-
-		//Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-		//swingPane.setPrefWidth(primaryScreenBounds.getWidth());
-
-/*
-        Group root = new Group();
-        Dash dash = new Dash();
-        //Scene scene = new Scene(root, 800, 600);
-        dash.setup(scene);  
-        FrostedPanel panel = new FrostedPanel(dash);       
-        dash.prefWidthProperty().bind(scene.widthProperty());
-        dash.prefHeightProperty().bind(scene.heightProperty());      
-        root.getChildren().add(dash);
-        root.getChildren().add(panel);
-*/		
-		final BuildingPanel buildingPanel = new BuildingPanel(true, "Building Detail", building, desktop);
-
-		SwingUtilities.invokeLater(() -> {
-			swingNode.setContent(buildingPanel);
-	    	swingNode.setStyle("-fx-background-color: transparent;");
-	    });
-
-	   	
-	   	
+    	
 	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
-
-	   	stage.requestFocus();
-
-	   	addDraggableNode(swingNode);
-
-	   	//stage.setTitle("Building Detail");
-	   	//stage.initStyle(StageStyle.UTILITY);
-	   	stage.initStyle(StageStyle.TRANSPARENT);
-		stage.setOpacity(.9);
+	   	//addDraggableNode(swingNode);
+	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
+	   	stage.setTitle("Building Detail");
+		stage.initOwner(mainScene.getStage());
+	   	//stage.initStyle(StageStyle.DECORATED);//.UTILITY); //UNIFIED);
+	   	//stage.initStyle(StageStyle.TRANSPARENT);
+		stage.setOpacity(.8);
 		stage.setResizable(false);
 	   	stage.setScene(scene);
         stage.show();
 
+	   	stage.requestFocus();
 
 	   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
 	   	{

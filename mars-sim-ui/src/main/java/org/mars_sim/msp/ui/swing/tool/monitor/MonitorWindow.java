@@ -124,12 +124,9 @@ implements TableModelListener, ActionListener {
 		else if (desktop.getMainWindow() != null)
 			this.mainWindow = desktop.getMainWindow();
 
-
-		this.setOpaque(true);
+		//this.setOpaque(true);
 		//this.setBackground(new Color(205, 133, 63, 50));//Color.ORANGE);
 		//this.setBackground(new Color(0, 0, 0, 0));
-
-		setMaximizable(true);
 
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -259,12 +256,17 @@ implements TableModelListener, ActionListener {
 			}
 		);
 
+		if (desktop.getMainScene() != null)
+			setClosable(false);
+
 		// Note: must define a starting size
-		setPreferredSize(new Dimension(1024, 512));
-		setMinimumSize(new Dimension(512, 256));
+		//setPreferredSize(new Dimension(1024, 512));
+		//setMinimumSize(new Dimension(512, 256));
 		setSize(new Dimension(1024, 512));
-		setResizable(true);
-		pack();
+		setResizable(false);
+		setMaximizable(true);
+		setVisible(true);
+		//pack();
 	}
 
 	/**

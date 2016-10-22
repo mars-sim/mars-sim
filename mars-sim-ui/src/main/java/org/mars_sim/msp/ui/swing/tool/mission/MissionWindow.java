@@ -61,11 +61,7 @@ extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-
 		ms = desktop.getMainScene();
-
-		// Set window resizable to false.
-		//setResizable(false);
 
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -151,8 +147,18 @@ extends ToolWindow {
 				});
 		buttonPane.add(endButton);
 
+		
+		if (desktop.getMainScene() != null)
+			setClosable(false);
+
+		//setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
+		setSize(new Dimension(640, 512));
+		setMaximizable(true);
+		setResizable(false);
+		setVisible(true);
+		
 		// Pack window
-		pack();
+		//pack();
 	}
 
 	/**

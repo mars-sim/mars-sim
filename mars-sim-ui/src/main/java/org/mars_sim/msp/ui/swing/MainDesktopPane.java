@@ -597,6 +597,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
 				}
 
+/*				
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
 				}
@@ -616,7 +617,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
-				
+*/				
 			});
 		
 		}
@@ -648,7 +649,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(SearchWindow.NAME)) {
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(false);
 				}
-
+/*
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(false);
 				}
@@ -668,7 +669,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
 				}
-				
+*/				
 			});
 		}
 		
@@ -1300,12 +1301,20 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
 
-			// Open user guide tool.
-			openToolWindow(GuideWindow.NAME);
-			// SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC (but not in other platform)
+			// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC (but not in other platform)
 
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
+			openToolWindow(GuideWindow.NAME);	
+			
 			if (mainScene != null) {
+				
+				//openToolWindow(NavigatorWindow.NAME);
+				openToolWindow(MonitorWindow.NAME);
+				openToolWindow(SettlementWindow.NAME);
+				openToolWindow(MissionWindow.NAME);
+				openToolWindow(ResupplyWindow.NAME);
+				openToolWindow(ScienceWindow.NAME);		
+				
 				//int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
 				//int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
 				int Xloc = (int)((mainScene.getWidth() - ourGuide.getWidth()) * .5D);

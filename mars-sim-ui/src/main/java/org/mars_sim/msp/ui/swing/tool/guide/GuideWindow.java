@@ -70,9 +70,11 @@ ComponentListener {
 	//private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator +
 	//        "help" + File.separator + "userguide.html");
 	/* [landrus, 27.11.09]: load the url in the constructor. */
-	private URL guideURL;
+	private URL guideURL, aboutURL, tutorialURL;
 	private String discussionURLstring, projectsiteURLstring;
 
+	private JButton aboutButton = new JButton(Msg.getString("GuideWindow.button.about")); //$NON-NLS-1$
+	private JButton tutorialButton = new JButton(Msg.getString("GuideWindow.button.tutorial")); //$NON-NLS-1$
 	private JButton userguideButton = new JButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
 	private JButton projectsiteButton = new JButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
 	private JButton discussionButton = new JButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
@@ -89,6 +91,8 @@ ComponentListener {
 
 		/* [landrus, 27.11.09]: use classloader compliant paths */
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
+		aboutURL = getClass().getResource(Msg.getString("doc.about")); //$NON-NLS-1$
+		tutorialURL = getClass().getResource(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		discussionURLstring = Msg.getString("url.discussion"); //$NON-NLS-1$
 		projectsiteURLstring = Msg.getString("url.projectsite"); //$NON-NLS-1$
 
@@ -103,6 +107,12 @@ ComponentListener {
 		userguideButton.setToolTipText(Msg.getString("GuideWindow.tooltip.userguide")); //$NON-NLS-1$
 		userguideButton.addActionListener(this);
 
+		aboutButton.setToolTipText(Msg.getString("GuideWindow.tooltip.about")); //$NON-NLS-1$
+		aboutButton.addActionListener(this);
+
+		tutorialButton.setToolTipText(Msg.getString("GuideWindow.tooltip.tutorial")); //$NON-NLS-1$
+		tutorialButton.addActionListener(this);
+
 		projectsiteButton.setToolTipText(Msg.getString("GuideWindow.tooltip.projectsite")); //$NON-NLS-1$
 		projectsiteButton.addActionListener(this);
 
@@ -111,17 +121,23 @@ ComponentListener {
 
 		// A toolbar to hold all our buttons
 		JPanel toolPanel = new JPanel();
+		toolPanel.add(aboutButton);
+		toolPanel.add(tutorialButton);		
 		toolPanel.add(userguideButton);
+
 		toolPanel.add(projectsiteButton);
 		toolPanel.add(discussionButton);
 	
 		mainPane.add(browserPanel, BorderLayout.CENTER);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
+		
+		
+		if (desktop.getMainScene() != null)
+			setClosable(false);		
+
 		setSize(new Dimension(1024, 600));
-		// Allow the window to be resized by the user.
-		//setResizable(true);
-		setMaximizable(true);
-		// Show the window
+		setResizable(false);
+		setMaximizable(true);		
 		setVisible(true);
 	   	//logger.info("GuideWindow's constructor: done!");
 
@@ -153,112 +169,49 @@ ComponentListener {
 		Object source = event.getSource();
 		if (source == this.userguideButton) {
 			String input = guideURL.toExternalForm();
-			//System.out.println("guideURL.toExternalForm() is "+ input);
 			Platform.runLater(()-> {
 				browser.setTextInputCache(input);
-				browser.inputURLType(input);//, BrowserJFX.REMOTE_HTML);
+				browser.inputURLType(input);
 				browser.showURL();
-				//browser.addCSS();
 			});
-			//browser.fireButtonGo(input);
+		} 
+		
+		else if (source == this.aboutButton) {
+			String input = aboutURL.toExternalForm();
+			Platform.runLater(()-> {
+				browser.setTextInputCache(input);
+				browser.inputURLType(input);
+				browser.showURL();
+			});
+		} 
 
-			//goToURL(guideURL);	
-			//updateButtons();
-			//browser.getStatusBarLabel().setText(guideURL.toExternalForm());
+		else if (source == this.tutorialButton) {
+			String input = tutorialURL.toExternalForm();
+			Platform.runLater(()-> {
+				browser.setTextInputCache(input);
+				browser.inputURLType(input);
+				browser.showURL();
+			});
 		} 
 		
 		else if (source == this.projectsiteButton) {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(projectsiteURLstring);
-				browser.inputURLType(projectsiteURLstring);//, BrowserJFX.REMOTE_HTML);
+				browser.inputURLType(projectsiteURLstring);
 				browser.showURL();
-
 			});
-			//browser.fireButtonGo(projectsiteURLstring);
 			
 		} else if (source == this.discussionButton) {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(discussionURLstring);
-				browser.inputURLType(discussionURLstring);//, BrowserJFX.REMOTE_HTML);
+				browser.inputURLType(discussionURLstring);
 				browser.showURL();
-
 			});
-			//browser.fireButtonGo(discussionURLstring);
 
 		}
 		
 	}
 
-
-	//public void goToURL(URL url) {
-	//	displayPage(url);
-	//}
-	
-/*
-	//2016-04-22 Revised displayPage() to discern between a local or a remote href
-	private URL displayPage(URL pageURL) {
-		//System.out.println("displayPage() : pageURL is " + pageURL);
-		String input = pageURL.toExternalForm();
-		//System.out.println("displayPage(). input is " + input);
-        Platform.runLater(()-> {
-		//SwingUtilities.invokeLater(()->{
-			browser.loadLocalURL(input);
-		});
-		
-*/        
-/*		
-	    //SwingUtilities.invokeLater(() -> {	    	    	
-    	String fileString = "file:/";
-		boolean status = input.toLowerCase().contains(fileString);          	
-		//int pos = input.toLowerCase().indexOf(fileString);
-    			
-		if (status) {// && pos == 0) {
-			//input = input.replace("file:/", "file:///");	
-			System.out.println("displayPage(). Case A : input is "+ input);
-			
-			browser.getURLType(input);//loadLocalURL(input);       		
-		}
-		else {
-			
-			fileString = "file://";
-
-			status = input.toLowerCase().contains(fileString);          	
-			//pos = input.toLowerCase().indexOf(fileString);
-	    			
-			if (status) {// && pos == 0) {
-				input = input.replace("file://", "file:///");	
-				System.out.println("displayPage(). Case B : input is "+ input);
-				browser.getURLType(input);//loadLocalURL(input);       		
-			}
-			else {
-				
-				fileString = "file:///";
-
-				status = input.toLowerCase().contains(fileString);          	
-				//pos = input.toLowerCase().indexOf(fileString);
-		    			
-				if (status) {// && pos == 0) {				
-					System.out.println("displayPage(). Case C : input is "+ input);
-					browser.loadLocalURL(input);       		
-				}
-				else {
-					System.out.println("displayPage(). Case D : input is "+ input);
-					browser.loadRemoteURL(input);
-				}
-					
-			}			
-		}
-		//});
-	    
-	    try {
-			return new URL(input);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-	}
-*/
 	
 	/**
 	 * Implement ComponentListener interface.
