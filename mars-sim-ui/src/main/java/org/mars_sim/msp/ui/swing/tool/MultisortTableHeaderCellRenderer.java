@@ -26,7 +26,7 @@ public class MultisortTableHeaderCellRenderer extends DefaultTableHeaderCellRend
    * Constructs a <code>MultisortTableHeaderCellRenderer</code> with a default alpha of 0.5.
    */
   public MultisortTableHeaderCellRenderer() {
-    this(0.5F);
+    this(0.7F);
   }
 
   /**

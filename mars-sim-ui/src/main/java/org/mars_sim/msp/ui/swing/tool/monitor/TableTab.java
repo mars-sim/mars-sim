@@ -56,7 +56,7 @@ extends MonitorTab {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private JTableHeader theHeader;
+	private JTableHeader header;
 
 	private TableHeaderRenderer theRenderer;
 
@@ -265,10 +265,10 @@ extends MonitorTab {
         	// Get the TableColumn header to display sorted column
 
 
-           	theHeader = table.getTableHeader();
-        	theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
-        	theHeader.setDefaultRenderer(theRenderer);
-        	theHeader.addMouseListener(new MouseAdapter() {
+           	header = table.getTableHeader();
+        	theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
+        	header.setDefaultRenderer(theRenderer);
+        	header.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) {
         			// Find the column at this point
         			int column = table.getTableHeader().columnAtPoint(e.getPoint());

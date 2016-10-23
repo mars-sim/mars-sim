@@ -19,6 +19,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
@@ -91,7 +92,7 @@ extends ToolWindow {
     private JPanel subPanel;
 
 	/** The main desktop. */
-	private MainDesktopPane desktop;
+	private JDesktopPane desktop;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
@@ -224,9 +225,10 @@ extends ToolWindow {
         });
   
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
- 
+        
+		//pack();
 
-		if (desktop.getMainScene() != null)
+		if (((MainDesktopPane)desktop).getMainScene() != null)
 			setClosable(false);
 
 		// 2014-12-27 Added preferred size and initial location
@@ -236,7 +238,7 @@ extends ToolWindow {
 		//setResizable(false);
 		setVisible(true);
 
-		pack();
+
 		
 	}
 
@@ -437,7 +439,7 @@ extends ToolWindow {
 	 * Gets the main desktop panel for this tool.
 	 * @return main desktop panel.
 	 */
-	public MainDesktopPane getDesktop() {
+	public JDesktopPane getDesktop() {
 		return desktop;
 	}
 
@@ -481,6 +483,10 @@ extends ToolWindow {
 			xyLabel.setTextFill(c);
 			timeLabel.setTextFill(c);
 		}
+	}
+	
+	public void setDesktop(JDesktopPane desktop) {
+		this.desktop = desktop;
 	}
 	
 	@Override

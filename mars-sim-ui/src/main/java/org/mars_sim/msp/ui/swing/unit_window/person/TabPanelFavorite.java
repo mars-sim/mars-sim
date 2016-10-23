@@ -177,7 +177,7 @@ extends TabPanel {
 		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
 		//table.getColumnModel().getColumn(1).setCellRenderer(renderer);
-
+/*
 		DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
 			//private Font font;
             @Override
@@ -220,10 +220,12 @@ extends TabPanel {
                 //setIcon(value);
 				return this;
 */
+/*		
             }
         };
-        
-        table.getColumnModel().getColumn(1).setCellRenderer(r);
+   
+*/        
+        //table.getColumnModel().getColumn(1).setCellRenderer(r);
 
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
@@ -233,9 +235,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
-        if (!MainScene.OS.equals("linux")) {
-        	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+        //if (!MainScene.OS.equals("linux")) {
+        //	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(table);
 
@@ -377,13 +379,13 @@ extends TabPanel {
 				JLabel cell = (JLabel) theResult;
 				cell.setText((String)value);
 			}
-
-			JTableHeader tableHeader = table.getTableHeader();
-		    if (tableHeader != null) {
-		    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
-		    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
-		    }
-
+/*
+			//JTableHeader tableHeader = table.getTableHeader();
+		    //if (tableHeader != null) {
+		   // 	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
+		    //	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
+		   // }
+*/
 			return theResult;
 		}
 	}

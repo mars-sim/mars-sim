@@ -208,9 +208,9 @@ extends TabPanel {
 		//radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
 		// 2015-06-08 Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
-        if (!MainScene.OS.equals("linux")) {
-        	radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+        //if (!MainScene.OS.equals("linux")) {
+        //	radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(radiationTable);
 
@@ -242,9 +242,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		medicationTable.setAutoCreateRowSorter(true);
-       if (!MainScene.OS.equals("linux")) {
-        	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+       //if (!MainScene.OS.equals("linux")) {
+        //	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-06-08 Added setTableStyle()
 		//TableStyle.setTableStyle(medicationTable);
 
@@ -272,9 +272,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		healthProblemTable.setAutoCreateRowSorter(true);
-       if (!MainScene.OS.equals("linux")) {
-        	healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+       //if (!MainScene.OS.equals("linux")) {
+       // 	healthProblemTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(healthProblemTable);
 	}

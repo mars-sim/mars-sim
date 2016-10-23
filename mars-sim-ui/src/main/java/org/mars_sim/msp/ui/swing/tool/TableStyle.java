@@ -31,9 +31,9 @@ public class TableStyle extends ZebraJTable{
 	//private static JTable table;
 	private static JTableHeader theHeader;
 	private static TableHeaderRenderer theRenderer;
-	private static Color border = Color.orange;
-	private static Color hBack = new Color(205, 133, 63); // 205, 133, 63 mud orange
-	private static Color hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
+	private static Color border;// = Color.orange;
+	private static Color hBack;// = new Color(205, 133, 63); // 205, 133, 63 mud orange
+	private static Color hFore;// = new Color(255, 255, 120); // 255, 255, 120 very light yellow
 
 	public TableStyle() {
 		super();
@@ -92,6 +92,7 @@ public class TableStyle extends ZebraJTable{
 
 	   	ZebraJTable z = new ZebraJTable(table.getModel());
 
+/*	   	
     	JTableHeader header = null;
     	if (table.getTableHeader() != null)
     		header = table.getTableHeader();
@@ -99,7 +100,7 @@ public class TableStyle extends ZebraJTable{
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
 		header.setBackground(new java.awt.Color(0, 167, 212));
 		header.setForeground(java.awt.Color.white);
-
+*/
     	int theme = MainScene.getTheme();
 
     	Color back = null;
@@ -171,73 +172,82 @@ public class TableStyle extends ZebraJTable{
     		themeName = "Night";
     	}
     	else if (theme == 6) { // snow + skyblue
-    		hBack = new Color(50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
-    		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
+    		
+    		// see default colors for nimbus 
+    		// https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary
+    		
+    		//hBack = new Color(57, 105, 138);// (57, 105, 138) is navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
+    		//hFore = new Color(164, 209, 242); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
-    		fore = new Color(31, 151, 229); // 139 71 38	sienna4
-    		selBack = new Color(70,130,180); //70 130	180	 steelblue
-    		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
+    		fore = new Color(42, 79, 105); //(42, 205, 60) is navy blue; (31, 151, 229); // 139 71 38	sienna4
+    		//selBack = new Color(144, 208, 229); // (144, 208, 229) is pale cyan; (70, 130, 180) is steelblue/dark sky blue
+    		//selFore = new Color(255, 255, 255); // (86, 105, 119) is grey blue; (133, 164, 242) is very pale light blue; 255 255 224 is LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.LIGHT_GRAY;
-    		themeName = "Snow";
+    		
+    		
+    		themeName = "Snow Blue";
     	}
 
     	else if (theme == 7) { // standard nimrod
-    		hBack = new Color(229, 171, 0); // 205, 133, 63 mud orange
-    		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
+    		//hBack = new Color(101,75,0); // (229, 171, 0) is bright yellow orange // 205, 133, 63 mud orange
+    		//hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		selBack = new Color(189,183,107); // 189,183,107 darkkhaki
-    		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
+    		//selBack = new Color(189,183,107); // 189,183,107 darkkhaki
+    		//selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.orange;
-    		themeName = "Standard Nimrod";
+    		themeName = "Mud Orange"; //Standard Nimrod";
     	}
 
-    	// Get the TableColumn header to display sorted column
-    	theHeader = table.getTableHeader();
-    	theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
-    	theHeader.setDefaultRenderer(theRenderer);
-
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		theHeader.setOpaque(false);
-    	// TODO: why is it NOT working?
-		theHeader.setBackground(hBack);
-		theHeader.setForeground(hFore);
-		theHeader.repaint();
-
-		theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );
 /*
-		JTableHeader tableHeader = table.getTableHeader();
-	    if (tableHeader != null) {
-	    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
-	    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
-	    }
+	    // Get the TableColumn header to display sorted column
+	    theHeader = table.getTableHeader();
+	    theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
+	    theHeader.setDefaultRenderer(theRenderer);		
+		theHeader.setOpaque(false);	
+		theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );	
+		
+    	// TODO: why is it NOT working?
+		if (hBack != null) theHeader.setBackground(hBack);
+		if (hFore != null) theHeader.setForeground(hFore);
+	
+		theHeader.repaint();	
 */
-		// 2015-09-24 Align the content to the center of the cell
-		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		//renderer.setHorizontalAlignment(JLabel.CENTER);
-		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-    	//for (int i = 0; i < table.getColumnCount(); ++i) {
-        //    table.getColumnModel().getColumn(i).setCellRenderer(renderer);
-        //}
+	/*
+			JTableHeader tableHeader = table.getTableHeader();
+		    if (tableHeader != null) {
+		    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
+		    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
+		    }
+	*/
+			// 2015-09-24 Align the content to the center of the cell
+			//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+			//renderer.setHorizontalAlignment(SwingConstants.CENTER);
+			//renderer.setHorizontalAlignment(JLabel.CENTER);
+			//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
+	    	//for (int i = 0; i < table.getColumnCount(); ++i) {
+	        //    table.getColumnModel().getColumn(i).setCellRenderer(renderer);
+	        //}
+	
 
-
-		table.setForeground(fore);
-		table.setBackground(back);
-
-		table.setSelectionForeground(selFore);
-		table.setSelectionBackground(selBack);
-
-		table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
-
-		//table.setShowGrid(true);
-	    //table.setShowVerticalLines(true);
-		table.setGridColor(grid);
+		if (fore != null) table.setForeground(fore);
+		if (back != null) table.setBackground(back);
+	
+		if (selFore != null) table.setSelectionForeground(selFore);
+		if (selBack != null) table.setSelectionBackground(selBack);
+	
+			//table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
+	
+			//table.setShowGrid(true);
+		    //table.setShowVerticalLines(true);
+		if (grid != null) table.setGridColor(grid);
+			
 		table.setBorder(BorderFactory.createLineBorder(border, 1));
-
+		
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    	
 		return (JTable) z;
     }
 
@@ -287,11 +297,11 @@ class TableHeaderRenderer implements TableCellRenderer {
 			cell.setBorder(border);
 		}
 
-		JTableHeader tableHeader = table.getTableHeader();
-	    if (tableHeader != null) {
-	    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
-	    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
-	    }
+		//JTableHeader tableHeader = table.getTableHeader();
+	    //if (tableHeader != null) {
+	    //	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
+	    //	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
+	    //}
 
 		return theResult;
 	}

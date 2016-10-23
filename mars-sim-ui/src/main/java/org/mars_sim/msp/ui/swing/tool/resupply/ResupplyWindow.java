@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -141,15 +142,25 @@ implements ListSelectionListener {
 		});
 		buttonPane.add(cancelButton);
 
-		if (desktop.getMainScene() != null)
-			setClosable(false);
-
 		setMinimumSize(new Dimension(512, 512));
 		setResizable(false);
 		setMaximizable(true);
-		setVisible(true);
 		
+		if (desktop.getMainScene() != null) {
+			setClosable(false);
+		}
+
+		
+		setVisible(true);	
 		pack();
+		
+		Dimension desktopSize = desktop.getMainScene().getDesktops().get(0).getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    setLocation(width, height);
+
+		
 	}
 
 	/**

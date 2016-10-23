@@ -99,7 +99,7 @@ extends JPanel {
 		researcherPane.add(bottomPane, BorderLayout.SOUTH);
 
 		// Create activity label.
-		activityLabel = new JLabel(Msg.getString("ResearcherPanel.activity.none")); //$NON-NLS-1$
+		activityLabel = new JLabel(Msg.getString("ResearcherPanel.activity.none") + " "); //$NON-NLS-1$
 		bottomPane.add(activityLabel, BorderLayout.WEST);
 
 		// Create activity bar panel.
@@ -161,7 +161,7 @@ extends JPanel {
 	 * Update the information.
 	 */
 	void update() {
-		activityLabel.setText(getStudyActivityText());
+		activityLabel.setText(getStudyActivityText() + "    ");
 		setActivityProgressBar();
 	}
 
@@ -178,7 +178,7 @@ extends JPanel {
 	 * @return the activity text.
 	 */
 	private String getStudyActivityText() {
-		String result = Msg.getString("ResearcherPanel.activity.none"); //$NON-NLS-1$
+		String result = Msg.getString("ResearcherPanel.activity.none") + " "; //$NON-NLS-1$
 
 		if ((study != null) && (researcher != null)) {
 			boolean isPrimaryResearcher = 

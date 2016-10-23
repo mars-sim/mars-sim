@@ -137,4 +137,11 @@
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
+.borderpane {
+	-fx-border-color: grey;
+    -fx-border-insets: 5;
+    -fx-border-width: 2;
+}
+
+
 

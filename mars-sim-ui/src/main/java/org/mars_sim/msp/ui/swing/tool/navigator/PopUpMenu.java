@@ -54,7 +54,7 @@ public class PopUpMenu extends JPopupMenu {
     public PopUpMenu(final SettlementWindow swindow, final Unit unit){
     	this.unit = unit;
     	this.settlement = swindow.getMapPanel().getSettlement();
-        this.desktop = swindow.getDesktop();
+        this.desktop = (MainDesktopPane) swindow.getDesktop();
 
         UIResource res = new BorderUIResource.LineBorderUIResource(Color.orange);
         UIManager.put("PopupMenu.border", res);

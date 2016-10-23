@@ -100,7 +100,12 @@ public class EditMissionDialog extends ModalInternalFrame {
 		//setResizable(false);
 		//setVisible(true);
 		
-	    desktop.add(this);	    
+        // 2016-10-22 Add to its own tab pane
+        if (desktop.getMainScene() != null)
+        	desktop.getMainScene().getDesktops().get(1).add(this);
+        else 
+        	desktop.add(this);
+	    
 	    
         setSize(new Dimension(700, 550));
 		Dimension desktopSize = desktop.getParent().getSize();

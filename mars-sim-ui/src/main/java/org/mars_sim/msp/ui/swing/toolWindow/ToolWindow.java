@@ -95,6 +95,7 @@ extends JInternalFrame {
 		// Set internal frame listener
 		//ToolFrameListener tool = new ToolFrameListener(this);
 		//addInternalFrameListener(tool);
+		
 		addInternalFrameListener(new ToolFrameListener());
 	}
 
@@ -135,16 +136,16 @@ extends JInternalFrame {
 			if(this.isVisible() || this.isShowing() ) {
 				//System.out.println("this.getToolName() is "+ this.getToolName());
 				// Note: need to refresh the table column/row header
-				if (this.getToolName().equals("Monitor Tool"))
+				if (this.getToolName().equals(MonitorWindow.NAME))
 					monitorWindow.refreshTable();
 					//pack(); // create time lag, and draw artifact
 					SwingUtilities.invokeLater(() -> {
 						//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
-						//SwingUtilities.updateComponentTreeUI(this); // create time lag, draw artifact and search text out of focus
+						SwingUtilities.updateComponentTreeUI(this); // create time lag, draw artifact and search text out of focus
 					});
 					//mainScene.setLookAndFeel(1); causing java.lang.NullPointerException at com.jidesoft.plaf.basic.BasicJideTabbedPaneUI.getFontMetrics(BasicJideTabbedPaneUI.java:5063)
 					//SwingUtilities.updateComponentTreeUI(this); causing java.lang.NullPointerException
-				//Platform.runLater(() -> {
+					//Platform.runLater(() -> {
 						//mainScene.changeTheme(mainScene.getTheme());
 					//});
 				}

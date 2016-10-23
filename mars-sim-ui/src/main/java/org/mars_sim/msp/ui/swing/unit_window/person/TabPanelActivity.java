@@ -67,7 +67,7 @@ implements ActionListener {
 	/** data cache */
 	private String missionPhaseCache = ""; //$NON-NLS-1$
 
-	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 	
 	/**
 	 * Constructor.
@@ -259,7 +259,7 @@ implements ActionListener {
 		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
 		//missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
-		balloonToolTip.createBalloonTip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
+		//balloonToolTip.createBalloonTip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 		
 		missionButton.addActionListener(this);
 		
@@ -276,7 +276,7 @@ implements ActionListener {
 		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		//monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
-		balloonToolTip.createBalloonTip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
+		//balloonToolTip.createBalloonTip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 		
 		if (person != null) {
@@ -404,7 +404,8 @@ implements ActionListener {
 							((MissionWindow) desktop.getToolWindow(MissionWindow.NAME)).selectMission(mind.getMission());
 							getDesktop().openToolWindow(MissionWindow.NAME);
 						}
-						else if (source == monitorButton) desktop.addModel(new PersonTableModel(mind.getMission()));
+						else if (source == monitorButton) 
+							desktop.addModel(new PersonTableModel(mind.getMission()));
 					}
 				}
 			}

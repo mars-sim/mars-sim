@@ -94,7 +94,7 @@ implements ActionListener {
 	private StarRater starRater, aveRater;
 	private MarsClock marsClock;
 
-	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 
 	/**
 	 * Constructor.
@@ -163,7 +163,7 @@ implements ActionListener {
 			// Prepare job label
 			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.CENTER); //$NON-NLS-1$
 			jobPanel.add(jobLabel);
-			balloonToolTip.createBalloonTip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
+			//balloonToolTip.createBalloonTip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
 
 
 			// Prepare job combo box
@@ -178,7 +178,7 @@ implements ActionListener {
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
 			jobPanel.add(jobComboBox);
-			balloonToolTip.createBalloonTip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip")); //$NON-NLS-1$
+			//balloonToolTip.createBalloonTip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip")); //$NON-NLS-1$
 
 
 			// check if a job reassignment is still pending for review
@@ -203,8 +203,8 @@ implements ActionListener {
 			rolePanel.add(roleTF);
 
 			String roleTip = Msg.getString("TabPanelCareer.roleType.tooltip"); //$NON-NLS-1$
-			balloonToolTip.createBalloonTip(roleLabel, roleTip);
-			balloonToolTip.createBalloonTip(roleTF, roleTip);
+			//balloonToolTip.createBalloonTip(roleLabel, roleTip);
+			//balloonToolTip.createBalloonTip(roleTF, roleTip);
 
 			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 			int size = list.size();
@@ -223,8 +223,8 @@ implements ActionListener {
 			aveRater.setEnabled(false);
 
 			String tip = Msg.getString("TabPanelCareer.aveRater.tooltip");
-			balloonToolTip.createBalloonTip(aveRatingLabel, tip); //$NON-NLS-1$
-			balloonToolTip.createBalloonTip(aveRater, tip); //$NON-NLS-1$
+			//balloonToolTip.createBalloonTip(aveRatingLabel, tip); //$NON-NLS-1$
+			//balloonToolTip.createBalloonTip(aveRater, tip); //$NON-NLS-1$
 
 			aveRatingPanel.add(aveRater);
 			ratingPanel.add(aveRatingPanel);
@@ -238,8 +238,8 @@ implements ActionListener {
 			raterPanel.add(raterLabel);
 			starRater = new StarRater(5, 0, 0);
 			//starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
-			balloonToolTip.createBalloonTip(raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip")); //$NON-NLS-1$
-			balloonToolTip.createBalloonTip(starRater, Msg.getString("TabPanelCareer.starRater.tooltip")); //$NON-NLS-1$
+			//balloonToolTip.createBalloonTip(raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip")); //$NON-NLS-1$
+			//balloonToolTip.createBalloonTip(starRater, Msg.getString("TabPanelCareer.starRater.tooltip")); //$NON-NLS-1$
 
 	        starRater.addStarListener(
 	            new StarRater.StarListener()   {
@@ -364,9 +364,9 @@ implements ActionListener {
 
 		// 2015-06-08 Added sorting
 		table.setAutoCreateRowSorter(true);
-		if (!MainScene.OS.equals("linux")) {
-        	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+		//if (!MainScene.OS.equals("linux")) {
+        //	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(table);
 
@@ -788,8 +788,6 @@ implements ActionListener {
 
 		/**
 		 * Prepares the job history of the person
-		 * @param
-		 * @param
 		 */
 		private void update() {
 			jobAssignmentList = jobHistory.getJobAssignmentList();
@@ -810,7 +808,7 @@ implements ActionListener {
 		jobHistoryTableModel = null;
 		starRater = null;
 		marsClock = null;
-		balloonToolTip = null;
+		//balloonToolTip = null;
 	}
 
 }

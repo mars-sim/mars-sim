@@ -91,14 +91,25 @@ public class PopUpUnitMenu extends JPopupMenu {
     	//this.vehicle = vehicle;
     	this.unit = unit;
     	this.settlement = swindow.getMapPanel().getSettlement();
-        this.desktop = swindow.getDesktop();
+        this.desktop = (MainDesktopPane) swindow.getDesktop();
 
         if (desktop.getMainWindow() != null)
         	mainWindow = desktop.getMainWindow();
         else if (desktop.getMainScene() != null)
         	mainScene = desktop.getMainScene();
 
-        UIResource res = new BorderUIResource.LineBorderUIResource(Color.orange);
+        UIResource res = null;
+        
+        if (mainScene != null) {
+	        if (mainScene.getTheme() == 7)
+	        	new BorderUIResource.LineBorderUIResource(Color.orange);
+	        else if (mainScene.getTheme() == 0 || mainScene.getTheme() == 6)
+	        	new BorderUIResource.LineBorderUIResource(Color.blue);
+        }
+        else
+        	new BorderUIResource.LineBorderUIResource(Color.blue);
+        	
+        
         UIManager.put("PopupMenu.border", res);
         //force to the Heavyweight Component or able for AWT Components
         this.setLightWeightPopupEnabled(false);

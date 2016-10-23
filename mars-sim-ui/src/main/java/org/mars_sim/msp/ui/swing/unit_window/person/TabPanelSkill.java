@@ -120,18 +120,18 @@ extends TabPanel {
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 		// 2015-09-24 Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		//skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		//skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		skillScrollPanel.setViewportView(skillTable);
 
 		// 2015-06-08 Added sorting
 		skillTable.setAutoCreateRowSorter(true);
-	    if (!MainScene.OS.equals("linux")) {
-	    	skillTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    }
+	    //if (!MainScene.OS.equals("linux")) {
+	    //	skillTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    //}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(skillTable);
 	}

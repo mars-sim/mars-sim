@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JDesktopPane;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -97,7 +98,7 @@ implements ClockListener {
 	/** Constructor 1
 	 * 	A panel for displaying a settlement map.
 	 */
-	public SettlementMapPanel(final MainDesktopPane desktop, final SettlementWindow settlementWindow) {
+	public SettlementMapPanel(JDesktopPane desktop, final SettlementWindow settlementWindow) {
 		super();
 		this.settlementWindow = settlementWindow;
 
@@ -134,17 +135,18 @@ implements ClockListener {
 
 		// 2015-01-16 Added detectMouseMovement() after refactoring
 		SwingUtilities.invokeLater(() -> {
+			detectMouseMovement();
 			setFocusable(true);
 			requestFocusInWindow();
-
-			detectMouseMovement();
 		});
 
+		//SwingUtilities.updateComponentTreeUI(this);
+			
         setVisible(true);
 	}
 
 	// 2015-02-09 Added init()
-	public void init(MainDesktopPane desktop) {
+	public void init(JDesktopPane desktop) {
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
@@ -162,7 +164,7 @@ implements ClockListener {
 		//});
 	
 		////paintDoubleBuffer();
-		repaint();
+		//repaint();
 	}
 
 	/** Constructor 2
@@ -191,16 +193,14 @@ implements ClockListener {
 		// Set foreground and background colors.
 		setOpaque(true);
 
-		//paintDoubleBuffer();
-		repaint();
 	}
 
 	public void detectMouseMovement() {
-
+/*
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
-				setCursor(new Cursor(Cursor.HAND_CURSOR));
+				//setCursor(new Cursor(Cursor.HAND_CURSOR));
 				if (evt.getButton() == MouseEvent.BUTTON3) {
 					// Set initial mouse drag position.
 					xLast = evt.getX();
@@ -216,7 +216,7 @@ implements ClockListener {
 				selectRobotAt(evt.getX(), evt.getY());
 			}
 		});
-
+*/
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
@@ -231,34 +231,61 @@ implements ClockListener {
 					xLast = evt.getX();
 					yLast = evt.getY();
 				}
+				
 			}
+					
+			
 		});
 
 		//2014-11-22 Added PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
-		    public void mousePressed(MouseEvent evt){
-				 if (evt.isPopupTrigger()) {
+
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				// Select person if clicked on.
+				if (evt.getButton() == MouseEvent.BUTTON1
+						|| evt.getButton() == MouseEvent.BUTTON3) {
+					setCursor(new Cursor(Cursor.HAND_CURSOR));
+					selectPersonAt(evt.getX(), evt.getY());
+					selectRobotAt(evt.getX(), evt.getY());
+				}
+				
+				else if (evt.isPopupTrigger()) {
 					 setCursor(new Cursor(Cursor.HAND_CURSOR));
-					 repaint();
 					 doPop(evt);
-				 }
+				}
+			}
+			
+			@Override
+		    public void mousePressed(MouseEvent evt){				 
+				//setCursor(new Cursor(Cursor.HAND_CURSOR));
+				if (evt.getButton() == MouseEvent.BUTTON3) {
+					// Set initial mouse drag position.
+					xLast = evt.getX();
+					yLast = evt.getY();
+					
+					 if (evt.isPopupTrigger()) {
+						 setCursor(new Cursor(Cursor.HAND_CURSOR));
+						 doPop(evt);
+					 }
+				}			
 		    }
 
+			@Override
 		    public void mouseReleased(MouseEvent evt){
-		    	setCursor(new Cursor(Cursor.HAND_CURSOR));
+		    	//setCursor(new Cursor(Cursor.HAND_CURSOR));
 				//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				if (evt.getButton() == MouseEvent.BUTTON3) {
 					xLast = evt.getX();
 					yLast = evt.getY();
+					
+					if (evt.isPopupTrigger()) {
+						setCursor(new Cursor(Cursor.HAND_CURSOR));
+						doPop(evt);
+					}
 				}
-
-				if (evt.isPopupTrigger()) {
-					doPop(evt);
-				}
-
-				repaint();
-
 		    }
+			
 		    //2015-01-14 Added vehicle detection
 		    private void doPop(final MouseEvent evt){
 		    	//System.out.println("doPop()");
@@ -284,10 +311,11 @@ implements ClockListener {
     	        	else if (site != null)
     	        		menu = new PopUpUnitMenu(settlementWindow, site);
 
+    	        	setComponentPopupMenu(menu);
     	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		        }
 		    }
-		} // end of class PopClickListener
+		}// end of class PopClickListener
 
 		addMouseListener(new PopClickListener());
 
@@ -972,7 +1000,6 @@ implements ClockListener {
 	@Override
 	public void clockPulse(double time) {
 		// Repaint map panel with each clock pulse.
-		//paintDoubleBuffer();
 		repaint();
 	}
 

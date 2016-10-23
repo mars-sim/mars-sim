@@ -104,9 +104,9 @@ public abstract class UnitWindow extends JInternalFrame {
 	    this.setPreferredSize(new Dimension(480, 580));
 	    
         // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
-        BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
-        titlePane.setOpaque(true);
-        titlePane.setBackground(new Color(250, 213, 174)); // light pale orange
+        //BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
+        //titlePane.setOpaque(true);
+        //titlePane.setBackground(new Color(250, 213, 174)); // light pale orange
 
         tabPanels = new ArrayList<TabPanel>();
 

@@ -113,9 +113,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		goodsTable.setAutoCreateRowSorter(true);
-	    if (!MainScene.OS.equals("linux")) {
-	    	goodsTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    }
+	    //if (!MainScene.OS.equals("linux")) {
+	    //	goodsTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    //}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(goodsTable);
 

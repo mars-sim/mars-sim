@@ -95,7 +95,13 @@ implements ActionListener {
 		categoryPane.add(transportCheck);
 
 		pack();
-		desktop.add(this);
+		
+        // 2016-10-22 Add to its own tab pane
+        if (desktop.getMainScene() != null)
+        	desktop.getMainScene().getDesktops().get(0).add(this);
+        else 
+        	desktop.add(this);
+	    
 	}
 
 	/**

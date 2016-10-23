@@ -185,9 +185,6 @@ public class MainSceneMenu extends MenuBar  {
         Menu skinThemeItem = new Menu("Skin Theme");
         ToggleGroup skinThemeToggleGroup = new ToggleGroup();
         
-        RadioMenuItem sevenItem = new RadioMenuItem("Standard");
-        sevenItem.setToggleGroup(skinThemeToggleGroup);
-        sevenItem.setSelected(true);
 /*
         RadioMenuItem oneItem = new RadioMenuItem("Olive");
         oneItem.setToggleGroup(skinThemeToggleGroup);
@@ -201,10 +198,15 @@ public class MainSceneMenu extends MenuBar  {
         RadioMenuItem fiveItem = new RadioMenuItem("Violet");
         fiveItem.setToggleGroup(skinThemeToggleGroup);
 */
-        RadioMenuItem sixItem = new RadioMenuItem("Snow");
+        RadioMenuItem sixItem = new RadioMenuItem("Snow Blue");
         sixItem.setToggleGroup(skinThemeToggleGroup);
+        //sixItem.setSelected(true);
 
-        skinThemeItem.getItems().addAll(sevenItem, sixItem);//, oneItem, twoItem, threeItem, fourItem, fiveItem);
+        RadioMenuItem sevenItem = new RadioMenuItem("Mud Orange");
+        sevenItem.setToggleGroup(skinThemeToggleGroup);
+        sevenItem.setSelected(true);
+        
+        skinThemeItem.getItems().addAll(sixItem, sevenItem);//, oneItem, twoItem, threeItem, fourItem, fiveItem);
 
 
         //CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
@@ -410,13 +412,6 @@ public class MainSceneMenu extends MenuBar  {
         	mainScene.changeTheme(6);
 
     		SwingUtilities.invokeLater(() -> {	
-    			// 2016-06-17 Added checking for OS. 
-    			// Note: NIMROD theme lib doesn't work on linux 
-    			if (MainScene.OS.equals("linux"))
-    				mainScene.setLookAndFeel(2);			
-    			else 
-    				mainScene.setLookAndFeel(1);		
-    			
             	mainScene.getSwingNode().setContent(desktop);
     		});
             
@@ -424,14 +419,8 @@ public class MainSceneMenu extends MenuBar  {
 
         sevenItem.setOnAction(e -> {
         	mainScene.changeTheme(7);
+        	
     		SwingUtilities.invokeLater(() -> {	
-    			// 2016-06-17 Added checking for OS. 
-    			// Note: NIMROD theme lib doesn't work on linux 
-    			if (MainScene.OS.equals("linux"))
-    				mainScene.setLookAndFeel(2);			
-    			else 
-    				mainScene.setLookAndFeel(1);		
-    			
             	mainScene.getSwingNode().setContent(desktop);
     		});
             

@@ -102,7 +102,7 @@ implements Serializable, MouseListener {
 
 	//private String[] tooltipArray;
 	private ArrayList tooltipArray;
-	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 	//private String deletingCrop = "";
 
 	// 2014-12-09 Added comboBox for crop queue
@@ -163,7 +163,7 @@ implements Serializable, MouseListener {
 		JPanel radPanel = new JPanel(new FlowLayout());
 		radLabel = new JLabel(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache),  JLabel.CENTER);
 	    radPanel.add(radLabel);
-		balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
+		//balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
 		labelPanel.add(radPanel);
 		
 		// Prepare farmers label
@@ -171,7 +171,7 @@ implements Serializable, MouseListener {
 		JPanel farmersPanel = new JPanel(new FlowLayout());
 		farmersLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfFarmers", farmersCache), JLabel.CENTER);
 	    farmersPanel.add(farmersLabel);
-		balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
+		//balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
 		labelPanel.add(farmersPanel);
 
 		// Prepare crops label
@@ -179,7 +179,7 @@ implements Serializable, MouseListener {
 		JPanel cropsPanel = new JPanel(new FlowLayout());
 		cropsLabel = new JLabel(Msg.getString("BuildingPanelFarming.numberOfCrops", cropsCache), JLabel.CENTER);
 	    cropsPanel.add(cropsLabel);
-		balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
+		//balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
 		labelPanel.add(cropsPanel);
 
 
@@ -290,7 +290,7 @@ implements Serializable, MouseListener {
 		//buttonPanel.setOpaque(false);
 		//buttonPanel.setBackground(new Color(0,0,0,128));
 		JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
-	    balloonToolTip.createBalloonTip(addButton, "<html>Select a crop from <br> the left to add</html>");
+	    //balloonToolTip.createBalloonTip(addButton, "<html>Select a crop from <br> the left to add</html>");
 		addButton.setPreferredSize(new Dimension(60, 20));
 		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		//addButton.setOpaque(false);
@@ -309,7 +309,7 @@ implements Serializable, MouseListener {
 		selectPanel.add(buttonPanel);
 
 		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
-	    balloonToolTip.createBalloonTip(delButton, "<html>Highlight a crop in <br> the queue below to delete </html>");
+	    //balloonToolTip.createBalloonTip(delButton, "<html>Highlight a crop in <br> the queue below to delete </html>");
 		delButton.setPreferredSize(new Dimension(60, 20));
 		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
 		//delButton.setOpaque(false);
@@ -375,7 +375,7 @@ implements Serializable, MouseListener {
             }
             });
 		comboBox.setMaximumRowCount(10);
-	    balloonToolTip.createBalloonTip(comboBox, "<html>Select a crop from here</html>");	    
+	    //balloonToolTip.createBalloonTip(comboBox, "<html>Select a crop from here</html>");	    
 	    selectPanel.add(comboBox);
 
 		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new FlowLayout(FlowLayout.CENTER));
@@ -409,7 +409,7 @@ implements Serializable, MouseListener {
 		listModel = new ListModel(); //settlement);
 		// Create list
 		list = new JList<CropType>(listModel);
-	    balloonToolTip.createBalloonTip(list, "<html>Crops in the queue</html>");	
+	    //balloonToolTip.createBalloonTip(list, "<html>Crops in the queue</html>");	
 		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -584,14 +584,14 @@ implements Serializable, MouseListener {
 		if (farmersCache != farm.getFarmerNum()) {
 			farmersCache = farm.getFarmerNum();
 			farmersLabel.setText("# Farmers: " + farmersCache);
-		    balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
+		    //balloonToolTip.createBalloonTip(farmersLabel, "<html># of active gardeners <br> tending the greenhouse</html>");
 		}
 
 		// Update crops label if necessary.
 		if (cropsCache != farm.getCrops().size()) {
 			cropsCache = farm.getCrops().size();
 			cropsLabel.setText("# Crops: " + cropsCache);
-		    balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
+		    //balloonToolTip.createBalloonTip(cropsLabel, "<html># of growing crops<br> in this greenhouse</html>");
 		}
 
 
@@ -601,7 +601,7 @@ implements Serializable, MouseListener {
 		if (radCache != rad) {
 			radCache = rad;
 			radLabel.setText(Msg.getString("BuildingPanelFarming.solarIrradiance", radCache));
-		    balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
+		    //balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
 		}
 
 		// Update crop table.
@@ -895,7 +895,7 @@ implements Serializable, MouseListener {
 		
 		farm = null;
 		tooltipArray = null;
-		balloonToolTip = null;
+		//balloonToolTip = null;
 		comboBoxModel= null;
 		comboBox= null;
 		list= null;

@@ -109,9 +109,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		creditTable.setAutoCreateRowSorter(true);
-		if (!MainScene.OS.equals("linux")) {
-			creditTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+		//if (!MainScene.OS.equals("linux")) {
+		//	creditTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-09-28 Align the preference score to the center of the cell
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);

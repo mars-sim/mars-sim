@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -147,18 +148,23 @@ extends ToolWindow {
 				});
 		buttonPane.add(endButton);
 
-		
-		if (desktop.getMainScene() != null)
-			setClosable(false);
-
-		//setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 		setSize(new Dimension(640, 512));
 		setMaximizable(true);
 		setResizable(false);
-		setVisible(true);
 		
-		// Pack window
+		if (desktop.getMainScene() != null) {
+			setClosable(false);
+		}
+
+		setVisible(true);	
 		//pack();
+		
+		Dimension desktopSize = desktop.getMainScene().getDesktops().get(0).getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    setLocation(width, height);
+
 	}
 
 	/**

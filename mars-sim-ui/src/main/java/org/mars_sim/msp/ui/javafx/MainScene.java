@@ -71,13 +71,18 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -93,6 +98,10 @@ import javax.management.AttributeList;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.swing.AbstractAction;
+import javax.swing.DesktopManager;
+import javax.swing.ImageIcon;
+import javax.swing.JDesktopPane;
+import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -115,6 +124,8 @@ import org.mars_sim.msp.ui.javafx.notification.MessagePopup;
 import org.mars_sim.msp.ui.javafx.notification.PNotification;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
 import org.mars_sim.msp.ui.steelseries.tools.Orientation;
+import org.mars_sim.msp.ui.swing.DesktopPane;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
@@ -145,6 +156,9 @@ public class MainScene {
 	
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 
+	public static final int NIMROD_THEME = 1;
+	public static final int NIMBUS_THEME = 2;
+	
 	public static final int LOADING = 0;
 	public static final int SAVING = 1;
 	public static final int PAUSED = 2; 
@@ -152,7 +166,7 @@ public class MainScene {
 	private static final String PAUSE_MSG = " [ PAUSE ]  ESC to resume  ";
 	private static final String LAST_SAVED = "Last Saved : ";
 	
-	private static int theme = 7; // 7 is the standard nimrod theme
+	private static int theme = 7; // 6 is snow blue with nimbus ; 7 is the orange with nimrod
 
 	public static int chatBoxHeight = 256;
 
@@ -213,7 +227,7 @@ public class MainScene {
 	private ESCHandler esc = null;
 
 	private JFXTabPane jfxTabPane;
-	private Tab desktopTab;
+	private Tab unitsTab;
 	
 	private Timeline timeline;
 	private static NotificationPane notificationPane;
@@ -238,6 +252,8 @@ public class MainScene {
 	private EarthClock earthClock;
 	
 	private SettlementWindow settlementWindow; 
+	
+	private List<DesktopPane> desktops;
 	
 	/**
 	 * Constructor for MainScene
@@ -496,15 +512,15 @@ public class MainScene {
 	public void createFXTabs() {
 		jfxTabPane = new JFXTabPane();
 		
-		//String cssFile = "/fxui/css/nimrodskin.css";
-		//jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		//jfxTabPane.getStyleClass().add("jfx-tab-pane");
+		String cssFile = "/css/jfx_orange.css";
+		jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		jfxTabPane.getStyleClass().add("jfx-tab-pane");
 		
 		//jfxTabPane.setPrefSize(300, 200);
 				
-		desktopTab = new Tab();
-		desktopTab.setText("Desktop");
-		desktopTab.setContent(desktopPane);
+		unitsTab = new Tab();
+		unitsTab.setText("Units");
+		unitsTab.setContent(desktopPane);
 		
 		//StackPane settlementPane = new StackPane();
 		//Tab settlementTab = new Tab();
@@ -521,59 +537,104 @@ public class MainScene {
 */
 
 		MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
-		SwingNode monNode = new SwingNode();
-		monNode.setContent(monWin); 
+		SwingNode monNode = new SwingNode();		
+	    JDesktopPane d0 = desktops.get(0);
+	    d0.add(monWin);
+		monNode.setContent(d0); 
 		StackPane monPane = new StackPane(monNode);
 		Tab monTab = new Tab();
 		monTab.setText("Monitor");
 		monTab.setContent(monPane);
 
+		desktop.openToolWindow(MonitorWindow.NAME);
+		
 		MissionWindow missionWin = (MissionWindow) desktop.getToolWindow(MissionWindow.NAME);
 		SwingNode missionNode = new SwingNode();
-		missionNode.setContent(missionWin); 
+	    JDesktopPane d1 = desktops.get(1);
+	    d1.add(missionWin);
+		missionNode.setContent(d1); 
 		StackPane missionPane = new StackPane(missionNode);
 		Tab missionTab = new Tab();
 		missionTab.setText("Mission");
 		missionTab.setContent(missionPane);
 
+		desktop.openToolWindow(MissionWindow.NAME);
+		
 		SettlementWindow settlementWin = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		SwingNode settlementNode = new SwingNode();
-		settlementNode.setContent(settlementWin); 
+	    //JDesktopPane d2 = desktops.get(2);
+	    //d2.add(settlementWin);
+	    //settlementNode.setContent(d2); 
+	    settlementNode.setContent(settlementWin);
 		StackPane settlementPane = new StackPane(settlementNode);
 		Tab settlementTab = new Tab();
 		settlementTab.setText("Settlements");
 		settlementTab.setContent(settlementPane);
 		
+		desktop.openToolWindow(SettlementWindow.NAME);
+		
 		ResupplyWindow resupplyWin = (ResupplyWindow) desktop.getToolWindow(ResupplyWindow.NAME);
 		SwingNode resupplyNode = new SwingNode();
-		resupplyNode.setContent(resupplyWin); 
+	    JDesktopPane d2 = desktops.get(2);
+	    d2.add(resupplyWin);
+		resupplyNode.setContent(d2); 
 		StackPane resupplyPane = new StackPane(resupplyNode);
 		Tab resupplyTab = new Tab();
 		resupplyTab.setText("Resupply");
 		resupplyTab.setContent(resupplyPane);
 
+		desktop.openToolWindow(ResupplyWindow.NAME);
+		
 		ScienceWindow scienceWin = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
 		SwingNode scienceNode = new SwingNode();
-		scienceNode.setContent(scienceWin); 
+	    //JDesktopPane d4 = desktops.get(4);
+	    //d4.add(scienceWin);
+		//scienceNode.setContent(d4); 
+		scienceNode.setContent(scienceWin);
 		StackPane sciencePane = new StackPane(scienceNode);
 		Tab scienceTab = new Tab();
 		scienceTab.setText("Science");
 		scienceTab.setContent(sciencePane);
 	
+		desktop.openToolWindow(ScienceWindow.NAME);	
 		
 		GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-		SwingNode helpNode = new SwingNode();
-		helpNode.setContent(ourGuide); // desktop.getBrowserJFX()
-		StackPane helpPane = new StackPane(helpNode);
+		SwingNode guideNode = new SwingNode();
+		guideNode.setContent(ourGuide); 
+		StackPane helpPane = new StackPane(guideNode);
 		Tab helpTab = new Tab();
 		helpTab.setText("Help");
 		helpTab.setContent(helpPane);
 
+		desktop.openToolWindow(GuideWindow.NAME);
 		
-		jfxTabPane.getTabs().addAll(desktopTab, monTab, settlementTab, missionTab, resupplyTab, scienceTab, helpTab);	
+		jfxTabPane.getTabs().addAll(unitsTab, monTab, missionTab, settlementTab, resupplyTab, scienceTab, helpTab);	
+/*
+		//if (mainScene != null) {	
+			//openToolWindow(NavigatorWindow.NAME);
+		desktop.openToolWindow(MonitorWindow.NAME);
+		desktop.openToolWindow(MissionWindow.NAME);
+		desktop.openToolWindow(SettlementWindow.NAME);
+		desktop.openToolWindow(ResupplyWindow.NAME);
+		desktop.openToolWindow(ScienceWindow.NAME);		
+		desktop.openToolWindow(GuideWindow.NAME);
+		//}
 
+*/
 	}
 	
+	public void createDesktops() {
+		desktops = new ArrayList<DesktopPane>();		
+		int size = 3;	
+		for (int i= 0; i < size; i++ ){
+		   DesktopPane d = new DesktopPane(this);
+		   desktops.add(d); 
+		}	    
+	}
+	
+	public List<DesktopPane> getDesktops() {
+		return desktops;
+	}
 	
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
@@ -586,19 +647,7 @@ public class MainScene {
 		// (2). the inability of loading the tab icons of the Monitor Tool at the beginning
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
-
 		changeTheme(theme);
-
-		// SwingUtilities is needed for MacOSX compatibility
-		SwingUtilities.invokeLater(() -> {	
-			// 2016-06-17 Added checking for OS. 
-			// Note: NIMROD theme lib doesn't work on linux 
-			if (OS.equals("linux"))
-				setLookAndFeel(2);			
-			else 
-				setLookAndFeel(1);			
-		});
-		
 		//logger.info("done with MainScene's initializeTheme()");
 	}
 
@@ -607,6 +656,18 @@ public class MainScene {
 	 */
 	public void changeTheme(int theme) {
 		this.theme = theme;
+		
+		SwingUtilities.invokeLater(() -> {	
+			// 2016-06-17 Added checking for OS. 
+			// Note: NIMROD theme lib doesn't work on linux 
+			if (OS.equals("linux")) { 
+				this.theme = 0;
+				setLookAndFeel(NIMBUS_THEME);	
+			}
+			else 
+				setLookAndFeel(NIMROD_THEME);			
+		});
+		
 		desktopPane.getStylesheets().clear();
 		if (menuBar.getStylesheets() != null) menuBar.getStylesheets().clear();
 		statusBar.getStylesheets().clear();	
@@ -614,7 +675,13 @@ public class MainScene {
 		String cssFile;
 	
 		//logger.info("MainScene's changeTheme()");
-		if (theme == 1) { // olive green
+		if (theme == 0) { //  snow blue 
+			// for numbus theme
+			cssFile = "/fxui/css/snowBlue.css";
+			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
+			lookAndFeelTheme = "Snow";
+
+		} else if (theme == 1) { // olive green
 			cssFile = "/fxui/css/oliveskin.css";
 			updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssFile); //DARKOLIVEGREEN
 			lookAndFeelTheme = "LightTabaco";
@@ -640,11 +707,13 @@ public class MainScene {
 			lookAndFeelTheme = "Night";
 
 		} else if (theme == 6) { // + skyblue
+	
 			cssFile = "/fxui/css/snowBlue.css";
 			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
 
-		} else if (theme == 7) { // standard
+		} else if (theme == 7) { // mud orange/standard
+
 			cssFile = "/fxui/css/nimrodskin.css";
 			updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(156,77,0), cssFile); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
@@ -671,7 +740,7 @@ public class MainScene {
 		timeText.setTextFill(txtColor);
 		lastSaveText.setTextFill(txtColor);
 		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		//jfxTabPane.getStylesheets().clear();
+		jfxTabPane.getStylesheets().clear();
 		
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow)(desktop.getToolWindow(SettlementWindow.NAME));
@@ -691,14 +760,14 @@ public class MainScene {
 				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
 			
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_chat_36.png"))));
-			//jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_blue.css").toExternalForm());
 		}
 		else if (theme == 7) {
 			if (!OS.contains("mac"))
 				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menubar_36.png"))));
 			
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_36.png"))));
-			//jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_orange.css").toExternalForm());
 		}
 		
 		chatBox.update();    
@@ -1183,16 +1252,16 @@ public class MainScene {
 		} else if (choice == 1) { // theme == "nimRODLookAndFeel"
 			try {
 
-				if (lookAndFeelTheme.equals("nimrod"))
+				//if (lookAndFeelTheme.equals("nimrod")) // at the start of the sim
 					// Use default theme
-					try {
-						UIManager.setLookAndFeel(new NimRODLookAndFeel());
-						changed = true;
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				//	try {
+				//		UIManager.setLookAndFeel(new NimRODLookAndFeel());
+				//		changed = true;
+				//	} catch (Exception e) {
+				//		e.printStackTrace();
+				//	}
 
-				else {
+				//else { // at the start of the sim
 					/*
 					 * //TODO: let user customize theme in future NimRODTheme nt
 					 * = new NimRODTheme(); nt.setPrimary1(new
@@ -1201,28 +1270,36 @@ public class MainScene {
 					 * java.awt.Color(30,30,30)); NimRODLookAndFeel NimRODLF =
 					 * new NimRODLookAndFeel(); NimRODLF.setCurrentTheme( nt);
 					 */
-					NimRODTheme nt = new NimRODTheme(
-							getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
+					if (theme == 0 || theme == 6) {
+						lookAndFeelTheme = "Snow";
+					}
+					else if (theme == 0)
+						lookAndFeelTheme = "nimrod"; // note that nimrod.theme uses all default parameter except overriding the opacity with 220.
+					
+					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
+					
 					NimRODLookAndFeel nf = new NimRODLookAndFeel();
+					
 					nf.setCurrentTheme(nt);
+
 					UIManager.setLookAndFeel(nf);
 					changed = true;
-				}
+				//}
 
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
 		} else if (choice == 2) {
 			try {
-				// Set Nimbus look & feel if found in JVM.
 				boolean foundNimbus = false;
-				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {				
 					if (info.getName().equals("Nimbus")) { //$NON-NLS-1$
+						// Set Nimbus look & feel if found in JVM.
 						UIManager.setLookAndFeel(info.getClassName());
 						foundNimbus = true;
 						lookAndFeelTheme = "nimbus";
 						changed = true;
-						break;
+						//break;
 					}
 				}
 
@@ -1260,14 +1337,9 @@ public class MainScene {
 	}
 
 	private void createSwingNode() {
+		createDesktops();
 		desktop = new MainDesktopPane(this);
-		SwingUtilities.invokeLater(() -> {	
-			// 2016-06-17 Added checking for OS. 
-			// Note: NIMROD theme lib doesn't work on linux 
-			if (OS.equals("linux"))
-				setLookAndFeel(2);			
-			else 
-				setLookAndFeel(1);				
+		SwingUtilities.invokeLater(() -> {			
 			swingNode.setContent(desktop);
 		});
 	}
@@ -1352,7 +1424,7 @@ public class MainScene {
 	}
 
 	public void openInitialWindows() {
-		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		//String OS = System.getProperty("os.name").toLowerCase();
 		//System.out.println("OS is " + OS);
 		if (OS.contains("mac")) {
@@ -1603,6 +1675,10 @@ public class MainScene {
     	return mainSceneExecutor;
     }
     
+    public JFXTabPane getJFXTabPane() {
+    	return jfxTabPane;
+    }
+    
 	public void destroy() {
 		quote = null;
 		messagePopup = null;		
@@ -1629,7 +1705,7 @@ public class MainScene {
 		loadingCircleStage = null;
 		savingCircleStage = null;
 		pausingCircleStage = null;
-		desktopTab = null;
+		unitsTab = null;
 		nodeTab = null;
 		dndTabPane = null;
 		timeline = null;

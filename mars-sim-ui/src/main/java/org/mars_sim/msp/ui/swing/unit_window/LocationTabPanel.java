@@ -397,6 +397,8 @@ implements ActionListener {
 
         		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         			desktop.openToolWindow(SettlementWindow.NAME);
+        			
+        			
         			//System.out.println("Just open Settlement Map Tool");
         			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
 

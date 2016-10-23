@@ -133,14 +133,18 @@ extends ModalInternalFrame {
 
 		setSize(300, 400);
 		setPreferredSize(new Dimension (300, 400));
-		
+/*		
 		Dimension desktopSize = desktop.getSize();
 	    Dimension size = this.getSize();
 	    int width = (desktopSize.width - size.width) / 2;
 	    int height = (desktopSize.height - size.height) / 2;
 	    setLocation(width, height);
-	    
-	    desktop.add(this);
+*/	    
+        // 2016-10-22 Add to its own tab pane
+        if (desktop.getMainScene() != null)
+        	desktop.getMainScene().getDesktops().get(0).add(this);
+        else 
+        	desktop.add(this);
 	    
         setModal(true);  
         

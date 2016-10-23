@@ -174,9 +174,9 @@ extends TabPanel {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		table.setAutoCreateRowSorter(true);
-		if (!MainScene.OS.equals("linux")) {
-			table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+		//if (!MainScene.OS.equals("linux")) {
+		//	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		
 		TableStyle.setTableStyle(table);
 

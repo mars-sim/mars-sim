@@ -105,11 +105,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
 	// Data members
-	//private long waitTime;
-	//private long previousTime;
-	//private long currentTime;
-	//private long elapsedNanos;
-
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
 	private boolean firstDisplay;
@@ -187,7 +182,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	// 2015-02-04 Added init()
 	public void init() {
-	   	//logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
+	   	logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
@@ -417,14 +412,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	   	//logger.info("toolWindows.add(timeWindow)");
 
-		// Prepare monitor tool window
-		MonitorWindow monitorWindow = new MonitorWindow(this);
-		try { monitorWindow.setClosed(true); }
-		catch (PropertyVetoException e) { }
-		toolWindows.add(monitorWindow);
-
-	   	//logger.info("toolWindows.add(monitorWindow)");
-
 		// Prepare settlement tool window
 		settlementWindow = new SettlementWindow(this);
 		try { settlementWindow.setClosed(true); }
@@ -442,29 +429,70 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	   	//logger.info("toolWindows.add(scienceWindow)");
 
-		// Prepare mission tool window
-		MissionWindow missionWindow = new MissionWindow(this);
-		try { missionWindow.setClosed(true); }
-		catch (PropertyVetoException e) { }
-		toolWindows.add(missionWindow);
-
-	   	//logger.info("toolWindows.add(missionWindow)");
-
-		// Prepare resupply tool window
-		ResupplyWindow resupplyWindow = new ResupplyWindow(this);
-		try { resupplyWindow.setClosed(true); }
-		catch (PropertyVetoException e) { }
-		toolWindows.add(resupplyWindow);
-
-	   	//logger.info("toolWindows.add(resupplyWindow)");
-
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);
 		try { guideWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
+		
+		
+		if (mainScene != null) {
+			
+			// Prepare monitor tool window
+			MonitorWindow monitorWindow = new MonitorWindow(this);
+			try { monitorWindow.setClosed(true); }
+			catch (PropertyVetoException e) { }
+			toolWindows.add(monitorWindow);
 
-	   	//logger.info("toolWindows.add(guideWindow)");
+		   	//logger.info("toolWindows.add(monitorWindow)");
+
+			// Prepare mission tool window
+			MissionWindow missionWindow = new MissionWindow(this);
+			try { missionWindow.setClosed(true); }
+			catch (PropertyVetoException e) { }
+			toolWindows.add(missionWindow);
+
+		   	//logger.info("toolWindows.add(missionWindow)");
+
+			// Prepare resupply tool window
+			ResupplyWindow resupplyWindow = new ResupplyWindow(this);
+			try { resupplyWindow.setClosed(true); }
+			catch (PropertyVetoException e) { }
+			toolWindows.add(resupplyWindow);
+
+		   	//logger.info("toolWindows.add(resupplyWindow)");
+			
+
+		}
+		else {
+			
+			// Prepare monitor tool window
+			MonitorWindow monitorWindow = new MonitorWindow(this);
+			try { monitorWindow.setClosed(true); }
+			catch (PropertyVetoException e) { }
+			toolWindows.add(monitorWindow);
+
+		   	//logger.info("toolWindows.add(monitorWindow)");
+
+			// Prepare mission tool window
+			MissionWindow missionWindow = new MissionWindow(this);
+			try { missionWindow.setClosed(true); }
+			catch (PropertyVetoException e) { }
+			toolWindows.add(missionWindow);
+
+		   	//logger.info("toolWindows.add(missionWindow)");
+
+			// Prepare resupply tool window
+			ResupplyWindow resupplyWindow = new ResupplyWindow(this);
+			try { resupplyWindow.setClosed(true); }
+			catch (PropertyVetoException e) { }
+			toolWindows.add(resupplyWindow);
+
+		   	//logger.info("toolWindows.add(resupplyWindow)");
+
+		   	//logger.info("toolWindows.add(guideWindow)");
+		}
+
 
 		// Prepare Mars Viewer window
 		//MarsViewer marsViewer = new MarsViewer(this);
@@ -564,7 +592,38 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 					}
 					window.setWasOpened(true);
 				}
-				add(window, 0);
+				
+				if (mainScene != null) {
+					// 2016-10-22 These 3 tools are in the Desktop Tab
+					if (toolName.equals(NavigatorWindow.NAME)
+							|| toolName.equals(SearchWindow.NAME)
+							|| toolName.equals(TimeWindow.NAME)) {
+						add(window, 0);	
+					}
+					else if (toolName.equals(MonitorWindow.NAME)) {
+						mainScene.getDesktops().get(0).add(window, 0);
+					}
+					else if (toolName.equals(MissionWindow.NAME)) {
+						mainScene.getDesktops().get(1).add(window, 0);
+					}
+					//else if (toolName.equals(SettlementWindow.NAME)) {
+					//	mainScene.getDesktops().get(2).add(window, 0);
+					//}
+					else if (toolName.equals(ResupplyWindow.NAME)) {
+						mainScene.getDesktops().get(2).add(window, 0);
+					}
+					//else if (toolName.equals(ScienceWindow.NAME)) {
+					//	mainScene.getDesktops().get(4).add(window, 0);
+					//}
+					//else if (toolName.equals(GuideWindow.NAME)) {
+					//	mainScene.getDesktops().get(5).add(window, 0);
+					//}				
+					
+				}
+				else {
+					add(window, 0);	
+				}
+				
 				try {
 					window.setClosed(false);
 				}
@@ -588,36 +647,66 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			//System.out.println(toolName + " is running openToolWindow().");
 			Platform.runLater(() -> {
 				
+				// 2016-10-22 Opening the first 3 tools will switch to the Desktop Tab
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					//System.out.println("closing nav");
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(0);
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
+					
 				}
 
 				else if (toolName.equals(SearchWindow.NAME)) {
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(0);
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
 				}
 
-/*				
+				else if (toolName.equals(TimeWindow.NAME)) {
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(0);
+					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
+				}
+
+				
 				else if (toolName.equals(MonitorWindow.NAME)) {
-					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
+					if (mainScene.isMainSceneDone()) {
+						mainScene.getJFXTabPane().getSelectionModel().select(1);
+						//System.out.println("opening monitor tool");
+					}
+					//mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
 				}
-
+				
 				else if (toolName.equals(MissionWindow.NAME)) {
-					mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(2);
+					//mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
 				}
-
-				else if (toolName.equals(ScienceWindow.NAME)) {
-					mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
-				}
-
+				
 				else if (toolName.equals(SettlementWindow.NAME)) {
-					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(3);
+					//mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ResupplyWindow.NAME)) {
-					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(4);
+					//mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
-*/				
+				
+				else if (toolName.equals(ScienceWindow.NAME)) {
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(5);
+					//mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
+				}
+
+				else if (toolName.equals(GuideWindow.NAME)) {
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(6);
+					//mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
+				}
+
 			});
 		
 		}
@@ -768,7 +857,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			unitWindows.add(tempWindow);
 
 			// Create new unit button in tool bar if necessary
-			if (mainWindow !=null) mainWindow.createUnitButton(unit);
+			if (mainWindow != null) 
+				mainWindow.createUnitButton(unit);
 		}
 
 		tempWindow.setVisible(true);
@@ -779,9 +869,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			tempWindow.moveToFront();
 		} catch (java.beans.PropertyVetoException e) {}
 
-		
+			
+		mainScene.getJFXTabPane().getSelectionModel().select(0);
+
 		playSound(unit);
-		
+
 	}
 	
 	/**
@@ -881,14 +973,14 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/**
 	 * Internal class thread for update.
 	 */
-	private class UpdateThread extends Thread {
+	private class UpdateThread extends Thread { // implements Runnable { //
 
 		public static final long SLEEP_TIME = 1000; // 1 second.
 		MainDesktopPane desktop;
 		boolean run = false;
 
 		private UpdateThread(MainDesktopPane desktop) {
-			super(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
+			//super(Msg.getString("MainDesktopPane.desktop.thread.running")); //$NON-NLS-1$
 			this.desktop = desktop;
 		}
 
@@ -958,7 +1050,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	private void runUnitWindowExecutor() {
 		// set up unitWindowExecutor
-		unitWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4);
+		unitWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); //newCachedThreadPool();
 
 		// Update all unit windows.
 		//Iterator<UnitWindow> i1 = unitWindows.iterator();
@@ -1008,7 +1100,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	private void setupToolWindowTasks() {
 		// set up toolWindowExecutor even though it is not used right now inside this method
-		toolWindowExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); //newFixedThreadPool(4); //
+		toolWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); //newCachedThreadPool();
 
 		toolWindowTaskList = new ArrayList<>();
 		toolWindows.forEach(t -> {
@@ -1308,13 +1400,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			
 			if (mainScene != null) {
 				
-				//openToolWindow(NavigatorWindow.NAME);
-				openToolWindow(MonitorWindow.NAME);
-				openToolWindow(SettlementWindow.NAME);
-				openToolWindow(MissionWindow.NAME);
-				openToolWindow(ResupplyWindow.NAME);
-				openToolWindow(ScienceWindow.NAME);		
-				
 				//int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
 				//int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
 				int Xloc = (int)((mainScene.getWidth() - ourGuide.getWidth()) * .5D);
@@ -1363,16 +1448,18 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				}
 			}
 
-			// Create unit bar buttons for closed unit windows.
-			if (Simulation.instance().isDefaultLoad()) {
-				Iterator<String> i = config.getInternalWindowNames().iterator();
-				while (i.hasNext()) {
-					String name = i.next();
-					if (UIConfig.UNIT.equals(config.getInternalWindowType(name))) {
-						if (!config.isInternalWindowDisplayed(name)) {
-							Unit unit = Simulation.instance().getUnitManager().findUnit(name);
-							if (unit != null) {
-								if (mainWindow !=null) mainWindow.createUnitButton(unit);
+			if (mainWindow != null) {
+				// Create unit bar buttons for closed unit windows.
+				if (Simulation.instance().isDefaultLoad()) {
+					Iterator<String> i = config.getInternalWindowNames().iterator();
+					while (i.hasNext()) {
+						String name = i.next();
+						if (UIConfig.UNIT.equals(config.getInternalWindowType(name))) {
+							if (!config.isInternalWindowDisplayed(name)) {
+								Unit unit = Simulation.instance().getUnitManager().findUnit(name);
+								if (unit != null) {
+									mainWindow.createUnitButton(unit);
+								}
 							}
 						}
 					}

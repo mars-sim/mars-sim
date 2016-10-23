@@ -43,6 +43,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -99,10 +100,10 @@ public class SettlementTransparentPanel extends JComponent {
 	private JCustomCheckBoxMenuItem buildingLabelMenuItem, personLabelMenuItem, constructionLabelMenuItem, vehicleLabelMenuItem, robotLabelMenuItem ;
 
 	private SettlementMapPanel mapPanel;
-	private MainDesktopPane desktop;
+	private JDesktopPane desktop;
 	//private Settlement settlement;
 
-    public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
+    public SettlementTransparentPanel(JDesktopPane desktop, SettlementMapPanel mapPanel) {
 
         this.mapPanel = mapPanel;
         this.desktop = desktop;
@@ -428,7 +429,7 @@ public class SettlementTransparentPanel extends JComponent {
 				if (settlement != null) {
 					// 2014-10-26 obtained settlement object
 					//setCurrentSettlement(settlement);
-					desktop.openUnitWindow(settlement, false);
+					((MainDesktopPane)desktop).openUnitWindow(settlement, false);
 				}
 			}
 		});
@@ -722,36 +723,37 @@ public class SettlementTransparentPanel extends JComponent {
 		//logger.info("Old name was " + oldName);
 		//boolean isFX = Platform.isFxApplicationThread();
 
-		if (desktop.getMainScene() != null) {
+		if (((MainDesktopPane)desktop).getMainScene() != null) {
 
 			Platform.runLater(() -> {
 
-				String newName = askNameFX(oldName).trim();
-				if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
-					mapPanel.getSettlement().changeName(newName);
-	            }
-				else {
-					Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
-					alert.initOwner(desktop.getMainScene().getStage());
-					alert.showAndWait();
-				}
-/*
-				// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
-				if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
-					//System.out.println("newName is " + newName);
-					newName = askNameFX(oldName);
-
-					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
-						return;
-					else
+				if (askNameFX(oldName) != null) {
+					String newName = askNameFX(oldName).trim();
+					if (!isBlank(newName)) { // newName != null && !newName.isEmpty() && newName with only whitespace(s)
 						mapPanel.getSettlement().changeName(newName);
+		            }
+					else {
+						Alert alert = new Alert(AlertType.ERROR, "Please use a valid name.");
+						alert.initOwner(((MainDesktopPane)desktop).getMainScene().getStage());
+						alert.showAndWait();
+					}
+	/*
+					// Note: do not use if (newName.trim().equals(null), will throw java.lang.NullPointerException
+					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
+						//System.out.println("newName is " + newName);
+						newName = askNameFX(oldName);
+	
+						if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
+							return;
+						else
+							mapPanel.getSettlement().changeName(newName);
+					}
+					else {
+						mapPanel.getSettlement().changeName(newName);
+						//logger.info("New name is now " + newName);
+					}
+	*/
 				}
-				else {
-					mapPanel.getSettlement().changeName(newName);
-					//logger.info("New name is now " + newName);
-				}
-*/
-
 			});
 
 
@@ -774,8 +776,8 @@ public class SettlementTransparentPanel extends JComponent {
 				mapPanel.getSettlement().changeName(settlementNewName);
 			}
 
-			desktop.closeToolWindow(SettlementWindow.NAME);
-			desktop.openToolWindow(SettlementWindow.NAME);
+			((MainDesktopPane)desktop).closeToolWindow(SettlementWindow.NAME);
+			((MainDesktopPane)desktop).openToolWindow(SettlementWindow.NAME);
 
 		}
 
@@ -831,7 +833,7 @@ public class SettlementTransparentPanel extends JComponent {
 	public String askNameFX(String oldName) {
 		String newName = null;
 		TextInputDialog dialog = new TextInputDialog(oldName);
-		dialog.initOwner(desktop.getMainScene().getStage());
+		dialog.initOwner(((MainDesktopPane)desktop).getMainScene().getStage());
 		dialog.initModality(Modality.APPLICATION_MODAL);
 		dialog.setTitle(Msg.getString("BuildingPanel.renameBuilding.dialogTitle"));
 		dialog.setHeaderText(Msg.getString("BuildingPanel.renameBuilding.dialog.header"));

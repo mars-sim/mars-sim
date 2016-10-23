@@ -588,7 +588,7 @@ implements Serializable {
 		if (phaseDescription != null) {
 			return Conversion.capitalize(phaseDescription);
 		}
-		else if (phase.toString() != null){
+		else if (phase != null){
 			return Conversion.capitalize(phase.toString());
 		}
 		else

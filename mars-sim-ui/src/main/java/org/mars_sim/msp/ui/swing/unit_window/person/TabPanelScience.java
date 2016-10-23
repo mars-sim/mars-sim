@@ -128,9 +128,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		studyTable.setAutoCreateRowSorter(true);
-	    if (!MainScene.OS.equals("linux")) {
-	    	studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    }
+	    //if (!MainScene.OS.equals("linux")) {
+	    //	studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    //}
 
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(studyTable);
@@ -193,9 +193,9 @@ extends TabPanel {
 
 		// 2015-06-08 Added sorting
 		achievementTable.setAutoCreateRowSorter(true);
-	    if (!MainScene.OS.equals("linux")) {
-	    	achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-	    }
+	    ///if (!MainScene.OS.equals("linux")) {
+	    //	achievementTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+	    //}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(achievementTable);
 	}

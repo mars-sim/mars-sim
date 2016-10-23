@@ -91,7 +91,11 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		});
 		buttonPane.add(cancelButton);
 
-	    desktop.add(this);
+        // 2016-10-22 Add to its own tab pane
+        if (desktop.getMainScene() != null)
+        	desktop.getMainScene().getDesktops().get(2).add(this);
+        else 
+        	desktop.add(this);    
 
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();

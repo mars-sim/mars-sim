@@ -102,7 +102,7 @@ public class MarqueeTicker extends JPanel {
 		super();
 		this.settlementWindow = settlementWindow;
 		this.settlement = settlementWindow.getMapPanel().getSettlement();
-		this.desktop = settlementWindow.getDesktop();
+		this.desktop = (MainDesktopPane) settlementWindow.getDesktop();
 
 		masterClock = Simulation.instance().getMasterClock();
 		marsClock = masterClock.getMarsClock();

@@ -85,9 +85,9 @@ extends JPanel {
 
 		// 2015-06-08 Added sorting
 		constructedTable.setAutoCreateRowSorter(true);
-		if (!MainScene.OS.equals("linux")) {
-			constructedTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
-		}
+		//if (!MainScene.OS.equals("linux")) {
+		//	constructedTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
+		//}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(constructedTable);
 

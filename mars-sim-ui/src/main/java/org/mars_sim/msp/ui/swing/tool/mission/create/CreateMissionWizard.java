@@ -115,8 +115,12 @@ implements ActionListener {
 		//setResizable(false);
 		//setVisible(true);
 
-	    desktop.add(this);
-
+        // 2016-10-22 Add to its own tab pane
+        if (desktop.getMainScene() != null)
+        	desktop.getMainScene().getDesktops().get(1).add(this);
+        else 
+        	desktop.add(this);
+        
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;

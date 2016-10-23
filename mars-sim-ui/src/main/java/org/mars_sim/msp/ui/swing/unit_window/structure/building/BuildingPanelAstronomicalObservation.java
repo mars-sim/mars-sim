@@ -34,7 +34,7 @@ extends BuildingFunctionPanel {
 	private int currentObserversAmount;
 
 	private JLabel observersLabel;
-	private BalloonToolTip balloonToolTip = new BalloonToolTip();
+	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
 	
 	private AstronomicalObservation function;
 	private OrbitViewer orbitViewer;
@@ -95,7 +95,7 @@ extends BuildingFunctionPanel {
 		// Create the orbit viewer button.
 		JButton button = new JButton("Orbit Viewer");
 		
-		balloonToolTip.createBalloonTip(button, "Click to open the solar system orbit viewer"); 
+		//balloonToolTip.createBalloonTip(button, "Click to open the solar system orbit viewer"); 
 		//button.setToolTipText("Click to open the solar system orbit viewer");
 		button.addActionListener(
 			new ActionListener() {

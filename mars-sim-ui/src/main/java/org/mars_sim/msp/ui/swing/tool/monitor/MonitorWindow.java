@@ -14,6 +14,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -256,17 +257,25 @@ implements TableModelListener, ActionListener {
 			}
 		);
 
-		if (desktop.getMainScene() != null)
-			setClosable(false);
 
 		// Note: must define a starting size
-		//setPreferredSize(new Dimension(1024, 512));
-		//setMinimumSize(new Dimension(512, 256));
 		setSize(new Dimension(1024, 512));
 		setResizable(false);
-		setMaximizable(true);
+		setMaximizable(true);	
+
+		if (desktop.getMainScene() != null) {
+			setClosable(false);
+
+		}
+
 		setVisible(true);
-		//pack();
+		
+		Dimension desktopSize = desktop.getMainScene().getDesktops().get(0).getSize();
+	    Dimension jInternalFrameSize = this.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    setLocation(width, height);
+		
 	}
 
 	/**
@@ -356,6 +365,7 @@ implements TableModelListener, ActionListener {
 	 * @return Monitor tab being displayed.
 	 */
 	private MonitorTab getSelected() {
+		SwingUtilities.updateComponentTreeUI(this);
 		MonitorTab selected = null;
 		int selectedIdx = tabsSection.getSelectedIndex();
 		if ((selectedIdx != -1) && (selectedIdx < tabs.size()))
@@ -364,6 +374,7 @@ implements TableModelListener, ActionListener {
 	}
 
 	public void tabChanged(boolean reloadSearch) {
+		SwingUtilities.updateComponentTreeUI(this);
 		//System.out.println("tabChanged()");
 		MonitorTab selected = getSelected();
 		JTable table = null;
@@ -428,7 +439,7 @@ implements TableModelListener, ActionListener {
 			}
 		}
 
-		SwingUtilities.updateComponentTreeUI(this);
+		//SwingUtilities.updateComponentTreeUI(this);
 	}
 
     public void createSearchableBar(JTable table) {

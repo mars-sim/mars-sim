@@ -51,7 +51,7 @@ class TableProperties extends JInternalFrame {
      * @param desktop the main desktop.
      */
     public TableProperties(String title, JTable table,
-                              MainDesktopPane main) {
+                              MainDesktopPane desktop) {
 
         // Use JInternalFrame constructor
         super(title + " Properties", false, true);
@@ -100,7 +100,12 @@ class TableProperties extends JInternalFrame {
         setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         
         pack();
-        main.add(this);
+        
+        // 2016-10-22 Add to its own tab pane
+        if (desktop.getMainScene() != null)
+        	desktop.getMainScene().getDesktops().get(0).add(this);
+        else 
+        	desktop.add(this);
     }
 
 

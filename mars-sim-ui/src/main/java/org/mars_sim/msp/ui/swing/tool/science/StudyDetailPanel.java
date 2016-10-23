@@ -121,9 +121,9 @@ extends JPanel {
 		this.study = study;
 
 		if (study != null) {
-			scienceFieldLabel.setText(Msg.getString("StudyDetailPanel.science", study.getScience().getName())); //$NON-NLS-1$
-			levelLabel.setText(Msg.getString("StudyDetailPanel.level", Integer.toString(study.getDifficultyLevel()))); //$NON-NLS-1$
-			statusLabel.setText(Msg.getString("StudyDetailPanel.status", getStatusString(study))); //$NON-NLS-1$
+			scienceFieldLabel.setText(Msg.getString("StudyDetailPanel.science", study.getScience().getName()) + " "); //$NON-NLS-1$
+			levelLabel.setText(Msg.getString("StudyDetailPanel.level", Integer.toString(study.getDifficultyLevel())) + " "); //$NON-NLS-1$
+			statusLabel.setText(Msg.getString("StudyDetailPanel.status", getStatusString(study)) + " "); //$NON-NLS-1$
 
 			primaryResearcherPane.setStudyResearcher(study, study.getPrimaryResearcher());
 			Iterator<Person> i = study.getCollaborativeResearchers().keySet().iterator();
