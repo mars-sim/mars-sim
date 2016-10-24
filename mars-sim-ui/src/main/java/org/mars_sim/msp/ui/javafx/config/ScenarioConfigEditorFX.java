@@ -1395,7 +1395,8 @@ public class ScenarioConfigEditorFX {
 			SettlementBase settlement = i.next();
 
 			// Check that settlement name is valid.
-			if ((settlement.getName().trim() == null) || (settlement.getName().trim().isEmpty())) {
+			if ((settlement.getName().trim() == null) || (settlement.getName().trim().isEmpty())
+					|| (settlement.getName().length() < 2) ) {
 				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
 			}
 
@@ -1428,62 +1429,6 @@ public class ScenarioConfigEditorFX {
 					e.printStackTrace();
 				}
 			}
-
-/*		
-			// Check that settlement latitude is valid.
-			if ((settlement.getLatitude().trim() == null) || (settlement.getLatitude().trim().isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
-			} else {
-				String cleanLatitude = settlement.getLatitude().trim().toUpperCase();
-				//if (!cleanLatitude.endsWith(Msg.getString("direction.northShort")) &&
-				//        !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
-				//	setError(Msg.getString(
-				//			"SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
-				//			Msg.getString("direction.northShort"), //$NON-NLS-1$
-				//			Msg.getString("direction.southShort") //$NON-NLS-1$
-				//		));
-				//}
-				//else {
-					String numLatitude = cleanLatitude.substring(0, cleanLatitude.length() - 1);
-					try {
-						double doubleLatitude = Double.parseDouble(numLatitude.trim());
-						if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-						}
-					}
-					catch(NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-						e.printStackTrace();
-					}
-				//}
-			}
-
-			// Check that settlement longitude is valid.
-			if ((settlement.getLongitude().trim() == null) || (settlement.getLongitude().trim().isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
-			} else {
-				String cleanLongitude = settlement.getLongitude().trim().toUpperCase();
-				if (!cleanLongitude.endsWith(Msg.getString("direction.westShort")) &&
-				        !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
-					setError(Msg.getString(
-							"SimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
-							Msg.getString("direction.eastShort"), //$NON-NLS-1$
-							Msg.getString("direction.westShort") //$NON-NLS-1$
-						));
-				} else {
-					String numLongitude = cleanLongitude.substring(0, cleanLongitude.length() - 1);
-					try {
-						double doubleLongitude = Double.parseDouble(numLongitude.trim());
-						if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
-							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-						}
-					} catch(NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-						e.printStackTrace();
-					}
-				}
-			}
-*/			
 		}
 	}
     

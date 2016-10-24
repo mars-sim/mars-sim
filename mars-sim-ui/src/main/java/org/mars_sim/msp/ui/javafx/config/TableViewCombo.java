@@ -97,7 +97,8 @@ public class TableViewCombo {
 	public void init() {
         TableColumn<SettlementBase, String> nameCol = new TableColumn<>(headers[0]);
         nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
-        nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        //nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        nameCol = setCellFactory(nameCol);
         nameCol.setMinWidth(150);
 
         TableColumn<SettlementBase, String> templateCol = new TableColumn<>(headers[1]);
@@ -113,7 +114,8 @@ public class TableViewCombo {
      
         TableColumn<SettlementBase, String> settlerCol = new TableColumn<>(headers[2]);
         settlerCol.setCellValueFactory(cellData -> cellData.getValue().settlerProperty());
-        settlerCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        //settlerCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        settlerCol = setCellFactory(settlerCol);
         settlerCol.setMinWidth(50);
 
         //private ValidationSupport validationSupport = new ValidationSupport();
@@ -121,7 +123,8 @@ public class TableViewCombo {
         
         TableColumn<SettlementBase, String> botCol = new TableColumn<>(headers[3]);
         botCol.setCellValueFactory(cellData -> cellData.getValue().botProperty());
-        botCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        //botCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        botCol = setCellFactory(botCol);
         botCol.setMinWidth(50);
         
         TableColumn<SettlementBase, String> sponsorCol = new TableColumn<>(headers[4]);
@@ -139,29 +142,26 @@ public class TableViewCombo {
        
 
         TableColumn<SettlementBase, String> latCol = new TableColumn<>(headers[5]);
-        latCol.setMinWidth(70);
         latCol.setCellValueFactory(cellData -> cellData.getValue().latitudeProperty());
         //latCol.setCellFactory(TextFieldTableCell.forTableColumn()); 
-        latCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<String>(){
-            @Override
-            public String toString(String item) {            	
-            	editor.checkForErrors();
-                return item.toString();
-            }
-            
-            @Override
-            public String fromString(String string) {
-                return string;
-            }
-            
-        }));
+        latCol = setCellFactory(latCol);
+        latCol.setMinWidth(70);
 
 
         TableColumn<SettlementBase, String> longCol = new TableColumn<>(headers[6]);
         longCol.setCellValueFactory(cellData -> cellData.getValue().longitudeProperty());
-        //longCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        longCol.setMinWidth(70);   
-        longCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<String>(){
+        //longCol.setCellFactory(TextFieldTableCell.forTableColumn());  
+        longCol = setCellFactory(longCol);
+        longCol.setMinWidth(70); 
+        
+        table_view.getColumns().addAll(nameCol,templateCol,settlerCol,botCol,sponsorCol,latCol, longCol);
+        table_view.getItems().addAll(generateDataInMap());
+    }
+
+	@SuppressWarnings("restriction")
+	public TableColumn<SettlementBase, String> setCellFactory(TableColumn<SettlementBase, String> col) {
+		
+        col.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<String>(){
             @Override
             public String toString(String item) {            	
             	editor.checkForErrors();
@@ -174,13 +174,10 @@ public class TableViewCombo {
             }
             
         }));
- 
-        table_view.getColumns().addAll(nameCol,templateCol,settlerCol,botCol,sponsorCol,latCol, longCol);
-        table_view.getItems().addAll(generateDataInMap());
         
-
-    }
-
+        return col;
+	}
+	
 	public TableView getTableView() {
 		return table_view;
 	}
