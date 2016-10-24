@@ -669,7 +669,7 @@ extends DesktopPane {
 				else if (toolName.equals(TimeWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						mainScene.getJFXTabPane().getSelectionModel().select(0);
-					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
+					mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(MonitorWindow.NAME)) {

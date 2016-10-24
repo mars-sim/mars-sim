@@ -59,7 +59,7 @@ public class RoboticStation extends Function implements Serializable {
         // System.out.println("Calling RoboticStation's constructor");
 		this.building = building;
 
-		inv = getBuilding().getSettlementInventory();
+		inv = building.getSettlementInventory();
 
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -202,7 +202,7 @@ public class RoboticStation extends Function implements Serializable {
     public void timePassing(double time) {
 
     	if (inv == null)
-    		inv = getBuilding().getSettlementInventory();
+    		inv = building.getSettlementInventory();
 
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.

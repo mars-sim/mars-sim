@@ -66,7 +66,6 @@ implements Serializable {
 	
 	private Person person = null;
 	private Robot robot = null;
-	//private MarsClock clock;
 
 	/**
 	 * Constructor.
@@ -84,7 +83,9 @@ implements Serializable {
 		timeCache = null;
 		taskProbCache = new HashMap<MetaTask, Double>();
 		totalProbCache = 0D;
-		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+		
+		if (Simulation.instance().getMasterClock() != null)
+			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // marsClock won't pass maven test
 	}
 
 	public TaskManager(BotMind botMind) {
@@ -778,6 +779,8 @@ implements Serializable {
 		}
 
 		// Set the time cache to the current time.
+		//if (marsClock != null)
+		//	marsClock = Simulation.instance().getMasterClock().getMarsClock();
 		timeCache = (MarsClock) marsClock.clone();
 	}
 
@@ -803,6 +806,7 @@ implements Serializable {
 		person = null;
 		robot = null;
 		timeCache = null;
+		marsClock = null;
 		if (taskProbCache != null) {
 			taskProbCache.clear();
 			taskProbCache = null;

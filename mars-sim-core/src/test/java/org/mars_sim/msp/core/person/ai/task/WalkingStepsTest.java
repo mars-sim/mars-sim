@@ -167,9 +167,9 @@ public class WalkingStepsTest extends TestCase {
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
-        assertEquals(2, walkingSteps.getWalkingStepsNumber());
+        assertEquals(2, walkingSteps.getWalkingStepsNumber()); // junit.framework.AssertionFailedError: expected:<2> but was:<0>
         
-        assertEquals(2, walkingSteps.getWalkingStepsList().size());
+        assertEquals(2, walkingSteps.getWalkingStepsList().size()); // junit.framework.AssertionFailedError: expected:<2> but was:<0>
     }
     
     /**
@@ -227,8 +227,9 @@ public class WalkingStepsTest extends TestCase {
         
         WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, building1);
         assertNotNull(walkingSteps);
-        
-        assertTrue(walkingSteps.canWalkAllSteps());
+
+        // 2016-10-23 testWalkingStepsBuildingToBuildingNoPathAirlocks(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)  Time elapsed: 0.559 sec  <<< FAILURE!
+        assertTrue(walkingSteps.canWalkAllSteps());          // junit.framework.AssertionFailedError
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
@@ -300,7 +301,7 @@ public class WalkingStepsTest extends TestCase {
         WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, null);
         assertNotNull(walkingSteps);
         
-        assertTrue(walkingSteps.canWalkAllSteps());
+        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
@@ -496,11 +497,11 @@ public class WalkingStepsTest extends TestCase {
         WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, building0);
         assertNotNull(walkingSteps);
         
-        assertTrue(walkingSteps.canWalkAllSteps());
+        assertTrue(walkingSteps.canWalkAllSteps());  // maven test won't pass : junit.framework.AssertionFailedError
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
-        assertEquals(5, walkingSteps.getWalkingStepsNumber());
+        assertEquals(5, walkingSteps.getWalkingStepsNumber()); // maven test : junit.framework.AssertionFailedError: expected:<5> but was:<2>
         
         assertEquals(5, walkingSteps.getWalkingStepsList().size());
         
@@ -570,7 +571,7 @@ public class WalkingStepsTest extends TestCase {
         WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
         assertNotNull(walkingSteps);
         
-        assertTrue(walkingSteps.canWalkAllSteps());
+        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
@@ -783,7 +784,7 @@ public class WalkingStepsTest extends TestCase {
         WalkingSteps walkingSteps = new WalkingSteps(person, 0D, 0D, rover);
         assertNotNull(walkingSteps);
         
-        assertTrue(walkingSteps.canWalkAllSteps());
+        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
@@ -856,7 +857,7 @@ public class WalkingStepsTest extends TestCase {
         WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, building0);
         assertNotNull(walkingSteps);
         
-        assertTrue(walkingSteps.canWalkAllSteps());
+        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
@@ -866,7 +867,7 @@ public class WalkingStepsTest extends TestCase {
         
         WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
         
-        assertEquals(WalkStep.EXIT_GARAGE_ROVER, walkStep1.stepType);
+        assertEquals(WalkStep.EXIT_GARAGE_ROVER, walkStep1.stepType); // junit.framework.AssertionFailedError: expected:<6> but was:<1>
         
         WalkStep walkStep2 = walkingSteps.getWalkingStepsList().get(1);
         
@@ -919,7 +920,7 @@ public class WalkingStepsTest extends TestCase {
         WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, building0);
         assertNotNull(walkingSteps);
         
-        assertTrue(walkingSteps.canWalkAllSteps());
+        assertTrue(walkingSteps.canWalkAllSteps()); // junit.framework.AssertionFailedError
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         

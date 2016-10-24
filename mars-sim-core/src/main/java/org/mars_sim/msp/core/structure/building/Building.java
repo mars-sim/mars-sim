@@ -186,25 +186,6 @@ LocalBoundedObject, InsidePathLocation {
 		this.settlement = manager.getSettlement();
 		this.location = manager.getSettlement().getCoordinates();
 		this.buildingType = template.getBuildingType();
-/*
- * Duplicate 
-		if (s_inv == null)
-			s_inv = settlement.getInventory();
-		if (b_inv == null) {
-			b_inv = getInventory();//new Inventory(this);
-			if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
-				//b_inv = new Inventory(this);
-				b_inv.addGeneralCapacity(100);
-			} else if (this.getBuildingType().toLowerCase().contains("greenhouse"))
-				b_inv.addGeneralCapacity(10000);
-			else
-				b_inv.addGeneralCapacity(1000);
-		}
-		
-		powerMode = PowerMode.FULL_POWER;
-		heatMode = HeatMode.ONLINE;
-*/
-
 
 		// Set the instance of life support
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
@@ -262,7 +243,8 @@ LocalBoundedObject, InsidePathLocation {
 		if (s_inv == null)
 			s_inv = settlement.getInventory();
 		if (b_inv == null) {
-			b_inv = getInventory();
+			b_inv = getInventory(); // it's already been created in its super class
+			
 			if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
 				//b_inv = new Inventory(this);
 				b_inv.addGeneralCapacity(100);
@@ -418,7 +400,7 @@ LocalBoundedObject, InsidePathLocation {
 
 	/**
 	 * Determines the building functions.
-	 * @return list of building functions.
+	 * @return list of building .
 	 * @throws Exception if error in functions.
 	 */
 	private List<Function> determineFunctions() {

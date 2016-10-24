@@ -196,7 +196,7 @@ extends WizardPanel {
         if (salvageSettlement != null) {
             
             // Add settlement buildings to list.
-            java.util.List<Building> buildingList = salvageSettlement.getBuildingManager().getACopyOfBuildings();
+            java.util.List<Building> buildingList = salvageSettlement.getBuildingManager().getBuildings();//.getACopyOfBuildings();
             Collections.sort(buildingList);
             Iterator<Building> i = buildingList.iterator();
             while (i.hasNext()) projectListModel.addElement(i.next());

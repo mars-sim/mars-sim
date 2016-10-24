@@ -173,7 +173,7 @@ implements Serializable {
 		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
 
 		// Add all buildings within the settlement.
-		Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();//getACopyOfBuildings().iterator();
 		while (i.hasNext()) {
 			entities.add(i.next());
 		}

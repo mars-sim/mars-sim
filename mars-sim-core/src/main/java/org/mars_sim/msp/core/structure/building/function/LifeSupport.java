@@ -39,7 +39,7 @@ implements Serializable {
 
 	DecimalFormat fmt = new DecimalFormat("#.#######");
 
-	private static final BuildingFunction FUNCTION = BuildingFunction.LIFE_SUPPORT;
+	private static final BuildingFunction THE_FUNCTION = BuildingFunction.LIFE_SUPPORT;
 
 	// Data members
 	private int occupantCapacity;
@@ -67,7 +67,7 @@ implements Serializable {
 	 */
 	public LifeSupport(Building building) {
 		// Call Function constructor.
-		super(FUNCTION, building);
+		super(THE_FUNCTION, building);
 		// Each building has its own instance of LifeSupport
         // System.out.println("Calling LifeSupport's constructor");
 
@@ -101,7 +101,7 @@ implements Serializable {
 	 */
 	public LifeSupport(Building building, int occupantCapacity, double powerRequired) {
 		// Use Function constructor
-		super(FUNCTION, building);
+		super(THE_FUNCTION, building);
 
 		occupants = new ConcurrentLinkedQueue<Person>();
 		//robotOccupants = new ConcurrentLinkedQueue<Robot>();
@@ -135,14 +135,14 @@ implements Serializable {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(THE_FUNCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {
-				LifeSupport lsFunction = (LifeSupport) building.getFunction(FUNCTION);
+				LifeSupport lsFunction = (LifeSupport) building.getFunction(THE_FUNCTION);
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += lsFunction.occupantCapacity * wearModifier;
 			}
@@ -236,17 +236,18 @@ implements Serializable {
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
 			// Remove person from any other inhabitable building in the settlement.
-			Iterator<Building> i = building.getBuildingManager().getACopyOfBuildings().iterator();
+			Iterator<Building> i = building.getBuildingManager().getBuildings().iterator(); // getACopyOfBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				if (building.hasFunction(FUNCTION)) {
+				if (building.hasFunction(THE_FUNCTION)) {
+					// remove this person from this building first
 					BuildingManager.removePersonOrRobotFromBuilding(person, building);
 				}
 			}
 
 			// Add person to this building.
-			logger.finest("Adding " + person + " to " + building + " life support.");
 			occupants.add(person);
+			logger.finest("Adding " + person + " to " + building + " life support.");
 		}
 		else {
 			throw new IllegalStateException("Person already occupying building.");

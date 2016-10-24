@@ -414,7 +414,7 @@ implements Serializable {
 		double tempHeatRequired = 0D;
 		boolean heatUp = heatMode == HeatMode.POWER_UP;
 		BuildingManager manager = settlement.getBuildingManager();
-		List<Building> buildings = manager.getACopyOfBuildings();
+		List<Building> buildings = manager.getBuildings();
 		Iterator<Building> iUsed = buildings.iterator();
 		while (iUsed.hasNext()) {
 			Building building = iUsed.next();

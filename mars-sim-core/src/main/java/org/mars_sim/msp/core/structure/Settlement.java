@@ -410,7 +410,7 @@ implements Serializable, LifeSupportType, Objective {
 	public int getRobotCapacity() {
 		int result = 0;
 		int stations = 0;
-		Iterator<Building> i = buildingManager.getACopyOfBuildings().iterator();
+		Iterator<Building> i = buildingManager.getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			result++;

@@ -740,7 +740,7 @@ public class GoodsManager implements Serializable {
      */
     private List<ResourceProcess> getResourceProcesses() {
         List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
-        Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
         while (i.hasNext()) {
             Building building = i.next();
             if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {

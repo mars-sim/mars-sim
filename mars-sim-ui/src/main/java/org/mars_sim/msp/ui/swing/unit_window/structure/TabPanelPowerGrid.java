@@ -352,7 +352,7 @@ extends TabPanel {
 
 		private PowerTableModel(Settlement settlement) {
 			this.settlement = settlement;
-			buildings = settlement.getBuildingManager().getACopyOfBuildings();
+			buildings = settlement.getBuildingManager().getBuildings();//getACopyOfBuildings()
 			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
 			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
 			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
@@ -431,7 +431,7 @@ extends TabPanel {
 		}
 
 		public void update() {
-			List<Building> newList = settlement.getBuildingManager().getACopyOfBuildings();
+			List<Building> newList = settlement.getBuildingManager().getBuildings();
 			if (!buildings.equals(newList))
 				buildings = newList;
 

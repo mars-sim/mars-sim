@@ -77,7 +77,7 @@ implements ActionListener {
         this.setBackground(new Color(0,0,0,128));
         
 		Settlement settlement = (Settlement) unit;
-		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
+		List<Building> buildings = settlement.getBuildingManager().getBuildings();//getACopyOfBuildings().iterator();.getACopyOfBuildings();
 		Collections.sort(buildings);
 		
 		// 2014-11-07 Set building to the first element on the list 
@@ -237,7 +237,7 @@ implements ActionListener {
 	@Override
 	public void update() {
 		Settlement settlement = (Settlement) unit;
-		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
+		List<Building> buildings = settlement.getBuildingManager().getBuildings();
 
 		// Update buildings if necessary.
 		if (!buildingsCache.equals(buildings)) {

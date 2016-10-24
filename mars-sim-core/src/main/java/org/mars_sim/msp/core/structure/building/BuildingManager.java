@@ -129,7 +129,7 @@ public class BuildingManager implements Serializable {
 
     
     /**
-     * Constructor to construct buildings from settlement config template.
+     * Constructor 1 : construct buildings from settlement config template. Called by Settlement
      * @param settlement the manager's settlement.
      * @throws Exception if buildings cannot be constructed.
      */
@@ -140,7 +140,7 @@ public class BuildingManager implements Serializable {
     }
 
     /**
-     * Constructor to construct buildings from name list.
+     * Constructor 2 : construct buildings from name list. Called by constructor 1 and by MockSettlement
      * @param settlement the manager's settlement
      * @param buildingTemplates the settlement's building templates.
      * @throws Exception if buildings cannot be constructed.
@@ -279,9 +279,7 @@ public class BuildingManager implements Serializable {
             }
             
             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
-            //unitManager.fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, settlement);
-            //unitManager.addUnit(newBuilding);
-            
+      
             // Create new building connections if needed.
             if (createBuildingConnections) {
                 settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
@@ -311,9 +309,6 @@ public class BuildingManager implements Serializable {
     	// normally on JavaFX Application Thread
 		this.resupply = resupply;
     	Building newBuilding = new Building(template, this);
-		//System.out.println("BuildingManager.java : addBuilding() : newBuilding is " + newBuilding.getBuildingType());
-        //settlement.fireUnitUpdate(UnitEventType.PLACE_BUILDING_EVENT, newBuilding);
-    	//logger.info("addBuilding() : just fired PLACE_BUILDING_EVENT");
         addBuilding(newBuilding, createBuildingConnections);
         return newBuilding;
     }

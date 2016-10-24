@@ -170,7 +170,7 @@ extends UnitTableModel {
 				case MALFUNCTION: {
 					int severity = 0;
 					Malfunction malfunction = null;
-					Iterator<Building> i = settle.getBuildingManager().getACopyOfBuildings().iterator();
+					Iterator<Building> i = settle.getBuildingManager().getBuildings().iterator();//getACopyOfBuildings().iterator();.getACopyOfBuildings().iterator();
 					while (i.hasNext()) {
 						Building building = i.next();
 						Malfunction tempMalfunction = building.getMalfunctionManager().getMostSeriousMalfunction();

@@ -60,7 +60,7 @@ public class MainSceneMenu extends MenuBar  {
 	
 	private boolean fMenuVisible = false;
 	
-	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,settlementMapToolItem;
+	private CheckMenuItem marsNavigatorItem, searchToolItem, timeToolItem, settlementMapToolItem;
 							//monitorToolItem, missionToolItem, 
 							//scienceToolItem, resupplyToolItem;
 							//marsViewerItem, webToolItem;
