@@ -1,1 +1,12 @@
-nimrodlf.frameOpacity=220
+nimrodlf.p1=#E5AB00
+nimrodlf.p2=#EFB500
+nimrodlf.p3=#F9BF00
+nimrodlf.s1=#ADAB89
+nimrodlf.s2=#B7B593
+nimrodlf.s3=#C1BF9D
+nimrodlf.w=#FFFFFF
+nimrodlf.b=#000000
+nimrodlf.menuOpacity=195
+nimrodlf.frameOpacity=255
+nimrodlf.font=SansSerif-PLAIN-12
+

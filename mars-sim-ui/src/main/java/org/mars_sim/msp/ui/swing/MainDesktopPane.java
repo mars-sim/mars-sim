@@ -96,8 +96,8 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  * along with the tool bars, by the main window.
  */
 public class MainDesktopPane
-extends JDesktopPane
-implements ComponentListener, UnitListener, UnitManagerListener {
+extends DesktopPane {
+//implements ComponentListener, UnitListener, UnitManagerListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -107,15 +107,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// Data members
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
-	private boolean firstDisplay;
+	//private boolean firstDisplay;
 	/** List of open or buttoned unit windows. */
 	private Collection<UnitWindow> unitWindows;
 	/** List of tool windows. */
 	private Collection<ToolWindow> toolWindows;
 	/** ImageIcon that contains the tiled background. */
-	private ImageIcon backgroundImageIcon;
+	//private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
-	private JLabel backgroundLabel;
+	//private JLabel backgroundLabel;
 
 	/* The desktop update thread. */
 	private UpdateThread updateThread;
@@ -142,7 +142,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	/** The main window frame. */
 	private MainWindow mainWindow;
+	
 	private MainScene mainScene;
+	
 	private MarqueeTicker marqueeTicker;
 
 	private OrbitViewer orbitViewer;
@@ -163,6 +165,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
+		super();
 	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainWindow = mainWindow;
 
@@ -174,6 +177,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
+		super(mainScene);
 	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
@@ -182,23 +186,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	// 2015-02-04 Added init()
 	public void init() {
-	   	logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
-
-		// Initialize data members
-		soundPlayer = new AudioPlayer(this);
-		soundPlayer.playInBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_MUSIC1); // play our intro music
-
-		// Prepare tool windows.
-		toolWindows = new ArrayList<ToolWindow>();
-
-		
-		browserJFX = new BrowserJFX(this);
-
-		prepareToolWindows();
-
-		// Prepare unit windows.
-		unitWindows = new ArrayList<UnitWindow>();
-
+	   	//logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
+/*
 		// Set background color to black
 		setBackground(Color.black);
 
@@ -218,7 +207,19 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		// Initialize firstDisplay to true
 		firstDisplay = true;
+*/
+		
+		// Initialize data members
+		soundPlayer = new AudioPlayer(this);
+		soundPlayer.playInBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_MUSIC1); // play our intro music
+		// Prepare tool windows.
+		toolWindows = new ArrayList<ToolWindow>();
+		
+		browserJFX = new BrowserJFX(this);
 
+		prepareToolWindows();
+		// Prepare unit windows.
+		unitWindows = new ArrayList<UnitWindow>();
 		// Create update thread.
 		setupToolWindowTasks();
 		updateThread = new UpdateThread(this);
@@ -236,7 +237,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		prepareWindows();
 	   	//logger.info("MainDesktopPane's init() is done ");
 	}
-
+	
+/*
 	public BufferedImage loadPartBufferedImage() {
 
 		//Read Image from File
@@ -283,7 +285,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 		return image;
 	}
-
+*/
+	
 	/**
 	 * sets up this class with two listeners
 	 */
@@ -330,7 +333,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * displayed. Recenter logoLabel on MainWindow and set
 	 * backgroundLabel to the size of MainDesktopPane.
 	 * @param e the component event
-	 */
+
 	@Override
 	public void componentResized(ComponentEvent e) {
 
@@ -374,7 +377,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	public void componentShown(ComponentEvent e) {}
 	@Override
 	public void componentHidden(ComponentEvent e) {}
-
+*/
+	
 	/*
 	 * Creates tool windows
 	 */
@@ -597,7 +601,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 					// 2016-10-22 These 3 tools are in the Desktop Tab
 					if (toolName.equals(NavigatorWindow.NAME)
 							|| toolName.equals(SearchWindow.NAME)
-							|| toolName.equals(TimeWindow.NAME)) {
+							|| toolName.equals(TimeWindow.NAME)
+							|| toolName.equals(SettlementWindow.NAME)) {
 						add(window, 0);	
 					}
 					else if (toolName.equals(MonitorWindow.NAME)) {
@@ -649,7 +654,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				
 				// 2016-10-22 Opening the first 3 tools will switch to the Desktop Tab
 				if (toolName.equals(NavigatorWindow.NAME)) {
-					//System.out.println("closing nav");
 					if (mainScene.isMainSceneDone())
 						mainScene.getJFXTabPane().getSelectionModel().select(0);
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
@@ -667,7 +671,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 						mainScene.getJFXTabPane().getSelectionModel().select(0);
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
 				}
-
 				
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					if (mainScene.isMainSceneDone()) {
@@ -684,9 +687,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				}
 				
 				else if (toolName.equals(SettlementWindow.NAME)) {
+					//System.out.println("MainDesktopPane : opening map tool");
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(3);
-					//mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+						mainScene.getJFXTabPane().getSelectionModel().select(0);
+					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ResupplyWindow.NAME)) {
@@ -706,12 +710,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 						mainScene.getJFXTabPane().getSelectionModel().select(6);
 					//mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
-
-			});
-		
+			});		
 		}
-		//System.out.println("openToolWindow() ended");
-
 	}
 
 	/**
@@ -738,6 +738,11 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(SearchWindow.NAME)) {
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(false);
 				}
+
+				else if (toolName.equals(SettlementWindow.NAME)) {
+					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
+				}
+				
 /*
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(false);
@@ -751,10 +756,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 					mainScene.getMainSceneMenu().getScienceToolItem().setSelected(false);
 				}
 
-				else if (toolName.equals(SettlementWindow.NAME)) {
-					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
-				}
-
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
 				}
@@ -762,39 +763,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			});
 		}
 		
-		
-/*
-		else if (mainWindow != null) {
-
-			if (toolName.equals(NavigatorWindow.NAME)) {
-				mainWindow.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
-			}
-
-			else if (toolName.equals(SearchWindow.NAME)) {
-				mainWindow.getMainSceneMenu().getSearchToolItem().setSelected(false);
-			}
-
-			else if (toolName.equals(MonitorWindow.NAME)) {
-				mainWindow.getMainSceneMenu().getMonitorToolItem().setSelected(false);
-			}
-
-			else if (toolName.equals(MissionWindow.NAME)) {
-				mainWindow.getMainSceneMenu().getMissionToolItem().setSelected(false);
-			}
-
-			else if (toolName.equals(ScienceWindow.NAME)) {
-				mainWindow.getMainSceneMenu().getScienceToolItem().setSelected(false);
-			}
-
-			else if (toolName.equals(SettlementWindow.NAME)) {
-				mainWindow.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
-			}
-
-			else if (toolName.equals(ResupplyWindow.NAME)) {
-				mainWindow.getMainSceneMenu().getResupplyToolItem().setSelected(false);
-			}
-		}
-*/
 	}
 
 	public void refreshTheme() {
@@ -1511,8 +1479,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		return marqueeTicker;
 	}
 
+	
 	// 2014-12-19 Added unitUpdate()
 	@SuppressWarnings("restriction")
+	@Override // @Override needed for Main window
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
 		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
@@ -1521,7 +1491,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
-			//settlement = mgr.getSettlement();
 
 			if (!isTransportingBuilding) {
 				isTransportingBuilding = true;
@@ -1584,7 +1553,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// repaint(); // raise cpu util% way too much for putting it here
 	}
 
-
+/*
 	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 /*
@@ -1606,7 +1575,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 */
 		//repaint(); // raise some cpu util% but not too bad
-
+/*
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
 			Settlement settlement = (Settlement) unit;
@@ -1621,7 +1590,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			}
 		}
 	}
-
+*/
+	
 	public TimeWindow getTimeWindow() {
 		return timeWindow;
 	}

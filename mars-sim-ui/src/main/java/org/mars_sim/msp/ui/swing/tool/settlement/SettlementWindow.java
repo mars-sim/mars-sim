@@ -92,12 +92,12 @@ extends ToolWindow {
     private JPanel subPanel;
 
 	/** The main desktop. */
-	private JDesktopPane desktop;
+	private MainDesktopPane desktop;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
 	private static MarsClock marsClock;
-	private javax.swing.Timer marsTimer = null;
+	//private javax.swing.Timer marsTimer = null;
 
 	//private BalloonToolTip balloonToolTip;
 
@@ -226,20 +226,18 @@ extends ToolWindow {
   
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
         
-		//pack();
-
-		if (((MainDesktopPane)desktop).getMainScene() != null)
-			setClosable(false);
+		//if (desktop.getMainScene() != null)
+		setClosable(true);
 
 		// 2014-12-27 Added preferred size and initial location
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 		//setMinimumSize(new Dimension(500, 400));
 		setMaximizable(true);
-		//setResizable(false);
+		setResizable(true);
 		setVisible(true);
 
+		pack();
 
-		
 	}
 
 	
@@ -269,7 +267,7 @@ extends ToolWindow {
 	    solLabel.setText(" Sol : " + statusText + " ");
 	    popLabel.setText(" Population : " + populationText + " ");
 	    capLabel.setText(" Capacity : " + capText + " ");
-	    xyLabel.setText("\t\t\tPointer at (" + xCoor + ", " + yCoor + ")" + " ");
+	    xyLabel.setText("\t\tPointer at (" + xCoor + ", " + yCoor + ")" + " ");
 	    //yLabel.setText(", " + yCoor + ")" + " ");
 
 		solLabel.setTooltip(new Tooltip ("Mission Day"));
@@ -485,18 +483,22 @@ extends ToolWindow {
 		}
 	}
 	
-	public void setDesktop(JDesktopPane desktop) {
-		this.desktop = desktop;
-	}
+	////public void setDesktop(MainDesktopPane desktop) {
+	//	this.desktop = desktop;
+	//}
 	
 	@Override
 	public void destroy() {
 		//marsTimer.stop();
-		marsTimer = null;
+		//marsTimer = null;
 		mapPanel.destroy();
 		mapPanel = null;
 		desktop = null;
 		timeline = null;
+		marqueeTicker = null;
+		jfxPanel = null;
+		scene = null;
+		stack = null;
 
 	}
 

@@ -143,7 +143,7 @@ implements SettlementMapLayer {
 	 */
 	private void drawBuildingLabels(Graphics2D g2d, Settlement settlement) {
 		if (settlement != null) {
-			Iterator<Building> i = settlement.getBuildingManager().getACopyOfBuildings().iterator();
+			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
 				String name = building.getNickName();

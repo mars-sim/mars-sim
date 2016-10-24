@@ -227,7 +227,7 @@ public class MainScene {
 	private ESCHandler esc = null;
 
 	private JFXTabPane jfxTabPane;
-	private Tab unitsTab;
+	private Tab mainTab;
 	
 	private Timeline timeline;
 	private static NotificationPane notificationPane;
@@ -518,9 +518,9 @@ public class MainScene {
 		
 		//jfxTabPane.setPrefSize(300, 200);
 				
-		unitsTab = new Tab();
-		unitsTab.setText("Units");
-		unitsTab.setContent(desktopPane);
+		mainTab = new Tab();
+		mainTab.setText("Main");
+		mainTab.setContent(desktopPane);
 		
 		//StackPane settlementPane = new StackPane();
 		//Tab settlementTab = new Tab();
@@ -559,7 +559,8 @@ public class MainScene {
 		missionTab.setContent(missionPane);
 
 		desktop.openToolWindow(MissionWindow.NAME);
-		
+
+/*		
 		SettlementWindow settlementWin = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		SwingNode settlementNode = new SwingNode();
 	    //JDesktopPane d2 = desktops.get(2);
@@ -572,6 +573,7 @@ public class MainScene {
 		settlementTab.setContent(settlementPane);
 		
 		desktop.openToolWindow(SettlementWindow.NAME);
+*/
 		
 		ResupplyWindow resupplyWin = (ResupplyWindow) desktop.getToolWindow(ResupplyWindow.NAME);
 		SwingNode resupplyNode = new SwingNode();
@@ -608,7 +610,7 @@ public class MainScene {
 
 		desktop.openToolWindow(GuideWindow.NAME);
 		
-		jfxTabPane.getTabs().addAll(unitsTab, monTab, missionTab, settlementTab, resupplyTab, scienceTab, helpTab);	
+		jfxTabPane.getTabs().addAll(mainTab, monTab, missionTab, resupplyTab, scienceTab, helpTab);	
 /*
 		//if (mainScene != null) {	
 			//openToolWindow(NavigatorWindow.NAME);
@@ -1424,7 +1426,7 @@ public class MainScene {
 	}
 
 	public void openInitialWindows() {
-		logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's openInitialWindows() is on " + Thread.currentThread().getName() + " Thread");
 		//String OS = System.getProperty("os.name").toLowerCase();
 		//System.out.println("OS is " + OS);
 		if (OS.contains("mac")) {
@@ -1705,7 +1707,7 @@ public class MainScene {
 		loadingCircleStage = null;
 		savingCircleStage = null;
 		pausingCircleStage = null;
-		unitsTab = null;
+		mainTab = null;
 		nodeTab = null;
 		dndTabPane = null;
 		timeline = null;

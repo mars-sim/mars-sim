@@ -8,8 +8,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SkinBase;
@@ -41,7 +43,6 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
 
     //This is Textbox where user types
     private TextField textbox;
-
     //This is the main Control of AutoFillTextBox
     private AutoFillTextBox autofillTextbox;
 
@@ -191,9 +192,9 @@ public class AutoFillTextBoxSkin<T> extends SkinBase<AutoFillTextBox<T>>
         //list data and sorted ordered
         data = text.getData();
         FXCollections.sort(data);
-
+   
         //Adding textbox in this control Children
-        getChildren().addAll(textbox);
+        getChildren().addAll(textbox);//, autofillTextbox.getClearButton());
 
     }
 

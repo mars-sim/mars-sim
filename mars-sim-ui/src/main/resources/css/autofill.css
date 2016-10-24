@@ -50,3 +50,12 @@ root {
     -fx-prompt-text-fill: transparent;
 }
 
+.button-clear {
+	-fx-background-color: white;
+    -fx-background-image: url("../icons/chatbox/clear.png");
+}
+.button-clear:hover {
+	-fx-background-color: white;
+    -fx-background-image: url("../icons/chatbox/clear-over.png");
+}
+

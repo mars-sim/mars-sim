@@ -49,7 +49,6 @@ import javafx.stage.Stage;
 //import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 //import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
-
 @SuppressWarnings("restriction")
 public class MainSceneMenu extends MenuBar  {
 
@@ -61,8 +60,8 @@ public class MainSceneMenu extends MenuBar  {
 	
 	private boolean fMenuVisible = false;
 	
-	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem;
-							//monitorToolItem, missionToolItem, settlementMapToolItem,
+	private CheckMenuItem marsNavigatorItem, searchToolItem,timeToolItem,settlementMapToolItem;
+							//monitorToolItem, missionToolItem, 
 							//scienceToolItem, resupplyToolItem;
 							//marsViewerItem, webToolItem;
 
@@ -142,15 +141,15 @@ public class MainSceneMenu extends MenuBar  {
         timeToolItem = createMenuItem("Time Tool", TimeWindow.NAME);
         timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
 
+        settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
+        settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
+
 /*        
         monitorToolItem = createMenuItem("Monitor Tool", MonitorWindow.NAME);
         monitorToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
 
         missionToolItem = createMenuItem("Mission Tool", MissionWindow.NAME);
         missionToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F5));
-
-        settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
-        settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F6));
 
         scienceToolItem = createMenuItem("Science Tool", ScienceWindow.NAME);
         scienceToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
@@ -165,8 +164,8 @@ public class MainSceneMenu extends MenuBar  {
         //webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
 
-        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem);
-        		//monitorToolItem, missionToolItem,settlementMapToolItem,
+        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem,settlementMapToolItem);
+        		//monitorToolItem, missionToolItem,
         		//scienceToolItem, resupplyToolItem);
         		//, marsViewerItem, webToolItem);
 
@@ -243,55 +242,6 @@ public class MainSceneMenu extends MenuBar  {
         		SeparatorMenuItem6, 
         		volumeUpItem, volumeDownItem,muteItem); // showUnitBarItem,showToolBarItem,
 
-        // --- Menu Notification
-/*
-        Menu menuNotification = new Menu("Notification");
-
-        Menu newsPaneItem = new Menu("News Pane");
-        newsPaneItem.setDisable(true);
-
-        CheckMenuItem slideFromTop = new CheckMenuItem("Slide from Top");
-        slideFromTop.setSelected(false);
-
-        CheckMenuItem slideFromBottom = new CheckMenuItem("Slide from Bottom");
-        slideFromBottom.setSelected(true);
-
-        CheckMenuItem showHideNewsPane = new CheckMenuItem("Toggle Show/Hide");
-		//showNewsPaneItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-		showHideNewsPane.setSelected(false);
-
-		newsPaneItem.getItems().addAll(slideFromTop, slideFromBottom, showHideNewsPane);
-
-        Menu messageTypeItem = new Menu("Message Type");
-        CheckMenuItem medicalItem = new CheckMenuItem("Medical");
-        CheckMenuItem malfunctionItem = new CheckMenuItem("Malfunction");
-        messageTypeItem.getItems().addAll(medicalItem, malfunctionItem);
-
-        Menu displayTimeItem = new Menu("Display Time");
-        ToggleGroup displayTimeToggleGroup = new ToggleGroup();
-        RadioMenuItem confirmEachItem = new RadioMenuItem("Confirm each");
-        confirmEachItem.setToggleGroup(displayTimeToggleGroup);
-        RadioMenuItem threeSecondsItem = new RadioMenuItem("3 seconds");
-        threeSecondsItem.setToggleGroup(displayTimeToggleGroup);
-        RadioMenuItem twoSecondsItem = new RadioMenuItem("2 seconds");
-        twoSecondsItem.setToggleGroup(displayTimeToggleGroup);
-        RadioMenuItem oneSecondItem = new RadioMenuItem("1 second");
-        oneSecondItem.setToggleGroup(displayTimeToggleGroup);
-        displayTimeItem.getItems().addAll(confirmEachItem, threeSecondsItem, twoSecondsItem, oneSecondItem);
-
-        Menu queueSizeItem = new Menu("Queue Size");
-        ToggleGroup queueSizeToggleGroup = new ToggleGroup();
-        RadioMenuItem unlimitedItem = new RadioMenuItem("Unlimited");
-        unlimitedItem.setToggleGroup(queueSizeToggleGroup);
-        RadioMenuItem threeItem = new RadioMenuItem("3");
-        threeItem.setToggleGroup(queueSizeToggleGroup);
-        RadioMenuItem oneItem = new RadioMenuItem("1");
-        oneItem.setToggleGroup(queueSizeToggleGroup);
-        queueSizeItem.getItems().addAll(unlimitedItem, threeItem, oneItem);
-
-
-        menuNotification.getItems().addAll(newsPaneItem); // , messageTypeItem,displayTimeItem,queueSizeItem);
-*/
 
 /*        
         // --- Menu Help
@@ -309,8 +259,6 @@ public class MainSceneMenu extends MenuBar  {
 
         // 2016-07-06 Added nsmenufx.
 		if (MainScene.OS.contains("mac")) {
-			
-			//Platform.runLater(() -> {
 
 				MenuToolkit tk = MenuToolkit.toolkit(Locale.getDefault());
 				tk.setApplicationMenu(tk.createDefaultApplicationMenu("mars-sim"));
@@ -336,7 +284,6 @@ public class MainSceneMenu extends MenuBar  {
 		
 				tk.setMenuBar(stage, menuBar);
 
-			//});
 		}
 		else
 			super.getMenus().addAll(menuFile, menuTools, menuSettings);//, menuHelp); // menuNotification,
@@ -530,6 +477,11 @@ public class MainSceneMenu extends MenuBar  {
 	public CheckMenuItem getTimeToolItem() {
 		return timeToolItem;
 	}
+	
+	public CheckMenuItem getSettlementMapToolItem() {
+		return settlementMapToolItem;
+	}
+	
 /*
 	public CheckMenuItem getMonitorToolItem() {
 		return monitorToolItem;
@@ -541,10 +493,6 @@ public class MainSceneMenu extends MenuBar  {
 
 	public CheckMenuItem getScienceToolItem() {
 		return scienceToolItem;
-	}
-
-	public CheckMenuItem getSettlementMapToolItem() {
-		return settlementMapToolItem;
 	}
 
 	public CheckMenuItem getResupplyToolItem() {
@@ -605,6 +553,10 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(TimeWindow.NAME)) {
 			getTimeToolItem().setSelected(false);
 		}
+		
+		else if (toolName.equals(SettlementWindow.NAME)) {
+			getSettlementMapToolItem().setSelected(false);
+		}
 /*
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			getMonitorToolItem().setSelected(false);
@@ -619,9 +571,6 @@ public class MainSceneMenu extends MenuBar  {
 			getScienceToolItem().setSelected(false);
 		}
 
-		else if (toolName.equals(SettlementWindow.NAME)) {
-			getSettlementMapToolItem().setSelected(false);
-		}
 
 		else if (toolName.equals(ResupplyWindow.NAME)) {
 			getResupplyToolItem().setSelected(false);
@@ -646,6 +595,10 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(TimeWindow.NAME)) {
 			return getTimeToolItem();
 		}
+		
+		else if (toolName.equals(SettlementWindow.NAME)) {
+			return getSettlementMapToolItem();
+		}
 /*
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			return getMonitorToolItem();
@@ -659,9 +612,6 @@ public class MainSceneMenu extends MenuBar  {
 			return getScienceToolItem();
 		}
 
-		else if (toolName.equals(SettlementWindow.NAME)) {
-			return getSettlementMapToolItem();
-		}
 
 		else if (toolName.equals(ResupplyWindow.NAME)) {
 			return getResupplyToolItem();

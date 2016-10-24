@@ -1,9 +1,12 @@
 package org.mars_sim.msp.ui.javafx.autofill;
 
+
+import javafx.event.ActionEvent;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -37,6 +40,8 @@ public class AutoFillTextBox<T> extends Control implements
     //==========
     //ATTRIBUTES
     //==========
+	
+	private Button clearButton;
     private TextField textbox;
     private ListView<T> listview;
     private ObservableList<T> data = FXCollections.observableArrayList();
@@ -65,11 +70,26 @@ public class AutoFillTextBox<T> extends Control implements
      * ================================ */
     private void init() {
         getStyleClass().setAll("autofill-text");
+
         textbox = new TextField();
         listview = new ListView();
         limit = 5;
         filterMode = false;
-
+/*
+        //setMaxSize(Control.USE_PREF_SIZE, Control.USE_PREF_SIZE);
+        //setMinHeight(24);
+	    clearButton = new Button();
+	    clearButton.setId("button-clear");
+	 	clearButton.setVisible(false);
+	    getChildren().add(clearButton);
+	    clearButton.setOnAction((ActionEvent actionEvent) -> {
+	        textbox.setText("");
+	        textbox.requestFocus();
+	    });
+	    textbox.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+	    	clearButton.setVisible(textbox.getText().length() != 0);
+	    });
+*/  
         listen();
 
     }
@@ -115,6 +135,10 @@ public class AutoFillTextBox<T> extends Control implements
         return textbox;
     }
 
+    public Button getClearButton() {
+    	return clearButton;
+    }
+    
     @Override
     public void setListLimit(int limit) {
 

@@ -123,6 +123,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
+		initialize();
+	}
+	
+	public void initialize() {
 		// Set background color to black
 		setBackground(Color.black);
 
@@ -146,6 +150,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	}
 
+	/**
+	 * Constructor 2.
+	 */
+	public DesktopPane() {
+	}
+	
 	/** Returns the MainScene instance
 	 *  @return MainScene instance
 	 */
@@ -238,11 +248,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	    comp.setVisible(true);
 	}
 	
-	public void destroy() {
-		mainScene = null;
-	}
-
-	@Override
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
 		Object unit = event.getUnit();
@@ -300,6 +305,13 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			isConstructingSite = false;
 		}
 
+	}
+
+	public void destroy() {
+		backgroundImageIcon  = null;
+		backgroundLabel = null;
+		building = null;
+		mainScene = null;
 	}
 
 }
