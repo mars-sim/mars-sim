@@ -8,8 +8,10 @@
 package org.mars_sim.msp.ui.javafx.config;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.controlsfx.validation.ValidationSupport;
@@ -26,9 +28,11 @@ import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 
 
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
@@ -60,24 +64,37 @@ public class TableViewCombo {
 	
 	private ObservableList<SettlementBase> allData;
 	
+	//private Formatter myLatitudeFormatter;
+	
 	private SettlementConfig settlementConfig;
 	
 	private SimulationConfig simulationConfig;
 	
-	public TableViewCombo() {
+	private ScenarioConfigEditorFX editor;
+	
+	public TableViewCombo(ScenarioConfigEditorFX editor) {
+		this.editor = editor;
 		
 		simulationConfig = SimulationConfig.instance();
 		settlementConfig = simulationConfig.getSettlementConfiguration();
 		settlementNames = settlementConfig.getSettlementNameList();
 		templates = settlementConfig.getSettlementTemplates();
-		
+			
 	}
  
+	@SuppressWarnings("restriction")
 	public TableView createGUI() {
-
+		
         table_view = new TableView<>();
         table_view.setEditable(true);
 
+        init();
+        
+        return table_view;
+	}
+	
+	@SuppressWarnings("restriction")
+	public void init() {
         TableColumn<SettlementBase, String> nameCol = new TableColumn<>(headers[0]);
         nameCol.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         nameCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -120,42 +137,48 @@ public class TableViewCombo {
         		SPONSORS[7].toString()));
         sponsorCol.setMinWidth(250);
        
+
         TableColumn<SettlementBase, String> latCol = new TableColumn<>(headers[5]);
-        latCol.setCellValueFactory(cellData -> cellData.getValue().latitudeProperty());
-        latCol.setCellFactory(TextFieldTableCell.forTableColumn());
         latCol.setMinWidth(70);
+        latCol.setCellValueFactory(cellData -> cellData.getValue().latitudeProperty());
+        //latCol.setCellFactory(TextFieldTableCell.forTableColumn()); 
+        latCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<String>(){
+            @Override
+            public String toString(String item) {            	
+            	editor.checkForErrors();
+                return item.toString();
+            }
+            
+            @Override
+            public String fromString(String string) {
+                return string;
+            }
+            
+        }));
+
 
         TableColumn<SettlementBase, String> longCol = new TableColumn<>(headers[6]);
         longCol.setCellValueFactory(cellData -> cellData.getValue().longitudeProperty());
-        longCol.setCellFactory(TextFieldTableCell.forTableColumn());
-        longCol.setMinWidth(70);
+        //longCol.setCellFactory(TextFieldTableCell.forTableColumn());
+        longCol.setMinWidth(70);   
+        longCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<String>(){
+            @Override
+            public String toString(String item) {            	
+            	editor.checkForErrors();
+                return item.toString();
+            }
+            
+            @Override
+            public String fromString(String string) {
+                return string;
+            }
+            
+        }));
  
         table_view.getColumns().addAll(nameCol,templateCol,settlerCol,botCol,sponsorCol,latCol, longCol);
         table_view.getItems().addAll(generateDataInMap());
         
-/*
-        table_view.getItems().addAll(
-            //new Base("Alpha Base", "Alpha Base (MD Phase 4)", 9, 24, "Mars Society"),
-            //new Base("Schiaparelli Point", "Mars Direct Base (Phase 1)", 3, 4, "Mars Society"),
-            //new Base("Port Zubrin", "Mars Direct Base (Phase 2)", 4, 8, "Mars Society")
-            new SettlementBase("Alpha Base", "Alpha Base (MD Phase 4)", "9", "24", "Mars Society", "0.0 N", "0.0 W"),
-            new SettlementBase("Schiaparelli Point", "Mars Direct Base (Phase 1)", "3", "4", "Mars Society", "5.0 N", "5.0 W"),
-            new SettlementBase("Port Zubrin", "Mars Direct Base (Phase 2)", "4", "8", "Mars Society", "9.0 N", "9.0 W"));
-*/
-        
-/*
-        settlerCol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Integer>(){
-            @Override
-            public String toString(Integer object) {
-                return object.toString();
-            }
-            @Override
-            public Integer fromString(String string) {
-                return Integer.parseInt(string);
-            }
-        }));
-*/       
-         return table_view;
+
     }
 
 	public TableView getTableView() {
@@ -168,20 +191,60 @@ public class TableViewCombo {
 	 */
 	public void addSettlement(SettlementBase base) {
 		settlements.add(base);
-		addNewSettlement(base);
+		createObservableList(base);
 		//table_view.refresh();
 		table_view.setItems(allData);
 	}
 	
 	
-	public void addNewSettlement(SettlementBase base) {     
+	public void createObservableList(SettlementBase base) {     
 		allData.add(base);
 	}
 	
+	public void startNewObsList() {
+	    allData = FXCollections.observableArrayList();
+	    
+	    allData.addListener(new ListChangeListener() {
+	    	@Override
+	    	public void onChanged(ListChangeListener.Change change) {
+	    		//System.out.println("onChange event: ");
+	    		while (change.next()) {
+	    			if (change.wasAdded() || change.wasPermutated() || change.wasReplaced()) {
+	    				int i = change.getTo() - 1;
+	    				//System.out.println("i : " + i);
+	    				//String s = change.toString();
+	    				//System.out.println("s : " + s);
+	    				ObservableList<SettlementBase> list = change.getList();
+	    				String name = list.get(i).getName().toString();
+	    				String template = list.get(i).getTemplate().toString();
+	    				String settler = list.get(i).getSettler().toString();
+	    				String bot = list.get(i).getBot().toString();
+	    				String sponsor = list.get(i).getSponsor().toString();
+	    				String latitude = list.get(i).getLatitude().toString();
+	    				String longitude = list.get(i).getLongitude().toString();
+	    				
+	    				//System.out.println("name : " + name);
+	    				
+	    				if (editor.getStartButton() != null) {
+		    				if (name.contains("?")) {
+		    					System.out.println("invalid settlement name !");
+		    					
+		    					editor.getStartButton().setDisable(true);
+		    				}
+		    				else
+		    					editor.getStartButton().setDisable(false);	
+	    				}
+	    			}
+	    		}
+	    	}
+	    });
+	}
+	
+    @SuppressWarnings("unchecked")
+	private ObservableList<SettlementBase> generateDataInMap() {
 
-    private ObservableList<SettlementBase> generateDataInMap() {
-    	
-        allData = FXCollections.observableArrayList();
+    	startNewObsList();
+
 		settlements.clear();
 
 		int size = settlementConfig.getNumberOfInitialSettlements();
@@ -259,26 +322,26 @@ public class TableViewCombo {
 	 * Recreate default settlement templates
 	 */
     private void recreateDefaultSettlements() {
-    	
-        allData = FXCollections.observableArrayList();
-		SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
-		settlements.clear();
-				
+		settlements.clear(); 
+		// start a new allData
+		startNewObsList();
+        // create a new instance of SettlementBase
 		SettlementBase base = new SettlementBase();
 
+		//SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();		
 		int size = settlementConfig.getNumberOfInitialSettlements();
-		System.out.println("size : " + size);
+		//System.out.println("size : " + size);
 		for (int x = 0; x < size; x++) {	
-			createRow(base, x);
+			createARow(base, x);
 		}
 
     }
     
 
     /*
-     * Create each settlement row
+     * Create a settlement in a row
      */
-	public void createRow(SettlementBase base, int r) {
+	public void createARow(SettlementBase base, int r) {
 		//System.out.println("allData.get(r) : " + allData.get(r));
 		//System.out.println("allData.get(r).getName() : " + allData.get(r).getName());
 		base.setName(allData.get(r).getName().toString());
@@ -291,7 +354,7 @@ public class TableViewCombo {
 	
 		settlements.add(base);			
 	
-		addNewSettlement(base);
+		createObservableList(base);
 	}
 	
 	public int getRowCount() {
@@ -305,6 +368,5 @@ public class TableViewCombo {
 	public List<SettlementBase> getSettlementBase() {
 		return settlements;
 	}
-	
 
 }

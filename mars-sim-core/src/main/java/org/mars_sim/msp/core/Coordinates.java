@@ -647,7 +647,7 @@ implements Serializable {
 
 		String cleanLatitude = latitude.toUpperCase().trim();
 
-		if (cleanLatitude.isEmpty()) throw new IllegalStateException("Latitude is blank");
+		if (cleanLatitude.isEmpty()) throw new IllegalStateException("Latitude is blank !");
 
 		try {
 			String numberString = cleanLatitude.substring(0, cleanLatitude.length() - 1).trim();
@@ -657,16 +657,16 @@ implements Serializable {
 			latValue = Double.parseDouble(numberString);
 		}
 		catch(NumberFormatException e) {
-			throw new IllegalStateException("Latitude number invalid: " + latitude);
+			throw new IllegalStateException("Latitude number invalid : " + latitude);
 		}
 
-		if ((latValue > 90D) || (latValue < 0)) throw new IllegalStateException("Latitude value out of range: " + latValue);
+		if ((latValue > 90D) || (latValue < 0)) throw new IllegalStateException("Latitude value out of range : " + latValue);
 
 		// TODO parse latitude depending on locale and validate
 		String direction = "" + cleanLatitude.charAt(latitude.length() - 1);
 		if (direction.compareToIgnoreCase(shortNorth) == 0) latValue = 90D - latValue;
 		else if (direction.compareToIgnoreCase(shortSouth) == 0) latValue += 90D;
-		else throw new IllegalStateException("Latitude direction wrong: " + direction);
+		else throw new IllegalStateException("Invalid Latitude direction : " + direction);
 
 		double phi = Math.PI * (latValue / 180D);
 		return phi;
@@ -684,7 +684,7 @@ implements Serializable {
 
 		String cleanLongitude = longitude.toUpperCase().trim();
 
-		if (cleanLongitude.isEmpty()) throw new IllegalStateException("Longitude is blank");
+		if (cleanLongitude.isEmpty()) throw new IllegalStateException("Longitude is blank !");
 
 		try {
 			String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
@@ -697,12 +697,12 @@ implements Serializable {
 			throw new IllegalStateException("Longitude number invalid: " + longitude);
 		}
 
-		if ((longValue > 180D) || (longValue < 0)) throw new IllegalStateException("Longitude value out of range: " + longValue);
+		if ((longValue > 180D) || (longValue < 0)) throw new IllegalStateException("Longitude value out of range : " + longValue);
 
 		// TODO parse longitude depending on locale and validate
 		String direction = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
 		if (direction.compareToIgnoreCase(shortWest) == 0) longValue = 360D - longValue;
-		else if (direction.compareToIgnoreCase(shortEast) != 0) throw new IllegalStateException("Longitude direction wrong: " + direction);
+		else if (direction.compareToIgnoreCase(shortEast) != 0) throw new IllegalStateException("Invalid Longitude direction : " + direction);
 
 		double theta = (2 * Math.PI) * (longValue / 360D);
 		return theta;

@@ -359,7 +359,7 @@ public class ScenarioConfigEditorFX {
 		borderAll.setTop(topVB);
 	
 		// 2016-08-09 Added TableViewCombo, TableView	
-		tableViewCombo = new TableViewCombo();		
+		tableViewCombo = new TableViewCombo(this);		
 		tableView = tableViewCombo.createGUI();	
 		tableView.setMaxHeight(200);
 		tableView.setPrefHeight(200);		
@@ -473,8 +473,9 @@ public class ScenarioConfigEditorFX {
 
 		// Create error label.
 		errorLabel = new Label(" "); //$NON-NLS-1$
+		errorLabel.setAlignment(Pos.CENTER); 
 		// errorLabel.set//setColor(Color.RED);
-		errorLabel.setStyle("-fx-font: 15 arial; -fx-color: red; -fx-base: #ff5400;");
+		errorLabel.setStyle("-fx-color: red; -fx-base: #ff5400;"); // -fx-font: 15 arial; 
 		bottomPanel.setTop(errorLabel);
 
 		// Create the bottom button panel.
@@ -515,7 +516,10 @@ public class ScenarioConfigEditorFX {
 			//	tableCellEditor.stopCellEditing();
 			//}
 
-			if (!hasError) {				
+			//checkForErrors();		
+			//System.out.println("hasError is " + hasError);
+
+			if (!hasError) {			
 				// create wait indicators
 				Platform.runLater(() -> {
 					mainScene.createIndicator();
@@ -1082,6 +1086,9 @@ public class ScenarioConfigEditorFX {
 		return mainMenu;
 	}
 
+	public int getRowCount() {
+		return tableViewCombo.getRowCount();
+	}
 	   
     private ScrollBar getVerticalScrollbar(TableView<?> table) {
         ScrollBar result = null;
@@ -1108,6 +1115,377 @@ public class ScenarioConfigEditorFX {
         }
     }
     
+	/**
+	 * Sets an edit-check error.
+	 * @param errorString the error description.
+	 */
+	private void setError(String errorString) {
+		// Platform.runLater is needed to switch from Swing EDT to JavaFX Thread
+		//Platform.runLater(() -> {
+		if (!getHasError()) {
+			setHasError(true);
+    		getErrorLabel().setText("\t\t" + errorString);
+    			//errorLabel.setStyle("-fx-font-color:red;");
+    		getErrorLabel().setTextFill(Color.RED);
+    		getStartButton().setDisable(true);
+    	}
+		//});
+	}
+	
+	/**
+	 * Clears all edit-check errors.
+	 */
+	private void clearError() {
+		// Platform.runLater is needed to switch from Swing EDT to JavaFX Thread
+		//Platform.runLater(() -> {
+		setHasError(false);
+        getErrorLabel().setText(""); //$NON-NLS-1$
+        getErrorLabel().setTextFill(Color.BLACK);
+        getStartButton().setDisable(false);
+        //});
+	}
+
+	
+	/**
+	 * Check for errors in table settlement values.
+	 */
+	public void checkForErrors() {
+		//System.out.println("checkForErrors"); // runs only when a user click on a cell
+		//checkNumExistingSettlement();
+		clearError();
+
+		// TODO: in multiplayer mode, check to ensure the latitude/longitude has NOT been chosen already in the table by another settlement registered by the host server
+
+		// TODO: incorporate checking for user locale and its decimal separation symbol (. or ,)
+
+		try {
+			boolean repeated = false;
+			int size = getRowCount();
+			for (int x = 0; x < size; x++) {
+
+				String latStr = tableViewCombo.getAllData().get(x).getLatitude().toString().trim().toUpperCase();;
+
+				// check if it's empty or having a length less than 2 characters.
+				if (latStr == null || latStr.length() < 2) {
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
+					return;
+				}
+				
+				// check if the last character is a digit, if digit, setError
+				if (Character.isDigit(latStr.charAt(latStr.length() - 1))){
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
+							Msg.getString("direction.northShort"), //$NON-NLS-1$
+							Msg.getString("direction.southShort") //$NON-NLS-1$
+							));
+					return;
+				}
+				
+				if (!latStr.endsWith(Msg.getString("direction.northShort")) &&
+				        !latStr.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					setError(Msg.getString(
+							"SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
+							Msg.getString("direction.northShort"), //$NON-NLS-1$
+							Msg.getString("direction.southShort") //$NON-NLS-1$
+						));
+				}
+				
+				else {
+					String numLatitude = latStr.substring(0, latStr.length() - 1);
+					try {
+						double doubleLatitude = Double.parseDouble(numLatitude.trim());
+						if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
+							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+							return;
+						}
+					}
+					catch(NumberFormatException e) {
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+						e.printStackTrace();
+						return;
+					}
+				}
+				
+				// check if the second from the last character is a whitespace or not, if not true, setError
+				if (latStr.charAt(latStr.length() - 2) != ' '){
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+					return;
+				}
+
+				// check if the third from the last character is a digit or not, if not true, setError
+				if (!Character.isDigit(latStr.charAt(latStr.length() - 3))){
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+					return;
+				}
+				
+				// check if the fourth from the last character is a whitespace or not, if not true, setError
+				if (latStr.charAt(latStr.length() - 4) != '.'){
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+					return;
+				}
+
+				// check if the fifth from the last character is a digit or not, if not true, setError
+				if (!Character.isDigit(latStr.charAt(latStr.length() - 5))){
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+					return;
+				}
+				
+				String longStr = tableViewCombo.getAllData().get(x).getLongitude().toString().trim().toUpperCase();;
+
+				
+				if (longStr == null || longStr.length() < 2 ) {
+					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+					return;
+				}
+				
+				// check if the last character is a digit or a letter, if digit, setError
+				if (Character.isDigit(longStr.charAt(longStr.length() - 1))){
+					setError(Msg.getString(
+								"SimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
+								Msg.getString("direction.eastShort"), //$NON-NLS-1$
+								Msg.getString("direction.westShort") //$NON-NLS-1$
+							));
+					return;
+				}
+				
+				else {
+					String numLong = longStr.substring(0, longStr.length() - 1);
+					try {
+						double doubleLong = Double.parseDouble(numLong.trim());
+						if ((doubleLong < 0) || (doubleLong > 180)) {
+							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+							return;
+						}
+					}
+					catch(NumberFormatException e) {
+						setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+						e.printStackTrace();
+						return;
+					}
+				}
+
+				
+				// check if the second from the last character is a digit or a letter, if a letter, setError
+				if (Character.isLetter(longStr.charAt(longStr.length() - 2))){
+					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+					return;
+				}
+
+				// check if the third from the last character is a digit or not, if not true, setError
+				if (!Character.isDigit(longStr.charAt(longStr.length() - 3))){
+					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
+					return;
+				}
+				
+				// check if the fourth from the last character is a whitespace or not, if not true, setError
+				if (longStr.charAt(longStr.length() - 4) != '.'){
+					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
+					return;
+				}
+
+				// check if the fifth from the last character is a digit or not, if not true, setError
+				if (!Character.isDigit(longStr.charAt(longStr.length() - 5))){
+					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
+					return;
+				}
+
+				if (x + 1 < size ) {
+					// if it has another settlement after this one
+					String latNextStr = tableViewCombo.getAllData().get(x+1).getLatitude().toString().trim().toUpperCase();;
+	
+					if ( latNextStr == null || latNextStr.length() < 2) {
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
+						return;
+					}
+					else if (latStr.equals(latNextStr)) {
+						repeated = true;
+						break;
+					}
+					
+					else {
+						
+						String numLat = latStr.substring(0, latStr.length() - 1);
+						String numLatNext = latNextStr.substring(0, latNextStr.length() - 1);
+						try {
+							double doubleLat = Double.parseDouble(numLat.trim());
+							double doubleLatNext = Double.parseDouble(numLatNext.trim());
+							if (doubleLat < 0 || doubleLat > 180
+								|| doubleLatNext < 0 || doubleLatNext > 180
+								) {
+								setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+								return;
+							}
+							
+							else if (doubleLatNext == 0 && doubleLat == 0) {
+								repeated = true;
+								break;
+								
+							} 
+							
+							else if (doubleLatNext == doubleLat) {
+								repeated = true;
+								break;
+							}
+						}
+						
+						catch(NumberFormatException e) {
+							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+							e.printStackTrace();
+							return;
+						}					
+						
+					}
+
+					String longNextStr = tableViewCombo.getAllData().get(x+1).getLongitude().toString().trim().toUpperCase();;
+					
+					if ( longNextStr == null ||  longNextStr.length() < 2) {
+						setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+						return;
+					}
+					else if (longStr.equals(longNextStr)) {
+						repeated = true;
+						break;
+					}
+
+					else {
+						String numLong = longStr.substring(0, longStr.length() - 1);
+						String numLongNext = longNextStr.substring(0, longNextStr.length() - 1);
+						try {
+							double doubleLong = Double.parseDouble(numLong.trim());
+							double doubleLongNext = Double.parseDouble(numLongNext.trim());
+							if (doubleLong < 0 || doubleLong > 180
+								|| doubleLongNext < 0 || doubleLongNext > 180
+								) {
+								setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+								return;
+							}
+							
+							else if (doubleLongNext == 0 && doubleLong == 0) {
+								repeated = true;
+								break;
+								
+							} 
+							
+							else if (doubleLongNext == doubleLong) {
+								repeated = true;
+								break;
+							}
+						}
+						
+						catch(NumberFormatException e) {
+							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+							e.printStackTrace();
+							return;
+						}
+					}
+				}
+			}
+
+			if (repeated) {
+				setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
+				return;
+			}
+
+		} catch(NumberFormatException e) {
+			setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeBadEntry")); //$NON-NLS-1$
+			e.printStackTrace();
+		}
+
+		Iterator<SettlementBase> i = tableViewCombo.getSettlementBase().iterator();
+		while (i.hasNext()) {
+			SettlementBase settlement = i.next();
+
+			// Check that settlement name is valid.
+			if ((settlement.getName().trim() == null) || (settlement.getName().trim().isEmpty())) {
+				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
+			}
+
+			// Check if population is valid.
+			if ((settlement.getSettler().trim() == null) || (settlement.getSettler().trim().isEmpty())) {
+				setError(Msg.getString("SimulationConfigEditor.error.populationMissing")); //$NON-NLS-1$
+			} else {
+				try {
+					int popInt = Integer.parseInt(settlement.getSettler().trim());
+					if (popInt < 0) {
+						setError(Msg.getString("SimulationConfigEditor.error.populationTooFew")); //$NON-NLS-1$
+					}
+				} catch (NumberFormatException e) {
+					setError(Msg.getString("SimulationConfigEditor.error.populationInvalid")); //$NON-NLS-1$
+					e.printStackTrace();
+				}
+			}
+
+			// Check if number of robots is valid.
+			if ((settlement.getBot().trim() == null) || (settlement.getBot().trim().isEmpty())) {
+				setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
+			} else {
+				try {
+					int num = Integer.parseInt(settlement.getBot().trim());
+					if (num < 0) {
+						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
+					}
+				} catch (NumberFormatException e) {
+					setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
+					e.printStackTrace();
+				}
+			}
+
+/*		
+			// Check that settlement latitude is valid.
+			if ((settlement.getLatitude().trim() == null) || (settlement.getLatitude().trim().isEmpty())) {
+				setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
+			} else {
+				String cleanLatitude = settlement.getLatitude().trim().toUpperCase();
+				//if (!cleanLatitude.endsWith(Msg.getString("direction.northShort")) &&
+				//        !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+				//	setError(Msg.getString(
+				//			"SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
+				//			Msg.getString("direction.northShort"), //$NON-NLS-1$
+				//			Msg.getString("direction.southShort") //$NON-NLS-1$
+				//		));
+				//}
+				//else {
+					String numLatitude = cleanLatitude.substring(0, cleanLatitude.length() - 1);
+					try {
+						double doubleLatitude = Double.parseDouble(numLatitude.trim());
+						if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
+							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+						}
+					}
+					catch(NumberFormatException e) {
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+						e.printStackTrace();
+					}
+				//}
+			}
+
+			// Check that settlement longitude is valid.
+			if ((settlement.getLongitude().trim() == null) || (settlement.getLongitude().trim().isEmpty())) {
+				setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+			} else {
+				String cleanLongitude = settlement.getLongitude().trim().toUpperCase();
+				if (!cleanLongitude.endsWith(Msg.getString("direction.westShort")) &&
+				        !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					setError(Msg.getString(
+							"SimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
+							Msg.getString("direction.eastShort"), //$NON-NLS-1$
+							Msg.getString("direction.westShort") //$NON-NLS-1$
+						));
+				} else {
+					String numLongitude = cleanLongitude.substring(0, cleanLongitude.length() - 1);
+					try {
+						double doubleLongitude = Double.parseDouble(numLongitude.trim());
+						if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
+							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+						}
+					} catch(NumberFormatException e) {
+						setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+						e.printStackTrace();
+					}
+				}
+			}
+*/			
+		}
+	}
     
 	public void destroy() {
 
