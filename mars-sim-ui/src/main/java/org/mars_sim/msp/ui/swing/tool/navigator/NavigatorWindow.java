@@ -326,18 +326,23 @@ implements ActionListener {
 		goThere.addActionListener(this);
 		goThere.setAlignmentY(.5F);
 		positionPane.add(goThere);
-
-		// Pack window
-		//pack();
 		
 		setSize(new Dimension(HORIZONTAL, VERTICAL));
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
-		//setSize(new Dimension(1024, 512));
-		setResizable(false);
 
-		//setClosable(false);
-		//setMaximizable(true);
-		setVisible(true);
+		if (desktop.getMainScene() != null) {
+			setClosable(false);
+			setResizable(false);
+			setMaximizable(false);
+		}
+		else {
+			setClosable(true);
+			setResizable(false);
+			setMaximizable(false);
+		}
+		
+		// Pack window
+		//pack();
 	}
 
 	/** Update coordinates in map, buttons, and globe

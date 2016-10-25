@@ -599,10 +599,12 @@ extends DesktopPane {
 				
 				if (mainScene != null) {
 					// 2016-10-22 These 3 tools are in the Desktop Tab
-					if (toolName.equals(NavigatorWindow.NAME)
-							|| toolName.equals(SearchWindow.NAME)
+					if (//toolName.equals(NavigatorWindow.NAME)
+							//|| 
+							toolName.equals(SearchWindow.NAME)
 							|| toolName.equals(TimeWindow.NAME)
-							|| toolName.equals(SettlementWindow.NAME)) {
+							//|| toolName.equals(SettlementWindow.NAME)
+							) {
 						add(window, 0);	
 					}
 					else if (toolName.equals(MonitorWindow.NAME)) {
@@ -655,26 +657,26 @@ extends DesktopPane {
 				// 2016-10-22 Opening the first 3 tools will switch to the Desktop Tab
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(0);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
 					
 				}
 
 				else if (toolName.equals(SearchWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(0);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(TimeWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(0);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 					mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					if (mainScene.isMainSceneDone()) {
-						mainScene.getJFXTabPane().getSelectionModel().select(1);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MONITOR_TAB);
 						//System.out.println("opening monitor tool");
 					}
 					//mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
@@ -682,32 +684,32 @@ extends DesktopPane {
 				
 				else if (toolName.equals(MissionWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(2);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MISSION_TAB);
 					//mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(SettlementWindow.NAME)) {
 					//System.out.println("MainDesktopPane : opening map tool");
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(0);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
 					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(4);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.RESUPPLY_TAB);
 					//mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(ScienceWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(5);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.SCIENCE_TAB);
 					//mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(GuideWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(6);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.HELP_TAB);
 					//mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
 			});		

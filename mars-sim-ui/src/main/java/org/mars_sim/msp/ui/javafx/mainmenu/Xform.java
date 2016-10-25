@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.javafx.demo;
+package org.mars_sim.msp.ui.javafx.mainmenu;
 
 /*
  * Copyright (c) 2011, 2013 Oracle and/or its affiliates.

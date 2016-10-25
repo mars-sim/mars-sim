@@ -29,7 +29,7 @@ import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import static javafx.scene.input.KeyCode.*;
 
-import org.mars_sim.msp.ui.javafx.demo.Xform;
+import org.mars_sim.msp.ui.javafx.mainmenu.Xform;
 
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -37,33 +37,47 @@ import javafx.util.Duration;
 import javafx.scene.Node;
 
 
-public class Mars3DGlobe { 
+public class Globe { 
     
     double ONE_FRAME = 1.0 / 24.0;
     double DELTA_MULTIPLIER = 200.0;
     double CONTROL_MULTIPLIER = 0.1;
     double SHIFT_MULTIPLIER = 0.1;
     double ALT_MULTIPLIER = 0.5;
-    
+
+    // Earth
+    //Image sImage = new Image(this.getClass().getResource("/maps/earth-s.jpg").toExternalForm());
+    //Image dImage = new Image(this.getClass().getResource("/maps/earth-d.jpg").toExternalForm());
+    //Image nImage = new Image(this.getClass().getResource("/maps/earth-n.jpg").toExternalForm()); //.toString());
+    //Image siImage = new Image(this.getClass().getResource("/maps/earth-l.jpg").toExternalForm()); //.toString());
+
+    // Earth. Maps from planetmaker
+    //Image dImage = new Image("http://planetmaker.wthr.us/img/earth_gebco8_texture_1024x512.jpg");
+    //Image nImage = new Image("http://planetmaker.wthr.us/img/earth_normalmap_flat_1024x512.jpg");
+ 	//Image sImage = new Image("http://planetmaker.wthr.us/img/earth_specularmap_flat_1024x512.jpg");
+
+    	  
+ 	// Mars 
 	//Image sImage = new Image(this.getClass().getResource("/maps/Mars_Clouds.jpg").toExternalForm());
     //Image dImage = new Image(this.getClass().getResource("/maps/Mars_Map.jpg").toExternalForm());
     //Image nImage = new Image(this.getClass().getResource("/maps/Mars_Normal.jpg").toExternalForm()); //.toString());
     //Image siImage = new Image(this.getClass().getResource("/maps/Mars_Clouds.jpg").toExternalForm()); //.toString());
 
-    // 2k maps
+    // Mars 2k maps
     Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec-2k.jpg").toExternalForm());
     Image dImage = new Image(this.getClass().getResource("/maps/Mars-Shaded-names-2k.jpg").toExternalForm());
     Image nImage = new Image(this.getClass().getResource("/maps/MarsNormalMap-2K.png").toExternalForm()); //.toString());
+
     //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-2k.png").toExternalForm()); //.toString());
     //Image siImage = new Image(this.getClass().getResource("/maps/names-2k-grey.png").toExternalForm()); //.toString());
 
-    // 1k maps
+    // Mars 1k maps
     //Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
     //Image dImage = new Image(this.getClass().getResource("/maps/MarsV3Shaded1k.jpg").toExternalForm());
     //Image nImage = new Image(this.getClass().getResource("/maps/MarsNormal1k.png").toExternalForm()); //.toString());
     //Image siImage = new Image(this.getClass().getResource("/maps/rgbmars-names-1k.png").toExternalForm()); //.toString());
 	
-    // 1k maps
+    // Mars 1k maps
 	//Image sImage = new Image(this.getClass().getResource("/maps/rgbmars-spec1k.jpg").toExternalForm());
     //Image dImage = new Image(this.getClass().getResource("/maps/mars_1k_color.jpg").toExternalForm());
     //Image nImage = new Image(this.getClass().getResource("/maps/mars_1k_normal.jpg").toExternalForm()); //.toString());
@@ -75,7 +89,6 @@ public class Mars3DGlobe {
     private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
     private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
-    
     final Group root = new Group();
     final Group axisGroup = new Group();
     
@@ -100,13 +113,13 @@ public class Mars3DGlobe {
     double mouseDeltaY;
 
 
-	public Mars3DGlobe() {
+	public Globe() {
 	    root.getChildren().addAll(world);
 	    buildCamera();
 	    buildSphereGroup();	
 	}
 
-	public Parent buildMars() {
+	public Parent getRoot() {
 		return root;
 	}
 
@@ -297,39 +310,4 @@ public class Mars3DGlobe {
             }
         });
     }
-
-/*
-        @Override
-    public void start(Stage primaryStage) {
-        buildScene();
-        buildCamera();
-        //buildAxes();
-        buildMolecule();
-
-        Scene scene = new Scene(root, 1024, 768, true);
-        scene.setFill(Color.GREY);
-        handleKeyboard(scene, world);
-        handleMouse(scene, world);
-
-        primaryStage.setTitle("Molecule Sample Application");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-        scene.setCamera(camera);
-
-    }
-
-    *
-     * The main() method is ignored in correctly deployed JavaFX application.
-     * main() serves only as fallback in case the application can not be
-     * launched through deployment artifacts, e.g., in IDEs with limited FX
-     * support. NetBeans ignores main().
-     *
-     * @param args the command line arguments
-     
-    public static void main(String[] args) {
-        System.setProperty("prism.dirtyopts", "false");
-        launch(args);
-    }
-*/    
 }

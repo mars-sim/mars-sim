@@ -30,6 +30,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
+import javafx.application.Application;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -40,6 +41,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.scene.AmbientLight;
+import javafx.scene.CacheHint;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -86,7 +88,7 @@ import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 /*
  * The SpinningGlobe class creates a spinning Mars Globe for MainMenu
  */
-public class SpinningGlobe {
+public class SpinningGlobe extends Application {
 
 	// ------------------------------ FIELDS ------------------------------
 
@@ -111,20 +113,12 @@ public class SpinningGlobe {
     private static final double MAX_SCALE = 4;
     private static final double DEFAULT_SCALE = 2;
 
-	// Data members
-
     private double anchorX, anchorY;
     private double rate, total_scale = DEFAULT_SCALE;
-
-    //private boolean cleanUI = true;
 
     @SuppressWarnings("restriction")
 	private final DoubleProperty sunDistance = new SimpleDoubleProperty(100);
     private final BooleanProperty sunLight = new SimpleBooleanProperty(true);
-    private final BooleanProperty diffuseMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty specularMap = new SimpleBooleanProperty(true);
-    private final BooleanProperty bumpMap = new SimpleBooleanProperty(true);
-    //private final BooleanProperty selfIlluminationMap = new SimpleBooleanProperty(true);
 
     private RotateTransition rt;
     private Sphere marsSphere;
@@ -137,7 +131,7 @@ public class SpinningGlobe {
 	public MainMenuController mainMenuController;
 	public MainMenu mainMenu;
 
-	public Mars3DGlobe globe;
+	public Globe globe;
 	/*
 	 * Constructor for SpinningGlobe
 	 */
@@ -146,21 +140,24 @@ public class SpinningGlobe {
     	this.mainMenuController = mainMenu.getMainMenuController();
  	}
 
+    public SpinningGlobe() {
+    }
+    
 	/*
-	 * Creates a spinning Mars Globe
+	 * Creates a spinning globe
 	 */
-   public Parent createMarsGlobe() {
+   public Parent createGlobe() {
 	   boolean support = Platform.isSupported(ConditionalFeature.SCENE3D);
 	   if (support)
 		   logger.info("JavaFX 3D features supported");
 	   else
 		   logger.info("JavaFX 3D features NOT supported");
 	   
-       globe = new Mars3DGlobe();
+       globe = new Globe();
        rotateGlobe();
        
 	   // Use a SubScene
-       subScene = new SubScene(globe.buildMars(), WIDTH, HEIGHT);//, true, SceneAntialiasing.BALANCED);
+       subScene = new SubScene(globe.getRoot(), WIDTH, HEIGHT);//, true, SceneAntialiasing.BALANCED);
        subScene.setId("sub");
        subScene.setCamera(globe.getCamera());//subScene));
        
@@ -196,19 +193,49 @@ public class SpinningGlobe {
 	   rt.setRate(1.0);
    }
 
-   public Mars3DGlobe getMarsGlobe() {
+   public Globe getGlobe() {
 	   return globe;
    }
    
-	public void destroy() {
-
-		rt = null;
-		marsSphere = null;
-		glowSphere = null;
-		material = null;
-		sun = null;
-		mainMenu = null;
-		mainMenuController = null;
+   
+	public static void main(String[] args) {
+		launch(args);
 	}
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setResizable(false);
+        Parent globe = createGlobe();     
+
+    	StackPane root = new StackPane();
+        root.setPrefHeight(WIDTH);
+        root.setPrefWidth(HEIGHT);
+        root.setStyle(//"-fx-border-style: none; "
+        			"-fx-background-color: transparent; "
+        			+ "-fx-background-radius: 1px;");
+
+        root.getChildren().add(globe);     
+        Scene scene = new Scene(root, 640, 640, true, SceneAntialiasing.BALANCED);
+        scene.setFill(Color.BLACK);
+        
+        // Add mouse and keyboard control
+        getGlobe().handleMouse(scene);
+        getGlobe().handleKeyboard(scene);
+        
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+    }
+
+    
+ 	public void destroy() {
+
+ 		rt = null;
+ 		marsSphere = null;
+ 		glowSphere = null;
+ 		material = null;
+ 		sun = null;
+ 		mainMenu = null;
+ 		mainMenuController = null;
+ 	}
 }

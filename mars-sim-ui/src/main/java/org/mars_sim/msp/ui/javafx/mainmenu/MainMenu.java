@@ -213,7 +213,7 @@ public class MainMenu {
     		   );
 
        spinningGlobe = new SpinningGlobe(this);
-       Parent globe = spinningGlobe.createMarsGlobe();
+       Parent globe = spinningGlobe.createGlobe();
 
        screen.setCache(true);
        starfield.setCache(true);
@@ -222,15 +222,15 @@ public class MainMenu {
 
        root.getChildren().addAll(rect, starfield, globe, screen);
 
-       mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20);//, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
+       mainMenuScene = new Scene(root, WIDTH+20, HEIGHT+20, true, SceneAntialiasing.BALANCED); // Color.DARKGOLDENROD, Color.TAN);//MAROON); //TRANSPARENT);//DARKGOLDENROD);
        mainMenuScene.setFill(Color.DARKGOLDENROD);//Color.BLACK);
        mainMenuScene.getStylesheets().add(this.getClass().getResource("/fxui/css/mainmenu.css").toExternalForm() );
        //mainMenuScene.setFill(Color.BLACK); // if using Group, a black border will remain
        //mainMenuScene.setFill(Color.TRANSPARENT); // if using Group, a white border will remain
        mainMenuScene.setCursor(Cursor.HAND);
 
-       spinningGlobe.getMarsGlobe().handleMouse(mainMenuScene);
-       spinningGlobe.getMarsGlobe().handleKeyboard(mainMenuScene);
+       spinningGlobe.getGlobe().handleMouse(mainMenuScene);
+       spinningGlobe.getGlobe().handleKeyboard(mainMenuScene);
 
        // Makes the menu option box fades in
        mainMenuScene.setOnMouseEntered(new EventHandler<MouseEvent>(){

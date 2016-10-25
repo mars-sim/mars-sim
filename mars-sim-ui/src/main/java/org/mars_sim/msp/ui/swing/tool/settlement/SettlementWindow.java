@@ -79,8 +79,8 @@ extends ToolWindow {
 
 	public static final int TIME_DELAY = 200;
 
-	public static final int HORIZONTAL = 800;
-	public static final int VERTICAL = 512;
+	public static final int HORIZONTAL = 630;
+	public static final int VERTICAL = 590;
 
 	private double xCoor, yCoor;
 
@@ -226,17 +226,26 @@ extends ToolWindow {
   
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
         
-		//if (desktop.getMainScene() != null)
-		setClosable(true);
+
 
 		// 2014-12-27 Added preferred size and initial location
+		setSize(new Dimension(HORIZONTAL, VERTICAL));
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
-		//setMinimumSize(new Dimension(500, 400));
-		setMaximizable(true);
-		setResizable(true);
+
+		if (desktop.getMainScene() != null) {
+			setClosable(false);
+			setResizable(false);
+			setMaximizable(false);
+		}
+		else {
+			setClosable(true);
+			setResizable(true);
+			setMaximizable(true);
+		}
+		
 		setVisible(true);
 
-		pack();
+		//pack();
 
 	}
 
