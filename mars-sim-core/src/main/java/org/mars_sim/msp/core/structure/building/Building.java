@@ -243,7 +243,7 @@ LocalBoundedObject, InsidePathLocation {
 		if (s_inv == null)
 			s_inv = settlement.getInventory();
 		if (b_inv == null) {
-			b_inv = getInventory(); // it's already been created in its super class
+			b_inv = super.getInventory(); // it's already been created in its super class
 			
 			if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
 				//b_inv = new Inventory(this);
@@ -345,6 +345,15 @@ LocalBoundedObject, InsidePathLocation {
 		return s_inv;
 	}
 
+	/**
+	 * Gets the settlement inventory of this building.
+	 * @return inventory
+	 */
+	public Inventory getInventory() {
+		return manager.getSettlement().getInventory();
+	}
+	
+	
 	/**
      * Gets the description of a building.
      * @return String description

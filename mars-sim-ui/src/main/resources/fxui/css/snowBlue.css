@@ -105,11 +105,10 @@
 }
 
 .text-area {
-	-fx-font: 13pt 'Corbel';
+	-fx-font: 10pt 'Corbel';
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
-    -fx-text-fill: #065185;
-    -fx-background-color: #000000;
+    -fx-text-fill: #a2b3db;
 }
 
 .label-large {
@@ -125,7 +124,6 @@
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #065185;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
 .label-small {
@@ -139,9 +137,11 @@
     -fx-font-size: 13px;
     -fx-font-weight: normal;
     -fx-text-fill: #065185;
+        -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
 .borderpane {
+	-fx-border-color: #c1bf9d;
 	-fx-border-color: grey;
     -fx-border-insets: 5;
     -fx-border-width: 2;

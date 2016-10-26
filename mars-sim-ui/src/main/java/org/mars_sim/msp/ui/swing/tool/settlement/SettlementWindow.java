@@ -40,6 +40,7 @@ import org.mars_sim.msp.ui.swing.tool.MarqueeWindow;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
+import javafx.scene.control.Label;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -57,6 +58,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import javafx.scene.paint.Color;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -82,13 +89,21 @@ extends ToolWindow {
 	public static final int HORIZONTAL = 630;
 	public static final int VERTICAL = 590;
 
-	private double xCoor, yCoor;
-
 	private int sol, cap, pop;
+
+	private double widthCache;
+	private double heightCache;
+	private double xCoor, yCoor;
+	
+	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
+	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
+	
     private String marsDateString, marsTimeString;
 
+    private boolean isBound;
+    
     //private JStatusBar statusBar;
-    private javafx.scene.control.Label solLabel, popLabel, capLabel, xyLabel, timeLabel, dateLabel;
+    private Label solLabel, popLabel, capLabel, xyLabel, timeLabel, dateLabel;
     private JPanel subPanel;
 
 	/** The main desktop. */
@@ -146,7 +161,6 @@ extends ToolWindow {
 	    //mainPanel.setBackground(new Color(0,0,0,128));
 		setContentPane(mainPanel);
 		
-
 		subPanel = new JPanel(new BorderLayout());
 	    mainPanel.add(subPanel, BorderLayout.CENTER);
 	    //subPanel.setOpaque(false);
@@ -225,19 +239,17 @@ extends ToolWindow {
         });
   
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
-        
 
-
-		// 2014-12-27 Added preferred size and initial location
-		setSize(new Dimension(HORIZONTAL, VERTICAL));
-		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
-
-		if (desktop.getMainScene() != null) {
+		if (desktop.getMainScene() != null) {			
+			setSize(new Dimension((int)width.get(), (int)height.get()));
+			setPreferredSize(new Dimension((int)width.get(), (int)height.get()));
 			setClosable(false);
-			setResizable(false);
-			setMaximizable(false);
+			setResizable(true);
+			setMaximizable(true);
 		}
 		else {
+			setSize(new Dimension(HORIZONTAL, VERTICAL));
+			setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 			setClosable(true);
 			setResizable(true);
 			setMaximizable(true);
@@ -348,6 +360,18 @@ extends ToolWindow {
 	 */
 	public void updateStatusBarText() {
  
+		if (desktop.getMainScene().isMainSceneDone() && !isBound) {
+			isBound = true;
+			height.bind(desktop.getMainScene().getScene().heightProperty());
+			width.bind(desktop.getMainScene().getScene().widthProperty());	
+		}
+		
+		if (widthCache != width.get() || heightCache != height.get()) {
+			setSize(new Dimension((int)width.get(), (int)height.get()));
+			widthCache = width.get();
+			heightCache = height.get();
+		}
+		
 		String d = marsClock.getDateString();
 		String t = marsClock.getTrucatedTimeString();
 		

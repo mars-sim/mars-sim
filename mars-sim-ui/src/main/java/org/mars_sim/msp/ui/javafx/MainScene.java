@@ -39,6 +39,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.stage.Modality;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
@@ -75,6 +76,8 @@ import javafx.util.Duration;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -145,9 +148,7 @@ import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
-import org.reactfx.inhibeans.property.SimpleBooleanProperty;
-import org.reactfx.inhibeans.property.SimpleDoubleProperty;
-import org.reactfx.inhibeans.property.SimpleIntegerProperty;
+
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
 
@@ -231,13 +232,12 @@ public class MainScene {
 	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
 	private Scene scene;
 	private AnchorPane anchorDesktopPane, anchorTabPane ;
-	private SwingNode swingNode, mapNode, minimapNode;
+	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
 	private StatusBar statusBar;
 	private Flyout flyout;
 
 	private ChatBox chatBox;
-	private StackPane chatBoxPane;
-	private StackPane desktopPane;
+	private StackPane chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
 	private Tab nodeTab;
 	private BorderPane borderPane;
 	private DndTabPane dndTabPane;
@@ -439,8 +439,8 @@ public class MainScene {
 		
 		createSwingNode();
 		desktopPane.getChildren().add(swingNode);
-		desktopPane.setMaxHeight(sceneHeight.get());
-		desktopPane.setMaxWidth(sceneWidth.get());
+		desktopPane.setMinHeight(sceneHeight.get());
+		desktopPane.setMinWidth(sceneWidth.get());
 
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
@@ -453,20 +453,17 @@ public class MainScene {
 
 		// Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
+		// for macOS
 		((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
   
-		createFXTabs();
-		
+		// Create jfxTabPane
+		createFXTabs();	
 		// Create BorderPane
 		borderPane = new BorderPane();
 		//borderPane.setCenter(swingPane);
 		borderPane.setCenter(jfxTabPane);
-		//borderPane.setMinWidth(mainSceneWidth);//1024);
-		
-		anchorDesktopPane = new AnchorPane();
-		//anchorPane.setMinWidth(sceneWidth);//1024);
-		//anchorPane.setMinHeight(sceneHeight);//480);
 
+		anchorDesktopPane = new AnchorPane();
 
         AnchorPane.setBottomAnchor(borderPane, 0.0);
         AnchorPane.setLeftAnchor(borderPane, 0.0);
@@ -518,141 +515,178 @@ public class MainScene {
 		}
 		
     	Scene scene = new Scene(anchorDesktopPane, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
-    	
-		borderPane.prefHeightProperty().bind(anchorDesktopPane.heightProperty());
-		borderPane.prefWidthProperty().bind(anchorDesktopPane.widthProperty());
-
+    	  	
+    	//scene.heightProperty().addListener((observable, oldValue, newValue) -> {
+    	//    System.out.println("scene height : " + newValue);    	    
+    	//});
+    	//scene.widthProperty().addListener((observable, oldValue, newValue) -> {
+    	//    System.out.println("scene width : " + newValue);
+    	//});
+    	   	
+    	// anchorDesktopPane is the largest pane
 		anchorDesktopPane.prefHeightProperty().bind(scene.heightProperty());
 		anchorDesktopPane.prefWidthProperty().bind(scene.widthProperty());
  
-		anchorTabPane.prefHeightProperty().bind(scene.heightProperty());
+		// borderPane is within anchorDesktopPane
+		borderPane.prefHeightProperty().bind(scene.heightProperty());
+		borderPane.prefWidthProperty().bind(scene.widthProperty());
+
+		jfxTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(110));
+		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
+		
+		// anchorTabPane is within jfxTabPane
+		anchorTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(110));
 		anchorTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
+		mapNodePane.prefHeightProperty().bind(scene.heightProperty().subtract(110));
+		//mapNodePane.prefWidthProperty().bind(scene.widthProperty());
+		
+		//mapNodePane.heightProperty().addListener((observable, oldValue, newValue) -> {
+    	//    System.out.println("mapNodePane height : " + newValue);    	    
+    	//});
+    	
 		this.scene = scene;
 		
 		return scene;
 	}
 
+	/**
+	 * Creates the tab pane for housing a bunch of tabs
+	 */
 	public void createFXTabs() {
 		jfxTabPane = new JFXTabPane();
 		
-		String cssFile = "/css/jfx_orange.css";
+		String cssFile = null;
+        
+        if (desktop.getMainScene().getTheme() == 6)
+        	cssFile = "/css/jfx_blue.css";
+        else
+        	cssFile = "/css/jfx_orange.css";
+		
 		jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		jfxTabPane.getStyleClass().add("jfx-tab-pane");
-		
-		//jfxTabPane.setPrefSize(300, 200);
-				
+					
 		mainTab = new Tab();
 		mainTab.setText("Main");
 		mainTab.setContent(desktopPane);
 		
-		//StackPane mapPane = new StackPane();
+		
+		// set up mapTab
+		
 		Tab mapTab = new Tab();
 			
-		//IntegerProperty mapAnchorHeight = new 0;
-		//mapAnchorHeight.bind(mainSceneHeight);
-		//IntegerProperty mapAnchorWidth = 0;
-		//mainSceneWidth;
 		anchorTabPane = new AnchorPane();
-		anchorTabPane.setMinWidth(sceneWidth.get());
-		anchorTabPane.setMinHeight(sceneHeight.get());
- 
-		anchorTabPane.setStyle(//"-fx-border-style: none; "
-    			"-fx-background-color: black; ");
-    			//+ "-fx-background-radius: 0px;");
+		//anchorTabPane.setPrefWidth(sceneWidth.get());
+		//anchorTabPane.setPrefHeight(sceneHeight.get()-35);
+		anchorTabPane.setStyle("-fx-background-color: black; ");
 
 		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 		minimapNode = new SwingNode();
+		minimapNodePane = new StackPane(minimapNode);
+		minimapNodePane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
 		miniMapBtn = new JFXButton("Mini-Map");
 		miniMapBtn.getStyleClass().add("button-broadcast");	
 		miniMapBtn.setOnAction(e -> {
+			
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-				desktop.closeToolWindow(NavigatorWindow.NAME);
-				anchorTabPane.getChildren().removeAll(minimapNode);
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
 			}
 			else {
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
+			}
+			
+			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
+			}
+			
+			else {
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
+			}
+			
+			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+				desktop.closeToolWindow(NavigatorWindow.NAME);
+				anchorTabPane.getChildren().removeAll(minimapNodePane);
+			}
+			
+			else {
 				desktop.openToolWindow(NavigatorWindow.NAME);
-				//StackPane root = new StackPane(mapNode);
 
 				minimapNode.setContent(navWin); 
-	/*			Stage stage = new Stage();
-	 * 			Scene scene = new Scene(root, NavigatorWindow.HORIZONTAL, NavigatorWindow.VERTICAL);
-				stage.setScene(scene);
-				stage.setResizable(false);
-				stage.initOwner(this.stage);
-				stage.initModality(Modality.WINDOW_MODAL);
-				stage.show();
-	*/				
-		        anchorTabPane.getChildren().addAll(minimapNode);
-		        AnchorPane.setRightAnchor(minimapNode, 20.0);
-		        AnchorPane.setTopAnchor(minimapNode, 68.0); 
+	
+		        anchorTabPane.getChildren().addAll(minimapNodePane);
+		        AnchorPane.setRightAnchor(minimapNodePane, 3.0);
+		        AnchorPane.setTopAnchor(minimapNodePane, 45.0); 
 			}
 
 		});
 		
 		SettlementWindow settlementWin = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapNode = new SwingNode();
+		mapNodePane = new StackPane(mapNode);
+		mapNodePane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 		mapBtn = new JFXButton("Settlement Map");
 		mapBtn.getStyleClass().add("button-broadcast");	
 		mapBtn.setOnAction(e -> {
+			
+			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
+			}
+			else {
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
+			}
+			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-				desktop.closeToolWindow(SettlementWindow.NAME);
-				anchorTabPane.getChildren().removeAll(mapNode);
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
 			}
 			
 			else {
-	
-				desktop.openToolWindow(SettlementWindow.NAME);
-				//StackPane root = new StackPane(mapNode);
-				mapNode.setContent(settlementWin); 
-	/*			Stage stage = new Stage();
-	 * 			Scene scene = new Scene(root, SettlementWindow.HORIZONTAL, SettlementWindow.VERTICAL);
-				stage.setScene(scene);
-				stage.setResizable(false);
-				stage.initOwner(this.stage);
-				stage.initModality(Modality.WINDOW_MODAL);
-				stage.show();
-	*/			
-		        anchorTabPane.getChildren().addAll(mapNode);
-		        AnchorPane.setLeftAnchor(mapNode, 3.0);
-		        AnchorPane.setTopAnchor(mapNode, 68.0);            
+				mapNodePane.prefWidthProperty().unbind();
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
 			}
+			
+			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+				desktop.closeToolWindow(SettlementWindow.NAME);
+				anchorTabPane.getChildren().removeAll(mapNodePane);
+			}
+			
+			else {
+						
+				desktop.openToolWindow(SettlementWindow.NAME);
+
+				mapNode.setContent(settlementWin); 
+	
+		        anchorTabPane.getChildren().addAll(mapNodePane);
+		        AnchorPane.setLeftAnchor(mapNodePane, 3.0);
+		        AnchorPane.setTopAnchor(mapNodePane, 45.0);            
+			}
+			
 		});
 		
-		//HBox box = new HBox();
-		//box.setPadding(new Insets(5,45,5,45));
-		//box.getChildren().addAll(miniMapBtn, mapBtn);
-        //anchorPane.getChildren().addAll(box);
-        //AnchorPane.setLeftAnchor(box, 5.0);
-        //AnchorPane.setTopAnchor(box, 35.0); 
-        
+   
         anchorTabPane.getChildren().addAll(miniMapBtn, mapBtn);
         AnchorPane.setRightAnchor(miniMapBtn, 10.0);
-        AnchorPane.setTopAnchor(miniMapBtn, 37.0); 
-        AnchorPane.setLeftAnchor(mapBtn, 15.0);
-        AnchorPane.setTopAnchor(mapBtn, 37.0);         
+        AnchorPane.setTopAnchor(miniMapBtn, 10.0); 
+        AnchorPane.setLeftAnchor(mapBtn, 10.0);
+        AnchorPane.setTopAnchor(mapBtn, 10.0);         
         
 		//mapPane.getChildren().add(box);
 		mapTab.setText("Map");
 		mapTab.setContent(anchorTabPane);
 		
 
-
-
-/*
-		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
-		SwingNode navNode = new SwingNode();
-		navNode.setContent(navWin); 
-		StackPane navPane = new StackPane(navNode);
-		Tab navTab = new Tab();
-		navTab.setText("Navigator");
-		navTab.setContent(navPane);
-*/
-
+		// set up monitor tab
+		
 		MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
-		SwingNode monNode = new SwingNode();		
+		monNode = new SwingNode();		
 	    JDesktopPane d0 = desktops.get(0);
 	    d0.add(monWin);
 		monNode.setContent(d0); 
@@ -660,11 +694,14 @@ public class MainScene {
 		Tab monTab = new Tab();
 		monTab.setText("Monitor");
 		monTab.setContent(monPane);
-
-		desktop.openToolWindow(MonitorWindow.NAME);
+		
+		//desktop.openToolWindow(MonitorWindow.NAME);
+		
+		
+		// set up mission tab
 		
 		MissionWindow missionWin = (MissionWindow) desktop.getToolWindow(MissionWindow.NAME);
-		SwingNode missionNode = new SwingNode();
+		missionNode = new SwingNode();
 	    JDesktopPane d1 = desktops.get(1);
 	    d1.add(missionWin);
 		missionNode.setContent(d1); 
@@ -673,25 +710,13 @@ public class MainScene {
 		missionTab.setText("Mission");
 		missionTab.setContent(missionPane);
 
-		desktop.openToolWindow(MissionWindow.NAME);
+		//desktop.openToolWindow(MissionWindow.NAME);
 
-/*		
-		SettlementWindow settlementWin = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
-		SwingNode settlementNode = new SwingNode();
-	    //JDesktopPane d2 = desktops.get(2);
-	    //d2.add(settlementWin);
-	    //settlementNode.setContent(d2); 
-	    settlementNode.setContent(settlementWin);
-		StackPane settlementPane = new StackPane(settlementNode);
-		Tab settlementTab = new Tab();
-		settlementTab.setText("Settlements");
-		settlementTab.setContent(settlementPane);
 		
-		desktop.openToolWindow(SettlementWindow.NAME);
-*/
+		// set up resupply tab
 		
 		ResupplyWindow resupplyWin = (ResupplyWindow) desktop.getToolWindow(ResupplyWindow.NAME);
-		SwingNode resupplyNode = new SwingNode();
+		resupplyNode = new SwingNode();
 	    JDesktopPane d2 = desktops.get(2);
 	    d2.add(resupplyWin);
 		resupplyNode.setContent(d2); 
@@ -700,32 +725,82 @@ public class MainScene {
 		resupplyTab.setText("Resupply");
 		resupplyTab.setContent(resupplyPane);
 
-		desktop.openToolWindow(ResupplyWindow.NAME);
+		//desktop.openToolWindow(ResupplyWindow.NAME);
 		
-		ScienceWindow scienceWin = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
-		SwingNode scienceNode = new SwingNode();
+		
+		// set up science tab
+		
+		ScienceWindow sciWin = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
+		sciNode = new SwingNode();
+		// Note: don't need to create a DesktopPane for scienceWin
 	    //JDesktopPane d4 = desktops.get(4);
 	    //d4.add(scienceWin);
 		//scienceNode.setContent(d4); 
-		scienceNode.setContent(scienceWin);
-		StackPane sciencePane = new StackPane(scienceNode);
+		sciNode.setContent(sciWin);
+		StackPane sciencePane = new StackPane(sciNode);
 		Tab scienceTab = new Tab();
 		scienceTab.setText("Science");
 		scienceTab.setContent(sciencePane);
 	
-		desktop.openToolWindow(ScienceWindow.NAME);	
+		//desktop.openToolWindow(ScienceWindow.NAME);	
 		
-		GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
-		SwingNode guideNode = new SwingNode();
-		guideNode.setContent(ourGuide); 
-		StackPane helpPane = new StackPane(guideNode);
-		Tab helpTab = new Tab();
-		helpTab.setText("Help");
-		helpTab.setContent(helpPane);
+		
+		// set up help tab
+		
+		GuideWindow guideWin = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
+		guideNode = new SwingNode();
+		guideNode.setContent(guideWin); 
+		StackPane guidePane = new StackPane(guideNode);
+		Tab guideTab = new Tab();
+		guideTab.setText("Help");
+		guideTab.setContent(guidePane);
 
-		desktop.openToolWindow(GuideWindow.NAME);
+		//desktop.openToolWindow(GuideWindow.NAME);
 		
-		jfxTabPane.getTabs().addAll(mainTab, mapTab, monTab, missionTab, resupplyTab, scienceTab, helpTab);	
+		jfxTabPane.getTabs().addAll(mainTab, mapTab, monTab, missionTab, resupplyTab, scienceTab, guideTab);	
+		
+		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+			if (newTab == monTab) {	
+				if (!desktop.isToolWindowOpen(MonitorWindow.NAME)) {
+					desktop.openToolWindow(MonitorWindow.NAME);
+					//monNode.setContent(monWin); 
+				}
+			}
+			
+			else if (newTab == missionTab) {	
+				if (!desktop.isToolWindowOpen(MissionWindow.NAME)) {
+					desktop.openToolWindow(MissionWindow.NAME);
+					//missionNode.setContent(missionWin); 
+				}
+			}
+
+			else if (newTab == resupplyTab) {	
+				if (!desktop.isToolWindowOpen(ResupplyWindow.NAME)) {
+					desktop.openToolWindow(ResupplyWindow.NAME);
+					//resupplyNode.setContent(resupplyWin); 
+				}
+			}
+
+			else if (newTab == scienceTab) {	
+				if (!desktop.isToolWindowOpen(ScienceWindow.NAME)) {
+					desktop.openToolWindow(ScienceWindow.NAME);
+					//sciNode.setContent(scienceWin); 
+				}
+			}
+			
+			else if (newTab == guideTab) {	
+				if (!desktop.isToolWindowOpen(GuideWindow.NAME)) {
+					desktop.openToolWindow(GuideWindow.NAME);
+					//guideNode.setContent(guideWin); 
+				}
+			}
+		});
+		
+		jfxTabPane.getSelectionModel().select(mainTab);
+		
+		// NOTE: if a tab is NOT selected, should close that tool as well to save cpu utilization
+		// this is done in ToolWindow's update(). It allows for up to 1 second of delay, in case user open and close the same repeated.
+		
 /*
 		//if (mainScene != null) {	
 			//openToolWindow(NavigatorWindow.NAME);
@@ -738,6 +813,34 @@ public class MainScene {
 		//}
 
 */
+	}
+	
+	
+	public void setSwingNode(int tab) {
+		if (tab == MONITOR_TAB) {
+		
+			//monNode
+		}
+		
+		else if (tab == MONITOR_TAB) {
+			
+		}
+		
+		else if (tab == MONITOR_TAB) {
+			
+		}
+		
+		else if (tab == MONITOR_TAB) {
+			
+		}
+		
+		else if (tab == MONITOR_TAB) {
+			
+		}
+		
+		//missionNode, resupplyNode, sciNode, guideNode ;
+
+		
 	}
 	
 	public void createDesktops() {
@@ -1802,6 +1905,10 @@ public class MainScene {
     
     public JFXTabPane getJFXTabPane() {
     	return jfxTabPane;
+    }
+    
+    public Scene getScene() {
+    	return scene;
     }
     
 	public void destroy() {

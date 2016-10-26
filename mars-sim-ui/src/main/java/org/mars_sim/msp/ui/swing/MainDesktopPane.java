@@ -609,6 +609,7 @@ extends DesktopPane {
 					}
 					else if (toolName.equals(MonitorWindow.NAME)) {
 						mainScene.getDesktops().get(0).add(window, 0);
+						
 					}
 					else if (toolName.equals(MissionWindow.NAME)) {
 						mainScene.getDesktops().get(1).add(window, 0);
@@ -636,7 +637,9 @@ extends DesktopPane {
 				}
 				catch (Exception e) { logger.log(Level.SEVERE,e.toString()); }
 			}
+			
 			window.show();
+			
 			// bring to front if it overlaps with other windows
 			try {
 				window.setSelected(true);
@@ -644,6 +647,7 @@ extends DesktopPane {
 				// ignore if setSelected is vetoed
 			}
 		}
+		
 		window.getContentPane().validate();
 		window.getContentPane().repaint();
 		validate();

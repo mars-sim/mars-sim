@@ -139,9 +139,10 @@ ComponentListener {
 		setResizable(false);
 		setMaximizable(true);		
 		setVisible(true);
-	   	//logger.info("GuideWindow's constructor: done!");
 
-		//userguideButton.doClick(); // not useful
+		// Pack window.
+		pack();
+		
 	}
 
 	

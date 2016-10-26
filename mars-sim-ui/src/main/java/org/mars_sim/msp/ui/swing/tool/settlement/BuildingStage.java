@@ -75,11 +75,8 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.food.BuildingPan
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -91,7 +88,6 @@ import javafx.scene.layout.VBox;
 //import javafx.scene.paint.Color;
 //import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
 import javafx.scene.text.TextAlignment;
 import javafx.geometry.Insets;
@@ -115,6 +111,11 @@ public class BuildingStage {
 
 	private Label buildingNameLabel;
 
+	private VBox box1;
+	private BorderPane mainPane;
+	private Button renameBtn;
+	
+	
 	/** The building this panel is for. */
 	private Building building;
 
@@ -140,6 +141,27 @@ public class BuildingStage {
 
 	}
 	
+    public void applyTheme() {
+        String cssFile = null;
+        
+        if (desktop.getMainScene().getTheme() == 6)
+        	cssFile = "/fxui/css/snowBlue.css";
+        else
+        	cssFile = "/fxui/css/nimrodskin.css";
+        
+        buildingNameLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        buildingNameLabel.getStyleClass().add("label-large");
+            
+        mainPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        mainPane.getStyleClass().add("borderpane");
+               
+        box1.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        box1.getStyleClass().add("borderpane");
+
+	    renameBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	    renameBtn.getStyleClass().add("button-broadcast");	
+    }
+    
 
 	/**
 	 * Initializes the BuildingStage
@@ -149,38 +171,21 @@ public class BuildingStage {
 
         this.functionPanels = new ArrayList<BuildingFunctionPanel>();
    
-        String cssFile = null;
+        mainPane = new BorderPane();
+        mainPane.setPadding(new Insets(3,3,3,3));    
         
-        if (desktop.getMainScene().getTheme() == 6)
-        	cssFile = "/fxui/css/snowBlue.css";
-        else
-        	cssFile = "/fxui/css/nimrodskin.css";
-		
-        BorderPane borderPane = new BorderPane();
-        //final String cssDefault = "-fx-border-color: grey;\n"
-        //        + "-fx-border-insets: 5;\n"
-         //       + "-fx-border-width: 2;\n";
-                //+ "-fx-border-style: dashed;\n";
-        //borderPane.setStyle(cssDefault);
-        
-        borderPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-        borderPane.getStyleClass().add("borderpane");	
-        
-        borderPane.setPadding(new Insets(3,3,3,3));
-        
-        
-        VBox box1 = new VBox();
+        box1 = new VBox();
         box1.setAlignment(Pos.CENTER);
         box1.setSpacing(2);
         
+
         buildingNameLabel = new Label(building.getNickName());
+        
         buildingNameLabel.setTextAlignment(TextAlignment.CENTER);
         buildingNameLabel.setContentDisplay(ContentDisplay.TOP);
-        buildingNameLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-        buildingNameLabel.getStyleClass().add("label-large");	
         buildingNameLabel.setLineSpacing(2);
         
-		Button renameBtn = new Button(Msg.getString(
+		renameBtn = new Button(Msg.getString(
 				"BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
 	    renameBtn.setOnAction(e -> {
 		// if rename is done successfully, then update the building name
@@ -188,16 +193,17 @@ public class BuildingStage {
 				buildingNameLabel.setText(newName);
 		});
 	    renameBtn.setLineSpacing(2);
-	    renameBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-	    renameBtn.getStyleClass().add("button-broadcast");	
+
 	    
 	    box1.getChildren().addAll(buildingNameLabel, renameBtn);
 		
-		borderPane.setTop(box1);
+        applyTheme();
+        
+		mainPane.setTop(box1);
 	
     	//Popup stage = new Popup();
     	SwingNode swingNode  = new SwingNode();
-    	borderPane.setCenter(swingNode);
+    	mainPane.setCenter(swingNode);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
 
@@ -449,7 +455,7 @@ public class BuildingStage {
         functionListPanel.add(maintenancePanel);
         //setPanelStyle(maintenancePanel);
 
-        return borderPane;
+        return mainPane;
     }
 
 	/**

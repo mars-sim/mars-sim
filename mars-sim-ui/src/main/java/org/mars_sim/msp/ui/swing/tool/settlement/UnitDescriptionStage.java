@@ -52,42 +52,32 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.CustomScroll;
 
 
-public class UnitInfoStage {
+public class UnitDescriptionStage {
 
 	private MainDesktopPane desktop;
+	private TextArea ta;
+	private VBox box1, box0;
+	private BorderPane mainPane;
+	private Label name;
 	
-    public UnitInfoStage(MainDesktopPane desktop) {		
+    public UnitDescriptionStage(MainDesktopPane desktop) {		
     	this.desktop = desktop;	
     }
-
+    
+	@SuppressWarnings("restriction")
     public BorderPane init(String unitName, String unitType, String unitDescription) {
 
     	//this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
 
-        BorderPane mainPane = new BorderPane();
-/*    
-        // Creating the text Input
-        TextField tf1 = new TextField();
-        tf1.setEditable(false);
-        tf1.setPrefWidth(400);
-        tf1.setText(unitName);
-*/ 
-        String cssFile = null;
-        
-        if (desktop.getMainScene().getTheme() == 6)
-        	cssFile = "/fxui/css/snowBlue.css";
-        else
-        	cssFile = "/fxui/css/nimrodskin.css";
+        mainPane = new BorderPane();
 		
-        VBox box0 = new VBox();
+        box0 = new VBox();
         box0.setAlignment(Pos.CENTER);
         
-        Label name = new Label(unitName);
+        name = new Label(unitName);
         name.setTextAlignment(TextAlignment.CENTER);
         name.setContentDisplay(ContentDisplay.TOP);
-        name.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-        name.getStyleClass().add("label-large");	
-        
+	        
 
 	    box0.getChildren().addAll(name);
 	    
@@ -96,11 +86,9 @@ public class UnitInfoStage {
         String type = "TYPE :";
         String description = "DESCRIPTION :";
  
-        VBox box1 = new VBox();
-        TextArea ta = new TextArea();
-        ta.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-        ta.getStyleClass().add("label-small");	
-        
+        box1 = new VBox();
+        ta = new TextArea();
+       
         ta.setEditable(false);
         ta.setWrapText(true);
         box1.getChildren().add(ta);
@@ -108,9 +96,36 @@ public class UnitInfoStage {
         ta.setText(System.lineSeparator() + type + System.lineSeparator() + unitType + System.lineSeparator() + System.lineSeparator());
         ta.appendText(description + System.lineSeparator() + unitDescription + System.lineSeparator() + System.lineSeparator());
         
+        applyTheme();
+        
         mainPane.setCenter(ta);
         
         return mainPane;
+        
+    }
+    
+    public void applyTheme() {
+        String cssFile = null;
+        
+        if (desktop.getMainScene().getTheme() == 6)
+        	cssFile = "/fxui/css/snowBlue.css";
+        else
+        	cssFile = "/fxui/css/nimrodskin.css";
+        
+        name.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        name.getStyleClass().add("label-large");
+        
+        ta.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        ta.getStyleClass().add("text-area");
+        
+        mainPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        mainPane.getStyleClass().add("borderpane");
+               
+        box1.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        box1.getStyleClass().add("borderpane");
+
+        box0.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+        box0.getStyleClass().add("borderpane");
         
     }
 

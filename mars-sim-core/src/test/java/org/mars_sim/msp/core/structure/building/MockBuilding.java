@@ -3,6 +3,7 @@ package org.mars_sim.msp.core.structure.building;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.Function;
@@ -69,5 +70,9 @@ public class MockBuilding extends Building {
 	    if (functions.contains(function)) {
 	        functions.remove(function);
 	    }
+	}
+	
+	public Inventory getInventory() {
+		return manager.getSettlement().getInventory();
 	}
 }

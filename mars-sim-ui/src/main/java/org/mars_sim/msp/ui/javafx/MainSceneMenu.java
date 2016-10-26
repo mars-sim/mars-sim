@@ -164,7 +164,8 @@ public class MainSceneMenu extends MenuBar  {
         //webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
 
-        menuTools.getItems().addAll(marsNavigatorItem, searchToolItem,timeToolItem,settlementMapToolItem);
+        menuTools.getItems().addAll(searchToolItem,timeToolItem);
+        		//marsNavigatorItem, settlementMapToolItem);
         		//monitorToolItem, missionToolItem,
         		//scienceToolItem, resupplyToolItem);
         		//, marsViewerItem, webToolItem);
@@ -358,18 +359,18 @@ public class MainSceneMenu extends MenuBar  {
         sixItem.setOnAction(e -> {
         	mainScene.changeTheme(6);
 
-    		SwingUtilities.invokeLater(() -> {	
-            	mainScene.getSwingNode().setContent(desktop);
-    		});
+    		//SwingUtilities.invokeLater(() -> {	
+            //	mainScene.getSwingNode().setContent(desktop);
+    		//});
             
         });
 
         sevenItem.setOnAction(e -> {
         	mainScene.changeTheme(7);
         	
-    		SwingUtilities.invokeLater(() -> {	
-            	mainScene.getSwingNode().setContent(desktop);
-    		});
+    		//SwingUtilities.invokeLater(() -> {	
+            //	mainScene.getSwingNode().setContent(desktop);
+    		//});
             
         });
         
@@ -542,11 +543,7 @@ public class MainSceneMenu extends MenuBar  {
     // 2015-10-01 Renamed to uncheckToolWindow()
     public void uncheckToolWindow(String toolName) {
 
-		if (toolName.equals(NavigatorWindow.NAME)) {
-			getMarsNavigatorItem().setSelected(false);
-		}
-
-		else if (toolName.equals(SearchWindow.NAME)) {
+		if (toolName.equals(SearchWindow.NAME)) {
 			getSearchToolItem().setSelected(false);
 		}
 
@@ -554,10 +551,16 @@ public class MainSceneMenu extends MenuBar  {
 			getTimeToolItem().setSelected(false);
 		}
 		
+/*
+		
 		else if (toolName.equals(SettlementWindow.NAME)) {
 			getSettlementMapToolItem().setSelected(false);
 		}
-/*
+		
+		else if (toolName.equals(NavigatorWindow.NAME)) {
+			getMarsNavigatorItem().setSelected(false);
+		}
+
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			getMonitorToolItem().setSelected(false);
 			//System.out.println(toolName + " is unchecked");
@@ -583,23 +586,24 @@ public class MainSceneMenu extends MenuBar  {
     }
 
     public CheckMenuItem getCheckMenuItem(String toolName) {
-		if (toolName.equals(NavigatorWindow.NAME)) {
-			//System.out.println("closing nav");
-			return getMarsNavigatorItem();
-		}
-
-		else if (toolName.equals(SearchWindow.NAME)) {
+		if (toolName.equals(SearchWindow.NAME)) {
 			return getSearchToolItem();
 		}
 
 		else if (toolName.equals(TimeWindow.NAME)) {
 			return getTimeToolItem();
 		}
+/*		
 		
 		else if (toolName.equals(SettlementWindow.NAME)) {
 			return getSettlementMapToolItem();
 		}
-/*
+		
+		else if (toolName.equals(NavigatorWindow.NAME)) {
+			//System.out.println("closing nav");
+			return getMarsNavigatorItem();
+		}
+		
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			return getMonitorToolItem();
 		}

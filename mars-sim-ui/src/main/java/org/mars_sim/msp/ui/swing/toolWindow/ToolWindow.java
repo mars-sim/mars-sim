@@ -19,7 +19,11 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
+import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
+import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 
 import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
@@ -133,6 +137,57 @@ extends JInternalFrame {
 
 		if (mainScene != null) {
 
+			if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MAIN_TAB)
+					|| mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MAP_TAB)) {
+				//System.out.println("ToolWindow : closing other tools !");
+				desktop.closeToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(ResupplyWindow.NAME);
+				desktop.closeToolWindow(ScienceWindow.NAME);
+				desktop.closeToolWindow(MissionWindow.NAME);
+				desktop.closeToolWindow(GuideWindow.NAME);
+			}
+			
+			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MONITOR_TAB)) {
+				//desktop.openToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(ResupplyWindow.NAME);
+				desktop.closeToolWindow(ScienceWindow.NAME);
+				desktop.closeToolWindow(MissionWindow.NAME);
+				desktop.closeToolWindow(GuideWindow.NAME);
+			}
+			
+			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MISSION_TAB)) {
+				//desktop.openToolWindow(MissionWindow.NAME);
+				desktop.closeToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(ResupplyWindow.NAME);
+				desktop.closeToolWindow(ScienceWindow.NAME);
+				desktop.closeToolWindow(GuideWindow.NAME);
+			}
+			
+			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.RESUPPLY_TAB)) {
+				//desktop.openToolWindow(ResupplyWindow.NAME);
+				desktop.closeToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(ScienceWindow.NAME);
+				desktop.closeToolWindow(MissionWindow.NAME);
+				desktop.closeToolWindow(GuideWindow.NAME);
+			}
+			
+			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.SCIENCE_TAB)) {
+				//desktop.openToolWindow(ScienceWindow.NAME);
+				desktop.closeToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(ResupplyWindow.NAME);
+				desktop.closeToolWindow(MissionWindow.NAME);
+				desktop.closeToolWindow(GuideWindow.NAME);
+			}
+
+			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.HELP_TAB)) {
+				//desktop.openToolWindow(GuideWindow.NAME);
+				desktop.closeToolWindow(MonitorWindow.NAME);
+				desktop.closeToolWindow(ResupplyWindow.NAME);
+				desktop.closeToolWindow(ScienceWindow.NAME);
+				desktop.closeToolWindow(MissionWindow.NAME);
+			}
+
+			
 			if(this.isVisible() || this.isShowing() ) {
 				//System.out.println("this.getToolName() is "+ this.getToolName());
 				// Note: need to refresh the table column/row header

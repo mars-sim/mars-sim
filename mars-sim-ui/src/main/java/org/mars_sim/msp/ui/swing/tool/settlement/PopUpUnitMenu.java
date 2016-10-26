@@ -174,7 +174,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
             	if (mainScene != null) {
 					Platform.runLater(() -> {
-                       	createDescriptionPanelFX(unit);
+                       	createDescriptionStage(unit);
 					});
                 }
                 else {
@@ -185,7 +185,7 @@ public class PopUpUnitMenu extends JPopupMenu {
     }
 
 
-    public void createDescriptionPanelFX(Unit unit) {
+    public void createDescriptionStage(Unit unit) {
 
 		String description = null;
 		String type = null;
@@ -215,13 +215,13 @@ public class PopUpUnitMenu extends JPopupMenu {
 			name = Conversion.capitalize(site.getDescription());
 	    }
 
-		double num = description.length() * 1.3D ;
+		double num = type.length() * 1.3D + name.length() * 1.3D + 100D + description.length() * 1.2D;
 		if (num > 450)
 			num = 450;
 		int frameHeight = (int) num;
 
 
-		UnitInfoStage unitInfo = new UnitInfoStage(desktop);
+		UnitDescriptionStage unitInfo = new UnitDescriptionStage(desktop);
 		BorderPane pane = (BorderPane) unitInfo.init(name, type, description);
 
 	   	Scene scene = new Scene(pane, 350, frameHeight, javafx.scene.paint.Color.TRANSPARENT);

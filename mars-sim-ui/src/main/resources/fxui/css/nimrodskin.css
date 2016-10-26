@@ -100,11 +100,10 @@
 }
 
 .text-area {
-	-fx-font: 13pt 'Corbel';
+	-fx-font: 10pt 'Corbel';
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
-    -fx-text-fill: #b85c01;
-    -fx-background-color: #000000;
+    -fx-text-fill: #f4f13f;
 }
 
 .label-large {
@@ -120,7 +119,6 @@
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #b85c01;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
 .label-small {
@@ -138,10 +136,13 @@
 }
 
 .borderpane {
-	-fx-border-color: grey;
+	-fx-border-color: #c1bf9d;
+	-fx-background-color: #c1bf9d;
     -fx-border-insets: 5;
     -fx-border-width: 2;
+    
 }
+
 
 
 

@@ -311,7 +311,7 @@ implements ClockListener {
     	        	else if (site != null)
     	        		menu = new PopUpUnitMenu(settlementWindow, site);
 
-    	        	setComponentPopupMenu(menu);
+    	        	//setComponentPopupMenu(menu);
     	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		        }
 		    }

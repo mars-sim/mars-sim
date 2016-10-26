@@ -69,7 +69,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
 
     	this.building = building;
-    		System.out.println("StructureMapLayer() : building is "+ building);
+    		System.out.println("StructureMapLayer : building is "+ building);
         // Initialize data members.
         this.mapPanel = mapPanel;
         svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
