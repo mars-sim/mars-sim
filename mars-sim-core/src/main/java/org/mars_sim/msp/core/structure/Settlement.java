@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.08 2016-03-01
+ * @version 3.10 2016-10-20
  * @author Scott Davis
  */
 
@@ -26,11 +26,13 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.RadiationExposure;
 import org.mars_sim.msp.core.person.ShiftType;
@@ -2844,6 +2846,28 @@ implements Serializable, LifeSupportType, Objective {
 	public CompositionOfAir getCompositionOfAir() {
 		return compositionOfAir;
 	}
+	
+	/**
+     * Checks if wash water needs rationing at the settlement due to low water supplies.
+     * @return true if water rationing.
+     */
+    public boolean isWashWaterRationing() {
+        boolean result = false;
+        
+        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+        double storedWater = getInventory().getAmountResourceStored(water, false);
+        
+        PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration(); 
+        double requiredDrinkingWaterOrbit = personconfig.getWaterConsumptionRate() * getCurrentPopulationNum() * 
+                MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        
+        // If stored water is less than 10% of required drinking water for Orbit, wash water should be rationed.
+        if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
+            result = true;
+        }
+        
+        return result;
+    }
 
 	//@Override
 	public void setObjective(ObjectiveType objectiveType) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.1.0 2016-10-12
+ * @version 3.1.0 2016-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -47,7 +47,6 @@ import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-import org.mars_sim.msp.core.time.SystemDateTime;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -84,14 +83,8 @@ implements Serializable {
 
     private Building building;
     private Settlement settlement;
-    private static BuildingConfig buildingConfig;
     private Inventory s_inv, b_inv;
-    private static ItemResource printerItem;
-    private static MarsClock marsClock;
-    private static BuildingManager buildingManager;
-    private static GoodsManager goodsManager;
-    private static UnitManager manager;
-
+    private ItemResource printerItem;
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -102,22 +95,15 @@ implements Serializable {
         super(FUNCTION, building);
 
         this.building = building;
-        //settlement = buildingManager.getSettlement(); // note: building.getSettlement() will return null
-        //settlement = getBuilding().getBuildingManager().getSettlement();
-        buildingManager = getBuilding().getBuildingManager();
+        BuildingManager buildingManager = getBuilding().getBuildingManager();
         settlement = buildingManager.getSettlement();
-        goodsManager = settlement.getGoodsManager();
-        manager = Simulation.instance().getUnitManager();
-
-        if (marsClock == null)
-            marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         s_inv = building.getSettlementInventory();
         b_inv = building.getBuildingInventory();
 
         printerItem = ItemResource.findItemResource(LASER_SINTERING_3D_PRINTER);
 
-        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
         techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
         maxProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
@@ -145,6 +131,7 @@ implements Serializable {
 
         double result = 0D;
 
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         int buildingTech = buildingConfig.getManufactureTechLevel(buildingName);
 
         double demand = 0D;
@@ -156,6 +143,7 @@ implements Serializable {
         double supply = 0D;
         int highestExistingTechLevel = 0;
         boolean removedBuilding = false;
+        BuildingManager buildingManager = settlement.getBuildingManager();
         Iterator<Building> j = buildingManager.getBuildings(FUNCTION).iterator();
         while (j.hasNext()) {
             Building building = j.next();
@@ -297,12 +285,7 @@ implements Serializable {
                     );
 
             // Recalculate settlement good value for input item.
-            //GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
-            if (goodsManager == null)  {
-                //System.out.println("goodsManager is null");
-                goodsManager = settlement.getGoodsManager();
-            }
-            goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
+            settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
         }
 
 
@@ -361,7 +344,10 @@ implements Serializable {
         else if (salvagedUnit instanceof Vehicle) {
             salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
         }
-        if (salvagedGood != null) goodsManager.updateGoodValue(salvagedGood, false);
+        
+        if (salvagedGood != null) {
+            settlement.getGoodsManager().updateGoodValue(salvagedGood, false);
+        }
         else throw new IllegalStateException("Salvaged good is null");
 
         // Log salvage process starting.
@@ -488,9 +474,7 @@ implements Serializable {
 
         if (!premature) {
             // Produce outputs.
-            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            //UnitManager manager = Simulation.instance().getUnitManager();
-            //Inventory inv = getBuilding().getSettlementInventory();
+            UnitManager manager = Simulation.instance().getUnitManager();
 
             Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
             while (j.hasNext()) {
@@ -550,17 +534,14 @@ implements Serializable {
                             item.getType() + " not a valid type.");
 
                     // Recalculate settlement good value for output item.
-                    //GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
-                    goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
+                    settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
                 }
             }
         }
         else {
 
             // Premature end of process.  Return all input materials.
-            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            //UnitManager manager = Simulation.instance().getUnitManager();
-            //Inventory inv = getBuilding().getSettlementInventory();
+            UnitManager manager = Simulation.instance().getUnitManager();
 
             Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
             while (j.hasNext()) {
@@ -618,8 +599,7 @@ implements Serializable {
                             item.getType() + " not a valid type.");
 
                     // Recalculate settlement good value for output item.
-                    //GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
-                    goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
+                    settlement.getGoodsManager().updateGoodValue(ManufactureUtil.getGood(item), false);
                 }
             }
         }
@@ -651,11 +631,7 @@ implements Serializable {
 
         if (!premature) {
             // Produce salvaged parts.
-            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            if (goodsManager == null)
-                goodsManager = settlement.getGoodsManager();
-            goodsManager = settlement.getGoodsManager();
-            //Inventory inv = getBuilding().getSettlementInventory();
+            GoodsManager goodsManager = settlement.getGoodsManager();
 
             // Determine the salvage chance based on the wear condition of the item.
             double salvageChance = 50D;
@@ -745,8 +721,7 @@ implements Serializable {
     public void checkPrinters() {
         //System.out.println("Manufacture : checkPrinters()");
 
-        if (marsClock == null)
-            marsClock = Simulation.instance().getMasterClock().getMarsClock();
+        MarsClock marsClock = Simulation.instance().getMasterClock().getMarsClock();
 
         // check for the passing of each day
         int solElapsed = marsClock.getSolElapsedFromStart();

@@ -66,6 +66,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
@@ -364,6 +365,9 @@ public class GoodsManager implements Serializable {
 
             // Add potable water usage demand if applicable.
             projectedDemand += getPotableWaterUsageDemand(resource);
+            
+            // Add toiletry usage demand if applicable.
+            projectedDemand += getToiletryUsageDemand(resource);
 
             // Add vehicle demand if applicable.
             projectedDemand += getVehicleDemand(resource);
@@ -554,6 +558,22 @@ public class GoodsManager implements Serializable {
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getCurrentPopulationNum();
             return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
+        }
+        else return 0D;
+    }
+    
+    /**
+     * Gets the toilet tissue usage demand.
+     * @param resource the resource to check.
+     * @return demand (kg)
+     */
+    private double getToiletryUsageDemand(AmountResource resource) {
+        AmountResource toiletTissue = AmountResource.findAmountResource("toilet tissue");
+        if (resource.equals(toiletTissue)) {
+            double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
+            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            int numPeople = settlement.getCurrentPopulationNum();
+            return numPeople * amountNeededOrbit; 
         }
         else return 0D;
     }

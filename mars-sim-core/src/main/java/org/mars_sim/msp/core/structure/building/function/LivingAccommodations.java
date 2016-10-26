@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 3.07 2015-01-28
+ * @version 3.10 2016-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -48,8 +49,9 @@ public class LivingAccommodations extends Function implements Serializable {
     private int sleepers;
 	//private int solCache = 1;
     
-    private double wasteWaterUsage; // wasteWaterUsage per person per millisol
-    private double greyWaterFraction; // percent portion of grey water generated
+    private double washWaterUsage; // Water used per person for washing (showers, washing clothes, hands, dishes, etc) per millisol (avg over Sol).
+    private double wasteWaterProduced; // Waste water produced by urination/defecation per person per millisol (avg over Sol).
+    private double greyWaterFraction; // percent portion of grey water generated from waste water.
     
     private boolean hasAnUndesignatedBed = true;
     
@@ -78,7 +80,8 @@ public class LivingAccommodations extends Function implements Serializable {
         beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
         
         PersonConfig personconfig = simulationConfig.getPersonConfiguration(); 
-        wasteWaterUsage = personconfig.getWaterUsageRate() / 1000D;
+        washWaterUsage = personconfig.getWaterUsageRate() / 1000D;
+        wasteWaterProduced = (personconfig.getWaterConsumptionRate() + personconfig.getFoodConsumptionRate()) / 1000D;
         double grey2BlackWaterRatio = personconfig.getGrey2BlackWaterRatio();
         greyWaterFraction = grey2BlackWaterRatio / (grey2BlackWaterRatio + 1);
       
@@ -87,7 +90,6 @@ public class LivingAccommodations extends Function implements Serializable {
         
         settlement = building.getBuildingManager().getSettlement();
         inv = building.getSettlementInventory();
-
     }
 
     /**
@@ -296,39 +298,45 @@ public class LivingAccommodations extends Function implements Serializable {
     /**
      * Utilizes water for bathing, washing, etc based on population.
      * @param time amount of time passing (millisols)
-     * @throws Exception if error in water usage.
      */
-    //2015-12-04 Modified and renamed to generateWaste()
     public void generateWaste(double time) {
     	double random_factor = 1 + RandomUtil.getRandomDouble(0.25) - RandomUtil.getRandomDouble(0.25);
-/*    	
-        double waterUsageSettlement = washWaterUsagePerPersonPerTime  * time * settlement.getCurrentPopulationNum();
+
+    	// Total wash water used at the settlement over this time period (average).  
+    	// This includes showering, washing hands, washing dishes, etc.
+        double washWaterUsageSettlement = washWaterUsage  * time * settlement.getCurrentPopulationNum();
+        
+        // If settlement is rationing wash water, only use 10% normal amount of water for washing.
+        if (settlement.isWashWaterRationing()) {
+            washWaterUsageSettlement *= .1D;
+        }
+        
+        // Total waste water produced (urination, defecation) over this time period (average).
+        double wasteWaterProducedSettlement = wasteWaterProduced * time * settlement.getCurrentPopulationNum();
+        
+        // The proportion of beds this living accommodations building provides for the settlement.
         double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
-        double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
-        double waterUsed = waterUsageBuilding;        
-*/        
         
-    	// Note: the ratio of non-sleepers to sleepers is about 3 to 1 
-    	// Thus, 2/3 of population are awake and active while 1/3 are sleeping.
-    	// Assume a 5% of chance that this 2/3 population will use rest room at a given instant of time
-    	// factor = 2 * .05 * # of sleepers * usage per person per sol /1000 * millisols 
-    	double toiletUsagefactor = .1; 
-    	
-    	// computes water waste -- grey water and black water
-    	double waterUsed = toiletUsagefactor * sleepers * wasteWaterUsage  * time;
-        retrieveAnResource(org.mars_sim.msp.core.LifeSupportType.WATER, waterUsed * random_factor);    
+        // Wash and waste water produced by this building over this time period.
+        double washWaterUsageBuilding = washWaterUsageSettlement * buildingProportionCap;
+        double wasteWaterProducedBuilding = wasteWaterProducedSettlement * buildingProportionCap;
+
+        // Remove wash water from settlement.
+        retrieveAnResource(LifeSupportType.WATER, washWaterUsageBuilding * random_factor);
         
-        double greyWaterProduced = waterUsed * greyWaterFraction;
-        double blackWaterProduced = waterUsed * (1 - greyWaterFraction);             
-        //System.out.println("blackWaterProduced "+ blackWaterProduced);      
+        // Grey water is produced by both wash water and waste water.
+        // Black water is only produced by waste water.
+        double greyWaterProduced = washWaterUsageBuilding + (wasteWaterProducedBuilding * greyWaterFraction);
+        double blackWaterProduced = wasteWaterProducedBuilding * (1 - greyWaterFraction);    
         storeAnResource(greyWaterProduced, "grey water");
         storeAnResource(blackWaterProduced, "black water");
     	
-    	// computes toxic waste        
-        double toiletTissueUsed = toiletUsagefactor * (1 - greyWaterFraction) * sleepers * TOILET_WASTE_PERSON_SOL * time;
-        retrieveAnResource("toilet tissue", toiletTissueUsed * random_factor);
-        storeAnResource(toiletTissueUsed, "toxic waste");
-
+    	// Use toilet paper and generate toxic waste (used toilet paper).       
+        double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
+        double toiletPaperUsageSettlement = toiletPaperUsagePerMillisol * time * settlement.getCurrentPopulationNum();
+        double toiletPaperUsageBuilding = toiletPaperUsageSettlement * buildingProportionCap;
+        retrieveAnResource("toilet tissue", toiletPaperUsageBuilding * random_factor);
+        storeAnResource(toiletPaperUsageBuilding, "toxic waste");
     }
     
     public Building getBuilding() {
