@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.1.0 2016-10-01
+ * @version 3.1.0 2016-10-26
  * @author Lars Næsbye Christensen
  */
 
@@ -198,8 +198,8 @@ public class MainScene {
 	private boolean isMarsNetOpen = false;
 	private boolean onMenuBarCache = false;
 	
-	private DoubleProperty sceneWidth = new SimpleDoubleProperty(1286);//1366-80;
-	private DoubleProperty sceneHeight = new SimpleDoubleProperty(688); //768-80;
+	private DoubleProperty sceneWidth = new SimpleDoubleProperty(1366);//1366-40;
+	private DoubleProperty sceneHeight = new SimpleDoubleProperty(768); //768-40;
 
 	private volatile transient ExecutorService mainSceneExecutor; 
     	
@@ -225,9 +225,8 @@ public class MainScene {
 	private Label timeText, lastSaveText;
 	private Text memUsedText;
 
-	private JFXButton miniMapBtn, mapBtn;
+	private JFXButton miniMapBtn, mapBtn, marsNetButton, menubarButton;
 	private Button memBtn, clkBtn;
-	private ToggleButton marsNetButton, menubarButton;
 
 	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
 	private Scene scene;
@@ -473,44 +472,36 @@ public class MainScene {
         borderPane.setBottom(statusBar);
 
  
-		if (OS.contains("mac")) {
-	        //menubarButton = new ToggleButton();
-	        
+		if (OS.contains("mac")) {        
 	        AnchorPane.setLeftAnchor(marsNetButton, 5.0);
 	        AnchorPane.setBottomAnchor(marsNetButton, 35.0);    
 	        
 	        anchorDesktopPane.getChildren().addAll(borderPane, marsNetButton);
 
-	        //borderPane.setTop(topFlapBar);  
 		}
 		else {
 			
-			menubarButton = new ToggleButton();
-	        menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/menubar_36.png"))));
-	        menubarButton.setStyle(
-	        		"-fx-background-color: transparent;" +     		    		
-	     		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
-	     		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
-	     		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
-	     		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
-	     		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
-	     		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-	     		  // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
-	     		   //"-fx-font-size: 80px;"
-	           		"-fx-background-radius: 2px;"
-	     		   );
-	    
-	        AnchorPane.setLeftAnchor(marsNetButton, 45.0);
-	        AnchorPane.setBottomAnchor(marsNetButton, 35.0);       
-	        AnchorPane.setLeftAnchor(menubarButton, 5.0);
-	        AnchorPane.setBottomAnchor(menubarButton, 35.0);
+			menubarButton = new JFXButton();
+			menubarButton.setTooltip(new Tooltip("Open top menu"));
 	        /**
 	         * Instantiate a BorderSlideBar for each child layouts
 	         */
 	        topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
 	        borderPane.setTop(topFlapBar);        
-	        
-	        anchorDesktopPane.getChildren().addAll(borderPane, marsNetButton, menubarButton);//toolbar);
+	       
+	        AnchorPane.setRightAnchor(menubarButton, 5.0);
+	        AnchorPane.setTopAnchor(menubarButton, -3.0);
+
+	        AnchorPane.setRightAnchor(marsNetButton, 45.0);
+	        AnchorPane.setTopAnchor(marsNetButton, -3.0);       
+	         
+	        AnchorPane.setRightAnchor(mapBtn, 85.0);
+	        AnchorPane.setTopAnchor(mapBtn, -3.0);     
+
+	        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
+	        AnchorPane.setTopAnchor(miniMapBtn, -3.0); 
+
+	        anchorDesktopPane.getChildren().addAll(borderPane, miniMapBtn, mapBtn, marsNetButton, menubarButton);
 
 		}
 		
@@ -531,14 +522,14 @@ public class MainScene {
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
-		jfxTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(110));
+		jfxTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		// anchorTabPane is within jfxTabPane
-		anchorTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(110));
+		anchorTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
 		anchorTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
-		mapNodePane.prefHeightProperty().bind(scene.heightProperty().subtract(110));
+		mapNodePane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
 		//mapNodePane.prefWidthProperty().bind(scene.widthProperty());
 		
 		//mapNodePane.heightProperty().addListener((observable, oldValue, newValue) -> {
@@ -572,12 +563,8 @@ public class MainScene {
 		
 		
 		// set up mapTab
-		
-		Tab mapTab = new Tab();
-			
+		Tab mapTab = new Tab();		
 		anchorTabPane = new AnchorPane();
-		//anchorTabPane.setPrefWidth(sceneWidth.get());
-		//anchorTabPane.setPrefHeight(sceneHeight.get()-35);
 		anchorTabPane.setStyle("-fx-background-color: black; ");
 
 		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
@@ -585,28 +572,9 @@ public class MainScene {
 		minimapNodePane = new StackPane(minimapNode);
 		minimapNodePane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
-		miniMapBtn = new JFXButton("Mini-Map");
-		miniMapBtn.getStyleClass().add("button-broadcast");	
+		miniMapBtn = new JFXButton();
+		miniMapBtn.setTooltip(new Tooltip("Open mini-map below"));
 		miniMapBtn.setOnAction(e -> {
-			
-			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
-			}
-			else {
-				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
-			}
-			
-			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
-			}
-			
-			else {
-				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
-			}
 			
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 				desktop.closeToolWindow(NavigatorWindow.NAME);
@@ -615,14 +583,12 @@ public class MainScene {
 			
 			else {
 				desktop.openToolWindow(NavigatorWindow.NAME);
-
 				minimapNode.setContent(navWin); 
-	
 		        anchorTabPane.getChildren().addAll(minimapNodePane);
-		        AnchorPane.setRightAnchor(minimapNodePane, 3.0);
-		        AnchorPane.setTopAnchor(minimapNodePane, 45.0); 
+		        AnchorPane.setLeftAnchor(minimapNodePane, 3.0);
+		        AnchorPane.setTopAnchor(minimapNodePane, 3.0); // 45.0  
 			}
-
+  
 		});
 		
 		SettlementWindow settlementWin = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
@@ -630,27 +596,17 @@ public class MainScene {
 		mapNodePane = new StackPane(mapNode);
 		mapNodePane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
-		mapBtn = new JFXButton("Settlement Map");
-		mapBtn.getStyleClass().add("button-broadcast");	
+		mapBtn = new JFXButton();
+		mapBtn.setTooltip(new Tooltip("Open settlement map below"));
 		mapBtn.setOnAction(e -> {
-			
+
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));							
 			}
 			else {
 				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
-			}
-			
-			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));					
-			}
-			
-			else {
-				mapNodePane.prefWidthProperty().unbind();
-				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(3));
+				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(2));			
 			}
 			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
@@ -661,28 +617,19 @@ public class MainScene {
 			else {
 						
 				desktop.openToolWindow(SettlementWindow.NAME);
-
 				mapNode.setContent(settlementWin); 
-	
 		        anchorTabPane.getChildren().addAll(mapNodePane);
-		        AnchorPane.setLeftAnchor(mapNodePane, 3.0);
-		        AnchorPane.setTopAnchor(mapNodePane, 45.0);            
+		        AnchorPane.setRightAnchor(mapNodePane, 0.0);
+		        AnchorPane.setTopAnchor(mapNodePane, 3.0);  // 45.0          
 			}
 			
 		});
-		
-   
-        anchorTabPane.getChildren().addAll(miniMapBtn, mapBtn);
-        AnchorPane.setRightAnchor(miniMapBtn, 10.0);
-        AnchorPane.setTopAnchor(miniMapBtn, 10.0); 
-        AnchorPane.setLeftAnchor(mapBtn, 10.0);
-        AnchorPane.setTopAnchor(mapBtn, 10.0);         
+		 
         
-		//mapPane.getChildren().add(box);
 		mapTab.setText("Map");
 		mapTab.setContent(anchorTabPane);
 		
-
+ 
 		// set up monitor tab
 		
 		MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
@@ -765,6 +712,54 @@ public class MainScene {
 					desktop.openToolWindow(MonitorWindow.NAME);
 					//monNode.setContent(monWin); 
 				}
+			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+
+			}
+			
+			else if (newTab == mapTab) {
+
+
+				mapBtn.fire();
+				miniMapBtn.fire();
+
+/*				
+				if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+					desktop.closeToolWindow(SettlementWindow.NAME);
+					anchorTabPane.getChildren().removeAll(mapNodePane);
+				}
+
+				else {
+					desktop.openToolWindow(SettlementWindow.NAME);
+					mapNode.setContent(settlementWin); 
+			        anchorTabPane.getChildren().addAll(mapNodePane);
+			        AnchorPane.setRightAnchor(mapNodePane, 0.0);
+			        AnchorPane.setTopAnchor(mapNodePane, 3.0);  
+				}
+
+				
+				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+					desktop.closeToolWindow(NavigatorWindow.NAME);
+					anchorTabPane.getChildren().removeAll(minimapNodePane);
+				}
+
+				else {
+					desktop.openToolWindow(NavigatorWindow.NAME);
+					minimapNode.setContent(navWin); 
+			        anchorTabPane.getChildren().addAll(minimapNodePane);
+			        AnchorPane.setLeftAnchor(minimapNodePane, 3.0);
+			        AnchorPane.setTopAnchor(minimapNodePane, 3.0);
+				}
+*/
+
+
+		        AnchorPane.setRightAnchor(mapBtn, 85.0);
+		        AnchorPane.setTopAnchor(mapBtn, -3.0);     
+
+		        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
+		        AnchorPane.setTopAnchor(miniMapBtn, -3.0);   
+		        
+		        anchorDesktopPane.getChildren().addAll(miniMapBtn, mapBtn);
+
 			}
 			
 			else if (newTab == missionTab) {	
@@ -772,6 +767,7 @@ public class MainScene {
 					desktop.openToolWindow(MissionWindow.NAME);
 					//missionNode.setContent(missionWin); 
 				}
+			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			}
 
 			else if (newTab == resupplyTab) {	
@@ -779,6 +775,7 @@ public class MainScene {
 					desktop.openToolWindow(ResupplyWindow.NAME);
 					//resupplyNode.setContent(resupplyWin); 
 				}
+			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			}
 
 			else if (newTab == scienceTab) {	
@@ -786,6 +783,7 @@ public class MainScene {
 					desktop.openToolWindow(ScienceWindow.NAME);
 					//sciNode.setContent(scienceWin); 
 				}
+			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			}
 			
 			else if (newTab == guideTab) {	
@@ -793,55 +791,18 @@ public class MainScene {
 					desktop.openToolWindow(GuideWindow.NAME);
 					//guideNode.setContent(guideWin); 
 				}
+			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			}
 		});
 		
-		jfxTabPane.getSelectionModel().select(mainTab);
+		//jfxTabPane.getSelectionModel().select(mainTab);
 		
 		// NOTE: if a tab is NOT selected, should close that tool as well to save cpu utilization
 		// this is done in ToolWindow's update(). It allows for up to 1 second of delay, in case user open and close the same repeated.
-		
-/*
-		//if (mainScene != null) {	
-			//openToolWindow(NavigatorWindow.NAME);
-		desktop.openToolWindow(MonitorWindow.NAME);
-		desktop.openToolWindow(MissionWindow.NAME);
-		desktop.openToolWindow(SettlementWindow.NAME);
-		desktop.openToolWindow(ResupplyWindow.NAME);
-		desktop.openToolWindow(ScienceWindow.NAME);		
-		desktop.openToolWindow(GuideWindow.NAME);
-		//}
 
-*/
 	}
 	
 	
-	public void setSwingNode(int tab) {
-		if (tab == MONITOR_TAB) {
-		
-			//monNode
-		}
-		
-		else if (tab == MONITOR_TAB) {
-			
-		}
-		
-		else if (tab == MONITOR_TAB) {
-			
-		}
-		
-		else if (tab == MONITOR_TAB) {
-			
-		}
-		
-		else if (tab == MONITOR_TAB) {
-			
-		}
-		
-		//missionNode, resupplyNode, sciNode, guideNode ;
-
-		
-	}
 	
 	public void createDesktops() {
 		desktops = new ArrayList<DesktopPane>();		
@@ -981,16 +942,20 @@ public class MainScene {
 		
 		if (theme == 6) {
 			if (!OS.contains("mac"))
-				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_36.png"))));
+				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_32.png"))));
 			
-			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_chat_36.png"))));
+			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_globe_32.png"))));
+			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_map_32.png"))));
+			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_chat_32.png"))));
 			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_blue.css").toExternalForm());
 		}
 		else if (theme == 7) {
 			if (!OS.contains("mac"))
-				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menubar_36.png"))));
-			
-			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_36.png"))));
+				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menu_32.png"))));
+
+			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_globe_32.png"))));
+			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_map_32.png"))));
+			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_32.png"))));
 			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_orange.css").toExternalForm());
 		}
 		
@@ -1018,8 +983,11 @@ public class MainScene {
      */
     //2015-11-11 Added createFlyout()
     public Flyout createFlyout() {
-     	marsNetButton = new ToggleButton();
-        marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/gray_chat_36.png")))); //" MarsNet ");       
+     	marsNetButton = new JFXButton();//ToggleButton();
+        //marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/gray_chat_36.png")))); //" MarsNet ");       
+        //marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_32.png")))); //" MarsNet ");       
+
+        /*
         marsNetButton.setStyle(
         			"-fx-background-color: transparent;" +   
         		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
@@ -1032,46 +1000,57 @@ public class MainScene {
         		   //"-fx-font-size: 80px;"
               		"-fx-background-radius: 2px;"
         		   );
-        
+*/        
         
         flyout = new Flyout(marsNetButton, createChatBox(), this);
-        marsNetButton.setId("marsNetButton");
-        marsNetButton.setTooltip(new Tooltip ("Toggle on and off MarsNet"));
+        //marsNetButton.setId("marsNetButton");
+        marsNetButton.setTooltip(new Tooltip ("Open MarsNet chat box"));
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
     	chatBox.update();
         marsNetButton.setOnAction(e -> {
             if (!flag) 
             	chatBox.update();
+  
+            if (flyout.flyoutShowing()) {
+                flyout.dismiss();
+            }
+            else {
+                flyout.flyout();              
+                chatBox.getAutoFillTextBox().getTextbox().clear();
+                chatBox.getAutoFillTextBox().getTextbox().requestFocus();
+            }
+            
+/*            
             if (marsNetButton.isSelected()) {
             	//System.out.println("flyingout : " + marsNetButton.isSelected());
                 flyout.flyout();              
                 // 2016-06-17 Added update() to show the initial system greeting
                 chatBox.getAutoFillTextBox().getTextbox().clear();
                 chatBox.getAutoFillTextBox().getTextbox().requestFocus();
-                ToggleMarsNetButton(true);
+                //ToggleMarsNetButton(true);
             } else {
             	//System.out.println("dismissing : " + marsNetButton.isSelected());
             	// 2016-06-17 Added closeChatBox() to display a disconnection msg 
                 flyout.dismiss();
-                ToggleMarsNetButton(false);
+                //ToggleMarsNetButton(false);
             }
-
+*/
         });
        
         return flyout;
     }
     
-    public void ToggleMarsNetButton(boolean value) {
-    	marsNetButton.setSelected(value);
-    }
+    //public void ToggleMarsNetButton(boolean value) {
+    //	marsNetButton.setSelected(value);
+    //}
  
-    public boolean isToggleMarsNetButtonSelected() {
-    	return marsNetButton.isSelected();
-    }
+    //public boolean isToggleMarsNetButtonSelected() {
+    //	return marsNetButton.isSelected();
+    //}
     
-    public void fireMarsNetButton() {
-    	marsNetButton.fire();
-    }
+    //public void fireMarsNetButton() {
+    //	marsNetButton.fire();
+    //}
     
     public Flyout getFlyout() {
     	return flyout;

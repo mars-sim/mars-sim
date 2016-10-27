@@ -273,7 +273,7 @@ public class ChatBox extends BorderPane {
     	}
     	
         mainScene.getFlyout().dismiss();
-        mainScene.ToggleMarsNetButton(false);
+        //mainScene.ToggleMarsNetButton(false);
     }
     
     /**
@@ -1016,7 +1016,7 @@ public class ChatBox extends BorderPane {
      		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
      		mainScene.setChatBoxPaneHeight(box_height[0]);
      		closeChatBox(false);
-     		mainScene.ToggleMarsNetButton(true);
+     		//mainScene.ToggleMarsNetButton(true);
      		mainScene.getFlyout().flyout();
      		
 /*     		

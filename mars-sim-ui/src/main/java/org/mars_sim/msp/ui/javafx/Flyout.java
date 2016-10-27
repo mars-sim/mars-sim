@@ -68,7 +68,7 @@ public class Flyout extends Region {
     public final static int DELAY = 10;
     
     //private Side flyoutSide = Side.BOTTOM;
-    private Side flyoutSide = Side.TOP_RIGHT;
+    private Side flyoutSide = Side.BOTTOM;
     
     private Timeline tl = new Timeline();
     private DoubleProperty loc = new SimpleDoubleProperty();

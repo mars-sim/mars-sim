@@ -16,6 +16,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.MainSceneMenu;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -45,7 +47,8 @@ extends JInternalFrame {
 	private MainSceneMenu msm;
 	/** The main desktop. */
 	protected MainDesktopPane desktop;
-
+	private  MasterClock masterClock = Simulation.instance().getMasterClock();
+	
 	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
 
@@ -112,6 +115,14 @@ extends JInternalFrame {
 	}
 
 	/**
+	 * Sets the tool name.
+	 * @param tool name
+	 */
+	public void setTitleName(String value) {
+		setName(value);
+	}
+	
+	/**
 	 * Checks if the tool window has previously been opened.
 	 * @return true if tool window has previously been opened.
 	 */
@@ -135,7 +146,7 @@ extends JInternalFrame {
 	@SuppressWarnings("restriction")
 	public void update() {
 
-		if (mainScene != null) {
+		if (mainScene != null && !masterClock.isPaused()) {
 
 			if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MAIN_TAB)
 					|| mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MAP_TAB)) {

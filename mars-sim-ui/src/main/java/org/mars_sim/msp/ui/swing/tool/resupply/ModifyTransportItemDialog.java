@@ -132,6 +132,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 			//if ( d != null ) d.dispose();
 			//if ( s != null ) s.close();
 			dispose();
+			//resupplyWindow.setRunning(false);
 		}
 	}
 	

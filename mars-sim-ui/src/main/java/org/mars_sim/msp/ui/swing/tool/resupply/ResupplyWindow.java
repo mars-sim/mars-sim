@@ -54,6 +54,7 @@ implements ListSelectionListener {
 	public static final String NAME = "Resupply Tool";
 
 	// Data members
+	private boolean isRunning = false;
 	private IncomingListPanel incomingListPane;
 	private ArrivedListPanel arrivedListPane;
 	private TransportDetailPanel detailPane;
@@ -182,6 +183,8 @@ implements ListSelectionListener {
 
 		new NewTransportItemDialog(desktop, this);	
 		
+		isRunning = true;
+		
 		// Unpause simulation.
 		if (mainScene != null) {
 			boolean now2 = Simulation.instance().getMasterClock().isPaused();
@@ -250,6 +253,8 @@ implements ListSelectionListener {
 				String title = "Modify Resupply Mission";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, resupply);
 				new ModifyTransportItemDialog(desktop, this, title, resupply);
+				
+				//isRunning = true;
 			}
 			else if (transportItem instanceof ArrivingSettlement) {
 				// Create modify arriving settlement dialog.
@@ -257,6 +262,8 @@ implements ListSelectionListener {
 				String title = "Modify Arriving Settlement";
 				//new ModifyTransportItemDialog(mw.getFrame(), title, settlement);
 				new ModifyTransportItemDialog(desktop, this, title, settlement);
+	
+				//isRunning = true;
 			}
 		}
 	}
@@ -352,6 +359,14 @@ implements ListSelectionListener {
 	public void setModifyButton(boolean value) {
 		modifyButton.setEnabled(value);
 	}
+	
+	//public boolean isRunning() {
+	//	return isRunning;
+	//}
+
+	//public void setRunning(boolean value){
+	//	isRunning = value;
+	//}
 	
 	/**
 	 * Prepare this window for deletion.

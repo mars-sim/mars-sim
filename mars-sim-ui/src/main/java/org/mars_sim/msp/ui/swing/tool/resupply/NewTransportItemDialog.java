@@ -126,6 +126,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				// Close dialog.
 				dispose();
+				//resupplyWindow.setRunning(false);
 			}
 
 		});

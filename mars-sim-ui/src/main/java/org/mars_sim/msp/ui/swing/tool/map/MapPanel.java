@@ -332,9 +332,11 @@ implements Runnable {
                 dbg.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
 
                 if (centerCoords != null) {
-                	if (map.isImageDone()) {
-                		mapImage = map.getMapImage();
-                		dbg.drawImage(mapImage, 0, 0, this);
+                	if (map != null) {
+	                	if (map.isImageDone()) {
+	                		mapImage = map.getMapImage();
+	                		dbg.drawImage(mapImage, 0, 0, this);
+	                	}
                 	}
 
                 	// Display map layers.

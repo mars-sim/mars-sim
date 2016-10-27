@@ -52,7 +52,7 @@ public class BorderSlideBar extends VBox {
      * @param nodes Nodes inside the panel.
      */
     public BorderSlideBar(double expandedSize,
-            final ToggleButton controlButton, Pos location, Node... nodes) {
+            final Button controlButton, Pos location, Node... nodes) {
 
         getStyleClass().add("sidebar");
         getStylesheets().add(CSS);        
