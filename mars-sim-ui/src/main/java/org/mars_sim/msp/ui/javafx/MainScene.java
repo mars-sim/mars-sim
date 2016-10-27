@@ -942,7 +942,7 @@ public class MainScene {
 		
 		if (theme == 6) {
 			if (!OS.contains("mac"))
-				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menubar_32.png"))));
+				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menu_32.png"))));
 			
 			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_globe_32.png"))));
 			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_map_32.png"))));
