@@ -82,7 +82,6 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(50D));
-
         // Initialize data members
         if (person.getSettlement() != null) {
             setDescription(Msg.getString("Task.description.tendGreenhouse.detail", 
@@ -276,7 +275,7 @@ implements Serializable {
 		else if (robot != null) {
 		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
 			// should it incurs penalty on workTime?
-			workTime = time * factor;
+			workTime = time * factor*.5d;
 		}
 
         // Determine amount of effective work time based on "Botany" skill
@@ -321,7 +320,7 @@ implements Serializable {
 		else if (robot != null) {
 		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
 			// should it incurs penalty on workTime?
-			workTime = time * factor;
+			workTime = time * factor*.5d;
 		}
 
         // Determine amount of effective work time based on "Botany" skill
@@ -365,7 +364,7 @@ implements Serializable {
 		else if (robot != null) {
 		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
 			// should it incurs penalty on workTime?
-			workTime = time * factor;
+			workTime = time * factor*.5d;
 		}
 
         // Determine amount of effective work time based on "Botany" skill
@@ -463,11 +462,12 @@ implements Serializable {
             LocationSituation location = person.getLocationSituation();
             if (location == LocationSituation.IN_SETTLEMENT) {
                 buildingManager = person.getSettlement().getBuildingManager();
-                List<Building> farmBuildings = buildingManager.getBuildings(BuildingFunction.FARMING);
-                farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
-                farmBuildings = getFarmsNeedingWork(farmBuildings);
-                farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
-
+                //List<Building> farmBuildings = buildingManager.getBuildings(BuildingFunction.FARMING);
+                //farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
+                //farmBuildings = BuildingManager.getFarmsNeedingWork(farmBuildings);
+                //farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
+                List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
+                
                 if (farmBuildings.size() > 0) {
                     Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                             person, farmBuildings);
@@ -480,71 +480,26 @@ implements Serializable {
             LocationSituation location = robot.getLocationSituation();
             if (location == LocationSituation.IN_SETTLEMENT) {
             	buildingManager = robot.getSettlement().getBuildingManager();
-                List<Building> buildings = buildingManager.getBuildings(BuildingFunction.FARMING);
-                buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
-                buildings = getFarmsNeedingWork(buildings);
-    			if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
-    				buildings = BuildingManager.getLeastCrowded4BotBuildings(buildings);
-
+                //List<Building> buildings = buildingManager.getBuildings(BuildingFunction.FARMING);
+                //buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
+                //buildings = Farming.getFarmsNeedingWork(buildings);
+    			//if (RandomUtil.getRandomInt(4) == 0) // robot is not as inclined to move around
+    			//	buildings = BuildingManager.getLeastCrowded4BotBuildings(buildings);
+                List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
+                
                 // TODO: add person's good/bad feeling toward robots
-                int size = buildings.size();
+                int size = farmBuildings.size();
                 //System.out.println("size is "+size);
                 int selected = 0; 
                 if (size == 0) 
                 	result = null;
                 if (size >= 1) {
                 	selected = RandomUtil.getRandomInt(size-1);         
-                	result = buildings.get(selected);
+                	result = farmBuildings.get(selected);
                 }
                 //System.out.println("getAvailableGreenhouse() : selected is "+selected); 
             }
         }
-        return result;
-    }
-
-    /**
-     * Gets a list of farm buildings needing work from a list of buildings with the farming function.
-     * @param buildingList list of buildings with the farming function.
-     * @return list of farming buildings needing work.
-     */
-    private static List<Building> getFarmsNeedingWork(List<Building> buildingList) {
-        List<Building> result = new ArrayList<Building>();
-
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
-            if (farm.requiresWork()) {
-                result.add(building);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets the number of crops that currently need work this Sol.
-     * @param settlement the settlement.
-     * @return number of crops.
-     */
-    public static int getCropsNeedingTending(Settlement settlement) {
-
-        int result = 0;
-
-        BuildingManager manager = settlement.getBuildingManager();
-        Iterator<Building> i = manager.getBuildings(BuildingFunction.FARMING).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
-            Iterator<Crop> j = farm.getCrops().iterator();
-            while (j.hasNext()) {
-                Crop crop = j.next();
-                if (crop.requiresWork()) {
-                    result++;
-                }
-            }
-        }
-        //System.out.println("getCropsNeedingTending() : result is " + result); 
         return result;
     }
 

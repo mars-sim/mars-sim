@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Gardenbot;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 
 /**
  * Meta task for the Tend Greenhouse task.
@@ -55,8 +56,9 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 // See if there is an available greenhouse.
                 Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(person);
                 if (farmingBuilding != null) {
-
-                    int needyCropsNum = TendGreenhouse.getCropsNeedingTending(person.getSettlement());
+                    result += 10D;
+                    // 2016-10-28 Added getCropsNeedingTendingCache()
+                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
                     result += needyCropsNum * 20D;
 
                     // Crowding modifier.
@@ -86,7 +88,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 }
             }
             catch (Exception e) {
-                logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
+                logger.log(Level.SEVERE, person + " cannot calculate probability : " + e.getMessage());
             }
 
         }
@@ -113,23 +115,26 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 	                Building farmingBuilding = TendGreenhouse.getAvailableGreenhouse(robot);
 	                if (farmingBuilding != null) {
 	                    result += 10D;
-
-	                    int needyCropsNum = TendGreenhouse.getCropsNeedingTending(robot.getSettlement());
+	                    // 2016-10-28 Added getCropsNeedingTendingCache()
+	                    int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
 	                    //System.out.println("needyCropsNum is "+needyCropsNum);
 	                    result += needyCropsNum * 100D;
 
 	                    // Crowding modifier.
 	                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
 	                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
+	               
+	    	            // Effort-driven task modifier.
+	    	            result *= robot.getPerformanceRating();
+	    	            //System.out.println("probability is " + result);
+	    	            
 	                }
 	            }
 	            catch (Exception e) {
-	                logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
+	                logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
 	            }
 
-	            // Effort-driven task modifier.
-	            result *= robot.getPerformanceRating();
-	            //System.out.println("probability is " + result);
+
 	        }
 
         return result;

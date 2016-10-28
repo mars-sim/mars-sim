@@ -59,6 +59,8 @@ import org.mars_sim.msp.core.structure.building.function.HeatMode;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.core.structure.building.function.RoboticStation;
+import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -118,7 +120,9 @@ implements Serializable, LifeSupportType, Objective {
 	private int numZ; // number of people with work shift Z
 	private int numOnCall;
 	private int sumOfCurrentManuProcesses = 0;
-
+	private int cropsNeedingTendingCache = 5;
+	private int millisolCache;
+	
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
 	
@@ -651,7 +655,14 @@ implements Serializable, LifeSupportType, Objective {
 	 *             if error during time passing.
 	 */
 	public void timePassing(double time) {
-
+/*		
+        int m = (int) marsClock.getMillisol();
+        if (millisolCache != m) {
+        	millisolCache = m;
+    	    // 2016-10-28 Added cropsNeedingTendingCache
+    		cropsNeedingTendingCache = getCropsNeedingTending();  		
+        }
+*/
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
@@ -2930,6 +2941,42 @@ implements Serializable, LifeSupportType, Objective {
 		sumOfCurrentManuProcesses = sumOfCurrentManuProcesses + value;
 	}
 
+
+    /**
+     * Gets the number of crops that currently need work this Sol.
+     * @param settlement the settlement.
+     * @return number of crops.
+     */
+    // 2016-10-28 Modified, added caching and relocated from TendGreenhouse
+    public int getCropsNeedingTending() {
+        int result = 0; 	
+	
+        int m = (int) marsClock.getMillisol();
+        if (millisolCache == m) {
+        	result = cropsNeedingTendingCache;  		
+    	}
+        
+    	else {
+        	millisolCache = m;
+	        for (Building b : buildingManager.getBuildings(BuildingFunction.FARMING)) {
+	            Farming farm = (Farming) b.getFunction(BuildingFunction.FARMING);
+	            for (Crop c : farm.getCrops()){
+	                if (c.requiresWork()) {
+	                    result++;
+	                }
+	            }
+	        }
+        	cropsNeedingTendingCache = result;  
+    	}
+        //System.out.println("getCropsNeedingTending() : result is " + result); 
+        return result;
+    }
+    
+    // 2016-10-28 Added getCropsNeedingTendingCache()
+    public int getCropsNeedingTendingCache() {
+    	return cropsNeedingTendingCache;
+    }
+    
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -257,7 +257,7 @@ public class MarsProject {
      * Create a new simulation instance.
      */
     private void handleNewSimulation() {
-		logger.info("MarsProject's handleNewSimulation() is on "+Thread.currentThread().getName() + " Thread");
+		//logger.info("MarsProject's handleNewSimulation() is on "+Thread.currentThread().getName() + " Thread");
 
         try {
             SimulationConfig.loadConfig();

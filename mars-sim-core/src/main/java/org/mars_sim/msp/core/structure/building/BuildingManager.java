@@ -102,20 +102,19 @@ public class BuildingManager implements Serializable {
     private int count = 0;
 	private int solCache = 0;
     private double sum = 0;
+    private int millisolCache;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
-    private List<Building> buildings;
     // 2014-10-29 Added buildingsNickNames
-    // A list of the settlement's buildings with their nicknames.
-    private List<Building> buildingsNickNames;
+    private List<Building> buildings, farmsNeedingWorkCache, buildingsNickNames;
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
 
     //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
 
-    private Settlement settlement; // The manager's settlement.
+    private Settlement settlement;
     private MarsClock lastBuildingValuesUpdateTime;
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
@@ -692,7 +691,15 @@ public class BuildingManager implements Serializable {
         while (i.hasNext()) {
             i.next().timePassing(time);
         }
-    }
+/*        
+        int m = (int) marsClock.getMillisol();
+        if (millisolCache != m) {
+        	millisolCache = m;
+    	    // 2016-10-28 Added farmsNeedingWorkCache
+        	farmsNeedingWorkCache = getFarmsNeedingWork();
+        }
+*/
+	}
 
     /**
      * Gets a random inhabitable building.
@@ -1758,6 +1765,42 @@ public class BuildingManager implements Serializable {
 //	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
 //	}
 
+    /**
+     * Gets a list of farm buildings needing work from a list of buildings with the farming function.
+     * @param buildingList list of buildings with the farming function.
+     * @return list of farming buildings needing work.
+     */
+    // 2016-10-28 Modified, added caching and relocated from TendGreenhouse
+    public List<Building> getFarmsNeedingWork() {	
+        List<Building> result = null;
+        
+        int m = (int) marsClock.getMillisol();
+        if (millisolCache == m) {
+        	result = farmsNeedingWorkCache;  		
+    	}
+        
+    	else {
+        	millisolCache = m;
+	        List<Building> farmBuildings = getLeastCrowdedBuildings(getNonMalfunctioningBuildings(getBuildings(BuildingFunction.FARMING)));
+	        //farmBuildings = getNonMalfunctioningBuildings(farmBuildings);
+	        //farmBuildings = getLeastCrowdedBuildings(farmBuildings);
+	        result = new ArrayList<Building>();
+	        for (Building b : farmBuildings) {
+	            Farming farm = (Farming) b.getFunction(BuildingFunction.FARMING);
+	            if (farm.requiresWork()) {
+	                result.add(b);
+	            }
+	        }
+	        
+	        farmsNeedingWorkCache = result;
+    	}
+        return result;
+    }
+    
+    // 2016-10-28 Added farmsNeedingWorkCache
+    public List<Building> getFarmsNeedingWorkCache() {
+    	return farmsNeedingWorkCache;
+    }
 
     /**
      * Prepare object for garbage collection.
