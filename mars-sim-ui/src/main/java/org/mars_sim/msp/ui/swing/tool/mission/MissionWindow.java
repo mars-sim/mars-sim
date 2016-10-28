@@ -148,7 +148,7 @@ extends ToolWindow {
 				});
 		buttonPane.add(endButton);
 
-		setSize(new Dimension(640, 512));
+		setSize(new Dimension(640, 640));
 		setMaximizable(true);
 		setResizable(false);
 		
@@ -159,7 +159,7 @@ extends ToolWindow {
 		setVisible(true);	
 		//pack();
 		
-		Dimension desktopSize = desktop.getMainScene().getDesktops().get(0).getSize();
+		Dimension desktopSize = desktop.getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;

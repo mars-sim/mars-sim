@@ -134,14 +134,21 @@ ComponentListener {
 		
 		if (desktop.getMainScene() != null)
 			setClosable(false);		
-
+		else {
+			Dimension desktopSize = desktop.getSize();
+		    Dimension jInternalFrameSize = this.getSize();
+		    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+		    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+		    setLocation(width, height);
+		}
+		
 		setSize(new Dimension(1024, 600));
 		setResizable(false);
 		setMaximizable(true);		
 		setVisible(true);
 
 		// Pack window.
-		pack();
+		//pack();
 		
 	}
 

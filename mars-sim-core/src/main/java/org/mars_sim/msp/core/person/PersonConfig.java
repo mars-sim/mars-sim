@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.08 2016-03-01
+ * @version 3.1.0 2016-10-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person;
@@ -652,7 +652,7 @@ implements Serializable {
 				roster.add(c);
 			}		
 			
-			//System.out.println("crewString : " + crewString);	
+			//System.out.println("crewString : " + crewString + "   crew size : " + roster.size());	
 			
 			return roster.size() - 1;
 		}
@@ -670,13 +670,17 @@ implements Serializable {
 		//System.out.println("roster.get(crew_id).getTeam().get(index) : " + roster.get(crew_id).getTeam().get(index));		
 		//System.out.println("name : " + roster.get(crew_id).getTeam().get(index).getName());		
 
-		if (roster.get(crew_id).getTeam().get(index).getName() != null)		
-			return roster.get(crew_id).getTeam().get(index).getName();   //alphaCrewName.get(index) ;
+		if (roster.get(crew_id) != null) {
+			if (roster.get(crew_id).getTeam().get(index).getName() != null)	{	
+				return roster.get(crew_id).getTeam().get(index).getName();   
+			}
+			else {		
+				return getValueAsString(index,NAME);
+			}
+			
+		}
 		else {		
-			String name = getValueAsString(index,NAME);
-			//System.out.println("name : " + name);
-			return name;
-			//return getValueAsString(index,NAME);
+			return getValueAsString(index,NAME);
 		}
 	}
 

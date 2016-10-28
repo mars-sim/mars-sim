@@ -282,34 +282,39 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <groupId>de.codecentric.centerdevice</groupId>
 		    <artifactId>centerdevice-nsmenufx</artifactId>
 		    <version>2.1.4</version>
-		</dependency>
-<!--  
+		</dependency>	
+		
+<!-- for enzo's funmenu --> 		
 		<dependency>
 			<groupId>org.kordamp.ikonli</groupId>
 			<artifactId>ikonli-core</artifactId>
-			<version>1.6.0</version>
+			<version>1.8.0</version>
 			<type>pom</type>
+		</dependency>		
+		<dependency>
+		    <groupId>org.kordamp.ikonli</groupId>
+		    <artifactId>ikonli-material-pack</artifactId>
+		    <version>1.8.0</version>
+		</dependency>		
+		<dependency>
+		    <groupId>org.kordamp.ikonli</groupId>
+		    <artifactId>ikonli-materialdesign-pack</artifactId>
+		    <version>1.8.0</version>
 		</dependency>	
 	    <dependency>
 	        <groupId>org.kordamp.ikonli</groupId>
 	        <artifactId>ikonli-javafx</artifactId>
-	        <version>1.6.0</version>
-	    </dependency>
+	        <version>1.8.0</version>
+	    </dependency>		
+<!-- for enzo's funmenu --> 		
+		
+<!--  
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-fontawesome-pack</artifactId>
-		    <version>1.6.0</version>
+		    <version>1.8.0</version>
 		</dependency>	
-		<dependency>
-		    <groupId>org.kordamp.ikonli</groupId>
-		    <artifactId>ikonli-materialdesign-pack</artifactId>
-		    <version>1.6.0</version>
-		</dependency>	
-		<dependency>
-		    <groupId>org.kordamp.ikonli</groupId>
-		    <artifactId>ikonli-material-pack</artifactId>
-		    <version>1.6.0</version>
-		</dependency>			    					
+		    					
 -->
 	</dependencies>
 	<repositories>
@@ -358,6 +363,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        </snapshots>
 	    </repository> 
 	    <repository>
+	    <!-- jcenter required by ikonli-javafx -->
 	        <id>central</id>
 	        <name>jcenter</name>
 	        <url>http://jcenter.bintray.com</url>

@@ -96,8 +96,8 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  * along with the tool bars, by the main window.
  */
 public class MainDesktopPane
-extends DesktopPane {
-//implements ComponentListener, UnitListener, UnitManagerListener {
+extends DesktopPane 
+implements ComponentListener, UnitListener, UnitManagerListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -232,9 +232,9 @@ extends DesktopPane {
         //threadPoolExecutor.execute(updateThreadTask);
 
 		// 2014-12-26 Added prepareListeners
-		prepareListeners();
+		//prepareListeners();
 		// 2014-12-27 Added prepareWindows
-		prepareWindows();
+		if (mainScene == null)	prepareWindows();
 	   	//logger.info("MainDesktopPane's init() is done ");
 	}
 	

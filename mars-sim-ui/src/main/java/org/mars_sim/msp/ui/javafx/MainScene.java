@@ -7,9 +7,10 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-import static javafx.geometry.Orientation.VERTICAL;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSlider;
+import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 import com.jfoenix.controls.JFXTabPane;
 //import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
@@ -78,6 +79,12 @@ import javafx.beans.property.Property;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ChangeListener;
+import static javafx.geometry.Orientation.VERTICAL;
+import javafx.geometry.Orientation;
+import javafx.event.EventHandler;
+import javafx.scene.input.ScrollEvent;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -131,7 +138,7 @@ import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.javafx.notification.MessagePopup;
 import org.mars_sim.msp.ui.javafx.notification.PNotification;
 import org.mars_sim.msp.ui.javafx.quotation.QuotationPopup;
-import org.mars_sim.msp.ui.steelseries.tools.Orientation;
+//import org.mars_sim.msp.ui.steelseries.tools.Orientation;
 import org.mars_sim.msp.ui.swing.DesktopPane;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -145,6 +152,8 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementTransparentPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
@@ -225,6 +234,7 @@ public class MainScene {
 	private Label timeText, lastSaveText;
 	private Text memUsedText;
 
+	private JFXSlider zoom;
 	private JFXButton miniMapBtn, mapBtn, marsNetButton, menubarButton;
 	private Button memBtn, clkBtn;
 
@@ -544,7 +554,8 @@ public class MainScene {
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
-	public void createFXTabs() {
+	@SuppressWarnings("restriction")
+public void createFXTabs() {
 		jfxTabPane = new JFXTabPane();
 		
 		String cssFile = null;
@@ -596,6 +607,70 @@ public class MainScene {
 		mapNodePane = new StackPane(mapNode);
 		mapNodePane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
+		
+		
+		// Set up a settlement view zoom bar
+		zoom = new JFXSlider();
+		//zoom.setMinHeight(100);
+		//zoom.setMaxHeight(200);
+		zoom.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
+		zoom.setMin(-10);
+		zoom.setMax(10);
+		zoom.setValue(0);
+		zoom.setMajorTickUnit(5);
+		zoom.setShowTickLabels(true);
+		zoom.setShowTickMarks(true);
+		zoom.setBlockIncrement(1);
+		zoom.setOrientation(Orientation.VERTICAL);
+		zoom.setIndicatorPosition(IndicatorPosition.RIGHT);
+		zoom.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.zoom"))); //$NON-NLS-1$	
+		
+		// detect dragging on zoom scroll bar
+        zoom.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov,
+                Number old_val, Number new_val) {
+            	// Change scale of map based on slider position.
+				int sliderValue = (int) new_val.doubleValue();
+				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
+				double newScale = defaultScale;
+				if (sliderValue > 0) {
+					newScale += defaultScale * (double) sliderValue * SettlementTransparentPanel.ZOOM_CHANGE;
+				}
+				else if (sliderValue < 0) {
+					newScale = defaultScale / (1D + ((double) sliderValue * -1D * SettlementTransparentPanel.ZOOM_CHANGE));
+				}
+				settlementWindow.getMapPanel().setScale(newScale);
+            }
+        });   
+        
+        // detect mouse wheel scrolling
+        mapNodePane.setOnScroll(new EventHandler<ScrollEvent>() {
+            public void handle(ScrollEvent event) {
+		                       
+                if (event.getDeltaY() == 0) {
+                    return;
+                }
+                //else
+                //	System.out.println("event.getDeltaY() : " + event.getDeltaY());
+
+ 				double direction = event.getDeltaY();
+ 				
+				if (direction > 0) {
+					// Move zoom slider down.
+					if (zoom.getValue() > zoom.getMin())
+						zoom.setValue( (zoom.getValue() - 1));
+				}
+				else if (direction < 0) {
+					// Move zoom slider up.
+					if (zoom.getValue() < zoom.getMax())
+						zoom.setValue( (zoom.getValue() + 1));
+				}
+
+                event.consume();
+                
+            }
+        });
+		
 		mapBtn = new JFXButton();
 		mapBtn.setTooltip(new Tooltip("Open settlement map below"));
 		mapBtn.setOnAction(e -> {
@@ -611,16 +686,20 @@ public class MainScene {
 			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 				desktop.closeToolWindow(SettlementWindow.NAME);
-				anchorTabPane.getChildren().removeAll(mapNodePane);
+				anchorTabPane.getChildren().removeAll(mapNodePane, zoom);
 			}
 			
 			else {
 						
 				desktop.openToolWindow(SettlementWindow.NAME);
 				mapNode.setContent(settlementWin); 
-		        anchorTabPane.getChildren().addAll(mapNodePane);
+	
+		        AnchorPane.setRightAnchor(zoom, 42.0);
+		        AnchorPane.setTopAnchor(zoom, (mapNodePane.prefHeightProperty().get() - zoom.heightProperty().get())*.4d);    
 		        AnchorPane.setRightAnchor(mapNodePane, 0.0);
-		        AnchorPane.setTopAnchor(mapNodePane, 3.0);  // 45.0          
+		        AnchorPane.setTopAnchor(mapNodePane, 3.0);  // 45.0     
+		        
+		        anchorTabPane.getChildren().addAll(mapNodePane, zoom);
 			}
 			
 		});
@@ -718,39 +797,8 @@ public class MainScene {
 			
 			else if (newTab == mapTab) {
 
-
 				mapBtn.fire();
 				miniMapBtn.fire();
-
-/*				
-				if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-					desktop.closeToolWindow(SettlementWindow.NAME);
-					anchorTabPane.getChildren().removeAll(mapNodePane);
-				}
-
-				else {
-					desktop.openToolWindow(SettlementWindow.NAME);
-					mapNode.setContent(settlementWin); 
-			        anchorTabPane.getChildren().addAll(mapNodePane);
-			        AnchorPane.setRightAnchor(mapNodePane, 0.0);
-			        AnchorPane.setTopAnchor(mapNodePane, 3.0);  
-				}
-
-				
-				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-					desktop.closeToolWindow(NavigatorWindow.NAME);
-					anchorTabPane.getChildren().removeAll(minimapNodePane);
-				}
-
-				else {
-					desktop.openToolWindow(NavigatorWindow.NAME);
-					minimapNode.setContent(navWin); 
-			        anchorTabPane.getChildren().addAll(minimapNodePane);
-			        AnchorPane.setLeftAnchor(minimapNodePane, 3.0);
-			        AnchorPane.setTopAnchor(minimapNodePane, 3.0);
-				}
-*/
-
 
 		        AnchorPane.setRightAnchor(mapBtn, 85.0);
 		        AnchorPane.setTopAnchor(mapBtn, -3.0);     
@@ -1888,6 +1936,10 @@ public class MainScene {
     
     public Scene getScene() {
     	return scene;
+    }
+    
+    public JFXSlider getZoom() {
+    	return zoom;
     }
     
 	public void destroy() {

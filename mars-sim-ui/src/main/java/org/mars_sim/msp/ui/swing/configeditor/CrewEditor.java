@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CrewEditor.java
- * @version 3.08 2015-10-07
+ * @version 3.1.0 2016-10-27
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -224,6 +224,7 @@ public class CrewEditor implements ActionListener {
 
 	public void setUpCrewName() {
 		for (int i = 0 ; i < SIZE_OF_CREW; i++) {
+			int crew_id = pc.getCrew(i);
 			String n = pc.getConfiguredPersonName(i, ALPHA_CREW);
 			//System.out.println(" name is "+ n);
 				JTextField tf = new JTextField();

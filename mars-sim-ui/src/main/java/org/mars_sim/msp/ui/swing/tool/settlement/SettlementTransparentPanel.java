@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTransparentPanel.java
- * @version 3.08 2015-03-28
+ * @version 3.1.0 2016-10-27
  * @author Manny Kung
  */
 
@@ -72,8 +72,10 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.steelseries.gauges.DisplaySingle;
 import org.mars_sim.msp.ui.steelseries.tools.LcdColor;
+import org.mars_sim.msp.ui.swing.DesktopPane;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -84,13 +86,14 @@ public class SettlementTransparentPanel extends JComponent {
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 	/** Zoom change. */
-	private static final double ZOOM_CHANGE = 1D;
+	public static final double ZOOM_CHANGE = 1D;
 
+	private JLabel emptyLabel;
 
 	private JSlider zoomSlider;
-	private JPanel rightPane, borderPane, nameBtnPane, zoomPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ;
+	private JPanel controlCenterPane, controlSouthPane, controlNorthPane, nameBtnPane, eastPane, labelPane, buttonPane, controlPane, settlementPanel, infoP, renameP ;
 	private JButton renameBtn, infoButton;
-	private JLabel zoomLabel;
+	//private JLabel zoomLabel;
 	private JPopupMenu labelsMenu;
 	/** Lists all settlements. */
 	private JComboBoxMW<?> settlementListBox;
@@ -100,13 +103,15 @@ public class SettlementTransparentPanel extends JComponent {
 	private JCustomCheckBoxMenuItem buildingLabelMenuItem, personLabelMenuItem, constructionLabelMenuItem, vehicleLabelMenuItem, robotLabelMenuItem ;
 
 	private SettlementMapPanel mapPanel;
-	private JDesktopPane desktop;
+	private DesktopPane desktop;
+	private MainScene mainScene;
 	//private Settlement settlement;
 
-    public SettlementTransparentPanel(JDesktopPane desktop, SettlementMapPanel mapPanel) {
+    public SettlementTransparentPanel(DesktopPane desktop, SettlementMapPanel mapPanel) {
 
         this.mapPanel = mapPanel;
         this.desktop = desktop;
+        this.mainScene = ((MainDesktopPane) desktop).getMainScene();
 
 		setDoubleBuffered(true);
 
@@ -116,12 +121,26 @@ public class SettlementTransparentPanel extends JComponent {
 
     public void createAndShowGUI() {
 
+	    emptyLabel = new JLabel("  ") {
+	    	@Override
+	    	public Dimension getMinimumSize() {
+	    		return new Dimension(50, 100);
+	    	};
+	    	@Override
+	    	public Dimension getPreferredSize() {
+	    		return new Dimension(50, 100);
+	    	};
+	    };
+	    	
         buildSettlementNameComboBox();
         buildInfoP();
         buildrenameBtn();
 
-        buildZoomLabel();
-        buildZoomSlider();
+	    if (mainScene == null) {
+	        //buildZoomLabel();
+	        buildZoomSlider();
+	    }
+
         buildButtonPane();
         buildLabelPane();
 
@@ -147,6 +166,9 @@ public class SettlementTransparentPanel extends JComponent {
 		box.setOpaque(false);
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);
+	    
+	    mapPanel.add(box, BorderLayout.NORTH);
+	    
 /*
 	    JPanel lcdPanel = new JPanel();
 	    DisplaySingle lcd1 = new DisplaySingle();
@@ -170,38 +192,64 @@ public class SettlementTransparentPanel extends JComponent {
 //    	ComponentMover cmName = new ComponentMover();
 //    	cmName.registerComponent(box);
 
-	    borderPane = new JPanel(new BorderLayout());//new GridLayout(2,1,2,2));
-	    borderPane.setBackground(new Color(0,0,0));//,0));
-		borderPane.setOpaque(false);
-	    controlPane = new JPanel(new GridLayout(2,1,2,2));
+	        
+/*	        
+	    controlNorthPane = new JPanel(new BorderLayout());//new GridLayout(2,1,2,2));
+	    controlNorthPane.setBackground(new Color(0,0,0));//,0));
+		controlNorthPane.setOpaque(false);
+		controlNorthPane.add(emptyLabel, BorderLayout.NORTH);
+		controlNorthPane.add(emptyLabel, BorderLayout.CENTER);
+		controlNorthPane.add(buttonPane, BorderLayout.SOUTH);
+
+		
+	    controlSouthPane = new JPanel(new BorderLayout());//new GridLayout(2,1,2,2));
+	    controlSouthPane.setBackground(new Color(0,0,0));//,0));
+		controlSouthPane.setOpaque(false);
+		controlSouthPane.add(labelPane, BorderLayout.NORTH);
+		controlSouthPane.add(emptyLabel, BorderLayout.CENTER);
+		controlSouthPane.add(emptyLabel, BorderLayout.SOUTH);
+*/
+		
+	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+	    controlCenterPane.setBackground(new Color(0,0,0));//,0));
+	    controlCenterPane.setOpaque(false);
+        controlCenterPane.setPreferredSize(new Dimension(50, 200));
+        controlCenterPane.setSize(new Dimension(50, 200));
+        if (mainScene == null) controlCenterPane.add(zoomSlider);
+        
+	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
 	    controlPane.setBackground(new Color(0,0,0));//,0));
 		controlPane.setOpaque(false);
-	    zoomPane = new JPanel(new GridLayout(3,1,2,2));
-		zoomPane.setBackground(new Color(0,0,0,15));
-		zoomPane.setBackground(new Color(0,0,0));//,0));
-		zoomPane.setOpaque(false);
-	    rightPane = new JPanel(new BorderLayout());
-//		rightPane.setBackground(new Color(0,0,0,15));
-	    rightPane.setBackground(new Color(0,0,0));//,0));
-		rightPane.setOpaque(false);
+	    //controlPane.add(controlNorthPane, BorderLayout.NORTH);
+	    //controlPane.add(controlSouthPane, BorderLayout.SOUTH);
+	    controlPane.add(buttonPane, BorderLayout.NORTH);
+	    controlPane.add(labelPane, BorderLayout.SOUTH);
 
-	    controlPane.add(buttonPane);
-	    controlPane.add(zoomLabel);
-	    borderPane.add(controlPane, BorderLayout.SOUTH);
+	    if (mainScene == null) {
+        	controlPane.add(controlCenterPane, BorderLayout.CENTER);
+	    }
+        else
+        	controlPane.add(emptyLabel, BorderLayout.CENTER);
 
-        zoomPane.add(borderPane);
-        zoomPane.add(zoomSlider);
-        zoomPane.add(labelPane);
+        
+	    eastPane = new JPanel(new BorderLayout());//GridLayout(3,1,10,2));
+		eastPane.setBackground(new Color(0,0,0,15));
+		eastPane.setBackground(new Color(0,0,0));//,0));
+		eastPane.setOpaque(false);
+        eastPane.add(emptyLabel, BorderLayout.EAST);
+        eastPane.add(emptyLabel, BorderLayout.WEST);
+        eastPane.add(emptyLabel, BorderLayout.NORTH);
+        eastPane.add(emptyLabel, BorderLayout.SOUTH);
+        eastPane.add(controlPane, BorderLayout.CENTER);
+        
+		
+        mapPanel.add(eastPane, BorderLayout.EAST);
 
         // Make panel drag-able
 //  		ComponentMover cmZoom = new ComponentMover(zoomPane);
 		//cmZoom.registerComponent(rightPane);
 //		cmZoom.registerComponent(zoomPane);
 
-	    mapPanel.add(box, BorderLayout.NORTH);
-        //mapPanel.add(rightPane, BorderLayout.EAST);
-        //mapPanel.add(zoomPane, BorderLayout.WEST);
-        mapPanel.add(zoomPane, BorderLayout.EAST);
         mapPanel.setVisible(true);
     }
 
@@ -309,23 +357,24 @@ public class SettlementTransparentPanel extends JComponent {
 		    }
 	}
 
-
+/*
     public void buildZoomLabel() {
 
 		zoomLabel = new JLabel(Msg.getString("SettlementTransparentPanel.label.zoom")); //$NON-NLS-1$
 		//zoomLabel.setPreferredSize(new Dimension(60, 20));
-		zoomLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+		zoomLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
 		zoomLabel.setForeground(Color.GREEN);
 		//zoomLabel.setContentAreaFilled(false);
 		zoomLabel.setOpaque(false);
-		zoomLabel.setVerticalAlignment(JLabel.BOTTOM);
+		zoomLabel.setVerticalAlignment(JLabel.CENTER);
 		zoomLabel.setHorizontalAlignment(JLabel.CENTER);
 		//zoomLabel.setBorder(new LineBorder(Color.green, 1, true));
 		//zoomLabel.setBorderPainted(true);
 		zoomLabel.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
 
     }
-
+*/
+	
     public void buildZoomSlider() {
 
         UIDefaults sliderDefaults = new UIDefaults();
@@ -356,6 +405,8 @@ public class SettlementTransparentPanel extends JComponent {
 
         zoomSlider = new JSlider(JSlider.VERTICAL, -10, 10, 0);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        zoomSlider.setPreferredSize(new Dimension(50, 200));
+        zoomSlider.setSize(new Dimension(50, 200));
         zoomSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
         zoomSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
 
@@ -463,7 +514,7 @@ public class SettlementTransparentPanel extends JComponent {
 
     public void buildButtonPane() {
 
-        buttonPane = new JPanel();
+        buttonPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
         buttonPane.setBackground(new Color(0,0,0));//,0));
         buttonPane.setOpaque(false);
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise"))); //$NON-NLS-1$
@@ -491,7 +542,12 @@ public class SettlementTransparentPanel extends JComponent {
 		recenterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				mapPanel.reCenter();
-				zoomSlider.setValue(0);
+				
+				if (mainScene != null) {
+					mainScene.getZoom().setValue(0);
+				}
+				else
+					zoomSlider.setValue(0);
 			}
 		});
 
@@ -513,11 +569,12 @@ public class SettlementTransparentPanel extends JComponent {
 
 		buttonPane.add(rotateCounterClockwiseButton);
 
+		buttonPane.add(emptyLabel);
     }
 
     public void buildLabelPane() {
 
-        labelPane = new JPanel();
+        labelPane = new JPanel(new FlowLayout(FlowLayout.LEADING));
         labelPane.setBackground(new Color(0,0,0));//,0));
 		labelPane.setOpaque(false);
 
@@ -530,7 +587,7 @@ public class SettlementTransparentPanel extends JComponent {
 		labelsButton.setPreferredSize(new Dimension(80, 20));
 		labelsButton.setForeground(Color.green);
 		labelsButton.setOpaque(false);
-		//labelsButton.setVerticalAlignment(JLabel.TOP);
+		labelsButton.setVerticalAlignment(JLabel.CENTER);
 		labelsButton.setHorizontalAlignment(JLabel.CENTER);
 		//labelsButton.setContentAreaFilled(false); more artifact when enabled
 		labelsButton.setBorder(new LineBorder(Color.green, 1, true));
@@ -548,6 +605,8 @@ public class SettlementTransparentPanel extends JComponent {
 
 		labelPane.add(labelsButton);
 
+		
+		labelPane.add(emptyLabel);
 	}
     /*
     class MyCellRenderer extends JLabel implements ListCellRenderer<Object>  {

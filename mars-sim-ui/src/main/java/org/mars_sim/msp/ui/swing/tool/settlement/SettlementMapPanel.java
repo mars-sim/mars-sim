@@ -39,6 +39,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.DesktopPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.SpotlightLayerUI;
@@ -98,7 +99,7 @@ implements ClockListener {
 	/** Constructor 1
 	 * 	A panel for displaying a settlement map.
 	 */
-	public SettlementMapPanel(JDesktopPane desktop, final SettlementWindow settlementWindow) {
+	public SettlementMapPanel(DesktopPane desktop, final SettlementWindow settlementWindow) {
 		super();
 		this.settlementWindow = settlementWindow;
 
@@ -146,7 +147,7 @@ implements ClockListener {
 	}
 
 	// 2015-02-09 Added init()
-	public void init(JDesktopPane desktop) {
+	public void init(DesktopPane desktop) {
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));

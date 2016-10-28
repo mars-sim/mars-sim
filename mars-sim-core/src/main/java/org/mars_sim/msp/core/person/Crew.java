@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * Crew.java
+ * @version 3.1.0 2016-10-27
+ * @author Manny Kung
+ */
 package org.mars_sim.msp.core.person;
 
 import java.io.Serializable;

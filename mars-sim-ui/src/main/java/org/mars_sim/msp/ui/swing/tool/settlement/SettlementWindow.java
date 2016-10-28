@@ -32,6 +32,7 @@ import org.controlsfx.control.StatusBar;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.AngledLinesWindowsCornerIcon;
@@ -88,8 +89,8 @@ extends ToolWindow {
 
 	public static final int TIME_DELAY = 200;
 
-	public static final int HORIZONTAL = 630;
-	public static final int VERTICAL = 590;
+	public static final int HORIZONTAL = 800;//630;
+	public static final int VERTICAL = 600;//590;
 
 	private int sol, cap, pop;
 
@@ -110,6 +111,7 @@ extends ToolWindow {
 
 	/** The main desktop. */
 	private MainDesktopPane desktop;
+	private MainScene mainScene;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
@@ -134,6 +136,7 @@ extends ToolWindow {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
 		this.desktop = desktop;
+		mainScene = desktop.getMainScene();
 
     	if (marsClock == null)
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
@@ -149,7 +152,7 @@ extends ToolWindow {
 	@SuppressWarnings("restriction")
 	public void init() {
 
-		if (desktop.getMainScene() != null) {
+		if (mainScene != null) {
 			//setTitleName(null);
 			// 2016-10-21 Remove title bar
 		    //putClientProperty("JInternalFrame.isPalette", Boolean.TRUE);
@@ -252,9 +255,10 @@ extends ToolWindow {
   
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
 
-		if (desktop.getMainScene() != null) {			
+		if (mainScene != null) {			
 			setSize(new Dimension((int)width.get(), (int)height.get()));
 			setPreferredSize(new Dimension((int)width.get(), (int)height.get()));
+			setMinimumSize(new Dimension(HORIZONTAL/2, VERTICAL/2));
 			setClosable(false);
 			setResizable(true);
 			setMaximizable(true);
@@ -262,6 +266,7 @@ extends ToolWindow {
 		else {
 			setSize(new Dimension(HORIZONTAL, VERTICAL));
 			setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
+			setMinimumSize(new Dimension(HORIZONTAL/2, VERTICAL/2));
 			setClosable(true);
 			setResizable(true);
 			setMaximizable(true);
@@ -269,7 +274,7 @@ extends ToolWindow {
 		
 		setVisible(true);
 
-		//pack();
+		pack();
 
 	}
 
@@ -372,10 +377,12 @@ extends ToolWindow {
 	 */
 	public void updateStatusBarText() {
  
-		if (desktop.getMainScene().isMainSceneDone() && !isBound) {
-			isBound = true;
-			height.bind(desktop.getMainScene().getScene().heightProperty());
-			width.bind(desktop.getMainScene().getScene().widthProperty());	
+		if (mainScene != null) {
+			if (mainScene.isMainSceneDone() && !isBound) {
+				isBound = true;
+				height.bind(mainScene.getScene().heightProperty());
+				width.bind(mainScene.getScene().widthProperty());	
+			}
 		}
 		
 		if (widthCache != width.get() || heightCache != height.get()) {

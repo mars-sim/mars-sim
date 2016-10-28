@@ -155,7 +155,7 @@ implements ListSelectionListener {
 		setVisible(true);	
 		pack();
 		
-		Dimension desktopSize = desktop.getMainScene().getDesktops().get(0).getSize();
+		Dimension desktopSize = desktop.getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;

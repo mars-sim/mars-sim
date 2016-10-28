@@ -116,7 +116,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	private MainScene mainScene;
 	
 	/**
-	 * Constructor 1.
+	 * Constructor 1 for setting up javaFX desktop
 	 * @param mainScene the main scene
 	 */
 	public DesktopPane(MainScene mainScene) {
@@ -148,12 +148,15 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		
 		setPreferredSize(new Dimension(1280, 1024));
 
+		prepareListeners();
 	}
 
 	/**
-	 * Constructor 2.
+	 * Constructor 2 for setting up swing desktop
 	 */
 	public DesktopPane() {
+		
+		initialize();
 	}
 	
 	/** Returns the MainScene instance
@@ -206,6 +209,32 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 	}
 
+	/**
+	 * sets up this class with two listeners
+	 */
+	// 2014-12-19 Added prepareListeners()
+	public void prepareListeners() {
+	   	//logger.info("MainDesktopPane's prepareListeners() is on " + Thread.currentThread().getName() + " Thread");
+
+		// Add addUnitManagerListener()
+		UnitManager unitManager = Simulation.instance().getUnitManager();
+		unitManager.addUnitManagerListener(this);
+
+		// Add addUnitListener()
+		Collection<Settlement> settlements = unitManager.getSettlements();
+		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
+		Settlement settlement = settlementList.get(0);
+		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
+		building = buildings.get(0);
+		//building.addUnitListener(this); // not working
+		Iterator<Settlement> i = settlementList.iterator();
+		while (i.hasNext()) {
+			i.next().addUnitListener(this);
+		}
+
+	   	//logger.info("MainDesktopPane's prepareListeners() is done");
+	}
+	
 	// Additional Component Listener methods implemented but not used.
 	@Override
 	public void componentMoved(ComponentEvent e) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfigEditor.java
- * @version 3.1.0 2016-10-03
+ * @version 3.1.0 2016-10-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -87,6 +87,7 @@ public class SimulationConfigEditor {
 	 * @param owner the owner window.
 	 * @param config the simulation configuration.
 	 */
+	@SuppressWarnings("static-access")
 	public SimulationConfigEditor(SimulationConfig config, MainWindow mainWindow) {
         //logger.info("SimulationConfigEditor's constructor is on " + Thread.currentThread().getName() + " Thread");
 
@@ -97,7 +98,7 @@ public class SimulationConfigEditor {
 
 		try {
 			//UIManager.setLookAndFeel(new NimRODLookAndFeel());
-			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/Snow.theme"));
+			NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("/theme/nimrod.theme"));
 			NimRODLookAndFeel nf = new NimRODLookAndFeel();
 			nf.setCurrentTheme(nt);
 			UIManager.setLookAndFeel(nf);
@@ -138,7 +139,7 @@ public class SimulationConfigEditor {
 		settlementTable.getColumnModel().getColumn(6).setPreferredWidth(50);
 
 		settlementTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
+		//settlementTable.setGridColor(java.awt.Color.ORANGE); // 0,128,0 is green
 		settlementTable.setBackground(java.awt.Color.WHITE);
 
 		// 2015-10-06 Added setTableStyle()
