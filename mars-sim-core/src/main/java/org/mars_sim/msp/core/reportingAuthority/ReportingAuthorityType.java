@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.reportingAuthority;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.medical.ComplaintType;
 
 public enum ReportingAuthorityType {
 
@@ -48,5 +49,15 @@ public enum ReportingAuthorityType {
 		return getName();
 	}
 	
+	public static ReportingAuthorityType fromString(String name) {
+		if (name != null) {
+	    	for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
+	    	  if (name.equalsIgnoreCase(ra.name)) {
+	        	return ra;
+	        }
+	      }
+	    }
+	    return null;
+	}
 
 }

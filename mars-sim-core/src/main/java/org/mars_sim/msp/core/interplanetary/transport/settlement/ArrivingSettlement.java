@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -319,7 +320,7 @@ implements Transportable, Serializable {
 		//List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 		scenarioID = 9; // NOTE: scenarioID will be updated later and NOT important here
 		//System.out.println("ArrivingSettlement.java : createNewSettlement() : scenarioID is " + scenarioID);
-		String sponsor = "Mars Society (MS)";
+		String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
 		
 		Settlement newSettlement = new Settlement(name, scenarioID, template, sponsor, landingLocation, populationNum, numOfRobots);
 		unitManager.addUnit(newSettlement);

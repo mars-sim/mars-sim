@@ -38,7 +38,7 @@ relative-humidity, ventilation)>
 <!ATTLIST template id CDATA #REQUIRED>
 <!ATTLIST template default-population CDATA #REQUIRED>
 <!ATTLIST template number-of-robots CDATA #REQUIRED>
-<!ATTLIST template max-MSD CDATA #REQUIRED>
+<!ATTLIST template sponsor CDATA #REQUIRED>
 <!ELEMENT building (connection-list?)>
 <!ATTLIST building id CDATA #REQUIRED>
 <!ATTLIST building type CDATA #REQUIRED>
@@ -72,11 +72,11 @@ relative-humidity, ventilation)>
 <!ATTLIST resupply-mission name CDATA #REQUIRED>
 <!ATTLIST resupply-mission arrival-time CDATA #REQUIRED>
 <!ELEMENT initial-settlement-list (settlement*)>
-<!ELEMENT settlement (location, population, number-of-robots, max-MSD)>
+<!ELEMENT settlement (location, population, number-of-robots, sponsor)>
 <!ATTLIST settlement name CDATA #REQUIRED>
 <!ATTLIST settlement template CDATA #REQUIRED>
 <!ELEMENT new-arriving-settlement-list (arriving-settlement*)>
-<!ELEMENT arriving-settlement (location, population, number-of-robots, max-MSD)>
+<!ELEMENT arriving-settlement (location, population, number-of-robots, sponsor)>
 <!ATTLIST arriving-settlement name CDATA #REQUIRED>
 <!ATTLIST arriving-settlement template CDATA #REQUIRED>
 <!ATTLIST arriving-settlement arrival-time CDATA #REQUIRED>
@@ -87,8 +87,8 @@ relative-humidity, ventilation)>
 <!ATTLIST population number CDATA #REQUIRED>
 <!ELEMENT number-of-robots EMPTY>
 <!ATTLIST number-of-robots number CDATA #REQUIRED>
-<!ELEMENT max-MSD EMPTY>
-<!ATTLIST max-MSD number CDATA #REQUIRED>
+<!ELEMENT sponsor EMPTY>
+<!ATTLIST sponsor name CDATA #REQUIRED>
 <!ELEMENT settlement-name-list (settlement-name*)>
 <!ELEMENT settlement-name EMPTY>
 <!ATTLIST settlement-name sponsor CDATA #REQUIRED>

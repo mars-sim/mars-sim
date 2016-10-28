@@ -94,9 +94,13 @@ extends TabPanel {
 		infoPanel.add(objectiveNameLabel);
 
 		// Prepare birth location label
-		String objective = person.getReportingAuthority().getMissionAgenda().getObjectiveName();
+		String objective = null;
+		JTextField objectiveTF = new JTextField();
+		if (person.getReportingAuthority() != null) {
+			objective = person.getReportingAuthority().getMissionAgenda().getObjectiveName();
+		}
 		//JLabel objectiveLabel = new JLabel(objective, JLabel.RIGHT);
-		JTextField objectiveTF = new JTextField(Conversion.capitalize(objective));
+		objectiveTF.setText(Conversion.capitalize(objective));
 		objectiveTF.setEditable(false);
 		objectiveTF.setColumns(16);
 		objectiveTF.setCaretPosition(0);

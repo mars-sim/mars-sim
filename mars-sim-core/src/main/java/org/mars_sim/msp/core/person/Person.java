@@ -202,6 +202,8 @@ implements VehicleOperator, MissionMember, Serializable {
         preference = new Preference(this);
         //preference.initializePreference();
 
+        assignReportingAuthority();
+        
         //2016-01-13 Set up chromosomes
         paternal_chromosome = new HashMap<>();
         maternal_chromosome = new HashMap<>();
@@ -213,7 +215,7 @@ implements VehicleOperator, MissionMember, Serializable {
 
         support = getLifeSupportType();
 
-        assignReportingAuthority();
+
     }
 
     
@@ -370,35 +372,34 @@ implements VehicleOperator, MissionMember, Serializable {
     
     // 2016-08-12 Revised assignReportingAuthority()
     public void assignReportingAuthority() {
-
     	if (ra == null) {
 
-    		if (ReportingAuthorityType.CNSA.toString().equals(sponsor)) {
+    		if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CNSA) {
     			ra = new CNSAMissionControl();
     			ra.setMissionAgenda(new FindingMineral());
     			
-    		} else if (ReportingAuthorityType.CSA.toString().equals(sponsor)) {
+    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CSA) {
     	        ra = new CSAMissionControl();
     	        ra.setMissionAgenda(new AdvancingSpaceKnowledge());   
 
-    		} else if (ReportingAuthorityType.ESA.toString().equals(sponsor)) {
+    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ESA) {
     			ra = new ESAMissionControl();
     			ra.setMissionAgenda(new DevelopingSpaceActivity());
 
-    		} else if (ReportingAuthorityType.ISRO.toString().equals(sponsor)) {
+    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ISRO) {
     	        ra = new CSAMissionControl();
     	        ra.setMissionAgenda(new DevelopingAdvancedTechnology());   
 
-    		} else if (ReportingAuthorityType.JAXA.toString().equals(sponsor)) {
+    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.JAXA) {
     			ra = new ESAMissionControl();
     			ra.setMissionAgenda(new ResearchingSpaceApplication());
      			
-    		} else if (ReportingAuthorityType.NASA.toString().equals(sponsor)) {
+    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.NASA) {
      	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
     	        ra = new NASAMissionControl();
     	        ra.setMissionAgenda(new FindingLife());   
      	        
-    		} else if (ReportingAuthorityType.MARS_SOCIETY.toString().equals(sponsor)) { 
+    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.MARS_SOCIETY) {
 	    		ra = new MarsSocietyMissionControl();
 	    		ra.setMissionAgenda(new SettlingMars());
     		}

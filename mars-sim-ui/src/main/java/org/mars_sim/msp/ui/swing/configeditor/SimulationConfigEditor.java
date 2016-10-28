@@ -149,11 +149,13 @@ public class SimulationConfigEditor {
 
 		settlementScrollPane.setViewportView(settlementTable);
 
+/*		
 		JTableHeader header = settlementTable.getTableHeader();
 		header.setFont(new Font("Dialog", Font.BOLD, 12));
 		header.setBackground(new java.awt.Color(0, 167, 212));
 		header.setForeground(java.awt.Color.white);
-
+*/
+		
 		// Create combo box for editing template column in settlement table.
 		TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
 		JComboBoxMW<String> templateCB = new JComboBoxMW<String>();
@@ -517,12 +519,22 @@ public class SimulationConfigEditor {
 		settlement.numOfRobots = determineNewSettlementNumOfRobots(settlement.template);
 		settlement.latitude = determineNewSettlementLatitude();
 		settlement.longitude = determineNewSettlementLongitude();
-		settlement.maxMSD = "0";
-
+		//settlement.maxMSD = "0";
+		settlement.sponsor = determineNewSettlementSponsor();
 
 		return settlement;
 	}
 
+	/**
+	 * Determines the new settlement sponsorship.
+	 * @return the settlement sponsor name.
+	 */
+	private String determineNewSettlementSponsor() {
+
+		return Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$
+	}
+
+	
 	/**
 	 * Determines a new settlement's name.
 	 * @return name.
@@ -685,8 +697,9 @@ public class SimulationConfigEditor {
 		String numOfRobots;
 		String latitude;
 		String longitude;
-		String maxMSD;
-		boolean hasMaxMSD = true;
+		//String maxMSD;
+		//boolean hasMaxMSD = true;
+		String sponsor;
 	}
 
 	/**
@@ -714,7 +727,8 @@ public class SimulationConfigEditor {
 				Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
 				Msg.getString("SimulationConfigEditor.column.longitude"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.hasMSD") //$NON-NLS-1$
+				//Msg.getString("SimulationConfigEditor.column.hasMSD") //$NON-NLS-1$
+				Msg.getString("SimulationConfigEditor.column.sponsor") //$NON-NLS-1$
 			};
 
 			// Load default settlements.
@@ -736,7 +750,8 @@ public class SimulationConfigEditor {
 				info.numOfRobots = Integer.toString(settlementConfig.getInitialSettlementNumOfRobots(x));
 				info.latitude = settlementConfig.getInitialSettlementLatitude(x);
 				info.longitude = settlementConfig.getInitialSettlementLongitude(x);
-				info.maxMSD = "0";
+				//info.maxMSD = "0";
+				info.sponsor = settlementConfig.getInitialSettlementSponsor(x);
 				settlements.add(info);
 			}
 			fireTableDataChanged();
@@ -804,7 +819,7 @@ public class SimulationConfigEditor {
 						result = info.longitude;
 						break;
 					case 6:
-						result = info.hasMaxMSD; //new Boolean(true);
+						result = info.sponsor;//hasMaxMSD; //new Boolean(true);
 						break;
 					case 7:
 
@@ -878,8 +893,9 @@ public class SimulationConfigEditor {
 						break;
 
 					case 6:
-						info.hasMaxMSD =  new Boolean(true); //(Boolean) aValue;
-						info.maxMSD = "1"; // TODO: correct maxMSD should be loaded
+						//info.hasMaxMSD =  new Boolean(true); //(Boolean) aValue;
+						//info.maxMSD = "1"; // TODO: correct maxMSD should be loaded
+						info.sponsor = (String) aValue; //Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$
 						break;
 
 					case 7:

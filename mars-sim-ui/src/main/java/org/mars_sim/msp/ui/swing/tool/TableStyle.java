@@ -176,12 +176,12 @@ public class TableStyle extends ZebraJTable{
     		// see default colors for nimbus 
     		// https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary
     		
-    		//hBack = new Color(57, 105, 138);// (57, 105, 138) is navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
-    		//hFore = new Color(164, 209, 242); // 255, 255, 120 very light yellow
+    		hBack = new Color(57, 105, 138);// (57, 105, 138) is navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
+    		hFore = new Color(164, 209, 242); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(42, 79, 105); //(42, 205, 60) is navy blue; (31, 151, 229); // 139 71 38	sienna4
-    		//selBack = new Color(144, 208, 229); // (144, 208, 229) is pale cyan; (70, 130, 180) is steelblue/dark sky blue
-    		//selFore = new Color(255, 255, 255); // (86, 105, 119) is grey blue; (133, 164, 242) is very pale light blue; 255 255 224 is LightYellow1
+    		selBack = new Color(144, 208, 229); // (144, 208, 229) is pale cyan; (70, 130, 180) is steelblue/dark sky blue
+    		selFore = new Color(255, 255, 255); // (86, 105, 119) is grey blue; (133, 164, 242) is very pale light blue; 255 255 224 is LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.LIGHT_GRAY;
     		
@@ -190,18 +190,18 @@ public class TableStyle extends ZebraJTable{
     	}
 
     	else if (theme == 7) { // standard nimrod
-    		//hBack = new Color(101,75,0); // (229, 171, 0) is bright yellow orange // 205, 133, 63 mud orange
-    		//hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
+    		hBack = new Color(101,75,0); // (229, 171, 0) is bright yellow orange // 205, 133, 63 mud orange
+    		hFore = new Color(255, 255, 120); // 255, 255, 120 very light yellow
     		back = new Color(255, 255, 255);
     		fore = new Color(139, 71, 38); // 139 71 38	sienna4
-    		//selBack = new Color(189,183,107); // 189,183,107 darkkhaki
-    		//selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
+    		selBack = new Color(189,183,107); // 189,183,107 darkkhaki
+    		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
     		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
     		border = Color.orange;
     		themeName = "Mud Orange"; //Standard Nimrod";
     	}
 
-/*
+
 	    // Get the TableColumn header to display sorted column
 	    theHeader = table.getTableHeader();
 	    theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
@@ -214,7 +214,7 @@ public class TableStyle extends ZebraJTable{
 		if (hFore != null) theHeader.setForeground(hFore);
 	
 		theHeader.repaint();	
-*/
+
 	/*
 			JTableHeader tableHeader = table.getTableHeader();
 		    if (tableHeader != null) {

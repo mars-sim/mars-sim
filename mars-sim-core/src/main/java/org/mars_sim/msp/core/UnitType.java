@@ -13,7 +13,8 @@ public enum UnitType {
 	PERSON ("UnitType.person"),
 	VEHICLE ("UnitType.vehicle"),
 	EQUIPMENT ("UnitType.equipment"),
-	ROBOT ("UnitType.robot");
+	ROBOT ("UnitType.robot"),
+	BUILDING ("UnitType.building");
 
 	private String msgKey;
 

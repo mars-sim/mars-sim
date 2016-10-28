@@ -118,7 +118,7 @@ public class SettlementTableModel extends AbstractTableModel {
 			info.longitude = settlementConfig.getInitialSettlementLongitude(x);
 			//info.hasMaxMSD = new Boolean(true);
 			//if (info.hasMaxMSD) // if the checkbox for hasMaxMSD is checked
-			info.maxMSD = Integer.toString(settlementConfig.getInitialSettlementMaxMSD(x));
+			//info.maxMSD = Integer.toString(settlementConfig.getInitialSettlementMaxMSD(x));
 			//else
 			//	info.maxMSD = Integer.toString(0);
 			settlements.add(info);

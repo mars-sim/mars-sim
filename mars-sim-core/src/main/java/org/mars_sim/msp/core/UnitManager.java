@@ -869,37 +869,37 @@ public class UnitManager implements Serializable {
 						List<String> male_first_list = new ArrayList<>();
 						List<String> female_first_list = new ArrayList<>();
 		
-						if (ReportingAuthorityType.CNSA.toString().equals(sponsor)) {
+						if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CNSA) {
 							last_list = lastNames.get(0);
 							male_first_list = maleFirstNames.get(0);
 							female_first_list = femaleFirstNames.get(0);
 			    			
-						} else if (ReportingAuthorityType.CSA.toString().equals(sponsor)) {
+						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CSA) {
 							last_list = lastNames.get(1);
 							male_first_list = maleFirstNames.get(1);
 							female_first_list = femaleFirstNames.get(1);
 	
-						} else if (ReportingAuthorityType.ESA.toString().equals(sponsor)) {
+						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ESA) {
 							last_list = lastNames.get(2);
 							male_first_list = maleFirstNames.get(2);
 							female_first_list = femaleFirstNames.get(2);
 	
-						} else if (ReportingAuthorityType.ISRO.toString().equals(sponsor)) {
+						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ISRO) {
 							last_list = lastNames.get(3);
 							male_first_list = maleFirstNames.get(3);
 							female_first_list = femaleFirstNames.get(3);
 	
-						} else if (ReportingAuthorityType.JAXA.toString().equals(sponsor)) {
+						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.JAXA) {
 							last_list = lastNames.get(4);
 							male_first_list = maleFirstNames.get(4);
 							female_first_list = femaleFirstNames.get(4);
 	
-			    		} else if (ReportingAuthorityType.NASA.toString().equals(sponsor)) {
+			    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.NASA) {
 							last_list = lastNames.get(5);
 							male_first_list = maleFirstNames.get(5);
 							female_first_list = femaleFirstNames.get(5);
 	
-						} else if (ReportingAuthorityType.RKA.toString().equals(sponsor)) {
+						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.RKA) {
 							last_list = lastNames.get(6);
 							male_first_list = maleFirstNames.get(6);
 							female_first_list = femaleFirstNames.get(6);

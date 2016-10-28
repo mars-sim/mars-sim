@@ -43,9 +43,9 @@
 		<!-- See http://www.marssociety.org/home/about/mars-direct for more info. -->
 		<!-- default-population: the default population capacity for the template. -->
 		<!-- number-of-robots: the default number of robots for the template. -->
-		<!-- max-MSD: the maximum number of Mars Society delegate for the template. -->
+		<!-- sponsor: the name of the sponsoring organization for the template. -->
 		<template id="0" name="Mars Direct Base (Phase 1)" default-population="4" number-of-robots="2"
-		    max-MSD="1">
+		    sponsor="Mars Society (MS)">
 
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
@@ -180,7 +180,7 @@
 			</resupply>
 		</template>
 
-		<template id="1" name="Mars Direct Base (Phase 2)" default-population="8" number-of-robots="4" max-MSD="2">
+		<template id="1" name="Mars Direct Base (Phase 2)" default-population="8" number-of-robots="4" sponsor="Mars Society (MS)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -354,7 +354,7 @@
 			</resupply>
 		</template>
 
-		<template id="2" name="Mars Direct Base (Phase 3)" default-population="12" number-of-robots="6"  max-MSD="3">
+		<template id="2" name="Mars Direct Base (Phase 3)" default-population="12" number-of-robots="6"  sponsor="Mars Society (MS)">
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="0.0" y-location="4.5" />
@@ -553,7 +553,7 @@
 			</resupply>
 		</template>
 
-		<template id="3" name="Alpha Base (MD Phase 4)" default-population="24" number-of-robots="12"  max-MSD="4">
+		<template id="3" name="Alpha Base (MD Phase 4)" default-population="24" number-of-robots="12"  sponsor="Mars Society (MS)">
 
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
@@ -850,7 +850,7 @@
 			<part-package name="package 4" number="1" />
 		</template>
 
-		<template id="4" name="Trading Outpost" default-population="4" number-of-robots="2"  max-MSD="0">
+		<template id="4" name="Trading Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -981,7 +981,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 
-		<template id="5" name="Mining Outpost" default-population="4" number-of-robots="2"  max-MSD="0">
+		<template id="5" name="Mining Outpost" default-population="4" number-of-robots="2"  sponsor="Mars Society (MS)">
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
@@ -1136,14 +1136,18 @@
 			<location longitude="0.0 W" latitude="0.0 N" />
 			<population number="24" />
 			<number-of-robots number="12" />
-			<max-MSD number="1" />
+			<!--max-MSD number="1" / -->
+			<sponsor name="Mars Society (MS)"/>
+			
 		</settlement>
 
 		<settlement name="Schiaparelli Point" template="Mars Direct Base (Phase 1)">
 			<location longitude="16.0 E" latitude="3.0 S" />
 			<population number="4" />
 			<number-of-robots number="2" />
-			<max-MSD number="4" />
+			<!--max-MSD number="4" / -->
+			<sponsor name="Mars Society (MS)"/>
+
 		</settlement>
 
 	</initial-settlement-list>
@@ -1155,6 +1159,7 @@
 			<location longitude="10.3 W" latitude="4.6 S" />
 			<population number="4" />
 			<number-of-robots number="2" />
+			<sponsor name="Mars Society (MS)"/>
 		</arriving-settlement>
 		-->
 	</new-arriving-settlement-list>

@@ -31,17 +31,19 @@ public class Conversion {
 	    StringBuilder titleCase = new StringBuilder();
 	    boolean nextTitleCase = true;
 
-	    for (char c : input.toCharArray()) {
-	        if (Character.isSpaceChar(c) || c == '(' ) {
-	            nextTitleCase = true;
-	        } else if (nextTitleCase) {
-	            c = Character.toTitleCase(c);
-	            nextTitleCase = false;
-	        }
-
-	        titleCase.append(c);
+	    if (input != null) {
+		    for (char c : input.toCharArray()) {
+		        if (Character.isSpaceChar(c) || c == '(' ) {
+		            nextTitleCase = true;
+		        } else if (nextTitleCase) {
+		            c = Character.toTitleCase(c);
+		            nextTitleCase = false;
+		        }
+	
+		        titleCase.append(c);
+		    }
 	    }
-
+	    
 	    return titleCase.toString();
 	}
 

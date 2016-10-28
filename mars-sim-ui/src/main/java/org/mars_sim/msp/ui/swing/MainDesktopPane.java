@@ -844,7 +844,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		} catch (java.beans.PropertyVetoException e) {}
 
 			
-		mainScene.getJFXTabPane().getSelectionModel().select(0);
+		if (mainScene != null) 
+			mainScene.getJFXTabPane().getSelectionModel().select(0);
 
 		playSound(unit);
 

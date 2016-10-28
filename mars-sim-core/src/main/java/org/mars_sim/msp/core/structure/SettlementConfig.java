@@ -75,8 +75,8 @@ implements Serializable {
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
 
 	// 2015-10-03 Added MAX_MSD and MSD_NUMBER
-	private static final String MAX_MSD = "max-MSD";
-	private static final String MSD_NUMBER = "number";
+	//private static final String SPONSOR = "max-MSD";
+	//private static final String NAME = "number";
 
 	// Random value indicator.
 	public static final String RANDOM = "random";
@@ -418,16 +418,23 @@ implements Serializable {
 			}
 			initialSettlement.numOfRobots = numOfRobots;
 
+/*			
 			// 2015-10-04 Added MSD element
-			Element maxMSDElement = settlementElement.getChild(MAX_MSD);
-			String maxMSDStr = maxMSDElement.getAttributeValue(MSD_NUMBER);
+			Element maxMSDElement = settlementElement.getChild(SPONSOR);
+			String maxMSDStr = maxMSDElement.getAttributeValue(NAME);
 			int maxMSD = Integer.parseInt(maxMSDStr);
 			//System.out.println("loadInitialSettlements() : maxMSD is "+maxMSD);
 			if (number < 0) {
 				throw new IllegalStateException("The maximum number of Mars Society delegate cannot be less than zero: " + number);
 			}
 			initialSettlement.maxMSD = maxMSD;
+*/
+			
+			Element sponsorElement = settlementElement.getChild(SPONSOR);
+			String sponsor = sponsorElement.getAttributeValue(NAME);
+			initialSettlement.sponsor = sponsor;
 
+			
 
 			initialSettlements.add(initialSettlement);
 		}
@@ -485,7 +492,7 @@ implements Serializable {
 				throw new IllegalStateException("numOfRobots cannot be less than zero: " + number);
 			}
 			arrivingSettlement.numOfRobots = number;
-
+/*
 			Element maxMSDElement = settlementElement.getChild(MAX_MSD);
 			String maxMSDStr = populationElement.getAttributeValue(MSD_NUMBER);
 			int maxMSD = Integer.parseInt(numOfRobotsStr);
@@ -493,7 +500,13 @@ implements Serializable {
 				throw new IllegalStateException("maxMSD cannot be less than zero: " + number);
 			}
 			arrivingSettlement.maxMSD = number;
+*/
+			
+			Element sponsorElement = settlementElement.getChild(SPONSOR);
+			String sponsor = sponsorElement.getAttributeValue(NAME);
+			arrivingSettlement.sponsor = sponsor;
 
+			
 			newArrivingSettlements.add(arrivingSettlement);
 		}
 	}
@@ -842,7 +855,7 @@ implements Serializable {
 	 * Gets the maximum number of Mars Society delegates for an initial settlement.
 	 * @param index the index of the initial settlement.
 	 * @return number of delegates.
-	 */
+
 	// 2015-10-03 Added loading getInitialSettlementMaxMSD()
 	public int getInitialSettlementMaxMSD(int index) {
 		if ((index >= 0) && (index < initialSettlements.size())) {
@@ -852,7 +865,8 @@ implements Serializable {
 		}
 		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
-
+	 */
+	
 	/**
 	 * Gets a list of possible settlement names.
 	 * @return list of settlement names as strings
@@ -904,7 +918,7 @@ implements Serializable {
 
 	    settlement.latitude = latitude;
 	    settlement.longitude = longitude;
-	    settlement.maxMSD = maxMSD;
+	    //settlement.maxMSD = maxMSD;
 	    initialSettlements.add(settlement);
 
 	}
@@ -934,17 +948,19 @@ implements Serializable {
 	implements Serializable {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		private String name;
 		private boolean randomName = false;
+		private boolean randomLongitude = false;
+		private boolean randomLatitude = false;
+		
+		private String name;
 		private String template;
 		private String longitude;
-		private boolean randomLongitude = false;
 		private String latitude;
-		private boolean randomLatitude = false;
 		private int populationNumber;
 		private int numOfRobots;		
-		private String sponsor = "Mars Society (MS)";
-		private int maxMSD;
+		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
+		
+		//private int maxMSD;
 		private int scenarioID;
 	}
 
@@ -955,18 +971,20 @@ implements Serializable {
 	implements Serializable {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		private String name;
 		private boolean randomName = false;
+		private boolean randomLongitude = false;
+		private boolean randomLatitude = false;
+		
+		private String name;
 		private String template;
 		private double arrivalTime;
 		private String longitude;
-		private boolean randomLongitude = false;
 		private String latitude;
-		private boolean randomLatitude = false;
 		private int populationNumber;
 		private int numOfRobots;
-		private String sponsor = "Mars Society (MS)";
-		private int maxMSD;
+		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
+
+		//private int maxMSD;
 		private int scenarioID;
 	}
 }
