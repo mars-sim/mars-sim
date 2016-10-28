@@ -315,6 +315,7 @@ implements ClockListener {
     	        	//setComponentPopupMenu(menu);
     	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		        }
+				repaint();
 		    }
 		}// end of class PopClickListener
 

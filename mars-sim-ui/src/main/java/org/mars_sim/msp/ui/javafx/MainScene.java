@@ -786,7 +786,11 @@ public void createFXTabs() {
 		jfxTabPane.getTabs().addAll(mainTab, mapTab, monTab, missionTab, resupplyTab, scienceTab, guideTab);	
 		
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
-			if (newTab == monTab) {	
+			if (newTab == mainTab) {	
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			}
+			
+			else if (newTab == monTab) {	
 				if (!desktop.isToolWindowOpen(MonitorWindow.NAME)) {
 					desktop.openToolWindow(MonitorWindow.NAME);
 					//monNode.setContent(monWin); 
@@ -796,17 +800,29 @@ public void createFXTabs() {
 			}
 			
 			else if (newTab == mapTab) {
+				
+				if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {			       
+					mapBtn.fire();
+				}
 
-				mapBtn.fire();
-				miniMapBtn.fire();
+				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {				       
+					miniMapBtn.fire();
+				}
+				
 
-		        AnchorPane.setRightAnchor(mapBtn, 85.0);
-		        AnchorPane.setTopAnchor(mapBtn, -3.0);     
-
-		        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
-		        AnchorPane.setTopAnchor(miniMapBtn, -3.0);   
-		        
-		        anchorDesktopPane.getChildren().addAll(miniMapBtn, mapBtn);
+				boolean found0 = false;
+				for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
+			        if (node == mapBtn || node == miniMapBtn) 
+			        	found0 = true;
+			    }
+				
+				if (!found0) {
+					AnchorPane.setRightAnchor(mapBtn, 85.0);
+					AnchorPane.setTopAnchor(mapBtn, -3.0);   
+			        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
+			        AnchorPane.setTopAnchor(miniMapBtn, -3.0);  
+			        anchorDesktopPane.getChildren().addAll(miniMapBtn, mapBtn);
+				}
 
 			}
 			
