@@ -1,10 +1,10 @@
 /**
  * Mars Simulation Project
- * TaskManager.java
+ * BotTaskManager.java
  * @version 3.08 2015-02-11
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.person.ai.task;
+package org.mars_sim.msp.core.robot.ai.task;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -22,6 +22,13 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunctionEVA;
+import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.TaskPhase;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
 import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.robot.Robot;
@@ -38,19 +45,19 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  *
  * There is one instance of TaskManager per person.
  */
-public class TaskManager
+public class BotTaskManager
 implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
+	private static Logger logger = Logger.getLogger(BotTaskManager.class.getName());
 
 	// Data members
 	private String taskNameCache = "", taskDescriptionCache = "", taskPhaseCache = "";
 	private String oldJob = "";
-	/** The current task the person/robot is doing. */
+	/** The current task the robot is doing. */
 	private Task currentTask, lastTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
@@ -64,29 +71,29 @@ implements Serializable {
 	private transient List<MetaTask> mtListCache;
 	private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
 	
-	private Person person = null;
+	private Robot robot = null;
 
 	/**
 	 * Constructor.
-	 * @param mind the mind that uses this task manager.
+	 * @param botMind the mind that uses this bot task manager.
 	 */
-	public TaskManager(Mind mind) {
+	public BotTaskManager(BotMind botMind) {
 		// Initialize data members
-		this.mind = mind;
+		this.botMind = botMind;
 
-		this.person = mind.getPerson();
+		this.robot = botMind.getRobot();
 
 		currentTask = null;
 
 		// Initialize cache values.
 		timeCache = null;
-		taskProbCache = new HashMap<MetaTask, Double>();
+		taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getRobotMetaTasks().size());
 		totalProbCache = 0D;
-		
+	
 		if (Simulation.instance().getMasterClock() != null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // marsClock won't pass maven test
 	}
-
+	
 	/**
 	 * Returns true if person has an active task.
 	 * @return true if person has an active task
@@ -175,8 +182,7 @@ implements Serializable {
 		currentTask.endTask();
 		currentTask = null;
 
-		person.fireUnitUpdate(UnitEventType.TASK_EVENT);
-
+		robot.fireUnitUpdate(UnitEventType.TASK_EVENT);
 	}
 
 	/*
@@ -201,10 +207,9 @@ implements Serializable {
 					taskPhase = getPhase().getName();
 
 					if (!taskPhase.equals(taskPhaseCache)) {
-
+			
 						if (!taskDescription.equals(""))
-							person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
-
+							robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);			
 
 						taskDescriptionCache = taskDescription;
 						taskPhaseCache = taskPhase;
@@ -214,9 +219,8 @@ implements Serializable {
 				else {
 
 					if (!taskDescription.equals(""))
-						person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
-
-
+						robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+				
 					taskDescriptionCache = taskDescription;
 				}
 			}
@@ -252,7 +256,8 @@ implements Serializable {
 			//	lastTask = currentTask;
 		}
 
-		person.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+
+		robot.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
 
 	}
 
@@ -261,15 +266,8 @@ implements Serializable {
 	 * @param time the passing time (
 	 */
     public void reduceEnergy(double time) {
-    	PhysicalCondition health = person.getPhysicalCondition();
-//			int ACTIVITY_FACTOR = 6;
-//			double newTime = ACTIVITY_FACTOR * time ;
-//			health.reduceEnergy(newTime);
-			// Changing reduce energy to be just time as it otherwise
-			// ends up being too much energy reduction compared to the
-			// amount gained from eating.
-		health.reduceEnergy(time);
-
+    	SystemCondition sys = robot.getSystemCondition();
+		sys.reduceEnergy(time);
 
     }
 
@@ -393,41 +391,44 @@ implements Serializable {
 	 */
 	private void checkForEmergency() {
 
-		if (person != null) {
+		//if (robot != null) {
+/*
 			// Check for emergency malfunction.
-			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(person)) {
+			if (RepairEmergencyMalfunction.hasEmergencyMalfunction(robot)) {
 
-			    // Check if person is already repairing an emergency.
+			    // Check if robot is already repairing an emergency.
 			    boolean hasEmergencyRepair = doingEmergencyRepair();
 
-				// Check if person is performing an airlock task.
+				// Check if robot is performing an airlock task.
 				boolean hasAirlockTask = doingAirlockTask();
 
-				// Check if person is outside.
-				boolean isOutside = person.getLocationSituation() == LocationSituation.OUTSIDE;
+				// Check if robot is outside.
+				boolean isOutside = robot.getLocationSituation() == LocationSituation.OUTSIDE;
 
 				// Cancel current task and start emergency repair task.
 				if (!hasEmergencyRepair && !hasAirlockTask && !isOutside) {
 
-					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(person)) {
+					if (RepairEmergencyMalfunctionEVA.requiresEVARepair(robot)) {
 
-			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(person)) {
+			            if (RepairEmergencyMalfunctionEVA.canPerformEVA(robot)) {
 
-			                logger.fine(person + " cancelling task " + currentTask +
+			                logger.fine(robot + " cancelling task " + currentTask +
 			                        " due to emergency EVA repairs.");
 			                clearTask();
-			                addTask(new RepairEmergencyMalfunctionEVA(person));
+			                addTask(new RepairEmergencyMalfunctionEVA(robot));
 			            }
+			            
 					}
 					else {
-					    logger.fine(person + " cancelling task " + currentTask +
+					    logger.fine(robot + " cancelling task " + currentTask +
 		                        " due to emergency repairs.");
 		                clearTask();
-					    addTask(new RepairEmergencyMalfunction(person));
+					    addTask(new RepairEmergencyMalfunction(robot));
 					}
 				}
 			}
-		}
+*/
+		//}
 	}
 
 	/**
@@ -444,10 +445,8 @@ implements Serializable {
 		double totalProbability = getTotalTaskProbability(true);
 
 		if (totalProbability == 0D) {
-
-			throw new IllegalStateException(mind.getPerson() +
+			throw new IllegalStateException(botMind.getRobot() +
 						" has zero total task probability weight.");
-
 		}
 
 
@@ -466,13 +465,14 @@ implements Serializable {
 				r -= probWeight;
 			}
 		}
+		
 		if (selectedMetaTask == null) {
-			throw new IllegalStateException(mind.getPerson() +
-						" could not determine a new task.");
+			throw new IllegalStateException(botMind.getRobot() +
+							" could not determine a new task.");
 
-		} else {
-			
-			result = selectedMetaTask.constructInstance(mind.getPerson());
+		} 
+		else {
+				result = selectedMetaTask.constructInstance(botMind.getRobot());
 		}
 		// Clear time cache.
 		timeCache = null;
@@ -495,157 +495,32 @@ implements Serializable {
 	 * Calculates and caches the probabilities.
 	 */
 	private void calculateProbability() {
-		if (person != null) {
 
-		    List<MetaTask> mtList = null;
+		List<MetaTask> mtList = MetaTaskUtil.getRobotMetaTasks();
 
-		    if (timeCache == null)
-		    	timeCache = Simulation.instance().getMasterClock().getMarsClock();
-		    int millisols =  (int) timeCache.getMillisol();
+		if (taskProbCache == null)
+			taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
 
-		    boolean isOnCall = person.getTaskSchedule().getShiftType().equals(ShiftType.ON_CALL);
-		    boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
-		    boolean isShiftHour = true;
+		// Clear total probabilities.
+		totalProbCache = 0D;
+		// Determine probabilities.
+		Iterator<MetaTask> i = mtList.iterator();
 
-/*		    
-		    //2016-10-04 Checked if the job is changed
-		    List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
-		    String newJob = "";
-		    boolean jobChanged = false;
-		    int num = list.size();
-		    if (num == 0) {
-		    	System.out.println(" list is zero");
-		    }
-		    else {
-			    newJob = person.getJobHistory().getJobAssignmentList().get(num-1).getJobType();
-			    //System.out.println("newJob is " + newJob);
-			    if (!oldJob.equals(newJob)) {
-			    	jobChanged = true;
-			    	oldJob = newJob;
-			    }
-		    }
+		while (i.hasNext()) {
+			MetaTask metaTask = i.next();
+			double probability = 0;
 
-		    List<MetaTask> newAnyHourTasks, newNonWorkTasks, newWorkTasks;
-		    // if there's a job change, do the following
-		    //if (jobChanged) {
-		    //	newAllWorkTasks = MetaTaskUtil.getAllWorkHourTasks();
-		    //	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
-		    //	oldAllWorkTasks = newAllWorkTasks;
-		    //	oldNonWorkTasks = newNonWorkTasks;
-		    //}		    	
-		    //else {	    	
-		    //}
-		    
-		    if (isOnCall) {
-		    	if (jobChanged) {
-			    	newAnyHourTasks = MetaTaskUtil.getAnyHourTasks();
-		    		if (newAnyHourTasks != null)
-		    			oldAnyHourTasks = newAnyHourTasks;
-		    	}
-		    	mtList = oldAnyHourTasks;
-		    	//mtList = MetaTaskUtil.getAllWorkHourTasks();
-		    }
-		    else if (isOff) {
-		    	if (jobChanged) {
-			    	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
-		    		if (newNonWorkTasks != null)
-		    			oldNonWorkTasks = newNonWorkTasks;
-		    	}
-		    	mtList = oldNonWorkTasks;
-		    	//mtList = MetaTaskUtil.getNonWorkHourTasks();
-		    }
-		    else {
-		    	// is the person off the shift ?
-		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
+			probability = metaTask.getProbability(robot);
 
-			    if (isShiftHour) {
-			    	if (jobChanged) {
-				    	newWorkTasks = MetaTaskUtil.getWorkHourTasks();
-			    		if (newWorkTasks != null)
-			    			oldWorkTasks = newWorkTasks;
-			    	}
-			    	mtList = oldWorkTasks;
-			    	//mtList = MetaTaskUtil.getWorkHourTasks();
-			    }
-			    else {
-			    	if (jobChanged) {
-				    	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
-			    		if (newNonWorkTasks != null)
-			    			oldNonWorkTasks = newNonWorkTasks;
-			    	}
-			    	mtList = oldNonWorkTasks;
-			    	//mtList = MetaTaskUtil.getNonWorkHourTasks();
-			    }
-		    }
-*/		    
-		    
-		    if (isOnCall) {
-		    	mtList = MetaTaskUtil.getAnyHourTasks();
-		    }
-		    else if (isOff) {
-		    	mtList = MetaTaskUtil.getNonWorkHourTasks();
-		    }
-		    else {
-		    	// is the person off the shift ?
-		    	isShiftHour = person.getTaskSchedule().isShiftHour(millisols);
-
-			    if (isShiftHour) {
-			    	mtList = MetaTaskUtil.getWorkHourTasks();
-			    }
-			    else {
-			    	mtList = MetaTaskUtil.getNonWorkHourTasks();		    	
-			    }
-		    }
-		    
-		    //if (mtList == null)
-		    	//System.out.println("mtList is null");
-	    	
-		    if (mtListCache != mtList && mtList != null) {
-		    	//System.out.println("mtListCache : " + mtListCache);
-		    	//System.out.println("mtList : " + mtList);
-		    	mtListCache = mtList;
-		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-		    }
-/*		    
-			if (taskProbCache == null) {
-		    	System.out.println("mtListCache : " + mtListCache);
-		    	System.out.println("mtList : " + mtList);
-		    	taskProbCache = new HashMap<MetaTask, Double>(mtList.size());
+			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
+				taskProbCache.put(metaTask, probability);
+				totalProbCache += probability;
 			}
+			else {
+				taskProbCache.put(metaTask, 0D);
 
-
-			// Note: one cannot compare the difference between two lists with .equals() 
-		    if (mtListCache == null || !mtListCache.equals(mtList)) {
-		    	System.out.println("mtListCache : " + mtListCache);
-		    	System.out.println("mtList : " + mtList);
-		    	taskProbCache = null;
-		    	mtListCache = mtList;
-		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
-		    }
-
-		    //System.out.println("mtListCache is "+ mtListCache);
-*/
-			// Clear total probabilities.
-			totalProbCache = 0D;
-			// Determine probabilities.
-			Iterator<MetaTask> i = mtListCache.iterator();
-
-			while (i.hasNext()) {
-				MetaTask metaTask = i.next();
-				double probability = 0;
-
-				probability = metaTask.getProbability(person);
-
-				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-					taskProbCache.put(metaTask, probability);
-					totalProbCache += probability;
-				}
-				else {
-					taskProbCache.put(metaTask, 0D);
-
-					logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() +
-								" probability: " + probability);
-				}
+				logger.severe(botMind.getRobot().getName() + " bad task probability: " +  metaTask.getName() +
+							" probability: " + probability);
 			}
 		}
 
@@ -674,7 +549,7 @@ implements Serializable {
 		}
 		mind = null;
 		botMind = null;
-		person = null;
+		robot = null;
 		timeCache = null;
 		marsClock = null;
 		if (taskProbCache != null) {

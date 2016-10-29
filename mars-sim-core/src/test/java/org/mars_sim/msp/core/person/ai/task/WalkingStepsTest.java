@@ -11,11 +11,13 @@ import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -87,6 +89,9 @@ public class WalkingStepsTest extends TestCase {
         connectorManager.addBuildingConnection(new BuildingConnector(building1, 
                 -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
         
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+
         Person person = new Person("test person", PersonGender.MALE, true,"Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
@@ -154,7 +159,9 @@ public class WalkingStepsTest extends TestCase {
         building1.setYLocation(0D);
         building1.setFacing(270D);
         buildingManager.addBuilding(building1, false);
-        
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+ 
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
@@ -219,7 +226,9 @@ public class WalkingStepsTest extends TestCase {
         
         BuildingAirlock airlock1 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock1));
-        
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+      
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
@@ -292,7 +301,9 @@ public class WalkingStepsTest extends TestCase {
         
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
-        
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+       
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
@@ -360,8 +371,10 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
-        
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+               
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -369,6 +382,7 @@ public class WalkingStepsTest extends TestCase {
         building0.removeFunction(eva);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, null);
+        
         assertNotNull(walkingSteps);
         
         assertFalse(walkingSteps.canWalkAllSteps());
@@ -408,16 +422,21 @@ public class WalkingStepsTest extends TestCase {
         building0.setXLocation(0D);
         building0.setYLocation(0D);
         building0.setFacing(0D);
-        buildingManager.addBuilding(building0, false);
-        
+  
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+                   
+        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society (MS)");
+        person.setXLocation(0D);
+        person.setYLocation(0D);
+        BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
         
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
-        
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -487,7 +506,9 @@ public class WalkingStepsTest extends TestCase {
         
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
-        
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+      
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(15D);
         person.setYLocation(-10D);
@@ -562,6 +583,8 @@ public class WalkingStepsTest extends TestCase {
         
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
         
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
@@ -637,6 +660,8 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
         
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
@@ -688,6 +713,8 @@ public class WalkingStepsTest extends TestCase {
         
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
         
         Rover rover1 = new Rover("Test Rover 1", "Explorer Rover", settlement);
         rover1.setParkedLocation(15D, -10D, 0D);
@@ -775,6 +802,8 @@ public class WalkingStepsTest extends TestCase {
                 new Point2D[] { parkingLocation });
         building0.addFunction(garage);
         garage.addVehicle(rover);
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
         
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(4D);
@@ -847,6 +876,8 @@ public class WalkingStepsTest extends TestCase {
                 new Point2D[] { parkingLocation });
         building0.addFunction(garage);
         garage.addVehicle(rover);
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
         
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
@@ -911,6 +942,8 @@ public class WalkingStepsTest extends TestCase {
         
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
         
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(50D);
@@ -979,14 +1012,16 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
-        
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+       
         Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
         person.setXLocation(0D);
         person.setYLocation(0D);
         settlement.getInventory().retrieveUnit(person);
         
         building0.removeFunction(eva);
-        
+     
         WalkingSteps walkingSteps = new WalkingSteps(person, 3D, 3D, building0);
         assertNotNull(walkingSteps);
         
@@ -1031,7 +1066,9 @@ public class WalkingStepsTest extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         EVA eva = new EVA(building0, airlock0);
         building0.addFunction(eva);
-        
+        // 2016-10-28 Added setupBuildingFunctionsMap()
+        buildingManager.setupBuildingFunctionsMap();
+             
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
         

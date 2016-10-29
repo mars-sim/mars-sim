@@ -121,7 +121,7 @@ implements Serializable, LifeSupportType, Objective {
 	private int numOnCall;
 	private int sumOfCurrentManuProcesses = 0;
 	private int cropsNeedingTendingCache = 5;
-	private int millisolCache;
+	private int millisolCache = -5;
 	
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
@@ -1469,8 +1469,10 @@ implements Serializable, LifeSupportType, Objective {
 						yLocation);
 				if (distance < leastDistance) {
 					EVA eva = (EVA) nextBuilding.getFunction(BuildingFunction.EVA);
-					result = eva.getAirlock();
-					leastDistance = distance;
+					if (eva != null) {
+						result = eva.getAirlock();
+						leastDistance = distance;
+					}
 				}
 			}
 		}
@@ -2952,7 +2954,7 @@ implements Serializable, LifeSupportType, Objective {
         int result = 0; 	
 	
         int m = (int) marsClock.getMillisol();
-        if (millisolCache == m) {
+        if (millisolCache + 5 >= m) {
         	result = cropsNeedingTendingCache;  		
     	}
         

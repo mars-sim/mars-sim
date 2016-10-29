@@ -99,15 +99,17 @@ public class Preference implements Serializable {
 	private MarsClock clock;
 
 	private List<MetaTask> metaTaskList;
+	private List<String> metaTaskStringList;
 	//private List<MetaMission> metaMissionList;
 
 	private Map<MetaTask, Integer> scoreMap;
-	private Map<String, Integer> stringNameMap;
-	private List<String> metaTaskStringList;
-	private Map<MarsClock, MetaTask> futureTaskMap;
-	private Map<MetaTask, Boolean> taskDueMap; // true if the activity has been accomplished
 	private Map<MetaTask, Integer> priorityMap;
 	private Map<MetaTask, Boolean> frequencyMap; // true if the activity can only be done once a day
+	private Map<MetaTask, Boolean> taskDueMap; // true if the activity has been accomplished
+
+	private Map<String, Integer> stringNameMap;
+
+	private Map<MarsClock, MetaTask> futureTaskMap;
 
 	public Preference(Person person) {
 		//System.out.println("starting Preference's constructor");

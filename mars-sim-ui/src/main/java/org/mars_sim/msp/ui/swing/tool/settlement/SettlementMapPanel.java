@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JDesktopPane;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -164,7 +163,7 @@ implements ClockListener {
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
 	
-		////paintDoubleBuffer();
+		//paintDoubleBuffer();
 		//repaint();
 	}
 
@@ -194,10 +193,12 @@ implements ClockListener {
 		// Set foreground and background colors.
 		setOpaque(true);
 
+		//paintDoubleBuffer();
+		//repaint();
 	}
 
 	public void detectMouseMovement() {
-/*
+
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
@@ -216,8 +217,9 @@ implements ClockListener {
 				selectPersonAt(evt.getX(), evt.getY());
 				selectRobotAt(evt.getX(), evt.getY());
 			}
+			
 		});
-*/
+
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
@@ -240,7 +242,7 @@ implements ClockListener {
 
 		//2014-11-22 Added PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
-
+			/*
 			@Override
 			public void mouseClicked(MouseEvent evt) {
 				// Select person if clicked on.
@@ -256,23 +258,21 @@ implements ClockListener {
 					 doPop(evt);
 				}
 			}
-			
-			@Override
+*/			
+			//@Override
 		    public void mousePressed(MouseEvent evt){				 
 				//setCursor(new Cursor(Cursor.HAND_CURSOR));
 				if (evt.getButton() == MouseEvent.BUTTON3) {
-					// Set initial mouse drag position.
-					xLast = evt.getX();
-					yLast = evt.getY();
 					
 					 if (evt.isPopupTrigger()) {
 						 setCursor(new Cursor(Cursor.HAND_CURSOR));
+						 repaint();
 						 doPop(evt);
 					 }
 				}			
 		    }
 
-			@Override
+			//@Override
 		    public void mouseReleased(MouseEvent evt){
 		    	//setCursor(new Cursor(Cursor.HAND_CURSOR));
 				//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -285,6 +285,11 @@ implements ClockListener {
 						doPop(evt);
 					}
 				}
+				
+				//if (evt.isPopupTrigger()) {
+				//	setCursor(new Cursor(Cursor.HAND_CURSOR));
+				//	doPop(evt);
+				//}
 		    }
 			
 		    //2015-01-14 Added vehicle detection
@@ -315,7 +320,7 @@ implements ClockListener {
     	        	//setComponentPopupMenu(menu);
     	        	menu.show(evt.getComponent(), evt.getX(), evt.getY());
 		        }
-				repaint();
+				//repaint();
 		    }
 		}// end of class PopClickListener
 

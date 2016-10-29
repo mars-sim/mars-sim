@@ -580,6 +580,7 @@ LocalBoundedObject, InsidePathLocation {
 		}
 	}
 
+	
 	/**
 	 * Gets the building's building manager.
 	 * @return building manager
@@ -959,7 +960,7 @@ LocalBoundedObject, InsidePathLocation {
 		Iterator<Robot> i = manager.getSettlement().getRobots().iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
-			Task task = robot.getBotMind().getTaskManager().getTask();
+			Task task = robot.getBotMind().getBotTaskManager().getTask();
 
 			// Add all robots maintaining this building.
 			if (task instanceof Maintenance) {
@@ -1153,6 +1154,14 @@ LocalBoundedObject, InsidePathLocation {
 		this.inhabitable_id = id;
 	}
 
+	public void removeFunction(Function function) {
+		if (functions.contains(function)) {
+	        functions.remove(function);
+	        // 2016-10-28 Add calling removeOneFunctionfromBFMap()
+	        manager.removeOneFunctionfromBFMap(this, function);    
+	    }
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

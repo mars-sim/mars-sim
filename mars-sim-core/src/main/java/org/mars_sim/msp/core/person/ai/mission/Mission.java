@@ -780,7 +780,7 @@ implements Serializable {
 		}
 
 		if (canPerformTask) {
-			robot.getBotMind().getTaskManager().addTask(task);
+			robot.getBotMind().getBotTaskManager().addTask(task);
 		}
 
 		return canPerformTask;

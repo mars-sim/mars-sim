@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 
 /**
  * This class represents the status of a Person when death occurs. It records
@@ -156,7 +157,7 @@ implements Serializable {
             missionPhase = mind.getMission().getPhaseDescription();
         }
 */
-        TaskManager taskMgr = botMind.getTaskManager();
+        BotTaskManager taskMgr = botMind.getBotTaskManager();
         if (taskMgr.hasTask()) {
             task = taskMgr.getTaskName();
             TaskPhase phase = taskMgr.getPhase();

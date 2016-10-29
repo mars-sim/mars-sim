@@ -211,7 +211,7 @@ implements VehicleOperator, MissionMember, Serializable {
         
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
-        BuildingManager.addToRandomBuilding(this, settlement);
+        BuildingManager.addToRandomBuilding(this, settlement); // why failed ? testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 
         support = getLifeSupportType();
 

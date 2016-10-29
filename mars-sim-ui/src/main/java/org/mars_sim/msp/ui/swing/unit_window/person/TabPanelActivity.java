@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 import org.mars_sim.msp.core.person.medical.DeathInfo;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.BotMind;
+import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -135,7 +136,7 @@ implements ActionListener {
 			if (person != null)
 				taskCache = mind.getTaskManager().getTaskDescription(true);
 			else if (robot != null)
-				taskCache = botMind.getTaskManager().getTaskDescription(true);
+				taskCache = botMind.getBotTaskManager().getTaskDescription(true);
 		}
 		taskTextArea = new JTextArea(2, 20);
 		if (taskCache != null) taskTextArea.setText(taskCache);
@@ -162,7 +163,7 @@ implements ActionListener {
 				if (person != null)
 					phase = mind.getTaskManager().getPhase();
 				else if (robot != null)
-					phase = botMind.getTaskManager().getPhase();
+					phase = botMind.getBotTaskManager().getPhase();
 			
 			
 		    if (phase != null) {
@@ -317,6 +318,8 @@ implements ActionListener {
 		}		
 		
 		TaskManager taskManager = null;
+		BotTaskManager botTaskManager = null;
+		
 		Mission mission = null;
 		if (!dead) {
 
@@ -326,7 +329,7 @@ implements ActionListener {
 				
 			}
 			else if (robot != null) {
-				taskManager = botMind.getTaskManager();
+				botTaskManager = botMind.getBotTaskManager();
 				if (botMind.hasActiveMission()) mission = botMind.getMission();
 				
 			}
@@ -334,8 +337,15 @@ implements ActionListener {
 		}
 
 		// Update task text area if necessary.
-		if (dead) taskCache = deathInfo.getTask() + DEAD_PHRASE ;
-		else taskCache = taskManager.getTaskDescription(true);
+		if (dead) 
+			taskCache = deathInfo.getTask() + DEAD_PHRASE ;
+		else {
+			if (person != null)
+				taskCache = taskManager.getTaskDescription(true);
+			else
+				taskCache = botTaskManager.getTaskDescription(true);	
+		}
+		
 		if (!taskCache.equals(taskTextArea.getText())) 
 			taskTextArea.setText(taskCache);
 
@@ -344,7 +354,14 @@ implements ActionListener {
 		    taskPhaseCache = deathInfo.getTaskPhase() + DEAD_PHRASE;
 		}
 		else {
-		    TaskPhase phase = taskManager.getPhase();
+		    TaskPhase phase;
+		    
+			if (person != null)
+			    phase = taskManager.getPhase();
+			else
+			    phase = botTaskManager.getPhase();
+		    
+
 		    if (phase != null) {
 		        taskPhaseCache = phase.getName();
 		    }

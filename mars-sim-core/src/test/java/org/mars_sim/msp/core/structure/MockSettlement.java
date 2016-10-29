@@ -21,7 +21,7 @@ public class MockSettlement extends Settlement {
 		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 		
         // Initialize building manager
-        buildingManager = new BuildingManager(this, null);
+        buildingManager = new BuildingManager(this, true);
         buildingManager.addBuilding(new MockBuilding(buildingManager), false);
         
         // Initialize building connector manager.

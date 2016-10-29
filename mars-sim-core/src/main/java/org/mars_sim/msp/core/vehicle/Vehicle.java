@@ -719,7 +719,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         Iterator<Robot> i = Simulation.instance().getUnitManager().getRobots().iterator();
         while (i.hasNext()) {
             Robot robot = i.next();
-            Task task = robot.getBotMind().getTaskManager().getTask();
+            Task task = robot.getBotMind().getBotTaskManager().getTask();
 
             // Add all robots maintaining this vehicle.
             if (task instanceof Maintenance) {

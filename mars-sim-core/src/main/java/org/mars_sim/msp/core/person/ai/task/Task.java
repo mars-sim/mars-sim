@@ -349,7 +349,7 @@ implements Serializable, Comparable<Task> {
     /** Adds a new sub-task.
      *  @param newSubTask the new sub-task to be added
      */
-    void addSubTask(Task newSubTask) {
+    public void addSubTask(Task newSubTask) {
         if (subTask != null) {
             if (subTask.done) {
                 subTask.destroy();
@@ -393,7 +393,7 @@ implements Serializable, Comparable<Task> {
      * @return amount of time (millisol) remaining after performing the task (in millisols)
      * @throws Exception if error performing task.
      */
-    double performTask(double time) {
+    public double performTask(double time) {
         double timeLeft = time;
         if (subTask != null) {
             if (subTask.isDone()) {

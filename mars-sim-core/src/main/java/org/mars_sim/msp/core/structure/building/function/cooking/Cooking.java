@@ -349,7 +349,7 @@ implements Serializable {
                 RoboticStation rs = (RoboticStation) getBuilding().getFunction(BuildingFunction.ROBOTIC_STATION);
                 Iterator<Robot> j = rs.getRobotOccupants().iterator();
                 while (j.hasNext()) {
-                    Task task = j.next().getBotMind().getTaskManager().getTask();
+                    Task task = j.next().getBotMind().getBotTaskManager().getTask();
                     if (task instanceof CookMeal) {
                         result++;
                     }

@@ -102,7 +102,7 @@ public class BuildingManager implements Serializable {
     private int count = 0;
 	private int solCache = 0;
     private double sum = 0;
-    private int millisolCache;
+    private int millisolCache = -5;
 	private double probabilityOfImpactPerSQMPerSol;
 	private double wallPenetrationThicknessAL;
 
@@ -195,45 +195,58 @@ public class BuildingManager implements Serializable {
 
     }
 
-	// This method is called by MeteoriteImpactImpl
-	public void setProbabilityOfImpactPerSQMPerSol(double value) {
-		probabilityOfImpactPerSQMPerSol = value;
-	}
-
-	// Called by each building once a sol to see if an impact is imminent
-	public double getProbabilityOfImpactPerSQMPerSol() {
-		return probabilityOfImpactPerSQMPerSol;
-	}
-
-	// 2016-10-05 Added setWallPenetration()
-	public void setWallPenetration(double value) {
-		wallPenetrationThicknessAL = value;
-	}
-	
-	// 2016-10-05 Added getWallPenetration()
-	public double getWallPenetration() {
-		return wallPenetrationThicknessAL;
-	}
-	
-	
-    //public MeteoriteImpact getMeteoriteImpact() {
-    //	return meteoriteImpact;
-    //}
-
-    public Meteorite getMeteorite() {
-    	return meteorite;
-    }
-
-
     /**
-     * Gets the building manager's settlement.
-     *
-     * @return settlement
+     * Constructor 3 : Called by MockSettlement for maven test
+     * @param settlement the manager's settlement
+     * @param buildingTemplates the settlement's building templates.
+     * @throws Exception if buildings cannot be constructed.
      */
-    public Settlement getSettlement() {
-        return settlement;
+    public BuildingManager(Settlement settlement, boolean dummy)  {
+        //logger.info("'s constructor 2 for " + settlement.getName() + " is on " + Thread.currentThread().getName());
+        this.settlement = settlement;
+
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+      
+        // Construct all buildings in the settlement.
+        buildings = new ArrayList<Building>();
+        
+    	//setupBuildingFunctionsMap();
+    	
+        buildingFunctionsMap = new ConcurrentHashMap<BuildingFunction, List<Building>>(); //  HashMap<>();
+        
+        // Initialize building value caches.
+        buildingValuesNewCache = new HashMap<String, Double>();
+        buildingValuesOldCache = new HashMap<String, Double>();
     }
 
+    // 2016-10-16 Create buildingFunctionsMap
+	public void setupBuildingFunctionsMap() {
+        //logger.info("setupBuildingFunctionsMap() is on " + Thread.currentThread().getName());
+    	//long start = System.nanoTime();
+		buildingFunctionsMap = new ConcurrentHashMap<BuildingFunction, List<Building>>(); //  HashMap<>();
+	    List<BuildingFunction> functions = buildingConfig.getBuildingFunctions();
+	    for (BuildingFunction f : functions) {
+	    	List<Building> l = new ArrayList<Building>();
+	        for (Building b : buildings) {
+	        	if (b.hasFunction(f))
+	        		l.add(b);
+	        }
+			buildingFunctionsMap.put(f, l); 
+	    }
+	    
+        //long end = System.nanoTime();
+        //count++;
+        //sum+= (end-start)/1e3;
+        //logger.info("time : " + (end-start)/1e3 + " milliseconds");
+        //if (count == 10000) {
+        //	logger.info("\tcount : " + count + "\taverage : " + Math.round(sum/count*100.00)/100.00 + " milliseconds");
+        //	count = 0;
+        //	sum = 0;
+        //}
+  
+	}
+
+	
     /**
      * Removes a building from the settlement.
      * @param oldBuilding the building to remove.
@@ -248,12 +261,76 @@ public class BuildingManager implements Serializable {
             oldBuilding.removeFunctionsFromSettlement();
 
             buildings.remove(oldBuilding);
+            
+            // 2016-10-28 Call to remove all references of this building in all functions
+            removeAllFunctionsfromBFMap(oldBuilding);
     		//logger.info("removeBuilding() : a new building has just been removed");
 
             settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
         }
     }
 
+    /**
+     * Removes all references of this building in all functions in buildingFunctionsMap
+     * @param oldBuilding
+     */
+    // 2016-10-28 Add removeAllFunctionsfromBFMap()
+	public void removeAllFunctionsfromBFMap(Building oldBuilding) {
+        if (buildingFunctionsMap != null) {
+        	// use this only after buildingFunctionsMap has been created
+            for (BuildingFunction f : buildingConfig.getBuildingFunctions()) {
+            	// if this building has this function
+            	if (oldBuilding.hasFunction(f)) {
+            		List<Building> list = buildingFunctionsMap.get(f);
+            		if (!list.contains(oldBuilding))
+            			list.remove(oldBuilding);           	
+            	}
+            }
+        }
+	}
+	
+    /**
+     * Removes the reference of this building for a functions in buildingFunctionsMap
+     * @param a building 
+     * @param a function
+     */
+    // 2016-10-28 Add removeOneFunctionsfromBFMap()
+	public void removeOneFunctionfromBFMap(Building b, Function f) {
+        if (buildingFunctionsMap != null) {
+        	BuildingFunction bf = f.getFunction();
+        	List<Building> list = buildingFunctionsMap.get(bf);
+    		if (!list.contains(b))
+    			list.remove(b);           	
+        }
+	}
+	
+    /**
+     * Add references of this building in all functions in buildingFunctionsMap
+     * @param oldBuilding
+     */
+    // 2016-10-28 Add removeAllFunctionsfromBFMap()
+	public void addAllFunctionstoBFMap(Building newBuilding) {
+	        if (buildingFunctionsMap != null) {
+        	// use this only after buildingFunctionsMap has been created
+            for (BuildingFunction f : buildingConfig.getBuildingFunctions()) {
+            	// if this building has this function
+            	if (newBuilding.hasFunction(f)) {
+            		List<Building> list = null;
+            		if (buildingFunctionsMap.containsKey(f)) {
+            			list = buildingFunctionsMap.get(f);
+	            		if (!list.contains(newBuilding))
+	            			list.add(newBuilding);
+            		}
+            		else {
+            			list = new ArrayList<>();
+            			list.add(newBuilding);
+            			buildingFunctionsMap.put(f, list);
+            		}
+            	}
+            }
+        }
+	}
+	
     /**
      * Adds a new building to the settlement.
      * @param newBuilding the building to add.
@@ -265,17 +342,7 @@ public class BuildingManager implements Serializable {
        		//logger.info("addBuilding() : a new building has just been added");
             
             // 2016-10-17 Insert this new building into buildingFunctionsMap
-            if (buildingFunctionsMap != null) {
-            	// use this only after buildingFunctionsMap has been created
-	            for (BuildingFunction f : buildingConfig.getBuildingFunctions()) {
-	            	// if this building has this function
-	            	if (newBuilding.hasFunction(f)) {
-	            		List<Building> list = buildingFunctionsMap.get(f);
-	            		if (!list.contains(newBuilding))
-	            			list.add(newBuilding);           	
-	            	}
-	            }
-            }
+            addAllFunctionstoBFMap(newBuilding);
             
             settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
       
@@ -481,46 +548,21 @@ public class BuildingManager implements Serializable {
         return result;
     }
 
-    // 2016-10-16 Create buildingFunctionsMap
-	public void setupBuildingFunctionsMap() {
-    	//long start = System.nanoTime();
-		buildingFunctionsMap = new ConcurrentHashMap<BuildingFunction, List<Building>>(); //  HashMap<>();
-	    List<BuildingFunction> functions = buildingConfig.getBuildingFunctions();
-	    for (BuildingFunction f : functions) {
-	    	List<Building> l = new ArrayList<Building>();
-	        for (Building b : buildings) {
-	        	if (b.hasFunction(f))
-	        		l.add(b);
-	        }
-			buildingFunctionsMap.put(f, l); 
-	    }
-	    
-        //long end = System.nanoTime();
-        //count++;
-        //sum+= (end-start)/1e3;
-        //logger.info("time : " + (end-start)/1e3 + " milliseconds");
-        //if (count == 10000) {
-        //	logger.info("\tcount : " + count + "\taverage : " + Math.round(sum/count*100.00)/100.00 + " milliseconds");
-        //	count = 0;
-        //	sum = 0;
-        //}
-  
-	}
-
    
     /**
      * Gets the buildings in a settlement that has a given function.
-     * @param function {@link BuildingFunction} the function of the building.
+     * @param building function {@link BuildingFunction} the function of the building.
      * @return list of buildings.
      */
-    public List<Building> getBuildings(BuildingFunction function) {
+    public List<Building> getBuildings(BuildingFunction bf) {
         //logger.info("getBuildings() is on " + Thread.currentThread().getName());
         //logger.info("getBuildings() : function is " + function);
         
      	//long start = System.nanoTime();		
        		
-    	if (buildingFunctionsMap.containsKey(function)) {		
-    		return buildingFunctionsMap.get(function);
+    	if (buildingFunctionsMap.containsKey(bf)) {		
+    		//System.out.println("buildingFunctionsMap.get(function)" + buildingFunctionsMap.get(function));
+    		return buildingFunctionsMap.get(bf);
     		
             //long end = System.nanoTime();
             //count++;
@@ -537,14 +579,16 @@ public class BuildingManager implements Serializable {
     	}
     	
     	else {
-    		System.out.println("can't find " + function + " in buildingFunctionsMap");
           	List<Building> list = new ArrayList<Building>();
 
             for (Building b : buildings) {
-            	if (b.hasFunction(function))
+            	if (b.hasFunction(bf))
             		list.add(b);
             }
-    		buildingFunctionsMap.put(function, list); 
+            
+    		buildingFunctionsMap.put(bf, list); 
+    		logger.info(bf + " was not found in buildingFunctionsMap yet. Just added.");
+
  /*   		
             long end = System.nanoTime();
             count++;
@@ -765,7 +809,8 @@ public class BuildingManager implements Serializable {
         		addPersonOrRobotToBuildingRandomLocation(person, building);
             }
             else {
-                throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
+                //throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
+                logger.warning("No inhabitable buildings available for " + person.getName());
             }
 
         }
@@ -1072,32 +1117,56 @@ public class BuildingManager implements Serializable {
     public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) {
 
         List<Building> result = new ArrayList<Building>();
+        
         // Find least crowded population.
         int leastCrowded = Integer.MAX_VALUE;
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(BuildingFunction.LIFE_SUPPORT);
+        for (Building b0 : buildingList) {
+            LifeSupport lifeSupport = (LifeSupport) b0.getFunction(BuildingFunction.LIFE_SUPPORT);
             int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
             if (crowded < leastCrowded) leastCrowded = crowded;
         }
-
+        
+        // Add least crowded buildings to list.
+        for (Building b : buildingList) {
+            LifeSupport lifeSupport = (LifeSupport) b.getFunction(BuildingFunction.LIFE_SUPPORT);
+            int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+            if (crowded < -1) crowded = -1;
+            if (crowded == leastCrowded) result.add(b);
+        }
+        
+/*
+ *         // Add least crowded buildings to list.
+        Iterator<Building> j = buildingList.iterator();
+        while (j.hasNext()) {
+            Building building = j.next();
+            EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+            if (eva != null) {
+	            int crowded = eva.getAirlock().getOccupants().size() - eva.getAirlock().getCapacity();
+	            if (crowded < -1) crowded = -1;
+	            if (crowded < leastCrowded) leastCrowded = crowded;
+            }
+        }
+        
         // Add least crowded buildings to list.
         Iterator<Building> j = buildingList.iterator();
         while (j.hasNext()) {
             Building building = j.next();
-            LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-            int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-            if (crowded < -1) crowded = -1;
-            if (crowded == leastCrowded) result.add(building);
+            EVA eva = (EVA) building.getFunction(BuildingFunction.EVA);
+            if (eva != null) {
+	            int crowded = eva.getAirlock().getOccupants().size() - eva.getAirlock().getCapacity();
+	            if (crowded < -1) crowded = -1;
+	            if (crowded == leastCrowded) result.add(building);
+            }
         }
-
+*/
         return result;
     }
 
     public static List<Building> getLeastCrowded4BotBuildings(List<Building> buildingList) {
 
         List<Building> result = new ArrayList<Building>();
+        
         // Find least crowded population.
         int leastCrowded = Integer.MAX_VALUE;
         Iterator<Building> i = buildingList.iterator();
@@ -1775,7 +1844,7 @@ public class BuildingManager implements Serializable {
         List<Building> result = null;
         
         int m = (int) marsClock.getMillisol();
-        if (millisolCache == m) {
+        if (millisolCache + 5 >= m) {
         	result = farmsNeedingWorkCache;  		
     	}
         
@@ -1801,6 +1870,47 @@ public class BuildingManager implements Serializable {
     public List<Building> getFarmsNeedingWorkCache() {
     	return farmsNeedingWorkCache;
     }
+
+    
+	// This method is called by MeteoriteImpactImpl
+	public void setProbabilityOfImpactPerSQMPerSol(double value) {
+		probabilityOfImpactPerSQMPerSol = value;
+	}
+
+	// Called by each building once a sol to see if an impact is imminent
+	public double getProbabilityOfImpactPerSQMPerSol() {
+		return probabilityOfImpactPerSQMPerSol;
+	}
+
+	// 2016-10-05 Added setWallPenetration()
+	public void setWallPenetration(double value) {
+		wallPenetrationThicknessAL = value;
+	}
+	
+	// 2016-10-05 Added getWallPenetration()
+	public double getWallPenetration() {
+		return wallPenetrationThicknessAL;
+	}
+	
+	
+    //public MeteoriteImpact getMeteoriteImpact() {
+    //	return meteoriteImpact;
+    //}
+
+    public Meteorite getMeteorite() {
+    	return meteorite;
+    }
+
+
+    /**
+     * Gets the building manager's settlement.
+     *
+     * @return settlement
+     */
+    public Settlement getSettlement() {
+        return settlement;
+    }
+
 
     /**
      * Prepare object for garbage collection.

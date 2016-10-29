@@ -206,6 +206,7 @@ extends JInternalFrame {
 					monitorWindow.refreshTable();
 					//pack(); // create time lag, and draw artifact
 					SwingUtilities.invokeLater(() -> {
+						// Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException when pressing the terminate button in eclipse
 						//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
 						SwingUtilities.updateComponentTreeUI(this); // create time lag, draw artifact and search text out of focus
 					});

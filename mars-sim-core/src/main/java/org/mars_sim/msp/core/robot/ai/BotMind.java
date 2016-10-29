@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
+import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -45,7 +46,7 @@ implements Serializable {
     /** The robot owning this mind. */
     private Robot robot = null;
     /** The robot's task manager. */
-    private TaskManager taskManager;
+    private BotTaskManager botTaskManager;
     /** The robot's current mission (if any). */
     private Mission mission;
     /** The robot's job. */
@@ -83,7 +84,7 @@ implements Serializable {
         skillManager = new SkillManager(robot);
         
         // Construct a task manager
-        taskManager = new TaskManager(this);
+        botTaskManager = new BotTaskManager(this);
 
         missionManager = sim.getMissionManager();
 
@@ -96,9 +97,9 @@ implements Serializable {
      */
     public void timePassing(double time) {
 
-        if (taskManager != null) {
+        if (botTaskManager != null) {
         	// 2015-10-22 Added recordTask()
-    		taskManager.recordTask();
+    		botTaskManager.recordTask();
 
     	if (missionManager != null)
             // 2015-10-31 Added recordMission()
@@ -142,8 +143,8 @@ implements Serializable {
             }
 
             // Perform a task if the robot has one, or determine a new task/mission.
-            if (taskManager.hasActiveTask()) {
-                double remainingTime = taskManager.performTask(time, robot
+            if (botTaskManager.hasActiveTask()) {
+                double remainingTime = botTaskManager.performTask(time, robot
                         .getPerformanceRating());
                 if (remainingTime > 0D) {
                     takeAction(remainingTime);
@@ -155,7 +156,7 @@ implements Serializable {
                     mission.performMission(robot);
                 }
 
-                if (!taskManager.hasActiveTask()) {
+                if (!botTaskManager.hasActiveTask()) {
                     try {
                         getNewAction(true, (!activeMission && !overrideMission));
                     } catch (Exception e) {
@@ -164,7 +165,7 @@ implements Serializable {
                     }
                 }
 
-                if (taskManager.hasActiveTask() || hasActiveMission()) {
+                if (botTaskManager.hasActiveTask() || hasActiveMission()) {
                     takeAction(time);
                 }
             }
@@ -177,10 +178,10 @@ implements Serializable {
     }
     /**
      * Returns the robot's task manager
-     * @return task manager
+     * @return botTaskManager
      */
-    public TaskManager getTaskManager() {
-        return taskManager;
+    public BotTaskManager getBotTaskManager() {
+        return botTaskManager;
     }
 
     /**
@@ -237,7 +238,7 @@ implements Serializable {
      * action would then allow the Mission to be also aborted.
      */
     public void setInactive() {
-        taskManager.clearTask();
+        botTaskManager.clearTask();
         if (hasActiveMission()) {
 
         	if (robot != null)
@@ -290,7 +291,7 @@ implements Serializable {
         double weightSum = 0D;
 
         if (tasks) {
-            taskWeights = taskManager.getTotalTaskProbability(false);
+            taskWeights = botTaskManager.getTotalTaskProbability(false);
             weightSum += taskWeights;
         }
 
@@ -318,10 +319,10 @@ implements Serializable {
         // Determine which type of action was selected and set new action accordingly.
         if (tasks) {
             if (rand < taskWeights) {
-                Task newTask = taskManager.getNewTask();
+                Task newTask = botTaskManager.getNewTask();
                 
                 if (newTask != null)
-                	taskManager.addTask(newTask);
+                	botTaskManager.addTask(newTask);
                 else 
                 	logger.severe(robot + " : newTask is null ");
                 
@@ -381,8 +382,8 @@ implements Serializable {
      */
     public void destroy() {
         robot = null;
-        taskManager.destroy();
-        taskManager = null;
+        botTaskManager.destroy();
+        botTaskManager = null;
         if (mission != null) mission.destroy();
         mission = null;
         robotJob = null;
