@@ -202,6 +202,8 @@ public class TableStyle extends ZebraJTable{
     	}
 
 
+
+
 	    // Get the TableColumn header to display sorted column
 	    theHeader = table.getTableHeader();
 	    theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
@@ -214,14 +216,13 @@ public class TableStyle extends ZebraJTable{
 		if (hFore != null) theHeader.setForeground(hFore);
 	
 		theHeader.repaint();	
-
-	/*
+/*
 			JTableHeader tableHeader = table.getTableHeader();
 		    if (tableHeader != null) {
 		    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
 		    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
 		    }
-	*/
+*/
 			// 2015-09-24 Align the content to the center of the cell
 			//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 			//renderer.setHorizontalAlignment(SwingConstants.CENTER);

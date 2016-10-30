@@ -7,11 +7,17 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-
+import com.jfoenix.controls.JFXPopup.PopupHPosition;
+import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.controls.JFXRippler;
+import com.jfoenix.controls.JFXRippler.RipplerMask;
+import com.jfoenix.controls.JFXRippler.RipplerPos;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
 import com.jfoenix.controls.JFXTabPane;
+import com.jfoenix.controls.JFXToggleButton;
 //import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
@@ -88,6 +94,7 @@ import javafx.scene.input.ScrollEvent;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Paint;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -234,16 +241,18 @@ public class MainScene {
 	private Label timeText, lastSaveText;
 	private Text memUsedText;
 
+	private JFXToggleButton cacheButton;
 	private JFXSlider zoom;
 	private JFXButton miniMapBtn, mapBtn, marsNetButton, menubarButton;
 	private Button memBtn, clkBtn;
 
 	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
 	private Scene scene;
-	private AnchorPane anchorDesktopPane, anchorTabPane ;
+	private AnchorPane anchorDesktopPane, anchorMapTabPane ;
 	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
 	private StatusBar statusBar;
-	private Flyout flyout;
+	//private Flyout flyout;
+	private JFXPopup flyout;
 
 	private ChatBox chatBox;
 	private StackPane chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
@@ -455,7 +464,7 @@ public class MainScene {
 		flyout = createFlyout();
         flag = false;
         
-        EffectUtilities.makeDraggable(flyout.getStage(), chatBox);
+        //EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(), chatBox);
 					
 		// Create ControlFX's StatusBar
 		statusBar = createStatusBar();
@@ -536,8 +545,8 @@ public class MainScene {
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		// anchorTabPane is within jfxTabPane
-		anchorTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
-		anchorTabPane.prefWidthProperty().bind(scene.widthProperty());
+		anchorMapTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
+		anchorMapTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		mapNodePane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
 		//mapNodePane.prefWidthProperty().bind(scene.widthProperty());
@@ -575,8 +584,8 @@ public void createFXTabs() {
 		
 		// set up mapTab
 		Tab mapTab = new Tab();		
-		anchorTabPane = new AnchorPane();
-		anchorTabPane.setStyle("-fx-background-color: black; ");
+		anchorMapTabPane = new AnchorPane();
+		anchorMapTabPane.setStyle("-fx-background-color: black; ");
 
 		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 		minimapNode = new SwingNode();
@@ -589,15 +598,17 @@ public void createFXTabs() {
 			
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 				desktop.closeToolWindow(NavigatorWindow.NAME);
-				anchorTabPane.getChildren().removeAll(minimapNodePane);
+				anchorMapTabPane.getChildren().removeAll(minimapNodePane);
 			}
 			
 			else {
 				desktop.openToolWindow(NavigatorWindow.NAME);
 				minimapNode.setContent(navWin); 
-		        anchorTabPane.getChildren().addAll(minimapNodePane);
 		        AnchorPane.setLeftAnchor(minimapNodePane, 3.0);
 		        AnchorPane.setTopAnchor(minimapNodePane, 3.0); // 45.0  
+		        anchorMapTabPane.getChildren().addAll(minimapNodePane);
+		        minimapNode.toFront();
+
 			}
   
 		});
@@ -608,6 +619,13 @@ public void createFXTabs() {
 		mapNodePane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 		
+		cacheButton = new JFXToggleButton();
+		cacheButton.setText("Cache Map");
+		cacheButton.setSelected(false);
+		//cacheButton.setOnAction(e -> {
+		//	if (!cacheButton.isSelected())
+		//		cacheButton.setTextFill(Paint.OPAQUE);
+		//});
 		
 		// Set up a settlement view zoom bar
 		zoom = new JFXSlider();
@@ -685,8 +703,7 @@ public void createFXTabs() {
 			}
 			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-				desktop.closeToolWindow(SettlementWindow.NAME);
-				anchorTabPane.getChildren().removeAll(mapNodePane, zoom);
+				closeMaps();
 			}
 			
 			else {
@@ -696,17 +713,45 @@ public void createFXTabs() {
 	
 		        AnchorPane.setRightAnchor(zoom, 42.0);
 		        AnchorPane.setTopAnchor(zoom, (mapNodePane.prefHeightProperty().get() - zoom.heightProperty().get())*.4d);    
+		        
 		        AnchorPane.setRightAnchor(mapNodePane, 0.0);
 		        AnchorPane.setTopAnchor(mapNodePane, 3.0);  // 45.0     
+
+		        //AnchorPane.setRightAnchor(cacheButton, 5.0);
+		        //AnchorPane.setTopAnchor(cacheButton, 45.0);
+
+		        boolean hasMap = false, hasZoom = false;
+				for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
+			        if (node == cacheButton) {
+			        	node.toFront();
+			        }
+			        else if (node == mapNodePane) {
+			        	hasMap = true;
+			        }
+			        else if (node == zoom) {
+			        	hasZoom = true;
+			        }
+			    }	
+				
+				if (!hasMap)
+					anchorMapTabPane.getChildren().addAll(mapNodePane);
 		        
-		        anchorTabPane.getChildren().addAll(mapNodePane, zoom);
+				if (!hasZoom)
+					anchorMapTabPane.getChildren().addAll(zoom);
+		        
+				
+				for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
+			        if (node == cacheButton) {
+			        	node.toFront();
+			        }
+			    }			
 			}
-			
+
 		});
 		 
         
 		mapTab.setText("Map");
-		mapTab.setContent(anchorTabPane);
+		mapTab.setContent(anchorMapTabPane);
 		
  
 		// set up monitor tab
@@ -787,7 +832,8 @@ public void createFXTabs() {
 		
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 			if (newTab == mainTab) {	
-				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			       anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
 			
 			else if (newTab == monTab) {	
@@ -795,35 +841,54 @@ public void createFXTabs() {
 					desktop.openToolWindow(MonitorWindow.NAME);
 					//monNode.setContent(monWin); 
 				}
-			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+				
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+				anchorMapTabPane.getChildren().removeAll(cacheButton);
 
 			}
 			
 			else if (newTab == mapTab) {
 				
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {			       
-					mapBtn.fire();
+					if (isCacheButtonOn())
+						mapBtn.fire();
 				}
 
 				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {				       
-					miniMapBtn.fire();
+					if (isCacheButtonOn())
+						miniMapBtn.fire();
 				}
-				
 
-				boolean found0 = false;
-				for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
-			        if (node == mapBtn || node == miniMapBtn) 
-			        	found0 = true;
+				boolean map = false, minimap = false, cache = false;
+/*				for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
+			        if (node == mapBtn)
+			        	map = true;
+			        else if (node == miniMapBtn)
+			        	minimap = true;
 			    }
 				
-				if (!found0) {
+				for (Node node : anchorTabPane.getChildrenUnmodifiable()) {
+			        if (node == cacheButton) 
+			        	cache = true;
+			    }	
+*/				
+				if (!map) {
 					AnchorPane.setRightAnchor(mapBtn, 85.0);
 					AnchorPane.setTopAnchor(mapBtn, -3.0);   
+					anchorDesktopPane.getChildren().addAll(mapBtn);
+				}
+				
+				if (!minimap) {
 			        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
 			        AnchorPane.setTopAnchor(miniMapBtn, -3.0);  
-			        anchorDesktopPane.getChildren().addAll(miniMapBtn, mapBtn);
+					anchorDesktopPane.getChildren().addAll(miniMapBtn);
 				}
-
+				
+				if (!cache) {
+			        AnchorPane.setRightAnchor(cacheButton, 5.0);
+			        AnchorPane.setTopAnchor(cacheButton, 45.0);  // 45.0 		        
+					anchorMapTabPane.getChildren().addAll(cacheButton);
+				}   
 			}
 			
 			else if (newTab == missionTab) {	
@@ -831,7 +896,9 @@ public void createFXTabs() {
 					desktop.openToolWindow(MissionWindow.NAME);
 					//missionNode.setContent(missionWin); 
 				}
-			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
 
 			else if (newTab == resupplyTab) {	
@@ -839,7 +906,9 @@ public void createFXTabs() {
 					desktop.openToolWindow(ResupplyWindow.NAME);
 					//resupplyNode.setContent(resupplyWin); 
 				}
-			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+				
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
 
 			else if (newTab == scienceTab) {	
@@ -847,7 +916,9 @@ public void createFXTabs() {
 					desktop.openToolWindow(ScienceWindow.NAME);
 					//sciNode.setContent(scienceWin); 
 				}
-			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			       
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
 			
 			else if (newTab == guideTab) {	
@@ -855,7 +926,9 @@ public void createFXTabs() {
 					desktop.openToolWindow(GuideWindow.NAME);
 					//guideNode.setContent(guideWin); 
 				}
-			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			       
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
 		});
 		
@@ -866,7 +939,22 @@ public void createFXTabs() {
 
 	}
 	
+	public void closeMaps() {
+		if (!isCacheButtonOn()) {
+			//System.out.println("closing both maps...");
+			desktop.closeToolWindow(SettlementWindow.NAME);
+			desktop.closeToolWindow(NavigatorWindow.NAME);
+			Platform.runLater(() -> anchorMapTabPane.getChildren().removeAll(mapNodePane, zoom, minimapNodePane));
+		}
+	}
 	
+	
+	public boolean isCacheButtonOn() {
+		if (cacheButton.isSelected())
+			return true;
+		else
+			return false;
+	}
 	
 	public void createDesktops() {
 		desktops = new ArrayList<DesktopPane>();		
@@ -990,6 +1078,7 @@ public void createFXTabs() {
 		mapBtn.getStylesheets().clear();
 		miniMapBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		mapBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		cacheButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow)(desktop.getToolWindow(SettlementWindow.NAME));
@@ -1046,7 +1135,7 @@ public void createFXTabs() {
      * @return  a new {@link Flyout}
      */
     //2015-11-11 Added createFlyout()
-    public Flyout createFlyout() {
+    public JFXPopup createFlyout() {
      	marsNetButton = new JFXButton();//ToggleButton();
         //marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/gray_chat_36.png")))); //" MarsNet ");       
         //marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_32.png")))); //" MarsNet ");       
@@ -1066,7 +1155,13 @@ public void createFXTabs() {
         		   );
 */        
         
-        flyout = new Flyout(marsNetButton, createChatBox(), this);
+        //flyout = new Flyout(marsNetButton, createChatBox(), this);
+		flyout = new JFXPopup();
+		flyout.setOpacity(.9);
+		flyout.setContent(createChatBox());
+		flyout.setPopupContainer(anchorDesktopPane);
+		flyout.setSource(marsNetButton);		
+        
         //marsNetButton.setId("marsNetButton");
         marsNetButton.setTooltip(new Tooltip ("Open MarsNet chat box"));
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
@@ -1075,34 +1170,29 @@ public void createFXTabs() {
             if (!flag) 
             	chatBox.update();
   
-            if (flyout.flyoutShowing()) {
-                flyout.dismiss();
+            if (flyout.isVisible()) {
+                flyout.close();
             }
             else {
-                flyout.flyout();              
-                chatBox.getAutoFillTextBox().getTextbox().clear();
-                chatBox.getAutoFillTextBox().getTextbox().requestFocus();
+            	openChatBox();
             }
             
-/*            
-            if (marsNetButton.isSelected()) {
-            	//System.out.println("flyingout : " + marsNetButton.isSelected());
-                flyout.flyout();              
-                // 2016-06-17 Added update() to show the initial system greeting
-                chatBox.getAutoFillTextBox().getTextbox().clear();
-                chatBox.getAutoFillTextBox().getTextbox().requestFocus();
-                //ToggleMarsNetButton(true);
-            } else {
-            	//System.out.println("dismissing : " + marsNetButton.isSelected());
-            	// 2016-06-17 Added closeChatBox() to display a disconnection msg 
-                flyout.dismiss();
-                //ToggleMarsNetButton(false);
-            }
-*/
         });
        
         return flyout;
     }
+    
+    public void openChatBox() {
+		try {
+			TimeUnit.MILLISECONDS.sleep(200L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+        chatBox.getAutoFillTextBox().getTextbox().clear();
+        chatBox.getAutoFillTextBox().getTextbox().requestFocus();
+    	flyout.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -50, 20); 
+    }
+    
     
     //public void ToggleMarsNetButton(boolean value) {
     //	marsNetButton.setSelected(value);
@@ -1116,7 +1206,7 @@ public void createFXTabs() {
     //	marsNetButton.fire();
     //}
     
-    public Flyout getFlyout() {
+    public JFXPopup getFlyout() {
     	return flyout;
     }
 
@@ -1277,7 +1367,7 @@ public void createFXTabs() {
 				public void run() {
 					Platform.runLater(() -> {
 						newSimulationProcess();
-					} );
+					});
 				}
 			};
 			newSimThread.start();

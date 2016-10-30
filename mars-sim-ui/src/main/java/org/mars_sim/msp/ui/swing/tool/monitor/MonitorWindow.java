@@ -365,7 +365,7 @@ implements TableModelListener, ActionListener {
 	 * @return Monitor tab being displayed.
 	 */
 	private MonitorTab getSelected() {
-		SwingUtilities.updateComponentTreeUI(this);
+		//SwingUtilities.updateComponentTreeUI(this);
 		MonitorTab selected = null;
 		int selectedIdx = tabsSection.getSelectedIndex();
 		if ((selectedIdx != -1) && (selectedIdx < tabs.size()))
@@ -374,7 +374,7 @@ implements TableModelListener, ActionListener {
 	}
 
 	public void tabChanged(boolean reloadSearch) {
-		SwingUtilities.updateComponentTreeUI(this);
+		//SwingUtilities.updateComponentTreeUI(this);
 		//System.out.println("tabChanged()");
 		MonitorTab selected = getSelected();
 		JTable table = null;

@@ -62,13 +62,13 @@ import javafx.util.Pair;
  * @author cogmission
  */
 public class Flyout extends Region {
-    public enum Side { TOP, BOTTOM, LEFT, RIGHT, TOP_RIGHT }
+    public enum Side { TOP, BOTTOM, LEFT, RIGHT, TOP_RIGHT, BOTTOM_LEFT }
     public enum Status { RUNNING, COMPLETE };
     
     public final static int DELAY = 10;
     
     //private Side flyoutSide = Side.BOTTOM;
-    private Side flyoutSide = Side.BOTTOM;
+    private Side flyoutSide = Side.BOTTOM_LEFT;//BOTTOM;
     
     private Timeline tl = new Timeline();
     private DoubleProperty loc = new SimpleDoubleProperty();
@@ -277,7 +277,8 @@ public class Flyout extends Region {
     private void defineFlyout() {
         tl.setCycleCount(1);
         loc.addListener((obs, oldY, newY) -> {
-            if(flyoutSide == Side.TOP || flyoutSide == Side.TOP_RIGHT || flyoutSide == Side.BOTTOM) {
+            if(flyoutSide == Side.TOP || flyoutSide == Side.TOP_RIGHT 
+            		|| flyoutSide == Side.BOTTOM || flyoutSide == Side.BOTTOM_LEFT) {
                 userNodeContainer.setLayoutY(newY.doubleValue());
             }else{
                 userNodeContainer.setLayoutX(newY.doubleValue());
@@ -327,6 +328,9 @@ public class Flyout extends Region {
             case TOP_RIGHT: {
                 userNodeContainer.setLayoutY(isReverse ? 0 : userNodeContainer.getHeight());
                 break;
+            }
+            case BOTTOM_LEFT: {
+            	
             }
         }
         

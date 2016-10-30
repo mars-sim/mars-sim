@@ -143,6 +143,20 @@
     
 }
 
+.jfx-toggle-button,
+.jfx-toggle-button:focused,
+.jfx-toggle-button:selected,
+.jfx-toggle-button:selected:focused {
+  	-fx-toggle-color: GREEN;
+    -fx-background-color: transparent;
+    -fx-text-fill: #f4f13f;
+    -fx-font-weight: bold;
+}
+
+.jfx-toggle-button: unselected{
+  	-fx-text-fill: GREY;
+}
+
 
 
 

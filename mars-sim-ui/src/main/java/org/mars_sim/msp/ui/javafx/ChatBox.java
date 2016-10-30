@@ -34,6 +34,8 @@ import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXPopup.PopupHPosition;
+import com.jfoenix.controls.JFXPopup.PopupVPosition;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -260,6 +262,7 @@ public class ChatBox extends BorderPane {
         }
        
         
+        textArea.setStyle("-fx-background-color: black;"); 
   		textArea.positionCaret(textArea.getText().length());
     }
 
@@ -272,7 +275,7 @@ public class ChatBox extends BorderPane {
 	    	settlementCache = null;
     	}
     	
-        mainScene.getFlyout().dismiss();
+        mainScene.getFlyout().close();//.dismiss();
         //mainScene.ToggleMarsNetButton(false);
     }
     
@@ -485,6 +488,7 @@ public class ChatBox extends BorderPane {
      		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
      		mainScene.setChatBoxPaneHeight(box_height[0]);
      		closeChatBox(false);    	
+     		mainScene.openChatBox();
      	}
     	
      	else if (text.equalsIgnoreCase("/y2")) {
@@ -492,6 +496,7 @@ public class ChatBox extends BorderPane {
      		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
      		mainScene.setChatBoxPaneHeight(box_height[1]);
             closeChatBox(false);
+            mainScene.openChatBox();
      	}
 
      	else if (text.equalsIgnoreCase("/y3")) {
@@ -499,6 +504,7 @@ public class ChatBox extends BorderPane {
      		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
      		mainScene.setChatBoxPaneHeight(box_height[2]);
             closeChatBox(false);
+            mainScene.openChatBox();
      	}
 
      	else if (text.equalsIgnoreCase("/y4")) {
@@ -506,7 +512,7 @@ public class ChatBox extends BorderPane {
      		mainScene.setChatBoxPaneHeight(box_height[3]);
      		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
             closeChatBox(false);
-			
+            mainScene.openChatBox();
 	    }
     	
     	// Case 1: ask about a particular settlement
@@ -1017,7 +1023,8 @@ public class ChatBox extends BorderPane {
      		mainScene.setChatBoxPaneHeight(box_height[0]);
      		closeChatBox(false);
      		//mainScene.ToggleMarsNetButton(true);
-     		mainScene.getFlyout().flyout();
+     		mainScene.getFlyout().show(PopupVPosition.TOP, PopupHPosition.RIGHT, -50, 20);
+
      		
 /*     		
      		System.out.println("1. is it selected : " + mainScene.isToggleMarsNetButtonSelected());
