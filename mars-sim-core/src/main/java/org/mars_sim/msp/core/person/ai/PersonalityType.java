@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonalityType.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2016-10-31
  * @author Scott Davis
  */
 
@@ -29,25 +28,44 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// TODO Personality types should be enums
-	private static final String ISTP = "ISTP";
-	private static final String ISTJ = "ISTJ";
-	private static final String ISFP = "ISFP";
-	private static final String ISFJ = "ISFJ";
-	private static final String INTP = "INTP";
-	private static final String INTJ = "INTJ";
-	private static final String INFP = "INFP";
-	private static final String INFJ = "INFJ";
-	private static final String ESTP = "ESTP";
-	private static final String ESTJ = "ESTJ";
-	private static final String ESFP = "ESFP";
-	private static final String ESFJ = "ESFJ";
-	private static final String ENTP = "ENTP";
-	private static final String ENTJ = "ENTJ";
-	private static final String ENFP = "ENFP";
-	private static final String ENFJ = "ENFJ";
-
+	// Jung's typology theories postulated a sequence of four cognitive functions (thinking, feeling, sensation, and intuition), 
+	// each having one of two polar orientations (extraversion or introversion), giving a total of eight dominant functions. 
+	// (A). Four main functions of consciousness:
+	// 		- 2 perceiving functions: Intuition (N) vs. Sensation (S) 
+	// 		- 2 judging functions: Feeling (F) vs. Thinking (T) 
+	// (B). Two main attitude types: Extraversion (E) vs. Introversion (I)
 	
+	// The MBTI is based on these eight hypothetical functions, although with some differences in expression from Jung's model 
+	// While the Jungian model offers empirical evidence for the first 3 dichotomies, 
+	// it is unclear whether the Briggs had evidence for the J-P preference.
+	// (C). Judging (J) vs. Perceiving (P)
+
+	// As a whole, they above gives rise to 16 outcomes
+	
+	// TODO Personality types should be enums
+	public static final String ISTP = "ISTP";
+	public static final String ISTJ = "ISTJ";
+	public static final String ISFP = "ISFP";
+	public static final String ISFJ = "ISFJ";
+	public static final String INTP = "INTP";
+	public static final String INTJ = "INTJ";
+	public static final String INFP = "INFP";
+	public static final String INFJ = "INFJ";
+	public static final String ESTP = "ESTP";
+	public static final String ESTJ = "ESTJ";
+	public static final String ESFP = "ESFP";
+	public static final String ESFJ = "ESFJ";
+	public static final String ENTP = "ENTP";
+	public static final String ENTJ = "ENTJ";
+	public static final String ENFP = "ENFP";
+	public static final String ENFJ = "ENFJ";
+
+	// 2016-10-30 Added four MBTI scores   
+	public static final int INTROVERSION_EXTRAVERSION = 0;
+	public static final int INTUITION_SENSATION = 1;
+	public static final int FEELING_THINKING = 2;
+	public static final int JUDGING_PERCEIVING = 3;
+
 	// The solitude stress modifier per millisol.
 	private static final double BASE_SOLITUDE_STRESS_MODIFIER = .1D;
 
@@ -55,7 +73,12 @@ implements Serializable {
 	private static final double BASE_COMPANY_STRESS_MODIFIER = .1D;
 
 	// Domain members
-	private static Map<String, Double> personalityTypes = null;
+	// % Breakdown of MBTI type of a general population, loading from people.xml
+	private static Map<String, Double> personalityDistribution = null;
+
+	// 2016-10-30 Added score map for each settler
+	private Map<Integer, Integer> scores = null; 
+	// In case of Introversion vs. Extraversion pair, 0 is extremely Introvert, 100 is extremely extravert
 	private String personalityType;
 	private Person person;
 
@@ -66,15 +89,18 @@ implements Serializable {
 
 		this.person = person;
 
+		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+		
 		// Load personality type map if necessary.
-		if (personalityTypes == null) loadPersonalityTypes();
+		if (personalityDistribution == null) 
+			personalityDistribution = config.loadPersonalityDistribution();
 
 		// Determine personality type.
 		double randValue = RandomUtil.getRandomDouble(100D);
-		Iterator<String> i = personalityTypes.keySet().iterator();
+		Iterator<String> i = personalityDistribution.keySet().iterator();
 		while (i.hasNext()) {
 			String type = i.next();
-			double percentage = personalityTypes.get(type);
+			double percentage = personalityDistribution.get(type);
 			if (randValue <= percentage) {
 				personalityType = type;
 				break;
@@ -83,11 +109,57 @@ implements Serializable {
 				randValue-= percentage;
 			}
 		}
-
+		
+		// 2016-10-30 Added setScorePairs()
+		setScorePairs();
+	
 		if (personalityType == null)
 			throw new IllegalStateException("PersonalityType.constructor(): Unable to determine personality type.");
 	}
 
+	/*
+	 * Sets the personality score pairs.
+	 */
+	public void setScorePairs() {
+		
+		//2016-10-30 Add computing the scores
+		scores = new HashMap<Integer, Integer>(4);
+
+		for (int j = 0; j < 4; j++) {
+			
+			int score = 0;
+			int rand = RandomUtil.getRandomInt(50);
+			if (j == 0) {
+				if (isIntrovert())
+					score = rand;
+				else
+					score = rand + 50;
+			}
+			else if (j == 1) {
+				if (isIntuitive())
+					score = rand;
+				else
+					score = rand + 50;			
+			}
+			else if (j == 2) {
+				if (isFeeler())
+					score = rand;
+				else
+					score = rand + 50;		
+			}
+			else if (j == 3) {
+				if (isJudger())
+					score = rand;
+				else
+					score = rand + 50;	
+			}
+			
+			scores.put(j, score);			
+		}
+		
+		
+	}
+	
 	/**
 	 * Gets the personality type as a four letter code.
 	 * Ex. "ISTJ"
@@ -102,8 +174,12 @@ implements Serializable {
 	 * @param newPersonalityType for letter MBTI code.
 	 */
 	public void setTypeString(String newPersonalityType) {
-		if (personalityTypes.containsKey(newPersonalityType)) personalityType = newPersonalityType;
-		else throw new IllegalArgumentException("Personality type: " + newPersonalityType + " invalid.");
+		if (personalityDistribution.containsKey(newPersonalityType)) {
+			personalityType = newPersonalityType;
+			setScorePairs();
+		}
+		else 
+			throw new IllegalArgumentException("Personality type: " + newPersonalityType + " invalid.");
 	}
 
 	/**
@@ -192,43 +268,6 @@ implements Serializable {
 	}
 
 	/**
-	 * Loads the average percentages for personality types into a map.
-	 * @throws Exception if personality type cannot be found or percentages don't add up to 100%.
-	 */
-	private void loadPersonalityTypes() {
-		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-		personalityTypes = new HashMap<String, Double>(16);
-
-//		try {
-			personalityTypes.put(ISTP, config.getPersonalityTypePercentage(ISTP));
-			personalityTypes.put(ISTJ, config.getPersonalityTypePercentage(ISTJ));
-			personalityTypes.put(ISFP, config.getPersonalityTypePercentage(ISFP));
-			personalityTypes.put(ISFJ, config.getPersonalityTypePercentage(ISFJ));
-			personalityTypes.put(INTP, config.getPersonalityTypePercentage(INTP));
-			personalityTypes.put(INTJ, config.getPersonalityTypePercentage(INTJ));
-			personalityTypes.put(INFP, config.getPersonalityTypePercentage(INFP));
-			personalityTypes.put(INFJ, config.getPersonalityTypePercentage(INFJ));
-			personalityTypes.put(ESTP, config.getPersonalityTypePercentage(ESTP));
-			personalityTypes.put(ESTJ, config.getPersonalityTypePercentage(ESTJ));
-			personalityTypes.put(ESFP, config.getPersonalityTypePercentage(ESFP));
-			personalityTypes.put(ESFJ, config.getPersonalityTypePercentage(ESFJ));
-			personalityTypes.put(ENTP, config.getPersonalityTypePercentage(ENTP));
-			personalityTypes.put(ENTJ, config.getPersonalityTypePercentage(ENTJ));
-			personalityTypes.put(ENFP, config.getPersonalityTypePercentage(ENFP));
-			personalityTypes.put(ENFJ, config.getPersonalityTypePercentage(ENFJ));
-//		}
-//		catch (Exception e) {
-//			throw new Exception("PersonalityType.loadPersonalityTypes(): unable to load a personality type.");
-//		}
-
-		Iterator<String> i = personalityTypes.keySet().iterator();
-		double count = 0D;
-		while (i.hasNext()) count+= personalityTypes.get(i.next());
-		if (count != 100D)
-			throw new IllegalStateException("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
-	}
-
-	/**
 	 * Updates a person's stress based on his/her personality.
 	 * @param time the time passing (millisols)
 	 * @throws Exception if problem updating stress.
@@ -251,12 +290,18 @@ implements Serializable {
 		}
 	}
 
+	
+	public Map<Integer, Integer> getScores() {
+		return scores;
+	}
+	
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
     public void destroy() {
-        if (personalityTypes != null) personalityTypes.clear();
-        personalityTypes = null;
+        if (personalityDistribution != null) personalityDistribution.clear();
+        personalityDistribution = null;
         personalityType = null;
         person = null;
     }

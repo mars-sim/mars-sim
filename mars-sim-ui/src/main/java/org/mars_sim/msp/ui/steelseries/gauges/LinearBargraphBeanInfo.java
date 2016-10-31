@@ -37,10 +37,10 @@ public class LinearBargraphBeanInfo extends java.beans.SimpleBeanInfo {
     public java.awt.Image getIcon(final int ICON_TYPE) {
         switch (ICON_TYPE) {
             case ICON_COLOR_16x16:
-                return loadImage("/eu/hansolo/steelseries/resources/LinearBargraph16.png");
+                return loadImage("/steelseries/LinearBargraph16.png");
 
             case ICON_COLOR_32x32:
-                return loadImage("/eu/hansolo/steelseries/resources/LinearBargraph32.png");
+                return loadImage("/steelseries/LinearBargraph32.png");
 
             case ICON_MONO_16x16:
                 return null;

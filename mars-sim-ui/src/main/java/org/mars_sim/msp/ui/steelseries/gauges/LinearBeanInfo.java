@@ -37,10 +37,10 @@ public class LinearBeanInfo extends java.beans.SimpleBeanInfo {
     public java.awt.Image getIcon(final int ICON_TYPE) {
         switch (ICON_TYPE) {
             case ICON_COLOR_16x16:
-                return loadImage("/eu/hansolo/steelseries/resources/Linear16.png");
+                return loadImage("/steelseries/Linear16.png");
 
             case ICON_COLOR_32x32:
-                return loadImage("/eu/hansolo/steelseries/resources/Linear32.png");
+                return loadImage("/steelseries/Linear32.png");
 
             case ICON_MONO_16x16:
                 return null;

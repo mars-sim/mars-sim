@@ -36,10 +36,10 @@ public class StopWatchBeanInfo extends java.beans.SimpleBeanInfo {
     public java.awt.Image getIcon(final int ICON_TYPE) {
         switch (ICON_TYPE) {
             case ICON_COLOR_16x16:
-                return loadImage("/eu/hansolo/steelseries/resources/StopWatch16.png");
+                return loadImage("/steelseries/StopWatch16.png");
 
             case ICON_COLOR_32x32:
-                return loadImage("/eu/hansolo/steelseries/resources/StopWatch32.png");
+                return loadImage("/steelseries/StopWatch32.png");
 
             case ICON_MONO_16x16:
                 return null;

@@ -37,10 +37,10 @@ public class RadialBeanInfo extends java.beans.SimpleBeanInfo {
     public java.awt.Image getIcon(final int ICON_TYPE) {
         switch (ICON_TYPE) {
             case ICON_COLOR_16x16:
-                return loadImage("/eu/hansolo/steelseries/resources/Radial416.png");
+                return loadImage("/steelseries/Radial416.png");
 
             case ICON_COLOR_32x32:
-                return loadImage("/eu/hansolo/steelseries/resources/Radial432.png");
+                return loadImage("/steelseries/Radial432.png");
 
             case ICON_MONO_16x16:
                 return null;

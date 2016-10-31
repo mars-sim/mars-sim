@@ -318,8 +318,8 @@ implements Serializable {
 				if (!oppositeGenders) RandomUtil.getRandomDouble(changeAmount+= genderBondingModifier);
 
 				// Modify based on personality differences.
-				PersonalityType personPersonality = person.getMind().getPersonalityType();
-				PersonalityType localPersonality = localPerson.getMind().getPersonalityType();
+				PersonalityType personPersonality = person.getMind().getMBTIType();
+				PersonalityType localPersonality = localPerson.getMind().getMBTIType();
 				double personalityDiffModifier = (2D - (double) personPersonality.getPersonalityDifference(localPersonality.getTypeString())) / 2D;
 				personalityDiffModifier*= PERSONALITY_DIFF_MODIFIER * time;
 				changeAmount+= RandomUtil.getRandomDouble(personalityDiffModifier);

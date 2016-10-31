@@ -131,12 +131,12 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 	<!-- Default 50 (equal numbers of males and females) -->
 	<gender-male-percentage value="50.0" />
 
-	<!-- The average percentages of the 16 MBTI (Myers-Briggs Type Indicator) personality types among settlers. -->
 	<!-- Myers-Briggs Type Indicator: http://www.wikipedia.org/wiki/MBTI -->
-	<!-- Note: The total percentage for all personality types must equal 100%. -->
-	<!-- TODO: Find percentage statistics appropriate for Martian settlers, perhaps statistics studies of scientists, -->
+	<!-- TODO: Find statistics appropriate for Martian settlers, perhaps from personality studies of scientists, -->
 	<!-- engineers or computer programmers. -->
+	<!-- The Proposed average percentages of the 16 MBTI among settlers are as follows -->
 	<personality-types>
+	<!-- Note: The total percentage for all personality types must equal 100%. -->
 		<mbti type="ISTP" percentage="3.0" />
 		<mbti type="ISTJ" percentage="19.0" />
 		<mbti type="ISFP" percentage="2.0" />
@@ -2592,8 +2592,8 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 				<!--   0 (hate) - 100 (close friend) (required) -->
 				<!--<relationship person-name="Rik Declercq" opinion="100"/> -->
 			</relationship-list>
-
 		</person>
+		
 		<person name="Rik Declercq" crew ="alpha" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef"
 			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
 			favorite-activity="Workout">
@@ -2635,8 +2635,8 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
                 <skill name="Medicine" level="1"/>
                 <skill name="Materials Science" level="2"/>
             </skill-list>
-
         </person>
+        
         <person name="Lena LaGranda" crew ="alpha" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
 			favorite-activity="Lab Experimentation">
@@ -2658,8 +2658,8 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
                 <skill name="EVA Operations" level="1"/>
                 <skill name="Materials Science" level="1"/>
             </skill-list>
-
         </person>
+        
 	</person-list>
 
 </people-configuration>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.08 2015-07-10
+ * @version 3.1.0 2016-10-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -734,10 +734,10 @@ public class UnitManager implements Serializable {
 			
 			relationshipManager.addInitialSettler(person, settlement);
 
-			// Set person's configured personality type (if any).
+			// Override person's personality type based on people.xml, if any.
 			String personalityType = personConfig.getConfiguredPersonPersonalityType(x, crew_id);
 			if (personalityType != null) {
-				person.getMind().getPersonalityType().setTypeString(personalityType);
+				person.getMind().getMBTIType().setTypeString(personalityType);
 			}
 
 			// Set person's job (if any).

@@ -75,7 +75,7 @@ public enum Util {
      */
     Util() {
         try {
-            digitalFont = Font.createFont(0, this.getClass().getResourceAsStream("/eu/hansolo/steelseries/resources/digital.ttf"));
+            digitalFont = Font.createFont(0, this.getClass().getResourceAsStream("/steelseries/digital.ttf"));
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(digitalFont);
         } catch (FontFormatException exception) {
         } catch (java.io.IOException exception) {

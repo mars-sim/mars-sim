@@ -56,7 +56,7 @@ implements Serializable {
     /** The person's job. */
     private Job job;
     /** The person's personality. */
-    private PersonalityType personality;
+    private PersonalityType mbti;
     /** The person's skill manager. */
     private SkillManager skillManager;
 
@@ -88,7 +88,7 @@ implements Serializable {
 	    //    marsClock = masterClock.getMarsClock();
         //}
         // Set the MBTI personality type.
-        personality = new PersonalityType(person);
+        mbti = new PersonalityType(person);
 
         // Construct a task manager
         taskManager = new TaskManager(this);
@@ -143,7 +143,7 @@ implements Serializable {
     	
 
         // Update stress based on personality.
-        personality.updateStress(time);
+        mbti.updateStress(time);
 
         // Update relationships.
         sim.getRelationshipManager().timePassing(person, time);
@@ -497,11 +497,11 @@ implements Serializable {
     }
 
     /**
-     * Gets the person's personality type.
+     * Gets the person's MBTI personality type.
      * @return personality type.
      */
-    public PersonalityType getPersonalityType() {
-        return personality;
+    public PersonalityType getMBTIType() {
+        return mbti;
     }
 
     /**
@@ -569,8 +569,8 @@ implements Serializable {
         if (mission != null) mission.destroy();
         mission = null;
         job = null;
-        if (personality !=null) personality.destroy();
-        personality = null;
+        if (mbti !=null) mbti.destroy();
+        mbti = null;
         skillManager.destroy();
         skillManager = null;
     }

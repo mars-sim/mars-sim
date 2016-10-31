@@ -37,10 +37,10 @@ public class LedBeanInfo extends java.beans.SimpleBeanInfo {
     public java.awt.Image getIcon(final int ICON_TYPE) {
         switch (ICON_TYPE) {
             case ICON_COLOR_16x16:
-                return loadImage("/eu/hansolo/steelseries/resources/Led16.png");
+                return loadImage("/steelseries/Led16.png");
 
             case ICON_COLOR_32x32:
-                return loadImage("/eu/hansolo/steelseries/resources/Led32.png");
+                return loadImage("/steelseries/Led32.png");
 
             case ICON_MONO_16x16:
                 return null;

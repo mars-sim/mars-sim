@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonalityTrait.java
- * @version 3.08 2015-12-12
+  * @version 3.1.0 2016-10-31
  * @author Manny Kung
  */
 

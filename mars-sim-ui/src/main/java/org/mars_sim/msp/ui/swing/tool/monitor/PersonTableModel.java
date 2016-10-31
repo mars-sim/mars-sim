@@ -414,7 +414,7 @@ extends UnitTableModel {
 			} break;
 
 			case PERSONALITY : {
-				result = person.getMind().getPersonalityType().getTypeString();
+				result = person.getMind().getMBTIType().getTypeString();
 			} break;
 
 			case HUNGER : {

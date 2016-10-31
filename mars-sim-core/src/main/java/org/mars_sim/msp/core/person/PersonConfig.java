@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -104,6 +105,8 @@ implements Serializable {
 	
 	private Document personDoc;
 	private List<String> personNameList;
+	
+	private Map<String, Double> personalityDistribution;
 
 	/**
 	 * Constructor
@@ -112,6 +115,7 @@ implements Serializable {
 	public PersonConfig(Document personDoc) {
 		this.personDoc = personDoc;
 		
+		createPersonalityDistribution();
 	}
 
 	/**
@@ -598,6 +602,55 @@ implements Serializable {
 		}
 
 		return result;
+	}
+
+
+	/**
+	 * Gets the average percentages for personality types
+	 * @param personalityDistribution map
+	 */
+	// 2016-10-30 Added loadPersonalityDistribution() 
+	public Map<String, Double> loadPersonalityDistribution() {
+		return personalityDistribution;
+	}
+	
+	/**
+	 * Loads the average percentages for personality types into a map.
+	 * @throws Exception if personality type cannot be found or percentages don't add up to 100%.
+	 */
+	// 2016-10-30 Relocated createPersonalityDistribution() from MBTI to here
+	public void createPersonalityDistribution() {
+
+		personalityDistribution = new HashMap<String, Double>(16);
+
+//		try {
+			personalityDistribution.put("ISTP", getPersonalityTypePercentage("ISTP"));
+			personalityDistribution.put("ISTJ", getPersonalityTypePercentage("ISTJ"));
+			personalityDistribution.put("ISFP", getPersonalityTypePercentage("ISFP"));
+			personalityDistribution.put("ISFJ", getPersonalityTypePercentage("ISFJ"));
+			personalityDistribution.put("INTP", getPersonalityTypePercentage("INTP"));
+			personalityDistribution.put("INTJ", getPersonalityTypePercentage("INTJ"));
+			personalityDistribution.put("INFP", getPersonalityTypePercentage("INFP"));
+			personalityDistribution.put("INFJ", getPersonalityTypePercentage("INFJ"));
+			personalityDistribution.put("ESTP", getPersonalityTypePercentage("ESTP"));
+			personalityDistribution.put("ESTJ", getPersonalityTypePercentage("ESTJ"));
+			personalityDistribution.put("ESFP", getPersonalityTypePercentage("ESFP"));
+			personalityDistribution.put("ESFJ", getPersonalityTypePercentage("ESFJ"));
+			personalityDistribution.put("ENTP", getPersonalityTypePercentage("ENTP"));
+			personalityDistribution.put("ENTJ", getPersonalityTypePercentage("ENTJ"));
+			personalityDistribution.put("ENFP", getPersonalityTypePercentage("ENFP"));
+			personalityDistribution.put("ENFJ", getPersonalityTypePercentage("ENFJ"));
+//		}
+//		catch (Exception e) {
+//			throw new Exception("PersonalityType.loadPersonalityTypes(): unable to load a personality type.");
+//		}
+
+		Iterator<String> i = personalityDistribution.keySet().iterator();
+		double count = 0D;
+		while (i.hasNext()) count+= personalityDistribution.get(i.next());
+		if (count != 100D)
+			throw new IllegalStateException("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
+		
 	}
 
 	/**

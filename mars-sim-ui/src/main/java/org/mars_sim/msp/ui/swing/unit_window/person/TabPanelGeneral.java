@@ -8,9 +8,13 @@
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,6 +23,8 @@ import javax.swing.JTextField;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.PersonalityType;
+import org.mars_sim.msp.ui.steelseries.gauges.Radial2Top;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
@@ -59,7 +65,7 @@ extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(7, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(8, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
@@ -161,38 +167,86 @@ extends TabPanel {
 		infoPanel.add(personalityNameLabel);
 
 		// Prepare personality label
-		String personality = person.getMind().getPersonalityType().getTypeString();
+		String personality = person.getMind().getMBTIType().getTypeString();
 		//JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
 		JTextField personalityTF = new JTextField(personality);
 		personalityTF.setEditable(false);
 		personalityTF.setColumns(12);
-
+		
 		String type1 = personality.substring(0,1);
 		if (type1.equals("E"))
-			type1 = "Extrovert";
+			type1 = "Extrovert (E)";
 		else
-			type1 = "Introvert";
+			type1 = "Introvert (I)";
 
 		String type2 = personality.substring(1,2);
 		if (type2.equals("N"))
-			type2 = "Intuitive";
+			type2 = "Intuitive (N)";
 		else
-			type2 = "Sensing";
+			type2 = "Sensing (S)";
 
 		String type3 = personality.substring(2,3);
 		if (type3.equals("F"))
-			type3 = "Feeling";
+			type3 = "Feeler (F)";
 		else
-			type3 = "Thinking";
+			type3 = "Thinker (T)";
 
 		String type4 = personality.substring(3,4);
 		if (type4.equals("J"))
-			type4 = "Judging";
+			type4 = "Judger (J)";
 		else
-			type4 = "Perceiving";
+			type4 = "Perceiver (P)";
 
-		personalityTF.setToolTipText("<html>" + type1 + "<br>" + type2 + "<br>" + type3 + "<br>" + type4 + "</html>");
+		personalityTF.setToolTipText("<html>" + type1 + " : " + "<br>" + type2 + "<br>" + type3 + "<br>" + type4 
+				+ "<br>" + "Note: see the 4 scores below"+ "<br>" + "</html>");
 		infoPanel.add(personalityTF);
+
+
+		infoPanel.add(new JLabel(" "));
+		
+		// Prepare gauge panel.
+		JPanel gaugePanel = new JPanel(new GridLayout(4, 1, 0, 0));
+		//gaugePanel.setBorder(new MarsPanelBorder());
+		centerContentPanel.add(gaugePanel, BorderLayout.CENTER);		
+
+		Map<Integer, Integer> scores = person.getMind().getMBTIType().getScores();
+		
+		List<Radial2Top> radials = new ArrayList<Radial2Top>();
+		for (int i=0; i< 4; i++) {
+			Radial2Top r = new Radial2Top();
+			radials.add(r);
+			gaugePanel.add(r);
+		}
+		
+		radials.get(0).setTitle("Introversion vs. Extravsersion");
+		radials.get(0).setToolTipText("Introversion vs. Extravsersion");
+		radials.get(0).setValue(scores.get(PersonalityType.INTROVERSION_EXTRAVERSION));
+
+		radials.get(1).setTitle("Intuition vs. Sensation");
+		radials.get(1).setToolTipText("Intuition vs. Sensation");
+		radials.get(1).setValue(scores.get(PersonalityType.INTUITION_SENSATION));
+		
+		radials.get(2).setTitle("Feeling vs. Thinking");		
+		radials.get(2).setToolTipText("Feeling vs. Thinking");
+		radials.get(2).setValue(scores.get(PersonalityType.FEELING_THINKING));
+
+		radials.get(3).setTitle("Judging vs. Perceiving");
+		radials.get(3).setToolTipText("Judging vs. Perceiving");
+		radials.get(3).setValue(scores.get(PersonalityType.JUDGING_PERCEIVING));
+
+		
+		for (Radial2Top r : radials) {
+			r.setUnitString("");
+			r.setLedBlinking(false);
+			r.setMajorTickSpacing(20);
+			r.setMinorTickmarkVisible(false);
+			r.setMinValue(0);
+			r.setMaxValue(100);
+			r.setSize(new Dimension(350, 350));
+			r.setMaximumSize(new Dimension(350, 350));
+			r.setPreferredSize(new Dimension(350, 350));
+			r.setVisible(true);
+		}
 	}
 
 	/**
