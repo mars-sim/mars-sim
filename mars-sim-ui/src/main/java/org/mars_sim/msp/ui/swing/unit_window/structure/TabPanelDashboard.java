@@ -20,6 +20,8 @@ import javax.swing.JPanel;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.ObjectiveType;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.javafx.SubmitButton;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -40,6 +42,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -61,11 +64,16 @@ import javafx.scene.control.ToggleButton;
  * Tab panel displaying general info regarding the settlement <br>
  */
 @SuppressWarnings("restriction")
-public class TabPanelDashboard
-extends TabPanel {
+public class TabPanelDashboard extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private double progress;
+	private long lastTimerCall;
+	private boolean toggle;
+
+	private String[] objectives;
 
 	// Data members
 	private JFXPanel jfxpanel;
@@ -73,325 +81,294 @@ extends TabPanel {
 	private StackPane stack;
 	private Label objLabel;
 
-	private String[] objectives;
-	//private ComboBox<ObjectiveType> cb;
-	private VBox toggleBox = new VBox();
+	// private ToggleGroup group;
+	private ToggleButton toggleBtn;
+	private SubmitButton commitButton;
+	private VBox buttonBox = new VBox();
+	private AnimationTimer timer;
+
 	private List<ToggleButton> buttons = new ArrayList<>();
-	
+
 	private Settlement settlement;
-	
+
 	/**
 	 * Constructor.
-	 * @param settlement {@link Settlement} the settlement this tab panel is for.
-	 * @param desktop {@link MainDesktopPane} the main desktop panel.
+	 * 
+	 * @param settlement
+	 *            {@link Settlement} the settlement this tab panel is for.
+	 * @param desktop
+	 *            {@link MainDesktopPane} the main desktop panel.
 	 */
 	@SuppressWarnings("restriction")
 	public TabPanelDashboard(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelDashboard.title"), //$NON-NLS-1$
-			null,
-			Msg.getString("TabPanelDashboard.title.tooltip"), //$NON-NLS-1$
-			settlement, 
-			desktop
-		);
+		super(Msg.getString("TabPanelDashboard.title"), //$NON-NLS-1$
+				null, Msg.getString("TabPanelDashboard.title.tooltip"), //$NON-NLS-1$
+				settlement, desktop);
 
 		// Initialize data members.
 		this.settlement = settlement;
 		objectives = settlement.getObjectiveArray();
-		//this.cb = new ComboBox<ObjectiveType>();//FXCollections.observableArrayList(objArray)); 
-		//this.cb.getItems().setAll(ObjectiveType.values());   
-		//setupChoiceBox();
-		
-		//setupToggleGroup();
-		setupButtonGroup();
-		
-		
+		// this.cb = new
+		// ComboBox<ObjectiveType>();//FXCollections.observableArrayList(objArray));
+		// this.cb.getItems().setAll(ObjectiveType.values());
+		// setupChoiceBox();
+
+		// setupToggleGroup();
+		createButtonPane();
+
 		jfxpanel = new JFXPanel();
-		
-       	int width = 400;
+
+		int width = 400;
 		int height = 500;
 
-        Platform.runLater(new Runnable(){
-            @Override
-            public void run() {
-                stack = new StackPane();
-                stack.setStyle(
-             		   "-fx-border-style: 2px; "
-             		   //"-fx-background-color: #231d12; "
-                			//+ "-fx-background-color: transparent; "
-                			+ "-fx-background-radius: 2px;"
-             		   );
-                
-                scene = new Scene(stack, width, height);
-                scene.setFill(Color.TRANSPARENT);//.BLACK);
-                jfxpanel.setScene(scene);
-
-                Label title = new Label(Msg.getString("TabPanelDashboard.title"));
-                Reflection reflection = new Reflection();
-                title.setEffect(reflection);
-                reflection.setTopOffset(0.0);
-                title.setPadding(new Insets(5,5,0,5));
-                //title.setFont(new Font("Arial", 20));
-                title.setFont(Font.font("Cambria", FontWeight.BOLD, 16));
-
-                //title.setAlignment(Pos.TOP_CENTER);
-                //title.setSpacing(10);
-                objLabel = new Label();
-                objLabel.setText(settlement.getObjective().toString());
-                objLabel.setAlignment(Pos.TOP_CENTER);
-                //objLabel.setPadding(new Insets(5,5,5,5));
-                //hello.setFill(Color.WHEAT);
-
-                Label label = new Label("New objective set.");
-                label.setFont(Font.font("Cambria", FontWeight.NORMAL, 13));
-                label.setPadding(new Insets(5,5,5,5));
-                label.setTextFill(Color.DARKCYAN);              
-                label.setVisible(false);
-                
-                //HBox hbox = new HBox();
-                //hbox.getChildren().addAll(label, cb);//, objLabel);                
-                //hbox.setAlignment(Pos.TOP_CENTER);
-                //hbox.setPadding(new Insets(5,5,5,5));
-       
-                VBox vbox0 = new VBox();
-                vbox0.getChildren().addAll(toggleBox, label);
-                vbox0.setAlignment(Pos.TOP_CENTER);
-                vbox0.setPadding(new Insets(5,5,5,5));                            
-                
-                VBox vbox = new VBox();
-                vbox.setAlignment(Pos.TOP_CENTER);
-                //vbox.getChildren().addAll(title, cb, hbox);
-                vbox.getChildren().addAll(title, new Label(), vbox0);
-                
-                stack.getChildren().add(vbox);
-
-            }
-        });
-  
-        centerContentPanel.add(jfxpanel);   
- 		this.setSize(new Dimension(width, height));
-        this.setVisible(true);
-        
-/*        
-		JPanel centerPanel = new JPanel(new BorderLayout());
-		centerPanel.setBorder(new MarsPanelBorder());
-		centerContentPanel.add(centerPanel, BorderLayout.CENTER);
-*/		
-
-	}
-
-/*
-	@SuppressWarnings("restriction")
-	public void setupChoiceBox() {
-
-		cb.setTooltip(new Tooltip(Msg.getString("TabPanelDashboard.cb.tooltip")));		
-		cb.getSelectionModel().select(0);		
-		cb.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		Platform.runLater(new Runnable() {
 			@Override
-			public void changed(javafx.beans.value.ObservableValue<? extends Number> observable, 
-					Number oldValue, Number newValue) {			
-				String choice = objectives[newValue.intValue()];
-				
-				ObjectiveType type = null;
-				if (choice.equals(ObjectiveType.CROP_FARM.toString()))	
-					type = ObjectiveType.CROP_FARM;
-				else if (choice.equals(ObjectiveType.MANUFACTURING.toString()))	
-					type = ObjectiveType.MANUFACTURING;
-				else if (choice.equals(ObjectiveType.RESEARCH_CENTER.toString()))	
-					type = ObjectiveType.RESEARCH_CENTER;
-				else if (choice.equals(ObjectiveType.TRADE_TOWN.toString()))	
-					type = ObjectiveType.TRADE_TOWN;
-				else if (choice.equals(ObjectiveType.TRANSPORTATION_HUB.toString()))	
-					type = ObjectiveType.TRANSPORTATION_HUB;
+			public void run() {
+				stack = new StackPane();
+				stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+						+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
 
-				settlement.setObjective(type);
+				scene = new Scene(stack, width, height);
+				scene.setFill(Color.TRANSPARENT);// .BLACK);
+				jfxpanel.setScene(scene);
+
+				Label title = new Label(Msg.getString("TabPanelDashboard.title"));
+				Reflection reflection = new Reflection();
+				title.setEffect(reflection);
+				reflection.setTopOffset(0.0);
+				title.setPadding(new Insets(5, 5, 0, 5));
+				// title.setFont(new Font("Arial", 20));
+				title.setFont(Font.font("Cambria", FontWeight.BOLD, 16));
+
+				VBox toggleVBox = new VBox();
+				toggleVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+						+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+				toggleVBox.getChildren().addAll(buttonBox);
+				toggleVBox.setAlignment(Pos.TOP_CENTER);
+				toggleVBox.setPadding(new Insets(5, 5, 5, 5));
+
+				VBox topVBox = new VBox();
+				topVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+						+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+				topVBox.setAlignment(Pos.TOP_CENTER);
+				// vbox.getChildren().addAll(title, cb, hbox);
+				topVBox.getChildren().addAll(title, new Label(), toggleVBox);
+
+				stack.getChildren().add(topVBox);
 			}
 		});
+
+		centerContentPanel.add(jfxpanel);
+		this.setSize(new Dimension(width, height));
+		this.setVisible(true);
+
+		/*
+		 * JPanel centerPanel = new JPanel(new BorderLayout());
+		 * centerPanel.setBorder(new MarsPanelBorder());
+		 * centerContentPanel.add(centerPanel, BorderLayout.CENTER);
+		 */
+
 	}
-	
-*/	
+
 	public String addSpace(String s) {
 		s = s.replace(" ", System.lineSeparator());
 		return s;
 	}
-	
-	public void setupButtonGroup() {
 
-		String header = "Settlement's Objective";
-/*		
-		String a = addSpace(objectives[0]);
-		String b = addSpace(objectives[1]);
-		String c = addSpace(objectives[2]);
-		String d = addSpace(objectives[3]);
-		String e = addSpace(objectives[4]);
-*/				
-		for (int i=0; i<5; i++) {
-			int num = i;
+	public void createButtonPane() {
+
+		String header = "Settlement Objective";
+
+		int size = objectives.length;
+
+		for (int i = 0; i < size; i++) {
+
+			int index = i;
 			String s = objectives[i];
 			String ss = null;
 			String sss = addSpace(s);
-			ToggleButton btn = new ToggleButton();
-			
-			btn.setOnAction(new EventHandler<ActionEvent>() {
-	            @Override
-	            public void handle(ActionEvent event) {
-	            	
-					for (int j=0; j<5; j++) {
-						if (num != j) {
+			toggleBtn = new ToggleButton();
+
+			toggleBtn.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+
+					toggleBtn.setSelected(true);
+
+					for (int j = 0; j < size; j++) {
+						if (index != j) {
 							buttons.get(j).setSelected(false);
 						}
 					}
-					
-					ObjectiveType type = null;
-					
-					if (s.equals(ObjectiveType.CROP_FARM.toString()))	
-						type = ObjectiveType.CROP_FARM;
-					else if (s.equals(ObjectiveType.MANUFACTURING.toString()))	
-						type = ObjectiveType.MANUFACTURING;
-					else if (s.equals(ObjectiveType.RESEARCH_CENTER.toString()))	
-						type = ObjectiveType.RESEARCH_CENTER;
-					else if (s.equals(ObjectiveType.TRADE_TOWN.toString()))	
-						type = ObjectiveType.TRADE_TOWN;
-					else if (s.equals(ObjectiveType.TRANSPORTATION_HUB.toString()))	
-						type = ObjectiveType.TRANSPORTATION_HUB;
-					
-					settlement.setObjective(type);
-					
-	            }
-	        });
-			
-			btn.setPadding(new Insets(5, 5, 5, 5));
-			btn.setTooltip(new Tooltip(sss));
-			buttons.add(btn);
-	        //btn.setGraphic(new Rectangle(10,10, Color.BURLYWOOD));
-			if (i == 0)				
+				}
+			});
+
+			toggleBtn.setPadding(new Insets(5, 5, 5, 5));
+			toggleBtn.setTooltip(new Tooltip(sss));
+
+			buttons.add(toggleBtn);
+			// btn.setGraphic(new Rectangle(10,10, Color.BURLYWOOD));
+			if (i == 0)
 				ss = "/icons/settlement_goals/cropfarm.png";
-			else if (i == 1)				
+			else if (i == 1)
 				ss = "/icons/settlement_goals/manufacture.png";
-			else if (i == 2)				
+			else if (i == 2)
 				ss = "/icons/settlement_goals/research.png";
-			else if (i == 3)				
+			else if (i == 3)
 				ss = "/icons/settlement_goals/transport.png";
-			else if (i == 4)				
+			else if (i == 4)
 				ss = "/icons/settlement_goals/trade.png";
-			
-			btn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ss))));
-	        //btn.setStyle("-fx-alignment: LEFT;");
-			btn.setAlignment(Pos.BASELINE_CENTER);
-			btn.setMaxHeight(90);
-			btn.setMaxWidth(90);
-	
+			else if (i == 5)
+				ss = "/icons/settlement_goals/free_market_128.png";
+
+			toggleBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ss))));
+			// btn.setStyle("-fx-alignment: LEFT;");
+			toggleBtn.setAlignment(Pos.BASELINE_CENTER);
+			toggleBtn.setMaxHeight(90);
+			toggleBtn.setMaxWidth(90);
+
 			if (settlement.getObjective().toString().equals(s))
-				btn.setSelected(true);
+				toggleBtn.setSelected(true);
 			else
-				btn.setSelected(false);
-			
+				toggleBtn.setSelected(false);
+
 		}
-/*		
-		Button ra = new Button(a);
-		Button rb = new Button(b);
-		Button rc = new Button(c);
-		Button rd = new Button(d);
-		Button re = new Button(e);
-*/	
+
 		VBox options = new VBox();
-		
+		options.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+				+ "-fx-background-radius: 2px;");
 		HBox hbox0 = new HBox();
+		hbox0.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+				+ "-fx-background-radius: 2px;");
 		HBox hbox1 = new HBox();
-		
-		hbox0.getChildren().addAll(buttons.get(0),buttons.get(1),buttons.get(2));
-		hbox1.getChildren().addAll(buttons.get(3),buttons.get(4));
-		
-		options.getChildren().addAll(hbox0, hbox1);
-		
+		hbox1.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+				+ "-fx-background-radius: 2px;");
+		hbox0.getChildren().addAll(buttons.get(0), buttons.get(1), buttons.get(2));
+		hbox1.getChildren().addAll(buttons.get(3), buttons.get(4), buttons.get(5));
+
+		createCommitButton();
+
+		StackPane commitPane = new StackPane(commitButton);
+		commitPane.setPrefSize(100, 50);
+		commitPane.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+				+ "-fx-background-radius: 2px;");
+
+		options.getChildren().addAll(hbox0, hbox1, commitPane);
+
 		TitledPane titledPane = new TitledPane(header, options);
-		//titledPane.setId("titledpane");
-	    //titledPane.setPrefSize(100, 100);
-		toggleBox.getChildren().add(titledPane);
-		
-	    
+		titledPane.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+				+ "-fx-background-radius: 2px;");
+		titledPane.setTooltip(new Tooltip("The direction where the settlement would devote its surplus resources"));
+		// titledPane.setId("titledpane");
+		// titledPane.setPrefSize(100, 100);
+		buttonBox.getChildren().add(titledPane);
+		buttonBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+				+ "-fx-background-radius: 2px;");
+
 	}
-	
-	public void setupToggleGroup() {
-		
-		String header = "Settlement's Overall Objective";
-		ToggleGroup group = new ToggleGroup();
-		group.setUserData(header);
-		
-		//group.setTooltip(new Tooltip(Msg.getString("TabPanelDashboard.cb.tooltip")));
 
-		//String a = ObjectiveType.CROP_FARM.toString();
-		//String b = ObjectiveType.MANUFACTURING.toString();
-		//String c = ObjectiveType.RESEARCH_CENTER.toString();
-		//String d = ObjectiveType.TRADE_TOWN.toString();
-		//String e = ObjectiveType.TRANSPORTATION_HUB.toString();
-		
-		String a = objectives[0];
-		String b = objectives[1];
-		String c = objectives[2];
-		String d = objectives[3];
-		String e = objectives[4];
-		
-		RadioButton ra = new RadioButton(a);
-		RadioButton rb = new RadioButton(b);
-		RadioButton rc = new RadioButton(c);
-		RadioButton rd = new RadioButton(d);
-		RadioButton re = new RadioButton(e);
 
-		ra.setUserData(a);
-		rb.setUserData(b);
-		rc.setUserData(c);
-		rd.setUserData(d);
-		re.setUserData(e);
-		
-		ra.setToggleGroup(group);
-		rb.setToggleGroup(group);
-		rc.setToggleGroup(group);
-		rd.setToggleGroup(group);
-		re.setToggleGroup(group);
+	public void createCommitButton() {
+		commitButton = new SubmitButton();
+		commitButton.setOnMousePressed(e -> timer.start());
+		commitButton.statusProperty().addListener(o -> {
 
-		VBox options = new VBox();
-		options.getChildren().addAll(ra, rb, rc, rd, re);
-		TitledPane titledPane = new TitledPane(header, options);
-		//titledPane.setId("titledpane");
-	    titledPane.setPrefSize(100, 100);
-	    //VBox vbox = new VBox();
-		toggleBox.getChildren().add(titledPane);
-		
-		
-		ra.setSelected(true);
-		
-		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
-		    public void changed(ObservableValue<? extends Toggle> ov,
-		        Toggle old_toggle, Toggle new_toggle) {
-		
-	            if (group.getSelectedToggle() != null) {
-	            	String choice = group.getSelectedToggle().getUserData().toString();
-	
-					ObjectiveType type = null;
-					
-					if (choice.equals(ObjectiveType.CROP_FARM.toString()))	
-						type = ObjectiveType.CROP_FARM;
-					else if (choice.equals(ObjectiveType.MANUFACTURING.toString()))	
-						type = ObjectiveType.MANUFACTURING;
-					else if (choice.equals(ObjectiveType.RESEARCH_CENTER.toString()))	
-						type = ObjectiveType.RESEARCH_CENTER;
-					else if (choice.equals(ObjectiveType.TRADE_TOWN.toString()))	
-						type = ObjectiveType.TRADE_TOWN;
-					else if (choice.equals(ObjectiveType.TRANSPORTATION_HUB.toString()))	
-						type = ObjectiveType.TRANSPORTATION_HUB;
-					
-					settlement.setObjective(type);
-	            }
-		    }
+			int index = -1;
+			for (int j = 0; j < 5; j++) {
+				if (buttons.get(j).isSelected()) {
+					index = j;
+				}
+			}
+
+			ObjectiveType type = null;
+
+			if (index == 0)
+				type = ObjectiveType.CROP_FARM;
+			else if (index == 1)
+				type = ObjectiveType.MANUFACTURING;
+			else if (index == 2)
+				type = ObjectiveType.RESEARCH_CENTER;
+			else if (index == 3)
+				type = ObjectiveType.TRADE_TOWN;
+			else if (index == 4)
+				type = ObjectiveType.TRANSPORTATION_HUB;
+			else if (index == 5)
+				type = ObjectiveType.FREE_MARKET;
+
+			settlement.setObjective(type);
+
 		});
-		
+
+		progress = 0;
+		lastTimerCall = System.nanoTime();
+		timer = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+                if (now > lastTimerCall + 50_000_000l) {
+					progress += 0.005;
+					commitButton.setProgress(progress);
+					lastTimerCall = now;
+					if (toggle) {
+						if (progress > 0.75) {
+							progress = 0;
+							commitButton.setFailed();
+							timer.stop();
+							toggle ^= true;
+						}
+					} else {
+						if (progress > 1) {
+							progress = 0;
+							timer.stop();
+							toggle ^= true;
+						}
+					}
+				}
+			}
+		};
 	}
-	
+
+	/*
+	 * Display the initial system greeting and update the css style
+	 */
+	// 2016-10-31 Added update()
 	@Override
 	public void update() {
-		
+
+		 int theme = MainScene.getTheme(); 
+		 if (theme == 6) { 
+			 //String cssFile ="/fxui/css/snowBlue.css"; 
+		 	commitButton.setColor(Color.web("#34495e")); // navy blue
+			 //commitButton.getStylesheets().clear();
+			 //commitButton.getStyleClass().add("button-broadcast");
+			 //commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
+		 } else if (theme == 7) { 
+			 commitButton.setColor(Color.web("#b85c01")); // orange
+			 //String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
+			 //commitButton.getStyleClass().add("button-broadcast");
+			 //commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
+		 } else { 
+			 commitButton.setColor(Color.web("#b85c01")); // orange
+			 //String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
+		 	//commitButton.getStyleClass().add("button-broadcast");
+		 	//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		 }
+
 	}
 
+	/**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+    	jfxpanel = null;
+    	scene = null;
+		stack	= null;
+		objLabel= null;
+		toggleBtn = null;
+		commitButton = null;
+		buttonBox = null;
+		timer.stop();
+		timer = null;
+		commitButton = null;
+    }
 }

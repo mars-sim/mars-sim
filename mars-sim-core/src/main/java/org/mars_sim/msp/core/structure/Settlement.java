@@ -157,7 +157,9 @@ implements Serializable, LifeSupportType, Objective {
 			, Msg.getString("ObjectiveType.manu")
 			, Msg.getString("ObjectiveType.research")
 			, Msg.getString("ObjectiveType.transportation")
-			, Msg.getString("ObjectiveType.trade")};
+			, Msg.getString("ObjectiveType.trade")
+			, Msg.getString("ObjectiveType.freeMarket")
+			};
 	
 	//private int[] resourceArray = new int[9];
 	//private int[] solArray = new int[30];
@@ -2911,6 +2913,8 @@ implements Serializable, LifeSupportType, Objective {
 		// alternatives :"Garage";
 		else if (objectiveType == ObjectiveType.TRADE_TOWN)
 			return "storage shed";
+		else if (objectiveType == ObjectiveType.FREE_MARKET)
+			return "";
 		
 		// Future alternatives : 
 		

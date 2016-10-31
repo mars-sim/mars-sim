@@ -39,11 +39,11 @@ public final class Fonts {
 
     static {
         try {
-            robotoThinName    = Font.loadFont(Fonts.class.getResourceAsStream("Roboto-Thin.ttf"), 10).getName();
-            robotoLightName   = Font.loadFont(Fonts.class.getResourceAsStream("Roboto-Light.ttf"), 10).getName();
-            robotoRegularName = Font.loadFont(Fonts.class.getResourceAsStream("Roboto-Regular.ttf"), 10).getName();
-            robotoMediumName  = Font.loadFont(Fonts.class.getResourceAsStream("Roboto-Medium.ttf"), 10).getName();
-            robotoBoldName    = Font.loadFont(Fonts.class.getResourceAsStream("Roboto-Bold.ttf"), 10).getName();
+            robotoThinName    = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/Roboto-Thin.ttf"), 10).getName();
+            robotoLightName   = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/Roboto-Light.ttf"), 10).getName();
+            robotoRegularName = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/Roboto-Regular.ttf"), 10).getName();
+            robotoMediumName  = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/Roboto-Medium.ttf"), 10).getName();
+            robotoBoldName    = Font.loadFont(Fonts.class.getResourceAsStream("/fonts/Roboto-Bold.ttf"), 10).getName();
         } catch (Exception exception) { }
 
         ROBOTO_THIN_NAME    = robotoThinName;

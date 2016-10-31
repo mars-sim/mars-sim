@@ -309,16 +309,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <artifactId>ikonli-javafx</artifactId>
 	        <version>1.8.0</version>
 	    </dependency>		
-<!-- for enzo's funmenu --> 		
-		
-<!--  
+<!-- for enzo's FunMenu and SubmitButton--> 				  
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-fontawesome-pack</artifactId>
 		    <version>1.8.0</version>
 		</dependency>	
-		    					
--->
+    					
 	</dependencies>
 	<repositories>
 		<repository>
