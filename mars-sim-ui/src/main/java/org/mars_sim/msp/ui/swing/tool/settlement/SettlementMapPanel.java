@@ -102,6 +102,8 @@ implements ClockListener {
 		super();
 		this.settlementWindow = settlementWindow;
 
+		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
+		
         //System.out.println("SettlementMapPanel's constructor");
 
 		setLayout(new BorderLayout());
@@ -349,7 +351,7 @@ implements ClockListener {
 	 * @param settlement the settlement.
 	 */
 	// Called by SettlementTransparentPanel to update settlement
-	public void setSettlement(Settlement newSettlement) {
+	public synchronized void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
 
 			this.settlement = newSettlement;

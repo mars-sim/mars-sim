@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.javafx;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXPopup;
 import com.jfoenix.controls.JFXRippler;
 import com.jfoenix.controls.JFXRippler.RipplerMask;
@@ -91,6 +93,8 @@ import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Orientation;
 import javafx.event.EventHandler;
 import javafx.scene.input.ScrollEvent;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -232,15 +236,18 @@ public class MainScene {
 	
 	private Thread newSimThread;
 
-    private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
-    private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
-    private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
-    private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
-    private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
-    private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
+    //private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
+    //private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
+    //private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
+    //private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
+    //private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
+    //private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
 
 	private Label timeText, lastSaveText;
 	private Text memUsedText;
+	//private JFXComboBox<Settlement> settlementBox;
+	//private VBox settlementBox;
+	private StackPane settlementBox;
 
 	private JFXToggleButton cacheButton;
 	private JFXSlider zoomSlider;
@@ -632,6 +639,41 @@ public class MainScene {
         });   
 	}
 	
+
+	public void createFXSettlementComboBox() {
+		JFXComboBox<Settlement> sBox = new JFXComboBox<>();
+		//sBox.setAlignment(Pos.CENTER_RIGHT);
+		//JFXListView<Settlement> list = new JFXListView<Settlement>();	
+		sBox.getStyleClass().add("jfx-combo-box");
+		sBox.setTooltip(new Tooltip(Msg.getString("SettlementWindow.tooltip.selectSettlement"))); //$NON-NLS-1$
+		//ObservableList<Settlement> names = sim.getUnitManager().getSettlementOList();		
+		sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
+		sBox.setPromptText("Select a settlement to view");
+		sBox.getSelectionModel().selectFirst();
+
+		//sBox.setOnAction(s -> {
+		//	settlementWindow.getMapPanel().setSettlement(sBox.getSelectionModel().getSelectedItem());  
+		//});
+		sBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+			if (oldValue != newValue) {
+				SwingUtilities.invokeLater(() -> settlementWindow.getMapPanel().setSettlement((Settlement)newValue));
+			}
+    	});
+		
+		//Settlement s0 = Simulation.instance().getUnitManager().getSettlementOList().get(0);
+		//System.out.println("s0 is " + s0);
+
+		settlementBox = new StackPane(sBox);
+		settlementBox.setMaxSize(180, 30);
+		settlementBox.setPrefSize(180, 30);		
+		settlementBox.setAlignment(Pos.CENTER_RIGHT);
+		//settlementBox = new VBox(sBox);
+		//settlementBox.setAlignment(Pos.CENTER_LEFT);
+		//VBox.setMargin(sBox, new Insets(5));
+		//settlementBox.setStyle("-fx-background-color: transparent");
+		//settlementBox.getChildren().add(sBox);	
+		//settlementBox.toFront();
+	}
 	
 	
 	/**
@@ -695,6 +737,8 @@ public class MainScene {
 		
 		createFXButtons();
 		
+		createFXSettlementComboBox();
+		
 		createFXZoomSlider();
 
         // detect mouse wheel scrolling
@@ -720,7 +764,7 @@ public class MainScene {
 						zoomSlider.setValue( (zoomSlider.getValue() + 1));
 				}
 
-                event.consume();
+                //event.consume();
                 
             }
         });
@@ -739,7 +783,9 @@ public class MainScene {
 			}
 			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-				closeMaps();
+				desktop.closeToolWindow(SettlementWindow.NAME);
+				anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane);
+				anchorMapTabPane.getChildren().remove(settlementBox);
 			}
 			
 			else {
@@ -747,8 +793,11 @@ public class MainScene {
 				desktop.openToolWindow(SettlementWindow.NAME);
 				mapNode.setContent(settlementWin); 
 	
-		        AnchorPane.setRightAnchor(zoomSlider, 48.0);
-		        AnchorPane.setTopAnchor(zoomSlider, 280.0);//(mapNodePane.prefHeightProperty().get() - zoomSlider.heightProperty().get())*.4d);    
+		        AnchorPane.setRightAnchor(mapNodePane, 0.0);
+		        AnchorPane.setTopAnchor(mapNodePane, 3.0);   
+
+		        AnchorPane.setRightAnchor(zoomSlider, 55.0);
+		        AnchorPane.setTopAnchor(zoomSlider, 280.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);    
 
 		        AnchorPane.setRightAnchor(rotateCWBtn, 100.0);
 		        AnchorPane.setTopAnchor(rotateCWBtn, 230.0);    
@@ -759,16 +808,18 @@ public class MainScene {
 		        AnchorPane.setRightAnchor(recenterBtn, 60.0);
 		        AnchorPane.setTopAnchor(recenterBtn, 230.0);    
 
-		        AnchorPane.setRightAnchor(mapNodePane, 0.0);
-		        AnchorPane.setTopAnchor(mapNodePane, 3.0);   
-
-		        //AnchorPane.setRightAnchor(cacheButton, 5.0);
-		        //AnchorPane.setTopAnchor(cacheButton, 45.0);
-
-		        boolean hasMap = false, hasZoom = false, hasButtons = false;
+		        //AnchorPane.setRightAnchor(settlementBox, 10.0);//anchorMapTabPane.widthProperty().get()/2D + settlementBox.getWidth()/2D );
+		        //AnchorPane.setTopAnchor(settlementBox, 150.0);
+		        AnchorPane.setRightAnchor(settlementBox, 2.0);//anchorMapTabPane.widthProperty().get()/2D - 110.0);//settlementBox.getWidth());
+		        AnchorPane.setTopAnchor(settlementBox, 30.0);//8.0);  
+		        
+		        boolean hasMap = false, hasZoom = false, hasButtons = false, hasSettlements = false;
 				for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
-			        if (node == cacheButton) {
-			        	node.toFront();
+			        //if (node == cacheButton) {
+			        //	node.toFront();
+			        //}
+			        if (node == settlementBox) {
+			        	hasSettlements = true;
 			        }
 			        else if (node == mapNodePane) {
 			        	hasMap = true;
@@ -779,11 +830,24 @@ public class MainScene {
 			        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
 			        	hasButtons = true;
 			        }
-				}	
+				}
+				
+				//for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
+			    //    if (node == settlementBox) {
+			    //    	hasSettlements = true;
+			     //   }
+				//}	
+				
 				
 				if (!hasMap)
 					anchorMapTabPane.getChildren().addAll(mapNodePane);
-		        
+	
+				if (!hasSettlements) {
+					anchorDesktopPane.getChildren().addAll(settlementBox);
+					anchorMapTabPane.getChildren().addAll(settlementBox);
+					//System.out.println("settlementBox added");
+				}
+					        
 				if (!hasZoom)
 					anchorMapTabPane.getChildren().addAll(zoomSlider);
 		        
@@ -794,7 +858,15 @@ public class MainScene {
 			        if (node == cacheButton) {
 			        	node.toFront();
 			        }
-			    }			
+			        if (node == settlementBox) {
+			        	node.toFront();
+			        }
+			    }
+				//for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
+			    //    if (node == settlementBox) {
+			    //    	node.toFront();
+			    //    }
+			    //}
 			}
 
 		});
@@ -935,8 +1007,8 @@ public class MainScene {
 				}
 				
 				if (!cache) {
-			        AnchorPane.setRightAnchor(cacheButton, 5.0);
-			        AnchorPane.setTopAnchor(cacheButton, 45.0);  // 45.0 		        
+			        AnchorPane.setRightAnchor(cacheButton, 20.0);
+			        AnchorPane.setTopAnchor(cacheButton, 55.0);  // 45.0 		        
 					anchorMapTabPane.getChildren().addAll(cacheButton);
 				}   
 			}
@@ -994,7 +1066,10 @@ public class MainScene {
 			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
-			Platform.runLater(() -> anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane));
+			Platform.runLater(() -> {
+				anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane);
+				anchorMapTabPane.getChildren().remove(settlementBox);
+			});
 		}
 	}
 	
@@ -1122,13 +1197,20 @@ public class MainScene {
 		String color = txtColor.toString().replace("0x", "");
 		timeText.setTextFill(txtColor);
 		lastSaveText.setTextFill(txtColor);
-		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		
 		jfxTabPane.getStylesheets().clear();
+		
+		statusBar.getStylesheets().clear();
+		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
 		miniMapBtn.getStylesheets().clear();
-		mapBtn.getStylesheets().clear();
 		miniMapBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		mapBtn.getStylesheets().clear();
 		mapBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		cacheButton.getStylesheets().clear();
 		cacheButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		settlementBox.getStylesheets().clear();
+		settlementBox.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		
 		
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow)(desktop.getToolWindow(SettlementWindow.NAME));
@@ -2102,12 +2184,12 @@ public class MainScene {
 		quote = null;
 		messagePopup = null;		
 		topFlapBar = null;	
-	    navMenuItem = null;
-	    mapMenuItem = null;
-	    missionMenuItem = null;
-	    monitorMenuItem = null;
-	    searchMenuItem = null;
-	    eventsMenuItem = null;
+	    //navMenuItem = null;
+	    //mapMenuItem = null;
+	    //missionMenuItem = null;
+	    //monitorMenuItem = null;
+	    //searchMenuItem = null;
+	    //eventsMenuItem = null;
 	    timeStamp = null;
 	    memUsedText = null;
 		memBtn = null;

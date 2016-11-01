@@ -2983,6 +2983,10 @@ implements Serializable, LifeSupportType, Objective {
     	return cropsNeedingTendingCache;
     }
     
+    //public String toString() {
+    //	return name;
+    //}
+    
 	@Override
 	public void destroy() {
 		super.destroy();

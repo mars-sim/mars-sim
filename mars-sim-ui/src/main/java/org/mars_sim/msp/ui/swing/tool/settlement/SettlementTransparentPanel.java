@@ -132,44 +132,44 @@ public class SettlementTransparentPanel extends JComponent {
 	    	};
 	    };
 	    	
-        buildSettlementNameComboBox();
-        buildInfoP();
-        buildrenameBtn();
-
-	    if (mainScene == null) {
-	        //buildZoomLabel();
-	        buildZoomSlider();
-	        buildButtonPane();
-	    }
-
 
         buildLabelPane();
 
-		nameBtnPane = new JPanel(new FlowLayout());
-		nameBtnPane.setBackground(new Color(0,0,0));
-        nameBtnPane.setOpaque(false);
+	    if (mainScene == null) {
+	        //buildZoomLabel();
+	        buildSettlementNameComboBox();
+	        buildInfoP();
+	        buildrenameBtn();
+	        buildZoomSlider();
+	        buildButtonPane();
+	        
 
-      	nameBtnPane.add(infoP);
-       	nameBtnPane.add(renameP);
-       	nameBtnPane.add(new JLabel(""));
+			nameBtnPane = new JPanel(new FlowLayout());
+			nameBtnPane.setBackground(new Color(0,0,0));
+	        nameBtnPane.setOpaque(false);
 
-		settlementPanel = new JPanel();//new BorderLayout());
-		settlementPanel.setBackground(new Color(0,0,0));
-		settlementPanel.setOpaque(false);
-		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
+	      	nameBtnPane.add(infoP);
+	       	nameBtnPane.add(renameP);
+	       	nameBtnPane.add(new JLabel(""));
 
-		Box box = new Box(BoxLayout.Y_AXIS);
-	    box.add(Box.createVerticalGlue());
-	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-	    box.add(Box.createVerticalGlue());
-		box.setBackground(new Color(0,0,0));
-		box.setOpaque(false);
-	    box.add(settlementPanel);
-	    box.add(nameBtnPane);
-	    
-	    mapPanel.add(box, BorderLayout.NORTH);
-	    
+			settlementPanel = new JPanel();//new BorderLayout());
+			settlementPanel.setBackground(new Color(0,0,0));
+			settlementPanel.setOpaque(false);
+			settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
+
+			Box box = new Box(BoxLayout.Y_AXIS);
+		    box.add(Box.createVerticalGlue());
+		    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+		    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+		    box.add(Box.createVerticalGlue());
+			box.setBackground(new Color(0,0,0));
+			box.setOpaque(false);
+		    box.add(settlementPanel);
+		    box.add(nameBtnPane);
+		    
+		    mapPanel.add(box, BorderLayout.NORTH);
+	    }
+
 /*
 	    JPanel lcdPanel = new JPanel();
 	    DisplaySingle lcd1 = new DisplaySingle();

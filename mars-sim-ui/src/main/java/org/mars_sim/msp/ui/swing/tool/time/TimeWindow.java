@@ -498,7 +498,7 @@ implements ClockListener {
 		if (earthTime != null) {
 			if (earthTime.getTimeStamp() != null)
 				SwingUtilities.invokeLater(() -> {
-					earthTimeLabel.setText(earthTime.getTimeStamp());
+					if (earthTime != null) earthTimeLabel.setText(earthTime.getTimeStamp());
 				});
 		}
 

@@ -71,7 +71,7 @@ public class TabPanelDashboard extends TabPanel {
 
 	private double progress;
 	private long lastTimerCall;
-	private boolean toggle;
+	private boolean toggle, running = false;
 
 	private String[] objectives;
 
@@ -271,58 +271,75 @@ public class TabPanelDashboard extends TabPanel {
 
 	public void createCommitButton() {
 		commitButton = new SubmitButton();
-		commitButton.setOnMousePressed(e -> timer.start());
-		commitButton.statusProperty().addListener(o -> {
+		commitButton.setOnMousePressed(e -> {
+        	if (!running) {
 
-			int index = -1;
-			for (int j = 0; j < 5; j++) {
-				if (buttons.get(j).isSelected()) {
-					index = j;
-				}
-			}
+        		timer.start();
+                running = true;
+                commitButton.setDisable(true);
 
-			ObjectiveType type = null;
+    			int index = -1;
+    			for (int j = 0; j < 5; j++) {
+    				if (buttons.get(j).isSelected()) {
+    					index = j;
+    				}
+    			}
 
-			if (index == 0)
-				type = ObjectiveType.CROP_FARM;
-			else if (index == 1)
-				type = ObjectiveType.MANUFACTURING;
-			else if (index == 2)
-				type = ObjectiveType.RESEARCH_CENTER;
-			else if (index == 3)
-				type = ObjectiveType.TRADE_TOWN;
-			else if (index == 4)
-				type = ObjectiveType.TRANSPORTATION_HUB;
-			else if (index == 5)
-				type = ObjectiveType.FREE_MARKET;
+    			ObjectiveType type = null;
 
-			settlement.setObjective(type);
+    			if (index == 0)
+    				type = ObjectiveType.CROP_FARM;
+    			else if (index == 1)
+    				type = ObjectiveType.MANUFACTURING;
+    			else if (index == 2)
+    				type = ObjectiveType.RESEARCH_CENTER;
+    			else if (index == 3)
+    				type = ObjectiveType.TRADE_TOWN;
+    			else if (index == 4)
+    				type = ObjectiveType.TRANSPORTATION_HUB;
+    			else if (index == 5)
+    				type = ObjectiveType.FREE_MARKET;
 
+    			settlement.setObjective(type);
+    			
+        	}
+ 
+        	e.consume();
 		});
+		
+		commitButton.statusProperty().addListener(o -> System.out.println(commitButton.getStatus()));
+
 
 		progress = 0;
 		lastTimerCall = System.nanoTime();
 		timer = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
-                if (now > lastTimerCall + 50_000_000l) {
+                if (now > lastTimerCall + 2_000l) {
 					progress += 0.005;
 					commitButton.setProgress(progress);
 					lastTimerCall = now;
-					if (toggle) {
-						if (progress > 0.75) {
-							progress = 0;
-							commitButton.setFailed();
-							timer.stop();
-							toggle ^= true;
-						}
-					} else {
-						if (progress > 1) {
-							progress = 0;
-							timer.stop();
-							toggle ^= true;
-						}
-					}
+                    if (toggle) {
+                       	
+                        if (progress > 0.75) {
+                            progress = 0;
+                            commitButton.setFailed();
+                            timer.stop();
+                            running = false;
+                            toggle ^= true;
+                            commitButton.setDisable(false);
+                        }
+                        
+                    } else {
+                        if (progress > 1) {
+                            progress = 0;
+                            commitButton.setSuccess();
+                            timer.stop();
+                            running = false;
+                            toggle ^= true;
+                            commitButton.setDisable(false);
+                        }
+                    }
 				}
 			}
 		};

@@ -36,37 +36,67 @@ public class SubmitButtonDemo extends Application {
     private SubmitButton   button;
     private double         progress;
     private long           lastTimerCall;
-    private boolean        toggle;
+    private boolean        toggle, running = false;
     private AnimationTimer timer;
 
-    @Override public void init() {
+    @SuppressWarnings("restriction")
+	@Override public void init() {
         button = new SubmitButton();
         button.setColor(Color.web("#34495e"));
-        button.setOnMousePressed(e -> timer.start());
+        button.setOnMousePressed(e -> {
+        	
+        	if (button.getStatus() != SubmitButton.Status.IN_PROGRESS && !running) {
+                running = true;
+                button.setDisable(true);
+        		timer.start();	
+        	}
+        	else if (button.getStatus() == SubmitButton.Status.IN_PROGRESS) {
+                running = true;
+                button.setDisable(true);
+        	}
+        	else if (button.getStatus() == SubmitButton.Status.FINISHED
+        			|| button.getStatus() == SubmitButton.Status.FAIL) {
+                running = false;
+                button.setDisable(false);
+        	}
+        	else
+        		e.consume();
+        });
         button.statusProperty().addListener(o -> System.out.println(button.getStatus()));
 
         progress      = 0;
         lastTimerCall = System.nanoTime();
         timer         = new AnimationTimer() {
             @Override public void handle(long now) {
-                if (now > lastTimerCall + 50_000_000l) {
+                if (now > lastTimerCall + 10_000_000l) {
                     progress += 0.005;
                     button.setProgress(progress);
                     lastTimerCall = now;
                     if (toggle) {
+                   	
                         if (progress > 0.75) {
                             progress = 0;
                             button.setFailed();
                             timer.stop();
+                            running = false;
                             toggle ^= true;
+                            button.setDisable(false);
                         }
+                        
                     } else {
                         if (progress > 1) {
                             progress = 0;
+                            button.setSuccess();
                             timer.stop();
+                            running = false;
                             toggle ^= true;
+                            button.setDisable(false);
                         }
                     }
+                }
+                else {
+                    running = false;
+                    button.setDisable(false);
                 }
             }
         };

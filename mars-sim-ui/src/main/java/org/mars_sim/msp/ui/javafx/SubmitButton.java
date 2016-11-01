@@ -256,6 +256,8 @@ public class SubmitButton extends Region {
 
     public void setFailed() { setStatus(Status.FAIL); }
 
+    public void setSuccess() { setStatus(Status.SUCCESS); }
+
     private void animateUpToProgress() {
         KeyValue kvButtonAreaFill0   = new KeyValue(buttonArea.fillProperty(), Color.WHITE, Interpolator.EASE_BOTH);
         KeyValue kvTextFill0         = new KeyValue(text.fillProperty(), getColor(), Interpolator.EASE_BOTH);

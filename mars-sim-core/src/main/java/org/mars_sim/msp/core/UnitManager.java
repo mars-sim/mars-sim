@@ -66,6 +66,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 /**
  * The UnitManager class contains and manages all units in virtual Mars. It has
  * methods for getting information about units. It is also responsible for
@@ -2069,6 +2072,13 @@ public class UnitManager implements Serializable {
 		return SPONSORS;
 	}
 
+	@SuppressWarnings("restriction")
+	public ObservableList<Settlement> getSettlementOList() {
+		return 	FXCollections.observableArrayList(getSettlements());
+	}
+			
+			
+			
 	//public ThreadPoolExecutor getPersonExecutor() {;
 	//	return personExecutor;
 	//}

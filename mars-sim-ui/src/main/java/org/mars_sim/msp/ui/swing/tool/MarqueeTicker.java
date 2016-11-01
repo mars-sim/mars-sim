@@ -101,7 +101,7 @@ public class MarqueeTicker extends JPanel {
 	public MarqueeTicker(SettlementWindow settlementWindow) {
 		super();
 		this.settlementWindow = settlementWindow;
-		this.settlement = settlementWindow.getMapPanel().getSettlement();
+		//this.settlement = settlementWindow.getMapPanel().getSettlement();
 		this.desktop = (MainDesktopPane) settlementWindow.getDesktop();
 
 		masterClock = Simulation.instance().getMasterClock();
@@ -113,6 +113,7 @@ public class MarqueeTicker extends JPanel {
 	    setOpaque(false);
 		setBackground(Color.BLACK);
 
+		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
 		settlement.sampleAllResources();
 
 		createMarqueePanel();
