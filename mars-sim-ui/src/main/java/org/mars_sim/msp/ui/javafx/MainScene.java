@@ -179,7 +179,8 @@ public class MainScene {
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
-
+	private static final double ROTATION_CHANGE = Math.PI / 20D;
+	
 	public static final int NIMROD_THEME = 1;
 	public static final int NIMBUS_THEME = 2;
 	
@@ -242,8 +243,8 @@ public class MainScene {
 	private Text memUsedText;
 
 	private JFXToggleButton cacheButton;
-	private JFXSlider zoom;
-	private JFXButton miniMapBtn, mapBtn, marsNetButton, menubarButton;
+	private JFXSlider zoomSlider;
+	private JFXButton miniMapBtn, mapBtn, marsNetButton, menubarButton, rotateCWBtn, rotateCCWBtn, recenterBtn;
 	private Button memBtn, clkBtn;
 
 	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
@@ -560,11 +561,84 @@ public class MainScene {
 		return scene;
 	}
 
+	public void createFXButtons() {
+		cacheButton = new JFXToggleButton();
+		cacheButton.setText("Cache Map");
+		cacheButton.setSelected(false);
+		//cacheButton.setOnAction(e -> {
+		//	if (!cacheButton.isSelected())
+		//		cacheButton.setTextFill(Paint.OPAQUE);
+		//});
+		
+		rotateCWBtn = new JFXButton();
+		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw")))));	 //$NON-NLS-1$
+		rotateCWBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.clockwise"))); //$NON-NLS-1$
+		rotateCWBtn.setOnAction(e -> {
+			settlementWindow.getMapPanel().setRotation(settlementWindow.getMapPanel().getRotation() + ROTATION_CHANGE);	
+		});
+		
+		rotateCCWBtn = new JFXButton();
+		rotateCCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw")))));	//$NON-NLS-1$ 
+		rotateCCWBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"))); //$NON-NLS-1$
+		rotateCCWBtn.setOnAction(e -> {
+			settlementWindow.getMapPanel().setRotation(settlementWindow.getMapPanel().getRotation() - ROTATION_CHANGE);	
+		});
+		
+		recenterBtn = new JFXButton();
+		recenterBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$	
+		recenterBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.recenter"))); //$NON-NLS-1$
+		recenterBtn.setOnAction(e -> {
+			settlementWindow.getMapPanel().reCenter();
+			zoomSlider.setValue(0);
+		});
+
+	}
+	
+	public void createFXZoomSlider() {
+		
+		// Set up a settlement view zoom bar
+		zoomSlider = new JFXSlider();
+		zoomSlider.getStyleClass().add("jfx-slider");
+		//zoom.setMinHeight(100);
+		//zoom.setMaxHeight(200);
+		zoomSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
+		zoomSlider.setMin(-10);
+		zoomSlider.setMax(10);
+		zoomSlider.setValue(0);
+		zoomSlider.setMajorTickUnit(5);
+		zoomSlider.setShowTickLabels(true);
+		zoomSlider.setShowTickMarks(true);
+		zoomSlider.setBlockIncrement(1);
+		zoomSlider.setOrientation(Orientation.VERTICAL);
+		zoomSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
+		zoomSlider.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.zoom"))); //$NON-NLS-1$	
+		
+		// detect dragging on zoom scroll bar
+        zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov,
+                Number old_val, Number new_val) {
+            	// Change scale of map based on slider position.
+				int sliderValue = (int) new_val.doubleValue();
+				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
+				double newScale = defaultScale;
+				if (sliderValue > 0) {
+					newScale += defaultScale * (double) sliderValue * SettlementTransparentPanel.ZOOM_CHANGE;
+				}
+				else if (sliderValue < 0) {
+					newScale = defaultScale / (1D + ((double) sliderValue * -1D * SettlementTransparentPanel.ZOOM_CHANGE));
+				}
+				settlementWindow.getMapPanel().setScale(newScale);
+            }
+        });   
+	}
+	
+	
+	
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
 	@SuppressWarnings("restriction")
-public void createFXTabs() {
+	public void createFXTabs() {
 		jfxTabPane = new JFXTabPane();
 		
 		String cssFile = null;
@@ -619,48 +693,10 @@ public void createFXTabs() {
 		mapNodePane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 		
-		cacheButton = new JFXToggleButton();
-		cacheButton.setText("Cache Map");
-		cacheButton.setSelected(false);
-		//cacheButton.setOnAction(e -> {
-		//	if (!cacheButton.isSelected())
-		//		cacheButton.setTextFill(Paint.OPAQUE);
-		//});
+		createFXButtons();
 		
-		// Set up a settlement view zoom bar
-		zoom = new JFXSlider();
-		//zoom.setMinHeight(100);
-		//zoom.setMaxHeight(200);
-		zoom.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
-		zoom.setMin(-10);
-		zoom.setMax(10);
-		zoom.setValue(0);
-		zoom.setMajorTickUnit(5);
-		zoom.setShowTickLabels(true);
-		zoom.setShowTickMarks(true);
-		zoom.setBlockIncrement(1);
-		zoom.setOrientation(Orientation.VERTICAL);
-		zoom.setIndicatorPosition(IndicatorPosition.RIGHT);
-		zoom.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.zoom"))); //$NON-NLS-1$	
-		
-		// detect dragging on zoom scroll bar
-        zoom.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,
-                Number old_val, Number new_val) {
-            	// Change scale of map based on slider position.
-				int sliderValue = (int) new_val.doubleValue();
-				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
-				double newScale = defaultScale;
-				if (sliderValue > 0) {
-					newScale += defaultScale * (double) sliderValue * SettlementTransparentPanel.ZOOM_CHANGE;
-				}
-				else if (sliderValue < 0) {
-					newScale = defaultScale / (1D + ((double) sliderValue * -1D * SettlementTransparentPanel.ZOOM_CHANGE));
-				}
-				settlementWindow.getMapPanel().setScale(newScale);
-            }
-        });   
-        
+		createFXZoomSlider();
+
         // detect mouse wheel scrolling
         mapNodePane.setOnScroll(new EventHandler<ScrollEvent>() {
             public void handle(ScrollEvent event) {
@@ -675,13 +711,13 @@ public void createFXTabs() {
  				
 				if (direction > 0) {
 					// Move zoom slider down.
-					if (zoom.getValue() > zoom.getMin())
-						zoom.setValue( (zoom.getValue() - 1));
+					if (zoomSlider.getValue() > zoomSlider.getMin())
+						zoomSlider.setValue( (zoomSlider.getValue() - 1));
 				}
 				else if (direction < 0) {
 					// Move zoom slider up.
-					if (zoom.getValue() < zoom.getMax())
-						zoom.setValue( (zoom.getValue() + 1));
+					if (zoomSlider.getValue() < zoomSlider.getMax())
+						zoomSlider.setValue( (zoomSlider.getValue() + 1));
 				}
 
                 event.consume();
@@ -711,16 +747,25 @@ public void createFXTabs() {
 				desktop.openToolWindow(SettlementWindow.NAME);
 				mapNode.setContent(settlementWin); 
 	
-		        AnchorPane.setRightAnchor(zoom, 42.0);
-		        AnchorPane.setTopAnchor(zoom, (mapNodePane.prefHeightProperty().get() - zoom.heightProperty().get())*.4d);    
-		        
+		        AnchorPane.setRightAnchor(zoomSlider, 48.0);
+		        AnchorPane.setTopAnchor(zoomSlider, 280.0);//(mapNodePane.prefHeightProperty().get() - zoomSlider.heightProperty().get())*.4d);    
+
+		        AnchorPane.setRightAnchor(rotateCWBtn, 100.0);
+		        AnchorPane.setTopAnchor(rotateCWBtn, 230.0);    
+
+		        AnchorPane.setRightAnchor(rotateCCWBtn, 20.0);
+		        AnchorPane.setTopAnchor(rotateCCWBtn, 230.0);    
+
+		        AnchorPane.setRightAnchor(recenterBtn, 60.0);
+		        AnchorPane.setTopAnchor(recenterBtn, 230.0);    
+
 		        AnchorPane.setRightAnchor(mapNodePane, 0.0);
-		        AnchorPane.setTopAnchor(mapNodePane, 3.0);  // 45.0     
+		        AnchorPane.setTopAnchor(mapNodePane, 3.0);   
 
 		        //AnchorPane.setRightAnchor(cacheButton, 5.0);
 		        //AnchorPane.setTopAnchor(cacheButton, 45.0);
 
-		        boolean hasMap = false, hasZoom = false;
+		        boolean hasMap = false, hasZoom = false, hasButtons = false;
 				for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
 			        if (node == cacheButton) {
 			        	node.toFront();
@@ -728,17 +773,22 @@ public void createFXTabs() {
 			        else if (node == mapNodePane) {
 			        	hasMap = true;
 			        }
-			        else if (node == zoom) {
+			        else if (node == zoomSlider) {
 			        	hasZoom = true;
 			        }
-			    }	
+			        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
+			        	hasButtons = true;
+			        }
+				}	
 				
 				if (!hasMap)
 					anchorMapTabPane.getChildren().addAll(mapNodePane);
 		        
 				if (!hasZoom)
-					anchorMapTabPane.getChildren().addAll(zoom);
+					anchorMapTabPane.getChildren().addAll(zoomSlider);
 		        
+				if (!hasButtons)
+					anchorMapTabPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
 				
 				for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
 			        if (node == cacheButton) {
@@ -944,7 +994,7 @@ public void createFXTabs() {
 			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
-			Platform.runLater(() -> anchorMapTabPane.getChildren().removeAll(mapNodePane, zoom, minimapNodePane));
+			Platform.runLater(() -> anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane));
 		}
 	}
 	
@@ -2045,7 +2095,7 @@ public void createFXTabs() {
     }
     
     public JFXSlider getZoom() {
-    	return zoom;
+    	return zoomSlider;
     }
     
 	public void destroy() {

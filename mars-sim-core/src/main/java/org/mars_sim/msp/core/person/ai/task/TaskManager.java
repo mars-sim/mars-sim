@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -444,36 +443,47 @@ implements Serializable {
 		double totalProbability = getTotalTaskProbability(true);
 
 		if (totalProbability == 0D) {
-
 			throw new IllegalStateException(mind.getPerson() +
 						" has zero total task probability weight.");
-
 		}
 
-
 		double r = RandomUtil.getRandomDouble(totalProbability);
-		// Determine which task is selected.
+		
 		MetaTask selectedMetaTask = null;
 		//System.out.println("size of metaTask : " + taskProbCache.size());
-		Iterator<MetaTask> i = taskProbCache.keySet().iterator();
-		while (i.hasNext() && (selectedMetaTask == null)) {
-			MetaTask metaTask = i.next();
-			double probWeight = taskProbCache.get(metaTask);
+		
+/*
+		taskProbCache.keySet().forEach(mt -> {
+			double probWeight = taskProbCache.get(mt);
 			if (r <= probWeight) {
-				selectedMetaTask = metaTask;
+				selectedMetaTask = mt;
+			}
+			else {
+				r -= probWeight;
+			}
+		});
+*/
+		// Determine which task is selected.
+		for (MetaTask mt : taskProbCache.keySet()) {
+			double probWeight = taskProbCache.get(mt);
+			if (r <= probWeight) {
+				// Select this task
+				selectedMetaTask = mt;
 			}
 			else {
 				r -= probWeight;
 			}
 		}
+		
 		if (selectedMetaTask == null) {
 			throw new IllegalStateException(mind.getPerson() +
 						" could not determine a new task.");
-
-		} else {
-			
+		} 
+		else {
+			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
 		}
+		
 		// Clear time cache.
 		timeCache = null;
 		return result;
@@ -628,22 +638,17 @@ implements Serializable {
 			// Clear total probabilities.
 			totalProbCache = 0D;
 			// Determine probabilities.
-			Iterator<MetaTask> i = mtListCache.iterator();
-
-			while (i.hasNext()) {
-				MetaTask metaTask = i.next();
-				double probability = 0;
-
-				probability = metaTask.getProbability(person);
+			for (MetaTask mt : mtListCache) {
+				double probability = mt.getProbability(person);
 
 				if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-					taskProbCache.put(metaTask, probability);
+					taskProbCache.put(mt, probability);
 					totalProbCache += probability;
 				}
 				else {
-					taskProbCache.put(metaTask, 0D);
+					taskProbCache.put(mt, 0D);
 
-					logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() +
+					logger.severe(mind.getPerson().getName() + " bad task probability: " +  mt.getName() +
 								" probability: " + probability);
 				}
 			}

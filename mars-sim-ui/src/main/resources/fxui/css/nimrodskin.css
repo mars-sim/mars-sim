@@ -143,20 +143,65 @@
     
 }
 
-.jfx-toggle-button,
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
-  	-fx-toggle-color: GREEN;
+  	-fx-toggle-color: #00cc66;
     -fx-background-color: transparent;
-    -fx-text-fill: #f4f13f;
+    -fx-text-fill: #00cc66;
     -fx-font-weight: bold;
 }
 
-.jfx-toggle-button: unselected{
+.jfx-toggle-button{
   	-fx-text-fill: GREY;
 }
 
+.jfx-button {
+	-fx-toggle-color: #00ff00;
+}
 
+.jfx-slider {
+  	-fx-background-color: #00ff00;
+  	-fx-snap-to-ticks : true;
+    -fx-font-size: 14px;
+    -fx-text-fill: #00ff00;;    
+}
 
+/*******************************************************************************
+ *                                                                             *
+ * JFX Slider                                                                  *
+ *                                                                             *
+ ******************************************************************************/
 
+.svg-slider .thumb{
+	-fx-stroke : black;
+	-fx-fill : black;
+}
+.jfx-slider:disabled {
+	-fx-opacity: 0.4;
+}
+
+/*******************************************************
+*                           						   *
+* For the main demo sliders 						   *
+*                          							   *
+*******************************************************/
+
+.jfx-slider-style {
+	-fx-indicator-position: right;
+}
+
+.jfx-slider-style > .thumb {
+	-fx-background-color:#03a9f4;
+}
+
+.jfx-slider-style .track {
+	-fx-background-color: #ff5252;
+	-fx-pref-height: 5px;
+	-fx-pref-width: 5px;
+}
+
+.jfx-slider-style .sliderValue {
+	-fx-stroke: #00cc66;
+	-fx-font-size: 12.0;
+}

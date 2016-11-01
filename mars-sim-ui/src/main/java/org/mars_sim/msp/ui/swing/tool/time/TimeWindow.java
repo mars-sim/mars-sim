@@ -480,7 +480,7 @@ implements ClockListener {
 	public void updateTime(double time) {
 		if (marsTime != null) {
 			SwingUtilities.invokeLater(() -> {
-				martianTimeLabel.setText(marsTime.getDateTimeStamp());
+				if (marsTime != null) martianTimeLabel.setText(marsTime.getDateTimeStamp());
 			});
 	    	int solElapsed = marsTime.getSolElapsedFromStart();
 			// 2015-02-24 Added solElapsedCache

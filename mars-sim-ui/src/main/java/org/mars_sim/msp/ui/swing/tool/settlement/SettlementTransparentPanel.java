@@ -139,9 +139,10 @@ public class SettlementTransparentPanel extends JComponent {
 	    if (mainScene == null) {
 	        //buildZoomLabel();
 	        buildZoomSlider();
+	        buildButtonPane();
 	    }
 
-        buildButtonPane();
+
         buildLabelPane();
 
 		nameBtnPane = new JPanel(new FlowLayout());
@@ -215,16 +216,17 @@ public class SettlementTransparentPanel extends JComponent {
 	    controlCenterPane.setOpaque(false);
         controlCenterPane.setPreferredSize(new Dimension(50, 200));
         controlCenterPane.setSize(new Dimension(50, 200));
-        if (mainScene == null) controlCenterPane.add(zoomSlider);
+        if (mainScene == null) 
+        	controlCenterPane.add(zoomSlider);
         
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
 	    controlPane.setBackground(new Color(0,0,0));//,0));
 		controlPane.setOpaque(false);
 	    //controlPane.add(controlNorthPane, BorderLayout.NORTH);
 	    //controlPane.add(controlSouthPane, BorderLayout.SOUTH);
-	    controlPane.add(buttonPane, BorderLayout.NORTH);
+        if (mainScene == null) 
+        	controlPane.add(buttonPane, BorderLayout.NORTH);
 	    controlPane.add(labelPane, BorderLayout.SOUTH);
-
 	    if (mainScene == null) {
         	controlPane.add(controlCenterPane, BorderLayout.CENTER);
 	    }

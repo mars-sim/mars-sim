@@ -234,7 +234,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// 2014-12-26 Added prepareListeners
 		//prepareListeners();
 		// 2014-12-27 Added prepareWindows
-		if (mainScene == null)	prepareWindows();
+		if (mainScene == null)	prepareAnnouncementWindow();
 	   	//logger.info("MainDesktopPane's init() is done ");
 	}
 	
@@ -387,8 +387,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		if (toolWindows != null)
 			toolWindows.clear();
-			
-		//browserJFX = new BrowserJFX();
 		
 	   	//logger.info("toolWindows.clear()");
 
@@ -465,7 +463,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			toolWindows.add(resupplyWindow);
 
 		   	//logger.info("toolWindows.add(resupplyWindow)");
-			
 
 		}
 		else {
@@ -510,7 +507,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	/*
 	 * * Creates announcement windows & transportWizard
 	 */
-	private void prepareWindows() {
+	private void prepareAnnouncementWindow() {
 	   	//logger.info("MainDesktopPane's prepareWindows() is on " + Thread.currentThread().getName() + " Thread");
 		// Prepare announcementWindow.
 		announcementWindow = new AnnouncementWindow(this);
@@ -599,15 +596,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				
 				if (mainScene != null) {
 					// 2016-10-22 These 3 tools are in the Desktop Tab
-					if (//toolName.equals(NavigatorWindow.NAME)
-							//|| 
-							toolName.equals(SearchWindow.NAME)
-							|| toolName.equals(TimeWindow.NAME)
-							//|| toolName.equals(SettlementWindow.NAME)
-							) {
-						add(window, 0);	
-					}
-					else if (toolName.equals(MonitorWindow.NAME)) {
+					//if (toolName.equals(SearchWindow.NAME)
+					//		|| toolName.equals(TimeWindow.NAME)){
+					//	add(window, 0);	
+					//}
+					//else 
+					if (toolName.equals(MonitorWindow.NAME)) {
 						mainScene.getDesktops().get(0).add(window, 0);
 						
 					}
@@ -681,7 +675,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					if (mainScene.isMainSceneDone()) {
 						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MONITOR_TAB);
-						//System.out.println("opening monitor tool");
 					}
 					//mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
 				}
@@ -737,7 +730,6 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			Platform.runLater(() -> {
 
 				if (toolName.equals(NavigatorWindow.NAME)) {
-					//System.out.println("closing nav");
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
 				}
 
@@ -844,8 +836,9 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		} catch (java.beans.PropertyVetoException e) {}
 
 			
+		// go to the main tab
 		if (mainScene != null) 
-			mainScene.getJFXTabPane().getSelectionModel().select(0);
+			mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 
 		playSound(unit);
 
@@ -856,6 +849,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	 * @param unit the unit the window is for.
 	 */
 	// 2016-09-28 Added playSound()
+	@SuppressWarnings("restriction")
 	public void playSound(Unit unit) {
 		
 		if (mainScene != null) {
@@ -926,7 +920,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 
 		// Have main window dispose of unit button
-		if (mainWindow != null) mainWindow.disposeUnitButton(unit);
+		if (mainWindow != null) 
+			mainWindow.disposeUnitButton(unit);
 	}
 
 	/**
@@ -941,7 +936,8 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			window.dispose();
 
 			// Have main window dispose of unit button
-			if (mainWindow != null) mainWindow.disposeUnitButton(window.getUnit());
+			if (mainWindow != null) 
+				mainWindow.disposeUnitButton(window.getUnit());
 		}
 	}
 

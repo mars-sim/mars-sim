@@ -8,7 +8,6 @@ package org.mars_sim.msp.core.robot.ai.task;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -20,7 +19,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
-import org.mars_sim.msp.core.person.ai.Mind;
+//import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.JobAssignment;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
@@ -59,8 +58,7 @@ implements Serializable {
 	private String oldJob = "";
 	/** The current task the robot is doing. */
 	private Task currentTask, lastTask;
-	/** The mind of the person the task manager is responsible for. */
-	private Mind mind;
+	/** The mind of the robot. */
 	private BotMind botMind;
 
 	// Cache variables.
@@ -449,17 +447,16 @@ implements Serializable {
 						" has zero total task probability weight.");
 		}
 
-
 		double r = RandomUtil.getRandomDouble(totalProbability);
-		// Determine which task is selected.
+
 		MetaTask selectedMetaTask = null;
 		//System.out.println("size of metaTask : " + taskProbCache.size());
-		Iterator<MetaTask> i = taskProbCache.keySet().iterator();
-		while (i.hasNext() && (selectedMetaTask == null)) {
-			MetaTask metaTask = i.next();
-			double probWeight = taskProbCache.get(metaTask);
+		// Determine which task is selected.
+		for (MetaTask mt : taskProbCache.keySet()) {
+			double probWeight = taskProbCache.get(mt);
 			if (r <= probWeight) {
-				selectedMetaTask = metaTask;
+				// Select this task
+				selectedMetaTask = mt;
 			}
 			else {
 				r -= probWeight;
@@ -504,22 +501,17 @@ implements Serializable {
 		// Clear total probabilities.
 		totalProbCache = 0D;
 		// Determine probabilities.
-		Iterator<MetaTask> i = mtList.iterator();
-
-		while (i.hasNext()) {
-			MetaTask metaTask = i.next();
-			double probability = 0;
-
-			probability = metaTask.getProbability(robot);
+		for (MetaTask mt : mtList) {
+			double probability = mt.getProbability(robot);
 
 			if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
-				taskProbCache.put(metaTask, probability);
+				taskProbCache.put(mt, probability);
 				totalProbCache += probability;
 			}
 			else {
-				taskProbCache.put(metaTask, 0D);
+				taskProbCache.put(mt, 0D);
 
-				logger.severe(botMind.getRobot().getName() + " bad task probability: " +  metaTask.getName() +
+				logger.severe(botMind.getRobot().getName() + " bad task probability: " +  mt.getName() +
 							" probability: " + probability);
 			}
 		}
@@ -547,7 +539,6 @@ implements Serializable {
 		if (currentTask != null) {
 			currentTask.destroy();
 		}
-		mind = null;
 		botMind = null;
 		robot = null;
 		timeCache = null;

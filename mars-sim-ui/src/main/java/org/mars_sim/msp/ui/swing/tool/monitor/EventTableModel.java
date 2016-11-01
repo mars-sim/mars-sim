@@ -203,7 +203,10 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	 * @return the number of Events.
 	 */
 	public int getRowCount() {
-		return cachedEvents.size();
+		if (cachedEvents != null)
+			return cachedEvents.size();
+		else
+			return 0;
 	}
 
 	/**
