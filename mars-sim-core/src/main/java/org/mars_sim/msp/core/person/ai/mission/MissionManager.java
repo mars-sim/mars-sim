@@ -312,6 +312,8 @@ implements Serializable {
 
 		return result;
 	}
+
+/*	
 	public Mission getNewMission(Robot robot) {
 		Mission result = null;
 		// If cache is not current, calculate the probabilities.
@@ -332,12 +334,10 @@ implements Serializable {
 
 		// Determine which mission is selected.
 		MetaMission selectedMetaMission = null;
-		Iterator<MetaMission> i = robotMissionProbCache.keySet().iterator();
-		while (i.hasNext() && (selectedMetaMission == null)) {
-			MetaMission metaMission = i.next();
-			double probWeight = robotMissionProbCache.get(metaMission);
+		for (MetaMission mm : robotMissionProbCache.keySet()) {
+			double probWeight = robotMissionProbCache.get(mm);
 			if (r <= probWeight) {
-				selectedMetaMission = metaMission;
+				selectedMetaMission = mm;
 			}
 			else {
 				r -= probWeight;
@@ -356,7 +356,7 @@ implements Serializable {
 
 		return result;
 	}
-
+*/
 	/**
 	 * Gets all the active missions associated with a given settlement.
 	 * @param settlement the settlement to find missions.

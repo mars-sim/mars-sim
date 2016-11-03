@@ -201,11 +201,16 @@ public class TransportWizard {
    		// TODO: Account for the case when the building is not from the default MD Phase 1 Resupply Mission
     	// how to make each building ask for a position ?
 
-		// Select the relevant settlement
-		desktop.openToolWindow(SettlementWindow.NAME);
 		//System.out.println("Just open Settlement Map Tool");
-	    settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(mgr.getSettlement());
-
+		if (mainScene != null) {
+			mainScene.setSettlement(mgr.getSettlement());
+		}
+		else {
+			// Select the relevant settlement
+			desktop.openToolWindow(SettlementWindow.NAME);
+			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(mgr.getSettlement());
+		}
+		
         if (mainScene != null) {
 
         	try {
@@ -702,7 +707,11 @@ public class TransportWizard {
 
 		Settlement currentS = settlementWindow.getMapPanel().getSettlement();
 		if (currentS != mgr.getSettlement()) {
-			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(mgr.getSettlement());
+			if (mainScene != null) {
+				mainScene.setSettlement(mgr.getSettlement());
+			}
+			else 
+				settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(mgr.getSettlement());
 		}
   		// set up the Settlement Map Tool to display the suggested location of the building
 		mapPanel.reCenter();

@@ -152,9 +152,9 @@ implements Serializable {
             }
             else {
 
-                if (activeMission) {
-                    mission.performMission(robot);
-                }
+            	if (activeMission) {
+            		mission.performMission(robot);
+            	}
 
                 if (!botTaskManager.hasActiveTask()) {
                     try {
@@ -279,9 +279,9 @@ implements Serializable {
      */
     public void getNewAction(boolean tasks, boolean missions) {
 
-    	if (robot.getPerformanceRating() < 0.5D) {
-        	missions = false;
-        }
+//    	if (robot.getPerformanceRating() < 0.5D) {
+//        	missions = false;
+//        }
 
         // Get probability weights from tasks, missions and active missions.
         double taskWeights = 0D;
@@ -294,14 +294,14 @@ implements Serializable {
             taskWeights = botTaskManager.getTotalTaskProbability(false);
             weightSum += taskWeights;
         }
-
+/*
         if (missions) {
         	if (missionManager == null)
         		missionManager = sim.getMissionManager();
         	missionWeights = missionManager.getTotalMissionProbability(robot);
         	weightSum += missionWeights;
 	   }
-
+*/
         if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || (Double.isInfinite(weightSum))) {      	
 	        try {
 				TimeUnit.MILLISECONDS.sleep(1000L);
@@ -333,7 +333,7 @@ implements Serializable {
             }
         }
 
-
+/*
         if (missions) {
             if (rand < missionWeights) {
             	Mission newMission = null;
@@ -353,11 +353,12 @@ implements Serializable {
                 rand -= missionWeights;
             }
         }
-
+*/
         // If reached this point, no task or mission has been found.
         logger.severe(robot.getName()
                     + " couldn't determine new action - taskWeights: "
                     + taskWeights + ", missionWeights: " + missionWeights);
+        
 
     }
 

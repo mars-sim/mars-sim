@@ -55,6 +55,8 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
+import javafx.application.Platform;
+
 /**
  * The LocationTabPanel is a tab panel for location information.
  */
@@ -381,7 +383,8 @@ implements ActionListener {
      *
      * @param event the action event
      */
-    public void actionPerformed(ActionEvent event) {
+    @SuppressWarnings("restriction")
+	public void actionPerformed(ActionEvent event) {
         JComponent source = (JComponent) event.getSource();
 
         // If the center map button was pressed, update navigator tool.
@@ -396,12 +399,16 @@ implements ActionListener {
     		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
 
         		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        			desktop.openToolWindow(SettlementWindow.NAME);
-        			
-        			
-        			//System.out.println("Just open Settlement Map Tool");
-        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
 
+        			        			
+        			if (mainScene != null) {
+        				mainScene.setSettlement(p.getSettlement());
+        			}
+        			else {
+            			desktop.openToolWindow(SettlementWindow.NAME);
+        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+        			}
+        			
         			Building b = p.getBuildingLocation();
         			double xLoc = b.getXLocation();
         			double yLoc = b.getYLocation();

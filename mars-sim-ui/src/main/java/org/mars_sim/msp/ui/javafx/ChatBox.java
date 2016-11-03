@@ -261,7 +261,7 @@ public class ChatBox extends BorderPane {
             textArea.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         }
        
-        
+		textArea.setStyle("-fx-text-inner-color: black;");
         textArea.setStyle("-fx-background-color: black;"); 
   		textArea.positionCaret(textArea.getText().length());
     }

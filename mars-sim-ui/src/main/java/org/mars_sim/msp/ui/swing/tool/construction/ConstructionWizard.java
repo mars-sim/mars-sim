@@ -169,12 +169,16 @@ public class ConstructionWizard {
 	    Settlement settlement = constructionSite.getSettlement();
 	    ConstructionManager constructionManager = settlement.getConstructionManager();
 
-		// Select the relevant settlement
-		desktop.openToolWindow(SettlementWindow.NAME);
-		//System.out.println("Just open Settlement Map Tool");
-	    settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox()
-	    	.setSelectedItem(constructionManager.getSettlement());
-
+	
+		if (mainScene != null) {
+			mainScene.setSettlement(constructionManager.getSettlement());
+		}
+		else {
+			// Select the relevant settlement
+			desktop.openToolWindow(SettlementWindow.NAME);
+			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(constructionManager.getSettlement());
+		}
+		
 	    ConstructionStageInfo stageInfo = constructionSite.getStageInfo();
 	    int constructionSkill = constructionSite.getSkill();
 		boolean isSitePicked = mission.getConstructionSite().getSitePicked();
@@ -401,7 +405,14 @@ public class ConstructionWizard {
 
 		Settlement currentS = settlementWindow.getMapPanel().getSettlement();
 		if (currentS != constructionManager.getSettlement()) {
-			settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(constructionManager.getSettlement());
+			
+			if (mainScene != null) {
+				mainScene.setSettlement(constructionManager.getSettlement());
+			}
+			else {
+    			//desktop.openToolWindow(SettlementWindow.NAME);
+				settlementWindow.getMapPanel().getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(constructionManager.getSettlement());
+			}
 		}
   		// set up the Settlement Map Tool to display the suggested location of the building
 		mapPanel.reCenter();

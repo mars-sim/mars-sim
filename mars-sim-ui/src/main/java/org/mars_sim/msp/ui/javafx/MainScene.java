@@ -245,7 +245,7 @@ public class MainScene {
 
 	private Label timeText, lastSaveText;
 	private Text memUsedText;
-	//private JFXComboBox<Settlement> settlementBox;
+	private JFXComboBox<Settlement> sBox;
 	//private VBox settlementBox;
 	private StackPane settlementBox;
 
@@ -641,7 +641,7 @@ public class MainScene {
 	
 
 	public void createFXSettlementComboBox() {
-		JFXComboBox<Settlement> sBox = new JFXComboBox<>();
+		sBox = new JFXComboBox<>();
 		//sBox.setAlignment(Pos.CENTER_RIGHT);
 		//JFXListView<Settlement> list = new JFXListView<Settlement>();	
 		sBox.getStyleClass().add("jfx-combo-box");
@@ -773,6 +773,7 @@ public class MainScene {
 		mapBtn.setTooltip(new Tooltip("Open settlement map below"));
 		mapBtn.setOnAction(e -> {
 
+				
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 				mapNodePane.prefWidthProperty().unbind();
 				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));							
@@ -782,14 +783,17 @@ public class MainScene {
 				mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(2));			
 			}
 			
+			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+				//System.out.println("closing map tool.");
 				desktop.closeToolWindow(SettlementWindow.NAME);
-				anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane);
-				anchorMapTabPane.getChildren().remove(settlementBox);
+				anchorMapTabPane.getChildren().removeAll(settlementBox, mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
+				//anchorMapTabPane.getChildren().remove(settlementBox);
 			}
 			
 			else {
 						
+				//System.out.println("opening map tool.");
 				desktop.openToolWindow(SettlementWindow.NAME);
 				mapNode.setContent(settlementWin); 
 	
@@ -808,16 +812,13 @@ public class MainScene {
 		        AnchorPane.setRightAnchor(recenterBtn, 60.0);
 		        AnchorPane.setTopAnchor(recenterBtn, 230.0);    
 
-		        //AnchorPane.setRightAnchor(settlementBox, 10.0);//anchorMapTabPane.widthProperty().get()/2D + settlementBox.getWidth()/2D );
-		        //AnchorPane.setTopAnchor(settlementBox, 150.0);
 		        AnchorPane.setRightAnchor(settlementBox, 2.0);//anchorMapTabPane.widthProperty().get()/2D - 110.0);//settlementBox.getWidth());
 		        AnchorPane.setTopAnchor(settlementBox, 30.0);//8.0);  
-		        
+		   
 		        boolean hasMap = false, hasZoom = false, hasButtons = false, hasSettlements = false;
-				for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
-			        //if (node == cacheButton) {
-			        //	node.toFront();
-			        //}
+	
+		        for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
+
 			        if (node == settlementBox) {
 			        	hasSettlements = true;
 			        }
@@ -830,22 +831,15 @@ public class MainScene {
 			        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
 			        	hasButtons = true;
 			        }
+
 				}
-				
-				//for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
-			    //    if (node == settlementBox) {
-			    //    	hasSettlements = true;
-			     //   }
-				//}	
-				
-				
+					
 				if (!hasMap)
 					anchorMapTabPane.getChildren().addAll(mapNodePane);
 	
 				if (!hasSettlements) {
-					anchorDesktopPane.getChildren().addAll(settlementBox);
+					//anchorDesktopPane.getChildren().addAll(settlementBox);
 					anchorMapTabPane.getChildren().addAll(settlementBox);
-					//System.out.println("settlementBox added");
 				}
 					        
 				if (!hasZoom)
@@ -862,11 +856,6 @@ public class MainScene {
 			        	node.toFront();
 			        }
 			    }
-				//for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
-			    //    if (node == settlementBox) {
-			    //    	node.toFront();
-			    //    }
-			    //}
 			}
 
 		});
@@ -980,9 +969,9 @@ public class MainScene {
 					if (isCacheButtonOn())
 						miniMapBtn.fire();
 				}
-
+/*
 				boolean map = false, minimap = false, cache = false;
-/*				for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
+				for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
 			        if (node == mapBtn)
 			        	map = true;
 			        else if (node == miniMapBtn)
@@ -993,24 +982,25 @@ public class MainScene {
 			        if (node == cacheButton) 
 			        	cache = true;
 			    }	
-*/				
-				if (!map) {
+*/					
+				//if (!map) {
 					AnchorPane.setRightAnchor(mapBtn, 85.0);
 					AnchorPane.setTopAnchor(mapBtn, -3.0);   
 					anchorDesktopPane.getChildren().addAll(mapBtn);
-				}
+				//}
 				
-				if (!minimap) {
+				//if (!minimap) {
 			        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
 			        AnchorPane.setTopAnchor(miniMapBtn, -3.0);  
 					anchorDesktopPane.getChildren().addAll(miniMapBtn);
-				}
+				//}
 				
-				if (!cache) {
+				//if (!cache) {
 			        AnchorPane.setRightAnchor(cacheButton, 20.0);
 			        AnchorPane.setTopAnchor(cacheButton, 55.0);  // 45.0 		        
 					anchorMapTabPane.getChildren().addAll(cacheButton);
-				}   
+				//}   
+			
 			}
 			
 			else if (newTab == missionTab) {	
@@ -1062,7 +1052,7 @@ public class MainScene {
 	}
 	
 	public void closeMaps() {
-		if (!isCacheButtonOn()) {
+		if (!cacheButton.isSelected()) {
 			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
@@ -1765,12 +1755,9 @@ public class MainScene {
 					else if (theme == 0)
 						lookAndFeelTheme = "nimrod"; // note that nimrod.theme uses all default parameter except overriding the opacity with 220.
 					
-					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
-					
-					NimRODLookAndFeel nf = new NimRODLookAndFeel();
-					
+					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));					
+					NimRODLookAndFeel nf = new NimRODLookAndFeel();				
 					nf.setCurrentTheme(nt);
-
 					UIManager.setLookAndFeel(nf);
 					changed = true;
 				//}
@@ -2180,6 +2167,18 @@ public class MainScene {
     	return zoomSlider;
     }
     
+	public JFXComboBox<Settlement> getSBox() {
+		return sBox;
+	};
+	
+	public void setSettlement(Settlement s) {
+		Platform.runLater(() -> {
+			//if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
+			mapBtn.fire();
+			sBox.getSelectionModel().select(s);
+		});
+	}
+	
 	public void destroy() {
 		quote = null;
 		messagePopup = null;		

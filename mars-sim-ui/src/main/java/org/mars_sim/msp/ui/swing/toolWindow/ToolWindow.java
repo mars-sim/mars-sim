@@ -184,8 +184,7 @@ extends JInternalFrame {
 			}
 			
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MISSION_TAB)) {
-				if (!mainScene.isCacheButtonOn())
-					desktop.closeToolWindow(SettlementWindow.NAME);
+				closeMaps();
 				//desktop.openToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(MonitorWindow.NAME);
 				desktop.closeToolWindow(ResupplyWindow.NAME);
@@ -194,8 +193,7 @@ extends JInternalFrame {
 			}
 			
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.RESUPPLY_TAB)) {
-				if (!mainScene.isCacheButtonOn())
-					desktop.closeToolWindow(SettlementWindow.NAME);
+				closeMaps();
 				//desktop.openToolWindow(ResupplyWindow.NAME);
 				desktop.closeToolWindow(MonitorWindow.NAME);
 				desktop.closeToolWindow(ScienceWindow.NAME);
@@ -204,8 +202,7 @@ extends JInternalFrame {
 			}
 			
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.SCIENCE_TAB)) {
-				if (!mainScene.isCacheButtonOn())
-					desktop.closeToolWindow(SettlementWindow.NAME);
+				closeMaps();
 				//desktop.openToolWindow(ScienceWindow.NAME);
 				desktop.closeToolWindow(MonitorWindow.NAME);
 				desktop.closeToolWindow(ResupplyWindow.NAME);
@@ -229,16 +226,16 @@ extends JInternalFrame {
 				if (this.getToolName().equals(MonitorWindow.NAME))
 					monitorWindow.refreshTable();
 					//pack(); // create time lag, and draw artifact
-					SwingUtilities.invokeLater(() -> {
-						// Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException when pressing the terminate button in eclipse
-						//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
-						SwingUtilities.updateComponentTreeUI(this); // create time lag, draw artifact and search text out of focus
-					});
+	
 					//mainScene.setLookAndFeel(1); causing java.lang.NullPointerException at com.jidesoft.plaf.basic.BasicJideTabbedPaneUI.getFontMetrics(BasicJideTabbedPaneUI.java:5063)
 					//SwingUtilities.updateComponentTreeUI(this); causing java.lang.NullPointerException
 					//Platform.runLater(() -> {
 						//mainScene.changeTheme(mainScene.getTheme());
 					//});
+				SwingUtilities.invokeLater(() -> SwingUtilities.updateComponentTreeUI(this));
+					// Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException when pressing the terminate button in eclipse
+					//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
+				// create time lag, draw artifact and search text out of focus			
 				}
 
 			else if(!this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {

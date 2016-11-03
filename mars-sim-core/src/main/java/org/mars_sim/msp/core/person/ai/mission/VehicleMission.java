@@ -371,7 +371,9 @@ implements UnitListener {
 				
 				else {
 					// if the vehicle is still somewhere inside the settlement when it got broken down
-					// wait till the repair is done and the mission may resume ?!?
+					// TODO: wait till the repair is done and the mission may resume ?!?
+					leaveVehicle();
+					super.endMission(reason);
 				}
 			}
 			
