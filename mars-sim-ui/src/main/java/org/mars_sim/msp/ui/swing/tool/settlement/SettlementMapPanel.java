@@ -103,8 +103,6 @@ implements ClockListener {
 		this.settlementWindow = settlementWindow;
 
 		settlement = Simulation.instance().getUnitManager().getSettlementOList().get(0);
-		
-        //System.out.println("SettlementMapPanel's constructor");
 
 		setLayout(new BorderLayout());
 
@@ -154,15 +152,14 @@ implements ClockListener {
 		mapLayers.add(new BackgroundTileMapLayer(this));
 		mapLayers.add(new StructureMapLayer(this));
 		mapLayers.add(new VehicleMapLayer(this));
-
 		mapLayers.add(new DayNightMapLayer(this));
-
 		mapLayers.add(new PersonMapLayer(this));
 		mapLayers.add(new RobotMapLayer(this));
 		mapLayers.add(new LabelMapLayer(this));
 
 		//SwingUtilities.invokeLater(() -> {
-		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
+		if (desktop.getMainScene() == null)
+			settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
 	
 		//paintDoubleBuffer();

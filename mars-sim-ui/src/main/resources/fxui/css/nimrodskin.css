@@ -228,5 +228,10 @@
     -fx-cell-size: 1.66667em; 
 }
 
+.check-box {
+    -fx-font-size: 12;
+    -fx-font-weight: italic;
+    -fx-text-fill: yellow;
+}
 
 

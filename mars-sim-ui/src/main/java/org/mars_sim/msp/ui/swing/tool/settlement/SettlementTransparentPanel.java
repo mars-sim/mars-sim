@@ -135,7 +135,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         buildLabelPane();
 
-	    if (mainScene == null) {
+	    //if (mainScene == null) {
 	        //buildZoomLabel();
 	        buildSettlementNameComboBox();
 	        buildInfoP();
@@ -168,7 +168,7 @@ public class SettlementTransparentPanel extends JComponent {
 		    box.add(nameBtnPane);
 		    
 		    mapPanel.add(box, BorderLayout.NORTH);
-	    }
+	    //}
 
 /*
 	    JPanel lcdPanel = new JPanel();
@@ -216,7 +216,7 @@ public class SettlementTransparentPanel extends JComponent {
 	    controlCenterPane.setOpaque(false);
         controlCenterPane.setPreferredSize(new Dimension(50, 200));
         controlCenterPane.setSize(new Dimension(50, 200));
-        if (mainScene == null) 
+        //if (mainScene == null) 
         	controlCenterPane.add(zoomSlider);
         
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
@@ -224,13 +224,13 @@ public class SettlementTransparentPanel extends JComponent {
 		controlPane.setOpaque(false);
 	    //controlPane.add(controlNorthPane, BorderLayout.NORTH);
 	    //controlPane.add(controlSouthPane, BorderLayout.SOUTH);
-        if (mainScene == null) 
+        //if (mainScene == null) 
         	controlPane.add(buttonPane, BorderLayout.NORTH);
 	    controlPane.add(labelPane, BorderLayout.SOUTH);
-	    if (mainScene == null) {
-        	controlPane.add(controlCenterPane, BorderLayout.CENTER);
-	    }
-        else
+	    //if (mainScene == null) {
+        //	controlPane.add(controlCenterPane, BorderLayout.CENTER);
+	    //}
+        //else
         	controlPane.add(emptyLabel, BorderLayout.CENTER);
 
         
@@ -1006,7 +1006,8 @@ public class SettlementTransparentPanel extends JComponent {
 	public JComboBoxMW<?> getSettlementListBox() {
 		return settlementListBox;
 	}
-
+	
+/*
 	public JCustomCheckBoxMenuItem getBuildingLabelMenuItem() {
 		return buildingLabelMenuItem;
 	}
@@ -1026,7 +1027,7 @@ public class SettlementTransparentPanel extends JComponent {
 	public JCustomCheckBoxMenuItem getRobotLabelMenuItem () {
 		return robotLabelMenuItem ;
 	}
-	
+*/	
 	/**
 	 * Prepare class for deletion.
 	 */

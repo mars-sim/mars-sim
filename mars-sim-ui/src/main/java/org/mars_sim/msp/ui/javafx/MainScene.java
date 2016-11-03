@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.javafx;
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXPopup;
@@ -24,6 +25,7 @@ import com.jfoenix.controls.JFXToggleButton;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
 
+import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
@@ -95,6 +97,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.ScrollEvent;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -261,7 +264,9 @@ public class MainScene {
 	private StatusBar statusBar;
 	//private Flyout flyout;
 	private JFXPopup flyout;
-
+	//private CheckComboBox<String> mapLabelBox;
+	private VBox mapLabelBox;
+	
 	private ChatBox chatBox;
 	private StackPane chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
 	private Tab nodeTab;
@@ -295,6 +300,7 @@ public class MainScene {
 	private EarthClock earthClock;
 	
 	private SettlementWindow settlementWindow; 
+	private SettlementMapPanel mapPanel;
 	
 	private List<DesktopPane> desktops;
 	
@@ -581,21 +587,21 @@ public class MainScene {
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw")))));	 //$NON-NLS-1$
 		rotateCWBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.clockwise"))); //$NON-NLS-1$
 		rotateCWBtn.setOnAction(e -> {
-			settlementWindow.getMapPanel().setRotation(settlementWindow.getMapPanel().getRotation() + ROTATION_CHANGE);	
+			mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);	
 		});
 		
 		rotateCCWBtn = new JFXButton();
 		rotateCCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw")))));	//$NON-NLS-1$ 
 		rotateCCWBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"))); //$NON-NLS-1$
 		rotateCCWBtn.setOnAction(e -> {
-			settlementWindow.getMapPanel().setRotation(settlementWindow.getMapPanel().getRotation() - ROTATION_CHANGE);	
+			mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);	
 		});
 		
 		recenterBtn = new JFXButton();
 		recenterBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$	
 		recenterBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.recenter"))); //$NON-NLS-1$
 		recenterBtn.setOnAction(e -> {
-			settlementWindow.getMapPanel().reCenter();
+			mapPanel.reCenter();
 			zoomSlider.setValue(0);
 		});
 
@@ -634,7 +640,7 @@ public class MainScene {
 				else if (sliderValue < 0) {
 					newScale = defaultScale / (1D + ((double) sliderValue * -1D * SettlementTransparentPanel.ZOOM_CHANGE));
 				}
-				settlementWindow.getMapPanel().setScale(newScale);
+				mapPanel.setScale(newScale);
             }
         });   
 	}
@@ -656,7 +662,7 @@ public class MainScene {
 		//});
 		sBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue != newValue) {
-				SwingUtilities.invokeLater(() -> settlementWindow.getMapPanel().setSettlement((Settlement)newValue));
+				SwingUtilities.invokeLater(() -> mapPanel.setSettlement((Settlement)newValue));
 			}
     	});
 		
@@ -675,6 +681,138 @@ public class MainScene {
 		//settlementBox.toFront();
 	}
 	
+	public void createFXMapLabelBox() {
+				
+		mapLabelBox = new VBox();
+		mapLabelBox.setSpacing(5);
+		mapLabelBox.setMaxSize(180, 150);
+		mapLabelBox.setPrefSize(180, 150);		
+		//mapLabelBox.setAlignment(Pos.CENTER_RIGHT);
+		
+		JFXCheckBox box0 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.daylightTracking"));
+		JFXCheckBox box1 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.buildings"));
+		JFXCheckBox box2 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.constructionSites"));
+		JFXCheckBox box3 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.people"));
+		JFXCheckBox box4 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.robots"));
+		JFXCheckBox box5 = new JFXCheckBox(Msg.getString("SettlementWindow.menu.vehicles"));
+		
+		mapLabelBox.getChildren().addAll(box0, box1, box2, box3, box4, box5);
+		
+		box0.setSelected(mapPanel.isDaylightTrackingOn());
+		box1.setSelected(mapPanel.isShowBuildingLabels());
+		box2.setSelected(mapPanel.isShowConstructionLabels());
+		box3.setSelected(mapPanel.isShowPersonLabels());
+		box4.setSelected(mapPanel.isShowRobotLabels());
+		box5.setSelected(mapPanel.isShowVehicleLabels());
+		
+		box0.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		        if (oldValue != newValue) {
+			    	box0.setSelected(newValue);
+					mapPanel.setShowDayNightLayer(newValue);
+		        }
+		    }
+		});
+		
+		box1.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		        if (oldValue != newValue) {
+			    	box1.setSelected(newValue);
+					mapPanel.setShowBuildingLabels(newValue);
+		        }
+		    }
+		});
+		
+		box2.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		        if (oldValue != newValue) {
+			    	box2.setSelected(newValue);
+					mapPanel.setShowConstructionLabels(newValue);
+		        }
+		    }
+		});
+		
+		box3.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		        if (oldValue != newValue) {
+			    	box3.setSelected(newValue);
+					mapPanel.setShowPersonLabels(newValue);
+		        }
+		    }
+		});
+		
+		box4.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		        if (oldValue != newValue) {
+			    	box4.setSelected(newValue);
+					mapPanel.setShowRobotLabels(newValue);
+		        }
+		    }
+		});
+		
+		box5.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+		        if (oldValue != newValue) {
+			    	box5.setSelected(newValue);
+					mapPanel.setShowVehicleLabels(newValue);
+		        }
+		    }
+		});
+/*		
+		 // create the data to show in the CheckComboBox 
+		 final ObservableList<String> labels = FXCollections.observableArrayList();
+		 
+		 labels.add(Msg.getString("SettlementWindow.menu.daylightTracking")); 
+		 labels.add(Msg.getString("SettlementWindow.menu.buildings"));
+		 labels.add(Msg.getString("SettlementWindow.menu.constructionSites"));
+		 labels.add(Msg.getString("SettlementWindow.menu.people"));
+		 labels.add(Msg.getString("SettlementWindow.menu.robots"));
+		 labels.add(Msg.getString("SettlementWindow.menu.vehicles"));
+		 
+		 //mapPanel.isShowRobotLabels()
+		 //mapPanel.isShowPersonLabels()
+		 //mapPanel.isShowVehicleLabels()
+		 
+		 //, mapPanel.isShowConstructionLabels()
+		 boolean building = mapPanel.isShowBuildingLabels();	 
+		 boolean light = mapPanel.isDaylightTrackingOn();
+		 
+		 // Create the CheckComboBox with the data 
+		 mapLabelBox = new CheckComboBox<String>(labels);
+		 
+		 // and listen to the relevant events (e.g. when the selected indices or 
+		 // selected items change).
+		 mapLabelBox.getCheckModel().getCheckedItems().addListener(new ListChangeListener<String>() {
+		     public void onChanged(ListChangeListener.Change<? extends String> c) {
+		         //System.out.println(mapLabelBox.getCheckModel().getCheckedItems());
+		         
+		    	 ObservableList<String> list = mapLabelBox.getCheckModel().getCheckedItems();
+		    	 for (String s : list) {
+		    		if (s.equals(Msg.getString("SettlementWindow.menu.daylightTracking")))
+						mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn());
+		    		if (s.equals(Msg.getString("SettlementWindow.menu.buildings")))
+			    		 mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());			    			    			 
+		    		if (s.equals(Msg.getString("SettlementWindow.menu.constructionSites"))) 
+		 				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels());		    			 
+		    		if (s.equals(Msg.getString("SettlementWindow.menu.people")))
+						mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());
+					if (s.equals(Msg.getString("SettlementWindow.menu.robots")))
+						mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels());
+		    		if (s.equals(Msg.getString("SettlementWindow.menu.vehicles")))
+						mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels());
+		    	 } 
+		    	 
+		     }
+		 });
+*/
+		
+	}
 	
 	/**
 	 * Creates the tab pane for housing a bunch of tabs
@@ -729,7 +867,9 @@ public class MainScene {
   
 		});
 		
-		SettlementWindow settlementWin = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
+		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
+		mapPanel = settlementWindow.getMapPanel();
+		
 		mapNode = new SwingNode();
 		mapNodePane = new StackPane(mapNode);
 		mapNodePane.setStyle("-fx-background-color: black; ");
@@ -741,6 +881,8 @@ public class MainScene {
 		
 		createFXZoomSlider();
 
+		createFXMapLabelBox();
+		
         // detect mouse wheel scrolling
         mapNodePane.setOnScroll(new EventHandler<ScrollEvent>() {
             public void handle(ScrollEvent event) {
@@ -787,7 +929,7 @@ public class MainScene {
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 				//System.out.println("closing map tool.");
 				desktop.closeToolWindow(SettlementWindow.NAME);
-				anchorMapTabPane.getChildren().removeAll(settlementBox, mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
+				anchorMapTabPane.getChildren().removeAll(settlementBox, mapLabelBox, mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
 				//anchorMapTabPane.getChildren().remove(settlementBox);
 			}
 			
@@ -795,28 +937,33 @@ public class MainScene {
 						
 				//System.out.println("opening map tool.");
 				desktop.openToolWindow(SettlementWindow.NAME);
-				mapNode.setContent(settlementWin); 
+				mapNode.setContent(settlementWindow); 
 	
 		        AnchorPane.setRightAnchor(mapNodePane, 0.0);
 		        AnchorPane.setTopAnchor(mapNodePane, 3.0);   
 
 		        AnchorPane.setRightAnchor(zoomSlider, 55.0);
-		        AnchorPane.setTopAnchor(zoomSlider, 280.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);    
+		        AnchorPane.setTopAnchor(zoomSlider, 350.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);    
 
 		        AnchorPane.setRightAnchor(rotateCWBtn, 100.0);
-		        AnchorPane.setTopAnchor(rotateCWBtn, 230.0);    
+		        AnchorPane.setTopAnchor(rotateCWBtn, 300.0);    
 
 		        AnchorPane.setRightAnchor(rotateCCWBtn, 20.0);
-		        AnchorPane.setTopAnchor(rotateCCWBtn, 230.0);    
+		        AnchorPane.setTopAnchor(rotateCCWBtn, 300.0);    
 
 		        AnchorPane.setRightAnchor(recenterBtn, 60.0);
-		        AnchorPane.setTopAnchor(recenterBtn, 230.0);    
+		        AnchorPane.setTopAnchor(recenterBtn, 300.0);    
 
 		        AnchorPane.setRightAnchor(settlementBox, 2.0);//anchorMapTabPane.widthProperty().get()/2D - 110.0);//settlementBox.getWidth());
-		        AnchorPane.setTopAnchor(settlementBox, 30.0);//8.0);  
+		        AnchorPane.setTopAnchor(settlementBox, 30.0);
 		   
-		        boolean hasMap = false, hasZoom = false, hasButtons = false, hasSettlements = false;
-	
+		        AnchorPane.setRightAnchor(mapLabelBox, -10.0);
+		        AnchorPane.setTopAnchor(mapLabelBox, 120.0); 
+		   
+		        
+		        boolean hasMap = false, hasZoom = false, hasButtons = false, 
+		        		hasSettlements = false, hasMapLabel = false;
+		        
 		        for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
 
 			        if (node == settlementBox) {
@@ -831,6 +978,8 @@ public class MainScene {
 			        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
 			        	hasButtons = true;
 			        }
+			        else if (node == mapLabelBox)
+			        	hasMapLabel = true;
 
 				}
 					
@@ -838,10 +987,12 @@ public class MainScene {
 					anchorMapTabPane.getChildren().addAll(mapNodePane);
 	
 				if (!hasSettlements) {
-					//anchorDesktopPane.getChildren().addAll(settlementBox);
 					anchorMapTabPane.getChildren().addAll(settlementBox);
 				}
-					        
+				
+				if (!hasMapLabel)
+					anchorMapTabPane.getChildren().addAll(mapLabelBox);
+					        				
 				if (!hasZoom)
 					anchorMapTabPane.getChildren().addAll(zoomSlider);
 		        
@@ -855,6 +1006,9 @@ public class MainScene {
 			        if (node == settlementBox) {
 			        	node.toFront();
 			        }
+			        if (node == mapLabelBox) {
+			        	node.toFront();
+			        }			        
 			    }
 			}
 
@@ -1057,8 +1211,7 @@ public class MainScene {
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
 			Platform.runLater(() -> {
-				anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane);
-				anchorMapTabPane.getChildren().remove(settlementBox);
+				anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane, settlementBox, mapLabelBox);
 			});
 		}
 	}
@@ -1200,7 +1353,9 @@ public class MainScene {
 		cacheButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		settlementBox.getStylesheets().clear();
 		settlementBox.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		
+		mapLabelBox.getStylesheets().clear();
+		mapLabelBox.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+			
 		
 		if (settlementWindow == null) {
 			settlementWindow = (SettlementWindow)(desktop.getToolWindow(SettlementWindow.NAME));
@@ -2178,6 +2333,10 @@ public class MainScene {
 			sBox.getSelectionModel().select(s);
 		});
 	}
+	
+	//public CheckComboBox<String> getMapLabelBox() {
+	//	return mapLabelBox;
+	//}
 	
 	public void destroy() {
 		quote = null;

@@ -53,7 +53,7 @@ implements SettlementMapLayer {
 	private static final Color HAB_LABEL_COLOR = new Color (92, 23, 0); // BURGUNDY
 	private static final Color REACTOR_LABEL_COLOR = Color.red; // red
 	private static final Color GARAGE_LABEL_COLOR = Color.yellow;//new Color (255, 222, 122); // pale yellow
-	private static final Color GREENHOUSE_LABEL_COLOR = new Color (79, 108, 44); // dull sage green //(69, 92, 0); // dark sage //  // new Color(0, 255, 64); //bright green;//
+	private static final Color GREENHOUSE_LABEL_COLOR = new Color (153, 234, 37); //(153, 234, 37) is bright green; (79, 108, 44) is dull sage green //(69, 92, 0) is dark sage //  // new Color(0, 255, 64); //bright green;//
 	private static final Color MEDICAL_LABEL_COLOR = new Color (0, 69, 92); // dull blue
 	private static final Color LIVING_LABEL_COLOR = new Color (236, 255, 179); // pale yellow
 	private static final Color RESOURCE_LABEL_COLOR = new Color (182, 201, 255); // pale blue
@@ -61,13 +61,15 @@ implements SettlementMapLayer {
 	
 	private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
 	private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
+	
 	private static final Color VEHICLE_LABEL_COLOR = new Color(127, 0, 127); // magenta-purple
-	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
+	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
 	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan
 	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	
 	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan;
-	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);//(0, 0, 0, 190);
 
 	static final Color ROBOT_LABEL_COLOR = new Color(255, 153, 11);// dull yellow
 	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
