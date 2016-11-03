@@ -16,7 +16,8 @@ public enum ObjectiveType {
 	RESEARCH_CENTER		(Msg.getString("ObjectiveType.research")), //$NON-NLS-1$
 	TRANSPORTATION_HUB	(Msg.getString("ObjectiveType.transportation")), //$NON-NLS-1$
 	TRADE_TOWN			(Msg.getString("ObjectiveType.trade")), //$NON-NLS-1$
-	FREE_MARKET			(Msg.getString("ObjectiveType.freeMarket")), //$NON-NLS-1$
+	//FREE_MARKET			(Msg.getString("ObjectiveType.freeMarket")), //$NON-NLS-1$
+	TOURISM				(Msg.getString("ObjectiveType.tourism")), //$NON-NLS-1$
 	;
 
 	private String objectiveName;

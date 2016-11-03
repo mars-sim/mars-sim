@@ -140,7 +140,8 @@ public class PerformLaboratoryResearchMeta implements MetaTask, Serializable {
 	        // Job modifier.
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(PerformLaboratoryResearch.class);
+	            result *= job.getStartTaskProbabilityModifier(PerformLaboratoryResearch.class)
+	            		* person.getSettlement().getGoodsManager().getResearchFactor();
 	        }
 
 	        // Modify if research is the person's favorite activity.

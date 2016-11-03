@@ -117,7 +117,8 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);
+            result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class)
+            		* person.getSettlement().getGoodsManager().getTransportationFactor();
         }
 
         // Modify if tinkering is the person's favorite activity.

@@ -56,32 +56,45 @@ public class ExplorationMeta implements MetaMission {
             boolean go = true;
   
             // Check if a mission-capable rover is available.
-            if (!RoverMission.areVehiclesAvailable(settlement, false))
+            if (!RoverMission.areVehiclesAvailable(settlement, false)){
             	go = false;
+            	return 0;
+            }
 
             // Check if available backup rover.
-            else if (!RoverMission.hasBackupRover(settlement))
+            else if (!RoverMission.hasBackupRover(settlement)){
             	go = false;
+            	return 0;
+            }
             
             // Check if minimum number of people are available at the settlement.
             // Plus one to hold down the fort.
             else if (!RoverMission.minAvailablePeopleAtSettlement(
-                    settlement, (RoverMission.MIN_PEOPLE + 1)))
+                    settlement, (RoverMission.MIN_PEOPLE + 1))){
             	go = false;
+            	return 0;
+            }
             
             // Check if there are enough specimen containers at the settlement for collecting rock samples.
             //boolean enoughContainers = false;
             //int numContainers = settlement.getSettlementInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
-            else if (!(settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false) >= Exploration.REQUIRED_SPECIMEN_CONTAINERS))
+            else if (!(settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class, false) 
+            		>= Exploration.REQUIRED_SPECIMEN_CONTAINERS)){
             	go = false;
+            	return 0;
+            }
             
             // Check for embarking missions.
-            else if (!VehicleMission.hasEmbarkingMissions(settlement))
+            else if (!VehicleMission.hasEmbarkingMissions(settlement)){
             	go = false;
+            	return 0;
+            }
             
             // Check if settlement has enough basic resources for a rover mission.
-            else if (!RoverMission.hasEnoughBasicResources(settlement))
+            else if (!RoverMission.hasEnoughBasicResources(settlement)){
             	go = false;
+            	return 0;
+            }
             
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
@@ -116,8 +129,7 @@ public class ExplorationMeta implements MetaMission {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null)
-                result *= job
-                        .getStartMissionProbabilityModifier(Exploration.class);
+                result *= job.getStartMissionProbabilityModifier(Exploration.class)* settlement.getGoodsManager().getTourismFactor();
         }
 
         if (result > 0D) {

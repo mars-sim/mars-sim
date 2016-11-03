@@ -99,8 +99,8 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(
-                        ManufactureConstructionMaterials.class);
+                result *= job.getStartTaskProbabilityModifier(ManufactureConstructionMaterials.class)
+                		* person.getSettlement().getGoodsManager().getManufacturingFactor();
             }
 
             // Modify if tinkering is the person's favorite activity.

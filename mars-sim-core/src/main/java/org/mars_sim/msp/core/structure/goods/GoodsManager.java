@@ -134,19 +134,24 @@ public class GoodsManager implements Serializable {
     private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 100D;
     private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
     private static final double REGOLITH_INPUT_FACTOR = 1000D;
-
     public final int SOL_PER_REFRESH = Settlement.SOL_PER_REFRESH;
-
     // 2015-02-13 Added four MAXIMUM/MINIMUM for computing VP
     private static final double MINIMUM_STORED_SUPPLY = 1D; //0.000001D;
     //private static final double MINIMUM_TOTAL_DEMAND = 0.000001D;
     //private static final double MAXIMUM_ALLOWABLE_VALUE_POINT = 1000000D;
     //private static final double MINIMUM_ALLOWABLE_VALUE_POINT = 0.000001D;
-
     //private static final String resource_name = "regolith";
 
     // Data members
-    private Settlement settlement;
+    // 2016-11-02 Added modifiers due to Settlement Development Objectives 
+    private double cropFarm_factor = 1;
+    private double manufacturing_factor = 1;
+    private double research_factor = 1;
+    private double transportation_factor = 1;
+    private double trade_factor = 1;
+    private double freeMarket_factor = 1;
+    private double tourism_factor = 1;
+
     private Map<Good, Double> goodsValues;
     private Map<Good, Double> goodsDemandCache;
     //private Map<Good, Double> goodsSupplyCache;
@@ -156,6 +161,7 @@ public class GoodsManager implements Serializable {
     private Map<Part, Double> partsDemandCache;
     private boolean initialized = false;
 
+    private Settlement settlement;
     private Inventory inv;
 
     private static Simulation sim = Simulation.instance();
@@ -540,7 +546,7 @@ public class GoodsManager implements Serializable {
 
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getAllAssociatedPeople().size();
-            return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
+            return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
         }
         else return 0D;
     }
@@ -557,7 +563,7 @@ public class GoodsManager implements Serializable {
         	double amountNeededSol = personConfig.getWaterUsageRate();
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getCurrentPopulationNum();
-            return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
+            return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR * trade_factor;
         }
         else return 0D;
     }
@@ -590,7 +596,7 @@ public class GoodsManager implements Serializable {
             Iterator<Vehicle> i = getAssociatedVehicles().iterator();
             while (i.hasNext()) {
                 double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
-                demand += fuelDemand * VEHICLE_FUEL_FACTOR;
+                demand += fuelDemand * transportation_factor * VEHICLE_FUEL_FACTOR;
             }
         }
         return demand;
@@ -634,11 +640,69 @@ public class GoodsManager implements Serializable {
         }
 
     	// 2015-01-10 Added FARMING_FACTOR
-        demand = demand * FARMING_FACTOR;
+        demand = demand * FARMING_FACTOR * cropFarm_factor;
 
         return demand;
     }
     
+    public void setCropFarmFactor(double value) {
+    	cropFarm_factor = value * cropFarm_factor;
+    }
+    
+    public void setManufacturingFactor(double value) {
+    	manufacturing_factor = value * manufacturing_factor;
+    }
+    
+    public void setTransportationFactor(double value) {
+    	transportation_factor = value * transportation_factor;
+    }
+    
+    public void setResearchFactor(double value) {
+    	research_factor = value * research_factor;
+    }
+
+    public void setTradeFactor(double value) {
+    	trade_factor = value * trade_factor;
+    }
+    
+    public void setFreeMarketFactor(double value) {
+    	freeMarket_factor = value * freeMarket_factor;
+    }
+
+    public void setTourismFactor(double value) {
+    	tourism_factor = value * tourism_factor;
+    }
+
+    
+    
+    public double getCropFarmFactor() {
+    	return cropFarm_factor;
+    }
+    
+    public double getManufacturingFactor() {
+    	return manufacturing_factor;
+    }
+    
+    public double getTransportationFactor() {
+    	return transportation_factor;
+    }
+    
+    public double getResearchFactor() {
+    	return research_factor;
+    }
+
+    public double getTradeFactor() {
+    	return trade_factor;
+    }
+    
+    //public double getFreeMarketFactor() {
+    //	return freeMarket_factor;
+    //}
+    
+    public double getTourismFactor() {
+    	return tourism_factor;
+    }
+        
     private double getIndividualFarmDemand(AmountResource resource, Farming farm) {
         
         double demand = 0D;
@@ -863,7 +927,7 @@ public class GoodsManager implements Serializable {
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
             
-            double totalInputsValue = (outputsValue - powerValue) * MANUFACTURING_INPUT_FACTOR;
+            double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor * MANUFACTURING_INPUT_FACTOR;
 
             if (totalInputsValue > 0D) {
                 demand = (1D / totalItems) * totalInputsValue;
@@ -915,7 +979,7 @@ public class GoodsManager implements Serializable {
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
             
-            double totalInputsValue = (outputsValue - powerValue) * FOOD_PRODUCTION_INPUT_FACTOR;
+            double totalInputsValue = (outputsValue - powerValue) * trade_factor * cropFarm_factor * FOOD_PRODUCTION_INPUT_FACTOR;
 
             if (totalInputsValue > 0D) {
                 demand = (1D / totalItems) * totalInputsValue;
@@ -1683,7 +1747,7 @@ public class GoodsManager implements Serializable {
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
             
-            double totalInputsValue = (outputsValue - powerValue) * MANUFACTURING_INPUT_FACTOR;
+            double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor * MANUFACTURING_INPUT_FACTOR;
             
             if (totalInputsValue > 0D) {
                 double partNum = partInput.getAmount();
@@ -1736,8 +1800,7 @@ public class GoodsManager implements Serializable {
         Iterator<FoodProductionProcessItem> i = process.getInputList().iterator();
         while (i.hasNext()) {
         	FoodProductionProcessItem item = i.next();
-            if (
-                    Type.PART.equals(item.getType()) &&
+            if (Type.PART.equals(item.getType()) &&
                     part.getName().equalsIgnoreCase(item.getName())
                     ) {
                 partInput = item;
@@ -1761,7 +1824,7 @@ public class GoodsManager implements Serializable {
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
             
-            double totalInputsValue = (outputsValue - powerValue) * FOOD_PRODUCTION_INPUT_FACTOR;
+            double totalInputsValue = (outputsValue - powerValue) * trade_factor * cropFarm_factor * FOOD_PRODUCTION_INPUT_FACTOR;
             if (totalInputsValue > 0D) {
                 double partNum = partInput.getAmount();
                 demand = totalInputsValue * (partNum / totalInputNum);
@@ -2241,7 +2304,7 @@ public class GoodsManager implements Serializable {
             }
 
             // Multiply by vehicle factor.
-            value *= VEHICLE_FACTOR;
+            value *= transportation_factor * VEHICLE_FACTOR;
 
             double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
             if (tradeValue > value) {

@@ -79,7 +79,8 @@ public class RespondToStudyInvitationMeta implements MetaTask, Serializable {
 	        // Job modifier.
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
-	            result *= job.getStartTaskProbabilityModifier(RespondToStudyInvitation.class);
+	            result *= job.getStartTaskProbabilityModifier(RespondToStudyInvitation.class)
+	            		* person.getSettlement().getGoodsManager().getResearchFactor();
 	        }
 
 	        // Modify if research is the person's favorite activity.

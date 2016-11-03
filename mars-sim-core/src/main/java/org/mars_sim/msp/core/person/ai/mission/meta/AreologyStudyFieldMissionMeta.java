@@ -60,36 +60,50 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
             boolean go = true;
             
             // Check if a mission-capable rover is available.
-            if (!RoverMission.areVehiclesAvailable(settlement, false))
+            if (!RoverMission.areVehiclesAvailable(settlement, false)) {
             	go = false;
+            	return 0;
+            }
 
             // Check if available backup rover.
-            else if (!RoverMission.hasBackupRover(settlement))
+            else if (!RoverMission.hasBackupRover(settlement)) {
             	go = false;
+            	return 0;
+            }
             // Check if minimum number of people are available at the settlement.
             // Plus one to hold down the fort.
             else if (!RoverMission.minAvailablePeopleAtSettlement(settlement, 
-                    (AreologyStudyFieldMission.MIN_PEOPLE + 1)))
+                    (AreologyStudyFieldMission.MIN_PEOPLE + 1))) {
             	go = false;
+            	return 0;
+            }
 
             // Check for embarking missions.
-            else if (VehicleMission.hasEmbarkingMissions(settlement))
+            else if (VehicleMission.hasEmbarkingMissions(settlement)) {
             	go = false;
+            	return 0;
+            }
 
             // Check if settlement has enough basic resources for a rover mission.
-            else if (!RoverMission.hasEnoughBasicResources(settlement))
+            else if (!RoverMission.hasEnoughBasicResources(settlement)) {
             	go = false;
+            	return 0;
+            }
             
             // Check if min number of EVA suits at settlement.
             else if (!(Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) 
-                    > AreologyStudyFieldMission.MIN_PEOPLE))
+                    > AreologyStudyFieldMission.MIN_PEOPLE)) {
             	go = false;
+            	return 0;
+            }
             
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
             else if (!(settlement.getInventory().getAmountResourceStored(AmountResource.findAmountResource("methane"), false) >= 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE))
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE)) {
             	go = false;
+            	return 0;
+            }
             
             if (go) {
             //if (reservableRover && backupRover && minNum && !embarkingMissions && hasBasicResources && enoughSuits && enoughMethane) {
@@ -139,7 +153,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                result *= job.getStartMissionProbabilityModifier(AreologyStudyFieldMission.class);
+                result *= job.getStartMissionProbabilityModifier(AreologyStudyFieldMission.class) * settlement.getGoodsManager().getTourismFactor();
             }
         }
 

@@ -68,7 +68,7 @@ public class PeerReviewStudyPaperMeta implements MetaTask, Serializable {
 	                    if (job != null) {
 	                        ScienceType jobScience = ScienceType.getJobScience(job);
 	                        if (study.getScience().equals(jobScience)) {
-	                            result += 50D;
+	                            result += 50D * person.getSettlement().getGoodsManager().getResearchFactor();;
 	                        }
 	                    }
 	                }

@@ -68,7 +68,8 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
             // Job modifier.
             Job job = person.getMind().getJob();
             if (job != null) {
-                result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);
+                result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class)
+                		* person.getSettlement().getGoodsManager().getTransportationFactor();
             }
 
             // Modify if operations is the person's favorite activity.

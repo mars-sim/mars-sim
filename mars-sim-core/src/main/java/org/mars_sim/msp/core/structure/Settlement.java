@@ -2888,6 +2888,43 @@ implements Serializable, LifeSupportType, Objective {
 	public void setObjective(ObjectiveType objectiveType) {
 		//System.out.println(name + "'s objective is " + objectiveType.toString());
 		this.objectiveType = objectiveType;
+		
+		// reset all to 1
+		goodsManager.setCropFarmFactor(1);
+		goodsManager.setManufacturingFactor(1);
+		goodsManager.setResearchFactor(1);
+		goodsManager.setTransportationFactor(1);
+		goodsManager.setTradeFactor(1);
+		goodsManager.setFreeMarketFactor(1);
+		
+		if (objectiveType == ObjectiveType.CROP_FARM) {
+			goodsManager.setCropFarmFactor(1.5);
+		}
+
+		else if (objectiveType == ObjectiveType.MANUFACTURING) {
+			goodsManager.setManufacturingFactor(1.5);
+		}
+
+		else if (objectiveType == ObjectiveType.RESEARCH_CENTER) {
+			goodsManager.setResearchFactor(1.5);
+		}
+
+		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB) {
+			goodsManager.setTransportationFactor(1.5);
+		}
+
+		else if (objectiveType == ObjectiveType.TRADE_TOWN) {
+			goodsManager.setTradeFactor(1.5);
+		}
+
+		else if (objectiveType == ObjectiveType.TOURISM) {
+			goodsManager.setTourismFactor(1.5);
+		}
+		
+		//else if (objectiveType == ObjectiveType.FREE_MARKET) {
+		//	goodsManager.setFreeMarketFactor(1.5);
+		//}
+
 	}
 
 	//@Override
@@ -2912,9 +2949,12 @@ implements Serializable, LifeSupportType, Objective {
 			return "loading dock garage"; 
 		// alternatives :"Garage";
 		else if (objectiveType == ObjectiveType.TRADE_TOWN)
-			return "storage shed";
-		else if (objectiveType == ObjectiveType.FREE_MARKET)
-			return "";
+			return "storage shed";		
+		else if (objectiveType == ObjectiveType.TOURISM)
+			return "loading dock garage"; 		
+		//else if (objectiveType == ObjectiveType.FREE_MARKET)
+		//	return "";
+		
 		
 		// Future alternatives : 
 		

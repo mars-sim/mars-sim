@@ -220,7 +220,7 @@ public class TabPanelDashboard extends TabPanel {
 			else if (i == 4)
 				ss = "/icons/settlement_goals/trade.png";
 			else if (i == 5)
-				ss = "/icons/settlement_goals/free_market_128.png";
+				ss = "/icons/settlement_goals/trip_128.png";//free_market_128.png";
 
 			toggleBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ss))));
 			// btn.setStyle("-fx-alignment: LEFT;");
@@ -298,7 +298,7 @@ public class TabPanelDashboard extends TabPanel {
     			else if (index == 4)
     				type = ObjectiveType.TRANSPORTATION_HUB;
     			else if (index == 5)
-    				type = ObjectiveType.FREE_MARKET;
+    				type = ObjectiveType.TOURISM;
 
     			settlement.setObjective(type);
     			

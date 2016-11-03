@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.ai.job.Deliverybot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
@@ -128,22 +129,47 @@ public class TradeMeta implements MetaMission {
 	    // Check if available rover.
 	    if (!RoverMission.areVehiclesAvailable(settlement, false)) {
 	        missionPossible = false;
+	        return 0;
 	    }
 	
 	    // Check if available backup rover.
 	    if (!RoverMission.hasBackupRover(settlement)) {
 	        missionPossible = false;
+	        return 0;
 	    }
 	
 	    // Check if minimum number of people are available at the settlement.
 	    // Plus one to hold down the fort.
 	    if (!RoverMission.minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_PEOPLE + 1)) {
 	        missionPossible = false;
+	        return 0;
 	    }
 	
 	    // Check if min number of EVA suits at settlement.
 	    if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE) {
 	        missionPossible = false;
+	        return 0;
+	    }
+	
+
+	    // Check for embarking missions.
+	    if (VehicleMission.hasEmbarkingMissions(settlement)) {
+	        missionPossible = false;
+	        return 0;
+	    }
+	
+	    // Check if settlement has enough basic resources for a rover mission.
+	    if (!RoverMission.hasEnoughBasicResources(settlement)) {
+	        missionPossible = false;
+	        return 0;
+	    }
+	    
+	    // Check if starting settlement has minimum amount of methane fuel.
+	    AmountResource methane = AmountResource.findAmountResource("methane");
+	    if (settlement.getInventory().getAmountResourceStored(methane, false) < 
+	            RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
+	        missionPossible = false;
+	        return 0;
 	    }
 	
 	    // Check for the best trade settlement within range.
@@ -192,28 +218,11 @@ public class TradeMeta implements MetaMission {
 	        e.printStackTrace();
 	    }
 	
-	    // Check for embarking missions.
-	    if (VehicleMission.hasEmbarkingMissions(settlement)) {
-	        missionPossible = false;
-	    }
-	
-	    // Check if settlement has enough basic resources for a rover mission.
-	    if (!RoverMission.hasEnoughBasicResources(settlement)) {
-	        missionPossible = false;
-	    }
-	    
-	    // Check if starting settlement has minimum amount of methane fuel.
-	    AmountResource methane = AmountResource.findAmountResource("methane");
-	    if (settlement.getInventory().getAmountResourceStored(methane, false) < 
-	            RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-	        missionPossible = false;
-	    }
-	
 	    // Determine mission probability.
 	    if (missionPossible) {
 	
 	        // Trade value modifier.
-	        missionProbability = tradeProfit / 1000D;
+	        missionProbability = tradeProfit / 1000D * settlement.getGoodsManager().getTradeFactor();
 	        if (missionProbability > Trade.MAX_STARTING_PROBABILITY) {
 	            missionProbability = Trade.MAX_STARTING_PROBABILITY;
 	        }

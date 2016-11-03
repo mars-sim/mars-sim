@@ -72,7 +72,8 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     // Job modifier.
                     Job job = person.getMind().getJob();
                     if (job != null) {
-                        result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
+                        result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class)
+                        		* person.getSettlement().getGoodsManager().getCropFarmFactor();
                     }
 
                     // Modify if tending plants is the person's favorite activity.

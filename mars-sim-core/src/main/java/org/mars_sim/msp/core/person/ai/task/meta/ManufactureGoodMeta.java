@@ -83,7 +83,8 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
                     // Job modifier.
                     Job job = person.getMind().getJob();
                     if (job != null) {
-                        result *= job.getStartTaskProbabilityModifier(ManufactureGood.class);
+                        result *= job.getStartTaskProbabilityModifier(ManufactureGood.class)
+                        		* person.getSettlement().getGoodsManager().getManufacturingFactor();
                     }
 
                     // Modify if tinkering is the person's favorite activity.

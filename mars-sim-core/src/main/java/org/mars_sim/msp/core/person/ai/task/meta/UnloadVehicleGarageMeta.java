@@ -75,7 +75,8 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);
+            result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class)
+            		* person.getSettlement().getGoodsManager().getTransportationFactor();
         }
 
         // Modify if operations is the person's favorite activity.

@@ -44,6 +44,21 @@ implements Serializable {
     private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString(
             "Task.phase.fieldWork")); //$NON-NLS-1$
 
+    // https://en.wikipedia.org/wiki/Volcanology_of_Mars
+    // http://www.space.com/198-mars-volcanoes-possibly-active-pictures-show.html
+    private static final TaskPhase STUDY_VOLCANIC_ACTIVITIES = new TaskPhase(Msg.getString(
+            "Task.phase.fieldWork")); //$NON-NLS-1$
+
+    // http://www.ibtimes.com/marsquake-seismic-activity-red-planet-bodes-well-life-414690
+    private static final TaskPhase STUDY_SEISMIC_ACTIVITIES = new TaskPhase(Msg.getString(
+            "Task.phase.fieldWork")); //$NON-NLS-1$
+
+    // Aeolian or Eolian science is where meteorology meets geology
+    // http://www.lpi.usra.edu/publications/slidesets/winds/
+    // Modification of the martian surface by the wind (atmospheric dust storms, dust devils, and perhaps even tornados)
+    private static final TaskPhase STUDY_AEOLIAN_ACTIVITIES = new TaskPhase(Msg.getString(
+            "Task.phase.fieldWork")); //$NON-NLS-1$
+
     // Data members
     private Person leadResearcher;
     private ScientificStudy study;

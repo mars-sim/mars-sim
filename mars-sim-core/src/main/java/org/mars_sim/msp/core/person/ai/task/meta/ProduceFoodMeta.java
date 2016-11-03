@@ -87,7 +87,8 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 	    	        // Job modifier.
 	    	        Job job = person.getMind().getJob();
 	    	        if (job != null) {
-	    	            result *= job.getStartTaskProbabilityModifier(ProduceFood.class);
+	    	            result *= job.getStartTaskProbabilityModifier(ProduceFood.class)
+	                    		* person.getSettlement().getGoodsManager().getCropFarmFactor();
 	    	        }
 
 	                // Modify if cooking is the person's favorite activity.

@@ -117,7 +117,8 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	            // Job modifier.
 	            Job job = person.getMind().getJob();
 	            if (job != null)
-	                result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class);
+	                result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class)
+	                		* person.getSettlement().getGoodsManager().getTransportationFactor();
 	
 	            // Effort-driven task modifier.
 	            result *= person.getPerformanceRating();
