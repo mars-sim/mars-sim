@@ -21,7 +21,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -140,6 +142,8 @@ implements ActionListener {
 	private MapLayer landmarkLayer;
 	private MapLayer exploredSiteLayer;
 
+	private List<Landmark> landmarks;
+	
 	/**
 	 * Constructor.
 	 * @param desktop {@link MainDesktopPane} the desktop pane
@@ -148,6 +152,7 @@ implements ActionListener {
 		// use ToolWindow constructor
 		super(NAME, desktop);
 
+		landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 		
 		if (desktop.getMainScene() != null) {
 			
@@ -240,15 +245,18 @@ implements ActionListener {
 			JPanel coordPane = new JPanel(new GridLayout(1, 6, 0, 0));//FlowLayout(FlowLayout.LEFT));//
 			//coordPane.setBorder(new EmptyBorder(6, 6, 3, 3));
 			coordPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+			coordPane.setAlignmentY(Component.TOP_ALIGNMENT);
 			bottomPane.add(coordPane);//, BorderLayout.NORTH);
 
 			
 			// Prepare latitude entry components
-			JLabel latLabel = new JLabel("Lat :");//Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
-			latLabel.setAlignmentY(.5F);
+			JLabel latLabel = new JLabel(" Lat : ", JLabel.RIGHT);//Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
+			//latLabel.setAlignmentY(.5F);
 			coordPane.add(latLabel);
 	
-			latText = new JTextField(3);
+			latText = new JTextField(5);
+			latText.setCaretPosition(latText.getText().length());
+			latText.setHorizontalAlignment(JTextField.CENTER);
 			coordPane.add(latText);
 	
 			String[] latStrings = {
@@ -265,11 +273,13 @@ implements ActionListener {
 			//positionPane.add(Box.createHorizontalStrut(5));
 	
 			// Prepare longitude entry components
-			JLabel longLabel = new JLabel("Lon :");//Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
-			longLabel.setAlignmentY(.5F);
+			JLabel longLabel = new JLabel(" Lon : ", JLabel.RIGHT);//Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
+			//longLabel.setAlignmentY(.5F);
 			coordPane.add(longLabel);
 	
-			longText = new JTextField(3);
+			longText = new JTextField(5);
+			longText.setCaretPosition(longText.getText().length());
+			longText.setHorizontalAlignment(JTextField.CENTER);
 			coordPane.add(longText);
 	
 			String[] longStrings = {
@@ -598,6 +608,9 @@ implements ActionListener {
 			// Read longitude and latitude from user input, translate to radians,
 			// and recenter globe and surface map on that location.
 			try {
+				latText.setCaretPosition(latText.getText().length());
+				longText.setCaretPosition(longText.getText().length());
+				
 				double latitude = ((Float) new Float(latText.getText())).doubleValue();
 				double longitude = ((Float) new Float(longText.getText())).doubleValue();
 				String latDirStr = (String) latDir.getSelectedItem();
@@ -629,14 +642,20 @@ implements ActionListener {
 		}
 		else if (source == topoItem) {
 			if (topoItem.isSelected()) {
+				// turn off day night layer
+				setMapLayer(dayNightItem.isSelected(), 0, shadingLayer);
+				globeNav.setDayNightTracking(dayNightItem.isSelected());
+				// show topo map
 				map.setMapType(TopoMarsMap.TYPE);
 				globeNav.showTopo();
-				ruler.showColor();
+				//ruler.showColor();
 			}
+			
 			else {
+				// show surface map
 				map.setMapType(SurfMarsMap.TYPE);
 				globeNav.showSurf();
-				ruler.showMap();
+				//ruler.showMap();
 			}
 		}
 		else if (source == dayNightItem) {
@@ -676,6 +695,14 @@ implements ActionListener {
 		// Create options menu.
 		optionsMenu = new JPopupMenu(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
 
+		// Create day/night tracking menu item.
+		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.daylightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
+		dayNightItem.addActionListener(this);		
+		optionsMenu.add(dayNightItem);
+		//2016-06-08 Unchecked dayNightItem at the start of sim
+		//globeNav.setDayNightTracking(false);
+		//dayNightItem.setSelected(false);
+				
 		// Create topographical map menu item.
 		topoItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.topo"), TopoMarsMap.TYPE.equals(map.getMapType())); //$NON-NLS-1$
 		topoItem.addActionListener(this);
@@ -686,14 +713,6 @@ implements ActionListener {
 		unitLabelItem.addActionListener(this);
 		optionsMenu.add(unitLabelItem);
 
-		// Create day/night tracking menu item.
-		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.daylightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
-		dayNightItem.addActionListener(this);		
-		optionsMenu.add(dayNightItem);
-		//2016-06-08 Unchecked dayNightItem at the start of sim
-		//globeNav.setDayNightTracking(false);
-		//dayNightItem.setSelected(false);
-		
 		// Create vehicle trails menu item.
 		trailItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showVehicleTrails"), map.hasMapLayer(trailLayer)); //$NON-NLS-1$
 		trailItem.addActionListener(this);
@@ -780,7 +799,7 @@ implements ActionListener {
 	private class mapListener extends MouseAdapter {
 
 		public void mouseEntered(MouseEvent event) {
-			checkHover(event);
+			//checkHover(event);
 		}
 
 		public void mouseExited(MouseEvent event) {
@@ -810,9 +829,10 @@ implements ActionListener {
 		if (map.getCenterLocation() != null) {
 			double rho = CannedMarsMap.PIXEL_RHO;
 
-			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
-					(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
-					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
+			double x = (double)(event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
+			double y = (double)(event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
+			
+			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(x, y, rho);
 
 			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
 
@@ -825,9 +845,11 @@ implements ActionListener {
 					double clickRange = unitCoords.getDistance(clickedPosition);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
-						openUnitWindow(unit);
 						map.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+						openUnitWindow(unit);
 					}
+					else 
+						map.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 			}
 		}
@@ -841,9 +863,10 @@ implements ActionListener {
 		if (mapCenter != null) {
 			double rho = CannedMarsMap.PIXEL_RHO;
 
-			Coordinates mousePos = map.getCenterLocation().convertRectToSpherical(
-					(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
-					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
+			double x = (double)(event.getX() - (Map.DISPLAY_WIDTH / 2D) - 1);
+			double y = (double)(event.getY() - (Map.DISPLAY_HEIGHT / 2D) - 1);
+			//System.out.println("x is " + x + "   y is " + y);
+			Coordinates mousePos = map.getCenterLocation().convertRectToSpherical(x, y, rho);
 			boolean onTarget = false;
 
 			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
@@ -857,14 +880,15 @@ implements ActionListener {
 					double clickRange = unitCoords.getDistance(mousePos);
 					double unitClickRange = displayInfo.getMapClickRange();
 					if (clickRange < unitClickRange) {
-						onTarget = true;
+						//System.out.println("you're on a settlement or vehicle");
 						map.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+						onTarget = true;
 					}
 				}
 			}
 
 			// Change mouse cursor if hovering over a landmark on the map
-			Iterator<Landmark> j = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks().iterator();
+			Iterator<Landmark> j = landmarks.iterator();
 			while (j.hasNext()) {
 				Landmark landmark = (Landmark) j.next();
 
@@ -874,6 +898,8 @@ implements ActionListener {
 
 				if (clickRange < unitClickRange) {
 					onTarget = true;
+					//System.out.println("you're on a landmark");
+					//TODO: may open a panel showing any special items at that landmark
 					map.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
 					//System.out.println("right on landmark");
 				}
@@ -885,11 +911,16 @@ implements ActionListener {
 		}
 	}
 
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
+	
 	public void destroy() {
 		map.destroy();
 		globeNav.destroy();
 		//navButtons = null;
 		ruler = null;
+		
 		unitIconLayer = null;
 		unitLabelLayer = null;
 		shadingLayer = null;
@@ -898,5 +929,8 @@ implements ActionListener {
 		navpointLayer = null;
 		landmarkLayer = null;
 		exploredSiteLayer = null;
+		
+		mapPaneInner = null;
+
 	}
 }

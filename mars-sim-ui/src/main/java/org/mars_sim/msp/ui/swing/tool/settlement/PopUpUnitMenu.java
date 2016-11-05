@@ -414,9 +414,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	            	Building building = (Building) unit;
 
                     if (mainScene != null) {
-    					Platform.runLater(() -> {
-                           	createBuildingPanelFX(building);
-    					});
+    					Platform.runLater(() -> createBuildingPanelFX(building));
                     }
                     else {
                     	createBuildingPanel(building);
@@ -444,7 +442,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 	   	stage.setTitle("Building Detail");
 		stage.initOwner(mainScene.getStage());
-	   	//stage.initStyle(StageStyle.DECORATED);//.UTILITY); //UNIFIED);
+	   	stage.initStyle(StageStyle.DECORATED);//.UTILITY); //UNIFIED);
 	   	//stage.initStyle(StageStyle.TRANSPARENT);
 		stage.setOpacity(.8);
 		stage.setResizable(false);

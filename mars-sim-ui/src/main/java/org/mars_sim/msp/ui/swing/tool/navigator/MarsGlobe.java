@@ -39,6 +39,13 @@ public class MarsGlobe {
 	/** Width of map source image (pixels). */
 	private final static int map_width = map_height * 2;
 
+	private final double PI_half = Math.PI / 2D;
+	private final double PI_double = Math.PI * 2D;
+	
+	private double rho = map_height / Math.PI;
+	private double col_array_modifier = 1D / PI_double;
+	private int half_map = map_height / 2;
+	
 	// Data members
 	/** Center position of globe. */
 	private Coordinates centerCoords;
@@ -94,7 +101,7 @@ public class MarsGlobe {
 	 *  @param newCenter new center location
 	 */
 	public synchronized void drawSphere(Coordinates newCenter) {
-
+		//System.out.println("drawSphere()");
 		// Adjust coordinates
 		Coordinates adjNewCenter =
 				new Coordinates(newCenter.getPhi(), newCenter.getTheta() + Math.PI);
@@ -109,8 +116,8 @@ public class MarsGlobe {
 
 		centerCoords.setCoords(adjNewCenter);
 
-		double PI_half = Math.PI / 2D;
-		double PI_double = Math.PI * 2D;
+		//double PI_half = Math.PI / 2D;
+		//double PI_double = Math.PI * 2D;
 
 		double end_row = centerCoords.getPhi() - PI_half;
 		double start_row = end_row + Math.PI;
@@ -131,12 +138,12 @@ public class MarsGlobe {
 		}
 
 		// More variable initializations
-		double col_correction = (Math.PI / -2D) - centerCoords.getTheta();
-		double rho = map_height / Math.PI;
+		double col_correction = -PI_half - centerCoords.getTheta();
+		//double rho = map_height / Math.PI;
 		double sin_offset = Math.sin(centerCoords.getPhi() + Math.PI);
 		double cos_offset = Math.cos(centerCoords.getPhi() + Math.PI);
-		double col_array_modifier = 1D / PI_double;
-		int half_map = map_height / 2;
+		//double col_array_modifier = 1D / PI_double;
+		//int half_map = map_height / 2;
 
 		// Create array to hold image
 		int[] buffer_array = new int[map_height * map_height];
@@ -181,48 +188,49 @@ public class MarsGlobe {
 
 			// Error adjustment for theta center close to PI_half
 			double error_correction = centerCoords.getPhi() - PI_half;
-					if (error_correction > 0D) {
-						if (error_correction < row_iterate) {
-							col_boundry = PI_half;
-						}
-					} else if (error_correction > 0D - row_iterate) {
-						col_boundry = PI_half;
-					}
+			
+			if (error_correction > 0D) {
+				if (error_correction < row_iterate) {
+					col_boundry = PI_half;
+				}
+			} else if (error_correction > 0D - row_iterate) {
+				col_boundry = PI_half;
+			}
 
-					// Determine column starting and stopping points for row
-					double start_col = centerCoords.getTheta() - col_boundry;
-					double end_col = centerCoords.getTheta() + col_boundry;
-					if (col_boundry == Math.PI)
-						end_col -= col_iterate;
+			// Determine column starting and stopping points for row
+			double start_col = centerCoords.getTheta() - col_boundry;
+			double end_col = centerCoords.getTheta() + col_boundry;
+			if (col_boundry == Math.PI)
+				end_col -= col_iterate;
 
-					double temp_buff_x = rho * Math.sin(row);
-					double temp_buff_y1 = temp_buff_x * cos_offset;
-					double temp_buff_y2 = rho * row_cos * sin_offset;
+			double temp_buff_x = rho * Math.sin(row);
+			double temp_buff_y1 = temp_buff_x * cos_offset;
+			double temp_buff_y2 = rho * row_cos * sin_offset;
 
-					double col_array_modifier2 = col_array_modifier * circum;
+			double col_array_modifier2 = col_array_modifier * circum;
 
-					// Go through each column in row
-					for (double col = start_col; col <= end_col; col += col_iterate) {
-						int array_x = (int)(col_array_modifier2 * col);
+			// Go through each column in row
+			for (double col = start_col; col <= end_col; col += col_iterate) {
+				int array_x = (int)(col_array_modifier2 * col);
 
-						if (array_x < 0) {
-							array_x += circum;
-						} else if (array_x >= circum) {
-							array_x -= circum;
-						}
+				if (array_x < 0) {
+					array_x += circum;
+				} else if (array_x >= circum) {
+					array_x -= circum;
+				}
 
-						double temp_col = col + col_correction;
+				double temp_col = col + col_correction;
 
-						// Determine x and y position of point on image
-						int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) +
-								half_map;
-						int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) +
-								temp_buff_y2) + half_map;
+				// Determine x and y position of point on image
+				int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) +
+						half_map;
+				int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) +
+						temp_buff_y2) + half_map;
 
-						// Put point in buffer array
-						buffer_array[buff_x + (map_height * buff_y)] = sphereColor[array_y].elementAt(array_x);
-						//buffer_array[buff_x + (map_height * buff_y)] = 0xFFFFFFFF; // if in gray scale
-					}
+				// Put point in buffer array
+				buffer_array[buff_x + (map_height * buff_y)] = sphereColor[array_y].elementAt(array_x);
+				//buffer_array[buff_x + (map_height * buff_y)] = 0xFFFFFFFF; // if in gray scale
+			}
 		}
 
 		// Create image out of buffer array
@@ -232,14 +240,18 @@ public class MarsGlobe {
 
 		MediaTracker mt = new MediaTracker(displayArea);
 		mt.addImage(globeImage, 0);
+		//System.out.println("mt.addImage(globeImage, 0)");
 		try {
 			mt.waitForID(0);
+			// Indicate that image is complete
+			imageDone = true;
+			//System.out.println("mt.waitForID(0)");
+			
 		} catch (InterruptedException e) {
 			logger.log(Level.SEVERE,Msg.getString("MarsGlobe.log.mediaTrackerError", e.toString())); //$NON-NLS-1$
 		}
 
-		// Indicate that image is complete
-		imageDone = true;
+
 	}
 
 	/** Returns globe image
@@ -254,7 +266,7 @@ public class MarsGlobe {
 
 		// Initialize variables
 		int row, col_num, map_col;
-		double rho, phi, theta;
+		double phi, theta;
 		double circum, offset;
 		double ih_d = (double) map_height;
 
@@ -279,7 +291,7 @@ public class MarsGlobe {
 				map_pixels[x][y] = pixels_color[x + (y * map_width)];
 
 		// Initialize variables
-		rho = map_height / Math.PI;
+		//rho = map_height / Math.PI;
 		offset = Math.PI / (2 * ih_d);
 
 		// Go through each row and create Sphere_Color vector with it
@@ -309,4 +321,17 @@ public class MarsGlobe {
 	public boolean isImageDone() {
 		return imageDone;
 	}
+	
+	/**
+	 * Prepare globe for deletion.
+	 */
+	public void destroy() {
+
+		centerCoords = null;
+		sphereColor = null;
+		marsMap = null;
+		globeImage = null;
+		displayArea= null;
+	}
+
 }

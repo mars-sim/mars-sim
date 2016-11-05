@@ -595,13 +595,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				}
 				
 				if (mainScene != null) {
-					// 2016-10-22 These 3 tools are in the Desktop Tab
-					//if (toolName.equals(SearchWindow.NAME)
-					//		|| toolName.equals(TimeWindow.NAME)){
-					//	add(window, 0);	
-					//}
-					//else 
-					if (toolName.equals(MonitorWindow.NAME)) {
+					// 2016-10-22 These 2 tools are in the Main Tab
+					if (toolName.equals(SearchWindow.NAME)
+							|| toolName.equals(TimeWindow.NAME)){
+						add(window, 0);	
+					}
+					else if (toolName.equals(MonitorWindow.NAME)) {
 						mainScene.getDesktops().get(0).add(window, 0);
 						
 					}
@@ -838,7 +837,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 			
 		// go to the main tab
 		if (mainScene != null) 
-			mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+			Platform.runLater(() -> mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB));
 
 		playSound(unit);
 

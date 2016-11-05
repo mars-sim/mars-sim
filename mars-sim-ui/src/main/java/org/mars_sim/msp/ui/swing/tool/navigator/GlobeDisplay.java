@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -96,13 +97,19 @@ implements Runnable {
 	int rightWidth = positionMetrics.stringWidth(longitude);
 
 	//private Mars mars;
-
+	private MainDesktopPane desktop;
+	private NavigatorWindow navwin;
 	private SurfaceFeatures surfaceFeatures;
 
 	private Graphics dbg;
 	private Image dbImage = null;
 	private Image starfield;
 
+	private boolean isOpenCache = false;
+	//private int difxCache, difyCache;
+	private double globeCircumference;
+    private double rho;
+	
 	/**
 	 * Constructor.
 	 * @param navwin the navigator window.
@@ -111,10 +118,16 @@ implements Runnable {
 	 */
 	public GlobeDisplay(final NavigatorWindow navwin) {//, int width, int height) {
 
+		this.navwin = navwin;
+		this.desktop = navwin.getDesktop();
+		
 		// Initialize data members
 		this.width = GLOBE_BOX_WIDTH;
 		this.height = GLOBE_BOX_HEIGHT;
 
+		globeCircumference = height *2;
+	    rho = globeCircumference / (2D * Math.PI);
+	    
 		//starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
 
@@ -136,9 +149,13 @@ implements Runnable {
 		update = true;
 		topo = false;
 		recreate = true;
+		keepRunning = true;
 		useUSGSMap = false;
 		shadingArray = new int[width * height *2 *2];
 		showDayNightShading = true;
+
+		// Initially show real surface globe
+		showSurf();
 
 		addMouseMotionListener(new MouseAdapter() {
 
@@ -147,37 +164,35 @@ implements Runnable {
 				int difx, dify, x = e.getX(), y = e.getY();
 
 				difx = dragx - x;
-				dify = dragy - y;
+				dify = dragy - y;				
 				dragx = x;
 				dragy = y;
-
-				if ((difx != 0) || (dify != 0)) {
+				//System.out.println("x is " + x + "   y is " + y);
+				//System.out.println("difx is " + difx + "   dify is " + dify);
+				if ((difx != 0) || (dify != 0)
+						&& x < 250 && y < 250) {
 
 				    // Globe circumference in pixels.
-				    //double globeCircumference =	300D;
-				    double globeCircumference = height *2;
-				    double rho = globeCircumference / (2D * Math.PI);
+				    //double globeCircumference = height *2;
+				    //double rho = globeCircumference / (2D * Math.PI);
                     centerCoords = centerCoords.convertRectToSpherical(
                             (double) difx, (double) dify, rho);
-
-					if (topo) {
-						topoSphere.drawSphere(centerCoords);
-					} else {
-						marsSphere.drawSphere(centerCoords);
-					}
-
+                    
 					recreate = false;
+					
+					// Regenerate globe if recreate is true, then display
+					drawSphere();
 
-					paintDoubleBuffer();
-					repaint();
-					//paintScreen();
+					
 				}
 
+				//e.consume();
 				super.mouseDragged(e);
 			}
 		});
 
 		addMouseListener(new MouseAdapter() {
+			
 			@Override
 			public void mousePressed(MouseEvent e) {
 				//System.out.println("mousepressed X = " + e.getX());
@@ -185,6 +200,8 @@ implements Runnable {
 				dragx = e.getX();
 				dragy = e.getY();
 				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				
+				e.consume();
 			}
 
 			@Override
@@ -193,11 +210,10 @@ implements Runnable {
 				dragy = 0;
 				navwin.updateCoords(centerCoords);
 				navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				
+				e.consume();
 			}
 		});
-
-		// Initially show real surface globe
-		showSurf();
 
 	}
 
@@ -246,6 +262,7 @@ implements Runnable {
 	 * Starts display update thread (or creates a new one if necessary)
 	 */
 	private void updateDisplay() {
+
 		if ((showThread == null) || (!showThread.isAlive())) {
 			showThread = new Thread(this, Msg.getString("GlobeDisplay.thread.globe")); //$NON-NLS-1$
 			showThread.start();
@@ -258,42 +275,46 @@ implements Runnable {
 	 * the run method for the runnable interface
 	 */
 	public void run() {
-		while (update)
-			refreshLoop();
-	}
-
+//		while (update) {
+//			refreshLoop();
+//		}
+//	}
 	/**
 	 * loop, refreshing the globe display when necessary
 	 */
-	public void refreshLoop() {
-		keepRunning = true;
-		while (keepRunning) { // Endless refresh loop
+//	public void refreshLoop() {
+		while (keepRunning) {
 			if (recreate) {
-				// Regenerate globe if recreate is true, then display
-				if (topo) {
-					topoSphere.drawSphere(centerCoords);
-				} else {
-					marsSphere.drawSphere(centerCoords);
-				}
+				//System.out.println("recreate is true");		
 				recreate = false;
-
-				paintDoubleBuffer();
-				repaint();
-				//paintScreen();
-
+				// Regenerate globe if recreate is true, then display
+				drawSphere();
+				
 			} else {
-				// Pause for 2 seconds between display refreshes
+				//System.out.println("recreate is false");	
 				try {
-					//Thread.sleep(2000);
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {}
-
-
-				paintDoubleBuffer();
-				repaint();
-				//paintScreen();
+					boolean open = desktop.isToolWindowOpen(NavigatorWindow.NAME);
+					if (isOpenCache != open) {
+						isOpenCache = open;
+						if (open) {
+							paintDoubleBuffer();
+							repaint();
+						}
+					}
+					Thread.sleep(5000l);
+				} catch (InterruptedException e) {
+					//e.printStackTrace(); // if enable, will print sleep interrupted
+				}
+				
+				
 			}
+			
+
+
+
 		}
+			
+		
 	}
 
 /*
@@ -314,6 +335,18 @@ implements Runnable {
 	}
 
 */
+	public void drawSphere() {
+	
+		if (topo) {
+			topoSphere.drawSphere(centerCoords);
+		} else {
+			marsSphere.drawSphere(centerCoords);
+		}
+		
+		paintDoubleBuffer();
+		repaint();
+		
+	}
 
 	/*
 	 * Uses double buffering to draws into its own graphics object dbg before calling paintComponent()
@@ -333,16 +366,20 @@ implements Runnable {
 		dbg.setColor(Color.black);
 		//dbg.fillRect(0, 0, 150, 150);
 		dbg.fillRect(0, 0, height, height);
-
 		//Image starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		dbg.drawImage(starfield, 0, 0, Color.black, null);
 
 		// Draw real or topo globe
 		MarsGlobe globe = topo ? topoSphere : marsSphere;
 
-		if (globe.isImageDone()) {
+		if(globe.isImageDone()) {
 			dbg.drawImage(globe.getGlobeImage(), 0, 0, this);
 		}
+		else {
+			return;
+		}
+				
+
 
 		if (showDayNightShading) {
 			drawShading(dbg);
@@ -441,19 +478,19 @@ implements Runnable {
 		Image shadingMap = this.createImage(new MemoryImageSource(width,
 				height, shadingArray, 0, width));
 
-				MediaTracker mt = new MediaTracker(this);
-				mt.addImage(shadingMap, 0);
-				try {
-					mt.waitForID(0);
-				} catch (InterruptedException e) {
-					logger.log(
-						Level.SEVERE,
-						Msg.getString("GlobeDisplay.log.shadingInterrupted",e.toString()) //$NON-NLS-1$
-					);
-				}
+		MediaTracker mt = new MediaTracker(this);
+		mt.addImage(shadingMap, 0);
+		try {
+			mt.waitForID(0);
+		} catch (InterruptedException e) {
+			logger.log(
+				Level.SEVERE,
+				Msg.getString("GlobeDisplay.log.shadingInterrupted",e.toString()) //$NON-NLS-1$
+			);
+		}
 
-				// Draw the shading image
-				g.drawImage(shadingMap, 0, 0, this);
+		// Draw the shading image
+		g.drawImage(shadingMap, 0, 0, this);
 	}
 
 	/**
@@ -593,6 +630,8 @@ implements Runnable {
 	 * Prepare globe for deletion.
 	 */
 	public void destroy() {
+
+		showThread = null;
 		update = false;
 		keepRunning = false;
 		marsSphere = null;

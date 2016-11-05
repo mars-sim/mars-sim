@@ -56,7 +56,7 @@ import javafx.scene.control.*;
 @SuppressWarnings("restriction")
 public class ChatBox extends BorderPane {
 
-
+ 
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
 	public final static String REQUEST_HEIGHT_CHANGE = YOU_PROMPT + "I'd like to change the chat box height to ";
@@ -142,11 +142,11 @@ public class ChatBox extends BorderPane {
         autoFillTextBox = new AutoFillTextBox<String>(autoCompleteData);
         autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
         autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
-        autoFillTextBox.setStyle(
-        		"-fx-background-color: white;" 
-        		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
-        		+ "-fx-text-fill: white;"
-        		);          
+        //autoFillTextBox.setStyle(
+        //		"-fx-background-color: white;" 
+        //		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+        //		+ "-fx-text-fill: white;"
+        //		);          
 
         autoFillTextBox.setFilterMode(false);
         autoFillTextBox.getTextbox().addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {
@@ -261,8 +261,8 @@ public class ChatBox extends BorderPane {
             textArea.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
         }
        
-		textArea.setStyle("-fx-text-inner-color: black;");
-        textArea.setStyle("-fx-background-color: black;"); 
+		textArea.setStyle("-fx-text-fill: black;");
+        //textArea.setStyle("-fx-background-color: black;"); 
   		textArea.positionCaret(textArea.getText().length());
     }
 

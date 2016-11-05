@@ -87,7 +87,8 @@ extends TabPanel {
 	private int today;
 	private int start;
 	private int end;
-
+	private int theme;
+	
 	private boolean hideRepeated, hideRepeatedCache, isRealTimeUpdate;
 
 	private Integer selectedSol;
@@ -102,7 +103,7 @@ extends TabPanel {
 	private JTextField shiftTF;
 	private JLabel shiftLabel;
 
-	private JComboBoxMW<Object> comboBox;
+	private JComboBoxMW<Object> solBox;
 	private DefaultComboBoxModel<Object> comboBoxModel;
 	private ScheduleTableModel scheduleTableModel;
 
@@ -268,32 +269,32 @@ extends TabPanel {
 		solList.forEach(s -> comboBoxModel.addElement(s));
 
 		// Create comboBox
-		comboBox = new JComboBoxMW<Object>(comboBoxModel);
-		comboBox.setSelectedItem(todayInteger);
+		solBox = new JComboBoxMW<Object>(comboBoxModel);
+		solBox.setSelectedItem(todayInteger);
 		//comboBox.setOpaque(false);
-		comboBox.setRenderer(new PromptComboBoxRenderer());
+		solBox.setRenderer(new PromptComboBoxRenderer());
 		//comboBox.setRenderer(new PromptComboBoxRenderer(" List of Schedules "));
 		//comboBox.setBackground(new Color(0,0,0,128));
 		//comboBox.setBackground(new Color(255,229,204));
 		//comboBox.setForeground(Color.orange);
-		comboBox.setMaximumRowCount(7);
+		solBox.setMaximumRowCount(7);
 		//comboBox.setBorder(null);
 
 		JPanel solPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		solPanel.add(comboBox);
+		solPanel.add(solBox);
 
 //		infoPanel.add(solPanel);
 		box.add(solPanel);
 		box.add(Box.createHorizontalGlue());
 
-    	selectedSol = (Integer) comboBox.getSelectedItem();
+    	selectedSol = (Integer) solBox.getSelectedItem();
 		if (selectedSol == null)
-			comboBox.setSelectedItem(todayInteger);
+			solBox.setSelectedItem(todayInteger);
 
-		comboBox.setSelectedItem((Integer)1);
-		comboBox.addActionListener(new ActionListener() {
+		solBox.setSelectedItem((Integer)1);
+		solBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	selectedSol = (Integer) comboBox.getSelectedItem();
+            	selectedSol = (Integer) solBox.getSelectedItem();
             	if (selectedSol != null) // e.g. when first loading up
             		scheduleTableModel.update(hideRepeated, (int) selectedSol);
             	if (selectedSol == todayInteger)
@@ -314,7 +315,7 @@ extends TabPanel {
 				if (realTimeBox.isSelected()){
 					isRealTimeUpdate = true;
 					scheduleTableModel.update(hideRepeated, today);
-					comboBox.setSelectedItem(todayInteger);
+					solBox.setSelectedItem(todayInteger);
 				}
 				else
 					isRealTimeUpdate = false;
@@ -365,7 +366,10 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-
+		
+		if (desktop.getMainScene() != null) 
+			theme = desktop.getMainScene().getTheme();
+		
 		TableStyle.setTableStyle(table);
 
 		if (person != null) {
@@ -402,7 +406,7 @@ extends TabPanel {
     	today = taskSchedule.getSolCache();
     	todayInteger = (Integer) today ;
 		//System.out.println("today is " + today);
-       	selectedSol = (Integer) comboBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
+       	selectedSol = (Integer) solBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
 
        	// Update the sol combobox at the beginning of a new sol
     	if (today != todayCache) { 
@@ -434,16 +438,16 @@ extends TabPanel {
 			solList.forEach(s -> newComboBoxModel.addElement(s));
 
 			// Update the solList comboBox
-			comboBox.setModel(newComboBoxModel);
-			comboBox.setRenderer(new PromptComboBoxRenderer());
+			solBox.setModel(newComboBoxModel);
+			solBox.setRenderer(new PromptComboBoxRenderer());
 
 			// Note: Below is needed or else users will be constantly interrupted
 			// as soon as the combobox got updated with the new day's schedule
 			// and will be swapped out without warning.
 			if (selectedSol != null)
-				comboBox.setSelectedItem(selectedSol);
+				solBox.setSelectedItem(selectedSol);
 			else {
-				comboBox.setSelectedItem(todayInteger);
+				solBox.setSelectedItem(todayInteger);
 				selectedSol = null;
 			}
 
@@ -514,15 +518,32 @@ extends TabPanel {
 
 				setText(" Sol " + value);
 
+				// 184,134,11 mud yellow
+				// 255,229,204 white-ish (super pale) yellow
+				
 				if (isSelected) {
-					result.setForeground(new Color(184,134,11));
-			        result.setBackground(Color.orange);
 
-		          // unselected, and not the DnD drop location
+					if (theme == 6) {
+						result.setForeground(Color.cyan);
+				        result.setBackground(new Color(131,172,234)); // 131,172,234 pale sky blue
+					}
+					else {
+				        result.setForeground(new Color(184,134,11));
+			        	result.setBackground(new Color(255,229,204));
+					}
+
+
 		        } else {
-		        	  result.setForeground(new Color(184,134,11));
-		        	  result.setBackground(new Color(255,229,204)); //pale yellow (255,229,204)
-				      //Color(184,134,11)) brown
+			          // unselected, and not the DnD drop location		        	
+					if (theme == 6) {
+						result.setBackground(Color.cyan);
+				        result.setForeground(new Color(131,172,234)); // 131,172,234 pale sky blue
+					}
+					else {
+				        result.setBackground(new Color(184,134,11));
+						result.setForeground(new Color(255,229,204));
+					}
+					
 		        }
 
 		        //result.setOpaque(false);
@@ -681,8 +702,8 @@ extends TabPanel {
 	 * Prepares for deletion.
 	 */
 	public void destroy() {
-		if (comboBox != null) 
-			comboBox.removeAllItems();
+		if (solBox != null) 
+			solBox.removeAllItems();
 		if (comboBoxModel != null) 
 			comboBoxModel.removeAllElements();
         if (tasks != null) 

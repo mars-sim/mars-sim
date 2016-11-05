@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
@@ -37,7 +38,10 @@ implements MapLayer {
 
 	/** Horizontal offset for label. */
 	private int LABEL_HORIZONTAL_OFFSET = 2;
+	
+	private List<Landmark> landmarks = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks();
 
+	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
 	/**
 	 * Displays the layer on the map image.
 	 *
@@ -47,10 +51,7 @@ implements MapLayer {
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
 
-		Iterator<Landmark> i = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks().iterator();
-		while (i.hasNext()) {
-			Landmark landmark = (Landmark) i.next();
-			double angle = CannedMarsMap.HALF_MAP_ANGLE;
+		for (Landmark landmark : landmarks) {
 			if (mapCenter.getAngle(landmark.getLandmarkLocation()) < angle)
 				displayLandmark(landmark, mapCenter, mapType, g);
 		}

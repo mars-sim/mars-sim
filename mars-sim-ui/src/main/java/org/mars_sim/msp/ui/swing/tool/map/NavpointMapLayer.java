@@ -31,6 +31,7 @@ public class NavpointMapLayer implements MapLayer {
 	private static final String WHITE_ICON_NAME = "FlagWhite";
 	private static final String GREEN_ICON_NAME = "FlagGreen";
 	
+	private double angle;
 	// Domain members
 	private Component displayComponent;
 	private Icon navpointIconColor;
@@ -38,6 +39,8 @@ public class NavpointMapLayer implements MapLayer {
 	private Icon navpointIconSelected;
 	private Mission singleMission;
 	private NavPoint selectedNavpoint;
+	
+	private MissionManager manager;
 
 	/**
 	 * Constructor
@@ -47,6 +50,10 @@ public class NavpointMapLayer implements MapLayer {
 		
 		// Initialize domain data.
 		this.displayComponent = displayComponent;
+		
+		angle = CannedMarsMap.HALF_MAP_ANGLE;
+		manager = Simulation.instance().getMissionManager();
+		
 		navpointIconColor = ImageLoader.getIcon(BLUE_ICON_NAME);
 		navpointIconWhite = ImageLoader.getIcon(WHITE_ICON_NAME);
 		navpointIconSelected = ImageLoader.getIcon(GREEN_ICON_NAME);
@@ -81,7 +88,7 @@ public class NavpointMapLayer implements MapLayer {
     			displayMission((TravelMission) singleMission, mapCenter, mapType, g);
     	}
     	else {
-    		MissionManager manager = Simulation.instance().getMissionManager();
+    		//MissionManager manager = Simulation.instance().getMissionManager();
     		for (Mission mission : manager.getMissions()) {
     			if (mission instanceof TravelMission) 
     				displayMission((TravelMission) mission, mapCenter, mapType, g);
@@ -89,7 +96,8 @@ public class NavpointMapLayer implements MapLayer {
     	}
     	
     	// Make sure selected navpoint is always on top.
-    	if (selectedNavpoint != null) displayNavpoint(selectedNavpoint, mapCenter, mapType, g);
+    	if (selectedNavpoint != null) 
+    		displayNavpoint(selectedNavpoint, mapCenter, mapType, g);
 	}
 	
 	/**
@@ -101,8 +109,8 @@ public class NavpointMapLayer implements MapLayer {
 	 */
 	private void displayMission(TravelMission mission, Coordinates mapCenter, String mapType, Graphics g) {
 		for (int x = 0; x < mission.getNumberOfNavpoints(); x++) {
-			NavPoint navpoint = mission.getNavpoint(x);
-			displayNavpoint(navpoint, mapCenter, mapType, g);
+			//NavPoint navpoint = mission.getNavpoint(x);
+			displayNavpoint(mission.getNavpoint(x), mapCenter, mapType, g);
 		}
 	}
 	
@@ -114,7 +122,7 @@ public class NavpointMapLayer implements MapLayer {
 	 * @param g graphics context of the map display.
 	 */
 	private void displayNavpoint(NavPoint navpoint, Coordinates mapCenter, String mapType, Graphics g) {
-		double angle = CannedMarsMap.HALF_MAP_ANGLE;
+		//double angle = CannedMarsMap.HALF_MAP_ANGLE;
 		
 		if (mapCenter.getAngle(navpoint.getLocation()) < angle) {
 			

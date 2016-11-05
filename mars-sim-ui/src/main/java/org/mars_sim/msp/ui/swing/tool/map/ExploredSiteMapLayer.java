@@ -37,6 +37,9 @@ public class ExploredSiteMapLayer implements MapLayer {
 	private boolean displayReserved;
 	private ExploredLocation selectedSite;
 
+	private double angle = CannedMarsMap.HALF_MAP_ANGLE;
+
+	private SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 	/**
 	 * Constructor.
 	 * @param displayComponent the display component.
@@ -84,10 +87,8 @@ public class ExploredSiteMapLayer implements MapLayer {
 	 * @param g graphics context of the map display.
 	 */
 	public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
-		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-		Iterator<ExploredLocation> i = surfaceFeatures.getExploredLocations().iterator();
-		while (i.hasNext()) {
-			ExploredLocation site = i.next();
+		//SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
+		for (ExploredLocation site : surfaceFeatures.getExploredLocations()) {
 			boolean displaySite = true;
 			if (site.isReserved() && !displayReserved) displaySite = false;
 			if (site.isMined() && !displayMined) displaySite = false;
@@ -105,8 +106,7 @@ public class ExploredSiteMapLayer implements MapLayer {
 	 */
 	private void displayExploredSite(ExploredLocation site, Coordinates mapCenter, String mapType, 
 			Graphics g) {
-		double angle = CannedMarsMap.HALF_MAP_ANGLE;
-
+		
 		if (mapCenter.getAngle(site.getLocation()) < angle) {
 
 			// Chose a navpoint icon based on the map type.

@@ -68,6 +68,7 @@ implements Runnable {
 	private Graphics dbg;
 	private Image dbImage = null;
 	private long refreshRate;
+	private double rho = CannedMarsMap.PIXEL_RHO;
 
 	public MapPanel(long refreshRate) {
 		super();
@@ -94,7 +95,10 @@ implements Runnable {
 	 */
 	// 2015-06-26 Added setNavWin()
 	public void setNavWin(final NavigatorWindow navwin) {
-
+		//showMap(centerCoords);
+		setMapType(getMapType());
+		map.drawMap(centerCoords);
+		
 		// 2015-06-26 Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
 
@@ -110,7 +114,7 @@ implements Runnable {
 
 				if ((difx != 0) || (dify != 0)) {
 
-				    double rho = CannedMarsMap.PIXEL_RHO;
+				    //double rho = CannedMarsMap.PIXEL_RHO;
 		            centerCoords = centerCoords.convertRectToSpherical(
 		                    (double) difx, (double) dify, rho);
 
@@ -141,9 +145,6 @@ implements Runnable {
 			}
 		});
 
-		//showMap(centerCoords);
-		setMapType(getMapType());
-		map.drawMap(centerCoords);
 	}
 
 	/**
@@ -340,10 +341,14 @@ implements Runnable {
                 	}
 
                 	// Display map layers.
-                	List<MapLayer> tempMapLayers = new ArrayList<MapLayer>(mapLayers);
-                	Iterator<MapLayer> i = tempMapLayers.iterator();
-                	while (i.hasNext()) {
-                	    i.next().displayLayer(centerCoords, mapType, dbg);
+                	//List<MapLayer> tempMapLayers = new ArrayList<MapLayer>(mapLayers);
+                	//Iterator<MapLayer> i = tempMapLayers.iterator();
+                	//while (i.hasNext()) {
+                	//   i.next().displayLayer(centerCoords, mapType, dbg);
+                	//}
+                	
+                	for (MapLayer l : mapLayers) {
+                		l.displayLayer(centerCoords, mapType, dbg);
                 	}
                 }
         	}
@@ -429,5 +434,6 @@ implements Runnable {
     	update = false;
 		dbg = null;
 		dbImage = null;
+		mapImage = null;
     }
 }

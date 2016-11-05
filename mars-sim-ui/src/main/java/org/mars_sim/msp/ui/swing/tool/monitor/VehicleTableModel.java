@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.tool.Conversion;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -185,7 +186,7 @@ extends UnitTableModel {
 				} break;
 
 				case TYPE : {
-					result = vehicle.getDescription();
+					result = Conversion.capitalize(vehicle.getDescription());
 				} break;
 
 				case CREW : {
