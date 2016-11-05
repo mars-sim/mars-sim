@@ -203,16 +203,22 @@ implements ActionListener {
 			if (dead) 
 				missionCache = deathInfo.getMission();
 			
-			else if (mind.getMission() != null) 
+			else if (mind.getMission() != null)  {
 				missionCache = mind.getMission().getDescription();
+				if (missionCache == null)
+					missionCache = "None";
+			}
 		}
 		else if (robot != null) {
 	
 			if (dead) 
 				missionCache = deathInfo.getMission();
 		
-			else if (botMind.getMission() != null) 
+			else if (botMind.getMission() != null)  {
 				missionCache = botMind.getMission().getDescription();
+				if (missionCache == null)
+					missionCache = "None";
+			}
 		}
 		
 		missionTextArea = new JTextArea(2, 20);
@@ -373,14 +379,25 @@ implements ActionListener {
 			taskPhaseTextArea.setText(taskPhaseCache);
 
 		// Update mission text area if necessary.
-		if (dead) missionCache = deathInfo.getMission() + DEAD_PHRASE;
+		if (dead) {		
+			if (deathInfo.getMission() == null)
+				missionCache = "None " + DEAD_PHRASE;
+			else
+				missionCache = deathInfo.getMission() + DEAD_PHRASE;
+		}
+
 		else if (mission != null) missionCache = mission.getDescription();
 		else missionCache = ""; //$NON-NLS-1$
 		if ((missionCache != null) && !missionCache.equals(missionTextArea.getText())) 
 			missionTextArea.setText(missionCache);
 
 		// Update mission phase text area if necessary.
-		if (dead) missionPhaseCache = deathInfo.getMissionPhase() + DEAD_PHRASE;
+		if (dead) {
+			if (deathInfo.getMissionPhase() == null)
+				missionPhaseCache = "None " + DEAD_PHRASE;
+			else
+				missionPhaseCache = deathInfo.getMissionPhase() + DEAD_PHRASE;
+		}
 		else if (mission != null) missionPhaseCache = mission.getPhaseDescription();
 		else missionPhaseCache = ""; //$NON-NLS-1$
 		if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText())) 

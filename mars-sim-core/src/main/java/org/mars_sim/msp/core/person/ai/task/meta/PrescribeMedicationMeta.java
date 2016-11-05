@@ -76,7 +76,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        //if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 	        // Only medicbot or a doctor is allowed to perform this task.
 	        if (robot.getBotMind().getRobotJob() instanceof Medicbot) {
@@ -91,7 +91,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 	        // Effort-driven task modifier.
 	        result *= robot.getPerformanceRating();
 
-	    }
+	    //}
 
         return result;
     }

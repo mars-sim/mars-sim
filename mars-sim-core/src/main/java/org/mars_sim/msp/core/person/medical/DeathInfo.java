@@ -82,7 +82,8 @@ implements Serializable {
         Complaint serious = person.getPhysicalCondition().getMostSerious();
         if (serious != null) illness = serious.getType();
 
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) placeOfDeath = "Outside";
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
+        	placeOfDeath = "Outside " + person.getBuriedSettlement();
         else {
             containerUnit = person.getContainerUnit();  
             placeOfDeath = containerUnit.getName();

@@ -309,7 +309,12 @@ public abstract class UnitWindow extends JInternalFrame {
         	
     	Person p = (Person) unit;
    	
-    	String townString = Conversion.capitalize(unit.getDescription());
+    	String townString = null;
+    	
+    	if (p.getPhysicalCondition().isDead())
+    		townString = "Buried";// + p.getBuriedSettlement();
+    	else
+    		townString = Conversion.capitalize(unit.getDescription());
     	//System.out.println("Description is : " + text);
         if (!oldTownString.equals(townString)) {
         	oldJobString = townString;

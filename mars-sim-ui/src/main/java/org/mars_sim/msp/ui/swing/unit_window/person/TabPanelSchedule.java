@@ -520,30 +520,31 @@ extends TabPanel {
 
 				// 184,134,11 mud yellow
 				// 255,229,204 white-ish (super pale) yellow
+				// (37, 85, 118) navy blue
+				// 131,172,234 pale sky blue
 				
 				if (isSelected) {
 
 					if (theme == 6) {
-						result.setForeground(Color.cyan);
-				        result.setBackground(new Color(131,172,234)); // 131,172,234 pale sky blue
+						result.setBackground(new Color(37,85,118,255)); // (37, 85, 118) navy blue
+				        result.setForeground(Color.white);//new Color(131,172,234)); // 131,172,234 pale sky blue
 					}
 					else {
-				        result.setForeground(new Color(184,134,11));
-			        	result.setBackground(new Color(255,229,204));
+				        result.setBackground(new Color(184,134,11,255)); // 184,134,11 mud yellow
+						result.setForeground(Color.white);//new Color(255,229,204)); // 255,229,204 white-ish (super pale) yellow
 					}
-
 
 		        } else {
-			          // unselected, and not the DnD drop location		        	
+			          // unselected, and not the DnD drop location			        	
 					if (theme == 6) {
-						result.setBackground(Color.cyan);
-				        result.setForeground(new Color(131,172,234)); // 131,172,234 pale sky blue
+						result.setForeground(new Color(37,85,118));// (37, 85, 118) navy blue
+				        result.setBackground(new Color(131,172,234,40)); // 131,172,234 pale sky blue
 					}
 					else {
-				        result.setBackground(new Color(184,134,11));
-						result.setForeground(new Color(255,229,204));
+				        result.setForeground(new Color(184,134,11)); // 184,134,11 mud yellow
+			        	result.setBackground(new Color(255,229,204,40)); // 255,229,204 white-ish (super pale) yellow
 					}
-					
+	
 		        }
 
 		        //result.setOpaque(false);
