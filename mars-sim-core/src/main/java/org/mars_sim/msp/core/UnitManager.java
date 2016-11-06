@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
-import org.mars_sim.msp.core.person.PersonalityTrait;
+import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.EmotionJSONConfig;
@@ -736,13 +736,7 @@ public class UnitManager implements Serializable {
 			//System.out.println("done with addUnit() in createConfiguredPeople() in UnitManager");
 			
 			relationshipManager.addInitialSettler(person, settlement);
-
-			// Override person's personality type based on people.xml, if any.
-			String personalityType = personConfig.getConfiguredPersonPersonalityType(x, crew_id);
-			if (personalityType != null) {
-				person.getMind().getMBTIType().setTypeString(personalityType);
-			}
-
+			
 			// Set person's job (if any).
 			String jobName = personConfig.getConfiguredPersonJob(x, crew_id);
 			if (jobName != null) {
@@ -767,17 +761,26 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteActivity(activity);
 			//System.out.println("done with setFavorite_() in createConfiguredPeople() in UnitManager");
 
+	
 			// 2015-11-23 Set the person's configured Big Five Personality traits (if any).
 			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
 			if (bigFiveMap != null) {
-				Iterator<String> i = bigFiveMap.keySet().iterator();
-				while (i.hasNext()) {
-					String personalityTypeName = i.next();
-					int value = (Integer) bigFiveMap.get(personalityTypeName);
-					person.getPersonalityManager().setPersonalityTrait(PersonalityTrait
-							.valueOfIgnoreCase(personalityTypeName), value);
+				for (String type : bigFiveMap.keySet()) {
+					int value = bigFiveMap.get(type);
+					//System.out.println(type + " : " + value);
+					person.getMind().getPersonalityTraitManager()
+					.setPersonalityTrait(PersonalityTraitType.fromString(type), value);
 				}
 			}
+
+			// Override person's personality type based on people.xml, if any.
+			String personalityType = personConfig.getConfiguredPersonPersonalityType(x, crew_id);
+			if (personalityType != null) {
+				person.getMind().getMBTI().setTypeString(personalityType);
+			}
+				
+			// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models
+			person.getMind().getMBTI().syncUpExtraversion();
 
 			// Set person's configured natural attributes (if any).
 			Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
@@ -945,6 +948,9 @@ public class UnitManager implements Serializable {
 					}
 					
 					person = new Person(fullname, gender, false, "Earth", settlement, sponsor); // TODO: read from file
+
+					// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models
+					person.getMind().getMBTI().syncUpExtraversion();
 
 					addUnit(person);
 

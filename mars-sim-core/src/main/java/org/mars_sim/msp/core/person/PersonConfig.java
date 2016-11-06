@@ -923,12 +923,13 @@ implements Serializable {
 
 		if ((listNodes != null) && (listNodes.size() > 0)) {
 			Element list = listNodes.get(0);
-			int attributeNum = list.getChildren(PERSONALITY_TRAIT_LIST).size();
+			int attributeNum = list.getChildren(PERSONALITY_TRAIT).size();
 
 			for (int x=0; x < attributeNum; x++) {
 				Element naturalAttributeElement = (Element) list.getChildren(PERSONALITY_TRAIT).get(x);
 				String name = naturalAttributeElement.getAttributeValue(NAME);
 				Integer value = new Integer(naturalAttributeElement.getAttributeValue(VALUE));
+				//System.out.println(name + " : " + value);
 				result.put(name, value);
 			}
 		}

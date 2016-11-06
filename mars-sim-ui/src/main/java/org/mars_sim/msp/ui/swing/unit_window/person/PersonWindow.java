@@ -58,6 +58,8 @@ extends UnitWindow {
 		addTabPanel(new InventoryTabPanel(person, desktop));
 
 		addTopPanel(new LocationTabPanel(person, desktop));
+		// 2016-11-06 Added TabPanelPersonality
+		addTabPanel(new TabPanelPersonality(person, desktop));
 		// 2015-03-20  Added TabPanelSchedule
 		addTabPanel(new TabPanelSchedule(person, desktop));
 

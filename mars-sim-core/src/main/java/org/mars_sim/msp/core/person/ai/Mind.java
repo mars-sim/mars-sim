@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonalityTraitManager;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -57,6 +58,8 @@ implements Serializable {
     private Job job;
     /** The person's personality. */
     private PersonalityType mbti;
+    
+    private PersonalityTraitManager trait;
     /** The person's skill manager. */
     private SkillManager skillManager;
 
@@ -87,8 +90,12 @@ implements Serializable {
         //if (masterClock != null) { // to avoid NullPointerException during maven test
 	    //    marsClock = masterClock.getMarsClock();
         //}
+        
+        // Set the Big Five personality trait.
+        trait = new PersonalityTraitManager(person);
+        
         // Set the MBTI personality type.
-        mbti = new PersonalityType(person);
+        mbti = new PersonalityType(person);    
 
         // Construct a task manager
         taskManager = new TaskManager(this);
@@ -497,10 +504,10 @@ implements Serializable {
     }
 
     /**
-     * Gets the person's MBTI personality type.
+     * Gets the person's MBTI (personality type).
      * @return personality type.
      */
-    public PersonalityType getMBTIType() {
+    public PersonalityType getMBTI() {
         return mbti;
     }
 
@@ -558,6 +565,10 @@ implements Serializable {
      */
     public void setJobLock(boolean value) {
     	jobLock = value;
+    }
+    
+    public PersonalityTraitManager getPersonalityTraitManager() {
+    	return trait;
     }
     
     /**

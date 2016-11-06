@@ -163,11 +163,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>reactfx</artifactId>
 			<version>2.0-M5</version>
 		</dependency-->
-		<!--dependency>
+		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
-			<version>5.8</version>
-		</dependency-->
+			<version>6.1</version>
+		</dependency>
 		<dependency>
 		    <groupId>eu.hansolo.enzo</groupId>
 		    <artifactId>Enzo</artifactId>
@@ -273,16 +273,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  </version>
 		</dependency>		
 -->
-		<dependency>
-		    <groupId>de.codecentric.centerdevice</groupId>
-		    <artifactId>centerdevice-nsmenufx</artifactId>
-		    <version>2.1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>eu.mihosoft.jfx.scaledfx</groupId>
-			<artifactId>scaledfx</artifactId>
-			<version>0.4</version>
-		</dependency>
 <!-- load jfoenix stored at mars-sim's maven-repo-snapshot --> 
 		<dependency>
 			<groupId>insidefx.undecorator</groupId>
@@ -309,11 +299,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>flow</artifactId>
-		    <version>8.0.7</version>
-		</dependency>	
-		<dependency>
-		    <groupId>io.datafx</groupId>
-		    <artifactId>datafx</artifactId>
 		    <version>8.0.7</version>
 		</dependency>
 		<dependency>

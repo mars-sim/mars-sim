@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 
 /**
@@ -182,6 +183,14 @@ implements Serializable {
 			throw new IllegalArgumentException("Personality type: " + newPersonalityType + " invalid.");
 	}
 
+	/*	
+	 * Sync up with the I-E pair score in MBTI
+	 */	
+	public void syncUpExtraversion() {	
+		int value = person.getMind().getPersonalityTraitManager().getPersonalityTraitMap().get(PersonalityTraitType.EXTRAVERSION);		
+		scores.put(0, value);		
+	}
+	
 	/**
 	 * Get this object as a string.
 	 */

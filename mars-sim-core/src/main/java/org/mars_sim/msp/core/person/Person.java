@@ -117,7 +117,6 @@ implements VehicleOperator, MissionMember, Serializable {
     private Settlement associatedSettlement;
     /** Manager for Person's natural attributes. */
     private NaturalAttributeManager attributes;
-    private PersonalityManager personalityManager;
     /** Person's mind. */
     private Mind mind;
     /** Person's physical condition. */
@@ -693,19 +692,6 @@ implements VehicleOperator, MissionMember, Serializable {
     public NaturalAttributeManager getNaturalAttributeManager() {
         return attributes;
     }
-
-
-    /**
-     * Returns a reference to the Person's Personality manager
-     * @return the person's Personality manager
-     */
-    //2015-12-12 Added
-    public PersonalityManager getPersonalityManager() {
-        return personalityManager;
-    }
-
-
-
 
     /**
      * Get the performance factor that effect Person with the complaint.

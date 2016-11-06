@@ -202,8 +202,8 @@ implements Serializable {
 		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
 
 		// Personality diff modifier
-		PersonalityType personType = person.getMind().getMBTIType();
-		PersonalityType targetType = target.getMind().getMBTIType();
+		PersonalityType personType = person.getMind().getMBTI();
+		PersonalityType targetType = target.getMind().getMBTI();
 		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString())) * 50D;
 		result+= RandomUtil.getRandomDouble(personalityDiffModifier);
 

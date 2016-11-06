@@ -22,6 +22,8 @@
 		"gratitude":		0,
 		"anger":			0,
 		"love":				0,
-		"hate":				0
+		"hate":				0,
+		"disgust":			0,
+		"surprise":			0
 	}
 }

@@ -50,7 +50,9 @@ public class EmotionJSONConfig implements Serializable {
 		"gratitude",
 		"anger",
 		"love",
-		"hate"
+		"hate",
+		"disgust",
+		"surprise"
 	};
     
     private Emotion e;
