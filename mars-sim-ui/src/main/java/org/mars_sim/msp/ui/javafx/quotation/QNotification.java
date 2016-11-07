@@ -67,9 +67,8 @@ public class QNotification {
   
     public final String       TITLE;
     public final String       MESSAGE;
-    public final Image        IMAGE;
+    public Image        IMAGE;
     
-
     // ******************** Constructors **************************************
     //public Notification() {}
     
@@ -93,14 +92,15 @@ public class QNotification {
     	private static final double left_indent		= 10;
         private static final double ICON_WIDTH    = 48;//32;//24;
         private static final double ICON_HEIGHT   = 48;//32;//24;
-        private static       double width         = 525;
-        private static       double height        = 80;
+        private static       double width         = 500;
+        private static       double height        = 75;
         private static       double offsetX       = 7;
         private static       double offsetY       = 32;
         private static       double spacingY      = 10;
         private static       Pos    popupLocation = Pos.TOP_RIGHT;
         private static       Stage  stageRef      = null;
         private Duration              popupLifetime;
+    	private static final int POPUP_IN_MILLISECONDS = 20_000;
         private Stage                 stage;
         private Scene                 scene;
         private ObservableList<Popup> popups;
@@ -108,6 +108,8 @@ public class QNotification {
    		double xPos = 0;
 		double yPos = 0;
 	    int count = 0;
+	    
+	    private TextArea		ta;
 
 
         // ******************** Constructor ***************************************
@@ -119,7 +121,7 @@ public class QNotification {
 
         // ******************** Initialization ************************************
         private void init() {
-            popupLifetime = Duration.millis(5000);
+            popupLifetime = Duration.millis(POPUP_IN_MILLISECONDS);
             popups = FXCollections.observableArrayList();
             
             QUOTE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_quote_64.png"));//quote_24.png"));
@@ -200,8 +202,9 @@ public class QNotification {
         	//	Notifier.width = WIDTH/1.35; // 547 - > 438 is optimal
         	//else
         	//	 Notifier.width = WIDTH;
-        	if (Notifier.width < WIDTH/1.3)
-        		Notifier.width = WIDTH/1.3;
+        	//if (Notifier.width < WIDTH/1.3)
+        	//	Notifier.width = WIDTH/1.3;
+        	Notifier.width = WIDTH;
             //System.out.println("adjusted width is " + Math.round(width));// / 1.25));
         }
 
@@ -254,9 +257,11 @@ public class QNotification {
         public void notify(final QNotification NOTIFICATION) {
             //System.out.println("starting notify()");
             preOrder();
-            showPopup(NOTIFICATION);          
+            showPopup(NOTIFICATION);  
+            //showPopup(createUI(NOTIFICATION));  
         }
 
+  
         /**
          * Show a Notification with the given parameters on the screen
          * @param TITLE
@@ -296,12 +301,16 @@ public class QNotification {
             }
         }
 
+	    public TextArea getTextArea() {
+	    	return ta;
+	    }
+	    
         /**
          * Creates and shows a popup with the data from the given Notification object
          * @param NOTIFICATION
          */
         @SuppressWarnings("restriction")
-		private void showPopup(final QNotification NOTIFICATION) {
+		private void showPopup(QNotification NOTIFICATION) {
             //System.out.println("starting showPopup(stage)");
             
             Label title = new Label(NOTIFICATION.TITLE);
@@ -316,13 +325,16 @@ public class QNotification {
             message.getStyleClass().add("message");
 
             String cssFile = "/fxui/css/nimrodskin.css";
-            TextArea ta = new TextArea();
+            ta = new TextArea();
             ta.setId("quotation");
             ta.appendText(NOTIFICATION.MESSAGE);
+            ta.setMinSize(width, height);
             ta.setEditable(false);
             ta.setWrapText(true);
     		ta.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
-/*
+            ta.positionCaret(0);
+
+    		/*
             ta.skinProperty().addListener(new ChangeListener<Skin<?>>() {
                 @Override
                 public void changed(
@@ -345,22 +357,23 @@ public class QNotification {
             });
 */
             HBox hBox = new HBox();
-            hBox.setSpacing(3);
+            hBox.setSpacing(5);
+            hBox.setPadding(new Insets(5, 5, 5, 5));
             hBox.setAlignment(Pos.CENTER_LEFT);
             hBox.getChildren().addAll(message, title);
 
             VBox popupLayout = new VBox();
             popupLayout.setSpacing(5);
             //popupLayout.setStyle("-fx-background-color: transparent;");
-            popupLayout.setPadding(new Insets(5, 5, 5, left_indent*2));
+            popupLayout.setPadding(new Insets(5, 5, 5, left_indent));
             popupLayout.getChildren().addAll(hBox, ta);
 
             StackPane popupContent = new StackPane();
-            popupContent.setPrefSize(width, height);
+            popupContent.setPrefSize(width, ta.getPrefHeight() + ICON_HEIGHT + 10);//.getPrefHeight());
             popupContent.getStyleClass().add("notification");
             popupContent.getChildren().addAll(popupLayout);
 
-            final Popup POPUP = new Popup();
+            Popup POPUP = new Popup();
             POPUP.setX( getX() );
             POPUP.setY( getY() );
             POPUP.getContent().add(popupContent);
@@ -550,7 +563,8 @@ public class QNotification {
 		
 	public void destroy() {
 
-	    //this = null;
+		QUOTE_ICON = null;
+		IMAGE = null;
 	 
 	}
 }

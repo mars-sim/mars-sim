@@ -44,81 +44,71 @@ public class QuotationPopup implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final int SIZE_ICON = 32;
-	private static final int BASE_HEIGHT = 70;
-	private static final int HEIGHT_PER_LINE = 20;
+	//private static final int SIZE_ICON = 32;
+	//private static final int BASE_HEIGHT = 70;
+	//private static final int HEIGHT_PER_LINE = 20;
 	//private static final int WIDTH = 510;
-	private static final int CHARS_PER_LINE = 50;
+	//private static final int CHARS_PER_LINE = 50;
 	private static final int POPUP_IN_MILLISECONDS = 20_000;
 	
 	// Data members		
-	private int new_width;
+	private int new_width = 515;
 	
 	private Map<Integer, Quotation> quotations;
 	
 	private MainScene mainScene;
     private QNotification.Notifier notifier = QNotification.Notifier.INSTANCE;
-	//private Timer timer;	
 	private Object[] quoteArray;	
 	private Quotation q;
 
 	
     /** Constructs a quotation object for creating a quote popup
      */
-    public QuotationPopup(MainScene mainScene) {   
+    @SuppressWarnings("restriction")
+	public QuotationPopup(MainScene mainScene) {   
     	this.mainScene = mainScene;
     	QuotationConfig quotationConfig = SimulationConfig.instance().getQuotationConfiguration();
     	quotations = quotationConfig.getQuotations();
-    	quoteArray = quotations.values().toArray();         
-    	//System.out.println("# of quotes : " + quoteArray.length);
-    	
-    	Duration duration = new Duration(POPUP_IN_MILLISECONDS);       
-        notifier.setPopupLifetime(duration); 
-       
+    	quoteArray = quotations.values().toArray();  
+    	//Duration d = new Duration(POPUP_IN_MILLISECONDS);
+        //notifier.setPopupLifetime(d);  
     }
 
     @SuppressWarnings("restriction")
 	public void popAQuote(Stage stage) {	
-    	//System.out.println("calling popAQuote()");
-     	//notifier = Notification.Notifier.INSTANCE;
-    
+     	//notifier = Notification.Notifier.INSTANCE;  
         //Notification.Notifier notifier = NotifierBuilder.create().build();
                 //.popupLocation(Pos.TOP_RIGHT)
                 //.popupLifeTime(Duration.millis(10000))
                 //.styleSheet(getClass().getResource("mynotification.css").toExternalForm())
-        //        .build();
-        
+        //        .build();       
     	Random rand = new Random();
     	
     	int num = rand.nextInt(quoteArray.length);
     	q = (Quotation)quoteArray[num];
     	
     	String name = q.getName();
-    	String str = q.getText();  	 
-
-		str = "\"" + wrap(str, CHARS_PER_LINE-1) + "\"";	
-    	
+    	String str = "\"" + q.getText() + "\"";	
+		//str = "\"" + wrap(str, CHARS_PER_LINE-1) + "\"";	
+/*   	
 		int strSize = str.length();	
-		int numLines = (int)Math.ceil((double)strSize/CHARS_PER_LINE);	
-	
+		//int numLines = (int)Math.ceil((double)strSize/CHARS_PER_LINE);	
 		int nameSize = name.length() + 3;
-		
 		//int remaining = CHARS_PER_LINE * numLines - strSize;
 		int index = str.lastIndexOf(System.lineSeparator());//"\n");
 		String s = str.substring(index+1, strSize);
 		int lastLineLength = s.length();
-		int remaining = CHARS_PER_LINE - lastLineLength;
-		
+		//int remaining = CHARS_PER_LINE - lastLineLength;
 		int numWhiteSpace = 0;
 		int new_height = 0;
-		new_width = (int)(CHARS_PER_LINE * 10);// + SIZE_ICON;
-	
+		//new_width = (int)(CHARS_PER_LINE * 10);// + SIZE_ICON;
+		//new_width = 515;
 		
 		if (strSize < CHARS_PER_LINE) {
 			// case 1: the quote is a short one-liner, type the author name on the second line.
 			numWhiteSpace = (int)(strSize - nameSize);
 			
-			new_width = (int)(strSize * 10);// + SIZE_ICON + 17;
+			//new_width = (int)(strSize * 10);// + SIZE_ICON + 17;
 
 			new_height = BASE_HEIGHT + HEIGHT_PER_LINE * 2;
 			
@@ -153,7 +143,7 @@ public class QuotationPopup implements Serializable {
 			//System.out.println("Case 3 : last line cannot fit author's name");
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 		}
-		
+*/		
 		
 		//System.out.println("# of remaining whitespaces in the last line: " + remaining);
 		//System.out.println("# of chars in the quote : " + strSize);
@@ -162,26 +152,20 @@ public class QuotationPopup implements Serializable {
 		//System.out.println("height in px : " + height);
 		//System.out.println("WIDTH in px : " + WIDTH);
 		
-		StringBuffer nameLine = new StringBuffer ("");
-		for (int i = 0; i < numWhiteSpace; i++)
-			nameLine.append(" ");
-
-		nameLine.append("- ").append(name);	
-					
+		StringBuffer nameLine = new StringBuffer (System.lineSeparator());
+		//for (int i = 0; i < 3; i++)
+		nameLine.append("\t\t");
+		nameLine.append("- ").append(name);						
 		str += nameLine;
-		
-		//System.out.println(str);	
-
-        //Duration duration = new Duration(POPUP_IN_MILLISECONDS);       
-        //notifier.setPopupLifetime(duration);        
+      
+        //notifier.setPopupLifetime(new Duration(POPUP_IN_MILLISECONDS));
         QNotification.Notifier.setNotificationOwner(stage);
         QNotification.Notifier.setPane(mainScene.getAnchorPane());
         notifier.setPopupLocation(stage, Pos.TOP_RIGHT);
-        QNotification.Notifier.setHeight(new_height);
-        //System.out.println("new_width is " + new_width);
-        QNotification.Notifier.setWidth(new_width);
+        //QNotification.Notifier.setHeight(new_height);
+        //QNotification.Notifier.setWidth(new_width);
 		//Notification n0 = new NotificationFX("QUOTATION", quoteString, QUOTE_ICON)
-		notifier.notify(" QUOTATION", str, QNotification.QUOTE_ICON); //INFO_ICON);
+		notifier.notify("QUOTATION", str, QNotification.QUOTE_ICON); //INFO_ICON);
 
 		stage.requestFocus();
 /*		
@@ -225,18 +209,7 @@ public class QuotationPopup implements Serializable {
     	
     	return in.substring(0,place).trim() + System.lineSeparator() + wrap(in.substring(place),len);
     }
-    
-/*    
-	public void stopNotification() {
-	//	notify_timeline.stop();
-	//	notifier.stop();
-	}
-	
-	public void stopTimer() {//Timer timer) {
-		//	notify_timeline.stop();
-			timer.stop();
-		}
-*/		
+    	
 
     public int getWidth() {
     	return new_width;
