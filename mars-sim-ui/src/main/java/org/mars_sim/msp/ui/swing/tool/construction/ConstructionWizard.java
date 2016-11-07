@@ -695,12 +695,11 @@ public class ConstructionWizard {
 
 		@Override
 		public void keyTyped(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub
+			e.consume();
 		}
 
 		@Override
 		public void keyReleased(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub
 			e.consume();
 		}
 	}

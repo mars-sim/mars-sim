@@ -67,24 +67,26 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
             // 2015-06-07 Added Preference modifier
             if (result > 0)
             	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+            
+
+            // Effort-driven task modifier.
+            result *= person.getPerformanceRating();
+
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class)
+                		* person.getSettlement().getGoodsManager().getTransportationFactor();
+            }
+
+            // Modify if operations is the person's favorite activity.
+            if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
+                result *= 2D;
+            }
+
+            if (result < 0) result = 0;
+            
         }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class)
-            		* person.getSettlement().getGoodsManager().getTransportationFactor();
-        }
-
-        // Modify if operations is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Operations")) {
-            result *= 2D;
-        }
-
-        if (result < 0) result = 0;
 
         return result;
     }

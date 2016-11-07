@@ -38,4 +38,23 @@
     -fx-content-display : left;
     -fx-graphic-text-gap: 7;
     -fx-text-fill       : -foreground-color;
+    
+}
+
+.notification .text-area .scroll-bar:vertical:disabled {
+    -fx-opacity: 0;
+    -fx-background-color: transparent; 
+}
+
+.notification .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.notification .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+
+.notification .scroll-pane .content{
+    -fx-background-color: transparent;
 }

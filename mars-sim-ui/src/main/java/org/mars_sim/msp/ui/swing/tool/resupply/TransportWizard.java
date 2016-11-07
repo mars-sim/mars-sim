@@ -963,10 +963,14 @@ public class TransportWizard {
 				    }
 
 					@Override
-					public void mouseEntered(MouseEvent arg0) {}
+					public void mouseEntered(MouseEvent arg0) {
+						//mouseMoved(arg0);
+					}
 
 					@Override
-					public void mouseExited(MouseEvent arg0) {}
+					public void mouseExited(MouseEvent arg0) {
+						//mouseMoved(arg0);
+					}
 
 					@Override
 					public void mousePressed(MouseEvent evt) {
@@ -1153,12 +1157,7 @@ public class TransportWizard {
 		@Override
 		public void mouseDragged(MouseEvent evt) {
 			if (evt.getButton() == MouseEvent.BUTTON1) {
-				mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			    // Check for collision here
-			    boolean ok1 = checkCollisionMoveVehicle(newBuilding, mgr);
-			    boolean ok2 = checkCollisionImmovable(newBuilding, mgr);
-			    if (ok1 && ok2) 			
-			    	moveNewBuildingTo(newBuilding,  evt.getX(), evt.getY());
+				mouseMoved(evt);
 			}
 		}
 
@@ -1200,7 +1199,6 @@ public class TransportWizard {
 
 		@Override
 		public void keyTyped(java.awt.event.KeyEvent e) {
-			// TODO Auto-generated method stub
 			e.consume();
 		}
 

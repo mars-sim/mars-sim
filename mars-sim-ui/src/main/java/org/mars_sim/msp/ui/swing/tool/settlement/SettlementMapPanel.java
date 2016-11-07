@@ -122,9 +122,9 @@ implements ClockListener {
 		selectedPerson = new HashMap<Settlement, Person>();
 		selectedRobot = new HashMap<Settlement, Robot>();
 
-		//SwingUtilities.invokeLater(() -> {
+		SwingUtilities.invokeLater(() -> {
 			init(desktop);
-		//});
+		});
 
 		// Set foreground and background colors.
 		setOpaque(false);
@@ -158,8 +158,8 @@ implements ClockListener {
 		mapLayers.add(new LabelMapLayer(this));
 
 		//SwingUtilities.invokeLater(() -> {
-		if (desktop.getMainScene() == null)
-			settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
+			if (desktop.getMainScene() == null)
+				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
 	
 		//paintDoubleBuffer();
@@ -197,7 +197,7 @@ implements ClockListener {
 	}
 
 	public void detectMouseMovement() {
-
+/*
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent evt) {
@@ -218,32 +218,65 @@ implements ClockListener {
 			}
 			
 		});
-
+*/
 		addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
-				//System.out.println("mouseDragged()");
 				if (evt.getButton() == MouseEvent.BUTTON3) {
+					double xDiff = evt.getX() - xLast;
+					double yDiff = evt.getY() - yLast;
+					xLast = evt.getX();
+					yLast = evt.getY();
 					//System.out.println("button3");
 					setCursor(new Cursor(Cursor.MOVE_CURSOR));
 					// Move map center based on mouse drag difference.
-					double xDiff = evt.getX() - xLast;
-					double yDiff = evt.getY() - yLast;
 					moveCenter(xDiff, yDiff);
-					xLast = evt.getX();
-					yLast = evt.getY();
-				}
-				
+
+				}			
+
 			}
 					
-			
+			@Override
+			public void mouseMoved(MouseEvent evt) {
+				//System.out.println("mouseDragged()");		
+				if (evt.getButton() == MouseEvent.BUTTON3) {
+					double xDiff = evt.getX() - xLast;
+					double yDiff = evt.getY() - yLast;
+					xLast = evt.getX();
+					yLast = evt.getY();
+					//System.out.println("button3");
+					setCursor(new Cursor(Cursor.MOVE_CURSOR));
+					// Move map center based on mouse drag difference.
+					moveCenter(xDiff, yDiff);
+
+				}			
+			}		
 		});
 
 		//2014-11-22 Added PopClickListener() to detect mouse right click
 		class PopClickListener extends MouseAdapter {
-			/*
-			@Override
+
+			//@Override
 			public void mouseClicked(MouseEvent evt) {
+				// Select person if clicked on.
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+				selectPersonAt(evt.getX(), evt.getY());
+				selectRobotAt(evt.getX(), evt.getY());
+			}
+			
+			//@Override
+			public void mouseEntered(MouseEvent evt) {
+				//mouseMoved(evt);
+
+			}
+			
+			public void mouseExited(MouseEvent evt) {
+				//mouseMoved(evt);
+			}
+			
+			/*			
+			@Override
+			public void mouseClicked(MouseEvent evt) {			
 				// Select person if clicked on.
 				if (evt.getButton() == MouseEvent.BUTTON1
 						|| evt.getButton() == MouseEvent.BUTTON3) {
@@ -256,13 +289,19 @@ implements ClockListener {
 					 setCursor(new Cursor(Cursor.HAND_CURSOR));
 					 doPop(evt);
 				}
+			
 			}
-*/			
-			//@Override
+*/	
+			
+			@Override
 		    public void mousePressed(MouseEvent evt){				 
-				//setCursor(new Cursor(Cursor.HAND_CURSOR));
+				setCursor(new Cursor(Cursor.HAND_CURSOR));
+			
 				if (evt.getButton() == MouseEvent.BUTTON3) {
-					
+					// Set initial mouse drag position.
+					xLast = evt.getX();
+					yLast = evt.getY();
+										
 					 if (evt.isPopupTrigger()) {
 						 setCursor(new Cursor(Cursor.HAND_CURSOR));
 						 repaint();
@@ -270,14 +309,15 @@ implements ClockListener {
 					 }
 				}			
 		    }
-
-			//@Override
+			
+			@Override
 		    public void mouseReleased(MouseEvent evt){
 		    	//setCursor(new Cursor(Cursor.HAND_CURSOR));
 				//setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
 				if (evt.getButton() == MouseEvent.BUTTON3) {
-					xLast = evt.getX();
-					yLast = evt.getY();
+					xLast = 0;//evt.getX();
+					yLast = 0;//evt.getY();
 					
 					if (evt.isPopupTrigger()) {
 						setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -285,10 +325,6 @@ implements ClockListener {
 					}
 				}
 				
-				//if (evt.isPopupTrigger()) {
-				//	setCursor(new Cursor(Cursor.HAND_CURSOR));
-				//	doPop(evt);
-				//}
 		    }
 			
 		    //2015-01-14 Added vehicle detection

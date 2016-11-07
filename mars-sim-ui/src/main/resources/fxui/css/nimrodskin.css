@@ -100,10 +100,47 @@
 }
 
 .text-area {
-	-fx-font: 10pt 'Corbel';
+/*	-fx-font: 10pt 'Corbel';				*/
+    -fx-font-size       : 0.80em;
+    -fx-font-family : "Liberation Mono";
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     -fx-text-fill: #f4f13f;
+    -fx-background-color: transparent;    
+/*    -fx-fill            : transparent;    */
+}
+
+#quotation {
+/*	-fx-font: 14pt 'Corbel';    */
+    -fx-font-size       : 1.0em;
+    -fx-font-family : "Liberation Mono";
+    -fx-content-display : left;
+    -fx-graphic-text-gap: 7;	
+    -fx-text-fill       : -foreground-color;
+    -fx-background-color: transparent;
+}
+
+#quotation .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+#quotation .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+
+#quotation .scroll-pane .content{
+    -fx-background-color: transparent;
+}
+
+#quotation .scroll-bar {
+    -fx-base: #202020;
+    -fx-background: #4f4747;
+    -fx-border-color: #707576;
+}
+
+#quotation .scroll-bar .thumb {
+    -fx-background-color: #707576;
 }
 
 .label-large {
@@ -245,4 +282,5 @@
 .page-corner {
 	-fx-shape: " ";
 }
+
 

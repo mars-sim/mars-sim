@@ -27,11 +27,15 @@ package org.mars_sim.msp.ui.javafx.quotation;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -49,6 +53,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import jfxtras.scene.layout.HBox;
 
 
 /**
@@ -88,7 +93,7 @@ public class QNotification {
     	private static final double left_indent		= 10;
         private static final double ICON_WIDTH    = 48;//32;//24;
         private static final double ICON_HEIGHT   = 48;//32;//24;
-        private static       double width         = 530;
+        private static       double width         = 525;
         private static       double height        = 80;
         private static       double offsetX       = 7;
         private static       double offsetY       = 32;
@@ -295,7 +300,8 @@ public class QNotification {
          * Creates and shows a popup with the data from the given Notification object
          * @param NOTIFICATION
          */
-        private void showPopup(final QNotification NOTIFICATION) {
+        @SuppressWarnings("restriction")
+		private void showPopup(final QNotification NOTIFICATION) {
             //System.out.println("starting showPopup(stage)");
             
             Label title = new Label(NOTIFICATION.TITLE);
@@ -306,13 +312,48 @@ public class QNotification {
             icon.setFitWidth(ICON_WIDTH);
             icon.setFitHeight(ICON_HEIGHT);
 
-            Label message = new Label(NOTIFICATION.MESSAGE, icon);
+            Label message = new Label("", icon);
             message.getStyleClass().add("message");
 
+            String cssFile = "/fxui/css/nimrodskin.css";
+            TextArea ta = new TextArea();
+            ta.setId("quotation");
+            ta.appendText(NOTIFICATION.MESSAGE);
+            ta.setEditable(false);
+            ta.setWrapText(true);
+    		ta.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
+/*
+            ta.skinProperty().addListener(new ChangeListener<Skin<?>>() {
+                @Override
+                public void changed(
+                  ObservableValue<? extends Skin<?>> ov, Skin<?> t, Skin<?> t1) {
+                    if (t1 != null && t1.getNode() instanceof Region) {
+                        Region r = (Region) t1.getNode();
+                        r.setBackground(Background.EMPTY);
+
+                        r.getChildrenUnmodifiable().stream().
+                                filter(n -> n instanceof Region).
+                                map(n -> (Region) n).
+                                forEach(n -> n.setBackground(Background.EMPTY));
+
+                        r.getChildrenUnmodifiable().stream().
+                                filter(n -> n instanceof Control).
+                                map(n -> (Control) n).
+                                forEach(c -> c.skinProperty().addListener(this)); // *
+                    }
+                }
+            });
+*/
+            HBox hBox = new HBox();
+            hBox.setSpacing(3);
+            hBox.setAlignment(Pos.CENTER_LEFT);
+            hBox.getChildren().addAll(message, title);
+
             VBox popupLayout = new VBox();
-            popupLayout.setSpacing(10);
-            popupLayout.setPadding(new Insets(10, 10, 10, left_indent));
-            popupLayout.getChildren().addAll(title, message);
+            popupLayout.setSpacing(5);
+            //popupLayout.setStyle("-fx-background-color: transparent;");
+            popupLayout.setPadding(new Insets(5, 5, 5, left_indent*2));
+            popupLayout.getChildren().addAll(hBox, ta);
 
             StackPane popupContent = new StackPane();
             popupContent.setPrefSize(width, height);

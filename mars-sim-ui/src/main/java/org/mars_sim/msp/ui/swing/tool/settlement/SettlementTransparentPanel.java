@@ -130,110 +130,54 @@ public class SettlementTransparentPanel extends JComponent {
 	    	public Dimension getPreferredSize() {
 	    		return new Dimension(50, 100);
 	    	};
-	    };
-	    	
+	    }; 	
 
         buildLabelPane();
+        buildSettlementNameComboBox();
+        buildInfoP();
+        buildrenameBtn();
+        buildZoomSlider();
+        buildButtonPane();       
 
-	    //if (mainScene == null) {
-	        //buildZoomLabel();
-	        buildSettlementNameComboBox();
-	        buildInfoP();
-	        buildrenameBtn();
-	        buildZoomSlider();
-	        buildButtonPane();
-	        
+		nameBtnPane = new JPanel(new FlowLayout());
+		nameBtnPane.setBackground(new Color(0,0,0));
+        nameBtnPane.setOpaque(false);
 
-			nameBtnPane = new JPanel(new FlowLayout());
-			nameBtnPane.setBackground(new Color(0,0,0));
-	        nameBtnPane.setOpaque(false);
+      	nameBtnPane.add(infoP);
+       	nameBtnPane.add(renameP);
+       	nameBtnPane.add(new JLabel(""));
 
-	      	nameBtnPane.add(infoP);
-	       	nameBtnPane.add(renameP);
-	       	nameBtnPane.add(new JLabel(""));
+		settlementPanel = new JPanel();//new BorderLayout());
+		settlementPanel.setBackground(new Color(0,0,0));
+		settlementPanel.setOpaque(false);
+		settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
 
-			settlementPanel = new JPanel();//new BorderLayout());
-			settlementPanel.setBackground(new Color(0,0,0));
-			settlementPanel.setOpaque(false);
-			settlementPanel.add(settlementListBox);//, BorderLayout.CENTER);
-
-			Box box = new Box(BoxLayout.Y_AXIS);
-		    box.add(Box.createVerticalGlue());
-		    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-		    box.add(Box.createVerticalGlue());
-			box.setBackground(new Color(0,0,0));
-			box.setOpaque(false);
-		    box.add(settlementPanel);
-		    box.add(nameBtnPane);
-		    
-		    mapPanel.add(box, BorderLayout.NORTH);
-	    //}
-
-/*
-	    JPanel lcdPanel = new JPanel();
-	    DisplaySingle lcd1 = new DisplaySingle();
-        lcd1.setLcdUnitString("S");//dir_N_S);
-        lcd1.setLcdValueAnimated(5);//locationCache.getLatitudeDouble());
-        lcd1.setLcdInfoString("Latitude");
-        lcd1.setLcdColor(LcdColor.BLUELIGHTBLUE_LCD);
-        //lcd1.init(150, 100);
-        lcd1.setMaximumSize(new Dimension(200, 100));
-        lcd1.setPreferredSize(new Dimension(150,50));
-        lcd1.setVisible(true);
-        lcdPanel.add(lcd1);
-        lcdPanel.setOpaque(false);
-        lcdPanel.setBackground(new Color(0,0,0,125));
-		mapPanel.add(lcdPanel, BorderLayout.WEST);
-        //box.setAlignmentX(JComponent.LEFT_ALIGNMENT);
-        //box.add(Box.createHorizontalGlue());
-	    //box.add(lcd1);
- */
-        // Make panel drag-able
-//    	ComponentMover cmName = new ComponentMover();
-//    	cmName.registerComponent(box);
-
-	        
-/*	        
-	    controlNorthPane = new JPanel(new BorderLayout());//new GridLayout(2,1,2,2));
-	    controlNorthPane.setBackground(new Color(0,0,0));//,0));
-		controlNorthPane.setOpaque(false);
-		controlNorthPane.add(emptyLabel, BorderLayout.NORTH);
-		controlNorthPane.add(emptyLabel, BorderLayout.CENTER);
-		controlNorthPane.add(buttonPane, BorderLayout.SOUTH);
-
-		
-	    controlSouthPane = new JPanel(new BorderLayout());//new GridLayout(2,1,2,2));
-	    controlSouthPane.setBackground(new Color(0,0,0));//,0));
-		controlSouthPane.setOpaque(false);
-		controlSouthPane.add(labelPane, BorderLayout.NORTH);
-		controlSouthPane.add(emptyLabel, BorderLayout.CENTER);
-		controlSouthPane.add(emptyLabel, BorderLayout.SOUTH);
-*/
-		
+		Box box = new Box(BoxLayout.Y_AXIS);
+	    box.add(Box.createVerticalGlue());
+	    box.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+	    //box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+	    box.add(Box.createVerticalGlue());
+		box.setBackground(new Color(0,0,0));
+		box.setOpaque(false);
+	    box.add(settlementPanel);
+	    box.add(nameBtnPane);
+	    
+	    mapPanel.add(box, BorderLayout.NORTH);
+	
 	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    controlCenterPane.setBackground(new Color(0,0,0));//,0));
 	    controlCenterPane.setOpaque(false);
         controlCenterPane.setPreferredSize(new Dimension(50, 200));
         controlCenterPane.setSize(new Dimension(50, 200));
-        //if (mainScene == null) 
-        	controlCenterPane.add(zoomSlider);
+        controlCenterPane.add(zoomSlider);
         
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
 	    controlPane.setBackground(new Color(0,0,0));//,0));
 		controlPane.setOpaque(false);
-	    //controlPane.add(controlNorthPane, BorderLayout.NORTH);
-	    //controlPane.add(controlSouthPane, BorderLayout.SOUTH);
-        //if (mainScene == null) 
-        	controlPane.add(buttonPane, BorderLayout.NORTH);
+       	controlPane.add(buttonPane, BorderLayout.NORTH);
 	    controlPane.add(labelPane, BorderLayout.SOUTH);
-	    //if (mainScene == null) {
-        //	controlPane.add(controlCenterPane, BorderLayout.CENTER);
-	    //}
-        //else
-        	controlPane.add(emptyLabel, BorderLayout.CENTER);
+       	controlPane.add(controlCenterPane, BorderLayout.CENTER);
 
-        
 	    eastPane = new JPanel(new BorderLayout());//GridLayout(3,1,10,2));
 		eastPane.setBackground(new Color(0,0,0,15));
 		eastPane.setBackground(new Color(0,0,0));//,0));
@@ -243,15 +187,12 @@ public class SettlementTransparentPanel extends JComponent {
         eastPane.add(emptyLabel, BorderLayout.NORTH);
         eastPane.add(emptyLabel, BorderLayout.SOUTH);
         eastPane.add(controlPane, BorderLayout.CENTER);
-        
-		
+        	
         mapPanel.add(eastPane, BorderLayout.EAST);
-
         // Make panel drag-able
-//  		ComponentMover cmZoom = new ComponentMover(zoomPane);
+//  	ComponentMover cmZoom = new ComponentMover(zoomPane);
 		//cmZoom.registerComponent(rightPane);
 //		cmZoom.registerComponent(zoomPane);
-
         mapPanel.setVisible(true);
     }
 

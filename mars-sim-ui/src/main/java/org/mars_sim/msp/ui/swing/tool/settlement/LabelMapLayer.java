@@ -69,7 +69,7 @@ implements SettlementMapLayer {
 	static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
 	
 	static final Color SELECTED_PERSON_LABEL_COLOR = new Color(67, 239, 229); // bright cyan;
-	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);//(0, 0, 0, 190);
+	static final Color SELECTED_PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190); //(255, 255, 255, 190);
 
 	static final Color ROBOT_LABEL_COLOR = new Color(255, 153, 11);// dull yellow
 	static final Color ROBOT_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);

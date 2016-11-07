@@ -111,14 +111,14 @@ public class QuotationPopup implements Serializable {
 		
 		int numWhiteSpace = 0;
 		int new_height = 0;
-		new_width = (int)(CHARS_PER_LINE * 10) + SIZE_ICON;
+		new_width = (int)(CHARS_PER_LINE * 10);// + SIZE_ICON;
 	
 		
 		if (strSize < CHARS_PER_LINE) {
 			// case 1: the quote is a short one-liner, type the author name on the second line.
 			numWhiteSpace = (int)(strSize - nameSize);
 			
-			new_width = (int)(strSize * 10) + SIZE_ICON + 17;
+			new_width = (int)(strSize * 10);// + SIZE_ICON + 17;
 
 			new_height = BASE_HEIGHT + HEIGHT_PER_LINE * 2;
 			

@@ -56,9 +56,10 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        try {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+
+        	try {
             // Get all vehicles requiring maintenance.
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 Iterator<Vehicle> i = MaintainGroundVehicleGarage.getAllVehicleCandidates(person).iterator();
                 while (i.hasNext()) {
                     Vehicle vehicle = i.next();
@@ -75,64 +76,65 @@ public class MaintainGroundVehicleGarageMeta implements MetaTask, Serializable {
                         result += entityProb;
                     }
                 }
-            }
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE,"getProbability()",e);
-        }
+	        }
+	        catch (Exception e) {
+	            logger.log(Level.SEVERE,"getProbability()",e);
+	        }
+	
+	        // Determine if settlement has available space in garage.
+	        boolean garageSpace = false;
+	        boolean needyVehicleInGarage = false;
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	            Settlement settlement = person.getSettlement();
+	            Iterator<Building> j = settlement.getBuildingManager().getBuildings(
+	                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
+	            while (j.hasNext() && !garageSpace) {
+	                try {
+	                    Building building = j.next();
+	                    VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(
+	                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+	                    if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
+	                        garageSpace = true;
+	                    }
+	
+	                    Iterator<Vehicle> i = garage.getVehicles().iterator();
+	                    while (i.hasNext()) {
+	                        if (i.next().isReservedForMaintenance()) {
+	                            needyVehicleInGarage = true;
+	                        }
+	                    }
+	                }
+	                catch (Exception e) {}
+	            }
+	        }
+	        if (!garageSpace && !needyVehicleInGarage) {
+	            result = 0D;
+	        }
+	
+	        // Effort-driven task modifier.
+	        result *= person.getPerformanceRating();
+	
+	        // Job modifier.
+	        Job job = person.getMind().getJob();
+	        if (job != null) {
+	            result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class)
+	            		* person.getSettlement().getGoodsManager().getTransportationFactor();
+	        }
+	
+	        // Modify if tinkering is the person's favorite activity.
+	        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
+	            result *= 1.5D;
+	        }
+	
+	        // 2015-06-07 Added Preference modifier
+	        if (result > 0D) {
+	            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	        }
+	        
+	        if (result < 0) result = 0;
 
-        // Determine if settlement has available space in garage.
-        boolean garageSpace = false;
-        boolean needyVehicleInGarage = false;
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-            Iterator<Building> j = settlement.getBuildingManager().getBuildings(
-                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
-            while (j.hasNext() && !garageSpace) {
-                try {
-                    Building building = j.next();
-                    VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(
-                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
-                    if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
-                        garageSpace = true;
-                    }
-
-                    Iterator<Vehicle> i = garage.getVehicles().iterator();
-                    while (i.hasNext()) {
-                        if (i.next().isReservedForMaintenance()) {
-                            needyVehicleInGarage = true;
-                        }
-                    }
-                }
-                catch (Exception e) {}
-            }
-        }
-        if (!garageSpace && !needyVehicleInGarage) {
-            result = 0D;
-        }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class)
-            		* person.getSettlement().getGoodsManager().getTransportationFactor();
-        }
-
-        // Modify if tinkering is the person's favorite activity.
-        if (person.getFavorite().getFavoriteActivity().equalsIgnoreCase("Tinkering")) {
-            result *= 1.5D;
-        }
-
-        // 2015-06-07 Added Preference modifier
-        if (result > 0D) {
-            result = result + result * person.getPreference().getPreferenceScore(this)/5D;
         }
         
-        if (result < 0) result = 0;
-
         return result;
     }
 
