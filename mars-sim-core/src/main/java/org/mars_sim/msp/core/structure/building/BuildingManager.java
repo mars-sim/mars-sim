@@ -111,7 +111,8 @@ public class BuildingManager implements Serializable {
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
-
+    private List<Resupply> resupplies;
+    
     //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
 
     private Settlement settlement;
@@ -193,6 +194,7 @@ public class BuildingManager implements Serializable {
         Injector injector = Guice.createInjector(new MeteoriteModule());
         meteorite = injector.getInstance(Meteorite.class);
 
+        resupplies = new ArrayList<Resupply>() ;
     }
 
     /**
@@ -379,14 +381,21 @@ public class BuildingManager implements Serializable {
         return newBuilding;
     }
 
-    // 2014-12-23 Added getResupply()
+    // 2016-11-07 Added getResupply()
     public Resupply getResupply() {
-    	return resupply;
+    	if (!resupplies.isEmpty()) {
+    		Resupply r = resupplies.get(0);
+    		resupplies.remove(0);
+    		return r;
+    	}
+    	else
+    		return null;
     }
     
-    // 2014-12-23 Added setResupply()
-    public void setResupply(Resupply resupply) {
-    	this.resupply= resupply;
+    // 2016-11-07 Added addResupply()
+    public void addResupply(Resupply resupply) {
+    	resupplies.add(resupply);
+    	//this.resupply= resupply;
     }
     
     /**

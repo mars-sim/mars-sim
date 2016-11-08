@@ -199,6 +199,8 @@ public class LocalAreaUtil {
             LocalBoundedObject object = i.next();
             if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
                 result = false;
+    			//logger.info("checkLocationCollision(): a point location is colliding with an existing vehicle, building, or construction site");
+    			break;
             }
         }
 
@@ -213,7 +215,7 @@ public class LocalAreaUtil {
      * @param coordinates the global coordinate location to check.
      * @return true if location doesn't collide with anything.
      */
-    // 2015-12-08 Added
+    // 2015-12-08 Added checkImmovableCollision()
     public static boolean checkImmovableCollision(double xLoc, double yLoc, Coordinates coordinates) {
 
         boolean result = true;
@@ -223,6 +225,8 @@ public class LocalAreaUtil {
             LocalBoundedObject object = i.next();
             if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
                 result = false;
+    			logger.info("checkImmovableCollision(): Colliding with an immovable object (a building or construction site");
+    			break;
             }
         }
 
@@ -238,18 +242,18 @@ public class LocalAreaUtil {
      */
     // 2015-12-08 Added checkVehicleBoundedOjectIntersected()
     public static boolean checkVehicleBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates, boolean needToMove) {
-    	boolean result = false;
+    	boolean result = true;
 
     	Iterator<LocalBoundedObject> i = getAllVehicleBoundedObjectsAtLocation(coordinates).iterator();
     	while (i.hasNext()) {
     		LocalBoundedObject vehicle = i.next();
 
     		if (getTwoBoundedOjectsIntersected(object, vehicle)) {
-    			result = true;
+    			result = false;
     			if (needToMove) {
     				Vehicle v = (Vehicle) vehicle;
     				v.determinedSettlementParkedLocationAndFacing();
-                  	logger.info("LocalAreaUtil: Collision with vehicle " + v + ". Moving it to another location");
+                  	logger.info("checkVehicleBoundedOjectIntersected(): Colliding with vehicle " + v + ". Moving it to another location");
                       				//  Call again recursively to clear any vehicles
     				result = checkVehicleBoundedOjectIntersected(object, coordinates, needToMove);
     			}
@@ -280,7 +284,7 @@ public class LocalAreaUtil {
                 if (needToMove) {
                 	Vehicle v = (Vehicle) object;
                 	v.determinedSettlementParkedLocationAndFacing();
-                	logger.info("LocalAreaUtil: Collision with vehicle " + v + ". Moving it to another location");
+                	logger.info("checkVehicleCollision(): Colliding with vehicle " + v + ". Moving it to another location");
                 	//  Call again recursively to clear any vehicles
                 	result = checkVehicleCollision(xLoc, yLoc, coordinates, needToMove);
                 }
@@ -345,14 +349,15 @@ public class LocalAreaUtil {
      */
     // 2015-12-08 Added checkImmovableBoundedOjectIntersected()
     public static boolean checkImmovableBoundedOjectIntersected(LocalBoundedObject object, Coordinates coordinates) { //, boolean needToMove) {
-    	boolean result = false;
+    	boolean result = true;
 
         Iterator<LocalBoundedObject> i = getAllImmovableBoundedObjectsAtLocation(coordinates).iterator();
     	while (i.hasNext()) {
     		LocalBoundedObject immovable = i.next();
     		if (getTwoBoundedOjectsIntersected(object, immovable)) {
-    			result = true;
-    			logger.info("LocalAreaUtil: Collision with an immovable object (a building or construction site");
+    			result = false;
+    			logger.info("LocalAreaUtil: Colliding with an immovable object (a building or construction site");
+    			break;
     		}
     	}
         return result;
@@ -488,12 +493,9 @@ public class LocalAreaUtil {
             LocalBoundedObject boundedObject, double newXLoc, double newYLoc, double newFacing,
             Coordinates coordinates) {
 
-        boolean result = true;
-
-        result = checkObjectCollision(boundedObject, boundedObject.getWidth(),
+        return checkObjectCollision(boundedObject, boundedObject.getWidth(),
                 boundedObject.getLength(), newXLoc, newYLoc, newFacing, coordinates);
 
-        return result;
     }
 
     /**

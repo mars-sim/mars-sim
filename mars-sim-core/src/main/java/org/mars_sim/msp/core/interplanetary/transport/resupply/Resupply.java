@@ -76,11 +76,11 @@ implements Serializable, Transportable {
     //private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 4D;
     //private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
 
-    private static final int MAX_INHABITABLE_BUILDING_DISTANCE = 50; //6
-    private static final int MIN_INHABITABLE_BUILDING_DISTANCE = 2;
+    public static final int MAX_INHABITABLE_BUILDING_DISTANCE = 50; //6
+    public static final int MIN_INHABITABLE_BUILDING_DISTANCE = 2;
 
-    private static final int MAX_NONINHABITABLE_BUILDING_DISTANCE = 50; //6
-    private static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 2;
+    public static final int MAX_NONINHABITABLE_BUILDING_DISTANCE = 50; //6
+    public static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 2;
 
     private static final int BUILDING_CENTER_SEPARATION = 10; // why 11?
 
@@ -89,7 +89,7 @@ implements Serializable, Transportable {
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
 
     /** Minimum length of a building connector (meters). */
-    private static final double MINIMUM_CONNECTOR_LENGTH = .5D;//.5D;
+    private static final double MINIMUM_CONNECTOR_LENGTH = 1D;//.5D;
 
 	// Data members
 	private int newImmigrantNum;
@@ -112,149 +112,12 @@ implements Serializable, Transportable {
 	 * @param settlement the settlement receiving the supplies.
 	 */
 	public Resupply(MarsClock arrivalDate, Settlement settlement) {
-		//logger.info("'s constructor is on " + Thread.currentThread().getName());
+		logger.info("constructor is on " + Thread.currentThread().getName()); // on on pool-2-thread-1
 		// Initialize data members.
 		this.arrivalDate = arrivalDate;
 		this.settlement = settlement;
 	}
 
-	@Override
-	public MarsClock getLaunchDate() {
-	    return (MarsClock) launchDate.clone();
-	}
-
-	/**
-	 * Sets the launch date of the resupply mission.
-	 * @param launchDate the launch date.
-	 */
-	public void setLaunchDate(MarsClock launchDate) {
-	    this.launchDate = (MarsClock) launchDate.clone();
-	}
-
-    /**
-     * Gets a list of the resupply buildings.
-     * @return list of building types.
-     */
-    public List<BuildingTemplate> getNewBuildings() {
-        return newBuildings;
-    }
-
-    /**
-     * Sets the list of resupply buildings.
-     * @param newBuildings list of building types.
-     */
-    public void setNewBuildings(List<BuildingTemplate> newBuildings) {
-        this.newBuildings = newBuildings;
-    }
-
-    /**
-     * Gets a list of the resupply vehicles.
-     * @return list of vehicle types.
-     */
-    public List<String> getNewVehicles() {
-        return newVehicles;
-    }
-
-    /**
-     * Sets the list of resupply vehicles.
-     * @param newVehicles list of vehicle types.
-     */
-    public void setNewVehicles(List<String> newVehicles) {
-        this.newVehicles = newVehicles;
-    }
-
-    /**
-     * Gets a map of the resupply equipment.
-     * @return map of equipment type and number.
-     */
-    public Map<String, Integer> getNewEquipment() {
-        return newEquipment;
-    }
-
-    /**
-     * Sets the map of resupply equipment.
-     * @param newEquipment map of equipment type and number.
-     */
-    public void setNewEquipment(Map<String, Integer> newEquipment) {
-        this.newEquipment = newEquipment;
-    }
-
-    /**
-     * Gets the number of immigrants in the resupply mission.
-     * @return the number of immigrants.
-     */
-    public int getNewImmigrantNum() {
-        return newImmigrantNum;
-    }
-
-    /**
-     * Sets the number of immigrants in the resupply mission.
-     * @param newImmigrantNum the number of immigrants.
-     */
-    public void setNewImmigrantNum(int newImmigrantNum) {
-        this.newImmigrantNum = newImmigrantNum;
-    }
-
-    /**
-     * Gets a map of the resupply resources.
-     * @return map of resource and amount (kg).
-     */
-    public Map<AmountResource, Double> getNewResources() {
-        return newResources;
-    }
-
-    /**
-     * Sets the map of resupply resources.
-     * @param newResources map of resource and amount (kg).
-     */
-    public void setNewResources(Map<AmountResource, Double> newResources) {
-        this.newResources = newResources;
-    }
-
-    /**
-     * Gets a map of resupply parts.
-     * @return map of part and number.
-     */
-    public Map<Part, Integer> getNewParts() {
-        return newParts;
-    }
-
-    /**
-     * Sets the map of resupply parts.
-     * @param newParts map of part and number.
-     */
-    public void setNewParts(Map<Part, Integer> newParts) {
-        this.newParts = newParts;
-    }
-
-    @Override
-	public MarsClock getArrivalDate() {
-		return (MarsClock) arrivalDate.clone();
-	}
-
-	/**
-	 * Sets the arrival date of the resupply mission.
-	 * @param arrivalDate the arrival date.
-	 */
-	public void setArrivalDate(MarsClock arrivalDate) {
-	    this.arrivalDate = (MarsClock) arrivalDate.clone();
-	}
-
-	/**
-	 * Gets the destination settlement.
-	 * @return destination settlement.
-	 */
-	public Settlement getSettlement() {
-	    return settlement;
-	}
-
-	/**
-	 * Sets the destination settlement.
-	 * @param settlement the destination settlement.
-	 */
-    public void setSettlement(Settlement settlement) {
-        this.settlement = settlement;
-    }
 
     /**
      * Commits a set of modifications for the resupply mission.
@@ -265,85 +128,14 @@ implements Serializable, Transportable {
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
     }
 
-    @Override
-    public void destroy() {
-        settlement = null;
-        launchDate = null;
-        arrivalDate = null;
-        newBuildings.clear();
-        newBuildings = null;
-        newVehicles.clear();
-        newVehicles = null;
-        newEquipment.clear();
-        newEquipment = null;
-        newResources.clear();
-        newResources = null;
-        newParts.clear();
-        newParts = null;
-    }
-
-    @Override
-    public String toString() {
-        StringBuffer buff = new StringBuffer();
-        buff.append(getSettlement().getName());
-        buff.append(": ");
-        buff.append(getArrivalDate().getDateString());
-        return buff.toString();
-    }
-
-    @Override
-    public int compareTo(Transportable o) {
-        int result = 0;
-
-        double arrivalTimeDiff = MarsClock.getTimeDiff(arrivalDate, o.getArrivalDate());
-        if (arrivalTimeDiff < 0D) {
-            result = -1;
-        }
-        else if (arrivalTimeDiff > 0D) {
-            result = 1;
-        }
-        else {
-            // If arrival time is the same, compare by name alphabetically.
-            result = getName().compareTo(o.getName());
-        }
-
-        return result;
-    }
-
-	@Override
-	public String getName() {
-		return getSettlement().getName();
-	}
-
-	@Override
-	public TransitState getTransitState() {
-		return state;
-	}
-
-	@Override
-	public void setTransitState(TransitState transitState) {
-		this.state = transitState;
-	}
-
-
-	@Override
- 	// 2014-12-26 Created startDeliveryEvent
-	public synchronized void performArrival() {
-     	// Deliver buildings to the destination settlement.
-		startDeliveryEvent();
-	}
 
 	/**
      * Generates START_BUILDING_PLACEMENT_EVENT and test if GUI is in use
      */
     public synchronized void startDeliveryEvent() {
-        //logger.info("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread");
-    	// normally on pool-4-thread-3 Thread
-
-        BuildingManager buildingManager = settlement.getBuildingManager();
-        // 2014-12-23 Added setBuildingManager() and setResupply()
-        setBuildingManager(buildingManager);
-        buildingManager.setResupply(this);
+        logger.info("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread"); // normally on pool-4-thread-3 Thread
+        buildingManager = settlement.getBuildingManager();
+        buildingManager.addResupply(this);
 
     	// 2014-12-26 Added Simulation.getUseGUI() to terminate handling of delivery
         // by Resupply.java if GUI is in use
@@ -446,7 +238,7 @@ implements Serializable, Transportable {
         if (checkBuildingTemplatePosition(correctedTemplate)) {
         	;
         } else {
-        	correctedTemplate = clearCollision(correctedTemplate);
+        	correctedTemplate = clearCollision(correctedTemplate, 10);
         }
 
         buildingManager.addBuilding(correctedTemplate, true);
@@ -458,24 +250,23 @@ implements Serializable, Transportable {
      * @return BuildingTemplate
      */
     // 2015-12-07 Added clearCollision()
-    public BuildingTemplate clearCollision(BuildingTemplate correctedTemplate) {
+    public BuildingTemplate clearCollision(BuildingTemplate correctedTemplate, int count) {
 
     	boolean noVehicle = true;
     	// check if a vehicle is the obstacle and move it
     	noVehicle = checkCollisionMoveVehicle(correctedTemplate);
 		//System.out.println("noVehicle is now " + noVehicle);
 
-	  	boolean noImmovable = true;
-		noImmovable = checkCollisionImmovable(correctedTemplate);
+	  	int noCollision = checkCollisionImmovable(correctedTemplate, count);
 		//System.out.println("noImmovable is now " + noImmovable);
 
-		if (!noImmovable) {
+		if (noCollision != 0) {
 			BuildingTemplate repositionedTemplate = positionNewResupplyBuilding(correctedTemplate.getBuildingType());
 
 			// 2015-12-16 Added setMissionName()
 			repositionedTemplate.setMissionName(correctedTemplate.getMissionName());
 			// Call again recursively to check for any collision
-			correctedTemplate = clearCollision(repositionedTemplate);
+			correctedTemplate = clearCollision(repositionedTemplate, count);
 		}
 
 		return correctedTemplate;
@@ -499,15 +290,23 @@ implements Serializable, Transportable {
 
 		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-        boolean collison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, settlement.getCoordinates(), true);
-        return !collison;
+        boolean noCollison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, settlement.getCoordinates(), true);
+        return noCollison;
 
     }
 
-
+    /**
+     * Check for collision for an immovable object
+     * @param building
+     * @param buildingManager
+     * @param count The number of times remaining checking collision
+     * @return int The remaining count or if zero, there is no collision. 
+     */
     // 2015-12-07 Added checkCollisionImmovable()
-    public boolean checkCollisionImmovable(BuildingTemplate t) {
+    public int checkCollisionImmovable(BuildingTemplate t, int count) {
 
+		count--;
+		
     	double xLoc = t.getXLoc();
     	double yLoc = t.getYLoc();
     	double w = t.getWidth();
@@ -516,10 +315,14 @@ implements Serializable, Transportable {
 
 		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-		boolean collison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, settlement.getCoordinates());
+		boolean noCollison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, settlement.getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
-
-        return !collison;
+		
+		if (noCollison)
+			return 0;
+		else
+			return count;
+		
     }
 
 
@@ -754,10 +557,7 @@ implements Serializable, Transportable {
 
     }
 
-    public void setBuildingManager(BuildingManager buildingManager) {
-    	this.buildingManager = buildingManager;
-    }
-
+  
 
     /**
      * Orders the new buildings with non-connector buildings first and connector buildings last.
@@ -858,7 +658,7 @@ implements Serializable, Transportable {
         if (isBuildingConnector) {
             // Try to find best location to connect two buildings.
             newPosition = positionNewConnector(buildingType);
-            System.out.println("Resupply: a new position has been determined for this building connector");
+            logger.info("positionNewResupplyBuilding() : " + newPosition.getNickName() + " has been positioned.");
         }
 
 /*
@@ -1276,16 +1076,6 @@ implements Serializable, Transportable {
         return newPosition;
     }
 
-	/**
-	 * Maps a number to an alphabet
-	 * @param a number
-	 * @return a String
-	 */
-	// 2014-10-29 Added getCharForNumber()
-	private String getCharForNumber(int i) {
-		// NOTE: i must be > 1, if i = 0, return null
-	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
-	}
 
     /**
      * Determine the position and length (for variable length) for a connector building between two existing
@@ -1434,4 +1224,230 @@ implements Serializable, Transportable {
 
         return result;
     }
+    
+	/**
+	 * Maps a number to an alphabet
+	 * @param a number
+	 * @return a String
+	 */
+	// 2014-10-29 Added getCharForNumber()
+	private String getCharForNumber(int i) {
+		// NOTE: i must be > 1, if i = 0, return null
+	    return i > 0 && i < 27 ? String.valueOf((char)(i + 'A' - 1)) : null;
+	}
+
+    
+	@Override
+	public String getName() {
+		return getSettlement().getName();
+	}
+
+	@Override
+	public TransitState getTransitState() {
+		return state;
+	}
+
+	@Override
+	public void setTransitState(TransitState transitState) {
+		this.state = transitState;
+	}
+
+
+	@Override
+ 	// 2014-12-26 Created startDeliveryEvent
+	public synchronized void performArrival() {
+     	// Deliver buildings to the destination settlement.
+		startDeliveryEvent();
+	}
+
+    
+	@Override
+	public MarsClock getLaunchDate() {
+	    return (MarsClock) launchDate.clone();
+	}
+
+	/**
+	 * Sets the launch date of the resupply mission.
+	 * @param launchDate the launch date.
+	 */
+	public void setLaunchDate(MarsClock launchDate) {
+	    this.launchDate = (MarsClock) launchDate.clone();
+	}
+
+    /**
+     * Gets a list of the resupply buildings.
+     * @return list of building types.
+     */
+    public List<BuildingTemplate> getNewBuildings() {
+        return newBuildings;
+    }
+
+    /**
+     * Sets the list of resupply buildings.
+     * @param newBuildings list of building types.
+     */
+    public void setNewBuildings(List<BuildingTemplate> newBuildings) {
+        this.newBuildings = newBuildings;
+    }
+
+    /**
+     * Gets a list of the resupply vehicles.
+     * @return list of vehicle types.
+     */
+    public List<String> getNewVehicles() {
+        return newVehicles;
+    }
+
+    /**
+     * Sets the list of resupply vehicles.
+     * @param newVehicles list of vehicle types.
+     */
+    public void setNewVehicles(List<String> newVehicles) {
+        this.newVehicles = newVehicles;
+    }
+
+    /**
+     * Gets a map of the resupply equipment.
+     * @return map of equipment type and number.
+     */
+    public Map<String, Integer> getNewEquipment() {
+        return newEquipment;
+    }
+
+    /**
+     * Sets the map of resupply equipment.
+     * @param newEquipment map of equipment type and number.
+     */
+    public void setNewEquipment(Map<String, Integer> newEquipment) {
+        this.newEquipment = newEquipment;
+    }
+
+    /**
+     * Gets the number of immigrants in the resupply mission.
+     * @return the number of immigrants.
+     */
+    public int getNewImmigrantNum() {
+        return newImmigrantNum;
+    }
+
+    /**
+     * Sets the number of immigrants in the resupply mission.
+     * @param newImmigrantNum the number of immigrants.
+     */
+    public void setNewImmigrantNum(int newImmigrantNum) {
+        this.newImmigrantNum = newImmigrantNum;
+    }
+
+    /**
+     * Gets a map of the resupply resources.
+     * @return map of resource and amount (kg).
+     */
+    public Map<AmountResource, Double> getNewResources() {
+        return newResources;
+    }
+
+    /**
+     * Sets the map of resupply resources.
+     * @param newResources map of resource and amount (kg).
+     */
+    public void setNewResources(Map<AmountResource, Double> newResources) {
+        this.newResources = newResources;
+    }
+
+    /**
+     * Gets a map of resupply parts.
+     * @return map of part and number.
+     */
+    public Map<Part, Integer> getNewParts() {
+        return newParts;
+    }
+
+    /**
+     * Sets the map of resupply parts.
+     * @param newParts map of part and number.
+     */
+    public void setNewParts(Map<Part, Integer> newParts) {
+        this.newParts = newParts;
+    }
+
+    @Override
+	public MarsClock getArrivalDate() {
+		return (MarsClock) arrivalDate.clone();
+	}
+
+	/**
+	 * Sets the arrival date of the resupply mission.
+	 * @param arrivalDate the arrival date.
+	 */
+	public void setArrivalDate(MarsClock arrivalDate) {
+	    this.arrivalDate = (MarsClock) arrivalDate.clone();
+	}
+
+	/**
+	 * Gets the destination settlement.
+	 * @return destination settlement.
+	 */
+	public Settlement getSettlement() {
+	    return settlement;
+	}
+
+	/**
+	 * Sets the destination settlement.
+	 * @param settlement the destination settlement.
+	 */
+    public void setSettlement(Settlement settlement) {
+        this.settlement = settlement;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuffer buff = new StringBuffer();
+        buff.append(getSettlement().getName());
+        buff.append(": ");
+        buff.append(getArrivalDate().getDateString());
+        return buff.toString();
+    }
+
+    @Override
+    public int compareTo(Transportable o) {
+        int result = 0;
+
+        double arrivalTimeDiff = MarsClock.getTimeDiff(arrivalDate, o.getArrivalDate());
+        if (arrivalTimeDiff < 0D) {
+            result = -1;
+        }
+        else if (arrivalTimeDiff > 0D) {
+            result = 1;
+        }
+        else {
+            // If arrival time is the same, compare by name alphabetically.
+            result = getName().compareTo(o.getName());
+        }
+
+        return result;
+    }
+
+    //public void setBuildingManager(BuildingManager buildingManager) {
+    //	this.buildingManager = buildingManager;
+    //}
+
+
+    @Override
+    public void destroy() {
+        settlement = null;
+        launchDate = null;
+        arrivalDate = null;
+        newBuildings.clear();
+        newBuildings = null;
+        newVehicles.clear();
+        newVehicles = null;
+        newEquipment.clear();
+        newEquipment = null;
+        newResources.clear();
+        newResources = null;
+        newParts.clear();
+        newParts = null;
+    }
+
 }
