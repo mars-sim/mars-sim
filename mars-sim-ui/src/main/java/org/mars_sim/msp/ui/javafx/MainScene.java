@@ -380,7 +380,7 @@ public class MainScene {
 	 */
 	public class MainSceneTask implements Runnable {
 		public void run() {
-			//logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
+			logger.info("MainScene's MainSceneTask is in " + Thread.currentThread().getName() + " Thread");
 			// Set look and feel of UI.
 			UIConfig.INSTANCE.useUIDefault();
 		}
@@ -390,7 +390,7 @@ public class MainScene {
 	 * Prepares the transport wizard, construction wizard, autosave timer and earth timer
 	 */
 	public void prepareOthers() {
-		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		startEarthTimer();
 		transportWizard = new TransportWizard(this, desktop);
 		constructionWizard = new ConstructionWizard(this, desktop);
@@ -450,7 +450,7 @@ public class MainScene {
 	 */
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
-		//logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
+		logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
 
 		//see dpi scaling at http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
 		//"I guess we�ll have to wait until Java 9 for more flexible DPI support. 
@@ -485,9 +485,7 @@ public class MainScene {
 
 		// Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
-		// for macOS
-		((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
-  
+
 		// Create jfxTabPane
 		createFXTabs();	
 		// Create BorderPane
@@ -504,13 +502,12 @@ public class MainScene {
         
         borderPane.setBottom(statusBar);
 
+        anchorDesktopPane.getChildren().addAll(borderPane);
  
-		if (OS.contains("mac")) {        
-	        AnchorPane.setLeftAnchor(marsNetButton, 5.0);
-	        AnchorPane.setBottomAnchor(marsNetButton, 35.0);    
-	        
-	        anchorDesktopPane.getChildren().addAll(borderPane, marsNetButton);
-
+		if (OS.contains("mac")) {   
+        	// for macOS
+			((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
+  
 		}
 		else {
 			
@@ -525,21 +522,23 @@ public class MainScene {
 	        AnchorPane.setRightAnchor(menubarButton, 5.0);
 	        AnchorPane.setTopAnchor(menubarButton, -3.0);
 
-	        AnchorPane.setRightAnchor(marsNetButton, 45.0);
-	        AnchorPane.setTopAnchor(marsNetButton, -3.0);       
-	         
-	        AnchorPane.setRightAnchor(mapBtn, 85.0);
-	        AnchorPane.setTopAnchor(mapBtn, -3.0);     
-
-	        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
-	        AnchorPane.setTopAnchor(miniMapBtn, -3.0); 
-
-	        anchorDesktopPane.getChildren().addAll(borderPane, miniMapBtn, mapBtn, marsNetButton, menubarButton);
+	        anchorDesktopPane.getChildren().addAll(menubarButton);
 
 		}
-		
+
+        AnchorPane.setRightAnchor(marsNetButton, 45.0);
+        AnchorPane.setTopAnchor(marsNetButton, -3.0);       
+         
+        AnchorPane.setRightAnchor(mapBtn, 85.0);
+        AnchorPane.setTopAnchor(mapBtn, -3.0);     
+
+        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
+        AnchorPane.setTopAnchor(miniMapBtn, -3.0); 
+
+        anchorDesktopPane.getChildren().addAll(miniMapBtn, mapBtn, marsNetButton);
+
     	Scene scene = new Scene(anchorDesktopPane, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
-    	  	
+
     	//scene.heightProperty().addListener((observable, oldValue, newValue) -> {
     	//    System.out.println("scene height : " + newValue);    	    
     	//});
@@ -613,6 +612,7 @@ public class MainScene {
 	}
 	
 	public void createFXZoomSlider() {
+		logger.info("MainScene's createFXZoomSlider() is on " + Thread.currentThread().getName() + " Thread");
 		
 		// Set up a settlement view zoom bar
 		zoomSlider = new JFXSlider();
@@ -824,6 +824,8 @@ public class MainScene {
 	 */
 	@SuppressWarnings("restriction")
 	public void createFXTabs() {
+		logger.info("MainScene's createFXTabs() is on " + Thread.currentThread().getName() + " Thread");
+		
 		jfxTabPane = new JFXTabPane();
 		
 		String cssFile = null;
