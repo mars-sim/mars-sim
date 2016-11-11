@@ -238,21 +238,26 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 	// Additional Component Listener methods implemented but not used.
 	@Override
 	public void componentMoved(ComponentEvent e) {
-		updateFrames();
+		logger.info("DesktopPane : componentMoved()");
+		updateToolWindow();
 	}
+	
 	@Override
 	public void componentShown(ComponentEvent e) {
+		logger.info("DesktopPane : componentShown()");
 		JInternalFrame[] frames = this.getAllFrames();
 		for (JInternalFrame f : frames) {
+			//((ToolWindow)f).update();
 			f.updateUI();
 			SwingUtilities.updateComponentTreeUI(f);
 		}
-
 	}
+	
 	@Override
 	public void componentHidden(ComponentEvent e) {}
 
-	public void updateFrames() {
+	public void updateToolWindow() {
+		logger.info("DesktopPane : updateToolWindow()");
 		JInternalFrame[] frames = this.getAllFrames();
 		for (JInternalFrame f : frames) {
 			//f.updateUI();	
@@ -292,7 +297,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				settlement.removeUnitListener(this);
 			}
 			
-			updateFrames();
+			updateToolWindow();
 		}
 	}
 

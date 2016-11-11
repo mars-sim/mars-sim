@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.swing.JLayer;
 import javax.swing.JPanel;
@@ -37,6 +38,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.DesktopPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -54,16 +56,17 @@ implements ClockListener {
 	private static final long serialVersionUID = 1L;
 
 	// default logger.
-	//private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
-
+	private static Logger logger = Logger.getLogger(SettlementMapPanel.class.getName());
+	
 	// Static members.
-	//public static final double DEFAULT_SCALE = 5D;
+	private static final double PERIOD_IN_MILLISOLS = 200D / MarsClock.SECONDS_IN_MILLISOL;
 	public static final double DEFAULT_SCALE = 10D;
 	public static final double MAX_SCALE = 55D;
 	public static final double MIN_SCALE = 5D / 11D;
 	private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
 
-	// Data members.
+	// Data members
+	private double timeCache = 0;
 	private double xPos;
 	private double yPos;
 	private double rotation;
@@ -123,7 +126,7 @@ implements ClockListener {
 		selectedRobot = new HashMap<Settlement, Robot>();
 
 		SwingUtilities.invokeLater(() -> {
-			init(desktop);
+			initLayers(desktop);
 		});
 
 		// Set foreground and background colors.
@@ -145,8 +148,8 @@ implements ClockListener {
         setVisible(true);
 	}
 
-	// 2015-02-09 Added init()
-	public void init(DesktopPane desktop) {
+	// 2015-02-09 Added initLayers()
+	public void initLayers(DesktopPane desktop) {
 		// Create map layers.
 		mapLayers = new ArrayList<SettlementMapLayer>();
 		mapLayers.add(new BackgroundTileMapLayer(this));
@@ -162,8 +165,6 @@ implements ClockListener {
 				settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		//});
 	
-		//paintDoubleBuffer();
-		//repaint();
 	}
 
 	/** Constructor 2
@@ -192,8 +193,6 @@ implements ClockListener {
 		// Set foreground and background colors.
 		setOpaque(true);
 
-		//paintDoubleBuffer();
-		//repaint();
 	}
 
 	public void detectMouseMovement() {
@@ -1041,8 +1040,13 @@ implements ClockListener {
 
 	@Override
 	public void clockPulse(double time) {
-		// Repaint map panel with each clock pulse.
-		repaint();
+		timeCache = timeCache + time;
+		if (timeCache > PERIOD_IN_MILLISOLS) {
+			//System.out.println("calling SettlementMapPanel's clockPulse()");
+			// Repaint map panel
+			repaint();
+			timeCache = 0;
+		}	
 	}
 
 	@Override

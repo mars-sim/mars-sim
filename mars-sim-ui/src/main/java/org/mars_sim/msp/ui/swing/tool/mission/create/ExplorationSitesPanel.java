@@ -86,7 +86,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		centerPane.add(mapMainPane, BorderLayout.WEST);
 		
 		// Create the map panel.
-		mapPane = new MapPanel(20L);
+		mapPane = new MapPanel(200L);
         mineralLayer = new MineralMapLayer(mapPane);
         mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane), 1);

@@ -105,7 +105,7 @@ public class MiningSitePanel extends WizardPanel {
 		leftPanel.add(centerPanel, BorderLayout.CENTER);
 		
 		// Create the map panel.
-		mapPane = new MapPanel(20L);
+		mapPane = new MapPanel(200L);
         mineralLayer = new MineralMapLayer(mapPane);
         mapPane.addMapLayer(mineralLayer, 0);
 		mapPane.addMapLayer(unitIconLayer = new UnitIconMapLayer(mapPane), 1);

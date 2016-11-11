@@ -112,7 +112,7 @@ implements Serializable, Transportable {
 	 * @param settlement the settlement receiving the supplies.
 	 */
 	public Resupply(MarsClock arrivalDate, Settlement settlement) {
-		logger.info("constructor is on " + Thread.currentThread().getName()); // on on pool-2-thread-1
+		//logger.info("constructor is on " + Thread.currentThread().getName()); // on on pool-2-thread-1
 		// Initialize data members.
 		this.arrivalDate = arrivalDate;
 		this.settlement = settlement;

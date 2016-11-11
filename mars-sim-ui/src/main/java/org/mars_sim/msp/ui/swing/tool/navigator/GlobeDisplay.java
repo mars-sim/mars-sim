@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
@@ -40,14 +42,15 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  */
 class GlobeDisplay
 extends JComponent
-implements Runnable {
+implements ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
-
+	private static final double PERIOD_IN_MILLISOLS = 500D / MarsClock.SECONDS_IN_MILLISOL;
+	
 	public final static int GLOBE_BOX_HEIGHT = 300;
 	public final static int GLOBE_BOX_WIDTH = 300;
 
@@ -56,6 +59,7 @@ implements Runnable {
 	private static int dragx, dragy;
 
 	// Data members
+	private double timeCache = 0;
 	/** Real surface sphere object. */
 	private MarsGlobe marsSphere;
 	/** Topographical sphere object. */
@@ -63,7 +67,7 @@ implements Runnable {
 	/** Spherical coordinates for globe center. */
 	private Coordinates centerCoords;
 	/** Refresh thread. */
-	private Thread showThread;
+	//private Thread showThread;
 	/** <code>true</code> if in topographical mode, false if in real surface mode. */
 	private boolean topo;
 	/** <code>true</code> if globe needs to be regenerated */
@@ -131,7 +135,8 @@ implements Runnable {
 		//starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
 
-
+		//Simulation.instance().getMasterClock().addClockListener(this);
+		
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
@@ -260,9 +265,8 @@ implements Runnable {
 
 	/**
 	 * Starts display update thread (or creates a new one if necessary)
-	 */
+	 
 	private void updateDisplay() {
-
 		if ((showThread == null) || (!showThread.isAlive())) {
 			showThread = new Thread(this, Msg.getString("GlobeDisplay.thread.globe")); //$NON-NLS-1$
 			showThread.start();
@@ -270,11 +274,12 @@ implements Runnable {
 			showThread.interrupt();
 		}
 	}
-
+*/
+	
 	/**
 	 * the run method for the runnable interface
 	 */
-	public void run() {
+	public void updateDisplay() {
 //		while (update) {
 //			refreshLoop();
 //		}
@@ -283,7 +288,7 @@ implements Runnable {
 	 * loop, refreshing the globe display when necessary
 	 */
 //	public void refreshLoop() {
-		while (keepRunning) {
+		if (keepRunning) {
 			if (recreate) {
 				//System.out.println("recreate is true");		
 				recreate = false;
@@ -292,7 +297,7 @@ implements Runnable {
 				
 			} else {
 				//System.out.println("recreate is false");	
-				try {
+				//try {
 					boolean open = desktop.isToolWindowOpen(NavigatorWindow.NAME);
 					if (isOpenCache != open) {
 						isOpenCache = open;
@@ -301,10 +306,10 @@ implements Runnable {
 							repaint();
 						}
 					}
-					Thread.sleep(5000l);
-				} catch (InterruptedException e) {
+				//	Thread.sleep(5000l);
+				//} catch (InterruptedException e) {
 					//e.printStackTrace(); // if enable, will print sleep interrupted
-				}
+				//}
 				
 				
 			}
@@ -630,8 +635,7 @@ implements Runnable {
 	 * Prepare globe for deletion.
 	 */
 	public void destroy() {
-
-		showThread = null;
+		//showThread = null;
 		update = false;
 		keepRunning = false;
 		marsSphere = null;
@@ -641,5 +645,21 @@ implements Runnable {
 		dbg = null;
 		dbImage = null;
 		starfield = null;
+	}
+
+	@Override
+	public void clockPulse(double time) {
+		timeCache = timeCache + time;
+		if (timeCache > PERIOD_IN_MILLISOLS) {
+			//System.out.println("calling GlobeDisplay's clockPulse()");
+			updateDisplay();
+			timeCache = 0;
+		}	
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -19,7 +19,7 @@ import javax.swing.event.InternalFrameEvent;
 public class UnitWindowListener extends InternalFrameAdapter {
 
     // Data members
-    MainDesktopPane desktop; // Main desktop pane that holds unit windows.
+    private MainDesktopPane desktop; // Main desktop pane that holds unit windows.
 
     /** Constructs a UnitWindowListener object
      *  @param desktop the desktop pane

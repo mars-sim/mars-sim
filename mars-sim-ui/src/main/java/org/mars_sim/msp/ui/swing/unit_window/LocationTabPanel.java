@@ -166,7 +166,6 @@ implements ActionListener {
         lcdLat.setLcdColor(LcdColor.BEIGE_LCD);
         //lcdLat.setBackground(BackgroundColor.NOISY_PLASTIC);
         lcdLat.setGlowColor(Color.orange);
-
         //lcd1.setBorder(new EmptyBorder(5, 5, 5, 5));
         lcdLat.setDigitalFont(true);
         lcdLat.setLcdDecimals(2);
@@ -176,7 +175,6 @@ implements ActionListener {
         lcdLat.setVisible(true);
         //locationPanel.add(lcdLat, BorderLayout.WEST);
         northPanel.add(lcdLat);
-
 
         elevationCache = terrainElevation.getElevation(unit.getCoordinates());
  /*

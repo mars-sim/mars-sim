@@ -22,17 +22,25 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
 public class MapPanel
 extends JPanel
-implements Runnable {
+implements
+//Runnable,
+ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -45,7 +53,10 @@ implements Runnable {
 
 	private static int dragx, dragy;
 
-	// Data members.
+	private static double PERIOD_IN_MILLISOLS;
+	
+	// Data members
+	private double timeCache = 0;
 	private boolean mapError;
 	private boolean wait;
 	private boolean update;
@@ -57,8 +68,8 @@ implements Runnable {
 	private List<MapLayer> mapLayers;
 	private Map map;
 
-	private Thread displayThread;
-	private Thread createMapThread;
+	//private Thread displayThread;
+	//private Thread createMapThread;
 	private Coordinates centerCoords;
 
 	private Image mapImage;
@@ -69,11 +80,19 @@ implements Runnable {
 	private Image dbImage = null;
 	private long refreshRate;
 	private double rho = CannedMarsMap.PIXEL_RHO;
+	
+	private ThreadPoolExecutor executor;
 
 	public MapPanel(long refreshRate) {
 		super();
 
+		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); // newFixedThreadPool(1); //
+
+		Simulation.instance().getMasterClock().addClockListener(this);
+		
 		this.refreshRate = refreshRate;
+		PERIOD_IN_MILLISOLS = refreshRate / MarsClock.SECONDS_IN_MILLISOL;
+		
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
 		topoMap = new TopoMarsMap(this);
@@ -85,6 +104,7 @@ implements Runnable {
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
 
+		
 		//setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT ));
 		setBackground(Color.BLACK);
 		setOpaque(true);
@@ -118,10 +138,14 @@ implements Runnable {
 		            centerCoords = centerCoords.convertRectToSpherical(
 		                    (double) difx, (double) dify, rho);
 
+					//if (!executor.isTerminated() || !executor.isShutdown() )
+					//	executor.execute(new MapTask());
+					
 					map.drawMap(centerCoords);
 
 					paintDoubleBuffer();
 					repaint();
+					
 				}
 			}
 		});
@@ -233,9 +257,12 @@ implements Runnable {
 
 		if (recreateMap) {
 			wait = true;
-			if ((createMapThread != null) && (createMapThread.isAlive()))
-				createMapThread.interrupt();
-			createMapThread = new Thread(new Runnable() {
+			if (!executor.isTerminated() || !executor.isShutdown() )
+				executor.execute(new MapTask());
+/*
+			//			if ((createMapThread != null) && (createMapThread.isAlive()))
+//				createMapThread.interrupt();
+//				createMapThread = new Thread(new Runnable() {
 				public void run() {
 	    			try {
 	    				mapError = false;
@@ -251,16 +278,41 @@ implements Runnable {
 	    			paintDoubleBuffer();
 	    			repaint();
 	    		}
-			});
-			createMapThread.start();
+//			});
+//			createMapThread.start();
+*/
 		}
 
         updateDisplay();
     }
 
+
+	class MapTask implements Runnable {
+
+		private MapTask() {
+		}
+
+		@Override
+		public void run() {
+			try {
+				mapError = false;
+				map.drawMap(centerCoords);
+			}
+			catch (Exception e) {
+				e.printStackTrace(System.err);
+				mapError = true;
+				mapErrorMessage = e.getMessage();
+			}
+			wait = false;
+
+			paintDoubleBuffer();
+			repaint();
+		}
+	}
+	
 	/**
 	 * Updates the current display
-	 */
+
     private void updateDisplay() {
         if ((displayThread == null) || (!displayThread.isAlive())) {
         	displayThread = new Thread(this, "Navpoint Map");
@@ -269,16 +321,18 @@ implements Runnable {
         	displayThread.interrupt();
         }
     }
-
-	public void run() {
-		while (update) {
-        	try {
-                Thread.sleep(refreshRate);
-            }
-	        catch (InterruptedException e) {}
-
-			paintDoubleBuffer();
-	        repaint();
+	 */
+	
+	public void updateDisplay() {
+		if (update) {
+			if (!executor.isTerminated() || !executor.isShutdown() )
+				executor.execute(new MapTask());
+        	//try {
+            //    Thread.sleep(refreshRate);
+            //}
+	        //catch (InterruptedException e) {}
+			//paintDoubleBuffer();
+	        //repaint();
         }
 	}
 
@@ -436,4 +490,21 @@ implements Runnable {
 		dbImage = null;
 		mapImage = null;
     }
+
+	@Override
+	public void clockPulse(double time) {
+		timeCache = timeCache + time;
+		if (timeCache > PERIOD_IN_MILLISOLS) {
+			//System.out.println("calling MapPanel's clockPulse()");
+			updateDisplay();
+			timeCache = 0;
+		}	
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

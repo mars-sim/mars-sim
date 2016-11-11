@@ -232,7 +232,7 @@ extends JInternalFrame {
 					//Platform.runLater(() -> {
 						//mainScene.changeTheme(mainScene.getTheme());
 					//});
-				SwingUtilities.invokeLater(() -> SwingUtilities.updateComponentTreeUI(this));
+					//SwingUtilities.invokeLater(() -> SwingUtilities.updateComponentTreeUI(this));
 					// Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException when pressing the terminate button in eclipse
 					//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
 				// create time lag, draw artifact and search text out of focus			
