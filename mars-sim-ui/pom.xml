@@ -104,12 +104,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>nimrodlf</artifactId>
 			<version>1.2c</version>
 		</dependency>	
-				
+<!-- 				
 		<dependency>
 			<groupId>com.sibvisions.external.jvxfx</groupId>
 			<artifactId>dndtabpane</artifactId>
 			<version>0.1</version>
 		</dependency>
+ -->		
 		<dependency>
 			<groupId>com.sibvisions.jvx</groupId>
 			<artifactId>jfxtensions</artifactId>
@@ -123,7 +124,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
-			<version>3.6.14</version>
+			<version>3.6.16</version>
 		</dependency>
 <!-- 		<dependency>
 		    <groupId>de.jensd</groupId>

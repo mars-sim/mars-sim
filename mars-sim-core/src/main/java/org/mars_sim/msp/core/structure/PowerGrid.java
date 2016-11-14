@@ -208,12 +208,11 @@ implements Serializable {
 	 * Calculate the flow of power/energy taking place due to the supply and demand of power
 	 * @param time
 	 */
-	public void updatePowerFlow(double time) {
-		
+	public void updatePowerFlow(double time) {		
 		// Check if there is enough power generated to fully supply each building.
 		if (powerRequired < powerGenerated) {
+			
 			sufficientPower = true;
-	
 			// Store excess power in power storage buildings.
 			double timeHr = time * HOURS_PER_MILLISOL; //MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
 			double excessEnergy = (powerGenerated - powerRequired) * timeHr;
@@ -221,71 +220,87 @@ implements Serializable {
 		}
 		
 		else {
+			
 			sufficientPower = false;
 			double neededPower = powerRequired - powerGenerated;
 			double timeHr = time * HOURS_PER_MILLISOL; //MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
-			double neededPowerHr = neededPower * timeHr;
-			// Retrieve power from power storage buildings.			
-			double storedPowerHr = retrieveStoredPower();//neededPowerHr);
-			//double storedPower = storedPowerHr / timeHr;
-			
+			double neededEnergy = neededPower * timeHr;		
+			// Find available power from power storage buildings.			
+			double availablePowerHr = computeStoredEnergy();
 			// NOTE : assume the energy flow is instantaneous and 
 			// the gauge of the cable is very low and 
-			if (storedPowerHr * PSUEDO_PERCENT_VOLTAGE_DROP > neededPowerHr) {
+			if (availablePowerHr * PSUEDO_PERCENT_VOLTAGE_DROP >= neededEnergy) {
+	
+				double actualNeeded = neededEnergy / PSUEDO_PERCENT_VOLTAGE_DROP;
+				// subtract powerHr from the battery reserve		
+				double retrieved = retrieveStoredEnergy(actualNeeded);
+				
+				if (retrieved >= actualNeeded)
+					sufficientPower = true;
+				else
+					sufficientPower = true;
 				
 			}
+			
 			else {
-				;// nothing
+				sufficientPower = false;
 			}
 			
-			//BuildingManager manager = settlement.getBuildingManager();
-			List<Building> buildings = manager.getBuildings();//getACopyOfBuildings();
-	
-			// Reduce each building's power mode to low power until
-			// required power reduction is met.
-			if (powerMode != PowerMode.POWER_DOWN) {
-				Iterator<Building> iLowPower = buildings.iterator();
-				while (iLowPower.hasNext() && (neededPower > 0D)) {
-					Building building = iLowPower.next();
-					if (!powerSurplus(building, PowerMode.FULL_POWER)) {
-						building.setPowerMode(PowerMode.POWER_DOWN);
-						neededPower -= building.getFullPowerRequired() -
-								building.getPoweredDownPowerRequired();
+			if (!sufficientPower) {
+				
+				neededEnergy = neededEnergy - availablePowerHr;				
+				neededPower = neededEnergy / timeHr;
+				
+				//BuildingManager manager = settlement.getBuildingManager();
+				List<Building> buildings = manager.getBuildings();//getACopyOfBuildings();
+		
+				// Reduce each building's power mode to low power until
+				// required power reduction is met.
+				if (powerMode != PowerMode.POWER_DOWN) {
+					Iterator<Building> iLowPower = buildings.iterator();
+					while (iLowPower.hasNext() && (neededPower > 0D)) {
+						Building building = iLowPower.next();
+						if (!powerSurplus(building, PowerMode.FULL_POWER)) {
+							building.setPowerMode(PowerMode.POWER_DOWN);
+							neededPower -= building.getFullPowerRequired() -
+									building.getPoweredDownPowerRequired();
+						}
 					}
 				}
-			}
-	
-			// If power needs are still not met, turn off the power to each
-			// uninhabitable building until required power reduction is met.
-			if (neededPower > 0D) {
-				Iterator<Building> iNoPower = buildings.iterator();
-				while (iNoPower.hasNext() && (neededPower > 0D)) {
-					Building building = iNoPower.next();
-					if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
-							// turn off the power to each uninhabitable building
-							!(building.hasFunction(BuildingFunction.LIFE_SUPPORT))) {
-						building.setPowerMode(PowerMode.NO_POWER);
-						neededPower -= building.getPoweredDownPowerRequired();
+		
+				// If power needs are still not met, turn off the power to each
+				// uninhabitable building until required power reduction is met.
+				if (neededPower > 0D) {
+					Iterator<Building> iNoPower = buildings.iterator();
+					while (iNoPower.hasNext() && (neededPower > 0D)) {
+						Building building = iNoPower.next();
+						if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
+								// turn off the power to each uninhabitable building
+								!(building.hasFunction(BuildingFunction.LIFE_SUPPORT))) {
+							building.setPowerMode(PowerMode.NO_POWER);
+							neededPower -= building.getPoweredDownPowerRequired();
+						}
 					}
 				}
-			}
-	
-			// If power needs are still not met, turn off the power to each inhabitable building
-			// until required power reduction is met.
-			if (neededPower > 0D) {
-				Iterator<Building> iNoPower = buildings.iterator();
-				while (iNoPower.hasNext() && (neededPower > 0D)) {
-					Building building = iNoPower.next();
-					if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
-							// turn off the power to each inhabitable building
-							building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-						building.setPowerMode(PowerMode.NO_POWER);
-						neededPower -= building.getPoweredDownPowerRequired();
+		
+				// If power needs are still not met, turn off the power to each inhabitable building
+				// until required power reduction is met.
+				if (neededPower > 0D) {
+					Iterator<Building> iNoPower = buildings.iterator();
+					while (iNoPower.hasNext() && (neededPower > 0D)) {
+						Building building = iNoPower.next();
+						if (!powerSurplus(building, PowerMode.POWER_DOWN) &&
+								// turn off the power to each inhabitable building
+								building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+							building.setPowerMode(PowerMode.NO_POWER);
+							neededPower -= building.getPoweredDownPowerRequired();
+						}
 					}
 				}
 			}
 		}
 	}
+	
 	/**
 	 * Updates the total power generated in the grid.
 	 * @throws BuildingException if error determining total power generated.
@@ -481,18 +496,13 @@ implements Serializable {
 				}
 				else { // remainingCapacity >= energyToStore
 					;
-				}
-				
+				}				
 				// the excessEnergy will be split into many chunks and stored at an array of batteries across the settlement
 				excessEnergy = excessEnergy - energyToStore;
-
 				// TODO: calculate how much power can be rejected via radiators 
 				// raise settlement temperature (or capture the excess power as heat)
 				// or turn down some modules in the power plant to conserve resources
-				
 				storage.setEnergyStored(storage.getEnergyStored() + energyToStore);
-				
-
 /*		
 				if (totalEnergyStored + energyToStore < energyStorageCapacity)
 					totalEnergyStored = totalEnergyStored + energyToStore;
@@ -509,36 +519,71 @@ implements Serializable {
 	}
 
 	/**
-	 * Retrieves stored power for the grid.
-	 * @param neededPower the power needed (kW hr).
-	 * @return stored power retrieved (kW hr).
-	 * @throws BuildingException if error retrieving power.
+	 * Retrieves stored energy for the grid.
+	 * @return stored energy retrieved (kW hr).
 	 */
-	private double retrieveStoredPower() {//double neededPower) {
-		double retrievedPower = 0;
+	private double computeStoredEnergy() {
+		double available = 0;
 		//BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_STORAGE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
 			if (storage.getEnergyStored() > 0)
-				retrievedPower = retrievedPower + storage.getEnergyStored();
+				available = available + storage.getEnergyStored();
 		}
-		return retrievedPower;
 		
+		return available;
+	}
+
+	/**
+	 * Retrieves stored energy for the grid.
+	 * @param needed the energy needed (kW hr).
+	 * @return energy retrieved (kW hr).
+	 */
+	// 2016-11-13 Added retrieveStoredEnergy()
+	private double retrieveStoredEnergy(double needed) {
+		double retrieved = 0;
+		List<Building> list = manager.getBuildings(BuildingFunction.POWER_STORAGE);
+		for (Building b : list) {
+			PowerStorage storage = (PowerStorage) b.getFunction(BuildingFunction.POWER_STORAGE);		
 /*		
 			if ((storage.getPowerStored() > 0D) && (neededPower > 0D)) {
 				double retrievedPower = neededPower;
-				if (storage.getPowerStored() < retrievedPower) retrievedPower = storage.getPowerStored();
+				if (storage.getPowerStored() < retrievedPower) 
+					retrievedPower = storage.getPowerStored();
 				storage.setPowerStored(storage.getPowerStored() - retrievedPower);
 				neededPower -= retrievedPower;
 			}
 		}
-		return neededPower;
-*/		
-		
-	}
+*/
+			if (needed <= 0) {
+				return retrieved;
+			}
 
+			else if (storage.getEnergyStored() > 0) {
+				// Check how much energy available
+				double available = storage.getEnergyStored();				
+				double newAmount = 0;
+
+				if (needed <= available) {
+					newAmount = available - needed;
+					needed = 0;
+				}
+
+				else { // if (needed > available)
+					newAmount = 0;
+					needed = needed - available;
+				}
+
+				retrieved = retrieved + newAmount;
+				storage.setEnergyStored(newAmount);
+			}
+		}
+
+		return retrieved;
+	}
+	
 	/**
 	 * Gets the value of electrical power at the settlement.
 	 * @return value of power (VP per kw h).
@@ -568,5 +613,6 @@ implements Serializable {
 	public void destroy() {
 		powerMode = null;
 		settlement = null;
+		manager = null;
 	}
 }
