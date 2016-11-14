@@ -86,4 +86,4 @@
   	<landmark approvaldate="N/A" diameter="0.1" latitude="68.22 N" longitude="125.7 W" name="Phoenix Mars Lander" origin="N/A" type="AO"/>
   	<landmark approvaldate="N/A" diameter="0.1" latitude="22.5 N" longitude="48.0 W" name="Viking Lander 1" origin="N/A" type="AO"/>
   	<landmark approvaldate="N/A" diameter="0.1" latitude="47.9 N" longitude="133.7 E" name="Viking Lander 2" origin="N/A" type="AO"/>
-  </landmark-list>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="0.2 N" longitude="357.5 E" name="Schiaparelli EDM Lander" origin="N/A" type="AO"/>  </landmark-list>
