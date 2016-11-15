@@ -175,9 +175,7 @@ implements Serializable {
 				ct = selectNewCrop();
 		} else {
 			// select the CropType currently in the user queue
-			Iterator<CropType> i = cropTypes.iterator();
-			while (i.hasNext()) {
-				CropType c = i.next();
+			for (CropType c : cropTypes) {
 				if (c.getName() == cropInQueue)
 					ct = c;
 			}
@@ -520,9 +518,8 @@ implements Serializable {
         // Supply is total farming area (m^2) of all farming buildings at settlement.
         double supply = 0D;
         boolean removedBuilding = false;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
+        List<Building> buildings = settlement.getBuildingManager().getBuildings(FUNCTION);
+        for (Building building : buildings) {
             if (!newBuilding && building.getBuildingType().equalsIgnoreCase(buildingName) && !removedBuilding) {
                 removedBuilding = true;
             }
@@ -557,12 +554,10 @@ implements Serializable {
         CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
         double totalFoodPerSolPerArea = 0D;
         List<CropType> cropList = cropConfig.getCropList();
-        Iterator<CropType> i = cropList.iterator();
-        while (i.hasNext()) {
-            CropType cropType = i.next();
+        for (CropType c : cropList)
             // Crop type average edible biomass (kg) per Sol.
-            totalFoodPerSolPerArea += cropType.getEdibleBiomass() / 1000D;
-        }
+            totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
+        
         double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropList.size();
         
         return neededFoodPerSol / producedFoodPerSolPerArea;
@@ -582,9 +577,10 @@ implements Serializable {
      */
     public boolean requiresWork() {
         boolean result = false;
-        Iterator<Crop> i = crops.iterator();
-        while (i.hasNext()) {
-            if (i.next().requiresWork()) result = true;
+        for (Crop c : crops)  {
+            if (c.requiresWork()) {
+            	return true;
+            }
         }
         return result;
     }
@@ -617,11 +613,9 @@ implements Serializable {
         Crop result = null;
 
         List<Crop> needyCrops = new ArrayList<Crop>(crops.size());
-        Iterator<Crop> i = crops.iterator();
-        while (i.hasNext()) {
-            Crop crop = i.next();
-            if (crop.requiresWork()) {
-                needyCrops.add(crop);
+        for (Crop c : crops) {
+            if (c.requiresWork()) {
+                needyCrops.add(c);
             }
         }
 
@@ -698,13 +692,11 @@ implements Serializable {
 		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 	    // check for the passing of each day
 	    int solElapsed = marsClock.getSolElapsedFromStart();
-	    if ( solElapsed != solCache) {
+	    if (solElapsed != solCache) {
 			solCache = solElapsed;
 			// 2016-10-12 reset cumulativeDailyPAR
-			Iterator<Crop> i = crops.iterator();
-			while (i.hasNext()) {
-				i.next().resetPAR();
-			}
+			for (Crop c : crops)
+				c.resetPAR();
 		}
 
         // Determine the production level.
@@ -800,17 +792,17 @@ implements Serializable {
         // Power (kW) required for normal operations.
         double powerRequired = 0D;
 
-        Iterator<Crop> i = crops.iterator();
-        while (i.hasNext()) {
-            Crop crop = i.next();
+        for (Crop crop : crops) {
             if (crop.getPhaseType() == PhaseType.PLANTING || crop.getPhaseType() == PhaseType.INCUBATION)
             	powerRequired += powerGrowingCrop/2D; // half power is needed for illumination and crop monitoring
             else if (crop.getPhaseType() == PhaseType.HARVESTING || crop.getPhaseType() == PhaseType.FINISHED)
             	powerRequired += powerGrowingCrop/5D;
-            else //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
-            	powerRequired += powerGrowingCrop + crop.getLightingPower();
+            //else //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
+            //	powerRequired += powerGrowingCrop + crop.getLightingPower();
         }
-
+        
+        powerRequired += getTotalLightingPower();
+        
         // TODO: add separate auxiliary power for subsystem, not just lighting power
 
         return powerRequired;
@@ -823,11 +815,8 @@ implements Serializable {
     public double getTotalLightingPower() {
         double powerRequired = 0D;
 
-        Iterator<Crop> i = crops.iterator();
-        while (i.hasNext()) {
-            Crop crop = i.next();
-            powerRequired += crop.getLightingPower();
-        }
+		for (Crop c : crops)
+            powerRequired += c.getLightingPower();
 
         return powerRequired;
     }
@@ -843,9 +832,7 @@ implements Serializable {
         double powerRequired = 0D;
 
         // Add power required to sustain growing or harvest-ready crops.
-        Iterator<Crop> i = crops.iterator();
-        while (i.hasNext()) {
-            Crop crop = i.next();
+        for (Crop crop : crops) {
             if ((crop.getPhaseNum() > 2 && crop.getPhaseNum() < crop.getPhases().size() - 1)
             		|| crop.getPhaseNum() == 2)
 				powerRequired += powerSustainingCrop;
@@ -884,11 +871,8 @@ implements Serializable {
 
         // Add max harvest for each crop.
         double totalMaxHarvest = 0D;
-        Iterator<Crop> i = crops.iterator();
-        while (i.hasNext()) {
-            Crop crop = i.next();
+        for (Crop crop : crops)
             totalMaxHarvest += crop.getMaxHarvest();
-        }
             
         return totalMaxHarvest * getAverageGrowingCyclesPerOrbit(); // 40 kg * 668 sols / 50
     }
