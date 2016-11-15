@@ -367,7 +367,19 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>ikonli-fontawesome-pack</artifactId>
 		    <version>1.8.0</version>
 		</dependency>   					
-<!-- for enzo's funmenu -->
+		<dependency>
+			<groupId>org.fxmisc.cssfx</groupId>
+			<artifactId>cssfx</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!-- https://github.com/TomasMikula/WellBehavedFX
+			 https://mvnrepository.com/artifact/org.fxmisc.wellbehaved/wellbehavedfx -->
+		<dependency>
+			<groupId>org.fxmisc.wellbehaved</groupId>
+			<artifactId>wellbehavedfx</artifactId>
+			<version>0.3</version>
+		</dependency>
+	
 	</dependencies>
 	<repositories>
 		<repository>

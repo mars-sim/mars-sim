@@ -31,6 +31,8 @@ import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
 import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
+import org.fxmisc.wellbehaved.event.InputMap;
+import org.fxmisc.wellbehaved.event.Nodes;
 
 import com.sun.management.OperatingSystemMXBean;
 
@@ -39,6 +41,7 @@ import de.codecentric.centerdevice.MenuToolkit;
 import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -166,11 +169,20 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.resupply.TransportWizard;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
+import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementTransparentPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
+import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
+
+
+import static javafx.scene.input.KeyCode.*;
+import static javafx.scene.input.KeyEvent.*;
+import static org.fxmisc.wellbehaved.event.EventPattern.*;
+import static org.fxmisc.wellbehaved.event.InputHandler.Result.*;
+import static org.fxmisc.wellbehaved.event.InputMap.*;
 
 import org.reactfx.util.FxTimer;
 import org.reactfx.util.Timer;
@@ -444,6 +456,32 @@ public class MainScene {
 	}
 
 	/**
+	 * Setup key events using wellbehavedfx
+	 */
+	// 2016-11-14 Setup key events using wellbehavedfx
+	public void setupKeyEvent() {
+		InputMap<KeyEvent> f2 = consume(keyPressed(F2), e -> {
+			if (desktop.isToolWindowOpen(SearchWindow.NAME))
+				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(SearchWindow.NAME));
+			else {
+				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				SwingUtilities.invokeLater(() -> desktop.openToolWindow(SearchWindow.NAME));
+			}
+		});
+	    Nodes.addInputMap(desktopPane, f2);
+	    
+		InputMap<KeyEvent> f3 = consume(keyPressed(F3), e -> {
+			if (desktop.isToolWindowOpen(TimeWindow.NAME))
+				SwingUtilities.invokeLater(() ->desktop.closeToolWindow(TimeWindow.NAME));
+			else {
+				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				SwingUtilities.invokeLater(() ->desktop.openToolWindow(TimeWindow.NAME));
+			}
+		});
+	    Nodes.addInputMap(desktopPane, f3);
+	}
+    
+	/**
 	 * initializes the scene
 	 *
 	 * @return Scene
@@ -469,6 +507,8 @@ public class MainScene {
 		desktopPane = new StackPane();
 		swingNode = new SwingNode();
 		
+		setupKeyEvent();
+
 		createSwingNode();
 		desktopPane.getChildren().add(swingNode);
 		desktopPane.setMinHeight(sceneHeight.get());
@@ -2353,12 +2393,6 @@ public class MainScene {
 		quote = null;
 		messagePopup = null;		
 		topFlapBar = null;	
-	    //navMenuItem = null;
-	    //mapMenuItem = null;
-	    //missionMenuItem = null;
-	    //monitorMenuItem = null;
-	    //searchMenuItem = null;
-	    //eventsMenuItem = null;
 	    timeStamp = null;
 	    memUsedText = null;
 		memBtn = null;

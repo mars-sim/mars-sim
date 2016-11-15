@@ -637,7 +637,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
-					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
+					//mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
 					
 				}
 
@@ -709,7 +709,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		if (mainScene != null) {
 			//System.out.println(toolName + " is running closeToolWindow().");
 			Platform.runLater(() -> {
-
+/*
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
 				}
@@ -722,7 +722,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
 				}
 				
-/*
+
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(false);
 				}

@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -136,7 +137,16 @@ public abstract class UnitWindow extends JInternalFrame {
         
         JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
         nameLabel.setOpaque(true);
-        Font font = new Font("DIALOG", Font.BOLD, 9);
+        
+        Font font = null;
+        
+		if (MainScene.OS.contains("linux")) {   
+			new Font("DIALOG", Font.BOLD, 9);
+		}
+		else {
+			new Font("DIALOG", Font.BOLD, 10);
+		}
+        
         nameLabel.setFont(font);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -251,7 +261,7 @@ public abstract class UnitWindow extends JInternalFrame {
                 rowPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
                 
                 
-            	statueUpdate();
+            	statusUpdate();
             }
         }
 
@@ -305,7 +315,7 @@ public abstract class UnitWindow extends JInternalFrame {
         }
     }
     
-    public void statueUpdate() {   
+    public void statusUpdate() {   
         	
     	Person p = (Person) unit;
    	
@@ -402,7 +412,7 @@ public abstract class UnitWindow extends JInternalFrame {
         }
         
         if (unit instanceof Person) {
-        	statueUpdate();
+        	statusUpdate();
         }
     }
 

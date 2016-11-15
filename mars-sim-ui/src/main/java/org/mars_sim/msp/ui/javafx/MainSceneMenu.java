@@ -132,8 +132,8 @@ public class MainSceneMenu extends MenuBar  {
         Menu menuTools = new Menu("Tools");
 
         // 2015-06-05 Switched to using method createMenuItem()
-        marsNavigatorItem = createMenuItem("Mars Navigator", NavigatorWindow.NAME);
-        marsNavigatorItem.setAccelerator(new KeyCodeCombination(KeyCode.F1));
+        //marsNavigatorItem = createMenuItem("Mars Navigator", NavigatorWindow.NAME);
+        //marsNavigatorItem.setAccelerator(new KeyCodeCombination(KeyCode.F1));
 
         searchToolItem = createMenuItem("Search Tool", SearchWindow.NAME);
         searchToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F2));
