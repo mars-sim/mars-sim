@@ -280,12 +280,13 @@ extends TabPanel {
 				label1.setPadding(new Insets(5, 5, 5, 5));
 				label1.setFont(Font.font("Cambria", FontWeight.NORMAL, 16));
 		
-				Tooltip i3 = new Tooltip("OCC Model by Ortony, Clore, & Collins, 1988 ");
+				Tooltip i3 = new Tooltip("also known as Five Factor Model (FFM)");
+				// Note: OCC Model is for emotion synthesis, by Ortony, Clore, & Collins, 1988
 
 				label1.setTooltip(i3);
 				setTT(label1, i3);
 			
-				JFXTextField tf1 = new JFXTextField("OCEAN");
+				JFXTextField tf1 = new JFXTextField("O.C.E.A.N.");
 				tf1.setFont(Font.font("Cambria", FontWeight.NORMAL, 16));
 				tf1.setAlignment(Pos.TOP_LEFT);
 				tf1.setEditable(false);

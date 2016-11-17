@@ -102,8 +102,10 @@ extends TabPanel {
 		//infoPanel.add(mainDishLabel);
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField mainDishTF = new JTextField(Conversion.capitalize(mainDish));
-		mainDishTF.setEditable(false);
+		mainDishTF.setEditable(true);
 		mainDishTF.setColumns(17);
+		mainDishTF.requestFocus();
+		mainDishTF.setCaretPosition(0);
 		wrapper1.add(mainDishTF);
 		infoPanel.add(wrapper1);
 
@@ -117,8 +119,10 @@ extends TabPanel {
 		//infoPanel.add(sideDishLabel);
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField sideDishTF = new JTextField(Conversion.capitalize(sideDish));
-		sideDishTF.setEditable(false);
+		sideDishTF.setEditable(true);
 		sideDishTF.setColumns(17);
+		sideDishTF.requestFocus();
+		sideDishTF.setCaretPosition(0);
 		wrapper2.add(sideDishTF);
 		infoPanel.add(wrapper2);
 
@@ -132,8 +136,10 @@ extends TabPanel {
 		//infoPanel.add(dessertLabel);
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField dessertTF = new JTextField(Conversion.capitalize(dessert));
-		dessertTF.setEditable(false);
+		dessertTF.setEditable(true);
 		dessertTF.setColumns(17);
+		dessertTF.requestFocus();
+		dessertTF.setCaretPosition(0);
 		wrapper3.add(dessertTF);
 		infoPanel.add(wrapper3);
 
@@ -147,6 +153,8 @@ extends TabPanel {
 		JTextField activityTF = new JTextField(Conversion.capitalize(activity));
 		activityTF.setEditable(false);
 		activityTF.setColumns(15);
+		activityTF.requestFocus();
+		activityTF.setCaretPosition(0);
 		wrapper4.add(activityTF);
 		infoPanel.add(wrapper4);
 

@@ -15,6 +15,7 @@ import java.awt.MenuComponent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JInternalFrame;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
@@ -89,8 +90,16 @@ public abstract class ModalInternalFrame extends JInternalFrame {
                     if (event instanceof MouseEvent) {
                         MouseEvent e = (MouseEvent) event;
                         MouseEvent m = SwingUtilities.convertMouseEvent((Component) e.getSource(), e, this);
-                        if (!this.contains(m.getPoint()) && (e.getID() != MouseEvent.MOUSE_DRAGGED)) {
-                            dispatch = false;
+                        //if (!this.contains(m.getPoint()) && (e.getID() != MouseEvent.MOUSE_DRAGGED)) {
+                        //    dispatch = false;
+                        //}
+                        // 2016-11-15 Implemented this bug fix posted in https://community.oracle.com/thread/1358431?start=0&tstart=0
+                        // 
+                        if (!this.contains(m.getPoint()) 
+                        	&& e.getID() != MouseEvent.MOUSE_DRAGGED 
+                        	&& !e.getSource().getClass().getName().equals("javax.swing.Popup$HeavyWeightWindow") 
+                        	&& e.getID() != MouseEvent.MOUSE_RELEASED) {
+                        	    dispatch = false;
                         }
                     }
 
@@ -99,6 +108,13 @@ public abstract class ModalInternalFrame extends JInternalFrame {
                             ((ActiveEvent) event).dispatch();
                         } 
                         else if (source instanceof Component) {
+                        	// 2016-11-15 Attempting to give a text field correct focus for linux
+                        	if (source instanceof JTextField) {
+                        		System.out.println("It's a text field.");
+                        		((JTextField) source).setEditable(true);
+                        		((JTextField) source).requestFocusInWindow();
+                        	}
+                        	
                             ((Component) source).dispatchEvent(event);
                         } 
                         else if (source instanceof MenuComponent) {

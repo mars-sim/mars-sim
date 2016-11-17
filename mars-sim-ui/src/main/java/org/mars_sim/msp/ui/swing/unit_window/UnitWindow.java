@@ -72,10 +72,10 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final String ROLE = Msg.getString("icon.role");
 	private static final String SHIFT = Msg.getString("icon.shift");
 	
-	private String oldRoleString = null, 
-					oldJobString = null,
-					oldTownString = null,
-					oldShiftString = null;
+	private String oldRoleString = "", 
+					oldJobString = "",
+					oldTownString = "",
+					oldShiftString = "";
 	private JLabel townLabel;
     private JLabel jobLabel;
     private JLabel roleLabel;
@@ -141,7 +141,7 @@ public abstract class UnitWindow extends JInternalFrame {
         Font font = null;
         
 		if (MainScene.OS.contains("linux")) {   
-			new Font("DIALOG", Font.BOLD, 9);
+			new Font("DIALOG", Font.BOLD, 8);
 		}
 		else {
 			new Font("DIALOG", Font.BOLD, 10);
@@ -181,58 +181,27 @@ public abstract class UnitWindow extends JInternalFrame {
             	
             	JLabel shiftIconLabel = new JLabel();
             	shiftIconLabel.setToolTipText("Work Shift");
-            	setImage(SHIFT, shiftIconLabel);
-            	
-            	//createImageIcon("/icons/city_32.png", null));
-            	//SwingUtilities.invokeLater(new Runnable() { 
-            	//	   public void run() {
-            		      //JLabel myLabel = new JLabel("Old Text");
-            	//		   iconLabel.setIcon(new ImageIcon("image.png"));
-            	//	   }
-            	//});          	
+            	setImage(SHIFT, shiftIconLabel);          	
             	
             	JPanel townPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             	JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             	JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
             	JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
-    
-            	Person p = (Person) unit;
-               	
-            	String townString = Conversion.capitalize(unit.getDescription());
-                if (townString.length() > 15)
-                	townString = townString.substring(0, 15);
-             	townLabel = new JLabel(townString);// , JLabel.CENTER);
+              	          	
+            	townLabel = new JLabel();
              	townLabel.setFont(font);
-             	oldTownString = townString;
-  
-                String jobString = p.getMind().getJob().getName(p.getGender());
-                jobLabel = new JLabel(jobString);// , JLabel.CENTER);
+            	
+             	jobLabel = new JLabel();
                 jobLabel.setFont(font);
-                oldJobString = jobString;
                 
-                String roleString = p.getRole().getType().getName();
-                int l = roleString.length();
-                if (l >= 15) {
-	                if (roleString.substring(0, 15).equals("Chief of Safety")
-	                	|| roleString.substring(0, 15).equals("Chief of Supply"))
-	                	roleString = roleString.substring(0, 15);              
-	                else if (l >= 16 && roleString.substring(0, 16).equals("Chief of Mission"))
-	                	roleString = "Chief of Mission";
-	                else if (l >= 18 && roleString.substring(0, 18).equals("Chief of Logistics"))
-                    	roleString = "Chief of Logistics";
-                }
-                oldRoleString = roleString;
-                //else if (roleString.length() > 22) 
-                //	roleString = roleString.substring(0, 22);
-                roleLabel = new JLabel(roleString);// , JLabel.CENTER);
+                roleLabel = new JLabel();
                 roleLabel.setFont(font);
                 
-                String shiftString = p.getTaskSchedule().getShiftType().getName();
-                shiftLabel = new JLabel(shiftString);// , JLabel.CENTER);
+                shiftLabel = new JLabel();
                 shiftLabel.setFont(font);
-                oldShiftString = shiftString;
-
                 
+            	statusUpdate();
+            	
                 townPanel.add(townIconLabel);
                 townPanel.add(townLabel);
                 townPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -258,10 +227,9 @@ public abstract class UnitWindow extends JInternalFrame {
             	rowPanel.add(jobPanel);//, FlowLayout.LEFT);
             	
                 namePanel.add(rowPanel);
-                rowPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+                rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
                 
-                
-            	statusUpdate();
+
             }
         }
 
@@ -343,14 +311,14 @@ public abstract class UnitWindow extends JInternalFrame {
         if (!oldRoleString.equals(roleString)) {
             int l = roleString.length();
             if (l >= 15) {
-		        if (roleString.substring(0, 15).equals("Chief of Safety")
-		            || roleString.substring(0, 15).equals("Chief of Supply"))
-		            roleString = roleString.substring(0, 15);
-                else if (l >= 16 && roleString.substring(0, 16).equals("Chief of Mission"))
+                if (roleString.contains("Chief of Safety")
+                	|| roleString.contains("Chief of Supply"))
+                	roleString = roleString.substring(0, 15);              
+                else if (l >= 16 && roleString.contains("Chief of Mission"))
                 	roleString = "Chief of Mission";
-                else if (l >= 18 && roleString.substring(0, 18).equals("Chief of Logistics"))
+                else if (l >= 18 && roleString.contains("Chief of Logistics"))
                 	roleString = "Chief of Logistics";
-           }
+            }
            	oldRoleString = roleString;
 	        roleLabel.setText(roleString);
         }

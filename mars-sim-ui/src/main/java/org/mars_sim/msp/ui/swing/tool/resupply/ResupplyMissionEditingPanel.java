@@ -257,6 +257,8 @@ extends TransportItemEditingPanel {
 		solsTF.setText(Integer.toString(solsDiff));
 		solsTF.setHorizontalAlignment(JTextField.RIGHT);
 		solsTF.setEnabled(false);
+		solsTF.setEditable(true);
+		
 		timeUntilArrivalPane.add(solsTF);
 		// 2016-01-15 Implemented addChangeListener() to validate solsTF.
 		addChangeListener(solsTF, e -> validateSolsTF());
@@ -369,6 +371,7 @@ extends TransportItemEditingPanel {
 	private void setEnableTimeUntilArrivalPane(boolean enable) {
 		timeUntilArrivalLabel.setEnabled(enable);
 		solsTF.setEnabled(enable);
+		solsTF.setEditable(true);
 		solInfoLabel.setEnabled(enable);
 	}
 
@@ -877,7 +880,8 @@ extends TransportItemEditingPanel {
 	public MarsClock validateSolsTF() { //String timeArrivalString) {
 		//System.out.println("running validateSolsTF()");
 		errorString = null;
-	
+		solsTF.setEditable(true);
+		
 		String timeArrivalString = solsTF.getText().trim();
 		if (timeArrivalString.isEmpty()) {
 			validation_result = false;

@@ -200,6 +200,9 @@ public class BrowserJFX {
         btnGo.addActionListener(al);
         urlTF.addActionListener(al);			
         
+        urlTF.setEditable(true);
+        urlTF.requestFocusInWindow();
+        
         progressBar.setPreferredSize(new Dimension(150, 18));
         progressBar.setStringPainted(true);
 
