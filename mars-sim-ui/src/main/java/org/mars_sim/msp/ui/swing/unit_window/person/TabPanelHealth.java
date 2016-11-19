@@ -212,7 +212,7 @@ extends TabPanel {
         //	radiationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(radiationTable);
+		TableStyle.setTableStyle(radiationTable);
 
 		// Prepare table panel.
 		JPanel tablePanel = new JPanel(new GridLayout(2, 1));
@@ -246,7 +246,7 @@ extends TabPanel {
         //	medicationTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(medicationTable);
+		TableStyle.setTableStyle(medicationTable);
 
 		// Prepare health problem panel
 		JPanel healthProblemPanel = new JPanel(new BorderLayout());

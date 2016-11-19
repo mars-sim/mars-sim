@@ -247,7 +247,7 @@ extends TabPanel {
         //	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(table);
+		TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);
 

@@ -257,6 +257,7 @@ public class AudioPlayer {
 	
 	/**
 	 * Checks if the audio player is muted.
+	 * @param is it a sound effect 
 	 * @return true if muted.
 	 */
 	public boolean isMute(boolean isSoundEffect) {

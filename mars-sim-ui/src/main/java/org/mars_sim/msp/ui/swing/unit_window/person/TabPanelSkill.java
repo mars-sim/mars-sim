@@ -193,20 +193,20 @@ extends TabPanel {
 
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 1) dataType = String.class;
-			if (columnIndex == 0) dataType = Integer.class;
+			if (columnIndex == 0) dataType = String.class;
+			if (columnIndex == 1) dataType = Integer.class;
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 1) return Msg.getString("TabPanelSkill.column.skill"); //$NON-NLS-1$
-			else if (columnIndex == 0) return Msg.getString("TabPanelSkill.column.level"); //$NON-NLS-1$
+			if (columnIndex == 0) return Msg.getString("TabPanelSkill.column.skill"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelSkill.column.level"); //$NON-NLS-1$
 			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (column == 1) return skillNames.get(row);
-			else if (column == 0) return skills.get(skillNames.get(row));
+			if (column == 0) return skillNames.get(row);
+			else if (column == 1) return skills.get(skillNames.get(row));
 			else return null;
 		}
 

@@ -228,6 +228,7 @@ public class MainScene {
 	private int memFree;
 	private int processCpuLoad;
 
+	private boolean isMuteCache;
 	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	public static boolean menuBarVisible = false;
@@ -1856,7 +1857,10 @@ public class MainScene {
 	/**
 	 * Pauses the marquee timer and pauses the simulation.
 	 */
-	public void pauseSimulation() {	
+	public void pauseSimulation() {
+		isMuteCache = desktop.getSoundPlayer().isMute(false);
+		if (!isMuteCache)
+			desktop.getSoundPlayer().setMute(true);
 		desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 		masterClock.setPaused(true);
 	}
@@ -1865,8 +1869,10 @@ public class MainScene {
 	 * Unpauses the marquee timer and unpauses the simulation.
 	 */
 	public void unpauseSimulation() {	
-		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 		masterClock.setPaused(false);
+		desktop.getMarqueeTicker().pauseMarqueeTimer(false);
+		if (!isMuteCache)
+			desktop.getSoundPlayer().setMute(false);
 	}
 
 	public boolean startPause() {

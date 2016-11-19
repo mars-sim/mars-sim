@@ -132,7 +132,7 @@ extends TabPanel {
 	    //	studyTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 	    //}
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(studyTable);
+		TableStyle.setTableStyle(studyTable);
 
 		// Create the button panel.
 		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -197,7 +197,7 @@ extends TabPanel {
 		achievementTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// 2015-06-08 Added setTableStyle()
-		//TableStyle.setTableStyle(achievementTable);
+		TableStyle.setTableStyle(achievementTable);
 
 
 	}
