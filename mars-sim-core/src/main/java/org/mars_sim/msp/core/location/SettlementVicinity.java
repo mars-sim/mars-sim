@@ -31,7 +31,7 @@ public class SettlementVicinity implements LocationState, Serializable {
 	public LocationStateType getType() {
 		return LocationStateType.SETTLEMENT_VICINITY;
 	}
-	
+/*	
 	public void leaveBuilding() {
 		unit.setLocationState(unit.getSettlementVicinity());
 	}
@@ -82,5 +82,5 @@ public class SettlementVicinity implements LocationState, Serializable {
 	public void transferFromVehicleToPerson() {
 		unit.setLocationState(unit.getOnAPerson());
 	}
-
+*/
 }

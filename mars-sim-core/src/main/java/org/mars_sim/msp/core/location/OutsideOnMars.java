@@ -27,7 +27,7 @@ public class OutsideOnMars implements LocationState, Serializable {
 	public LocationStateType getType() {
 		return LocationStateType.OUTSIDE_ON_MARS;
 	}
-	
+/*	
 	public void leaveBuilding() {
 		unit.setLocationState(unit.getSettlementVicinity());
 	}
@@ -78,4 +78,5 @@ public class OutsideOnMars implements LocationState, Serializable {
 	public void transferFromVehicleToPerson() {
 		unit.setLocationState(unit.getOnAPerson());
 	}
+*/	
 }

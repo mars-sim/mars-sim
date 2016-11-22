@@ -73,48 +73,18 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
             Settlement s = person.getParkedSettlement();
 
             // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
-            Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
+            Collection<Person> attendees = null; 
                  	      	              
-            pool.addAll(p_talking_all); 
+            pool.addAll(attendees); 
             
             // pool doesn't include this person
             pool.remove((Person)person);
             
             int num = pool.size();
-        	// check if someone is idling somewhere and ready for a chat 
-            if (num > 0) {         
-            	// Note: having people who are already chatting will increase the probability of having this person to join
-                double rand = RandomUtil.getRandomDouble(num) + 1;
-                result = rand*result;
-            }
-            else {
-            	result = 0; // if there is no one else in the settlement, set result to 0
-            	return 0;
-            }
-            // get a list of "idle" people
-            Collection<Person> p_idle_all = s.getChattingPeople(person, true, false, true);  
-            
-            pool.clear();
-        	pool.addAll(p_idle_all);
-        	         
-        	// Note: having idling people will somewhat increase the chance of starting conversations,
-        	// though at a low probability 
-        	if (pool.size() > 0) {
-                num = pool.size();
-
-                if (num == 1) {
-            		double rand = RandomUtil.getRandomDouble(.3);
-                	result = result + rand*result;
-                }
-                else {
-            		double rand = RandomUtil.getRandomDouble(.3*(num+1));
-                	result = result + rand*result;
-                }
-        	}
-
  
         	if (result > 0) {
-	            // Check if there is a local dining building.
+	            // Check if there is a building big enough to hold the meeting.
+        		// Use Lounge by default (max : 33)
 	            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
 	            if (diningBuilding != null) {
 	            	// Walk to that building.
@@ -134,16 +104,9 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
         	Vehicle v = (Vehicle) person.getContainerUnit();
         	// get the number of people maintaining or repairing this vehicle
         	Collection<Person> affected = v.getAffectedPeople();       	
-            //Collection<Person> crew = ((Rover) v).getCrew();     
-            Collection<Person> talking = v.getTalkingPeople();
-            // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements
-            Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         
-            
+             
             pool.addAll(affected);
-            pool.addAll(p_talking_all);
-            //candidates.addAll(crew);          
-            pool.addAll(talking);        
-            int num = pool.size();
+             int num = pool.size();
             //System.out.println("talking folks : " + talking);
             //TODO: get some candidates to switch their tasks to HaveConversation       
             // need to have at least two people to have a social conversation
@@ -173,7 +136,6 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
         
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-
 
         if (result < 0) 
         	result = 0;

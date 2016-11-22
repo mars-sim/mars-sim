@@ -17,9 +17,9 @@ public interface LocationState {
 	
 	String getName();
 	LocationStateType getType();
-	
+/*	
 	// for a person or robot
-	public void leaveBuilding();
+	public void leavingBuilding();
 	// for a person or robot
 	public void enterBuilding();
 	// for a person or robot
@@ -46,5 +46,5 @@ public interface LocationState {
 	public void transferFromPersonToVehicle();
 	// for a resource or item
 	public void transferFromVehicleToPerson();
-
+*/
 }

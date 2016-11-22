@@ -50,7 +50,7 @@ implements Serializable {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.haveConversation"); //$NON-NLS-1$
+            "Task.description.meetTogether"); //$NON-NLS-1$
 
     /** Task phases. */
     private static final TaskPhase MEET_TOGETHER = new TaskPhase(Msg.getString(

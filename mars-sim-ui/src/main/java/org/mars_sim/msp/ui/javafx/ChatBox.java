@@ -458,6 +458,8 @@ public class ChatBox extends BorderPane {
     		
     		else {
     			
+    			the_other_party = name;
+    			
     			int rand = RandomUtil.getRandomInt(6);
 
     			if (rand == 0)

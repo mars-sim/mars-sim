@@ -30,7 +30,7 @@ public class OnAPerson implements LocationState, Serializable {
 	public OnAPerson(Unit unit) {
 		this.unit = unit;
 	}
-
+/*
 	public void leaveBuilding() {
 		unit.setLocationState(unit.getSettlementVicinity());
 	}
@@ -81,4 +81,5 @@ public class OnAPerson implements LocationState, Serializable {
 	public void transferFromVehicleToPerson() {
 		unit.setLocationState(unit.getOnAPerson());
 	}
+*/	
 }

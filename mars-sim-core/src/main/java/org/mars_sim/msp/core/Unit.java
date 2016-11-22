@@ -880,19 +880,18 @@ implements Serializable, Comparable<Unit> {
 		return name.compareToIgnoreCase(o.name);
 	}
 
-	// 2015-12-20 Added getLocationState()
-	public LocationState getLocationState() {
-		return currentState;
-	}
-
-
 	/**
 	 * Sets the current location state
 	 * @param state
-	 */
+
 	// 2015-12-21 Added setLocationState()
 	public void setLocationState(LocationState state) {
 		this.currentState = state;
+	}
+
+	// 2015-12-20 Added getLocationState()
+	public LocationState getLocationState() {
+		return currentState;
 	}
 
 	public LocationState getInsideVehicleOutsideOnMars() {
@@ -968,7 +967,8 @@ implements Serializable, Comparable<Unit> {
 	public void transferFromVehicleToPerson() {
 		currentState.transferFromVehicleToPerson();
 	}
-
+*/
+	
 	public LocationSituation getLocationSituation() {
 		return null;
 	}

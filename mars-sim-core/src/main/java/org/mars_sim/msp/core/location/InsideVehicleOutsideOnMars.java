@@ -30,7 +30,7 @@ public class InsideVehicleOutsideOnMars implements LocationState, Serializable {
 	public InsideVehicleOutsideOnMars(Unit unit) {
 		this.unit = unit;
 	}
-
+/*
 	public void leaveBuilding() {
 		//unit.setLocationState(unit.getInsideVehicle());
 	}
@@ -81,4 +81,5 @@ public class InsideVehicleOutsideOnMars implements LocationState, Serializable {
 	public void transferFromVehicleToPerson() {
 		unit.setLocationState(unit.getOnAPerson());
 	}
+*/	
 }

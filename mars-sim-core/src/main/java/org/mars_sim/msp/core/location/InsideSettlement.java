@@ -30,7 +30,7 @@ public class InsideSettlement implements LocationState, Serializable {
 	public InsideSettlement(Unit unit) {
 		this.unit = unit;
 	}
-
+/*
 	public void leaveBuilding() {
 		unit.setLocationState(unit.getSettlementVicinity());
 	}
@@ -89,5 +89,5 @@ public class InsideSettlement implements LocationState, Serializable {
 		//not possible, not inside a vehicle
 		//unit.setLocationState(unit.getOnAPerson());
 	}
-
+	 */
 }

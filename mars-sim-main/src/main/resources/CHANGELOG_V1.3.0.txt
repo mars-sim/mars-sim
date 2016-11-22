@@ -6,17 +6,22 @@ http://mars-sim.sourceforge.net/
 
 ------------------------------------------------------
 
-## v3.1.0 (build 37__) Snapshot Preview 4 - 2016-10-__
+## v3.1.0 (build 37__) Snapshot Preview 4 - 2016-11-__
 
 
 ### NEW FEATURES :
 
-1. Segregate tools into their own tabs. Add the use of tabs 
+1. Segregate a number of Tools into their own individual tab. 
 
-2. Add the ability to tweak how much fuel and life support consumable to bring for each mission via a parameter in xml.
+2. Improve the depth of personality modeling by implementing the Five Factor Model, alongside with the existing Myer-Brigg Type Indicator (MBTI). Display personality using bullet charts and gauges
 
-3. Reimplement and refine the model for absorbing the unused/excess power for charging up the backup batteries and releasing power when the power grid goes down.
+3. Add the ability to tweak how much fuel and life support consumable to bring for each mission via a parameter in xml.
 
+4. Add new battery charging/discharging model for the power grid batteries that store unused/excess power for future use.
+
+5. Add wash water rationing. Activate rationing if water stored at a settlement is less than 10% of their yearly drinking water needs.
+
+6. Replace the old swing UI elements with new JavaFX UI in Settlement Map.
 
 
 ### FIXES :
@@ -24,6 +29,13 @@ http://mars-sim.sourceforge.net/
 1. Reduce the likelihood of bots frequently moving from one building to another. 
 
 2. Remove duplicate calling of building update in each frame.
+
+3. Fix tracking the whereabout of vehicles in the Location tab in the Vehicle Window.
+
+4. Fix the electric lighting calculation for greenhouse operation.
+
+5. Fix width and height determination of the quotation popup under different screen resolution. Add a scrollbar and text autowrapping.
+
 
 
 ### IMPROVEMENTS:
@@ -38,7 +50,23 @@ http://mars-sim.sourceforge.net/
 
 5. Re-implement validation of all table cells in simulation configuration editor.
  
+6. Mute/unmute the background music when the game is paused/resume.
  
+7. Fine tune the display of the Mars Navigator.
+ 
+8. Implement the effect of choosing the settlement's objective.
+
+9. Sync up UI updates better in each frame and with better multithreading.
+ 
+10. Re-implement validation of settlements' name, population and # of bots entries in configuration editor.
+ 
+11. Re-implement validation of latitude and longitude in the configuration editor.
+ 
+12. Improve the Good value points updates. 
+
+13. Add initial supplies of black water, grey water and regolith. 
+ 
+  
 ------------------------------------------------------
 
 ## v3.1.0 (build 3743) Snapshot Preview 3 - 2016-10-13

@@ -102,8 +102,8 @@ public class Preference implements Serializable {
 	private List<String> metaTaskStringList;
 	//private List<MetaMission> metaMissionList;
 
-	private Map<MetaTask, Integer> scoreMap;
-	private Map<MetaTask, Integer> priorityMap;
+	private Map<MetaTask, Integer> scoreMap; // store preference scores
+	private Map<MetaTask, Integer> priorityMap; // store priority scores for scheduled tasks
 	private Map<MetaTask, Boolean> frequencyMap; // true if the activity can only be done once a day
 	private Map<MetaTask, Boolean> taskDueMap; // true if the activity has been accomplished
 
@@ -337,8 +337,10 @@ public class Preference implements Serializable {
 				&& (taskDueMap.get(metaTask) != null)
 				&& !taskDueMap.get(metaTask)
 				&& frequencyMap.get(metaTask)) {
+			// preference scores are not static. They are influenced by priority scores
 			result += checkScheduledTask(metaTask);
 		}
+		
 		return result;
 	}
 
