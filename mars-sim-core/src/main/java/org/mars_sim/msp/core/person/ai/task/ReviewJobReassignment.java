@@ -102,7 +102,7 @@ implements Serializable {
 	            // Iterates through each person's
 
         	    // Get highest person skill level.
-        	    Iterator<Person> i = person.getSettlement().getAllAssociatedPeople().iterator();
+        	    Iterator<Person> i = person.getParkedSettlement().getAllAssociatedPeople().iterator();
                 while (i.hasNext()) {
                     Person tempPerson = i.next();
                     List<JobAssignment> list = tempPerson.getJobHistory().getJobAssignmentList();
@@ -225,7 +225,7 @@ implements Serializable {
 
         // If person is in a settlement, try to find a building with )an office.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager buildingManager = person.getSettlement()
+            BuildingManager buildingManager = person.getParkedSettlement()
                     .getBuildingManager();
             List<Building> offices = buildingManager.getBuildings(BuildingFunction.ADMINISTRATION);
             offices = BuildingManager.getNonMalfunctioningBuildings(offices);

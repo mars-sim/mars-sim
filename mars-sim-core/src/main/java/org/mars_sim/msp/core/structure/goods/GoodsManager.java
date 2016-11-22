@@ -1401,7 +1401,7 @@ public class GoodsManager implements Serializable {
             Mission mission = i.next();
             if (mission instanceof VehicleMission) {
                 Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-                if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
+                if ((vehicle != null) && !settlement.equals(vehicle.getParkedSettlement()))
                     amount += vehicle.getInventory().getAmountResourceStored(resource, false);
             }
         }
@@ -1936,7 +1936,7 @@ public class GoodsManager implements Serializable {
             Mission mission = i.next();
             if (mission instanceof VehicleMission) {
                 Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-                if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
+                if ((vehicle != null) && !settlement.equals(vehicle.getParkedSettlement()))
                     number += vehicle.getInventory().getItemResourceNum(resource);
             }
         }
@@ -2172,7 +2172,7 @@ public class GoodsManager implements Serializable {
             Mission mission = i.next();
             if (mission instanceof VehicleMission) {
                 Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-                if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
+                if ((vehicle != null) && !settlement.equals(vehicle.getParkedSettlement()))
                     number += vehicle.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
             }
         }

@@ -24,6 +24,10 @@ public class OutsideOnMars implements LocationState, Serializable {
 		return name;
 	}
 
+	public LocationStateType getType() {
+		return LocationStateType.OUTSIDE_ON_MARS;
+	}
+	
 	public void leaveBuilding() {
 		unit.setLocationState(unit.getSettlementVicinity());
 	}
@@ -42,7 +46,7 @@ public class OutsideOnMars implements LocationState, Serializable {
 
 
 	public void embarkVehicleInVicinity() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void disembarkVehicleInVicinity() {
@@ -50,7 +54,7 @@ public class OutsideOnMars implements LocationState, Serializable {
 	}
 
 	public void embarkVehicleInGarage() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void disembarkVehicleInGarage() {
@@ -68,7 +72,7 @@ public class OutsideOnMars implements LocationState, Serializable {
 	}
 
 	public void transferFromPersonToVehicle() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void transferFromVehicleToPerson() {

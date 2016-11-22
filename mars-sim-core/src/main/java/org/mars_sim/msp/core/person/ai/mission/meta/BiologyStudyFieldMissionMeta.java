@@ -50,7 +50,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
 
             boolean go = true;
             
@@ -87,7 +87,7 @@ public class BiologyStudyFieldMissionMeta implements MetaMission {
             }
             	
             // Check if min number of EVA suits at settlement.
-            else if (!(Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) 
+            else if (!(Mission.getNumberAvailableEVASuitsAtSettlement(person.getParkedSettlement()) 
                     > BiologyStudyFieldMission.MIN_PEOPLE)) {
             	go = false;
             	return 0;

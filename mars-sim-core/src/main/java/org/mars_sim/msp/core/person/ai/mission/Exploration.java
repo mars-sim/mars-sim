@@ -106,12 +106,12 @@ implements Serializable {
                 setMissionCapacity(getRover().getCrewCapacity());
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(startingPerson
-                            .getSettlement());
+                            .getParkedSettlement());
             if (availableSuitNum < getMissionCapacity())
                 setMissionCapacity(availableSuitNum);
 
             // Initialize data members.
-            setStartingSettlement(startingPerson.getSettlement());
+            setStartingSettlement(startingPerson.getParkedSettlement());
             exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
             explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 
@@ -519,7 +519,7 @@ implements Serializable {
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getSettlement() == getStartingSettlement()) {
+                if (member.getParkedSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }
             }

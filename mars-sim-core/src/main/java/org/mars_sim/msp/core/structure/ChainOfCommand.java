@@ -124,15 +124,15 @@ public class ChainOfCommand implements Serializable {
             Job job = person.getMind().getJob();
             Role role = person.getRole();
             int pop = 0;
-            if (person.getSettlement() == null)
+            if (person.getParkedSettlement() == null)
             	System.err.print("person.getSettlement() = null");
-            else if (person.getSettlement().getAllAssociatedPeople() == null)
+            else if (person.getParkedSettlement().getAllAssociatedPeople() == null)
                	System.err.print("person.getSettlement().getAllAssociatedPeople() = null");
             else {
-            	pop = person.getSettlement().getAllAssociatedPeople().size();
+            	pop = person.getParkedSettlement().getAllAssociatedPeople().size();
             	if (pop == 0) {
             		System.err.print("person.getSettlement().getAllAssociatedPeople().size() = 0");
-            		pop = person.getSettlement().getCurrentPopulationNum();
+            		pop = person.getParkedSettlement().getCurrentPopulationNum();
             		if (pop == 0)
                 		System.err.print("person.getSettlement().getCurrentPopulationNum() = 0");
             	}
@@ -263,7 +263,7 @@ public class ChainOfCommand implements Serializable {
 */
             Job job = person.getMind().getJob();
             Role role = person.getRole();
-            int pop = person.getSettlement().getAllAssociatedPeople().size();
+            int pop = person.getParkedSettlement().getAllAssociatedPeople().size();
             int slot = (int) ((pop - 2 - 7 )/ 7);
 
             boolean allSlotsFilledOnce = areAllFilled(1);

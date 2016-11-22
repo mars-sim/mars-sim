@@ -44,7 +44,7 @@ public class CollectRegolithMeta implements MetaMission {
     	double result = 0;
     	
         // Check if min number of EVA suits at settlement.
-        if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < 
+        if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getParkedSettlement()) < 
                 CollectRegolith.MIN_PEOPLE) {
             result = 0D;
         }
@@ -65,7 +65,7 @@ public class CollectRegolithMeta implements MetaMission {
             
             else {
 	            // Factor the value of regolith at the settlement.
-	            GoodsManager manager = person.getSettlement().getGoodsManager();
+	            GoodsManager manager = person.getParkedSettlement().getGoodsManager();
 	            AmountResource regolithResource = AmountResource.findAmountResource("regolith");
 	            double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
 	            result *= value;

@@ -83,7 +83,7 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
 
                     // If settlement has manufacturing override, no new
                     // manufacturing processes can be created.
-                    else if (person.getSettlement().getManufactureOverride()) {
+                    else if (person.getParkedSettlement().getManufactureOverride()) {
                         result = 0;
                         return 0;
                     }
@@ -100,7 +100,7 @@ public class ManufactureConstructionMaterialsMeta implements MetaTask, Serializa
             Job job = person.getMind().getJob();
             if (job != null) {
                 result *= job.getStartTaskProbabilityModifier(ManufactureConstructionMaterials.class)
-                		* person.getSettlement().getGoodsManager().getManufacturingFactor();
+                		* person.getParkedSettlement().getGoodsManager().getManufacturingFactor();
             }
 
             // Modify if tinkering is the person's favorite activity.

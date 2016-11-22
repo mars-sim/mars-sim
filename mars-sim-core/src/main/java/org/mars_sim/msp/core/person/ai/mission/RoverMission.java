@@ -281,14 +281,14 @@ extends VehicleMission {
 		
 		else {
 				
-			Settlement settlement = getVehicle().getSettlement();
+			Settlement settlement = getVehicle().getParkedSettlement();
 			if (settlement == null)
 				throw new IllegalStateException(Msg.getString("RoverMission.log.notAtSettlement",getPhase().getName())); //$NON-NLS-1$
 	
 			// Add the rover to a garage if possible.
 			if (BuildingManager.getBuilding(getVehicle()) == null) {
 				BuildingManager.addToRandomBuilding((Rover) getVehicle(),
-						getVehicle().getSettlement());
+						getVehicle().getParkedSettlement());
 			}
 	
 			// Load vehicle if not fully loaded.
@@ -413,7 +413,7 @@ extends VehicleMission {
 		VehicleMaintenance garage = null;
 
 		// If rover is not parked at settlement, park it.
-		if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
+		if ((getVehicle() != null) && (getVehicle().getParkedSettlement() == null)) {
 			disembarkSettlement.getInventory().storeUnit(getVehicle());
 			getVehicle().determinedSettlementParkedLocationAndFacing();
 
@@ -796,7 +796,7 @@ extends VehicleMission {
 		while (i.hasNext()) {
 			MissionMember member = i.next();
 			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			    member.setAssociatedSettlement(member.getSettlement());
+			    member.setAssociatedSettlement(member.getParkedSettlement());
 			}
 		}
 

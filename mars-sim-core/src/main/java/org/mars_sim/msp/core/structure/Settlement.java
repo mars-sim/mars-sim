@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.Weather;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -1242,7 +1243,7 @@ implements Serializable, LifeSupportType, Objective {
             Task task = person.getMind().getTaskManager().getTask();
             if (sameBuilding) {
             	// face-to-face conversation
-                if (person.getLocationState().getName().equals("Inside a building")) {
+                if (person.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {//.getName().equals("Inside a building")) {
                     if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
                     	if (checkIdle) {
                     		if (task instanceof Relax
@@ -1266,8 +1267,8 @@ implements Serializable, LifeSupportType, Objective {
             }
             else {
             	// may be radio (non face-to-face) conversation
-                if (person.getLocationState().getName().equals("Inside a building")
-                		&& initiator.getLocationState().getName().equals("Inside a building")) {
+                if (person.getLocationStateType() == LocationStateType.INSIDE_BUILDING //.getName().equals("Inside a building")
+                		&& initiator.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {//.getName().equals("Inside a building")) {
                     if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
                     	if (checkIdle) {
                     		if (task instanceof Relax
@@ -2011,7 +2012,7 @@ implements Serializable, LifeSupportType, Objective {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
+				if ((vehicle != null) && !this.equals(vehicle.getParkedSettlement()))
 					result.add(vehicle);
 			}
 		}
@@ -2035,7 +2036,7 @@ implements Serializable, LifeSupportType, Objective {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
+				if ((vehicle != null) && !this.equals(vehicle.getParkedSettlement()))
 					result.add(vehicle);
 			}
 		}

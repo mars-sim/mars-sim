@@ -243,7 +243,7 @@ implements ResearchScientificStudy, Serializable {
     private static Lab getSettlementLab(Person person, ScienceType science) {
         Lab result = null;
 
-        BuildingManager manager = person.getSettlement().getBuildingManager();
+        BuildingManager manager = person.getParkedSettlement().getBuildingManager();
         List<Building> labBuildings = manager.getBuildings(BuildingFunction.RESEARCH);
         labBuildings = getSettlementLabsWithSpecialty(science, labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);

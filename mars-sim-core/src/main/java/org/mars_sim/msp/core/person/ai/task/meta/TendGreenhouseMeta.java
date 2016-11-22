@@ -58,7 +58,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                 if (farmingBuilding != null) {
                     result += 10D;
                     // 2016-10-28 Added getCropsNeedingTendingCache()
-                    int needyCropsNum = person.getSettlement().getCropsNeedingTending();
+                    int needyCropsNum = person.getParkedSettlement().getCropsNeedingTending();
                     result += needyCropsNum * 20D;
 
                     // Crowding modifier.
@@ -73,7 +73,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
                     Job job = person.getMind().getJob();
                     if (job != null) {
                         result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class)
-                        		* person.getSettlement().getGoodsManager().getCropFarmFactor();
+                        		* person.getParkedSettlement().getGoodsManager().getCropFarmFactor();
                     }
 
                     // Modify if tending plants is the person's favorite activity.
@@ -117,7 +117,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 	                if (farmingBuilding != null) {
 	                    result += 10D;
 	                    // 2016-10-28 Added getCropsNeedingTendingCache()
-	                    int needyCropsNum = robot.getSettlement().getCropsNeedingTending();
+	                    int needyCropsNum = robot.getParkedSettlement().getCropsNeedingTending();
 	                    //System.out.println("needyCropsNum is "+needyCropsNum);
 	                    result += needyCropsNum * 100D;
 

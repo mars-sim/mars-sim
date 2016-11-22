@@ -109,7 +109,7 @@ public class Sleep extends Task implements Serializable {
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         		
-        	Settlement s1 = person.getSettlement();
+        	Settlement s1 = person.getParkedSettlement();
         	Settlement s2 = person.getAssociatedSettlement();
         	
 			// check to see if a person is a trader or on a trading mission
@@ -433,7 +433,7 @@ public class Sleep extends Task implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             //BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> quartersBuildings = person.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIVING_ACCOMODATIONS);
+            List<Building> quartersBuildings = person.getParkedSettlement().getBuildingManager().getBuildings(BuildingFunction.LIVING_ACCOMODATIONS);
             quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
             quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, unmarked);
             if (quartersBuildings.size() > 0) {
@@ -480,7 +480,7 @@ public class Sleep extends Task implements Serializable {
         Building result = null;
 
         if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = robot.getSettlement().getBuildingManager();
+            BuildingManager manager = robot.getParkedSettlement().getBuildingManager();
             List<Building> buildings = manager.getBuildings(BuildingFunction.ROBOTIC_STATION);
             buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
             buildings = getRoboticStationsWithEmptySlots(buildings);

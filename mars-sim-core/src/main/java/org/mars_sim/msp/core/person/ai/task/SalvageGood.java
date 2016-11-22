@@ -234,7 +234,7 @@ implements Serializable {
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = person.getSettlement().getBuildingManager();
+			BuildingManager manager = person.getParkedSettlement().getBuildingManager();
 			List<Building> manufacturingBuildings = manager.getBuildings(BuildingFunction.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingSalvageWork(manufacturingBuildings, skill);
@@ -460,7 +460,7 @@ implements Serializable {
 				SalvageProcessInfo processInfo = i.next();
 				if (ManufactureUtil.canSalvageProcessBeStarted(processInfo, workshop)) {
 					double processValue = ManufactureUtil.getSalvageProcessValue(processInfo, 
-							person.getSettlement(), person);
+							person.getParkedSettlement(), person);
 					if (processValue > 0D) {
 						processValues.put(processInfo, processValue);
 					}
@@ -472,7 +472,7 @@ implements Serializable {
 
 			if (selectedProcess != null) {
 				Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess, 
-						person.getSettlement());
+						person.getParkedSettlement());
 				if (salvagedUnit != null) {
 					result = new SalvageProcess(selectedProcess, workshop, salvagedUnit);
 					workshop.addSalvageProcess(result);

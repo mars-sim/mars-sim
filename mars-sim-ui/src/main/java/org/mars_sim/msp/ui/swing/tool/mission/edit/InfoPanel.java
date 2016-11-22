@@ -285,7 +285,7 @@ extends JPanel {
 				if (phase.equals(RoverMission.EMBARKING) || 
 						phase.equals(RoverMission.DISEMBARKING)) {
 					// Add available people and robots at the local settlement.
-					Settlement settlement = rover.getSettlement();
+					Settlement settlement = rover.getParkedSettlement();
 					if (settlement != null) {
 					    membersAtLocation.addAll(settlement.getInhabitants());
 					    membersAtLocation.addAll(settlement.getRobots());

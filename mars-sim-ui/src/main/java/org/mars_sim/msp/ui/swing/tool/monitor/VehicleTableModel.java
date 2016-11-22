@@ -289,7 +289,7 @@ extends UnitTableModel {
 				} break;
 
 				case LOCATION : {
-					Settlement settle = vehicle.getSettlement();
+					Settlement settle = vehicle.getParkedSettlement();
 					if (settle != null) {
 						result = settle.getName();
 					}

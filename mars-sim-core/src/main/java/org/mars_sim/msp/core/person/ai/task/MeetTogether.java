@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * HaveConversation.java
- * @version 3.08 2016-03-01
+ * MeetTogether.java
+ * @version 3.1.0 2016-11-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -36,9 +36,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * The HaveConversation class is the task of having a casual conversation with another person
+ * The MeetTogether class is the task of having a casual conversation with another person
  */
-public class HaveConversation
+public class MeetTogether
 extends Task
 implements Serializable {
 
@@ -46,15 +46,15 @@ implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** default logger. */
-    private static Logger logger = Logger.getLogger(HaveConversation.class.getName());
+    private static Logger logger = Logger.getLogger(MeetTogether.class.getName());
 
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.haveConversation"); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase HAVING_CONVERSATION = new TaskPhase(Msg.getString(
-            "Task.phase.havingConversation")); //$NON-NLS-1$
+    private static final TaskPhase MEET_TOGETHER = new TaskPhase(Msg.getString(
+            "Task.phase.meetTogether")); //$NON-NLS-1$
 
     // Static members
     /** The stress modified per millisol. */
@@ -83,7 +83,7 @@ implements Serializable {
      * @param person the person performing the task.
      */
     // 2016-03-01 Added 8 situations for having a conversation
-    public HaveConversation(Person person) {
+    public MeetTogether(Person person) {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER - RandomUtil.getRandomDouble(.2), true, 5D + RandomUtil.getRandomDouble(10));
 
@@ -231,8 +231,8 @@ implements Serializable {
         }
 
         // Initialize phase
-        addPhase(HAVING_CONVERSATION);
-        setPhase(HAVING_CONVERSATION);
+        addPhase(MEET_TOGETHER);
+        setPhase(MEET_TOGETHER);
     }
 
     // 2016-03-01 Added conditional checking to append " via radio" in two cases
@@ -241,7 +241,7 @@ implements Serializable {
     	if (invitee_location == Location.Another_Building | invitee_location == Location.All_Settlements)
     		detail = detail + " via radio";
     		
-    	if (invitee.getMind().getTaskManager().getTask() instanceof HaveConversation) {
+    	if (invitee.getMind().getTaskManager().getTask() instanceof MeetTogether) {
         	setDescription(Msg.getString("Task.description.havingConversation.detail", 
                 detail)); //$NON-NLS-1$
         	//logger.info(person.getName() + " is chatting with " + detail);
@@ -253,7 +253,7 @@ implements Serializable {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
-        else if (HAVING_CONVERSATION.equals(getPhase())) {
+        else if (MEET_TOGETHER.equals(getPhase())) {
             return havingConversation(time);
         }
         else {

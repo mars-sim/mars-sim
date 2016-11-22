@@ -23,6 +23,10 @@ public class InsideBuilding implements LocationState, Serializable {
 		return name;
 	}
 
+	public LocationStateType getType() {
+		return LocationStateType.INSIDE_BUILDING;
+	}
+	
 	public InsideBuilding(Unit unit) {
 		this.unit = unit;
 	}
@@ -32,31 +36,37 @@ public class InsideBuilding implements LocationState, Serializable {
 	}
 
 	public void enterBuilding() {
-		unit.setLocationState(unit.getInsideBuilding());
+		//not possible, already inside a building
+		//unit.setLocationState(unit.getInsideBuilding());
 	}
 
 	public void departFromVicinity() {
-		unit.setLocationState(unit.getOutsideOnMars());
+		//not possible, need to leave building first
+		//unit.setLocationState(unit.getOutsideOnMars());
 	}
 
 	public void returnToVicinity() {
-		unit.setLocationState(unit.getSettlementVicinity());
+		//not possible, since the unit was in a building
+		//unit.setLocationState(unit.getSettlementVicinity());
 	}
 
 	public void embarkVehicleInVicinity() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//not possible, need to leave building first
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void disembarkVehicleInVicinity() {
-		unit.setLocationState(unit.getSettlementVicinity());
+		//not possible, since the unit was in a building
+		//unit.setLocationState(unit.getSettlementVicinity());
 	}
 
 	public void embarkVehicleInGarage() {
-		unit.setLocationState(unit.getInsideVehicle());
+		unit.setLocationState(unit.getInsideVehicleInSettlement());
 	}
 
 	public void disembarkVehicleInGarage() {
-		unit.setLocationState(unit.getInsideBuilding());
+		//not possible, need to leave building first
+		//unit.setLocationState(unit.getInsideBuilding());
 	}
 
 	public void transferFromSettlementToPerson() {
@@ -64,14 +74,17 @@ public class InsideBuilding implements LocationState, Serializable {
 	}
 
 	public void transferFromPersonToSettlement() {
-		unit.setLocationState(unit.getInsideBuilding());
+		//not possible, not on a person
+		//unit.setLocationState(unit.getInsideBuilding());
 	}
 
 	public void transferFromPersonToVehicle() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//not possible, not on a person
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void transferFromVehicleToPerson() {
-		unit.setLocationState(unit.getOnAPerson());
+		//not possible, not on a vehicle
+		//unit.setLocationState(unit.getOnAPerson());
 	}
 }

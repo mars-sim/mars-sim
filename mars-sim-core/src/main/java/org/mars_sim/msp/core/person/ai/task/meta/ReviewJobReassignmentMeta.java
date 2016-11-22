@@ -91,7 +91,7 @@ public class ReviewJobReassignmentMeta implements MetaTask, Serializable {
 	*/
 
 		       	    // Get highest person skill level.
-	        	    Iterator<Person> i = person.getSettlement().getAllAssociatedPeople().iterator();
+	        	    Iterator<Person> i = person.getParkedSettlement().getAllAssociatedPeople().iterator();
 	                while (i.hasNext()) {
 	                    Person tempPerson = i.next();
 

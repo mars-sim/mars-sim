@@ -114,12 +114,12 @@ implements Serializable {
                 setMissionCapacity(getRover().getCrewCapacity());
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(startingPerson
-                    .getSettlement());
+                    .getParkedSettlement());
             if (availableSuitNum < getMissionCapacity())
                 setMissionCapacity(availableSuitNum);
 
             // Initialize data members.
-            setStartingSettlement(startingPerson.getSettlement());
+            setStartingSettlement(startingPerson.getParkedSettlement());
             this.resourceType = resourceType;
             this.siteResourceGoal = siteResourceGoal;
             this.resourceCollectionRate = resourceCollectionRate;
@@ -252,7 +252,7 @@ implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
 
             // Check if a mission-capable rover is available.
             boolean reservableRover = areVehiclesAvailable(settlement, false);
@@ -571,7 +571,7 @@ implements Serializable {
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getSettlement() == getStartingSettlement()) {
+                if (member.getParkedSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }
             }

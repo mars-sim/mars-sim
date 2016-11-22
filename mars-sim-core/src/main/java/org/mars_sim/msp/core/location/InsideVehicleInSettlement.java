@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * SettlementVicinity.java
- * @version 3.08 2015-12-20
+ * IInsideVehicleInSettlement.java
+ * @version 3.1.0 2016-11-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
@@ -10,28 +10,27 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Unit;
 
-public class SettlementVicinity implements LocationState, Serializable {
+public class InsideVehicleInSettlement implements LocationState, Serializable {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private String name = "Within a settlement's vicinity";
-	
+	private String name = "Inside a vehicle in a settlement";
 	private Unit unit;
-
-	public SettlementVicinity(Unit unit) {
-		this.unit = unit;
-	}
 
 	public String getName() {
 		return name;
 	}
 
 	public LocationStateType getType() {
-		return LocationStateType.SETTLEMENT_VICINITY;
+		return LocationStateType.INSIDE_VEHICLE;
 	}
 	
+	public InsideVehicleInSettlement(Unit unit) {
+		this.unit = unit;
+	}
+
 	public void leaveBuilding() {
 		unit.setLocationState(unit.getSettlementVicinity());
 	}
@@ -41,7 +40,8 @@ public class SettlementVicinity implements LocationState, Serializable {
 	}
 
 	public void departFromVicinity() {
-		unit.setLocationState(unit.getOutsideOnMars());
+		// not possible. was inside a settlement
+		//unit.setLocationState(unit.getOutsideOnMars());
 	}
 
 	public void returnToVicinity() {
@@ -82,5 +82,4 @@ public class SettlementVicinity implements LocationState, Serializable {
 	public void transferFromVehicleToPerson() {
 		unit.setLocationState(unit.getOnAPerson());
 	}
-
 }

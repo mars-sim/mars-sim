@@ -83,9 +83,9 @@ implements Serializable {
         super(NAME, person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(50D));
         // Initialize data members
-        if (person.getSettlement() != null) {
+        if (person.getParkedSettlement() != null) {
             setDescription(Msg.getString("Task.description.tendGreenhouse.detail", 
-                    person.getSettlement().getName())); //$NON-NLS-1$
+                    person.getParkedSettlement().getName())); //$NON-NLS-1$
         }
         else {
             endTask();
@@ -125,9 +125,9 @@ implements Serializable {
 
         
         // Initialize data members
-        if (robot.getSettlement() != null) {
+        if (robot.getParkedSettlement() != null) {
             setDescription(Msg.getString("Task.description.tendGreenhouse.detail", 
-            		robot.getSettlement().getName())); //$NON-NLS-1$
+            		robot.getParkedSettlement().getName())); //$NON-NLS-1$
         }
         else {
             endTask();
@@ -461,7 +461,7 @@ implements Serializable {
          	person = (Person) unit;
             LocationSituation location = person.getLocationSituation();
             if (location == LocationSituation.IN_SETTLEMENT) {
-                buildingManager = person.getSettlement().getBuildingManager();
+                buildingManager = person.getParkedSettlement().getBuildingManager();
                 //List<Building> farmBuildings = buildingManager.getBuildings(BuildingFunction.FARMING);
                 //farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
                 //farmBuildings = BuildingManager.getFarmsNeedingWork(farmBuildings);
@@ -479,7 +479,7 @@ implements Serializable {
         	robot = (Robot) unit;
             LocationSituation location = robot.getLocationSituation();
             if (location == LocationSituation.IN_SETTLEMENT) {
-            	buildingManager = robot.getSettlement().getBuildingManager();
+            	buildingManager = robot.getParkedSettlement().getBuildingManager();
                 //List<Building> buildings = buildingManager.getBuildings(BuildingFunction.FARMING);
                 //buildings = BuildingManager.getNonMalfunctioningBuildings(buildings);
                 //buildings = Farming.getFarmsNeedingWork(buildings);

@@ -140,7 +140,7 @@ implements Serializable {
 
         // If person is in a settlement, try to find a building with an office.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager buildingManager = person.getSettlement()
+            BuildingManager buildingManager = person.getParkedSettlement()
                     .getBuildingManager();
             List<Building> bldgs = buildingManager.getBuildings(BuildingFunction.COMMUNICATION);
             bldgs = BuildingManager.getNonMalfunctioningBuildings(bldgs);

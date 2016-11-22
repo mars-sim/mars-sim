@@ -50,7 +50,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // the person has to be inside the settlement to check for manufacture override
-            if (!person.getSettlement().getManufactureOverride())  {
+            if (!person.getParkedSettlement().getManufactureOverride())  {
 
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = ManufactureGood.getAvailableManufacturingBuilding(person);
@@ -84,7 +84,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
                     Job job = person.getMind().getJob();
                     if (job != null) {
                         result *= job.getStartTaskProbabilityModifier(ManufactureGood.class)
-                        		* person.getSettlement().getGoodsManager().getManufacturingFactor();
+                        		* person.getParkedSettlement().getGoodsManager().getManufacturingFactor();
                     }
 
                     // Modify if tinkering is the person's favorite activity.
@@ -128,7 +128,7 @@ public class ManufactureGoodMeta implements MetaTask, Serializable {
 	        if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            // If settlement has manufacturing override, no new
 	            // manufacturing processes can be created.
-	            if (!robot.getSettlement().getManufactureOverride()) {
+	            if (!robot.getParkedSettlement().getManufactureOverride()) {
 	        	// the person has to be inside the settlement to check for manufacture override
 
 		            // See if there is an available manufacturing building.

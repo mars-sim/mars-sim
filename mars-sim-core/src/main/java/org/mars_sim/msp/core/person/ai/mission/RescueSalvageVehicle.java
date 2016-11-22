@@ -80,7 +80,7 @@ implements Serializable {
         super(DEFAULT_DESCRIPTION, startingPerson, MISSION_MIN_MEMBERS);   
 
         if (!isDone()) {
-            setStartingSettlement(startingPerson.getSettlement());
+            setStartingSettlement(startingPerson.getParkedSettlement());
             setMissionCapacity(MISSION_MAX_MEMBERS);
 
             if (hasVehicle()) {
@@ -91,7 +91,7 @@ implements Serializable {
                     setMissionCapacity(capacity);
                 }
 
-                int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+                int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getParkedSettlement());
                 if (availableSuitNum < getMissionCapacity()) {
                     setMissionCapacity(availableSuitNum);
                 }
@@ -657,7 +657,7 @@ implements Serializable {
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getSettlement() == getStartingSettlement()) {
+                if (member.getParkedSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }
             }

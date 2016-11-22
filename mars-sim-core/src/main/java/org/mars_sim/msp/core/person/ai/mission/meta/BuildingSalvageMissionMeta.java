@@ -53,7 +53,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
         // Check if person is in a settlement.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
 
             boolean go = true;
   
@@ -112,7 +112,7 @@ public class BuildingSalvageMissionMeta implements MetaMission {
 
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < BuildingSalvageMission.MIN_PEOPLE) {
+                    .getParkedSettlement()) < BuildingSalvageMission.MIN_PEOPLE) {
                 result = 0D;
             }
 

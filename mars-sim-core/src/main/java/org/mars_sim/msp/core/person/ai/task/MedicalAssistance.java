@@ -332,7 +332,7 @@ implements Serializable {
 		Building result = null;
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = person.getSettlement();
+			Settlement settlement = person.getParkedSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> medicalBuildings = manager.getBuildings(BuildingFunction.MEDICAL_CARE);
 
@@ -371,7 +371,7 @@ implements Serializable {
 		boolean result = false;
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
+			Iterator<Person> i = person.getParkedSettlement().getInhabitants().iterator();
 			while (i.hasNext()) {
 				Person inhabitant = i.next();
 				if ((inhabitant != person) && (inhabitant.getMind().getJob())

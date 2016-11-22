@@ -109,7 +109,7 @@ implements Serializable {
         
         // Set the mission capacity.
         setMissionCapacity(MAX_MEMBERS);
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getParkedSettlement());
         if (availableSuitNum < getMissionCapacity()) {
             setMissionCapacity(availableSuitNum);
         }
@@ -119,7 +119,7 @@ implements Serializable {
         if (!isDone()) {
         
             // Initialize data members
-            setStartingSettlement(startingPerson.getSettlement());
+            setStartingSettlement(startingPerson.getParkedSettlement());
             
             // Determine emergency settlement.
             emergencySettlement = findSettlementNeedingEmergencySupplies(getStartingSettlement(), getRover());
@@ -345,7 +345,7 @@ implements Serializable {
     private void performSupplyDeliveryDisembarkingPhase(MissionMember member) {
 
         // If rover is not parked at settlement, park it.
-        if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
+        if ((getVehicle() != null) && (getVehicle().getParkedSettlement() == null)) {
 
             emergencySettlement.getInventory().storeUnit(getVehicle());
             getVehicle().determinedSettlementParkedLocationAndFacing();
@@ -1093,7 +1093,7 @@ implements Serializable {
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getSettlement() == getStartingSettlement()) {
+                if (member.getParkedSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }
             }

@@ -52,7 +52,7 @@ public class CollectIceMeta implements MetaMission {
             // Check if mission is possible for person based on their
             // circumstance.
             boolean missionPossible = true;
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
 
             // Check if there are any desirable settlements within range.
             double topSettlementDesirability = 0D;

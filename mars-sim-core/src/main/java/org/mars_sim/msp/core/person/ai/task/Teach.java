@@ -311,7 +311,7 @@ implements Serializable {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Iterator<Person> i = person.getSettlement().getInhabitants()
+            Iterator<Person> i = person.getParkedSettlement().getInhabitants()
                     .iterator();
             while (i.hasNext()) {
                 Person inhabitant = i.next();

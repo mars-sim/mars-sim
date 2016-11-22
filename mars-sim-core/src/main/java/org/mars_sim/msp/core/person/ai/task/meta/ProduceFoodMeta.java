@@ -51,7 +51,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 	        // If settlement has foodProduction override, no new foodProduction processes can be created.
-	        if (!person.getSettlement().getFoodProductionOverride()) {
+	        if (!person.getParkedSettlement().getFoodProductionOverride()) {
 
 
 	            // See if there is an available foodProduction building.
@@ -88,7 +88,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 	    	        Job job = person.getMind().getJob();
 	    	        if (job != null) {
 	    	            result *= job.getStartTaskProbabilityModifier(ProduceFood.class)
-	                    		* person.getSettlement().getGoodsManager().getCropFarmFactor();
+	                    		* person.getParkedSettlement().getGoodsManager().getCropFarmFactor();
 	    	        }
 
 	                // Modify if cooking is the person's favorite activity.
@@ -131,7 +131,7 @@ public class ProduceFoodMeta implements MetaTask, Serializable {
 
 		        // If settlement has foodProduction override, no new
 		        // foodProduction processes can be created.
-		        if (! robot.getSettlement().getFoodProductionOverride()) {
+		        if (! robot.getParkedSettlement().getFoodProductionOverride()) {
 
 		            // See if there is an available foodProduction building.
 		            Building foodProductionBuilding = ProduceFood.getAvailableFoodProductionBuilding(robot);

@@ -562,7 +562,7 @@ public class EatMeal extends Task implements Serializable {
         Building result = null;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
             BuildingManager manager = settlement.getBuildingManager();
             List<Building> diningBuildings = manager.getBuildings(BuildingFunction.DINING);
             diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
@@ -594,7 +594,7 @@ public class EatMeal extends Task implements Serializable {
         Cooking result = null;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
             BuildingManager manager = settlement.getBuildingManager();
             List<Building> cookingBuildings = manager.getBuildings(BuildingFunction.COOKING);
             Iterator<Building> i = cookingBuildings.iterator();
@@ -619,7 +619,7 @@ public class EatMeal extends Task implements Serializable {
         PreparingDessert result = null;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
             BuildingManager manager = settlement.getBuildingManager();
             List<Building> dessertBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
             Iterator<Building> i = dessertBuildings.iterator();

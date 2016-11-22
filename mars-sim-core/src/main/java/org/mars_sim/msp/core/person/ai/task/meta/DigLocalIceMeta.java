@@ -82,7 +82,7 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             }
             
             
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
             Inventory inv = settlement.getInventory();
 
             // Check at least one EVA suit at settlement.

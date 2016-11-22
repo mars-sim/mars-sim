@@ -67,7 +67,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	
         	//2016-10-04 Checked for radiation events
-        	boolean[] exposed = person.getSettlement().getExposed();
+        	boolean[] exposed = person.getParkedSettlement().getExposed();
 
     		if (exposed[2]) {
     			noGo = true;// SEP can give lethal dose of radiation, out won't go outside
@@ -97,7 +97,7 @@ public class MaintenanceEVAMeta implements MetaTask, Serializable {
         	
             if (!noGo) {
             	            
-	            Settlement settlement = person.getSettlement();
+	            Settlement settlement = person.getParkedSettlement();
 	            
 	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity())
 	                result *= 2D;

@@ -121,7 +121,7 @@ implements Serializable {
 
         if (!isDone()) {
             // Sets the settlement.
-            settlement = startingMember.getSettlement();
+            settlement = startingMember.getParkedSettlement();
 
             // Sets the mission capacity.
             setMissionCapacity(MAX_PEOPLE);
@@ -635,7 +635,7 @@ implements Serializable {
         if (result) {
             boolean atSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getSettlement() == settlement) {
+                if (member.getParkedSettlement() == settlement) {
                     atSettlement = true;
                 }
             }

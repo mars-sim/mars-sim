@@ -55,7 +55,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();       
+            Settlement settlement = person.getParkedSettlement();       
 
             boolean go = true;
             
@@ -91,7 +91,7 @@ public class AreologyStudyFieldMissionMeta implements MetaMission {
             }
             
             // Check if min number of EVA suits at settlement.
-            else if (!(Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) 
+            else if (!(Mission.getNumberAvailableEVASuitsAtSettlement(person.getParkedSettlement()) 
                     > AreologyStudyFieldMission.MIN_PEOPLE)) {
             	go = false;
             	return 0;

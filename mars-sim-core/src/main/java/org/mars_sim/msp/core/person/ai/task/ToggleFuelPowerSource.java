@@ -160,7 +160,7 @@ implements Serializable {
     public static Building getFuelPowerSourceBuilding(Person person) {
         Building result = null;
 
-        Settlement settlement = person.getSettlement();
+        Settlement settlement = person.getParkedSettlement();
         if (settlement != null) {
             BuildingManager manager = settlement.getBuildingManager();
             double bestDiff = 0D;

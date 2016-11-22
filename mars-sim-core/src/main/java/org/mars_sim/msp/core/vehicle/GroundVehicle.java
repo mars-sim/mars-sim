@@ -165,7 +165,7 @@ implements Serializable {
 	@Override
 	public void determinedSettlementParkedLocationAndFacing() {
 
-		Settlement settlement = getSettlement();
+		Settlement settlement = getParkedSettlement();
 		if (settlement == null) {
 			throw new IllegalStateException("Vehicle not parked at a settlement");
 		}

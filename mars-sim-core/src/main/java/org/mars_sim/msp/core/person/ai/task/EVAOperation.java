@@ -501,7 +501,7 @@ implements Serializable {
         LocationSituation location = person.getLocationSituation();
 
         if (location == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
             //logger.info(person.getName() + " is walking to an airlock. getClosestWalkableAvailableAirlock()");
         }
@@ -521,7 +521,7 @@ implements Serializable {
         LocationSituation location = robot.getLocationSituation();
 
         if (location == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = robot.getSettlement();
+            Settlement settlement = robot.getParkedSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(robot, xLocation, yLocation);
         }
         else if (location == LocationSituation.IN_VEHICLE) {

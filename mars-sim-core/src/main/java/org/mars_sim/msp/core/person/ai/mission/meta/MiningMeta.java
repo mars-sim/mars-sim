@@ -52,7 +52,7 @@ public class MiningMeta implements MetaMission {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
 
             // Check if a mission-capable rover is available.
             boolean reservableRover = RoverMission.areVehiclesAvailable(
@@ -134,7 +134,7 @@ public class MiningMeta implements MetaMission {
         if (result > 0D) {
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < RoverMission.MIN_PEOPLE) {
+                    .getParkedSettlement()) < RoverMission.MIN_PEOPLE) {
                 result = 0D;
             }
         }

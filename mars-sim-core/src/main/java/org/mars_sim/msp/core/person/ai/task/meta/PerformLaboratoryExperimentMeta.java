@@ -147,7 +147,7 @@ public class PerformLaboratoryExperimentMeta implements MetaTask, Serializable {
 	        Job job = person.getMind().getJob();
 	        if (job != null) {
 	            result *= job.getStartTaskProbabilityModifier(PerformLaboratoryExperiment.class)
-	            		* person.getSettlement().getGoodsManager().getResearchFactor();;
+	            		* person.getParkedSettlement().getGoodsManager().getResearchFactor();;
 	        }
 
 	        // Modify if lab experimentation is the person's favorite activity.

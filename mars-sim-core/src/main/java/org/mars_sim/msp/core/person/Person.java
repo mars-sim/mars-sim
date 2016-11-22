@@ -557,7 +557,7 @@ implements VehicleOperator, MissionMember, Serializable {
      * @return the person's settlement
      */
     // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
-    public Settlement getSettlement() {
+    public Settlement getParkedSettlement() {
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
      	   Settlement settlement = (Settlement) getContainerUnit();
      	   return settlement;
@@ -718,7 +718,7 @@ implements VehicleOperator, MissionMember, Serializable {
 
         LocationSituation location = getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = getSettlement();
+            Settlement settlement = getParkedSettlement();
             List<Building> infirmaries = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);
             if (infirmaries.size() > 0) {
                 int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
@@ -786,7 +786,7 @@ implements VehicleOperator, MissionMember, Serializable {
         LifeSupportType result = null;
         List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
 
-        Settlement settlement = getSettlement();
+        Settlement settlement = getParkedSettlement();
         if (settlement != null) {
             lifeSupportUnits.add(settlement);
         }
@@ -795,7 +795,7 @@ implements VehicleOperator, MissionMember, Serializable {
             if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
 
                 if (BuildingManager.getBuilding(vehicle) != null) {
-                    lifeSupportUnits.add(vehicle.getSettlement());
+                    lifeSupportUnits.add(vehicle.getParkedSettlement());
                 }
                 else {
                     lifeSupportUnits.add((LifeSupportType) vehicle);
@@ -1053,7 +1053,7 @@ implements VehicleOperator, MissionMember, Serializable {
     public Building getBuildingLocation() {
         Building result = null;
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = getSettlement().getBuildingManager();
+            BuildingManager manager = getParkedSettlement().getBuildingManager();
             result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
             //List<Building> buildings = manager.getBuildings();
             //Iterator<Building> i = buildings.iterator();

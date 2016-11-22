@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.LocationState;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.robot.Robot;
@@ -657,17 +658,19 @@ public class ChatBox extends BorderPane {
     		
     		if (num == 1 || text.equalsIgnoreCase("where") || text.equalsIgnoreCase("location")) {// || text.contains("location")) {
 	    		questionText = YOU_PROMPT + "Where are you ? "; //what is your Location State [Expert Mode only] ?";
-	    		LocationState state = cache.getLocationState();
-	    		if (state != null) {
+	    		//LocationState state = cache.getLocationState();
+	    		LocationStateType stateType = cache.getLocationStateType();
+	    		
+	    		if (stateType != null) {
 	    			if (personCache != null) {
 	    				if (personCache.getBuildingLocation() != null)
-	    					responseText = "I'm " + state.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
+	    					responseText = "I'm " + stateType.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
 	    				else {
-	    					responseText = "I'm " + state.getName();				
+	    					responseText = "I'm " + stateType.getName();				
 	    				}
 	    	    	}
 	    	    	else if (robotCache != null) {
-	    	    		responseText = "I'm " + state.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
+	    	    		responseText = "I'm " + stateType.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
 	    	    	}	
 	    		}
 	    		else
@@ -717,7 +720,7 @@ public class ChatBox extends BorderPane {
 	    			responseText = "I don't have my own private quarters/bed.";
 	    		else {
 	    			if (personCache != null) {
-	    				Settlement s1 = personCache.getSettlement();
+	    				Settlement s1 = personCache.getParkedSettlement();
 		    			if (s1 != null) {	
 		    				// check to see if a person is on a trading mission
 		    				Settlement s2 = personCache.getAssociatedSettlement();		    				
@@ -762,7 +765,7 @@ public class ChatBox extends BorderPane {
 	
 	    	else if (num == 8 || text.equalsIgnoreCase("building") ) {
 	    		questionText = YOU_PROMPT + "What building are you at ?";
-	    		Settlement s = cache.getSettlement();
+	    		Settlement s = cache.getParkedSettlement();
 	    		if (s != null) {
 		    		//Building b1 = s.getBuildingManager().getBuilding(cache);
 		    		Building b = cache.getBuildingLocation();
@@ -780,7 +783,7 @@ public class ChatBox extends BorderPane {
     		
 	    	else if (num == 9 || text.equalsIgnoreCase("settlement")) {
 	    		questionText = YOU_PROMPT + "What is the settlement that you are at ?";
-	    		Settlement s = cache.getSettlement();
+	    		Settlement s = cache.getParkedSettlement();
 	   			if (s != null)
 	   				responseText = "My settlement is " + s.getName();
 	   			else
@@ -831,7 +834,7 @@ public class ChatBox extends BorderPane {
 	       		if (v  != null) {
 	       			Unit c = v.getContainerUnit();
 	       			if (c != null)
-	       				responseText = "My vehicle is at" + c.getName();
+	       				responseText = "My vehicle is at " + c.getName();
 	       			else
 	       				responseText = "My vehicle is not inside";//doesn't have a container unit.";
 	
@@ -858,7 +861,7 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "What building does your vehicle park at ?";
 	    		Vehicle v = cache.getVehicle();
 		       	if (v != null) {
-		       		Settlement s = v.getSettlement();
+		       		Settlement s = v.getParkedSettlement();
 		       		if (s != null) {
 		       			Building b = s.getBuildingManager().getBuilding(v);
 		       			if (b != null)
@@ -877,7 +880,7 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "What settlement is your vehicle located at ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
-	       			Settlement s = v.getSettlement();
+	       			Settlement s = v.getParkedSettlement();
 	       			if (s != null)
 	       				responseText = "My vehicle is at " + s.getName();
 	       			else

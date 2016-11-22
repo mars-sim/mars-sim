@@ -455,7 +455,7 @@ extends UnitTableModel {
 			case LOCATION : {
 				LocationSituation locationSituation = person.getLocationSituation();
 				if (locationSituation == LocationSituation.IN_SETTLEMENT) {
-					if (person.getSettlement() != null) result = person.getSettlement().getName();
+					if (person.getParkedSettlement() != null) result = person.getParkedSettlement().getName();
 				}
 				else if (locationSituation == LocationSituation.IN_VEHICLE) {
 					if (person.getVehicle() != null) result = person.getVehicle().getName();

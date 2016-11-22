@@ -86,14 +86,14 @@ implements Serializable {
         }
 
         // Initialize data members.
-        this.settlement = person.getSettlement();
+        this.settlement = person.getParkedSettlement();
         this.destBuilding = destinationBuilding;
         this.destXLoc = destinationXLocation;
         this.destYLoc = destinationYLocation;
 
         // Check that destination location is within destination building.
         if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, destBuilding)) {
-        	logger.warning(person + " is unable to walk to the destination in " + person.getBuildingLocation() + " at "+ person.getSettlement());       	
+        	logger.warning(person + " is unable to walk to the destination in " + person.getBuildingLocation() + " at "+ person.getParkedSettlement());       	
         	//throw new IllegalStateException(
             //        "Given destination walking location not within destination building.");
         	// 
@@ -146,7 +146,7 @@ implements Serializable {
         }
 
         // Initialize data members.
-        this.settlement = robot.getSettlement();
+        this.settlement = robot.getParkedSettlement();
         this.destBuilding = destinationBuilding;
         this.destXLoc = destinationXLocation;
         this.destYLoc = destinationYLocation;

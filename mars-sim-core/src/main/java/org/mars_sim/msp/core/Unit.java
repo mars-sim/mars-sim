@@ -17,8 +17,10 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.location.InsideBuilding;
 import org.mars_sim.msp.core.location.InsideSettlement;
-import org.mars_sim.msp.core.location.InsideVehicle;
+import org.mars_sim.msp.core.location.InsideVehicleInSettlement;
+import org.mars_sim.msp.core.location.InsideVehicleOutsideOnMars;
 import org.mars_sim.msp.core.location.LocationState;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.location.OnAPerson;
 import org.mars_sim.msp.core.location.OutsideOnMars;
 import org.mars_sim.msp.core.location.SettlementVicinity;
@@ -60,13 +62,16 @@ implements Serializable, Comparable<Unit> {
 	/** The unit's inventory. */
 	private Inventory inventory;
 	/** The unit containing this unit. */
-	private Unit containerUnit;
+	protected Unit containerUnit;
 	/** Unit location coordinates. */
 	private Coordinates location;
 
 	// 2015-12-20 Added LocationState class
-	private LocationState currentState, insideBuilding, insideVehicle, insideSettlement, outsideOnMars, settlementVicinity, onAPerson;
+	private LocationState currentState, insideBuilding, insideVehicleOutsideOnMars, insideVehicleInSettlement, insideSettlement, outsideOnMars, settlementVicinity, onAPerson;
 
+	// 2016-11-21 Added LocationStateType
+	private LocationStateType currentStateType;
+	
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
@@ -87,7 +92,6 @@ implements Serializable, Comparable<Unit> {
 	public Unit(String name, Coordinates location) {
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
-
 		this.identifier = getNextIdentifier();
 	
 		// Initialize data members from parameters
@@ -103,9 +107,24 @@ implements Serializable, Comparable<Unit> {
 			this.location.setCoords(location);	
 			this.inventory.setCoordinates(location);
 		}
+
+		if (this instanceof Robot)
+			currentStateType = LocationStateType.INSIDE_BUILDING;
+		else if (this instanceof Equipment)
+			currentStateType = LocationStateType.INSIDE_BUILDING;
+		else if (this instanceof Person)
+			currentStateType = LocationStateType.INSIDE_BUILDING;
+		else if (this instanceof Building)
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+		else if (this instanceof Vehicle)
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+		else if (this instanceof Settlement)
+			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		
+/*		
 		insideBuilding = new InsideBuilding(this);
-		insideVehicle = new InsideVehicle(this);
+		insideVehicleOutsideOnMars = new InsideVehicleOutsideOnMars(this);
+		insideVehicleInSettlement = new InsideVehicleInSettlement(this);		
 		outsideOnMars = new OutsideOnMars(this);
 		settlementVicinity = new SettlementVicinity(this);
 		insideSettlement =  new InsideSettlement(this);
@@ -123,6 +142,7 @@ implements Serializable, Comparable<Unit> {
 			currentState = insideSettlement;
 		else if (this instanceof Vehicle)
 			currentState = settlementVicinity;
+*/		
 	}
 
 
@@ -278,7 +298,7 @@ implements Serializable, Comparable<Unit> {
 
 	/**
 	 * Gets the topmost container unit that owns this unit.
-	 * Returns null if unit has no container unit (meaning that he's outside)
+	 * Returns null if unit has no container unit (meaning that the unit is outside)
 	 * @return the unit's topmost container unit
 	 */
 	public Unit getTopContainerUnit() {
@@ -307,18 +327,20 @@ implements Serializable, Comparable<Unit> {
 	 * @param newContainer the unit to contain this unit.
 	 */
 	public void setContainerUnit(Unit newContainer) {
-			if (this instanceof Person)
+			if (this instanceof Robot)
 				updatePersonState(newContainer);
-			else if (this instanceof Robot)
-				updateEquipmentState(newContainer);
 			else if (this instanceof Equipment)
 				updateEquipmentState(newContainer);
+			else if (this instanceof Person)
+				updatePersonState(newContainer);
 			else if (this instanceof Vehicle)
 				updateVehicleState(newContainer);
 			else if (this instanceof Building)
-				currentState = insideSettlement;
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+				//currentState = insideSettlement;
 			else if (this instanceof Settlement)
-				currentState = outsideOnMars;
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+				//currentState = outsideOnMars;
 
 		this.containerUnit = newContainer;
 
@@ -589,115 +611,147 @@ implements Serializable, Comparable<Unit> {
 */
 
 	/**
-	 * Updates the location state of a person
+	 * Updates the location state type of a person or robot
 	 * @param newContainer
 	 */
 	public void updatePersonState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
-
+		
+		// Case 1
 		if (oldContainer instanceof Settlement && newContainer == null)
-			leaveBuilding();
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY; 
 
+		// Case 2
 		else if (oldContainer == null && newContainer instanceof Settlement)
-			enterBuilding();
+			currentStateType = LocationStateType.INSIDE_BUILDING;
 
+		// Case 3 or 5
 		else if (oldContainer == null && newContainer instanceof Vehicle)
-			embarkVehicleInVicinity();
+			currentStateType = LocationStateType.INSIDE_VEHICLE;
 
-		else if (oldContainer instanceof Vehicle && newContainer  == null)
-			disembarkVehicleInVicinity();
-
+		// Case 8
 		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
-			embarkVehicleInGarage();
-
-		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
-			disembarkVehicleInGarage();
-
-		else if (oldContainer == null && newContainer == null) {
-			// resolve how to tell which direction a vehicle is going
-			if (currentState.equals(settlementVicinity))
-				departFromVicinity();
+			currentStateType = LocationStateType.INSIDE_VEHICLE;
+		
+		else if (oldContainer instanceof Vehicle && newContainer == null) {
+			// Case 4
+			if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			// Case 6
+			else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 			else
-				returnToVicinity();
+				System.err.println("Unit : " + name + " was no longer on a vehicle.");
+			
 		}
 
+		// Case 7
+		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
+			currentStateType = LocationStateType.INSIDE_BUILDING;
 	}
 
 	/**
-	 * Updates the location state of an equipment
+	 * Updates the location state type of an equipment
 	 * @param newContainer
 	 */
 	public void updateEquipmentState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
 
+		// Case 1
 		if (oldContainer instanceof Settlement && newContainer == null)
-			leaveBuilding();
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY; 
 
+		// Case 2
 		else if (oldContainer == null && newContainer instanceof Settlement)
-			enterBuilding();
+			currentStateType = LocationStateType.INSIDE_BUILDING;
 
-
+		// Case 3 or 5
 		else if (oldContainer == null && newContainer instanceof Vehicle)
-			embarkVehicleInVicinity();
+			currentStateType = LocationStateType.INSIDE_VEHICLE;
 
-		else if (oldContainer instanceof Vehicle && newContainer  == null)
-			disembarkVehicleInVicinity();
-
+		// Case 8
 		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
-			embarkVehicleInGarage();
-
-		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
-			disembarkVehicleInGarage();
-
-
-
-		else if (oldContainer instanceof Settlement && newContainer instanceof Person)
-			transferFromSettlementToPerson();
-
-		else if (oldContainer instanceof Person && newContainer instanceof Settlement)
-			transferFromPersonToSettlement();
-
-		else if (oldContainer instanceof Person && newContainer instanceof Vehicle)
-			transferFromPersonToVehicle();
-
-		else if (oldContainer instanceof Vehicle && newContainer instanceof Person)
-			transferFromVehicleToPerson();
-
-
-
-		else if (oldContainer == null && newContainer == null) {
-			// resolve how to tell which direction a vehicle is going
-			if (currentState.equals(settlementVicinity))
-				departFromVicinity();
-			else
-				returnToVicinity();
+			currentStateType = LocationStateType.INSIDE_VEHICLE;
+		
+		else if (oldContainer instanceof Vehicle && newContainer == null) {
+			// Case 4
+			if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+			// Case 6
+			else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			
+			else {			
+				System.err.println("Unit : " + name + " was no longer on a vehicle.");			
+			}
+				
 		}
 
+		// Case 7
+		else if (oldContainer instanceof Vehicle && newContainer instanceof Settlement)
+			currentStateType = LocationStateType.INSIDE_BUILDING;
+
+		// Case 9
+		else if (oldContainer instanceof Vehicle && newContainer instanceof Person)
+			currentStateType = LocationStateType.ON_A_PERSON;
+
+		// Case 10
+		else if (oldContainer instanceof Person && newContainer instanceof Vehicle)
+			currentStateType = LocationStateType.INSIDE_VEHICLE;
+
+		// Case 11
+		else if (oldContainer instanceof Settlement && newContainer instanceof Person)
+			currentStateType = LocationStateType.ON_A_PERSON;
+
+		// Case 12
+		else if (oldContainer instanceof Person && newContainer instanceof Settlement)
+			currentStateType = LocationStateType.INSIDE_BUILDING;
+		
 	}
 
 
 	/**
-	 * Updates the location state of a vehicle
+	 * Updates the location state type of a vehicle
 	 * @param newContainer
 	 */
 	public void updateVehicleState(Unit newContainer) {
-		Unit oldContainer = this.containerUnit;
+		//Unit oldContainer = this.containerUnit;
 
-		if (oldContainer instanceof Settlement && newContainer == null)
-			leaveBuilding();
-
-		else if (oldContainer == null && newContainer instanceof Settlement)
-			enterBuilding();
-
-		else if (oldContainer == null && newContainer == null) {
-			//Vehicle v = (Vehicle) this;
-			// resolve how to tell which direction a vehicle is going
-			if (currentState.equals(settlementVicinity))
-				departFromVicinity();
+		if (newContainer != null) {
+			if (((Vehicle)this).getGarage((Settlement)newContainer) != null) {
+				// Case 2
+				currentStateType = LocationStateType.INSIDE_BUILDING;
+	        	//System.out.println(((Vehicle)this) + " is inside a building.");
+			}
 			else
-				returnToVicinity();
+				// Case 4
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;	
+		}
+			
+		else {
+			// Case 3
+			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		}
 
+
+/*		
+		// Case 1
+		if (oldContainer instanceof Settlement && newContainer == null)
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
+		// Case 2
+		else if (oldContainer == null && newContainer instanceof Settlement)
+			currentStateType = LocationStateType.INSIDE_BUILDING;
+
+		else if (oldContainer == null && newContainer == null) {
+			// Case 3
+			if (((Vehicle)this).getTotalDistanceTraveled() > 0)
+				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
+			// Case 4
+			else
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;	
+		}
+*/
+		
 	}
 
 
@@ -841,10 +895,15 @@ implements Serializable, Comparable<Unit> {
 		this.currentState = state;
 	}
 
-	public LocationState getInsideVehicle() {
-		return insideVehicle;
+	public LocationState getInsideVehicleOutsideOnMars() {
+		return insideVehicleOutsideOnMars;
 	}
 
+	public LocationState getInsideVehicleInSettlement() {
+		return insideVehicleInSettlement;
+	}
+	
+	
 	public LocationState getInsideBuilding() {
 		return insideBuilding;
 	}
@@ -922,7 +981,7 @@ implements Serializable, Comparable<Unit> {
 		return null;
 	}
 
-	public Settlement getSettlement(){
+	public Settlement getParkedSettlement(){
 		return null;
 	}
 
@@ -933,6 +992,11 @@ implements Serializable, Comparable<Unit> {
 	public Settlement getBuriedSettlement(){
 		return null;
 	}
+	
+	public LocationStateType getLocationStateType() {
+		return currentStateType;
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

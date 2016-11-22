@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InsideVehicle.java
- * @version 3.08 2015-12-20
+ * @version 3.1.0 2016-11-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.location;
@@ -10,25 +10,29 @@ import java.io.Serializable;
 
 import org.mars_sim.msp.core.Unit;
 
-public class InsideVehicle implements LocationState, Serializable {
+public class InsideVehicleOutsideOnMars implements LocationState, Serializable {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private String name = "Inside a vehicle";
+	private String name = "Inside a vehicle outside on Mars";
 	private Unit unit;
 
 	public String getName() {
 		return name;
 	}
 
-	public InsideVehicle(Unit unit) {
+	public LocationStateType getType() {
+		return LocationStateType.INSIDE_VEHICLE;
+	}
+	
+	public InsideVehicleOutsideOnMars(Unit unit) {
 		this.unit = unit;
 	}
 
 	public void leaveBuilding() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void enterBuilding() {
@@ -45,7 +49,7 @@ public class InsideVehicle implements LocationState, Serializable {
 
 
 	public void embarkVehicleInVicinity() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void disembarkVehicleInVicinity() {
@@ -53,7 +57,7 @@ public class InsideVehicle implements LocationState, Serializable {
 	}
 
 	public void embarkVehicleInGarage() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void disembarkVehicleInGarage() {
@@ -71,7 +75,7 @@ public class InsideVehicle implements LocationState, Serializable {
 	}
 
 	public void transferFromPersonToVehicle() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void transferFromVehicleToPerson() {

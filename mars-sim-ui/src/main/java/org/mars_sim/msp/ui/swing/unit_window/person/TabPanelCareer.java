@@ -447,7 +447,7 @@ implements ActionListener {
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
         	Vehicle vehicle = (Vehicle) person.getContainerUnit();
-        	settlement = vehicle.getSettlement();
+        	settlement = vehicle.getParkedSettlement();
         }
         
       //List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
@@ -636,7 +636,7 @@ implements ActionListener {
 			        }
 			        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 			        	Vehicle vehicle = (Vehicle) person.getContainerUnit();
-			        	settlement = vehicle.getSettlement();
+			        	settlement = vehicle.getParkedSettlement();
 			        }
 
 			        pop = settlement.getAllAssociatedPeople().size();

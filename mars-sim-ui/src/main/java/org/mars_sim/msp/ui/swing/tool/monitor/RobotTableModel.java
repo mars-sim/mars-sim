@@ -358,7 +358,7 @@ extends UnitTableModel {
 			case LOCATION : {
 				LocationSituation locationSituation = robot.getLocationSituation();
 				if (locationSituation == LocationSituation.IN_SETTLEMENT) {
-					if (robot.getSettlement() != null) result = robot.getSettlement().getName();
+					if (robot.getParkedSettlement() != null) result = robot.getParkedSettlement().getName();
 				}
 				else if (locationSituation == LocationSituation.IN_VEHICLE) {
 					if (robot.getVehicle() != null) result = robot.getVehicle().getName();

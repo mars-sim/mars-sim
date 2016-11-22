@@ -985,17 +985,20 @@ public class BuildingManager implements Serializable {
     public static Building getBuilding(Vehicle vehicle) {
         if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
         Building result = null;
-        Settlement settlement = vehicle.getSettlement();
+        Settlement settlement = vehicle.getParkedSettlement();
         if (settlement != null) {
-            Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
-            while (i.hasNext()) {
-                Building garageBuilding = i.next();
+        	for (Building garageBuilding : settlement.getBuildingManager().getBuildings(
+                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
+            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(
+                    //BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
+            //while (i.hasNext()) {
+                //Building garageBuilding = i.next();
                 try {
                     VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
                             BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
                     if (garage.containsVehicle(vehicle)) {
-                        result = garageBuilding;
+                        //result = garageBuilding;
+                        return garageBuilding;
                     }
                 }
                 catch (Exception e) {
@@ -1006,6 +1009,37 @@ public class BuildingManager implements Serializable {
         return result;
     }
 
+    /**
+     * Gets the vehicle maintenance building a given vehicle is in.
+     * @return building or null if none.
+     */
+    public static Building getBuilding(Vehicle vehicle, Settlement settlement) {
+        if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
+        Building result = null;
+        if (settlement != null) {
+        	for (Building garageBuilding : settlement.getBuildingManager().getBuildings(
+                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
+            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(
+                    //BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
+            //while (i.hasNext()) {
+                //Building garageBuilding = i.next();
+                try {
+                    VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
+                            BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                    if (garage.containsVehicle(vehicle)) {
+                        //result = garageBuilding;
+                        return garageBuilding;
+                    }
+                }
+                catch (Exception e) {
+                    logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
+                }
+            }
+        }
+        return result;
+    }
+
+    
     /**
      * Gets the building a person or robot is in.
      * @return building or null if none.
@@ -1018,7 +1052,7 @@ public class BuildingManager implements Serializable {
         if (unit instanceof Person) {
          	person = (Person) unit;
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            Settlement settlement = person.getSettlement();
+	            Settlement settlement = person.getParkedSettlement();
 	            Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
 	            while (i.hasNext()) {
 	                Building building = i.next();
@@ -1300,7 +1334,7 @@ public class BuildingManager implements Serializable {
          	person = (Person) unit;
             Building currentBuilding = BuildingManager.getBuilding(person);
              if (currentBuilding != null) {
-                BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+                BuildingConnectorManager connectorManager = person.getParkedSettlement().getBuildingConnectorManager();
 
                 Iterator<Building> i = buildingList.iterator();
                 while (i.hasNext()) {
@@ -1320,7 +1354,7 @@ public class BuildingManager implements Serializable {
         	robot = (Robot) unit;
 	        Building currentBuilding = BuildingManager.getBuilding(robot);
 	        if (currentBuilding != null) {
-	            BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
+	            BuildingConnectorManager connectorManager = robot.getParkedSettlement().getBuildingConnectorManager();
 
 	            Iterator<Building> i = buildingList.iterator();
 	            while (i.hasNext()) {

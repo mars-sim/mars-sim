@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
@@ -98,6 +99,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     // Get vehicle configuration.
     private VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 
+    private Settlement associatedSettlement;
     
     /** 
      * Constructor 1 : prepares a Vehicle object with a given settlement
@@ -114,8 +116,11 @@ public abstract class Vehicle extends Unit implements Serializable,
         
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
     
+        //2016-11-21 Added associatedSettlement
+        associatedSettlement = settlement;       
+        containerUnit = settlement;
         settlement.getInventory().storeUnit(this);
-
+        
         // Initialize vehicle data
         vehicleType = vehicleType.toLowerCase();
         setDescription(vehicleType);
@@ -169,9 +174,12 @@ public abstract class Vehicle extends Unit implements Serializable,
         this.vehicleType = vehicleType;
         
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
-        
-        settlement.getInventory().storeUnit(this);
 
+        //2016-11-21 Added associatedSettlement
+        associatedSettlement = settlement;
+        containerUnit = settlement;
+        settlement.getInventory().storeUnit(this); 
+        
         // Initialize vehicle data
         setDescription(vehicleType);
         direction = new Direction(0);
@@ -590,13 +598,27 @@ public abstract class Vehicle extends Unit implements Serializable,
      *  Returns null if vehicle is not currently parked at a settlement.
      *  @return the settlement the vehicle is parked at
      */
-    public Settlement getSettlement() {
+    public Settlement getParkedSettlement() {
+	    Unit c = containerUnit;
 
+	    if ((c != null) && (c instanceof Settlement)) 
+	    	return (Settlement) c;
+	    else
+	    	return null;
+/*	    
 	    Unit topUnit = getTopContainerUnit();
 
-	    if ((topUnit != null) && (topUnit instanceof Settlement)) return (Settlement) topUnit;
-	    else return null;
+	    if ((topUnit != null) && (topUnit instanceof Settlement)) 
+	    	return (Settlement) topUnit;
+	    else
+	    	return null;
+*/
     }
+    
+    public Building getGarage(Settlement s) {
+		return s.getBuildingManager().getBuilding(this, s);
+    }
+    
     
     /**
      * Gets the unit's malfunction manager.
@@ -753,7 +775,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public void addToTrail(Coordinates location) {
 	    
-        if (getSettlement() != null) {
+        if (getParkedSettlement() != null) {
             if (trail.size() > 0) trail.clear();
 	    }
 	    else if (trail.size() > 0) {
@@ -842,6 +864,11 @@ public abstract class Vehicle extends Unit implements Serializable,
     
 	public static double getErrorMargin() {
 		return fuel_range_error_margin;
+	}
+	
+    //2016-11-21 Added getAssociatedSettlement()
+	public Settlement getAssociatedSettlement(){
+		return associatedSettlement;
 	}
 	
     @Override

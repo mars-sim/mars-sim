@@ -107,7 +107,7 @@ implements Serializable {
                  
         // Set the mission capacity.
         setMissionCapacity(MAX_MEMBERS);
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingMember.getSettlement());            
+        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingMember.getParkedSettlement());            
         if (availableSuitNum < getMissionCapacity()) {
             setMissionCapacity(availableSuitNum);
         }
@@ -118,7 +118,7 @@ implements Serializable {
         if (!isDone()) {
 
             // Initialize data members 	
-            setStartingSettlement(startingMember.getSettlement());
+            setStartingSettlement(startingMember.getParkedSettlement());
 
             // Get trading settlement
             tradingSettlement = TRADE_SETTLEMENT_CACHE.get(getStartingSettlement());
@@ -577,7 +577,7 @@ implements Serializable {
     private void performTradeDisembarkingPhase(MissionMember member) {
 
         // If rover is not parked at settlement, park it.
-        if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
+        if ((getVehicle() != null) && (getVehicle().getParkedSettlement() == null)) {
 
             tradingSettlement.getInventory().storeUnit(getVehicle());
             getVehicle().determinedSettlementParkedLocationAndFacing();
@@ -1294,7 +1294,7 @@ implements Serializable {
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getSettlement() == getStartingSettlement()) {
+                if (member.getParkedSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }
             }

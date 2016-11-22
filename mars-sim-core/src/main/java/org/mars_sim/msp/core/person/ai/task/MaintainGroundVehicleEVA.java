@@ -67,7 +67,7 @@ implements Serializable {
     public MaintainGroundVehicleEVA(Person person) {
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        settlement = person.getSettlement();
+        settlement = person.getParkedSettlement();
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
@@ -250,7 +250,7 @@ implements Serializable {
     public static Collection<Vehicle> getAllVehicleCandidates(Person person) {
         Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
 
-        Settlement settlement = person.getSettlement();
+        Settlement settlement = person.getParkedSettlement();
         if (settlement != null) {
             Iterator<Vehicle> vI = settlement.getParkedVehicles().iterator();
             while (vI.hasNext()) {

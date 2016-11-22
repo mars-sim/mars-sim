@@ -23,6 +23,10 @@ public class OnAPerson implements LocationState, Serializable {
 		return name;
 	}
 
+	public LocationStateType getType() {
+		return LocationStateType.ON_A_PERSON;
+	}
+	
 	public OnAPerson(Unit unit) {
 		this.unit = unit;
 	}
@@ -45,7 +49,7 @@ public class OnAPerson implements LocationState, Serializable {
 
 
 	public void embarkVehicleInVicinity() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void disembarkVehicleInVicinity() {
@@ -53,7 +57,7 @@ public class OnAPerson implements LocationState, Serializable {
 	}
 
 	public void embarkVehicleInGarage() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void disembarkVehicleInGarage() {
@@ -71,7 +75,7 @@ public class OnAPerson implements LocationState, Serializable {
 	}
 
 	public void transferFromPersonToVehicle() {
-		unit.setLocationState(unit.getInsideVehicle());
+		//unit.setLocationState(unit.getInsideVehicle());
 	}
 
 	public void transferFromVehicleToPerson() {

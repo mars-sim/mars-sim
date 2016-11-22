@@ -55,7 +55,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
 
             // Check all vehicle missions occurring at the settlement.
             try {
-                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getSettlement());
+                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(person.getParkedSettlement());
                 result = 100D * missions.size();
             }
             catch (Exception e) {
@@ -69,7 +69,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
             Job job = person.getMind().getJob();
             if (job != null) {
                 result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class)
-                		* person.getSettlement().getGoodsManager().getTransportationFactor();
+                		* person.getParkedSettlement().getGoodsManager().getTransportationFactor();
             }
 
             // Modify if operations is the person's favorite activity.
@@ -105,7 +105,7 @@ public class LoadVehicleGarageMeta implements MetaTask, Serializable {
 
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
-	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getSettlement());
+	                List<Mission> missions = LoadVehicleGarage.getAllMissionsNeedingLoading(robot.getParkedSettlement());
 	                result = 100D * missions.size();
 	            }
 	            catch (Exception e) {

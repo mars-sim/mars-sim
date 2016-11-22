@@ -79,7 +79,7 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
                 }
             }
             
-            Settlement settlement = person.getSettlement();
+            Settlement settlement = person.getParkedSettlement();
             Inventory inv = settlement.getInventory();
 
 

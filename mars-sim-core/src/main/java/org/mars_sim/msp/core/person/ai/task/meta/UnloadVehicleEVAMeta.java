@@ -58,7 +58,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
         	//2016-10-04 Checked for radiation events
-        	boolean[] exposed = person.getSettlement().getExposed();
+        	boolean[] exposed = person.getParkedSettlement().getExposed();
 
     		if (exposed[2]) {
     			noGo = true;// SEP can give lethal dose of radiation, out won't go outside
@@ -91,8 +91,8 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
 	                int numVehicles = 0;
-	                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getSettlement()).size();
-	                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
+	                numVehicles += UnloadVehicleEVA.getAllMissionsNeedingUnloading(person.getParkedSettlement()).size();
+	                numVehicles += UnloadVehicleEVA.getNonMissionVehiclesNeedingUnloading(person.getParkedSettlement()).size();
 	                result = 100D * numVehicles;
 	            }
 	            catch (Exception e) {
@@ -101,7 +101,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	            }
 	
 	            // Crowded settlement modifier
-	            Settlement settlement = person.getSettlement();
+	            Settlement settlement = person.getParkedSettlement();
 	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
 	                result *= 2D;
 	            }
@@ -113,7 +113,7 @@ public class UnloadVehicleEVAMeta implements MetaTask, Serializable {
 	            Job job = person.getMind().getJob();
 	            if (job != null) {
 	                result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class)
-                    		* person.getSettlement().getGoodsManager().getTransportationFactor();
+                    		* person.getParkedSettlement().getGoodsManager().getTransportationFactor();
 	            }
 	
 	            // Modify if operations is the person's favorite activity.

@@ -166,7 +166,7 @@ public class ConstructionWizard {
     		mapPanel = settlementWindow.getMapPanel();
     	
 		ConstructionSite constructionSite = mission.getConstructionSite();
-	    Settlement settlement = constructionSite.getSettlement();
+	    Settlement settlement = constructionSite.getParkedSettlement();
 	    ConstructionManager constructionManager = settlement.getConstructionManager();
 
 	
@@ -258,7 +258,7 @@ public class ConstructionWizard {
 
 		    System.out.println("ConstructionWizard's executeCase1() : stageInfo is " + stageInfo.getName() );
 	        
-	        logger.log(Level.INFO, "New construction site added at " + constructionSite.getSettlement().getName());
+	        logger.log(Level.INFO, "New construction site added at " + constructionSite.getParkedSettlement().getName());
 	    }
 	    else {
 	    	
@@ -897,7 +897,7 @@ public class ConstructionWizard {
 
         ConstructionStageInfo result = null;
 
-        ConstructionValues values = site.getSettlement().getConstructionManager().getConstructionValues();
+        ConstructionValues values = site.getParkedSettlement().getConstructionManager().getConstructionValues();
         Map<ConstructionStageInfo, Double> stageProfits =
             values.getNewConstructionStageProfits(site, skill);
         if (!stageProfits.isEmpty()) {
@@ -926,7 +926,7 @@ public class ConstructionWizard {
 		//}
 			
       	if (buildingType == null) {
-			Settlement settlement = site.getSettlement();
+			Settlement settlement = site.getParkedSettlement();
 			// 2016-05-08 Added the use of getObjectiveBuildingType() to determine the desired building type
 	        buildingType = settlement.getObjectiveBuildingType();     		            
 	        System.out.println("ConstructionWizard's positionNewConstructionSite() : using the length and width from Settlement Objective's " + buildingType);
@@ -949,7 +949,7 @@ public class ConstructionWizard {
             }
             else if (hasLifeSupport) {
                 // Try to put building next to another inhabitable building.
-                List<Building> inhabitableBuildings = site.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+                List<Building> inhabitableBuildings = site.getParkedSettlement().getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
                 Collections.shuffle(inhabitableBuildings);
                 Iterator<Building> i = inhabitableBuildings.iterator();
                 while (i.hasNext()) {
@@ -961,7 +961,7 @@ public class ConstructionWizard {
             }
             else {
                 // Try to put building next to the same building type.
-                List<Building> sameBuildings = site.getSettlement().getBuildingManager().getBuildingsOfSameType(buildingType);
+                List<Building> sameBuildings = site.getParkedSettlement().getBuildingManager().getBuildingsOfSameType(buildingType);
                 Collections.shuffle(sameBuildings);
                 Iterator<Building> j = sameBuildings.iterator();
                 while (j.hasNext()) {
@@ -977,7 +977,7 @@ public class ConstructionWizard {
             // Try to put building next to another building.
             // If not successful, try again 10m from each building and continue out at 10m increments
             // until a location is found.
-            BuildingManager buildingManager = site.getSettlement().getBuildingManager();
+            BuildingManager buildingManager = site.getParkedSettlement().getBuildingManager();
             if (buildingManager.getBuildingNum() > 0) {
                 for (int x = 10; !goodPosition; x+= 10) {
                     List<Building> allBuildings = buildingManager.getACopyOfBuildings();
@@ -1044,7 +1044,7 @@ public class ConstructionWizard {
 
         boolean result = false;
 
-        BuildingManager manager = site.getSettlement().getBuildingManager();
+        BuildingManager manager = site.getParkedSettlement().getBuildingManager();
         List<Building> inhabitableBuildings = manager.getBuildings(BuildingFunction.LIFE_SUPPORT);
         Collections.shuffle(inhabitableBuildings);
 
@@ -1053,14 +1053,14 @@ public class ConstructionWizard {
 
         // Try to find a connection between an inhabitable building without access to airlock and
         // another inhabitable building with access to an airlock.
-        if (site.getSettlement().getAirlockNum() > 0) {
+        if (site.getParkedSettlement().getAirlockNum() > 0) {
 
             double leastDistance = Double.MAX_VALUE;
 
             Iterator<Building> i = inhabitableBuildings.iterator();
             while (i.hasNext()) {
                 Building startingBuilding = i.next();
-                if (!site.getSettlement().hasWalkableAvailableAirlock(startingBuilding)) {
+                if (!site.getParkedSettlement().hasWalkableAvailableAirlock(startingBuilding)) {
 
                     // Find a different inhabitable building that has walkable access to an airlock.
                     Iterator<Building> k = inhabitableBuildings.iterator();
@@ -1072,7 +1072,7 @@ public class ConstructionWizard {
                             boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) ||
                                     (baseLevel == building.getBaseLevel());
 
-                            if (site.getSettlement().hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
+                            if (site.getParkedSettlement().hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
                                 double distance = Point2D.distance(startingBuilding.getXLocation(),
                                         startingBuilding.getYLocation(), building.getXLocation(),
                                         building.getYLocation());
@@ -1105,7 +1105,7 @@ public class ConstructionWizard {
                 Iterator<Building> k = inhabitableBuildings.iterator();
                 while (k.hasNext()) {
                     Building building = k.next();
-                    boolean hasWalkingPath = site.getSettlement().getBuildingConnectorManager().hasValidPath(
+                    boolean hasWalkingPath = site.getParkedSettlement().getBuildingConnectorManager().hasValidPath(
                             startingBuilding, building);
 
                     // Check if connector base level matches either building.
@@ -1144,7 +1144,7 @@ public class ConstructionWizard {
                 Iterator<Building> k = inhabitableBuildings.iterator();
                 while (k.hasNext()) {
                     Building building = k.next();
-                    boolean directlyConnected = (site.getSettlement().getBuildingConnectorManager().getBuildingConnections(
+                    boolean directlyConnected = (site.getParkedSettlement().getBuildingConnectorManager().getBuildingConnections(
                             startingBuilding, building).size() > 0);
 
                     // Check if connector base level matches either building.
@@ -1259,7 +1259,7 @@ public class ConstructionWizard {
 
             // Check to see if proposed new site position intersects with any existing buildings
             // or construction sites.
-            if (site.getSettlement().getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX,
+            if (site.getParkedSettlement().getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX,
                     rectCenterY, site.getWidth(), site.getLength(), rectRotation, site)) {
                 // Set the new site here.
                 site.setXLocation(rectCenterX);
@@ -1308,7 +1308,7 @@ public class ConstructionWizard {
                     // Check line rect between positions for obstacle collision.
                     Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
                             secondBuildingPos.getX(), secondBuildingPos.getY());
-                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, site.getSettlement().getCoordinates(), false);
+                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, site.getParkedSettlement().getCoordinates(), false);
                     if (clearPath) {
                         validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
                     }

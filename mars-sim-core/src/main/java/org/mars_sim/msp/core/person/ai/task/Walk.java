@@ -123,9 +123,9 @@ implements Serializable {
 
             // If no mission and vehicle is at a settlement location, enter settlement.
             boolean walkToSettlement = false;
-            if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null)) {
+            if ((person.getMind().getMission() == null) && (vehicle.getParkedSettlement() != null)) {
 
-                Settlement settlement = vehicle.getSettlement();
+                Settlement settlement = vehicle.getParkedSettlement();
 
                 // Check if vehicle is in garage.
                 Building garageBuilding = BuildingManager.getBuilding(vehicle);
@@ -253,9 +253,9 @@ implements Serializable {
 
             // If no mission and vehicle is at a settlement location, enter settlement.
             boolean walkToSettlement = false;
-            if ((robot.getBotMind().getMission() == null) && (vehicle.getSettlement() != null)) {
+            if ((robot.getBotMind().getMission() == null) && (vehicle.getParkedSettlement() != null)) {
 
-                Settlement settlement = vehicle.getSettlement();
+                Settlement settlement = vehicle.getParkedSettlement();
 
                 // Check if vehicle is in garage.
                 Building garageBuilding = BuildingManager.getBuilding(vehicle);
@@ -416,7 +416,7 @@ implements Serializable {
                 if (member != person) {
                     LocationSituation location = member.getLocationSituation();
                     if (location == LocationSituation.IN_SETTLEMENT) {
-                        result = member.getSettlement().getClosestAvailableAirlock(person);
+                        result = member.getParkedSettlement().getClosestAvailableAirlock(person);
                     }
                     else if (location == LocationSituation.IN_VEHICLE) {
                         Vehicle vehicle = member.getVehicle();
@@ -467,7 +467,7 @@ implements Serializable {
                 if (member != robot) {
                     LocationSituation location = member.getLocationSituation();
                     if (location == LocationSituation.IN_SETTLEMENT) {
-                        result = member.getSettlement().getClosestAvailableAirlock(robot);
+                        result = member.getParkedSettlement().getClosestAvailableAirlock(robot);
                     }
                     else if (location == LocationSituation.IN_VEHICLE) {
                         Vehicle vehicle = member.getVehicle();
@@ -776,7 +776,7 @@ implements Serializable {
 		        		logger.info(robot + " is not in a building");
 		        		logger.info(robot + " may be at " + robot.getBuildingLocation());
 		        		logger.info(robot + "'s location is " + robot.getLocationSituation());
-		        		logger.info(robot + " is in " + robot.getSettlement());
+		        		logger.info(robot + " is in " + robot.getParkedSettlement());
 		        		logger.info(robot + " is associated to " + robot.getAssociatedSettlement());
 		        		logger.info(robot + " has the container unit of " + robot.getContainerUnit());
 		        		logger.info(robot + " has the top container unit of " + robot.getTopContainerUnit());

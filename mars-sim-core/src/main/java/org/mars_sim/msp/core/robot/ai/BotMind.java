@@ -139,7 +139,7 @@ implements Serializable {
 
         if (robot != null) {
             if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                overrideMission = robot.getSettlement().getMissionCreationOverride();
+                overrideMission = robot.getParkedSettlement().getMissionCreationOverride();
             }
 
             // Perform a task if the robot has one, or determine a new task/mission.

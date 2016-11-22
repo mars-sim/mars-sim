@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * HaveConversationMeta.java
- * @version 3.08 2016-03-01
+ * MeetTogetherMeta.java
+ * @version 3.1.0 2016-11-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
 import org.mars_sim.msp.core.person.ai.task.HaveConversation;
+import org.mars_sim.msp.core.person.ai.task.MeetTogether;
 import org.mars_sim.msp.core.person.ai.task.Read;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.Workout;
@@ -39,16 +40,16 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * Meta task for HaveConversation task.
+ * Meta task for MeetTogether task.
  */
-public class HaveConversationMeta implements MetaTask, Serializable {
+public class MeetTogetherMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.haveConversation"); //$NON-NLS-1$
+            "Task.description.meetTogether"); //$NON-NLS-1$
     
     @Override
     public String getName() {
@@ -57,7 +58,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
 
     @Override
     public Task constructInstance(Person person) {
-        return new HaveConversation(person);
+        return new MeetTogether(person);
     }
 
     @Override

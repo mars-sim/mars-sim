@@ -78,7 +78,7 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        settlement = person.getSettlement();
+        settlement = person.getParkedSettlement();
 
         VehicleMission mission = getMissionNeedingUnloading();
         if (mission != null) {
@@ -160,7 +160,7 @@ implements Serializable {
         Point2D unloadingLoc = determineUnloadingLocation();
         setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
 
-        settlement = person.getSettlement();
+        settlement = person.getParkedSettlement();
 
         // Initialize phase
         addPhase(UNLOADING);
@@ -261,7 +261,7 @@ implements Serializable {
                     VehicleMission vehicleMission = (VehicleMission) mission;
                     if (vehicleMission.hasVehicle()) {
                         Vehicle vehicle = vehicleMission.getVehicle();
-                        if (settlement == vehicle.getSettlement()) {
+                        if (settlement == vehicle.getParkedSettlement()) {
                             int peopleOnboard = CollectionUtils.getPerson(
                                     vehicle.getInventory().getContainedUnits()).size();
                             if (peopleOnboard == 0) {
@@ -300,9 +300,9 @@ implements Serializable {
         VehicleMission result = null;
         List<Mission> unloadingMissions = null;
 		if (person != null)
-        	unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
+        	unloadingMissions = getAllMissionsNeedingUnloading(person.getParkedSettlement());
 		else if (robot != null)
-        	unloadingMissions = getAllMissionsNeedingUnloading(robot.getSettlement());
+        	unloadingMissions = getAllMissionsNeedingUnloading(robot.getParkedSettlement());
 
         if (unloadingMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);

@@ -31,6 +31,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -274,8 +276,6 @@ implements ActionListener {
         setGauge(gauge, min, max);
         locationPanel.add(gauge, BorderLayout.CENTER);
 
-
-
 		//centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));//GridLayout(2,1,0,0)); // new BorderLayout())
 /*
 		// 2015-12-09 Prepare loc label
@@ -286,7 +286,7 @@ implements ActionListener {
         locLabel.setHorizontalAlignment(SwingConstants.CENTER);
  */
 
-        String loc = "On Mars";
+        String loc = "On the surface of Mars";
 		lcdText = new DisplaySingle();
         lcdText.setLcdInfoString("Last Unknown Position");
         //lcdText.setLcdColor(LcdColor.REDDARKRED_LCD);
@@ -306,7 +306,10 @@ implements ActionListener {
 		//locationPanel.add(centerPanel, BorderLayout.SOUTH);
 		locationPanel.add(lcdText, BorderLayout.SOUTH);
 
+		updateLocation();
+		
 		checkTheme(true);
+		
     }
 
     public void checkTheme(boolean firstRun) {
@@ -400,11 +403,11 @@ implements ActionListener {
 
         			        			
         			if (mainScene != null) {
-        				mainScene.setSettlement(p.getSettlement());
+        				mainScene.setSettlement(p.getParkedSettlement());
         			}
         			else {
             			desktop.openToolWindow(SettlementWindow.NAME);
-        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getParkedSettlement());
         			}
         			
         			Building b = p.getBuildingLocation();
@@ -420,7 +423,7 @@ implements ActionListener {
         		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = p.getVehicle();
-        			if (vv.getSettlement() == null) {
+        			if (vv.getParkedSettlement() == null) {
         				// out there on a mission
         				desktop.centerMapGlobe(p.getCoordinates());
         			}
@@ -428,7 +431,7 @@ implements ActionListener {
         				// still parked inside a garage or within the premise of a settlement
 	        			desktop.openToolWindow(SettlementWindow.NAME);
 	        			//System.out.println("Just open Settlement Map Tool");
-	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getParkedSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -448,7 +451,7 @@ implements ActionListener {
         				// he's stepped outside the settlement temporally
                			desktop.openToolWindow(SettlementWindow.NAME);
             			//System.out.println("Just open Settlement Map Tool");
-             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getParkedSettlement());
 
         				double xLoc = p.getXLocation();
             			double yLoc = p.getYLocation();
@@ -471,7 +474,7 @@ implements ActionListener {
         		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         			desktop.openToolWindow(SettlementWindow.NAME);
         			//System.out.println("Just open Settlement Map Tool");
-        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getParkedSettlement());
 
         			Building b = r.getBuildingLocation();
         			double xLoc = b.getXLocation();
@@ -486,7 +489,7 @@ implements ActionListener {
         		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = r.getVehicle();
-        			if (vv.getSettlement() == null) {
+        			if (vv.getParkedSettlement() == null) {
         				// out there on a mission
         				desktop.centerMapGlobe(r.getCoordinates());
         			}
@@ -494,7 +497,7 @@ implements ActionListener {
         				// still parked inside a garage or within the premise of a settlement
 	        			desktop.openToolWindow(SettlementWindow.NAME);
 	        			//System.out.println("Just open Settlement Map Tool");
-	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getParkedSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -514,7 +517,7 @@ implements ActionListener {
         				// he's stepped outside the settlement temporally
                			desktop.openToolWindow(SettlementWindow.NAME);
             			//System.out.println("Just open Settlement Map Tool");
-             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getParkedSettlement());
 
         				double xLoc = r.getXLocation();
             			double yLoc = r.getYLocation();
@@ -532,11 +535,11 @@ implements ActionListener {
 
         	} else if (unit instanceof Vehicle) {
         		v = (Vehicle) unit;
-          		if (v.getSettlement() != null) {
+          		if (v.getParkedSettlement() != null) {
         			desktop.openToolWindow(SettlementWindow.NAME);
         			//System.out.println("Just open Settlement Map Tool");
         		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
-        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getSettlement());
+        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getParkedSettlement());
 
         			double xLoc = v.getXLocation();
         			double yLoc = v.getYLocation();
@@ -664,6 +667,193 @@ implements ActionListener {
 
     	String loc = null;
 
+    	if (unit instanceof Person) {
+    		Person p = (Person) unit;
+    		
+    		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    			// case A
+    			loc = " at " + p.getBuildingLocation().getNickName() + " in " + topContainerCache;
+    		}
+    		
+    		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+    			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
+    			if (vehicle.getParkedSettlement() != null) {
+    				Building building = BuildingManager.getBuilding(vehicle);
+
+    				if (building == null) {
+            			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+            			//System.out.println(p + " is in " + settlement.getName());
+
+            			// case D
+    					//loc = " in a vehicle parked within the premise of a settlement";
+    					loc = " in " + containerCache + " parked within the premise of " + settlement;
+    				}
+    				else {
+    					// case C
+        				// vehicle.getSettlement() <==> getTopContainerUnit()
+         				// e.g. " in LUV1 inside Garage 1 in Alpha Base;
+        				// vehicle = containerCache
+               			loc = " in " + vehicle + " inside " + p.getBuildingLocation() + " in " + vehicle.getParkedSettlement();
+    				}
+
+    			} else {
+        			// case E
+        			loc = " in " + containerCache + " gone outside on a mission ";
+    			}
+    		}
+    		
+    		else if (p.getLocationSituation() == LocationSituation.BURIED)
+    			// case G
+    			loc = " Buried outside " + p.getBuriedSettlement().getName();
+    		
+    		else if (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
+				loc = " Within the vicinity of " + topContainerCache;
+			}
+
+			else if (p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {//.getName().equals("Outside on the surface of Mars")) {
+				// case F
+				loc = " Stepped outside on the surface of Mars";
+			}
+    	}
+    	
+    	else if (unit instanceof Robot) {
+    		Robot r = (Robot) unit;
+    		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    			// case A
+    			loc = " at " + r.getBuildingLocation().getNickName() + " in " + topContainerCache;
+    		}
+
+    		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+     			if (r.getParkedSettlement() != null)
+    				// case C
+           			loc = " in " + containerCache + " inside a garage";
+    			else {
+         			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
+        	     	// Note: a vehicle's container unit may be null if it's outside a settlement
+        			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+
+        			if (settlement == null)
+        				// case E
+           				loc = " in " + containerCache + " on a mission outside";
+    				else
+    					// case D
+    					//loc = " in a vehicle parked within the premise of a settlement";
+    					loc = " in " + containerCache + " parked within the premise of " + settlement;
+    			}
+    		}
+    		
+    		else if (r.getLocationSituation() == LocationSituation.OUTSIDE) {
+    			
+    			if (r.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
+    				loc = " Within the vicinity of " + topContainerCache;
+    			}
+
+    			else if (r.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {//.getName().equals("Outside on the surface of Mars")) {
+    				// case F
+    				loc = " Stepped outside on the surface of Mars";
+    			}
+    		}
+    		
+    		else if (r.getLocationSituation() == LocationSituation.BURIED)
+    			loc = " decommmissed ";// + r.getBuriedSettlement().getName();
+    		
+    		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+     			if (r.getParkedSettlement() != null)
+    				// case C
+           			loc = " in " + containerCache + " inside a garage";
+    			else {
+         			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
+        	     	// Note: a vehicle's container unit may be null if it's outside a settlement
+        			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+           			System.out.println(r.getName() + " is in " + settlement.getName());
+
+    				if (settlement == null)
+        				// case E
+           				loc = " in " + containerCache + " on a mission outside";
+    				else
+    					// case D
+    					//loc = " in a vehicle parked within the premise of a settlement";
+    					loc = " in " + containerCache + " parked within the premise of " + settlement;
+    			}
+    		}
+    	}
+
+    	else if (unit instanceof Equipment) {
+    		Equipment e = (Equipment) unit;
+    		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    			// case A
+    			loc = " at " + e.getBuildingLocation().getNickName() + " in " + topContainerCache;
+    		}
+    		
+       		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+     			if (e.getParkedSettlement() != null)
+    				// case C
+           			loc = " in " + containerCache + " inside a garage";
+    			else {
+         			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
+        	     	// Note: a vehicle's container unit may be null if it's outside a settlement
+        			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+
+    				if (settlement == null)
+        				// case E
+           				loc = " in " + containerCache + " on a mission outside";
+    				else
+    					// case D
+    					//loc = " in a vehicle parked within the premise of a settlement";
+    					loc = " in " + containerCache + " parked within the premise of " + settlement;
+    			}
+    		}
+    		
+    		else if (e.getLocationSituation() == LocationSituation.OUTSIDE) {
+    			
+    			if (e.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
+    				loc = " Within the vicinity of " + topContainerCache;
+    			}
+
+    			else if (e.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {//.getName().equals("Outside on the surface of Mars")) {
+    				// case F
+    				loc = " Outside on the surface of Mars";
+    			}
+    		}
+    	}
+
+    	else if (unit instanceof Vehicle) {
+    		Vehicle v = (Vehicle) unit;
+			//Settlement settlement = (Settlement) v.getContainerUnit();
+			Settlement s = v.getParkedSettlement();
+   			//System.out.println(v.getName() + " is in " + settlement.getName());
+   			//Unit tc = v.getTopContainerUnit();
+			//Unit c = v.getContainerUnit();
+				
+   			if (v.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
+				loc = " Parked within the premise of " + s;
+
+   			else if (v.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
+				loc = " Outside on a mission on the surface of Mars";
+   			
+   			else if (v.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {
+   	   			Unit tc = v.getTopContainerUnit();
+   	   			s = (Settlement)tc;
+   				Building b = v.getGarage(s);
+   				//System.out.println(v + " is at " + s);
+   				//System.out.println(v + " is at " + b);
+
+   				// case D
+				// Note: it takes a short finite amount of time to update the latest LocationStateType
+   				// the vehicle would have left the building and b becomes null when LocationStateType is waiting to be updated in the next frame.
+   				if (s != null && b != null)
+   					loc = " Parked at " + b.getNickName() + " in " + s;
+   			}
+   			
+   			else {
+   				Unit c = v.getContainerUnit();
+   				loc = " Parked at " + c;
+   			}
+   				
+
+		}
+  
+/*    	
         // Case F or case G
         if (containerCache == null && topContainerCache == null) {
         	if (unit instanceof Person) {
@@ -673,13 +863,13 @@ implements ActionListener {
         			//Rover ro = (Rover) p.getVehicle();
         			//boolean crew = ro.isCrewmember(p);
         			//if (crew) {
-        			if (p.getLocationState().getName().equals("Within a settlement's vicinity")) {
+        			if (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
         				loc = " Within the vicinity of " + topContainerCache;
         			}
 
-        			else if (p.getLocationState().getName().equals("Outside on the surface of Mars")) {
+        			else if (p.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {//.getName().equals("Outside on the surface of Mars")) {
         				// case F
-        				loc = " stepped outside a vehicle on a mission";
+        				loc = " stepped outside on the surface of Mars";
         			}
 
         		} else if (p.getLocationSituation() == LocationSituation.BURIED)
@@ -689,8 +879,42 @@ implements ActionListener {
         	}
         	else if (unit instanceof Robot) {
         		Robot r = (Robot) unit;
-        		if (r.getLocationSituation() == LocationSituation.OUTSIDE)
-        			loc = " on a mission, stepped outside a vehicle at prescribed coordinates";
+        		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        			// case A
+        			loc = " at " + r.getBuildingLocation().getNickName() + " in " + topContainerCache;
+        		}
+        		
+        		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+         			if (r.getSettlement() != null)
+        				// case C
+               			loc = " in " + containerCache + " inside a garage";
+        			else {
+             			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
+            	     	// Note: a vehicle's container unit may be null if it's outside a settlement
+            			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+
+        				if (settlement == null)
+            				// case E
+               				loc = " in " + containerCache + " on a mission outside";
+        				else
+        					// case D
+        					//loc = " in a vehicle parked within the premise of a settlement";
+        					loc = " in " + containerCache + " parked within the premise of " + settlement;
+        			}
+        		}
+        		
+        		else if (r.getLocationSituation() == LocationSituation.OUTSIDE) {
+        			
+        			if (r.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
+        				loc = " Within the vicinity of " + topContainerCache;
+        			}
+
+        			else if (r.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS) {//.getName().equals("Outside on the surface of Mars")) {
+        				// case F
+        				loc = " stepped outside on the surface of Mars";
+        			}
+        		}
+        		
         		else if (r.getLocationSituation() == LocationSituation.BURIED)
         			loc = " decommmissed ";// + r.getBuriedSettlement().getName();
         	}
@@ -763,7 +987,8 @@ implements ActionListener {
         		}
         	}
         }
-
+*/
+    	
         lcdText.setLcdText(loc);
 
     }
