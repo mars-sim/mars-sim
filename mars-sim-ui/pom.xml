@@ -379,7 +379,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>wellbehavedfx</artifactId>
 			<version>0.3</version>
 		</dependency>
-	
+		<dependency>
+			<groupId>org.codehaus.izpack</groupId>
+			<artifactId>izpack-maven-plugin</artifactId>
+			<version>5.0.10</version>
+		</dependency>	
 	</dependencies>
 	<repositories>
 		<repository>
@@ -400,8 +404,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	    <repository>
 	        <id>maven-central-repo</id>
 	        <url>http://repo1.maven.org/maven2</url>
+	        <releases>
+                <enabled>true</enabled>
+            </releases>
 	        <snapshots>
-	            <enabled>false</enabled>
+	            <enabled>true</enabled>
 	        </snapshots>
 	    </repository>
  		<repository>

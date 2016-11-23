@@ -96,7 +96,9 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  */
 public class DesktopPane
 extends JDesktopPane
-implements ComponentListener, UnitListener, UnitManagerListener {
+implements ComponentListener, 
+//UnitListener,
+UnitManagerListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -219,7 +221,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		// Add addUnitManagerListener()
 		UnitManager unitManager = Simulation.instance().getUnitManager();
 		unitManager.addUnitManagerListener(this);
-
+/*
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
@@ -231,7 +233,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 			i.next().addUnitListener(this);
 		}
-
+*/
 	   	//logger.info("MainDesktopPane's prepareListeners() is done");
 	}
 	
@@ -286,8 +288,10 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 
 		Object unit = event.getUnit();
 		if (unit instanceof Settlement) {
+/*
 			Settlement settlement = (Settlement) unit;
 			UnitManagerEventType eventType = event.getEventType();
+			
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
 				//System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
 				settlement.addUnitListener(this);
@@ -296,12 +300,12 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 				//System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
 				settlement.removeUnitListener(this);
 			}
-			
+*/			
 			updateToolWindow();
 		}
 	}
 
-
+/*
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType eventType = event.getType();
 		//System.out.println("MainDesktopPane : unitUpdate() " + eventType);
@@ -340,7 +344,7 @@ implements ComponentListener, UnitListener, UnitManagerListener {
 		}
 
 	}
-
+*/
 	public void destroy() {
 		backgroundImageIcon  = null;
 		backgroundLabel = null;

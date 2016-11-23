@@ -76,20 +76,20 @@ implements Serializable, Transportable {
     //private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 4D;
     //private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
 
-    public static final int MAX_INHABITABLE_BUILDING_DISTANCE = 50; //6
-    public static final int MIN_INHABITABLE_BUILDING_DISTANCE = 2;
+    public static final int MAX_INHABITABLE_BUILDING_DISTANCE = 6; //6
+    public static final int MIN_INHABITABLE_BUILDING_DISTANCE = 4;
 
-    public static final int MAX_NONINHABITABLE_BUILDING_DISTANCE = 50; //6
+    public static final int MAX_NONINHABITABLE_BUILDING_DISTANCE = 6; //6
     public static final int MIN_NONINHABITABLE_BUILDING_DISTANCE = 2;
 
-    private static final int BUILDING_CENTER_SEPARATION = 10; // why 11?
+    private static final int BUILDING_CENTER_SEPARATION = 11; // why 11?
 
     // Default width and length for variable size buildings if not otherwise determined.
     private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 9D;
     private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 9D;
 
     /** Minimum length of a building connector (meters). */
-    private static final double MINIMUM_CONNECTOR_LENGTH = 1D;//.5D;
+    private static final double MINIMUM_CONNECTOR_LENGTH = .5;//.5D;
 
 	// Data members
 	private int newImmigrantNum;
@@ -134,12 +134,11 @@ implements Serializable, Transportable {
      */
     public synchronized void startDeliveryEvent() {
         logger.info("startDeliverBuildings() is on " + Thread.currentThread().getName() + " Thread"); // normally on pool-4-thread-3 Thread
-        buildingManager = settlement.getBuildingManager();
-        buildingManager.addResupply(this);
-
-    	// 2014-12-26 Added Simulation.getUseGUI() to terminate handling of delivery
-        // by Resupply.java if GUI is in use
+        // 2014-12-26 Added Simulation.getUseGUI() to terminate handling of delivery by Resupply.java if GUI is in use
         if (Simulation.getUseGUI())  {
+    		// 2016-11-23 Added calling addResupply()
+            buildingManager = settlement.getBuildingManager();
+            buildingManager.addResupply(this);
         	//boolean check = Simulation.instance().getTransportManager().isTransportingBuilding();
         	//System.out.println("Resupply : is it transporting : " + check);
         	//if(!check) {
@@ -155,6 +154,7 @@ implements Serializable, Transportable {
 	            else {
 	            	// 2016-01-12 Deliver the rest of the supplies and add people.
 	                deliverOthers();
+	               	settlement.fireUnitUpdate(UnitEventType.END_TRANSPORT_WIZARD_EVENT);
 	            }
         	//}
         } else {
@@ -164,6 +164,7 @@ implements Serializable, Transportable {
 
             // Deliver the rest of the supplies and add people.
             deliverOthers();
+           	settlement.fireUnitUpdate(UnitEventType.END_TRANSPORT_WIZARD_EVENT);
         }
 
     }
@@ -705,7 +706,7 @@ implements Serializable, Transportable {
             Iterator<Building> i = inhabitableBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                int rand = RandomUtil.getRandomInt(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
+                int rand = RandomUtil.getRandomRegressionInteger(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
                 newPosition = positionNextToBuilding(buildingType, building, rand, false);
                 if (newPosition != null) {
                     //System.out.println("next to another inhabitable building");
@@ -721,7 +722,7 @@ implements Serializable, Transportable {
             Iterator<Building> j = sameBuildings.iterator();
             while (j.hasNext()) {
                 Building building = j.next();
-                int rand1 = RandomUtil.getRandomInt(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
+                int rand1 = RandomUtil.getRandomRegressionInteger(MIN_NONINHABITABLE_BUILDING_DISTANCE, MAX_NONINHABITABLE_BUILDING_DISTANCE);
                 newPosition = positionNextToBuilding(buildingType, building, rand1, false);
                 if (newPosition != null) {
                     System.out.println("next to building of the same type");

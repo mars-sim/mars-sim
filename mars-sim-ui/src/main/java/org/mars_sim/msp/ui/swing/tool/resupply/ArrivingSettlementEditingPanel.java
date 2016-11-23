@@ -720,7 +720,7 @@ extends TransportItemEditingPanel {
 	
 	public void enableButton(boolean value) {
 		if (modifyTransportItemDialog != null)
-			modifyTransportItemDialog.setModifyButton(value);
+			modifyTransportItemDialog.setCommitButton(value);
 		else if (newTransportItemDialog != null)
 			newTransportItemDialog.setCreateButton(value);
 	}

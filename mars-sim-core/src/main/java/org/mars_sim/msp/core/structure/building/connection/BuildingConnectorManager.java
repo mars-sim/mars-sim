@@ -762,6 +762,7 @@ public class BuildingConnectorManager implements Serializable {
         
         BuildingSide result = null;
         
+        // Exception in thread "JavaFX Application Thread" java.lang.NullPointerException
         Point2D buildingRelativePt = LocalAreaUtil.getObjectRelativeLocation(point.getX(), point.getY(), building);
         
         if (Math.abs(buildingRelativePt.getY() - (building.getLength() / 2D)) < SMALL_AMOUNT_COMPARISON) {

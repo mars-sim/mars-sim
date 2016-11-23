@@ -194,7 +194,7 @@ public class TransportWizard {
      */
 	// 2015-01-02 Added keyword synchronized to avoid JOption crash
     public synchronized void deliverBuildings(BuildingManager mgr) {
-    	//logger.info("deliverBuildings() is on " + Thread.currentThread().getName()); // normally on JavaFX Application Thread
+    	logger.info("deliverBuildings() is on " + Thread.currentThread().getName()); // normally on JavaFX Application Thread
 	    resupply = mgr.getResupply();
 	    
     	if (settlementWindow == null)
@@ -277,6 +277,7 @@ public class TransportWizard {
 		   	logger.info("DeliverTask's run() is on " + Thread.currentThread().getName() + " Thread");
 			// it's now on pool-3-thread-1 Thread
 		   	resupply.deliverOthers();
+           	mgr.getSettlement().fireUnitUpdate(UnitEventType.END_TRANSPORT_WIZARD_EVENT);
 		}
     }
     
@@ -567,32 +568,33 @@ public class TransportWizard {
 
     /**
      * Identifies the type of collision and gets new template if the collision is immovable
-     * @param correctedTemplate
+     * @param t
      * @return BuildingTemplate
      */
     // 2015-12-07 Added clearCollision()
-    public BuildingTemplate clearCollision(BuildingTemplate correctedTemplate, BuildingManager mgr, int count) {
+    public BuildingTemplate clearCollision(BuildingTemplate t, BuildingManager mgr, int count) {
 		logger.info("calling clearCollision()");
-
+		count--;
+		
     	boolean noVehicle = true;
     	// check if a vehicle is the obstacle and move it
-    	noVehicle = checkCollisionMoveVehicle(correctedTemplate, mgr);
+    	noVehicle = checkCollisionMoveVehicle(t, mgr);
 		//System.out.println("noVehicle is now " + noVehicle);
 
-	  	int noImmovable = checkCollisionImmovable(correctedTemplate, mgr, count);
+	  	int noImmovable = checkCollisionImmovable(t, mgr, count);
 		//System.out.println("noImmovable is now " + noImmovable);
 
 		if (noImmovable != 0) {
 			// if there are no obstacles
-			BuildingTemplate newT = resupply.positionNewResupplyBuilding(correctedTemplate.getBuildingType());
+			BuildingTemplate newT = resupply.positionNewResupplyBuilding(t.getBuildingType());
     		//System.out.println("inside clearCollision(), just got newT");
 			// 2015-12-16 Added setMissionName()
-    		newT.setMissionName(correctedTemplate.getMissionName());
+    		newT.setMissionName(t.getMissionName());
 			// Call again recursively to check for any collision
-			correctedTemplate = clearCollision(newT, mgr, count);
+			t = clearCollision(newT, mgr, count);
 		}
 
-		return correctedTemplate;
+		return t;
     }
 
     /**
@@ -613,7 +615,7 @@ public class TransportWizard {
 
 		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-		// true if it collides
+		// true if no collision
         boolean noCollison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
         
         return noCollison;
@@ -630,9 +632,8 @@ public class TransportWizard {
     // 2015-12-07 Added checkCollisionImmovable()
     public int checkCollisionImmovable(BuildingTemplate t, BuildingManager mgr, int count) {
 		logger.info(count + " : calling checkCollisionImmovable(t, mgr) for " + t.getNickName());
-
-		count--;
-		
+		if (count > 0)
+			count--;	
     	double xLoc = t.getXLoc();
     	double yLoc = t.getYLoc();
     	double w = t.getWidth();
@@ -645,9 +646,9 @@ public class TransportWizard {
 				&& t.getBuildingType().equalsIgnoreCase("tunnel"))
 				boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 			else
-				boundedObject = new BoundedObject(xLoc, yLoc, w+2, l+2, f);
+				boundedObject = new BoundedObject(xLoc, yLoc, w+1, l+1, f);
 
-		// true if it collides
+		// true if no collision
 		boolean noCollison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
 
@@ -676,7 +677,7 @@ public class TransportWizard {
 
 		BoundedObject boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 
-		// true if it collides
+		// true if no collision
         boolean noCollison = LocalAreaUtil.checkVehicleBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates(), true);
 
         return noCollison;
@@ -694,8 +695,8 @@ public class TransportWizard {
     // 2015-12-07 Added checkCollisionImmovable()
     public int checkCollisionImmovable(Building b, BuildingManager mgr, int count) {
 		logger.info(count + " : calling checkCollisionImmovable(b, mgr) for " + b.getNickName());
-
-		count--;
+		if (count > 0)
+			count--;
 		
     	double xLoc = b.getXLocation();
     	double yLoc = b.getYLocation();
@@ -709,9 +710,9 @@ public class TransportWizard {
 			&& b.getBuildingType().equalsIgnoreCase("tunnel"))
 			boundedObject = new BoundedObject(xLoc, yLoc, w, l, f);
 		else
-			boundedObject = new BoundedObject(xLoc, yLoc, w+2, l+2, f);
+			boundedObject = new BoundedObject(xLoc, yLoc, w+1, l+1, f);
 			
-		// true if it collides
+		// true if no collision
 		boolean noCollison = LocalAreaUtil.checkImmovableBoundedOjectIntersected(boundedObject, mgr.getSettlement().getCoordinates());
         //boolean noCollison = LocalAreaUtil.checkImmovableCollision(t.getXLoc(), t.getYLoc(), settlement.getCoordinates());
         
@@ -723,49 +724,6 @@ public class TransportWizard {
     }
 	
 	    
-
-    /**
-     * Check if the obstacle is a vehicle, if it is a vehicle, move it elsewhere
-     * @param template the position of the proposed building
-     * @return true if something else is still blocking
-
-    // 2015-12-08 Replaced with using LocalAreaUtil.checkVehicleBoundedOjectIntersected()
-    // and checkImmovableBoundedOjectIntersected() for better accuracy and less buggy collision checking
-    public boolean checkObstacleMoveVehicle(BuildingTemplate template){
-
-		boolean isSomethingElseBlocking = false;
-		boolean quit = false;
-
-		// Note: why using the do while loop ? could there be more than one unit at a location ? a person, a construction site and a vehicle?
-		do {
-			Unit unit = mapPanel.selectVehicleAsObstacle(template.getXLoc(), template.getYLoc());
-			if (unit == null) {
-				// no obstacle is found
-				isSomethingElseBlocking = false;
-				quit = true;
-				//System.out.println("TranportWizard : unit is null");
-			} else if (unit != null) {
-				//System.out.println("TranportWizard : unit is NOT null");
-				if (unit instanceof Vehicle) {
-					//Vehicle vehicle = mapPanel.selectVehicleAt(0, 0);
-					Vehicle vehicle = (Vehicle) unit;
-					//System.out.println("TranportWizard : calling vehicle.determinedSettlementParkedLocationAndFacing() ");
-					// move the vehicle elsewhere
-					vehicle.determinedSettlementParkedLocationAndFacing();
-					isSomethingElseBlocking = false;
-				} else {
-					// something is blocking it but it's NOT a vehicle
-					isSomethingElseBlocking = true;
-					quit = true;
-				}
-			}
-
-		} while (!quit);
-
-		return isSomethingElseBlocking;
-    }
-*/
-
 	/**
 	 * Maps a number to an alphabet
 	 * @param a number
@@ -779,9 +737,10 @@ public class TransportWizard {
 
     /**
      * Asks user to confirm the location of the new building.
-     * @param template the position of the proposed building
      * @param buildingManager
+     * @param template the position of the proposed building
      * @param isAtPreDefinedLocation
+     * @param isNewTemplate
      */
 	public synchronized void createDialog(BuildingManager mgr, BuildingTemplate template,
 			boolean isAtPreDefinedLocation, boolean isNewTemplate) {
@@ -812,7 +771,6 @@ public class TransportWizard {
 		//mapPanel.setShowBuildingLabels(true);
 		//mapPanel.getSettlementTransparentPanel().getBuildingLabelMenuItem().setSelected(true);
 
-
 		String header = null;
 		String title = null;
 		String message = "(1) Will default to \"Yes\" in 30 secs unless timer is cancelled."
@@ -840,7 +798,7 @@ public class TransportWizard {
         	alertDialog(title, header, msg, template, mgr, newBuilding, true);//, timer);
 
 		} else {
-
+			// for Swing mode
 	        desktop.openAnnouncementWindow("Pause for Transport Wizard");
 	        AnnouncementWindow aw = desktop.getAnnouncementWindow();
 	        Point location = MouseInfo.getPointerInfo().getLocation();

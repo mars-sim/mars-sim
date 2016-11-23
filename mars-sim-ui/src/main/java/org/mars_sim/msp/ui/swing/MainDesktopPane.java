@@ -1487,29 +1487,18 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 			if (!isTransportingBuilding) {
 				isTransportingBuilding = true;
-				if (mainWindow != null)  {//mainWindow.pauseSimulation();
-					//SwingUtilities.invokeLater(() -> {
-						mainWindow.openTransportWizard(mgr);
-					//});
-				}
-				else if (mainScene != null) {//mainScene.pauseSimulation();
-					//Platform.runLater(() -> {
-		                mainScene.openTransportWizard(mgr);
-					//});
-				}
-
-				Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
-			}
-			else {
-				//mgr.getResupply();
+				if (mainWindow != null)
+					mainWindow.openTransportWizard(mgr);
+				else if (mainScene != null)
+					mainScene.openTransportWizard(mgr);
+				//Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
 			}
 
-
-		} else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
-
+		} 
+		
+		else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
 			isTransportingBuilding = false;
-            disposeAnnouncementWindow();
-
+            //disposeAnnouncementWindow();
 		}
 
 		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {

@@ -44,7 +44,7 @@ public class CompositionOfAir implements Serializable {
 	private static Logger logger = Logger.getLogger(CompositionOfAir.class.getName());
 	private static final double C_TO_K = 273.15;
 	private static final int numGases = 5;
-	private static final int HEIGHT = 3;
+	private static final int HEIGHT = 3; // assume an uniform height of 3m in all buildings
 	
 	
 	private static final int ONE_TENTH_MILLISOLS_PER_UPDATE = 10 ;
@@ -57,6 +57,10 @@ public class CompositionOfAir implements Serializable {
 
 	private double dryAirDensity = 1.275D; // breath-able air in [kg/m3]
 
+	// Assume using Earth's atmospheric pressure at sea level, 14.7 psi, or ~ 1 bar, for the habitat
+
+	// Note : Mars' outside atmosphere is ~6 to 10 millibars (or .0882 to 0.147 psi) , < 1% that of Earth's. 
+	
     // 1 kilopascal = 0.00986923267 atm
 	// 1 cubic ft = L * 0.035315
     // A full scale pressurized Mars rover prototype may have an airlock volume of 5.7 m^3
@@ -169,9 +173,10 @@ public class CompositionOfAir implements Serializable {
 		}
 
 		for (int i = 0; i < numGases; i++) {
-			Iterator<Building> k = buildings.iterator();
-			while (k.hasNext()) {
-				Building b = k.next();
+			for (Building b: buildings) {
+			//Iterator<Building> k = buildings.iterator();
+			//while (k.hasNext()) {
+			//	Building b = k.next();
 				int id = b.getInhabitable_id();
 
 				double t =  22.5 + C_TO_K ;
@@ -247,17 +252,19 @@ public class CompositionOfAir implements Serializable {
 			List<Building> newBuildings = new ArrayList<>();
 
 			// Assembled a list of new buildings
-			Iterator<Building> k = buildings.iterator();
-			while (k.hasNext()) {
-				Building b = k.next();
+			for (Building b: buildings) {
+			//Iterator<Building> k = buildings.iterator();
+			//while (k.hasNext()) {
+			//	Building b = k.next();
 				int id = b.getInhabitable_id();
 				if (id >= numBuildingsCache)
 					newBuildings.add(b);
 			}
 
-			Iterator<Building> kk = newBuildings.iterator();
-			while (kk.hasNext()) {
-				Building b = kk.next();
+			for (Building b: newBuildings) {
+			//Iterator<Building> kk = newBuildings.iterator();
+			//while (kk.hasNext()) {
+			//	Building b = kk.next();
 				int id = b.getInhabitable_id();
 
 				for (int i=0; i<numGases; i++) {
@@ -291,9 +298,10 @@ public class CompositionOfAir implements Serializable {
 
 
 		for (int i= 0; i< numGases; i++) {
-			Iterator<Building> k = buildings.iterator();
-			while (k.hasNext()) {
-				Building b = k.next();
+			for (Building b: buildings) {
+			//Iterator<Building> k = buildings.iterator();
+			//while (k.hasNext()) {
+			//	Building b = k.next();
 				int id = b.getInhabitable_id();
 
 				double t = C_TO_K  + b.getCurrentTemperature(); //b.getThermalGeneration().getHeating().getCurrentTemperature();
@@ -395,6 +403,14 @@ public class CompositionOfAir implements Serializable {
 	 	thermalSystem = null;
 		weather = null;
 		location = null;
+		emissivityMap.clear();
+		emissivityMap = null;
+		settlement = null;
+		masterClock = null;
+		clock = null;
+		surfaceFeatures = null;
+		personConfig = null;
+		fmt = null;
 	}
 
 }

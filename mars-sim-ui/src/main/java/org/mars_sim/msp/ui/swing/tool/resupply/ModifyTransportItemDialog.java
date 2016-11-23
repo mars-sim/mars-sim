@@ -35,7 +35,7 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	private TransportItemEditingPanel editingPanel;
 	private ResupplyWindow resupplyWindow;
 
-	private JButton modifyButton;
+	private JButton commitButton;
 	
 	/**
 	 * Constructor.
@@ -68,19 +68,19 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 
 		mainPane.add(buttonPane, BorderLayout.SOUTH);
 
-		// Create modify button.
-		// 9/29/2014 by mkung: Changed button text from "Modify" to "Commit Changes"
-		modifyButton = new JButton("Commit Changes");
-		modifyButton.addActionListener(new ActionListener() {
+		// Create commit button.
+		// 9/29/2014 Changed button text from "Modify" to "Commit Changes"
+		commitButton = new JButton("Commit Changes");
+		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// Modify transport item and close dialog.
 				modifyTransportItem();
 			}
 		});
-		buttonPane.add(modifyButton);
+		buttonPane.add(commitButton);
 
 		// Create cancel button.
-		// 9/29/2014 by mkung: Changed button text from "Cancel"  to "Discard Changes"
+		// 9/29/2014 by Changed button text from "Cancel"  to "Discard Changes"
 		JButton cancelButton = new JButton("Discard Changes");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -136,8 +136,9 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 		}
 	}
 	
-	public void setModifyButton(boolean value) {
-		modifyButton.setEnabled(value);
+	public void setCommitButton(boolean value) {
+		System.out.println("set commit button to " + value);
+		commitButton.setEnabled(value);
 	}
 	
 }

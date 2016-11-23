@@ -111,7 +111,7 @@ public class BuildingManager implements Serializable {
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
-    private List<Resupply> resupplies;
+    //private List<Resupply> resupplies;
     
     //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
 
@@ -194,7 +194,7 @@ public class BuildingManager implements Serializable {
         Injector injector = Guice.createInjector(new MeteoriteModule());
         meteorite = injector.getInstance(Meteorite.class);
 
-        resupplies = new ArrayList<Resupply>() ;
+        //resupplies = new ArrayList<Resupply>() ;
     }
 
     /**
@@ -375,7 +375,7 @@ public class BuildingManager implements Serializable {
     public Building prepareToAddBuilding(BuildingTemplate template, Resupply resupply, boolean createBuildingConnections) {
 		//logger.info("BuildingManager's addOneBuilding() is on " + Thread.currentThread().getName() + " Thread");
     	// normally on JavaFX Application Thread
-		this.resupply = resupply;
+		//this.resupply = resupply;
     	Building newBuilding = new Building(template, this);
         addBuilding(newBuilding, createBuildingConnections);
         return newBuilding;
@@ -383,19 +383,22 @@ public class BuildingManager implements Serializable {
 
     // 2016-11-07 Added getResupply()
     public Resupply getResupply() {
-    	if (!resupplies.isEmpty()) {
-    		Resupply r = resupplies.get(0);
-    		resupplies.remove(0);
-    		return r;
-    	}
-    	else
-    		return null;
+    	return resupply;
+    	//Resupply result = null;
+    	//if (!resupplies.isEmpty()) {
+    	//	result = resupplies.get(0);
+    	//}
+   		//return result;
     }
+
+    //public void removeResupply() {
+	//	resupplies.remove(0);
+    //}
     
     // 2016-11-07 Added addResupply()
     public void addResupply(Resupply resupply) {
-    	resupplies.add(resupply);
-    	//this.resupply= resupply;
+    	//resupplies.add(resupply);
+    	this.resupply = resupply;
     }
     
     /**

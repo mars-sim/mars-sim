@@ -133,6 +133,41 @@ public final class RandomUtil {
 	}
 
 	/**
+	 * Returns a random integer from the base to the ceiling. 
+	 * Note: the [base] has twice the chance of being chosen than [the base + 1] and so forth
+	 * to the given integer.
+ 	 * @param base the minimum number result
+	 * @param ceiling the maximum integer result, ( ceiling > 0 )
+	 * @return the random integer
+	 */
+	public static int getRandomRegressionInteger(int base, int ceiling) {
+
+		double totalWeight = 0D;
+		double weight = 1D;
+
+		for (int x=base; x < ceiling; x++) {
+			totalWeight += weight;
+			weight /= 2D;
+		}
+
+		double randWeight = getRandomDouble(totalWeight);
+
+		totalWeight = 0D;
+		weight = 1D;
+		int result = 0;
+		for (int x=base; x < ceiling; x++) {
+			totalWeight += weight;
+			weight /= 2D;
+			if (randWeight < totalWeight) {
+				result = x + 1;
+				break;
+			}
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Gets the average value returned from the getRandomRegressionInteger method.
 	 * @param ceiling the maximum integer result, (ceiling > 0)
 	 * @return average value.
