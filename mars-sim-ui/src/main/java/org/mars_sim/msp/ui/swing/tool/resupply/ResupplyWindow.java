@@ -143,7 +143,7 @@ implements ListSelectionListener {
 		});
 		buttonPane.add(cancelButton);
 
-		setMinimumSize(new Dimension(512, 512));
+		setMinimumSize(new Dimension(512, 640));
 		setResizable(false);
 		setMaximizable(true);
 		

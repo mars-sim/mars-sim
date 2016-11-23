@@ -89,6 +89,7 @@ public class SimulationConfig implements Serializable {
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
 
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
+	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
 
 	public String build;
 	
@@ -408,23 +409,23 @@ public class SimulationConfig implements Serializable {
 
 	/**
 	 * Gets the autosave interval when the simulation starts.
-	 * @return date/time as string in "orbit-month-sol:millisol" format.
+	 * @return number of minutes.
 	 * @throws Exception if value is null or empty.
 	 */
 	// 2016-05-02 Added getAutosaveInterval()
-	public long getAutosaveInterval() {
+	public int getAutosaveInterval() {
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element el = timeConfig.getChild(AUTOSAVE_INTERVAL);
 		String str = el.getAttributeValue(VALUE);
 		
-		long d = 0;
+		int d = 0;
 		
 		if ((str == null) || str.trim().length() == 0)
 			throw new IllegalStateException("autosave_interval must not be blank and must be greater than zero.");
 		else {
 			try {
-		         d = (long) Double.valueOf(str.trim()).doubleValue();
+		         d = (int) Double.valueOf(str.trim()).doubleValue();
 		         //System.out.println("double d = " + d);
 		         
 		         if (d < 1 || d > 1440)
@@ -438,6 +439,40 @@ public class SimulationConfig implements Serializable {
 		
 		return d;
 	}
+	
+	/**
+	 * Gets the AverageTransitTime when the simulation starts.
+	 * @return number of sols.
+	 * @throws Exception if value is null or empty.
+	 */
+	// 2016-11-23 Added getAverageTransitTime()
+	public int getAverageTransitTime() {
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element el = timeConfig.getChild(AVERAGE_TRANSIT_TIME);
+		String str = el.getAttributeValue(VALUE);
+		
+		int d = 0;
+		
+		if ((str == null) || str.trim().length() == 0)
+			throw new IllegalStateException("average-transit-time must not be blank and must be greater than zero.");
+		else {
+			try {
+		         d = (int) Double.valueOf(str.trim()).doubleValue();
+		         //System.out.println("double d = " + d);
+		         
+		         if (d < 1 || d > 430)
+		 			throw new IllegalStateException("average-transit-time must be between 1 and 430.");		         
+		         
+		      } catch (NumberFormatException nfe) {
+		         System.out.println("NumberFormatException found in average-transit-time : " + nfe.getMessage());
+		      }
+	
+		}
+		
+		return d;
+	}
+	
 	
 
 	/**

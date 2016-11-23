@@ -59,6 +59,7 @@ implements ClockListener, HistoricalEventListener {
 	private JLabel destinationValueLabel;
 	private JLabel stateValueLabel;
 	private JLabel arrivalDateValueLabel;
+	private JLabel launchDateValueLabel;
 	private JLabel timeArrivalValueLabel;
 	private JLabel immigrantsValueLabel;
 	private int solsToArrival = -1;
@@ -89,7 +90,7 @@ implements ClockListener, HistoricalEventListener {
 		infoPane.add(titleLabel, BorderLayout.NORTH);
 
 		// Create the info2 panel.
-		JPanel info2Pane = new JPanel(new GridLayout(5, 1, 5, 5));
+		JPanel info2Pane = new JPanel(new GridLayout(6, 1, 3, 3));
 		infoPane.add(info2Pane, BorderLayout.CENTER);
 
 		// Create destination panel.
@@ -97,7 +98,7 @@ implements ClockListener, HistoricalEventListener {
 		info2Pane.add(destinationPane);
 
 		// Create destination title label.
-		JLabel destinationTitleLabel = new JLabel("Destination: ", JLabel.LEFT);
+		JLabel destinationTitleLabel = new JLabel("  Destination : ", JLabel.LEFT);
 		destinationPane.add(destinationTitleLabel);
 
 		// Create destination value label.
@@ -109,31 +110,43 @@ implements ClockListener, HistoricalEventListener {
 		info2Pane.add(statePane);
 
 		// Create state title label.
-		JLabel stateTitleLabel = new JLabel("State: ", JLabel.LEFT);
+		JLabel stateTitleLabel = new JLabel("  State : ", JLabel.LEFT);
 		statePane.add(stateTitleLabel);
 
 		// Create state value label.
 		stateValueLabel = new JLabel("", JLabel.LEFT);
 		statePane.add(stateValueLabel);
 
+		// 2016-11-23 Create launch date panel.
+		JPanel launchDatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		info2Pane.add(launchDatePane);
+
+		// 2016-11-23 Create launch date title label.
+		JLabel launchDateTitleLabel = new JLabel("  Launch Date : ", JLabel.LEFT);
+		launchDatePane.add(launchDateTitleLabel);
+
+		// 2016-11-23  Create launch date value label.
+		launchDateValueLabel = new JLabel("", JLabel.LEFT);
+		launchDatePane.add(launchDateValueLabel);
+		
 		// Create arrival date panel.
 		JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(arrivalDatePane);
 
 		// Create arrival date title label.
-		JLabel arrivalDateTitleLabel = new JLabel("Arrival Date: ", JLabel.LEFT);
+		JLabel arrivalDateTitleLabel = new JLabel("  Arrival Date : ", JLabel.LEFT);
 		arrivalDatePane.add(arrivalDateTitleLabel);
 
 		// Create arrival date value label.
 		arrivalDateValueLabel = new JLabel("", JLabel.LEFT);
 		arrivalDatePane.add(arrivalDateValueLabel);
-
+	
 		// Create time arrival panel.
 		JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		info2Pane.add(timeArrivalPane);
 
 		// Create time arrival title label.
-		JLabel timeArrivalTitleLabel = new JLabel("Time Until Arrival: ", JLabel.LEFT);
+		JLabel timeArrivalTitleLabel = new JLabel("  Time Until Arrival : ", JLabel.LEFT);
 		timeArrivalPane.add(timeArrivalTitleLabel);
 
 		// Create time arrival value label.
@@ -145,7 +158,7 @@ implements ClockListener, HistoricalEventListener {
 		info2Pane.add(immigrantsPane);
 
 		// Create immigrants title label.
-		JLabel immigrantsTitleLabel = new JLabel("Immigrants: ", JLabel.LEFT);
+		JLabel immigrantsTitleLabel = new JLabel("  Immigrants : ", JLabel.LEFT);
 		immigrantsPane.add(immigrantsTitleLabel);
 
 		// Create immigrants value label.
@@ -201,6 +214,7 @@ implements ClockListener, HistoricalEventListener {
 	private void clearInfo() {
 		destinationValueLabel.setText("");
 		stateValueLabel.setText("");
+		launchDateValueLabel.setText("");
 		arrivalDateValueLabel.setText("");
 		timeArrivalValueLabel.setText("");
 		immigrantsValueLabel.setText("");
@@ -214,7 +228,9 @@ implements ClockListener, HistoricalEventListener {
 
 		destinationValueLabel.setText(resupply.getSettlement().getName());
 
-		stateValueLabel.setText(resupply.getTransitState().getName());
+		stateValueLabel.setText(Conversion.capitalize(resupply.getTransitState().getName()));
+
+		launchDateValueLabel.setText(resupply.getLaunchDate().getDateString());
 
 		arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateString());
 

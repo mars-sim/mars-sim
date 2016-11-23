@@ -103,7 +103,7 @@ implements ClockListener, Serializable {
             File.separator +
             Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$
 
-	public static long autosave_minute;// = 15;
+	public static int autosave_minute;// = 15;
 
 	// Categories of loading and saving simulation
 	public static final int OTHER = 0; // load other file

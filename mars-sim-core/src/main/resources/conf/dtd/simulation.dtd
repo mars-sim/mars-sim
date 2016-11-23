@@ -1,6 +1,6 @@
 <!ELEMENT simulation-configuration (time-configuration)>
 <!ELEMENT time-configuration (time-ratio, time-between-updates, no-delays-per-yield, max-frame-skips, 
-earth-start-date-time, mars-start-date-time, autosave-interval)>
+earth-start-date-time, mars-start-date-time, autosave-interval, average-transit-time)>
 <!ELEMENT time-ratio EMPTY>
 <!ATTLIST time-ratio value CDATA #REQUIRED>
 <!ELEMENT time-between-updates EMPTY>
@@ -15,3 +15,5 @@ earth-start-date-time, mars-start-date-time, autosave-interval)>
 <!ATTLIST mars-start-date-time value CDATA #REQUIRED>
 <!ELEMENT autosave-interval EMPTY>
 <!ATTLIST autosave-interval value CDATA #REQUIRED>
+<!ELEMENT average-transit-time EMPTY>
+<!ATTLIST average-transit-time value CDATA #REQUIRED>

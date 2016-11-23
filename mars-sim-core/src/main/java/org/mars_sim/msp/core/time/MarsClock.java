@@ -339,7 +339,7 @@ public class MarsClock implements Serializable {
     }
 
     /** Returns formatted time stamp string.
-     *  e.g.. "13-Adir-05  056.349"
+     *  e.g.. "0013-Adir-05  056.349"
      *  @return formatted time stamp string
      */
     public String getDateTimeStamp() {
@@ -348,7 +348,7 @@ public class MarsClock implements Serializable {
     }
 
     /** Returns formatted time stamp string
-     *  e.g. "13-Adir-05 0056"
+     *  e.g. "0013-Adir-05 0056"
      *  @return formatted String
      */
     public static String getDateTimeStamp(MarsClock time) {
@@ -358,13 +358,20 @@ public class MarsClock implements Serializable {
 
     /**
      * Gets the current date string.
-     * ex. "13-Adir-05"
+     * ex. "0013-Adir-05"
      * @return current date string
      */
     public String getDateString() {
         StringBuilder result = new StringBuilder();
 
-        // Append orbit
+        // 2016-11-23 Append padding zeros to orbit
+        if (orbit < 10)
+        	result.append("000");
+        else if (orbit < 100)
+        	result.append("00");
+        else 
+        	result.append("0");
+        
         result.append(orbit).append("-").append(getMonthName()).append("-");
 
         if(sol < 10){

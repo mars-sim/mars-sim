@@ -22,9 +22,10 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public final class ResupplyUtil {
 
-    // Average transit time for resupply missions from Earth to Mars (sols).
-    public static int AVG_TRANSIT_TIME = 60;
-	
+    // Average transit time for resupply missions from Earth to Mars [in sols]
+    public static int AVG_TRANSIT_TIME = SimulationConfig.instance().getAverageTransitTime();
+    public static int MAX_NUM_SOLS_PLANNED = 2007; // 669 * 3 = 2007
+    		
 	/**
 	 * Private constructor for utility class.
 	 */

@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
@@ -138,7 +139,8 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	
 	public void setCommitButton(boolean value) {
 		System.out.println("set commit button to " + value);
-		commitButton.setEnabled(value);
+		SwingUtilities.invokeLater(() -> commitButton.setEnabled(value));
+	    //setVisible(true);
 	}
 	
 }

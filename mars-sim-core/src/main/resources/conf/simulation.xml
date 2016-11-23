@@ -72,8 +72,14 @@
 
 		<!-- autosave-interval is the number of minutes the simulation will wait between two successive autosave events -->
 		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->
-		<!-- Default: 15.0 -->
-		<autosave-interval value="15.0" />
+		<!-- Min : 1 ; Max : 1440 -->
+		<!-- Default: 15 -->
+		<autosave-interval value="15" />
+
+		<!-- average transit-time is the number of sols to send payload/cargo from Earth to Mars -->
+		<!-- Min : 1 ; Max : 430 -->
+		<!-- Default: 60 -->
+		<average-transit-time value="60" />
 
 	</time-configuration>
 
