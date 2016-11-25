@@ -101,7 +101,7 @@ public abstract class UnitWindow extends JInternalFrame {
      */
     public UnitWindow(MainDesktopPane desktop, Unit unit, boolean hasDescription) {
         // Use JInternalFrame constructor
-        super(unit.getName(), false, true, false, true);
+        super(unit.getName(), true, true, false, true);
 
         // Initialize data members
         this.desktop = desktop;
@@ -119,7 +119,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Create main panel
         JPanel mainPane = new JPanel();//new BorderLayout());
-        // mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+        mainPane.setBorder(new MarsPanelBorder());//setBorder(MainDesktopPane.newEmptyBorder());
  
         setContentPane(mainPane);
         
@@ -147,7 +147,7 @@ public abstract class UnitWindow extends JInternalFrame {
         //else
         //	name = " " + Conversion.capitalize(unit.getName()) + " ";
         
-        JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.CENTER);
+        JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEFT);
         nameLabel.setOpaque(true);
         
         Font font = null;
@@ -261,7 +261,7 @@ public abstract class UnitWindow extends JInternalFrame {
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
-        factory.add(centerPanel,"Detail", getImage(TITLE), false);
+        factory.add(centerPanel,"Details", getImage(TITLE), false);
 
         //mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
@@ -317,20 +317,20 @@ public abstract class UnitWindow extends JInternalFrame {
     	//System.out.println("Description is : " + text);
         if (!oldTownString.equals(townString)) {
         	oldJobString = townString;
-        	if (townString.length() > 15)
-        		townString = townString.substring(0, 15);
-        	townLabel.setText(townString);// , JLabel.CENTER);
+        	if (townString.length() > 40)
+        		townString = townString.substring(0, 40);
+        	townLabel.setText("  " + townString);// , JLabel.CENTER);
         }
         
         String jobString = p.getMind().getJob().getName(p.getGender());
         if (!oldJobString.equals(jobString)) {
         	oldJobString = jobString;
-        	jobLabel.setText(jobString);// , JLabel.CENTER);
+        	jobLabel.setText("  " + jobString);// , JLabel.CENTER);
         }
         
         String roleString = p.getRole().getType().getName();
         if (!oldRoleString.equals(roleString)) {
-            int l = roleString.length();
+/*            int l = roleString.length();
             if (l >= 15) {
                 if (roleString.contains("Chief of Safety")
                 	|| roleString.contains("Chief of Supply"))
@@ -340,14 +340,15 @@ public abstract class UnitWindow extends JInternalFrame {
                 else if (l >= 18 && roleString.contains("Chief of Logistics"))
                 	roleString = "Chief of Logistics";
             }
+*/            
            	oldRoleString = roleString;
-	        roleLabel.setText(roleString);
+	        roleLabel.setText("  " + roleString);
         }
         
         ShiftType newShiftType = p.getTaskSchedule().getShiftType();
         if (oldShiftType != newShiftType) {
         	oldShiftType = newShiftType;
-        	shiftLabel.setText(newShiftType.getName() + getTimePeriod(newShiftType));
+        	shiftLabel.setText("  " + newShiftType.getName() + getTimePeriod(newShiftType));
         }
     }
     

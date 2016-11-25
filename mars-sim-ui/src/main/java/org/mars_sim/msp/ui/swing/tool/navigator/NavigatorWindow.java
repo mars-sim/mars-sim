@@ -90,6 +90,8 @@ implements ActionListener {
 	public static final int VERTICAL_MINIMAP = 695;
 	
 	// Data members
+	private Integer[] degrees = new Integer[181];
+	private JComboBoxMW<?> latCB, longCB;
 	/** map navigation. */
 	private MapPanel map;
 	/** Globe navigation. */
@@ -254,11 +256,21 @@ implements ActionListener {
 			//latLabel.setAlignmentY(.5F);
 			coordPane.add(latLabel);
 	
-			latText = new JTextField(5);
-			latText.setCaretPosition(latText.getText().length());
-			latText.setHorizontalAlignment(JTextField.CENTER);
-			coordPane.add(latText);
+			//latText = new JTextField(5);
+			//latText.setCaretPosition(latText.getText().length());
+			//latText.setHorizontalAlignment(JTextField.CENTER);
+			//coordPane.add(latText);
 	
+			// 2016-11-24 Switch to using ComboBoxMW for latitude
+			int size = degrees.length;
+			for (int i = 0; i<size; i++) {
+				degrees[i] = i;
+			}
+			latCB = new JComboBoxMW<Integer>(degrees);
+			latCB.setSelectedItem(0);
+			coordPane.add(latCB);
+			
+			
 			String[] latStrings = {
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -277,11 +289,16 @@ implements ActionListener {
 			//longLabel.setAlignmentY(.5F);
 			coordPane.add(longLabel);
 	
-			longText = new JTextField(5);
-			longText.setCaretPosition(longText.getText().length());
-			longText.setHorizontalAlignment(JTextField.CENTER);
-			coordPane.add(longText);
+			//longText = new JTextField(5);
+			//longText.setCaretPosition(longText.getText().length());
+			//longText.setHorizontalAlignment(JTextField.CENTER);
+			//coordPane.add(longText);
 	
+			// 2016-11-24 Switch to using ComboBoxMW for longtitude
+			longCB = new JComboBoxMW<Integer>(degrees);
+			longCB.setSelectedItem(0);
+			coordPane.add(longCB);
+			
 			String[] longStrings = {
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
 				Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
@@ -608,11 +625,23 @@ implements ActionListener {
 			// Read longitude and latitude from user input, translate to radians,
 			// and recenter globe and surface map on that location.
 			try {
-				latText.setCaretPosition(latText.getText().length());
-				longText.setCaretPosition(longText.getText().length());
 				
-				double latitude = ((Float) new Float(latText.getText())).doubleValue();
-				double longitude = ((Float) new Float(longText.getText())).doubleValue();
+				double latitude = 0;
+				double longitude = 0;
+				
+				if (mainScene != null) {
+					latitude = (int)latCB.getSelectedItem();
+					longitude = (int)longCB.getSelectedItem();
+
+				}
+				else {
+					latText.setCaretPosition(latText.getText().length());
+					longText.setCaretPosition(longText.getText().length());
+					
+					latitude = ((Float) new Float(latText.getText())).doubleValue();
+					longitude = ((Float) new Float(longText.getText())).doubleValue();				
+				}
+				
 				String latDirStr = (String) latDir.getSelectedItem();
 				String longDirStr = (String) longDir.getSelectedItem();
 

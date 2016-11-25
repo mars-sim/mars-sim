@@ -174,9 +174,9 @@ public class TitlePanel extends JPanel {
 
         if (title != null) {
             g2d.setColor(accentColor);
-            g2d.drawString(title, 40, 22);
+            g2d.drawString(title, 50, 22);
             g2d.setColor(textColor);
-            g2d.drawString(title, 40, 21);
+            g2d.drawString(title, 50, 21);
         }
 
         /**
@@ -184,7 +184,7 @@ public class TitlePanel extends JPanel {
          */
         if (imageIcon != null) {
             //new ImageIcon("images/self.png").getImage();
-            g2d.drawImage(imageIcon, 5, 5, 20, 20,
+            g2d.drawImage(imageIcon, 15, 5, 20, 20,
                     null, null);
         }
         if(isToggleIcon){

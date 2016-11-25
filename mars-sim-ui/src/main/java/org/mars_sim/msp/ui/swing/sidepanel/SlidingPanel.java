@@ -37,7 +37,7 @@ public class SlidingPanel extends JPanel implements StateListener {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(null);
         slider = new SlideAnimator(slideContainer, slideComponent);
-        titlePanel = new TitlePanel(title, imageIcon, slideComponent.getPreferredSize().width + 10);
+        titlePanel = new TitlePanel(title, imageIcon, slideComponent.getPreferredSize().width + 8);
         add(titlePanel);
         add(slideContainer);
         
