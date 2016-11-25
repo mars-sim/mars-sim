@@ -56,7 +56,6 @@ import javafx.scene.control.*;
 
 @SuppressWarnings("restriction")
 public class ChatBox extends BorderPane {
-
  
 	public final static String SYSTEM_PROMPT = "System : ";
 	public final static String YOU_PROMPT = "You : ";
@@ -127,15 +126,12 @@ public class ChatBox extends BorderPane {
     	
     	// 2016-01-01 Added autoCompleteData
     	ObservableList<String> autoCompleteData = createAutoCompleteData();
-        
-        titleLabel = new Label("  " + Msg.getString("ChatBox.title")); //$NON-NLS-1$
-       	       
+             
         textArea = new TextArea();
         //textArea.setPadding(new Insets(2, 0, 2, 0));
         //textArea.setPrefWidth(560);
         textArea.setEditable(false);
         textArea.setWrapText(true);
-
         textArea.setTooltip(new Tooltip ("Chatters on MarsNet"));
 		//ta.appendText("System : WARNING! A small dust storm 20 km away NNW may be heading toward the Alpha Base" + System.lineSeparator());
   		
@@ -160,7 +156,6 @@ public class ChatBox extends BorderPane {
         //autoFillTextBox.setStyle("-fx-font: 11pt 'Corbel';");
   		autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll history."));
   		autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel"); 			
- 
   		
   		broadcastButton = new JFXButton(" Broadcast ".toUpperCase());
   		broadcastButton.getStyleClass().clear();
@@ -184,7 +179,13 @@ public class ChatBox extends BorderPane {
         hbox.setPadding(new Insets(0, 0, 0, 0));
         hbox.getChildren().addAll(broadcastButton, autoFillTextBox);//.getTextbox());
 
-        setTop(titleLabel);
+        titleLabel = new Label("  " + Msg.getString("ChatBox.title")); //$NON-NLS-1$
+    
+        //VBox vbox = new VBox();
+        //vbox.getChildren().addAll(titleLabel,textArea);
+        
+        //setTop(titleLabel);
+        //setCenter(vbox);
         setCenter(textArea);
         setBottom(hbox);
         

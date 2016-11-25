@@ -234,6 +234,7 @@ public class MainScene {
 	public static boolean menuBarVisible = false;
 	private boolean isMarsNetOpen = false;
 	private boolean onMenuBarCache = false;
+	private boolean isFullScreenCache = false;
 	
 	private DoubleProperty sceneWidth = new SimpleDoubleProperty(1366);//1366-40;
 	private DoubleProperty sceneHeight = new SimpleDoubleProperty(768); //768-40;
@@ -267,7 +268,7 @@ public class MainScene {
 
 	private JFXToggleButton cacheButton;
 	private JFXSlider zoomSlider;
-	private JFXButton miniMapBtn, mapBtn, marsNetButton, menubarButton, rotateCWBtn, rotateCCWBtn, recenterBtn;
+	private JFXButton miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn; //menubarButton,
 	private Button memBtn, clkBtn;
 
 	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
@@ -460,7 +461,7 @@ public class MainScene {
 	 * Setup key events using wellbehavedfx
 	 */
 	// 2016-11-14 Setup key events using wellbehavedfx
-	public void setupKeyEvent() {
+	public void setupKeyEvents() {
 		InputMap<KeyEvent> f2 = consume(keyPressed(F2), e -> {
 			if (desktop.isToolWindowOpen(SearchWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(SearchWindow.NAME));
@@ -480,8 +481,101 @@ public class MainScene {
 			}
 		});
 	    Nodes.addInputMap(desktopPane, f3);
+	    
+		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)), e -> {
+			boolean isMute = menuBar.getMuteItem().isSelected();
+			if (isMute) {	
+        		menuBar.getMuteItem().setSelected(false);
+        		desktop.getSoundPlayer().setMute(true);
+        	}
+        	else {
+        		menuBar.getMuteItem().setSelected(true);
+        		desktop.getSoundPlayer().setMute(false);
+        	}
+			
+		});
+	    Nodes.addInputMap(desktopPane, ctrlM);
+
+		InputMap<KeyEvent> ctrlQ = consume(keyPressed(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN)), e -> {
+        	popAQuote();
+        	desktopPane.requestFocus();	
+		});
+	    Nodes.addInputMap(desktopPane, ctrlQ);
+
+		InputMap<KeyEvent> ctrlO = consume(keyPressed(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), e -> {
+        	boolean isNotificationOn = !desktop.getEventTableModel().isNoFiring();    	
+       		if (isNotificationOn) {	
+        		menuBar.getNotificationItem().setSelected(false);
+                desktop.getEventTableModel().setNoFiring(true);
+        	}
+        	else {
+        		menuBar.getNotificationItem().setSelected(true);
+                desktop.getEventTableModel().setNoFiring(false);
+        	}
+		});
+	    Nodes.addInputMap(desktopPane, ctrlO);
+	    
+		InputMap<KeyEvent> ctrlF = consume(keyPressed(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN)), e -> {
+           	boolean isFullScreen = stage.isFullScreen();
+        	if (!isFullScreen) {
+        		menuBar.getShowFullScreenItem().setSelected(true);
+        		if (!isFullScreenCache)
+        			stage.setFullScreen(true);
+        	}
+        	else {
+        		menuBar.getShowFullScreenItem().setSelected(false);
+        		if (isFullScreenCache)
+        			stage.setFullScreen(false);
+        	}
+        	isFullScreenCache = stage.isFullScreen();
+		});
+	    Nodes.addInputMap(desktopPane, ctrlF);
+	    
+		InputMap<KeyEvent> ctrlUp = consume(keyPressed(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN)), e -> {
+			desktop.getSoundPlayer().volumeUp();
+		});
+	    Nodes.addInputMap(desktopPane, ctrlUp);
+
+		InputMap<KeyEvent> ctrlDown = consume(keyPressed(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN)), e -> {
+			desktop.getSoundPlayer().volumeDown();
+		});
+	    Nodes.addInputMap(desktopPane, ctrlDown);
+
+		InputMap<KeyEvent> ctrlN = consume(keyPressed(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), e -> {
+			newSimulation();
+		});
+	    Nodes.addInputMap(desktopPane, ctrlN);
+    
+		InputMap<KeyEvent> ctrlS = consume(keyPressed(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), e -> {
+			saveSimulation(Simulation.SAVE_DEFAULT);
+		});
+	    Nodes.addInputMap(desktopPane, ctrlS);
+
+		InputMap<KeyEvent> ctrlA = consume(keyPressed(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN)), e -> {
+			saveSimulation(Simulation.SAVE_AS);
+		});
+	    Nodes.addInputMap(desktopPane, ctrlA);
+
+		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)), e -> {
+			alertOnExit();
+		});
+	    Nodes.addInputMap(desktopPane, ctrlX);
+	    
+		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)), e -> {
+			if (theme == 6)
+				changeTheme(7);
+			else if (theme == 7)
+				changeTheme(6);
+		});
+	    Nodes.addInputMap(desktopPane, ctrlT);
+	    
 	}
     
+	// Toggle the full screen mode off
+	public void updateFullScreenMode() {
+		menuBar.getShowFullScreenItem().setSelected(false);
+	}
+	
 	/**
 	 * initializes the scene
 	 *
@@ -503,30 +597,27 @@ public class MainScene {
 		// DPI scale factor.
 		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
 		//logger.info("DPI Scale Factor is " + dpiScaleFactor);
-			
-		// Create group to hold swingNode1 which holds the swing desktop
-		desktopPane = new StackPane();
-		swingNode = new SwingNode();
 		
-		setupKeyEvent();
-
+		// Create group to hold swingNode1 which holds the swing desktop
+		swingNode = new SwingNode();
 		createSwingNode();
+		
+		desktopPane = new StackPane();
 		desktopPane.getChildren().add(swingNode);
 		desktopPane.setMinHeight(sceneHeight.get());
 		desktopPane.setMinWidth(sceneWidth.get());
-
+		
+		// 2016-11-14 Setup keyboard events using wellbehavedfx
+		setupKeyEvents();
+		
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
         flag = false;
-        
-        //EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(), chatBox);
-					
+        //EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(), chatBox);		
 		// Create ControlFX's StatusBar
 		statusBar = createStatusBar();
-
 		// Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
-
 		// Create jfxTabPane
 		createJFXTabs();	
 		// Create BorderPane
@@ -552,18 +643,18 @@ public class MainScene {
 		}
 		else {
 			
-			menubarButton = new JFXButton();
-			menubarButton.setTooltip(new Tooltip("Open top menu"));
+			//menubarButton = new JFXButton();
+			//menubarButton.setTooltip(new Tooltip("Open top menu"));
 	        /**
 	         * Instantiate a BorderSlideBar for each child layouts
 	         */
-	        topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
-	        borderPane.setTop(topFlapBar);        
+	        //topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
+	        //borderPane.setTop(topFlapBar);        
 	       
-	        AnchorPane.setRightAnchor(menubarButton, 5.0);
-	        AnchorPane.setTopAnchor(menubarButton, -3.0);
+	        //AnchorPane.setRightAnchor(menubarButton, 5.0);
+	        //AnchorPane.setTopAnchor(menubarButton, -3.0);
 
-	        anchorDesktopPane.getChildren().addAll(menubarButton);
+	        //anchorDesktopPane.getChildren().addAll(menubarButton);
 
 		}
 
@@ -1064,8 +1155,9 @@ public class MainScene {
 		
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 			if (newTab == mainTab) {	
-			       anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			       anchorMapTabPane.getChildren().removeAll(cacheButton);
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+				anchorMapTabPane.getChildren().removeAll(cacheButton);
+				desktopPane.requestFocus();
 			}
 			
 			else if (newTab == monTab) {	
@@ -1426,8 +1518,8 @@ public class MainScene {
 		}
 		
 		if (theme == 6) {
-			if (!OS.contains("mac"))
-				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menu_32.png"))));
+			//if (!OS.contains("mac"))
+			//	menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_menu_32.png"))));
 			
 			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_globe_32.png"))));
 			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/blue_map_32.png"))));
@@ -1435,8 +1527,8 @@ public class MainScene {
 			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_blue.css").toExternalForm());
 		}
 		else if (theme == 7) {
-			if (!OS.contains("mac"))
-				menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menu_32.png"))));
+			//if (!OS.contains("mac"))
+			//	menubarButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_menu_32.png"))));
 
 			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_globe_32.png"))));
 			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_map_32.png"))));

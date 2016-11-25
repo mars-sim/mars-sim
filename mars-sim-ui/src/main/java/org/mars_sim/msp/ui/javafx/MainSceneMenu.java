@@ -65,9 +65,9 @@ public class MainSceneMenu extends MenuBar  {
 							//scienceToolItem, resupplyToolItem;
 							//marsViewerItem, webToolItem;
 
-	private CheckMenuItem showFullScreenItem, notificationItem; 
-
-	private MenuItem skinThemeItem, quotationItem ;
+	private CheckMenuItem showFullScreenItem, notificationItem, muteItem;
+	
+	private MenuItem skinThemeItem, quotationItem, volumeUpItem, volumeDownItem ;
 
 	private Stage stage;
 	//private Stage webStage;
@@ -141,10 +141,11 @@ public class MainSceneMenu extends MenuBar  {
         timeToolItem = createMenuItem("Time Tool", TimeWindow.NAME);
         timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
 
+/*         
         settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
         settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
 
-/*        
+       
         monitorToolItem = createMenuItem("Monitor Tool", MonitorWindow.NAME);
         monitorToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
 
@@ -229,11 +230,11 @@ public class MainSceneMenu extends MenuBar  {
         SeparatorMenuItem SeparatorMenuItem6 = new SeparatorMenuItem();
 
         
-        MenuItem volumeUpItem = new MenuItem("Volume Up");
+        volumeUpItem = new MenuItem("Volume Up");
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
-        MenuItem volumeDownItem = new MenuItem("Volume Down");
+        volumeDownItem = new MenuItem("Volume Down");
         volumeDownItem.setAccelerator(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN));
-        CheckMenuItem muteItem = new CheckMenuItem("Mute");
+        muteItem = new CheckMenuItem("Mute");
         muteItem.setAccelerator(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN));
 
         menuSettings.getItems().addAll(showFullScreenItem, skinThemeItem, SeparatorMenuItem4, 
@@ -407,8 +408,7 @@ public class MainSceneMenu extends MenuBar  {
             public void handle(ActionEvent arg0) {
             	//float oldvolume = desktop.getSoundPlayer().getVolume();
     			//desktop.getSoundPlayer().setVolume(oldvolume+0.1F);
-    			desktop.getSoundPlayer().volumeUp();
-    			
+    			desktop.getSoundPlayer().volumeUp();  			
             }
         });
 
@@ -585,6 +585,19 @@ public class MainSceneMenu extends MenuBar  {
 */
     }
 
+    public CheckMenuItem getMuteItem() {
+    	return muteItem;
+    }
+    
+    public CheckMenuItem getNotificationItem() {
+    	return notificationItem;
+    }
+    
+    public CheckMenuItem getShowFullScreenItem() {
+    	return showFullScreenItem;
+    }
+    
+    
     public CheckMenuItem getCheckMenuItem(String toolName) {
 		if (toolName.equals(SearchWindow.NAME)) {
 			return getSearchToolItem();
