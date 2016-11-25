@@ -47,6 +47,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -1227,20 +1228,24 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		Dimension desktop_size = getSize();
 		Dimension window_size = tempWindow.getSize();
 
-		int rX = (int) Math.round(Math.random() *
-				(desktop_size.width - window_size.width));
-		int rY = 20 + (int) Math.round(Math.random() *
-				(desktop_size.height - window_size.height));
+		// 2016-11-24 populate windows in grid=like starting position
+		int w = desktop_size.width - window_size.width;
+		int rX = RandomUtil.getRandomInt(w/20) * 20;				
+				//(int) Math.round(Math.random() *
+				//);
+		
+		int rY = 55 + RandomUtil.getRandomInt(5) * 20;
+				//(desktop_size.height - window_size.height));
 
 		// Make sure y position isn't < 0.
-		if (rY < 0) {
-			rY = 20;
-		}
+		//if (rY < 50) {
+		//	rY = 50;
+		//}
 
 		// 2014-12-25 Added rX checking
-		if (rX < 0) {
-			rX = 0;
-		}
+		//if (rX < 0) {
+		//	rX = 0;
+		//}
 		return new Point(rX, rY);
 	}
 

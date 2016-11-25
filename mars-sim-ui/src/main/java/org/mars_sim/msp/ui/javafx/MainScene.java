@@ -528,7 +528,7 @@ public class MainScene {
 		menuBar = new MainSceneMenu(this, desktop);
 
 		// Create jfxTabPane
-		createFXTabs();	
+		createJFXTabs();	
 		// Create BorderPane
 		borderPane = new BorderPane();
 		//borderPane.setCenter(swingPane);
@@ -597,6 +597,9 @@ public class MainScene {
 
 		jfxTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
+		
+		desktopPane.prefHeightProperty().bind(scene.heightProperty().subtract(93));
+		desktopPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		// anchorTabPane is within jfxTabPane
 		anchorMapTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
@@ -864,8 +867,8 @@ public class MainScene {
 	 * Creates the tab pane for housing a bunch of tabs
 	 */
 	@SuppressWarnings("restriction")
-	public void createFXTabs() {
-		logger.info("MainScene's createFXTabs() is on " + Thread.currentThread().getName() + " Thread");
+	public void createJFXTabs() {
+		logger.info("MainScene's createJFXTabs() is on " + Thread.currentThread().getName() + " Thread");
 		
 		jfxTabPane = new JFXTabPane();
 		

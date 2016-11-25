@@ -34,11 +34,15 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
+import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.sidepanel.BookForm;
+import org.mars_sim.msp.ui.swing.sidepanel.SlidePaneFactory;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
@@ -72,10 +76,12 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final String ROLE = Msg.getString("icon.role");
 	private static final String SHIFT = Msg.getString("icon.shift");
 	
+	private static final String TITLE = Msg.getString("icon.title");
+	
 	private String oldRoleString = "", 
 					oldJobString = "",
-					oldTownString = "",
-					oldShiftString = "";
+					oldTownString = "";
+	private ShiftType oldShiftType = null;
 	private JLabel townLabel;
     private JLabel jobLabel;
     private JLabel roleLabel;
@@ -112,19 +118,25 @@ public abstract class UnitWindow extends JInternalFrame {
         tabPanels = new ArrayList<TabPanel>();
 
         // Create main panel
-        JPanel mainPane = new JPanel(new BorderLayout());
+        JPanel mainPane = new JPanel();//new BorderLayout());
         // mainPane.setBorder(MainDesktopPane.newEmptyBorder());
+ 
         setContentPane(mainPane);
         
         //getContentPane().setBackground(THEME_COLOR);
 
         // Create name panel
-        //namePanel = new JPanel(new BorderLayout(0, 0));
-        namePanel = new JPanel(new FlowLayout());//FlowLayout.LEFT));
-        
+        //namePanel = new JPanel(new BorderLayout(0, 0));     
+        namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        namePanel.setPreferredSize(new Dimension(465,196));
+        namePanel.setBorder(null);
+        SlidePaneFactory factory = SlidePaneFactory.getInstance();  
+        factory.add(namePanel,"Status", getImage(TITLE), true);
+
         //namePanel.setBackground(THEME_COLOR);
         //namePanel.setBorder(new MarsPanelBorder());
-        mainPane.add(namePanel, BorderLayout.NORTH);
+        mainPane.add(factory);//, BorderLayout.CENTER);
+        //mainPane.add(namePanel, BorderLayout.NORTH);
         //mainPane.setBackground(THEME_COLOR);
 
         // Create name label
@@ -146,7 +158,8 @@ public abstract class UnitWindow extends JInternalFrame {
 		else {
 			new Font("DIALOG", Font.BOLD, 10);
 		}
-        
+        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
         nameLabel.setFont(font);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
@@ -157,7 +170,6 @@ public abstract class UnitWindow extends JInternalFrame {
         //namePanel.setBorder(new EmptyBorder(5, 5, 5, 5) );
         //namePanel.add(nameLabel, BorderLayout.WEST);
         namePanel.add(nameLabel);
-        nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel empty = new JLabel(" ");
         namePanel.add(empty);
@@ -218,7 +230,7 @@ public abstract class UnitWindow extends JInternalFrame {
                 shiftPanel.add(shiftLabel);
                 shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
                 
-            	JPanel rowPanel = new JPanel(new GridLayout(2,2,0,0));
+            	JPanel rowPanel = new JPanel(new GridLayout(4,1,0,0));
             	rowPanel.setBorder(new MarsPanelBorder());
             	
             	rowPanel.add(townPanel);//, FlowLayout.LEFT);
@@ -235,6 +247,8 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Create center panel
         centerPanel = new JideTabbedPane();
+        centerPanel.setPreferredSize(new Dimension(465,480));
+        centerPanel.setBorder(null);
         LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
         centerPanel.setBoldActiveTab(true);
         centerPanel.setScrollSelectedTabOnWheel(true);
@@ -243,13 +257,13 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Setting foreground color for tab text.
         centerPanel.setForeground(Color.DARK_GRAY);
-
         //centerPanel.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
-
         //centerPanel.setBackground(THEME_COLOR);
-        mainPane.add(centerPanel, BorderLayout.CENTER);
+        factory.add(centerPanel,"Detail", getImage(TITLE), false);
+
+        //mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
 
         //TODO: disabled in SVN while in development
@@ -268,6 +282,13 @@ public abstract class UnitWindow extends JInternalFrame {
         Image img = kit.createImage(resource);
         ImageIcon imageIcon = new ImageIcon(img);
     	label.setIcon(imageIcon);
+	}
+	
+	public Image getImage(String imageLocation) {
+        URL resource = ImageLoader.class.getResource(imageLocation);
+        Toolkit kit = Toolkit.getDefaultToolkit();
+        Image img = kit.createImage(resource);
+        return (new ImageIcon(img)).getImage();
 	}
 	
     private ImageIcon createImageIcon(String path, String description) {
@@ -323,12 +344,30 @@ public abstract class UnitWindow extends JInternalFrame {
 	        roleLabel.setText(roleString);
         }
         
-        String shiftString = p.getTaskSchedule().getShiftType().getName();
-        if (!oldShiftString.equals(shiftString)) {
-        	oldShiftString = shiftString;
-        	shiftLabel.setText(shiftString);
+        ShiftType newShiftType = p.getTaskSchedule().getShiftType();
+        if (oldShiftType != newShiftType) {
+        	oldShiftType = newShiftType;
+        	shiftLabel.setText(newShiftType.getName() + getTimePeriod(newShiftType));
         }
-
+    }
+    
+    public String getTimePeriod(ShiftType shiftType) {
+    	String time = null;
+    	if (shiftType.equals(ShiftType.A))
+    		time = " Shift :  " + TaskSchedule.A_START + " to " + TaskSchedule.A_END + " millisols";
+    	else if (shiftType.equals(ShiftType.B))
+    		time = " Shift :  " + TaskSchedule.B_START + " to " + TaskSchedule.B_END + " millisols";
+    	else if (shiftType.equals(ShiftType.X))
+    		time = " Shift :  " + TaskSchedule.X_START + " to " + TaskSchedule.Y_END + " millisols";
+    	else if (shiftType.equals(ShiftType.Y))
+    		time = " Shift :  " + TaskSchedule.Y_START + " to " + TaskSchedule.Y_END + " millisols";
+    	else if (shiftType.equals(ShiftType.Z))
+    		time = " Shift :  " + TaskSchedule.Z_START + " to " + TaskSchedule.Z_END + " millisols";
+    	else if (shiftType.equals(ShiftType.ON_CALL))
+    		time = " Shift :  Anytime";
+    	else
+    		time = " Shift";	
+    	return time;
     }
     
     /**
