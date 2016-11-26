@@ -84,8 +84,11 @@ implements ClockListener {
 	private static final double minfracpos = 1d;
 	private static final double maxfracpos = minslider - 1d;
 
+	private String northernSeasonTip, northernSeasonCache = "";
+	private String southernSeasonTip, southernSeasonCache = "";
+	
 	// Data members
-	private int solElapsedCache = 1;
+	private int solElapsedCache = 0;
 	private Simulation sim;
 	/** Master Clock. */
 	private MasterClock masterClock;
@@ -171,16 +174,24 @@ implements ClockListener {
 		martianCalendarPane.add(calendarMonthPane);
 
 		// Create martian month label
-		martianMonthLabel = new JLabel(marsTime.getMonthName(), JLabel.CENTER);
+		martianMonthLabel = new JLabel("Month of " + marsTime.getMonthName(), JLabel.CENTER);
 		calendarMonthPane.add(martianMonthLabel, BorderLayout.NORTH);
 
 		// Create Martian calendar display
 		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
 		JPanel innerCalendarPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		innerCalendarPane.setPreferredSize(new Dimension(140, 100));
 		innerCalendarPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		innerCalendarPane.add(calendarDisplay);
 		calendarMonthPane.add(innerCalendarPane, BorderLayout.CENTER);
 
+		JPanel emptyP = new JPanel();
+		JLabel emptyL = new JLabel(" ", JLabel.CENTER);
+		emptyP.add(emptyL);
+		emptyL.setMinimumSize(new Dimension(140, 15));
+		emptyP.setMinimumSize(new Dimension(140, 15));
+		calendarMonthPane.add(emptyP, BorderLayout.SOUTH);
+		
 		JPanel southPane = new JPanel(new BorderLayout());
 		mainPane.add(southPane, BorderLayout.SOUTH);
 
@@ -205,7 +216,14 @@ implements ClockListener {
 		);
 		marsSeasonPane.add(northernSeasonLabel, BorderLayout.CENTER);
 
-		balloonToolTip.createBalloonTip(northernSeasonLabel, Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+/*		
+		String str = "<html>\t\tEarth vs Mars "
+					+ "<br>\tSpring : 93 days vs 199 days"
+					+ "<br>\tSummer : 94 days vs 184 days"
+					+ "<br>\tFall : 89 days vs 146 days"
+					+ "<br>\tWinter : 89 days vs 158 days</html>";
+*/		
+		//balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);//Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
 
 		// Create Southern season label
 		southernSeasonLabel = new JLabel(
@@ -216,7 +234,7 @@ implements ClockListener {
 		);
 		marsSeasonPane.add(southernSeasonLabel, BorderLayout.SOUTH);
 
-		balloonToolTip.createBalloonTip(southernSeasonLabel, Msg.getString("TimeWindow.season.toolTip"), BalloonToolTip.Orientation.RIGHT_ABOVE); //$NON-NLS-1$
+		//balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);//Msg.getString("TimeWindow.season.toolTip"), BalloonToolTip.Orientation.RIGHT_ABOVE); //$NON-NLS-1$
 
 		
 		// Create Earth time panel
@@ -280,7 +298,7 @@ implements ClockListener {
 
 		//String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
 		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
-		String s = masterClock.getTimeString(masterClock.getTimeRatio());
+		String s = "1 real sec = " + masterClock.getTimeString(masterClock.getTimeRatio());
 		final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
 		pulsePane.add(pulseCurRatioLabel, BorderLayout.CENTER);
 
@@ -289,10 +307,10 @@ implements ClockListener {
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-					pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
+					pulseCurRatioLabel.setText("1 real sec = " + String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
 				}
 				else {
-					pulseCurRatioLabel.setText(masterClock.getTimeString(masterClock.getTimeRatio()));
+					pulseCurRatioLabel.setText("1 real sec = " + masterClock.getTimeString(masterClock.getTimeRatio()));
 				}
 			}
 		});
@@ -327,7 +345,7 @@ implements ClockListener {
 
 		// Add 10 pixels to packed window width
 		Dimension windowSize = getSize();
-		setSize(new Dimension((int)windowSize.getWidth() + 10, (int) windowSize.getHeight()));
+		setSize(new Dimension((int)windowSize.getWidth() + 40, (int) windowSize.getHeight()));
 	}
 
 	/**
@@ -441,16 +459,53 @@ implements ClockListener {
 	}
 
 	public void setSeason() {
-		if (marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE) != null) {
-			northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere",  //$NON-NLS-1$
-						marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)));
+		
+		String northernSeason = marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE);
+		String southernSeason = marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE);
+				
+		if (!northernSeasonCache.equals(northernSeason)) {			
+			northernSeasonCache = northernSeason;
+			
+			if (marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE) != null) {
+				northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere",  //$NON-NLS-1$
+						northernSeason));
+			}
+
+			northernSeasonTip = getSeasonTip(northernSeason);
+			balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);//Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+			
 		}
-		if (marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE) != null ) {
-			southernSeasonLabel.setText(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
-						marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)));
+		
+
+		if (!southernSeasonCache.equals(southernSeason)) {			
+			southernSeasonCache = southernSeason;
+
+			if (marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE) != null ) {
+				southernSeasonLabel.setText(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
+						southernSeason));
+			}
+
+			southernSeasonTip = getSeasonTip(southernSeason);			
+			balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);//Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+
 		}
+		
+
 	}
 
+	public String getSeasonTip(String hemi) {
+		if (hemi.contains("Spring"))
+			return Msg.getString("TimeWindow.season.spring");
+		else if (hemi.contains("Summer"))
+			return Msg.getString("TimeWindow.season.summer");
+		else if (hemi.contains("Autumn"))
+			return Msg.getString("TimeWindow.season.autumn");
+		else if (hemi.contains("Winter"))
+			return Msg.getString("TimeWindow.season.winter");		
+		else
+			return null;
+	}
+	
 	@Override
 	public void clockPulse(double time) {
 		if (mainScene != null) {
@@ -462,14 +517,7 @@ implements ClockListener {
 			SwingUtilities.invokeLater(() -> {
 				updateTime(time);
 			});
-		}
-		//SwingUtilities.invokeLater(
-			//new Runnable() {
-				//public void run() {
-					// TODO: need to resolve mysterious NullPointerException at the start of sim
-				//updateTime(time);
-				//}
-			//});			
+		}	
 	}
 
 	/**

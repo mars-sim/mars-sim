@@ -75,9 +75,9 @@ public class UpTimer implements Serializable {
         if (seconds < 10) secstr = "0" + seconds;
 
         String daystr = "";
-        if (days == 1) daystr = "" + days + " day ";
+        if (days == 1) daystr = "" + days + " Day ";
         else {
-            daystr = "" + days + " days ";
+            daystr = "" + days + " Days ";
         }
 
         String hourstr = "" + hours;

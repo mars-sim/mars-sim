@@ -571,7 +571,11 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 								window.setSize(config.getInternalWindowDimension(toolName));
 							}
 						} else {
-							window.setLocation(getRandomLocation(window));
+							System.out.println("Go to whatever location");
+							if (toolName.equals(TimeWindow.NAME))
+								window.setLocation(getStartingLocation(window));
+							else	
+								window.setLocation(getRandomLocation(window));
 						}
 					}
 					window.setWasOpened(true);
@@ -1246,6 +1250,23 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		//if (rX < 0) {
 		//	rX = 0;
 		//}
+		return new Point(rX, rY);
+	}
+
+
+	/**
+	 * Gets the starting location on the desktop for a given {@link JInternalFrame}.
+	 * @return a specific point on the desktop
+	 */
+	// 2016-11-26 getStartingLocation()
+	private Point getStartingLocation(JInternalFrame f) {
+		Dimension desktop_size = getSize();
+		Dimension f_size = f.getSize();
+
+		// 2016-11-24 populate windows in grid=like starting position
+		int w = desktop_size.width - f_size.width;
+		int rX = 5;
+		int rY = 10;
 		return new Point(rX, rY);
 	}
 

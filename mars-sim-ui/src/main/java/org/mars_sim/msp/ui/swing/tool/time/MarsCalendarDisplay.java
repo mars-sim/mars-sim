@@ -51,7 +51,7 @@ extends JComponent {
 		solOfMonthCache = marsTime.getSolOfMonth();
 
 		// Set component size
-		setPreferredSize(new Dimension(140, 90));
+		setPreferredSize(new Dimension(140, 100));
 		setMaximumSize(getPreferredSize());
 		setMinimumSize(getPreferredSize());
 
@@ -130,36 +130,36 @@ extends JComponent {
 
 		// Paint dark green background
 		g.setColor(darkColor);
-		g.fillRect(0, 0, 140, 90);
+		g.fillRect(0, 0, 140, 95);
 
 		// Paint mid green week day name boxes
 		g.setColor(midColor);
-		g.fillRect(0, 0, 140, 10);
+		g.fillRect(0, 0, 140, 15);
 
 		int solsInMonth = MarsClock.getSolsInMonth(marsTime.getMonth(), marsTime.getOrbit());
 
 		// If sols in month are 27, black out lower left square
 		if (solsInMonth == 27) {
 			g.setColor(Color.black);
-			g.fillRect(121, 71, 138, 88);
+			g.fillRect(121, 71, 138, 93);
 		}
 
 		// Paint green rectangle
 		g.setColor(baseColor);
-		g.drawRect(0, 0, 139, 89);
+		g.drawRect(0, 0, 139, 94);
 
 		// Paint vertical day lines
 		for (int x=1; x < 7; x++) {
-			g.drawLine(20 * x, 0, 20 * x, 89);
+			g.drawLine(20 * x, 0, 20 * x, 94);
 		}
 
 		// Paint horizontal lines
 		for (int x=0; x < 4; x++) {
-			g.drawLine(0, (20 * x) + 10, 139, (20 * x) + 10);
+			g.drawLine(0, (20 * x) + 15, 139, (20 * x) + 15);
 		}
 
 		// Set up week letter font
-		Font weekFont = new Font("SansSerif", Font.PLAIN, 8);
+		Font weekFont = new Font("SansSerif", Font.PLAIN, 10);
 		FontMetrics weekMetrics = getFontMetrics(weekFont);
 		int weekHeight = weekMetrics.getAscent();
 
@@ -172,7 +172,7 @@ extends JComponent {
 		}
 
 		// Set up Sol number font
-		Font solFont = new Font("SansSerif", Font.BOLD, 10);
+		Font solFont = new Font("SansSerif", Font.BOLD, 9);
 		FontMetrics solMetrics = getFontMetrics(solFont);
 		int solHeight = solMetrics.getAscent();
 
@@ -183,11 +183,11 @@ extends JComponent {
 				int solNumber = (y * 7) + x + 1;
 				int solNumberWidth = solMetrics.stringWidth("" + solNumber);
 				int xPos = (20 * x) + 11 - (solNumberWidth / 2);
-				int yPos = (20 * y) + 30 - (solHeight / 2);
+				int yPos = (20 * y) + 35 - (solHeight / 2);
 				if (solNumber <= solsInMonth)
 					g.drawString(Integer.toString(solNumber), xPos, yPos);
 				if (solNumber == marsTime.getSolOfMonth()) {
-					g.fillRect((20 * x) + 2, (20 * y) + 12, 17, 17);
+					g.fillRect((20 * x) + 2, (20 * y) + 17, 17, 17);
 					g.setColor(Color.black);
 					g.drawString(Integer.toString(solNumber), xPos, yPos);
 					g.setColor(baseColor);

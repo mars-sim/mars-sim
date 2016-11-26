@@ -60,6 +60,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>miglayout-swing</artifactId>
 			<version>5.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-javafx -->
+		<dependency>
+		    <groupId>com.miglayout</groupId>
+		    <artifactId>miglayout-javafx</artifactId>
+		    <version>5.0</version>
+		</dependency>		
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
@@ -148,7 +154,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>org.loadui</groupId>
 			<artifactId>testFx</artifactId>
 			<version>3.1.2</version>
-		</dependency>
+        	<scope>test</scope>
+        </dependency>
 	   	<dependency>
 			<groupId>org.luaj</groupId>
 			<artifactId>luaj-jse</artifactId>
