@@ -172,6 +172,15 @@
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
+.label{
+    -fx-padding: 0 15 0 15;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #E5AB00;
+    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
+}
+
 .borderpane {
 	-fx-border-color: #c1bf9d;
 	-fx-background-color: #c1bf9d;
@@ -283,4 +292,17 @@
 	-fx-shape: " ";
 }
 
+.jfx-snackbar-content {
+	-fx-background-color: #323232;
+    -fx-padding: 5;
+    -fx-spacing: 5;	
+}
+
+.jfx-snackbar-toast {
+	-fx-text-fill: WHITE;	
+}
+
+.jfx-snackbar-action {
+	-fx-text-fill: #ff4081;	
+}
 

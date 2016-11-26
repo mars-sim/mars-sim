@@ -671,7 +671,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 					//System.out.println("MainDesktopPane : opening map tool");
 					if (mainScene.isMainSceneDone())
 						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
-					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+					//mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ResupplyWindow.NAME)) {

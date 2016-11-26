@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.javafx;
 
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
+import com.jfoenix.controls.JFXBadge;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXComboBox;
@@ -19,11 +20,14 @@ import com.jfoenix.controls.JFXRippler.RipplerMask;
 import com.jfoenix.controls.JFXRippler.RipplerPos;
 import com.jfoenix.controls.JFXSlider;
 import com.jfoenix.controls.JFXSlider.IndicatorPosition;
+import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSnackbar.SnackbarEvent;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXToggleButton;
 //import com.jidesoft.swing.MarqueePane;
 import com.nilo.plaf.nimrod.NimRODLookAndFeel;
 import com.nilo.plaf.nimrod.NimRODTheme;
+
 
 import org.controlsfx.control.CheckComboBox;
 import org.controlsfx.control.MaskerPane;
@@ -37,7 +41,7 @@ import org.fxmisc.wellbehaved.event.Nodes;
 import com.sun.management.OperatingSystemMXBean;
 
 import de.codecentric.centerdevice.MenuToolkit;
-
+import de.jensd.fx.fontawesome.Icon;
 import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -74,6 +78,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -81,11 +86,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+
 import javafx.util.Duration;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -101,6 +109,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -215,13 +224,14 @@ public class MainScene {
 	public static final int SAVING = 1;
 	public static final int PAUSED = 2; 
 	
-	private static final String PAUSE_MSG = " [ PAUSE ]  ESC to resume  ";
+	private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
 	
 	private static int theme = 7; // 6 is snow blue with nimbus ; 7 is the orange with nimrod
 
 	public static int chatBoxHeight = 256;
 
+	private int count = 0;
 	private int memMax;
 	private int memTotal;
 	private int memUsed, memUsedCache;
@@ -249,55 +259,48 @@ public class MainScene {
 	private StringProperty timeStamp;
     private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
+	private Pane root;
+	private StackPane settlementBox, chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
+	private BorderPane borderPane;
+	private FlowPane flowPane;
+	private AnchorPane anchorDesktopPane, anchorMapTabPane ;
+	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
+	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
+	private Scene scene;
+
 	private File fileLocn = null;
-	
 	private Thread newSimThread;
 
-    //private MenuItem navMenuItem = registerAction(new MenuItem("Navigator", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.globe.wire.png")))));
-    //private MenuItem mapMenuItem = registerAction(new MenuItem("Map", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.map.folds.png")))));
-    //private MenuItem missionMenuItem = registerAction(new MenuItem("Mission", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.flag.wavy.png")))));
-    //private MenuItem monitorMenuItem = registerAction(new MenuItem("Monitor", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.eye.png")))));
-    //private MenuItem searchMenuItem = registerAction(new MenuItem("Search", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.magnify.png")))));
-    //private MenuItem eventsMenuItem = registerAction(new MenuItem("Events", new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/appbar.page.new.png")))));
-
-	private Label timeText, lastSaveText;
+	private Label timeLabel, lastSaveLabel;
 	private Text memUsedText;
+	
 	private JFXComboBox<Settlement> sBox;
-	//private VBox settlementBox;
-	private StackPane settlementBox;
-
+	private JFXBadge badge1;
+	private JFXSnackbar snackbar;
 	private JFXToggleButton cacheButton;
 	private JFXSlider zoomSlider;
 	private JFXButton miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn; //menubarButton,
-	private Button memBtn, clkBtn;
-
-	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
-	private Scene scene;
-	private AnchorPane anchorDesktopPane, anchorMapTabPane ;
-	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
-	private StatusBar statusBar;
-	//private Flyout flyout;
 	private JFXPopup flyout;
-	//private CheckComboBox<String> mapLabelBox;
-	private VBox mapLabelBox;
+	private JFXTabPane jfxTabPane;
 	
+	//private Button memBtn, clkBtn;
+	//private StatusBar statusBar;
+	//private Flyout flyout;
+	//private CheckComboBox<String> mapLabelBox;
+	private HBox timeBar;
+	private VBox mapLabelBox;
 	private ChatBox chatBox;
-	private StackPane chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
-	private Tab nodeTab;
-	private BorderPane borderPane;
 	private DndTabPane dndTabPane;
 	private ESCHandler esc = null;
 
-	private JFXTabPane jfxTabPane;
 	private Tab mainTab;
 	
 	private Timeline timeline;
-	private static NotificationPane notificationPane;
+	private NotificationPane notificationPane;
 
-	private ObservableList<Screen> screens;
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
 
-	private static MainDesktopPane desktop;
+	private MainDesktopPane desktop;
 	private MainSceneMenu menuBar;
 
 	private MarsNode marsNode;
@@ -317,6 +320,7 @@ public class MainScene {
 	private SettlementMapPanel mapPanel;
 	
 	private List<DesktopPane> desktops;
+	private ObservableList<Screen> screens;
 	
 	/**
 	 * Constructor for MainScene
@@ -385,9 +389,9 @@ public class MainScene {
 	/**
 	 * Calls an thread executor to submit MainSceneTask
 	 */
-	public void prepareMainScene() {
-			UIConfig.INSTANCE.useUIDefault();
-	}
+	//public void prepareMainScene() {
+	//	UIConfig.INSTANCE.useUIDefault();
+	//}
 
 	/**
 	 * Sets up the UI theme and the two timers as a thread pool task
@@ -470,7 +474,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(SearchWindow.NAME));
 			}
 		});
-	    Nodes.addInputMap(desktopPane, f2);
+	    Nodes.addInputMap(root, f2);
 	    
 		InputMap<KeyEvent> f3 = consume(keyPressed(F3), e -> {
 			if (desktop.isToolWindowOpen(TimeWindow.NAME))
@@ -480,7 +484,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() ->desktop.openToolWindow(TimeWindow.NAME));
 			}
 		});
-	    Nodes.addInputMap(desktopPane, f3);
+	    Nodes.addInputMap(root, f3);
 	    
 		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)), e -> {
 			boolean isMute = menuBar.getMuteItem().isSelected();
@@ -494,15 +498,15 @@ public class MainScene {
         	}
 			
 		});
-	    Nodes.addInputMap(desktopPane, ctrlM);
+	    Nodes.addInputMap(root, ctrlM);
 
 		InputMap<KeyEvent> ctrlQ = consume(keyPressed(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN)), e -> {
         	popAQuote();
         	desktopPane.requestFocus();	
 		});
-	    Nodes.addInputMap(desktopPane, ctrlQ);
+	    Nodes.addInputMap(root, ctrlQ);
 
-		InputMap<KeyEvent> ctrlO = consume(keyPressed(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN)), e -> {
+		InputMap<KeyEvent> ctrlN = consume(keyPressed(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), e -> {
         	boolean isNotificationOn = !desktop.getEventTableModel().isNoFiring();    	
        		if (isNotificationOn) {	
         		menuBar.getNotificationItem().setSelected(false);
@@ -513,7 +517,7 @@ public class MainScene {
                 desktop.getEventTableModel().setNoFiring(false);
         	}
 		});
-	    Nodes.addInputMap(desktopPane, ctrlO);
+	    Nodes.addInputMap(root, ctrlN);
 	    
 		InputMap<KeyEvent> ctrlF = consume(keyPressed(new KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN)), e -> {
            	boolean isFullScreen = stage.isFullScreen();
@@ -529,37 +533,37 @@ public class MainScene {
         	}
         	isFullScreenCache = stage.isFullScreen();
 		});
-	    Nodes.addInputMap(desktopPane, ctrlF);
+	    Nodes.addInputMap(root, ctrlF);
 	    
 		InputMap<KeyEvent> ctrlUp = consume(keyPressed(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN)), e -> {
 			desktop.getSoundPlayer().volumeUp();
 		});
-	    Nodes.addInputMap(desktopPane, ctrlUp);
+	    Nodes.addInputMap(root, ctrlUp);
 
 		InputMap<KeyEvent> ctrlDown = consume(keyPressed(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN)), e -> {
 			desktop.getSoundPlayer().volumeDown();
 		});
-	    Nodes.addInputMap(desktopPane, ctrlDown);
+	    Nodes.addInputMap(root, ctrlDown);
 
-		InputMap<KeyEvent> ctrlN = consume(keyPressed(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), e -> {
-			newSimulation();
-		});
-	    Nodes.addInputMap(desktopPane, ctrlN);
+		//InputMap<KeyEvent> ctrlN = consume(keyPressed(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), e -> {
+		//	newSimulation();
+		//});
+	    //Nodes.addInputMap(root, ctrlN);
     
 		InputMap<KeyEvent> ctrlS = consume(keyPressed(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)), e -> {
 			saveSimulation(Simulation.SAVE_DEFAULT);
 		});
-	    Nodes.addInputMap(desktopPane, ctrlS);
+	    Nodes.addInputMap(root, ctrlS);
 
 		InputMap<KeyEvent> ctrlA = consume(keyPressed(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_DOWN)), e -> {
 			saveSimulation(Simulation.SAVE_AS);
 		});
-	    Nodes.addInputMap(desktopPane, ctrlA);
+	    Nodes.addInputMap(root, ctrlA);
 
 		InputMap<KeyEvent> ctrlX = consume(keyPressed(new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN)), e -> {
 			alertOnExit();
 		});
-	    Nodes.addInputMap(desktopPane, ctrlX);
+	    Nodes.addInputMap(root, ctrlX);
 	    
 		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)), e -> {
 			if (theme == 6)
@@ -567,7 +571,7 @@ public class MainScene {
 			else if (theme == 7)
 				changeTheme(6);
 		});
-	    Nodes.addInputMap(desktopPane, ctrlT);
+	    Nodes.addInputMap(root, ctrlT);
 	    
 	}
     
@@ -598,65 +602,67 @@ public class MainScene {
 		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
 		//logger.info("DPI Scale Factor is " + dpiScaleFactor);
 		
-		// Create group to hold swingNode1 which holds the swing desktop
+
+		// Create group to hold swingNode which in turns holds the Swing desktop
 		swingNode = new SwingNode();
 		createSwingNode();
-		
+
 		desktopPane = new StackPane();
 		desktopPane.getChildren().add(swingNode);
 		desktopPane.setMinHeight(sceneHeight.get());
 		desktopPane.setMinWidth(sceneWidth.get());
-		
-		// 2016-11-14 Setup keyboard events using wellbehavedfx
-		setupKeyEvents();
-		
+		// 2016-11-25 Setup root for embedding key events
+		root = new Pane();//Group();
+		// 2016-11-14 Setup key events using wellbehavedfx
+		setupKeyEvents();		
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
         flag = false;
         //EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(), chatBox);		
 		// Create ControlFX's StatusBar
-		statusBar = createStatusBar();
-		// Create menuBar
+		//statusBar = createStatusBar();
+        createTimeBar();
+        // Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
+		// Create Snackbar
+		createJFXSnackbar();
 		// Create jfxTabPane
 		createJFXTabs();	
 		// Create BorderPane
 		borderPane = new BorderPane();
 		//borderPane.setCenter(swingPane);
 		borderPane.setCenter(jfxTabPane);
+	    //borderPane.setBottom(statusBar);
 
 		anchorDesktopPane = new AnchorPane();
-
-        AnchorPane.setBottomAnchor(borderPane, 0.0);
-        AnchorPane.setLeftAnchor(borderPane, 0.0);
-        AnchorPane.setRightAnchor(borderPane, 0.0);
-        AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
-        
-        borderPane.setBottom(statusBar);
-
-        anchorDesktopPane.getChildren().addAll(borderPane);
- 
+		//anchorDesktopPane.setMaxWidth(sceneWidth.get());
+		//anchorDesktopPane.setPrefWidth(sceneWidth.get());
+		//anchorDesktopPane.setPrefHeight(sceneHeight.get());
+		
 		if (OS.contains("mac")) {   
-        	// for macOS
-			((MenuBar)menuBar).useSystemMenuBarProperty().set(true);
-  
+			((MenuBar)menuBar).useSystemMenuBarProperty().set(true);  
 		}
-		else {
-			
+		else {			
 			//menubarButton = new JFXButton();
 			//menubarButton.setTooltip(new Tooltip("Open top menu"));
 	        /**
 	         * Instantiate a BorderSlideBar for each child layouts
 	         */
 	        //topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
-	        //borderPane.setTop(topFlapBar);        
-	       
+	        //borderPane.setTop(topFlapBar);        	       
+
 	        //AnchorPane.setRightAnchor(menubarButton, 5.0);
 	        //AnchorPane.setTopAnchor(menubarButton, -3.0);
-
 	        //anchorDesktopPane.getChildren().addAll(menubarButton);
-
 		}
+		
+        AnchorPane.setBottomAnchor(borderPane, 0.0);
+        AnchorPane.setLeftAnchor(borderPane, 0.0);
+        AnchorPane.setRightAnchor(borderPane, 0.0);
+        AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
+
+        AnchorPane.setRightAnchor(badge1, 5.0);
+        AnchorPane.setTopAnchor(badge1, 0.0);
 
         AnchorPane.setRightAnchor(marsNetButton, 45.0);
         AnchorPane.setTopAnchor(marsNetButton, -3.0);       
@@ -667,9 +673,24 @@ public class MainScene {
         AnchorPane.setRightAnchor(miniMapBtn, 125.0);
         AnchorPane.setTopAnchor(miniMapBtn, -3.0); 
 
-        anchorDesktopPane.getChildren().addAll(miniMapBtn, mapBtn, marsNetButton);
+        AnchorPane.setRightAnchor(timeLabel, 140.0);
+        AnchorPane.setTopAnchor(timeLabel, -2.0);
 
-    	Scene scene = new Scene(anchorDesktopPane, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
+        AnchorPane.setRightAnchor(lastSaveLabel, 460.0);
+        AnchorPane.setTopAnchor(lastSaveLabel, -2.0);
+ 
+        //AnchorPane.setLeftAnchor(snackbar, 100.0);
+        //AnchorPane.setBottomAnchor(snackbar, 40.0);
+        
+        anchorDesktopPane.getChildren().addAll(borderPane, miniMapBtn, mapBtn, marsNetButton, badge1, timeLabel, lastSaveLabel);//timeBar);//, snackbar);
+/*
+		flowPane = new FlowPane();
+		flowPane.setPrefSize(500, 40);
+		flowPane.getChildren().addAll(snackbar);
+*/
+		root.getChildren().addAll(anchorDesktopPane);//, flowPane);
+		//root.setStyle("-fx-background-color: transparent;");
+    	scene = new Scene(root, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
 
     	//scene.heightProperty().addListener((observable, oldValue, newValue) -> {
     	//    System.out.println("scene height : " + newValue);    	    
@@ -686,28 +707,74 @@ public class MainScene {
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 
-		jfxTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
+		jfxTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
+		//root.prefHeightProperty().bind(scene.heightProperty());
+		//root.prefWidthProperty().bind(scene.widthProperty());
+
 		desktopPane.prefHeightProperty().bind(scene.heightProperty().subtract(93));
 		desktopPane.prefWidthProperty().bind(scene.widthProperty());
-		
+
 		// anchorTabPane is within jfxTabPane
-		anchorMapTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
+		anchorMapTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
 		anchorMapTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
-		mapNodePane.prefHeightProperty().bind(scene.heightProperty().subtract(73));
+		mapNodePane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
 		//mapNodePane.prefWidthProperty().bind(scene.widthProperty());
 		
 		//mapNodePane.heightProperty().addListener((observable, oldValue, newValue) -> {
     	//    System.out.println("mapNodePane height : " + newValue);    	    
     	//});
-    	
-		this.scene = scene;
-		
+
 		return scene;
 	}
 
+	public void createJFXSnackbar() {	
+		snackbar = new JFXSnackbar();
+		//snackbar.getStylesheets().clear();
+		//snackbar.getStylesheets().add(getClass().getResource("/css/jfoenix-design.css").toExternalForm());
+		//snackbar.getStylesheets().add(getClass().getResource("/css/jfoenix-components.css").toExternalForm());
+		snackbar.setPrefSize(300, 40);
+		snackbar.getStyleClass().add("jfx-snackbar");
+		snackbar.registerSnackbarContainer(root);
+
+		Icon icon = new Icon("INBOX");
+		icon.setPadding(new Insets(10));
+		badge1 = new JFXBadge(icon);
+		badge1.getStylesheets().clear();
+		//badge1.getStylesheets().add(getClass().getResource("/css/jfoenix-design.css").toExternalForm());
+		//badge1.getStylesheets().add(getClass().getResource("/css/jfoenix-components.css").toExternalForm());
+		//badge1.getStyleClass().add("icons-badge");
+		//badge1.setStyle("icons-badge");
+		badge1.setText("0");
+	
+		badge1.setOnMouseClicked((e) -> {
+			int value = Integer.parseInt(badge1.getText());
+			if (e.getButton() == MouseButton.PRIMARY) {
+				value++;
+			} else if (e.getButton() == MouseButton.SECONDARY) {
+				if (value > 0)
+					value--;
+			}
+			
+			if (value == 0) {
+				badge1.setEnabled(false);
+			} else {
+				badge1.setEnabled(true);
+			}
+			badge1.setText(String.valueOf(value));
+			
+			// trigger snackbar
+			if (count++%2==0){
+				snackbar.fireEvent(new SnackbarEvent("Toast Message " + count));
+			} else {
+				snackbar.fireEvent(new SnackbarEvent("Snackbar Message "+ count,"UNDO",3000,(b)->{}));
+			}
+		});	
+	}
+	
+	
 	public void createFXButtons() {
 		cacheButton = new JFXToggleButton();
 		cacheButton.setText("Cache Off");
@@ -797,28 +864,18 @@ public class MainScene {
 		sBox.setPromptText("Select a settlement to view");
 		sBox.getSelectionModel().selectFirst();
 
-		//sBox.setOnAction(s -> {
-		//	settlementWindow.getMapPanel().setSettlement(sBox.getSelectionModel().getSelectedItem());  
-		//});
 		sBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 			if (oldValue != newValue) {
 				SwingUtilities.invokeLater(() -> mapPanel.setSettlement((Settlement)newValue));
 			}
     	});
 		
-		//Settlement s0 = Simulation.instance().getUnitManager().getSettlementOList().get(0);
-		//System.out.println("s0 is " + s0);
 
 		settlementBox = new StackPane(sBox);
 		settlementBox.setMaxSize(180, 30);
 		settlementBox.setPrefSize(180, 30);		
 		settlementBox.setAlignment(Pos.CENTER_RIGHT);
-		//settlementBox = new VBox(sBox);
-		//settlementBox.setAlignment(Pos.CENTER_LEFT);
-		//VBox.setMargin(sBox, new Insets(5));
-		//settlementBox.setStyle("-fx-background-color: transparent");
-		//settlementBox.getChildren().add(sBox);	
-		//settlementBox.toFront();
+
 	}
 	
 	public void createFXMapLabelBox() {
@@ -1268,11 +1325,11 @@ public class MainScene {
 		
 		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 			mapNodePane.prefWidthProperty().unbind();
-			mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(5));							
+			mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(2));							
 		}
 		else {
 			mapNodePane.prefWidthProperty().unbind();
-			mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(2));			
+			mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(1));			
 		}
 		
 		
@@ -1416,9 +1473,11 @@ public class MainScene {
 				setLookAndFeel(NIMROD_THEME);			
 		});
 		
-		desktopPane.getStylesheets().clear();
-		if (menuBar.getStylesheets() != null) menuBar.getStylesheets().clear();
-		statusBar.getStylesheets().clear();	
+		//desktopPane.getStylesheets().clear();
+		
+		if (menuBar.getStylesheets() != null) 
+			menuBar.getStylesheets().clear();
+		//statusBar.getStylesheets().clear();	
 
 		String cssFile;
 	
@@ -1457,13 +1516,13 @@ public class MainScene {
 		} else if (theme == 6) { // + skyblue
 	
 			cssFile = "/fxui/css/snowBlue.css";
-			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
+			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(255,255,255), cssFile); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "Snow";
 
 		} else if (theme == 7) { // mud orange/standard
 
 			cssFile = "/fxui/css/nimrodskin.css";
-			updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(156,77,0), cssFile); //DARKORANGE, CORAL
+			updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(255,255,255), cssFile); //DARKORANGE, CORAL
 			lookAndFeelTheme = "nimrod";
 
 		}
@@ -1475,7 +1534,7 @@ public class MainScene {
 	 * Updates the theme colors of statusBar, swingPane and menuBar
 	 */
 	// 2015-08-29 Added updateThemeColor()
-	public void updateThemeColor(int theme, Color txtColor, Color btnTxtColor, String cssFile) {
+	public void updateThemeColor(int theme, Color txtColor, Color txtColor2, String cssFile) {
 		desktopPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		if (!OS.contains("mac"))
 			menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -1484,14 +1543,18 @@ public class MainScene {
 		// orange theme : F4BA00
 		// blue theme : 3291D2
 		
-		String color = txtColor.toString().replace("0x", "");
-		timeText.setTextFill(txtColor);
-		lastSaveText.setTextFill(txtColor);
-		
+		//String color = txtColor.toString().replace("0x", "");
+		//timeLabel.setTextFill(txtColor2);
+		//lastSaveLabel.setTextFill(txtColor2);
+
 		jfxTabPane.getStylesheets().clear();
 		
-		statusBar.getStylesheets().clear();
-		statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+		timeLabel.getStylesheets().clear();
+		timeLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+		
+		lastSaveLabel.getStylesheets().clear();
+		lastSaveLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		
 		miniMapBtn.getStylesheets().clear();
 		miniMapBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		mapBtn.getStylesheets().clear();
@@ -1545,7 +1608,7 @@ public class MainScene {
 	 */
 	public void startEarthTimer() {
 		// Set up earth time text update
-		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateStatusBarText()));
+		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeBar()));
 		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
 		// All the objects with animated properties would not be garbage collected.
 		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
@@ -1560,36 +1623,18 @@ public class MainScene {
      */
     //2015-11-11 Added createFlyout()
     public JFXPopup createFlyout() {
-     	marsNetButton = new JFXButton();//ToggleButton();
-        //marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/gray_chat_36.png")))); //" MarsNet ");       
-        //marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/icons/statusbar/orange_chat_32.png")))); //" MarsNet ");       
-
-        /*
-        marsNetButton.setStyle(
-        			"-fx-background-color: transparent;" +   
-        		   "-fx-shadow-highlight-color : transparent;" +  // if you don't want a 3d effect highlight.
-        		   "-fx-outer-border : transparent;" +  // if you don't want a button border.
-        		   "-fx-inner-border : transparent;" +  // if you don't want a button border.
-        		   "-fx-focus-color: transparent;" +  // if you don't want any focus ring.
-        		   "-fx-faint-focus-color : transparent;" +  // if you don't want any focus ring.
-        		   "-fx-base : orange;" + // if you want a gradient shaded button that lightens on hover and darkens on arming.
-        		  // "-fx-body-color: palegreen;" + // instead of -fx-base, if you want a flat shaded button that does not lighten on hover and darken on arming.
-        		   //"-fx-font-size: 80px;"
-              		"-fx-background-radius: 2px;"
-        		   );
-*/        
-        
-        //flyout = new Flyout(marsNetButton, createChatBox(), this);
+     	marsNetButton = new JFXButton();       
+        //marsNetButton.setId("marsNetButton");
+        marsNetButton.setTooltip(new Tooltip ("Open MarsNet chat box"));
+        //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
+ 
 		flyout = new JFXPopup();
 		flyout.setOpacity(.9);
 		flyout.setContent(createChatBox());
 		flyout.setPopupContainer(anchorDesktopPane);
 		flyout.setSource(marsNetButton);		
-        
-        //marsNetButton.setId("marsNetButton");
-        marsNetButton.setTooltip(new Tooltip ("Open MarsNet chat box"));
-        //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
-    	chatBox.update();
+   	
+		//chatBox.update();
         marsNetButton.setOnAction(e -> {
             if (!flag) 
             	chatBox.update();
@@ -1664,10 +1709,59 @@ public class MainScene {
  		chatBoxPane.setPrefHeight(value);
  		chatBoxPane.setMaxHeight(value);
   	}
-  	
+ 
+	/*
+	 * Creates the time bar for MainScene
+	 */
+	public void createTimeBar() {
+		timeBar = new HBox();
+		timeBar.setPadding(new Insets(0,20,0,20));
+		
+		//2016-09-15 Added oldLastSaveStamp
+		oldLastSaveStamp = sim.instance().getLastSave();
+		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
+		
+		lastSaveLabel = new Label();
+		lastSaveLabel.setMaxWidth(Double.MAX_VALUE);
+		lastSaveLabel.setMinWidth(250);
+		lastSaveLabel.setPrefSize(250, 40);
+		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
+		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + " ");
+		//lastSaveText.setStyle("-fx-text-inner-color: orange;");
+		lastSaveLabel.setTooltip(new Tooltip ("Time last saved/autosaved on your machine"));
+
+		timeBar.getChildren().add(lastSaveLabel);		
+/*
+		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
+		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
+		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
+		memUsed = memTotal - memFree;
+*/		
+		if (masterClock == null) {
+			masterClock = Simulation.instance().getMasterClock();
+		}
+		
+		if (earthClock == null) {
+			earthClock = masterClock.getEarthClock();
+		}
+
+		timeLabel = new Label();
+		timeLabel.setMaxWidth(Double.MAX_VALUE);
+		timeLabel.setMinWidth(300);
+		timeLabel.setPrefSize(300, 40);
+		timeLabel.setTextAlignment(TextAlignment.RIGHT);
+		timeLabel.setText("  " + timeStamp + "  ");
+		//timeText.setStyle("-fx-text-inner-color: orange;");
+		timeLabel.setTooltip(new Tooltip ("Earth Date/Time"));
+
+		timeBar.getChildren().add(timeLabel);		
+
+		//return timeBar;
+	}
+	
 	/*
 	 * Creates the status bar for MainScene
-	 */
+
 	public StatusBar createStatusBar() {
 		if (statusBar == null) {
 			statusBar = new StatusBar();
@@ -1712,7 +1806,7 @@ public class MainScene {
 
 		return statusBar;
 	}
-
+	 */
 
 	public NotificationPane getNotificationPane() {
 		return notificationPane;
@@ -1746,23 +1840,23 @@ public class MainScene {
 
 
 	/*
-	 * Updates the cpu loads, memory usage and time text in the status bar
+	 * Updates the last saved and time labels in the time bar
 	 */
-	public void updateStatusBarText() {
+	public void updateTimeBar() {
  
 		String t = earthClock.getTimeStamp2();
 		// Check if new simulation is being created or loaded from file.
 		if (sim.isUpdating() || masterClock.isPaused()) {
-			timeText.setText(PAUSE_MSG + t + "  ");		
+			timeLabel.setText(" " + t + " " + PAUSE_MSG);		
 		}	
 		else { 	
-			timeText.setText("  " + t + "  ");
+			timeLabel.setText(" " + t + " ");
 			
 			//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
 			String newLastSaveStamp = sim.instance().getLastSave();
 			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
 				oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
-				lastSaveText.setText(LAST_SAVED + oldLastSaveStamp + " ");
+				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + " ");
 			}
 		}
 	}
@@ -1937,7 +2031,7 @@ public class MainScene {
 		if (messagePopup.numPopups() == 0) {	
             // Note: (NOT WORKING) popups.size() is always zero no matter what.
 			Platform.runLater(() -> 
-				messagePopup.popAMessage(" PAUSED", " ", " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
+				messagePopup.popAMessage("PAUSE", "ESC to resume", " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
 			);  		    	
 		}
 	}
@@ -2003,7 +2097,6 @@ public class MainScene {
 		Simulation.instance().getSimExecutor().shutdownNow();
 		mainSceneExecutor.shutdownNow();
 		getDesktop().clearDesktop();
-		statusBar = null;
 		stage.close();
 	}
 
@@ -2426,11 +2519,11 @@ public class MainScene {
 		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
 		if (anchorDesktopPane == null) {
-			StackPane root = new StackPane();//starfield);
-			root.setPrefHeight(sceneWidth.get());
-			root.setPrefWidth(sceneHeight.get());
+			StackPane pane = new StackPane();//starfield);
+			pane.setPrefHeight(sceneWidth.get());
+			pane.setPrefWidth(sceneHeight.get());
 
-			StartUpLocation startUpLoc = new StartUpLocation(root.getPrefWidth(), root.getPrefHeight());		 
+			StartUpLocation startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());		 
 		}
 		else {
 			//root.prefHeightProperty().bind(scene.heightProperty());
@@ -2490,15 +2583,20 @@ public class MainScene {
 	//	return mapLabelBox;
 	//}
 	
+	public void sendSnackBar(String msg) {
+		snackbar.fireEvent(new SnackbarEvent(msg, "UNDO",3000,(b)->{}));
+	}
+	
 	public void destroy() {
 		quote = null;
 		messagePopup = null;		
 		topFlapBar = null;	
 	    timeStamp = null;
 	    memUsedText = null;
-		memBtn = null;
-		clkBtn = null;	
-		statusBar = null;
+		//memBtn = null;
+		//clkBtn = null;	
+		timeBar = null;
+		//statusBar = null;
 		flyout = null;
 		marsNetButton = null;
 		chatBox = null;
@@ -2511,7 +2609,7 @@ public class MainScene {
 		savingCircleStage = null;
 		pausingCircleStage = null;
 		mainTab = null;
-		nodeTab = null;
+		//nodeTab = null;
 		dndTabPane = null;
 		timeline = null;
 		notificationPane = null;

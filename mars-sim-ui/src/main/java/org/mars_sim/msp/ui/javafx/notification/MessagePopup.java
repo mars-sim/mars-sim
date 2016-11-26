@@ -78,7 +78,7 @@ public class MessagePopup implements Serializable {
     
     public void popAMessage(String title, String str, String name, Stage stage, Pos location, Image IMAGE) {  
     	//System.out.println("calling popAMessage()");
-    	
+/*    	
     	//notifier = Notification.Notifier.INSTANCE;
 		//msg = "\"" + wrap(msg, CHARS_PER_LINE-1) + "\"";	
 		str = wrap(str, CHARS_PER_LINE-1);	
@@ -152,15 +152,15 @@ public class MessagePopup implements Serializable {
 			nameLine.append("- ").append(name);	
 					
 		str = System.lineSeparator() + str + nameLine;
-		
+*/		
         //Duration duration = new Duration(POPUP_IN_MILLISECONDS);
 		//notifier.setPopupLifetime(duration);
 		
         notifier.setPopupLifetime(Duration.ZERO);//INDEFINITE);//duration); 
         PNotification.Notifier.setNotificationOwner(stage);
         notifier.setPopupLocation(stage, location);
-        PNotification.Notifier.setHeight(new_height);
-        PNotification.Notifier.setWidth(new_width);
+        //PNotification.Notifier.setHeight(new_height);
+        PNotification.Notifier.setWidth(100);
         //System.out.println("wait time : " + notifier.getPopupLifetime().toSeconds() + " secs");
         notifier.notify(title, str, IMAGE); //INFO_ICON);
 	        //notifier.setNotificationOwner(stage);

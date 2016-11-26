@@ -55,7 +55,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	// 2014-12-17 Added Timer and isPaused
 	//private Timer timer;
-	private boolean isPaused = false;
+	//private boolean isPaused = false;
 	private boolean showMedical = true;
 	private boolean showMedicalCache = true;
 	private boolean showMalfunction = true;
@@ -344,7 +344,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 				}
 
 				if (!noFiring)
-					if (!isPaused)
+					//if (!isPaused)
 						if ((index == 0) && (event != null) ) {
 							SwingUtilities.invokeLater(new NotifyBoxLauncher(event));
 						}
@@ -382,52 +382,49 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					noFiring = true;
 				}
 */
-				if (!noFiring)
-					if (!isPaused)
-						if ((index == 0) && (event != null) ) {
+				if (!noFiring) {
+					//if (!isPaused)
+					if ((index == 0) && (event != null) ) {
 
-								int position = 0;
-								String header = null ;
-								String message = event.getDescription(); //.toUpperCase();
-								// reset willNotify to false
-								boolean willNotify = false;
+						int position = 0;
+						String header = null ;
+						String message = event.getDescription(); //.toUpperCase();
+						// reset willNotify to false
+						boolean willNotify = false;
 
-								if ( message != null && message != "" ) {
+						if (message != null && message != "" ) {
 
-								    HistoricalEventCategory category = event.getCategory();
+						    HistoricalEventCategory category = event.getCategory();
 
-								    if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
-								           // && showMalfunction ) {
-								        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
+						    if (category.equals(HistoricalEventCategory.MALFUNCTION)) {
+						           // && showMalfunction ) {
+						        header = Msg.getString("NotificationManager.message.malfunction"); //$NON-NLS-1$
 
-								        // Only display notification window when malfunction has occurred, not when fixed.
-								        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
-								            willNotify = true;
-								        }
-								    }
+						        // Only display notification window when malfunction has occurred, not when fixed.
+						        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
+						            willNotify = true;
+						        }
+						    }
 
-								    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
-								            // && showMedical )	{
+						    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
+						            // && showMedical )	{
 
-								        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
+						        header = Msg.getString("NotificationManager.message.medical"); //$NON-NLS-1$
 
-								        // Only display notification windows when medical problems are starting or person has died.
-								        if ((event.getType() == EventType.MEDICAL_STARTS) ||
-								                (event.getType() == EventType.MEDICAL_DEATH)) {
-								            willNotify = true;
-								        }
-								    }
-								}
-								if (willNotify)
-									Platform.runLater(new NotifyFXLauncher(header, message, position));
-
-							}
+						        // Only display notification windows when medical problems are starting or person has died.
+						        if ((event.getType() == EventType.MEDICAL_STARTS) ||
+						                (event.getType() == EventType.MEDICAL_DEATH)) {
+						            willNotify = true;
+						        }
+						    }
 						}
+						
+						if (willNotify)
+							Platform.runLater(new NotifyFXLauncher(header, message, position));
 
-
-
-
-
+					}
+				}
+			}
 		}
 	}
 
@@ -568,13 +565,13 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 
 	// 2014-12-17 Added clockPulse()
 	public void clockPulse(double time) {
-		isPaused = false;
+
 	}
 
 	// 2014-12-17 Added pauseChange()
-	public void pauseChange(boolean isPaused) {
-		isPaused = true;
-	};
+	public void pauseChange(boolean value) {
+		noFiring = value;
+	}
 
 	public void setNoFiring(boolean value) {
 		noFiring = value;

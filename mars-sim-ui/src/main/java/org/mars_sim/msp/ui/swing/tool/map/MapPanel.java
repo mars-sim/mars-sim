@@ -322,7 +322,7 @@ ClockListener {
         }
     }
 	 */
-	
+
 	public void updateDisplay() {
 		if (update) {
 			if (!executor.isTerminated() || !executor.isShutdown() )

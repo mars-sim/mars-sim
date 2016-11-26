@@ -119,6 +119,12 @@ public class ChatBox extends BorderPane {
     	//this.setHeight(height);
     	//super.setHeight(height);
     	
+    	this.setStyle("-fx-background-color: white;" 
+    	        		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+    	        //		+ "-fx-text-fill: white;"
+          				+ "-fx-background-radius: 5px;"
+    	        );        
+    			
        	box_height[0] = 256; //mainScene.getFlyout().getContainerHeight();
     	box_height[1] = 512;//box_height[0] * 1.5D;
     	box_height[2] = 768;//box_height[0] * 3D;
@@ -137,13 +143,14 @@ public class ChatBox extends BorderPane {
   		
   		// 2016-01-01 Replaced textField with autoFillTextBox
         autoFillTextBox = new AutoFillTextBox<String>(autoCompleteData);
-        autoFillTextBox.setPadding(new Insets(0, 0, 0, 0));
+        autoFillTextBox.setPadding(new Insets(2, 0, 0, 0));
         autoFillTextBox.getStylesheets().addAll("/css/autofill.css");
-        //autoFillTextBox.setStyle(
+        autoFillTextBox.setStyle(
         //		"-fx-background-color: white;" 
         //		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
         //		+ "-fx-text-fill: white;"
-        //		);          
+        		"-fx-background-radius: 5px;"
+        		);          
 
         autoFillTextBox.setFilterMode(false);
         autoFillTextBox.getTextbox().addEventHandler(KeyEvent.KEY_RELEASED, keyEvent -> {

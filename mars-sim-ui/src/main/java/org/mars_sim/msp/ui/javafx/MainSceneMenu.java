@@ -109,8 +109,8 @@ public class MainSceneMenu extends MenuBar  {
 		
         // --- Menu File	
         Menu menuFile = new Menu("File");
-        MenuItem newItem = new MenuItem("New...");
-        newItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+        //MenuItem newItem = new MenuItem("New...");
+        //newItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
         //MenuItem openItem = new MenuItem("Open...");
         //openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         //MenuItem openAutoSaveItem = new MenuItem("Open autosave");
@@ -125,7 +125,7 @@ public class MainSceneMenu extends MenuBar  {
         SeparatorMenuItem SeparatorMenuItem2 = new SeparatorMenuItem();
         SeparatorMenuItem SeparatorMenuItem3 = new SeparatorMenuItem();
 
-        menuFile.getItems().addAll(newItem, SeparatorMenuItem1, //openItem, openAutoSaveItem, 
+        menuFile.getItems().addAll(SeparatorMenuItem1, //newItem, openItem, openAutoSaveItem, 
         		SeparatorMenuItem2, saveItem, saveAsItem, SeparatorMenuItem3, exitItem);
 
         // --- Menu Tools
@@ -224,7 +224,7 @@ public class MainSceneMenu extends MenuBar  {
         SeparatorMenuItem SeparatorMenuItem5 = new SeparatorMenuItem();
         
         notificationItem = new CheckMenuItem("Notifications");
-        notificationItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        notificationItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
         notificationItem.setSelected(true);
 
         SeparatorMenuItem SeparatorMenuItem6 = new SeparatorMenuItem();
@@ -291,14 +291,15 @@ public class MainSceneMenu extends MenuBar  {
 			super.getMenus().addAll(menuFile, menuTools, menuSettings);//, menuHelp); // menuNotification,
     
 	});
-	
+		
+		/*	
         newItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override
      	   public void handle(ActionEvent e) {
      		   mainScene.newSimulation();
      	   }
      	});
-/*
+
         openItem.setOnAction(new EventHandler<ActionEvent>() {
      	   @Override
      	   public void handle(ActionEvent e) {

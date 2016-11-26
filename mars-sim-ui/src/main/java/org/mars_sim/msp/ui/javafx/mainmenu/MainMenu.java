@@ -107,6 +107,7 @@ import org.mars_sim.msp.ui.javafx.config.StarfieldFX;
 import org.mars_sim.msp.ui.javafx.config.controller.MainMenuController;
 import org.mars_sim.msp.ui.javafx.networking.MultiplayerMode;
 import org.mars_sim.msp.ui.javafx.MainScene;
+import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 
 
@@ -142,7 +143,7 @@ public class MainMenu {
 
     private StackPane root;
 	private Stage stage, mainSceneStage, circleStage, loadingCircleStage;//, waitStage;
-	public Scene mainMenuScene, mainSceneScene;
+	public Scene mainMenuScene;
 
 	public MainMenu mainMenu;
 	public MainScene mainScene;
@@ -189,7 +190,7 @@ public class MainMenu {
        screen.loadScreen(MainMenu.screen3ID, MainMenu.screen3File);
        screen.setScreen(MainMenu.screen1ID);
 
-       if ( screen.lookup("#menuOptionBox") == null)
+       if (screen.lookup("#menuOptionBox") == null)
 			System.out.println("Warning: menu option box is not found");
 
        VBox menuOptionBox = ((VBox) screen.lookup("#menuOptionBox"));
@@ -480,9 +481,10 @@ public class MainMenu {
 	public void prepareScene() {
 		//logger.info("MainMenu's prepareScene() is on " + Thread.currentThread().getName());
 		// prepare main scene
-		mainScene.prepareMainScene();
+		//mainScene.prepareMainScene();
+		UIConfig.INSTANCE.useUIDefault();
 		// creates and initialize scene
-		mainSceneScene = mainScene.initializeScene();	
+		Scene mainSceneScene = mainScene.initializeScene();	
 		// switch from the main menu's scene to the main scene's scene
 		mainSceneStage.setScene(mainSceneScene);
 
