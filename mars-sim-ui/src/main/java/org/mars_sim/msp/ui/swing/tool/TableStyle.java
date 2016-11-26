@@ -78,12 +78,12 @@ public class TableStyle extends ZebraJTable{
 		//SwingUtilities.invokeLater(() -> {	
 			// 2016-06-17 Added checking for OS. 
 			// Note: NIMROD theme lib doesn't work on linux 
-			if (MainScene.OS.equals("linux")) {
+			//if (MainScene.OS.equals("linux")) {
 			   	//ZebraJTable z = new ZebraJTable(table.getModel());
 				//table = (JTable) z;
-				;
-			}
-			else 
+			//	;
+			//}
+			//else 
 				//SwingUtilities.invokeLater(() -> 
 				table = editHeader(table);
 		//});

@@ -131,7 +131,7 @@ public abstract class UnitWindow extends JInternalFrame {
         namePanel.setPreferredSize(new Dimension(465,196));
         namePanel.setBorder(null);
         SlidePaneFactory factory = SlidePaneFactory.getInstance();  
-        factory.add(namePanel,"Status", getImage(TITLE), true);
+        factory.add(namePanel,"Status", getImage(TITLE), false);
 
         //namePanel.setBackground(THEME_COLOR);
         //namePanel.setBorder(new MarsPanelBorder());
@@ -261,7 +261,7 @@ public abstract class UnitWindow extends JInternalFrame {
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
-        factory.add(centerPanel,"Details", getImage(TITLE), false);
+        factory.add(centerPanel,"Details", getImage(TITLE), true);
 
         //mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
@@ -397,7 +397,7 @@ public abstract class UnitWindow extends JInternalFrame {
         		(t1, t2) -> t2.getTabTitle().compareTo(t1.getTabTitle()));
         tabPanels.forEach(panel -> {
 	            centerPanel.addTab(panel.getTabTitle(), panel.getTabIcon(),
-	                panel, panel.getTabToolTip());
+	                panel, null);//panel.getTabToolTip());
         });
 
     }
@@ -414,14 +414,17 @@ public abstract class UnitWindow extends JInternalFrame {
      * Updates this window.
      */
     public void update() {
-        // Update each of the tab panels.
-        for (TabPanel tabPanel : tabPanels) {
-        	tabPanel.update();
-        }
-        
-        if (unit instanceof Person) {
-        	statusUpdate();
-        }
+		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()
+    	SwingUtilities.invokeLater(() -> {	
+	    	// Update each of the tab panels.
+	        for (TabPanel tabPanel : tabPanels) {
+	        	tabPanel.update();
+	        }
+	        
+	        if (unit instanceof Person) {
+	        	statusUpdate();
+	        }
+    	});
     }
 
 

@@ -1465,11 +1465,11 @@ public class MainScene {
 		SwingUtilities.invokeLater(() -> {	
 			// 2016-06-17 Added checking for OS. 
 			// Note: NIMROD theme lib doesn't work on linux 
-			if (OS.equals("linux")) { 
-				this.theme = 0;
-				setLookAndFeel(NIMBUS_THEME);	
-			}
-			else 
+			//if (OS.equals("linux")) { 
+			//	this.theme = 0;
+			//	setLookAndFeel(NIMBUS_THEME);	
+			//}
+			//else 
 				setLookAndFeel(NIMROD_THEME);			
 		});
 		
