@@ -70,10 +70,6 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
-        // Initialize data members
-        setDescription(Msg.getString("Task.description.prepareDessert.detail", 
-                getDessertName())); //$NON-NLS-1$
-        
         // Get an available dessert preparing kitchen.
         Building kitchenBuilding = getAvailableKitchen(person);
         
@@ -116,10 +112,6 @@ implements Serializable {
         // Use Task constructor
         super(NAME, robot, true, false, STRESS_MODIFIER, false, 0D);
 
-        // Initialize data members
-        setDescription(Msg.getString("Task.description.prepareDessert.detail", 
-                getDessertName())); //$NON-NLS-1$
-        
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(robot);
         
@@ -243,8 +235,16 @@ implements Serializable {
         }
          
         // Add this work to the kitchen.
-        kitchen.addWork(workTime);
-
+        String nameOfDessert = kitchen.addWork(workTime);
+        
+        if (nameOfDessert != null)
+        	setDescription(Msg.getString("Task.description.prepareDessert.detail.finish", 
+        		nameOfDessert)); //$NON-NLS-1$
+        else
+            setDescription(Msg.getString("Task.description.prepareDessert.detail", 
+                    getDessertName())); //$NON-NLS-1$
+            
+        
         // Add experience
         addExperience(time);
 
@@ -334,10 +334,8 @@ implements Serializable {
      * Gets the name of dessert the chef is making based on the time.
      * @return result
      */
-    //TODO: May change to specific products such as Soymilk, Soybean oil and Tofu in near future
     private String getDessertName() {        
-    	String result = "Dessert";
-        return result;
+    	return "a Dessert";
     }
 
     /**

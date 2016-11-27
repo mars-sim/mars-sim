@@ -48,9 +48,9 @@ implements Serializable {
 
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
-		// 2014-11-02 Changed name to PrepareSoymilk.class
+		// 2014-11-02 Changed name to PrepareDessert
 		jobTasks.add(PrepareDessert.class);
-		//2014-11-23 Added ProduceFood.class
+		//2014-11-23 Added ProduceFood
 		jobTasks.add(ProduceFood.class);
 
 		jobTasks.add(WriteReport.class);

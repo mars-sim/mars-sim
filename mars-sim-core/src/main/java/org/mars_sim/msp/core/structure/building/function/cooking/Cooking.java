@@ -503,8 +503,9 @@ implements Serializable {
      * @param workTime work time (millisols)
      */
  	// Called by CookMeal.java
-    public void addWork(double workTime) {
-
+    public String addWork(double workTime) {
+    	String nameOfMeal = null;
+    	
     	cookingWorkTime += workTime;
 
     	if ((cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) && (!cookNoMore)) {
@@ -525,11 +526,12 @@ implements Serializable {
 	    		aMeal = getACookableMeal();
 	    		if (aMeal != null) {
 	            	//System.out.println("aMeal is " + aMeal);
-	    			cookAHotMeal(aMeal);
+	    			nameOfMeal = cookAHotMeal(aMeal);
 	    		}
 	    	}
     	}
 
+    	return nameOfMeal;
     }
 
     /**
@@ -735,7 +737,7 @@ implements Serializable {
      * Cook a hot meal.
      * @param hotMeal the meal to cook.
      */
-    public void cookAHotMeal(HotMeal hotMeal) {
+    public String cookAHotMeal(HotMeal hotMeal) {
 
     	List<Ingredient> ingredientList = hotMeal.getIngredientList();
 	    Iterator<Ingredient> i = ingredientList.iterator();
@@ -776,6 +778,8 @@ implements Serializable {
 	            " has " + cookedMeals.size() + " meal(s) with quality score of " + mealQuality);
 
 	    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
+	    
+	    return nameOfMeal;
     }
 
 

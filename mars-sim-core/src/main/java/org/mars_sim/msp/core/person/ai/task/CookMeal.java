@@ -85,10 +85,6 @@ implements Serializable {
         // Use Task constructor
         super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
-        // Initialize data members
-        setDescription(Msg.getString("Task.description.cookMeal.detail",
-                getMealName())); //$NON-NLS-1$
-
         // Get an available kitchen.
         Building kitchenBuilding = getAvailableKitchen(person);
 
@@ -158,7 +154,7 @@ implements Serializable {
 
         // Initialize data members
         setDescription(Msg.getString("Task.description.cookMeal.detail",
-                getMealName())); //$NON-NLS-1$
+                getTypeOfMeal())); //$NON-NLS-1$
 
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(robot);
@@ -310,8 +306,15 @@ implements Serializable {
 	    }
 
 	    // Add this work to the kitchen.
-	    kitchen.addWork(workTime);
+	    String nameOfMeal = kitchen.addWork(workTime);
 
+        if (nameOfMeal != null)
+        	setDescription(Msg.getString("Task.description.cookMeal.detail.finish",
+        		nameOfMeal)); //$NON-NLS-1$
+        else 
+            setDescription(Msg.getString("Task.description.cookMeal.detail",
+                    getTypeOfMeal())); //$NON-NLS-1$
+        		
 	    // Add experience
 	    addExperience(time);
 
@@ -441,7 +444,7 @@ implements Serializable {
      * Gets the name of the meal the person is cooking based on the time.
      * @return mean name ("Breakfast", "Lunch" or "Dinner) or empty string if none.
      */
-    private String getMealName() {
+    private String getTypeOfMeal() {
         String result = "";
         double timeDiff = 0;
 

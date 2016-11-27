@@ -193,31 +193,29 @@ implements Serializable {
 				//&& !taskName.equals("WalkSettlementInterior")
 				&& !taskName.equals("WalkSteps")
 				) // filter off Task phase "Walking" due to its excessive occurrences
-			if (!taskDescription.equals(taskDescriptionCache) && !taskDescription.equals("Walking inside a settlement")) {
+			if (!taskDescription.equals(taskDescriptionCache) 
+					&& !taskDescription.equals("Walking inside a settlement")
+					&& !taskDescription.equals("")) {
 
 				if (getPhase() != null) {
 
 					taskPhase = getPhase().getName();
 
 					if (!taskPhase.equals(taskPhaseCache)) {
-
-						if (!taskDescription.equals(""))
-							person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
-
-
-						taskDescriptionCache = taskDescription;
 						taskPhaseCache = taskPhase;
+					}
+					
+					else {
+						;
 					}
 				}
 
 				else {
-
-					if (!taskDescription.equals(""))
-						person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
-
-
-					taskDescriptionCache = taskDescription;
+					;
 				}
+				
+				person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+				taskDescriptionCache = taskDescription;
 			}
 	}
 

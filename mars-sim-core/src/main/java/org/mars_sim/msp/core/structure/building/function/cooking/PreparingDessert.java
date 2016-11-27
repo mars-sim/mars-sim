@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * The PreparingDessert class is a building function for making dessert.
@@ -385,8 +386,9 @@ implements Serializable {
      * The amount of work is dependent upon the person's skill.
      * @param workTime work time (millisols)
       */
-    public void addWork(double workTime) {
-        
+    public String addWork(double workTime) {
+    	String selectedDessert = null;
+    	
     	preparingWorkTime += workTime;
 
     	if ((preparingWorkTime >= PREPARE_DESSERT_WORK_REQUIRED) && !makeNoMoreDessert) {
@@ -402,10 +404,11 @@ implements Serializable {
 	        }
 	        else {
 	        	List<String> dessertList = getAListOfDesserts();
-	        	String selectedDessert = getADessert(dessertList);
-	        	makeADessert(selectedDessert);
+	        	selectedDessert = makeADessert(getADessert(dessertList));
 	        }
     	}
+    	
+    	return Conversion.capitalize(selectedDessert);
     }
 
     /**
@@ -441,7 +444,7 @@ implements Serializable {
     	return result;
     }
 
-    public void makeADessert(String selectedDessert) {
+    public String makeADessert(String selectedDessert) {
         
     	// Take out one serving of the selected dessert from storage.
         double dryMass = getDryMass(selectedDessert);
@@ -460,6 +463,8 @@ implements Serializable {
 	    logger.fine("addWork() : new dessert just prepared : " + selectedDessert);
 
 	    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
+	    
+	    return selectedDessert;
     }
 
     // 2015-01-28 Added useWater()
