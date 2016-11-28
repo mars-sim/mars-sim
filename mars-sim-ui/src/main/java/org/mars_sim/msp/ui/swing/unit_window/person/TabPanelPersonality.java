@@ -79,7 +79,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import jfxtras.scene.layout.GridPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 /**
@@ -322,7 +322,7 @@ extends TabPanel {
 				vboxes.get(3).getChildren().add(createLabel("Aggreeableness"));
 				vboxes.get(4).getChildren().add(createLabel("Neuroticism"));
 
-				grid.remove(vboxes.get(5));
+				grid.getChildren().remove(vboxes.get(5));
 				vboxes.remove(gauges.get(5));
 				gauges.remove(5);
 				

@@ -355,15 +355,15 @@ public abstract class UnitWindow extends JInternalFrame {
     public String getTimePeriod(ShiftType shiftType) {
     	String time = null;
     	if (shiftType.equals(ShiftType.A))
-    		time = " Shift :  " + TaskSchedule.A_START + " to " + TaskSchedule.A_END + " millisols";
+    		time = " Shift :  (From " + TaskSchedule.A_START + " to " + TaskSchedule.A_END + " millisols)";
     	else if (shiftType.equals(ShiftType.B))
-    		time = " Shift :  " + TaskSchedule.B_START + " to " + TaskSchedule.B_END + " millisols";
+    		time = " Shift :  (From " + TaskSchedule.B_START + " to " + TaskSchedule.B_END + " millisols)";
     	else if (shiftType.equals(ShiftType.X))
-    		time = " Shift :  " + TaskSchedule.X_START + " to " + TaskSchedule.Y_END + " millisols";
+    		time = " Shift :  (From " + TaskSchedule.X_START + " to " + TaskSchedule.Y_END + " millisols)";
     	else if (shiftType.equals(ShiftType.Y))
-    		time = " Shift :  " + TaskSchedule.Y_START + " to " + TaskSchedule.Y_END + " millisols";
+    		time = " Shift :  (From " + TaskSchedule.Y_START + " to " + TaskSchedule.Y_END + " millisols)";
     	else if (shiftType.equals(ShiftType.Z))
-    		time = " Shift :  " + TaskSchedule.Z_START + " to " + TaskSchedule.Z_END + " millisols";
+    		time = " Shift :  (From " + TaskSchedule.Z_START + " to " + TaskSchedule.Z_END + " millisols)";
     	else if (shiftType.equals(ShiftType.ON_CALL))
     		time = " Shift :  Anytime";
     	else

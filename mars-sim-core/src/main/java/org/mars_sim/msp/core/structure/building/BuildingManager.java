@@ -742,10 +742,12 @@ public class BuildingManager implements Serializable {
         	// Update the impact probability for each settlement based on the size and speed of the new meteorite
         	meteorite.startMeteoriteImpact(this);
         }
-    	
-        Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) {
-            i.next().timePassing(time);
+
+        for (Building b : buildings) {
+        //Iterator<Building> i = buildings.iterator();
+        //while (i.hasNext()) {
+            //i.next().timePassing(time);
+            b.timePassing(time);
         }
 /*        
         int m = (int) marsClock.getMillisol();
@@ -867,9 +869,10 @@ public class BuildingManager implements Serializable {
             // Note: if the function is robotic-station, go through the list and remove hallways
             // since we don't want robots to stay in a hallway
             List<Building> validBuildings = new ArrayList<Building>();
-            Iterator<Building> i = functionBuildings.iterator();
-            while (i.hasNext()) {
-                Building bldg = i.next();         
+            for (Building bldg : functionBuildings) {
+            //Iterator<Building> i = functionBuildings.iterator();
+            //while (i.hasNext()) {
+            //    Building bldg = i.next();         
             	RoboticStation roboticStation = (RoboticStation) bldg.getFunction(BuildingFunction.ROBOTIC_STATION);
     			// remove hallway, tunnel, observatory
             	if (roboticStation != null) {
@@ -924,9 +927,10 @@ public class BuildingManager implements Serializable {
             else {
                 List<Building> validBuildings1 = new ArrayList<Building>();
             	List<Building> stations = settlement.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
-                Iterator<Building> j = stations.iterator();
-                while (j.hasNext()) {
-                    Building bldg = j.next();         
+                for (Building bldg : stations) {
+            	//Iterator<Building> j = stations.iterator();
+                //while (j.hasNext()) {
+                //    Building bldg = j.next();         
          			// remove hallway, tunnel, observatory
              		if (bldg.getBuildingType().toLowerCase().contains("hallway")
             				|| bldg.getBuildingType().toLowerCase().contains("tunnel")
@@ -965,9 +969,10 @@ public class BuildingManager implements Serializable {
 
         List<Building> garages = settlement.getBuildingManager().getBuildings(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
-        Iterator<Building> i = garages.iterator();
-        while (i.hasNext()) {
-            Building garageBuilding = i.next();
+        for (Building garageBuilding : garages) {
+        //Iterator<Building> i = garages.iterator();
+        //while (i.hasNext()) {
+        //    Building garageBuilding = i.next();
             VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
             if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) openGarages.add(garage);
         }
@@ -1056,9 +1061,10 @@ public class BuildingManager implements Serializable {
          	person = (Person) unit;
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	            Settlement settlement = person.getParkedSettlement();
-	            Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
-	            while (i.hasNext()) {
-	                Building building = i.next();
+	            for (Building building : settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT)) { 
+	            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
+	            //while (i.hasNext()) {
+	            //    Building building = i.next();
 	                try {
 	                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
 	                    if (lifeSupport.containsOccupant(person)) {
@@ -1118,9 +1124,10 @@ public class BuildingManager implements Serializable {
      */
     public Building getBuildingAtPosition(double xLoc, double yLoc) {
         Building result = null;
-        Iterator<Building> i = buildings.iterator();
-        while (i.hasNext() && (result == null)) {
-            Building building = i.next();
+        for (Building building : buildings) { 
+        //Iterator<Building> i = buildings.iterator();
+        //while (i.hasNext() && (result == null)) {
+        //    Building building = i.next();
             if (LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
                 result = building;
             }
@@ -1138,9 +1145,10 @@ public class BuildingManager implements Serializable {
     public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
         try {
-            Iterator<Building> i = buildingList.iterator();
-            while (i.hasNext()) {
-                Building building = i.next();
+            for (Building building : buildingList) { 
+            //Iterator<Building> i = buildingList.iterator();
+            //while (i.hasNext()) {
+            //    Building building = i.next();
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
                 if (lifeSupport.getAvailableOccupancy() > 0) {
                     result.add(building);
@@ -1215,9 +1223,10 @@ public class BuildingManager implements Serializable {
         
         // Find least crowded population.
         int leastCrowded = Integer.MAX_VALUE;
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-        	RoboticStation roboticStation = (RoboticStation)  i.next().getFunction(BuildingFunction.ROBOTIC_STATION);
+        for (Building building : buildingList) {        
+        //Iterator<Building> i = buildingList.iterator();
+        //while (i.hasNext()) {
+        	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
         	//if (roboticStation == null) System.out.println("roboticStation is null");
             int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
             if (crowded < -1) crowded = -1;
@@ -1225,9 +1234,10 @@ public class BuildingManager implements Serializable {
         }
 
         // Add least crowded buildings to list.
-        Iterator<Building> j = buildingList.iterator();
-        while (j.hasNext()) {
-            Building building = j.next();
+        for (Building building : buildingList) {        
+        //Iterator<Building> j = buildingList.iterator();
+        //while (j.hasNext()) {
+        //    Building building = j.next();
         	RoboticStation roboticStation = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
 
             int crowded = roboticStation.getRobotOccupantNumber() - roboticStation.getOccupantCapacity();
@@ -1255,9 +1265,10 @@ public class BuildingManager implements Serializable {
             LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
             double buildingRelationships = 0D;
             int numPeople = 0;
-            Iterator<Person> j = lifeSupport.getOccupants().iterator();
-            while (j.hasNext()) {
-                Person occupant = j.next();
+            for (Person occupant : lifeSupport.getOccupants()) {
+            //Iterator<Person> j = lifeSupport.getOccupants().iterator();
+            //while (j.hasNext()) {
+            //    Person occupant = j.next();
                 if (person != occupant) {
                     buildingRelationships+= relationshipManager.getOpinionOfPerson(person, occupant);
                     numPeople++;
@@ -1289,9 +1300,10 @@ public class BuildingManager implements Serializable {
             Building building = i.next();
             LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
             int numPeople = 0;
-            Iterator<Person> j = lifeSupport.getOccupants().iterator();
-            while (j.hasNext()) {
-                Person occupant = j.next();
+            for (Person occupant : lifeSupport.getOccupants()) {
+            //Iterator<Person> j = lifeSupport.getOccupants().iterator();
+            //while (j.hasNext()) {
+            //    Person occupant = j.next();
                 Task task = occupant.getMind().getTaskManager().getTask();
                 if (task instanceof HaveConversation) {
                     numPeople++;
@@ -1312,11 +1324,13 @@ public class BuildingManager implements Serializable {
     public static List<Building> getNonMalfunctioningBuildings(List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
 
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-            if (!malfunction) result.add(building);
+        for (Building building : buildingList) {
+        //Iterator<Building> i = buildingList.iterator();
+        //while (i.hasNext()) {
+        //	Building building = i.next();
+        //	boolean malfunction = building.getMalfunctionManager().hasMalfunction();
+        //	if (!malfunction) result.add(building);
+            if (!building.getMalfunctionManager().hasMalfunction()) result.add(building);
         }
 
         return result;
@@ -1339,10 +1353,10 @@ public class BuildingManager implements Serializable {
              if (currentBuilding != null) {
                 BuildingConnectorManager connectorManager = person.getParkedSettlement().getBuildingConnectorManager();
 
-                Iterator<Building> i = buildingList.iterator();
-                while (i.hasNext()) {
-                    Building building = i.next();
-
+                for (Building building : buildingList) {
+                //Iterator<Building> i = buildingList.iterator();
+                //while (i.hasNext()) {
+                //    Building building = i.next();
                     InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
                             currentBuilding.getXLocation(), currentBuilding.getYLocation(), building,
                             building.getXLocation(), building.getYLocation());
@@ -1359,10 +1373,10 @@ public class BuildingManager implements Serializable {
 	        if (currentBuilding != null) {
 	            BuildingConnectorManager connectorManager = robot.getParkedSettlement().getBuildingConnectorManager();
 
-	            Iterator<Building> i = buildingList.iterator();
-	            while (i.hasNext()) {
-	                Building building = i.next();
-
+	            for (Building building : buildingList) {
+	            //Iterator<Building> i = buildingList.iterator();
+	            //while (i.hasNext()) {
+	            //	Building building = i.next();
 	                InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding,
 	                        currentBuilding.getXLocation(), currentBuilding.getYLocation(), building,
 	                        building.getXLocation(), building.getYLocation());

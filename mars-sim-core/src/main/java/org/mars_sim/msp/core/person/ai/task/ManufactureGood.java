@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * A task for working on a manufacturing process.
@@ -74,8 +75,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (person.getParkedSettlement() != null) {
-		    setDescription(Msg.getString("Task.description.manufactureGood.detail",
-                    person.getParkedSettlement().getName())); //$NON-NLS-1$
+		    //setDescription(Msg.getString("Task.description.manufactureGood.detail",
+            //        person.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
 		else {
 			endTask();
@@ -106,8 +107,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (robot.getParkedSettlement() != null) {
-		    setDescription(Msg.getString("Task.description.manufactureGood.detail",
-                    robot.getParkedSettlement().getName())); //$NON-NLS-1$
+		    //setDescription(Msg.getString("Task.description.manufactureGood.detail",
+            //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
 		else {
 			endTask();
@@ -154,9 +155,10 @@ implements Serializable {
 		if (settlement != null) {
 			int highestSkillLevel = 0;
 			SkillManager skillManager = null;
-			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				Person tempPerson = i.next();
+			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
+			//Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+			//while (i.hasNext()) {
+			//	Person tempPerson = i.next();
 				//if (skillManager == null)
 					skillManager = tempPerson.getMind().getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
@@ -166,9 +168,10 @@ implements Serializable {
 			}
 			
 			skillManager = null;
-			Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
-            while (l.hasNext()) {
-                Robot tempRobot = l.next();
+			for (Robot tempRobot : settlement.getAllAssociatedRobots()) {
+			//Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
+            //while (l.hasNext()) {
+            //    Robot tempRobot = l.next();
                 if (tempRobot.getBotMind().getRobotJob() instanceof Makerbot) {
                 	//if (skillManager == null)
                 		skillManager = tempRobot.getBotMind().getSkillManager();
@@ -180,15 +183,17 @@ implements Serializable {
             }
 
 			BuildingManager buildingManager = person.getParkedSettlement().getBuildingManager();
-			Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
-			while (j.hasNext()) {
-				Building building = (Building) j.next();
+			for (Building building : buildingManager.getBuildings(BuildingFunction.MANUFACTURE)) {
+			//Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
+			//while (j.hasNext()) {
+			//	Building building = (Building) j.next();
 				Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
 				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
 						manufacturingFunction.getProcesses());
-				Iterator<ManufactureProcess> k = processes.iterator();
-				while (k.hasNext()) {
-					ManufactureProcess process = k.next();
+				for (ManufactureProcess process : processes) {				
+				//Iterator<ManufactureProcess> k = processes.iterator();
+				//while (k.hasNext()) {
+				//	ManufactureProcess process = k.next();
 					int processSkillLevel = process.getInfo().getSkillLevelRequired();
 					if (processSkillLevel > highestSkillLevel) {
 						// Cancel manufacturing process.
@@ -205,9 +210,10 @@ implements Serializable {
 		if (settlement != null) {
 			int highestSkillLevel = 0;
 			SkillManager skillManager = null;
-			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-            while (i.hasNext()) {
-                Person tempPerson = i.next();
+			for (Person tempPerson : settlement.getAllAssociatedPeople()) {
+			//Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+            //while (i.hasNext()) {
+            //  Person tempPerson = i.next();
                 if (skillManager == null)
                 	skillManager = tempPerson.getMind().getSkillManager();
                 int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
@@ -217,10 +223,10 @@ implements Serializable {
             }
             
             skillManager = null;
-            
-            Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
-            while (l.hasNext()) {
-                Robot tempRobot = l.next();
+            for (Robot tempRobot : settlement.getAllAssociatedRobots()) {            
+            //Iterator<Robot> l = settlement.getAllAssociatedRobots().iterator();
+            //while (l.hasNext()) {
+            //    Robot tempRobot = l.next();
                 if (robot.getBotMind().getRobotJob() instanceof Makerbot) {
                     if (skillManager == null) 
                     	skillManager = tempRobot.getBotMind().getSkillManager();
@@ -232,15 +238,17 @@ implements Serializable {
             }
 
 			BuildingManager buildingManager = robot.getParkedSettlement().getBuildingManager();
-			Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
-			while (j.hasNext()) {
-				Building building = (Building) j.next();
+			for (Building building : buildingManager.getBuildings(BuildingFunction.MANUFACTURE)) {
+			//Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
+			//while (j.hasNext()) {
+			//	Building building = (Building) j.next();
 				Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
 				List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
 						manufacturingFunction.getProcesses());
-				Iterator<ManufactureProcess> k = processes.iterator();
-				while (k.hasNext()) {
-					ManufactureProcess process = k.next();
+				for (ManufactureProcess process : processes) {
+				//Iterator<ManufactureProcess> k = processes.iterator();
+				//while (k.hasNext()) {
+				//	ManufactureProcess process = k.next();
 					int processSkillLevel = process.getInfo().getSkillLevelRequired();
 					if (processSkillLevel > highestSkillLevel) {
 						// Cancel manufacturing process.
@@ -581,6 +589,14 @@ implements Serializable {
 					endTask();
 				}
 			}
+			
+			if (process != null)
+				// 2016-11-26 Inserted process into setDescription() 
+				setDescription(Msg.getString("Task.description.manufactureGood.detail", 
+                    Conversion.capitalize(process.toString()))); //$NON-NLS-1$
+			else
+				setDescription(Msg.getString("Task.description.manufactureGood.checking")); //$NON-NLS-1$
+			
 		}
 
 		// Add experience

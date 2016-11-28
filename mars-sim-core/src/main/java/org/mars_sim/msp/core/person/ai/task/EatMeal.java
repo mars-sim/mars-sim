@@ -388,17 +388,16 @@ public class EatMeal extends Task implements Serializable {
 
             if (nameOfDessert != null) {
                 // Eat prepared dessert.
-                setDescription(Msg.getString("Task.description.eatMeal.preparedDessert.detail", Conversion.capitalize(nameOfDessert.getName()))); //$NON-NLS-1$
+            	checkInDescription(nameOfDessert.getName(), true);
                 eatPreparedDessert(eatingTime);
             }
             else {
                 // Eat unprepared dessert (fruit, soymilk, etc).
                  boolean enoughDessert = eatUnpreparedDessert(eatingTime);
 
-                 if (enoughDessert)
-                	 setDescription(Msg.getString("Task.description.eatMeal.unpreparedDessert.detail", Conversion.capitalize(nameOfUnpreparedDessert))); //$NON-NLS-1$                	 
-                 //else
-                 //	 setDescription(Msg.getString("Task.description.eatMeal.unpreparedDessert")); //$NON-NLS-1$             
+                 if (enoughDessert) {
+                	checkInDescription(nameOfUnpreparedDessert, false);
+                  }
                  
                 // If not enough unprepared dessert available, end task.
                 if (!enoughDessert) {
@@ -419,6 +418,22 @@ public class EatMeal extends Task implements Serializable {
         return remainingTime;
     }
 
+    private void checkInDescription(String s, boolean prepared) { 
+    	if (s.contains("milk") || s.contains("juice")) {
+    		if (prepared)
+    			setDescription(Msg.getString("Task.description.eatMeal.preparedDessert.drink", Conversion.capitalize(s))); //$NON-NLS-1$
+    		else
+               	setDescription(Msg.getString("Task.description.eatMeal.unpreparedDessert.drink", Conversion.capitalize(s))); //$NON-NLS-1$                	 
+    	}
+    	else {
+    		if (prepared)
+    			setDescription(Msg.getString("Task.description.eatMeal.preparedDessert.eat", Conversion.capitalize(s))); //$NON-NLS-1$
+    		else
+               	setDescription(Msg.getString("Task.description.eatMeal.unpreparedDessert.eat", Conversion.capitalize(s))); //$NON-NLS-1$                	 		
+    	}
+    }
+    
+    
     /**
      * Eat a prepared dessert.
      * @param eatingTime the amount of time (millisols) to eat.

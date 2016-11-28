@@ -174,7 +174,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
-			<version>6.1</version>
+			<version>6.2</version>
 		</dependency>
 		<dependency>
 		    <groupId>eu.hansolo.enzo</groupId>
@@ -331,11 +331,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>java-json</artifactId>
 		    <version>0.13.0</version>
 		</dependency>	
-		<dependency>
+		<!--dependency>
 		    <groupId>org.jfxtras</groupId>
 		    <artifactId>jfxtras-labs</artifactId>
 		    <version>8.0-r6-SNAPSHOT</version>
-		</dependency>	
+		</dependency-->	
 <!-- The above artifacts are Needed by olmectron's material design -->			
 		<dependency>
 		    <groupId>de.codecentric.centerdevice</groupId>
@@ -386,11 +386,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>wellbehavedfx</artifactId>
 			<version>0.3</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-maven-plugin</artifactId>
 			<version>5.0.10</version>
-		</dependency>	
+		</dependency-->	
 	</dependencies>
 	<repositories>
 		<repository>
@@ -403,11 +403,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>	
-		<repository>
+		<!-->repository>
 			<id>jme3-repo</id>
 			<name>JME3 maven repo</name>
 			<url>http://updates.jmonkeyengine.org/maven/</url>
-		</repository>
+		</repository-->
 	    <repository>
 	        <id>maven-central-repo</id>
 	        <url>http://repo1.maven.org/maven2</url>

@@ -37,6 +37,7 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -51,7 +52,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
-import jfxtras.scene.layout.VBox;
+//import jfxtras.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.FoodProduction;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /**
  * A task for working on a foodProduction process.
@@ -73,8 +74,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (person.getParkedSettlement() != null) {
-		    setDescription(Msg.getString("Task.description.produceFood.detail", 
-                    person.getParkedSettlement().getName())); //$NON-NLS-1$
+		    //setDescription(Msg.getString("Task.description.produceFood.detail", 
+            //        person.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
 		else {
 			endTask();
@@ -105,8 +106,8 @@ implements Serializable {
 
 		// Initialize data members
 		if (robot.getParkedSettlement() != null) {
-		    setDescription(Msg.getString("Task.description.produceFood.detail", 
-                    robot.getParkedSettlement().getName())); //$NON-NLS-1$
+		    //setDescription(Msg.getString("Task.description.produceFood.detail", 
+            //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
 		else {
 			endTask();
@@ -312,13 +313,14 @@ implements Serializable {
 	 * @return list of foodProduction buildings needing work.
 	 */
 	private static List<Building> getFoodProductionBuildingsNeedingWork(
-			List<Building> buildingList, int skill) {
+		List<Building> buildingList, int skill) {
 
 		List<Building> result = new ArrayList<Building>();
 
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		for (Building building : buildingList) {
+		//Iterator<Building> i = buildingList.iterator();
+		//while (i.hasNext()) {
+		//	Building building = i.next();
 			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
 			if (foodProductionFunction.requiresFoodProductionWork(skill)) {
 				result.add(building);
@@ -342,9 +344,10 @@ implements Serializable {
 		List<Building> result = new ArrayList<Building>();
 
 		// Add all buildings with processes requiring work.
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		for (Building building : buildingList) {
+		//Iterator<Building> i = buildingList.iterator();
+		//while (i.hasNext()) {
+		//	Building building = i.next();
 			if (hasProcessRequiringWork(building, skill)) {
 				result.add(building);
 			}
@@ -369,9 +372,10 @@ implements Serializable {
 		boolean result = false;
 
 		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
-		Iterator<FoodProductionProcess> i = foodProductionFunction.getProcesses().iterator();
-		while (i.hasNext()) {
-			FoodProductionProcess process = i.next();
+		for (FoodProductionProcess process : foodProductionFunction.getProcesses()) {
+		//Iterator<FoodProductionProcess> i = foodProductionFunction.getProcesses().iterator();
+		//while (i.hasNext()) {
+		//	FoodProductionProcess process = i.next();
 			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
 			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
 			if (workRequired && skillRequired) result = true;
@@ -392,18 +396,20 @@ implements Serializable {
 		List<Building> result = new ArrayList<Building>();
 
 		int highestTechLevel = 0;
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		for (Building building : buildingList) {
+		//Iterator<Building> i = buildingList.iterator();
+		//while (i.hasNext()) {
+		//	Building building = i.next();
 			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
 			if (foodProductionFunction.getTechLevel() > highestTechLevel) {
 				highestTechLevel = foodProductionFunction.getTechLevel();
 			}
 		}
 
-		Iterator<Building> j = buildingList.iterator();
-		while (j.hasNext()) {
-			Building building = j.next();
+		for (Building building : buildingList) {
+		//Iterator<Building> j = buildingList.iterator();
+		//while (j.hasNext()) {
+		//	Building building = j.next();
 			FoodProduction foodProductionFunction = (FoodProduction) building.getFunction(BuildingFunction.FOOD_PRODUCTION);
 			if (foodProductionFunction.getTechLevel() == highestTechLevel) {
 				result.add(building);
@@ -448,10 +454,12 @@ implements Serializable {
 		FoodProduction foodProductionFunction = (FoodProduction) foodProductionBuilding.getFunction(BuildingFunction.FOOD_PRODUCTION);
 		int techLevel = foodProductionFunction.getTechLevel();
 
-		Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
-				techLevel, skillLevel).iterator();
-		while (i.hasNext()) {
-			FoodProductionProcessInfo process = i.next();
+		for (FoodProductionProcessInfo process : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
+				techLevel, skillLevel)) {
+		//Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
+		//		techLevel, skillLevel).iterator();
+		//while (i.hasNext()) {
+		//	FoodProductionProcessInfo process = i.next();
 			if (FoodProductionUtil.canProcessBeStarted(process, foodProductionFunction) || 
 					isProcessRunning(process, foodProductionFunction)) {
 				Settlement settlement = foodProductionBuilding.getBuildingManager().getSettlement();
@@ -593,6 +601,13 @@ implements Serializable {
 					endTask();
 				}
 			}
+			
+			if (process != null)
+				// 2016-11-26 Inserted process into setDescription() 
+				setDescription(Msg.getString("Task.description.produceFood.detail", 
+                    Conversion.capitalize(process.toString()))); //$NON-NLS-1$
+			else
+				setDescription(Msg.getString("Task.description.produceFood.checking")); //$NON-NLS-1$
 		}
 
 		// Add experience
@@ -612,10 +627,10 @@ implements Serializable {
 		FoodProductionProcess result = null;
 
 		int skillLevel = getEffectiveSkillLevel();
-
-		Iterator<FoodProductionProcess> i = foodFactory.getProcesses().iterator();
-		while (i.hasNext() && (result == null)) {
-			FoodProductionProcess process = i.next();
+		for (FoodProductionProcess process : foodFactory.getProcesses()) {
+		//Iterator<FoodProductionProcess> i = foodFactory.getProcesses().iterator();
+		//while (i.hasNext() && (result == null)) {
+		//	FoodProductionProcess process = i.next();
 			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && 
 					(process.getWorkTimeRemaining() > 0D)) {
 				result = process;
@@ -636,9 +651,10 @@ implements Serializable {
 			FoodProduction foodProductionBuilding) {
 		boolean result = false;
 
-		Iterator<FoodProductionProcess> i = foodProductionBuilding.getProcesses().iterator();
-		while (i.hasNext()) {
-			FoodProductionProcess process = i.next();
+		for (FoodProductionProcess process : foodProductionBuilding.getProcesses()) {
+		//Iterator<FoodProductionProcess> i = foodProductionBuilding.getProcesses().iterator();
+		//while (i.hasNext()) {
+		//	FoodProductionProcess process = i.next();
 			if (process.getInfo().getName() == processInfo.getName()) {
 				result = true;
 			}
@@ -660,11 +676,13 @@ implements Serializable {
 			int techLevel = foodFactory.getTechLevel();
 
 			// Determine all foodProduction processes that are possible and profitable.
-			Map<FoodProductionProcessInfo, Double> processProbMap = new HashMap<FoodProductionProcessInfo, Double>();
-			Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
-					techLevel, skillLevel).iterator();
-			while (i.hasNext()) {
-				FoodProductionProcessInfo processInfo = i.next();
+			Map<FoodProductionProcessInfo, Double> processProbMap = new HashMap<FoodProductionProcessInfo, Double>();		
+			for (FoodProductionProcessInfo processInfo : FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
+					techLevel, skillLevel)) {
+			//Iterator<FoodProductionProcessInfo> i = FoodProductionUtil.getFoodProductionProcessesForTechSkillLevel(
+			//		techLevel, skillLevel).iterator();
+			//while (i.hasNext()) {
+			//	FoodProductionProcessInfo processInfo = i.next();
 				if (FoodProductionUtil.canProcessBeStarted(processInfo, foodFactory)) {
 					double processValue = 0;
 					
