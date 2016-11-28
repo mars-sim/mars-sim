@@ -143,17 +143,19 @@ implements ListSelectionListener {
 		});
 		buttonPane.add(cancelButton);
 
-		setMinimumSize(new Dimension(512, 640));
 		setResizable(false);
 		setMaximizable(true);
 		
 		if (desktop.getMainScene() != null) {
 			setClosable(false);
+			setMinimumSize(new Dimension(640, 640));
+			setSize(new Dimension(768, 640));	
 		}
-
+		else
+			setMinimumSize(new Dimension(640, 640));
 		
 		setVisible(true);	
-		pack();
+		//pack();
 		
 		Dimension desktopSize = desktop.getSize();
 	    Dimension jInternalFrameSize = this.getSize();

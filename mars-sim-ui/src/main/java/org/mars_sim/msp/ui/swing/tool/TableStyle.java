@@ -92,8 +92,6 @@ public class TableStyle extends ZebraJTable{
     }
 	
     public static JTable editHeader(JTable table) {
-
-	   	ZebraJTable z = new ZebraJTable(table.getModel());
 		
     	int theme = MainScene.getTheme();
 
@@ -179,9 +177,7 @@ public class TableStyle extends ZebraJTable{
 	    		selBack = new Color(144, 208, 229); // (144, 208, 229) is pale cyan; (70, 130, 180) is steelblue/dark sky blue
 	    		selFore = new Color(255, 255, 255); // (86, 105, 119) is grey blue; (133, 164, 242) is very pale light blue; 255 255 224 is LightYellow1
 	    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-	    		border = new Color(57, 105, 138);//Color.LIGHT_GRAY;
-	    		
-	    		
+	    		border = new Color(57, 105, 138);//Color.LIGHT_GRAY;	    		
 	    		themeName = "Snow Blue";
 	    	}
 	
@@ -203,12 +199,13 @@ public class TableStyle extends ZebraJTable{
 		    theHeader.setDefaultRenderer(theRenderer);		
 			theHeader.setOpaque(false);	
 			theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );	
+			theHeader.setBorder(BorderFactory.createLineBorder(border, 1));	
 			
 	    	// TODO: why is it NOT working?
 			if (hBack != null) theHeader.setBackground(hBack);
 			if (hFore != null) theHeader.setForeground(hFore);
-		
-			theHeader.repaint();	
+
+			//theHeader.repaint();	
 			
 			/*	   	
 	    	JTableHeader header = null;
@@ -252,6 +249,10 @@ public class TableStyle extends ZebraJTable{
 			table.setBorder(BorderFactory.createLineBorder(border, 1));			
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 	    	
+			table.repaint();
+			
+		   	ZebraJTable z = new ZebraJTable(table.getModel());
+
 			return (JTable) z;
 	    //}
     	

@@ -227,7 +227,7 @@ public class MainScene {
 	private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
 	
-	private static int theme = 7; // 6 is snow blue with nimbus ; 7 is the orange with nimrod
+	private static int theme = 7; // 6 is snow blue; 7 is the mud orange with nimrod
 
 	public static int chatBoxHeight = 256;
 
@@ -2120,7 +2120,7 @@ public class MainScene {
 	public void setLookAndFeel(int choice) {
 		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
-		if (choice == 0) { // theme == "nativeLookAndFeel"
+		if (choice == NIMBUS_THEME) { // theme == "nativeLookAndFeel"
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
@@ -2128,7 +2128,7 @@ public class MainScene {
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
-		} else if (choice == 1) { // theme == "nimRODLookAndFeel"
+		} else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel"
 			try {
 
 				//if (lookAndFeelTheme.equals("nimrod")) // at the start of the sim
@@ -2152,7 +2152,7 @@ public class MainScene {
 					if (theme == 0 || theme == 6) {
 						lookAndFeelTheme = "Snow";
 					}
-					else if (theme == 0)
+					else if (theme == 7)
 						lookAndFeelTheme = "nimrod"; // note that nimrod.theme uses all default parameter except overriding the opacity with 220.
 					
 					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));					

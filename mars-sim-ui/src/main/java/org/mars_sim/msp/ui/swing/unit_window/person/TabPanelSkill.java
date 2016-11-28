@@ -113,17 +113,17 @@ extends TabPanel {
 
 		// Create skill table
 		skillTable = new ZebraJTable(skillTableModel);
-		skillTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		skillTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-		skillTable.getColumnModel().getColumn(1).setPreferredWidth(120);
+		skillTable.setPreferredScrollableViewportSize(new Dimension(250, 100));
+		skillTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+		skillTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		skillTable.setCellSelectionEnabled(false);
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 
 		// 2015-09-24 Align the content to the center of the cell
-		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		//skillTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		//skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		skillTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		skillScrollPanel.setViewportView(skillTable);
 

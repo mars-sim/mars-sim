@@ -35,8 +35,9 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
+//import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -45,6 +46,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
@@ -64,6 +66,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
 /**
@@ -82,7 +85,7 @@ extends TransportItemEditingPanel {
 	private String errorString = new String();
 	private boolean validation_result = true;
 	private Integer[] sols = new Integer[ResupplyUtil.MAX_NUM_SOLS_PLANNED];
-	private Integer[] quantity = new Integer[1000];
+	private Number[] quantity = new Number[1000];
 	private Integer[] immigrants = new Integer[25];
 	
 	private JComboBoxMW<Settlement> destinationCB;
@@ -339,11 +342,13 @@ extends TransportItemEditingPanel {
 		// Create supply table.
 		supplyTableModel = new SupplyTableModel(resupply) ;
 		supplyTable = new JTable(supplyTableModel) ;
-		supplyTable.getColumnModel().getColumn(0).setMaxWidth(100);
+		TableStyle.setTableStyle(supplyTable);
+		supplyTable.getColumnModel().getColumn(0).setMaxWidth(150);
 		supplyTable.getColumnModel().getColumn(0).setCellEditor(new CategoryCellEditor());
-		supplyTable.getColumnModel().getColumn(1).setMaxWidth(200);
+		supplyTable.getColumnModel().getColumn(1).setMaxWidth(250);
 		supplyTable.getColumnModel().getColumn(1).setCellEditor(new TypeCellEditor());
 		supplyTable.getColumnModel().getColumn(2).setMaxWidth(150);
+		supplyTable.getColumnModel().getColumn(2).setCellEditor(new QuantityCellEditor());		
 		supplyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent evt) {
 				if (!evt.getValueIsAdjusting()) {
@@ -354,6 +359,11 @@ extends TransportItemEditingPanel {
 			}
 		});
 
+		// Align the content to the center of the cell
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		supplyTable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+		
 		// Create supply scroll pane.
 		JScrollPane supplyScrollPane = new JScrollPane(supplyTable);
 		supplyScrollPane.setPreferredSize(new Dimension(450, 200));
@@ -497,7 +507,7 @@ extends TransportItemEditingPanel {
 				supplyTable.setValueAt(defaultType, editingRow, 1);
 			}
 		}
-		
+/*		
 		public void updateSolsCB() {
 			List<Integer> list = new ArrayList<Integer>();
 			Collections.addAll(list, sols);
@@ -506,7 +516,7 @@ extends TransportItemEditingPanel {
 			sols = list.toArray(EMPTY_STRING_ARRAY);
 			solsFromCB = new JComboBoxMW<Integer>(sols);
 		}
-		
+*/		
 	}
 
 	/**
@@ -561,6 +571,46 @@ extends TransportItemEditingPanel {
 		}
 	}
 
+	/**
+	 * Inner class for editing the quantity cell with a combo box.
+	 */
+	//2016-11-28 Added QuantityCellEditor
+	private class QuantityCellEditor extends AbstractCellEditor implements TableCellEditor {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+		// Data members.
+		private JComboBoxMW<Number> quantityCB;
+
+		/**
+		 * Constructor
+		 */
+		private QuantityCellEditor() {
+
+			int size = quantity.length;
+			for (int i = 0; i<size; i++) {
+				quantity[i] = i+1;
+			}
+			
+			quantityCB = new JComboBoxMW<Number>(quantity);
+
+		}
+
+		@Override
+		public Object getCellEditorValue() {
+			Object result = null;
+			if (quantityCB != null) result = quantityCB.getSelectedItem();
+			return result;
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(JTable table, Object value,
+				boolean isSelected, int row, int column) {
+			quantityCB.setSelectedItem(table.getValueAt(row, column));
+			return quantityCB;
+		}
+	}
+	
 	@Override
 	public boolean modifyTransportItem() {
 		// Modify resupply mission.

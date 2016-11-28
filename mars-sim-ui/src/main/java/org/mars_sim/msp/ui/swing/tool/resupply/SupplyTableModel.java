@@ -168,7 +168,7 @@ extends AbstractTableModel {
 		String result = null;
 		if (column == 0) result = "Category";
 		else if (column == 1) result = "Supply Type";
-		else if (column == 2) result = "Number/Amount (kg)";
+		else if (column == 2) result = "Quantity (# or kg)";
 		return result;
 	}
 

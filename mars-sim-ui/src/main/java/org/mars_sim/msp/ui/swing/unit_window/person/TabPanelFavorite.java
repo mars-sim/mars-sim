@@ -102,7 +102,7 @@ extends TabPanel {
 		//infoPanel.add(mainDishLabel);
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField mainDishTF = new JTextField(Conversion.capitalize(mainDish));
-		mainDishTF.setEditable(true);
+		//mainDishTF.setEditable(true);
 		mainDishTF.setColumns(17);
 		mainDishTF.requestFocus();
 		mainDishTF.setCaretPosition(0);
@@ -119,7 +119,7 @@ extends TabPanel {
 		//infoPanel.add(sideDishLabel);
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField sideDishTF = new JTextField(Conversion.capitalize(sideDish));
-		sideDishTF.setEditable(true);
+		//sideDishTF.setEditable(true);
 		sideDishTF.setColumns(17);
 		sideDishTF.requestFocus();
 		sideDishTF.setCaretPosition(0);
@@ -136,7 +136,7 @@ extends TabPanel {
 		//infoPanel.add(dessertLabel);
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField dessertTF = new JTextField(Conversion.capitalize(dessert));
-		dessertTF.setEditable(true);
+		//dessertTF.setEditable(true);
 		dessertTF.setColumns(17);
 		dessertTF.requestFocus();
 		dessertTF.setCaretPosition(0);
@@ -151,7 +151,7 @@ extends TabPanel {
 		String activity = person.getFavorite().getFavoriteActivity();
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField activityTF = new JTextField(Conversion.capitalize(activity));
-		activityTF.setEditable(false);
+		//activityTF.setEditable(false);
 		activityTF.setColumns(15);
 		activityTF.requestFocus();
 		activityTF.setCaretPosition(0);
@@ -181,10 +181,10 @@ extends TabPanel {
 		table = new ZebraJTable(tableModel);
 
 		// 2015-09-24 Align the preference score to the center of the cell
-		//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		//renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
 		//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		//table.getColumnModel().getColumn(1).setCellRenderer(renderer);
+		table.getColumnModel().getColumn(1).setCellRenderer(renderer);
 /*
 		DefaultTableCellRenderer r = new DefaultTableCellRenderer() {
 			//private Font font;

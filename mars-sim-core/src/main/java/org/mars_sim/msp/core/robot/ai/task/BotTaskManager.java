@@ -183,9 +183,9 @@ implements Serializable {
 		robot.fireUnitUpdate(UnitEventType.TASK_EVENT);
 	}
 
+
 	/*
 	 * Prepares the task for recording in the task schedule
-	 * @param newTask
 	 */
 	// 2015-10-22 Added recordTask()
 	@SuppressWarnings("null")
@@ -194,34 +194,27 @@ implements Serializable {
 		String taskName = getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
 
-		if (!taskName.equals("WalkRoverInterior")
+		if (!taskName.toLowerCase().contains("walk")) {//equals("WalkRoverInterior")
 				//&& !taskName.equals("WalkSettlementInterior")
-				&& !taskName.equals("WalkSteps")
-				) // filter off Task phase "Walking" due to its excessive occurrences
-			if (!taskDescription.equals(taskDescriptionCache) && !taskDescription.equals("Walking inside a settlement")) {
+				//&& !taskName.equals("WalkSteps")) { // filter off Task phase "Walking" due to its excessive occurrences
+			if (!taskDescription.equals(taskDescriptionCache) 
+					&& !taskDescription.toLowerCase().contains("walk") //.equals("Walking inside a settlement")
+					&& !taskDescription.equals("")) {
 
 				if (getPhase() != null) {
 
 					taskPhase = getPhase().getName();
 
 					if (!taskPhase.equals(taskPhaseCache)) {
-			
-						if (!taskDescription.equals(""))
-							robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);			
-
-						taskDescriptionCache = taskDescription;
 						taskPhaseCache = taskPhase;
 					}
+					
 				}
-
-				else {
-
-					if (!taskDescription.equals(""))
-						robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
 				
-					taskDescriptionCache = taskDescription;
-				}
+				robot.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
+				taskDescriptionCache = taskDescription;
 			}
+		}
 	}
 
 	/**
