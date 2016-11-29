@@ -75,6 +75,7 @@ implements Serializable {
 	public List<CropType> getCropList() {
 
 		if (cropList == null) {
+			// first time loading the list from crops.xml
 			cropList = new ArrayList<CropType>();
 
 			Element root = cropDoc.getRootElement();
@@ -230,6 +231,11 @@ implements Serializable {
 			}
 
 		}
+		
+		//else {
+		//	System.out.println("CropConfig : Reloading the cropList");
+		//}
+		
 		return cropList;
 	}
 

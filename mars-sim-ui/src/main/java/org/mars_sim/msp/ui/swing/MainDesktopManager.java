@@ -52,7 +52,7 @@ extends DefaultDesktopManager {
 			Container parent = f.getParent();
 			Dimension parentSize = parent.getSize();
 			int boundedX = (int) Math.min(Math.max(0, newX), parentSize.getWidth() - newWidth);
-			int boundedY = (int) Math.min(Math.max(40, newY), parentSize.getHeight() - 40);//newHeight);
+			int boundedY = (int) Math.min(Math.max(0, newY), parentSize.getHeight() - 40);//newHeight);
 			f.setBounds(boundedX, boundedY, newWidth, newHeight);
 		} else {
 			f.setBounds(newX, newY, newWidth, newHeight);
@@ -63,7 +63,7 @@ extends DefaultDesktopManager {
 	}
 
 	protected boolean inBounds(JInternalFrame f, int newX, int newY, int newWidth, int newHeight) {
-		if (newX < 0 || newY < 40) return false;
+		if (newX < 0 || newY < 0) return false;
 		if (newX + newWidth > f.getDesktopPane().getWidth()) return false;
 		if (newY + newHeight > f.getDesktopPane().getHeight()) return false;
 		return true;

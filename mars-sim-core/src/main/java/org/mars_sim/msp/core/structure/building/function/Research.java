@@ -151,13 +151,18 @@ implements Lab, Serializable {
 
     /**
      * Adds a researcher to the laboratory.
-     * @throws Exception if person cannot be added.
+     * @return true if the person can be added. 
      */
-    public void addResearcher() {
-        researcherNum ++;
+    public boolean addResearcher() {
+
         if (researcherNum > researcherCapacity) {
             researcherNum = researcherCapacity;
-            throw new IllegalStateException("Lab already full of researchers.");
+            return false;
+            //throw new IllegalStateException("Lab already full of researchers.");
+        }
+        else {
+            researcherNum ++;
+            return true;
         }
     }
 

@@ -59,8 +59,8 @@ implements InternalFrameListener {
     @SuppressWarnings("restriction")
 	public void createJFX() {
       	// In non-java mode, Why "Exception in thread "AWT-EventQueue-0" java.lang.RuntimeException: Internal graphics not initialized yet" ?
-       	double width = desktop.getMainScene().getBorderPane().getWidth();
-		double height = desktop.getMainScene().getBorderPane().getHeight();
+       	double width = desktop.getMainScene().getAnchorPane().getWidth();
+		double height = desktop.getMainScene().getAnchorPane().getHeight();
 
         panel = new JFXPanel();
         	//StackPane layout = new StackPane(infoOverlay);
@@ -134,7 +134,7 @@ implements InternalFrameListener {
     }
 */
 
-    public void centerMap(ScrollPane scrollPane, BorderPane pane) {
+    public void centerMap(ScrollPane scrollPane, Pane pane) {
   	    // bind the preferred size of the scroll area to the size of the scene.
   	    scrollPane.prefWidthProperty().bind(pane.widthProperty());
   	    scrollPane.prefHeightProperty().bind(pane.widthProperty());
@@ -158,7 +158,7 @@ implements InternalFrameListener {
 
   	    // wrap the scene contents in a pannable scroll pane.
   	    scroll = createScrollPane(layout);
-  	    centerMap(scroll, desktop.getMainScene().getBorderPane());
+  	    centerMap(scroll, desktop.getMainScene().getAnchorPane());
   	    return scroll;
   	  }
 

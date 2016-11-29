@@ -558,21 +558,25 @@
 		</outputs>
 	</process>
 		
-	
-	<process name="Derive Sugar and Sugarcane Juice from Sugarcane" 
+	<!-- https://en.wikipedia.org/wiki/Sugarcane
+		A mature stalk is typically composed of 11–16% fiber, 12–16% soluble sugars, 2–3% nonsugars, and 63–73% water -->
+	<!-- https://en.wikipedia.org/wiki/Bagasse
+		For each 10 tonnes of sugarcane crushed, a sugar factory produces nearly 3 tonnes of wet bagasse.   -->
+	<process name="Derive Sugar, Cane fiber, Bagasse, Sugarcane Juice from Sugarcane" 
 		tech="1" skill="2" work-time="50" process-time="100" 
 			power-required="1.0">		
 		<description>Derive Sugar from Sugarcane. The juice is obtained by 
 		crushing peeled sugarcane in a mill or by hand cranked machine. </description>
 		<inputs>
-			<!-- <equipment name="oven" number="1" /> -->
-			<resource name="Sugarcane" amount="8" />
-			<resource name="Water" amount="5" />				
+			<!-- <equipment name="oven" number="1" -->
+			<resource name="Sugarcane" amount="10" />
+			<resource name="Water" amount="1" />				
 		</inputs>
 		<outputs>
-			<resource name="Sugar" amount="2" />
-			<resource name="cane fiber" amount="6" />
-			<resource name="Sugarcane Juice" amount="5" />			
+			<resource name="Sugar" amount="1.6" />
+			<resource name="cane fiber" amount="1.6" />
+			<!-- resource name="bagasse" amount="1.0" -->			
+			<resource name="Sugarcane Juice" amount="7.3" />			
 		</outputs>
 	</process>
 	

@@ -261,7 +261,7 @@ public class MainScene {
 
 	private Pane root;
 	private StackPane settlementBox, chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
-	private BorderPane borderPane;
+	//private BorderPane borderPane;
 	private FlowPane flowPane;
 	private AnchorPane anchorDesktopPane, anchorMapTabPane ;
 	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
@@ -290,7 +290,7 @@ public class MainScene {
 	private HBox timeBar;
 	private VBox mapLabelBox;
 	private ChatBox chatBox;
-	private DndTabPane dndTabPane;
+	//private DndTabPane dndTabPane;
 	private ESCHandler esc = null;
 
 	private Tab mainTab;
@@ -629,9 +629,9 @@ public class MainScene {
 		// Create jfxTabPane
 		createJFXTabs();	
 		// Create BorderPane
-		borderPane = new BorderPane();
+		//borderPane = new BorderPane();
 		//borderPane.setCenter(swingPane);
-		borderPane.setCenter(jfxTabPane);
+		//borderPane.setCenter(jfxTabPane);
 	    //borderPane.setBottom(statusBar);
 
 		anchorDesktopPane = new AnchorPane();
@@ -656,10 +656,15 @@ public class MainScene {
 	        //anchorDesktopPane.getChildren().addAll(menubarButton);
 		}
 		
-        AnchorPane.setBottomAnchor(borderPane, 0.0);
-        AnchorPane.setLeftAnchor(borderPane, 0.0);
-        AnchorPane.setRightAnchor(borderPane, 0.0);
-        AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
+        //AnchorPane.setBottomAnchor(borderPane, 0.0);
+        //AnchorPane.setLeftAnchor(borderPane, 0.0);
+        //AnchorPane.setRightAnchor(borderPane, 0.0);
+        //AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
+        
+		//AnchorPane.setBottomAnchor(jfxTabPane, 0.0);
+        AnchorPane.setLeftAnchor(jfxTabPane, 0.0);
+        AnchorPane.setRightAnchor(jfxTabPane, 0.0);
+        AnchorPane.setTopAnchor(jfxTabPane, 0.0);
 
         AnchorPane.setRightAnchor(badge1, 5.0);
         AnchorPane.setTopAnchor(badge1, 0.0);
@@ -682,7 +687,7 @@ public class MainScene {
         //AnchorPane.setLeftAnchor(snackbar, 100.0);
         //AnchorPane.setBottomAnchor(snackbar, 40.0);
         
-        anchorDesktopPane.getChildren().addAll(borderPane, miniMapBtn, mapBtn, marsNetButton, badge1, timeLabel, lastSaveLabel);//timeBar);//, snackbar);
+        anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, badge1, timeLabel, lastSaveLabel);//borderPane, timeBar, snackbar
 /*
 		flowPane = new FlowPane();
 		flowPane.setPrefSize(500, 40);
@@ -704,16 +709,16 @@ public class MainScene {
 		anchorDesktopPane.prefWidthProperty().bind(scene.widthProperty());
  
 		// borderPane is within anchorDesktopPane
-		borderPane.prefHeightProperty().bind(scene.heightProperty());
-		borderPane.prefWidthProperty().bind(scene.widthProperty());
+		//borderPane.prefHeightProperty().bind(scene.heightProperty());
+		//borderPane.prefWidthProperty().bind(scene.widthProperty());
 
-		jfxTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
+		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(35));//73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		//root.prefHeightProperty().bind(scene.heightProperty());
 		//root.prefWidthProperty().bind(scene.widthProperty());
 
-		desktopPane.prefHeightProperty().bind(scene.heightProperty().subtract(93));
+		desktopPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));
 		desktopPane.prefWidthProperty().bind(scene.widthProperty());
 
 		// anchorTabPane is within jfxTabPane
@@ -1814,7 +1819,7 @@ public class MainScene {
 
 	public Node createNotificationPane() {
 		// wrap the dndTabPane inside notificationNode
-		notificationPane = new NotificationPane(dndTabPane);
+		notificationPane = new NotificationPane(desktopPane);
 
 		String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
 		ImageView image = new ImageView(imagePath);
@@ -2341,9 +2346,9 @@ public class MainScene {
 		return sceneHeight.get();
 	}
 
-	public BorderPane getBorderPane() {
-		return borderPane;
-	}
+	//public BorderPane getBorderPane() {
+	//	return borderPane;
+	//}
 
 	public AnchorPane getAnchorPane() {
 		return anchorDesktopPane;
@@ -2559,6 +2564,10 @@ public class MainScene {
     	return jfxTabPane;
     }
     
+    public Pane getRoot() {
+    	return root;
+    }
+    
     public Scene getScene() {
     	return scene;
     }
@@ -2602,7 +2611,7 @@ public class MainScene {
 		chatBox = null;
 		desktopPane = null;
 		anchorDesktopPane = null;
-		borderPane = null;
+		//borderPane = null;
 		newSimThread = null;
 		stage = null;
 		loadingCircleStage = null;
@@ -2610,7 +2619,7 @@ public class MainScene {
 		pausingCircleStage = null;
 		mainTab = null;
 		//nodeTab = null;
-		dndTabPane = null;
+		//dndTabPane = null;
 		timeline = null;
 		notificationPane = null;
 		desktop.destroy();

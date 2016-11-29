@@ -28,7 +28,9 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.farming.Crop;
+import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
+import org.mars_sim.msp.core.tool.Conversion;
 
 /** 
  * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
@@ -53,7 +55,7 @@ implements Serializable {
             "Task.phase.tending")); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase INSPECTING_CROP = new TaskPhase(Msg.getString(
+    private static final TaskPhase INSPECTING = new TaskPhase(Msg.getString(
             "Task.phase.inspecting")); //$NON-NLS-1$
 
     /** Task phases. */
@@ -61,8 +63,8 @@ implements Serializable {
             "Task.phase.cleaning")); //$NON-NLS-1$
 
     /** Task phases. */
-    private static final TaskPhase CHECKING_ON_EQUIPMENT = new TaskPhase(Msg.getString(
-            "Task.phase.checkingOnEquipment")); //$NON-NLS-1$
+    private static final TaskPhase SAMPLING = new TaskPhase(Msg.getString(
+            "Task.phase.sampling")); //$NON-NLS-1$
 
     // Static members
     /** The stress modified per millisol. */
@@ -84,8 +86,8 @@ implements Serializable {
                 10D + RandomUtil.getRandomDouble(50D));
         // Initialize data members
         if (person.getParkedSettlement() != null) {
-            setDescription(Msg.getString("Task.description.tendGreenhouse.detail", 
-                    person.getParkedSettlement().getName())); //$NON-NLS-1$
+       //     setDescription(Msg.getString("Task.description.tendGreenhouse"));//.detail", 
+                    //person.getParkedSettlement().getName())); //$NON-NLS-1$
         }
         else {
             endTask();
@@ -107,10 +109,11 @@ implements Serializable {
 
 
         // Initialize phase
-        addPhase(TENDING);
-        addPhase(INSPECTING_CROP);
+        addPhase(INSPECTING);
         addPhase(CLEANING);
-        addPhase(CHECKING_ON_EQUIPMENT);
+        addPhase(SAMPLING);
+        addPhase(TENDING);
+        
         setPhase(TENDING);
     }
 
@@ -126,8 +129,8 @@ implements Serializable {
         
         // Initialize data members
         if (robot.getParkedSettlement() != null) {
-            setDescription(Msg.getString("Task.description.tendGreenhouse.detail", 
-            		robot.getParkedSettlement().getName())); //$NON-NLS-1$
+        //    setDescription(Msg.getString("Task.description.tendGreenhouse"));//
+            		//robot.getParkedSettlement().getName())); //$NON-NLS-1$
         }
         else {
             endTask();
@@ -148,10 +151,11 @@ implements Serializable {
         }
         
         // Initialize phase
-        addPhase(TENDING);
-        addPhase(INSPECTING_CROP);
+        addPhase(INSPECTING);
         addPhase(CLEANING);
-        addPhase(CHECKING_ON_EQUIPMENT);
+        addPhase(SAMPLING);
+        addPhase(TENDING);
+        
         setPhase(TENDING);
     }
     
@@ -172,15 +176,16 @@ implements Serializable {
         else if (TENDING.equals(getPhase())) {
             return tendingPhase(time);
         }
-        else if (INSPECTING_CROP.equals(getPhase())) {
+        else if (INSPECTING.equals(getPhase())) {
             return inspectingPhase(time);
         }
         else if (CLEANING.equals(getPhase())) {
             return cleaningPhase(time);
         }
-        else if (CHECKING_ON_EQUIPMENT.equals(getPhase())) {
-            return checkingPhase(time);
+        else if (SAMPLING.equals(getPhase())) {
+            return samplingPhase(time);
         }
+
         else {
             return time;
         }
@@ -193,67 +198,102 @@ implements Serializable {
      */
     private double tendingPhase(double time) {
 
+        double workTime = 0, remainingTime = 0;
+        
         // Check if greenhouse has malfunction.
         if (greenhouse.getBuilding().getMalfunctionManager().hasMalfunction()) {
-            endTask();
-            return time;
+            //endTask();
+            return 0;
         }
 
-    	int rand = RandomUtil.getRandomInt(5);
+    	int rand = RandomUtil.getRandomInt(19);
     	
     	if (rand == 0) { 		
-       		//System.out.println("0: setPhase(INSPECTING_CROP)");
-    		setPhase(INSPECTING_CROP);
-    		return time;
+       		//System.out.println("0: setPhase(INSPECTING)");
+    		setPhase(INSPECTING);
+            //endTask();
+            return 0;
     	}
     	else if (rand == 1) {
        		//System.out.println("1: setPhase(CLEANING)");
     		setPhase(CLEANING);
-    		return time;
+            //endTask();    		
+    		return 0;
     	}
     	else if (rand == 2) {
        		//System.out.println("2: setPhase(CHECKING_ON_EQUIPMENT)");
-    		setPhase(CHECKING_ON_EQUIPMENT);
-    		return time;
+    		setPhase(SAMPLING);
+            //endTask();    		
+    		return 0;
     	}
-    	else  { //if (rand == 3) {
-    		//System.out.println("3: continue to tend");
-    		setPhase(TENDING);
+    	else  {
+ 
+    		// 85% of the change for rand == 3 to 9 	
+    		//setPhase(TENDING);
+/*    		  	
+    		// Obtain a needy crop to work on
+    		Crop needyCrop = greenhouse.getNeedyCrop();
+        	//System.out.println("1: needyCrop is " + needyCrop.getCropType().getName());
     		
-	        double workTime = 0;
-	        double factor = 2D;
-	        
-			if (person != null) {			
-		        workTime = time * factor;
-			}
-			else if (robot != null) {
-			     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
-				// should it incurs penalty on workTime?
-				workTime = time * factor;
-			}
+    		if (needyCrop == null) {
+	        	List<Crop> list = greenhouse.getCrops();
+	        	int size = list.size();
+	        	int rand1 = RandomUtil.getRandomInt(0, size-1);	        	
+	        	needyCrop = list.get(rand1);    
 	
-	        // Determine amount of effective work time based on "Botany" skill
-	        int greenhouseSkill = getEffectiveSkillLevel();
-	        if (greenhouseSkill == 0) {
-	            workTime /= 2;
-	        }
-	        else {
-	            workTime += workTime * (double) greenhouseSkill;
-	        }
-	
-	        // Add this work to the greenhouse.
-	        greenhouse.addWork(workTime);
-	        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
-	        
-	        // Add experience
-	        addExperience(time);
-	
-	        // Check for accident in greenhouse.
-	        checkForAccident(time);
-	    	
-	        return 0D;
+	        	//System.out.println("2: needyCrop is " + needyCrop.getCropType().getName());
+    		}
+        	
+       		if (needyCrop != null) {
+*/	
+	        	//logger.info("3: needyCrop is " + needyCrop.getCropType().getName());
+
+	            //setDescription(Msg.getString("Task.description.tendGreenhouse.tend", Conversion.capitalize(needyCrop.getCropType().getName())));
+	            
+		        double factor = 2D;
+		        
+				if (person != null) {			
+			        workTime = time * factor;
+				}
+				
+				else if (robot != null) {
+				     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+					// should it incurs penalty on workTime?
+					workTime = time * factor;
+				}
+		
+		        // Determine amount of effective work time based on "Botany" skill
+		        int greenhouseSkill = getEffectiveSkillLevel();
+		        if (greenhouseSkill == 0) {
+		            workTime /= 2;
+		        }
+		        else {
+		            workTime += workTime * (double) greenhouseSkill;
+		        }
+		
+		        //System.out.println("TendGreenhouse : before greenhouse.addWork(workTime) ");
+		        // Add this work to the greenhouse.
+		        workTime = greenhouse.addWork(workTime, this);
+		        //System.out.println("TendGreenhouse : after greenhouse.addWork(workTime) ");
+		        
+		        // Add experience
+		        addExperience(time);
+		
+		        // Check for accident in greenhouse.
+		        checkForAccident(time);    	
+		       
+		        remainingTime = time - workTime;
+		        
+		        if (remainingTime < 0)
+		        	remainingTime = 0;
     	}
+  
+        return remainingTime;
+    }
     
+    public void setCrop(Crop needyCrop) {
+        setDescription(Msg.getString("Task.description.tendGreenhouse.tend", Conversion.capitalize(needyCrop.getCropType().getName())));
+
     }
 
     /**
@@ -262,12 +302,34 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double inspectingPhase(double time) {
-    	double remaingTime = 0;
+    	double remainingTime = time;
     	
+    	String goal = null;    	
+    	int rand = RandomUtil.getRandomInt(7);
+    	
+    	if (rand == 0) 
+    		goal = "the Environmental Control System";
+    	else if (rand == 1)
+    		goal = "the HVAC System";
+    	else if (rand == 2)
+    		goal = "the Waste Disposal System";
+    	else if (rand == 3)
+    		goal = "the Containment System";
+    	else if (rand == 4)
+    		goal = "Any Traces of Contamination";
+    	else if (rand == 5)
+    		goal = "the Foundation/Structural Elements";
+    	else if (rand == 6)
+    		goal = "the Thermal Budget";
+    	else if (rand == 7)
+    		goal = "the Water and Irrigation System";
+    	
+        setDescription(Msg.getString("Task.description.tendGreenhouse.inspect", goal));
+        
    		//System.out.println("inspectingPhase");
    		
         double workTime = 0;
-        double factor = 1.4;//2D;
+        double factor = .5;//2D;
         
 		if (person != null) {			
 	        workTime = time * factor;
@@ -288,8 +350,7 @@ implements Serializable {
         }
 
         // Add this work to the greenhouse.
-        greenhouse.addWork(workTime);
-        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
+        //greenhouse.addWork(workTime, null);
         
         // Add experience
         addExperience(time);
@@ -297,8 +358,15 @@ implements Serializable {
         // Check for accident in greenhouse.
         checkForAccident(time);
     	
-    	
-    	return remaingTime;
+        remainingTime = time - workTime;
+        
+        if (remainingTime < 0)
+        	remainingTime = 0;
+        //else
+    	//	setPhase(CLEANING);
+        	
+        endTask();
+    	return remainingTime;
     }
     
     /**
@@ -307,12 +375,26 @@ implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double cleaningPhase(double time) {
-    	double remaingTime = 0;
+    	double remainingTime = 0;
   
+    	String goal = null;    	
+    	int rand = RandomUtil.getRandomInt(2);
+    	
+    	if (rand == 0) 
+    		goal = "the Floor and Walls";
+    	else if (rand == 1)
+    		goal = "the Canopy";
+    	else if (rand == 2)
+    		goal = "the Equipment";
+    	else if (rand == 2)
+    		goal = "Pipings, Trays and Valves";
+    	
+        setDescription(Msg.getString("Task.description.tendGreenhouse.clean", goal));
+        
   		//System.out.println("cleaningPhase");
   		 
         double workTime = 0;
-        double factor = 1.5;//2D;
+        double factor = .5;//2D;
         
 		if (person != null) {			
 	        workTime = time * factor;
@@ -331,62 +413,90 @@ implements Serializable {
         else {
             workTime += workTime * (double) greenhouseSkill;
         }
-
+  
         // Add this work to the greenhouse.
-        greenhouse.addWork(workTime);
-        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
-        
+        //greenhouse.addWork(workTime, null);
+
         // Add experience
         addExperience(time);
 
         // Check for accident in greenhouse.
         checkForAccident(time);
     	
-    	return remaingTime;
+        remainingTime = time - workTime;
+        
+        if (remainingTime < 0)
+        	remainingTime = 0;
+        //else
+    	//	setPhase(CLEANING);
+        	
+        endTask();
+    	return remainingTime;
     }
     
     /**
-     * Performs the checking phase.
+     * Performs the sampling phase in the botany lab
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
-    private double checkingPhase(double time) {
-      	double remaingTime = 0;
-  
-  		//System.out.println("checkingPhase");
-  		 
-        double workTime = 0;
-        double factor = 1.3;//2D;
-        
-		if (person != null) {			
-	        workTime = time * factor;
+    private double samplingPhase(double time) {
+      	double remainingTime = 0, workTime = 0;
+
+		// Obtain the crop with the highest VP to work on in the lab
+		CropType type = greenhouse.selectNewCrop();
+
+		if (type == null)
+			// Obtain a needy crop to work on
+			type = greenhouse.getNeedyCrop().getCropType();	
+		
+		if (type != null) {
+	      	//System.out.println("type is " + type);
+			boolean isDone = greenhouse.checkBotanyLab(type);
+			//System.out.println("isDone is " + isDone);
+			if (isDone) {
+		        setDescription(Msg.getString("Task.description.tendGreenhouse.sample", Conversion.capitalize(type.getName()) + " for Lab Work"));
+	
+		        double factor = .5;//2D;
+		        
+				if (person != null) {			
+			        workTime = time * factor;
+				}
+				else if (robot != null) {
+				     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+					// should it incurs penalty on workTime?
+					workTime = time * factor*.5d;
+				}
+		
+		        // Determine amount of effective work time based on "Botany" skill
+		        int greenhouseSkill = getEffectiveSkillLevel();
+		        if (greenhouseSkill == 0) {
+		            workTime /= 2;
+		        }
+		        else {
+		            workTime += workTime * (double) greenhouseSkill;
+		        }
+		
+		        // Add this work to the greenhouse.
+		        //greenhouse.addWork(workTime, null);
+	      
+		        // Add experience
+		        addExperience(time);
+		
+		        // Check for accident in greenhouse.
+		        checkForAccident(time);
+		    
+			}
+	       
 		}
-		else if (robot != null) {
-		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
-			// should it incurs penalty on workTime?
-			workTime = time * factor*.5d;
-		}
-
-        // Determine amount of effective work time based on "Botany" skill
-        int greenhouseSkill = getEffectiveSkillLevel();
-        if (greenhouseSkill == 0) {
-            workTime /= 2;
-        }
-        else {
-            workTime += workTime * (double) greenhouseSkill;
-        }
-
-        // Add this work to the greenhouse.
-        greenhouse.addWork(workTime);
-        //System.out.println("TendGreenhouse : just greenhouse.addWork(workTime) ");
+		
+        remainingTime = time - workTime;
         
-        // Add experience
-        addExperience(time);
-
-        // Check for accident in greenhouse.
-        checkForAccident(time);
-    	
-    	return remaingTime;
+        if (remainingTime < 0)
+        	remainingTime = 0;
+        //else
+    	//	setPhase(CLEANING);
+        endTask();
+    	return remainingTime;
     }
     
     @Override

@@ -97,8 +97,25 @@ public class MobileLaboratory implements Lab, Serializable {
 
     /**
      * Adds a researcher to the laboratory.
-     * @throws Exception if person cannot be added.
+     * @return true if the person can be added. 
      */
+    public boolean addResearcher() {
+
+        if (researcherNum > laboratorySize) {
+            researcherNum = laboratorySize;
+            return false;
+            //throw new IllegalStateException("Lab already full of researchers.");
+        }
+        else {
+            researcherNum ++;
+            return true;
+        }
+    }
+
+    /**
+     * Adds a researcher to the laboratory.
+     * @throws Exception if person cannot be added.
+   
     public void addResearcher() {
     	researcherNum ++;
         if (researcherNum > laboratorySize) {
@@ -106,7 +123,8 @@ public class MobileLaboratory implements Lab, Serializable {
             throw new IllegalStateException("Lab already full of researchers.");
         }
     }
-
+ */
+    
     /**
      * Removes a researcher from the laboratory.
      * @throws Exception if person cannot be removed.

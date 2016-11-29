@@ -449,6 +449,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<repository>
 	        <id>in-sidefx</id>
 	        <url>https://dl.bintray.com/in-sidefx/maven/</url>
-	    </repository>         	    
+	    </repository>        
+		<repository>
+			<id>bintray</id>
+			<name>Medusa</name>
+			<url>https://dl.bintray.com/hansolo/Medusa/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>	     	    
 	</repositories>
 </project>

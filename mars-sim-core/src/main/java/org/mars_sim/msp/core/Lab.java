@@ -51,9 +51,10 @@ public interface Lab extends Serializable {
 
 	/**
 	 * Adds a researcher to the laboratory.
+	 * @return 
 	 * @throws Exception if person cannot be added.
 	 */
-	public void addResearcher();
+	public boolean addResearcher();
 
 	/**
 	 * Removes a researcher from the laboratory.

@@ -703,7 +703,9 @@ public class Crop implements Serializable {
 				generateCropWaste(lastHarvest);
 
 				// 2015-10-13 Check to see if a botany lab is available
-				checkBotanyLab();
+				boolean done = checkBotanyLab();
+				if (!done)
+					logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName); 
 				//actualHarvest = 0;
 				//growingTimeCompleted = 0;
 			}
@@ -724,9 +726,10 @@ public class Crop implements Serializable {
 	/*
 	 * Checks to see if a botany lab with an open research slot is available and performs cell tissue extraction
 	 */
-	public void checkBotanyLab() {
+	public boolean checkBotanyLab() {
 		// 2015-10-13 Check to see if a botany lab is available
 		boolean hasEmptySpace = false;
+		boolean done = false;
 		//boolean full = false;
 		Building bldg = farm.getBuilding();
 		Research lab0 = (Research) bldg.getFunction(BuildingFunction.RESEARCH);
@@ -736,25 +739,35 @@ public class Crop implements Serializable {
 		}
 
 		if (hasEmptySpace) {
-			lab0.addResearcher();
-			preserveCropTissue(lab0, true);
-			lab0.removeResearcher();
+			
+			hasEmptySpace = lab0.addResearcher();
+			if (hasEmptySpace) {
+				preserveCropTissue(lab0, true);
+				lab0.removeResearcher();
+			}
+			
+			done = true;			
 		}
+		
 		else {
 			// Check available research slot in another lab located in another greenhouse
 			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
-				Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
-				if (lab.hasSpecialty(ScienceType.BOTANY)) {
-					hasEmptySpace = lab.checkAvailability();
+				Research lab1 = (Research) building.getFunction(BuildingFunction.RESEARCH);
+				if (lab1.hasSpecialty(ScienceType.BOTANY)) {
+					hasEmptySpace = lab1.checkAvailability();
 					if (hasEmptySpace) {
-						lab.addResearcher();
-						preserveCropTissue(lab, true);
-						lab.removeResearcher();
+						hasEmptySpace = lab1.addResearcher();
+						if (hasEmptySpace) {
+							preserveCropTissue(lab1, true);
+							lab0.removeResearcher();
+						}
+						
 						// TODO: compute research ooints to determine if it can be carried out.
 						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
+						done = true;
 					}
 				}
 			}
@@ -763,6 +776,7 @@ public class Crop implements Serializable {
 		// check to see if a person can still "squeeze into" this busy lab to get lab time
 		if (!hasEmptySpace && (lab0.getLaboratorySize() == lab0.getResearcherNum())) {
 			preserveCropTissue(lab0, false);
+			done = true;
 		}
 		else {
 
@@ -771,16 +785,18 @@ public class Crop implements Serializable {
 			Iterator<Building> i = laboratoryBuildings.iterator();
 			while (i.hasNext() && !hasEmptySpace) {
 				Building building = i.next();
-				Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
-				if (lab.hasSpecialty(ScienceType.BOTANY)) {
-					hasEmptySpace = lab.checkAvailability();
-					if (lab.getLaboratorySize() == lab.getResearcherNum()) {
-						preserveCropTissue(lab, false);
+				Research lab2 = (Research) building.getFunction(BuildingFunction.RESEARCH);
+				if (lab2.hasSpecialty(ScienceType.BOTANY)) {
+					hasEmptySpace = lab2.checkAvailability();
+					if (lab2.getLaboratorySize() == lab2.getResearcherNum()) {
+						preserveCropTissue(lab2, false);
+						done = true;
 					}
-
 				}
 			}
 		}
+		
+		return done;
 	}
 
     /**
@@ -812,8 +828,6 @@ public class Crop implements Serializable {
 					+ " extracted & cryo-preserved in " 
 					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 		}
-
-
 	}
 
     /**

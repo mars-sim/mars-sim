@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.image.ImageView;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -386,7 +389,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 					//if (!isPaused)
 					if ((index == 0) && (event != null) ) {
 
-						int position = 0;
+						int type = 0;
 						String header = null ;
 						String message = event.getDescription(); //.toUpperCase();
 						// reset willNotify to false
@@ -404,6 +407,8 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 						        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
 						            willNotify = true;
 						        }
+						        
+						        type = 0;
 						    }
 
 						    else if (category.equals(HistoricalEventCategory.MEDICAL)) {
@@ -416,11 +421,13 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 						                (event.getType() == EventType.MEDICAL_DEATH)) {
 						            willNotify = true;
 						        }
+						        
+						        type = 1;
 						    }
 						}
 						
 						if (willNotify)
-							Platform.runLater(new NotifyFXLauncher(header, message, position));
+							Platform.runLater(new NotifyFXLauncher(header, message, type));
 
 					}
 				}
@@ -531,21 +538,69 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		private String header;
 		private String message;
 		private Pos pos = null;
+		private int type = -1;
+		ImageView v = null; 
+		
 
-		private NotifyFXLauncher(String header, String message, int position) {
+		private NotifyFXLauncher(String header, String message, int type) {
 			this.header = header;
 			this.message = message;
-			if (position == 0)
+	   	    this.type = type;
+	   	    
+			if (type == 0) {
 				pos = Pos.BOTTOM_LEFT;
-			else
-				pos = Pos.BOTTOM_LEFT;
+		   	    v = new ImageView(getClass().getResource("/icons/notification/medical_48.png").toExternalForm());
+
+			}
+			
+			else if (type == 1) {
+				pos = Pos.BOTTOM_RIGHT;
+				v = new ImageView(getClass().getResource("/icons/notification/malfunction_48.png").toExternalForm());
+
+			}
+	    	
+			else {
+				pos = Pos.TOP_LEFT;
+
+			}
+			
 		}
 
 	    public void run() {
 	    	//Notifications.create().darkStyle().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
-	    	Notifications.create().title(header).text(message).position(pos).owner(desktop.getMainScene().getStage()).showWarning();
-	    }
 
+	    	if (type == 0 || type == 1) {
+		    	Notifications.create()
+	    		.title(header)
+	    		.text(message)
+	    		.position(pos)
+	    		.onAction(new EventHandler<ActionEvent>() {
+	    			@Override
+	    			public void handle(ActionEvent event){
+	    				System.out.println("You clicked on the message'" + message + "'.");
+	    			}
+	    		})
+	    		.graphic(v)
+	    		.darkStyle()
+	    		.owner(desktop.getMainScene().getStage())
+	    		.show();
+	    	}
+	    	
+	    	else {
+		    	Notifications.create()
+	    		.title(header)
+	    		.text(message)
+	    		.position(pos)
+	    		.onAction(new EventHandler<ActionEvent>() {
+	    			@Override
+	    			public void handle(ActionEvent event){
+	    				System.out.println("You clicked on the message'" + message + "'.");
+	    			}
+	    		})
+	    		.owner(desktop.getMainScene().getStage())
+	    		.showWarning();
+	    	}
+	    }
 	}
 	/**
 	 * Internal class for launching a notify window.
