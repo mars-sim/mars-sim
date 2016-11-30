@@ -338,7 +338,7 @@ public class BrowserJFX {
 
     	java.net.CookieHandler.setDefault(null);
     	
-        Platform.runLater(() -> {  
+        Platform.runLater(() -> {
                   
                 WebViewHyperlinkListener eventPrintingListener = event -> {
                 	
@@ -360,6 +360,10 @@ public class BrowserJFX {
 		    				}
 		                    
 		                    updateButtons();
+		                    
+		                    // 2016-11-30 Fix the URL not being displayed correctly
+		                    textInputCache = input;
+		                    showURL();
 	                	}
                 	}
 
@@ -662,13 +666,13 @@ public class BrowserJFX {
             		int i = content.indexOf("docs")-1;
                     addressURLText = content;
             		statusBarURLText = content.substring(i, content.length());
-            		statusBarLbl.setText(statusBarURLText);          		
             	}
             	else {
             		// this is a remote link or internal link, is this condition needed ?
             		statusBarURLText = content;
-            		statusBarLbl.setText(statusBarURLText);
             	}
+        		statusBarLbl.setText(statusBarURLText);
+                urlTF.setText(statusBarURLText);
             }
         });
         

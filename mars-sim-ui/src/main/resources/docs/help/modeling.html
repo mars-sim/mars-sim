@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<TITLE>Mars Simulation Project - Modeling and Simulation<</TITLE>
+<LINK rel="stylesheet" href="/docs/msp.css">
+</HEAD>
+<BODY>
+<TT>
+<H2>Modeling and Simulation</H2>
+
+<H3>Discrete Event</H3>
+
+<P>mars-sim is developed with a heuristic approach using both discrete event modeling and 
+Agent-based Modeling and Simulation (ABMS) in modeling the everyday decision of a settler in mars-sim.</P>
+
+<P>Discrete event simulation is widely used throughout mars-sim for dividing a continuous 
+process into discrete parts to simplify the modeling. 
+For example, we break down the task of the greenhouse operation into 4 independent phases: 
+tending the crop, inspecting the systems, cleaning the equipment, and sampling crop for lab analysis. </P>
+
+<P>See <A HREF="http://www.anylogic.com/discrete-event-simulation">Discrete Event Simulation</A> for more info.</P>
+
+<H3>Agent Modeling</H3>
+
+<P>On the other hand, Agent Modeling and Simulation is a fairly new paradigm of computational 
+modeling that we attempt to implement in a limited sense. </P>
+
+<P>See <A HREF="http://www.scholarpedia.org/article/Agent_based_modeling">Agent Base Modeling</A> for more info.</P>
+
+<P>In mars-sim, under the object-oriented approach, we have Person class as the blueprint for creating each settler as being an Java object that has many internal states and action methods.</P>
+
+<P>These internal states are represented by discrete variables. These state variable(s) can affect 
+the agent's behaviors (such as what tasks or missions to perform).</P>
+
+<H3>Frames and Compression</H3>
+
+<P>At the start of the simulation, it is set to run at 25 frames per second (FPS) or ticks per second (TPS)
+ for each period of the game loop. Also, the time compression ratio is set as 1 real second to 
+ 8 simulation minutes and 30 seconds. Time compression ratio is how fast the simulation is running. User may
+ change it with the Time Tool.</P>
+
+<H3>Probability for Tasks and Missions</H3>
+
+<P>On each frame, a probability score is computed for each settler for each possible task (and mission) 
+that a person is capable of performing during his/her work shift and according to one's job and role
+in the settlement.</P>
+
+<P>While these scores are affected by a person's internal state, various environmental factors, as
+well as the needs of the settlement collective, they represent the relative likelihood that this person 
+will undertake a particular task or mission. </P>
+
+<P>With some exceptions, the task or the mission with the highest score has the 
+highest probability of being chosen by the pseudo-random number generator (PRNG) in Java. </P>
+
+<H3>Relationship</H3>
+
+<P>Note that for now, our implementation of ABMS is somewhat limited and does NOT include a wide 
+range of interactions between agents. </P>
+
+<P>If a settler has a bad relationship with another settler, they are less likely to be work 
+together as a team in a scientific research/experiment or heading out on a regolith/mining 
+mission together. Nor will they want to seeing each other much within the same building. </P>
+  
+</UL>
+<hr>
+</TT>
+</BODY>
+</HTML>

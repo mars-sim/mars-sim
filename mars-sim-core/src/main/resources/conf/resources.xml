@@ -53,7 +53,7 @@
 	<resource name="table salt" type="food" phase="solid" edible="true">Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
 	<resource name="yeast" type="food" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
-<!-- Soybean-derived food items -->
+<!-- Soybean-derived food resources -->
 	<resource name="okara" type="dfood" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
 	<resource name="soybean ash" type="food" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
@@ -71,7 +71,7 @@
 	<resource name="fiber cloth" type="misc" phase="solid" >Cloth made from Soy Fiber and cane fiber.</resource>
 
 
-<!-- Food items derived from crop harvest -->
+<!-- Derived food resources from crop harvest -->
 	<resource name="Blueberry Muffin" type="food" phase="solid" edible="true"></resource>
 	<resource name="Brown Rice" type="food" phase="solid" edible="true"></resource>
 	<resource name="Cranberry Juice" type="food" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
