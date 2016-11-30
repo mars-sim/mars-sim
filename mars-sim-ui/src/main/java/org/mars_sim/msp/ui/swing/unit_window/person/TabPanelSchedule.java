@@ -47,6 +47,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.Preference;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
+import org.mars_sim.msp.core.person.TaskSchedule.OneActivity;
 import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -111,9 +112,11 @@ extends TabPanel {
 	//private Color transparentFill;
 	//private ModernBalloonStyle style;
 
-	private List<OneTask> tasks;
+	//private List<OneTask> tasks;
+	private List<OneActivity> activities;
 	private List<Integer> solList;
-	private Map <Integer, List<OneTask>> schedules;
+	//private Map <Integer, List<OneTask>> schedules;
+	private Map <Integer, List<OneActivity>> allActivities;
 
 	private Person person;
 	private Robot robot;
@@ -150,7 +153,8 @@ extends TabPanel {
         	taskSchedule = robot.getTaskSchedule();
         }
 
-        schedules = taskSchedule.getSchedules();
+        //schedules = taskSchedule.getSchedules();
+        allActivities = taskSchedule.getAllActivities();
 
         balloonToolTip = new BalloonToolTip();
 
@@ -242,12 +246,7 @@ extends TabPanel {
     	todayInteger = (Integer) today ;
     	solList = new CopyOnWriteArrayList<Integer>();
     		
-		//solList.clear();
-		//int max = todayCache;
-		for (int key : schedules.keySet() ) {
-			//System.out.println("key is " + key);
-			//if (key > max)
-			//	max = key;
+		for (int key : allActivities.keySet() ) {
 			solList.add(key);
 		}
 		//OptionalInt max = solList.stream().mapToInt((x) -> x).max();
@@ -414,7 +413,7 @@ extends TabPanel {
            	if (!solList.contains(today))
            		solList.add(today);         	
     		//int max = todayCache;
-    		for (int key : schedules.keySet() ) {
+    		for (int key : allActivities.keySet() ) {
     			//System.out.println("key is " + key);
     			//if (key > max) max = key;
     			solList.add(key);
@@ -477,14 +476,15 @@ extends TabPanel {
 
 	/**
 	 * Opens PlannerWindow
-	 */
+	 
     // 2015-05-21 Added openPlannerWindow()
 	private void openPlannerWindow() {
 		// Create PlannerWindow
 		if (plannerWindow == null)
 			plannerWindow = new PlannerWindow(unit, desktop, this);
 	}
-
+*/
+    
 	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -573,8 +573,8 @@ extends TabPanel {
 
 		@Override
 		public int getRowCount() {
-			if (tasks != null)
-				return tasks.size();
+			if (activities != null)
+				return activities.size();
 			else
 				return 0;
 		}
@@ -605,10 +605,10 @@ extends TabPanel {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
-			else if (column == 1) return tasks.get(row).getDescription();
-			else if (column == 2) return tasks.get(row).getPhase();
-			else if (column == 3) return formatClassName(tasks.get(row).getTaskName());
+			if (column == 0) return fmt.format(activities.get(row).getStartTime());
+			else if (column == 1) return taskSchedule.convertTaskDescription(activities.get(row).getDescription());
+			else if (column == 2) return taskSchedule.convertTaskPhase(activities.get(row).getPhase());
+			else if (column == 3) return formatClassName(taskSchedule.convertTaskName(activities.get(row).getTaskName()));
 			else return null;
 		}
 
@@ -617,6 +617,7 @@ extends TabPanel {
 			//System.out.println(ss + " <-- " + s);
 			return ss;
 		}
+
 		
 		/**
 		 * Prepares a list of activities done on the selected day
@@ -625,40 +626,45 @@ extends TabPanel {
 		 */
 		public void update(boolean hideRepeatedTasks, int selectedSol) {
 	        int todaySol = taskSchedule.getSolCache();
-			OneTask lastTask = null;
+			//OneTask lastTask = null;
+			OneActivity lastTask = null;
         	String lastName = null;
         	String lastDes = null;
         	String lastPhase = null;
-			OneTask currentTask = null;
+			//OneTask currentTask = null;
+			OneActivity currentTask = null;
 			String currentDes = null;
         	
 	        // Load previous day's schedule if selected
 			if (todaySol == selectedSol) {
 				// Load today's schedule
-				tasks = new CopyOnWriteArrayList<OneTask>(taskSchedule.getTodaySchedule());
+				//tasks = new CopyOnWriteArrayList<OneTask>(taskSchedule.getTodaySchedule());
+				activities = new CopyOnWriteArrayList<OneActivity>(taskSchedule.getTodayActivities());
 			}
 			else {
-				tasks = new CopyOnWriteArrayList<OneTask>(schedules.get(selectedSol));
+				//tasks = new CopyOnWriteArrayList<OneTask>(schedules.get(selectedSol));
+				activities = new CopyOnWriteArrayList<OneActivity>(allActivities.get(selectedSol));
 			}
 
 			// check if user selected hide repeated tasks checkbox
-			if (tasks != null && hideRepeatedTasks) {
+			if (activities != null && hideRepeatedTasks) {
 				// show only non-repeating consecutive tasks
-				List<OneTask> displaySchedule = new CopyOnWriteArrayList<OneTask>(tasks);
+				//List<OneTask> displaySchedule = new CopyOnWriteArrayList<OneTask>(tasks);
+				List<OneActivity> displaySchedule = new CopyOnWriteArrayList<OneActivity>(activities);
 
 				int size = displaySchedule.size();
 
 				for (int i = size - 1; i >= 0; i--) {
 					currentTask = displaySchedule.get(i);
 					//String currentName = currentTask.getTaskName();
-					currentDes = currentTask.getDescription();
+					currentDes = taskSchedule.convertTaskDescription(currentTask.getDescription());
 					//String currentPhase = currentTask.getPhase();
 		        	// make sure this is NOT the very first task (i = 0) of the day
 		        	if (i != 0) {
 		        		lastTask = displaySchedule.get(i - 1);
-		        		lastName = lastTask.getTaskName();
-		        		lastDes = lastTask.getDescription();
-		        		lastPhase = lastTask.getPhase();
+		        		lastName = taskSchedule.convertTaskName(lastTask.getTaskName());
+		        		lastDes = taskSchedule.convertTaskDescription(lastTask.getDescription());
+		        		lastPhase = taskSchedule.convertTaskPhase(lastTask.getPhase());
 
 		        		// check if the last task is the same as the current task
 			        	if (lastDes.equals(currentDes)) {
@@ -672,7 +678,7 @@ extends TabPanel {
 		        	}
 				}
 
-		        tasks = displaySchedule;
+		        activities = displaySchedule;
 			}
 
         	fireTableDataChanged();
@@ -689,18 +695,22 @@ extends TabPanel {
 			solBox.removeAllItems();
 		if (comboBoxModel != null) 
 			comboBoxModel.removeAllElements();
-        if (tasks != null) 
+/*
+		if (tasks != null) 
         	tasks.clear();
         if (solList != null) 
         	solList.clear();  
         if (schedules != null) 
         	schedules.clear(); 
-        
+*/      
+		activities = null;
+		allActivities = null;
+		//todayActivities = null;
 		solBox = null; 
 		comboBoxModel = null;
-		tasks = null;
+		//tasks = null;
 		solList = null;
-		schedules = null; 
+		//schedules = null; 
         table = null;
         hideBox = null;
     	realTimeBox = null;

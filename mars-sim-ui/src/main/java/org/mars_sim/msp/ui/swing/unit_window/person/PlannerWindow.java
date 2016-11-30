@@ -43,6 +43,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.TaskSchedule;
+import org.mars_sim.msp.core.person.TaskSchedule.OneActivity;
 import org.mars_sim.msp.core.person.TaskSchedule.OneTask;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.ui.javafx.MainScene;
@@ -319,7 +320,8 @@ implements InternalFrameListener, ActionListener {
 		private static final long serialVersionUID = 1L;
 
 		private TaskSchedule taskSchedule;
-		private List<OneTask> tasks;
+		//private List<OneTask> tasks;
+		private List<OneActivity> activities;
 
 		DecimalFormat fmt = new DecimalFormat("0000");
 
@@ -339,14 +341,15 @@ implements InternalFrameListener, ActionListener {
 	        	taskSchedule = robot.getTaskSchedule();
 	        }
 
-	        tasks = taskSchedule.getTodaySchedule();
+	        //tasks = taskSchedule.getTodaySchedule();
+	        activities = taskSchedule.getTodayActivities();
 
 		}
 
 		@Override
 		public int getRowCount() {
-			if (tasks != null)
-				return tasks.size();
+			if (activities != null)
+				return activities.size();
 			else
 				return 0;
 		}
@@ -375,10 +378,13 @@ implements InternalFrameListener, ActionListener {
 
 		@Override
 		public Object getValueAt(int row, int column) {
+/*			
 			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
 			//else if (column == 1) return tasks.get(row).getTaskName();
 			else if (column == 1) return tasks.get(row).getDescription();
-			else return null;
+			else 
+*/				
+			return null;
 		}
 
 		/**
@@ -388,22 +394,24 @@ implements InternalFrameListener, ActionListener {
 		 */
 		public void update(boolean hideRepeatedTasks, int selectedSol) {
 	        int sol = taskSchedule.getSolCache();
-
+/*
 	        // Load previous day's schedule if selected
 			if (sol != selectedSol) {
-				Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
-				tasks = schedules.get(selectedSol);
+				//Map <Integer, List<OneTask>> schedules = taskSchedule.getSchedules();
+				//tasks = schedules.get(selectedSol);
+				activities = taskSchedule.getAllActivities().get(selectedSol);
 			}
 
 			else {
 				// Load today's schedule
-				tasks = taskSchedule.getTodaySchedule();
+				//tasks = taskSchedule.getTodaySchedule();
+				activities = taskSchedule.getTodayActivities();
 			}
 
 			// check if user selected hide repeated tasks checkbox
-			if (tasks != null && hideRepeatedTasks) {
+			if (activities != null && hideRepeatedTasks) {
 				// show only non-repeating consecutive tasks
-				List<OneTask> thisSchedule = new ArrayList<OneTask>(tasks);
+				List<OneActivity> thisSchedule = new ArrayList<OneActivity>(activities);
 		        int i = thisSchedule.size() - 1;
 		        //for (int i = size - 1; i > 0; i--) {
 		        while (i > 0 ) {
@@ -427,7 +435,7 @@ implements InternalFrameListener, ActionListener {
 
 		        tasks = thisSchedule;
 			}
-
+*/
         	fireTableDataChanged();
 
 		}
