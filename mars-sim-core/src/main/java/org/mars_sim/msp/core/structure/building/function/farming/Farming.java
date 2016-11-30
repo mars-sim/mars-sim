@@ -147,6 +147,7 @@ implements Serializable {
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
         	CropType cropType = getNewCrop(false);
+        	if (cropType == null) break;// for avoiding NullPointerException during maven test	
         	Crop crop = plantACrop(cropType, false, 0);
             crops.add(crop);
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
@@ -171,7 +172,8 @@ implements Serializable {
 		CropType ct = null;
 		//List<CropType> cropTypes = cropTypeList;
 		//if (cropInQueue.equals("0")) {
-			if (!isInitialCrop) {
+		int size = cropTypeList.size();
+			if (!isInitialCrop && size != 0) {
 				int r = RandomUtil.getRandomInt(0, cropTypeList.size()-1);
 				ct =  cropTypeList.get(r);
 			}
@@ -203,10 +205,8 @@ implements Serializable {
 		CropType chosen = null;
 		double no_1_crop_VP = 0;
 		double no_2_crop_VP = 0;
-		List<CropType> cropCache = new ArrayList<CropType>(cropTypeList);
-		Iterator<CropType> i = cropCache.iterator();
-		while (i.hasNext()) {
-			CropType c = i.next();
+		
+		for (CropType c : cropTypeList) {
 			String cropName = c.getName();
 			AmountResource ar = AmountResource.findAmountResource(cropName);
 			double cropVP = getCropValue(ar);
@@ -233,7 +233,7 @@ implements Serializable {
 			// get the last two planted crops
 			last2CT = plantedCropList.get(size-2);
 			lastCT = plantedCropList.get(size-1);
-
+			
 			if (no_1_crop == last2CT || no_1_crop == lastCT) {
 				// if highestCrop has already been selected once
 
@@ -352,6 +352,9 @@ implements Serializable {
 
 		plantedCropList.add(cropType);
 		
+		// remove the very first crop on the list to prevent uncheck blotting. 
+		plantedCropList.remove(0);
+
     	return crop;
     }
 
@@ -998,6 +1001,7 @@ implements Serializable {
     public void destroy() {
         super.destroy();
 
+        marsClock = null;
         s_inv = null;
 		b_inv = null;
         settlement = null;
@@ -1007,20 +1011,29 @@ implements Serializable {
         while (i.hasNext()) {
             i.next().destroy();
         }
+        
+        cropListInQueue = null;
+        
         Iterator<Crop> ii = crops.iterator();
         while (ii.hasNext()) {
             ii.next().destroy();
         }
 
+        crops = null;
+        
         Iterator<CropType> iii = cropTypeList.iterator();
         while (iii.hasNext()) {
             iii.next().destroy();
         }
+        
+        cropTypeList = null;
+        
         Iterator<CropType> iv = plantedCropList.iterator();
         while (iv.hasNext()) {
             iv.next().destroy();
         }
 
+        plantedCropList = null;
     }
 
 }

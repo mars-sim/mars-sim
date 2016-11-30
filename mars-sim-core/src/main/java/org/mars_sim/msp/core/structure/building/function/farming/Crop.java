@@ -55,7 +55,6 @@ public class Crop implements Serializable {
 	
 	// 2016-10-12 Added the limiting factor that determines how fast and how much PAR can be absorbed in one frame.
 	public static final double PHYSIOLOGICAL_LIMIT = 0.9; // 1 is max. if set to 1, a lot of lights will toggle on and off indesirably. 
-	
 	public static final double TISSUE_EXTRACTED_PERCENT = .1D;
 
 	/** Amount of carbon dioxide needed per harvest mass. */
@@ -80,9 +79,9 @@ public class Crop implements Serializable {
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
     private static final double T_TOLERANCE = 3D;
 
+	// Data members
     private double conversion_factor; 
     
-	// Data members
 	private int numLampCache;
     /** Current sol since the start of sim. */
 	private int solCache = 1;
@@ -115,10 +114,10 @@ public class Crop implements Serializable {
 	private double wattToPhotonConversionRatio;
 	private double uPAR;
 	private double diseaseIndex = 0;
-
+	private String cropName, capitalizedCropName;
+	
 	/** Current phase of crop. */
 	private PhaseType phaseType;
-	private String cropName, capitalizedCropName;
 	private CropType cropType;
 	private CropCategoryType cropCategoryType;
 	private Inventory inv;
@@ -1430,10 +1429,14 @@ public class Crop implements Serializable {
 	public void resetPAR() {
 		cumulativeDailyPAR = 0;
 	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
+		waterAr = null;
+		greyWaterAr = null;
+		fertilizerAr = null;
 		cropType = null;
 		farm = null;
 		inv = null;
@@ -1444,8 +1447,8 @@ public class Crop implements Serializable {
 		marsClock = null;
 		masterClock = null;
 		cropConfig = null;
-		phases.clear();
 		phases = null;
-		fmt = null;;
+		fmt = null;
+		
 	}
 }

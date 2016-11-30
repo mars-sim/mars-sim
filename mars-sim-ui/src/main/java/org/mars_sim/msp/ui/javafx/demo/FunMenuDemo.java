@@ -25,6 +25,8 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import org.kordamp.ikonli.material.Material;
 import org.kordamp.ikonli.materialdesign.MaterialDesign;
 
@@ -54,12 +56,15 @@ public class FunMenuDemo extends Application {
     @Override public void start(Stage stage) {
         StackPane pane = new StackPane(funMenu);
         pane.setPadding(new Insets(20));
-        pane.setBackground(new Background(new BackgroundFill(Color.web("#825ECB"), CornerRadii.EMPTY, Insets.EMPTY)));
-
+        //pane.setBackground(new Background(new BackgroundFill(Color.web("#825ECB"), CornerRadii.EMPTY, Insets.EMPTY)));
+        pane.setStyle("-fx-background-color: transparent; ");  
+        
         Scene scene = new Scene(pane);
+ 		scene.setFill(Color.TRANSPARENT);
         //scene.getStylesheets().add(FunMenuDemo.class.getResource("/funmenu/styles.css").toExternalForm());
 
-        stage.setTitle("FunMenu");
+        //stage.setTitle("FunMenu");
+		stage.initStyle (StageStyle.TRANSPARENT);
         stage.setScene(scene);
         stage.show();
     }

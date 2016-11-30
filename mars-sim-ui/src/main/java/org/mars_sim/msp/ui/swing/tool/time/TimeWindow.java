@@ -564,33 +564,24 @@ implements ClockListener {
 	}
 	
 	
-	@Override
-	
+
 	// Called by Masterclock's firePauseChange() since TimeWindow is on clocklistener
 	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or .play()
+	@Override
 	public void pauseChange(boolean isPaused) {
-		//System.out.println("TimeWindow : calling pauseChange()");
+		//logger.info("TimeWindow : calling pauseChange()");
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
-			//if (!masterClock.isPaused() && 
 			if (mainScene != null && !masterClock.isSavingSimulation())
-				//Platform.runLater(() -> mainScene.startPausePopup());
 				mainScene.showWaitStage(MainScene.PAUSED);
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
-			//desktop.openAnnouncementWindow(Msg.getString("MainScene.pausingSim")); //$NON-NLS-1$		
 			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
-			//if (mainScene != null)
-			//sim.getAutosaveTimer().pause();
+
 
 		} else {			
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
-			//desktop.disposeAnnouncementWindow();
 			desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
-			//if (mainScene != null)
-			//sim.getAutosaveTimer().play();
-			//if (masterClock.isPaused() && 
 			if (mainScene != null)
-				//Platform.runLater(() -> mainScene.stopPausePopup());
 				mainScene.hideWaitStage(MainScene.PAUSED);
 	
 		}

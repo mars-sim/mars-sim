@@ -171,7 +171,7 @@ public class FunMenu extends Region {
         shadow = new DropShadow(BlurType.TWO_PASS_BOX, Color.rgb(0, 0, 0, 0.5), 5, 0, 0, 5);
 
         menu = new Region();
-        //menu.setEffect(shadow);
+        menu.setEffect(shadow);
         menu.getStyleClass().add("menu");
 
         item1 = new FunMenuItem();

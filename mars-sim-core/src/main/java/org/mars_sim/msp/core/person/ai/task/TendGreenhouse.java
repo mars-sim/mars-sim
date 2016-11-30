@@ -639,5 +639,11 @@ implements Serializable {
         super.destroy();
 
         greenhouse = null;
+/*        
+        TENDING = null;
+        INSPECTING  = null;
+        CLEANING = null;
+        SAMPLING = null;
+*/
     }
 }

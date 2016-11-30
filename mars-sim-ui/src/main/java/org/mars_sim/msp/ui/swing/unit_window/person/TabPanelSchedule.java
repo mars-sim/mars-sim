@@ -562,9 +562,6 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		//private TaskSchedule taskSchedule;
-		//private List<OneTask> tasks;
-
 		DecimalFormat fmt = new DecimalFormat("0000");
 
 		/**
@@ -572,22 +569,6 @@ extends TabPanel {
 		 * @param person {@link Person}
 		 */
 		private ScheduleTableModel(Unit unit) {
-/*
-	        Person person = null;
-	        Robot robot = null;
-	        if (unit instanceof Person) {
-	         	person = (Person) unit;
-	         	taskSchedule = person.getTaskSchedule();
-	        }
-	        else if (unit instanceof Robot) {
-	        	robot = (Robot) unit;
-	        	taskSchedule = robot.getTaskSchedule();
-	        }
-
-	        tasks = taskSchedule.getTodaySchedule();
-*/
-
-			//tasks = new ArrayList<>(taskSchedule.getTodaySchedule());
 		}
 
 		@Override
@@ -644,7 +625,13 @@ extends TabPanel {
 		 */
 		public void update(boolean hideRepeatedTasks, int selectedSol) {
 	        int todaySol = taskSchedule.getSolCache();
-
+			OneTask lastTask = null;
+        	String lastName = null;
+        	String lastDes = null;
+        	String lastPhase = null;
+			OneTask currentTask = null;
+			String currentDes = null;
+        	
 	        // Load previous day's schedule if selected
 			if (todaySol == selectedSol) {
 				// Load today's schedule
@@ -662,15 +649,10 @@ extends TabPanel {
 				int size = displaySchedule.size();
 
 				for (int i = size - 1; i >= 0; i--) {
-					OneTask currentTask = displaySchedule.get(i);
-					String currentName = currentTask.getTaskName();
-					String currentDes = currentTask.getDescription();
-					String currentPhase = currentTask.getPhase();
-					OneTask lastTask = null;
-		        	String lastName = null;
-		        	String lastDes = null;
-		        	String lastPhase = null;
-
+					currentTask = displaySchedule.get(i);
+					//String currentName = currentTask.getTaskName();
+					currentDes = currentTask.getDescription();
+					//String currentPhase = currentTask.getPhase();
 		        	// make sure this is NOT the very first task (i = 0) of the day
 		        	if (i != 0) {
 		        		lastTask = displaySchedule.get(i - 1);
@@ -713,6 +695,12 @@ extends TabPanel {
         	solList.clear();  
         if (schedules != null) 
         	schedules.clear(); 
+        
+		solBox = null; 
+		comboBoxModel = null;
+		tasks = null;
+		solList = null;
+		schedules = null; 
         table = null;
         hideBox = null;
     	realTimeBox = null;
@@ -726,6 +714,7 @@ extends TabPanel {
 		plannerWindow = null;
 		desktop = null;
 		balloonToolTip = null;
+
 	}
 	
 

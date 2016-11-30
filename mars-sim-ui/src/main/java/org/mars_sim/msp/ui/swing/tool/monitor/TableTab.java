@@ -57,8 +57,7 @@ extends MonitorTab {
 	private static final long serialVersionUID = 1L;
 
 	private JTableHeader header;
-
-	private TableHeaderRenderer theRenderer;
+	//private TableHeaderRenderer theRenderer;
 
 	private TableCellRenderer tableCellRenderer;
 	
@@ -259,15 +258,15 @@ extends MonitorTab {
 
         	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
             //TableStyle.setTableStyle(table);
-
+            
          	// Add a mouse listener for the mouse event selecting the sorted column
          	// Not the best way but no double click is provided on Header class
         	// Get the TableColumn header to display sorted column
 
 
            	header = table.getTableHeader();
-        	theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
-        	header.setDefaultRenderer(theRenderer);
+        	//theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
+        	//header.setDefaultRenderer(theRenderer);
         	header.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) {
         			// Find the column at this point
@@ -348,9 +347,9 @@ extends MonitorTab {
         setSortColumn(0);
 
         // 2014-12-29 Added ColumnResizer
-     	SwingUtilities.invokeLater(() -> {
-	     	adjustColumnPreferredWidths(table);
-	    });
+     	//SwingUtilities.invokeLater(() -> {
+	    // 	adjustColumnPreferredWidths(table);
+	    //});
 
     }
 

@@ -10,9 +10,11 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
+import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -338,52 +340,12 @@ public class TaskSchedule implements Serializable {
 		}
 	}
 
-/*
-	public class Shift implements Serializable {
 
-
-		private static final long serialVersionUID = 1L;
-
-		// Data members
-		private String shiftName;
-		private int startTime;
-		private int endTime;
-
-		public Shift(String shiftName, int startTime, int endTime) {
-			this.shiftName = shiftName;
-			this.startTime = startTime;
-			this.endTime = endTime;
-		}
-*
-		**
-		 * Gets the shift name
-		 * @return shift name
-		 *
-		public String getShiftName() {
-			return shiftName;
-		}
-
-		**
-		 * Gets the start time of the task
-		 * @return start time
-		 *
-		public int getStartTime() {
-			return startTime;
-		}
-
-		**
-		 * Gets the end time of the task
-		 * @return end time
-		 *
-		public int getEndTime() {
-			return endTime;
-		}
-	}
-*/
-	
     public void destroy() {
     	person = null;
     	clock  = null;
     	robot  = null;
+    	todaySchedule = null;   
+        schedules = null;
     }
 }

@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.swing.tool;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -200,7 +202,8 @@ public class TableStyle extends ZebraJTable{
 			theHeader.setOpaque(false);	
 			theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );	
 			theHeader.setBorder(BorderFactory.createLineBorder(border, 1));	
-			
+		
+        	
 	    	// TODO: why is it NOT working?
 			if (hBack != null) theHeader.setBackground(hBack);
 			if (hFore != null) theHeader.setForeground(hFore);

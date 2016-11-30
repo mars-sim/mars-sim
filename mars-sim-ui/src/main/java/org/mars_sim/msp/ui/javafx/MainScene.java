@@ -385,14 +385,6 @@ public class MainScene {
 		}
 	}
 
-
-	/**
-	 * Calls an thread executor to submit MainSceneTask
-	 */
-	//public void prepareMainScene() {
-	//	UIConfig.INSTANCE.useUIDefault();
-	//}
-
 	/**
 	 * Sets up the UI theme and the two timers as a thread pool task
 	 */
@@ -628,39 +620,13 @@ public class MainScene {
 		createJFXSnackbar();
 		// Create jfxTabPane
 		createJFXTabs();	
-		// Create BorderPane
-		//borderPane = new BorderPane();
-		//borderPane.setCenter(swingPane);
-		//borderPane.setCenter(jfxTabPane);
-	    //borderPane.setBottom(statusBar);
 
 		anchorDesktopPane = new AnchorPane();
-		//anchorDesktopPane.setMaxWidth(sceneWidth.get());
-		//anchorDesktopPane.setPrefWidth(sceneWidth.get());
-		//anchorDesktopPane.setPrefHeight(sceneHeight.get());
-		
+
 		if (OS.contains("mac")) {   
 			((MenuBar)menuBar).useSystemMenuBarProperty().set(true);  
 		}
-		else {			
-			//menubarButton = new JFXButton();
-			//menubarButton.setTooltip(new Tooltip("Open top menu"));
-	        /**
-	         * Instantiate a BorderSlideBar for each child layouts
-	         */
-	        //topFlapBar = new BorderSlideBar(30, menubarButton, Pos.TOP_LEFT, menuBar);
-	        //borderPane.setTop(topFlapBar);        	       
 
-	        //AnchorPane.setRightAnchor(menubarButton, 5.0);
-	        //AnchorPane.setTopAnchor(menubarButton, -3.0);
-	        //anchorDesktopPane.getChildren().addAll(menubarButton);
-		}
-		
-        //AnchorPane.setBottomAnchor(borderPane, 0.0);
-        //AnchorPane.setLeftAnchor(borderPane, 0.0);
-        //AnchorPane.setRightAnchor(borderPane, 0.0);
-        //AnchorPane.setTopAnchor(borderPane, 0.0);//31.0);
-        
 		//AnchorPane.setBottomAnchor(jfxTabPane, 0.0);
         AnchorPane.setLeftAnchor(jfxTabPane, 0.0);
         AnchorPane.setRightAnchor(jfxTabPane, 0.0);
@@ -684,9 +650,6 @@ public class MainScene {
         AnchorPane.setRightAnchor(lastSaveLabel, 460.0);
         AnchorPane.setTopAnchor(lastSaveLabel, -2.0);
  
-        //AnchorPane.setLeftAnchor(snackbar, 100.0);
-        //AnchorPane.setBottomAnchor(snackbar, 40.0);
-        
         anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, badge1, timeLabel, lastSaveLabel);//borderPane, timeBar, snackbar
 /*
 		flowPane = new FlowPane();
@@ -704,19 +667,9 @@ public class MainScene {
     	//    System.out.println("scene width : " + newValue);
     	//});
     	   	
-    	// anchorDesktopPane is the largest pane
-		anchorDesktopPane.prefHeightProperty().bind(scene.heightProperty());
-		anchorDesktopPane.prefWidthProperty().bind(scene.widthProperty());
- 
-		// borderPane is within anchorDesktopPane
-		//borderPane.prefHeightProperty().bind(scene.heightProperty());
-		//borderPane.prefWidthProperty().bind(scene.widthProperty());
 
 		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(35));//73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
-		
-		//root.prefHeightProperty().bind(scene.heightProperty());
-		//root.prefWidthProperty().bind(scene.widthProperty());
 
 		desktopPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));
 		desktopPane.prefWidthProperty().bind(scene.widthProperty());
@@ -965,55 +918,7 @@ public class MainScene {
 					mapPanel.setShowVehicleLabels(newValue);
 		        }
 		    }
-		});
-/*		
-		 // create the data to show in the CheckComboBox 
-		 final ObservableList<String> labels = FXCollections.observableArrayList();
-		 
-		 labels.add(Msg.getString("SettlementWindow.menu.daylightTracking")); 
-		 labels.add(Msg.getString("SettlementWindow.menu.buildings"));
-		 labels.add(Msg.getString("SettlementWindow.menu.constructionSites"));
-		 labels.add(Msg.getString("SettlementWindow.menu.people"));
-		 labels.add(Msg.getString("SettlementWindow.menu.robots"));
-		 labels.add(Msg.getString("SettlementWindow.menu.vehicles"));
-		 
-		 //mapPanel.isShowRobotLabels()
-		 //mapPanel.isShowPersonLabels()
-		 //mapPanel.isShowVehicleLabels()
-		 
-		 //, mapPanel.isShowConstructionLabels()
-		 boolean building = mapPanel.isShowBuildingLabels();	 
-		 boolean light = mapPanel.isDaylightTrackingOn();
-		 
-		 // Create the CheckComboBox with the data 
-		 mapLabelBox = new CheckComboBox<String>(labels);
-		 
-		 // and listen to the relevant events (e.g. when the selected indices or 
-		 // selected items change).
-		 mapLabelBox.getCheckModel().getCheckedItems().addListener(new ListChangeListener<String>() {
-		     public void onChanged(ListChangeListener.Change<? extends String> c) {
-		         //System.out.println(mapLabelBox.getCheckModel().getCheckedItems());
-		         
-		    	 ObservableList<String> list = mapLabelBox.getCheckModel().getCheckedItems();
-		    	 for (String s : list) {
-		    		if (s.equals(Msg.getString("SettlementWindow.menu.daylightTracking")))
-						mapPanel.setShowDayNightLayer(!mapPanel.isDaylightTrackingOn());
-		    		if (s.equals(Msg.getString("SettlementWindow.menu.buildings")))
-			    		 mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());			    			    			 
-		    		if (s.equals(Msg.getString("SettlementWindow.menu.constructionSites"))) 
-		 				mapPanel.setShowConstructionLabels(!mapPanel.isShowConstructionLabels());		    			 
-		    		if (s.equals(Msg.getString("SettlementWindow.menu.people")))
-						mapPanel.setShowPersonLabels(!mapPanel.isShowPersonLabels());
-					if (s.equals(Msg.getString("SettlementWindow.menu.robots")))
-						mapPanel.setShowRobotLabels(!mapPanel.isShowRobotLabels());
-		    		if (s.equals(Msg.getString("SettlementWindow.menu.vehicles")))
-						mapPanel.setShowVehicleLabels(!mapPanel.isShowVehicleLabels());
-		    	 } 
-		    	 
-		     }
-		 });
-*/
-		
+		});	
 	}
 	
 	/**
@@ -1094,9 +999,7 @@ public class MainScene {
                 if (event.getDeltaY() == 0) {
                     return;
                 }
-                //else
-                //	System.out.println("event.getDeltaY() : " + event.getDeltaY());
-
+  
  				double direction = event.getDeltaY();
  				
 				if (direction > 0) {
@@ -1117,18 +1020,14 @@ public class MainScene {
 		
 		mapBtn = new JFXButton();
 		mapBtn.setTooltip(new Tooltip("Open settlement map below"));
-		mapBtn.setOnAction(e -> {
-
-				
+		mapBtn.setOnAction(e -> {			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 				//System.out.println("closing map tool.");
 				desktop.closeToolWindow(SettlementWindow.NAME);
 				anchorMapTabPane.getChildren().removeAll(settlementBox, mapLabelBox, mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
-				//anchorMapTabPane.getChildren().remove(settlementBox);
 			}
 			
 			else {					
-				//System.out.println("opening map tool.");
 				openMap();
 			}
 
@@ -1244,38 +1143,19 @@ public class MainScene {
 					if (isCacheButtonOn())
 						miniMapBtn.fire();
 				}
-/*
-				boolean map = false, minimap = false, cache = false;
-				for (Node node : anchorDesktopPane.getChildrenUnmodifiable()) {
-			        if (node == mapBtn)
-			        	map = true;
-			        else if (node == miniMapBtn)
-			        	minimap = true;
-			    }
-				
-				for (Node node : anchorTabPane.getChildrenUnmodifiable()) {
-			        if (node == cacheButton) 
-			        	cache = true;
-			    }	
-*/					
-				//if (!map) {
-					AnchorPane.setRightAnchor(mapBtn, 85.0);
-					AnchorPane.setTopAnchor(mapBtn, -3.0);   
-					anchorDesktopPane.getChildren().addAll(mapBtn);
-				//}
-				
-				//if (!minimap) {
-			        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
-			        AnchorPane.setTopAnchor(miniMapBtn, -3.0);  
-					anchorDesktopPane.getChildren().addAll(miniMapBtn);
-				//}
-				
-				//if (!cache) {
-			        AnchorPane.setRightAnchor(cacheButton, 20.0);
-			        AnchorPane.setTopAnchor(cacheButton, 55.0);  // 45.0 		        
-					anchorMapTabPane.getChildren().addAll(cacheButton);
-				//}   
-			
+
+				AnchorPane.setRightAnchor(mapBtn, 85.0);
+				AnchorPane.setTopAnchor(mapBtn, -3.0);   
+				anchorDesktopPane.getChildren().addAll(mapBtn);
+
+		        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
+		        AnchorPane.setTopAnchor(miniMapBtn, -3.0);  
+				anchorDesktopPane.getChildren().addAll(miniMapBtn);
+
+		        AnchorPane.setRightAnchor(cacheButton, 20.0);
+		        AnchorPane.setTopAnchor(cacheButton, 55.0);  // 45.0 		        
+				anchorMapTabPane.getChildren().addAll(cacheButton);
+
 			}
 			
 			else if (newTab == missionTab) {	
@@ -2315,7 +2195,6 @@ public class MainScene {
 			});
 		}
 		else {
-
 			desktop.openInitialWindows();
 		}
 
@@ -2346,10 +2225,6 @@ public class MainScene {
 		return sceneHeight.get();
 	}
 
-	//public BorderPane getBorderPane() {
-	//	return borderPane;
-	//}
-
 	public AnchorPane getAnchorPane() {
 		return anchorDesktopPane;
 	}
@@ -2373,30 +2248,7 @@ public class MainScene {
      * Create the progress circle animation while waiting for loading the main scene
      */
  	public void createProgressCircle(int type) {
-/*
- 		ProgressIndicator indicator = new ProgressIndicator();
- 		//MaskerPane indicator = new MaskerPane();
- 		indicator.setSkin(null);
- 		//indicator.setOpacity(.5);
- 		indicator.setStyle("-fx-background-color: transparent; ");  
- 		//indicator.setScaleX(1.5);
- 		//indicator.setScaleY(1.5);
- 		StackPane stackPane = new StackPane();
- 		//stackPane.setOpacity(0.5);
- 		stackPane.getChildren().add(indicator);
- 		StackPane.setAlignment(indicator, Pos.CENTER);
- 		stackPane.setBackground(Background.EMPTY);
- 		//stackPane.setStyle("-fx-background-color: transparent; ");     		
- 		stackPane.setStyle(
- 	    		   //"-fx-border-style: none; "
- 	       			"-fx-background-color: transparent; "
- 	       			//+ "-fx-background-radius: 3px;"
- 	    		   );
- 		
- 		Scene scene = new Scene(stackPane, 150, 150);
- 		scene.setFill(Color.TRANSPARENT);
- 		//scene.setStyle("-fx-background-color: transparent; ");  
-*/
+
  		if (type == LOADING) {
  	 		ProgressIndicator indicator = new ProgressIndicator();
  	 		indicator.setSkin(null);
@@ -2531,9 +2383,6 @@ public class MainScene {
 			StartUpLocation startUpLoc = new StartUpLocation(pane.getPrefWidth(), pane.getPrefHeight());		 
 		}
 		else {
-			//root.prefHeightProperty().bind(scene.heightProperty());
-			//root.prefWidthProperty().bind(scene.widthProperty());
-
 			StartUpLocation startUpLoc = new StartUpLocation(scene.getWidth(), scene.getHeight());
 	        double xPos = startUpLoc.getXPos();
 	        double yPos = startUpLoc.getYPos();
@@ -2556,9 +2405,6 @@ public class MainScene {
     	mainSceneExecutor = Executors.newSingleThreadExecutor();
     }
 
-    public ExecutorService getSimExecutor() {
-    	return mainSceneExecutor;
-    }
     
     public JFXTabPane getJFXTabPane() {
     	return jfxTabPane;
