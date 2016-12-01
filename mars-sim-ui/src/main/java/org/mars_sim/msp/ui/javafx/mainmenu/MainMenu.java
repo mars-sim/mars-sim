@@ -124,7 +124,7 @@ public class MainMenu {
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 	
     private static final int WIDTH = 1024;//768-20;
-    private static final int HEIGHT = 768-20;
+    private static final int HEIGHT = 768-50;
 
 	// Data members
     private double fileSize;
@@ -255,7 +255,6 @@ public class MainMenu {
            }
        });
 
-       stage.centerOnScreen();
        stage.setResizable(false);
 	   stage.setTitle(Simulation.title);
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -263,6 +262,7 @@ public class MainMenu {
        stage.setScene(mainMenuScene);     
        //2016-02-07 Added calling setMonitor()
        setMonitor(stage);   
+       stage.centerOnScreen();
        stage.show();
 
    }
@@ -582,14 +582,12 @@ public class MainMenu {
         if (xPos != 0 && yPos != 0) {
             stage.setX(xPos);
             stage.setY(yPos);
-            stage.centerOnScreen();
             //System.out.println("Monitor 2:    x : " + xPos + "   y : " + yPos);
         } else {
-            stage.centerOnScreen();
             //System.out.println("calling centerOnScreen()");
             //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
         }  
-		
+        stage.centerOnScreen();
 	}
 	
 	public Stage getCircleStage() {

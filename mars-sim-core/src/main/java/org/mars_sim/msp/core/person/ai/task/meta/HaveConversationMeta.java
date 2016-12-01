@@ -69,7 +69,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             Set<Person> pool = new HashSet<Person>();
-            Settlement s = person.getParkedSettlement();
+            Settlement s = person.getSettlement();
 
             // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
             Collection<Person> p_talking_all = s.getChattingPeople(person, false, false, true);         

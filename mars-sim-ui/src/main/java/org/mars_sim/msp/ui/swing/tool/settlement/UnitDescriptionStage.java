@@ -44,6 +44,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -70,15 +71,15 @@ public class UnitDescriptionStage {
     	//this.setSize(350, 400); // undecorated 301, 348 ; decorated : 303, 373
 
         mainPane = new BorderPane();
-		
-        box0 = new VBox();
-        box0.setAlignment(Pos.CENTER);
         
         name = new Label(unitName);
+        name.setPadding(new Insets(5,5,5,5));
         name.setTextAlignment(TextAlignment.CENTER);
         name.setContentDisplay(ContentDisplay.TOP);
-	        
-
+			
+        box0 = new VBox();
+        box0.setAlignment(Pos.CENTER);
+        box0.setPadding(new Insets(5,5,5,5));     
 	    box0.getChildren().addAll(name);
 	    
         mainPane.setTop(box0);

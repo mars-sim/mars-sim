@@ -86,7 +86,7 @@ implements Serializable {
             
             logger.info(person.getName() + " is prescribing " + medication.getName()
                     + " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName() 
-                    + " at " + patient.getParkedSettlement());
+                    + " at " + patient.getSettlement());
         }
         else {
             endTask();
@@ -139,7 +139,7 @@ implements Serializable {
         Collection<Person> patientList = null;
         LocationSituation loc = doctor.getLocationSituation();
         if (loc == LocationSituation.IN_SETTLEMENT) {
-            patientList = doctor.getParkedSettlement().getInhabitants();
+            patientList = doctor.getSettlement().getInhabitants();
         }
         else if (loc == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = doctor.getVehicle();
@@ -175,7 +175,7 @@ implements Serializable {
         Collection<Person> patientList = null;
         LocationSituation loc = doctor.getLocationSituation();
         if (loc == LocationSituation.IN_SETTLEMENT) {
-            patientList = doctor.getParkedSettlement().getInhabitants();
+            patientList = doctor.getSettlement().getInhabitants();
         }
         else if (loc == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = doctor.getVehicle();

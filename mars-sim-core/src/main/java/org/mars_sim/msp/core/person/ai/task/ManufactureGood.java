@@ -74,7 +74,7 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (person.getParkedSettlement() != null) {
+		if (person.getSettlement() != null) {
 		    //setDescription(Msg.getString("Task.description.manufactureGood.detail",
             //        person.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
@@ -106,7 +106,7 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (robot.getParkedSettlement() != null) {
+		if (robot.getSettlement() != null) {
 		    //setDescription(Msg.getString("Task.description.manufactureGood.detail",
             //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
@@ -151,7 +151,7 @@ implements Serializable {
 	 */
 	public static void cancelDifficultManufacturingProcesses(Person person) {
 
-		Settlement settlement = person.getParkedSettlement();
+		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
 			int highestSkillLevel = 0;
 			SkillManager skillManager = null;
@@ -182,7 +182,7 @@ implements Serializable {
                 }
             }
 
-			BuildingManager buildingManager = person.getParkedSettlement().getBuildingManager();
+			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
 			for (Building building : buildingManager.getBuildings(BuildingFunction.MANUFACTURE)) {
 			//Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
 			//while (j.hasNext()) {
@@ -206,7 +206,7 @@ implements Serializable {
 
 	public static void cancelDifficultManufacturingProcesses(Robot robot) {
 
-		Settlement settlement = robot.getParkedSettlement();
+		Settlement settlement = robot.getSettlement();
 		if (settlement != null) {
 			int highestSkillLevel = 0;
 			SkillManager skillManager = null;
@@ -237,7 +237,7 @@ implements Serializable {
                 }                
             }
 
-			BuildingManager buildingManager = robot.getParkedSettlement().getBuildingManager();
+			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
 			for (Building building : buildingManager.getBuildings(BuildingFunction.MANUFACTURE)) {
 			//Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
 			//while (j.hasNext()) {
@@ -272,7 +272,7 @@ implements Serializable {
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = person.getParkedSettlement().getBuildingManager();
+			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> manufacturingBuildings = manager.getBuildings(BuildingFunction.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
@@ -297,7 +297,7 @@ implements Serializable {
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = robot.getParkedSettlement().getBuildingManager();
+			BuildingManager manager = robot.getSettlement().getBuildingManager();
 			List<Building> manufacturingBuildings = manager.getBuildings(BuildingFunction.MANUFACTURE);
 			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
 			manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
@@ -579,10 +579,10 @@ implements Serializable {
 			} else {
 
 				if (person != null)
-					if (!person.getParkedSettlement().getManufactureOverride())
+					if (!person.getSettlement().getManufactureOverride())
 						process = createNewManufactureProcess();
 					else if (robot != null)
-					if (!robot.getParkedSettlement().getManufactureOverride())
+					if (!robot.getSettlement().getManufactureOverride())
 						process = createNewManufactureProcess();
 
 				if (process == null) {
@@ -672,10 +672,10 @@ implements Serializable {
 					double processValue = 0;
 					if (person != null)
 						processValue = ManufactureUtil.getManufactureProcessValue(processInfo,
-								person.getParkedSettlement());
+								person.getSettlement());
 					else if (robot != null)
 						processValue = ManufactureUtil.getManufactureProcessValue(processInfo,
-							robot.getParkedSettlement());
+							robot.getSettlement());
 
 					if (processValue > 0D) {
 						processProbMap.put(processInfo, processValue);

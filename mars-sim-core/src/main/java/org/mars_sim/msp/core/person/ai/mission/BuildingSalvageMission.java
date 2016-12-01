@@ -100,7 +100,7 @@ implements Serializable {
 
 		if (!isDone()) {
 			// Sets the settlement.
-			settlement = startingMember.getParkedSettlement();
+			settlement = startingMember.getSettlement();
 
 			// Sets the mission capacity.
 			setMissionCapacity(MAX_PEOPLE);
@@ -696,7 +696,7 @@ implements Serializable {
 		if (result) {
 		    result = false;
 			if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-				if (member.getParkedSettlement() == settlement) {
+				if (member.getSettlement() == settlement) {
 					result = true;
 				}
 			}

@@ -116,6 +116,29 @@ implements Serializable {
 	}
 
 	/**
+	 * Returns the task name of the current or last task (one without the word "walk" in it).
+	 * @return task name
+	 */
+	public String getFilteredTaskName() {
+		String s = getTaskName(); 
+		if (s.toLowerCase().contains("walk")) {
+			if (lastTask != null) {
+				s = lastTask.getName();
+				if (lastTask != null && !s.toLowerCase().contains("walk")) {
+					return "";
+				}
+				else
+					return s;
+			}
+			else
+				return "";
+		}
+		else
+			return s;
+
+	}
+	
+	/**
 	 * Returns the name of the current task for UI purposes.
 	 * Returns a blank string if there is no current task.
 	 * @return name of the current task

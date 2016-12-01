@@ -51,7 +51,7 @@ public class ExplorationMeta implements MetaMission {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getParkedSettlement();
+            Settlement settlement = person.getSettlement();
 
             boolean go = true;
   
@@ -135,7 +135,7 @@ public class ExplorationMeta implements MetaMission {
         if (result > 0D) {
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getParkedSettlement()) < RoverMission.MIN_PEOPLE)
+                    .getSettlement()) < RoverMission.MIN_PEOPLE)
                 result = 0D;
         }
 

@@ -369,7 +369,7 @@ public class RadiationExposure implements Serializable {
       	    // TODO: account for the effect of atmosphere pressure on radiation dosage as shown by RAD data
     		//RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
 
-    		boolean[] exposed = person.getParkedSettlement().getExposed();
+    		boolean[] exposed = person.getSettlement().getExposed();
 
     		if (exposed[1])
 	    		shield_factor = RandomUtil.getRandomDouble(1) ; // arbitrary

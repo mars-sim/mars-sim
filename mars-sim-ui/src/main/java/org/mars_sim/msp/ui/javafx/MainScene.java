@@ -2390,10 +2390,9 @@ public class MainScene {
 	        if (xPos != 0 && yPos != 0) {
 	            stage.setX(xPos);
 	            stage.setY(yPos);
-	            stage.centerOnScreen();
-	        } else {
-	            stage.centerOnScreen();
-	        }  
+	        } 
+	        
+            stage.centerOnScreen();	        
 		}
 	}
 	

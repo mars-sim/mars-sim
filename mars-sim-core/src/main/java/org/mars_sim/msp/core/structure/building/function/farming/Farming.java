@@ -8,8 +8,10 @@ package org.mars_sim.msp.core.structure.building.function.farming;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,12 +19,15 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -101,17 +106,22 @@ implements Serializable {
     private List<CropType> cropListInQueue = new ArrayList<CropType>();
     private static List<CropType> cropTypeList;
     private List<CropType> plantedCropList = new ArrayList<CropType>();
-
     //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
+    
+    // 2016-11-30 Added cropAssignment and shiftAssignment
+    //private Map<Unit, Crop> cropAssignment = new HashMap<Unit, Crop>();
+    //private Map<Unit, ShiftType> shiftAssignment = new HashMap<Unit, ShiftType>();
 
     private Inventory b_inv, s_inv;
-
     private Settlement settlement;
     private Building building;
     //private BeeGrowing beeGrowing;
 	//private GoodsManager goodsManager;
 
+    private Person p;
+    private Robot r;
     private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
+    
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -603,19 +613,19 @@ implements Serializable {
      * @return workTime remaining after working on crop (millisols)
      * @throws Exception if error adding work.
      */
-    public double addWork(double workTime, TendGreenhouse h) {
+    public double addWork(double workTime, TendGreenhouse h, Unit unit) {
         double workTimeRemaining = workTime;
-        Crop needyCrop = null, cache = null;
+        Crop needyCrop = null, lastCrop = null;
         // Scott - I used the comparison criteria 00001D rather than 0D
         // because sometimes math anomalies result in workTimeRemaining
         // becoming very small double values and an endless loop occurs.
-        while (((needyCrop = getNeedyCrop()) != null)
+        while (((needyCrop = getNeedyCrop(lastCrop, unit)) != null)
         		&& (workTimeRemaining > .00001D)) {
         	
-        	if (cache != needyCrop) {
+        	if (lastCrop != needyCrop) {
         		// 2016-11-29 update the name of the crop being worked on in the task description 
         		h.setCrop(needyCrop);
-        		cache = needyCrop;
+        		lastCrop = needyCrop;
         	}
         	
             workTimeRemaining = needyCrop.addWork(workTimeRemaining);
@@ -628,23 +638,42 @@ implements Serializable {
      * Gets a crop that needs planting, tending, or harvesting.
      * @return crop or null if none found.
      */
-    public Crop getNeedyCrop() {
+    public Crop getNeedyCrop(Crop lastCrop, Unit unit) {
         Crop result = null;
-
+/*    	if (unit instanceof Person)
+    		p = (Person) unit;
+    	else
+    		r = (Robot) unit;
+*/
         List<Crop> needyCrops = new ArrayList<Crop>(crops.size());
         for (Crop c : crops) {
             if (c.requiresWork()) {
-                needyCrops.add(c);
+            	if (c == lastCrop)
+                	return c;
+            	//else if (cropAssignment.get(unit) == c) {
+            	//	updateAssignmentMap(unit);
+            	//	return c;
+            	//}
+                else	
+                	needyCrops.add(c);
             }
         }
 
         if (needyCrops.size() > 0) {
-            result = needyCrops.get(RandomUtil.getRandomInt(0, needyCrops.size() - 1));
+        	result = needyCrops.get(RandomUtil.getRandomInt(0, needyCrops.size() - 1));
+    		//updateCropAssignment(unit, result);
         }
 
         return result;
     }
+/*
+    public void updateAssignmentMap(Unit unit) {   	
+    }
 
+    public void updateCropAssignment(Unit unit, Crop crop) {
+    	cropAssignment.put(unit, crop);
+    }
+*/    
     /**
      * Adds the crop harvest to the farm.
      * @param harvest: harvested food to add (kg.)
@@ -706,9 +735,6 @@ implements Serializable {
      * @throws BuildingException if error occurs.
      */
 	public void timePassing(double time) {
-		//System.out.println("timePassing() : time is " + time);
-
-		//MarsClock clock = Simulation.instance().getMasterClock().getMarsClock();
 	    // check for the passing of each day
 	    int solElapsed = marsClock.getSolElapsedFromStart();
 	    if (solElapsed != solCache) {
@@ -722,7 +748,6 @@ implements Serializable {
         double productionLevel = 0D;
         if (building.getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
         else if (building.getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
-		//System.out.println("timePassing() : productionLevel  is " + productionLevel );
 
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
@@ -730,21 +755,17 @@ implements Serializable {
         while (i.hasNext()) {
             Crop crop = i.next();
             crop.timePassing(time * productionLevel);
-
             // Remove old crops.
             if (crop.getPhaseType() == PhaseType.FINISHED) {
                 remainingGrowingArea = remainingGrowingArea + crop.getGrowingArea();
                 i.remove();
-                //System.out.println("Farming : " + crop.getCropType().getName() + " is removed.");
                 numNewCrops++;
-                //System.out.println("Farming timePassing() newCrops++ : remainingGrowingArea is "+ remainingGrowingArea);
-            }
+             }
         }
 
         // Add any new crops.
         for (int x = 0; x < numNewCrops; x++) {
            	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
-        	//CropType cropType = Crop.getNewCrop();
         	CropType cropType = null;
         	int size = cropListInQueue.size();
           	if (size > 0) {
@@ -887,7 +908,6 @@ implements Serializable {
      * @return max harvest (kg)
      */
     public double getEstimatedHarvestPerOrbit() {
-
         // Add max harvest for each crop.
         double totalMaxHarvest = 0D;
         for (Crop crop : crops)
@@ -896,12 +916,13 @@ implements Serializable {
         return totalMaxHarvest * getAverageGrowingCyclesPerOrbit(); // 40 kg * 668 sols / 50
     }
 
-	/*
+	/**
 	 * Checks to see if a botany lab with an open research slot is available and performs cell tissue extraction
+	 * @param cropType
+	 * @return true if it has space
 	 */
 	// 2016-10-13 Check to see if a botany lab is available
 	public boolean checkBotanyLab(CropType type) {
-
 		boolean proceed = false;
 		Research lab0 = (Research) getBuilding().getFunction(BuildingFunction.RESEARCH);
 		// Check to see if the local greenhouse has a research slot

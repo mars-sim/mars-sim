@@ -1002,7 +1002,7 @@ implements Serializable, Comparable<Task> {
 
 	            //Building currentBuilding = BuildingManager.getBuilding(person);
 	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
-	            List<Building> buildingList = person.getParkedSettlement().getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+	            List<Building> buildingList = person.getSettlement().getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
 
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
@@ -1027,7 +1027,7 @@ implements Serializable, Comparable<Task> {
 	            //Building currentBuilding = BuildingManager.getBuilding(robot);
 	            //TODO: determine why the below results in java.lang.NullPointerException
 	            //List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
-	        	List<Building> buildingList = robot.getParkedSettlement().getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
+	        	List<Building> buildingList = robot.getSettlement().getBuildingManager().getBuildings(BuildingFunction.ROBOTIC_STATION);
 
 	            if (buildingList.size() > 0) {
 	                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);

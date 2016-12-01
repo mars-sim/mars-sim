@@ -730,7 +730,7 @@ public class ChatBox extends BorderPane {
 	    			responseText = "I don't have my own private quarters/bed.";
 	    		else {
 	    			if (personCache != null) {
-	    				Settlement s1 = personCache.getParkedSettlement();
+	    				Settlement s1 = personCache.getSettlement();
 		    			if (s1 != null) {	
 		    				// check to see if a person is on a trading mission
 		    				Settlement s2 = personCache.getAssociatedSettlement();		    				
@@ -775,7 +775,7 @@ public class ChatBox extends BorderPane {
 	
 	    	else if (num == 8 || text.equalsIgnoreCase("building") ) {
 	    		questionText = YOU_PROMPT + "What building are you at ?";
-	    		Settlement s = cache.getParkedSettlement();
+	    		Settlement s = cache.getSettlement();
 	    		if (s != null) {
 		    		//Building b1 = s.getBuildingManager().getBuilding(cache);
 		    		Building b = cache.getBuildingLocation();
@@ -793,7 +793,7 @@ public class ChatBox extends BorderPane {
     		
 	    	else if (num == 9 || text.equalsIgnoreCase("settlement")) {
 	    		questionText = YOU_PROMPT + "What is the settlement that you are at ?";
-	    		Settlement s = cache.getParkedSettlement();
+	    		Settlement s = cache.getSettlement();
 	   			if (s != null)
 	   				responseText = "My settlement is " + s.getName();
 	   			else
@@ -871,7 +871,7 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "What building does your vehicle park at ?";
 	    		Vehicle v = cache.getVehicle();
 		       	if (v != null) {
-		       		Settlement s = v.getParkedSettlement();
+		       		Settlement s = v.getSettlement();
 		       		if (s != null) {
 		       			Building b = s.getBuildingManager().getBuilding(v);
 		       			if (b != null)
@@ -890,7 +890,7 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "What settlement is your vehicle located at ?";
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
-	       			Settlement s = v.getParkedSettlement();
+	       			Settlement s = v.getSettlement();
 	       			if (s != null)
 	       				responseText = "My vehicle is at " + s.getName();
 	       			else

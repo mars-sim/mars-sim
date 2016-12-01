@@ -238,7 +238,7 @@ implements UnitListener {
 		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
 
 		// Create list of best unreserved vehicles for the mission.
-		Iterator<Vehicle> i = getAvailableVehicles(member.getParkedSettlement())
+		Iterator<Vehicle> i = getAvailableVehicles(member.getSettlement())
 				.iterator();
 		while (i.hasNext()) {
 			Vehicle availableVehicle = i.next();
@@ -344,7 +344,7 @@ implements UnitListener {
 					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)) {
 				// Set emergency beacon if vehicle is not at settlement.
 				// TODO: need to find out if there are other matching reasons for setting emergency beacon.
-				if (vehicle.getParkedSettlement() == null) {
+				if (vehicle.getSettlement() == null) {
 					// if the vehicle somewhere on Mars and is outside the settlement 
 					if (!vehicle.isEmergencyBeacon()) {
 						//if the emergency beacon is off
@@ -413,7 +413,7 @@ implements UnitListener {
 		try {
 			return LoadVehicleGarage.isFullyLoaded(getRequiredResourcesToLoad(), 
 					getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), 
-					getOptionalEquipmentToLoad(), vehicle, vehicle.getParkedSettlement());
+					getOptionalEquipmentToLoad(), vehicle, vehicle.getSettlement());
 		} catch (Exception e) {
 			throw new IllegalStateException(getPhase().getName(), e);
 		}
@@ -429,7 +429,7 @@ implements UnitListener {
 		Map<Resource, Number> resources = getRequiredResourcesToLoad();
 		Map<Class, Integer> equipment = getRequiredEquipmentToLoad();
 		Vehicle vehicle = this.vehicle;
-		Settlement settlement = vehicle.getParkedSettlement();
+		Settlement settlement = vehicle.getSettlement();
 		double tripTime = getEstimatedRemainingMissionTime(true);
 
 		boolean vehicleCapacity = LoadVehicleGarage.enoughCapacityForSupplies(

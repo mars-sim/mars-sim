@@ -47,7 +47,7 @@ public class RescueSalvageVehicleMeta implements MetaMission {
             // Check if mission is possible for person based on their circumstance.
             boolean missionPossible = true;
             
-            Settlement settlement = person.getParkedSettlement();
+            Settlement settlement = person.getSettlement();
         
             Vehicle vehicleTarget = null;
             

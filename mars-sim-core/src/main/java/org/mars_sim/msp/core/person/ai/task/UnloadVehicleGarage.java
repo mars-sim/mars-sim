@@ -81,7 +81,7 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
 
-        settlement = person.getParkedSettlement();
+        settlement = person.getSettlement();
 
         VehicleMission mission = getMissionNeedingUnloading();
         if (mission != null) {
@@ -120,7 +120,7 @@ implements Serializable {
         // Use Task constructor.
         super(NAME, robot, true, false, STRESS_MODIFIER, true, DURATION);
 
-        settlement = robot.getParkedSettlement();
+        settlement = robot.getSettlement();
 
         VehicleMission mission = getMissionNeedingUnloading();
         if (mission != null) {
@@ -168,7 +168,7 @@ implements Serializable {
                 vehicle.getName()));  //$NON-NLS-1$;
         this.vehicle = vehicle;
 
-        settlement = person.getParkedSettlement();
+        settlement = person.getSettlement();
 
         // If vehicle is in a garage, add person to garage.
         Building garageBuilding = BuildingManager.getBuilding(vehicle);
@@ -191,7 +191,7 @@ implements Serializable {
                 vehicle.getName()));  //$NON-NLS-1$;
         this.vehicle = vehicle;
 
-        settlement = robot.getParkedSettlement();
+        settlement = robot.getSettlement();
 
         // If vehicle is in a garage, add robot to garage.
         Building garageBuilding = BuildingManager.getBuilding(vehicle);
@@ -292,7 +292,7 @@ implements Serializable {
                     VehicleMission vehicleMission = (VehicleMission) mission;
                     if (vehicleMission.hasVehicle()) {
                         Vehicle vehicle = vehicleMission.getVehicle();
-                        if (settlement == vehicle.getParkedSettlement()) {
+                        if (settlement == vehicle.getSettlement()) {
                             int peopleOnboard = CollectionUtils.getPerson(
                                     vehicle.getInventory().getContainedUnits()).size();
                             if (peopleOnboard == 0) {
@@ -330,9 +330,9 @@ implements Serializable {
         VehicleMission result = null;
         List<Mission> unloadingMissions = null;
 		if (person != null) 
-	        unloadingMissions = getAllMissionsNeedingUnloading(person.getParkedSettlement());			
+	        unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());			
 		else if (robot != null)
-			unloadingMissions = getAllMissionsNeedingUnloading(robot.getParkedSettlement());
+			unloadingMissions = getAllMissionsNeedingUnloading(robot.getSettlement());
 
         if (unloadingMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);

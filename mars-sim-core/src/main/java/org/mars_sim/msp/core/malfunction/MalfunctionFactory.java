@@ -115,7 +115,7 @@ implements Serializable {
 		LocationSituation location = person.getLocationSituation();
 
 		if (location == LocationSituation.IN_SETTLEMENT) {
-		    entities = getMalfunctionables(person.getParkedSettlement());
+		    entities = getMalfunctionables(person.getSettlement());
 		}
 
 		if (location == LocationSituation.IN_VEHICLE) {
@@ -142,7 +142,7 @@ implements Serializable {
 		LocationSituation location = robot.getLocationSituation();
 
 		if (location == LocationSituation.IN_SETTLEMENT) {
-		    entities = getMalfunctionables(robot.getParkedSettlement());
+		    entities = getMalfunctionables(robot.getSettlement());
 		}
 
 		if (location == LocationSituation.IN_VEHICLE) {
@@ -235,7 +235,7 @@ implements Serializable {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !settlement.equals(vehicle.getParkedSettlement()))
+				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
 					entities.addAll(getMalfunctionables(vehicle));
 			}
 		}

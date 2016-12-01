@@ -174,7 +174,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
-			<version>6.2</version>
+			<version>6.3</version>
 		</dependency>
 		<dependency>
 		    <groupId>eu.hansolo.enzo</groupId>

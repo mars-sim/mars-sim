@@ -78,7 +78,7 @@ implements Serializable {
         if (!isDone()) {
 
             // Initialize data members
-            setStartingSettlement(startingMember.getParkedSettlement());
+            setStartingSettlement(startingMember.getSettlement());
 
             // Set mission capacity.
             if (hasVehicle()) {
@@ -86,7 +86,7 @@ implements Serializable {
             }
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(startingMember
-                            .getParkedSettlement());
+                            .getSettlement());
             if (availableSuitNum < getMissionCapacity()) {
                 setMissionCapacity(availableSuitNum);
             }
@@ -603,7 +603,7 @@ implements Serializable {
     protected boolean isCapableOfMission(MissionMember member) {
         if (super.isCapableOfMission(member)) {
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getParkedSettlement() == getStartingSettlement()) {
+                if (member.getSettlement() == getStartingSettlement()) {
                     return true;
                 }
             }

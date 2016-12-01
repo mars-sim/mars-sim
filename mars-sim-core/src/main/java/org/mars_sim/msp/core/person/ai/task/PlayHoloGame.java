@@ -213,7 +213,7 @@ implements Serializable {
 		Building result = null;
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager manager = person.getParkedSettlement().getBuildingManager();
+			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> recreationBuildings = manager.getBuildings(BuildingFunction.RECREATION);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);

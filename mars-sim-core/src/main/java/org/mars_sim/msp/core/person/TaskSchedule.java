@@ -317,8 +317,8 @@ public class TaskSchedule implements Serializable {
 		if (shiftType != null) {
 			if (person != null) {
 				if (shiftTypeCache != null)
-					person.getParkedSettlement().decrementAShift(shiftTypeCache);
-				person.getParkedSettlement().incrementAShift(shiftType);
+					person.getSettlement().decrementAShift(shiftTypeCache);
+				person.getSettlement().incrementAShift(shiftType);
 			}
 /*			else if (robot != null) {
 				if (shiftTypeCache != null)

@@ -73,7 +73,7 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (person.getParkedSettlement() != null) {
+		if (person.getSettlement() != null) {
 		    //setDescription(Msg.getString("Task.description.produceFood.detail", 
             //        person.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
@@ -105,7 +105,7 @@ implements Serializable {
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
-		if (robot.getParkedSettlement() != null) {
+		if (robot.getSettlement() != null) {
 		    //setDescription(Msg.getString("Task.description.produceFood.detail", 
             //        robot.getParkedSettlement().getName())); //$NON-NLS-1$
 		}
@@ -148,11 +148,11 @@ implements Serializable {
 	 */
 	public static void cancelDifficultFoodProductionProcesses(Person person) {
 
-		Settlement settlement = person.getParkedSettlement();
+		Settlement settlement = person.getSettlement();
 		if (settlement != null) {
 		    int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
-			BuildingManager manager = person.getParkedSettlement().getBuildingManager();
+			BuildingManager manager = person.getSettlement().getBuildingManager();
 			Iterator<Building> j = manager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
@@ -174,11 +174,11 @@ implements Serializable {
 
 	public static void cancelDifficultFoodProductionProcesses(Robot robot) {
 
-		Settlement settlement = robot.getParkedSettlement();
+		Settlement settlement = robot.getSettlement();
 		if (settlement != null) {
 			int highestSkillLevel = getHighestSkillAtSettlement(settlement);
 
-			BuildingManager buildingManager = robot.getParkedSettlement().getBuildingManager();
+			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
 			Iterator<Building> j = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION).iterator();
 			while (j.hasNext()) {
 				Building building = (Building) j.next();
@@ -257,7 +257,7 @@ implements Serializable {
         skill = (int) Math.round(skill / 7D);
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager buildingManager = person.getParkedSettlement().getBuildingManager();
+			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
 			List<Building> foodProductionBuildings = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
@@ -285,7 +285,7 @@ implements Serializable {
         //skill = (int) Math.round(skill / 7D);
 
 		if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			BuildingManager buildingManager = robot.getParkedSettlement().getBuildingManager();
+			BuildingManager buildingManager = robot.getSettlement().getBuildingManager();
 			List<Building> foodProductionBuildings = buildingManager.getBuildings(BuildingFunction.FOOD_PRODUCTION);
 			foodProductionBuildings = BuildingManager.getNonMalfunctioningBuildings(foodProductionBuildings);
 			foodProductionBuildings = getFoodProductionBuildingsNeedingWork(foodProductionBuildings, skill);
@@ -587,12 +587,12 @@ implements Serializable {
 			} else {
 				
 				if (person != null) {
-					if (!person.getParkedSettlement().getFoodProductionOverride()) {
+					if (!person.getSettlement().getFoodProductionOverride()) {
 						process = createNewFoodProductionProcess();
 					}
 				}
 				else if (robot != null) {
-					if (!robot.getParkedSettlement().getFoodProductionOverride()) {
+					if (!robot.getSettlement().getFoodProductionOverride()) {
 						process = createNewFoodProductionProcess();
 					}
 				}
@@ -688,10 +688,10 @@ implements Serializable {
 					
 					if (person != null) 
 						processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo, 
-								person.getParkedSettlement());
+								person.getSettlement());
 					else if (robot != null)
 						processValue = FoodProductionUtil.getFoodProductionProcessValue(processInfo, 
-							robot.getParkedSettlement());
+							robot.getSettlement());
 					
 					if (processValue > 0D) {
 						processProbMap.put(processInfo, processValue);

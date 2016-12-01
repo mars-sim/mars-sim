@@ -70,7 +70,7 @@ implements Serializable {
         // Use EVAOperation constructor.
         super(NAME, person, false, 0D);
 
-        settlement = person.getParkedSettlement();
+        settlement = person.getSettlement();
 
         // Get an available airlock.
         airlock = getWalkableAvailableAirlock(person);

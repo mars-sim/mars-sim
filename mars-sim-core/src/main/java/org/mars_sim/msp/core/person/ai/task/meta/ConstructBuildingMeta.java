@@ -79,11 +79,11 @@ public class ConstructBuildingMeta implements MetaTask, Serializable {
             try {
                 // Check all building construction missions occurring at the settlement.
                 List<BuildingConstructionMission> missions = ConstructBuilding.
-                        getAllMissionsNeedingAssistance(person.getParkedSettlement());
+                        getAllMissionsNeedingAssistance(person.getSettlement());
                 result = 100D * missions.size();
 
                 // Crowded settlement modifier
-                Settlement settlement = person.getParkedSettlement();
+                Settlement settlement = person.getSettlement();
                 if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                     result *= 2D;
                 }

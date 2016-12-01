@@ -135,7 +135,7 @@ public class SelfTreatHealthProblemMeta implements MetaTask, Serializable {
         boolean result = false;
 
         // Check all medical care buildings.
-        Iterator<Building> i = person.getParkedSettlement().getBuildingManager().getBuildings(
+        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
                 BuildingFunction.MEDICAL_CARE).iterator();
         while (i.hasNext() && !result) {
             Building building = i.next();

@@ -55,8 +55,8 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
             // Check all vehicle missions occurring at the settlement.
             try {
                 int numVehicles = 0;
-                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(person.getParkedSettlement()).size();
-                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(person.getParkedSettlement()).size();
+                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(person.getSettlement()).size();
+                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
                 result = 100D * numVehicles;
             }
             catch (Exception e) {
@@ -76,7 +76,7 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
             Job job = person.getMind().getJob();
             if (job != null) {
                 result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class)
-                		* person.getParkedSettlement().getGoodsManager().getTransportationFactor();
+                		* person.getSettlement().getGoodsManager().getTransportationFactor();
             }
 
             // Modify if operations is the person's favorite activity.
@@ -107,8 +107,8 @@ public class UnloadVehicleGarageMeta implements MetaTask, Serializable {
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
 	                int numVehicles = 0;
-	                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(robot.getParkedSettlement()).size();
-	                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(robot.getParkedSettlement()).size();
+	                numVehicles += UnloadVehicleGarage.getAllMissionsNeedingUnloading(robot.getSettlement()).size();
+	                numVehicles += UnloadVehicleGarage.getNonMissionVehiclesNeedingUnloading(robot.getSettlement()).size();
 	                result = 100D * numVehicles;
 	            }
 	            catch (Exception e) {

@@ -61,7 +61,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	
         	//2016-10-04 Checked for radiation events
-        	boolean[] exposed = person.getParkedSettlement().getExposed();
+        	boolean[] exposed = person.getSettlement().getExposed();
 
     		if (exposed[2]) {
     			noGo = true;// SEP can give lethal dose of radiation, out won't go outside
@@ -94,7 +94,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 
 	            // Check all vehicle missions occurring at the settlement.
 	            try {
-	                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(person.getParkedSettlement());
+	                List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(person.getSettlement());
 	                result += 100D * missions.size();
 	            }
 	            catch (Exception e) {
@@ -102,15 +102,15 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	            }
 	
 	            // Check if any rovers are in need of EVA suits to allow occupants to exit.
-	            if (LoadVehicleEVA.getRoversNeedingEVASuits(person.getParkedSettlement()).size() > 0) {
-	                int numEVASuits = person.getParkedSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+	            if (LoadVehicleEVA.getRoversNeedingEVASuits(person.getSettlement()).size() > 0) {
+	                int numEVASuits = person.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
 	                if (numEVASuits >= 2) {
 	                    result += 100D;
 	                }
 	            }
 	
 	            // Crowded settlement modifier
-	            Settlement settlement = person.getParkedSettlement();
+	            Settlement settlement = person.getSettlement();
 	            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity())
 	                result *= 2D;
 	            
@@ -118,7 +118,7 @@ public class LoadVehicleEVAMeta implements MetaTask, Serializable {
 	            Job job = person.getMind().getJob();
 	            if (job != null)
 	                result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class)
-	                		* person.getParkedSettlement().getGoodsManager().getTransportationFactor();
+	                		* person.getSettlement().getGoodsManager().getTransportationFactor();
 	
 	            // Effort-driven task modifier.
 	            result *= person.getPerformanceRating();

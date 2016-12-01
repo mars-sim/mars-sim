@@ -209,7 +209,7 @@ implements Serializable {
         boolean overrideMission = false;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            overrideMission = person.getParkedSettlement().getMissionCreationOverride();
+            overrideMission = person.getSettlement().getMissionCreationOverride();
         }
 
         // Perform a task if the person has one, or determine a new task/mission.
@@ -346,9 +346,9 @@ implements Serializable {
 
 		        // Assign a new role type to the person and others in a settlement
 		        // immediately after the change of one's job type
-		        if (person.getParkedSettlement() != null) {
-		        	ChainOfCommand cc = person.getParkedSettlement().getChainOfCommand();
-		        	population = person.getParkedSettlement().getAllAssociatedPeople().size();
+		        if (person.getSettlement() != null) {
+		        	ChainOfCommand cc = person.getSettlement().getChainOfCommand();
+		        	population = person.getSettlement().getAllAssociatedPeople().size();
 			        // Assign a role associate with
 	                if (population >= UnitManager.POPULATION_WITH_MAYOR) {
 	                	cc.set7Divisions(true);

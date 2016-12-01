@@ -203,7 +203,7 @@ implements ResearchScientificStudy, Serializable {
     private static Lab getSettlementLab(Person person) {
         Lab result = null;
 
-        BuildingManager manager = person.getParkedSettlement().getBuildingManager();
+        BuildingManager manager = person.getSettlement().getBuildingManager();
         List<Building> labBuildings = manager.getBuildings(BuildingFunction.RESEARCH);
         labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);

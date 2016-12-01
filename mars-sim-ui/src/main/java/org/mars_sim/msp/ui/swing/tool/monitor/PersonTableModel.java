@@ -455,7 +455,7 @@ extends UnitTableModel {
 			case LOCATION : {
 				LocationSituation locationSituation = person.getLocationSituation();
 				if (locationSituation == LocationSituation.IN_SETTLEMENT) {
-					if (person.getParkedSettlement() != null) result = person.getParkedSettlement().getName();
+					if (person.getSettlement() != null) result = person.getSettlement().getName();
 				}
 				else if (locationSituation == LocationSituation.IN_VEHICLE) {
 					if (person.getVehicle() != null) result = person.getVehicle().getName();
@@ -501,7 +501,17 @@ extends UnitTableModel {
 			case TASK : {
 				// If the Person is dead, there is no Task Manager
 				TaskManager mgr = person.getMind().getTaskManager();
-				result = ((mgr != null)? mgr.getTaskName() : null); // .getTaskDescription(true) // .getTaskClassName()		 	
+				result = ((mgr != null)? mgr.getTaskName() : null); //getFilteredTaskName() //getTaskDescription(false)  // .getTaskClassName()		 	
+/*				if (mgr != null) {
+					String s = mgr.getTaskName();
+					if (!s.toLowerCase().contains("walk"))
+						result = s;
+					//else
+					//	result = null;
+				}
+				//else
+				//	result = null;
+*/
 			} break;
 
 			case MISSION : {

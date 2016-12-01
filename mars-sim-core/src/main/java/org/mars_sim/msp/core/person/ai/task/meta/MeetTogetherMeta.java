@@ -70,7 +70,7 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             Set<Person> pool = new HashSet<Person>();
-            Settlement s = person.getParkedSettlement();
+            Settlement s = person.getSettlement();
 
             // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
             Collection<Person> attendees = null; 

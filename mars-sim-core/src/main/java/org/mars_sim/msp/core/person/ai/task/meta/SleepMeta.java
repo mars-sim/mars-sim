@@ -208,7 +208,7 @@ public class SleepMeta implements MetaTask, Serializable {
 		        }
 
 	        	Building quarters = null;
-            	Settlement s1 = person.getParkedSettlement();
+            	Settlement s1 = person.getSettlement();
             	Settlement s2 = person.getAssociatedSettlement();
             	
     			// check to see if a person is a trader or on a trading mission

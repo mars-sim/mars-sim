@@ -288,7 +288,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @return the robot's settlement
      */
    // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
-   public Settlement getParkedSettlement() {
+   public Settlement getSettlement() {
        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     	   Settlement settlement = (Settlement) getContainerUnit();
     	   return settlement;
@@ -465,7 +465,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         LifeSupportType result = null;
         List<LifeSupportType> lifeSupportUnits = new ArrayList<LifeSupportType>();
 
-        Settlement settlement = getParkedSettlement();
+        Settlement settlement = getSettlement();
         if (settlement != null) {
             lifeSupportUnits.add(settlement);
         }
@@ -474,7 +474,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
             if ((vehicle != null) && (vehicle instanceof LifeSupportType)) {
 
                 if (BuildingManager.getBuilding(vehicle) != null) {
-                    lifeSupportUnits.add(vehicle.getParkedSettlement());
+                    lifeSupportUnits.add(vehicle.getSettlement());
                 }
                 else {
                     lifeSupportUnits.add((LifeSupportType) vehicle);
@@ -696,7 +696,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     public Building getBuildingLocation() {
         Building result = null;
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = getParkedSettlement().getBuildingManager();
+            BuildingManager manager = getSettlement().getBuildingManager();
             result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
             //List<Building> buildings = manager.getBuildings();
             //Iterator<Building> i = buildings.iterator();

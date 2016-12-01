@@ -476,7 +476,7 @@ implements Serializable, LocalBoundedObject {
     }
 
     // 2015-12-18 Created getSettlement()
-    public Settlement getParkedSettlement() {
+    public Settlement getSettlement() {
     	return settlement;
     }
 

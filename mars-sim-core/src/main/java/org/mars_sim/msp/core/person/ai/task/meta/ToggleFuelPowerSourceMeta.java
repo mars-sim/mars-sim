@@ -55,9 +55,9 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
         // TODO: need to consider if a person is out there on Mars somewhere, out of the settlement 
         // and if he has to do a EVA to repair a broken vehicle.
 
-        if (person.getParkedSettlement() != null) {
+        if (person.getSettlement() != null) {
         	//2016-10-04 Checked for radiation events
-    		exposed = person.getParkedSettlement().getExposed();
+    		exposed = person.getSettlement().getExposed();
         }
     	
 		if (exposed[2]) {
@@ -85,7 +85,7 @@ public class ToggleFuelPowerSourceMeta implements MetaTask, Serializable {
             
             boolean isEVA = false;
 
-            Settlement settlement = person.getParkedSettlement();
+            Settlement settlement = person.getSettlement();
 
             try {
                 Building building = ToggleFuelPowerSource.getFuelPowerSourceBuilding(person);

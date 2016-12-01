@@ -101,7 +101,7 @@ implements Serializable {
         	}
         	else {
         		// If not in a garage, try to add it to a garage with empty space.
-        		Settlement settlement = person.getParkedSettlement();
+        		Settlement settlement = person.getSettlement();
         		Iterator<Building> j = settlement.getBuildingManager().getBuildings(
         		        BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
         		while (j.hasNext() && (garage == null)) {
@@ -305,7 +305,7 @@ implements Serializable {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
         
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Iterator<Vehicle> vI = person.getParkedSettlement().getParkedVehicles().iterator();
+			Iterator<Vehicle> vI = person.getSettlement().getParkedVehicles().iterator();
 			while (vI.hasNext()) {
 				Vehicle vehicle = vI.next();
 				if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) {

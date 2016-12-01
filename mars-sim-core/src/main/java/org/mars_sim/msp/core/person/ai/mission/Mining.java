@@ -109,13 +109,13 @@ extends RoverMission {
             }
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(startingPerson
-                            .getParkedSettlement());
+                            .getSettlement());
             if (availableSuitNum < getMissionCapacity()) {
                 setMissionCapacity(availableSuitNum);
             }
 
             // Initialize data members.
-            setStartingSettlement(startingPerson.getParkedSettlement());
+            setStartingSettlement(startingPerson.getSettlement());
             excavatedMinerals = new HashMap<AmountResource, Double>(1);
             totalExcavatedMinerals = new HashMap<AmountResource, Double>(1);
 
@@ -955,7 +955,7 @@ extends RoverMission {
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getParkedSettlement() == getStartingSettlement()) {
+                if (member.getSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }
             }

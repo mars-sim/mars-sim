@@ -993,7 +993,7 @@ public class BuildingManager implements Serializable {
     public static Building getBuilding(Vehicle vehicle) {
         if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
         Building result = null;
-        Settlement settlement = vehicle.getParkedSettlement();
+        Settlement settlement = vehicle.getSettlement();
         if (settlement != null) {
         	for (Building garageBuilding : settlement.getBuildingManager().getBuildings(
                     BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
@@ -1060,7 +1060,7 @@ public class BuildingManager implements Serializable {
         if (unit instanceof Person) {
          	person = (Person) unit;
 	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	            Settlement settlement = person.getParkedSettlement();
+	            Settlement settlement = person.getSettlement();
 	            for (Building building : settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT)) { 
 	            //Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).iterator();
 	            //while (i.hasNext()) {
@@ -1351,7 +1351,7 @@ public class BuildingManager implements Serializable {
          	person = (Person) unit;
             Building currentBuilding = BuildingManager.getBuilding(person);
              if (currentBuilding != null) {
-                BuildingConnectorManager connectorManager = person.getParkedSettlement().getBuildingConnectorManager();
+                BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
 
                 for (Building building : buildingList) {
                 //Iterator<Building> i = buildingList.iterator();
@@ -1371,7 +1371,7 @@ public class BuildingManager implements Serializable {
         	robot = (Robot) unit;
 	        Building currentBuilding = BuildingManager.getBuilding(robot);
 	        if (currentBuilding != null) {
-	            BuildingConnectorManager connectorManager = robot.getParkedSettlement().getBuildingConnectorManager();
+	            BuildingConnectorManager connectorManager = robot.getSettlement().getBuildingConnectorManager();
 
 	            for (Building building : buildingList) {
 	            //Iterator<Building> i = buildingList.iterator();

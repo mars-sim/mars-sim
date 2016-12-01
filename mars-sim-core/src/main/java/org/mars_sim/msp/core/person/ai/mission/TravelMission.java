@@ -97,10 +97,10 @@ extends Mission {
                 
         NavPoint startingNavPoint = null;
         
-        if (startingMember.getParkedSettlement() != null) {
+        if (startingMember.getSettlement() != null) {
             startingNavPoint = new NavPoint(getCurrentMissionLocation(),
-                    startingMember.getParkedSettlement(), startingMember
-                            .getParkedSettlement().getName());
+                    startingMember.getSettlement(), startingMember
+                            .getSettlement().getName());
         }
         else {
             startingNavPoint = new NavPoint(getCurrentMissionLocation(),

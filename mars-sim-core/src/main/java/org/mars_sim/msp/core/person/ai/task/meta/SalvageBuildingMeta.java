@@ -79,7 +79,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
             // Check all building salvage missions occurring at the settlement.
             try {
                 List<BuildingSalvageMission> missions = SalvageBuilding.
-                        getAllMissionsNeedingAssistance(person.getParkedSettlement());
+                        getAllMissionsNeedingAssistance(person.getSettlement());
                 result = 100D * missions.size();
             }
             catch (Exception e) {
@@ -87,7 +87,7 @@ public class SalvageBuildingMeta implements MetaTask, Serializable {
             }
 
             // Crowded settlement modifier
-            Settlement settlement = person.getParkedSettlement();
+            Settlement settlement = person.getSettlement();
             if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                 result *= 2D;
             }

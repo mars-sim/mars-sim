@@ -76,7 +76,7 @@ public interface MissionMember {
      * Get settlement the member is at, null if member is not at a settlement
      * @return the member's settlement
      */
-    public Settlement getParkedSettlement();
+    public Settlement getSettlement();
 
     /**
      * Get vehicle member is in, null if member is not in vehicle

@@ -63,7 +63,7 @@ public class TradeMeta implements MetaMission {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check if mission is possible for person based on their circumstance.           
-            Settlement settlement = person.getParkedSettlement();
+            Settlement settlement = person.getSettlement();
 
             if (person.getMind().getJob() instanceof Trader) {
 

@@ -125,7 +125,7 @@ implements Serializable {
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
         // Log mission starting.
-        logger.info(description + " started by " + startingMember.getName() + " at "  + startingMember.getParkedSettlement());
+        logger.info(description + " started by " + startingMember.getName() + " at "  + startingMember.getSettlement());
 
         // Add starting member to mission.
         // 2015-11-01 Temporarily set the shift type to none during the mission
@@ -323,13 +323,13 @@ implements Serializable {
             	
             	ShiftType shift = null;
             	//System.out.println("A mission was ended. Calling removeMember() in Mission.java.   Name : " + person.getName() + "   Settlement : " + person.getSettlement());
-            	if (person.getParkedSettlement() != null) {
-            		shift = person.getParkedSettlement().getAEmptyWorkShift(-1);
+            	if (person.getSettlement() != null) {
+            		shift = person.getSettlement().getAEmptyWorkShift(-1);
             		person.setShiftType(shift);
             	}
             	else if (person.getVehicle() != null)
-            		if (person.getVehicle().getParkedSettlement() != null){
-            		shift = person.getVehicle().getParkedSettlement().getAEmptyWorkShift(-1);
+            		if (person.getVehicle().getSettlement() != null){
+            		shift = person.getVehicle().getSettlement().getAEmptyWorkShift(-1);
             		person.setShiftType(shift);
             	}
 

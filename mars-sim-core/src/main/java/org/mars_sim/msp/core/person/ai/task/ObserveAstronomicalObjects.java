@@ -112,7 +112,7 @@ implements ResearchScientificStudy, Serializable {
 
         if (LocationSituation.IN_SETTLEMENT == observer.getLocationSituation()) {
 
-            BuildingManager manager = observer.getParkedSettlement().getBuildingManager();
+            BuildingManager manager = observer.getSettlement().getBuildingManager();
             List<Building> observatoryBuildings = manager.getBuildings(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
             observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
             observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);

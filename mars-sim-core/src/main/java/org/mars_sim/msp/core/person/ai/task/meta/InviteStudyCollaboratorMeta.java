@@ -85,7 +85,7 @@ public class InviteStudyCollaboratorMeta implements MetaTask, Serializable {
 	                        // Job modifier.
 	                        if (job != null) {
 	                            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class)
-	                            		* person.getParkedSettlement().getGoodsManager().getResearchFactor();
+	                            		* person.getSettlement().getGoodsManager().getResearchFactor();
 	                        }
 
 

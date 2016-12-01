@@ -95,7 +95,7 @@ implements Serializable {
 
 		        String jobName = person.getMind().getJob().getName(person.getGender());
 		        logger.finest(jobName + " " + person.getName() + " making dessert in " + kitchen.getBuilding().getNickName() + 
-		                " at " + person.getParkedSettlement());
+		                " at " + person.getSettlement());
 	        }
 	        else {
 	            // No dessert available or enough desserts have been prepared for now.
@@ -137,7 +137,7 @@ implements Serializable {
 
 		        String jobName = RobotJob.getName(robot.getRobotType());
 		        logger.finest(jobName + " " + robot.getName() + " making dessert in " + kitchen.getBuilding().getNickName() + 
-		                " at " + robot.getParkedSettlement());
+		                " at " + robot.getSettlement());
 	        }
 	        else {
 	            // No dessert available or enough has been prepared for now.
@@ -348,7 +348,7 @@ implements Serializable {
         
         LocationSituation location = person.getLocationSituation();	  			
         if (location == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = person.getParkedSettlement().getBuildingManager();
+            BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
@@ -371,7 +371,7 @@ implements Serializable {
 
         LocationSituation location = robot.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = robot.getParkedSettlement().getBuildingManager();
+            BuildingManager manager = robot.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.PREPARING_DESSERT);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);

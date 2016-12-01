@@ -56,11 +56,11 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
         // Determine if settlement has a garage.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	
-            if (person.getParkedSettlement().getBuildingManager().getBuildings(
+            if (person.getSettlement().getBuildingManager().getBuildings(
                     BuildingFunction.GROUND_VEHICLE_MAINTENANCE).size() > 0) {
 
             	//2016-10-04 Checked for radiation events
-            	boolean[] exposed = person.getParkedSettlement().getExposed();
+            	boolean[] exposed = person.getSettlement().getExposed();
 
         		if (exposed[2]) {
         			noGo = true;// SEP can give lethal dose of radiation, out won't go outside
@@ -90,7 +90,7 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
             	
                 if (!noGo) {
 	                
-	                Settlement settlement = person.getParkedSettlement();
+	                Settlement settlement = person.getSettlement();
 	                if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity())
 	                    result *= 2D;
 	
@@ -114,7 +114,7 @@ public class MaintainGroundVehicleEVAMeta implements MetaTask, Serializable {
 	                Job job = person.getMind().getJob();
 	                if (job != null) {
 	                    result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleEVA.class)
-	                    		* person.getParkedSettlement().getGoodsManager().getTransportationFactor();
+	                    		* person.getSettlement().getGoodsManager().getTransportationFactor();
 	                }
 	
 	                // Modify if tinkering is the person's favorite activity.

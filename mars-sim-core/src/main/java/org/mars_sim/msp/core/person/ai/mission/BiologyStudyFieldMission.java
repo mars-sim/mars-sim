@@ -100,11 +100,11 @@ implements Serializable {
 			// Set mission capacity.
 			if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
 			int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(
-					startingPerson.getParkedSettlement());
+					startingPerson.getSettlement());
 			if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
 
 			// Initialize data members.
-			setStartingSettlement(startingPerson.getParkedSettlement());
+			setStartingSettlement(startingPerson.getSettlement());
 
 			// Recruit additional members to mission.
 			recruitMembersForMission(startingPerson);
@@ -559,7 +559,7 @@ implements Serializable {
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (member.getParkedSettlement() == getStartingSettlement()) {
+                if (member.getSettlement() == getStartingSettlement()) {
                     atStartingSettlement = true;
                 }
             }

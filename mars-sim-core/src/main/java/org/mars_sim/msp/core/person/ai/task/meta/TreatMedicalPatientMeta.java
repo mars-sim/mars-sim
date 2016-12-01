@@ -93,7 +93,7 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
         boolean result = false;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            result = hasNeedyMedicalAidsAtSettlement(person, person.getParkedSettlement());
+            result = hasNeedyMedicalAidsAtSettlement(person, person.getSettlement());
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             result = hasNeedyMedicalAidsInVehicle(person, person.getVehicle());
@@ -113,7 +113,7 @@ public class TreatMedicalPatientMeta implements MetaTask, Serializable {
         boolean result = false;
 
         // Check all medical care buildings.
-        Iterator<Building> i = person.getParkedSettlement().getBuildingManager().getBuildings(
+        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
                 BuildingFunction.MEDICAL_CARE).iterator();
         while (i.hasNext() && !result) {
             Building building = i.next();

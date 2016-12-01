@@ -78,7 +78,7 @@ public class AssistScientificStudyResearcherMeta implements MetaTask, Serializab
 	            Job job = person.getMind().getJob();
 	            if (job != null) {
 	                result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class)
-	                		* person.getParkedSettlement().getGoodsManager().getResearchFactor();
+	                		* person.getSettlement().getGoodsManager().getResearchFactor();
 	            }
 
 	            // Modify if research is the person's favorite activity.

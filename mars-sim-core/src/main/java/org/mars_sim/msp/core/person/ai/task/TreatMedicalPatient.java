@@ -158,7 +158,7 @@ public class TreatMedicalPatient extends Task implements Serializable {
         List<MedicalAid> goodMedicalAids = new ArrayList<MedicalAid>();
         
         // Check all medical care buildings.
-        Iterator<Building> i = person.getParkedSettlement().getBuildingManager().getBuildings(
+        Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
                 BuildingFunction.MEDICAL_CARE).iterator();
         while (i.hasNext()) {
             Building building = i.next();

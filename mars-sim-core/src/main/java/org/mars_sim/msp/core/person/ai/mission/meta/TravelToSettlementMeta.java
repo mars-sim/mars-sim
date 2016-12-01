@@ -56,7 +56,7 @@ public class TravelToSettlementMeta implements MetaMission {
 
             // Check if mission is possible for person based on their
             // circumstance.
-            Settlement settlement = person.getParkedSettlement();
+            Settlement settlement = person.getSettlement();
 
             getMission(settlement, person);
             

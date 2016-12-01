@@ -229,10 +229,10 @@ implements Serializable {
 
         if (person != null)
         	salvageMissions = getAllMissionsNeedingAssistance(
-                person.getParkedSettlement());
+                person.getSettlement());
         else if (robot != null)
         	salvageMissions = getAllMissionsNeedingAssistance(
-                robot.getParkedSettlement());
+                robot.getSettlement());
 
         if (salvageMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(salvageMissions.size() - 1);

@@ -111,7 +111,7 @@ implements Serializable {
 	        	// display the msg when no ingredients are detected at first and after n warnings
 	        	if (counter % 30 == 0 && counter < 150) {
 	        		logger.severe("Warning: cannot cook meals in "
-	            		+ person.getParkedSettlement().getName()
+	            		+ person.getSettlement().getName()
 	            		+ " because none of the ingredients of a meal are available ");
 	        	}
 
@@ -138,7 +138,7 @@ implements Serializable {
 
 				String jobName = person.getMind().getJob().getName(person.getGender());
 				logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getNickName() +
-				    	                " in " + person.getParkedSettlement());
+				    	                " in " + person.getSettlement());
 		    }
 	    }
 	    else {
@@ -181,7 +181,7 @@ implements Serializable {
 	        	counter++;
 	        	if (counter % 30 == 0 && counter < 150)
 	        		logger.severe("Warning: cannot cook meals in "
-	            		+ robot.getParkedSettlement().getName()
+	            		+ robot.getSettlement().getName()
 	            		+ " because none of the ingredients of any meals are available ");
 
 	            // 2015-01-15 Added solElapsed
@@ -208,7 +208,7 @@ implements Serializable {
 
 				String jobName = RobotJob.getName(robot.getRobotType());
 				logger.finest(jobName + " " + robot.getName() + " cooking at " + kitchen.getBuilding().getNickName() +
-				    	                " in " + robot.getParkedSettlement());
+				    	                " in " + robot.getSettlement());
 
 		    }
 	    }
@@ -487,7 +487,7 @@ implements Serializable {
 
         LocationSituation location = person.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = person.getParkedSettlement().getBuildingManager();
+            BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
@@ -510,7 +510,7 @@ implements Serializable {
 
         LocationSituation location = robot.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = robot.getParkedSettlement().getBuildingManager();
+            BuildingManager manager = robot.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);

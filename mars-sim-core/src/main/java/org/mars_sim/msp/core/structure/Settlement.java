@@ -2012,7 +2012,7 @@ implements Serializable, LifeSupportType, Objective {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !this.equals(vehicle.getParkedSettlement()))
+				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
 					result.add(vehicle);
 			}
 		}
@@ -2036,7 +2036,7 @@ implements Serializable, LifeSupportType, Objective {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !this.equals(vehicle.getParkedSettlement()))
+				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
 					result.add(vehicle);
 			}
 		}

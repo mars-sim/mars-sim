@@ -403,11 +403,11 @@ implements ActionListener {
 
         			        			
         			if (mainScene != null) {
-        				mainScene.setSettlement(p.getParkedSettlement());
+        				mainScene.setSettlement(p.getSettlement());
         			}
         			else {
             			desktop.openToolWindow(SettlementWindow.NAME);
-        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getParkedSettlement());
+        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
         			}
         			
         			Building b = p.getBuildingLocation();
@@ -423,7 +423,7 @@ implements ActionListener {
         		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = p.getVehicle();
-        			if (vv.getParkedSettlement() == null) {
+        			if (vv.getSettlement() == null) {
         				// out there on a mission
         				desktop.centerMapGlobe(p.getCoordinates());
         			}
@@ -431,7 +431,7 @@ implements ActionListener {
         				// still parked inside a garage or within the premise of a settlement
 	        			desktop.openToolWindow(SettlementWindow.NAME);
 	        			//System.out.println("Just open Settlement Map Tool");
-	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getParkedSettlement());
+	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -451,7 +451,7 @@ implements ActionListener {
         				// he's stepped outside the settlement temporally
                			desktop.openToolWindow(SettlementWindow.NAME);
             			//System.out.println("Just open Settlement Map Tool");
-             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getParkedSettlement());
+             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
 
         				double xLoc = p.getXLocation();
             			double yLoc = p.getYLocation();
@@ -474,7 +474,7 @@ implements ActionListener {
         		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         			desktop.openToolWindow(SettlementWindow.NAME);
         			//System.out.println("Just open Settlement Map Tool");
-        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getParkedSettlement());
+        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
 
         			Building b = r.getBuildingLocation();
         			double xLoc = b.getXLocation();
@@ -489,7 +489,7 @@ implements ActionListener {
         		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
         			Vehicle vv = r.getVehicle();
-        			if (vv.getParkedSettlement() == null) {
+        			if (vv.getSettlement() == null) {
         				// out there on a mission
         				desktop.centerMapGlobe(r.getCoordinates());
         			}
@@ -497,7 +497,7 @@ implements ActionListener {
         				// still parked inside a garage or within the premise of a settlement
 	        			desktop.openToolWindow(SettlementWindow.NAME);
 	        			//System.out.println("Just open Settlement Map Tool");
-	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getParkedSettlement());
+	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -517,7 +517,7 @@ implements ActionListener {
         				// he's stepped outside the settlement temporally
                			desktop.openToolWindow(SettlementWindow.NAME);
             			//System.out.println("Just open Settlement Map Tool");
-             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getParkedSettlement());
+             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
 
         				double xLoc = r.getXLocation();
             			double yLoc = r.getYLocation();
@@ -535,11 +535,11 @@ implements ActionListener {
 
         	} else if (unit instanceof Vehicle) {
         		v = (Vehicle) unit;
-          		if (v.getParkedSettlement() != null) {
+          		if (v.getSettlement() != null) {
         			desktop.openToolWindow(SettlementWindow.NAME);
         			//System.out.println("Just open Settlement Map Tool");
         		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
-        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getParkedSettlement());
+        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getSettlement());
 
         			double xLoc = v.getXLocation();
         			double yLoc = v.getYLocation();
@@ -677,7 +677,7 @@ implements ActionListener {
     		
     		else if (p.getLocationSituation() == LocationSituation.IN_VEHICLE) {
     			Vehicle vehicle = (Vehicle) unit.getContainerUnit();
-    			if (vehicle.getParkedSettlement() != null) {
+    			if (vehicle.getSettlement() != null) {
     				Building building = BuildingManager.getBuilding(vehicle);
 
     				if (building == null) {
@@ -693,7 +693,7 @@ implements ActionListener {
         				// vehicle.getSettlement() <==> getTopContainerUnit()
          				// e.g. " in LUV1 inside Garage 1 in Alpha Base;
         				// vehicle = containerCache
-               			loc = " in " + vehicle + " inside " + p.getBuildingLocation() + " in " + vehicle.getParkedSettlement();
+               			loc = " in " + vehicle + " inside " + p.getBuildingLocation() + " in " + vehicle.getSettlement();
     				}
 
     			} else {
@@ -724,7 +724,7 @@ implements ActionListener {
     		}
 
     		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-     			if (r.getParkedSettlement() != null)
+     			if (r.getSettlement() != null)
     				// case C
            			loc = " in " + containerCache + " inside a garage";
     			else {
@@ -758,7 +758,7 @@ implements ActionListener {
     			loc = " decommmissed ";// + r.getBuriedSettlement().getName();
     		
     		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-     			if (r.getParkedSettlement() != null)
+     			if (r.getSettlement() != null)
     				// case C
            			loc = " in " + containerCache + " inside a garage";
     			else {
@@ -786,7 +786,7 @@ implements ActionListener {
     		}
     		
        		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-     			if (e.getParkedSettlement() != null)
+     			if (e.getSettlement() != null)
     				// case C
            			loc = " in " + containerCache + " inside a garage";
     			else {
@@ -820,7 +820,7 @@ implements ActionListener {
     	else if (unit instanceof Vehicle) {
     		Vehicle v = (Vehicle) unit;
 			//Settlement settlement = (Settlement) v.getContainerUnit();
-			Settlement s = v.getParkedSettlement();
+			Settlement s = v.getSettlement();
    			//System.out.println(v.getName() + " is in " + settlement.getName());
    			//Unit tc = v.getTopContainerUnit();
 			//Unit c = v.getContainerUnit();

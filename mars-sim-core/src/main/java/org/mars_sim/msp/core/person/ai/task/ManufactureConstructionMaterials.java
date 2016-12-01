@@ -80,9 +80,9 @@ implements Serializable {
                 10D + RandomUtil.getRandomDouble(50D));
 
         // Initialize data members
-        if (person.getParkedSettlement() != null) {
+        if (person.getSettlement() != null) {
             setDescription(Msg.getString("Task.description.manufactureConstructionMaterials.detail",
-                    person.getParkedSettlement().getName())); //$NON-NLS-1$
+                    person.getSettlement().getName())); //$NON-NLS-1$
         }
         else {
             endTask();
@@ -125,7 +125,7 @@ implements Serializable {
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = person.getParkedSettlement()
+            BuildingManager manager = person.getSettlement()
                     .getBuildingManager();
             List<Building> manufacturingBuildings = manager
                     .getBuildings(BuildingFunction.MANUFACTURE);
@@ -484,7 +484,7 @@ implements Serializable {
                     workshop.endManufacturingProcess(process, false);
                 }
             } else {
-                if (!person.getParkedSettlement().getManufactureOverride()) {
+                if (!person.getSettlement().getManufactureOverride()) {
                     process = createNewManufactureProcess();
                 }
                 if (process == null) {
@@ -571,7 +571,7 @@ implements Serializable {
                 if (ManufactureUtil.canProcessBeStarted(processInfo, workshop)
                         && producesConstructionMaterials(processInfo)) {
                     double processValue = ManufactureUtil.getManufactureProcessValue(
-                            processInfo, person.getParkedSettlement());
+                            processInfo, person.getSettlement());
                     if (processValue > 0D) {
                         processProbMap.put(processInfo, processValue);
                     }

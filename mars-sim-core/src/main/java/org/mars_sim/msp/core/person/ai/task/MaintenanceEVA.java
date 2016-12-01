@@ -72,7 +72,7 @@ implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-		settlement = person.getParkedSettlement();
+		settlement = person.getSettlement();
 
 		try {
 			entity = getMaintenanceMalfunctionable();

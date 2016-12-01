@@ -981,7 +981,7 @@ implements Serializable, Comparable<Unit> {
 		return null;
 	}
 
-	public Settlement getParkedSettlement(){
+	public Settlement getSettlement(){
 		return null;
 	}
 

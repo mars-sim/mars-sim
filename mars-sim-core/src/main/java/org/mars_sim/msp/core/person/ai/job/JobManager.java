@@ -189,7 +189,7 @@ public final class JobManager implements Serializable {
     		// Determine person's associated settlement.
     		Settlement settlement = null;
     		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
-    			settlement = person.getParkedSettlement();
+    			settlement = person.getSettlement();
     		else if (person.getMind().hasActiveMission())
     			settlement = person.getMind().getMission().getAssociatedSettlement();
 
@@ -237,7 +237,7 @@ public final class JobManager implements Serializable {
 			// Determine robot's associated settlement.
 			Settlement settlement = null;
 			if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
-				settlement = robot.getParkedSettlement();
+				settlement = robot.getSettlement();
 			else if (robot.getBotMind().hasActiveMission())
 				settlement = robot.getBotMind().getMission().getAssociatedSettlement();
 

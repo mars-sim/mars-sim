@@ -598,7 +598,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      *  Returns null if vehicle is not currently parked at a settlement.
      *  @return the settlement the vehicle is parked at
      */
-    public Settlement getParkedSettlement() {
+    public Settlement getSettlement() {
 	    Unit c = containerUnit;
 
 	    if ((c != null) && (c instanceof Settlement)) 
@@ -775,7 +775,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public void addToTrail(Coordinates location) {
 	    
-        if (getParkedSettlement() != null) {
+        if (getSettlement() != null) {
             if (trail.size() > 0) trail.clear();
 	    }
 	    else if (trail.size() > 0) {

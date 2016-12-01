@@ -90,7 +90,7 @@ implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             Set<Person> pool = new HashSet<Person>();
-            Settlement s = person.getParkedSettlement();
+            Settlement s = person.getSettlement();
             
             Collection<Person> p_same_bldg_talking = s.getChattingPeople(person, false, true, false);        	          
             pool.addAll(p_same_bldg_talking);

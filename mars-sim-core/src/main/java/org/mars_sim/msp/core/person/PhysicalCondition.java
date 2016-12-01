@@ -826,7 +826,7 @@ implements Serializable {
             }
             
             //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
-            if (RandomUtil.lessThanRandPercent(chance / 5D * resilienceModifier)) {
+            if (RandomUtil.lessThanRandPercent(chance / 10D * resilienceModifier)) {
 /*            	
                	if (fatigue < 200) 
             		fatigue = fatigue * 4;

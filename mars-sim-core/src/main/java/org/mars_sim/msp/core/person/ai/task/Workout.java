@@ -134,7 +134,7 @@ implements Serializable {
 
         // If person is in a settlement, try to find a building with a gym.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager buildingManager = person.getParkedSettlement()
+            BuildingManager buildingManager = person.getSettlement()
                     .getBuildingManager();
             List<Building> gyms = buildingManager.getBuildings(BuildingFunction.EXERCISE);
             gyms = BuildingManager.getNonMalfunctioningBuildings(gyms);
