@@ -104,6 +104,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.beans.value.ChangeListener;
 import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.event.EventHandler;
 import javafx.scene.input.ScrollEvent;
 import javafx.collections.ObservableList;
@@ -224,8 +225,15 @@ public class MainScene {
 	public static final int SAVING = 1;
 	public static final int PAUSED = 2; 
 	
+	public static final int DEFAULT_WIDTH = 1366;
+	public static final int DEFAULT_HEIGHT = 768;
+	
 	private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
+	private static final String EARTH_DATE_TIME = "EARTH  :  ";
+	private static final String MARS_DATE_TIME = "MARS  :  ";
+	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
+	public static final String UMST = " (UMST)";
 	
 	private static int theme = 7; // 6 is snow blue; 7 is the mud orange with nimrod
 
@@ -246,8 +254,8 @@ public class MainScene {
 	private boolean onMenuBarCache = false;
 	private boolean isFullScreenCache = false;
 	
-	private DoubleProperty sceneWidth = new SimpleDoubleProperty(1366);//1366-40;
-	private DoubleProperty sceneHeight = new SimpleDoubleProperty(768); //768-40;
+	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
+	private DoubleProperty sceneHeight;// = new SimpleDoubleProperty(DEFAULt_HEIGHT); //768-40;
 
 	private volatile transient ExecutorService mainSceneExecutor; 
     	
@@ -256,8 +264,8 @@ public class MainScene {
 	private String dir = null;
 	private String oldLastSaveStamp = null;
 
-	private StringProperty timeStamp;
-    private final BooleanProperty hideProperty = new SimpleBooleanProperty();
+	//private StringProperty timeStamp;
+    //private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
 	private Pane root;
 	private StackPane settlementBox, chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
@@ -271,13 +279,13 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
-	private Label timeLabel, lastSaveLabel;
+	private Label earthTimeLabel, marsTimeLabel, lastSaveLabel;
 	private Text memUsedText;
 	
 	private JFXComboBox<Settlement> sBox;
-	private JFXBadge badge1;
+	private JFXBadge badgeIcon;
 	private JFXSnackbar snackbar;
-	private JFXToggleButton cacheButton;
+	private JFXToggleButton cacheButton, calendarButton;
 	private JFXSlider zoomSlider;
 	private JFXButton miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn; //menubarButton,
 	private JFXPopup flyout;
@@ -287,7 +295,7 @@ public class MainScene {
 	//private StatusBar statusBar;
 	//private Flyout flyout;
 	//private CheckComboBox<String> mapLabelBox;
-	private HBox timeBar;
+	private HBox lastSaveBar, earthTimeBar, marsTimeBar;
 	private VBox mapLabelBox;
 	private ChatBox chatBox;
 	//private DndTabPane dndTabPane;
@@ -315,6 +323,7 @@ public class MainScene {
     private Simulation sim = Simulation.instance();
     private MasterClock masterClock = sim.getMasterClock();
 	private EarthClock earthClock;
+	private MarsClock marsClock;
 	
 	private SettlementWindow settlementWindow; 
 	private SettlementMapPanel mapPanel;
@@ -332,6 +341,9 @@ public class MainScene {
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
 
+		sceneWidth = new SimpleDoubleProperty(DEFAULT_WIDTH);
+		sceneHeight = new SimpleDoubleProperty(DEFAULT_HEIGHT);
+		
 		//logger.info("OS is " + OS);
 		stage.setResizable(true);
 		stage.setMinWidth(sceneWidth.get());//1024);
@@ -613,7 +625,9 @@ public class MainScene {
         //EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(), chatBox);		
 		// Create ControlFX's StatusBar
 		//statusBar = createStatusBar();
-        createTimeBar();
+        createLastSaveBar();
+        
+        createEarthTimeBar();
         // Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
 		// Create Snackbar
@@ -632,8 +646,8 @@ public class MainScene {
         AnchorPane.setRightAnchor(jfxTabPane, 0.0);
         AnchorPane.setTopAnchor(jfxTabPane, 0.0);
 
-        AnchorPane.setRightAnchor(badge1, 5.0);
-        AnchorPane.setTopAnchor(badge1, 0.0);
+        AnchorPane.setRightAnchor(badgeIcon, 5.0);
+        AnchorPane.setTopAnchor(badgeIcon, 0.0);
 
         AnchorPane.setRightAnchor(marsNetButton, 45.0);
         AnchorPane.setTopAnchor(marsNetButton, -3.0);       
@@ -644,20 +658,19 @@ public class MainScene {
         AnchorPane.setRightAnchor(miniMapBtn, 125.0);
         AnchorPane.setTopAnchor(miniMapBtn, -3.0); 
 
-        AnchorPane.setRightAnchor(timeLabel, 140.0);
-        AnchorPane.setTopAnchor(timeLabel, -2.0);
+        AnchorPane.setRightAnchor(lastSaveBar, 140.0);
+        AnchorPane.setTopAnchor(lastSaveBar, 0.0);
 
-        AnchorPane.setRightAnchor(lastSaveLabel, 460.0);
-        AnchorPane.setTopAnchor(lastSaveLabel, -2.0);
+        AnchorPane.setLeftAnchor(earthTimeBar, sceneWidth.get()/2D);// - earthTimeBar.getPrefWidth());
+        AnchorPane.setTopAnchor(earthTimeBar, 35.0);
+
+        AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
+        AnchorPane.setTopAnchor(marsTimeBar, 35.0);
  
-        anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, badge1, timeLabel, lastSaveLabel);//borderPane, timeBar, snackbar
-/*
-		flowPane = new FlowPane();
-		flowPane.setPrefSize(500, 40);
-		flowPane.getChildren().addAll(snackbar);
-*/
-		root.getChildren().addAll(anchorDesktopPane);//, flowPane);
-		//root.setStyle("-fx-background-color: transparent;");
+        anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, badgeIcon, lastSaveBar, earthTimeBar, marsTimeBar);//borderPane, timeBar, snackbar
+        
+		root.getChildren().addAll(anchorDesktopPane);
+		
     	scene = new Scene(root, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
 
     	//scene.heightProperty().addListener((observable, oldValue, newValue) -> {
@@ -699,16 +712,16 @@ public class MainScene {
 
 		Icon icon = new Icon("INBOX");
 		icon.setPadding(new Insets(10));
-		badge1 = new JFXBadge(icon);
-		badge1.getStylesheets().clear();
+		badgeIcon = new JFXBadge(icon);
+		badgeIcon.getStylesheets().clear();
 		//badge1.getStylesheets().add(getClass().getResource("/css/jfoenix-design.css").toExternalForm());
 		//badge1.getStylesheets().add(getClass().getResource("/css/jfoenix-components.css").toExternalForm());
 		//badge1.getStyleClass().add("icons-badge");
 		//badge1.setStyle("icons-badge");
-		badge1.setText("0");
+		badgeIcon.setText("0");
 	
-		badge1.setOnMouseClicked((e) -> {
-			int value = Integer.parseInt(badge1.getText());
+		badgeIcon.setOnMouseClicked((e) -> {
+			int value = Integer.parseInt(badgeIcon.getText());
 			if (e.getButton() == MouseButton.PRIMARY) {
 				value++;
 			} else if (e.getButton() == MouseButton.SECONDARY) {
@@ -717,11 +730,11 @@ public class MainScene {
 			}
 			
 			if (value == 0) {
-				badge1.setEnabled(false);
+				badgeIcon.setEnabled(false);
 			} else {
-				badge1.setEnabled(true);
+				badgeIcon.setEnabled(true);
 			}
-			badge1.setText(String.valueOf(value));
+			badgeIcon.setText(String.valueOf(value));
 			
 			// trigger snackbar
 			if (count++%2==0){
@@ -732,11 +745,68 @@ public class MainScene {
 		});	
 	}
 	
+	public void createEarthTimeBar() {
+		earthTimeBar = new HBox();
+		earthTimeBar.setMaxWidth(Double.MAX_VALUE);
+		earthTimeBar.setMinWidth(220);
+		earthTimeBar.setPrefSize(220, 32);
+	
+		//calendarButton = new JFXToggleButton();
+		
+		if (masterClock == null) {
+			masterClock = Simulation.instance().getMasterClock();
+		}
+		
+		if (earthClock == null) {
+			earthClock = masterClock.getEarthClock();
+		}
+
+		earthTimeLabel = new Label();
+		earthTimeLabel.setId("rich-blue");
+		//earthTimeLabel.setMaxWidth(Double.MAX_VALUE);
+		//earthTimeLabel.setMinWidth(180);
+		//earthTimeLabel.setPrefSize(180, 30);
+		earthTimeLabel.setTextAlignment(TextAlignment.CENTER);
+		Tooltip t = new Tooltip("Earth Date/Time");
+		earthTimeLabel.setTooltip(t);
+		setQuickToolTip(earthTimeLabel, t);
+
+		earthTimeBar.getChildren().add(earthTimeLabel);
+	}
+	
+	
+	public void createMarsTimeBar() {
+		marsTimeBar = new HBox();
+		marsTimeBar.setMaxWidth(Double.MAX_VALUE);
+		marsTimeBar.setMinWidth(223);
+		marsTimeBar.setPrefSize(223, 24);
+	
+		if (masterClock == null) {
+			masterClock = Simulation.instance().getMasterClock();
+		}
+		
+		if (marsClock == null) {
+			marsClock = masterClock.getMarsClock();
+		}
+
+		marsTimeLabel = new Label();
+		marsTimeLabel.setId("rich-orange");
+		Tooltip t = new Tooltip("Mars Date/Time");
+		marsTimeLabel.setTooltip(t);
+		setQuickToolTip(marsTimeLabel, t);
+
+		marsTimeLabel.setTextAlignment(TextAlignment.CENTER);
+		
+		marsTimeBar.getChildren().add(marsTimeLabel);
+	}
 	
 	public void createFXButtons() {
 		cacheButton = new JFXToggleButton();
 		cacheButton.setText("Cache Off");
 		cacheButton.setSelected(false);
+		Tooltip t = new Tooltip("Caching Settlement Map even after switching to another tab");
+		cacheButton.setTooltip(t);
+		setQuickToolTip(cacheButton, t);
 		cacheButton.setOnAction(e -> {
 			if (cacheButton.isSelected()) {
 				cacheButton.setText("Cache On");
@@ -749,21 +819,27 @@ public class MainScene {
 		
 		rotateCWBtn = new JFXButton();
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw")))));	 //$NON-NLS-1$
-		rotateCWBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.clockwise"))); //$NON-NLS-1$
+		Tooltip t0 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
+		rotateCWBtn.setTooltip(t0);
+		setQuickToolTip(rotateCWBtn, t0);
 		rotateCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);	
 		});
 		
 		rotateCCWBtn = new JFXButton();
 		rotateCCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw")))));	//$NON-NLS-1$ 
-		rotateCCWBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"))); //$NON-NLS-1$
+		Tooltip t1 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
+		rotateCCWBtn.setTooltip(t1);
+		setQuickToolTip(rotateCCWBtn, t1);
 		rotateCCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);	
 		});
 		
 		recenterBtn = new JFXButton();
 		recenterBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$	
-		recenterBtn.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.recenter"))); //$NON-NLS-1$
+		Tooltip t2 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
+		recenterBtn.setTooltip(t2);
+		setQuickToolTip(recenterBtn, t2);
 		recenterBtn.setOnAction(e -> {
 			mapPanel.reCenter();
 			zoomSlider.setValue(0);
@@ -789,7 +865,9 @@ public class MainScene {
 		zoomSlider.setBlockIncrement(1);
 		zoomSlider.setOrientation(Orientation.VERTICAL);
 		zoomSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
-		zoomSlider.setTooltip(new Tooltip (Msg.getString("SettlementTransparentPanel.tooltip.zoom"))); //$NON-NLS-1$	
+		Tooltip t2 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
+		zoomSlider.setTooltip(t2);
+		setQuickToolTip(zoomSlider, t2);
 		
 		// detect dragging on zoom scroll bar
         zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -816,7 +894,9 @@ public class MainScene {
 		//sBox.setAlignment(Pos.CENTER_RIGHT);
 		//JFXListView<Settlement> list = new JFXListView<Settlement>();	
 		sBox.getStyleClass().add("jfx-combo-box");
-		sBox.setTooltip(new Tooltip(Msg.getString("SettlementWindow.tooltip.selectSettlement"))); //$NON-NLS-1$
+		Tooltip t2 = new Tooltip(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
+		sBox.setTooltip(t2);
+		setQuickToolTip(sBox, t2);
 		//ObservableList<Settlement> names = sim.getUnitManager().getSettlementOList();		
 		sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
 		sBox.setPromptText("Select a settlement to view");
@@ -968,7 +1048,7 @@ public class MainScene {
 				desktop.openToolWindow(NavigatorWindow.NAME);
 				minimapNode.setContent(navWin); 
 		        AnchorPane.setLeftAnchor(minimapNodePane, 3.0);
-		        AnchorPane.setTopAnchor(minimapNodePane, 3.0); // 45.0  
+		        AnchorPane.setTopAnchor(minimapNodePane, 0.0); // 45.0  
 		        anchorMapTabPane.getChildren().addAll(minimapNodePane);
 		        minimapNode.toFront();
 
@@ -984,6 +1064,10 @@ public class MainScene {
 		mapNodePane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 		
+		createEarthTimeBar();
+
+		createMarsTimeBar();
+
 		createFXButtons();
 		
 		createFXSettlementComboBox();
@@ -1039,7 +1123,6 @@ public class MainScene {
 		
  
 		// set up monitor tab
-		
 		MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
 		monNode = new SwingNode();		
 	    JDesktopPane d0 = desktops.get(0);
@@ -1054,7 +1137,6 @@ public class MainScene {
 		
 		
 		// set up mission tab
-		
 		MissionWindow missionWin = (MissionWindow) desktop.getToolWindow(MissionWindow.NAME);
 		missionNode = new SwingNode();
 	    JDesktopPane d1 = desktops.get(1);
@@ -1069,7 +1151,6 @@ public class MainScene {
 
 		
 		// set up resupply tab
-		
 		ResupplyWindow resupplyWin = (ResupplyWindow) desktop.getToolWindow(ResupplyWindow.NAME);
 		resupplyNode = new SwingNode();
 	    JDesktopPane d2 = desktops.get(2);
@@ -1084,7 +1165,6 @@ public class MainScene {
 		
 		
 		// set up science tab
-		
 		ScienceWindow sciWin = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
 		sciNode = new SwingNode();
 		// Note: don't need to create a DesktopPane for scienceWin
@@ -1101,7 +1181,6 @@ public class MainScene {
 		
 		
 		// set up help tab
-		
 		GuideWindow guideWin = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 		guideNode = new SwingNode();
 		guideNode.setContent(guideWin); 
@@ -1222,7 +1301,7 @@ public class MainScene {
 		mapNode.setContent(settlementWindow); 
 
         AnchorPane.setRightAnchor(mapNodePane, 0.0);
-        AnchorPane.setTopAnchor(mapNodePane, 3.0);   
+        AnchorPane.setTopAnchor(mapNodePane, 0.0);   
 
         AnchorPane.setRightAnchor(zoomSlider, 55.0);
         AnchorPane.setTopAnchor(zoomSlider, 350.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);    
@@ -1293,7 +1372,7 @@ public class MainScene {
 	        }			        
 	    }
 	}
-	
+
 	public void closeMaps() {
 		if (!cacheButton.isSelected()) {
 			//System.out.println("closing both maps...");
@@ -1434,9 +1513,12 @@ public class MainScene {
 
 		jfxTabPane.getStylesheets().clear();
 		
-		timeLabel.getStylesheets().clear();
-		timeLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
-		
+		earthTimeLabel.getStylesheets().clear();
+		earthTimeLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+
+		marsTimeLabel.getStylesheets().clear();
+		marsTimeLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+	
 		lastSaveLabel.getStylesheets().clear();
 		lastSaveLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		
@@ -1493,7 +1575,7 @@ public class MainScene {
 	 */
 	public void startEarthTimer() {
 		// Set up earth time text update
-		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeBar()));
+		timeline = new Timeline(new KeyFrame(Duration.millis(TIME_DELAY), ae -> updateTimeLabels()));
 		// Note: Infinite Timeline might result in a memory leak if not stopped properly.
 		// All the objects with animated properties would not be garbage collected.
 		timeline.setCycleCount(javafx.animation.Animation.INDEFINITE);
@@ -1598,50 +1680,32 @@ public class MainScene {
 	/*
 	 * Creates the time bar for MainScene
 	 */
-	public void createTimeBar() {
-		timeBar = new HBox();
-		timeBar.setPadding(new Insets(0,20,0,20));
+	public void createLastSaveBar() {
+		lastSaveBar = new HBox();
+		lastSaveBar.setPadding(new Insets(5,20,5,20));
 		
 		//2016-09-15 Added oldLastSaveStamp
-		oldLastSaveStamp = sim.instance().getLastSave();
+		oldLastSaveStamp = sim.getLastSave();
 		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
 		
 		lastSaveLabel = new Label();
 		lastSaveLabel.setMaxWidth(Double.MAX_VALUE);
 		lastSaveLabel.setMinWidth(250);
-		lastSaveLabel.setPrefSize(250, 40);
+		lastSaveLabel.setPrefSize(250, 25);
 		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
-		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + " ");
-		//lastSaveText.setStyle("-fx-text-inner-color: orange;");
-		lastSaveLabel.setTooltip(new Tooltip ("Time last saved/autosaved on your machine"));
-
-		timeBar.getChildren().add(lastSaveLabel);		
+		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
+		Tooltip t = new Tooltip ("The very last time the sim was saved/autosaved on your machine");
+		lastSaveLabel.setTooltip(t);
+		setQuickToolTip(lastSaveLabel, t);
+		
+		lastSaveBar.getChildren().add(lastSaveLabel);		
 /*
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
 		memTotal = (int) Math.round(Runtime.getRuntime().totalMemory()) / 1000000;
 		memUsed = memTotal - memFree;
 */		
-		if (masterClock == null) {
-			masterClock = Simulation.instance().getMasterClock();
-		}
-		
-		if (earthClock == null) {
-			earthClock = masterClock.getEarthClock();
-		}
 
-		timeLabel = new Label();
-		timeLabel.setMaxWidth(Double.MAX_VALUE);
-		timeLabel.setMinWidth(300);
-		timeLabel.setPrefSize(300, 40);
-		timeLabel.setTextAlignment(TextAlignment.RIGHT);
-		timeLabel.setText("  " + timeStamp + "  ");
-		//timeText.setStyle("-fx-text-inner-color: orange;");
-		timeLabel.setTooltip(new Tooltip ("Earth Date/Time"));
-
-		timeBar.getChildren().add(timeLabel);		
-
-		//return timeBar;
 	}
 	
 	/*
@@ -1725,24 +1789,22 @@ public class MainScene {
 
 
 	/*
-	 * Updates the last saved and time labels in the time bar
+	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
 	 */
-	public void updateTimeBar() {
- 
-		String t = earthClock.getTimeStamp2();
+	public void updateTimeLabels() {
+		//String t = earthClock.getTimeStamp2();
 		// Check if new simulation is being created or loaded from file.
-		if (sim.isUpdating() || masterClock.isPaused()) {
-			timeLabel.setText(" " + t + " " + PAUSE_MSG);		
-		}	
-		else { 	
-			timeLabel.setText(" " + t + " ");
-			
-			//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
-			String newLastSaveStamp = sim.instance().getLastSave();
-			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
-				oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
-				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp + " ");
-			}
+		//if (sim.isUpdating() || masterClock.isPaused()) {
+		//	earthTimeLabel.setText(" " + t + " " + PAUSE_MSG);		
+		marsTimeLabel.setText(MARS_DATE_TIME + marsClock.getDateString() + " " + marsClock.getTrucatedTimeString() + UMST);		
+		earthTimeLabel.setText(EARTH_DATE_TIME + earthClock.getTimeStamp2());
+		
+		//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
+		String newLastSaveStamp = sim.getLastSave();
+		if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
+			oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
+			lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
+			//System.out.print("updated last save time stamp");
 		}
 	}
 
@@ -1837,6 +1899,7 @@ public class MainScene {
         new Thread(task).start();
 
 		endPause(previous);
+		
 	}
 
 	/**
@@ -2441,15 +2504,44 @@ public class MainScene {
 		snackbar.fireEvent(new SnackbarEvent(msg, "UNDO",3000,(b)->{}));
 	}
 	
+
+	/**
+	 * Speeds up the time it takes to display JavaFX's tooltip 
+	 * @param node
+	 * @param tooltip
+	 */
+	@SuppressWarnings("restriction")
+	public void setQuickToolTip(Node n, Tooltip tt) {
+		
+		tt.getStyleClass().add("ttip");
+
+		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			
+		    @Override
+		    public void handle(MouseEvent event) {
+		        Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); //I position the tooltip at bottom right of the node (see below for explanation)
+		        tt.show(n, p.getX(), p.getY());
+		    }
+		});
+		n.setOnMouseExited(new EventHandler<MouseEvent>() {
+		 
+		    @Override
+		    public void handle(MouseEvent event) {
+		        tt.hide();
+		    }
+		});
+		
+	}
+	
 	public void destroy() {
 		quote = null;
 		messagePopup = null;		
 		topFlapBar = null;	
-	    timeStamp = null;
+	    //timeStamp = null;
 	    memUsedText = null;
 		//memBtn = null;
 		//clkBtn = null;	
-		timeBar = null;
+		lastSaveBar = null;
 		//statusBar = null;
 		flyout = null;
 		marsNetButton = null;

@@ -85,7 +85,7 @@ extends ToolWindow {
 	
 	public static final String CSS_FILE = "/fxui/css/nimrodskin.css";
 	
-	public static final String MILLISOLS_UMST = " millisols (UMST) ";
+	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
 	public static final int TIME_DELAY = 200;
 
@@ -327,6 +327,7 @@ extends ToolWindow {
 		//statusBar.getLeftItems().add(yLabel);
 		//statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));	
 
+/*		
     	marsDateString = marsClock.getDateString();
     	marsTimeString = marsClock.getTrucatedTimeString();
     	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0
@@ -341,7 +342,8 @@ extends ToolWindow {
 		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 		statusBar.getRightItems().add(timeLabel);
 		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
-	
+*/
+		
 		Color c = Color.rgb(156,77,0);
 		//String c = orange.toString().replace("0x", "");
 		//System.out.println("c is " + c.toString().replace("0x", "")); // 9c4d00ff
@@ -390,7 +392,7 @@ extends ToolWindow {
 			widthCache = width.get();
 			heightCache = height.get();
 		}
-		
+	/*	
 		String d = marsClock.getDateString();
 		String t = marsClock.getTrucatedTimeString();
 		
@@ -404,7 +406,7 @@ extends ToolWindow {
 			marsDateString = d;
 			marsTimeString = t;
 		}
-		
+	*/	
     	int s = marsClock.getSolElapsedFromStart();
     	int p = mapPanel.getSettlement().getAllAssociatedPeople().size();
     	int c = mapPanel.getSettlement().getPopulationCapacity();

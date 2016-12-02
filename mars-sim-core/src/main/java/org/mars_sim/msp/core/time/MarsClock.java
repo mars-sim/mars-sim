@@ -410,22 +410,19 @@ public class MarsClock implements Serializable {
 
     
     /** Returns the current time string.
-     *  ex. "056"
+     *  ex. "0056"
      */
 	public String getTrucatedTimeString() {
         StringBuilder b = new StringBuilder();
         int tb = (int)millisol;
-//        String result = "" + tb;
         b.append(tb);
-        if (millisol < 100D) {
+        if (millisol > 100D) 
             b.insert(0,"0");
-//            result = "0" + result;
-        }
-        if (millisol < 10D) {
-            b.insert(0,"0");
-//            result = "0" + result;
-        }
+        else if (millisol > 10D)
+            b.insert(0,"00");
 
+        else 
+        	b.insert(0,"0");
         return b.toString();
 	}
 	

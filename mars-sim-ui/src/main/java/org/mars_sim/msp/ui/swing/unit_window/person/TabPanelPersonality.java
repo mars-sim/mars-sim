@@ -159,7 +159,7 @@ extends TabPanel {
 				label0.setText(Msg.getString("TabPanelPersonality.MBTI") + " "); //$NON-NLS-1$
 				Tooltip i0 = new Tooltip("Myers-Briggs Type Indicator (MBTI)");
 				label0.setTooltip(i0);
-				setTT(label0, i0);
+				setQuickToolTip(label0, i0);
 				
 				// Prepare personality label
 				String personality = person.getMind().getMBTI().getTypeString();
@@ -200,7 +200,7 @@ extends TabPanel {
 										+ type4 );
 				
 				tf0.setTooltip(i1);
-				setTT(tf0, i1);
+				setQuickToolTip(tf0, i1);
 
 				VBox chartBox = new VBox();
 				chartBox.setAlignment(Pos.TOP_LEFT);
@@ -242,28 +242,28 @@ extends TabPanel {
 				b0.setTitle("I - E  ");
 				Tooltip t0 = new Tooltip("Introversion vs. Extraversion");
 				b0.setTooltip(t0);
-				setTT(b0, t0);
+				setQuickToolTip(b0, t0);
 
 				Gauge b1 = bars.get(1);
 				b1.setTitle("N - S  ");
 				b1.setValue(scores.get(PersonalityType.INTUITION_SENSATION));
 				Tooltip t1 = new Tooltip("Intuition vs. Sensation");
 				b1.setTooltip(t1);
-				setTT(b1, t1);
+				setQuickToolTip(b1, t1);
 				
 				Gauge b2 = bars.get(2);
 				b2.setTitle("F - T  ");
 				b2.setValue(scores.get(PersonalityType.FEELING_THINKING));
 				Tooltip t2 = new Tooltip("Feeling vs. Thinking");
 				b2.setTooltip(t2);
-				setTT(b2, t2);
+				setQuickToolTip(b2, t2);
 				
 				Gauge b3 = bars.get(3);
 				b3.setTitle("J - P  ");
 				b3.setValue(scores.get(PersonalityType.JUDGING_PERCEIVING));
 				Tooltip t3 = new Tooltip("Judging vs. Perceiving");
 				b3.setTooltip(t3);
-				setTT(b3, t3);
+				setQuickToolTip(b3, t3);
 				
 				
 				// Build gauges for Big Five Personality	
@@ -284,7 +284,7 @@ extends TabPanel {
 				// Note: OCC Model is for emotion synthesis, by Ortony, Clore, & Collins, 1988
 
 				label1.setTooltip(i3);
-				setTT(label1, i3);
+				setQuickToolTip(label1, i3);
 			
 				JFXTextField tf1 = new JFXTextField("O.C.E.A.N.");
 				tf1.setFont(Font.font("Cambria", FontWeight.NORMAL, 16));
@@ -299,7 +299,7 @@ extends TabPanel {
 					+ "Neuroticism" );
 
 				tf1.setTooltip(i2);
-				setTT(tf1, i2);
+				setQuickToolTip(tf1, i2);
 				
 				GridPane grid = new GridPane();			
 				List<VBox> vboxes = new ArrayList<VBox>();
@@ -332,31 +332,31 @@ extends TabPanel {
 				g0.setValue((int)(Math.round(points.get(PersonalityTraitType.OPENNESS)/10d)));
 				Tooltip tt0 = new Tooltip("Openness is willingness to make a shift of standards in new situations");
 				Tooltip.install(g0, tt0);
-				setTT(g0, tt0);
+				setQuickToolTip(g0, tt0);
 
 				QualityGauge g1 = gauges.get(1);
 				g1.setValue((int)(Math.round(points.get(PersonalityTraitType.CONSCIENTIOUSNESS)/10d)));
 				Tooltip tt1 = new Tooltip("Conscientiousness is planning ahead rather than being spontaneous");
 				Tooltip.install(g1, tt1);
-				setTT(g1, tt1);
+				setQuickToolTip(g1, tt1);
 				
 				QualityGauge g2 = gauges.get(2);
 				g2.setValue((int)(Math.round(points.get(PersonalityTraitType.EXTRAVERSION)/10d)));
 				Tooltip tt2 = new Tooltip("Extraversion is willingness to communicate and socialize with people");
 				Tooltip.install(g2, tt2);
-				setTT(g2, tt2);
+				setQuickToolTip(g2, tt2);
 				
 				QualityGauge g3 = gauges.get(3);
 				g3.setValue((int)(Math.round(points.get(PersonalityTraitType.AGREEABLENESS)/10d)));
 				Tooltip tt3 = new Tooltip("Aggreeablene is adaptiveness to other people and adopting goals in favor of others");
 				Tooltip.install(g3, tt3);
-				setTT(g3, tt3);
+				setQuickToolTip(g3, tt3);
 	
 				QualityGauge g4 = gauges.get(4);
 				g4.setValue((int)(Math.round(points.get(PersonalityTraitType.NEUROTICISM)/10d)));
 				Tooltip tt4 = new Tooltip("Neuroticism is a person's emotional sensitivity and sense of security to the situation.");
 				Tooltip.install(g4, tt4);
-				setTT(g4, tt4);		
+				setQuickToolTip(g4, tt4);		
 
 				hBox0.getChildren().addAll(label0, tf0);
 				chartBox.getChildren().addAll(hBox0, barBox);
@@ -375,8 +375,13 @@ extends TabPanel {
 		this.setVisible(true);
 	}
 	
+	/**
+	 * Speeds up the time it takes to display JavaFX's tooltip 
+	 * @param node
+	 * @param tooltip
+	 */
 	@SuppressWarnings("restriction")
-	public void setTT(Node n, Tooltip tt) {
+	public void setQuickToolTip(Node n, Tooltip tt) {
 		
 		tt.getStyleClass().add("ttip");
 
