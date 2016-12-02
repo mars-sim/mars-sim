@@ -63,7 +63,7 @@ public class HaveConversationMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        double result = 1D;
+        double result = 0;
         // TODO: Probability affected by the person's stress and fatigue.
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

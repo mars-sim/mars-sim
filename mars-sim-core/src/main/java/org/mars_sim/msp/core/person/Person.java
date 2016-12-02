@@ -694,7 +694,7 @@ implements VehicleOperator, MissionMember, Serializable {
     }
 
     /**
-     * Get the performance factor that effect Person with the complaint.
+     * Get the performance factor that effect Person with health complaint.
      * @return The value is between 0 -> 1.
      */
     public double getPerformanceRating() {

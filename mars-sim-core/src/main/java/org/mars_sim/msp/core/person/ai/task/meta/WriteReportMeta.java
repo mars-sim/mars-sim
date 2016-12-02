@@ -48,7 +48,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
         double result = 0D;
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE)
+        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
         	
         	// check if he has this meta task done
         	if (!person.getPreference().isTaskDue(this)) {
@@ -99,6 +99,7 @@ public class WriteReportMeta implements MetaTask, Serializable {
 			        if (result < 0) result = 0;
 	            }
         	}
+    	}
         
         //System.out.println("result : " + result);
         return result;

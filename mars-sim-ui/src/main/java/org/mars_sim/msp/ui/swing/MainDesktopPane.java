@@ -705,6 +705,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	@SuppressWarnings("restriction")
 	public void closeToolWindow(String toolName) {
+		SwingUtilities.invokeLater(() -> {
 		ToolWindow window = getToolWindow(toolName);
 		if ((window != null) && !window.isClosed()) {
 			try { window.setClosed(true); }
@@ -746,7 +747,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 */				
 			});
 		}
-		
+		});
 	}
 
 	public void refreshTheme() {

@@ -55,10 +55,6 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
     public double getProbability(Person person) {
         double result = 0D;
         
-    	// Stress modifier
-        double stress = person.getPhysicalCondition().getStress();
-        result += stress * 3; // 0 to 100%
-        
         /*
         // TODO: listening to music is driven by boredom, not so much fatigue
         // Fatigue modifier.
@@ -73,6 +69,10 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
         // Crowding modifier
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
+        	// Stress modifier
+            double stress = person.getPhysicalCondition().getStress();
+            result += stress * 3D; // 0 to 100%
+            
             try {
             	// 2016-01-10 Added checking if a person has a designated bed
                 Building quarters = person.getQuarters();    
@@ -99,6 +99,10 @@ public class ListenToMusicMeta implements MetaTask, Serializable {
         
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
+        	// Stress modifier
+            double stress = person.getPhysicalCondition().getStress();
+            result += stress * 3; // 0 to 100%
+            
             if (result > 0)
             	result *= RandomUtil.getRandomDouble(2); // more likely to listen to music than not if on a vehicle
 

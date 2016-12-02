@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.io.Serializable;
 
 import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -48,14 +49,14 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		&& !person.getPreference().isTaskDue(this)) {
+        if (!person.getPreference().isTaskDue(this)) {
 
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             
-            if (condition.getFatigue() < 1200D && condition.getStress() < 75D) {
-
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+            		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            		
 	            // Get an available office space.
 	            Building building = ConnectWithEarth.getAvailableBuilding(person);
 
@@ -66,17 +67,29 @@ public class ConnectWithEarthMeta implements MetaTask, Serializable {
 	                result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
 	                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 
-		            // Effort-driven task modifier.
-		            result *= person.getPerformanceRating();
-
-		            // 2015-06-07 Added Preference modifier
-		            if (result > 0D) {
-		                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-		            }
-		         
-			        if (result < 0) result = 0;
 
 	            }
+	            else {
+	            //if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {            	
+	                if (result > 0)
+	                	result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
+	            }   	
+	            
+	            // Effort-driven task modifier.
+	            //result *= person.getPerformanceRating();
+
+            	if (condition.getFatigue() > 1200D)
+            		result = result - 20D;
+
+            	if (condition.getStress() > 75D)
+            		result = result - 10D;
+            	
+	            // 2015-06-07 Added Preference modifier
+	            if (result > 0D) {
+	                result = result + result * person.getPreference().getPreferenceScore(this)/5D;
+	            }
+	         
+		        if (result < 0) result = 0;
 
             }
         }

@@ -24,6 +24,7 @@ import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import javafx.scene.web.WebHistory.Entry;
 import javafx.scene.web.WebHistory;
+import javafx.scene.Cursor;
 //import javafx.scene.text.Text;
 
 import netscape.javascript.JSObject;
@@ -364,7 +365,13 @@ public class BrowserJFX {
 		                    // 2016-11-30 Fix the URL not being displayed correctly
 		                    textInputCache = input;
 		                    showURL();
+		                    desktop.getMainScene().getScene().setCursor(Cursor.HAND);
+		                    //System.out.println("just clicked at a link");
 	                	}
+                	}
+                	
+                	else {
+                		desktop.getMainScene().getScene().setCursor(Cursor.DEFAULT);
                 	}
 
                     return false;
@@ -431,9 +438,10 @@ public class BrowserJFX {
                         	// Note: it shows the content of the hyperlink (even before the user clicks on it.
                             String content = event.getData();
                             if (content != null && !content.isEmpty()) {
-                            	     
+                        		desktop.getMainScene().getScene().setCursor(Cursor.HAND);
+    		                    //System.out.println("now hovering over a link");
                             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-                            	if (content.contains("/docs/help")) {                            	
+                            	if (content.contains("/docs/help")) { 
                             		int i = content.indexOf("docs")-1;
                             		//System.out.println("shortened content is " + content.substring(i, content.length()));
                             		statusBarLbl.setText(content.substring(i, content.length()));          		
@@ -446,6 +454,7 @@ public class BrowserJFX {
                             }
                             
                             else {
+                            	desktop.getMainScene().getScene().setCursor(Cursor.DEFAULT);
                             	// if the mouse pointer is not on any hyperlink
                            		//System.out.println("The null content is " + content);                           	 
                             	statusBarLbl.setText(content);                    	

@@ -44,19 +44,26 @@ public class WorkoutMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        // one can work out inside the vehicle
         
-        // Probability affected by the person's stress and fatigue.
-        PhysicalCondition condition = person.getPhysicalCondition();
-        result = condition.getStress() * 2D + (condition.getFatigue() / 10D)
-                + 20D;
-        if (result < 0D) {
-            result = 0D;
-        }
-        
-        
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
+            // Probability affected by the person's stress and fatigue.
+            PhysicalCondition condition = person.getPhysicalCondition();
+            result = 20D + condition.getStress() * 2D;
+            
+            double fatigue = condition.getFatigue();
+            
+            if (fatigue > 2000)
+            	result = result - 20D;
+
+            else if (fatigue < 700)
+            	result = result + fatigue/10D;
+            
+            if (result < 0D) {
+                result = 0D;
+            }
+            
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
             if (building != null) {

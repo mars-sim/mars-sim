@@ -62,13 +62,15 @@ public class RelaxMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-        double result = 10D;
-
-        // Stress modifier
-        result += person.getPhysicalCondition().getStress();
+        double result = 0D;
 
         // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT 
+    		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        	
+            // Stress modifier
+            result += person.getPhysicalCondition().getStress();
+
             try {
                 Building recBuilding = Relax.getAvailableRecreationBuilding(person);
                 if (recBuilding != null) {

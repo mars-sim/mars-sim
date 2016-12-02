@@ -470,6 +470,16 @@ public class MainScene {
 	 */
 	// 2016-11-14 Setup key events using wellbehavedfx
 	public void setupKeyEvents() {
+		InputMap<KeyEvent> f1 = consume(keyPressed(F1), e -> {
+			if (desktop.isToolWindowOpen(GuideWindow.NAME))
+				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(GuideWindow.NAME));
+			else {
+				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				SwingUtilities.invokeLater(() -> desktop.openToolWindow(GuideWindow.NAME));
+			}
+		});
+	    Nodes.addInputMap(root, f1);
+	    
 		InputMap<KeyEvent> f2 = consume(keyPressed(F2), e -> {
 			if (desktop.isToolWindowOpen(SearchWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(SearchWindow.NAME));
@@ -626,7 +636,7 @@ public class MainScene {
 		// Create ControlFX's StatusBar
 		//statusBar = createStatusBar();
         createLastSaveBar();
-        
+		createMarsTimeBar(); 
         createEarthTimeBar();
         // Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
@@ -778,8 +788,8 @@ public class MainScene {
 	public void createMarsTimeBar() {
 		marsTimeBar = new HBox();
 		marsTimeBar.setMaxWidth(Double.MAX_VALUE);
-		marsTimeBar.setMinWidth(223);
-		marsTimeBar.setPrefSize(223, 24);
+		marsTimeBar.setMinWidth(230);
+		marsTimeBar.setPrefSize(230, 24);
 	
 		if (masterClock == null) {
 			masterClock = Simulation.instance().getMasterClock();
@@ -1064,10 +1074,6 @@ public class MainScene {
 		mapNodePane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 		
-		createEarthTimeBar();
-
-		createMarsTimeBar();
-
 		createFXButtons();
 		
 		createFXSettlementComboBox();

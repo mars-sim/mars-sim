@@ -65,17 +65,19 @@ public class PlayHoloGameMeta implements MetaTask, Serializable {
 
     @Override
     public double getProbability(Person person) {
-        double result = 5D;
+        double result = 0D;
 
-        // Stress modifier
-    	double stress = person.getPhysicalCondition().getStress(); //0.0 to 100.0
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
-        if (stress > 50D) {
-            result += (stress - 50D) * 2;
-        }
 
-        // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            // Stress modifier
+        	double stress = person.getPhysicalCondition().getStress(); //0.0 to 100.0
+
+            if (stress > 20D) {
+                result += (stress - 20D) * 2;
+            }
+
             try {
             	// 2016-01-10 Added checking if a person has a designated bed
                 Building quarters = person.getQuarters();    
