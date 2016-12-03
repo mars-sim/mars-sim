@@ -60,18 +60,13 @@ public class WorkoutMeta implements MetaTask, Serializable {
             else if (fatigue < 700)
             	result = result + fatigue/10D;
             
-            if (result < 0D) {
-                result = 0D;
-            }
-            
             // Get an available gym.
             Building building = Workout.getAvailableGym(person);
             if (building != null) {
                 result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(person, building);
                 result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
             } // a person can still have workout on his own without a gym in MDP Phase 1-3
-            //else
-            //    result = 0D;
+
         }
 
         // Effort-driven task modifier.

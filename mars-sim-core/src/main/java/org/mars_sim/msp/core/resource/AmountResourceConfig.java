@@ -37,16 +37,29 @@ public class AmountResourceConfig implements Serializable {
 	private static final String EDIBLE = "edible";
 	// 2016-06-28 Added TYPE
 	private static final String TYPE = "type";
+	
+	private static int id;
 
 	// Data members.
 	private Set<AmountResource> resources = new TreeSet<AmountResource>();
+	
+	private Map<String, AmountResource> amountResourceMap;
 
+	private Map<Integer, AmountResource> amountResourceIDMap;
+	
+	private Map<Integer, String> idNameMap;
+
+	
 	/**
 	 * Constructor
 	 * @param amountResourceDoc the amount resource XML document.
 	 * @throws Exception if error reading XML document
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
+		id = 0;
+		amountResourceMap = new HashMap<String, AmountResource>();
+		amountResourceIDMap = new HashMap<Integer, AmountResource>();
+		idNameMap = new HashMap<Integer, String>() ;
 		loadAmountResources(amountResourceDoc);
 	}
 
@@ -60,37 +73,29 @@ public class AmountResourceConfig implements Serializable {
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
 		for (Element resourceElement : resourceNodes) {
-			
-			// Get name.
+			id++;
 			// 2015-02-24 Added toLowerCase() just in case
 			String name = resourceElement.getAttributeValue(NAME).toLowerCase();
-
 			// 2016-06-28 Added type
 			String type = resourceElement.getAttributeValue(TYPE);
 		
 			String description = resourceElement.getText();
-
 			// Get phase.
 			String phaseString = resourceElement.getAttributeValue(PHASE).toUpperCase();
+			
 			Phase phase = Phase.valueOf(phaseString);
-
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
-
 			// 2014-11-25 Added edible
 			Boolean edible = Boolean.parseBoolean(resourceElement.getAttributeValue(EDIBLE));
-
-			// Create new amount resource.
 			// 2014-11-25 Added edible
-			
-			// Create new tissue culture for each crop.
-			// 2014-11-25 Added edible
-			AmountResource ar = new AmountResource(name, type, description, phase, lifeSupport, edible);
-			resources.add(ar);
+			resources.add(new AmountResource(id, name, type, description, phase, lifeSupport, edible));
 
-			if (type != null && type.equals("crop")) {
-				AmountResource tissue = new AmountResource(name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false);
-				resources.add(tissue);
+			if (type != null && type.toLowerCase().equals("crop")) {
+				id++;
+				// Create new tissue culture for each crop.
+				resources.add(new AmountResource(id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
+				// TODO: may set edible to true
 			}
 			
 		}
@@ -105,16 +110,56 @@ public class AmountResourceConfig implements Serializable {
 	}
 
 	/**
-	 * an alphabetically ordered map of all resources.
+	 * an alphabetically ordered map of all amount resources by name.
 	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
-	public Map<String,AmountResource> getAmountResourcesMap() {
-		Map<String,AmountResource> map = new TreeMap<String,AmountResource>();
-		for (AmountResource resource : resources) {
-			map.put(resource.getName(),resource);
+	public Map<String, AmountResource> getAmountResourcesMap() {
+		if (!amountResourceMap.isEmpty())
+			return amountResourceMap;
+		
+		else {
+			Map<String, AmountResource> map = new HashMap<String,AmountResource>();		
+			for (AmountResource resource : resources) {
+				map.put(resource.getName(), resource);
+			}
+			//System.out.println("AmountResourceConfig : done getAmountResourcesMap()");
+			return map;
 		}
-		//System.out.println("AmountResourceConfig : done getAmountResourcesMap()");
-		return map;
 
 	}
+	
+	/**
+	 * an alphabetically ordered map of all amount resources by id.
+	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
+	 */
+	public Map<Integer, AmountResource> getAmountResourcesIDMap() {
+		if (!amountResourceIDMap.isEmpty())
+			return amountResourceIDMap;
+		
+		else {
+			Map<Integer, AmountResource> map = new HashMap<Integer, AmountResource>();
+			for (AmountResource resource : resources) {
+				map.put(resource.getID(), resource);
+			}
+			return map;
+		}
+	}
+	
+	/**
+	 * an alphabetically ordered map of all resource names by id.
+	 * @return {@link Map}<{@link Integer},{@link String}>
+	 */
+	public Map<Integer, String> getIDNameMap() {
+		if (!idNameMap.isEmpty())
+			return idNameMap;
+		
+		else {
+			Map<Integer, String> map = new HashMap<Integer, String>();
+			for (AmountResource resource : resources) {
+				map.put(resource.getID(), resource.getName());
+			}
+			return map;
+		}
+	}
+	
 }

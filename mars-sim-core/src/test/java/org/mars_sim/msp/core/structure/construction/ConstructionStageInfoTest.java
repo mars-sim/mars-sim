@@ -36,7 +36,7 @@ public class ConstructionStageInfoTest extends TestCase {
         parts.put(new Part("test part","test resource description", 1D), 1);
         
         Map<AmountResource, Double> resources = new HashMap<AmountResource, Double>(1);
-        resources.put(new AmountResource("test resource", "test type","test resource description", Phase.SOLID, false, false), 1D);
+        resources.put(new AmountResource(1, "test resource", "test type","test resource description", Phase.SOLID, false, false), 1D);
         
         List<ConstructionVehicleType> vehicles = 
             new ArrayList<ConstructionVehicleType>(1);

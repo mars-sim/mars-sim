@@ -31,7 +31,7 @@ public class Favorite implements Serializable {
 	
 	private String[] availableActivities = 
     	{ 	"Tending Plants",
-			"Workout",
+			"Workout",		
 			"Research",
 			"Field Work",
 			"Tinkering",

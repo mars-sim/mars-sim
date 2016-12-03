@@ -13,11 +13,23 @@
 	<!-- life-support - Is the resource used for life support? -->
 	<!-- edible - Is the resource edible? -->
 
+	<!-- Life Support Resources -->
 	<resource name="food" phase="solid" life-support="true" edible="true">Represents general freeze dried food.</resource>
-	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
 	<resource name="water" phase="liquid" life-support="true">potable water</resource>
+	<resource name="oxygen" phase="gas" life-support="true" />
+	<resource name="carbon dioxide" phase="gas" life-support="true"/>
+	
+	
+	<!-- Other Gas Resources -->
+	<resource name="carbon monoxide" phase="gas" />
+	<resource name="ethylene" phase="gas" />
+	<resource name="hydrogen" phase="gas" />
+	<resource name="methane" phase="gas" />
+	<resource name="nitrogen" phase="gas"> N2 is an odorless gas </resource>
+	<resource name="chlorine" phase="gas"/>
 
 	<resource name="soil" phase="solid">Soil is the mixture of minerals, organic matter, gases, liquids, and the myriad of organisms that together support plant life.</resource>
+	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
 
 <!-- Wastes -->
 	<resource name="compost" phase="solid">Organic waste consists of decaying food waste and crop remains. </resource>
@@ -36,16 +48,6 @@
 
 <!--	<resource name="Non-recyclable Waste" phase="solid" life-support="true">The "compacted" waste that cannot be recycled or broken down into other resources, as limited by the level of technology available to the settlement. </resource>
 -->
-
-<!-- Gas Resources -->
-	<resource name="carbon dioxide" phase="gas" />
-	<resource name="carbon monoxide" phase="gas" />
-	<resource name="ethylene" phase="gas" />
-	<resource name="hydrogen" phase="gas" />
-	<resource name="methane" phase="gas" />
-	<resource name="nitrogen" phase="gas"> N2 is an odorless gas </resource>
-	<resource name="oxygen" phase="gas" life-support="true" />
-	<resource name="chlorine" phase="gas"/>
 
 <!-- Cooking Condiment -->
 	<resource name="baking powder" type="food" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>

@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -70,25 +71,36 @@ implements Serializable {
 
     private static final BuildingFunction FARMING_FUNCTION = BuildingFunction.FARMING;
     private static final BuildingFunction RESEARCH_FUNCTION = BuildingFunction.RESEARCH;
-	public static final String TISSUE_CULTURE = "tissue culture";
-
-    private static final double CROP_WASTE_PER_SQM_PER_SOL = .01D; // .01 kg
-
+  
+	public static final String FERTILIZER = "fertilizer";
+	public static final String GREY_WATER = "grey water";
+    public static final String SOIL = "soil";
+    public static final String CROP_WASTE = "crop waste";
+    public static final String TISSUE_CULTURE = "tissue culture";
 	public static final String LED_KIT = "light emitting diode kit";
 	public static final String HPS_LAMP = "high pressure sodium lamp";
 
 	/** amount of crop tissue culture needed for each square meter of growing area */
-    public static final double TISSUE_PER_SQM = .0005D; // 1/2 gram (arbitrary)
+    public static final double TISSUE_PER_SQM = .0005; // 1/2 gram (arbitrary)
 	public static final double STANDARD_AMOUNT_TISSUE_CULTURE = 0.01;
+	private static final double CROP_WASTE_PER_SQM_PER_SOL = .01; // .01 kg
+
+    private static List<CropType> cropTypeList;
 
 	private static ItemResource LED_Item;
 	private static ItemResource HPS_Item;
-
+	
+	static AmountResource cropWasteAR;
+	static AmountResource soilAR;
+	static AmountResource waterAR;
+	static AmountResource greyWaterAR;
+	static AmountResource fertilizerAR;
+	static AmountResource o2AR;
+	static AmountResource co2AR;
+	
 	private int numLEDInUse;
 	private int cacheNumLED;
-	private boolean checkLED;
 	private int numHPSinNeed;
-
     private int cropNum;
 	private int solCache = 1;
 
@@ -98,14 +110,14 @@ implements Serializable {
     private double remainingGrowingArea;
     private double totalMaxHarvest = 0;
     
+	private boolean checkLED;
+	
     private String cropInQueue;
 
-    private List<Crop> crops = new ArrayList<Crop>();
-  
   	// 2014-12-09 Added cropInQueue, cropListInQueue
     private List<CropType> cropListInQueue = new ArrayList<CropType>();
-    private static List<CropType> cropTypeList;
     private List<CropType> plantedCropList = new ArrayList<CropType>();
+    private List<Crop> crops = new ArrayList<Crop>();
     //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
     
     // 2016-11-30 Added cropAssignment and shiftAssignment
@@ -115,12 +127,11 @@ implements Serializable {
     private Inventory b_inv, s_inv;
     private Settlement settlement;
     private Building building;
-    //private BeeGrowing beeGrowing;
-	//private GoodsManager goodsManager;
-
     private Person p;
     private Robot r;
-    private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
+    private MarsClock marsClock;
+    //private BeeGrowing beeGrowing;
+	//private GoodsManager goodsManager;
     
     /**
      * Constructor.
@@ -134,6 +145,14 @@ implements Serializable {
 		LED_Item = ItemResource.findItemResource(LED_KIT);
 		HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
+		cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
+	    soilAR = AmountResource.findAmountResource(SOIL);
+		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+		greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
+		fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
+		o2AR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		co2AR = AmountResource.findAmountResource(LifeSupportType.CO2);
+		
         this.building = building;
         this.settlement = building.getBuildingManager().getSettlement();
 		this.b_inv = building.getBuildingInventory();
@@ -217,9 +236,7 @@ implements Serializable {
 		double no_2_crop_VP = 0;
 		
 		for (CropType c : cropTypeList) {
-			String cropName = c.getName();
-			AmountResource ar = AmountResource.findAmountResource(cropName);
-			double cropVP = getCropValue(ar);
+			double cropVP = getCropValue(AmountResource.findAmountResource(c.getName()));
 			if (cropVP >= no_1_crop_VP) {
 				if (no_1_crop != null) {
 					no_2_crop_VP = no_1_crop_VP;
@@ -379,10 +396,10 @@ implements Serializable {
     	double amount = Crop.NEW_SOIL_NEEDED_PER_SQM * cropArea *rand;
 
     	// TODO: adjust how much old soil should be turned to crop waste
-    	Storage.storeAnResource(amount, Crop.CROP_WASTE, s_inv);
+    	Storage.storeAnResource(amount, cropWasteAR, s_inv);
 
     	// TODO: adjust how much new soil is needed to replenish the soil bed
-    	Storage.retrieveAnResource(amount, Crop.SOIL, s_inv, true );
+    	Storage.retrieveAnResource(amount, soilAR, s_inv, true );
 
     }
 
@@ -397,7 +414,7 @@ implements Serializable {
     public void provideFertilizer(double cropArea) {
     	double rand = RandomUtil.getRandomDouble(2);
     	double amount = Crop.FERTILIZER_NEEDED_IN_SOIL_PER_SQM * cropArea / 10D * rand;
-    	Storage.retrieveAnResource(amount, Crop.FERTILIZER, s_inv, true);
+    	Storage.retrieveAnResource(amount, fertilizerAR, s_inv, true);
 		//System.out.println("fertilizer used in planting a new crop : " + amount);
     }
 
@@ -414,15 +431,16 @@ implements Serializable {
 
     	double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
-    	String tissue = cropType.getName()+ " " + Crop.TISSUE_CULTURE;
-    	String name = Conversion.capitalize(cropType.getName()) + " " + Crop.TISSUE_CULTURE;
+    	String tissue = cropType.getName()+ " " + TISSUE_CULTURE;
+    	String name = Conversion.capitalize(cropType.getName()) + " " + TISSUE_CULTURE;
+    	AmountResource tissueAR = AmountResource.findAmountResource(tissue);
     	
     	boolean available = false;
 
       	try {
-	    	AmountResource nameAR = AmountResource.findAmountResource(tissue);
-	        double amountStored = s_inv.getAmountResourceStored(nameAR, false);
-			s_inv.addAmountDemandTotalRequest(nameAR);
+
+	        double amountStored = s_inv.getAmountResourceStored(tissueAR, false);
+			s_inv.addAmountDemandTotalRequest(tissueAR);
 	    	
 	    	if (amountStored < 0.0000000001) {
 	    		logger.warning("No more " + name);
@@ -443,10 +461,10 @@ implements Serializable {
 	    	}
 
 	    	if (available) {
-	    		s_inv.retrieveAmountResource(nameAR, requestedAmount);
+	    		s_inv.retrieveAmountResource(tissueAR, requestedAmount);
 	    	}
 
-			s_inv.addAmountDemand(nameAR, requestedAmount);
+			s_inv.addAmountDemand(tissueAR, requestedAmount);
 
 	    }  catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
@@ -622,7 +640,7 @@ implements Serializable {
         while (((needyCrop = getNeedyCrop(lastCrop, unit)) != null)
         		&& (workTimeRemaining > .00001D)) {
         	
-        	if (lastCrop != needyCrop) {
+        	if (lastCrop.getCropType() != needyCrop.getCropType()) {
         		// 2016-11-29 update the name of the crop being worked on in the task description 
         		h.setCrop(needyCrop);
         		lastCrop = needyCrop;
@@ -648,14 +666,16 @@ implements Serializable {
         List<Crop> needyCrops = new ArrayList<Crop>(crops.size());
         for (Crop c : crops) {
             if (c.requiresWork()) {
-            	if (c == lastCrop)
-                	return c;
-            	//else if (cropAssignment.get(unit) == c) {
-            	//	updateAssignmentMap(unit);
-            	//	return c;
-            	//}
-                else	
-                	needyCrops.add(c);
+            	if (lastCrop != null) {
+	            	if (c.getCropType() == lastCrop.getCropType())
+	                	return c;
+	            	//else if (cropAssignment.get(unit) == c) {
+	            	//	updateAssignmentMap(unit);
+	            	//	return c;
+	            	//}
+	                else	
+	                	needyCrops.add(c);
+            	}
             }
         }
 
@@ -802,7 +822,7 @@ implements Serializable {
 		double rand = RandomUtil.getRandomDouble(2);
 		// add a randomness factor
 		double amountCropWaste = CROP_WASTE_PER_SQM_PER_SOL * maxGrowingArea * rand;
-		Storage.storeAnResource(amountCropWaste, Crop.CROP_WASTE, s_inv);
+		Storage.storeAnResource(amountCropWaste, cropWasteAR, s_inv);
 	}
 
 /*
@@ -954,16 +974,17 @@ implements Serializable {
 		// but also the inedible biomass and the crop category
 		boolean isDone = false;
 		String cropName = cropType.getName();
-		String tissue = cropName + " " + TISSUE_CULTURE;
-    	AmountResource nameAR = AmountResource.findAmountResource(tissue);
-        double amountAvailable = s_inv.getAmountResourceStored(nameAR, false);
+		AmountResource cropAR = AmountResource.findAmountResource(cropName);
+		String tissueName = cropName + " " + TISSUE_CULTURE;
+    	AmountResource tissueAR = AmountResource.findAmountResource(tissueName);
+        double amountAvailable = s_inv.getAmountResourceStored(tissueAR, false);
         double amountExtracted = 0;
     
         if (amountAvailable > 0 && amountAvailable < 1) {
         	// increase the amount of tissue culture by 10%
         	amountExtracted = amountAvailable * 1.1;	
         	// store the tissues
-      		Storage.storeAnResource(amountExtracted, tissue, s_inv);
+      		Storage.storeAnResource(amountExtracted, tissueAR, s_inv);
       		
     		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in " 
     					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
@@ -973,16 +994,15 @@ implements Serializable {
         
         else if (amountAvailable < 0) {
         	// if no tissue culture is available, go extract some tissues from the crop
-           	nameAR = AmountResource.findAmountResource(cropName);
-            double amount = s_inv.getAmountResourceStored(nameAR, false);
+            double amount = s_inv.getAmountResourceStored(cropAR, false);
             
             amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * 10; 
             
             if (amount > amountExtracted) {
             	// assume an arbitrary 10% of the mass of crop kg extracted will be developed into tissue culture
-            	Storage.retrieveAnResource(amountExtracted, cropName, s_inv, true);       
+            	Storage.retrieveAnResource(amountExtracted, cropAR, s_inv, true);       
             	// store the tissues
-         		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissue, s_inv);
+         		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, s_inv);
           		
         		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0 + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in " 
         					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
@@ -1021,7 +1041,16 @@ implements Serializable {
     @Override
     public void destroy() {
         super.destroy();
-
+    	
+        LED_Item = null;
+    	HPS_Item = null;
+    	cropWasteAR = null;
+    	soilAR = null;
+    	o2AR = null;
+    	co2AR = null;
+		waterAR = null;
+		greyWaterAR = null;
+		fertilizerAR = null;
         marsClock = null;
         s_inv = null;
 		b_inv = null;

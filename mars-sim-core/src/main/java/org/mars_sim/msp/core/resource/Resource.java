@@ -15,6 +15,12 @@ public interface Resource
 extends Comparable<Resource> {
 
 	/**
+	 * Gets the resource's id.
+	 * @return resource id.
+	 */
+	public int getID();
+	
+	/**
 	 * Gets the resource's name.
 	 * @return name
 	 */

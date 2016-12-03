@@ -745,7 +745,7 @@ public class GoodsManager implements Serializable {
             // Average grey water consumption rate of crops per orbit using total growing area.
             demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
         }
-        else if (Crop.TISSUE_CULTURE.equalsIgnoreCase(resource.getType())) {
+        else if (Farming.TISSUE_CULTURE.equalsIgnoreCase(resource.getType())) {
             // Average use of tissue culture at greenhouse each orbit.
             CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
             int numCropTypes = cropConfig.getCropList().size();

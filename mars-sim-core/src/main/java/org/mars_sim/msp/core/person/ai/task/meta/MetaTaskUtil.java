@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.mars_sim.msp.core.person.ai.task.MeetTogether;
+
 /**
  * A utility task for getting the list of meta tasks.
  */
@@ -194,6 +196,7 @@ public class MetaTaskUtil {
 	        tasks.add(new MaintenanceMeta());
 	        tasks.add(new ManufactureConstructionMaterialsMeta());
 	        tasks.add(new ManufactureGoodMeta());
+	        tasks.add(new MeetTogetherMeta());
 	        tasks.add(new PeerReviewStudyPaperMeta());
 	        tasks.add(new PerformLaboratoryExperimentMeta());
 	        tasks.add(new PerformLaboratoryResearchMeta());

@@ -230,6 +230,37 @@ implements Serializable {
 
     /**
      * Stores a resource
+     * @param amount
+     * @param ar
+     * @param inv
+     */
+	// 2015-03-09 Added storeAnResource()
+	public static boolean storeAnResource(double amount, AmountResource ar, Inventory inv) {
+		boolean result = false;
+		try {
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, false);
+
+			if (remainingCapacity < amount) {
+			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+				amount = remainingCapacity;
+				result = false;
+			    //logger.info(name + " storage is full!");
+			}
+			else {
+				inv.storeAmountResource(ar, amount, true);
+				inv.addAmountSupplyAmount(ar, amount);
+				result = true;
+			}
+		} catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+		}
+
+		return result;
+	}
+
+	
+    /**
+     * Stores a resource
      * @param name
      * @param Amount
      * @param inv
@@ -244,7 +275,7 @@ implements Serializable {
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
-				result = false;
+				result = false; 
 			    //logger.info(name + " storage is full!");
 			}
 			else {
@@ -266,8 +297,9 @@ implements Serializable {
      * @param requestedAmount
      * @param inv
      * @param isRetrieving
+     * @return true if the full amount can be retrieved.
      */
-    //2015-03-09 Added retrieveAnResource()
+    //2016-12-03 Added retrieveAnResource()
     public static boolean retrieveAnResource(double requestedAmount, String name, Inventory inv, boolean isRetrieving ) {
     	boolean result = false;
     	try {
@@ -284,7 +316,7 @@ implements Serializable {
 	     		//requestedAmount = amountStored;
 	     		// TODO: how to report it only 3 times and quit the reporting ?
 	    		//logger.warning("Just ran out of " + name);
-	    		result = false;
+	    		result = false; // not enough for the requested amount
 	    	}
 	    	else {
 	    		if (isRetrieving) {
@@ -300,6 +332,47 @@ implements Serializable {
     	return result;
     }
 
+
+    /**
+     * Retrieves a resource or test if a resource is available
+     * @param requestedAmount
+     * @param ar
+     * @param inv
+     * @param isRetrieving
+     * @return true if the full amount can be retrieved.
+     */
+    //2016-12-03 Added retrieveAnResource()
+    public static boolean retrieveAnResource(double requestedAmount, AmountResource ar, Inventory inv, boolean isRetrieving ) {
+    	boolean result = false;
+    	try {
+	        double amountStored = inv.getAmountResourceStored(ar, false);
+	    	inv.addAmountDemandTotalRequest(ar);
+	    	
+	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
+	     		// TODO: how to report it only 3 times and quit the reporting ?
+	    		//logger.warning("No more " + name);
+	    		result = false; // not enough for the requested amount
+	    	}
+	    	else if (amountStored < requestedAmount) {
+	     		//requestedAmount = amountStored;
+	     		// TODO: how to report it only 3 times and quit the reporting ?
+	    		//logger.warning("Just ran out of " + name);
+	    		result = false;
+	    	}
+	    	else {
+	    		if (isRetrieving) {
+		    		inv.retrieveAmountResource(ar, requestedAmount);
+		    		inv.addAmountDemand(ar, requestedAmount);
+	    		}
+	    		result = true;
+	    	}
+	    }  catch (Exception e) {
+    		logger.log(Level.SEVERE,e.getMessage());
+	    }
+
+    	return result;
+    }
+    
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -27,10 +27,20 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+	private int id;
 	private double massPerItem;
 	private String name;
 	private String description;
 
+	/**
+	 * Gets the resource's id.
+	 * @return resource id.
+	 */
+	@Override
+	public int getID() {
+		return id;
+	}
+	
 	/**
 	 * Gets the resource's name.
 	 * @return name of resource.

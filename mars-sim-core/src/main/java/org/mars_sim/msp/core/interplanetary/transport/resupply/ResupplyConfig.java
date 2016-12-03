@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
@@ -57,6 +58,9 @@ public class ResupplyConfig implements Serializable {
     public ResupplyConfig(Document resupplyDoc,
             PartPackageConfig partPackageConfig) {
 
+    	// Call to just initialize amountResourceConfig in this constructor
+    	new AmountResource();
+    	
         resupplyTemplates = new ArrayList<ResupplyTemplate>();
         loadResupplyTemplates(resupplyDoc, partPackageConfig);
     }

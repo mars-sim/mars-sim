@@ -30,8 +30,6 @@ public class WriteReportMeta implements MetaTask, Serializable {
     private static final String NAME = Msg.getString(
             "Task.description.writeReport"); //$NON-NLS-1$
 
-    public RoleType roleType;
-
     @Override
     public String getName() {
         return NAME;
@@ -47,12 +45,12 @@ public class WriteReportMeta implements MetaTask, Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
-        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        	
-        	// check if he has this meta task done
-        	if (!person.getPreference().isTaskDue(this)) {
-	
+    	// check if he has this meta task done
+    	if (!person.getPreference().isTaskDue(this)) {
+    		
+	        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
+	        		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+	        
 	            // Probability affected by the person's stress and fatigue.
 	            PhysicalCondition condition = person.getPhysicalCondition();
 	            
@@ -67,22 +65,26 @@ public class WriteReportMeta implements MetaTask, Serializable {
 		                result *= TaskProbabilityUtil.getRelationshipModifier(person, building);
 		            }
 	
-		            if (roleType == null)
-		            	roleType = person.getRole().getType();
+		            RoleType roleType = person.getRole().getType();
 	
 		            if (roleType.equals(RoleType.PRESIDENT)
 		                	|| roleType.equals(RoleType.MAYOR)
-		            		|| roleType.equals(RoleType.COMMANDER) )
+		            		|| roleType.equals(RoleType.COMMANDER)
+		                    || roleType.equals(RoleType.SUB_COMMANDER)) {
+		            	
 		            	result += 50D;
-	
+		            }
+		            
 		            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
 		            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
 		            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
 		            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
 		            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
 		            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
-		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) )
+		            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES)){
+		            
 		            	result += 20D;
+		            }
 	
 		            // Effort-driven task modifier.
 		            result *= person.getPerformanceRating();

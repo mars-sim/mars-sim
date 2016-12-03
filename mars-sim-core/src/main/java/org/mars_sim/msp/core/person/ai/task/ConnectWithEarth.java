@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Communication;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The ConnectWithEarth class is a task of connecting with Earth's family, relatives and friends
@@ -60,7 +61,7 @@ implements Serializable {
                 5D + RandomUtil.getRandomDouble(5D));
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
+ 
 	            // If person is in a settlement, try to find an comm facility.
 	            Building bldg = getAvailableBuilding(person);
 	            if (bldg != null) {
@@ -75,6 +76,16 @@ implements Serializable {
 	            else {
 	                endTask();
 	            }
+        }
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+
+            if (person.getVehicle() instanceof Rover) {
+                walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+                
+                // set the boolean to true so that it won't be done again today
+                person.getPreference().setTaskDue(this, true);
+            }
+
         }
         else {
             endTask();

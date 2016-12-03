@@ -64,6 +64,17 @@ public class ReadMeta implements MetaTask, Serializable {
 	        // Effort-driven task modifier.
 	        //result *= person.getPerformanceRating();
 
+            String fav = person.getFavorite().getFavoriteActivity();
+            if (fav.equalsIgnoreCase("Research")) {
+                result *= 2D;
+            }
+            else if (fav.equalsIgnoreCase("Tinkering")) {
+                result *= 1.5D;
+            }
+            else if (fav.equalsIgnoreCase("Lab Experimentation")) {
+                result *= 1.5D;
+            }                
+            
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {
                 result = result + result * person.getPreference().getPreferenceScore(this)/5D;

@@ -476,6 +476,7 @@ public class HelpGenerator {
 	private static final void generateResourceDescriptions() {
 		//System.out.println("Calling generateResourceDescriptions()");
 		Map<String,AmountResource> resources = AmountResource.getAmountResourcesMap();
+		//Map<Integer, AmountResource> resources = AmountResource.getAmountResourcesIDMap();
 
 		// first: generate "resources.html" with a list of defined resources
 		StringBuffer content = new StringBuffer()
@@ -486,8 +487,10 @@ public class HelpGenerator {
 		//System.out.println("Done with making content");
 				
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
+		//for (Entry<Integer, AmountResource> entry : resources.entrySet()) {	
 			AmountResource resource = entry.getValue();
 			String name = entry.getKey();
+			//int id = entry.getKey();
 			String life = resource.isLifeSupport() ? "   (Life Support)" : "";
 			String edible = resource.isEdible() ? "   (Edible)" : "";
 

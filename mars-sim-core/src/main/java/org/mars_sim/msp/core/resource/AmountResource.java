@@ -13,7 +13,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.SimulationConfig;
 
@@ -28,19 +31,32 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
+	static AmountResourceConfig amountResourceConfig;// = SimulationConfig.instance().getResourceConfiguration();
+	
 	// Data members
-	private Phase phase;
-	private boolean lifeSupport;
+	private static int count = 0;
+	// 2016-12-02 Added id
+	private int id;
+	
 	private int hashcode = -1;
+	// 2014-11-25 Added edible
+	private boolean edible;
+	
+	private boolean lifeSupport;
+	
 	private String name;
 	// 2016-06-28 Added type
 	private String type;
 	
 	private String description;
 
-	// 2014-11-25 Added edible
-	private boolean edible;
-
+	private Phase phase;
+	
+	public AmountResource() {
+		//if (amountResourceConfig == null)
+		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
+	}
+	
 	/**
 	 * Constructor with life support parameter.
 	 * @param name the resource's name
@@ -49,6 +65,7 @@ implements Serializable {
 	 * @param lifeSupport true if life support resource.
 	 */
 	public AmountResource(
+		int id,
 		String name,
 		String type,
 		String description,
@@ -56,6 +73,7 @@ implements Serializable {
 		boolean lifeSupport,
 		boolean edible
 	) {
+		this.id = id;
 		this.name = name.toLowerCase();
 		this.type = type;
 		this.description = description;
@@ -65,6 +83,15 @@ implements Serializable {
 		this.hashcode = getName().toLowerCase().hashCode() * phase.hashCode();
 	}
 
+	/**
+	 * Gets the resource's id.
+	 * @return resource id.
+	 */
+	@Override
+	public int getID() {
+		return id;
+	}
+	
 	/**
 	 * Gets the resource's name.
 	 * @return name of resource.
@@ -123,8 +150,10 @@ implements Serializable {
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
-	 */
+
 	public static AmountResource findAmountResource(String name) {
+		count++;
+		if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
 		AmountResource result = null;
 		Iterator<AmountResource> i = getAmountResources().iterator();
 		while (i.hasNext()) {
@@ -134,32 +163,121 @@ implements Serializable {
 		if (result != null) return result;
 		else throw new IllegalStateException("Resource: " + name + " could not be found.");
 	}
+*/
+	
+	/**
+	 * Finds an amount resource by id.
+	 * @param id the resource's id.
+	 * @return resource
+	 * @throws ResourceException if resource could not be found.
+	 */
+	public static AmountResource findAmountResource(int id) {
+		//count++;
+		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
+		AmountResource result = null;
+		Map<Integer, AmountResource> map = getAmountResourcesIDMap();
+		result = map.get(id);		
+		if (result != null) return result;
+		else throw new IllegalStateException("Resource: " + id + " could not be found.");
+	}
 
+	
+	/**
+	 * Finds an amount resource by name.
+	 * @param name the name of the resource.
+	 * @return resource
+	 * @throws ResourceException if resource could not be found.
+	 */
+	public static AmountResource findAmountResource(String name) {
+		//count++;
+		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
+		Map<String, AmountResource> map = getAmountResourcesMap();
+		AmountResource result = null;
+		result = map.get(name.toLowerCase());
+		if (result != null) return result;
+		else throw new IllegalStateException("Resource: " + name + " could not be found.");
+	}
+
+	/**
+	 * Finds an amount resource by name.
+	 * @param name the name of the resource.
+	 * @return resource
+	 * @throws ResourceException if resource could not be found.
+	 */
+	public static int findIDbyAmountResourceName(String name) {
+		//count++;
+		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
+		Map<Integer, String> map = getIDNameMap();
+		Object result = null;
+		result = getKeyByValue(map, name.toLowerCase());
+		if (result != null) return (int) result;
+		else throw new IllegalStateException("Resource: " + name + " could not be found.");
+	}
+	
+	
+	/**
+	 * Returns the first matched key from a given value in a map for one-to-one relationship
+	 * @param map
+	 * @param value
+	 * @return key
+	 */
+	public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+	    for (Entry<T, E> entry : map.entrySet()) {
+	        if (Objects.equals(value, entry.getValue())) {
+	            return entry.getKey();
+	        }
+	    }
+	    return null;
+	}
+	
+	/**
+	 * Returns a set of keys from a given value in a map using Java 8 stream
+	 * @param map
+	 * @param value
+	 * @return a set of key
+	 */
+	public static <T, E> Set<T> getKeySetByValue(Map<T, E> map, E value) {
+	    return map.entrySet()
+	              .stream()
+	              .filter(entry -> Objects.equals(entry.getValue(), value))
+	              .map(Map.Entry::getKey)
+	              .collect(Collectors.toSet());
+	}
+	
 	/**
 	 * Gets a ummutable set of all the amount resources.
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
-		Set<AmountResource> set = SimulationConfig
-		.instance()
-		.getResourceConfiguration()
-		.getAmountResources();
+		Set<AmountResource> set = amountResourceConfig.getAmountResources();
 		return Collections.unmodifiableSet(set);
 	}
-
+	
+	/**
+	 * gets a sorted map of all amount resource names by calling
+	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
+	 * @return {@link Map}<{@link Integer}, {@link String}>
+	 */
+	public static Map<Integer, String> getIDNameMap() {
+		return amountResourceConfig.getIDNameMap();
+	}
+	
+	/**
+	 * gets a sorted map of all amount resources by calling
+	 * {@link AmountResourceConfig#getAmountResourcesIDMap()}.
+	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
+	 */
+	public static Map<Integer, AmountResource> getAmountResourcesIDMap() {
+		return amountResourceConfig.getAmountResourcesIDMap();
+	}
+	
 	/**
 	 * gets a sorted map of all amount resources by calling
 	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
 	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
 	public static Map<String,AmountResource> getAmountResourcesMap() {
-		
-		//System.out.println("AmountResource : caling getAmountResourcesMap()");
-
-		return SimulationConfig
-		.instance()
-		.getResourceConfiguration()
-		.getAmountResourcesMap();
+		return amountResourceConfig.getAmountResourcesMap();
 	}
 
 	/**

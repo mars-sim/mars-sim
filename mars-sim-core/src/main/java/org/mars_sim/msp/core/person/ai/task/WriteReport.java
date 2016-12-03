@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The WriteReport class is a task for writing reports in an office space
@@ -62,6 +63,7 @@ implements Serializable {
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
         		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
+        	/*
             if (roleType == null)
             	roleType = person.getRole().getType();
 
@@ -75,7 +77,7 @@ implements Serializable {
             	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
             	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
             	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) ) {
-
+*/
 	            // If person is in a settlement, try to find an office building.
 	            Building officeBuilding = getAvailableOffice(person);
 	            if (officeBuilding != null) {
@@ -84,16 +86,23 @@ implements Serializable {
 
 	                office = (Administration) officeBuilding.getFunction(BuildingFunction.ADMINISTRATION);
 
-
 	            }
-	            //else {
-	            //    endTask();
-	            //}
+	            	            
+                // set the boolean to true so that it won't be done again today
+                person.getPreference().setTaskDue(this, true);
+            //}
+        }
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 
+            if (person.getVehicle() instanceof Rover) {
+                walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
+                
                 // set the boolean to true so that it won't be done again today
                 person.getPreference().setTaskDue(this, true);
             }
+
         }
+        
         else {
             endTask();
         }

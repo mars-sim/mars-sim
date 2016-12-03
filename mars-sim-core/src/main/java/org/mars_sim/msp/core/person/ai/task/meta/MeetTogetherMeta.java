@@ -50,7 +50,7 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.meetTogether"); //$NON-NLS-1$
-    
+     
     @Override
     public String getName() {
         return NAME;
@@ -64,66 +64,31 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
     @Override
     public double getProbability(Person person) {
 
-        double result = 1D;
+        double result = 0D;
         // TODO: Probability affected by the person's stress and fatigue.
 
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-            Set<Person> pool = new HashSet<Person>();
-            Settlement s = person.getSettlement();
+        	RoleType roleType = person.getRole().getType();
 
-            // Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements      
-            Collection<Person> attendees = null; 
-                 	      	              
-            pool.addAll(attendees); 
-            
-            // pool doesn't include this person
-            pool.remove((Person)person);
-            
-            int num = pool.size();
+            if (roleType.equals(RoleType.PRESIDENT)
+                	|| roleType.equals(RoleType.MAYOR)
+            		|| roleType.equals(RoleType.COMMANDER) )
+            	result += 100D;
+
+            else if (roleType.equals(RoleType.CHIEF_OF_AGRICULTURE)
+            	|| roleType.equals(RoleType.CHIEF_OF_ENGINEERING)
+            	|| roleType.equals(RoleType.CHIEF_OF_LOGISTICS_N_OPERATIONS)
+            	|| roleType.equals(RoleType.CHIEF_OF_MISSION_PLANNING)
+            	|| roleType.equals(RoleType.CHIEF_OF_SAFETY_N_HEALTH)
+            	|| roleType.equals(RoleType.CHIEF_OF_SCIENCE)
+            	|| roleType.equals(RoleType.CHIEF_OF_SUPPLY_N_RESOURCES) )
+            	result += 30D;
  
-        	if (result > 0) {
-	            // Check if there is a building big enough to hold the meeting.
-        		// Use Lounge by default (max : 33)
-	            Building diningBuilding = EatMeal.getAvailableDiningBuilding(person, true);
-	            if (diningBuilding != null) {
-	            	// Walk to that building.
-	            	//pool.addAll(p_same_bldg_talking);
-	            	// having a dining hall will increase the base chance of conversation by 1.2 times 
-	            	result = result * 1.2;
-	            	// modified by his relationship with those already there
-	                result *= TaskProbabilityUtil.getRelationshipModifier(person, diningBuilding);
-	            }
-        	}
         }
 
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        	Settlement s = person.getAssociatedSettlement();
-        	Set<Person> pool = new HashSet<Person>();
-        	
-        	Vehicle v = (Vehicle) person.getContainerUnit();
-        	// get the number of people maintaining or repairing this vehicle
-        	Collection<Person> affected = v.getAffectedPeople();       	
-             
-            pool.addAll(affected);
-             int num = pool.size();
-            //System.out.println("talking folks : " + talking);
-            //TODO: get some candidates to switch their tasks to HaveConversation       
-            // need to have at least two people to have a social conversation
-            //if (num == 0) {
-            	// no one is chatting to yet
-            	// but he could the first person to start the chat 
-            //}
-            if (num == 1) {
-        		double rand = RandomUtil.getRandomDouble(1);
-            	result = result + rand*result;
-            }
-            else {
-        		//result = (num + 1)*result;
-        		double rand = RandomUtil.getRandomDouble(num)+ 1;
-            	result = result + rand*result;
-            }
-        }
+        //else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+        //}
 
 
         // Effort-driven task modifier.
@@ -132,7 +97,7 @@ public class MeetTogetherMeta implements MetaTask, Serializable {
     	int now = (int) Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
         if (isOnShiftNow)
-        	result = result/2.0;
+        	result = result*1.5D;
         
         if (result > 0)
         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;

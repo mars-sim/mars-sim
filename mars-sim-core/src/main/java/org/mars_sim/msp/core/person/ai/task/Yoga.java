@@ -57,6 +57,9 @@ implements Serializable {
             walkToRandomLocation(true);
         }
 
+        // set the boolean to true so that it won't be done again today
+        person.getPreference().setTaskDue(this, true);
+        
         // Initialize phase
         addPhase(DOING_YOGA);
         setPhase(DOING_YOGA);
