@@ -93,7 +93,7 @@ implements Serializable {
 	static AmountResource cropWasteAR;
 	static AmountResource soilAR;
 	static AmountResource waterAR;
-	static AmountResource greyWaterAR;
+	public static AmountResource greyWaterAR;
 	static AmountResource fertilizerAR;
 	static AmountResource o2AR;
 	static AmountResource co2AR;

@@ -1022,13 +1022,17 @@ public class GoodsManager implements Serializable {
 
         String r = resource.getName().toLowerCase();
 
-        if ( r.equals("Garlic Oil") || r.equals("Sesame Oil") || r.equals("Soybean Oil") || r.equals("Peanut Oil")) {
-            // Assuming a person takes 2.5 meals per sol
-            demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;
-        }
-        else if ( r.equals("Table Salt")) {
+        if (r.equals(Cooking.TABLE_SALT)) {
             // Assuming a person takes 2.5 meals per sol
             demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
+        }
+        else {
+	        for (AmountResource ar : Cooking.getOilMenuARList()) {
+		        if (r.equals(ar.getName().toLowerCase())){
+		            // Assuming a person takes 2.5 meals per sol
+		            demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_OIL_PER_MEAL;
+		        }
+	        }
         }
 
         // Determine total demand for cooked meal mass for the settlement.
@@ -1066,15 +1070,16 @@ public class GoodsManager implements Serializable {
 
         double demand = 0D;
         // 2015-03-02 Used PreparingDessert.getArrayOfDesserts()
-        String[] dessert = PreparingDessert.getArrayOfDesserts();
-        //List<String> dessertList = PreparingDessert.getAListOfDesserts();
-        String dessertName = resource.getName();
+        AmountResource[] dessert = PreparingDessert.getArrayOfDessertsAR();
         boolean hasDessert = false;
 
-        for(String n : dessert)
-        	if (n.equalsIgnoreCase(dessertName))
+        for(AmountResource ar : dessert) {
+        	if (ar.getName().equalsIgnoreCase(resource.getName())) {
         		hasDessert = true;
-
+        		break;
+        	}
+        }
+        	
         if (hasDessert) {
             //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
             double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;

@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.structure.building.function.RoboticStation;
 import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.structure.building.function.farming.CropConfig;
 import org.mars_sim.msp.core.structure.building.function.farming.CropType;
+import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -67,11 +68,13 @@ implements Serializable {
     public static final String FOOD_WASTE = "food waste";
     public static final String GREY_WATER = "grey water"; 
     public static final String TABLE_SALT = "table salt";
+    public static final String SOLID_WASTE = "solid waste";
+    public static final String NAPKIN = "napkin";
     
-    public static final String SOYBEAN_OIL = "Soybean Oil";
-    public static final String GARLIC_OIL = "Garlic Oil";
-    public static final String SESAME_OIL = "Sesame Oil";
-    public static final String PEANUT_OIL = "Peanut Oil";
+    public static final String SOYBEAN_OIL = "soybean oil";
+    public static final String GARLIC_OIL = "garlic oil";
+    public static final String SESAME_OIL = "sesame oil";
+    public static final String PEANUT_OIL = "peanut oil";
 		 
     public static final int RECHECKING_FREQ = 250; // in millisols
     
@@ -101,7 +104,8 @@ implements Serializable {
     //private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
     private List<CropType> cropTypeList;
-    private List<String> oilMenu = new CopyOnWriteArrayList<>();
+    private List<String> oilMenu;// = new CopyOnWriteArrayList<>();
+    private static List<AmountResource> oilMenuAR;
     
     private int cookCapacity;
 	private int mealCounterPerSol = 0;
@@ -120,8 +124,16 @@ implements Serializable {
     private Inventory inv;
     private HotMeal aMeal;
     private Settlement settlement;
-    private AmountResource dryFoodAR = null;
-
+    
+    static AmountResource dryFoodAR;
+    static AmountResource NaClOAR;
+    static AmountResource greyWaterAR;
+    public static AmountResource waterAR;
+    public static AmountResource foodWasteAR;
+    public static AmountResource foodAR;
+    public static AmountResource solidWasteAR;
+    public static AmountResource napkinAR; 
+    
     private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); //HashMap<String, Integer>();
 
@@ -179,18 +191,39 @@ implements Serializable {
     	timeMap = ArrayListMultimap.create();
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven test
+        
+        napkinAR = AmountResource.findAmountResource(NAPKIN);
+        solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);
+        foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+        foodWasteAR = AmountResource.findAmountResource(FOOD_WASTE);
+        greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
+        NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);
         dryFoodAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupportType.FOOD);
+        waterAR = AmountResource.findAmountResource(org.mars_sim.msp.core.LifeSupportType.WATER);
         dryMassPerServing = personConfig.getFoodConsumptionRate() / (double) NUMBER_OF_MEAL_PER_SOL;
 
        	// 2014-12-12 Added computeDryMass()
         computeDryMass();
         
+        prepareOilMenu();
+
+    }
+
+    public void prepareOilMenu() {
+        oilMenu = new CopyOnWriteArrayList<String>();
         oilMenu.add(SOYBEAN_OIL);
         oilMenu.add(GARLIC_OIL);
         oilMenu.add(SESAME_OIL);
         oilMenu.add(PEANUT_OIL);
+        
+        oilMenuAR = new CopyOnWriteArrayList<AmountResource>();
+        oilMenuAR.add(AmountResource.findAmountResource(SOYBEAN_OIL));
+        oilMenuAR.add(AmountResource.findAmountResource(GARLIC_OIL));
+        oilMenuAR.add(AmountResource.findAmountResource(SESAME_OIL));
+        oilMenuAR.add(AmountResource.findAmountResource(PEANUT_OIL));
     }
-
+    
+    
     // 2014-12-12 Created computeDryMass(). Called out once only in Cooking.java's constructor
     public void computeDryMass() {
     	Iterator<HotMeal> i = mealConfigMealList.iterator();
@@ -848,7 +881,7 @@ implements Serializable {
     		usage = 1 - rand;
 	    retrieveAnIngredientFromMap(usage, LifeSupportType.WATER, true);
 		double wasteWaterAmount = usage * .5;
-		Storage.storeAnResource(wasteWaterAmount, GREY_WATER, inv);
+		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv);
     }
 
 
@@ -948,7 +981,7 @@ implements Serializable {
                         double quality = meal.getQuality() / 2D + 1D;
                         double num = RandomUtil.getRandomDouble(7 * quality + 1);
                         if (num < 1) {
-                            Storage.storeAnResource(dryMassPerServing, FOOD_WASTE, inv);
+                            Storage.storeAnResource(dryMassPerServing, foodWasteAR, inv);
                             logger.fine(dryMassPerServing  + " kg " + meal.getName()
                                     + " expired, turned bad and discarded at " + getBuilding().getNickName()
                                     + " in " + settlement.getName() );
@@ -1013,14 +1046,14 @@ implements Serializable {
 
 	// 2015-02-27 Added cleanUpKitchen()
 	public void cleanUpKitchen() {
-		Storage.retrieveAnResource(cleaningAgentPerSol, SODIUM_HYPOCHLORITE, inv, true);
+		Storage.retrieveAnResource(cleaningAgentPerSol, NaClOAR, inv, true);
 		//Storage.retrieveAnResource(CLEANING_AGENT_PER_SOL*10D, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
 	}
 
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
 		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, TABLE_SALT, true);
-		Storage.storeAnResource(dryMassPerServing, LifeSupportType.FOOD, inv);
+		Storage.storeAnResource(dryMassPerServing, foodAR, inv);
  	}
 
     /**
@@ -1052,6 +1085,10 @@ implements Serializable {
 	@Override
 	public double getPoweredDownHeatRequired() {
 		return 0;
+	}
+	
+	public static List<AmountResource> getOilMenuARList() {
+		return oilMenuAR;
 	}
 	
     @Override

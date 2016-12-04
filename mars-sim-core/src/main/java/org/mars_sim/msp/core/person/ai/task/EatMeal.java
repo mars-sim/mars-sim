@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -87,7 +88,7 @@ public class EatMeal extends Task implements Serializable {
     // Data members
     private CookedMeal cookedMeal;
     private PreparedDessert nameOfDessert;
-    private String nameOfUnpreparedDessert;
+    private AmountResource unpreparedDessertAR;
     private boolean hasNapkin;
     private Cooking kitchen;
     private PreparingDessert dessertKitchen;
@@ -98,6 +99,7 @@ public class EatMeal extends Task implements Serializable {
     private double startingHunger;
     private double currentHunger;
 
+    
     /**
      * Constructor.
      * @param person the person to perform the task
@@ -123,7 +125,7 @@ public class EatMeal extends Task implements Serializable {
         Unit container = person.getTopContainerUnit();
         if (container != null) {
             Inventory inv = container.getInventory();
-            hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, "napkin", inv, true);
+            hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, Cooking.napkinAR, inv, true);
         }
 
         // Initialize task phase.
@@ -333,13 +335,13 @@ public class EatMeal extends Task implements Serializable {
             Inventory inv = containerUnit.getInventory();
 
             // Take preserved food from inventory if it is available.
-            if (Storage.retrieveAnResource(foodAmount, "food", inv, true)) {
+            if (Storage.retrieveAnResource(foodAmount, Cooking.foodAR, inv, true)) {
 
                 // Check if preserved food has gone bad.
                 if (RandomUtil.lessThanRandPercent(PRESERVED_FOOD_BAD_CHANCE)) {
 
                     // Throw food out.
-                    Storage.storeAnResource(foodAmount, "food waste", inv);
+                    Storage.storeAnResource(foodAmount, Cooking.foodWasteAR, inv);
                 }
                 else {
                     // Consume preserved food.
@@ -388,7 +390,7 @@ public class EatMeal extends Task implements Serializable {
 
             if (nameOfDessert != null) {
                 // Eat prepared dessert.
-            	checkInDescription(nameOfDessert.getName(), true);
+            	checkInDescription(PreparingDessert.convertString2AR(nameOfDessert.getName()), true);
                 eatPreparedDessert(eatingTime);
             }
             else {
@@ -396,7 +398,7 @@ public class EatMeal extends Task implements Serializable {
                  boolean enoughDessert = eatUnpreparedDessert(eatingTime);
 
                  if (enoughDessert) {
-                	checkInDescription(nameOfUnpreparedDessert, false);
+                	checkInDescription(unpreparedDessertAR, false);
                   }
                  
                 // If not enough unprepared dessert available, end task.
@@ -418,7 +420,8 @@ public class EatMeal extends Task implements Serializable {
         return remainingTime;
     }
 
-    private void checkInDescription(String s, boolean prepared) { 
+    private void checkInDescription(AmountResource dessertAR, boolean prepared) {
+    	String s = dessertAR.getName();
     	if (s.contains("milk") || s.contains("juice")) {
     		if (prepared)
     			setDescription(Msg.getString("Task.description.eatMeal.preparedDessert.drink", Conversion.capitalize(s))); //$NON-NLS-1$
@@ -472,15 +475,15 @@ public class EatMeal extends Task implements Serializable {
         double totalDessertAmount = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 
         // Determine dessert resource type if not known.
-        if (nameOfUnpreparedDessert == null) {
+        if (unpreparedDessertAR == null) {
 
             // Determine list of available dessert resources.
-            List<String> availableDessertResources = getAvailableDessertResources(totalDessertAmount);
+            List<AmountResource> availableDessertResources = getAvailableDessertResources(totalDessertAmount);
             if (availableDessertResources.size() > 0) {
 
                 // Randomly choose available dessert resource.
                 int index = RandomUtil.getRandomInt(availableDessertResources.size() - 1);
-                nameOfUnpreparedDessert = availableDessertResources.get(index);
+                unpreparedDessertAR = availableDessertResources.get(index);
             }
             else {
                 result = false;
@@ -488,7 +491,7 @@ public class EatMeal extends Task implements Serializable {
         }
 
         // Consume portion of unprepared dessert resource.
-        if (nameOfUnpreparedDessert != null) {
+        if (unpreparedDessertAR != null) {
             // Proportion of dessert being eaten over this time period.
             double dessertProportion = eatingTime / dessertEatingDuration;
 
@@ -500,13 +503,13 @@ public class EatMeal extends Task implements Serializable {
                 Inventory inv = containerUnit.getInventory();
 
                 // Take dessert resource from inventory if it is available.
-                if (Storage.retrieveAnResource(dessertAmount, nameOfUnpreparedDessert, inv, true)) {
+                if (Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true)) {
 
                     // Check if dessert resource has gone bad.
                     if (RandomUtil.lessThanRandPercent(UNPREPARED_DESSERT_BAD_CHANCE)) {
 
                         // Throw dessert resource out.
-                        Storage.storeAnResource(dessertAmount, "food waste", inv);
+                        Storage.storeAnResource(dessertAmount, Cooking.foodWasteAR, inv);
                     }
                     else {
                         // Consume unpreserved dessert.
@@ -531,24 +534,24 @@ public class EatMeal extends Task implements Serializable {
     }
 
     /**
-     * Gets a list of available unprepared dessert resources.
+     * Gets a list of available unprepared dessert AmountResource.
      * @param amountNeeded the amount (kg) of unprepared dessert needed for eating.
-     * @return list of resource strings.
+     * @return list of AmountResource.
      */
-    private List<String> getAvailableDessertResources(double amountNeeded) {
+    private List<AmountResource> getAvailableDessertResources(double amountNeeded) {
 
-        List<String> result = new ArrayList<String>();
+        List<AmountResource> result = new ArrayList<AmountResource>();
 
         Unit containerUnit = person.getTopContainerUnit();
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
 
-            String[] possibleDesserts = PreparingDessert.getArrayOfDesserts();
+            AmountResource[] possibleDesserts = PreparingDessert.getArrayOfDessertsAR();
             for (int x = 0; x < possibleDesserts.length; x++) {
-                String dessert = possibleDesserts[x];
-                boolean available = Storage.retrieveAnResource(amountNeeded, dessert, inv, false);
+            	AmountResource dessertAR = possibleDesserts[x];
+                boolean available = Storage.retrieveAnResource(amountNeeded, dessertAR, inv, false);
                 if (available) {
-                    result.add(dessert);
+                    result.add(dessertAR);
                 }
             }
         }
@@ -664,7 +667,7 @@ public class EatMeal extends Task implements Serializable {
                 Inventory inv = containerUnit.getInventory();
                 PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
                 double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
-                result = Storage.retrieveAnResource(foodAmount, "food", inv, false);
+                result = Storage.retrieveAnResource(foodAmount, Cooking.foodAR, inv, false);
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -693,7 +696,7 @@ public class EatMeal extends Task implements Serializable {
             Unit container = person.getTopContainerUnit();
             if (container != null) {
                 Inventory inv = container.getInventory();
-                Storage.storeAnResource(NAPKIN_MASS, "solid waste", inv);
+                Storage.storeAnResource(NAPKIN_MASS, Cooking.solidWasteAR, inv);
             }
         }
     }

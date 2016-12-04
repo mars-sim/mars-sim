@@ -144,6 +144,13 @@ extends UnitTableModel {
 	private LocalMissionManagerListener missionManagerListener;
 	private Map<Unit, Map<AmountResource, Double>> resourceCache;
 
+	private AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+	private AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+	private AmountResource methaneAR = AmountResource.findAmountResource("methane");
+	private AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
+	private AmountResource iceAR = AmountResource.findAmountResource("ice");
+	
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
 	 * Vehicles from the Unit manager.
@@ -203,12 +210,12 @@ extends UnitTableModel {
 
 				case WATER : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.WATER)));
-					result = resourceMap.get(AmountResource.findAmountResource(LifeSupportType.WATER));
+					result = resourceMap.get(waterAR);
 				} break;
 
 				case FOOD : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.FOOD)));
-					result= resourceMap.get(AmountResource.findAmountResource(LifeSupportType.FOOD));
+					result= resourceMap.get(foodAR);
 				} break;
 
 				case DESSERT : {
@@ -224,9 +231,9 @@ extends UnitTableModel {
 			   		Iterator<AmountResource> j = resourceMap.keySet().iterator();
 		    		while (j.hasNext()) {
 		    			AmountResource ar = j.next();
-				        String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
-		    	        for(String n : availableDesserts) {
-		    	        	if (AmountResource.findAmountResource(n).equals(ar)) {
+		    			AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+		    	        for(AmountResource n : availableDesserts) {
+		    	        	if (n.getName().equals(ar.getName())) {
 				    			double amount = resourceMap.get(ar);
 				    			//System.out.println("i = " + i + "   " + n + " : " + amount);
 		    	        		sum += amount;
@@ -242,17 +249,17 @@ extends UnitTableModel {
 
 				case OXYGEN : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource(LifeSupport.OXYGEN)));
-					result = resourceMap.get(AmountResource.findAmountResource(LifeSupportType.OXYGEN));
+					result = resourceMap.get(oxygenAR);
 				} break;
 
 				case METHANE : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("methane")));
-					result = resourceMap.get(AmountResource.findAmountResource("methane"));
+					result = resourceMap.get(methaneAR);
 				} break;
 
 				case ROCK_SAMPLES : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("rock samples")));
-					result = resourceMap.get(AmountResource.findAmountResource("rock samples"));
+					result = resourceMap.get(rockSamplesAR);
 				} break;
 
 				case SPEED : {
@@ -339,13 +346,13 @@ extends UnitTableModel {
 
 				case ICE : {
 					//result = decFormatter.format(resourceMap.get(AmountResource.findAmountResource("ice")));
-					result = resourceMap.get(AmountResource.findAmountResource("ice"));
+					result = resourceMap.get(iceAR);
 				} break;
 
 				}
 			}
 			catch (Exception e) {
-				logger.log(Level.SEVERE, "", e);
+				logger.log(Level.SEVERE, "getValueAt() cannot return a valid result", e);
 				e.printStackTrace(System.err);
 			}
 		}
@@ -381,24 +388,24 @@ extends UnitTableModel {
 			try {
 				int tempColumnNum = -1;
 
-				if (target.equals(AmountResource.findAmountResource(LifeSupportType.OXYGEN)))
+				if (target.equals(oxygenAR))
 					tempColumnNum = OXYGEN;
-				else if (target.equals(AmountResource.findAmountResource("methane")))
+				else if (target.equals(methaneAR))
 					tempColumnNum = METHANE;
-				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.FOOD)))
+				else if (target.equals(foodAR))
 					tempColumnNum = FOOD;
-				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.WATER)))
+				else if (target.equals(waterAR))
 					tempColumnNum = WATER;
-				else if (target.equals(AmountResource.findAmountResource("rock samples")))
+				else if (target.equals(rockSamplesAR))
 					tempColumnNum = ROCK_SAMPLES;
-				else if (target.equals(AmountResource.findAmountResource("ice")))
+				else if (target.equals(iceAR))
 					tempColumnNum = ICE;
 				else {
 					// 2015-03-09 Added matching the dessert chosen for the journey
-					String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+					AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 				  	// Put together a list of available dessert
-			        for(String n : availableDesserts) {
-			        	if (target.equals(AmountResource.findAmountResource(n)))
+			        for(AmountResource n : availableDesserts) {
+			        	if (((AmountResource) target).getName().equals(n.getName()))
 			    			tempColumnNum = DESSERT;
 			        }
 				}
@@ -442,32 +449,32 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
-				AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-				resourceMap.put(food, getResourceStored(newUnit, food));
-				AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
-				AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-				resourceMap.put(water, getResourceStored(newUnit, water));
-				AmountResource methane = AmountResource.findAmountResource("methane");
-				resourceMap.put(methane, getResourceStored(newUnit, methane));
-				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-				resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
-				AmountResource ice = AmountResource.findAmountResource("ice");
-				resourceMap.put(ice, getResourceStored(newUnit, ice));
+				//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+				resourceMap.put(foodAR, getResourceStored(newUnit, foodAR));
+				//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+				resourceMap.put(oxygenAR, getResourceStored(newUnit, oxygenAR));
+				//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+				resourceMap.put(waterAR, getResourceStored(newUnit, waterAR));
+				//AmountResource methane = AmountResource.findAmountResource("methane");
+				resourceMap.put(methaneAR, getResourceStored(newUnit, methaneAR));
+				//AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+				resourceMap.put(rockSamplesAR, getResourceStored(newUnit, rockSamplesAR));
+				//AmountResource ice = AmountResource.findAmountResource("ice");
+				resourceMap.put(iceAR, getResourceStored(newUnit, iceAR));
 
 				// 2015-03-09 Added all dessert to the resourceMap
-				String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
+				AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 			  	// Put together a list of available dessert
-		        for(String n : availableDesserts) {
-		        	AmountResource dessert = AmountResource.findAmountResource(n);
-		        	resourceMap.put(dessert, getResourceStored(newUnit, dessert));
+		        for(AmountResource ar : availableDesserts) {
+		        	//AmountResource dessert = AmountResource.findAmountResource(n);
+		        	resourceMap.put(ar, getResourceStored(newUnit, ar));
 		        }
 
 				resourceCache.put(newUnit, resourceMap);
 
 			}
 			catch (Exception e) {
-				logger.log(Level.SEVERE, "", e);
+				logger.log(Level.SEVERE, "addUnit() does not work when creating resourceCache", e);
 			}
 		}
 		super.addUnit(newUnit);

@@ -763,28 +763,27 @@ extends VehicleMission {
         // Determine dessert amount for trip.
         double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * crewNum * timeSols;
         
-        
         // Put together a list of available unprepared dessert resources. 
-        List<String> dessertList = new ArrayList<String>();
-        String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
-        for (String n : availableDesserts) {     
+        List<AmountResource> dessertList = new ArrayList<AmountResource>();
+        AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+        for (AmountResource ar : availableDesserts) {     
             
             // See if an unprepared dessert resource is available
-            boolean isAvailable = Storage.retrieveAnResource(dessertAmount, n, startingSettlement.getInventory(), false);
+            boolean isAvailable = Storage.retrieveAnResource(dessertAmount, ar, startingSettlement.getInventory(), false);
             if (isAvailable) {
-                dessertList.add(n);                    
+                dessertList.add(ar);                    
             }
         }
         
         // Randomly choose an unprepared dessert resource from the available resources.
-        AmountResource dessert = null;
+        AmountResource dessertAR = null;
         if (dessertList.size() > 0) {
-            String dessertName = dessertList.get(RandomUtil.getRandomInt(dessertList.size() - 1));
-            dessert = AmountResource.findAmountResource(dessertName);
+        	dessertAR = dessertList.get(RandomUtil.getRandomInt(dessertList.size() - 1));
+            //dessert = AmountResource.findAmountResource(dessertName);
         }
         
-        if (dessert != null) {
-            dessertResources.put(dessert, dessertAmount);
+        if (dessertAR != null) {
+            dessertResources.put(dessertAR, dessertAmount);
         }
 	}
 

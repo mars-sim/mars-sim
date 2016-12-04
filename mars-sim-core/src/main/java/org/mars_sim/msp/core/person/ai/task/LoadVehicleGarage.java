@@ -895,11 +895,11 @@ implements Serializable {
         		double remainingSettlementDessertAmount = 0;
         		double amountDessertNeeded = (Double) resources.get(resource);
            	  	// Put together a list of available dessert 
-        		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();
-                for(String n : availableDesserts) {
-                	AmountResource dessert = AmountResource.findAmountResource(n);
+        		AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+                for(AmountResource dessert : availableDesserts) {
+                	//AmountResource dessert = AmountResource.findAmountResource(n);
 	        		
-                	if (resource.equals(dessert)) {
+                	if (resource.getName().equals(dessert.getName())) {
     	        		// 2015-03-15 Added the amount of all six desserts together
     	        		amountDessertLoaded += vInv.getAmountResourceStored((AmountResource) resource, false);	
     	        		totalAmountDessertStored += inv.getAmountResourceStored((AmountResource) resource, false);
@@ -988,11 +988,11 @@ implements Serializable {
     	double tripTimeSols = tripTime / 1000D;	
     	boolean isDessert = false;
 		// 2015-03-09 Added all desserts to the matching test
-		String [] availableDesserts = PreparingDessert.getArrayOfDesserts();									
+    	AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();									
 	  	// Put together a list of available dessert 
-        for(String n : availableDesserts) {
-        	AmountResource dessert = AmountResource.findAmountResource(n);
-        	if (resource.equals(dessert)) {
+        for(AmountResource dessert : availableDesserts) {
+        	//AmountResource dessert = AmountResource.findAmountResource(n);
+        	if (resource.getName().equals(dessert.getName())) {
         		//System.out.println("LocalVehicleGarage.java : getRemainingSettlementAmount() : " + n + " was the chosen dessert. ");
         		amountPersonPerSol = PreparingDessert.getDessertMassPerServing(); 
         		isDessert = true;

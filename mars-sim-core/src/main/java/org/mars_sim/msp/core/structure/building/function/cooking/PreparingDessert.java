@@ -95,6 +95,15 @@ implements Serializable {
 			"blueberry muffin",
 			"cranberry juice"  };
 
+    private static AmountResource [] availableDessertsAR =     	
+    	{ 	AmountResource.findAmountResource("soymilk"),
+    		AmountResource.findAmountResource("sugarcane juice"),
+    		AmountResource.findAmountResource("strawberry"),
+    		AmountResource.findAmountResource("granola bar"),
+    		AmountResource.findAmountResource("blueberry muffin"),
+    		AmountResource.findAmountResource("cranberry juice")  };
+
+    		
 	// TODO: get the real world figure on each serving
     // arbitrary dry mass of the corresponding dessert/beverage.
 	private static double [] dryMass =
@@ -114,7 +123,7 @@ implements Serializable {
         // Use Function constructor.
         super(FUNCTION, building);
         this.building = building;
-
+        
         inv = getBuilding().getBuildingManager().getSettlement().getInventory();
 
         settlement = getBuilding().getBuildingManager().getSettlement();
@@ -142,7 +151,27 @@ implements Serializable {
     	return availableDesserts;
     }
 
+    public static AmountResource[] getArrayOfDessertsAR() {
+    	return availableDessertsAR;
+    }
 
+    public static String convertAR2String(AmountResource dessertAR) {
+    	for (AmountResource ar : availableDessertsAR) {
+    		if (ar.getName().equals(dessertAR.getName()))
+    			return dessertAR.getName();
+    	}
+    	return null;
+    }
+    
+    public static AmountResource convertString2AR(String dessert) {
+    	for (String s : availableDesserts) {
+    		if (dessert.equals(s)) {
+    			return availableDessertsAR[s.indexOf(dessert)];
+    		}
+    	}
+    	return null;
+    }
+    
     // 2015-01-12 Added setChef()
     public void setChef(String name) {
     	this.producerName = name;
@@ -470,9 +499,9 @@ implements Serializable {
     // 2015-01-28 Added useWater()
     public void useWater() {
     	//TODO: need to move the hardcoded amount to a xml file
-    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, org.mars_sim.msp.core.LifeSupportType.WATER, inv, true);
+    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, Cooking.waterAR, inv, true);
 		double wasteWaterAmount = WATER_USAGE_PER_DESSERT * .95;
-		Storage.storeAnResource(wasteWaterAmount, "grey water", inv);
+		Storage.storeAnResource(wasteWaterAmount, Cooking.greyWaterAR, inv);
     }
 
 
@@ -503,7 +532,7 @@ implements Serializable {
                         double num = RandomUtil.getRandomDouble(8 * quality);
                         if (num < 1) {
                             // Throw out bad dessert as food waste.
-                            Storage.storeAnResource(getDryMass(dessert.getName()), "Food Waste", inv);
+                            Storage.storeAnResource(getDryMass(dessert.getName()), Cooking.foodWasteAR, inv);
                             logger.finest(getDryMass(dessert.getName()) + " kg "
                                     + dessert.getName()
                                     + " expired, turned bad and discarded at " + getBuilding().getNickName()
