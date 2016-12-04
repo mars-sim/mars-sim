@@ -47,7 +47,7 @@ public class AmountResourceConfig implements Serializable {
 
 	private Map<Integer, AmountResource> amountResourceIDMap;
 	
-	private Map<Integer, String> idNameMap;
+	private Map<Integer, String> IDNameMap;
 
 	
 	/**
@@ -57,10 +57,23 @@ public class AmountResourceConfig implements Serializable {
 	 */
 	public AmountResourceConfig(Document amountResourceDoc) {
 		id = 0;
-		amountResourceMap = new HashMap<String, AmountResource>();
-		amountResourceIDMap = new HashMap<Integer, AmountResource>();
-		idNameMap = new HashMap<Integer, String>() ;
+
 		loadAmountResources(amountResourceDoc);
+			
+		amountResourceMap = new HashMap<String,AmountResource>();		
+		for (AmountResource resource : resources) {
+			amountResourceMap.put(resource.getName(), resource);
+		}
+
+		amountResourceIDMap = new HashMap<Integer, AmountResource>();
+		for (AmountResource resource : resources) {
+			amountResourceIDMap.put(resource.getID(), resource);
+		}
+
+		IDNameMap = new HashMap<Integer, String>();
+		for (AmountResource resource : resources) {
+			IDNameMap.put(resource.getID(), resource.getName());
+		}
 	}
 
 	/**
@@ -114,18 +127,19 @@ public class AmountResourceConfig implements Serializable {
 	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
 	public Map<String, AmountResource> getAmountResourcesMap() {
-		if (!amountResourceMap.isEmpty())
+//		if (!amountResourceMap.isEmpty())
 			return amountResourceMap;
-		
+/*		
 		else {
 			Map<String, AmountResource> map = new HashMap<String,AmountResource>();		
 			for (AmountResource resource : resources) {
 				map.put(resource.getName(), resource);
 			}
-			//System.out.println("AmountResourceConfig : done getAmountResourcesMap()");
+			amountResourceMap = map;
+			//System.out.println("amountResourcesMap constructed");
 			return map;
 		}
-
+*/
 	}
 	
 	/**
@@ -133,16 +147,19 @@ public class AmountResourceConfig implements Serializable {
 	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
 	 */
 	public Map<Integer, AmountResource> getAmountResourcesIDMap() {
-		if (!amountResourceIDMap.isEmpty())
+//		if (!amountResourceIDMap.isEmpty())
 			return amountResourceIDMap;
-		
+/*		
 		else {
 			Map<Integer, AmountResource> map = new HashMap<Integer, AmountResource>();
 			for (AmountResource resource : resources) {
 				map.put(resource.getID(), resource);
 			}
+			amountResourceIDMap = map;
+			//System.out.println("amountResourcesIDMap constructed");
 			return map;
 		}
+*/		
 	}
 	
 	/**
@@ -150,16 +167,19 @@ public class AmountResourceConfig implements Serializable {
 	 * @return {@link Map}<{@link Integer},{@link String}>
 	 */
 	public Map<Integer, String> getIDNameMap() {
-		if (!idNameMap.isEmpty())
-			return idNameMap;
-		
+//		if (!IDNameMap.isEmpty())
+			return IDNameMap;
+/*		
 		else {
 			Map<Integer, String> map = new HashMap<Integer, String>();
 			for (AmountResource resource : resources) {
 				map.put(resource.getID(), resource.getName());
 			}
+			IDNameMap = map;
+			//System.out.println("IDNameMap constructed");
 			return map;
 		}
+*/		
 	}
 	
 }

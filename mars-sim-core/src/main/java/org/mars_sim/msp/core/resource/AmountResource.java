@@ -174,11 +174,12 @@ implements Serializable {
 	public static AmountResource findAmountResource(int id) {
 		//count++;
 		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
-		AmountResource result = null;
-		Map<Integer, AmountResource> map = getAmountResourcesIDMap();
-		result = map.get(id);		
-		if (result != null) return result;
-		else throw new IllegalStateException("Resource: " + id + " could not be found.");
+		//AmountResource result = null;
+		//Map<Integer, AmountResource> map = getAmountResourcesIDMap();
+		//result = getAmountResourcesIDMap().get(id);		
+		//if (result != null) return result;
+		//else throw new IllegalStateException("Resource: " + id + " could not be found.");
+		return getAmountResourcesIDMap().get(id);
 	}
 
 	
@@ -191,11 +192,12 @@ implements Serializable {
 	public static AmountResource findAmountResource(String name) {
 		//count++;
 		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
-		Map<String, AmountResource> map = getAmountResourcesMap();
-		AmountResource result = null;
-		result = map.get(name.toLowerCase());
-		if (result != null) return result;
-		else throw new IllegalStateException("Resource: " + name + " could not be found.");
+		//Map<String, AmountResource> map = getAmountResourcesMap();
+		//AmountResource result = null;
+		//result = getAmountResourcesMap().get(name.toLowerCase());
+		//if (result != null) return result;
+		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
+		return getAmountResourcesMap().get(name.toLowerCase());
 	}
 
 	/**
@@ -207,11 +209,12 @@ implements Serializable {
 	public static int findIDbyAmountResourceName(String name) {
 		//count++;
 		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
-		Map<Integer, String> map = getIDNameMap();
-		Object result = null;
-		result = getKeyByValue(map, name.toLowerCase());
-		if (result != null) return (int) result;
-		else throw new IllegalStateException("Resource: " + name + " could not be found.");
+		//Map<Integer, String> map = getIDNameMap();
+		//Object result = null;
+		//result = getKeyByValue(getIDNameMap(), name.toLowerCase());
+		//if (result != null) return (int) result;
+		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
+		return (int)(getKeyByValue(getIDNameMap(), name.toLowerCase()));
 	}
 	
 	

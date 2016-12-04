@@ -647,7 +647,7 @@ implements VehicleOperator, MissionMember, Serializable {
             // result in death.
             
             // if alive
-            if (health.timePassing(time, support, config)) {
+            if (health.timePassing(time, support)) {//, config)) {
 
             	// 2015-06-29 Added calling preference
             	preference.timePassing(time);

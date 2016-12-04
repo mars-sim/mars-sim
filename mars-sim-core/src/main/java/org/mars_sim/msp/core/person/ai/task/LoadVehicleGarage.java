@@ -22,12 +22,14 @@ import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -84,6 +86,13 @@ implements Serializable {
 	private Vehicle vehicle;
 	/** The person's settlement. */
 	private Settlement settlement;
+	
+	private static PersonConfig personConfig;
+	
+	private static AmountResource oxygenAR;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR;// = AmountResource.findAmountResource(LifeSupportType.WATER);
+	private static AmountResource foodAR;// = AmountResource.findAmountResource(LifeSupportType.FOOD);
+
 	/** Resources required to load. */
 	private Map<Resource, Number> requiredResources;
 	/** Resources desired to load but not required. */
@@ -100,6 +109,12 @@ implements Serializable {
 	public LoadVehicleGarage(Person person) {
     	// Use Task constructor
     	super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
+    	
+        personConfig = SimulationConfig.instance().getPersonConfiguration();
+    	
+    	oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+    	waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+    	foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
     	
     	VehicleMission mission = getMissionNeedingLoading();
     	if (mission != null) {
@@ -987,13 +1002,13 @@ implements Serializable {
 
         if (!isDessert) {
 	    	// Only life support resources are required at settlement at this time.
-	    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	    	AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-	    	AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+	    	//AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	    	//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+	    	//AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		
-	    	if (resource.equals(oxygen)) amountPersonPerSol = PhysicalCondition.getOxygenConsumptionRate();
-	    	else if (resource.equals(water)) amountPersonPerSol = PhysicalCondition.getWaterConsumptionRate();
-	    	else if (resource.equals(food)) amountPersonPerSol = PhysicalCondition.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
+	    	if (resource.equals(oxygenAR)) amountPersonPerSol = personConfig.getNominalO2Rate();
+	    	else if (resource.equals(waterAR)) amountPersonPerSol = personConfig.getWaterConsumptionRate();
+	    	else if (resource.equals(foodAR)) amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
         }
         
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);

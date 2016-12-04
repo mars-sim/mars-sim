@@ -31,8 +31,6 @@ import org.mars_sim.msp.core.person.medical.MedicalEvent;
 import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.robot.Robot;
-import org.mars_sim.msp.core.robot.RobotConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -139,8 +137,6 @@ implements Serializable {
 
     /** Person owning this physical. */
     private Person person;
-
-    private Robot robot;
     /** Details of persons death. */
     private DeathInfo deathDetails;
     /** Most serious problem. */
@@ -149,7 +145,10 @@ implements Serializable {
     // 2015-04-29 Added RadiationExposure
     private RadiationExposure radiation;
 
-	private MarsClock marsClock;// = Simulation.instance().getMasterClock().getMarsClock();
+	private MarsClock marsClock;
+
+	private static PersonConfig personConfig;
+	private AmountResource foodAR;
 
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
@@ -186,7 +185,7 @@ implements Serializable {
 
         medicationList = new ArrayList<Medication>();
 
-        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+        personConfig = SimulationConfig.instance().getPersonConfiguration();
         foodDryMassPerServing = personConfig.getFoodConsumptionRate() / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
         try {
@@ -198,6 +197,7 @@ implements Serializable {
             e.printStackTrace(System.err);
         }
 
+    	foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 
     }
 
@@ -227,11 +227,9 @@ implements Serializable {
      *
      * @param time amount of time passing (in millisols)
      * @param support life support system.
-     * @param config person configuration.
      * @return True still alive.
      */
-    boolean timePassing(double time, LifeSupportType support,
-            PersonConfig config) {
+    boolean timePassing(double time, LifeSupportType support) {
 
     	if (alive) {
 	      	// 2015-12-05 check for the passing of each day
@@ -297,9 +295,9 @@ implements Serializable {
 	                logger.log(Level.SEVERE, person.getName() + " has insufficient oxygen.");
 	            if (consumeWater(support, getWaterConsumptionRate() * (time / 1000D)))
 	                logger.log(Level.SEVERE, person.getName() + " has insufficient water.");
-	            if (requireAirPressure(support, config.getMinAirPressure()))
+	            if (requireAirPressure(support, personConfig.getMinAirPressure()))
 	                logger.log(Level.SEVERE, person.getName() + " has insufficient air pressure.");
-	            if (requireTemperature(support, config.getMinTemperature(), config.getMaxTemperature()))
+	            if (requireTemperature(support, personConfig.getMinTemperature(), personConfig.getMaxTemperature()))
 	                logger.log(Level.SEVERE, person.getName() + " cannot survive long at this high/low temperature.");
 	        }
 	        catch (Exception e) {
@@ -331,12 +329,12 @@ implements Serializable {
 	
 	        // If person is at high stress, check for mental breakdown.
 	        if (stress > MENTAL_BREAKDOWN) {
-	            checkForStressBreakdown(config, time);
+	            checkForStressBreakdown(time);
 	        }
 	
 	        // 2016-03-01 check if person is at very high fatigue may collapse.
 	        if (fatigue > COLLAPSE_IMMINENT) {
-	            checkForHighFatigueCollapse(config, time);
+	            checkForHighFatigueCollapse(time);
 	        }
 	        
 	        // Calculate performance and most serious illness.
@@ -450,7 +448,7 @@ implements Serializable {
      */
     public void consumeFood(double amount, Unit container) {
         if (container == null) throw new IllegalArgumentException("container is null");
-		consumePackedFood(amount, container, LifeSupportType.FOOD);
+		consumePackedFood(amount, container);//, LifeSupportType.FOOD);
 
     }
 
@@ -472,12 +470,12 @@ implements Serializable {
      */
 	// 2014-11-07 Added consumePackedFood()
     @SuppressWarnings("unused")
-	public void consumePackedFood(double amount, Unit container, String foodType) {
+	public void consumePackedFood(double amount, Unit container) {//, String foodType) {
     	Inventory inv = container.getInventory();
 
     	if (container == null) throw new IllegalArgumentException("container is null");
 
-    	AmountResource foodAR = AmountResource.findAmountResource(foodType);
+    	//AmountResource foodAR = AmountResource.findAmountResource(foodType);
         double foodEaten = amount;
         double foodAvailable = inv.getAmountResourceStored(foodAR, false);
 
@@ -801,7 +799,7 @@ implements Serializable {
      * @param time the time passing (millisols)
      */
     // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
-    private void checkForStressBreakdown(PersonConfig personConfig, double time) {
+    private void checkForStressBreakdown(double time) {
  
     	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
     	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
@@ -888,7 +886,7 @@ implements Serializable {
      * @param time the time passing (millisols)
      */
     // 2016-03-01 checkForHighFatigue
-    private void checkForHighFatigueCollapse(PersonConfig personConfig, double time) {
+    private void checkForHighFatigueCollapse(double time) {
     	Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
         if (!problems.containsKey(highFatigue)) {
 
@@ -1096,8 +1094,8 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getOxygenConsumptionRate() {
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getNominalO2Rate();
+        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        return personConfig.getNominalO2Rate();
     }
 
     /**
@@ -1106,8 +1104,8 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getWaterConsumptionRate() {
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getWaterConsumptionRate();
+        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        return personConfig.getWaterConsumptionRate();
     }
 
     /**
@@ -1116,8 +1114,8 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getFoodConsumptionRate() {
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getFoodConsumptionRate();
+        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        return personConfig.getFoodConsumptionRate();
     }
 
     /**
@@ -1126,20 +1124,21 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getDessertConsumptionRate() {
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return config.getDessertConsumptionRate();
+        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        return personConfig.getDessertConsumptionRate();
     }
 
     /**
      * Gets the power consumption rate per Sol.
      * @return power consumed (kJ/Sol)
      * @throws Exception if error in configuration.
-     */
+
     public static double getPowerConsumptionRate() {
         RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
         return config.getPowerConsumptionRate();
     }
-
+     */
+    
     /**
      * Gets a list of medication affecting the person.
      * @return list of medication.
@@ -1334,12 +1333,12 @@ implements Serializable {
      */
     public void destroy() {
         deathDetails = null;
-        problems.clear();
+        //problems.clear();
         problems = null;
         serious = null;
         person = null;
-        robot = null;
-        if (medicationList != null) medicationList.clear();
+        personConfig = null;
+        //if (medicationList != null) medicationList.clear();
         medicationList = null;
     }
 }

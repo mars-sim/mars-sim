@@ -431,9 +431,9 @@ implements Serializable {
 
     	double requestedAmount = cropArea * cropType.getEdibleBiomass() * TISSUE_PER_SQM;
 
-    	String tissue = cropType.getName()+ " " + TISSUE_CULTURE;
-    	String name = Conversion.capitalize(cropType.getName()) + " " + TISSUE_CULTURE;
-    	AmountResource tissueAR = AmountResource.findAmountResource(tissue);
+    	String tissueName = cropType.getName() + " " + TISSUE_CULTURE;
+    	//String name = Conversion.capitalize(cropType.getName()) + " " + TISSUE_CULTURE;
+    	AmountResource tissueAR = AmountResource.findAmountResource(tissueName);
     	
     	boolean available = false;
 
@@ -443,7 +443,7 @@ implements Serializable {
 			s_inv.addAmountDemandTotalRequest(tissueAR);
 	    	
 	    	if (amountStored < 0.0000000001) {
-	    		logger.warning("No more " + name);
+	    		logger.warning("No more " + tissueName);
 	    		percent = 0;
 	    	}
 	    	
@@ -451,13 +451,13 @@ implements Serializable {
 	    		available = true;
 	    		percent = amountStored / requestedAmount * 100D;
 	    		requestedAmount = amountStored ;
-	    		logger.info(name + " is partially available : " + requestedAmount + " kg");
+	    		logger.info(tissueName + " is partially available : " + requestedAmount + " kg");
 	    	}
 
 	    	else {
 	    		available = true;
 	    		percent = 100D ;
-	    		logger.info(name + " is fully available : " + requestedAmount + " kg");
+	    		logger.info(tissueName + " is fully available : " + requestedAmount + " kg");
 	    	}
 
 	    	if (available) {
