@@ -6,8 +6,8 @@ http://mars-sim.sourceforge.net/
 
 ** Installation **
 
-- This Java application requires a 64-bit Java Runtime Environment (JRE) or 
-Java SE Development Kit (JDK) of version 8. 
+- This Java application requires the latest 64-bit Java Runtime Environment (JRE) or 
+Java SE Development Kit (JDK) version 8. 
 
 - Note that mars-sim currently does not work with OpenJDK 8. Please
 use oracle-java8 instead. 

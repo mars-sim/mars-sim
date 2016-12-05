@@ -88,8 +88,6 @@ public class SleepMeta implements MetaTask, Serializable {
 
            	boolean proceed = false;
 
-           	double fatigue = 0;
-
         	// each millisol generates 1 fatigue point
         	// 500 millisols is 12 hours
      
@@ -109,7 +107,10 @@ public class SleepMeta implements MetaTask, Serializable {
       	  	boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
 
             // Fatigue modifier.
-            fatigue = person.getFatigue();
+            double fatigue = person.getFatigue();
+            
+        	double stress = person.getStress();
+        	
             // 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
             // he is supposed to want to sleep right away.
         	if (fatigue > 1000D)
@@ -122,6 +123,11 @@ public class SleepMeta implements MetaTask, Serializable {
             else
             	maxNumSleep = 3;
 
+            if (!proceed) {
+            	if (stress > 50D)
+            		proceed = true;
+            }
+            
             if (!proceed && pc.getNumSleep() <= maxNumSleep) {
             	// 2015-12-05 checks the current time against the sleep habit heat map
     	    	int bestSleepTime[] = person.getBestKeySleepCycle();
@@ -135,18 +141,11 @@ public class SleepMeta implements MetaTask, Serializable {
     	    	}
             }
 
-
-            if (!proceed) {
-            	int stress = (int) person.getStress();
-            	if (stress > 50D)
-            		proceed = true;
-            }
-            
             
             if (proceed) {
 	            	
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result = (fatigue - 500D) / 3D;
+	            result = (fatigue - 500D) / 10D + stress * 10D;
 	            
 	            // Check if person is an astronomer.
 	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);

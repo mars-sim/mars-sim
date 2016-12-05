@@ -233,7 +233,8 @@ extends UnitTableModel {
 		    			AmountResource ar = j.next();
 		    			AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 		    	        for(AmountResource n : availableDesserts) {
-		    	        	if (n.getName().equals(ar.getName())) {
+		    	        	//if (n.getName().equals(ar.getName())) {
+		    	        	if (n.equals(ar)) {
 				    			double amount = resourceMap.get(ar);
 				    			//System.out.println("i = " + i + "   " + n + " : " + amount);
 		    	        		sum += amount;
@@ -404,9 +405,10 @@ extends UnitTableModel {
 					// 2015-03-09 Added matching the dessert chosen for the journey
 					AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 				  	// Put together a list of available dessert
-			        for(AmountResource n : availableDesserts) {
-			        	if (((AmountResource) target).getName().equals(n.getName()))
-			    			tempColumnNum = DESSERT;
+			        for(AmountResource ar : availableDesserts) {
+			        	//if (((AmountResource) target).getName().equals(n.getName()))
+			        	if (target.equals(ar))
+			        		tempColumnNum = DESSERT;
 			        }
 				}
 
@@ -423,7 +425,7 @@ extends UnitTableModel {
 				}
 			}
 			catch (Exception e) {
-				logger.log(Level.SEVERE, "", e);
+				logger.log(Level.SEVERE, "Issues with unitUpdate()", e);
 			}
 		}
 

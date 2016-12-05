@@ -69,8 +69,11 @@ public class RelaxMeta implements MetaTask, Serializable {
     		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
         	
             // Stress modifier
-            result += person.getPhysicalCondition().getStress();
+            result += person.getStress() * 10D;
+            // fatigue modifier
+            result += person.getFatigue() / 10D;
 
+            
             try {
                 Building recBuilding = Relax.getAvailableRecreationBuilding(person);
                 if (recBuilding != null) {

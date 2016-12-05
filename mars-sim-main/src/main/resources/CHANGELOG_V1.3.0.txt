@@ -2,31 +2,84 @@ Mars Simulation Project v3.1.0
 Copyright (C) 2016 Scott Davis
 http://mars-sim.sourceforge.net/
 
-
-
 ------------------------------------------------------
 
-## v3.1.0 (build 37__) Snapshot Preview 4 - 2016-11-__
+## v3.1.0 (build 3816) Snapshot Preview 4 - 2016-12-03
+
+
+### Known Limitation :
+
+1. The Graphic Mode cannot run under MacOSX due to some unknown bugs. However, it can still run under Headless Mode in MacOSX.
+
+2. The Main Menu's 3D Mars Globe has shadow artifact when running in linux (due to unknown recent Java JDK changes)
+
 
 
 ### NEW FEATURES :
 
-1. Segregate a number of Tools into their own individual tab. 
 
-2. Improve the depth of personality modeling by implementing the Five Factor Model, alongside with the existing Myer-Brigg Type Indicator (MBTI). Display personality using bullet charts and gauges
+A. New Modeling
 
-3. Add the ability to tweak how much fuel and life support consumable to bring for each mission via a parameter in xml.
+1. Improve the depth of personality modeling by implementing the Five Factor Model, alongside with the existing Myer-Brigg Type Indicator (MBTI). Display personality using bullet charts and gauges
 
-4. Add new battery charging/discharging model for the power grid batteries that store unused/excess power for future use.
+2. Add new battery charging/discharging model for the power grid batteries that store unused/excess power for future use.
 
-5. Add wash water rationing. Activate rationing if water stored at a settlement is less than 10% of their yearly drinking water needs.
+3. Add wash water rationing. Activate rationing if water stored at a settlement is less than 10% of their yearly drinking water needs.
 
-6. Replace the old swing UI elements with new JavaFX UI in Settlement Map.
+4. Add the ability to tweak how much fuel and life support consumable to bring for each mission via an element/attribute in xml.
 
+
+B. New UI elements
+
+1. Add a tab bar on top and segregate most Tools into their own tabs. 
+
+2. Add Earth and Mars Date/Time bar anchored near top center. 
+
+3. The 'Mars Navigator Tool' is renamed 'Navigator Minimap' and now has two maps stacked up on top of each other.
+
+4. Both the Settlement Map and the Navigator Minimap are now displayed inside Map tab. They can be turned on at the click of their buttons on top right.
+
+5. Add bullet bar and gauges for displaying a person's personalities (for both MBTI and Big Five Models)
+
+6. Add the use of keyboard shortcuts (see /docs/help/shortcuts.html at Help Browser's User Guide under User Interface).
+
+
+### CORE ENGINE IMPROVEMENTS:
+
+1. Optimize numerous method calls for less cpu utilization.
+
+2. Re-enable doing various scientific research tasks while inside a moving/non-moving vehicle (albeit with penalty).
+ 
+3. Re-implement validation of all table cells in simulation configuration editor.
+ 
+4. Mute/unmute the background music when the game is paused/resume.
+
+5. Implement how choosing the settlement's objective would affect the VP (and production) of related goods.
+
+6. Re-implement validation of settlements' name, population and # of bots entries in configuration editor.
+ 
+7. Re-implement validation of latitude and longitude in the configuration editor.
+ 
+8. Improve the Good Value Points (VS) updates for waste water, cooking consumables and others.
+
+9. Add supplies of black water, grey water and regolith at the beginning of a new sim. 
+
+
+
+## UI IMPROVEMENT
+
+1. Sync up UI updates better in each frame and with better multi-threading.
+ 
+2. Remove top menu bar. Remove status bar. 
+
+3. Replace the old swing UI elements with new JavaFX UI in Settlement Map.
+  
+  
+  
 
 ### FIXES :
 
-1. Reduce the likelihood of bots frequently moving from one building to another. 
+1. Lessen the likelihood of bots moving frequently from one building to another. 
 
 2. Remove duplicate calling of building update in each frame.
 
@@ -36,36 +89,11 @@ http://mars-sim.sourceforge.net/
 
 5. Fix width and height determination of the quotation popup under different screen resolution. Add a scrollbar and text autowrapping.
 
+6. Fix the latest URL not being displayed correctly in the address bar of Help Browswer.
+  
+7. Resolve a major linux UI issue. Can now switch between the Orange and Blue themes just like in Windows OS.
 
 
-### IMPROVEMENTS:
-
-1. Optimize method calls for less cpu utilization.
-
-2. Better looking status bar in Settlement Window.
-
-3. Re-enable doing various scientific research tasks while inside a moving/non-moving vehicle (albeit with penalty).
- 
-4. Allow tweaking the error margins for rovers going on a mission via xml. 
-
-5. Re-implement validation of all table cells in simulation configuration editor.
- 
-6. Mute/unmute the background music when the game is paused/resume.
- 
-7. Fine tune the display of the Mars Navigator.
- 
-8. Implement the effect of choosing the settlement's objective.
-
-9. Sync up UI updates better in each frame and with better multithreading.
- 
-10. Re-implement validation of settlements' name, population and # of bots entries in configuration editor.
- 
-11. Re-implement validation of latitude and longitude in the configuration editor.
- 
-12. Improve the Good value points updates. 
-
-13. Add initial supplies of black water, grey water and regolith. 
- 
   
 ------------------------------------------------------
 

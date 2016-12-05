@@ -9,30 +9,39 @@ package org.mars_sim.msp.core.structure.building.function.cooking;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.resource.AmountResource;
+
 // 2014-11-29 Created Ingredient()
 public class Ingredient implements Serializable {
 	private int id;
-	private String name;
+	private AmountResource amountResource;
+	//private String name;
 	private double proportion;
-	//2014-12-11 Added isItAvailable
 	private boolean isItAvailable;	
 	private double ingredientDryMass;
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	Ingredient(int id, String name, double proportion) {//, boolean isItAvailable) {
+	Ingredient(int id, AmountResource amountResource, double proportion) {//String name, , boolean isItAvailable) {
 		this.id = id;
-		this.name = name;
+		this.amountResource = amountResource;
+		//this.name = name;
 		this.proportion = proportion;
 		//this.isItAvailable = isItAvailable;
 	}
 	    public String getName() {
-	    		return name;
-	    	}
+    		return amountResource.getName();
+    	}
+	    
+	    public AmountResource getAR() {
+	    	return amountResource;
+	    }
+	    
 	    public double getProportion() {
 	    		return proportion;
-	    	}
+	    }
+	    
 	    public int getID() {
     		return id;
     	}
@@ -50,7 +59,12 @@ public class Ingredient implements Serializable {
 
 	    	return ingredientDryMass;
 	    }
+	    
 	    public String toString() {
-    		return name;
+    		return amountResource.getName();
     	}
+	    
+	    public AmountResource toAR() {
+	    	return amountResource;
+	    }
 }

@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.resource.AmountResource;
 
 /**
  * Provides configuration information about meal.
@@ -165,13 +166,13 @@ implements Serializable {
 					// Get name.
 					String ingredientName = "";
 					ingredientName = ingredient.getAttributeValue(INGREDIENT_NAME).toLowerCase();
-
+					AmountResource ingredientAR = AmountResource.findAmountResource(ingredientName);
 					// Get proportion
 					String proportionStr = ingredient.getAttributeValue(PROPORTION);
 					double proportion = Double.parseDouble(proportionStr);
 
 					//2014-12-11 Added isItAvailable
-					aMeal.addIngredient(ingredientId, ingredientName, proportion);//, isItAvailable);
+					aMeal.addIngredient(ingredientId, ingredientAR, proportion);//, isItAvailable);
 
 					//System.out.println("proportion is "+ proportion);
 		    		//System.out.println("MealConfig.java : aMeal.getIngredientList() is " + aMeal.getIngredientList());

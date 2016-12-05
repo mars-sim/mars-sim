@@ -104,7 +104,7 @@ implements Serializable {
     //private List<CookedMeal> dailyMealList = new ArrayList<CookedMeal>();
 	private List<HotMeal> mealConfigMealList; // = new ArrayList<HotMeal>();
     private List<CropType> cropTypeList;
-    private List<String> oilMenu;// = new CopyOnWriteArrayList<>();
+    //private List<String> oilMenu;// = new CopyOnWriteArrayList<>();
     private static List<AmountResource> oilMenuAR;
     
     private int cookCapacity;
@@ -125,6 +125,7 @@ implements Serializable {
     private HotMeal aMeal;
     private Settlement settlement;
     
+    static AmountResource tableSaltAR;
     static AmountResource dryFoodAR;
     static AmountResource NaClOAR;
     static AmountResource greyWaterAR;
@@ -133,8 +134,9 @@ implements Serializable {
     public static AmountResource foodAR;
     public static AmountResource solidWasteAR;
     public static AmountResource napkinAR; 
-    
-    private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
+
+    private Map<AmountResource, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
+    //private Map<String, Double> ingredientMap = new ConcurrentHashMap<>(); //HashMap<String, Double>();
     private Map<String, Integer> mealMap = new ConcurrentHashMap<>(); //HashMap<String, Integer>();
 
     private static Simulation sim = Simulation.instance();
@@ -192,6 +194,7 @@ implements Serializable {
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration(); // need this to pass maven test
         
+        tableSaltAR = AmountResource.findAmountResource(TABLE_SALT);
         napkinAR = AmountResource.findAmountResource(NAPKIN);
         solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);
         foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
@@ -210,12 +213,13 @@ implements Serializable {
     }
 
     public void prepareOilMenu() {
-        oilMenu = new CopyOnWriteArrayList<String>();
+/*
+    	oilMenu = new CopyOnWriteArrayList<String>();
         oilMenu.add(SOYBEAN_OIL);
         oilMenu.add(GARLIC_OIL);
         oilMenu.add(SESAME_OIL);
         oilMenu.add(PEANUT_OIL);
-        
+*/        
         oilMenuAR = new CopyOnWriteArrayList<AmountResource>();
         oilMenuAR.add(AmountResource.findAmountResource(SOYBEAN_OIL));
         oilMenuAR.add(AmountResource.findAmountResource(GARLIC_OIL));
@@ -244,7 +248,7 @@ implements Serializable {
 		        proportionList.add(proportion);
 
 		        // get totalDryMass
-				double waterContent = getWaterContent(ingredientName);
+				double waterContent = getCropWaterContent(ingredientName);
 		        waterContentList.add(waterContent);
 	        }
 
@@ -279,13 +283,12 @@ implements Serializable {
 	 * @return water content ( 1 is equal to 100% )
 	 */
     // 2014-12-12 Created getWaterContent()
-	public double getWaterContent(String name) {
+	public double getCropWaterContent(String name) {
 		double w = 0 ;
 		Iterator<CropType> i = cropTypeList.iterator();
 		while (i.hasNext()) {
 			CropType c = i.next();
 			String cropName = c.getName();
-			double water = c.getEdibleWaterContent();
 			if (cropName.equals(name)) {
 				w = c.getEdibleWaterContent();
 				break;
@@ -677,11 +680,12 @@ implements Serializable {
 
 	        Ingredient oneIngredient;
 	        oneIngredient = i.next();
-	        String ingredientName = oneIngredient.getName();
+	        //String ingredientName = oneIngredient.getName();
+    		AmountResource ingredientAR = oneIngredient.getAR();
 	        double dryMass = oneIngredient.getDryMass();
 
 	        // checks if a particular ingredient is available
-	        result = retrieveAnIngredientFromMap(dryMass, ingredientName, false);
+	        result = retrieveAnIngredientFromMap(dryMass, ingredientAR, false);
         	if (!result) break;
         }
 
@@ -694,14 +698,14 @@ implements Serializable {
      * @return dessertAvailable
      */
     // 2015-01-02 Modified pickOneOil()
-	public String pickOneOil(double amount) {
+	public AmountResource pickOneOil(double amount) {
 
-	    	List<String> available_oils = new CopyOnWriteArrayList<>();
-	    	int size = oilMenu.size();    	
+	    	List<AmountResource> available_oils = new CopyOnWriteArrayList<>();
+	    	int size = oilMenuAR.size();    	
 	    	for (int i=0; i<size; i++) {
-	    		String oil = oilMenu.get(i);
-	    		if (getAmountAvailable(oil) > amount)//AMOUNT_OF_OIL_PER_MEAL)
-		 	    	available_oils.add(oil);
+	    		AmountResource oilAR = oilMenuAR.get(i);
+	    		if (getAmountAvailable(oilAR) > amount)//AMOUNT_OF_OIL_PER_MEAL)
+		 	    	available_oils.add(oilAR);
 	    	}
 /*
 	 	    if (getAmountAvailable("Soybean Oil") > AMOUNT_OF_OIL_PER_MEAL)
@@ -732,7 +736,7 @@ implements Serializable {
 */
 	    	
 	    	int s = available_oils.size();
-	    	String selectedOil = null;
+	    	AmountResource selectedOil = null;
 	    	int index = 0;
 	    	if (s > 0) { 
 	    		index = RandomUtil.getRandomInt(s-1);
@@ -743,7 +747,7 @@ implements Serializable {
 	    		no_oil_last_time = true;
 	    		int rand = RandomUtil.getRandomInt(size-1);
 	    		
-		    	inv.addAmountDemand(AmountResource.findAmountResource(oilMenu.get(rand)), amount);
+		    	inv.addAmountDemand(oilMenuAR.get(rand), amount);
 	    		oil_count++;
 	    		if (oil_count < 1)
 	    			logger.info("Running out of oil in " + getBuilding().getNickName() + " at "+ settlement.getName());
@@ -758,12 +762,12 @@ implements Serializable {
      * Gets the amount of the food item in the whole settlement.
      * @return foodAvailable
      */
-    public double getAmountAvailable(String name) {
+    public double getAmountAvailable(AmountResource ar) {
 	    //AmountResource foodAR = AmountResource.findAmountResource(name);
 		//double foodAvailable = inv.getAmountResourceStored(foodAR, false);
 		//return foodAvailable;
 		//return inv.getAmountResourceStored(foodAR, false);
-		return inv.getAmountResourceStored(AmountResource.findAmountResource(name), false);
+		return inv.getAmountResourceStored(ar, false);
 	}
 
     /**
@@ -776,10 +780,11 @@ implements Serializable {
 	    Iterator<Ingredient> i = ingredientList.iterator();
 	    while (i.hasNext()) {
 	        Ingredient oneIngredient = i.next();
-	        String ingredientName = oneIngredient.getName();
+	        //String ingredientName = oneIngredient.getName();
+    		AmountResource ingredientAR = oneIngredient.getAR();
 	        // 2014-12-11 Updated to using dry weight
 	        double dryMass = oneIngredient.getDryMass();
-	        retrieveAnIngredientFromMap(dryMass, ingredientName, true);
+	        retrieveAnIngredientFromMap(dryMass, ingredientAR, true);
 	    }
 
 	    // consume oil
@@ -789,7 +794,7 @@ implements Serializable {
 	    	has_oil = consumeOil(hotMeal.getOil());
 	    
 	    // consume salt
-	    retrieveAnIngredientFromMap(hotMeal.getSalt(), TABLE_SALT, true);
+	    retrieveAnIngredientFromMap(hotMeal.getSalt(), tableSaltAR, true);
 
 	    // consume water
 	    consumeWater();
@@ -816,48 +821,48 @@ implements Serializable {
     }
 
 
-    public boolean retrieveAnIngredientFromMap(double amount, String name, boolean isRetrieving) {
+    public boolean retrieveAnIngredientFromMap(double amount, AmountResource resource, boolean isRetrieving) {
         boolean result = true;
         // 1. check local map cache
         //Object value = resourceMap.get(name);
-        if (ingredientMap.containsKey(name)) {
+        if (ingredientMap.containsKey(resource)) {
             //if (value != null) {
             //double cacheAmount = (double) value;
-            double cacheAmount = ingredientMap.get(name);
+            double cacheAmount = ingredientMap.get(resource);
             // 2. if found, retrieve the resource locally
             // 2a. check if cacheAmount > dryMass
             if (cacheAmount >= amount) {
                 // compute new value for key
                 // subtract the amount from the cache
                 // set result to true
-                ingredientMap.put(name, cacheAmount-amount);
+                ingredientMap.put(resource, cacheAmount-amount);
                 //result = true && result; // not needed since there is no change to the value of result
             }
             else {
-                result = replenishIngredientMap(cacheAmount, amount, name, isRetrieving);
+                result = replenishIngredientMap(cacheAmount, amount, resource, isRetrieving);
             }
         }
         else {
-            result = replenishIngredientMap(0, amount, name, isRetrieving);
+            result = replenishIngredientMap(0, amount, resource, isRetrieving);
         }
 
         return result;
     }
 
-    public boolean replenishIngredientMap(double cacheAmount, double amount, String name, boolean isRetrieving) {
+    public boolean replenishIngredientMap(double cacheAmount, double amount, AmountResource resource, boolean isRetrieving) {
         boolean result = true;
         //if (cacheAmount < amount)
         // 2b. if not, retrieve whatever amount from inv
         // Note: retrieve twice the amount to REDUCE frequent calling of retrieveAnResource()
-        boolean hasFive = Storage.retrieveAnResource(amount * 5, name, inv, isRetrieving);
+        boolean hasFive = Storage.retrieveAnResource(amount * 5, resource, inv, isRetrieving);
         // 2b1. if inv has it, save it to local map cache
         if (hasFive) {
             // take 5 out, put 4 into resourceMap, use 1 right now
-            ingredientMap.put(name, cacheAmount + amount * 4);
+            ingredientMap.put(resource, cacheAmount + amount * 4);
             //result = true && result; // not needed since there is no change to the value of result
         }
         else { // 2b2.
-            boolean hasOne = Storage.retrieveAnResource(amount, name, inv, isRetrieving);
+            boolean hasOne = Storage.retrieveAnResource(amount, resource, inv, isRetrieving);
             if (hasOne)
                 ; // no change to resourceMap since resourceMap.put(name, cacheAmount);
             else
@@ -879,7 +884,7 @@ implements Serializable {
     		usage = 1 + rand;
     	else
     		usage = 1 - rand;
-	    retrieveAnIngredientFromMap(usage, LifeSupportType.WATER, true);
+	    retrieveAnIngredientFromMap(usage, waterAR, true);
 		double wasteWaterAmount = usage * .5;
 		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv);
     }
@@ -888,7 +893,7 @@ implements Serializable {
     // 2015-01-12 Added consumeOil()
     public boolean consumeOil(double oilRequired) {
 	    // 2014-12-29 Added pickOneOil()
-	    String oil = pickOneOil(oilRequired);
+    	AmountResource oil = pickOneOil(oilRequired);
 
 	    if (oil != null) {
 		    //may use the default amount of AMOUNT_OF_OIL_PER_MEAL;	    	
@@ -1052,7 +1057,7 @@ implements Serializable {
 
 	// 2015-01-16 Added salt as preservatives
 	public void preserveFood() {
-		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, TABLE_SALT, true);
+		retrieveAnIngredientFromMap(AMOUNT_OF_SALT_PER_MEAL, tableSaltAR, true);
 		Storage.storeAnResource(dryMassPerServing, foodAR, inv);
  	}
 
@@ -1095,16 +1100,25 @@ implements Serializable {
     public void destroy() {
         super.destroy();
         inv = null;
-        cookedMeals.clear();
+        oilMenuAR = null;
+        //cookedMeals.clear();
         cookedMeals = null;
         settlement = null;
         //dailyMealList.clear();
         //dailyMealList = null;
         aMeal = null;
-        mealConfigMealList.clear();
+        //mealConfigMealList.clear();
         mealConfigMealList = null;
         dryFoodAR = null;
-        cropTypeList.clear();
+        tableSaltAR = null;
+        NaClOAR = null;
+        greyWaterAR = null;
+        waterAR = null;
+        foodWasteAR = null;
+        foodAR = null;
+        solidWasteAR = null;
+        napkinAR = null; 
+        //cropTypeList.clear();
         cropTypeList = null;
     }
 

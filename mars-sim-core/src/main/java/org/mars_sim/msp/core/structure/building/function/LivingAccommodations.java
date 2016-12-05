@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -42,7 +43,13 @@ public class LivingAccommodations extends Function implements Serializable {
     public final static double TOILET_WASTE_PERSON_SOL = .02D;
     //public final static double GREY_WATER_RATIO = .8;
     //public final static double BLACK_WATER_RATIO = .2;
-
+    public final static String WATER = "water";
+    public final static String BLACK_WATER = "black water";
+    public final static String GREY_WATER = "grey water";
+    public final static String TOILET_TISSUE = "toilet tissue";
+    public final static String TOXIC_WASTE = "toxic waste";
+    
+    
     private static final BuildingFunction FUNCTION = BuildingFunction.LIVING_ACCOMODATIONS;
 
     private int beds;
@@ -62,8 +69,16 @@ public class LivingAccommodations extends Function implements Serializable {
     private Map<Person, Point2D> bedMap = new HashMap<>();
     
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
-    
     private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
+
+    public static AmountResource blackWaterAR;
+    public static AmountResource greyWaterAR;
+    public static AmountResource waterAR;
+    public static AmountResource toiletTissueAR;
+    public static AmountResource toxicWasteAR;
+    //public static AmountResource solidWasteAR;
+    //public static AmountResource napkinAR;
+
     		
     /**
      * Constructor
@@ -76,6 +91,14 @@ public class LivingAccommodations extends Function implements Serializable {
         
         this.building = building;
   
+        //solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);
+        toiletTissueAR = AmountResource.findAmountResource(TOILET_TISSUE);
+        toxicWasteAR = AmountResource.findAmountResource(TOXIC_WASTE);
+        waterAR = AmountResource.findAmountResource(WATER);
+        greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
+    	blackWaterAR = AmountResource.findAmountResource(BLACK_WATER);
+        //NaClOAR = AmountResource.findAmountResource(SODIUM_HYPOCHLORITE);
+                
         BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration(); // need this to pass maven test
         beds = buildingConfig.getLivingAccommodationBeds(building.getBuildingType());
         
@@ -231,7 +254,7 @@ public class LivingAccommodations extends Function implements Serializable {
      * Retrieves an resource
      * @param name
      * @param requestedAmount
-     */
+
     //2015-02-27 Added retrieveAnResource()
     public void retrieveAnResource(String name, double requestedAmount) {
     	try {
@@ -240,8 +263,7 @@ public class LivingAccommodations extends Function implements Serializable {
 	    	inv.addAmountDemandTotalRequest(nameAR);  
 
 	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
-	            Settlement settlement = getBuilding().getBuildingManager()
-	                    .getSettlement();
+	            //Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 	     		// TODO: how to report it only 3 times and quit the reporting ?
 	            //logger.info("no more " + name + " at " + getBuilding().getNickName() + " in " + settlement.getName());	
 	    	}
@@ -259,13 +281,13 @@ public class LivingAccommodations extends Function implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
 	    }
     }
-    
+*/    
 
     /**
      * Stores an resource
      * @param amount
      * @param name
-     */
+
     //2015-02-27 Added storeAnResource()
     public void storeAnResource(double amount, String name) {
     	try {
@@ -284,7 +306,7 @@ public class LivingAccommodations extends Function implements Serializable {
     		logger.log(Level.SEVERE,e.getMessage());
         }
     }
-
+*/
 
     /**
      * Time passing for the building.
@@ -322,21 +344,21 @@ public class LivingAccommodations extends Function implements Serializable {
         double wasteWaterProducedBuilding = wasteWaterProducedSettlement * buildingProportionCap;
 
         // Remove wash water from settlement.
-        retrieveAnResource(LifeSupportType.WATER, washWaterUsageBuilding * random_factor);
+        Storage.retrieveAnResource(washWaterUsageBuilding * random_factor, waterAR, inv, true);
         
         // Grey water is produced by both wash water and waste water.
         // Black water is only produced by waste water.
         double greyWaterProduced = washWaterUsageBuilding + (wasteWaterProducedBuilding * greyWaterFraction);
         double blackWaterProduced = wasteWaterProducedBuilding * (1 - greyWaterFraction);    
-        storeAnResource(greyWaterProduced, "grey water");
-        storeAnResource(blackWaterProduced, "black water");
+        Storage.storeAnResource(greyWaterProduced, greyWaterAR, inv);
+        Storage.storeAnResource(blackWaterProduced, blackWaterAR, inv);
     	
     	// Use toilet paper and generate toxic waste (used toilet paper).       
         double toiletPaperUsagePerMillisol = TOILET_WASTE_PERSON_SOL / 1000D;
         double toiletPaperUsageSettlement = toiletPaperUsagePerMillisol * time * settlement.getCurrentPopulationNum();
         double toiletPaperUsageBuilding = toiletPaperUsageSettlement * buildingProportionCap;
-        retrieveAnResource("toilet tissue", toiletPaperUsageBuilding * random_factor);
-        storeAnResource(toiletPaperUsageBuilding, "toxic waste");
+        Storage.retrieveAnResource(toiletPaperUsageBuilding * random_factor, toiletTissueAR, inv, true);
+        Storage.storeAnResource(toiletPaperUsageBuilding, toxicWasteAR, inv);
     }
     
     public Building getBuilding() {

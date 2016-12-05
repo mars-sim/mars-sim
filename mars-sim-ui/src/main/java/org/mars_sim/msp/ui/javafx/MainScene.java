@@ -641,7 +641,7 @@ public class MainScene {
         // Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
 		// Create Snackbar
-		createJFXSnackbar();
+		//createJFXSnackbar();
 		// Create jfxTabPane
 		createJFXTabs();	
 
@@ -656,8 +656,8 @@ public class MainScene {
         AnchorPane.setRightAnchor(jfxTabPane, 0.0);
         AnchorPane.setTopAnchor(jfxTabPane, 0.0);
 
-        AnchorPane.setRightAnchor(badgeIcon, 5.0);
-        AnchorPane.setTopAnchor(badgeIcon, 0.0);
+        //AnchorPane.setRightAnchor(badgeIcon, 5.0);
+        //AnchorPane.setTopAnchor(badgeIcon, 0.0);
 
         AnchorPane.setRightAnchor(marsNetButton, 45.0);
         AnchorPane.setTopAnchor(marsNetButton, -3.0);       
@@ -677,7 +677,7 @@ public class MainScene {
         AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
         AnchorPane.setTopAnchor(marsTimeBar, 35.0);
  
-        anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, badgeIcon, lastSaveBar, earthTimeBar, marsTimeBar);//borderPane, timeBar, snackbar
+        anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, lastSaveBar, earthTimeBar, marsTimeBar);//badgeIcon,borderPane, timeBar, snackbar
         
 		root.getChildren().addAll(anchorDesktopPane);
 		
@@ -764,7 +764,7 @@ public class MainScene {
 		//calendarButton = new JFXToggleButton();
 		
 		if (masterClock == null) {
-			masterClock = Simulation.instance().getMasterClock();
+			masterClock = sim.getMasterClock();
 		}
 		
 		if (earthClock == null) {
@@ -792,7 +792,7 @@ public class MainScene {
 		marsTimeBar.setPrefSize(230, 24);
 	
 		if (masterClock == null) {
-			masterClock = Simulation.instance().getMasterClock();
+			masterClock = sim.getMasterClock();
 		}
 		
 		if (marsClock == null) {
