@@ -672,11 +672,13 @@ public class MainScene {
         AnchorPane.setTopAnchor(lastSaveBar, 0.0);
 
         AnchorPane.setLeftAnchor(earthTimeBar, sceneWidth.get()/2D);// - earthTimeBar.getPrefWidth());
-        AnchorPane.setTopAnchor(earthTimeBar, 35.0);
-
+		if (OS.contains("linux")) AnchorPane.setTopAnchor(earthTimeBar, 30.0);
+		else AnchorPane.setTopAnchor(earthTimeBar, 35.0);
+		
         AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
-        AnchorPane.setTopAnchor(marsTimeBar, 35.0);
- 
+        if (OS.contains("linux")) AnchorPane.setTopAnchor(marsTimeBar, 30.0);
+        else AnchorPane.setTopAnchor(marsTimeBar, 35.0);
+        
         anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, lastSaveBar, earthTimeBar, marsTimeBar);//badgeIcon,borderPane, timeBar, snackbar
         
 		root.getChildren().addAll(anchorDesktopPane);
@@ -758,9 +760,14 @@ public class MainScene {
 	public void createEarthTimeBar() {
 		earthTimeBar = new HBox();
 		earthTimeBar.setMaxWidth(Double.MAX_VALUE);
-		earthTimeBar.setMinWidth(220);
-		earthTimeBar.setPrefSize(220, 32);
-	
+		if (OS.contains("linux")) {
+			earthTimeBar.setMinWidth(250);
+			earthTimeBar.setPrefSize(250, 32);			
+		}
+		else {
+			earthTimeBar.setMinWidth(220);
+			earthTimeBar.setPrefSize(220, 32);			
+		}	
 		//calendarButton = new JFXToggleButton();
 		
 		if (masterClock == null) {
@@ -788,8 +795,15 @@ public class MainScene {
 	public void createMarsTimeBar() {
 		marsTimeBar = new HBox();
 		marsTimeBar.setMaxWidth(Double.MAX_VALUE);
-		marsTimeBar.setMinWidth(230);
-		marsTimeBar.setPrefSize(230, 24);
+		if (OS.contains("linux")) {
+			marsTimeBar.setMinWidth(260);
+			marsTimeBar.setPrefSize(260, 24);			
+		}
+		else {
+			marsTimeBar.setMinWidth(230);
+			marsTimeBar.setPrefSize(230, 24);			
+		}
+
 	
 		if (masterClock == null) {
 			masterClock = sim.getMasterClock();
@@ -1456,7 +1470,7 @@ public class MainScene {
 			// for numbus theme
 			cssFile = "/fxui/css/snowBlue.css";
 			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
-			lookAndFeelTheme = "Snow";
+			lookAndFeelTheme = "snowBlue";
 
 		} else if (theme == 1) { // olive green
 			cssFile = "/fxui/css/oliveskin.css";
@@ -1486,8 +1500,8 @@ public class MainScene {
 		} else if (theme == 6) { // + skyblue
 	
 			cssFile = "/fxui/css/snowBlue.css";
-			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(255,255,255), cssFile); // CADETBLUE // Color.rgb(23,138,255)
-			lookAndFeelTheme = "Snow";
+			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(255,255,255), cssFile); //(144, 208, 229) light blue // CADETBLUE (0,107,184)// Color.rgb(23,138,255)
+			lookAndFeelTheme = "snowBlue";
 
 		} else if (theme == 7) { // mud orange/standard
 
@@ -2104,7 +2118,7 @@ public class MainScene {
 					 * new NimRODLookAndFeel(); NimRODLF.setCurrentTheme( nt);
 					 */
 					if (theme == 0 || theme == 6) {
-						lookAndFeelTheme = "Snow";
+						lookAndFeelTheme = "snowBlue";
 					}
 					else if (theme == 7)
 						lookAndFeelTheme = "nimrod"; // note that nimrod.theme uses all default parameter except overriding the opacity with 220.

@@ -273,8 +273,10 @@ implements Serializable, LifeSupportType, Objective {
 		compositionOfAir = new CompositionOfAir(this);
 
 		// 2016-01-16 Added setObjective()
-		objectiveName = Msg.getString("ObjectiveType.crop");
+		//objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
+		System.out.println("Setting " + this + "'s Objective to " + objectiveType.toString());
+
 
 		oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		water = AmountResource.findAmountResource(LifeSupportType.WATER);
@@ -1240,10 +1242,12 @@ implements Serializable, LifeSupportType, Objective {
         
         while (i.hasNext()) {
             Person person = i.next();
-            Task task = person.getMind().getTaskManager().getTask();
-            if (sameBuilding) {
+            if (person.getLocationStateType() == LocationStateType.INSIDE_BUILDING
+            	&& initiator.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {
+            	Task task = person.getMind().getTaskManager().getTask();
+            	
+            	if (sameBuilding) {
             	// face-to-face conversation
-                if (person.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {//.getName().equals("Inside a building")) {
                     if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
                     	if (checkIdle) {
                     		if (task instanceof Relax
@@ -1260,37 +1264,32 @@ implements Serializable, LifeSupportType, Objective {
     	               			//if (isOff)
     	               				if (!person.equals(initiator))
     	               					people.add(person);
-    		                   }
+    	               		}
     	                }
                     }
-                }
-            }
-            else {
+	            }
+            	
+	            else {
             	// may be radio (non face-to-face) conversation
-                if (person.getLocationStateType() == LocationStateType.INSIDE_BUILDING //.getName().equals("Inside a building")
-                		&& initiator.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {//.getName().equals("Inside a building")) {
-                    if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
-                    	if (checkIdle) {
-                    		if (task instanceof Relax
-                    			| task instanceof Read
-                    			| task instanceof Workout) {
-                    			if (!person.equals(initiator))
-                    				people.add(person); 
-                    		}
-    		            }
-    	                else {
-    	               		if (task instanceof HaveConversation) {
-    	               			//boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
-    	               			//if (isOff)
-                    			if (!person.equals(initiator))
-    	               				people.add(person);
-    		                   }
-    	                }
-                    }
-                }
+                     //if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
+                	if (checkIdle) {
+                		if (task instanceof Relax
+                			| task instanceof Read
+                			| task instanceof Workout) {
+                			if (!person.equals(initiator))
+                				people.add(person); 
+                		}
+		            }
+	                else {
+	               		if (task instanceof HaveConversation) {
+	               			//boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
+	               			//if (isOff)
+                			if (!person.equals(initiator))
+	               				people.add(person);
+	               		}
+	                }
+            	}          
             }
-            
-
         }
 
         return people;

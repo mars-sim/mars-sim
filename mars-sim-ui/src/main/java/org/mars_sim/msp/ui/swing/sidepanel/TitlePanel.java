@@ -56,7 +56,7 @@ public class TitlePanel extends JPanel {
 
     int width = 0;
     private Color startColor = Color.WHITE;//new Color(238, 238, 238);
-    private Color endColor = new Color(0xC1BF9D);//Color.ORANGE;//new Color(255, 255, 255);
+    private Color endColor;// = new Color(0xC1BF9D);//nimrod skin color Color.ORANGE;//new Color(255, 255, 255);
     GeneralPath path;
     Color accentColor = new Color(0x80ffffff);
     Color textColor = new Color(0x0f0f0f);
@@ -65,11 +65,14 @@ public class TitlePanel extends JPanel {
     private Container parent;
     private boolean isToggleIcon;
     
-    public TitlePanel(String title, Image imageIcon, int width) {
+    public TitlePanel(String title, Image imageIcon, int width, Color color) {
         super();
         this.width = width;
         this.imageIcon = imageIcon;
         this.title = title;
+              
+        this.endColor = color;//new Color(0xC1BF9D);
+        
         MouseListener mouseListener = new MouseAdapter() {
 
             public void mouseClicked(MouseEvent e) {

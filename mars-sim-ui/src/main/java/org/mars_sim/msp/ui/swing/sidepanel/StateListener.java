@@ -15,6 +15,8 @@
 
 package org.mars_sim.msp.ui.swing.sidepanel;
 
+import java.awt.Color;
+
 /**
  *
  * @author root
@@ -22,5 +24,7 @@ package org.mars_sim.msp.ui.swing.sidepanel;
 public interface StateListener {
    public void toggleState() ;
    public void reset() ;
+   
+public void update(Color color);
 
 }

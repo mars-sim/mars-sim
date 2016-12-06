@@ -14,6 +14,7 @@
  */
 package org.mars_sim.msp.ui.swing.sidepanel;
 
+import java.awt.Color;
 import java.awt.Image;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -32,12 +33,12 @@ public class SlidingPanel extends JPanel implements StateListener {
     SlideAnimator slider = null;
     TitlePanel titlePanel = null;
 
-    public SlidingPanel(JComponent slideComponent, String title, Image imageIcon, boolean isExpand) {
+    public SlidingPanel(JComponent slideComponent, String title, Image imageIcon, boolean isExpand, Color color) {
         slideContainer = new SlideContainer();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(null);
         slider = new SlideAnimator(slideContainer, slideComponent);
-        titlePanel = new TitlePanel(title, imageIcon, slideComponent.getPreferredSize().width + 8);
+        titlePanel = new TitlePanel(title, imageIcon, slideComponent.getPreferredSize().width + 8, color);
         add(titlePanel);
         add(slideContainer);
         
@@ -69,4 +70,9 @@ public class SlidingPanel extends JPanel implements StateListener {
            state = COLLAPSE;
         }
     }
+
+	@Override
+	public void update(Color color) {
+		titlePanel.setEndColor(color);
+	}
 }

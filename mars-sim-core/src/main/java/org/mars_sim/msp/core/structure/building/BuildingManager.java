@@ -1124,10 +1124,10 @@ public class BuildingManager implements Serializable {
      */
     public Building getBuildingAtPosition(double xLoc, double yLoc) {
         Building result = null;
-        for (Building building : buildings) { 
-        //Iterator<Building> i = buildings.iterator();
-        //while (i.hasNext() && (result == null)) {
-        //    Building building = i.next();
+        //for (Building building : buildings) { 
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {// && (result == null)) {
+            Building building = i.next();
             if (LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
                 result = building;
             }

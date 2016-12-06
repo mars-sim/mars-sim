@@ -14,6 +14,7 @@
  */
 package org.mars_sim.msp.ui.swing.sidepanel;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
  */
 public class SlidePaneFactory extends Box {
 
+	Color color = new Color(0xC1BF9D);
     StateListener listener;
     List<StateListener> listeList = new ArrayList<StateListener>();
 
@@ -70,16 +72,22 @@ public static SlidePaneFactory getInstance(boolean isGroup) {
     }
     public void add(JComponent slideComponent, String title, boolean isExpand) {
         listener = null;
-        listener = new SlidingPanel(slideComponent, title, null, isExpand);
+        listener = new SlidingPanel(slideComponent, title, null, isExpand, color);
         super.add((JPanel) listener);
         super.add(Box.createVerticalGlue());
         listeList.add(listener);
     }
     public void add(JComponent slideComponent, String title, Image imageIcon, boolean isExpand) {
         listener = null;
-        listener = new SlidingPanel(slideComponent, title, imageIcon, isExpand);
+        listener = new SlidingPanel(slideComponent, title, imageIcon, isExpand, color);
         super.add((JPanel) listener);
         super.add(Box.createVerticalGlue());
         listeList.add(listener);
+    }
+    
+    public void update(Color color) {
+    	for (StateListener s : listeList) {
+    		s.update(color);
+    	}
     }
 }

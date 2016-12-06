@@ -61,6 +61,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
     //private static final int BLUR_SIZE = 7;
 	// Data members
+	private int themeCache = -1;
 	protected JPanel namePanel;
 	/** The tab panels. */
 	private Collection<TabPanel> tabPanels;
@@ -91,6 +92,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
 	protected Unit unit;
+	protected SlidePaneFactory factory;
 
     /**
      * Constructor
@@ -130,7 +132,7 @@ public abstract class UnitWindow extends JInternalFrame {
         namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         namePanel.setPreferredSize(new Dimension(465,196));
         namePanel.setBorder(null);
-        SlidePaneFactory factory = SlidePaneFactory.getInstance();  
+        factory = SlidePaneFactory.getInstance();  
         factory.add(namePanel,"Status", getImage(TITLE), false);
 
         //namePanel.setBackground(THEME_COLOR);
@@ -180,7 +182,7 @@ public abstract class UnitWindow extends JInternalFrame {
             if (unit instanceof Person) {
             	     	
             	JLabel townIconLabel = new JLabel();
-            	townIconLabel.setToolTipText("Home Town or Associated Settlement");
+            	townIconLabel.setToolTipText("Associated Settlement");
             	setImage(TOWN, townIconLabel);
             	 
             	JLabel jobIconLabel = new JLabel();
@@ -199,7 +201,7 @@ public abstract class UnitWindow extends JInternalFrame {
             	JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             	JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
             	JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
-              	          	
+
             	townLabel = new JLabel();
              	townLabel.setFont(font);
             	
@@ -425,6 +427,18 @@ public abstract class UnitWindow extends JInternalFrame {
 	        	statusUpdate();
 	        }
     	});
+    	
+    	int theme = desktop.getMainScene().getTheme();
+    	if (theme != themeCache) {
+	    	if (theme == 0 || theme == 6) {
+	        	factory.update(new Color(0xC6D9D9));
+			}
+			else if (theme == 7) {
+		    	factory.update(new Color(0xC1BF9D));	
+			}
+    	}
+    	
+
     }
 
 

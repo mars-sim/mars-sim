@@ -69,6 +69,7 @@ public class TabPanelDashboard extends TabPanel {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private int themeCache;
 	private double progress;
 	private long lastTimerCall;
 	private boolean toggle, running = false;
@@ -78,13 +79,14 @@ public class TabPanelDashboard extends TabPanel {
 	// Data members
 	private JFXPanel jfxpanel;
 	private Scene scene;
-	private StackPane stack;
-	private Label objLabel;
+	private StackPane stack, commitPane;
+	private Label objLabel, headerLabel;
 
 	// private ToggleGroup group;
 	private ToggleButton toggleBtn;
 	private SubmitButton commitButton;
-	private VBox buttonBox = new VBox();
+	private VBox buttonBox, headerBox, objBox, optionBox;
+	private HBox hbox0, hbox1;
 	private AnimationTimer timer;
 
 	private List<ToggleButton> buttons = new ArrayList<>();
@@ -126,9 +128,6 @@ public class TabPanelDashboard extends TabPanel {
 			@Override
 			public void run() {
 				stack = new StackPane();
-				stack.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
-						+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
-
 				scene = new Scene(stack, width, height);
 				scene.setFill(Color.TRANSPARENT);// .BLACK);
 				jfxpanel.setScene(scene);
@@ -142,15 +141,15 @@ public class TabPanelDashboard extends TabPanel {
 				title.setFont(Font.font("Cambria", FontWeight.BOLD, 16));
 
 				VBox toggleVBox = new VBox();
-				toggleVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
-						+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+				//toggleVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+				//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
 				toggleVBox.getChildren().addAll(buttonBox);
 				toggleVBox.setAlignment(Pos.TOP_CENTER);
 				toggleVBox.setPadding(new Insets(5, 5, 5, 5));
 
 				VBox topVBox = new VBox();
-				topVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
-						+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
+				//topVBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;"
+				//		+ "-fx-border-color: #c1bf9d;" + "-fx-background-radius: 2px;");
 				topVBox.setAlignment(Pos.TOP_CENTER);
 				// vbox.getChildren().addAll(title, cb, hbox);
 				topVBox.getChildren().addAll(title, new Label(), toggleVBox);
@@ -177,38 +176,42 @@ public class TabPanelDashboard extends TabPanel {
 	}
 
 	public void createButtonPane() {
-
-		String header = "Settlement Objective";
-
+		ToggleGroup group = new ToggleGroup();
+		
+		buttonBox = new VBox();
+		
+		headerBox = new VBox();
+		String header = "Select a new objective below: ";
+		headerLabel = new Label(header);		
+		headerBox.getChildren().add(headerLabel);
 		int size = objectives.length;
-
 		for (int i = 0; i < size; i++) {
 
-			int index = i;
+			//int index = i;
 			String s = objectives[i];
 			String ss = null;
 			String sss = addSpace(s);
 			toggleBtn = new ToggleButton();
-
-			toggleBtn.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-
-					toggleBtn.setSelected(true);
-
-					for (int j = 0; j < size; j++) {
-						if (index != j) {
-							buttons.get(j).setSelected(false);
-						}
-					}
-				}
-			});
-
+			buttons.add(toggleBtn);
 			toggleBtn.setPadding(new Insets(5, 5, 5, 5));
 			toggleBtn.setTooltip(new Tooltip(sss));
+			// btn.setStyle("-fx-alignment: LEFT;");
+			toggleBtn.setAlignment(Pos.BASELINE_CENTER);
+			toggleBtn.setMaxHeight(90);
+			toggleBtn.setMaxWidth(90);
+			toggleBtn.setToggleGroup(group);
+			
+			group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+			    public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
 
-			buttons.add(toggleBtn);
-			// btn.setGraphic(new Rectangle(10,10, Color.BURLYWOOD));
+			    	if (group.getSelectedToggle() != null) {					
+			    		if (toggleBtn.isSelected()) {
+							commitObjective();
+						}					
+			         }
+			     }
+			});
+
 			if (i == 0)
 				ss = "/icons/settlement_goals/cropfarm.png";
 			else if (i == 1)
@@ -223,48 +226,43 @@ public class TabPanelDashboard extends TabPanel {
 				ss = "/icons/settlement_goals/trip_128.png";//free_market_128.png";
 
 			toggleBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ss))));
-			// btn.setStyle("-fx-alignment: LEFT;");
-			toggleBtn.setAlignment(Pos.BASELINE_CENTER);
-			toggleBtn.setMaxHeight(90);
-			toggleBtn.setMaxWidth(90);
 
-			if (settlement.getObjective().toString().equals(s))
+			// set the objective at the beginning of the sim to the default value
+			if (settlement.getObjective().toString().equals(s)) {
 				toggleBtn.setSelected(true);
+				//System.out.println(settlement + "'s objective is " + s);
+			}
 			else
 				toggleBtn.setSelected(false);
-
+			
 		}
 
-		VBox options = new VBox();
-		options.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
-				+ "-fx-background-radius: 2px;");
-		HBox hbox0 = new HBox();
-		hbox0.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
-				+ "-fx-background-radius: 2px;");
-		HBox hbox1 = new HBox();
-		hbox1.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
-				+ "-fx-background-radius: 2px;");
+		optionBox = new VBox();
+		hbox0 = new HBox();
+		hbox1 = new HBox();
 		hbox0.getChildren().addAll(buttons.get(0), buttons.get(1), buttons.get(2));
 		hbox1.getChildren().addAll(buttons.get(3), buttons.get(4), buttons.get(5));
-
+	
+		objBox = new VBox();
+		objLabel = new Label("Current Choice : " + settlement.getObjective().toString());
+		objBox.getChildren().add(objLabel);
+		
 		createCommitButton();
 
-		StackPane commitPane = new StackPane(commitButton);
+		commitPane = new StackPane(commitButton);
 		commitPane.setPrefSize(100, 50);
-		commitPane.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
-				+ "-fx-background-radius: 2px;");
-
-		options.getChildren().addAll(hbox0, hbox1, commitPane);
-
+		optionBox.getChildren().addAll(hbox0, hbox1, commitPane);
+		buttonBox.getChildren().addAll(headerBox, optionBox, objBox);
+		
+/*
 		TitledPane titledPane = new TitledPane(header, options);
 		titledPane.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
 				+ "-fx-background-radius: 2px;");
 		titledPane.setTooltip(new Tooltip("The direction where the settlement would devote its surplus resources"));
 		// titledPane.setId("titledpane");
-		// titledPane.setPrefSize(100, 100);
+		// titledPane.setPrefSize(100, 100);	
 		buttonBox.getChildren().add(titledPane);
-		buttonBox.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
-				+ "-fx-background-radius: 2px;");
+*/		
 
 	}
 
@@ -273,42 +271,15 @@ public class TabPanelDashboard extends TabPanel {
 		commitButton = new SubmitButton();
 		commitButton.setOnMousePressed(e -> {
         	if (!running) {
-
         		timer.start();
                 running = true;
-                commitButton.setDisable(true);
-
-    			int index = -1;
-    			for (int j = 0; j < 5; j++) {
-    				if (buttons.get(j).isSelected()) {
-    					index = j;
-    				}
-    			}
-
-    			ObjectiveType type = null;
-
-    			if (index == 0)
-    				type = ObjectiveType.CROP_FARM;
-    			else if (index == 1)
-    				type = ObjectiveType.MANUFACTURING;
-    			else if (index == 2)
-    				type = ObjectiveType.RESEARCH_CENTER;
-    			else if (index == 3)
-    				type = ObjectiveType.TRADE_TOWN;
-    			else if (index == 4)
-    				type = ObjectiveType.TRANSPORTATION_HUB;
-    			else if (index == 5)
-    				type = ObjectiveType.TOURISM;
-
-    			settlement.setObjective(type);
-    			
+                commitButton.setDisable(true);		
         	}
  
         	e.consume();
 		});
 		
 		commitButton.statusProperty().addListener(o -> System.out.println(commitButton.getStatus()));
-
 
 		progress = 0;
 		lastTimerCall = System.nanoTime();
@@ -319,8 +290,8 @@ public class TabPanelDashboard extends TabPanel {
 					progress += 0.005;
 					commitButton.setProgress(progress);
 					lastTimerCall = now;
+					
                     if (toggle) {
-                       	
                         if (progress > 0.75) {
                             progress = 0;
                             commitButton.setFailed();
@@ -328,6 +299,8 @@ public class TabPanelDashboard extends TabPanel {
                             running = false;
                             toggle ^= true;
                             commitButton.setDisable(false);
+                            // reset back to the old objective
+                            resetButton();
                         }
                         
                     } else {
@@ -338,6 +311,8 @@ public class TabPanelDashboard extends TabPanel {
                             running = false;
                             toggle ^= true;
                             commitButton.setDisable(false);
+                            // set to the new objective
+                            commitObjective();
                         }
                     }
 				}
@@ -345,6 +320,48 @@ public class TabPanelDashboard extends TabPanel {
 		};
 	}
 
+	public void resetButton() {
+
+		for (int i=0; i < objectives.length; i++) {
+			if (objectives[i].equals(settlement.getObjective())) {
+				buttons.get(i).setSelected(true);
+			}
+		}		
+	}
+	
+	public void commitObjective() {
+		
+		if (buttons.size() == 6) {
+			// after all the toggleBtn has been setup
+			int index = -1;
+			for (int j = 0; j < 6; j++) {
+				if (buttons.get(j).isSelected()) {
+					index = j;
+				}
+			}
+		
+			ObjectiveType type = null;
+		
+			if (index == 0)
+				type = ObjectiveType.CROP_FARM;
+			else if (index == 1)
+				type = ObjectiveType.MANUFACTURING;
+			else if (index == 2)
+				type = ObjectiveType.RESEARCH_CENTER;
+			else if (index == 3)
+				type = ObjectiveType.TRANSPORTATION_HUB;
+			else if (index == 4)
+				type = ObjectiveType.TRADE_TOWN;
+			else if (index == 5)
+				type = ObjectiveType.TOURISM;
+		
+			settlement.setObjective(type);
+			//System.out.println("index : " + index);// + "    type is " + type.toString());
+			//System.out.println("Resetting " + settlement + "'s objective to " + settlement.getObjective().toString());
+		}
+	}
+	
+	
 	/*
 	 * Display the initial system greeting and update the css style
 	 */
@@ -352,24 +369,83 @@ public class TabPanelDashboard extends TabPanel {
 	@Override
 	public void update() {
 
-		 int theme = MainScene.getTheme(); 
-		 if (theme == 6) { 
-			 //String cssFile ="/fxui/css/snowBlue.css"; 
-		 	commitButton.setColor(Color.web("#34495e")); // navy blue
-			 //commitButton.getStylesheets().clear();
-			 //commitButton.getStyleClass().add("button-broadcast");
-			 //commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
-		 } else if (theme == 7) { 
-			 commitButton.setColor(Color.web("#b85c01")); // orange
-			 //String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
-			 //commitButton.getStyleClass().add("button-broadcast");
-			 //commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
-		 } else { 
-			 commitButton.setColor(Color.web("#b85c01")); // orange
-			 //String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
-		 	//commitButton.getStyleClass().add("button-broadcast");
-		 	//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		 }
+		if (settlement.getObjective() != null) {
+			Platform.runLater(() -> {
+				objLabel.setText("Current Choice : " + settlement.getObjective().toString());
+				//System.out.println(settlement + "'s objective is " + settlement.getObjective().toString());
+			});
+		}
+
+		int theme = MainScene.getTheme(); 
+		if (themeCache != theme) {
+			themeCache = theme;
+			if (theme == 6) { 
+				String cssFile = "/fxui/css/snowBlue.css";
+				String color = "-fx-border-style: 2px; " + "-fx-background-color: white;" + "-fx-border-color: white;"
+						+ "-fx-background-radius: 2px;";
+				stack.getStylesheets().clear();
+				buttonBox.getStylesheets().clear();
+				headerBox.getStylesheets().clear();
+				commitPane.getStylesheets().clear();
+				objBox.getStylesheets().clear();
+				hbox1.getStylesheets().clear();
+				hbox0.getStylesheets().clear();
+				optionBox.getStylesheets().clear();
+				headerLabel.getStylesheets().clear();
+				objLabel.getStylesheets().clear();			
+				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+				objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+				//headerLabel.setId("rich-blue");
+				//objLabel.setId("rich-blue");
+				headerLabel.getStyleClass().add("label-medium");
+				objLabel.getStyleClass().add("label-medium");
+				commitButton.setColor(Color.web("#34495e")); // navy blue
+				stack.setStyle(color);
+				buttonBox.setStyle(color);
+				commitPane.setStyle(color);
+				headerBox.setStyle(color);
+				objBox.setStyle(color);
+				hbox1.setStyle(color);
+				hbox0.setStyle(color);
+				optionBox.setStyle(color);
+				//String cssFile ="/fxui/css/snowBlue.css"; 
+				//commitButton.getStylesheets().clear();
+				//commitButton.getStyleClass().add("button-broadcast");
+				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
+			} else if (theme == 0 || theme == 7) { 
+				String cssFile = "/fxui/css/nimrodskin.css";
+				String color = "-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
+						+ "-fx-background-radius: 2px;";
+				stack.getStylesheets().clear();
+				buttonBox.getStylesheets().clear();
+				headerBox.getStylesheets().clear();
+				commitPane.getStylesheets().clear();
+				objBox.getStylesheets().clear();
+				hbox1.getStylesheets().clear();
+				hbox0.getStylesheets().clear();
+				optionBox.getStylesheets().clear();
+				headerLabel.getStylesheets().clear();
+				objLabel.getStylesheets().clear();
+				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+				objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+				//headerLabel.setId("rich-orange");
+				//objLabel.setId("rich-orange");
+				headerLabel.getStyleClass().add("label-medium");
+				objLabel.getStyleClass().add("label-medium");
+				commitButton.setColor(Color.web("#b85c01")); // orange
+				stack.setStyle(color);
+				buttonBox.setStyle(color);
+				commitPane.setStyle(color);
+				headerBox.setStyle(color);
+				objBox.setStyle(color);
+				hbox1.setStyle(color);
+				hbox0.setStyle(color);
+				optionBox.setStyle(color);
+				//String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
+				//commitButton.getStyleClass().add("button-broadcast");
+				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
+			}
+		}
 
 	}
 
