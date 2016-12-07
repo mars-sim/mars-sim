@@ -558,7 +558,7 @@ public class GoodsManager implements Serializable {
             double amountNeededSol = 0D;
             //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
             if (resource.equals(oxygenAR))
-                amountNeededSol = personConfig.getNominalO2Rate();
+                amountNeededSol = personConfig.getNominalO2ConsumptionRate();
             //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (resource.equals(waterAR))
                 amountNeededSol = personConfig.getWaterConsumptionRate();
@@ -2603,7 +2603,7 @@ public class GoodsManager implements Serializable {
         if (waterRange < range) range = waterRange;
 
         // Check oxygen capacity as range limit.
-        double oxygenConsumptionRate = personConfig.getNominalO2Rate();
+        double oxygenConsumptionRate = personConfig.getNominalO2ConsumptionRate();
         double oxygenCapacity = v.getCargoCapacity(LifeSupportType.OXYGEN);
         double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
         double oxygenRange = distancePerSol * oxygenSols / 3D;

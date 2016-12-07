@@ -1,5 +1,6 @@
 <!ELEMENT people-configuration (low-activity-metaboic-load-o2-consumption-rate, 
-nominal-activity-metaboic-load-o2-consumption-rate, high-activity-metaboic-load-o2-consumption-rate, water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
+nominal-activity-metaboic-load-o2-consumption-rate, high-activity-metaboic-load-o2-consumption-rate, 
+water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
 dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, water-deprivation-time,
 food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time,
 min-temperature, max-temperature, freezing-time, stress-breakdown-chance, high-fatigue-collapse-chance,

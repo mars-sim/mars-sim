@@ -912,7 +912,7 @@ extends RoverMission {
 
         // Check oxygen capacity as time limit.
         //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenConsumptionRate = config.getHighO2Rate();
+        double oxygenConsumptionRate = config.getHighO2ConsumptionRate();
         double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);

@@ -99,13 +99,15 @@ implements Serializable {
 	private Map<Part, Integer> emergencyParts;
 	private Vehicle emergencyVehicle;
 
-	private static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-	private static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	private static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-	private static AmountResource methaneAR = AmountResource.findAmountResource("methane");
+	private static AmountResource foodAR = Rover.foodAR;//AmountResource.findAmountResource(LifeSupportType.FOOD);
+	private static AmountResource oxygenAR =  Rover.oxygenAR;//AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR = Rover.waterAR;//AmountResource.findAmountResource(LifeSupportType.WATER);
+	private static AmountResource methaneAR = Rover.methaneAR;//AmountResource.findAmountResource("methane");
 	//private static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
 	//private static AmountResource iceAR = AmountResource.findAmountResource("ice");
 	
+    private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+    
     /**
      * Constructor.
      * @param startingPerson the person starting the settlement.
@@ -659,9 +661,9 @@ implements Serializable {
         
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
-            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+            //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
             //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            if (resource.equals(oxygenAR)) amountNeededSol = config.getNominalO2Rate();
+            if (resource.equals(oxygenAR)) amountNeededSol = config.getNominalO2ConsumptionRate();
             //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
             if (resource.equals(waterAR)) amountNeededSol = config.getWaterConsumptionRate();
             //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
@@ -742,11 +744,11 @@ implements Serializable {
         
         double solsMonth = MarsClock.SOLS_IN_MONTH_LONG;
         int numPeople = settlement.getAllAssociatedPeople().size();
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
        // AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double oxygenAmountNeeded = config.getNominalO2Rate() * numPeople * solsMonth;
+        double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenAR, false);
  
         // 2015-01-09 Added addDemandTotalRequest()

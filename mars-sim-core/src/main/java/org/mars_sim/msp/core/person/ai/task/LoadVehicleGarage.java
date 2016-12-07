@@ -88,7 +88,7 @@ implements Serializable {
 	/** The person's settlement. */
 	private Settlement settlement;
 	
-	private static PersonConfig personConfig;
+	private static PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 	
 	/** Resources required to load. */
 	private Map<Resource, Number> requiredResources;
@@ -107,7 +107,7 @@ implements Serializable {
     	// Use Task constructor
     	super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
     	
-        personConfig = SimulationConfig.instance().getPersonConfiguration();
+        //personConfig = SimulationConfig.instance().getPersonConfiguration();
     	
     	VehicleMission mission = getMissionNeedingLoading();
     	if (mission != null) {
@@ -985,7 +985,8 @@ implements Serializable {
 	  	// Put together a list of available dessert 
         for(AmountResource dessert : availableDesserts) {
         	//AmountResource dessert = AmountResource.findAmountResource(n);
-        	if (resource.getName().equals(dessert.getName())) {
+           	//if (resource.getName().equals(dessert.getName())) {
+        	if (resource.equals(dessert)) {
         		//System.out.println("LocalVehicleGarage.java : getRemainingSettlementAmount() : " + n + " was the chosen dessert. ");
         		amountPersonPerSol = PreparingDessert.getDessertMassPerServing(); 
         		isDessert = true;
@@ -999,7 +1000,7 @@ implements Serializable {
 	    	//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
 	    	//AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		
-	    	if (resource.equals(VehicleMaintenance.oxygenAR)) amountPersonPerSol = personConfig.getNominalO2Rate();
+	    	if (resource.equals(VehicleMaintenance.oxygenAR)) amountPersonPerSol = personConfig.getNominalO2ConsumptionRate();
 	    	else if (resource.equals(VehicleMaintenance.waterAR)) amountPersonPerSol = personConfig.getWaterConsumptionRate();
 	    	else if (resource.equals(VehicleMaintenance.foodAR)) amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
         }

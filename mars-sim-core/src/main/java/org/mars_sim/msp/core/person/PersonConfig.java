@@ -48,8 +48,8 @@ implements Serializable {
 	private static final String SPONSOR = "sponsor";
 	
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
-	private static final String NOMINAL_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
-	private static final String HIGH_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";	
+	private static final String NOMINAL_O2_RATE = "nominal-activity-metaboic-load-o2-consumption-rate";
+	private static final String HIGH_O2_RATE = "high-activity-metaboic-load-o2-consumption-rate";	
 
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String WATER_USAGE_RATE = "water-usage-rate";
@@ -108,9 +108,27 @@ implements Serializable {
 	
 	private Map<String, Double> personalityDistribution;
 
+	// for 3 types of metabolic loads
+	private double[] o2ConsumptionRate = new double[] {0,0,0};
+	// for water, dessert, food 
+	private double[] consumptionRates = new double[] {0,0,0};
+	// for grey2BlackWaterRatio, gender ratio
+	private double[] ratio = new double[] {0,0};
+	// for stress breakdown and high fatigue collapse chance
+	private double[] chance = new double[] {0,0};		
+	// for various time values 
+	private double[] time = new double[] {0,0,0,0,0,0};
+	// for min and max temperature
+	private double[] temperature = new double[] {0,0};
+	
+	private double waterUsage = 0;
+
+	private double pressure = 0;
+
+	
 	/**
 	 * Constructor
-	 * @param personDoc the person congif DOM document.
+	 * @param personDoc the person config DOM document.
 	 */
 	public PersonConfig(Document personDoc) {
 		this.personDoc = personDoc;
@@ -397,9 +415,14 @@ implements Serializable {
 	 * @return oxygen rate (kg/sol)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	// 2016-03-31 Added getNominalO2Rate()
-	public double getNominalO2Rate() {
-		return getValueAsDouble(NOMINAL_O2_RATE);
+	// 2016-03-31 Added getNominalO2ConsumptionRate()
+	public double getNominalO2ConsumptionRate() {
+		if (o2ConsumptionRate[1] != 0)
+			return o2ConsumptionRate[1];
+		else {
+			o2ConsumptionRate[1] = getValueAsDouble(NOMINAL_O2_RATE);
+			return o2ConsumptionRate[1];
+		}
 	}
 
 	/**
@@ -407,9 +430,14 @@ implements Serializable {
 	 * @return oxygen rate (kg/sol)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	// 2016-03-31 Added getLowO2Rate()
-	public double getLowO2Rate() {
-		return getValueAsDouble(NOMINAL_O2_RATE);
+	// 2016-03-31 Added getLowO2ConsumptionRate()
+	public double getLowO2ConsumptionRate() {
+		if (o2ConsumptionRate[0] != 0)
+			return o2ConsumptionRate[0];
+		else {
+			o2ConsumptionRate[0] = getValueAsDouble(LOW_O2_RATE);
+			return o2ConsumptionRate[0];
+		}
 	}
 	
 	/**
@@ -417,9 +445,14 @@ implements Serializable {
 	 * @return oxygen rate (kg/sol)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	// 2016-03-31 Added getHIghO2Rate()
-	public double getHighO2Rate() {
-		return getValueAsDouble(NOMINAL_O2_RATE);
+	// 2016-03-31 Added getHIghO2ConsumptionRate()
+	public double getHighO2ConsumptionRate() {
+		if (o2ConsumptionRate[2] != 0)
+			return o2ConsumptionRate[2];
+		else {
+			o2ConsumptionRate[2] = getValueAsDouble(HIGH_O2_RATE);
+			return o2ConsumptionRate[2];
+		}
 	}
 	
 	/**
@@ -428,7 +461,12 @@ implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getWaterConsumptionRate() {
-		return getValueAsDouble(WATER_CONSUMPTION_RATE);
+		if (consumptionRates[0] != 0)
+			return consumptionRates[0];
+		else {
+			consumptionRates[0] = getValueAsDouble(WATER_CONSUMPTION_RATE);
+			return consumptionRates[0];
+		}
 	}
 
 	/**
@@ -438,7 +476,12 @@ implements Serializable {
 	 */
 	// 2015-12-04 Added getWaterUsageRate()
 	public double getWaterUsageRate() {
-		return getValueAsDouble(WATER_USAGE_RATE);
+		if (waterUsage != 0)
+			return waterUsage;
+		else {
+			waterUsage = getValueAsDouble(WATER_USAGE_RATE);
+			return waterUsage;
+		}
 	}
 
 	/**
@@ -448,7 +491,12 @@ implements Serializable {
 	 */
 	// 2015-12-04 Added getGrey2BlackWaterRatio()
 	public double getGrey2BlackWaterRatio() {
-		return getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
+		if (ratio[0] != 0)
+			return ratio[0];
+		else {
+			ratio[0] = getValueAsDouble(GREY_TO_BLACK_WATER_RATIO);
+			return ratio[0];
+		}
 	}
 
 	
@@ -458,7 +506,12 @@ implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getFoodConsumptionRate() {
-		return getValueAsDouble(FOOD_CONSUMPTION_RATE);
+		if (consumptionRates[2] != 0)
+			return consumptionRates[2];
+		else {
+			consumptionRates[2] = getValueAsDouble(FOOD_CONSUMPTION_RATE);
+			return consumptionRates[2];
+		}
 	}
 
 	/**
@@ -467,7 +520,12 @@ implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getDessertConsumptionRate() {
-		return getValueAsDouble(DESSERT_CONSUMPTION_RATE);
+		if (consumptionRates[1] != 0)
+			return consumptionRates[1];
+		else {
+			consumptionRates[1] = getValueAsDouble(DESSERT_CONSUMPTION_RATE);
+			return consumptionRates[1];
+		}
 	}
 	
 	/**
@@ -476,7 +534,12 @@ implements Serializable {
 	 * @throws Exception if oxygen deprivation time could not be found.
 	 */
 	public double getOxygenDeprivationTime() {
-		return getValueAsDouble(OXYGEN_DEPRIVATION_TIME);
+		if (time[0] != 0)
+			return time[0];
+		else {
+			time[0] = getValueAsDouble(OXYGEN_DEPRIVATION_TIME);
+			return time[0];
+		}
 	}
 
 	/**
@@ -485,7 +548,12 @@ implements Serializable {
 	 * @throws Exception if water deprivation time could not be found.
 	 */
 	public double getWaterDeprivationTime() {
-		return getValueAsDouble(WATER_DEPRIVATION_TIME);
+		if (time[1] != 0)
+			return time[1];
+		else {
+			time[1] = getValueAsDouble(WATER_DEPRIVATION_TIME);
+			return time[1];
+		}
 	}
 
 	/**
@@ -494,7 +562,12 @@ implements Serializable {
 	 * @throws Exception if food deprivation time could not be found.
 	 */
 	public double getFoodDeprivationTime() {
-		return getValueAsDouble(FOOD_DEPRIVATION_TIME);
+		if (time[2] != 0)
+			return time[2];
+		else {
+			time[2] = getValueAsDouble(FOOD_DEPRIVATION_TIME);
+			return time[2];
+		}
 	}
 
 	/**
@@ -503,7 +576,12 @@ implements Serializable {
 	 * @throws Exception if starvation start time could not be found.
 	 */
 	public double getStarvationStartTime() {
-		return getValueAsDouble(STARVATION_START_TIME);
+		if (time[3] != 0)
+			return time[3];
+		else {
+			time[3] = getValueAsDouble(STARVATION_START_TIME);
+			return time[3];
+		}
 	}
 
 	/**
@@ -512,7 +590,12 @@ implements Serializable {
 	 * @throws Exception if air pressure could not be found.
 	 */
 	public double getMinAirPressure() {
-		return getValueAsDouble(MIN_AIR_PRESSURE);
+		if (pressure != 0)
+			return pressure;
+		else {
+			pressure = getValueAsDouble(MIN_AIR_PRESSURE);
+			return pressure;
+		}
 	}
 
 	/**
@@ -521,7 +604,12 @@ implements Serializable {
 	 * @throws Exception if decompression time could not be found.
 	 */
 	public double getDecompressionTime() {
-		return getValueAsDouble(DECOMPRESSION_TIME);
+		if (time[4] != 0)
+			return time[4];
+		else {
+			time[4] = getValueAsDouble(DECOMPRESSION_TIME);
+			return time[4];
+		}
 	}
 
 	/**
@@ -530,7 +618,12 @@ implements Serializable {
 	 * @throws Exception if min temperature cannot be found.
 	 */
 	public double getMinTemperature() {
-		return getValueAsDouble(MIN_TEMPERATURE);
+		if (temperature[0] != 0)
+			return temperature[0];
+		else {
+			temperature[0] = getValueAsDouble(MIN_TEMPERATURE);
+			return temperature[0];
+		}
 	}
 
 	/**
@@ -539,7 +632,12 @@ implements Serializable {
 	 * @throws Exception if max temperature cannot be found.
 	 */
 	public double getMaxTemperature() {
-		return getValueAsDouble(MAX_TEMPERATURE);
+		if (temperature[1] != 0)
+			return temperature[1];
+		else {
+			temperature[1] = getValueAsDouble(MAX_TEMPERATURE);
+			return temperature[1];
+		}
 	}
 
 	/**
@@ -548,7 +646,12 @@ implements Serializable {
 	 * @throws Exception if freezing time could not be found.
 	 */
 	public double getFreezingTime() {
-		return getValueAsDouble(FREEZING_TIME);
+		if (time[5] != 0)
+			return time[5];
+		else {
+			time[5] = getValueAsDouble(FREEZING_TIME);
+			return time[5];
+		}
 	}
 
 	/**
@@ -557,7 +660,12 @@ implements Serializable {
 	 * @throws Exception if stress breakdown time could not be found.
 	 */
 	public double getStressBreakdownChance() {
-		return getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
+		if (chance[0] != 0)
+			return chance[0];
+		else {
+			chance[0] = getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
+			return chance[0];
+		}
 	}
 	
 	/**
@@ -566,7 +674,12 @@ implements Serializable {
 	 * @throws Exception if collapse time could not be found.
 	 */
 	public double getHighFatigueCollapseChance() {
-		return getValueAsDouble(HIGH_FATIGUE_COLLAPSE);
+		if (chance[1] != 0)
+			return chance[1];
+		else {
+			chance[1] = getValueAsDouble(HIGH_FATIGUE_COLLAPSE);
+			return chance[1];
+		}
 	}
 
 
@@ -576,7 +689,12 @@ implements Serializable {
 	 * @throws Exception if gender ratio could not be found.
 	 */
 	public double getGenderRatio() {
-		return getValueAsDouble(GENDER_MALE_PERCENTAGE) / 100D;
+		if (ratio[1] != 0)
+			return ratio[1];
+		else {
+			ratio[1] = getValueAsDouble(GENDER_MALE_PERCENTAGE) / 100D;
+			return ratio[1];
+		}
 	}
 
 	/**

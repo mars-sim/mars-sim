@@ -154,14 +154,16 @@ implements Serializable {
 	public static AmountResource findAmountResource(String name) {
 		count++;
 		if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
-		AmountResource result = null;
+		//AmountResource result = null;
 		Iterator<AmountResource> i = getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if (resource.getName().equals(name.toLowerCase())) result = resource;
+			if (resource.getName().equals(name.toLowerCase())) //result = resource;
+				return resource;
 		}
-		if (result != null) return result;
-		else throw new IllegalStateException("Resource: " + name + " could not be found.");
+		return null;
+		//if (result != null) return result;
+		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
 	}
 */
 	
@@ -188,7 +190,7 @@ implements Serializable {
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
-	 */
+ */	
 	public static AmountResource findAmountResource(String name) {
 		//count++;
 		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
@@ -200,6 +202,7 @@ implements Serializable {
 		return getAmountResourcesMap().get(name.toLowerCase());
 	}
 
+	
 	/**
 	 * Finds an amount resource by name.
 	 * @param name the name of the resource.
