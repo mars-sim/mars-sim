@@ -102,6 +102,16 @@ extends UnitTableModel {
 		columnTypes[ICE] = Integer.class;
 	};
 
+	private AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+	private AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+	private AmountResource methaneAR = AmountResource.findAmountResource("methane");
+	private AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
+	private AmountResource iceAR = AmountResource.findAmountResource("ice");
+	private AmountResource greyWaterAR = AmountResource.findAmountResource("grey water");
+	private AmountResource blackWaterAR = AmountResource.findAmountResource("black water");
+	private AmountResource hydrogenAR = AmountResource.findAmountResource("hydrogen");
+	private AmountResource carbonDioxideAR = AmountResource.findAmountResource("carbon dioxide");;
 	// Data members
 	private UnitManagerListener unitManagerListener;
 	private Map<Unit, Map<AmountResource, Integer>> resourceCache;
@@ -147,24 +157,20 @@ extends UnitTableModel {
 				} break;
 
 				case WATER : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource(LifeSupportType.WATER));
+					result = resourceMap.get(waterAR);
 				} break;
 
 
 				case OXYGEN : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource(LifeSupportType.OXYGEN));
+					result = resourceMap.get(oxygenAR);
 				} break;
 
 				case METHANE : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("methane"));
+					result = resourceMap.get(methaneAR);
 				} break;
 
 				case ROCK_SAMPLES : {
-					result = resourceMap.get(
-						AmountResource.findAmountResource("rock samples"));
+					result = resourceMap.get(rockSamplesAR);
 				} break;
 
 				case MALFUNCTION: {
@@ -195,28 +201,23 @@ extends UnitTableModel {
 				} break;
 
 				case HYDROGEN : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("hydrogen"));
+					result = resourceMap.get(hydrogenAR);
 				} break;
 
 				case GREY_WATER : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("grey water"));
+					result = resourceMap.get(greyWaterAR);
 				} break;
 
 				case BLACK_WATER : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("black water"));
+					result = resourceMap.get(blackWaterAR);
 				} break;
 
 				case CO2 : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("carbon dioxide"));
+					result = resourceMap.get(carbonDioxideAR);
 				} break;
 
 				case ICE : {
-					result = resourceMap.get(
-							AmountResource.findAmountResource("ice"));
+					result = resourceMap.get(iceAR);
 				} break;
 				}
 			}
@@ -249,23 +250,23 @@ extends UnitTableModel {
 			try {
 				int tempColumnNum = -1;
 
-				if (target.equals(AmountResource.findAmountResource(LifeSupportType.OXYGEN)))
+				if (target.equals(oxygenAR))
 					tempColumnNum = OXYGEN;
-				else if (target.equals(AmountResource.findAmountResource("hydrogen")))
+				else if (target.equals(hydrogenAR))
 					tempColumnNum = HYDROGEN;
-				else if (target.equals(AmountResource.findAmountResource("carbon dioxide")))
+				else if (target.equals(carbonDioxideAR))
 					tempColumnNum = CO2;
-				else if (target.equals(AmountResource.findAmountResource("methane")))
+				else if (target.equals(methaneAR))
 					tempColumnNum = METHANE;
-				else if (target.equals(AmountResource.findAmountResource(LifeSupportType.WATER)))
+				else if (target.equals(waterAR))
 					tempColumnNum = WATER;
-				else if (target.equals(AmountResource.findAmountResource("grey water")))
+				else if (target.equals(greyWaterAR))
 					tempColumnNum = GREY_WATER;
-				else if (target.equals(AmountResource.findAmountResource("black water")))
+				else if (target.equals(blackWaterAR))
 					tempColumnNum = BLACK_WATER;
-				else if (target.equals(AmountResource.findAmountResource("rock samples")))
+				else if (target.equals(rockSamplesAR))
 					tempColumnNum = ROCK_SAMPLES;
-				else if (target.equals(AmountResource.findAmountResource("ice")))
+				else if (target.equals(iceAR))
 					tempColumnNum = ICE;
 
 				if (tempColumnNum > -1) {
@@ -301,24 +302,24 @@ extends UnitTableModel {
 		if (!resourceCache.containsKey(newUnit)) {
 			try {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
-				AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
-				AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-				resourceMap.put(water, getResourceStored(newUnit, water));
-				AmountResource hydrogen = AmountResource.findAmountResource("hydrogen");
-				resourceMap.put(hydrogen, getResourceStored(newUnit, hydrogen));
-				AmountResource methane = AmountResource.findAmountResource("methane");
-				resourceMap.put(methane, getResourceStored(newUnit, methane));
-				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-				resourceMap.put(rockSamples, getResourceStored(newUnit, rockSamples));
-				AmountResource greyWater = AmountResource.findAmountResource("grey water");
-				resourceMap.put(greyWater, getResourceStored(newUnit, greyWater));
-				AmountResource blackWater = AmountResource.findAmountResource("black water");
-				resourceMap.put(blackWater, getResourceStored(newUnit, blackWater));
-				AmountResource ice = AmountResource.findAmountResource("ice");
-				resourceMap.put(ice, getResourceStored(newUnit, ice));
-				AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-				resourceMap.put(carbonDioxide, getResourceStored(newUnit, carbonDioxide));
+				//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+				resourceMap.put(oxygenAR, getResourceStored(newUnit, oxygenAR));
+				//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+				resourceMap.put(waterAR, getResourceStored(newUnit, waterAR));
+				//AmountResource hydrogen = AmountResource.findAmountResource("hydrogen");
+				resourceMap.put(hydrogenAR, getResourceStored(newUnit, hydrogenAR));
+				//AmountResource methane = AmountResource.findAmountResource("methane");
+				resourceMap.put(methaneAR, getResourceStored(newUnit, methaneAR));
+				//AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+				resourceMap.put(rockSamplesAR, getResourceStored(newUnit, rockSamplesAR));
+				//AmountResource greyWater = AmountResource.findAmountResource("grey water");
+				resourceMap.put(greyWaterAR, getResourceStored(newUnit, greyWaterAR));
+				//AmountResource blackWater = AmountResource.findAmountResource("black water");
+				resourceMap.put(blackWaterAR, getResourceStored(newUnit, blackWaterAR));
+				//AmountResource ice = AmountResource.findAmountResource("ice");
+				resourceMap.put(iceAR, getResourceStored(newUnit, iceAR));
+				//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+				resourceMap.put(carbonDioxideAR, getResourceStored(newUnit, carbonDioxideAR));
 				resourceCache.put(newUnit, resourceMap);
 			}
 			catch (Exception e) {}

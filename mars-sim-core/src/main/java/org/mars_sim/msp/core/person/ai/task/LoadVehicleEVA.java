@@ -43,6 +43,8 @@ import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -103,8 +105,8 @@ implements Serializable {
             setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.WATER), 40D);
-            requiredResources.put(AmountResource.findAmountResource(LifeSupportType.OXYGEN), 10D);
+            requiredResources.put(VehicleMaintenance.waterAR, 40D);
+            requiredResources.put(VehicleMaintenance.oxygenAR, 10D);
             optionalResources = new HashMap<Resource, Number>(0);
             requiredEquipment = new HashMap<Class, Integer>(1);
             requiredEquipment.put(EVASuit.class, 1);
@@ -315,8 +317,8 @@ implements Serializable {
                         int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
-                            double water = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupportType.WATER), false);
-                            double oxygen = roverInv.getAmountResourceStored(AmountResource.findAmountResource(LifeSupportType.OXYGEN), false);
+                            double water = roverInv.getAmountResourceStored(EVA.waterAR, false);
+                            double oxygen = roverInv.getAmountResourceStored(EVA.oxygenAR, false);
                             if ((numSuits == 0) || (water < 40D) || (oxygen < 10D)) {
                                 result.add(rover);
                             }

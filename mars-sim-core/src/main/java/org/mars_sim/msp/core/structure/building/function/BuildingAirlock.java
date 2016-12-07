@@ -12,10 +12,12 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -36,6 +38,9 @@ public class BuildingAirlock extends Airlock {
     private Point2D airlockInsidePos;
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
+
+	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
 
     /**
      * Constructor

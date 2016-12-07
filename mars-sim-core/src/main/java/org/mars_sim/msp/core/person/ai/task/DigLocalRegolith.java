@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The DigLocalRegolith class is a task for performing
@@ -62,6 +63,8 @@ implements Serializable {
 	private Bag bag;
 	private Settlement settlement;
 
+	private static AmountResource regolithAR = Rover.regolithAR;
+	
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -235,17 +238,17 @@ implements Serializable {
 
         // Unload bag to rover's inventory.
         if (bag != null) {
-            AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-            double collectedAmount = bag.getInventory().getAmountResourceStored(regolithResource, false);
+            //AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+            double collectedAmount = bag.getInventory().getAmountResourceStored(regolithAR, false);
             double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
-                    regolithResource, false, false);
+                    regolithAR, false, false);
 
             // Try to store regolith in settlement.
             if (collectedAmount < settlementCap) {
-                bag.getInventory().retrieveAmountResource(regolithResource, collectedAmount);
-                settlement.getInventory().storeAmountResource(regolithResource, collectedAmount, false);
+                bag.getInventory().retrieveAmountResource(regolithAR, collectedAmount);
+                settlement.getInventory().storeAmountResource(regolithAR, collectedAmount, false);
         		// 2015-01-15 Add addSupplyAmount()
-                settlement.getInventory().addAmountSupplyAmount(regolithResource, collectedAmount);
+                settlement.getInventory().addAmountSupplyAmount(regolithAR, collectedAmount);
             }
 
             // Store bag.
@@ -254,7 +257,7 @@ implements Serializable {
 
             // Recalculate settlement good value for output item.
             GoodsManager goodsManager = settlement.getGoodsManager();
-            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(regolithResource), false);
+            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(regolithAR), false);
         }
 
         super.endTask();
@@ -281,9 +284,9 @@ implements Serializable {
             return time;
         }
 
-        AmountResource regolith = AmountResource.findAmountResource("regolith");
+        //AmountResource regolith = AmountResource.findAmountResource("regolith");
         double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
-                regolith, true, false);
+                regolithAR, true, false);
 
         double regolithCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;
@@ -292,7 +295,7 @@ implements Serializable {
             finishedCollecting = true;
         }
 
-        person.getInventory().storeAmountResource(regolith, regolithCollected, true);
+        person.getInventory().storeAmountResource(regolithAR, regolithCollected, true);
         if (finishedCollecting) {
             setPhase(WALK_BACK_INSIDE);
         }

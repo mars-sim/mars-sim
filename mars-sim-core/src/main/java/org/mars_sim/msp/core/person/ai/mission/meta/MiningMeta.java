@@ -88,8 +88,8 @@ public class MiningMeta implements MetaMission {
             boolean availableAttachmentParts = Mining.areAvailableAttachmentParts(settlement);
 
             // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
+            //AmountResource methane = AmountResource.findAmountResource("methane");
+            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) >= 
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
             
             if (reservableRover && backupRover && minNum && enoughBags

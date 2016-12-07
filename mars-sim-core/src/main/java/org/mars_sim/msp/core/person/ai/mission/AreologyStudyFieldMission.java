@@ -80,6 +80,11 @@ implements Serializable {
 	/** The person leading the areology research. */
 	private Person leadResearcher;
 
+	private static AmountResource oxygenAR = Rover.oxygenAR;
+	private static AmountResource waterAR = Rover.waterAR;
+	private static AmountResource foodAR = Rover.foodAR;
+
+
 	/**
 	 * Constructor.
 	 * @param startingPerson {@link Person} the person starting the mission.
@@ -266,9 +271,9 @@ implements Serializable {
 		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
 		// Check food capacity as time limit.
-		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodConsumptionRate = config.getFoodConsumptionRate();
-		double foodCapacity = vInv.getAmountResourceCapacity(food, false);
+		double foodCapacity = vInv.getAmountResourceCapacity(foodAR, false);
 		double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
 		if (foodTimeLimit < timeLimit) {
 			timeLimit = foodTimeLimit;
@@ -285,18 +290,18 @@ implements Serializable {
  */     
 		
 		// Check water capacity as time limit.
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterConsumptionRate = config.getWaterConsumptionRate();
-		double waterCapacity = vInv.getAmountResourceCapacity(water, false);
+		double waterCapacity = vInv.getAmountResourceCapacity(waterAR, false);
 		double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
 		if (waterTimeLimit < timeLimit) {
 			timeLimit = waterTimeLimit;
 		}
 
 		// Check oxygen capacity as time limit.
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenConsumptionRate = config.getNominalO2Rate();
-		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
+		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygenAR, false);
 		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
 		if (oxygenTimeLimit < timeLimit) {
 			timeLimit = oxygenTimeLimit;
@@ -622,26 +627,26 @@ implements Serializable {
 		int crewNum = getPeopleNumber();
 
 		// Determine life support supplies needed for trip.
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(oxygen)) {
-			oxygenAmount += (Double) result.get(oxygen);
+		if (result.containsKey(oxygenAR)) {
+			oxygenAmount += (Double) result.get(oxygenAR);
 		}
-		result.put(oxygen, oxygenAmount);
+		result.put(oxygenAR, oxygenAmount);
 
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-		if (result.containsKey(water)) {
-			waterAmount += (Double) result.get(water);
+		if (result.containsKey(waterAR)) {
+			waterAmount += (Double) result.get(waterAR);
 		}
-		result.put(water, waterAmount);
+		result.put(waterAR, waterAmount);
 
-		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum * PhysicalCondition.FOOD_RESERVE_FACTOR;
-		if (result.containsKey(food)) {
-			foodAmount += (Double) result.get(food);
+		if (result.containsKey(foodAR)) {
+			foodAmount += (Double) result.get(foodAR);
 		}
-		result.put(food, foodAmount);
+		result.put(foodAR, foodAmount);
 		
 		/* 
 		// 2015-03-09 Added the chosen dessert for the journey

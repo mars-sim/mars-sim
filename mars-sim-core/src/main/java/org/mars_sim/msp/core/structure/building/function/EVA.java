@@ -10,7 +10,9 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -29,6 +31,14 @@ implements Serializable {
 	private static final BuildingFunction FUNCTION = BuildingFunction.EVA;
 
 	private Airlock airlock;
+
+	public static AmountResource methaneAR = AmountResource.findAmountResource("methane");
+	public static AmountResource regolithAR = AmountResource.findAmountResource("regolith");
+	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+    public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+    public static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+    public static AmountResource iceAR = AmountResource.findAmountResource("ice");
+    public static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
 
 	/**
 	 * Constructor

@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
+import org.mars_sim.msp.core.structure.building.function.Storage;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
@@ -73,6 +74,7 @@ implements Serializable {
 	private double duration;
 	/** Health problem to treat. */
 	private HealthProblem problem;
+
 
 	/**
 	 * Constructor.
@@ -414,13 +416,13 @@ implements Serializable {
 	public void produceMedicalWaste() {
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
-            Inventory inv = containerUnit.getInventory();
-            storeAnResource(AVERAGE_MEDICAL_WASTE, "Toxic Waste", inv);
+            //Inventory inv = containerUnit.getInventory();
+            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, MedicalCare.toxicWasteAR, containerUnit.getInventory());
             //System.out.println("MedicalAssistance.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);
 	     }
 	}
 
-
+/*
 	// 2015-02-06 Added storeAnResource()
 	public boolean storeAnResource(double amount, String name, Inventory inv) {
 		boolean result = false;
@@ -445,7 +447,8 @@ implements Serializable {
 
 		return result;
 	}
-
+*/
+	
 	@Override
 	public void destroy() {
 		super.destroy();

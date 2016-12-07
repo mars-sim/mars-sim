@@ -98,6 +98,6 @@ extends CollectResourcesMission {
 	 * @throws MissionException if error getting regolith resource.
 	 */
 	private static AmountResource getRegolithResource() {
-		return AmountResource.findAmountResource("regolith");
+		return Rover.regolithAR;
 	}
 }

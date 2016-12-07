@@ -43,7 +43,7 @@ public class TradeMeta implements MetaMission {
     
     private Person person;
     private Robot robot;
-    
+      
     @Override
     public String getName() {
         return NAME;
@@ -165,8 +165,8 @@ public class TradeMeta implements MetaMission {
 	    }
 	    
 	    // Check if starting settlement has minimum amount of methane fuel.
-	    AmountResource methane = AmountResource.findAmountResource("methane");
-	    if (settlement.getInventory().getAmountResourceStored(methane, false) < 
+	    //AmountResource methane = AmountResource.findAmountResource("methane");
+	    if (settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) < 
 	            RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
 	        missionPossible = false;
 	        return 0;

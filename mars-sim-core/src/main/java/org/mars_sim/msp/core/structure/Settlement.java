@@ -97,9 +97,9 @@ implements Serializable, LifeSupportType, Objective {
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
-	private AmountResource oxygen;
-	private AmountResource water;
-	private AmountResource carbonDioxide;
+	private AmountResource oxygenAR;
+	private AmountResource waterAR;
+	private AmountResource carbonDioxideAR;
 	/*
 	 * Amount of time (millisols) required for periodic maintenance. private
 	 * static final double MAINTENANCE_TIME = 1000D;
@@ -278,9 +278,9 @@ implements Serializable, LifeSupportType, Objective {
 		System.out.println("Setting " + this + "'s Objective to " + objectiveType.toString());
 
 
-		oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		carbonDioxide = AmountResource.findAmountResource(LifeSupportType.CO2);
+		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2);
 		
 	}
 
@@ -507,14 +507,14 @@ implements Serializable, LifeSupportType, Objective {
 		boolean result = true;
 		
 		// 2016-08-27 Restructured with if else to avoid NullPointerException during maven test
-		if (oxygen == null)
-			oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
+		if (oxygenAR == null)
+			oxygenAR = oxygenAR;
+		if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D)
 			result = false;	
 		
-		if (water == null)
-			water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		if (getInventory().getAmountResourceStored(water, false) <= 0D)
+		if (waterAR == null)
+			waterAR = waterAR;
+		if (getInventory().getAmountResourceStored(waterAR, false) <= 0D)
 			result = false;
 	
 		
@@ -549,24 +549,24 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideOxygen(double amountRequested) {
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenTaken = amountRequested;
-		double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
+		double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
 		if (oxygenTaken > oxygenLeft)
 			oxygenTaken = oxygenLeft;
-		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
+		getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		inv.addAmountDemandTotalRequest(oxygen);
+		inv.addAmountDemandTotalRequest(oxygenAR);
 		// 2015-01-09 addDemandRealUsage()
-		inv.addAmountDemand(oxygen, oxygenTaken);
+		inv.addAmountDemand(oxygenAR, oxygenTaken);
 
 		//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
 		double carbonDioxideProvided = oxygenTaken;
-		double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxide, true, false);
+		double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
 		if (carbonDioxideProvided > carbonDioxideCapacity)
 			carbonDioxideProvided = carbonDioxideCapacity;
 
-		getInventory().storeAmountResource(carbonDioxide, carbonDioxideProvided, true);
+		getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
 		// 2015-01-15 Add addSupplyAmount()
-		getInventory().addAmountSupplyAmount(carbonDioxide, carbonDioxideProvided);
+		getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
 		return oxygenTaken;
 	}
 
@@ -582,15 +582,15 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideWater(double amountRequested) {
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterTaken = amountRequested;
-		double waterLeft = getInventory().getAmountResourceStored(water, false);
+		double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
 		if (waterTaken > waterLeft)
 			waterTaken = waterLeft;
-		getInventory().retrieveAmountResource(water, waterTaken);
+		getInventory().retrieveAmountResource(waterAR, waterTaken);
 
 		// 2015-01-09 Added addDemandTotalRequest()
-		inv.addAmountDemandTotalRequest(water);
+		inv.addAmountDemandTotalRequest(waterAR);
 		// 2015-01-09 addDemandRealUsage()
-		inv.addAmountDemand(water, waterTaken);
+		inv.addAmountDemand(waterAR, waterTaken);
 
 		return waterTaken;
 	}
@@ -2869,8 +2869,8 @@ implements Serializable, LifeSupportType, Objective {
     public boolean isWashWaterRationing() {
         boolean result = false;
         
-        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double storedWater = getInventory().getAmountResourceStored(water, false);
+        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+        double storedWater = getInventory().getAmountResourceStored(waterAR, false);
         
         PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration(); 
         double requiredDrinkingWaterOrbit = personconfig.getWaterConsumptionRate() * getCurrentPopulationNum() * 

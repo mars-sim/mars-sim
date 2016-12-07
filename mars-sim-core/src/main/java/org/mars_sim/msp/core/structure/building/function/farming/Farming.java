@@ -97,6 +97,8 @@ implements Serializable {
 	static AmountResource fertilizerAR;
 	static AmountResource o2AR;
 	static AmountResource co2AR;
+    static AmountResource foodAR;
+    
 	
 	private int numLEDInUse;
 	private int cacheNumLED;
@@ -132,7 +134,7 @@ implements Serializable {
     private MarsClock marsClock;
     //private BeeGrowing beeGrowing;
 	//private GoodsManager goodsManager;
-    
+
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -145,6 +147,7 @@ implements Serializable {
 		LED_Item = ItemResource.findItemResource(LED_KIT);
 		HPS_Item = ItemResource.findItemResource(HPS_LAMP);
 
+		foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
 	    soilAR = AmountResource.findAmountResource(SOIL);
 		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
@@ -570,7 +573,7 @@ implements Serializable {
         }
 
         // Modify result by value (VP) of food at the settlement.
-        Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("food"));
+        Good foodGood = GoodsUtil.getResourceGood(foodAR);
         double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
         
         result = (demand / (supply + 1D)) * foodValue;

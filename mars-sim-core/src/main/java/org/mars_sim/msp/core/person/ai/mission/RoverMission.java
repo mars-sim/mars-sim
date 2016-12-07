@@ -69,6 +69,11 @@ extends VehicleMission {
 	private Settlement startingSettlement;
 	private Map<AmountResource, Double> dessertResources;
 	
+	private static AmountResource oxygenAR = Rover.oxygenAR;
+	private static AmountResource waterAR = Rover.waterAR;
+	private static AmountResource foodAR = Rover.foodAR;
+	private static AmountResource methaneAR = Rover.methaneAR;
+    
 	/**
 	 * Constructor.
 	 * @param name the name of the mission.
@@ -699,22 +704,22 @@ extends VehicleMission {
 				* timeSols * crewNum;
 		if (useBuffer)
 			oxygenAmount *= Rover.getErrorMargin();
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		result.put(oxygen, oxygenAmount);
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		result.put(oxygenAR, oxygenAmount);
 
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate()
 				* timeSols * crewNum;
 		if (useBuffer)
 			waterAmount *= Rover.getErrorMargin();
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		result.put(water, waterAmount);
+		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		result.put(waterAR, waterAmount);
 
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() 
 				* timeSols * crewNum; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
 			foodAmount *= Rover.getErrorMargin();
-		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-		result.put(food, foodAmount);
+		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+		result.put(foodAR, foodAmount);
 		
 		return result;
 	}
@@ -828,20 +833,20 @@ extends VehicleMission {
 
 		Inventory inv = settlement.getInventory();
 		try {
-			AmountResource methane = AmountResource.findAmountResource("methane");
-			if (inv.getAmountResourceStored(methane, false) < 100D) {
+			//AmountResource methane = AmountResource.findAmountResource("methane");
+			if (inv.getAmountResourceStored(methaneAR, false) < 100D) {
 				hasBasicResources = false;
 			}
-			AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-			if (inv.getAmountResourceStored(oxygen, false) < 50D) {
+			//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+			if (inv.getAmountResourceStored(oxygenAR, false) < 50D) {
 				hasBasicResources = false;
 			}
-			AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-			if (inv.getAmountResourceStored(water, false) < 50D) {
+			//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+			if (inv.getAmountResourceStored(waterAR, false) < 50D) {
 				hasBasicResources = false;
 			}
-			AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-			if (inv.getAmountResourceStored(food, false) < 50D) {
+			//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+			if (inv.getAmountResourceStored(foodAR, false) < 50D) {
 				hasBasicResources = false;
 			}
 		} 

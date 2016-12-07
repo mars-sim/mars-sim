@@ -65,6 +65,15 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 	/** The vehicle the rover is currently towing. */
 	private Vehicle towedVehicle;
 	
+	public static AmountResource methaneAR = AmountResource.findAmountResource("methane");
+	public static AmountResource regolithAR = AmountResource.findAmountResource("regolith");
+	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+    public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+    public static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+    public static AmountResource iceAR = AmountResource.findAmountResource("ice");
+    public static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
+
+    
 	private List<Point2D> labActivitySpots;
 	private List<Point2D> sickBayActivitySpots;
 
@@ -101,14 +110,14 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		inv.addGeneralCapacity(config.getTotalCapacity(description));
 	
 		// Set inventory resource capacities.
-		AmountResource methane = AmountResource.findAmountResource("methane");
-		inv.addAmountResourceTypeCapacity(methane, config.getCargoCapacity(description, "methane"));
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		inv.addAmountResourceTypeCapacity(oxygen, config.getCargoCapacity(description, LifeSupportType.OXYGEN));
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		inv.addAmountResourceTypeCapacity(water, config.getCargoCapacity(description, LifeSupportType.WATER));
-		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-		inv.addAmountResourceTypeCapacity(food, config.getCargoCapacity(description, LifeSupportType.FOOD));
+		//AmountResource methane = AmountResource.findAmountResource("methane");
+		inv.addAmountResourceTypeCapacity(methaneAR, config.getCargoCapacity(description, "methane"));
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		inv.addAmountResourceTypeCapacity(oxygenAR, config.getCargoCapacity(description, LifeSupportType.OXYGEN));
+		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		inv.addAmountResourceTypeCapacity(waterAR, config.getCargoCapacity(description, LifeSupportType.WATER));
+		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+		inv.addAmountResourceTypeCapacity(foodAR, config.getCargoCapacity(description, LifeSupportType.FOOD));
 				
 		// TODO: can I call .addAmountResourceTypeCapacity() later after the chosen dessert is known?
 		// In RoverMission.java's getResourcesNeededForTrip() we add the storage space for the desserts
@@ -129,10 +138,10 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		inv.addAmountResourceTypeCapacity(toxicWaste, config.getCargoCapacity(description, "toxic waste"));
 */
 		
-		AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-		inv.addAmountResourceTypeCapacity(rockSamples, config.getCargoCapacity(description, "rock samples"));
-		AmountResource ice = AmountResource.findAmountResource("ice");
-		inv.addAmountResourceTypeCapacity(ice, config.getCargoCapacity(description, "ice"));
+		//AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+		inv.addAmountResourceTypeCapacity(rockSamplesAR, config.getCargoCapacity(description, "rock samples"));
+		//AmountResource ice = AmountResource.findAmountResource("ice");
+		inv.addAmountResourceTypeCapacity(iceAR, config.getCargoCapacity(description, "ice"));
 		
 		// Construct sick bay.
 		if (config.hasSickbay(description)) {
@@ -234,10 +243,10 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public boolean lifeSupportCheck() {
         boolean result = true;
 
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        if (getInventory().getAmountResourceStored(oxygen, false) <= 0D) result = false;
-        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        if (getInventory().getAmountResourceStored(water, false) <= 0D) result = false;
+        //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+        if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D) result = false;
+        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+        if (getInventory().getAmountResourceStored(waterAR, false) <= 0D) result = false;
         if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -259,16 +268,16 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
      *  @throws Exception if error providing oxygen.
      */
     public double provideOxygen(double amountRequested) {
-    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+    	//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
     	double oxygenTaken = amountRequested;
-    	double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
+    	double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
-    	getInventory().retrieveAmountResource(oxygen, oxygenTaken);
+    	getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
 
     	// 2015-01-09 Added addDemandTotalRequest()
-    	getInventory().addAmountDemandTotalRequest(oxygen);
+    	getInventory().addAmountDemandTotalRequest(oxygenAR);
     	// 2015-01-09 addDemandRealUsage()
-    	getInventory().addAmountDemand(oxygen, oxygenTaken);
+    	getInventory().addAmountDemand(oxygenAR, oxygenTaken);
        	
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
@@ -279,16 +288,16 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
      *  @throws Exception if error providing water.
      */
     public double provideWater(double amountRequested) {
-    	AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+    	//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
     	double waterTaken = amountRequested;
-    	double waterLeft = getInventory().getAmountResourceStored(water, false);
+    	double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
-    	getInventory().retrieveAmountResource(water, waterTaken);
+    	getInventory().retrieveAmountResource(waterAR, waterTaken);
 
     	// 2015-01-09 Added addDemandTotalRequest()
-    	getInventory().addAmountDemandTotalRequest(water);
+    	getInventory().addAmountDemandTotalRequest(waterAR);
     	// 2015-01-09 addDemandRealUsage()
-    	getInventory().addAmountDemand(water, waterTaken);    	
+    	getInventory().addAmountDemand(waterAR, waterTaken);    	
     	
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
@@ -426,7 +435,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
      */
     public AmountResource getFuelType() {
     	try {
-    		return AmountResource.findAmountResource("methane");
+    		return methaneAR;//AmountResource.findAmountResource("methane");
     	}
     	catch (Exception e) {
     		return null;
@@ -457,9 +466,9 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     		
     	// Check food capacity as range limit.
-    	AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+    	//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
     	double foodConsumptionRate = config.getFoodConsumptionRate();
-    	double foodCapacity = getInventory().getAmountResourceCapacity(food, false);
+    	double foodCapacity = getInventory().getAmountResourceCapacity(foodAR, false);
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
     	double foodRange = distancePerSol * foodSols / life_support_range_error_margin;
     	if (foodRange < range) range = foodRange;
@@ -476,17 +485,17 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     	*/
     	
     	// Check water capacity as range limit.
-    	AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+    	//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
     	double waterConsumptionRate = config.getWaterConsumptionRate();
-    	double waterCapacity = getInventory().getAmountResourceCapacity(water, false);
+    	double waterCapacity = getInventory().getAmountResourceCapacity(waterAR, false);
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
     	double waterRange = distancePerSol * waterSols / life_support_range_error_margin;
     	if (waterRange < range) range = waterRange;
     		
     	// Check oxygen capacity as range limit.
-    	AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+    	//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
     	double oxygenConsumptionRate = config.getNominalO2Rate();
-    	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygen, false);
+    	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygenAR, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
     	double oxygenRange = distancePerSol * oxygenSols / life_support_range_error_margin;
     	if (oxygenRange < range) range = oxygenRange;

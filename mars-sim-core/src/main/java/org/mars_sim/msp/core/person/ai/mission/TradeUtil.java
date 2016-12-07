@@ -69,6 +69,10 @@ public final class TradeUtil {
 	/** Cache for container types. */
 	private final static Map <Class, Equipment> containerTypeCache = new HashMap<Class, Equipment>(3);
 
+	private static AmountResource oxygenAR = Rover.oxygenAR;
+	private static AmountResource waterAR = Rover.waterAR;
+	private static AmountResource foodAR = Rover.foodAR;
+    
 	/**
 	 * Private constructor for utility class.
 	 */
@@ -715,22 +719,22 @@ public final class TradeUtil {
 		// Get oxygen amount.
 		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS *
 				Rover.getErrorMargin();
-		AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		Good oxygenGood = GoodsUtil.getResourceGood(oxygen);
+		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		Good oxygenGood = GoodsUtil.getResourceGood(oxygenAR);
 		neededResources.put(oxygenGood, (int) oxygenAmount);
 
 		// Get water amount.
 		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
 				Rover.getErrorMargin();
-		AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-		Good waterGood = GoodsUtil.getResourceGood(water);
+		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+		Good waterGood = GoodsUtil.getResourceGood(waterAR);
 		neededResources.put(waterGood, (int) waterAmount);
 
 		// Get food amount.
 		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * PhysicalCondition.FOOD_RESERVE_FACTOR * tripTimeSols * Trade.MAX_MEMBERS *
 				Rover.getErrorMargin();
-		AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-		Good foodGood = GoodsUtil.getResourceGood(food);
+		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+		Good foodGood = GoodsUtil.getResourceGood(foodAR);
 		neededResources.put(foodGood, (int) foodAmount);
 
 /*

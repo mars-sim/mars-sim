@@ -950,12 +950,12 @@ implements Serializable {
      *
      * @param String food group
      * @return double amount of fresh food in kg, rounded to the 4th decimal places
-     */
+    
      //2014-11-21 Added getFreshFoodAvailable()
     public double getFreshFoodAvailable(String food) {
     	return getFreshFood(getFreshFoodAR(food));
     }
-
+*/
 
     /**
      * Time passing for the Cooking function in a building.

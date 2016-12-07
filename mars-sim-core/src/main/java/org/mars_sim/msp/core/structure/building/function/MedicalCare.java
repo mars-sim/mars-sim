@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.person.medical.MedicalStation;
 import org.mars_sim.msp.core.person.medical.Treatment;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
@@ -38,6 +39,8 @@ implements MedicalAid, Serializable {
 
     private MedicalStation medicalStation;
 
+	public static AmountResource toxicWasteAR = AmountResource.findAmountResource("toxic waste");
+	
     /**
      * Constructor.
      * @param building the building this function is for.

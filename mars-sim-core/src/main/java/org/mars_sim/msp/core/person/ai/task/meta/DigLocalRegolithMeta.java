@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * Meta task for the DigLocalRegolith task.
@@ -100,9 +101,9 @@ public class DigLocalRegolithMeta implements MetaTask, Serializable {
             try {
                 // Factor the value of regolith at the settlement.
                 GoodsManager manager = settlement.getGoodsManager();
-                AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-                double available = inv.getAmountResourceStored(regolithResource, false);
-                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
+                //AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+                double available = inv.getAmountResourceStored(Rover.regolithAR, false);
+                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
 
                 int size = settlement.getAllAssociatedPeople().size();
                 

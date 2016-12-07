@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * Meta task for the DigLocalIce task.
@@ -102,21 +103,21 @@ public class DigLocalIceMeta implements MetaTask, Serializable {
             try {
                 // Factor the value of ice at the settlement.
                 GoodsManager manager = settlement.getGoodsManager();
-                AmountResource iceResource = AmountResource.findAmountResource("ice");
-                AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
-                double ice_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
+                //AmountResource iceResource = AmountResource.findAmountResource("ice");
+                //AmountResource waterResource =AmountResource.findAmountResource(LifeSupportType.WATER);
+                double ice_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.iceAR));
                 ice_value = ice_value * ICE_VALUE_MODIFIER;
             	if (ice_value > 300)
             		ice_value = 300;
 
-                double water_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
+                double water_value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.waterAR));
                 water_value = water_value * ICE_VALUE_MODIFIER;
                 if (water_value > 300)
             		water_value = 300;
                 
                 // 2016-10-14 Compare the available amount of water and ice reserve
-                double ice_available = inv.getAmountResourceStored(iceResource, false);
-                double water_available = inv.getAmountResourceStored(waterResource, false);
+                double ice_available = inv.getAmountResourceStored(Rover.iceAR, false);
+                double water_available = inv.getAmountResourceStored(Rover.waterAR, false);
                 
                 int size = settlement.getAllAssociatedPeople().size();
                 

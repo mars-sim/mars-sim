@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -31,7 +32,7 @@ public class TravelToSettlementMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.travelToSettlement"); //$NON-NLS-1$
-    
+       
     @Override
     public String getName() {
         return NAME;
@@ -123,8 +124,8 @@ public class TravelToSettlementMeta implements MetaMission {
         }
         
         // Check if starting settlement has minimum amount of methane fuel.
-        AmountResource methane = AmountResource.findAmountResource("methane");
-        if (settlement.getInventory().getAmountResourceStored(methane, false) < 
+        //AmountResource methane = AmountResource.findAmountResource("methane");
+        if (settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) < 
                 RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
             missionPossible = false;
         	return 0;

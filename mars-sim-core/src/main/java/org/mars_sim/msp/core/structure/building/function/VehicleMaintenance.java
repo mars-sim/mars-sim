@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -39,6 +41,10 @@ implements Serializable {
     protected int vehicleCapacity;
     protected List<ParkingLocation> parkingLocations;
     private Collection<Vehicle> vehicles;
+
+	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+    public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+	public static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 
     /**
      * Constructor.

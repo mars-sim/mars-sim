@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -68,6 +69,7 @@ implements Serializable {
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
+ 
 	/**
 	 * Constructor.
 	 * @param name the name of the task
@@ -376,18 +378,18 @@ implements Serializable {
 
         try {
             // Check if EVA suit is at 15% of its oxygen capacity.
-            AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource, false);
-            double oxygen = suitInv.getAmountResourceStored(oxygenResource, false);
+            //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+            double oxygenCap = suitInv.getAmountResourceCapacity(EVA.oxygenAR, false);
+            double oxygen = suitInv.getAmountResourceStored(EVA.oxygenAR, false);
             if (oxygen <= (oxygenCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
                 result = true;
             }
 
             // Check if EVA suit is at 15% of its water capacity.
-            AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-            double waterCap = suitInv.getAmountResourceCapacity(waterResource, false);
-            double water = suitInv.getAmountResourceStored(waterResource, false);
+            //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
+            double waterCap = suitInv.getAmountResourceCapacity(EVA.waterAR, false);
+            double water = suitInv.getAmountResourceStored(EVA.waterAR, false);
             if (water <= (waterCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
                 result = true;

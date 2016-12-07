@@ -70,6 +70,10 @@ implements Serializable {
     private Vehicle vehicleTarget;
     private boolean rescue = false;
 
+	private static AmountResource oxygenAR = Rover.oxygenAR;
+	private static AmountResource waterAR = Rover.waterAR;
+	private static AmountResource foodAR = Rover.foodAR;
+    
     /** 
      * Constructor
      * @param startingPerson the person starting the mission.
@@ -434,26 +438,26 @@ implements Serializable {
         int peopleNum = getRescuePeopleNum(vehicleTarget);
 
         // Determine life support supplies needed for trip.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+        //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
             oxygenAmount *= Rover.getErrorMargin();
         }
-        result.put(oxygen, oxygenAmount);
+        result.put(oxygenAR, oxygenAmount);
 
-        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
             waterAmount *= Rover.getErrorMargin();
         }
-        result.put(water, waterAmount);
+        result.put(waterAR, waterAmount);
 
-        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+        //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * peopleNum;
         if (useBuffer) {
             foodAmount *= Rover.getErrorMargin();
         }
-        result.put(food, foodAmount);
+        result.put(foodAR, foodAmount);
 
         return result;
     }
@@ -716,12 +720,12 @@ implements Serializable {
         Inventory inv = getVehicle().getInventory();
         result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(
                 getVehicle().getFuelType(), false));
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        result.put(oxygen, inv.getAmountResourceCapacity(oxygen, false));
-        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        result.put(water, inv.getAmountResourceCapacity(water, false));
-        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-        result.put(food, inv.getAmountResourceCapacity(food, false));
+        //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+        result.put(oxygenAR, inv.getAmountResourceCapacity(oxygenAR, false));
+        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+        result.put(waterAR, inv.getAmountResourceCapacity(waterAR, false));
+        //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+        result.put(foodAR, inv.getAmountResourceCapacity(foodAR, false));
 
         // Get parts too.
         result.putAll(getPartsNeededForTrip(getTotalRemainingDistance()));

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A meta mission for the CollectRegolith mission.
@@ -66,8 +67,8 @@ public class CollectRegolithMeta implements MetaMission {
             else {
 	            // Factor the value of regolith at the settlement.
 	            GoodsManager manager = person.getSettlement().getGoodsManager();
-	            AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-	            double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
+	            //AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+	            double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(Rover.regolithAR));
 	            result *= value;
 	            if (result > 1D) {
 	                result = 1D;

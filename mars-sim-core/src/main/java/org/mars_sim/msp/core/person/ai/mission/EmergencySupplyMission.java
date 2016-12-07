@@ -99,6 +99,13 @@ implements Serializable {
 	private Map<Part, Integer> emergencyParts;
 	private Vehicle emergencyVehicle;
 
+	private static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+	private static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+	private static AmountResource methaneAR = AmountResource.findAmountResource("methane");
+	//private static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
+	//private static AmountResource iceAR = AmountResource.findAmountResource("ice");
+	
     /**
      * Constructor.
      * @param startingPerson the person starting the settlement.
@@ -653,20 +660,20 @@ implements Serializable {
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            if (resource.equals(oxygen)) amountNeededSol = config.getNominalO2Rate();
-            AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-            if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
-            AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-            if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
+            //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+            if (resource.equals(oxygenAR)) amountNeededSol = config.getNominalO2Rate();
+            //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+            if (resource.equals(waterAR)) amountNeededSol = config.getWaterConsumptionRate();
+            //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+            if (resource.equals(foodAR)) amountNeededSol = config.getFoodConsumptionRate();
 
             double amountNeededOrbit = amountNeededSol * (MarsClock.SOLS_IN_MONTH_LONG * 3D);
             int numPeople = startingSettlement.getAllAssociatedPeople().size();
             result = numPeople * amountNeededOrbit ;
         }
         else {
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            if (resource.equals(methane)) {
+            //AmountResource methane = AmountResource.findAmountResource("methane");
+            if (resource.equals(methaneAR)) {
                 Iterator<Vehicle> i = startingSettlement.getAllAssociatedVehicles().iterator();
                 while (i.hasNext()) {
                     double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
@@ -738,71 +745,71 @@ implements Serializable {
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         Inventory inv = settlement.getInventory();
         // Determine oxygen amount needed.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+       // AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmountNeeded = config.getNominalO2Rate() * numPeople * solsMonth;
-        double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygen, false);
+        double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenAR, false);
  
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(oxygen);
+        inv.addAmountDemandTotalRequest(oxygenAR);
         
-        oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygen);
+        oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygenAR);
         if (oxygenAmountAvailable < oxygenAmountNeeded) {
             double oxygenAmountEmergency = oxygenAmountNeeded - oxygenAmountAvailable;
             if (oxygenAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 oxygenAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(oxygen, oxygenAmountEmergency);
+            result.put(oxygenAR, oxygenAmountEmergency);
         }
         
         // Determine water amount needed.
-        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+        //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth;
-        double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(water, false);
+        double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterAR, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(water);  
+        inv.addAmountDemandTotalRequest(waterAR);  
         
-        waterAmountAvailable += getResourcesOnMissions(settlement, water);
+        waterAmountAvailable += getResourcesOnMissions(settlement, waterAR);
         if (waterAmountAvailable < waterAmountNeeded) {
             double waterAmountEmergency = waterAmountNeeded - waterAmountAvailable;
             if (waterAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 waterAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(water, waterAmountEmergency);
+            result.put(waterAR, waterAmountEmergency);
         }
         
         // Determine food amount needed.
-        AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+        //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth;
-        double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(food, false);
+        double foodAmountAvailable = settlement.getInventory().getAmountResourceStored(foodAR, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(food);
+        inv.addAmountDemandTotalRequest(foodAR);
         
-        foodAmountAvailable += getResourcesOnMissions(settlement, food);
+        foodAmountAvailable += getResourcesOnMissions(settlement, foodAR);
         if (foodAmountAvailable < foodAmountNeeded) {
             double foodAmountEmergency = foodAmountNeeded - foodAmountAvailable;
             if (foodAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 foodAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(food, foodAmountEmergency);
+            result.put(foodAR, foodAmountEmergency);
         }
         
         // Determine methane amount needed.
-        AmountResource methane = AmountResource.findAmountResource("methane");
+        //AmountResource methane = AmountResource.findAmountResource("methane");
         double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
-        double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methane, false);
+        double methaneAmountAvailable = settlement.getInventory().getAmountResourceStored(methaneAR, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(methane);
+        inv.addAmountDemandTotalRequest(methaneAR);
         
-        methaneAmountAvailable += getResourcesOnMissions(settlement, methane);
+        methaneAmountAvailable += getResourcesOnMissions(settlement, methaneAR);
         if (methaneAmountAvailable < methaneAmountNeeded) {
             double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
             if (methaneAmountEmergency < MINIMUM_EMERGENCY_SUPPLY_AMOUNT) {
                 methaneAmountEmergency = MINIMUM_EMERGENCY_SUPPLY_AMOUNT;
             }
-            result.put(methane, methaneAmountEmergency);
+            result.put(methaneAR, methaneAmountEmergency);
         }
         
         return result;

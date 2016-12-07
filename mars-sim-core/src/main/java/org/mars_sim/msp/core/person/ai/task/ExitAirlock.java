@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.robot.RoboticAttribute;
 import org.mars_sim.msp.core.robot.RoboticAttributeManager;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -75,6 +76,9 @@ implements Serializable {
 
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
+
+	protected static AmountResource oxygenAR = BuildingAirlock.oxygenAR;
+	protected static AmountResource waterAR = BuildingAirlock.waterAR;
 
     //private Person person = null;
     //private Robot robot = null;
@@ -844,17 +848,17 @@ implements Serializable {
         int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
 
         // Check if enough oxygen.
-        AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
-        double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
+        //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
+        double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
         // Make sure there is enough extra oxygen for everyone else.
         availableOxygen -= (neededOxygen * otherPeopleNum);
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
-        AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
-        double availableWater = entityInv.getAmountResourceStored(water, false);
+        //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+        double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
+        double availableWater = entityInv.getAmountResourceStored(waterAR, false);
         // Make sure there is enough extra water for everyone else.
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);
@@ -874,38 +878,38 @@ implements Serializable {
             Inventory entityInv = person.getContainerUnit().getInventory();
 
             // Fill oxygen in suit from entity's inventory.
-            AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
-            double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
+            //AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+            double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
+            double availableOxygen = entityInv.getAmountResourceStored(oxygenAR, false);
 
         	// 2015-01-09 Added addDemandTotalRequest()
-            entityInv.addAmountDemandTotalRequest(oxygen);
+            entityInv.addAmountDemandTotalRequest(oxygenAR);
 
             double takenOxygen = neededOxygen;
             if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
             try {
-                entityInv.retrieveAmountResource(oxygen, takenOxygen);
+                entityInv.retrieveAmountResource(oxygenAR, takenOxygen);
             	// 2015-01-09 addDemandRealUsage()
-                entityInv.addAmountDemand(oxygen, takenOxygen);
-                suitInv.storeAmountResource(oxygen, takenOxygen, true);
+                entityInv.addAmountDemand(oxygenAR, takenOxygen);
+                suitInv.storeAmountResource(oxygenAR, takenOxygen, true);
                 // not calling addSupplyAmount()
             }
             catch (Exception e) {}
 
             // Fill water in suit from entity's inventory.
-            AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-            double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
-            double availableWater = entityInv.getAmountResourceStored(water, false);
+            //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+            double neededWater = suitInv.getAmountResourceRemainingCapacity(waterAR, true, false);
+            double availableWater = entityInv.getAmountResourceStored(waterAR, false);
         	// 2015-01-09 Added addDemandTotalRequest()
-            entityInv.addAmountDemandTotalRequest(water);
+            entityInv.addAmountDemandTotalRequest(waterAR);
 
             double takenWater = neededWater;
             if (takenWater > availableWater) takenWater = availableWater;
             try {
-                entityInv.retrieveAmountResource(water, takenWater);
+                entityInv.retrieveAmountResource(waterAR, takenWater);
             	// 2015-01-09 addDemandRealUsage()
-                entityInv.addAmountDemand(water, takenWater);
-                suitInv.storeAmountResource(water, takenWater, true);
+                entityInv.addAmountDemand(waterAR, takenWater);
+                suitInv.storeAmountResource(waterAR, takenWater, true);
                 // not calling addSupplyAmount()
             }
             catch (Exception e) {}

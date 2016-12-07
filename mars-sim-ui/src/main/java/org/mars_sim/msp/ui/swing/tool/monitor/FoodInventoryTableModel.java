@@ -176,14 +176,13 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 			*/
 		else {
 			try {
-				Settlement settlement = settlements.get(columnIndex - 1);
-				Food food = foodList.get(rowIndex);
-				Inventory inv = settlement.getInventory();
-			    String foodName = food.getName();
-				AmountResource ar = AmountResource.findAmountResource(foodName);
-				double foodAvailable = inv.getAmountResourceStored(ar, false);
-				//double foodAvailable = inv.getAmountResourceStored(ar, true);
-				return foodAvailable;
+				//Settlement settlement = settlements.get(columnIndex - 1);
+				//Food food = foodList.get(rowIndex);
+				//Inventory inv = settlement.getInventory();
+			    //String foodName = food.getName();
+				//AmountResource ar = AmountResource.findAmountResource(foodName);
+				//double foodAvailable = inv.getAmountResourceStored(ar, false);
+				return settlements.get(columnIndex - 1).getInventory().getAmountResourceStored(AmountResource.findAmountResource(foodList.get(rowIndex).getName()), false);
 			}
 			catch (Exception e) {
 				return null;

@@ -98,7 +98,7 @@ public class ExplorationMeta implements MetaMission {
             
             // Check if starting settlement has minimum amount of methane fuel.
             //AmountResource methane = AmountResource.findAmountResource("methane");
-            else if (!(settlement.getInventory().getAmountResourceStored(AmountResource.findAmountResource("methane"), false) >= 
+            else if (!(settlement.getInventory().getAmountResourceStored(Rover.methaneAR, false) >= 
                     RoverMission.MIN_STARTING_SETTLEMENT_METHANE))
             		go = false;
             

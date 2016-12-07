@@ -44,6 +44,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -89,10 +90,6 @@ implements Serializable {
 	
 	private static PersonConfig personConfig;
 	
-	private static AmountResource oxygenAR;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-	private static AmountResource waterAR;// = AmountResource.findAmountResource(LifeSupportType.WATER);
-	private static AmountResource foodAR;// = AmountResource.findAmountResource(LifeSupportType.FOOD);
-
 	/** Resources required to load. */
 	private Map<Resource, Number> requiredResources;
 	/** Resources desired to load but not required. */
@@ -111,10 +108,6 @@ implements Serializable {
     	super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
     	
         personConfig = SimulationConfig.instance().getPersonConfiguration();
-    	
-    	oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-    	waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-    	foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
     	
     	VehicleMission mission = getMissionNeedingLoading();
     	if (mission != null) {
@@ -1006,9 +999,9 @@ implements Serializable {
 	    	//AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
 	    	//AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		
-	    	if (resource.equals(oxygenAR)) amountPersonPerSol = personConfig.getNominalO2Rate();
-	    	else if (resource.equals(waterAR)) amountPersonPerSol = personConfig.getWaterConsumptionRate();
-	    	else if (resource.equals(foodAR)) amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
+	    	if (resource.equals(VehicleMaintenance.oxygenAR)) amountPersonPerSol = personConfig.getNominalO2Rate();
+	    	else if (resource.equals(VehicleMaintenance.waterAR)) amountPersonPerSol = personConfig.getWaterConsumptionRate();
+	    	else if (resource.equals(VehicleMaintenance.foodAR)) amountPersonPerSol = personConfig.getFoodConsumptionRate() / 3D; // settlement serves meals and will prefer meals over "food"
         }
         
     	return remainingPeopleNum * (amountPersonPerSol * tripTimeSols);

@@ -126,15 +126,15 @@ implements ResearchScientificStudy, Serializable {
         if (!isDone()) {
             Unit container = person.getContainerUnit();
             if (container != null) {
-                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 Inventory inv = container.getInventory();
-                double totalRockSampleMass = inv.getAmountResourceStored(rockSamples, false);
+                double totalRockSampleMass = inv.getAmountResourceStored(Rover.rockSamplesAR, false);
                 if (totalRockSampleMass >= SAMPLE_MASS) {
                     double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
                     if (fieldSampleMass > totalRockSampleMass) {
                         fieldSampleMass = totalRockSampleMass;
                     }
-                    inv.retrieveAmountResource(rockSamples, fieldSampleMass);
+                    inv.retrieveAmountResource(Rover.rockSamplesAR, fieldSampleMass);
                 }
             }
         }

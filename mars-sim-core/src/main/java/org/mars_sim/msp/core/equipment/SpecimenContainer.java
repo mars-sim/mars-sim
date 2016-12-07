@@ -11,6 +11,7 @@ import java.io.Serializable;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Phase;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * A specialized container for holding rock samples.
@@ -36,8 +37,7 @@ implements Container, Serializable {
 		setBaseMass(EMPTY_MASS);
 
 		// Set the capacity of the container.
-		getInventory().addAmountResourceTypeCapacity(
-				AmountResource.findAmountResource("rock samples"), CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(Rover.rockSamplesAR, CAPACITY);
 	}
 
 	/**

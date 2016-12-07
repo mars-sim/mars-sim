@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.MissionMember;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
@@ -62,6 +63,8 @@ implements Serializable {
     // Data members
     private ExploredLocation site;
     private Rover rover;
+
+    static AmountResource rockSamplesAR = EVA.rockSamplesAR;
 
     /**
      * Constructor.
@@ -227,13 +230,13 @@ implements Serializable {
             if (RandomUtil.getRandomDouble(1.0D) <= probability) {
                 Inventory inv = person.getInventory();
                 double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
-                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+                //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(
-                        rockSamples, true, false);
+                        rockSamplesAR, true, false);
                 if (rockSampleMass < rockSampleCapacity)
-                    inv.storeAmountResource(rockSamples, rockSampleMass, true);
+                    inv.storeAmountResource(rockSamplesAR, rockSampleMass, true);
    			 		// 2015-01-15 Add addSupplyAmount()
-                	inv.addAmountSupplyAmount(rockSamples, rockSampleMass);
+                	inv.addAmountSupplyAmount(rockSamplesAR, rockSampleMass);
             }
         }
     }
@@ -303,9 +306,9 @@ implements Serializable {
         while (i.hasNext()) {
             SpecimenContainer container = (SpecimenContainer) i.next();
             try {
-                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+                //AmountResource rockSamples = ("rock samples");
                 double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(
-                        rockSamples, false, false);
+                        rockSamplesAR, false, false);
 
                 if (remainingCapacity > mostCapacity) {
                     result = container;

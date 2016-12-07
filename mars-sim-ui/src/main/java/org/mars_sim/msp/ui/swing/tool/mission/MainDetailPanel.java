@@ -105,6 +105,10 @@ implements ListSelectionListener, MissionListener, UnitListener {
 	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 	private MissionWindow missionWindow;
 	
+    private static AmountResource iceAR = AmountResource.findAmountResource("ice");
+    private static AmountResource regolithAR = AmountResource.findAmountResource("regolith");
+
+	
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
@@ -352,15 +356,13 @@ implements ListSelectionListener, MissionListener, UnitListener {
 		missionCustomPane.add(areologyFieldPanel, areologyMissionName);
 
 		// Create custom collect regolith mission panel.
-		MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(
-				AmountResource.findAmountResource("regolith"));
+		MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(regolithAR);
 		String collectRegolithMissionName = CollectRegolith.class.getName();
 		customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
 		missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
 
 		// Create custom collect ice mission panel.
-		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(
-				AmountResource.findAmountResource("ice"));
+		MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(iceAR);
 		String collectIceMissionName = CollectIce.class.getName();
 		customInfoPanels.put(collectIceMissionName, collectIcePanel);
 		missionCustomPane.add(collectIcePanel, collectIceMissionName);
