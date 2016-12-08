@@ -95,6 +95,9 @@ extends RoverMission {
 	private static AmountResource oxygenAR = Rover.oxygenAR;
 	private static AmountResource waterAR = Rover.waterAR;
 	private static AmountResource foodAR = Rover.foodAR;
+	private static Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
+	private static Part backhoe = (Part) Part.findItemResource(BACKHOE);
+    
     /**
      * Constructor
      * @param startingPerson the person starting the mission.
@@ -286,11 +289,11 @@ extends RoverMission {
         Inventory inv = settlement.getInventory();
 
         try {
-            Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
+            //Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
             if (!inv.hasItemResource(pneumaticDrill)) {
                 result = false;
             }
-            Part backhoe = (Part) Part.findItemResource(BACKHOE);
+            //Part backhoe = (Part) Part.findItemResource(BACKHOE);
             if (!inv.hasItemResource(backhoe)) {
                 result = false;
             }
@@ -366,12 +369,11 @@ extends RoverMission {
                 settlementInv.retrieveUnit(luv);
 
                 // Load light utility vehicle with attachment parts.
-                Part pneumaticDrill = (Part) Part
-                        .findItemResource(PNEUMATIC_DRILL);
+                //Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
                 settlementInv.retrieveItemResources(pneumaticDrill, 1);
                 luvInv.storeItemResources(pneumaticDrill, 1);
 
-                Part backhoe = (Part) Part.findItemResource(BACKHOE);
+                //Part backhoe = (Part) Part.findItemResource(BACKHOE);
                 settlementInv.retrieveItemResources(backhoe, 1);
                 luvInv.storeItemResources(backhoe, 1);
             } catch (Exception e) {
@@ -407,12 +409,11 @@ extends RoverMission {
                 luv.determinedSettlementParkedLocationAndFacing();
 
                 // Unload attachment parts.
-                Part pneumaticDrill = (Part) Part
-                        .findItemResource(PNEUMATIC_DRILL);
+                //Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
                 luvInv.retrieveItemResources(pneumaticDrill, 1);
                 settlementInv.storeItemResources(pneumaticDrill, 1);
 
-                Part backhoe = (Part) Part.findItemResource(BACKHOE);
+                //Part backhoe = (Part) Part.findItemResource(BACKHOE);
                 luvInv.retrieveItemResources(backhoe, 1);
                 settlementInv.storeItemResources(backhoe, 1);
             } catch (Exception e) {

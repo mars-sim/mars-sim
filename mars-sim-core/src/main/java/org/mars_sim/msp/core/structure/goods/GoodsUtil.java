@@ -160,6 +160,7 @@ public class GoodsUtil {
 	 */
 	private static void populateItemResources() {
 		Iterator<Part> i = ItemResource.getItemResources().iterator();
+		//Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
 		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}
 

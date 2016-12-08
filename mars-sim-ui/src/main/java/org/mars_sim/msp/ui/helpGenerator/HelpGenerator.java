@@ -623,7 +623,8 @@ public class HelpGenerator {
 	 * generate help files with parts descriptions.
 	 */
 	private static final void generatePartsDescriptions() {
-		TreeMap<String,Part> parts = ItemResource.getItemResourcesMap();
+		//Map<String, ItemResource> parts = ItemResource.getItemResourcesMap();
+		Map<String, Part> parts = ItemResource.getItemResourcesMap();
 
 		// first: generate "parts.html" with a list of defined equipment parts
 		StringBuffer content = new StringBuffer()
@@ -641,7 +642,9 @@ public class HelpGenerator {
 		generateFile(getPathParts(),content);
 
 		// second: loop over part types to generate a help file for each one
-		for (Entry<String,Part> entry : parts.entrySet()) {
+		//for (Entry<String, ItemResource> entry : parts.entrySet()) {
+		//	Part part = (Part) entry.getValue();
+		for (Entry<String, Part> entry : parts.entrySet()) {
 			Part part = entry.getValue();
 			String name = entry.getKey();
 			String description = part.getDescription();

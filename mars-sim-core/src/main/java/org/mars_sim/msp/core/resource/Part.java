@@ -128,7 +128,14 @@ public class Part extends ItemResource {
                 result.add((Part) resource);
             }
         }
-
+        
+/*
+        Iterator<Part> i = ItemResource.getItemResources().iterator();
+        while (i.hasNext()) {
+            Part p = i.next();
+            result.add(p);
+        }
+*/        
         return result;
     }
 

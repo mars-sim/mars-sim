@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.resource;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -32,6 +33,12 @@ implements Serializable {
 	private String name;
 	private String description;
 
+	private static PartConfig partConfig;
+	
+	public ItemResource() {
+		partConfig = SimulationConfig.instance().getPartConfiguration();
+	}
+	
 	/**
 	 * Gets the resource's id.
 	 * @return resource id.
@@ -114,7 +121,7 @@ implements Serializable {
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
-	 */
+	 
 	public static ItemResource findItemResource(String name) {
 		ItemResource result = null;
 		Iterator<Part> i = getItemResources().iterator();
@@ -126,24 +133,34 @@ implements Serializable {
 		if (result != null) return result;
 		else throw new UnknownResourceName(name);
 	}
+	*/
+	
+	/**
+	 * Finds an item resource by name.
+	 * @param name the name of the resource.
+	 * @return resource
+	 * @throws ResourceException if resource could not be found.
+*/	 
+	public static ItemResource findItemResource(String name) {
+		return getItemResourcesMap().get(name.toLowerCase());
+	}
 
+	
 	/**
 	 * Gets a ummutable collection of all the item resources.
 	 * @return collection of item resources.
 	 */
+	//public static Set<ItemResource> getItemResources() {
+	//	return Collections.unmodifiableSet(partConfig.getItemResources());
+	//}
+	
 	public static Set<Part> getItemResources() {
-		Set<Part> set = SimulationConfig
-				.instance()
-				.getPartConfiguration()
-				.getItemResources();
-		return Collections.unmodifiableSet(set);
+		return Collections.unmodifiableSet(partConfig.getItemResources());
 	}
-
-	public static TreeMap<String,Part> getItemResourcesMap() {
-		return SimulationConfig
-				.instance()
-				.getPartConfiguration()
-				.getItemResourcesMap();
+	
+	public static Map<String, Part> getItemResourcesMap() {
+		//if (partConfig == null) System.err.println("partConfig == null");
+		return partConfig.getItemResourcesMap();
 	}
 
 	public static ItemResource createItemResource(

@@ -44,6 +44,9 @@ public class PartPackageConfig implements Serializable {
 	 * @throws Exception if error reading XML document
 	 */
 	public PartPackageConfig(Document partPackageDoc) {
+    	// 2016-12-07 Call to just initialize PartConfig in this constructor
+       	new ItemResource();
+       	
 		partPackages = new ArrayList<PartPackage>();
 		loadPartPackages(partPackageDoc);
 	}
@@ -66,7 +69,8 @@ public class PartPackageConfig implements Serializable {
 			List<Element> partNodes = partPackageElement.getChildren(PART);
 			for (Element partElement : partNodes) {
 				String partType = partElement.getAttributeValue(TYPE);
-				Part part = (Part) Part.findItemResource(partType);
+				//System.out.println("partPackage is " + partPackage.name + "     partType is " + partType);
+				Part part = (Part) ItemResource.findItemResource(partType);
 				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 				partPackage.parts.put(part, partNumber);
 			}

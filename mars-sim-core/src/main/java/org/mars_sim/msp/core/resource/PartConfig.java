@@ -8,10 +8,13 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -35,16 +38,28 @@ public final class PartConfig implements Serializable {
 	public static final String MAX_NUMBER = "max-number";
 
 	// Data members.
-	private Set<Part> itemResources = new HashSet<Part>();
+	//private Set<ItemResource> itemResources = new HashSet<ItemResource>();
+	private Set<Part> itemResources = new TreeSet<Part>();
 
+	private Map<String, Part> itemResourceMap;
+
+	
     /**
      * Constructor
      * @param itemResourceDoc the item resource XML document.
      * @throws Exception if error reading XML document
      */
     public PartConfig(Document itemResourceDoc) {
+    	//System.out.println("Setting up PartConfig");
         loadItemResources(itemResourceDoc);
-        //System.out.println("done with PartConfig constructor");
+	
+		itemResourceMap = new HashMap<String, Part>();		
+		//for (ItemResource r : itemResources) {
+		//	itemResourceMap.put(r.getName(), r);
+		//}
+		for (Part p : itemResources) {
+			itemResourceMap.put(p.getName(), p);
+		}
     }
 
     /**
@@ -61,7 +76,7 @@ public final class PartConfig implements Serializable {
             String description = "no description available.";
 
             // Get name.
-            name = partElement.getAttributeValue(NAME);
+            name = partElement.getAttributeValue(NAME).toLowerCase();
 
             // get description
             Element descriptElem = partElement.getChild(DESCRIPTION);
@@ -74,8 +89,10 @@ public final class PartConfig implements Serializable {
                     .getAttributeValue(MASS));
 
             // Add part to item resources.
-            Part part = new Part(name, description, mass);
-            itemResources.add(part);
+            Part p = new Part(name, description, mass);
+            itemResources.add(p);
+            //ItemResource r = new ItemResource(name, description, mass);
+            //itemResources.add(r);
 
             // Add maintenance entities for part.
             Element entityListElement = partElement
@@ -89,7 +106,7 @@ public final class PartConfig implements Serializable {
                             .getAttributeValue(PROBABILITY));
                     int maxNumber = Integer.parseInt(entityElement
                             .getAttributeValue(MAX_NUMBER));
-                    part.addMaintenanceEntity(entityName, probability,
+                    p.addMaintenanceEntity(entityName, probability,
                             maxNumber);
                 }
             }
@@ -100,20 +117,30 @@ public final class PartConfig implements Serializable {
 	 * Gets a collection of all item resources.
 	 * @return collection of item resources.
 	 */
+	//public Set<ItemResource> getItemResources() {
+	//	return itemResources;
+	//}
 	public Set<Part> getItemResources() {
 		return itemResources;
 	}
-
 	/**
 	 * gives back an alphabetically ordered map of all
 	 * item resources.
 	 * @return {@link TreeMap}<{@link String},{@link ItemResource}>
 	 */
-	public TreeMap<String,Part> getItemResourcesMap() {
+	//public Map<String, ItemResource> getItemResourcesMap() {
+	//	return itemResourceMap;
+	//}
+	
+	public Map<String, Part> getItemResourcesMap() {
+		//if (itemResourceMap == null) System.err.println("itemResourceMap == null");
+		return itemResourceMap;
+/*
 		TreeMap<String,Part> map = new TreeMap<String,Part>();
 		for (Part resource : itemResources) {
 			map.put(resource.getName(),resource);
 		}
 		return map;
+*/		
 	}
 }

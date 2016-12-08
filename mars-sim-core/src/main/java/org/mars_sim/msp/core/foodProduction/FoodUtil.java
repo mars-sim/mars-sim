@@ -167,6 +167,7 @@ public class FoodUtil {
 	 * Populates the food list with all item resources.
 	 */
 	private static void populateItemResources() {
+		//Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
 		Iterator<Part> i = ItemResource.getItemResources().iterator();
 		while (i.hasNext()) foodList.add(getResourceFood(i.next()));
 	}

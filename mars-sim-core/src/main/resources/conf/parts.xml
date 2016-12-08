@@ -728,17 +728,20 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="fuel cell stack" mass="3">
-		<description>Each fuel cell stack comprises 5 solid oxide fuel cell (SOFC), totalling 1kWe</description>
-	    <maintenance-entity-list>
-			<entity name="vehicle" probability="2" max-number="1" />
-			<entity name="methane power generator" probability="1" max-number="15" />
-		</maintenance-entity-list>
-	</part>
-
 	<part name="solid oxide fuel cell" mass=".3">
 		<description>Each solid oxide fuel cell (SOFC) can generate 200W. 
 		It consumes methane and has attained a rating of 85% efficiency</description>
+		<!--maintenance-entity-list>
+			<entity name="fuel cell stack" probability="1" max-number="25" />
+		</maintenance-entity-list-->
+	</part>
+
+	<part name="fuel cell stack" mass="10">
+		<description>Each fuel cell stack comprises 25 solid oxide fuel cell (SOFC), totalling 5kWe</description>
+	    <maintenance-entity-list>
+			<entity name="vehicle" probability="1" max-number="1" />
+			<entity name="methane power generator" probability="1" max-number="15" />
+		</maintenance-entity-list>
 	</part>
 
 	<part name="portable water purification unit" mass="1">

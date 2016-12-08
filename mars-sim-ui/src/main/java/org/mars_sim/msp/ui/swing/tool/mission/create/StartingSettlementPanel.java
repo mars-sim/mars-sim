@@ -57,11 +57,19 @@ class StartingSettlementPanel extends WizardPanel {
 	/** The wizard panel name. */
 	private final static String NAME = "Starting Settlement";
 
+	// Light utility vehicle attachment parts for mining.
+	public static final String PNEUMATIC_DRILL = "pneumatic drill";
+	public static final String BACKHOE = "backhoe";
+
+	
 	// Data members.
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JLabel errorMessageLabel;
 
+	private static Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
+	private static Part backhoe = (Part) Part.findItemResource(BACKHOE);
+	
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -275,11 +283,11 @@ class StartingSettlementPanel extends WizardPanel {
 						else if (column == 9)
 							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
 						else if (column == 10) {
-							Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
+							//Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
 							result = inv.getItemResourceNum(pneumaticDrill);
 						}
 						else if (column == 11) {
-							Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
+							//Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
 							result = inv.getItemResourceNum(backhoe);
 						}
 					}
@@ -375,11 +383,11 @@ class StartingSettlementPanel extends WizardPanel {
 						if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
 					}
 					else if (column == 11) {
-						Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
+						//Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
 						if (inv.getItemResourceNum(pneumaticDrill) == 0) result = true;
 					}
 					else if (column == 12) {
-						Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
+						//Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
 						if (inv.getItemResourceNum(backhoe) == 0) result = true;
 					}
 				}

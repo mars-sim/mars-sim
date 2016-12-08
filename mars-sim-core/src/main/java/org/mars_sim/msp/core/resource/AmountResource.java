@@ -199,7 +199,7 @@ implements Serializable {
 		//result = getAmountResourcesMap().get(name.toLowerCase());
 		//if (result != null) return result;
 		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
-		return getAmountResourcesMap().get(name.toLowerCase());
+		return amountResourceConfig.getAmountResourcesMap().get(name.toLowerCase());
 	}
 
 	
@@ -255,8 +255,9 @@ implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
-		Set<AmountResource> set = amountResourceConfig.getAmountResources();
-		return Collections.unmodifiableSet(set);
+		//Set<AmountResource> set = amountResourceConfig.getAmountResources();
+		//return Collections.unmodifiableSet(set);
+		return Collections.unmodifiableSet(amountResourceConfig.getAmountResources());
 	}
 	
 	/**

@@ -3296,7 +3296,7 @@ Ethylene carbonate is produced by the reaction between ethylene oxide and carb
 		</outputs>
 	</process>
 
-		<!-- 2015-09-28 Added manufacturing solid oxide fuel cell. -->
+		<!-- 2015-09-28 Added manufacturing fuel cell stack. each comprises 25 solid oxide fuel cells, at 5kWe. -->
 	<process name="manufacture fuel cell stack" tech="3" skill="4" work-time="1000" process-time="100"
 			power-required="3">
 		<inputs>
