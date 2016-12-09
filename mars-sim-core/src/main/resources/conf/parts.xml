@@ -806,6 +806,12 @@
 		times that of an equivalent piece of copper.</description>
 	</part>
 	
+	<part name="small hammer" mass="1.5"/>
+	
+	<part name="socket wrench" mass="1.0"/>
+	
+	<part name="pipe wrench" mass="1.5"/>
+			
 <!-- Future:
 	1. work glove
 		<maintenance-entity-list>

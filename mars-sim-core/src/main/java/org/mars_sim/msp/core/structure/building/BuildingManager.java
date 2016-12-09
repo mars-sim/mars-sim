@@ -546,26 +546,29 @@ public class BuildingManager implements Serializable {
      * @return building or null if none found.
      */
     public Building getBuilding(int id) {
-
-		// 2016-12-08 Using Java 8 stream
+/* 
+		// 2016-12-08 Using Java 8 stream 
+    	// Note: stream won't pass junit test.
 		return buildings
 				.stream()
 				.filter(b-> b.getID() == id)
-				.findFirst().get();	
+				.findFirst().orElse(null);//.get();	// .findAny()
 
-/*    	
+*/
+     	// Note: the version below can pass junit test.   
         Building result = null;
 
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
-            Building building = i.next();
-            if (building.getID() == id) {
-                result = building;
+            Building b = i.next();
+            if (b.getID() == id) {
+                result = b;
+                //break; 
+                // 2016-12-08 Note: the word 'break' here will cause maven test to fail
             }
         }
 
         return result;
-*/        
     }
 
    
@@ -1148,8 +1151,8 @@ public class BuildingManager implements Serializable {
             }
         }
 
-        return result;
-*/        
+        return result; 
+*/              
     }
 
     /**
@@ -1833,21 +1836,20 @@ public class BuildingManager implements Serializable {
 		return buildings
 				.stream()
 				.filter(b-> b.getInhabitable_id() == id)
-				.findFirst().get();	
+				.findFirst().orElse(null);//.get();	
 /*		
-    	Building b = null;
+    	Building result = null;
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
-            Building this_b = i.next();
-            int this_id = this_b.getInhabitable_id();
-            if (this_id == id) {
-            	b = this_b;
-            	break;
+            Building b = i.next();
+            if (b.getInhabitable_id() == id) {
+            	return b;
+            	//break;
             }
         }
 
-        return b;
-*/        
+        return result;   
+*/            
     }
 
     /**

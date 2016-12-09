@@ -31,7 +31,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
-	static AmountResourceConfig amountResourceConfig;// = SimulationConfig.instance().getResourceConfiguration();
+	static AmountResourceConfig amountResourceConfig;
 	
 	// Data members
 	private static int count = 0;
@@ -53,7 +53,6 @@ implements Serializable {
 	private Phase phase;
 	
 	public AmountResource() {
-		//if (amountResourceConfig == null)
 		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
 	}
 	
@@ -201,6 +200,7 @@ implements Serializable {
 		// 2016-12-08 Using Java 8 stream
 		return getAmountResources()
 				.stream()
+				//.parallelStream()
 				.filter(item -> item.getName().equals(name.toLowerCase()))
 				.findFirst().get();	
 		//return amountResourceConfig.getAmountResourcesMap().get(name.toLowerCase());

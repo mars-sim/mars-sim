@@ -451,7 +451,8 @@ public class LocalAreaUtil {
     public static boolean checkLocationWithinLocalBoundedObject(double xLoc, double yLoc,
             LocalBoundedObject object) {
         boolean result = false;
-
+        // Below gets java.lang.NullPointerException after resuming from power saving in windows os
+        // called from ai.task.Walk.walkingRoverInteriorPhase(Walk.java:813)
         Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() -
                 (object.getWidth() / 2D), object.getYLocation() -
                 (object.getLength() / 2D), object.getWidth(), object.getLength());

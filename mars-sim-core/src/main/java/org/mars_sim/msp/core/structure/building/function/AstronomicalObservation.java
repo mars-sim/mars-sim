@@ -34,12 +34,15 @@ extends Function {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.ASTRONOMICAL_OBSERVATIONS;
 
+    private static BuildingConfig buildingConfig;
+    
     // Data members
     private double powerRequired;
     private int techLevel;
     private int observatoryCapacity;
     private int observerNum;
 
+    
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -49,14 +52,14 @@ extends Function {
         // Use function constructor.
         super(FUNCTION, building);
 
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
-        powerRequired = config.getAstronomicalObservationPowerRequirement(building.getBuildingType());
-        techLevel = config.getAstronomicalObservationTechLevel(building.getBuildingType());
-        observatoryCapacity = config.getAstronomicalObservationCapacity(building.getBuildingType());
+        powerRequired = buildingConfig.getAstronomicalObservationPowerRequirement(building.getBuildingType());
+        techLevel = buildingConfig.getAstronomicalObservationTechLevel(building.getBuildingType());
+        observatoryCapacity = buildingConfig.getAstronomicalObservationCapacity(building.getBuildingType());
 
         // Load activity spots
-        loadActivitySpots(config.getAstronomicalObservationActivitySpots(building.getBuildingType()));
+        loadActivitySpots(buildingConfig.getAstronomicalObservationActivitySpots(building.getBuildingType()));
     }
 
     /**
@@ -176,15 +179,15 @@ extends Function {
         double existingObservatoryValue = observatoryDemand / (observatorySupply + 1D);
 
         // Determine settlement value for this building's astronomical observatory function.
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        int techLevel = config.getAstronomicalObservationTechLevel(buildingName);
-        int observatorySize = config.getAstronomicalObservationCapacity(buildingName);
+        //BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        int techLevel = buildingConfig.getAstronomicalObservationTechLevel(buildingName);
+        int observatorySize = buildingConfig.getAstronomicalObservationCapacity(buildingName);
         double buildingObservatorySupply = techLevel * observatorySize;
 
         double result = buildingObservatorySupply * existingObservatoryValue;
 
         // Subtract power usage cost per sol.
-        double power = config.getAstronomicalObservationPowerRequirement(buildingName);
+        double power = buildingConfig.getAstronomicalObservationPowerRequirement(buildingName);
         double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
         double powerPerSol = power * hoursInSol;
         double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();

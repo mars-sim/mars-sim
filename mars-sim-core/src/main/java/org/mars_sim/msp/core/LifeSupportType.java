@@ -7,6 +7,8 @@
  */
 package org.mars_sim.msp.core;
 
+import org.mars_sim.msp.core.resource.AmountResource;
+
 /**
  * This interface represents a Life Support system that provides Oxygen, Water
  * Temperature and Air Pressure to a Person. Implementations of this interface
@@ -20,6 +22,12 @@ public interface LifeSupportType {
 	public static final String FOOD = "food";
 	public static final String CO2 = "carbon dioxide";
 
+	public static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+	public static AmountResource carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2);
+
+	
 	/**
 	 * Returns true if life support is working properly and is not out
 	 * of oxygen or water.

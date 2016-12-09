@@ -26,7 +26,13 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	// Light utility vehicle attachment parts for mining.
+	public static final String PNEUMATIC_DRILL = "pneumatic drill";
+	public static final String BACKHOE = "backhoe";
+	public static final String SMALL_HAMMER = "small hammer";
+	public static final String SOCKET_WRENCH = "socket wrench";
+	public static final String PIPE_WRENCH = "pipe wrench";
+	
 	// Data members
 	private int id;
 	private double massPerItem;
@@ -34,11 +40,40 @@ implements Serializable {
 	private String description;
 
 	private static PartConfig partConfig;
+	public static Part pneumaticDrill, backhoe, smallHammer, socketWrench, pipeWrench;
+  
 	
 	public ItemResource() {
 		partConfig = SimulationConfig.instance().getPartConfiguration();
+		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
+		backhoe = (Part) findItemResource(BACKHOE);	
+		smallHammer = (Part) findItemResource(SMALL_HAMMER);
+		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
+		pipeWrench = (Part) findItemResource(PIPE_WRENCH); 
 	}
 	
+
+	/*
+	 * Default private constructor
+	 *
+	private ItemResource() {
+		throw new UnsupportedOperationException("invalid constructor");
+	}
+	 */
+
+	
+	/**
+	 * Constructor.
+	 * @param name the name of the resource.
+	 * @param description {@link String}
+	 * @param massPerItem the mass (kg) of the resource per item.
+	 */
+	protected ItemResource(String name, String description, double massPerItem) {
+		this.name = name;
+		this.description = description;
+		this.massPerItem = massPerItem;
+	}
+
 	/**
 	 * Gets the resource's id.
 	 * @return resource id.
@@ -62,26 +97,7 @@ implements Serializable {
 		return description;
 	}
 
-	/*
-	 * Default private constructor
-	 *
-	private ItemResource() {
-		throw new UnsupportedOperationException("invalid constructor");
-	}
-	 */
-
-	/**
-	 * Constructor.
-	 * @param name the name of the resource.
-	 * @param description {@link String}
-	 * @param massPerItem the mass (kg) of the resource per item.
-	 */
-	protected ItemResource(String name, String description, double massPerItem) {
-		this.name = name;
-		this.description = description;
-		this.massPerItem = massPerItem;
-	}
-
+	
 	/**
 	 * Gets the mass for an item of the resource.
 	 * @return mass (kg)
@@ -121,7 +137,7 @@ implements Serializable {
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
-	 
+
 	public static ItemResource findItemResource(String name) {
 		ItemResource result = null;
 		Iterator<Part> i = getItemResources().iterator();
@@ -133,24 +149,23 @@ implements Serializable {
 		if (result != null) return result;
 		else throw new UnknownResourceName(name);
 	}
-	*/
+	 */
 	
 	/**
 	 * Finds an item resource by name.
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
-*/	 
+	 */	 
 	public static ItemResource findItemResource(String name) {
 		// 2016-12-08 Using Java 8 stream
 		return getItemResources()
 				.stream()
 				.filter(item -> item.getName().equals(name.toLowerCase()))
-				.findFirst().get();	
+				.findFirst().orElse(null);//.get();	
 
 		//return getItemResourcesMap().get(name.toLowerCase());
 	}
-
 	
 	/**
 	 * Gets a ummutable collection of all the item resources.

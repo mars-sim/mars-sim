@@ -24,10 +24,12 @@ public class Administration extends Function implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final BuildingFunction FUNCTION = BuildingFunction.ADMINISTRATION;
-
+    private static BuildingConfig buildingConfig;
+    
     // Data members
     private int populationSupport;
     private int staff, staffCapacity;
+    
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -37,11 +39,11 @@ public class Administration extends Function implements Serializable {
         super(FUNCTION, building);
 
         // Populate data members.
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        populationSupport = config.getAdministrationPopulationSupport(building.getName());
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        populationSupport = buildingConfig.getAdministrationPopulationSupport(building.getName());
 
         // Load activity spots
-        loadActivitySpots(config.getAdministrationActivitySpots(building.getName()));
+        loadActivitySpots(buildingConfig.getAdministrationActivitySpots(building.getName()));
     }
 
     /**
@@ -69,8 +71,8 @@ public class Administration extends Function implements Serializable {
         }
 
         if (!newBuilding) {
-            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-            supply -= config.getAdministrationPopulationSupport(buildingName);
+            //BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+            supply -= buildingConfig.getAdministrationPopulationSupport(buildingName);
             if (supply < 0D) supply = 0D;
         }
 

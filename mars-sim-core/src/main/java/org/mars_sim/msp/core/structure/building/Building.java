@@ -152,7 +152,7 @@ LocalBoundedObject, InsidePathLocation {
 
     private Inventory b_inv, s_inv;
     private Settlement settlement;
-	private static BuildingConfig config;
+	private static BuildingConfig buildingConfig;
     
 	protected ThermalGeneration furnace;
 	protected LifeSupport lifeSupport;
@@ -238,7 +238,7 @@ LocalBoundedObject, InsidePathLocation {
 		this.facing = facing;
 		this.location = manager.getSettlement().getCoordinates();
 
-		config = SimulationConfig.instance().getBuildingConfiguration();
+		buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
 		if (s_inv == null)
 			s_inv = settlement.getInventory();
@@ -266,7 +266,7 @@ LocalBoundedObject, InsidePathLocation {
 			this.width = width;
 			}
 		else {
-			this.width = config.getWidth(buildingType);
+			this.width = buildingConfig.getWidth(buildingType);
 			}
 		if (this.width <= 0D) {
 			throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + buildingType);
@@ -276,7 +276,7 @@ LocalBoundedObject, InsidePathLocation {
 			this.length = length;
 		}
 		else {
-			this.length = config.getLength(buildingType);
+			this.length = buildingConfig.getLength(buildingType);
 		}
 		if (this.length <= 0D) {
 			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + buildingType);
@@ -284,20 +284,20 @@ LocalBoundedObject, InsidePathLocation {
 
 		floorArea = length * width;
 		
-		baseLevel = config.getBaseLevel(buildingType);
-		description = config.getDescription(buildingType);
+		baseLevel = buildingConfig.getBaseLevel(buildingType);
+		description = buildingConfig.getDescription(buildingType);
 
 		// Get the building's functions
 		functions = determineFunctions();
 
 		// Get base power requirements.
-		basePowerRequirement = config.getBasePowerRequirement(buildingType);
-		basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(buildingType);
-		wearLifeTime = config.getWearLifeTime(buildingType);
-		maintenanceTime = config.getMaintenanceTime(buildingType);
+		basePowerRequirement = buildingConfig.getBasePowerRequirement(buildingType);
+		basePowerDownPowerRequirement = buildingConfig.getBasePowerDownPowerRequirement(buildingType);
+		wearLifeTime = buildingConfig.getWearLifeTime(buildingType);
+		maintenanceTime = buildingConfig.getMaintenanceTime(buildingType);
 
 		// Set room temperature
-		roomTemperature = config.getRoomTemperature(buildingType);
+		roomTemperature = buildingConfig.getRoomTemperature(buildingType);
 		// TODO: determine the benefit of adding other heat requirements.
 		//baseHeatRequirement = config.getBaseHeatRequirement(buildingType);
 		//baseHeatDownHeatRequirement = config.getBasePowerDownHeatRequirement(buildingType);
@@ -418,88 +418,88 @@ LocalBoundedObject, InsidePathLocation {
 		//Set<Function> buildingFunctions = new HashSet<Function>();
 
 		// Set power generation function.
-		if (config.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
+		if (buildingConfig.hasPowerGeneration(buildingType)) buildingFunctions.add(new PowerGeneration(this));
 
 		//2014-10-17 Set thermal generation function.
-		if (config.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
+		if (buildingConfig.hasThermalGeneration(buildingType)) buildingFunctions.add(new ThermalGeneration(this));
 
 		// Set life support function.
-		if (config.hasLifeSupport(buildingType)) buildingFunctions.add(new LifeSupport(this));
+		if (buildingConfig.hasLifeSupport(buildingType)) buildingFunctions.add(new LifeSupport(this));
 
 		// Set living accommodations function.
-		if (config.hasLivingAccommodations(buildingType)) buildingFunctions.add(new LivingAccommodations(this));
+		if (buildingConfig.hasLivingAccommodations(buildingType)) buildingFunctions.add(new LivingAccommodations(this));
 
 		// Set research function.
-		if (config.hasResearchLab(buildingType)) buildingFunctions.add(new Research(this));
+		if (buildingConfig.hasResearchLab(buildingType)) buildingFunctions.add(new Research(this));
 
 		// Set communication function.
-		if (config.hasCommunication(buildingType)) buildingFunctions.add(new Communication(this));
+		if (buildingConfig.hasCommunication(buildingType)) buildingFunctions.add(new Communication(this));
 
 		// Set EVA function.
 		//eva = new EVA(this);
 		//if (config.hasEVA(buildingType)) buildingFunctions.add(eva);
-		if (config.hasEVA(buildingType)) buildingFunctions.add(new EVA(this));
+		if (buildingConfig.hasEVA(buildingType)) buildingFunctions.add(new EVA(this));
 
 		// Set recreation function.
-		if (config.hasRecreation(buildingType)) buildingFunctions.add(new Recreation(this));
+		if (buildingConfig.hasRecreation(buildingType)) buildingFunctions.add(new Recreation(this));
 
 		// Set dining function.
-		if (config.hasDining(buildingType)) buildingFunctions.add(new Dining(this));
+		if (buildingConfig.hasDining(buildingType)) buildingFunctions.add(new Dining(this));
 
 		// Set resource processing function.
-		if (config.hasResourceProcessing(buildingType)) buildingFunctions.add(new ResourceProcessing(this));
+		if (buildingConfig.hasResourceProcessing(buildingType)) buildingFunctions.add(new ResourceProcessing(this));
 
 		// Set storage function.
-		if (config.hasStorage(buildingType)) buildingFunctions.add(new Storage(this));
+		if (buildingConfig.hasStorage(buildingType)) buildingFunctions.add(new Storage(this));
 
 		// Set medical care function.
-		if (config.hasMedicalCare(buildingType)) buildingFunctions.add(new MedicalCare(this));
+		if (buildingConfig.hasMedicalCare(buildingType)) buildingFunctions.add(new MedicalCare(this));
 
 		// Set farming function.
-		if (config.hasFarming(buildingType)) buildingFunctions.add(new Farming(this));
+		if (buildingConfig.hasFarming(buildingType)) buildingFunctions.add(new Farming(this));
 
 		// Set exercise function.
-		if (config.hasExercise(buildingType)) buildingFunctions.add(new Exercise(this));
+		if (buildingConfig.hasExercise(buildingType)) buildingFunctions.add(new Exercise(this));
 
 		// Set ground vehicle maintenance function.
-		if (config.hasGroundVehicleMaintenance(buildingType)) buildingFunctions.add(new GroundVehicleMaintenance(this));
+		if (buildingConfig.hasGroundVehicleMaintenance(buildingType)) buildingFunctions.add(new GroundVehicleMaintenance(this));
 
 		// Set cooking function.
-		if (config.hasCooking(buildingType)) buildingFunctions.add(new Cooking(this));
+		if (buildingConfig.hasCooking(buildingType)) buildingFunctions.add(new Cooking(this));
 		
 		// Set preparing dessert function.
-		if (config.hasCooking(buildingType)) buildingFunctions.add(new PreparingDessert(this));
+		if (buildingConfig.hasCooking(buildingType)) buildingFunctions.add(new PreparingDessert(this));
 
 		// Set manufacture function.
-		if (config.hasManufacture(buildingType)) buildingFunctions.add(new Manufacture(this));
+		if (buildingConfig.hasManufacture(buildingType)) buildingFunctions.add(new Manufacture(this));
 
 		//2014-11-23 Added food production
-		if (config.hasFoodProduction(buildingType)) buildingFunctions.add(new FoodProduction(this));
+		if (buildingConfig.hasFoodProduction(buildingType)) buildingFunctions.add(new FoodProduction(this));
 
 		// Set power storage function.
-		if (config.hasPowerStorage(buildingType)) buildingFunctions.add(new PowerStorage(this));
+		if (buildingConfig.hasPowerStorage(buildingType)) buildingFunctions.add(new PowerStorage(this));
 
 		//2014-10-17  Added and imported ThermalStorage
 		// Set thermal storage function.
 		//if (config.hasThermalStorage(buildingType)) buildingFunctions.add(new ThermalStorage(this));
 
 		// Set astronomical observation function
-		if (config.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
+		if (buildingConfig.hasAstronomicalObservation(buildingType)) buildingFunctions.add(new AstronomicalObservation(this));
 
 		// Set management function.
-		if (config.hasManagement(buildingType)) buildingFunctions.add(new Management(this));
+		if (buildingConfig.hasManagement(buildingType)) buildingFunctions.add(new Management(this));
 
 		// Set Earth return function.
-		if (config.hasEarthReturn(buildingType)) buildingFunctions.add(new EarthReturn(this));
+		if (buildingConfig.hasEarthReturn(buildingType)) buildingFunctions.add(new EarthReturn(this));
 
 		// Set building connection function.
-		if (config.hasBuildingConnection(buildingType)) buildingFunctions.add(new BuildingConnection(this));
+		if (buildingConfig.hasBuildingConnection(buildingType)) buildingFunctions.add(new BuildingConnection(this));
 
 		// Set administration function.
-		if (config.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
+		if (buildingConfig.hasAdministration(buildingType)) buildingFunctions.add(new Administration(this));
 
 		// Set robotic function.
-		if (config.hasRoboticStation(buildingType)) buildingFunctions.add(new RoboticStation(this));
+		if (buildingConfig.hasRoboticStation(buildingType)) buildingFunctions.add(new RoboticStation(this));
 
 		return buildingFunctions;
 	}

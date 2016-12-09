@@ -26,6 +26,8 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.COMMUNICATION;
 
+    private static BuildingConfig buildingConfig;
+    
     // Data members
     private int populationSupport;
     private int user, userCapacity;
@@ -39,8 +41,8 @@ implements Serializable {
         super(FUNCTION, building);
 
         // Load activity spots
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        loadActivitySpots(config.getCommunicationActivitySpots(building.getBuildingType()));
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        loadActivitySpots(buildingConfig.getCommunicationActivitySpots(building.getBuildingType()));
     }
 
     /**

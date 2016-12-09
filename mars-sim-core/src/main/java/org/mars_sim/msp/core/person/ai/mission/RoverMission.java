@@ -754,7 +754,7 @@ extends VehicleMission {
 	/**
 	 * Determine an unprepared dessert resource to load on the mission.
 	 */
-	private void determineDessertResources() {
+	private AmountResource determineDessertResources() {
 	    
 	    dessertResources = new HashMap<AmountResource, Double>(1);
 	    
@@ -776,13 +776,14 @@ extends VehicleMission {
             // See if an unprepared dessert resource is available
             boolean isAvailable = Storage.retrieveAnResource(dessertAmount, ar, startingSettlement.getInventory(), false);
             if (isAvailable) {
-                dessertList.add(ar);                    
+                dessertList.add(ar); 
             }
         }
         
         // Randomly choose an unprepared dessert resource from the available resources.
         AmountResource dessertAR = null;
         if (dessertList.size() > 0) {
+            // only needs one of the dessert with that amount.
         	dessertAR = dessertList.get(RandomUtil.getRandomInt(dessertList.size() - 1));
             //dessert = AmountResource.findAmountResource(dessertName);
         }
@@ -790,6 +791,8 @@ extends VehicleMission {
         if (dessertAR != null) {
             dessertResources.put(dessertAR, dessertAmount);
         }
+        
+        return dessertAR;
 	}
 
 	@Override

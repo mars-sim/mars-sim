@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
@@ -80,10 +81,6 @@ extends RoverMission {
 	 * an exploration site for it to be considered mature enough to mine. */
 	private static final int MATURE_ESTIMATE_NUM = 10;
 
-	// Light utility vehicle attachment parts for mining.
-	public static final String PNEUMATIC_DRILL = "pneumatic drill";
-	public static final String BACKHOE = "backhoe";
-
 	// Data members
 	private ExploredLocation miningSite;
 	private MarsClock miningSiteStartTime;
@@ -95,9 +92,7 @@ extends RoverMission {
 	private static AmountResource oxygenAR = Rover.oxygenAR;
 	private static AmountResource waterAR = Rover.waterAR;
 	private static AmountResource foodAR = Rover.foodAR;
-	private static Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
-	private static Part backhoe = (Part) Part.findItemResource(BACKHOE);
-    
+  
     /**
      * Constructor
      * @param startingPerson the person starting the mission.
@@ -290,11 +285,11 @@ extends RoverMission {
 
         try {
             //Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
-            if (!inv.hasItemResource(pneumaticDrill)) {
+            if (!inv.hasItemResource(ItemResource.pneumaticDrill)) {
                 result = false;
             }
             //Part backhoe = (Part) Part.findItemResource(BACKHOE);
-            if (!inv.hasItemResource(backhoe)) {
+            if (!inv.hasItemResource(ItemResource.backhoe)) {
                 result = false;
             }
         } catch (Exception e) {
@@ -370,12 +365,12 @@ extends RoverMission {
 
                 // Load light utility vehicle with attachment parts.
                 //Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
-                settlementInv.retrieveItemResources(pneumaticDrill, 1);
-                luvInv.storeItemResources(pneumaticDrill, 1);
+                settlementInv.retrieveItemResources(ItemResource.pneumaticDrill, 1);
+                luvInv.storeItemResources(ItemResource.pneumaticDrill, 1);
 
                 //Part backhoe = (Part) Part.findItemResource(BACKHOE);
-                settlementInv.retrieveItemResources(backhoe, 1);
-                luvInv.storeItemResources(backhoe, 1);
+                settlementInv.retrieveItemResources(ItemResource.backhoe, 1);
+                luvInv.storeItemResources(ItemResource.backhoe, 1);
             } catch (Exception e) {
                 logger.log(Level.SEVERE,
                         "Error loading light utility vehicle and attachment parts.");
@@ -410,12 +405,12 @@ extends RoverMission {
 
                 // Unload attachment parts.
                 //Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
-                luvInv.retrieveItemResources(pneumaticDrill, 1);
-                settlementInv.storeItemResources(pneumaticDrill, 1);
+                luvInv.retrieveItemResources(ItemResource.pneumaticDrill, 1);
+                settlementInv.storeItemResources(ItemResource.pneumaticDrill, 1);
 
                 //Part backhoe = (Part) Part.findItemResource(BACKHOE);
-                luvInv.retrieveItemResources(backhoe, 1);
-                settlementInv.storeItemResources(backhoe, 1);
+                luvInv.retrieveItemResources(ItemResource.backhoe, 1);
+                settlementInv.storeItemResources(ItemResource.backhoe, 1);
             } catch (Exception e) {
                 logger.log(Level.SEVERE,
                         "Error unloading light utility vehicle and attachment parts.");

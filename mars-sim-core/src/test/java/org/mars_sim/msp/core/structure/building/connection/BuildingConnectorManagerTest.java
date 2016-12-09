@@ -8,6 +8,7 @@ import java.util.Set;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 
@@ -191,6 +192,8 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertTrue(path1.isEndOfPath());
         
         InsideBuildingPath path2 = manager.determineShortestPath(building0, 2D, -1D, building2, -5D, 1D);
+        
+        // 2016-12-09 To pass maven test, change the code in getBuilding(int id) in BuildingManager to the non-java stream version
         assertNotNull(path2);
         assertEquals(7.694507207732848D, path2.getPathLength(), SMALL_DELTA);
         assertEquals(2, path2.getRemainingPathLocations().size());

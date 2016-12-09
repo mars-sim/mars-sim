@@ -97,16 +97,10 @@ implements Serializable, LifeSupportType, Objective {
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
-	private AmountResource oxygenAR;
-	private AmountResource waterAR;
-	private AmountResource carbonDioxideAR;
 	/*
 	 * Amount of time (millisols) required for periodic maintenance. private
 	 * static final double MAINTENANCE_TIME = 1000D;
 	 */
-	/** The settlement template name. */
-	private String template;
-	private String name;
 
 	/** The initial population of the settlement. */
 	private int initialPopulation;
@@ -152,6 +146,9 @@ implements Serializable, LifeSupportType, Objective {
 	
 	private String sponsor;
 	private String objectiveName;
+	/** The settlement template name. */
+	private String template;
+	private String name;
 	//private ObservableList<String> objectivesOList;
 	private final String[] objectiveArray = new String[]{
 			Msg.getString("ObjectiveType.crop")
@@ -189,6 +186,10 @@ implements Serializable, LifeSupportType, Objective {
 
 	private Weather weather;// = sim.getMars().getWeather();
 	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
+	
+	private AmountResource oxygenAR;
+	private AmountResource waterAR;
+	private AmountResource carbonDioxideAR;
 	
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -276,7 +277,6 @@ implements Serializable, LifeSupportType, Objective {
 		//objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
 		System.out.println("Setting " + this + "'s Objective to " + objectiveType.toString());
-
 
 		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
@@ -505,15 +505,16 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public boolean lifeSupportCheck() {
 		boolean result = true;
-		
-		// 2016-08-27 Restructured with if else to avoid NullPointerException during maven test
+			
 		if (oxygenAR == null)
-			oxygenAR = oxygenAR;
+			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
+			oxygenAR = LifeSupportType.oxygenAR;
 		if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D)
 			result = false;	
 		
 		if (waterAR == null)
-			waterAR = waterAR;
+			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
+			waterAR = LifeSupportType.waterAR;
 		if (getInventory().getAmountResourceStored(waterAR, false) <= 0D)
 			result = false;
 	

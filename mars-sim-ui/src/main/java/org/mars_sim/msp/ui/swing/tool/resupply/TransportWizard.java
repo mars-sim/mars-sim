@@ -154,7 +154,7 @@ public class TransportWizard {
 	private SettlementMapPanel mapPanel;
 	private MainScene mainScene;
 	private MainWindow mainWindow;
-	private BuildingConfig buildingConfig;
+	private static BuildingConfig buildingConfig;
 
 	private Resupply resupply;
 

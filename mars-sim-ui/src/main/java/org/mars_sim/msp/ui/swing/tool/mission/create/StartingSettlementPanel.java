@@ -15,8 +15,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -31,17 +35,22 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupportType;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -56,19 +65,12 @@ class StartingSettlementPanel extends WizardPanel {
 
 	/** The wizard panel name. */
 	private final static String NAME = "Starting Settlement";
-
-	// Light utility vehicle attachment parts for mining.
-	public static final String PNEUMATIC_DRILL = "pneumatic drill";
-	public static final String BACKHOE = "backhoe";
-
 	
 	// Data members.
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JLabel errorMessageLabel;
 
-	private static Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
-	private static Part backhoe = (Part) Part.findItemResource(BACKHOE);
 	
 	/**
 	 * Constructor.
@@ -244,24 +246,23 @@ class StartingSettlementPanel extends WizardPanel {
 					else if (column == 2) 
 						result = inv.findNumUnitsOfClass(Rover.class);
 					if (column == 3) {
-						AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-						result = (int) inv.getAmountResourceStored(oxygen, false);
+						//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+						result = (int) inv.getAmountResourceStored(Rover.oxygenAR, false);
 					}
 					else if (column == 4) {
-						AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-						result = (int) inv.getAmountResourceStored(water, false);
+						//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+						result = (int) inv.getAmountResourceStored(Rover.waterAR, false);
 					}
 					else if (column == 5) {
-						AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-						result = (int) inv.getAmountResourceStored(food, false);
+						//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+						result = (int) inv.getAmountResourceStored(Rover.foodAR, false);
 					}
 					else if (column == 6) {
-						AmountResource dessert = AmountResource.findAmountResource("Soymilk");
-						result = (int) inv.getAmountResourceStored(dessert, false);
+						result = (int) determineHighestDessertResources(inv);
 					}
 					else if (column == 7) {
-						AmountResource methane = AmountResource.findAmountResource("methane");
-						result = (int) inv.getAmountResourceStored(methane, false);
+						//AmountResource methane = AmountResource.findAmountResource("methane");
+						result = (int) inv.getAmountResourceStored(Rover.methaneAR, false);
 					}
 					else if (column == 8) 
 						result = inv.findNumUnitsOfClass(EVASuit.class);
@@ -284,11 +285,11 @@ class StartingSettlementPanel extends WizardPanel {
 							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
 						else if (column == 10) {
 							//Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
-							result = inv.getItemResourceNum(pneumaticDrill);
+							result = inv.getItemResourceNum(ItemResource.pneumaticDrill);
 						}
 						else if (column == 11) {
 							//Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
-							result = inv.getItemResourceNum(backhoe);
+							result = inv.getItemResourceNum(ItemResource.backhoe);
 						}
 					}
 				}
@@ -296,6 +297,55 @@ class StartingSettlementPanel extends WizardPanel {
 			}
 
 			return result;
+		}
+		
+	
+		/**
+		 * Determine an unprepared dessert resource to load on the mission.
+		 */
+		private double determineHighestDessertResources(Inventory inv) {
+				
+			double highestAmount = 0;
+	        AmountResource dessertAR = null;
+
+	        AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+	        for (AmountResource ar : availableDesserts) {     
+	            
+	        	double amount = inv.getAmountResourceStored(ar, false);
+	        	if (highestAmount <= amount) {
+	        		highestAmount = amount;
+	        		dessertAR = ar;
+	        	}
+
+	        }
+	        
+	        return highestAmount;
+		}
+		
+		/**
+		 * Determine an unprepared dessert resource to load on the mission.
+		 */
+		private Map<AmountResource, Double> determineDessertResources(Inventory inv) {
+		     
+			Map<AmountResource, Double> dessert = new HashMap<AmountResource, Double>(1);
+			
+			double highestAmount = 0;
+	        AmountResource dessertAR = null;
+
+	        AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+	        for (AmountResource ar : availableDesserts) {     
+	            
+	        	double amount = inv.getAmountResourceStored(ar, false);
+	        	if (highestAmount <= amount) {
+	        		highestAmount = amount;
+	        		dessertAR = ar;
+	        	}
+
+	        }
+	        
+	        dessert.put(dessertAR, highestAmount);
+	        
+	        return dessert;
 		}
 
 		/**
@@ -337,24 +387,24 @@ class StartingSettlementPanel extends WizardPanel {
 					if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
 				}
 				else if (column == 3) {
-					AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-					if (inv.getAmountResourceStored(oxygen, false) < 100D) result = true;
+					//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+					if (inv.getAmountResourceStored(Rover.oxygenAR, false) < 100D) result = true;
 				}
 				else if (column == 4) {
-					AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-					if (inv.getAmountResourceStored(water, false) < 100D) result = true;
+					//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
+					if (inv.getAmountResourceStored(Rover.waterAR, false) < 100D) result = true;
 				}
 				else if (column == 5) {
-					AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
+					//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+					if (inv.getAmountResourceStored(Rover.foodAR, false) < 100D) result = true;
 				}
 				else if (column == 6) {
-					AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
-					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
+					//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
+					if (determineHighestDessertResources(inv) < 100D) result = true;
 				}
 				else if (column == 7) {
-					AmountResource methane = AmountResource.findAmountResource("methane");
-					if (inv.getAmountResourceStored(methane, false) < 100D) result = true;
+					//AmountResource methane = AmountResource.findAmountResource("methane");
+					if (inv.getAmountResourceStored(Rover.methaneAR, false) < 100D) result = true;
 				}
 				else if (column == 8) {
 					if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
@@ -384,11 +434,11 @@ class StartingSettlementPanel extends WizardPanel {
 					}
 					else if (column == 11) {
 						//Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
-						if (inv.getItemResourceNum(pneumaticDrill) == 0) result = true;
+						if (inv.getItemResourceNum(ItemResource.pneumaticDrill) == 0) result = true;
 					}
 					else if (column == 12) {
 						//Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
-						if (inv.getItemResourceNum(backhoe) == 0) result = true;
+						if (inv.getItemResourceNum(ItemResource.backhoe) == 0) result = true;
 					}
 				}
 			}

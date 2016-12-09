@@ -141,7 +141,7 @@ implements Serializable {
 
     private static Simulation sim = Simulation.instance();
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
-    private static BuildingConfig config = simulationConfig.getBuildingConfiguration();
+    private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
     private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
     private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
     private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
@@ -351,7 +351,9 @@ implements Serializable {
 
         double cookingCapacityValue = demand / (supply + 1D);
         //BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double cookingCapacity = config.getCookCapacity(buildingName);
+        //System.out.println("before calling cookingCapacity");
+        double cookingCapacity = buildingConfig.getCookCapacity(buildingName);
+        //System.out.println("after calling cookingCapacity");
         return cookingCapacity * cookingCapacityValue;
     }
 
