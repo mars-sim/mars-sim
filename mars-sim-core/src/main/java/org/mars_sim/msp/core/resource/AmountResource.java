@@ -194,12 +194,16 @@ implements Serializable {
 	public static AmountResource findAmountResource(String name) {
 		//count++;
 		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
-		//Map<String, AmountResource> map = getAmountResourcesMap();
-		//AmountResource result = null;
-		//result = getAmountResourcesMap().get(name.toLowerCase());
-		//if (result != null) return result;
-		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
-		return amountResourceConfig.getAmountResourcesMap().get(name.toLowerCase());
+		//getAmountResources().forEach(r -> {
+		//	if (r.getName().equals(name.toLowerCase()))
+		//		return r;
+		//});	
+		// 2016-12-08 Using Java 8 stream
+		return getAmountResources()
+				.stream()
+				.filter(item -> item.getName().equals(name.toLowerCase()))
+				.findFirst().get();	
+		//return amountResourceConfig.getAmountResourcesMap().get(name.toLowerCase());
 	}
 
 	

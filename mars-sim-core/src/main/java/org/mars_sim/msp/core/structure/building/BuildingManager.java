@@ -547,6 +547,13 @@ public class BuildingManager implements Serializable {
      */
     public Building getBuilding(int id) {
 
+		// 2016-12-08 Using Java 8 stream
+		return buildings
+				.stream()
+				.filter(b-> b.getID() == id)
+				.findFirst().get();	
+
+/*    	
         Building result = null;
 
         Iterator<Building> i = buildings.iterator();
@@ -558,6 +565,7 @@ public class BuildingManager implements Serializable {
         }
 
         return result;
+*/        
     }
 
    
@@ -1123,6 +1131,13 @@ public class BuildingManager implements Serializable {
      * within any building.
      */
     public Building getBuildingAtPosition(double xLoc, double yLoc) {
+
+		// 2016-12-08 Using Java 8 stream
+		return buildings
+				.stream()
+				.filter(b-> LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, b) == true)
+				.findFirst().orElse(null);//get();	
+/*    	
         Building result = null;
         //for (Building building : buildings) { 
         Iterator<Building> i = buildings.iterator();
@@ -1134,6 +1149,7 @@ public class BuildingManager implements Serializable {
         }
 
         return result;
+*/        
     }
 
     /**
@@ -1813,6 +1829,12 @@ public class BuildingManager implements Serializable {
     // 2015-12-30 Added getInhabitableBuilding()
     public Building getInhabitableBuilding(int id) {
 
+		// 2016-12-08 Using Java 8 stream
+		return buildings
+				.stream()
+				.filter(b-> b.getInhabitable_id() == id)
+				.findFirst().get();	
+/*		
     	Building b = null;
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
@@ -1825,6 +1847,7 @@ public class BuildingManager implements Serializable {
         }
 
         return b;
+*/        
     }
 
     /**
@@ -1981,11 +2004,11 @@ public class BuildingManager implements Serializable {
         while (i.hasNext()) {
             i.next().destroy();
         }
-        buildings.clear();
+        //buildings.clear();
         buildings = null;
-        buildingValuesNewCache.clear();
+        //buildingValuesNewCache.clear();
         buildingValuesNewCache = null;
-        buildingValuesOldCache.clear();
+        //buildingValuesOldCache.clear();
         buildingValuesOldCache = null;
         lastBuildingValuesUpdateTime = null;
     }

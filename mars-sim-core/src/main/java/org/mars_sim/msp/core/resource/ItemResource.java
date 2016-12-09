@@ -142,7 +142,13 @@ implements Serializable {
 	 * @throws ResourceException if resource could not be found.
 */	 
 	public static ItemResource findItemResource(String name) {
-		return getItemResourcesMap().get(name.toLowerCase());
+		// 2016-12-08 Using Java 8 stream
+		return getItemResources()
+				.stream()
+				.filter(item -> item.getName().equals(name.toLowerCase()))
+				.findFirst().get();	
+
+		//return getItemResourcesMap().get(name.toLowerCase());
 	}
 
 	
