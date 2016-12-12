@@ -29,7 +29,6 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
 	
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
@@ -38,31 +37,22 @@ implements Serializable {
 	// Element names
 	private static final String MEAL_LIST = "meal-list";
 	private static final String MAIN_DISH = "main-dish";
-
 	private static final String INGREDIENT = "ingredient";
-
 	private static final String MAIN_DISH_NAME = "name";
 	private static final String MAIN_DISH_ID = "id";
 	private static final String MEAL_CATEGORY = "category";
-
 	private static final String INGREDIENT_ID = "id";
 	private static final String INGREDIENT_NAME = "name";
-
-
 	private static final String PROPORTION = "proportion";
-
 	private static final String OIL = "oil";
-	//private static final String EDIBLE_WATER_CONTENT = "edible-water-content";
 	private static final String SALT = "salt";
-	//2014-12-11 Added isItAvailable
-	//private boolean isItAvailable = false;
 
 	private Document mealDoc;
 	private List<HotMeal> mealList;
-	//private HotMeal meal;
-	//private List<Ingredient> ingredientList;
-	//private Ingredient ingredient;
 
+	// water consumption rate, cleaning agent per sol
+	private double[] values = new double[] {0,0}; 
+	
 	/**
 	 * Constructor.
 	 * @param mealDoc the meal DOM document.
@@ -79,7 +69,12 @@ implements Serializable {
 	 */
 	// 2016-05-31 Added getWaterConsumptionRate()
 	public double getWaterConsumptionRate() {
-		return getValueAsDouble(WATER_CONSUMPTION_RATE);
+		if (values[0] != 0)
+			return values[0];
+		else {
+			values[0] = getValueAsDouble(WATER_CONSUMPTION_RATE);
+			return values[0];
+		}
 	}
 
 	
@@ -90,7 +85,12 @@ implements Serializable {
 	 */
 	// 2016-05-31 Added getCleaningAgentPerSol()
 	public double getCleaningAgentPerSol() {
-		return getValueAsDouble(CLEANING_AGENT_PER_SOL);
+		if (values[1] != 0)
+			return values[1];
+		else {
+			values[1] = getValueAsDouble(CLEANING_AGENT_PER_SOL);
+			return values[1];
+		}
 	}
 
 	

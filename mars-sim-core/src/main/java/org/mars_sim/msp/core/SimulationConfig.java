@@ -75,25 +75,26 @@ public class SimulationConfig implements Serializable {
 	public static final String MEAL_FILE = "meals";
 	public static final String ROBOT_FILE = "robots";
 	public static final String QUOTATION_FILE = "quotations";
-	
+	private static final String TIME_CONFIGURATION = "time-configuration";	
 	public static final String VALUE = "value";
 	
 	// Simulation element names.
-	private static final String TIME_CONFIGURATION = "time-configuration";
+
 	private static final String TIME_RATIO = "time-ratio";
 	private static final String TIME_BETWEEN_UPDATES = "time-between-updates";
 	private static final String NO_DELAYS_PER_YIELD = "no-delays-per-yield";
 	private static final String MAX_FRAME_SKIPS = "max-frame-skips";
-	
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
-
 	private static final String AUTOSAVE_INTERVAL = "autosave-interval";
 	private static final String AVERAGE_TRANSIT_TIME = "average-transit-time";
 
 	public String build;
 	
+	private double[] values = new double[] {0,0}; 
 
+	private int[] integers = new int[] {0,0,0,0}; 
+	
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
 	 * ---------------------------------------------------------------------------------------------------- */
@@ -226,34 +227,38 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
 	public double getSimulationTimeRatio() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element timeRatioEL = timeConfig.getChild(TIME_RATIO);
-		String str = timeRatioEL.getAttributeValue(VALUE);
-
-		double d = 0;
-		
-		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException("time_ratio must be greater than zero and cannot be blank.");
-		else {
-			try {
-		         d = Double.valueOf(str.trim()).doubleValue();
-		         //System.out.println("double d = " + d);
-		         
-		         if (d < 0.0001 || d > 500000)
-		 			throw new IllegalStateException("time_ratio must be between .0001 and 500,000.");
-		         
-		         
-		      } catch (NumberFormatException nfe) {
-		         System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());
-		      }
+		if (values[0] != 0) {
+			return values[0];
 		}
 		
-		return d;
+		else {
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element timeRatioEL = timeConfig.getChild(TIME_RATIO);
+			String str = timeRatioEL.getAttributeValue(VALUE);
+	
+			double d = 0;
 			
-		//if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
-		//else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
-
+			if ((str == null) || str.trim().length() == 0)
+				throw new IllegalStateException("time_ratio must be greater than zero and cannot be blank.");
+			
+			else {
+				try {
+			         d = Double.valueOf(str.trim()).doubleValue();
+			         //System.out.println("double d = " + d);
+			         
+			         if (d < 0.0001 || d > 500000)
+			 			throw new IllegalStateException("time_ratio must be between .0001 and 500,000.");
+			         
+			      } catch (NumberFormatException nfe) {
+			         System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());
+			      }
+				}
+			//if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
+			//else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
+			values[0] = d;
+			return d;
+		}
 	}
 
 	/**
@@ -264,37 +269,41 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2015-10-31 getTimeBetweenUpdates()
 	public double getTimeBetweenUpdates() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element el = timeConfig.getChild(TIME_BETWEEN_UPDATES);
-		String str = el.getAttributeValue(VALUE);
-		
-		double d = 0;
-		
-		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException("time-between-updates must be greater than zero and cannot be blank.");
-		else {
-			try {
-		         d = Double.valueOf(str.trim()).doubleValue();
-		         //System.out.println("double d = " + d);
-		         
-		         if (d > 1000 || d < 1)
-		 			throw new IllegalStateException("time-between-updates must be between 1 and 1,000");
-		         
-		         
-		      } catch (NumberFormatException nfe) {
-		         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
-		      }
+		if (values[1] != 0) {
+			return values[1];
 		}
 		
-		return d;
-		
-		
-		//double result = Double.parseDouble(el.getAttributeValue(VALUE));
-		//if (result < 0D) throw new IllegalStateException("time-between-updates in simulation.xml must be positive number.");
-		//else if (result == 0D) throw new IllegalStateException("time-between-updates in simulation.xml cannot be zero.");
-		//return result;
-		
+		else {
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element el = timeConfig.getChild(TIME_BETWEEN_UPDATES);
+			String str = el.getAttributeValue(VALUE);
+			
+			double d = 0;
+			
+			if ((str == null) || str.trim().length() == 0)
+				throw new IllegalStateException("time-between-updates must be greater than zero and cannot be blank.");
+			else {
+				try {
+			         d = Double.valueOf(str.trim()).doubleValue();
+			         //System.out.println("double d = " + d);
+			         
+			         if (d > 1000 || d < 1)
+			 			throw new IllegalStateException("time-between-updates must be between 1 and 1,000");
+			         
+			         
+			      } catch (NumberFormatException nfe) {
+			         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+			      }
+			}
+			
+			values[1] = d;
+			return d;
+			//double result = Double.parseDouble(el.getAttributeValue(VALUE));
+			//if (result < 0D) throw new IllegalStateException("time-between-updates in simulation.xml must be positive number.");
+			//else if (result == 0D) throw new IllegalStateException("time-between-updates in simulation.xml cannot be zero.");
+			//return result;
+		}
 	}
 
 	/**
@@ -304,35 +313,42 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2015-10-31 getNoDelayPerYield()
 	public int getNoDelaysPerYield() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element el = timeConfig.getChild(NO_DELAYS_PER_YIELD);
-		
-		String str = el.getAttributeValue(VALUE);
-		
-		int result = 0;
-		
-		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException("no-delays-per-yield must be greater than zero and cannot be blank.");
-		else {
-			try {
-		         result = Integer.parseInt(str);
-		         
-		         if (result > 200 || result < 1)
-		 			throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
-		         
-		         
-		      } catch (NumberFormatException nfe) {
-		         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
-		      }
+		if (integers[0] != 0) {
+			return integers[0];
 		}
 		
-		return result;
-					
-		//int result = Integer.parseInt(el.getAttributeValue(VALUE));
-		//if (result < 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml must be positive number.");
-		//else if (result == 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml cannot be zero.");
-		//return result;
+		else {		
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element el = timeConfig.getChild(NO_DELAYS_PER_YIELD);
+			
+			String str = el.getAttributeValue(VALUE);
+			
+			int result = 0;
+			
+			if ((str == null) || str.trim().length() == 0)
+				throw new IllegalStateException("no-delays-per-yield must be greater than zero and cannot be blank.");
+			else {
+				try {
+			         result = Integer.parseInt(str);
+			         
+			         if (result > 200 || result < 1)
+			 			throw new IllegalStateException("no-delays-per-yield must be between 1 and 200.");
+			         
+			         
+			      } catch (NumberFormatException nfe) {
+			         System.out.println("NumberFormatException found in time-between-updates : " + nfe.getMessage());
+			      }
+			}
+			
+			integers[0] = result;
+			return result;
+						
+			//int result = Integer.parseInt(el.getAttributeValue(VALUE));
+			//if (result < 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml must be positive number.");
+			//else if (result == 0) throw new IllegalStateException("no-delays-per-yield in simulation.xml cannot be zero.");
+			//return result;
+		}
 	}
 
 	/**
@@ -342,37 +358,42 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2015-10-31 Added getMaxFrameSkips()
 	public int getMaxFrameSkips() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element el = timeConfig.getChild(MAX_FRAME_SKIPS);
-		
-		String str = el.getAttributeValue(VALUE);
-		
-		int result = 0;
-		
-		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException("max-frame-skips must be greater than zero and cannot be blank.");
-		else {
-			try {
-		         result = Integer.parseInt(str);
-		         
-		         if (result > 200 || result < 1)
-		 			throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
-		         
-		         
-		      } catch (NumberFormatException nfe) {
-		         System.out.println("NumberFormatException found in max-frame-skips : " + nfe.getMessage());
-		      }
+		if (integers[1] != 0) {
+			return integers[1];
 		}
 		
-		return result;
-					
-		
-		//int result = Integer.parseInt(el.getAttributeValue(VALUE));
-		//if (result < 0) throw new IllegalStateException("max-frame-skips in simulation.xml must be positive number.");
-		//else if (result == 0) throw new IllegalStateException("max-frame-skips in simulation.xml cannot be zero.");
-		//return result;
-		
+		else {	
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element el = timeConfig.getChild(MAX_FRAME_SKIPS);
+			
+			String str = el.getAttributeValue(VALUE);
+			
+			int result = 0;
+			
+			if ((str == null) || str.trim().length() == 0)
+				throw new IllegalStateException("max-frame-skips must be greater than zero and cannot be blank.");
+			else {
+				try {
+			         result = Integer.parseInt(str);
+			         
+			         if (result > 200 || result < 1)
+			 			throw new IllegalStateException("max-frame-skips must be between 1 and 200.");
+			         
+			         
+			      } catch (NumberFormatException nfe) {
+			         System.out.println("NumberFormatException found in max-frame-skips : " + nfe.getMessage());
+			      }
+			}
+			
+			integers[1] = result;
+			return result;
+						
+		}
+			//int result = Integer.parseInt(el.getAttributeValue(VALUE));
+			//if (result < 0) throw new IllegalStateException("max-frame-skips in simulation.xml must be positive number.");
+			//else if (result == 0) throw new IllegalStateException("max-frame-skips in simulation.xml cannot be zero.");
+			
 	}
 
 	/**
@@ -414,30 +435,37 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2016-05-02 Added getAutosaveInterval()
 	public int getAutosaveInterval() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element el = timeConfig.getChild(AUTOSAVE_INTERVAL);
-		String str = el.getAttributeValue(VALUE);
-		
-		int d = 0;
-		
-		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException("autosave_interval must not be blank and must be greater than zero.");
-		else {
-			try {
-		         d = (int) Double.valueOf(str.trim()).doubleValue();
-		         //System.out.println("double d = " + d);
-		         
-		         if (d < 1 || d > 1440)
-		 			throw new IllegalStateException("autosave_interval must be between 1 and 1440.");		         
-		         
-		      } catch (NumberFormatException nfe) {
-		         System.out.println("NumberFormatException found in autosave_interval : " + nfe.getMessage());
-		      }
-	
+		if (integers[2] != 0) {
+			return integers[2];
 		}
 		
-		return d;
+		else {	
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element el = timeConfig.getChild(AUTOSAVE_INTERVAL);
+			String str = el.getAttributeValue(VALUE);
+			
+			int d = 0;
+			
+			if ((str == null) || str.trim().length() == 0)
+				throw new IllegalStateException("autosave_interval must not be blank and must be greater than zero.");
+			else {
+				try {
+			         d = (int) Double.valueOf(str.trim()).doubleValue();
+			         //System.out.println("double d = " + d);
+			         
+			         if (d < 1 || d > 1440)
+			 			throw new IllegalStateException("autosave_interval must be between 1 and 1440.");		         
+			         
+			      } catch (NumberFormatException nfe) {
+			         System.out.println("NumberFormatException found in autosave_interval : " + nfe.getMessage());
+			      }
+		
+			}
+			
+			integers[2] = d;	
+			return d;
+		}
 	}
 	
 	/**
@@ -447,30 +475,37 @@ public class SimulationConfig implements Serializable {
 	 */
 	// 2016-11-23 Added getAverageTransitTime()
 	public int getAverageTransitTime() {
-		Element root = simulationDoc.getRootElement();
-		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element el = timeConfig.getChild(AVERAGE_TRANSIT_TIME);
-		String str = el.getAttributeValue(VALUE);
-		
-		int d = 0;
-		
-		if ((str == null) || str.trim().length() == 0)
-			throw new IllegalStateException("average-transit-time must not be blank and must be greater than zero.");
-		else {
-			try {
-		         d = (int) Double.valueOf(str.trim()).doubleValue();
-		         //System.out.println("double d = " + d);
-		         
-		         if (d < 1 || d > 430)
-		 			throw new IllegalStateException("average-transit-time must be between 1 and 430.");		         
-		         
-		      } catch (NumberFormatException nfe) {
-		         System.out.println("NumberFormatException found in average-transit-time : " + nfe.getMessage());
-		      }
-	
+		if (integers[3] != 0) {
+			return integers[3];
 		}
 		
-		return d;
+		else {
+			Element root = simulationDoc.getRootElement();
+			Element timeConfig = root.getChild(TIME_CONFIGURATION);
+			Element el = timeConfig.getChild(AVERAGE_TRANSIT_TIME);
+			String str = el.getAttributeValue(VALUE);
+			
+			int d = 0;
+			
+			if ((str == null) || str.trim().length() == 0)
+				throw new IllegalStateException("average-transit-time must not be blank and must be greater than zero.");
+			else {
+				try {
+			         d = (int) Double.valueOf(str.trim()).doubleValue();
+			         //System.out.println("double d = " + d);
+			         
+			         if (d < 1 || d > 430)
+			 			throw new IllegalStateException("average-transit-time must be between 1 and 430.");		         
+			         
+			      } catch (NumberFormatException nfe) {
+			         System.out.println("NumberFormatException found in average-transit-time : " + nfe.getMessage());
+			      }
+		
+			}
+			
+			integers[3] = d;
+			return d;
+		}
 	}
 	
 	
@@ -569,6 +604,7 @@ public class SimulationConfig implements Serializable {
 	 * @return building config
 	 */
 	public BuildingConfig getBuildingConfiguration() {
+        //System.out.println("right before calling getBuildingConfiguration()");
 		return buildingConfig;
 	}
 

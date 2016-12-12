@@ -33,6 +33,16 @@ implements Serializable {
 	private static final String ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN = "rover-life-support-range-error-margin";
 	private static final String ROVER_FUEL_RANGE_ERROR_MARGIN = "rover-fuel-range-error-margin";
 	private static final String MISSION_CONTROL = "mission-control";
+	private static final String LIFE_SUPPORT_REQUIREMENTS = "life-support-requirements";
+	private static final String TOTAL_PRESSURE = "total-pressure";// low="99.9" high="102.7" />
+	private static final String PARTIAL_PRESSURE_OF_O2 = "partial-pressure-of-oxygen"; //low="19.5" high="23.1" />
+	private static final String PARTIAL_PRESSURE_OF_N2 = "partial-pressure-of-nitrogen";// low="79" high="79"/>
+	private static final String PARTIAL_PRESSURE_OF_CO2 = "partial-pressure-of-carbon-dioxide"; //low=".4" high=".4" />
+	private static final String TEMPERATURE = "temperature";// low="18.3" high="23.9"/>
+	private static final String RELATIVE_HUMIDITY = "relative-humidity"; //low="30" high="70"/>
+	private static final String VENTILATION = "ventilation";//
+	private static final String LOW = "low";
+	private static final String HIGH = "high";
 	private static final String SETTLEMENT_TEMPLATE_LIST = 	"settlement-template-list";
 	private static final String TEMPLATE = "template";
 	private static final String NAME = "name";
@@ -81,6 +91,10 @@ implements Serializable {
 	// Random value indicator.
 	public static final String RANDOM = "random";
 
+	private double[] rover_values = new double[] {0,0}; 
+
+	private double[][] life_support_values = new double[2][7]; 
+	
 	// Data members
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
@@ -144,28 +158,90 @@ implements Serializable {
 	// 2016-10-14 loadMissionControl()
     @SuppressWarnings("unchecked")
 	public double[] loadMissionControl() {
+    	
+		if (rover_values[0] != 0) {
+			//System.out.println("using saved rover_values");
+			return rover_values;
+		}
+		
+		else {
+			Element root = settlementDoc.getRootElement();
+			Element missionControlElement = root.getChild(MISSION_CONTROL);
+			Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
+			Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
+			
+			rover_values[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
+			if (rover_values[0] < 1.0 || rover_values[0] > 15.0 )
+				rover_values[0] = 5.0;
+			
+			
+			rover_values[1]= Double.parseDouble(fuelRange.getAttributeValue(VALUE));
+			if (rover_values[1] < 1.0 || rover_values[1] > 10.0 )
+				rover_values[1] = 3.0;
+			
+			return rover_values;
+		}
+    }
+    	
+	/**
+	 * Load the life support requirements from the XML document.
+	 * @return an array of double.
+	 * @throws Exception if error reading XML document.
+	 */
+	// 2016-12-11 loadLifeSupportRequirements()
+    @SuppressWarnings("unchecked")
+	public double[][] loadLifeSupportRequirements() {
+    	
+		if (life_support_values[0][0] != 0) {
+			return life_support_values;
+		}
+		
+		else {
+			Element root = settlementDoc.getRootElement();
+			Element req = root.getChild(LIFE_SUPPORT_REQUIREMENTS);
 
-		Element root = settlementDoc.getRootElement();
-		Element missionControlElement = root.getChild(MISSION_CONTROL);
-		Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
-		Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
-		
-		double[] results = new double[]{0.0, 0.0};
-		results[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
-		//System.out.println("results[0] : " + results[0]);
-		if (results[0] < 1.0 || results[0] > 15.0 )
-			results[0] = 5.0;
-		
-		
-		results[1]= Double.parseDouble(fuelRange.getAttributeValue(VALUE));
-		//System.out.println("results[1] : " + results[1]);
-		if (results[1] < 1.0 || results[1] > 10.0 )
-			results[1] = 3.0;
-		return results;
-		
+			String [] types = new String[] {
+					TOTAL_PRESSURE,
+					PARTIAL_PRESSURE_OF_O2,
+					PARTIAL_PRESSURE_OF_N2,
+					PARTIAL_PRESSURE_OF_CO2,
+					TEMPERATURE,
+					RELATIVE_HUMIDITY,
+					VENTILATION};
+			
+			for (int i = 0; i < 7; i++) {
+				life_support_values = getValues(req, types[i], i);
+			}
+			
+			return life_support_values;
+		}
     }
     
+    public double[][] getValues(Element element, String name, int i) {
+    	double[][] result = new double[2][7];
+    	
+		Element e1 = (Element) element.getChild(name);
 		
+		result[0][i] = Double.parseDouble(e1.getAttributeValue(LOW));
+		//if (result[0] < 1.0 || result[0] > 15.0 )
+		//	result[0] = 101.0;
+		
+		result[1][i] = Double.parseDouble(e1.getAttributeValue(HIGH));
+		//if (result[0] < 1.0 || result[0] > 15.0 )
+		//	result[0] = 99.0;
+		
+		return result;
+/*			
+		TOTAL_PRESSURE; // low="99.9" high="102.7" />
+		PARTIAL_PRESSURE_OF_O2 ; //low="19.5" high="23.1" />
+		PARTIAL_PRESSURE_OF_N2 ;// low="79" high="79"/>
+		PARTIAL_PRESSURE_OF_CO2 ; //low=".4" high=".4" />
+		TEMPERATURE ;// low="18.3" high="23.9"/>
+		RELATIVE_HUMIDITY ; //low="30" high="70"/>
+		VENTILATION ;//
+*/			
+    }
+    
 	/**
 	 * Load the settlement templates from the XML document.
 	 * @param settlementDoc DOM document with settlement configuration.

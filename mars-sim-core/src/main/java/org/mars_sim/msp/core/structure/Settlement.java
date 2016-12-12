@@ -276,7 +276,7 @@ implements Serializable, LifeSupportType, Objective {
 		// 2016-01-16 Added setObjective()
 		//objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
-		System.out.println("Setting " + this + "'s Objective to " + objectiveType.toString());
+		logger.info("Setting " + this + "'s Objective to " + objectiveType.toString());
 
 		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);

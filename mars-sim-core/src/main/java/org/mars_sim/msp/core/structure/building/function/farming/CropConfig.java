@@ -35,10 +35,7 @@ implements Serializable {
 	private static final String CARBON_DIOXIDE_CONSUMPTION_RATE = "carbon-dioxide-consumption-rate";
 	private static final String WATT_TO_PHOTON_CONVERSION_RATIO = "watt-to-photon-conversion-ratio";
 
-
-
 	private static final String VALUE= "value";
-	
 	private static final String CROP_LIST = "crop-list";
 	private static final String CROP = "crop";
 	private static final String NAME = "name";
@@ -57,6 +54,11 @@ implements Serializable {
 
 	private List<CropCategoryType> cropCategoryTypes = new ArrayList<CropCategoryType>(Arrays.asList(CropCategoryType.values()));
 
+	// for co2, o2, water 
+	private double[] consumptionRates = new double[] {0,0,0};
+	
+	private double conversionRate = 0;
+	
 	/**
 	 * Constructor.
 	 * @param cropDoc the crop DOM document.
@@ -246,7 +248,13 @@ implements Serializable {
 	 */
 	// 2015-12-04 Added getCarbonDioxideConsumptionRate()
 	public double getCarbonDioxideConsumptionRate() {
-		return getValueAsDouble(CARBON_DIOXIDE_CONSUMPTION_RATE);
+		if (consumptionRates[0] != 0)
+			return consumptionRates[0];
+		else {
+			consumptionRates[0] = getValueAsDouble(CARBON_DIOXIDE_CONSUMPTION_RATE);
+			//System.out.println("first time calling getCarbonDioxideConsumptionRate()");
+			return consumptionRates[0];
+		}
 	}
 
 	/**
@@ -255,7 +263,15 @@ implements Serializable {
 	 * @throws Exception if the ratio could not be found.
 	 */
 	// 2016-10-11 Added getWattToPhotonConversionRatio()
-	public double getWattToPhotonConversionRatio() { return getValueAsDouble(WATT_TO_PHOTON_CONVERSION_RATIO); }
+	public double getWattToPhotonConversionRatio() { 
+		if (conversionRate != 0)
+			return conversionRate;
+		else {
+			conversionRate = getValueAsDouble(WATT_TO_PHOTON_CONVERSION_RATIO);
+			//System.out.println("first time calling getWattToPhotonConversionRatio()");
+			return conversionRate;
+		}
+	}
 
 	/**
 	 * Gets the oxygen consumption rate.
@@ -264,7 +280,13 @@ implements Serializable {
 	 */
 	// 2015-12-04 Added getOxygenConsumptionRate()
 	public double getOxygenConsumptionRate() {
-		return getValueAsDouble(OXYGEN_CONSUMPTION_RATE);
+		if (consumptionRates[1] != 0)
+			return consumptionRates[1];
+		else {
+			consumptionRates[1] = getValueAsDouble(OXYGEN_CONSUMPTION_RATE);
+			//System.out.println("first time calling getOxygenConsumptionRate()");
+			return consumptionRates[1];
+		}
 	}
 
 	/**
@@ -274,7 +296,13 @@ implements Serializable {
 	 */
 	// 2015-12-04 Added getWaterConsumptionRate()
 	public double getWaterConsumptionRate() {
-		return getValueAsDouble(WATER_CONSUMPTION_RATE);
+		if (consumptionRates[2] != 0)
+			return consumptionRates[2];
+		else {
+			consumptionRates[2] = getValueAsDouble(WATER_CONSUMPTION_RATE);
+			//System.out.println("first time calling getWaterConsumptionRate()");
+			return consumptionRates[2];
+		}
 	}
 	
 	/*

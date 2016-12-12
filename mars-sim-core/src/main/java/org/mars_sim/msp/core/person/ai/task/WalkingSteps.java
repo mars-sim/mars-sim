@@ -151,6 +151,7 @@ implements Serializable {
                 
                 if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(), 
                         person.getYLocation(), vehicle)) {
+                	// 2016-12-12 java.lang.IllegalStateException: Ralph Radske has invalid walk start location. (-52.43904870061289, 53.26900723773019) is not within vehicle Spirit II
                     throw new IllegalStateException(person.getName() + " has invalid walk start location. (" + 
                         person.getXLocation() + ", " + person.getYLocation() + ") is not within vehicle " + vehicle);
                 }
