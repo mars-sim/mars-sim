@@ -761,8 +761,8 @@ public class MainScene {
 		earthTimeBar = new HBox();
 		earthTimeBar.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			earthTimeBar.setMinWidth(250);
-			earthTimeBar.setPrefSize(250, 32);			
+			earthTimeBar.setMinWidth(260);
+			earthTimeBar.setPrefSize(260, 32);			
 		}
 		else {
 			earthTimeBar.setMinWidth(220);
