@@ -1224,8 +1224,12 @@ implements Serializable {
         if (amountResourceCapacityCache == null) {
             initializeAmountResourceCapacityCache();
         }
+        // 2016-12-21 Check if amountResourceCapacityCacheDirty contains the resource
+        if (amountResourceCapacityCacheDirty.containsKey(resource))
+        	return amountResourceCapacityCacheDirty.get(resource);
+        else
+        	return true;
 
-        return amountResourceCapacityCacheDirty.get(resource);
     }
 
     /**
@@ -1310,18 +1314,26 @@ implements Serializable {
 
         // Determine capacity for all contained units.
         double containedCapacity = 0D;
-        if (amountResourceContainersCapacityCacheDirty.get(resource)) {
-            if (containedUnits != null) {
-                for (Unit unit : containedUnits) {
-                    if (unit instanceof Container) {
-                        containedCapacity += unit.getInventory().getAmountResourceCapacity(resource, false);
-                    }
-                }
-            }
-            amountResourceContainersCapacityCache.put(resource, containedCapacity);
-            amountResourceContainersCapacityCacheDirty.put(resource, false);
+        // 2016-12-21 Check for null
+        if (amountResourceContainersCapacityCacheDirty.containsKey(resource)) {
+	        if (amountResourceContainersCapacityCacheDirty.get(resource)) {
+	            if (containedUnits != null) {
+	                for (Unit unit : containedUnits) {
+	                    if (unit instanceof Container) {
+	                        containedCapacity += unit.getInventory().getAmountResourceCapacity(resource, false);
+	                    }
+	                }
+	            }
+	            amountResourceContainersCapacityCache.put(resource, containedCapacity);
+	            amountResourceContainersCapacityCacheDirty.put(resource, false);
+	        }
+	        // 2016-12-21 Check for null
+	        else if (amountResourceContainersCapacityCache.containsKey(resource)) {
+	            containedCapacity = amountResourceContainersCapacityCache.get(resource);
+	        }
         }
-        else {
+        // 2016-12-21 Check for null
+        else if (amountResourceContainersCapacityCache.containsKey(resource)) {
             containedCapacity = amountResourceContainersCapacityCache.get(resource);
         }
 
@@ -1383,13 +1395,16 @@ implements Serializable {
      * @return true if resource is dirty in cache.
      */
     private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
-
         // Initialize amount resource stored cache if necessary.
         if (amountResourceStoredCacheDirty == null) {
             initializeAmountResourceStoredCache();
         }
 
-        return amountResourceStoredCacheDirty.get(resource);
+        // 2016-12-21 Check if amountResourceStoredCacheDirty contains the resource
+        if (amountResourceStoredCacheDirty.containsKey(resource))
+        	return amountResourceStoredCacheDirty.get(resource);
+        else
+        	return true;
     }
 
     /**
@@ -1467,19 +1482,29 @@ implements Serializable {
         }
 
         double containerStored = 0D;
-        if (amountResourceContainersStoredCacheDirty.get(resource)) {
-            if (containedUnits != null) {
-                for (Unit unit : containedUnits) {
-                    if (unit instanceof Container) {
-                        containerStored += unit.getInventory().getAmountResourceStored(resource, false);
-                    }
-                }
-            }
-            amountResourceContainersStoredCache.put(resource, containerStored);
-            amountResourceContainersStoredCacheDirty.put(resource, false);
+        // 2016-12-21 Add checking for null
+        if (amountResourceContainersStoredCacheDirty.containsKey(resource)) {
+	        if (amountResourceContainersStoredCacheDirty.get(resource)) {
+	            if (containedUnits != null) {
+	                for (Unit unit : containedUnits) {
+	                    if (unit instanceof Container) {
+	                        containerStored += unit.getInventory().getAmountResourceStored(resource, false);
+	                    }
+	                }
+	            }
+	            amountResourceContainersStoredCache.put(resource, containerStored);
+	            amountResourceContainersStoredCacheDirty.put(resource, false);
+	        }
+	        else {
+	            containerStored = amountResourceContainersStoredCache.get(resource);
+	        }
+        }
+        // 2016-12-21 Add checking for null
+        else if (amountResourceContainersStoredCache.containsKey(resource)) {
+        	containerStored = amountResourceContainersStoredCache.get(resource);
         }
         else {
-            containerStored = amountResourceContainersStoredCache.get(resource);
+        	
         }
 
         stored += containerStored;

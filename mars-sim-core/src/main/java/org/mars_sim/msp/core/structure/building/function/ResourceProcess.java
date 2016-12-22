@@ -306,6 +306,7 @@ implements Serializable {
 		Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
 		while (inputI.hasNext()) {
 			AmountResource resource = inputI.next();
+			//System.out.println(resource.getName());
 			double maxRate = maxInputResourceRates.get(resource);
 			double desiredResourceAmount = maxRate * time;
 			double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);
@@ -339,13 +340,13 @@ implements Serializable {
 	 */
 	public void destroy() {
 		name = null;
-		maxInputResourceRates.clear();
+		//maxInputResourceRates.clear();
 		maxInputResourceRates = null;
-		maxAmbientInputResourceRates.clear();
+		//maxAmbientInputResourceRates.clear();
 		maxAmbientInputResourceRates = null;
-		maxOutputResourceRates.clear();
+		//maxOutputResourceRates.clear();
 		maxOutputResourceRates = null;
-		maxWasteOutputResourceRates.clear();
+		//maxWasteOutputResourceRates.clear();
 		maxWasteOutputResourceRates = null;
 	}
 }

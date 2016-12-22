@@ -77,7 +77,6 @@ implements Serializable {
     private int supportingProcesses, maxProcesses;
     //private boolean checkNumPrinter;
 
-
     private List<ManufactureProcess> processes;
     private List<SalvageProcess> salvages;
 
@@ -85,6 +84,9 @@ implements Serializable {
     private Settlement settlement;
     private Inventory s_inv, b_inv;
     private ItemResource printerItem;
+    
+	private static BuildingConfig buildingConfig;
+	
     /**
      * Constructor.
      * @param building the building the function is for.
@@ -103,7 +105,7 @@ implements Serializable {
 
         printerItem = ItemResource.findItemResource(LASER_SINTERING_3D_PRINTER);
 
-        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
 
         techLevel = buildingConfig.getManufactureTechLevel(building.getBuildingType());
         maxProcesses = buildingConfig.getManufactureConcurrentProcesses(building.getBuildingType());
@@ -131,7 +133,7 @@ implements Serializable {
 
         double result = 0D;
 
-        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        //BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         int buildingTech = buildingConfig.getManufactureTechLevel(buildingName);
 
         double demand = 0D;

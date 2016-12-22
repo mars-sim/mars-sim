@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.PersonalityTraitManager;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
+import org.mars_sim.msp.core.person.ai.job.JobHistory;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.job.Manager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -30,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.ChainOfCommand;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
 
@@ -303,6 +305,9 @@ implements Serializable {
     public void assignJob(Job newJob, String newJobStr, boolean bypassingJobLock, String assignedBy, JobAssignmentType status, String approvedBy) {
     	//System.out.println("Mind.java : assignJob() : starting");
     	String jobStr = null;
+    	JobHistory jh = person.getJobHistory();
+    	Settlement s = person.getSettlement();
+    	
     	if (job == null)
     		jobStr = null;
     	else
@@ -323,34 +328,35 @@ implements Serializable {
 		        // 2015-09-23 Set up 4 approvedBy conditions
 		        if (approvedBy.equals(JobManager.SETTLEMENT)) { // automatically approved if pop <= 4
 		        	//System.out.println("Mind.java : assignJob() : pop > 4, calling JobHistory's saveJob(), approved by Settlement");
-		        	person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
+		        	jh.saveJob(newJob, assignedBy, status, approvedBy, true);
 		        }
 		        else if (approvedBy.equals(JobManager.USER)) {
 		        // if (person.getAssociatedSettlement().getAllAssociatedPeople().size() <= 4) {
 	        		//System.out.println("Mind.java : assignJob() : pop <= 4, calling JobHistory's saveJob(), approved by User");
-	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, true);
+	        		jh.saveJob(newJob, assignedBy, status, approvedBy, true);
 		        }
 		        else if (approvedBy.equals(JobManager.MISSION_CONTROL)) { // at the start of sim
 	            	//System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by Mission Control");
-	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
+	        		jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 		        }
 		        else { // if approvedBy = name of commander/subcommander/mayor/president
 	        		//System.out.println("Mind.java : assignJob() : calling JobHistory's saveJob(), approved by a Senior Official");
-	        		person.getJobHistory().saveJob(newJob, assignedBy, status, approvedBy, false);
+	        		jh.saveJob(newJob, assignedBy, status, approvedBy, false);
 		        }
 
 		    	//System.out.println("just called JobHistory's saveJob()");
 		        person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
 
-		        int population = 0;
+		        //int population = 0;
 
 		        // Assign a new role type to the person and others in a settlement
 		        // immediately after the change of one's job type
-		        if (person.getSettlement() != null) {
-		        	ChainOfCommand cc = person.getSettlement().getChainOfCommand();
-		        	population = person.getSettlement().getAllAssociatedPeople().size();
+		        if (s != null) {
+		        	ChainOfCommand cc = s.getChainOfCommand();
+		        	//s.updateAllAssociatedPeople();
+		        	//population = s.getAllAssociatedPeople().size();
 			        // Assign a role associate with
-	                if (population >= UnitManager.POPULATION_WITH_MAYOR) {
+	                if (s.getAllAssociatedPeople().size() >= UnitManager.POPULATION_WITH_MAYOR) {
 	                	cc.set7Divisions(true);
 	                	cc.assignSpecialiststo7Divisions(person);
 	                }

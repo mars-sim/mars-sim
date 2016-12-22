@@ -25,7 +25,9 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.Crew;
+import org.mars_sim.msp.core.person.Favorite;
 import org.mars_sim.msp.core.person.NaturalAttribute;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
@@ -33,7 +35,9 @@ import org.mars_sim.msp.core.person.PersonalityTraitType;
 import org.mars_sim.msp.core.person.RoleType;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.ai.EmotionJSONConfig;
+import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobAssignmentType;
@@ -91,11 +95,10 @@ public class UnitManager implements Serializable {
 	public static ReportingAuthorityType[] SPONSORS = ReportingAuthorityType.SPONSORS;
 	public static int NUM_SPONSORS = SPONSORS.length;
 
-	//public static String build;
-	   
 	// Data members
 	//private int solCache;
-
+	/** Flag true if the class has just been deserialized */ 
+	public transient boolean justReloaded = true;
 	/** Collection of all units. */
 	private Collection<Unit> units;
 	/** List of possible settlement names. */
@@ -129,6 +132,8 @@ public class UnitManager implements Serializable {
 	private SettlementConfig settlementConfig;
 	private RelationshipManager relationshipManager;
 	private VehicleConfig vehicleConfig;
+	private RobotConfig robotConfig;
+
 	//private MasterClock masterClock;
 	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
 
@@ -147,6 +152,7 @@ public class UnitManager implements Serializable {
 		equipmentNumberMap = new HashMap<String, Integer>();
 		vehicleNumberMap = new HashMap<String, Integer>();
 		personConfig = SimulationConfig.instance().getPersonConfiguration();
+		robotConfig = SimulationConfig.instance().getRobotConfiguration();
 		settlementConfig = SimulationConfig.instance().getSettlementConfiguration();
 		vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
 		//emotionJSONConfig = new EmotionJSONConfig();
@@ -646,7 +652,10 @@ public class UnitManager implements Serializable {
 	 * @throws Exception if error parsing XML.
 	 */
 	private void createPreconfiguredPeople() {
-		//PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		Settlement settlement = null;
+		
+		if (personConfig == null) // FOR PASSING MAVEN TEST	
+			personConfig = SimulationConfig.instance().getPersonConfiguration();
 		//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		//EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
 
@@ -681,7 +690,7 @@ public class UnitManager implements Serializable {
 
 			// Get person's settlement or randomly determine it if not configured.
 			String settlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
-			Settlement settlement = null;
+			//Settlement settlement = null;
 			if (settlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getSettlement(col, settlementName);
@@ -813,6 +822,10 @@ public class UnitManager implements Serializable {
 			//person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
 
 		}
+		
+		// 2016-12-21 Call updateAllAssociatedPeople()
+		settlement.updateAllAssociatedPeople();
+		
 		//System.out.println("b4 calling createConfiguredRelationships() in UnitManager");
 		// Create all configured relationships.
 		createConfiguredRelationships();
@@ -949,29 +962,31 @@ public class UnitManager implements Serializable {
 					
 					person = new Person(fullname, gender, false, "Earth", settlement, sponsor); // TODO: read from file
 
+					Mind m = person.getMind();
 					// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models
-					person.getMind().getMBTI().syncUpExtraversion();
+					m.getMBTI().syncUpExtraversion();
 
 					addUnit(person);
 
 					relationshipManager.addInitialSettler(person, settlement);
-
+					
+					Favorite f = person.getFavorite();
 					// 2015-02-27 and 2015-03-24 Added Favorite class
-					String mainDish = person.getFavorite().getRandomMainDish();
-					String sideDish = person.getFavorite().getRandomSideDish();
-					String dessert = person.getFavorite().getRandomDessert();
-					String activity = person.getFavorite().getRandomActivity();
+					String mainDish = f.getRandomMainDish();
+					String sideDish = f.getRandomSideDish();
+					String dessert = f.getRandomDessert();
+					String activity = f.getRandomActivity();
 
-					person.getFavorite().setFavoriteMainDish(mainDish);
-					person.getFavorite().setFavoriteSideDish(sideDish);
-					person.getFavorite().setFavoriteDessert(dessert);
-					person.getFavorite().setFavoriteActivity(activity);
+					f.setFavoriteMainDish(mainDish);
+					f.setFavoriteSideDish(sideDish);
+					f.setFavoriteDessert(dessert);
+					f.setFavoriteActivity(activity);
 
 					// 2015-06-07 Added Preference
 					person.getPreference().initializePreference();
 
 					// 2015-06-18 Assign a job by calling getInitialJob
-					person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
+					m.getInitialJob(JobManager.MISSION_CONTROL);
 
 				    // 2015-10-05 added setupReportingAuthority()
 				    person.assignReportingAuthority();
@@ -989,6 +1004,9 @@ public class UnitManager implements Serializable {
 						
 
 				}
+				
+				// 2016-12-21 Added calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
+				settlement.updateAllAssociatedPeople();
 
 				// 2015-07-02 Added setupShift()
 				setupShift(settlement, initPop);
@@ -1000,7 +1018,7 @@ public class UnitManager implements Serializable {
 
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
-			throw new IllegalStateException("People could not be created: " + e.getMessage(), e);
+			//throw new IllegalStateException("People could not be created: " + e.getMessage(), e);
 		}
 	}
 
@@ -1030,11 +1048,12 @@ public class UnitManager implements Serializable {
 		int cv_combined = 0;
 		// compare their leadership scores
 		for (Person p : people) {
-			int p_leadership = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
-			int p_combined = 3 * p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-					+ 2 * p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY)
-					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
-					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION);
+			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
+			int p_leadership = mgr.getAttribute(NaturalAttribute.LEADERSHIP);
+			int p_combined = 3 * mgr.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+					+ 2 * mgr.getAttribute(NaturalAttribute.EMOTIONAL_STABILITY)
+					+ mgr.getAttribute(NaturalAttribute.ATTRACTIVENESS)
+					+ mgr.getAttribute(NaturalAttribute.CONVERSATION);
 			// if this person p has a higher leadership score than the previous
 			// cc
 			if (p_leadership > cc_leadership) {
@@ -1174,12 +1193,13 @@ public class UnitManager implements Serializable {
 		int m_combined = 0;
 		// compare their leadership scores
 		for (Person p : people) {
-			int p_leadership = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP);
+			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
+			int p_leadership = mgr.getAttribute(NaturalAttribute.LEADERSHIP);
 			int p_tradeSkill = 5 * p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 			p_leadership = p_leadership + p_tradeSkill;
-			int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS)
-					+ 3 * p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-					+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION);
+			int p_combined = mgr.getAttribute(NaturalAttribute.ATTRACTIVENESS)
+					+ 3 * mgr.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+					+ mgr.getAttribute(NaturalAttribute.CONVERSATION);
 			// if this person p has a higher leadership score than the previous
 			// cc
 			if (p_leadership > m_leadership) {
@@ -1265,19 +1285,20 @@ public class UnitManager implements Serializable {
 
 		// compare their scores
 		for (Person p : people) {
-
+			SkillManager skillMgr = p.getMind().getSkillManager();
+			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
 			if (p.getRole().getType() == specialty) {
 				// && (p.getRole().getType() != RoleType.COMMANDER)
 				// && (p.getRole().getType() != RoleType.SUB_COMMANDER)) {
 
-				int p_skills = 6 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_1)
-						+ 5 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_2)
-						+ 4 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_3)
-						+ 3 * p.getMind().getSkillManager().getEffectiveSkillLevel(skill_4);
+				int p_skills = 6 * skillMgr.getEffectiveSkillLevel(skill_1)
+						+ 5 * skillMgr.getEffectiveSkillLevel(skill_2)
+						+ 4 * skillMgr.getEffectiveSkillLevel(skill_3)
+						+ 3 * skillMgr.getEffectiveSkillLevel(skill_4);
 
-				int p_combined = p.getNaturalAttributeManager().getAttribute(NaturalAttribute.LEADERSHIP)
-						+ p.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
-						+ p.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MANAGEMENT);
+				int p_combined = mgr.getAttribute(NaturalAttribute.LEADERSHIP)
+						+ mgr.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE)
+						+ skillMgr.getEffectiveSkillLevel(SkillType.MANAGEMENT);
 				// if this person p has a higher experience score than the
 				// previous cc
 				if (p_skills > c_skills) {
@@ -1312,7 +1333,6 @@ public class UnitManager implements Serializable {
 	 *             if error parsing XML.
 	 */
 	private void createPreconfiguredRobots() {
-		RobotConfig robotConfig = SimulationConfig.instance().getRobotConfiguration();
 		int size = robotConfig.getNumberOfConfiguredRobots();
 		// Create all configured robot.
 		for (int x = 0; x < size; x++) {
@@ -1447,12 +1467,7 @@ public class UnitManager implements Serializable {
 	 * @throws Exception if Robots can not be constructed.
 	 */
 	private void createInitialRobots() {
-
-		// RobotConfig robotConfig =
-		// SimulationConfig.instance().getRobotConfiguration();
-
-		// Randomly create all remaining robots to fill the settlements to
-		// capacity.
+		// Randomly create all remaining robots to fill the settlements to capacity.
 		try {
 			Iterator<Settlement> i = getSettlements().iterator();
 			while (i.hasNext()) {
@@ -1811,6 +1826,14 @@ public class UnitManager implements Serializable {
 		//logger.info("UnitManager's timePassing() is in " + Thread.currentThread().getName());
 		// it's in pool-5-thread-1
 
+		if (justReloaded) {
+			Collection<Settlement> c = CollectionUtils.getSettlement(units);
+			for (Settlement s : c) {
+				s.updateAllAssociatedPeople();
+			}
+			justReloaded = false;
+		}
+ 		
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
 	
@@ -1823,7 +1846,7 @@ public class UnitManager implements Serializable {
 				//final long time1 = System.nanoTime();
 				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());	
 			}
-			//else if (unit instanceof Settlement) {				
+			//else if (unit instanceof Settlement) {	
 			//	Settlement s = (Settlement) unit;
 				//final long time0 = System.nanoTime();
 			//	settlementExecutor.execute(new SettlementTask(s, time));

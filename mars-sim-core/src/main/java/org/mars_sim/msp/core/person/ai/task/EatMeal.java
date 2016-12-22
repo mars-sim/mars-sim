@@ -98,6 +98,8 @@ public class EatMeal extends Task implements Serializable {
     private double dessertEatingDuration = 0D;
     private double startingHunger;
     private double currentHunger;
+    
+    private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
     
     /**
@@ -321,7 +323,7 @@ public class EatMeal extends Task implements Serializable {
         PhysicalCondition condition = person.getPhysicalCondition();
 
         // Determine total preserved food amount eaten during this meal.
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         double totalFoodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
 
         // Proportion of meal being eaten over this time period.
@@ -471,7 +473,7 @@ public class EatMeal extends Task implements Serializable {
         PhysicalCondition condition = person.getPhysicalCondition();
 
         // Determine total unprepared dessert amount eaten during this meal.
-        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         double totalDessertAmount = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 
         // Determine dessert resource type if not known.
@@ -665,7 +667,7 @@ public class EatMeal extends Task implements Serializable {
         if (containerUnit != null) {
             try {
                 Inventory inv = containerUnit.getInventory();
-                PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+                //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
                 double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
                 result = Storage.retrieveAnResource(foodAmount, Cooking.foodAR, inv, false);
             }

@@ -73,7 +73,10 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
     public static AmountResource iceAR = AmountResource.findAmountResource("ice");
     public static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
 
-    
+    private static VehicleConfig config;// = SimulationConfig.instance().getVehicleConfiguration();
+	
+    private static Inventory inv;// = getInventory();
+	
 	private List<Point2D> labActivitySpots;
 	private List<Point2D> sickBayActivitySpots;
 
@@ -90,7 +93,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
         life_support_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[0];
         
 		// Get vehicle configuration.
-		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+		config = SimulationConfig.instance().getVehicleConfiguration();
 		
 		// Add scope to malfunction manager.
 		malfunctionManager.addScopeString("Rover");
@@ -104,7 +107,7 @@ implements Crewable, LifeSupportType, Airlockable, Medical, Towing {
 		crewCapacity = config.getCrewSize(description);
 		robotCrewCapacity = crewCapacity;
 
-		Inventory inv = getInventory();
+		inv = getInventory();
 		
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(config.getTotalCapacity(description));

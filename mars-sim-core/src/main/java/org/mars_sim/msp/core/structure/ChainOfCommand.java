@@ -43,6 +43,8 @@ public class ChainOfCommand implements Serializable {
     private Map<RoleType, Integer> roleType;
 
     private Settlement settlement;
+    
+    private UnitManager unitManager;
 
     /*
      * This class creates a chain of command structure for a settlement. A settlement can have either 3 divisions
@@ -51,6 +53,9 @@ public class ChainOfCommand implements Serializable {
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
 		roleType = new ConcurrentHashMap<>();
+		
+		unitManager = Simulation.instance().getUnitManager();
+		
 		initializeRoleType();
 
 	}
@@ -264,7 +269,7 @@ public class ChainOfCommand implements Serializable {
             Job job = person.getMind().getJob();
             Role role = person.getRole();
             int pop = person.getSettlement().getAllAssociatedPeople().size();
-            int slot = (int) ((pop - 2 - 7 )/ 7);
+            //int slot = (int) ((pop - 2 - 7 )/ 7);
 
             boolean allSlotsFilledOnce = areAllFilled(1);
 
@@ -440,15 +445,15 @@ public class ChainOfCommand implements Serializable {
     	if (key == RoleType.CHIEF_OF_SUPPLY_N_RESOURCES
     		|| key == RoleType.CHIEF_OF_ENGINEERING
     		|| key == RoleType.CHIEF_OF_SAFETY_N_HEALTH) {
-    		Simulation.instance().getUnitManager().electChief(settlement, key);
+    		unitManager.electChief(settlement, key);
     	}
     	else if (key == RoleType.COMMANDER
     			|| key == RoleType.SUB_COMMANDER) {
     		int pop = settlement.getAllAssociatedPeople().size();
-    		Simulation.instance().getUnitManager().electCommanders(settlement, key, pop);
+    		unitManager.electCommanders(settlement, key, pop);
     	}
     	else if ( key == RoleType.MAYOR) {
-    		Simulation.instance().getUnitManager().electMayor(settlement, key);
+    		unitManager.electMayor(settlement, key);
     	}
     }
 

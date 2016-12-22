@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
@@ -139,7 +140,9 @@ implements Serializable, LifeSupportType, Objective {
 	private boolean resourceProcessOverride = false;
 	/* Override flag for construction/salvage mission creation at settlement.*/
 	private boolean constructionOverride = false;
-
+	/* Flag showing if the instance of Settlement has just been deserialized */
+	public transient boolean justReloaded = true;
+	
 	private boolean[] exposed = {false, false, false};
 
 	private ObjectiveType objectiveType;
@@ -180,16 +183,14 @@ implements Serializable, LifeSupportType, Objective {
 	private Inventory inv;
 	private ChainOfCommand chainOfCommand;
 	private CompositionOfAir compositionOfAir;
-	private Simulation sim = Simulation.instance();
-	private UnitManager unitManager = sim.getUnitManager();
-	private MissionManager missionManager = sim.getMissionManager();
+	
+	private static Simulation sim = Simulation.instance();
+	private static UnitManager unitManager = sim.getUnitManager();
+	private static MissionManager missionManager = sim.getMissionManager();
+	private static PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
 
 	private Weather weather;// = sim.getMars().getWeather();
 	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
-	
-	private AmountResource oxygenAR;
-	private AmountResource waterAR;
-	private AmountResource carbonDioxideAR;
 	
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
@@ -197,10 +198,16 @@ implements Serializable, LifeSupportType, Objective {
 	//private Map<Integer, Double> resourceMapCache = new HashMap<>();
 	private Map<Integer, Map<Integer, List<Double>>> resourceStat = new HashMap<>();
 
+	// 2016-12-21 Added allAssociatedPeople
+	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
 	
 	// constructor 0
 	public Settlement() {
 		super(null, null);
+		unitManager = Simulation.instance().getUnitManager();
+		inv = getInventory();
+		// 2016-12-21 Call updateAllAssociatedPeople()
+		updateAllAssociatedPeople();
 	}
 	
 	/**
@@ -208,12 +215,19 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param name the settlement's name
 	 * @param location the settlement's location
 	 */
-	// constructor 1 for testing
+	// constructor 1 for maven testing
 	// TODO: pending for deletion (use constructor 2 instead)
 	protected Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
 		super(name, location);
 		this.name = name;
+		unitManager = Simulation.instance().getUnitManager();
+		if (missionManager == null) // for passing maven test
+			missionManager = Simulation.instance().getMissionManager();
+		inv = getInventory();
+		// 2016-12-21 Call updateAllAssociatedPeople()
+		updateAllAssociatedPeople();
+		
 		// count++;
 		// logger.info("constructor 1 : count is " + count);
 	}
@@ -225,6 +239,11 @@ implements Serializable, LifeSupportType, Objective {
 		super(name, location);
 		this.name = name;
 		this.scenarioID = scenarioID;
+		unitManager = Simulation.instance().getUnitManager();
+		inv = getInventory();
+		// 2016-12-21 Call updateAllAssociatedPeople()
+		updateAllAssociatedPeople();
+		
 		// count++;
 		// logger.info("constructor 2 : count is " + count);
 	}
@@ -245,13 +264,15 @@ implements Serializable, LifeSupportType, Objective {
 		this.initialPopulation = populationNumber;
 		// count++;
 		// logger.info("constructor 3 : count is " + count);
-		this.inv = getInventory();
-
-		this.marsClock = sim.getMasterClock().getMarsClock();
-		this.weather = sim.getMars().getWeather();
 		
-		//resourceStat = new HashMap<>();
-
+		marsClock = sim.getMasterClock().getMarsClock();
+		weather = sim.getMars().getWeather();
+		
+		inv = getInventory();
+		unitManager = Simulation.instance().getUnitManager();
+		// 2016-12-21 Call updateAllAssociatedPeople()
+		updateAllAssociatedPeople();
+		
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(Double.MAX_VALUE);
 		// Initialize building manager
@@ -272,16 +293,12 @@ implements Serializable, LifeSupportType, Objective {
 		chainOfCommand = new ChainOfCommand(this);
 		// 2015-12-29 Added CompositionOfAir
 		compositionOfAir = new CompositionOfAir(this);
-
+		
 		// 2016-01-16 Added setObjective()
 		//objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
 		logger.info("Setting " + this + "'s Objective to " + objectiveType.toString());
 
-		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2);
-		
 	}
 
 	/**
@@ -387,7 +404,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return Collection of inhabitants
 	 */
 	public Collection<Person> getInhabitants() {
-		return CollectionUtils.getPerson(getInventory().getContainedUnits());
+		return CollectionUtils.getPerson(inv.getContainedUnits());
 	}
 
 	/**
@@ -454,7 +471,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return Collection of robots
 	 */
 	public Collection<Robot> getRobots() {
-		return CollectionUtils.getRobot(getInventory().getContainedUnits());
+		return CollectionUtils.getRobot(inv.getContainedUnits());
 	}
 
 	/**
@@ -487,7 +504,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return Collection of parked vehicles
 	 */
 	public Collection<Vehicle> getParkedVehicles() {
-		return CollectionUtils.getVehicle(getInventory().getContainedUnits());
+		return CollectionUtils.getVehicle(inv.getContainedUnits());
 	}
 
 	/**
@@ -506,16 +523,16 @@ implements Serializable, LifeSupportType, Objective {
 	public boolean lifeSupportCheck() {
 		boolean result = true;
 			
-		if (oxygenAR == null)
+		//if (AmountResource.oxygenAR == null)
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
-			oxygenAR = LifeSupportType.oxygenAR;
-		if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D)
+		//	oxygenAR = LifeSupportType.oxygenAR;
+		if (inv.getAmountResourceStored(oxygenAR, false) <= 0D)
 			result = false;	
 		
-		if (waterAR == null)
+		//if (AmountResource.waterAR == null)
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
-			waterAR = LifeSupportType.waterAR;
-		if (getInventory().getAmountResourceStored(waterAR, false) <= 0D)
+		//	waterAR = LifeSupportType.waterAR;
+		if (inv.getAmountResourceStored(waterAR, false) <= 0D)
 			result = false;
 	
 		
@@ -550,10 +567,10 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideOxygen(double amountRequested) {
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenTaken = amountRequested;
-		double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
+		double oxygenLeft = inv.getAmountResourceStored(oxygenAR, false);
 		if (oxygenTaken > oxygenLeft)
 			oxygenTaken = oxygenLeft;
-		getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
+		inv.retrieveAmountResource(oxygenAR, oxygenTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
 		inv.addAmountDemandTotalRequest(oxygenAR);
 		// 2015-01-09 addDemandRealUsage()
@@ -561,13 +578,13 @@ implements Serializable, LifeSupportType, Objective {
 
 		//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
 		double carbonDioxideProvided = oxygenTaken;
-		double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
+		double carbonDioxideCapacity = inv.getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
 		if (carbonDioxideProvided > carbonDioxideCapacity)
 			carbonDioxideProvided = carbonDioxideCapacity;
 
-		getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
+		inv.storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
 		// 2015-01-15 Add addSupplyAmount()
-		getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+		inv.addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
 		return oxygenTaken;
 	}
 
@@ -583,10 +600,10 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideWater(double amountRequested) {
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterTaken = amountRequested;
-		double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
+		double waterLeft = inv.getAmountResourceStored(waterAR, false);
 		if (waterTaken > waterLeft)
 			waterTaken = waterLeft;
-		getInventory().retrieveAmountResource(waterAR, waterTaken);
+		inv.retrieveAmountResource(waterAR, waterTaken);
 
 		// 2015-01-09 Added addDemandTotalRequest()
 		inv.addAmountDemandTotalRequest(waterAR);
@@ -652,6 +669,7 @@ implements Serializable, LifeSupportType, Objective {
    
 	}
 
+	
 	/**
 	 * Perform time-related processes
 	 *
@@ -671,6 +689,7 @@ implements Serializable, LifeSupportType, Objective {
 */
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
+		
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
@@ -687,12 +706,15 @@ implements Serializable, LifeSupportType, Objective {
 		if (getCurrentPopulationNum() == 0) {
 			zeroPopulationTime += time;
 			if (zeroPopulationTime > 1000D) {
-				powerGrid.setPowerMode(PowerMode.POWER_DOWN);
-				thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
+				if (powerGrid.getPowerMode() != PowerMode.POWER_DOWN)
+					powerGrid.setPowerMode(PowerMode.POWER_DOWN);
+				if (thermalSystem.getHeatMode() != HeatMode.HEAT_OFF)				
+					thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
 			}
 		} else {
 			zeroPopulationTime = 0D;
-			powerGrid.setPowerMode(PowerMode.POWER_UP);
+			if (powerGrid.getPowerMode() != PowerMode.POWER_UP)
+				powerGrid.setPowerMode(PowerMode.POWER_UP);
 			// TODO: check if POWER_UP is necessary
 			// Question: is POWER_UP a prerequisite of FULL_POWER ?
 			// thermalSystem.setHeatMode(HeatMode.POWER_UP);
@@ -731,7 +753,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	    // 2015-12-29 Added CompositionOfAir
 	    compositionOfAir.timePassing(time);
-	    
+		
 	}
 
 	public void sampleAllResources() {
@@ -1537,19 +1559,66 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
-		Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		if (!justReloaded)
+		//if (!allAssociatedPeople.isEmpty())
+			return allAssociatedPeople;
 
+		else {
+			//System.out.println("allAssociatedPeople.isEmpty() is true");
+			// using java 8 stream
+			return updateAllAssociatedPeople();
+/*			
+			Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+			//if (unitManager == null) // for passing maven test
+			//	unitManager = Simulation.instance().getUnitManager();
+			Iterator<Person> i = unitManager.getPeople().iterator();
+			while (i.hasNext()) {
+				Person person = i.next();
+				if (person.getAssociatedSettlement() == this)
+					result.add(person);
+			}
+*/
+		}
+
+	}
+
+	/**
+	 * Updates all people associated with this settlement
+	 * @return collection of associated people.
+	 */
+	// 2016-12-21 Added updateAllAssociatedPeople()
+	public Collection<Person> updateAllAssociatedPeople() {
+		//System.out.println("running updateAllAssociatedPeople()");
+		//Collection<Person> result = new ConcurrentLinkedQueue<Person>();
+		//if (unitManager == null) // for passing maven test
+		//	unitManager = Simulation.instance().getUnitManager();
+		
+		// using java 8 stream
+		Collection<Person> result = unitManager.getPeople()
+				.stream()
+				.filter(p-> p.getAssociatedSettlement() == this)
+				.collect(Collectors.toList());
+/*		
 		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getAssociatedSettlement() == this)
 				result.add(person);
 		}
-
+*/		
+		allAssociatedPeople = result;
+		justReloaded = false;
 		return result;
 	}
+	
+	public void addPerson(Person p){
+		allAssociatedPeople.add(p);
+	}
 
-
+	public void removePerson(Person p){
+		allAssociatedPeople.remove(p);
+	}
+	
 	/**
 	 * Checks if the settlement has a particular person
 	 * @param a person
@@ -2029,18 +2098,21 @@ implements Serializable, LifeSupportType, Objective {
 	public Collection<Vehicle> getAllAssociatedVehicles() {
 		Collection<Vehicle> result = getParkedVehicles();
 
-		
+		//if (missionManager == null) // for passing maven test
+		//	missionManager = Simulation.instance().getMissionManager();
 		// Also add vehicle mission vehicles not parked at settlement.
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) {
-				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-				if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
-					result.add(vehicle);
-			}
+		if (missionManager.getMissionsForSettlement(this) != null) {
+			Iterator<Mission> i = missionManager.getMissionsForSettlement(this).iterator();
+			while (i.hasNext()) {
+				Mission mission = i.next();
+				if (mission instanceof VehicleMission) {
+					Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+					if ((vehicle != null) && !this.equals(vehicle.getSettlement()))
+						result.add(vehicle);
+				}
 		}
-
+		}
+		
 		return result;
 	}
 	
@@ -2871,9 +2943,9 @@ implements Serializable, LifeSupportType, Objective {
         boolean result = false;
         
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double storedWater = getInventory().getAmountResourceStored(waterAR, false);
+        double storedWater = inv.getAmountResourceStored(waterAR, false);
         
-        PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration(); 
+        //PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration(); 
         double requiredDrinkingWaterOrbit = personconfig.getWaterConsumptionRate() * getCurrentPopulationNum() * 
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         

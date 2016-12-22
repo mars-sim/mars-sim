@@ -520,7 +520,7 @@ implements ClockListener, Serializable {
             unitManager = (UnitManager) ois.readObject();
             masterClock = (MasterClock) ois.readObject();
             //eventManager = (HistoricalEventManager) ois.readObject();
-            
+ 
 	        if (ois != null) {
 	            ois.close();
 	        }
@@ -582,9 +582,7 @@ implements ClockListener, Serializable {
         if (!no_go) {
 	        // Initialize transient data.
 	        instance().initializeTransientData();
-	
 	        instance().initialSimulationCreated = true;
-	        
 	        isUpdating = false;        
         }
 	}

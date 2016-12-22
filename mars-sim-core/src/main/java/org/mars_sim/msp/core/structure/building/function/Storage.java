@@ -367,7 +367,8 @@ implements Serializable {
 	    		result = true;
 	    	}
 	    }  catch (Exception e) {
-    		logger.log(Level.SEVERE, "Issues with retrieveAnResource(AmountResource ar) on " + ar.getName() + e.getMessage());
+			e.printStackTrace(System.err);
+    		logger.log(Level.SEVERE, "Issues with retrieveAnResource(AmountResource ar) on " + ar.getName() + " : " + e.getMessage());
 	    }
 
     	return result;

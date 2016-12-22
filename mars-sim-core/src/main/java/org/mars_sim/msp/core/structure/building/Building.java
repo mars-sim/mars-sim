@@ -152,8 +152,7 @@ LocalBoundedObject, InsidePathLocation {
 
     private Inventory b_inv, s_inv;
     private Settlement settlement;
-	private static BuildingConfig buildingConfig;
-    
+       
 	protected ThermalGeneration furnace;
 	protected LifeSupport lifeSupport;
 	protected RoboticStation roboticStation; 
@@ -161,7 +160,8 @@ LocalBoundedObject, InsidePathLocation {
 	
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
-
+	private static BuildingConfig buildingConfig;
+	 
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
 	protected HeatMode heatMode;

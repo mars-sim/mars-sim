@@ -74,34 +74,34 @@
 
 
 <!-- Derived food resources from crop harvest -->
-	<resource name="Blueberry Muffin" type="food" phase="solid" edible="true"></resource>
-	<resource name="Brown Rice" type="food" phase="solid" edible="true"></resource>
-	<resource name="Cranberry Juice" type="food" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
-	<resource name="Cranberry Sauce" type="food" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
-	<resource name="French Fries" type="food" phase="solid" edible="true">French fries made from potatoes.</resource>
-	<resource name="Garlic Oil" type="food" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
-	<resource name="Granola Bar" type="food" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
-	<resource name="Honey" type="food" phase="liquid" edible="true">Honey extracted from bee hives</resource>
-	<resource name="Peanut Butter" type="food" phase="solid" edible="true"></resource>
-	<resource name="Peanut Oil" type="food" phase="liquid" edible="true"></resource>
-	<resource name="Pizza Dough" type="food" phase="solid" edible="true"></resource>
-	<resource name="Quinoa Sprout" type="food" phase="solid" edible="true">Sprouts from Quinoa</resource>
-	<resource name="Rice Noodle" type="food" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
-	<resource name="Rice Flour" type="food" phase="solid" edible="true">Flour made from White Rice. </resource>
-	<resource name="Rice Vinegar" type="food" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
-	<resource name="Roasted Peanut" type="food" phase="solid" edible="true"></resource>
-	<resource name="Sesame Oil" type="food" phase="liquid" edible="true">Oil pressed from Sesame Seeds.</resource>
-	<resource name="Soy Sauce" type="food" phase="liquid" edible="true">Made from fermented soybeans</resource>
-	<resource name="Sugarcane Juice" type="food" phase="liquid" edible="true">Juice made from Sugarcane</resource>
-	<resource name="Sugar" type="food" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
-	<resource name="Veggie Patty" type="food" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
-	<resource name="Wheat Noodle" type="food" phase="solid" edible="true">Noodle made of Wheat Flour.</resource>
-	<resource name="Wheat Flour" type="food" phase="solid" edible="true">Flour made from wheat kernel.</resource>
-	<resource name="Wheat Bun" type="food" phase="solid" edible="true">fluffy Buns for holding Veggie Patty.</resource>
-	<resource name="Wheat Bread" type="food" phase="solid" edible="true">Loaves of Bread for making sandwiches. </resource>
-	<resource name="White Bread" type="food" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
-	<resource name="White Bun" type="food" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
-	<resource name="White Rice" type="food" phase="solid" edible="true"></resource>
+	<resource name="blueberry muffin" type="food" phase="solid" edible="true"></resource>
+	<resource name="brown rice" type="food" phase="solid" edible="true"></resource>
+	<resource name="cranberry juice" type="food" phase="solid" edible="true">Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="cranberry sauce" type="food" phase="solid" edible="true">Sauce or relish made from Cranberries</resource>
+	<resource name="french fries" type="food" phase="solid" edible="true">French fries made from potatoes.</resource>
+	<resource name="garlic oil" type="food" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
+	<resource name="granola bar" type="food" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
+	<resource name="honey" type="food" phase="liquid" edible="true">Honey extracted from bee hives</resource>
+	<resource name="peanut butter" type="food" phase="solid" edible="true"></resource>
+	<resource name="peanut oil" type="food" phase="liquid" edible="true"></resource>
+	<resource name="pizza dough" type="food" phase="solid" edible="true"></resource>
+	<resource name="quinoa sprout" type="food" phase="solid" edible="true">Sprouts from Quinoa</resource>
+	<resource name="rice noodle" type="food" phase="solid" edible="true">Noodle made of Rice Flour.</resource>
+	<resource name="rice flour" type="food" phase="solid" edible="true">Flour made from White Rice. </resource>
+	<resource name="rice vinegar" type="food" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
+	<resource name="roasted peanut" type="food" phase="solid" edible="true"></resource>
+	<resource name="sesame oil" type="food" phase="liquid" edible="true">Oil pressed from Sesame Seeds.</resource>
+	<resource name="soy sauce" type="food" phase="liquid" edible="true">Made from fermented soybeans</resource>
+	<resource name="sugarcane juice" type="food" phase="liquid" edible="true">Juice made from Sugarcane</resource>
+	<resource name="sugar" type="food" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
+	<resource name="veggie patty" type="food" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
+	<resource name="wheat noodle" type="food" phase="solid" edible="true">Noodle made of Wheat Flour.</resource>
+	<resource name="wheat flour" type="food" phase="solid" edible="true">Flour made from wheat kernel.</resource>
+	<resource name="wheat bun" type="food" phase="solid" edible="true">fluffy Buns for holding Veggie Patty.</resource>
+	<resource name="wheat bread" type="food" phase="solid" edible="true">Loaves of Bread for making sandwiches. </resource>
+	<resource name="white bread" type="food" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="white bun" type="food" phase="solid" edible="true">French bread or loaves of bread made from flour. </resource>
+	<resource name="white rice" type="food" phase="solid" edible="true"></resource>
 
 <!-- Crop Produce -->
 	<resource name="blueberry" type="crop" phase="solid" edible="true"></resource>

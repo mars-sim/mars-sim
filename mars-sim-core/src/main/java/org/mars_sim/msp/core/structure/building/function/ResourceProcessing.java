@@ -39,6 +39,8 @@ implements Serializable {
 	private double powerDownProcessingLevel;
 	private List<ResourceProcess> resourceProcesses;
 
+	private static BuildingConfig config;
+	
 	/**
 	 * Constructor.
 	 * @param building the building the function is for.
@@ -48,7 +50,7 @@ implements Serializable {
 		// Use Function constructor
 		super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		config = SimulationConfig.instance().getBuildingConfiguration();
 
 		powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getBuildingType());
 		resourceProcesses = config.getResourceProcesses(building.getBuildingType());
@@ -68,7 +70,7 @@ implements Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
 			Settlement settlement) {
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		//BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		Inventory inv = settlement.getInventory();
 
 		double result = 0D;
@@ -212,7 +214,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
-		resourceProcesses.clear();
+		//resourceProcesses.clear();
 		resourceProcesses = null;
 	}
 

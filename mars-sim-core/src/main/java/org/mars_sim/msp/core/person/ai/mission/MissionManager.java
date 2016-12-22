@@ -128,7 +128,10 @@ implements Serializable {
 	public List<Mission> getMissions() {
 		// Remove inactive missions.
 		cleanMissions();
-		return new ArrayList<Mission>(missions);
+		if (missions != null)
+			return new ArrayList<Mission>(missions);
+		else
+			return null;
 	}
 
 	/**
@@ -447,13 +450,15 @@ implements Serializable {
 	private void cleanMissions() {
 
 		int index = 0;
-		while (index < missions.size()) {
-			Mission tempMission = missions.get(index);
-			if ((tempMission == null) || tempMission.isDone()) {
-				removeMission(tempMission);
-			}
-			else {
-				index++;
+		if (missions != null) { // for passing maven test
+			while (index < missions.size()) {
+				Mission tempMission = missions.get(index);
+				if ((tempMission == null) || tempMission.isDone()) {
+					removeMission(tempMission);
+				}
+				else {
+					index++;
+				}
 			}
 		}
 	}

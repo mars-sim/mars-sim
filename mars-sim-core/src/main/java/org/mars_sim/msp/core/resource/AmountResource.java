@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.mars_sim.msp.core.LifeSupportType;
 import org.mars_sim.msp.core.SimulationConfig;
 
 /**
@@ -52,8 +53,18 @@ implements Serializable {
 
 	private Phase phase;
 	
+	public static AmountResource foodAR;
+	public static AmountResource oxygenAR;
+	public static AmountResource waterAR;
+	public static AmountResource carbonDioxideAR;
+	
 	public AmountResource() {
 		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
+		
+		foodAR = findAmountResource(LifeSupportType.FOOD);
+		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);
+		waterAR = findAmountResource(LifeSupportType.WATER);
+		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);
 	}
 	
 	/**

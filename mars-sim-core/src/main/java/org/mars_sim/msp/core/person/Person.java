@@ -134,10 +134,11 @@ implements VehicleOperator, MissionMember, Serializable {
     private ReportingAuthority ra;
     private Building quarters;
     private Point2D bed;
+    
     private static Simulation sim = Simulation.instance();
-    private MarsClock marsClock;
-    private EarthClock earthClock;
-    private MasterClock masterClock;
+    private static MarsClock marsClock;
+    private static EarthClock earthClock;
+    private static MasterClock masterClock;
     
     /**
      * Constructs a Person object at a given settlement.
@@ -210,8 +211,10 @@ implements VehicleOperator, MissionMember, Serializable {
         
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
+        setAssociatedSettlement(settlement);
         BuildingManager.addToRandomBuilding(this, settlement); // why failed ? testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
 
+        
         support = getLifeSupportType();
 
 
@@ -954,15 +957,18 @@ implements VehicleOperator, MissionMember, Serializable {
             associatedSettlement = newSettlement;
             fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
             if (oldSettlement != null) {
-            	setBuriedSettlement(oldSettlement);
+                oldSettlement.removePerson(this);
                 oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
             }
             if (newSettlement != null) {
+                newSettlement.addPerson(this);
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
             }
             
-            if (associatedSettlement == null)
-            	super.setDescription("Dead");            	
+            if (associatedSettlement == null) {
+            	setBuriedSettlement(oldSettlement);
+            	super.setDescription("Dead");  
+            }
             else
             	// TODO: what is the potential use of description for a person ?
             	// Why is it set to associatedSettlement.getName() ?

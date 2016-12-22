@@ -111,22 +111,19 @@ public class BuildingManager implements Serializable {
     private Map<String, Double> buildingValuesNewCache;
     private Map<String, Double> buildingValuesOldCache;
     private Map<BuildingFunction, List<Building>> buildingFunctionsMap;
-    //private List<Resupply> resupplies;
-    
+    //private List<Resupply> resupplies;   
     //private Map<String, Integer> buildingTypeIDMap = new HashMap<>();;
-
     private Settlement settlement;
     private MarsClock lastBuildingValuesUpdateTime;
-	private static MarsClock marsClock;
-	private static MasterClock masterClock;
-	
     // 2014-12-23 Added resupply
     private Resupply resupply;
-    private BuildingConfig buildingConfig;
     private Meteorite meteorite;
     //private MeteoriteImpact meteoriteImpact;  
     //private Injector injector;
-
+    
+	private static MarsClock marsClock;
+	private static MasterClock masterClock;
+    private static BuildingConfig buildingConfig;
     
     /**
      * Constructor 1 : construct buildings from settlement config template. Called by Settlement
@@ -149,6 +146,9 @@ public class BuildingManager implements Serializable {
         //logger.info("'s constructor 2 for " + settlement.getName() + " is on " + Thread.currentThread().getName());
         this.settlement = settlement;
 
+		masterClock = Simulation.instance().getMasterClock();
+		marsClock = masterClock.getMarsClock();
+        
         buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
         
         // Construct all buildings in the settlement.
@@ -739,10 +739,10 @@ public class BuildingManager implements Serializable {
      * @throws Exception if error.
      */
     public void timePassing(double time) {
-		if (masterClock == null)
-			masterClock = Simulation.instance().getMasterClock();
-		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();
+		//if (masterClock == null)
+		//	masterClock = Simulation.instance().getMasterClock();
+		//if (marsClock == null)
+		//	marsClock = masterClock.getMarsClock();
 
         // check for the passing of each day
         int solElapsed = marsClock.getSolElapsedFromStart();
@@ -838,6 +838,7 @@ public class BuildingManager implements Serializable {
                 logger.warning("No inhabitable buildings available for " + person.getName());
             }
 
+            
         }
 
 		else if (unit instanceof Robot) {

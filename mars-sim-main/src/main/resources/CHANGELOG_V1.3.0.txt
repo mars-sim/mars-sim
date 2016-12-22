@@ -2,6 +2,30 @@ Mars Simulation Project v3.1.0
 Copyright (C) 2016 Scott Davis
 http://mars-sim.sourceforge.net/
 
+
+------------------------------------------------------
+
+## v3.1.0 (build ____) Snapshot Preview 5 - 2016-__-__
+
+
+### KNOWN LIMITATION :
+
+1. The Graphic Mode cannot run under MacOSX due to some unknown bugs. However, it can still run under Headless Mode in MacOSX.
+
+2. The Main Menu's 3D Mars Globe has shadow artifact when running in linux (due to unknown recent Java JDK changes)
+
+### NEW FEATURES :
+
+### CORE ENGINE IMPROVEMENTS :
+
+1. Further optimizing cpu utilization.
+
+### UI IMPROVEMENT :
+
+### FIXES :
+
+
+
 ------------------------------------------------------
 
 ## v3.1.0 (build 3817) Snapshot Preview 4 - 2016-12-05
