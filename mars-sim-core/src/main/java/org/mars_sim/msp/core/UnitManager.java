@@ -825,7 +825,8 @@ public class UnitManager implements Serializable {
 		
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		settlement.updateAllAssociatedPeople();
-		
+		settlement.updateAllAssociatedRobots();
+				
 		//System.out.println("b4 calling createConfiguredRelationships() in UnitManager");
 		// Create all configured relationships.
 		createConfiguredRelationships();
@@ -1007,7 +1008,8 @@ public class UnitManager implements Serializable {
 				
 				// 2016-12-21 Added calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
 				settlement.updateAllAssociatedPeople();
-
+				settlement.updateAllAssociatedRobots();
+				
 				// 2015-07-02 Added setupShift()
 				setupShift(settlement, initPop);
 
@@ -1830,6 +1832,7 @@ public class UnitManager implements Serializable {
 			Collection<Settlement> c = CollectionUtils.getSettlement(units);
 			for (Settlement s : c) {
 				s.updateAllAssociatedPeople();
+				s.updateAllAssociatedRobots();
 			}
 			justReloaded = false;
 		}

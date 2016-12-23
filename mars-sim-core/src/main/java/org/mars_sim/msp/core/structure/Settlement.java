@@ -141,7 +141,8 @@ implements Serializable, LifeSupportType, Objective {
 	/* Override flag for construction/salvage mission creation at settlement.*/
 	private boolean constructionOverride = false;
 	/* Flag showing if the instance of Settlement has just been deserialized */
-	public transient boolean justReloaded = true;
+	public transient boolean justReloadedPeople = true;
+	public transient boolean justReloadedRobots = true;
 	
 	private boolean[] exposed = {false, false, false};
 
@@ -200,6 +201,8 @@ implements Serializable, LifeSupportType, Objective {
 
 	// 2016-12-21 Added allAssociatedPeople
 	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
+	// 2016-12-22 Added allAssociatedRobots
+	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 	
 	// constructor 0
 	public Settlement() {
@@ -208,6 +211,7 @@ implements Serializable, LifeSupportType, Objective {
 		inv = getInventory();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
+		updateAllAssociatedRobots();
 	}
 	
 	/**
@@ -227,7 +231,7 @@ implements Serializable, LifeSupportType, Objective {
 		inv = getInventory();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
-		
+		updateAllAssociatedRobots();
 		// count++;
 		// logger.info("constructor 1 : count is " + count);
 	}
@@ -243,7 +247,7 @@ implements Serializable, LifeSupportType, Objective {
 		inv = getInventory();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
-		
+		updateAllAssociatedRobots();
 		// count++;
 		// logger.info("constructor 2 : count is " + count);
 	}
@@ -272,6 +276,7 @@ implements Serializable, LifeSupportType, Objective {
 		unitManager = Simulation.instance().getUnitManager();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
+		updateAllAssociatedRobots();
 		
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(Double.MAX_VALUE);
@@ -1559,7 +1564,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return collection of associated people.
 	 */
 	public Collection<Person> getAllAssociatedPeople() {
-		if (!justReloaded)
+		if (!justReloadedPeople)
 		//if (!allAssociatedPeople.isEmpty())
 			return allAssociatedPeople;
 
@@ -1607,7 +1612,7 @@ implements Serializable, LifeSupportType, Objective {
 		}
 */		
 		allAssociatedPeople = result;
-		justReloaded = false;
+		justReloadedPeople = false;
 		return result;
 	}
 	
@@ -1617,6 +1622,14 @@ implements Serializable, LifeSupportType, Objective {
 
 	public void removePerson(Person p){
 		allAssociatedPeople.remove(p);
+	}
+
+	public void addRobot(Robot r){
+		allAssociatedRobots.add(r);
+	}
+
+	public void removeRobot(Robot r){
+		allAssociatedRobots.remove(r);
 	}
 	
 	/**
@@ -2056,8 +2069,17 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return collection of associated Robots.
 	 */
 	public Collection<Robot> getAllAssociatedRobots() {
-		Collection<Robot> result = new ConcurrentLinkedQueue<Robot>();
+		if (!justReloadedRobots)
+		//if (!allAssociatedPeople.isEmpty())
+			return allAssociatedRobots;
 
+		else {
+			//System.out.println("allAssociatedPeople.isEmpty() is true");
+			// using java 8 stream
+			return updateAllAssociatedRobots();		
+		}
+/*			
+		Collection<Robot> result = new ConcurrentLinkedQueue<Robot>();
 		Iterator<Robot> i = unitManager.getRobots().iterator();
 		while (i.hasNext()) {
 			Robot robot = i.next();
@@ -2066,8 +2088,26 @@ implements Serializable, LifeSupportType, Objective {
 		}
 
 		return result;
+*/		
 	}
 
+	/**
+	 * Updates all robots associated with this settlement
+	 * @return collection of associated robots.
+	 */
+	// 2016-12-22 Added updateAllAssociatedRobots()
+	public Collection<Robot> updateAllAssociatedRobots() {
+		// using java 8 stream
+		Collection<Robot> result = unitManager.getRobots()
+				.stream()
+				.filter(p-> p.getAssociatedSettlement() == this)
+				.collect(Collectors.toList());
+
+		allAssociatedRobots = result;
+		justReloadedRobots = false;
+		return result;
+	}
+	
 	/**
 	 * Gets all vehicles currently on mission and are associated with this settlement.
 	 *

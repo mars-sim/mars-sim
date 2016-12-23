@@ -211,13 +211,10 @@ implements VehicleOperator, MissionMember, Serializable {
         
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
-        setAssociatedSettlement(settlement);
+        //setAssociatedSettlement(settlement); // will cause suffocation when reloading a saved sim
         BuildingManager.addToRandomBuilding(this, settlement); // why failed ? testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
-
-        
+     
         support = getLifeSupportType();
-
-
     }
 
     
@@ -965,13 +962,12 @@ implements VehicleOperator, MissionMember, Serializable {
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
             }
             
+            // set description for this person
             if (associatedSettlement == null) {
             	setBuriedSettlement(oldSettlement);
             	super.setDescription("Dead");  
             }
             else
-            	// TODO: what is the potential use of description for a person ?
-            	// Why is it set to associatedSettlement.getName() ?
             	super.setDescription(associatedSettlement.getName());
         }
     }

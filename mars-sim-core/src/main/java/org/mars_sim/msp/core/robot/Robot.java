@@ -600,11 +600,20 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
             associatedSettlement = newSettlement;
             fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
             if (oldSettlement != null) {
+                oldSettlement.removeRobot(this);
                 oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
             }
             if (newSettlement != null) {
+                newSettlement.addRobot(this);
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
             }
+            
+            // set description for this robot
+            if (associatedSettlement == null) {
+            	super.setDescription("Inoperable");  
+            }
+            else
+            	super.setDescription(associatedSettlement.getName());
         }
     }
 
