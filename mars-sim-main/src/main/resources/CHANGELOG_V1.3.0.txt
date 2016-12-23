@@ -18,7 +18,7 @@ http://mars-sim.sourceforge.net/
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Further optimizing cpu utilization.
+1. Further lower cpu utilization.
 
 ### UI IMPROVEMENT :
 

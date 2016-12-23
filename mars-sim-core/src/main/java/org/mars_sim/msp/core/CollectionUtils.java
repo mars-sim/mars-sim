@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
@@ -26,6 +27,13 @@ public class CollectionUtils {
 	public static Collection<Equipment> getEquipment(
 		Collection<Unit> units
 	) {
+		return units
+				.stream()
+				.filter(u-> u instanceof Equipment)
+				.map(u -> (Equipment) u)
+				.filter(u-> !u.isSalvaged())
+				.collect(Collectors.toList());
+/*				
 		ConcurrentLinkedQueue<Equipment> equipment = new ConcurrentLinkedQueue<Equipment>();
 		for (Unit unit : units) {
 			if (unit instanceof Equipment) {
@@ -35,7 +43,7 @@ public class CollectionUtils {
 			}
 		}
 		return equipment;
-
+*/
 	}
 
 	public synchronized static void mergeEquipments(Collection<Unit> units, 
@@ -50,6 +58,13 @@ public class CollectionUtils {
 	public static Collection<Vehicle> getVehicle(
 		Collection<Unit> units
 	) {
+		return units
+				.stream()
+				.filter(u-> u instanceof Vehicle)
+				.map(u -> (Vehicle) u)
+				.filter(u-> !u.isSalvaged())
+				.collect(Collectors.toList());
+/*								
 		ConcurrentLinkedQueue<Vehicle> vehicles = new ConcurrentLinkedQueue<Vehicle>();
 		for (Unit unit : units) {
 			if (unit instanceof Vehicle) {
@@ -58,6 +73,7 @@ public class CollectionUtils {
 			}
 		}
 		return vehicles;
+*/		
 	}
 
 	public synchronized static void mergeVehicles(Collection<Unit> units, 
@@ -72,12 +88,19 @@ public class CollectionUtils {
 	public static Collection<Robot> getRobot(
 		Collection<Unit> units
 	) {
+		return units
+				.stream()
+				.filter(u-> u instanceof Robot)
+				.map(u -> (Robot) u)
+				.collect(Collectors.toList());
+/*				
 		ConcurrentLinkedQueue<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 		for (Unit unit : units) {
 			if (unit instanceof Robot)
 				robots.add((Robot) unit);
 		}
 		return robots;
+*/		
 	}
 
 	public static void mergeRobots(Collection<Unit> units, 
@@ -93,6 +116,13 @@ public class CollectionUtils {
 	public static Collection<Person> getPerson(
 		Collection<Unit> units
 	) {
+		
+		return units
+				.stream()
+				.filter(u-> u instanceof Person)
+				.map(u -> (Person) u)
+				.collect(Collectors.toList());
+/*		
 		ConcurrentLinkedQueue<Person> persons = new ConcurrentLinkedQueue<Person>();
 		Iterator<Unit> i = units.iterator(); // switch to iterator to avoid concurrent modification exception
 		while (i.hasNext()) {
@@ -101,6 +131,7 @@ public class CollectionUtils {
 				persons.add((Person) unit);
 		}
 		return persons;
+*/		
 	}
 
 	public synchronized static void mergePersons(Collection<Unit> units, 
@@ -115,12 +146,19 @@ public class CollectionUtils {
 	public static Collection<Settlement> getSettlement(
 		Collection<Unit> units
 	) {
+		return units
+				.stream()
+				.filter(u-> u instanceof Settlement)
+				.map(u -> (Settlement) u)
+				.collect(Collectors.toList());
+/*			
 		ConcurrentLinkedQueue<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
 		for (Unit unit : units) {
 			if (unit instanceof Settlement)
 				settlements.add((Settlement) unit);
 		}
 		return settlements;
+*/		
 	}
 
 	public synchronized static void mergeSettlements(Collection<Unit> units, 
