@@ -508,17 +508,17 @@ implements UnitListener {
 		NavPoint destination = getNextNavpoint();
 
 		// If vehicle has not reached destination and isn't broken down, travel to destination.
-		boolean reachedDestination = false;
-		
-		// 2016-12-21 Avoid java.lang.NullPointerException by checking for null
-		if (vehicle !=  null && destination != null) {
+		boolean reachedDestination = false, malfunction = false;
+		// 2016-12-21 Avoid NullPointerException by checking if vehicle/destination is null
+		if (vehicle != null && destination != null) {
 			if (vehicle.getCoordinates() != null && destination.getLocation() != null) {
 				reachedDestination = vehicle.getCoordinates().equals(
 						destination.getLocation());
 			}
+			
+			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
 		
-		boolean malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		if (!reachedDestination && !malfunction) {
 		    
 		    if (member instanceof Person) {
