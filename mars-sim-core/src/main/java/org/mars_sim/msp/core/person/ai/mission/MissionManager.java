@@ -131,7 +131,7 @@ implements Serializable {
 		if (missions != null)
 			return new ArrayList<Mission>(missions);
 		else
-			return null;
+			return new ArrayList<Mission>();
 	}
 
 	/**
@@ -368,18 +368,21 @@ implements Serializable {
 	public List<Mission> getMissionsForSettlement(Settlement settlement) {
 
 		if (settlement == null) {
+			//System.out.println("settlement is null");
 			throw new IllegalArgumentException("settlement is null");
 		}
 
 		List<Mission> settlementMissions = new ArrayList<Mission>();
-		Iterator<Mission> i = getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (!mission.isDone() && (settlement == mission.getAssociatedSettlement())) {
-				settlementMissions.add(mission);
+		if (!getMissions().isEmpty()) {
+			Iterator<Mission> i = getMissions().iterator();
+			while (i.hasNext()) {
+				Mission mission = i.next();
+				if (!mission.isDone() && (settlement == mission.getAssociatedSettlement())) {
+					settlementMissions.add(mission);
+				}
 			}
 		}
-
+		
 		return settlementMissions;
 	}
 
