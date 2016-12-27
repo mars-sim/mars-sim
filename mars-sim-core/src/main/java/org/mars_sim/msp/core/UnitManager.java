@@ -122,7 +122,7 @@ public class UnitManager implements Serializable {
 	//private Map<String, List<String>> settlementNamesMap;
 
 	private Map<Integer, List<String>> marsSociety = new HashMap<>();
-	private Map<Integer, List<String>> lastNames = new HashMap<>();
+	//private Map<Integer, List<String>> lastNames = new HashMap<>();
 	private Map<Integer, Map<Integer, List<String>>> firstNames = new HashMap<>();
 	private Map<Integer, List<String>> maleFirstNames = new HashMap<>();	
 	private Map<Integer, List<String>> femaleFirstNames = new HashMap<>();
@@ -134,6 +134,9 @@ public class UnitManager implements Serializable {
 	private VehicleConfig vehicleConfig;
 	private RobotConfig robotConfig;
 
+	private Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
+	private Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
+	
 	//private MasterClock masterClock;
 	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
 
@@ -245,7 +248,9 @@ public class UnitManager implements Serializable {
     // 2016-04-06 Added initializeLastNames()
 	private void initializeLastNames() {
 		try {
-			lastNames = personConfig.getLastNameList(SPONSORS);	
+			List<Map<Integer, List<String>>> list = personConfig.getLastNameList();//SPONSORS);	
+			lastNamesBySponsor = list.get(0);
+			lastNamesByCountry = list.get(1);
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
 		}
@@ -260,7 +265,7 @@ public class UnitManager implements Serializable {
 	private void initializeFirstNames() {
 		
 		try {
-			firstNames = personConfig.getFirstNameList(SPONSORS);
+			firstNames = personConfig.getFirstNameList();//SPONSORS);
 			maleFirstNames = firstNames.get(0);	
 			femaleFirstNames = firstNames.get(1);
 		} catch (Exception e) {
@@ -890,37 +895,37 @@ public class UnitManager implements Serializable {
 						List<String> female_first_list = new ArrayList<>();
 		
 						if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CNSA) {
-							last_list = lastNames.get(0);
+							last_list = lastNamesBySponsor.get(0);
 							male_first_list = maleFirstNames.get(0);
 							female_first_list = femaleFirstNames.get(0);
 			    			
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CSA) {
-							last_list = lastNames.get(1);
+							last_list = lastNamesBySponsor.get(1);
 							male_first_list = maleFirstNames.get(1);
 							female_first_list = femaleFirstNames.get(1);
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ESA) {
-							last_list = lastNames.get(2);
+							last_list = lastNamesBySponsor.get(2);
 							male_first_list = maleFirstNames.get(2);
 							female_first_list = femaleFirstNames.get(2);
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ISRO) {
-							last_list = lastNames.get(3);
+							last_list = lastNamesBySponsor.get(3);
 							male_first_list = maleFirstNames.get(3);
 							female_first_list = femaleFirstNames.get(3);
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.JAXA) {
-							last_list = lastNames.get(4);
+							last_list = lastNamesBySponsor.get(4);
 							male_first_list = maleFirstNames.get(4);
 							female_first_list = femaleFirstNames.get(4);
 	
 			    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.NASA) {
-							last_list = lastNames.get(5);
+							last_list = lastNamesBySponsor.get(5);
 							male_first_list = maleFirstNames.get(5);
 							female_first_list = femaleFirstNames.get(5);
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.RKA) {
-							last_list = lastNames.get(6);
+							last_list = lastNamesBySponsor.get(6);
 							male_first_list = maleFirstNames.get(6);
 							female_first_list = femaleFirstNames.get(6);
 			     	    	

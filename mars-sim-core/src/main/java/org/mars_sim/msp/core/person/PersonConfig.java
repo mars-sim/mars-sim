@@ -46,6 +46,7 @@ implements Serializable {
 	private static final String GENDER = "gender";
 	
 	private static final String SPONSOR = "sponsor";
+	private static final String COUNTRY = "country";
 	
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String NOMINAL_O2_RATE = "nominal-activity-metaboic-load-o2-consumption-rate";
@@ -125,6 +126,8 @@ implements Serializable {
 
 	private double pressure = 0;
 
+	private Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
+	private Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
 	
 	/**
 	 * Constructor
@@ -190,15 +193,22 @@ implements Serializable {
 	 */
     //@SuppressWarnings("unchecked")
     // 2016-04-06 Added getLastNameList()
-	public Map<Integer, List<String>> getLastNameList(ReportingAuthorityType[] type) {
+	public List<Map<Integer, List<String>>> getLastNameList(){//ReportingAuthorityType[] type) {
 
-		Map<Integer, List<String>> lastNames = new HashMap<>();
+		//Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
 		List<List<String>> lists = new ArrayList<>();
 		for (int i= 0; i<7; i++){
 	    	List<String> list = new ArrayList<String>();
 			lists.add(list);
 		}
-    	
+
+		// 2016-12-27 Added lists for countries
+		List<List<String>> countries = new ArrayList<>();
+		for (int i= 0; i<28; i++){
+	    	List<String> countryList = new ArrayList<String>();
+	    	countries.add(countryList);
+		}
+		
     	Element root = personDoc.getRootElement();
 		Element lastNameEl = root.getChild(LAST_NAME_LIST);
 		List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
@@ -207,31 +217,76 @@ implements Serializable {
 			
 			String sponsor = nameElement.getAttributeValue(SPONSOR);
 			String name = nameElement.getAttributeValue(VALUE);
+			String country = nameElement.getAttributeValue(COUNTRY);
 			
 			for (int i=0; i<7; i++) {
-				if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
+				if (sponsor.equals("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
 					lists.get(0).add(name);		
-				else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
+				else if (sponsor.equals("CSA"))// && type[i] == ReportingAuthorityType.CSA)
 					lists.get(1).add(name);		
-				else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
-					lists.get(2).add(name);			
-				else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
+				else if (sponsor.equals("ESA"))// && type[i] == ReportingAuthorityType.ESA)
+					lists.get(2).add(name);					
+				else if (sponsor.equals("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
 					lists.get(3).add(name);			
-				else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
+				else if (sponsor.equals("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
 					lists.get(4).add(name);				
-				else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
+				else if (sponsor.equals("NASA"))// && type[i] == ReportingAuthorityType.NASA)
 					lists.get(5).add(name);			
-				else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
+				else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 					lists.get(6).add(name);
 			}
+			
+			/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/		
+			if (country.equals("China")) countries.get(0).add(name);
+			else if (country.equals("Canada")) countries.get(1).add(name);
+			else if (country.equals("India")) countries.get(2).add(name);
+			else if (country.equals("Japan")) countries.get(3).add(name);
+			else if (country.equals("The United States")) countries.get(4).add(name);
+			else if (country.equals("Russia")) countries.get(5).add(name);
+	
+			/* ESA has 22 Member States. The national bodies responsible for space in 
+			these countries sit on ESA’s governing Council: Austria, Belgium, Czech Republic, 
+			Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, 
+			Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain, Sweden, 
+			Switzerland and the United Kingdom.*/
+			else if (country.equals("Austria")) countries.get(6).add(name);
+			else if (country.equals("Belgium")) countries.get(7).add(name);
+			else if (country.equals("Czech Republic")) countries.get(8).add(name);
+			else if (country.equals("Denmark")) countries.get(9).add(name);
+			else if (country.equals("Estonia")) countries.get(10).add(name);
+			else if (country.equals("Finland")) countries.get(11).add(name);
+			else if (country.equals("France")) countries.get(12).add(name);
+			else if (country.equals("Germany")) countries.get(13).add(name);
+			else if (country.equals("Greece")) countries.get(14).add(name);
+			else if (country.equals("Hungary")) countries.get(15).add(name);
+			else if (country.equals("Ireland")) countries.get(16).add(name);
+			else if (country.equals("Italy")) countries.get(17).add(name);
+			else if (country.equals("Luxembourg")) countries.get(18).add(name);
+			else if (country.equals("The Netherlands")) countries.get(19).add(name);
+			else if (country.equals("Norway")) countries.get(20).add(name);
+			else if (country.equals("Poland")) countries.get(21).add(name);
+			else if (country.equals("Portugal")) countries.get(22).add(name);
+			else if (country.equals("Romania")) countries.get(23).add(name);
+			else if (country.equals("Spain")) countries.get(24).add(name);
+			else if (country.equals("Sweden")) countries.get(25).add(name);
+			else if (country.equals("Switzerland")) countries.get(26).add(name);
+			else if (country.equals("The United Kingdom")) countries.get(27).add(name);
+			
 		}
 		
 		for (int i= 0; i<7; i++){
-			lastNames.put(i, lists.get(i));
+			lastNamesBySponsor.put(i, lists.get(i));
+		}
+
+		for (int i= 0; i<28; i++){
+			lastNamesByCountry.put(i, countries.get(i));
 		}
 		
+		List<Map<Integer, List<String>>> list = new ArrayList<Map<Integer, List<String>>>();
+		list.add(lastNamesBySponsor);
+		list.add(lastNamesByCountry);
 		//System.out.println("done with getLastNameList()");	
-		return lastNames;
+		return list;
 	}
 
 
@@ -242,7 +297,7 @@ implements Serializable {
 	 */
     //@SuppressWarnings("unchecked")
     // 2016-04-06 Added getFirstNameList()
-	public Map<Integer, Map<Integer, List<String>>> getFirstNameList(ReportingAuthorityType[] type) {//, boolean isMale) {
+	public Map<Integer, Map<Integer, List<String>>> getFirstNameList() {//ReportingAuthorityType[] type) {//, boolean isMale) {
 
 		Map<Integer, Map<Integer, List<String>>> firstNames = new HashMap<>();
 		Map<Integer, List<String>> maleFirstNames = new HashMap<>();
@@ -275,25 +330,25 @@ implements Serializable {
 				
 				for (int i=0; i<7; i++) {
 
-					if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
+					if (sponsor.equals("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
 						mlists.get(0).add(name);
 					
-					else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
+					else if (sponsor.equals("CSA"))// && type[i] == ReportingAuthorityType.CSA)
 						mlists.get(1).add(name);
 					
-					else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
+					else if (sponsor.equals("ESA"))// && type[i] == ReportingAuthorityType.ESA)
 						mlists.get(2).add(name);
 						
-					else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
+					else if (sponsor.equals("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
 						mlists.get(3).add(name);
 						
-					else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
+					else if (sponsor.equals("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
 						mlists.get(4).add(name);	
 						
-					else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
+					else if (sponsor.equals("NASA"))// && type[i] == ReportingAuthorityType.NASA)
 						mlists.get(5).add(name);
 						
-					else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
+					else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						mlists.get(6).add(name);
 				
 				}
@@ -302,25 +357,25 @@ implements Serializable {
 				
 				for (int i=0; i<7; i++) {
 
-					if (sponsor.equals("CNSA") && type[i] == ReportingAuthorityType.CNSA)
+					if (sponsor.equals("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
 						flists.get(0).add(name);
 					
-					else if (sponsor.equals("CSA") && type[i] == ReportingAuthorityType.CSA)
+					else if (sponsor.equals("CSA"))// && type[i] == ReportingAuthorityType.CSA)
 						flists.get(1).add(name);
 					
-					else if (sponsor.equals("ESA") && type[i] == ReportingAuthorityType.ESA)
+					else if (sponsor.equals("ESA"))// && type[i] == ReportingAuthorityType.ESA)
 						flists.get(2).add(name);
 						
-					else if (sponsor.equals("ISRO") && type[i] == ReportingAuthorityType.ISRO)
+					else if (sponsor.equals("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
 						flists.get(3).add(name);
 						
-					else if (sponsor.equals("JAXA") && type[i] == ReportingAuthorityType.JAXA)
+					else if (sponsor.equals("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
 						flists.get(4).add(name);	
 						
-					else if (sponsor.equals("NASA") && type[i] == ReportingAuthorityType.NASA)
+					else if (sponsor.equals("NASA"))// && type[i] == ReportingAuthorityType.NASA)
 						flists.get(5).add(name);
 						
-					else if (sponsor.equals("RKA") && type[i] == ReportingAuthorityType.RKA)
+					else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						flists.get(6).add(name);
 				}
 			}

@@ -13,6 +13,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
 /*
  *  Adopted from Rob Camick's post on https://tips4java.wordpress.com/2008/11/18/row-number-table/
  *
@@ -118,6 +120,7 @@ public class RowNumberTable extends JTable
 
 		JViewport viewport = (JViewport) e.getSource();
 		JScrollPane scrollPane = (JScrollPane)viewport.getParent();
+		scrollPane.setBorder(new MarsPanelBorder());
 		scrollPane.getVerticalScrollBar().setValue(viewport.getViewPosition().y);
 	}
 //

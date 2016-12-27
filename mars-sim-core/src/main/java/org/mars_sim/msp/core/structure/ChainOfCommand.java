@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -28,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 public class ChainOfCommand implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+    private static Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
 /*
     int safetySlot = 0;
     int engrSlot = 0;
@@ -130,16 +132,16 @@ public class ChainOfCommand implements Serializable {
             Role role = person.getRole();
             int pop = 0;
             if (person.getSettlement() == null)
-            	System.err.print("person.getSettlement() = null");
+            	logger.warning("person.getSettlement() = null");
             else if (person.getSettlement().getAllAssociatedPeople() == null)
-               	System.err.print("person.getSettlement().getAllAssociatedPeople() = null");
+            	logger.warning("person.getSettlement().getAllAssociatedPeople() = null");
             else {
             	pop = person.getSettlement().getAllAssociatedPeople().size();
             	if (pop == 0) {
-            		System.err.print("person.getSettlement().getAllAssociatedPeople().size() = 0");
+            		//logger.warning("person.getSettlement().getAllAssociatedPeople().size() = 0");
             		pop = person.getSettlement().getCurrentPopulationNum();
             		if (pop == 0)
-                		System.err.print("person.getSettlement().getCurrentPopulationNum() = 0");
+            			logger.warning("person.getSettlement().getCurrentPopulationNum() = 0");
             	}
             }
             //if (pop == 0)

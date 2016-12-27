@@ -4,7 +4,7 @@ water-consumption-rate, water-usage-rate, grey-to-black-water-ratio,
 dessert-consumption-rate, food-consumption-rate, oxygen-deprivation-time, water-deprivation-time,
 food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time,
 min-temperature, max-temperature, freezing-time, stress-breakdown-chance, high-fatigue-collapse-chance,
-gender-male-percentage, personality-types, person-name-list, first-name-list, last-name-list,person-list)>
+gender-male-percentage, personality-types, person-name-list, first-name-list, last-name-list, person-list)>
 
 <!ELEMENT low-activity-metaboic-load-o2-consumption-rate EMPTY>
 <!ATTLIST low-activity-metaboic-load-o2-consumption-rate value CDATA #REQUIRED>
@@ -66,12 +66,13 @@ gender-male-percentage, personality-types, person-name-list, first-name-list, la
 <!ATTLIST first-name value CDATA #REQUIRED>
 <!ATTLIST first-name gender (male|female) #REQUIRED>
 <!ATTLIST first-name sponsor CDATA #REQUIRED>
+<!ATTLIST first-name country CDATA #REQUIRED>
 
 <!ELEMENT last-name-list (last-name*)>
 <!ELEMENT last-name EMPTY>
 <!ATTLIST last-name value CDATA #REQUIRED>
 <!ATTLIST last-name sponsor CDATA #REQUIRED>
-
+<!ATTLIST last-name country CDATA #REQUIRED>
 
 <!ELEMENT person-list (person*)>
 <!ELEMENT person (personality-trait-list?, natural-attribute-list?, skill-list?, relationship-list?)>

@@ -336,7 +336,7 @@ extends MonitorTab {
 
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
-        scroller.setBorder(new MarsPanelBorder());
+        //scroller.setBorder(new MarsPanelBorder());
 
         scroller.setRowHeaderView(rowTable);
         scroller.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowTable.getTableHeader());

@@ -202,7 +202,7 @@ public class TableStyle extends ZebraJTable{
 		    theHeader.setDefaultRenderer(theRenderer);		
 			theHeader.setOpaque(false);	
 			theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );	
-			theHeader.setBorder(BorderFactory.createLineBorder(border, 1));	
+			//theHeader.setBorder(BorderFactory.createLineBorder(border, 1));	
 		
         	
 	    	// TODO: why is it NOT working?
@@ -250,7 +250,7 @@ public class TableStyle extends ZebraJTable{
 		
 			table.setShowGrid(true);
 			table.setShowVerticalLines(true);			
-			table.setBorder(BorderFactory.createLineBorder(border, 1));			
+			//table.setBorder(BorderFactory.createLineBorder(border, 1));			
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 	    	
 			table.repaint();

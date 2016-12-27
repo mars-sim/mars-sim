@@ -412,7 +412,7 @@ public class MainScene {
 	 * Prepares the transport wizard, construction wizard, autosave timer and earth timer
 	 */
 	public void prepareOthers() {
-		logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
 		startEarthTimer();
 		transportWizard = new TransportWizard(this, desktop);
 		constructionWizard = new ConstructionWizard(this, desktop);
@@ -601,7 +601,7 @@ public class MainScene {
 	 */
 	@SuppressWarnings("unchecked")
 	public Scene initializeScene() {
-		logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's initializeScene() is on " + Thread.currentThread().getName() + " Thread");
 
 		//see dpi scaling at http://news.kynosarges.org/2015/06/29/javafx-dpi-scaling-fixed/
 		//"I guess we�ll have to wait until Java 9 for more flexible DPI support. 
@@ -872,7 +872,7 @@ public class MainScene {
 	}
 	
 	public void createFXZoomSlider() {
-		logger.info("MainScene's createFXZoomSlider() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's createFXZoomSlider() is on " + Thread.currentThread().getName() + " Thread");
 		
 		// Set up a settlement view zoom bar
 		zoomSlider = new JFXSlider();
@@ -1030,7 +1030,7 @@ public class MainScene {
 	 */
 	@SuppressWarnings("restriction")
 	public void createJFXTabs() {
-		logger.info("MainScene's createJFXTabs() is on " + Thread.currentThread().getName() + " Thread");
+		//logger.info("MainScene's createJFXTabs() is on " + Thread.currentThread().getName() + " Thread");
 		
 		jfxTabPane = new JFXTabPane();
 		

@@ -292,8 +292,7 @@ public class ScenarioConfigEditorFX {
 				if (isExit) {
 					borderAll.setOpacity(0);
 					// undecorator.setFadeOutTransition();
-					if (crewEditorFX != null || isCrewEditorOpen)
-						crewEditorFX.getStage().close();
+					closeWindow();
 					Platform.exit();
 				}
 			});
@@ -787,10 +786,13 @@ public class ScenarioConfigEditorFX {
 	 * Close and dispose dialog window.
 	 */
 	private void closeWindow() {
-		// cstage.hide();
-		// cstage.close();
+		if (crewEditorFX != null || isCrewEditorOpen) {//crewEditorFX.getStage() != null) {
+			crewEditorFX.getStage().hide();
+			crewEditorFX.getStage().close();
+		}
 		stage.hide();
 		stage.close();
+
 	}
 
 	/**
