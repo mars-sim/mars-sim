@@ -99,11 +99,11 @@ public class MarsClock implements Serializable {
         }
         if ((month < 1) || (month > MONTH_NAMES.length)) throw new IllegalStateException("Invalid month: " + monthStr);
 
-        String solStr = dateString.substring(dateString.lastIndexOf("-") + 1, dateString.indexOf(":"));
+        String solStr = dateString.substring(dateString.lastIndexOf("-") + 1, dateString.indexOf(" "));
         sol = Integer.parseInt(solStr);
         if (sol < 1) throw new IllegalStateException("Invalid sol number: " + sol);
 
-        String millisolStr = dateString.substring(dateString.indexOf(":") + 1);
+        String millisolStr = dateString.substring(dateString.indexOf(" ") + 1);
         millisol = Double.parseDouble(millisolStr);
         if (millisol < 0D) throw new IllegalStateException("Invalid millisol number: " + millisol);
 

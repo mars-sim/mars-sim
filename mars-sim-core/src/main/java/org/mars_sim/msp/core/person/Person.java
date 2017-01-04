@@ -170,16 +170,17 @@ implements VehicleOperator, MissionMember, Serializable {
         if (masterClock != null) { // to avoid NullPointerException during maven test
         	marsClock = masterClock.getMarsClock();
         	earthClock = masterClock.getEarthClock();
+            birthTimeStamp = new EarthClock(createBirthTimeString());
         }
+        
         config = SimulationConfig.instance().getPersonConfiguration();
 
         //if (Simulation.instance().getMasterClock() != null)
         //	if (marsClock == null)
         //		marsClock = Simulation.instance().getMasterClock().getMarsClock();
- 
-        String birthTimeString = createBirthTimeString();
-
-        birthTimeStamp = new EarthClock(birthTimeString);
+        //String birthTimeString = createBirthTimeString();
+        // birthTimeStamp = new EarthClock(birthTimeString);
+        
         attributes = new NaturalAttributeManager(this);
 
         // 2015-02-27 Added JobHistory
@@ -469,11 +470,13 @@ implements VehicleOperator, MissionMember, Serializable {
      * Create a string representing the birth time of the person.
      * @return birth time string.
      */
+    // 2017-01-03 Revise createBirthTimeString()
     private String createBirthTimeString() {
         // Set a birth time for the person
-        int year = 2003 + RandomUtil.getRandomInt(10)
-                + RandomUtil.getRandomInt(10);
+        int year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
+        		//2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
         int month = RandomUtil.getRandomInt(11) + 1;
+        String monthString = EarthClock.getMonthForInt(month-1);
         int day;
         if (month == 2) {
             if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
@@ -498,8 +501,11 @@ implements VehicleOperator, MissionMember, Serializable {
         int minute = RandomUtil.getRandomInt(59);
         int second = RandomUtil.getRandomInt(59);
 
-        return month + "/" + day + "/" + year + " " + hour + ":"
-        + minute + ":" + second;
+        //return month + "/" + day + "/" + year + " " + hour + ":"
+        //+ minute + ":" + second;
+        
+        return year + "-" + monthString + "-" + day + " " 
+        + hour + ":" + minute + ":" + second;
     }
 
     /**

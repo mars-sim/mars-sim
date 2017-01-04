@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
 import java.text.DateFormat;
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -39,60 +40,77 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private String fullDateTimeString;
+	//private String fullDateTimeString;
 	private final GregorianCalendar cal;
 
 	// Data members
-	private final SimpleDateFormat formatter, formatter2;
-	private final DateFormat formatter_millis;
+	private final SimpleDateFormat f0, f1, f2, f3;
 	//private final DateTimeFormatter dtFormatter_millis;
 
 	/**
 	 * Constructor.
-	 * @param fullDateTimeString the UT date string in format: "MM/dd/yyyy hh:mm:ss" e.g. 09/30/2043 00:00:00.
+	 * @param fullDateTimeString the UT date string
 	 * @throws Exception if date string is invalid.
 	 */
 	public EarthClock(String fullDateTimeString) {
-		this.fullDateTimeString = fullDateTimeString;
+		//this.fullDateTimeString = fullDateTimeString;
 		
 		// Use GregorianCalendar constructor
 		cal = new GregorianCalendar();
-
+		
 		// Set GMT timezone for calendar
 		SimpleTimeZone zone = new SimpleTimeZone(0, "GMT");
 		cal.setTimeZone(zone);
+		cal.clear();
 		
 		// Initialize formatter
-		formatter = new SimpleDateFormat("yyyy-MMM-dd  HH:mm:ss '(UT)'");
-		formatter.setTimeZone(zone);
-		formatter2 = new SimpleDateFormat("yyyy-MMM-dd  HH:mm '(UT)'");
-		formatter2.setTimeZone(zone);
+		f0 = new SimpleDateFormat("yyyy-MMM-dd  HH:mm:ss '(UT)'");
+		f0.setTimeZone(zone);
+		f1 = new SimpleDateFormat("yyyy-MMM-dd  HH:mm '(UT)'");
+		f1.setTimeZone(zone);
 		
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
-		cal.clear();
-		DateFormat tempFormatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
-		tempFormatter.setTimeZone(zone);
+
+		f2 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+		f2.setTimeZone(zone);
 		try {
-			cal.setTime(tempFormatter.parse(fullDateTimeString));
+			cal.setTime(f2.parse(fullDateTimeString));
 		} catch (ParseException ex) {
 			throw new IllegalStateException(ex);
 		}
-		
+			
 		//System.out.println("GMT/UT: cal.getTime() is " + cal.getTime());
 		//System.out.println("dateString is " + fullDateTimeString);
 		//System.out.println("this.getTimeStamp() is " + this.getTimeStamp()); 
-		
+
 		// Initialize a second formatter
-		formatter_millis = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");//.SSS"); // :SSS
+		f3 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");//.SSS"); // :SSS
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
-		formatter_millis.setTimeZone(gmt);
-		formatter_millis.setLenient(false);
+		f3.setTimeZone(gmt);
+		f3.setLenient(false);
 		
 		// Use Java 8 Date/Time API in java.time package
 		//dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");
-		}
 
+	}
+
+    // 2017-01-03 Added getMonthForInt()
+	public static String getMonthForInt(int m) {
+	    String month = "invalid";
+	    DateFormatSymbols dfs = new DateFormatSymbols();
+	    String[] months = dfs.getMonths();
+	    if (m >= 0 && m <= 11 ) {
+	        month = months[m];
+	    }
+	    return month;
+	}
+	
+	   // 2017-01-03 Added getMonthForInt()
+	public static int getCurrentYear(EarthClock clock) {
+		return clock.getYear();
+	}
+	
 	public Calendar getCalender() {
 		return cal;
 	}
@@ -137,7 +155,7 @@ implements Serializable {
 	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 01212"
 	 */
 	public String getCurrentDateTimeString(EarthClock clock) {
-		String result = formatter_millis.format(cal.getTime());
+		String result = f3.format(cal.getTime());
 		//System.out.println("getCurrentDateTimeString() is " + result);
 		return result;
 	}
@@ -262,7 +280,7 @@ implements Serializable {
 	 */
 	//2015-01-08 Added if clause
 	public String getTimeStamp() {
-		String result = formatter.format(cal.getTime());// + " (UT)";
+		String result = f0.format(cal.getTime());// + " (UT)";
 		if (result == null) result = "0";
 		return result;
 	}
@@ -273,7 +291,7 @@ implements Serializable {
 	 */
 	//2016-09-24 Added getTimeStamp2()
 	public String getTimeStamp2() {
-		String result = formatter2.format(cal.getTime());// + " (UT)";
+		String result = f1.format(cal.getTime());// + " (UT)";
 		if (result == null) result = "0";
 		return result;
 	}
@@ -346,8 +364,7 @@ implements Serializable {
 		return s;
 	}
 
-	public int getYear()
-	{
+	public int getYear() {
 		return cal.get(Calendar.YEAR);
 	}
 

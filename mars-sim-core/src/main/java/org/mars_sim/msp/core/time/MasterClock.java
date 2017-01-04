@@ -135,10 +135,38 @@ public class MasterClock implements Serializable { // Runnable,
         clockThreadTask = new ClockThreadTask();
 
         // Setting the initial time ratio.
-        setTimeRatio(config.getSimulationTimeRatio());
-
-        // 2015-10-31 Added loading the 3 values below from SimulationConfig
-        setTimeBetweenUpdates(config.getTimeBetweenUpdates());
+        double ratio = config.getSimulationTimeRatio();
+        double ms = config.getTimeBetweenUpdates();
+        if (Simulation.NUM_THREADS <= 2) {
+        	setTimeRatio(ratio/24D);
+            setTimeBetweenUpdates(ms*16D);
+        }
+        else if (Simulation.NUM_THREADS <= 3) {
+        	setTimeRatio(ratio/12D);
+            setTimeBetweenUpdates(ms*8D);
+        }
+        else if (Simulation.NUM_THREADS <= 4) {
+        	setTimeRatio(ratio/8D);
+            setTimeBetweenUpdates(ms*6D);
+        }
+        else if (Simulation.NUM_THREADS <= 6) {
+        	setTimeRatio(ratio/6D);
+            setTimeBetweenUpdates(ms*4D);
+        }
+        else if (Simulation.NUM_THREADS <= 8) {
+        	setTimeRatio(ratio/4D);
+            setTimeBetweenUpdates(ms*2D);
+        }
+        else if (Simulation.NUM_THREADS <= 12) {
+        	setTimeRatio(ratio/2D);
+            setTimeBetweenUpdates(ms);
+        }
+        else {
+        	setTimeRatio(ratio);
+            setTimeBetweenUpdates(ms);
+        }
+        
+        // 2015-10-31 Added loading the values below from SimulationConfig
         setNoDelaysPerYield(config.getNoDelaysPerYield());
         setMaxFrameSkips(config.getMaxFrameSkips());
     }
@@ -820,39 +848,40 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public String getTimeString(double seconds) {
 
-        long years = (int) Math.floor(seconds / secsperyear);
-        long days = (int) ((seconds % secsperyear) / secspday);
+        //long years = (int) Math.floor(seconds / secsperyear);
+        //long days = (int) ((seconds % secsperyear) / secspday);
         long hours = (int) ((seconds % secspday) / secsphour);
         long minutes = (int) ((seconds % secsphour) / secspmin);
         double secs = (seconds % secspmin);
 
         StringBuilder b = new StringBuilder();
-
+/*
         b.append(years);
         if(years>0){
-            b.append(":");
+            b.append("yr:");
         }
 
         if (days > 0) {
-            b.append(String.format("%03d", days)).append(":");
+            b.append(String.format("%03d", days)).append("mon:");
         } else {
-            b.append("0:");
+            b.append("0mon:");
         }
-
+*/
         if (hours > 0) {
-            b.append(String.format("%02d", hours)).append(":");
+            b.append(String.format("%02d", hours)).append("h ");
         } else {
-            b.append("00:");
+            b.append("00h ");
         }
 
         if (minutes > 0) {
-            b.append(String.format("%02d", minutes)).append(":");
+            b.append(String.format("%02d", minutes)).append("m ");
         } else {
-            b.append("00:");
+            b.append("00m ");
         }
 
-        b.append(String.format("%5.3f", secs));
-
+        //b.append(String.format("%5.3f", secs));
+        b.append(String.format("%05.2f", secs) + "s");
+        
         return b.toString();
     }
 

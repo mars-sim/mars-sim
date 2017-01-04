@@ -73,6 +73,14 @@ implements ClockListener, Serializable {
 
     private static Logger logger = Logger.getLogger(Simulation.class.getName());
 
+	// Categories of loading and saving simulation
+	public static final int OTHER = 0; // load other file
+	public static final int SAVE_DEFAULT = 1; // save as default.sim
+	public static final int SAVE_AS = 2; // save with other name
+	public static final int AUTOSAVE_DEFAULT = 3; // save as default.sim
+	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
+	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
+
     /** Version string. */
     public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
 
@@ -95,7 +103,7 @@ implements ClockListener, Serializable {
             Msg.getString("Simulation.defaultDir"); //$NON-NLS-1$
 
     // 2015-01-08 Added autosave
-    /** Autosave directory. */
+    /** autosave directory. */
     public final static String AUTOSAVE_DIR =
             System.getProperty("user.home") + //$NON-NLS-1$
             File.separator +
@@ -103,21 +111,8 @@ implements ClockListener, Serializable {
             File.separator +
             Msg.getString("Simulation.defaultDir.autosave"); //$NON-NLS-1$
 
-	public static int autosave_minute;// = 15;
-
-	// Categories of loading and saving simulation
-	public static final int OTHER = 0; // load other file
-	public static final int SAVE_DEFAULT = 1; // save as default.sim
-	public static final int SAVE_AS = 2; // save with other name
-	public static final int AUTOSAVE_DEFAULT = 3; // save as default.sim
-	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
-	
-	
-	public final static int NUM_THREADS = Runtime.getRuntime().availableProcessors();
-
 	public final static String MARS_SIM_DIRECTORY = ".mars-sim";
 
-    @SuppressWarnings("restriction")
     public final static String title = Msg.getString(
             "Simulation.title", VERSION
             + " - Build " + BUILD
@@ -126,18 +121,18 @@ implements ClockListener, Serializable {
             ); //$NON-NLS-1$
 
     private static final boolean debug = logger.isLoggable(Level.FINE);
-
+    /** true if displaying graphic user interface. */
+    private static boolean useGUI = true;
     /** Flag to indicate that a new simulation is being created or loaded. */
     private static boolean isUpdating = false;
 
     private double fileSize;
-    // 2014-12-26 Added useGUI
-    /** true if displaying graphic user interface. */
-    private static boolean useGUI = true;
 
     private boolean defaultLoad = false;
 
     private boolean initialSimulationCreated = false;
+
+	public static int autosave_minute;// = 15;
 
     /* The build version of the SimulationConfig of the loading .sim */
     private String loadBuild;// = "unknown";
@@ -379,15 +374,16 @@ implements ClockListener, Serializable {
 
         if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
 	        
-        	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
-/*        	
-        	if (NUM_THREADS <= 3)
-        		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);// newSingleThreadExecutor();// newCachedThreadPool(); //
-        	else if (NUM_THREADS <= 6)
-        		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// newSingleThreadExecutor();// newCachedThreadPool(); //
-        	else 
-        		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(6);// newSingleThreadExecutor();// newCachedThreadPool(); //
-*/   
+        	//if (NUM_THREADS <= 3)
+        		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+        		//clockScheduler = (ThreadPoolExecutor) Executors.newSingleThreadExecutor();
+        	//else if (NUM_THREADS <= 8)
+        	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);// newSingleThreadExecutor();// newCachedThreadPool(); //
+        	//else if (NUM_THREADS <= 16)
+        	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);// newSingleThreadExecutor();// newCachedThreadPool(); //
+        	//else 
+        	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// newSingleThreadExecutor();// newCachedThreadPool(); //
+   
         	clockScheduler.execute(masterClock.getClockThreadTask());
        }
  

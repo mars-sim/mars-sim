@@ -170,7 +170,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
 
-        String timeString = createTimeString();
+        String timeString = createBirthTimeString();
 
         birthTimeStamp = new EarthClock(timeString);
         attributes = new RoboticAttributeManager(this);
@@ -201,15 +201,17 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     	return taskSchedule;
     }
 
+
     /**
-     * Create a string representing the birth time of the robot.
+     * Create a string representing the birth time of the person.
      * @return birth time string.
      */
-    private String createTimeString() {
-        // Set a birth time for the robot
-        int year = 2043 + RandomUtil.getRandomInt(10)
-                + RandomUtil.getRandomInt(10);
+    // 2017-01-03 Revise createBirthTimeString()
+    private String createBirthTimeString() {
+        // Set a birth time for the person
+        int year = EarthClock.getCurrentYear(earthClock);
         int month = RandomUtil.getRandomInt(11) + 1;
+        String monthString = EarthClock.getMonthForInt(month-1);
         int day;
         if (month == 2) {
             if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
@@ -224,13 +226,21 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
                 day = RandomUtil.getRandomInt(29) + 1;
             }
         }
+        // TODO: find out why sometimes day = 0 as seen on
+        if (day == 0) {
+        	logger.warning( name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
+        	day = 1;
+        }
 
         int hour = RandomUtil.getRandomInt(23);
         int minute = RandomUtil.getRandomInt(59);
         int second = RandomUtil.getRandomInt(59);
 
-        return month + "/" + day + "/" + year + " " + hour + ":"
-        + minute + ":" + second;
+        //return month + "/" + day + "/" + year + " " + hour + ":"
+        //+ minute + ":" + second;
+        
+        return year + "-" + monthString + "-" + day + " " 
+        + hour + ":" + minute + ":" + second;
     }
 
     /**

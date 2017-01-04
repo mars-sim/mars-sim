@@ -9,8 +9,8 @@
 
 		<!-- time-ratio (TR) is the simulation time ratio : the ratio of real time to sim time -->
 		<!-- It denotes the speed of the simulation -->
-		<!-- Value must be positive number between 0.0001 and 500,000 and cannot be zero -->
-		<!-- Default: 500.0 -->
+		<!-- Value must be positive number between 0.001 and 10800 and cannot be zero -->
+		<!-- Default: 500.0 (for a cpu with 8+ threads. Will automatically set to a fraction of its value if having less threads-->
 		<time-ratio value="500.0" />
 		<!-- e.g. if TR = 500, 1 real second in your computer = 500 sim second in MSP  -->
 
@@ -18,8 +18,8 @@
 		<!-- It is essentially the maximum sleep time between two game iterations or updates.
 			 The smaller the TBU, the better the "resolution" of the simulation -->
 		<!-- Frames Per Second (FPS) or Ticks Per Seconds (TPS) [in hertz] is just the reciprocal of TBU  -->
-		<!-- Value must be positive number between 1.0 and 1,000 and cannot be zero and cannot be zero -->
-		<!-- Default: 40.0 -->
+		<!-- Value must be positive number between 1.0 and 640 and cannot be zero and cannot be zero -->
+		<!-- Default: 40.0 Will automatically set to a multiple of its value if having less threads-->
 		<time-between-updates value="40.0" />
 		<!-- e.g. 40 ms is equal to 25 Hz  -->
 
@@ -58,17 +58,17 @@
 
 
 		<!-- Earth start date/time -->
-		<!-- "MM/dd/yyyy hh:mm:ss" format -->
-		<!-- Default: 09/30/2043 00:00:00 -->
+		<!-- "yyyy-MMM-dd hh:mm:ss" format -->
+		<!-- Default: 2043-Sep-30 00:00:00 -->
 		<!-- Note that changing this date to another value is currently unsupported -->		
-		<earth-start-date-time value="09/30/2043 00:00:00" />
+		<earth-start-date-time value="2043-Sep-30 00:00:00" />
 
 		<!-- Mars start date/time -->
 		<!-- (See time.txt) -->
-		<!-- "orbit-month-sol:millisol" format -->
-		<!-- Default: 15-Adir-01:000.000 -->
+		<!-- "orbit-month-sol millisol" format -->
+		<!-- Default: 15-Adir-01 000.000 -->
 		<!-- Note that changing this date to another value is currently unsupported -->
-		<mars-start-date-time value="15-Adir-01:000.000" />
+		<mars-start-date-time value="15-Adir-01 000.000" />
 
 		<!-- autosave-interval is the number of minutes the simulation will wait between two successive autosave events -->
 		<!-- Value must be a positive number between 1 and 1440 and cannot be zero -->

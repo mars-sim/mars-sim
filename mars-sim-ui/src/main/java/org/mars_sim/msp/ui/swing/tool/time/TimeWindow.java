@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.time;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -66,13 +67,13 @@ implements ClockListener {
 	public static final String NAME = Msg.getString("TimeWindow.title");		 //$NON-NLS-1$
 
 	/** the "default" ratio that will be set at 50, the middle of the scale. */
-	private static final double ratioatmid = 1000d;
+	private static final double ratioatmid = Simulation.instance().getMasterClock().getTimeRatio();
 
 	/** the max ratio the sim can be set at. */
 	private static final double maxratio = 10800d;
 
 	/** the minimum ratio the sim can be set at. */
-	private static final double minfracratio = 0.001d;
+	private static final double minfracratio = 0.01d;//0.001d;
 
 	/** the largest fractional ratio the sim can be set at. */
 	private static final double maxfracratio = 0.98d;
@@ -114,6 +115,8 @@ implements ClockListener {
 	private JLabel uptimeLabel;
 	/** label for pulses per second label. */
 	private JLabel pulsespersecondLabel;
+	
+	private JLabel pulseHeaderLabel;
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
 
@@ -290,47 +293,75 @@ implements ClockListener {
 		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(pulsePane, BorderLayout.SOUTH);
 
-		// Create pulse header label
-		final JLabel pulseHeaderLabel = new JLabel(Msg.getString("TimeWindow.pulseHeader"), JLabel.CENTER); //$NON-NLS-1$
-		pulsePane.add(pulseHeaderLabel, BorderLayout.NORTH);
-
 		pulsespersecondPane.add(pausePane, BorderLayout.SOUTH);
 
 		//String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
 		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
-		String s = "1 real sec = " + masterClock.getTimeString(masterClock.getTimeRatio());
-		final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
+		double ratio = masterClock.getTimeRatio();
+		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+		String s = "1 Real Second : " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+		final JLabel pulseCurRatioLabel = new JLabel(s , JLabel.CENTER);
 		pulsePane.add(pulseCurRatioLabel, BorderLayout.CENTER);
 
+		// Create pulse header label
+		JPanel northPanel = new JPanel(new GridLayout(2, 1));
+		JLabel speedLabel = new JLabel(Msg.getString("TimeWindow.simSpeed"), JLabel.CENTER); //$NON-NLS-1$
+
+		pulseHeaderLabel = new JLabel(Msg.getString("TimeWindow.pulseHeader", factor), JLabel.CENTER); //$NON-NLS-1$
+		pulsePane.add(northPanel, BorderLayout.NORTH);
+
+		northPanel.add(speedLabel);
+		northPanel.add(pulseHeaderLabel);
+		
 		pulseCurRatioLabel.addMouseListener(new MouseInputAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
+				
+				double ratio = masterClock.getTimeRatio();
+				String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+				String s = "1 Real Second : " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+				pulseCurRatioLabel.setText(s);
+				
+				pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
+
+/*				
 				if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-					pulseCurRatioLabel.setText("1 real sec = " + String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
+					pulseCurRatioLabel.setText("1 Real Second : " + String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
 				}
 				else {
-					pulseCurRatioLabel.setText("1 real sec = " + masterClock.getTimeString(masterClock.getTimeRatio()));
+					pulseCurRatioLabel.setText("1 Real Second : " + masterClock.getTimeString(masterClock.getTimeRatio()));
 				}
+*/				
 			}
 		});
 
 		// Create pulse slider
 		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
 		pulseSlider = new JSliderMW(1, 100, sliderpos);
-		pulseSlider.setMajorTickSpacing(10);
-		pulseSlider.setMinorTickSpacing(2);
+		pulseSlider.setMajorTickSpacing(20);
+		pulseSlider.setMinorTickSpacing(5);
 		pulseSlider.setPaintTicks(true);
 		pulseSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				try {
 					setTimeRatioFromSlider(pulseSlider.getValue());
+
+					double ratio = masterClock.getTimeRatio();
+					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+					String s = "1 Real Second : " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+					pulseCurRatioLabel.setText(s);
+					
+					pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
+
+	/*				
 					if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-					    pulseCurRatioLabel.setText(masterClock.getTimeString(masterClock.getTimeRatio()));
+						pulseCurRatioLabel.setText("1 Real Second : " + String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
 					}
 					else {
-					    pulseCurRatioLabel.setText(String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
+						pulseCurRatioLabel.setText("1 Real Second : " + masterClock.getTimeString(masterClock.getTimeRatio()));
 					}
+	*/		
 				}
 				catch (Exception e2) {
 					logger.log(Level.SEVERE,e2.getMessage());
@@ -354,6 +385,7 @@ implements ClockListener {
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
 	    double timeRatio = calculateTimeRatioFromSlider(sliderValue);
+	    //System.out.println("timeRatio : " + timeRatio);
 		masterClock.setTimeRatio(timeRatio);
 	}
 
@@ -401,6 +433,7 @@ implements ClockListener {
             throw new IllegalArgumentException(Msg.getString("TimeWindow.log.ratioError")); //$NON-NLS-1$
         }
 
+        
         return timeRatio;
 	}
 

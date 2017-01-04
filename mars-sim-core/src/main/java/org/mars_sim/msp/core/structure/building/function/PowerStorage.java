@@ -48,8 +48,8 @@ implements Serializable {
 	private int solCache = 1;
 	/** The health of the battery */
 	private double batteryHealth = 1D; 	
-	/** energy storage capacity in kWh */
-	private double energyStorageCapacity; // in kilo Watt hour, not Watt-hour
+	/** max energy storage capacity in kWh */
+	private double maxCapacity; // Note: in kilo watt-hour, not Watt-hour
 	/** energy last stored in the battery */
 	private double kWattHoursCache;
 	/** energy currently stored in the battery */
@@ -86,13 +86,17 @@ implements Serializable {
 
 		MAX_KW_HR_NAMEPLATE = config.getPowerStorageCapacity(building.getBuildingType());
 
-		energyStorageCapacity = MAX_KW_HR_NAMEPLATE;
-		// TODO: at the start of sim, set to one half of the max value ?
-		batteryVoltage = 0;// BATTERY_MAX_VOLTAGE;
-		// TODO: at the start of sim, set to one half of the max value ?
-		kWattHoursStored = 0; 
+		maxCapacity = MAX_KW_HR_NAMEPLATE;
+
+		ampHoursRating = 1000D * maxCapacity/SECONDARY_LINE_VOLTAGE; 
+
+		// 2017-01-03 at the start of sim, set to a random value		
+		kWattHoursStored = RandomUtil.getRandomInt(1, (int)MAX_KW_HR_NAMEPLATE);		
+		//System.out.println("kWattHoursStored is " + kWattHoursStored);
 		
-		ampHoursRating = 1000D * energyStorageCapacity/SECONDARY_LINE_VOLTAGE; 
+		// update batteryVoltage
+		updateVoltage();
+		
 		//currentAmpere = wattHourStored / currentVoltage;
 
 	}
@@ -118,7 +122,7 @@ implements Serializable {
 			Building building = iStore.next();
 			PowerStorage store = (PowerStorage) building.getFunction(PowerStorage.FUNCTION);
 			double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-			supply += store.energyStorageCapacity * wearModifier;
+			supply += store.maxCapacity * wearModifier;
 		}
 
 		double existingPowerStorageValue = demand / (supply + 1D);
@@ -143,14 +147,14 @@ implements Serializable {
 			startCycle = true;
 		}
 		
-		else if (kWh < energyStorageCapacity / 5D) {
+		else if (kWh < maxCapacity / 5D) {
 		int rand = RandomUtil.getRandomInt(3);		
 		if (rand == 0)
 			startCycle = true;
 		}
 
-		else if (kWh > energyStorageCapacity) {
-			kWh = energyStorageCapacity;			
+		else if (kWh > maxCapacity) {
+			kWh = maxCapacity;			
 		}
 		
 		kWattHoursCache = kWattHoursStored;
@@ -170,13 +174,13 @@ implements Serializable {
 		if (batteryHealth > 1)
 			batteryHealth = 1;
 		//System.out.println("battery_health is " + battery_health);
-    	energyStorageCapacity = energyStorageCapacity * batteryHealth;
-    	if (energyStorageCapacity > MAX_KW_HR_NAMEPLATE)
-    		energyStorageCapacity = MAX_KW_HR_NAMEPLATE;
-		ampHoursRating = 1000D * energyStorageCapacity/SECONDARY_LINE_VOLTAGE; 
-		if (kWattHoursStored > energyStorageCapacity) {
+    	maxCapacity = maxCapacity * batteryHealth;
+    	if (maxCapacity > MAX_KW_HR_NAMEPLATE)
+    		maxCapacity = MAX_KW_HR_NAMEPLATE;
+		ampHoursRating = 1000D * maxCapacity/SECONDARY_LINE_VOLTAGE; 
+		if (kWattHoursStored > maxCapacity) {
 			kWattHoursCache = kWattHoursStored;
-			kWattHoursStored = energyStorageCapacity;		
+			kWattHoursStored = maxCapacity;		
 		}
 		updateVoltage();
 
@@ -184,7 +188,7 @@ implements Serializable {
 	
 	public void updateVoltage() {
     	batteryVoltage = kWattHoursStored / ampHoursRating * 1000D;
-    	if (batteryVoltage > BATTERY_MAX_VOLTAGE )
+    	if (batteryVoltage > BATTERY_MAX_VOLTAGE)
     		batteryVoltage = BATTERY_MAX_VOLTAGE;
 	}
 	
@@ -204,7 +208,7 @@ implements Serializable {
 
 	@Override
 	public double getMaintenanceTime() {
-		return energyStorageCapacity / 5D;
+		return maxCapacity / 5D;
 	}
 
 	@Override
@@ -240,14 +244,14 @@ implements Serializable {
 	 * @return capacity (kW hr).
 	 */
 	public double getEnergyStorageCapacity() {
-		return energyStorageCapacity;
+		return maxCapacity;
 	}
 
 	/**
 	 * Gets the building's stored energy.
 	 * @return energy (kW hr).
 	 */
-	public double getEnergyStored() {
+	public double getkWattHourStored() {
 		return kWattHoursStored;
 	}
 	
@@ -256,11 +260,11 @@ implements Serializable {
 		return ampHoursRating;
 	}
 	
-	public double getCurrentVoltage() {
+	public double getBatteryVoltage() {
 		return batteryVoltage;
 	}
 	
-	public void setCurrentVoltage(double value) {
+	public void setBatteryVoltage(double value) {
 		batteryVoltage = value;
 	}
 	

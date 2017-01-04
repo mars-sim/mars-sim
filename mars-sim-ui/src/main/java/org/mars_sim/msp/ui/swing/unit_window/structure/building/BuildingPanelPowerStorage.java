@@ -56,7 +56,7 @@ extends BuildingFunctionPanel {
 		add(capacityLabel);
 
 		// Create stored label.
-		storedCache = storage.getEnergyStored();
+		storedCache = storage.getkWattHourStored();
 		storedLabel = new JLabel("Energy Stored : " + formatter.format(storedCache) + 
 				" kWh", JLabel.CENTER);
 		add(storedLabel);
@@ -76,7 +76,7 @@ extends BuildingFunctionPanel {
 		}
 
 		// Update stored label if necessary.
-		double newStored = storage.getEnergyStored();
+		double newStored = storage.getkWattHourStored();
 		if (storedCache != newStored) {
 			storedCache = newStored;
 			storedLabel.setText("Energy Stored : " + formatter.format(storedCache) + " kWh");

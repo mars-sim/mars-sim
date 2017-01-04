@@ -247,7 +247,7 @@ public class SimulationConfig implements Serializable {
 			         d = Double.valueOf(str.trim()).doubleValue();
 			         //System.out.println("double d = " + d);
 			         
-			         if (d < 0.0001 || d > 500000)
+			         if (d < 0.001 || d > 10_800)
 			 			throw new IllegalStateException("time_ratio must be between .0001 and 500,000.");
 			         
 			      } catch (NumberFormatException nfe) {
@@ -288,7 +288,7 @@ public class SimulationConfig implements Serializable {
 			         d = Double.valueOf(str.trim()).doubleValue();
 			         //System.out.println("double d = " + d);
 			         
-			         if (d > 1000 || d < 1)
+			         if (d > 640 || d < 40)
 			 			throw new IllegalStateException("time-between-updates must be between 1 and 1,000");
 			         
 			         
