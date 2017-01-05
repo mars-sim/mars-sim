@@ -225,7 +225,7 @@ public class MainScene {
 	public static final int SAVING = 1;
 	public static final int PAUSED = 2; 
 	
-	public static final int DEFAULT_WIDTH = 1366;
+	public static final int DEFAULT_WIDTH = 1280;//1366;
 	public static final int DEFAULT_HEIGHT = 768;
 	
 	private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
@@ -246,8 +246,9 @@ public class MainScene {
 	private int memFree;
 	private int processCpuLoad;
 
+	
 	private boolean isMuteCache;
-	private boolean flag = true;
+	private boolean earthTimeFlag = false, marsTimeFlag = false, flag = true;
 	private boolean isMainSceneDoneLoading = false;
 	public static boolean menuBarVisible = false;
 	private boolean isMarsNetOpen = false;
@@ -279,7 +280,8 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
-	private Label earthTimeLabel, marsTimeLabel, lastSaveLabel;
+	private Button earthTime, marsTime;
+	private Label lastSaveLabel;
 	private Text memUsedText;
 	
 	private JFXComboBox<Settlement> sBox;
@@ -671,13 +673,20 @@ public class MainScene {
         AnchorPane.setRightAnchor(lastSaveBar, 140.0);
         AnchorPane.setTopAnchor(lastSaveBar, 0.0);
 
-        AnchorPane.setLeftAnchor(earthTimeBar, sceneWidth.get()/2D);// - earthTimeBar.getPrefWidth());
-		if (OS.contains("linux")) AnchorPane.setTopAnchor(earthTimeBar, 30.0);
-		else AnchorPane.setTopAnchor(earthTimeBar, 35.0);
-		
-        AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
-        if (OS.contains("linux")) AnchorPane.setTopAnchor(marsTimeBar, 30.0);
-        else AnchorPane.setTopAnchor(marsTimeBar, 35.0);
+        //AnchorPane.setLeftAnchor(earthTimeBar, sceneWidth.get()/2D);// - earthTimeBar.getPrefWidth());
+        //AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
+
+        AnchorPane.setLeftAnchor(earthTimeBar, 5.0);
+        AnchorPane.setRightAnchor(marsTimeBar, 0.0);
+        
+        if (OS.contains("linux")) {
+        	AnchorPane.setTopAnchor(earthTimeBar, 30.0);
+        	AnchorPane.setTopAnchor(marsTimeBar, 30.0);
+        }
+        else {
+        	AnchorPane.setTopAnchor(earthTimeBar, 35.0);
+        	AnchorPane.setTopAnchor(marsTimeBar, 35.0);
+        }
         
         anchorDesktopPane.getChildren().addAll(jfxTabPane, miniMapBtn, mapBtn, marsNetButton, lastSaveBar, earthTimeBar, marsTimeBar);//badgeIcon,borderPane, timeBar, snackbar
         
@@ -759,17 +768,17 @@ public class MainScene {
 	
 	public void createEarthTimeBar() {
 		earthTimeBar = new HBox();
+		//earthTimeBar.setId("rich-blue");
 		earthTimeBar.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			earthTimeBar.setMinWidth(260);
-			earthTimeBar.setPrefSize(260, 32);			
+			earthTimeBar.setMinWidth(280);
+			earthTimeBar.setPrefSize(280, 32);			
 		}
 		else {
-			earthTimeBar.setMinWidth(220);
-			earthTimeBar.setPrefSize(220, 32);			
+			earthTimeBar.setMinWidth(240);
+			earthTimeBar.setPrefSize(240, 32);			
 		}	
-		//calendarButton = new JFXToggleButton();
-		
+	
 		if (masterClock == null) {
 			masterClock = sim.getMasterClock();
 		}
@@ -778,30 +787,43 @@ public class MainScene {
 			earthClock = masterClock.getEarthClock();
 		}
 
-		earthTimeLabel = new Label();
-		earthTimeLabel.setId("rich-blue");
+		earthTime = new Button();//Label();
+		earthTime.setOnAction(e -> {
+			if (earthTimeFlag) {
+				// TODO more here
+				earthTimeFlag = false;
+			}
+			else {
+				// TODO more here
+				earthTimeFlag = true;
+			}
+		});
+		
+		earthTime.setId("rich-blue");
 		//earthTimeLabel.setMaxWidth(Double.MAX_VALUE);
 		//earthTimeLabel.setMinWidth(180);
 		//earthTimeLabel.setPrefSize(180, 30);
-		earthTimeLabel.setTextAlignment(TextAlignment.CENTER);
-		Tooltip t = new Tooltip("Earth Date/Time");
-		earthTimeLabel.setTooltip(t);
-		setQuickToolTip(earthTimeLabel, t);
-
-		earthTimeBar.getChildren().add(earthTimeLabel);
+		earthTime.setTextAlignment(TextAlignment.CENTER);
+		
+		Tooltip t = new Tooltip("Click to see Quick Info on Mars");
+		earthTime.setTooltip(t);
+		setQuickToolTip(earthTime, t);
+		
+		earthTimeBar.getChildren().add(earthTime);
 	}
 	
 	
 	public void createMarsTimeBar() {
 		marsTimeBar = new HBox();
+		//marsTimeBar.setId("rich-orange");
 		marsTimeBar.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			marsTimeBar.setMinWidth(260);
-			marsTimeBar.setPrefSize(260, 24);			
+			marsTimeBar.setMinWidth(270);
+			marsTimeBar.setPrefSize(270, 32);			
 		}
 		else {
 			marsTimeBar.setMinWidth(230);
-			marsTimeBar.setPrefSize(230, 24);			
+			marsTimeBar.setPrefSize(230, 32);			
 		}
 
 	
@@ -813,15 +835,27 @@ public class MainScene {
 			marsClock = masterClock.getMarsClock();
 		}
 
-		marsTimeLabel = new Label();
-		marsTimeLabel.setId("rich-orange");
-		Tooltip t = new Tooltip("Mars Date/Time");
-		marsTimeLabel.setTooltip(t);
-		setQuickToolTip(marsTimeLabel, t);
 
-		marsTimeLabel.setTextAlignment(TextAlignment.CENTER);
+		marsTime = new Button();//Label();
+		marsTime.setOnAction(e -> {
+			if (marsTimeFlag) {
+				// TODO more here
+				marsTimeFlag = false;
+			}
+			else {
+				// TODO more here
+				marsTimeFlag = true;
+			}
+		});
 		
-		marsTimeBar.getChildren().add(marsTimeLabel);
+		marsTime.setId("rich-orange");
+		marsTime.setTextAlignment(TextAlignment.CENTER);
+		
+		Tooltip t = new Tooltip("Click to see Quick Info on Mars");
+		marsTime.setTooltip(t);
+		setQuickToolTip(marsTime, t);
+
+		marsTimeBar.getChildren().add(marsTime);
 	}
 	
 	public void createFXButtons() {
@@ -1533,11 +1567,11 @@ public class MainScene {
 
 		jfxTabPane.getStylesheets().clear();
 		
-		earthTimeLabel.getStylesheets().clear();
-		earthTimeLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+		earthTime.getStylesheets().clear();
+		earthTime.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
 
-		marsTimeLabel.getStylesheets().clear();
-		marsTimeLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+		marsTime.getStylesheets().clear();
+		marsTime.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
 	
 		lastSaveLabel.getStylesheets().clear();
 		lastSaveLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -1714,7 +1748,7 @@ public class MainScene {
 		lastSaveLabel.setPrefSize(250, 25);
 		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
 		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
-		Tooltip t = new Tooltip ("The very last time the sim was saved/autosaved on your machine");
+		Tooltip t = new Tooltip ("Last time When the sim was (auto)saved");
 		lastSaveLabel.setTooltip(t);
 		setQuickToolTip(lastSaveLabel, t);
 		
@@ -1812,12 +1846,19 @@ public class MainScene {
 	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
 	 */
 	public void updateTimeLabels() {
-		//String t = earthClock.getTimeStamp2();
-		// Check if new simulation is being created or loaded from file.
-		//if (sim.isUpdating() || masterClock.isPaused()) {
-		//	earthTimeLabel.setText(" " + t + " " + PAUSE_MSG);		
-		marsTimeLabel.setText(MARS_DATE_TIME + marsClock.getDateString() + " " + marsClock.getTrucatedTimeString() + UMST);		
-		earthTimeLabel.setText(EARTH_DATE_TIME + earthClock.getTimeStamp2());
+
+		StringBuilder m = new StringBuilder();
+        m.append(MARS_DATE_TIME);
+        m.append(marsClock.getDateString());
+        m.append(" ");
+        m.append(marsClock.getTrucatedTimeString());
+        m.append(UMST);
+		marsTime.setText(m.toString());		
+		
+		StringBuilder e = new StringBuilder();
+        e.append(EARTH_DATE_TIME);
+        e.append(earthClock.getTimeStamp2());
+		earthTime.setText(e.toString());
 		
 		//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
 		String newLastSaveStamp = sim.getLastSave();

@@ -66,11 +66,8 @@ implements ClockListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title");		 //$NON-NLS-1$
 
-	/** the "default" ratio that will be set at 50, the middle of the scale. */
-	private static final double ratioatmid = Simulation.instance().getMasterClock().getTimeRatio();
-
 	/** the max ratio the sim can be set at. */
-	private static final double maxratio = 10800d;
+	public static final double maxratio = 10800d;
 
 	/** the minimum ratio the sim can be set at. */
 	private static final double minfracratio = 0.01d;//0.001d;
@@ -84,6 +81,9 @@ implements ClockListener {
 	private static final double maxslider = 100d - minslider;
 	private static final double minfracpos = 1d;
 	private static final double maxfracpos = minslider - 1d;
+
+	/** the "default" ratio that will be set at 50, the middle of the scale. */
+	public static double ratioatmid = 500D; // default value = 500D This avoids maven test error
 
 	private String northernSeasonTip, northernSeasonCache = "";
 	private String southernSeasonTip, southernSeasonCache = "";
@@ -134,6 +134,8 @@ implements ClockListener {
 		// Use TimeWindow constructor
 		super(NAME, desktop);
 		mainScene = desktop.getMainScene();
+
+		ratioatmid = Simulation.instance().getMasterClock().getTimeRatio();
 
 		//new ClockTool();
 
@@ -299,7 +301,7 @@ implements ClockListener {
 		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
 		double ratio = masterClock.getTimeRatio();
 		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-		String s = "1 Real Second : " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+		String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
 		final JLabel pulseCurRatioLabel = new JLabel(s , JLabel.CENTER);
 		pulsePane.add(pulseCurRatioLabel, BorderLayout.CENTER);
 
@@ -320,7 +322,7 @@ implements ClockListener {
 				
 				double ratio = masterClock.getTimeRatio();
 				String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-				String s = "1 Real Second : " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+				String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
 				pulseCurRatioLabel.setText(s);
 				
 				pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
@@ -349,7 +351,7 @@ implements ClockListener {
 
 					double ratio = masterClock.getTimeRatio();
 					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-					String s = "1 Real Second : " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+					String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
 					pulseCurRatioLabel.setText(s);
 					
 					pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
@@ -449,7 +451,7 @@ implements ClockListener {
 	/**
 	 * Calculates a slider value based on a time ratio.
 	 * Note: This method is the inverse of calculateTimeRatioFromSlider.
-	 * @param timeRatio time ratio (simulation time / real time). (.001 to 10800)
+	 * @param timeRatio time ratio (simulation time / real time). 
 	 * @return slider value (1 to 100).
 	 */
 	public static int calculateSliderValue(double timeRatio) {

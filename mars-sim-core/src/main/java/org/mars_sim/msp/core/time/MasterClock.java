@@ -137,9 +137,13 @@ public class MasterClock implements Serializable { // Runnable,
         // Setting the initial time ratio.
         double ratio = config.getSimulationTimeRatio();
         double ms = config.getTimeBetweenUpdates();
-        if (Simulation.NUM_THREADS <= 2) {
+        if (Simulation.NUM_THREADS == 1) {
         	setTimeRatio(ratio/24D);
             setTimeBetweenUpdates(ms*16D);
+        }
+        if (Simulation.NUM_THREADS == 2) {
+        	setTimeRatio(ratio/18D);
+            setTimeBetweenUpdates(ms*12D);
         }
         else if (Simulation.NUM_THREADS <= 3) {
         	setTimeRatio(ratio/12D);
@@ -413,7 +417,7 @@ public class MasterClock implements Serializable { // Runnable,
      * @param value in milliseconds
      */
     public void setTimeBetweenUpdates(double value) {
-        if (value >= 1D && value <= 1000D) {
+        if (value >= 1D && value <= 10800D) {
             timeBetweenUpdates = (long)value * 1_000_000L; // convert milli to nano
         }
         else throw new IllegalArgumentException("time between updates is out of bounds. Must be between 1 and 1000 ");

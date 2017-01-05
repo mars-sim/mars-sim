@@ -420,9 +420,11 @@ public class MarsClock implements Serializable {
             b.insert(0,"0");
         else if (millisol > 10D)
             b.insert(0,"00");
-
+        else if (millisol == 100D) 
+            ;
         else 
-        	b.insert(0,"0");
+        	b.insert(0,"000");
+        
         return b.toString();
 	}
 	

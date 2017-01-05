@@ -7,13 +7,14 @@ import junit.framework.TestCase;
  */
 public class TestTimeWindow extends TestCase {
 
+
     /**
      * Test the calculateTimeRatioFromSlider method.
      */
-    public void testCalculateTimeRatioFromSlider() {
-        
-        assertEquals(.001D, TimeWindow.calculateTimeRatioFromSlider(1));
-        assertEquals(1000D, TimeWindow.calculateTimeRatioFromSlider(50));
+    public void testCalculateTimeRatioFromSlider() {    
+    	//TimeWindow.ratioatmid = 500D;	
+        assertEquals(.01D, TimeWindow.calculateTimeRatioFromSlider(1));
+        assertEquals(500D, TimeWindow.calculateTimeRatioFromSlider(50));
         assertEquals(10800D, TimeWindow.calculateTimeRatioFromSlider(100));
     }
     
@@ -22,8 +23,8 @@ public class TestTimeWindow extends TestCase {
      */
     public void testCalculateSliderValue() {
         
-        assertEquals(1, TimeWindow.calculateSliderValue(.001D));
-        assertEquals(50, TimeWindow.calculateSliderValue(1000D));
+        assertEquals(1, TimeWindow.calculateSliderValue(.01D));
+        assertEquals(50, TimeWindow.calculateSliderValue(500D));
         assertEquals(100, TimeWindow.calculateSliderValue(10800D));
     }
     
