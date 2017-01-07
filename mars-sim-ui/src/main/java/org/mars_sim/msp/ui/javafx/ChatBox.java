@@ -417,7 +417,7 @@ public class ChatBox extends BorderPane {
     	String the_other_party = "";
     	//String SYSTEM = "System ";
     	
-    	String responseText = null;
+    	StringBuilder responseText = new StringBuilder();
     	String questionText = null;
     	Unit cache = null;
     	String name = null;
@@ -425,17 +425,16 @@ public class ChatBox extends BorderPane {
 
     	if (personCache != null) {
     		cache = (Person) personCache;
-    		name = cache.getName();
     	}
     	else if (robotCache != null) {
     		cache = (Robot) robotCache;
-    		name = cache.getName();
     	}
     	else if (settlementCache != null) {
     		cache = (Settlement) settlementCache;
-    		name = cache.getName();
     	}	
 
+		name = cache.getName();
+		
     	// Case 0 : exit the conversation
     	if (text.equalsIgnoreCase("quit")
     			|| text.equalsIgnoreCase("/quit") 
@@ -457,7 +456,7 @@ public class ChatBox extends BorderPane {
    		
     		String[] txt = farewell();
     		questionText = txt[0];
-    		responseText = txt[1];
+    		responseText.append(txt[1]);
 
     		
     		if (settlementCache != null)
@@ -471,20 +470,30 @@ public class ChatBox extends BorderPane {
     			int rand = RandomUtil.getRandomInt(6);
 
     			if (rand == 0)
-    				responseText = "bye!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " is disconnected. "; //" + sys + " had left the conversation.";
+    				responseText.append("bye!");
     			else if (rand == 1)
-    				responseText = "farewell!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
+    				responseText.append("farewell!");
     			else if (rand == 2)
-    				responseText = "bye now" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
+    				responseText.append("bye now");
     			else if (rand == 3)
-    				responseText = "have a nice sol!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
+    				responseText.append("have a nice sol!");
     			else if (rand == 4)
-    				responseText = "Take it easy!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
+    				responseText.append("Take it easy!");
     			else if (rand == 5)
-    				responseText = "Take care!" + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
+    				responseText.append("Take care!");
     			else
-    				responseText = "oh well! " + System.lineSeparator() + SYSTEM_PROMPT + the_other_party + " had left the conversation.";
+    				responseText.append("oh well! ");
     		    
+				responseText.append(System.lineSeparator());
+				responseText.append(SYSTEM_PROMPT);
+				responseText.append(the_other_party);
+				
+    			int rand1 = RandomUtil.getRandomInt(1);
+
+    			if (rand1 == 0)
+    				responseText.append(" had left the conversation.");
+    			else
+    				responseText.append(" is disconnected.");
     		}
     		
     		personCache = null; 
@@ -496,7 +505,10 @@ public class ChatBox extends BorderPane {
      	// 2016-10-06 Added changing the height of the chat box
      	else if (text.equalsIgnoreCase("/y1")) {
      		questionText = REQUEST_HEIGHT_CHANGE + box_height[0] + " pixels.";
-     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
+     		
+     		responseText.append(SYSTEM_PROMPT);
+     		responseText.append("Close the chat box to reset the chat box height to 256 pixels.");
+     		
      		mainScene.setChatBoxPaneHeight(box_height[0]);
      		closeChatBox(false);    	
      		mainScene.openChatBox();
@@ -504,7 +516,10 @@ public class ChatBox extends BorderPane {
     	
      	else if (text.equalsIgnoreCase("/y2")) {
      		questionText = REQUEST_HEIGHT_CHANGE + box_height[1] + " pixels.";
-     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
+     		
+     		responseText.append(SYSTEM_PROMPT);
+     		responseText.append("Close the chat box to reset the chat box height to 256 pixels.");
+     
      		mainScene.setChatBoxPaneHeight(box_height[1]);
             closeChatBox(false);
             mainScene.openChatBox();
@@ -512,7 +527,10 @@ public class ChatBox extends BorderPane {
 
      	else if (text.equalsIgnoreCase("/y3")) {
      		questionText = REQUEST_HEIGHT_CHANGE + box_height[2] + " pixels.";
-     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
+     		
+     		responseText.append(SYSTEM_PROMPT);
+     		responseText.append("Close the chat box to reset the chat box height to 256 pixels.");
+     
      		mainScene.setChatBoxPaneHeight(box_height[2]);
             closeChatBox(false);
             mainScene.openChatBox();
@@ -520,9 +538,12 @@ public class ChatBox extends BorderPane {
 
      	else if (text.equalsIgnoreCase("/y4")) {
      		questionText = REQUEST_HEIGHT_CHANGE + box_height[3] + " pixels.";
+  		
+     		responseText.append(SYSTEM_PROMPT);
+     		responseText.append("Close the chat box to reset the chat box height to 256 pixels.");
+     
      		mainScene.setChatBoxPaneHeight(box_height[3]);
-     		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
-            closeChatBox(false);
+     		closeChatBox(false);
             mainScene.openChatBox();
 	    }
     	
@@ -546,31 +567,38 @@ public class ChatBox extends BorderPane {
 */    	
     	    	if (num == 1) {
     	    		questionText = YOU_PROMPT + "how many beds are there in total ? ";
-    	    		responseText = "The total number of beds is " + settlementCache.getPopulationCapacity();
+    	    		responseText.append("The total number of beds is ");
+    	    		responseText.append(settlementCache.getPopulationCapacity());
     	    		
     	    	}
 
     	    	else if (num == 2) {
     	    		questionText = YOU_PROMPT + "how many beds that have already been designated to a person ? ";
-    	    		responseText = "There are " + settlementCache.getTotalNumDesignatedBeds() + " designated beds. ";
+    	    		responseText.append("There are ");
+    	    		responseText.append(settlementCache.getTotalNumDesignatedBeds());
+    	    		responseText.append(" designated beds. ");
     	    		
     	    	}
 
     	    	else if (num == 3) {
     	    		questionText = YOU_PROMPT + "how many beds that are currently NOT occupied ? ";
-    	    		responseText = "There are " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers()) + " unoccupied beds. ";
+    	    		responseText.append("There are ");
+    	    		responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
+    	    		responseText.append(" unoccupied beds. ");
     	    		
     	    	}
 
     	    	else if (num == 4) {
     	    		questionText = YOU_PROMPT + "how many beds are currently occupied ? ";
-    	    		responseText = "There are " + settlementCache.getSleepers() + " occupied beds with people sleeping on it at this moment. ";
+    	    		responseText.append("There are ");
+    	    		responseText.append(settlementCache.getSleepers());
+    	    		responseText.append(" occupied beds with people sleeping on it at this moment. ");
     	    		
     	    	}
 	
     	    	else {
     	    		questionText = YOU_PROMPT + "You entered '" + num + "'.";
-    	    		responseText = "Sorry. This number is not assigned to a valid question.";
+    	    		responseText.append("Sorry. This number is not assigned to a valid question.");
     	    	}
     	    	
     	    // if it's not a integer input	
@@ -582,10 +610,18 @@ public class ChatBox extends BorderPane {
     				|| text.contains("quarters")) {
     			  			
     			questionText = YOU_PROMPT + "how well are the beds utilized ? ";
-	    		responseText = "Total number of beds : " + settlementCache.getPopulationCapacity() + System.lineSeparator() +
-	    				"Desginated beds : " + settlementCache.getTotalNumDesignatedBeds() + System.lineSeparator() +
-	    				"Unoccupied beds : " + (settlementCache.getPopulationCapacity() - settlementCache.getSleepers())  + System.lineSeparator() +
-	    				"Occupied beds : " + settlementCache.getSleepers() + System.lineSeparator();
+	    		responseText.append("Total number of beds : ");
+	    		responseText.append(settlementCache.getPopulationCapacity());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("Desginated beds : ");
+	    		responseText.append(settlementCache.getTotalNumDesignatedBeds());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("Unoccupied beds : ");
+	    		responseText.append(settlementCache.getPopulationCapacity() - settlementCache.getSleepers());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("Occupied beds : ");
+	    		responseText.append(settlementCache.getSleepers());
+	    		responseText.append(System.lineSeparator());
     		} 
     		
     		else if (text.equalsIgnoreCase("vehicle")
@@ -594,20 +630,41 @@ public class ChatBox extends BorderPane {
     				|| text.contains("vehicle")) {
     			  			
     			questionText = YOU_PROMPT + "What are the vehicles in the settlement ? ";
-	    		responseText = 
-	    				" ** Rovers/Vehicles Inventory **" + System.lineSeparator() +
-	    				"(1). Total # of Rovers/Vehicles : " + settlementCache.getAllAssociatedVehicles().size() + System.lineSeparator() +
-	    				"(2). Total # of Rovers/Vehicles on Mission : " + settlementCache.getMissionVehicles().size() + System.lineSeparator() +
-	    				"(3). Total # of Parked Rovers/Vehicles (NOT on Mission) : " + settlementCache.getParkedVehicleNum() + System.lineSeparator() +
-	    				
-	    				"(4). # Cargo Rovers on Mission : " + settlementCache.getCargoRovers(2).size() + System.lineSeparator() +
-	    				"(5). # Transport Rovers on Mission : " + settlementCache.getTransportRovers(2).size() + System.lineSeparator() +
-	    				"(6). # Explorer Rovers on Mission : " + settlementCache.getExplorerRovers(2).size()  + System.lineSeparator() +
-	    				"(7). # Light Utility Vehicles (LUVs) on Mission : " + settlementCache.getLUVs(2).size() + System.lineSeparator() +
-	    				"(8). # Parked Cargo Rovers : " + settlementCache.getCargoRovers(1).size() + System.lineSeparator() +
-	    				"(9). # Parked Transport Rovers : " + settlementCache.getTransportRovers(1).size() + System.lineSeparator() +
-	    				"(10). # Parked Explorer Rovers : " + settlementCache.getExplorerRovers(1).size()  + System.lineSeparator() +
-	    				"(11). # Parked Light Utility Vehicles (LUVs) : " + settlementCache.getLUVs(1).size() + System.lineSeparator();
+	    		responseText.append(" ** Rovers/Vehicles Inventory **");
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(1). Total # of Rovers/Vehicles : ");
+	    		responseText.append(settlementCache.getAllAssociatedVehicles().size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(2). Total # of Rovers/Vehicles on Mission : ");
+	    		responseText.append(settlementCache.getMissionVehicles().size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(3). Total # of Parked Rovers/Vehicles (NOT on Mission) : ");
+	    		responseText.append(settlementCache.getParkedVehicleNum());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(4). # Cargo Rovers on Mission : ");
+	    		responseText.append(settlementCache.getCargoRovers(2).size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(5). # Transport Rovers on Mission : ");
+	    		responseText.append(settlementCache.getTransportRovers(2).size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(6). # Explorer Rovers on Mission : ");
+	    		responseText.append(settlementCache.getExplorerRovers(2).size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(7). # Light Utility Vehicles (LUVs) on Mission : ");
+	    		responseText.append(settlementCache.getLUVs(2).size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(8). # Parked Cargo Rovers : ");
+	    		responseText.append(settlementCache.getCargoRovers(1).size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(9). # Parked Transport Rovers : ");
+	    		responseText.append(settlementCache.getTransportRovers(1).size());
+	    		responseText.append(System.lineSeparator());
+	    		responseText.append("(10). # Parked Explorer Rovers : ");
+	    		responseText.append(settlementCache.getExplorerRovers(1).size());
+	    		responseText.append(System.lineSeparator());
+				responseText.append("(11). # Parked Light Utility Vehicles (LUVs) : ");
+				responseText.append(settlementCache.getLUVs(1).size());
+				responseText.append(System.lineSeparator());
     		} 
     		
         	else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")
@@ -617,28 +674,31 @@ public class ChatBox extends BorderPane {
     	    	
         		help = true;
     	    	questionText = REQUEST_HELP;
-    			responseText = HELP_TEXT;    	
+    	    	responseText.append(HELP_TEXT);    	
     		
     	    }  	
         	
 	     	// 2016-10-06 Added changing the height of the chat box
 	     	else if (text.equalsIgnoreCase("/y1")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[0] + " pixels.";
-	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Close the chat box to reset the chat box height to 256 pixels.");
 	     		mainScene.setChatBoxPaneHeight(box_height[0]);
 	     		closeChatBox(false);    	
 	     	}
 	    	
 	     	else if (text.equalsIgnoreCase("/y2")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[1] + " pixels.";
-	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Close the chat box to reset the chat box height to 512 pixels.");
 	     		mainScene.setChatBoxPaneHeight(box_height[1]);
 	            closeChatBox(false);
 	     	}
 
 	     	else if (text.equalsIgnoreCase("/y3")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[2] + " pixels.";
-	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Close the chat box to reset the chat box height to 768 pixels.");
 	     		mainScene.setChatBoxPaneHeight(box_height[2]);
 	            closeChatBox(false);
 	     	}
@@ -646,7 +706,8 @@ public class ChatBox extends BorderPane {
 	     	else if (text.equalsIgnoreCase("/y4")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[3] + " pixels.";
 	     		mainScene.setChatBoxPaneHeight(box_height[3]);
-	     		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Will close the chat box to reset the chat box height to 1024 pixels.");
 	            closeChatBox(false);
 				
 		    }
@@ -654,7 +715,7 @@ public class ChatBox extends BorderPane {
 	     	else {    	    	
     	    	String[] txt = clarify();   	    	
     	    	questionText = txt[0];
-    			responseText = txt[1]; 
+    	    	responseText.append(txt[1]); 
     		}
  		
     	}	
@@ -673,33 +734,45 @@ public class ChatBox extends BorderPane {
 	    		
 	    		if (stateType != null) {
 	    			if (personCache != null) {
-	    				if (personCache.getBuildingLocation() != null)
-	    					responseText = "I'm " + stateType.getName() + " (" + personCache.getBuildingLocation().getNickName() + ")";
-	    				else {
-	    					responseText = "I'm " + stateType.getName();				
+	    				
+	    				responseText.append("I'm ");
+	    				responseText.append(stateType.getName());
+	    				
+	    				if (personCache.getBuildingLocation() != null) {
+	    					responseText.append(" ("); 
+	    					responseText.append(personCache.getBuildingLocation().getNickName());
+	    					responseText.append(")");
 	    				}
+	    				
+
 	    	    	}
 	    	    	else if (robotCache != null) {
-	    	    		responseText = "I'm " + stateType.getName() + " (" + robotCache.getBuildingLocation().getNickName() + ")";
+	    	    		
+	    	    		responseText.append("I'm ");
+	    	    		responseText.append(stateType.getName()); 
+	    	    		responseText.append(" (");
+	    	    		responseText.append(robotCache.getBuildingLocation().getNickName());
+	    	    		responseText.append(")");
 	    	    	}	
 	    		}
 	    		else
-	    			responseText = "It may sound strange but I don't know where I'm at. ";
+	    			responseText.append("It may sound strange but I don't know where I'm at. ");
 	    	}
 	
 	    	else if (num == 2 || text.contains("located") || text.contains("location") && text.contains("situation")) {
 	    		questionText = YOU_PROMPT + "Where are you located ? "; //what is your Location Situation [Expert Mode only] ?";
-	       		responseText = "I'm located at " + Conversion.capitalize(cache.getLocationSituation().getName());
+	    		responseText.append("I'm located at ");
+	    		responseText.append(Conversion.capitalize(cache.getLocationSituation().getName()));
 	    	}
     		
 	       	else if (num == 3 || text.equalsIgnoreCase("task") || text.equalsIgnoreCase("activity") 
 	       			|| text.equalsIgnoreCase("action")) {
 	    		questionText = YOU_PROMPT + "What are you doing ?";
 	    		if (personCache != null) {
-	    			responseText = personCache.getTaskDescription();
+	    			responseText.append(personCache.getTaskDescription());
     	    	}
     	    	else if (robotCache != null) {
-    	    		responseText = robotCache.getTaskDescription();
+    	    		responseText.append(robotCache.getTaskDescription());
     	    	}
 	    		
 	       	}
@@ -717,9 +790,9 @@ public class ChatBox extends BorderPane {
 		    	}
     		
 	    		if (mission == null)
-	    			responseText = "No. I'm not. ";
+	    			responseText.append("No. I'm not. ");
 	    		else
-	    			responseText = mission.getDescription();
+	    			responseText.append(mission.getDescription());
     	
     		}
     		
@@ -727,7 +800,7 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "Where is your designated quarters/bed ? ";
 	    		Point2D bed = personCache.getBed();
 	    		if (bed == null)
-	    			responseText = "I don't have my own private quarters/bed.";
+	    			responseText.append("I don't have my own private quarters/bed.");
 	    		else {
 	    			if (personCache != null) {
 	    				Settlement s1 = personCache.getSettlement();
@@ -735,21 +808,36 @@ public class ChatBox extends BorderPane {
 		    				// check to see if a person is on a trading mission
 		    				Settlement s2 = personCache.getAssociatedSettlement();		    				
 		    				if (s2 != null) {
-		    					if (s1 == s2)
-		    						responseText = "My designated quarters/bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
-		    								+ personCache.getQuarters() + " at " + s1;
-		    					else
+		    					responseText.append("My designated quarters/bed is at (");
+		    					responseText.append(bed.getX());
+		    					responseText.append(", ");
+		    					responseText.append(bed.getY());
+		    					responseText.append(") in ");
+		    					responseText.append(personCache.getQuarters());
+		    					responseText.append(" at ");
+	    								
+		    					if (s1 == s2) {
+		    						responseText.append(s1);
+		    					}
+
+		    					else {
 				    				// yes, a person is on a trading mission
-		    						responseText = "My designated quarters/bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
-		    								+ personCache.getQuarters() + " at " + s2;
+		    						responseText.append(s2);
+		    					}
 		    				}
 		    			}
-		    			else
-		    				responseText = "My designated quarters/bed is at (" + bed.getX() + ", " + bed.getY() + ") in " 
-		    						+ personCache.getQuarters();
+		    			else {
+	    					responseText.append("My designated quarters/bed is at (");
+	    					responseText.append(bed.getX());
+	    					responseText.append(", ");
+	    					responseText.append(bed.getY());
+	    					responseText.append(") in ");
+	    					responseText.append(personCache.getQuarters());
+	    					responseText.append(" at ");
+		    			}
 	    	    	}
 	    	    	else if (robotCache != null) {
-	    	    		responseText = "I don't need one. My battery can be charged at any robotic station.";
+	    	    		responseText.append("I don't need one. My battery can be charged at any robotic station.");
 	    	    	}
 	    		} 		
 	    	}
@@ -757,19 +845,24 @@ public class ChatBox extends BorderPane {
 	    	else if (num == 6 || text.equalsIgnoreCase("inside") || text.equalsIgnoreCase("container")) {
 	    		questionText = YOU_PROMPT + "Are you inside?"; //what is your Container unit [Expert Mode only] ?";
 	    		Unit c = cache.getContainerUnit();
-	    		if (c != null)
-	    			responseText = "I'm at/in " + c.getName();
+	    		if (c != null) {
+	    			responseText.append("I'm at/in ");
+	    			responseText.append(c.getName());
+	    		}
 	    		else
-	    			responseText = "I'm not inside a building or vehicle"; //"I don't have a Container unit. ";
+	    			responseText.append("I'm not inside a building or vehicle"); //"I don't have a Container unit. ";
 	    	}
 	
 	    	else if (num == 7 ||text.equalsIgnoreCase("outside") || text.contains("top") && text.contains("container")) {	
 	    		questionText = YOU_PROMPT + "Are you inside?"; //YOU_PROMPT + "what is your Top Container unit [Expert Mode only] ?";
 	    		Unit tc = cache.getTopContainerUnit();
-	    		if (tc != null)
-	    			responseText = "I'm in " + tc.getName();
+	    		if (tc != null) {
+	    			responseText.append("I'm in ");
+	    			responseText.append(tc.getName());
+	    		}
+
 	    		else
-	    			responseText = "I'm nowhere";// don't have a Top Container unit.";
+	    			responseText.append("I'm nowhere");// don't have a Top Container unit.";
 	
 	    	}
 	
@@ -779,14 +872,16 @@ public class ChatBox extends BorderPane {
 	    		if (s != null) {
 		    		//Building b1 = s.getBuildingManager().getBuilding(cache);
 		    		Building b = cache.getBuildingLocation();
-		    		if (b != null) // && b1 != null)
-		    			responseText = "The building I'm in is " + b.getNickName();
+		    		if (b != null) {// && b1 != null)
+		    			responseText.append("The building I'm in is ");
+		    			responseText.append(b.getNickName());
 		    				//+ "  (aka " + b1.getNickName() + ").";
+		    		}
 		    		else
-		    			responseText = "I'm not in a building.";
+		    			responseText.append("I'm not in a building.");
 	    		}
 	    		else
-	    			responseText = "I'm not in a building.";
+	    			responseText.append("I'm not in a building.");
 	
 	    	}
 	
@@ -794,10 +889,12 @@ public class ChatBox extends BorderPane {
 	    	else if (num == 9 || text.equalsIgnoreCase("settlement")) {
 	    		questionText = YOU_PROMPT + "What is the settlement that you are at ?";
 	    		Settlement s = cache.getSettlement();
-	   			if (s != null)
-	   				responseText = "My settlement is " + s.getName();
+	   			if (s != null) {
+	   				responseText.append("My settlement is ");
+	   				responseText.append(s.getName());
+	   			}
 	   			else
-	   				responseText = "I'm not inside a settlement";
+	   				responseText.append("I'm not inside a settlement");
 	
 	    	}
 	
@@ -805,10 +902,11 @@ public class ChatBox extends BorderPane {
 	    		questionText = YOU_PROMPT + "What is your associated settlement ?";
 	    		Settlement s = cache.getAssociatedSettlement();
 	    		if (s  != null) {
-	    			responseText = "My associated settlement is " + s.getName();
+	    			responseText.append("My associated settlement is ");
+	    			responseText.append(s.getName());
 	    		}
 	    		else
-	    			responseText = "I don't have an associated settlement";
+	    			responseText.append("I don't have an associated settlement");
 	    	}
 
 /*    		
@@ -831,11 +929,16 @@ public class ChatBox extends BorderPane {
 	       		if (v  != null) {
 	           		String d = cache.getVehicle().getDescription();
 	           		String status = cache.getVehicle().getStatus();
-	       			responseText = "My vehicle is " + v.getName() + " (a " + Conversion.capitalize(d)
-	       				+ " type). It's currently " + status.toLowerCase() + ".";
+	           		responseText.append("My vehicle is ");
+	           		responseText.append(v.getName());
+	           		responseText.append(" (a ");
+	           		responseText.append(Conversion.capitalize(d));
+	           		responseText.append(" type). It's currently ");
+	           		responseText.append(status.toLowerCase());
+	           		responseText.append(".");
 	       		}
 	       		else
-	       			responseText = "I'm not in a vehicle.";
+	       			responseText.append("I'm not in a vehicle.");
 	       	}
     		
 	    	else if (num == 12 || text.equalsIgnoreCase("vehicle inside") || text.equalsIgnoreCase("vehicle container") || text.contains("vehicle") && text.contains("container")) {
@@ -843,14 +946,17 @@ public class ChatBox extends BorderPane {
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Unit c = v.getContainerUnit();
-	       			if (c != null)
-	       				responseText = "My vehicle is at " + c.getName();
+	       			if (c != null) {
+	       				responseText.append("My vehicle is at ");
+	       				responseText.append(c.getName());   				
+	       			}
+
 	       			else
-	       				responseText = "My vehicle is not inside";//doesn't have a container unit.";
+	       				responseText.append("My vehicle is not inside");//doesn't have a container unit.";
 	
 	       		}
 	       		else
-	       			responseText = "I'm not in a vehicle.";
+	       			responseText.append("I'm not in a vehicle.");
 	       	}
 	
 	    	else if (num == 13 || text.equalsIgnoreCase("vehicle outside") || text.equalsIgnoreCase("vehicle top container") || text.contains("vehicle") && text.contains("top") && text.contains("container")) {
@@ -858,13 +964,15 @@ public class ChatBox extends BorderPane {
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Unit tc = v.getTopContainerUnit();
-	       			if (tc != null)
-	       				responseText = "My vehicle is at " + tc.getName();
+	       			if (tc != null) {
+	       				responseText.append("My vehicle is at ");
+	       				responseText.append(tc.getName());   				
+	       			}
 	       			else
-	       				responseText = "My vehicle is not inside";//doesn't have a top container unit.";
+	       				responseText.append("My vehicle is not inside");//doesn't have a top container unit.";
 	       		}
 	       		else
-	       			responseText = "I'm not in a vehicle.";
+	       			responseText.append("I'm not in a vehicle.");
 	       	}
 	
 	    	else if (num == 14  || text.contains("vehicle") && text.contains("park")) {
@@ -874,16 +982,19 @@ public class ChatBox extends BorderPane {
 		       		Settlement s = v.getSettlement();
 		       		if (s != null) {
 		       			Building b = s.getBuildingManager().getBuilding(v);
-		       			if (b != null)
-		       				responseText = "My vehicle is parked inside " + b.getNickName();
+		       			if (b != null) {
+		       				responseText.append("My vehicle is parked inside ");
+		       				responseText.append(b.getNickName());
+		       			}
+		       				
 		       			else
-		       				responseText = "My vehicle does not park inside a building/garage";
+		       				responseText.append("My vehicle does not park inside a building/garage");
 		       		}
 		       		else
-		       			responseText = "My vehicle is not at a settlement.";
+		       			responseText.append("My vehicle is not at a settlement.");
 	   			}
 		       	else
-	       			responseText = "I'm not on a vehicle.";
+	       			responseText.append("I'm not on a vehicle.");
 	       	}
 	
 	    	else if (num == 15 || text.contains("vehicle") && text.contains("settlement")) {
@@ -891,13 +1002,15 @@ public class ChatBox extends BorderPane {
 	    		Vehicle v = cache.getVehicle();
 	       		if (v  != null) {
 	       			Settlement s = v.getSettlement();
-	       			if (s != null)
-	       				responseText = "My vehicle is at " + s.getName();
+	       			if (s != null)  {
+	       				responseText.append("My vehicle is at ");
+	       				responseText.append(s.getName());   				
+	       			}
 	       			else
-	       				responseText = "My vehicle is not at a settlement.";
+	       				responseText.append("My vehicle is not at a settlement.");
 	       		}
 	       		else
-	       			responseText = "I'm not on a vehicle.";
+	       			responseText.append("I'm not on a vehicle.");
 	    	}
 	
 	    	else if (text.equalsIgnoreCase("key") || text.equalsIgnoreCase("/k")
@@ -907,28 +1020,31 @@ public class ChatBox extends BorderPane {
 		    	
         		help = true;
 		    	questionText = REQUEST_HELP;
-				responseText = HELP_TEXT;    	
+				responseText.append(HELP_TEXT);    	
 				
 	    	}
     		
 	     	// 2016-10-06 Added changing the height of the chat box
 	     	else if (text.equalsIgnoreCase("/y1")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[0] + " pixels.";	     		
-	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 256 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Close the chat box to reset the chat box height to 256 pixels.");
 	     		mainScene.setChatBoxPaneHeight(box_height[0]);
 	     		closeChatBox(false);    	
 	     	}
 	    	
 	     	else if (text.equalsIgnoreCase("/y2")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[1] + " pixels.";
-	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 512 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Close the chat box to reset the chat box height to 512 pixels.");
 	     		mainScene.setChatBoxPaneHeight(box_height[1]);
 	            closeChatBox(false);
 	     	}
 
 	     	else if (text.equalsIgnoreCase("/y3")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[2] + " pixels.";
-	     		responseText = SYSTEM_PROMPT + "Close the chat box to reset the chat box height to 768 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Close the chat box to reset the chat box height to 768 pixels.");
 	     		mainScene.setChatBoxPaneHeight(box_height[2]);
 	            closeChatBox(false);
 	     	}
@@ -936,13 +1052,14 @@ public class ChatBox extends BorderPane {
 	     	else if (text.equalsIgnoreCase("/y4")) {
 	     		questionText = REQUEST_HEIGHT_CHANGE + box_height[3] + " pixels.";
 	     		mainScene.setChatBoxPaneHeight(box_height[3]);
-	     		responseText = SYSTEM_PROMPT + "Will close the chat box to reset the chat box height to 1024 pixels.";
+	     		responseText.append(SYSTEM_PROMPT);
+	     		responseText.append("Will close the chat box to reset the chat box height to 1024 pixels.");
 	            closeChatBox(false);
 				
 		    } else {	    		
     	    	String[] txt = clarify();   	    	
     	    	questionText = txt[0];
-    			responseText = txt[1]; 
+    	    	responseText.append(txt[1]); 
 	    	}
 	    	
     	}
@@ -951,17 +1068,21 @@ public class ChatBox extends BorderPane {
     		// set personCache and robotCache to null only if you want to quit the conversation
 	    	String[] txt = clarify();   	    	
 	    	questionText = txt[0];
-			responseText = txt[1]; 
+	    	responseText.append(txt[1]);
     	}
     	
-    	textArea.appendText(questionText + System.lineSeparator());	
+    	textArea.appendText(questionText);
+    	textArea.appendText(System.lineSeparator());	
     	
     	if (help)
 			the_other_party = "System";
     	else
     		the_other_party = name;
     	
-   		textArea.appendText(the_other_party + " : " + responseText + System.lineSeparator());
+   		textArea.appendText(the_other_party);
+   		textArea.appendText(" : ");
+   		textArea.appendText(responseText.toString());
+   		textArea.appendText(System.lineSeparator());
     }
 
     /*

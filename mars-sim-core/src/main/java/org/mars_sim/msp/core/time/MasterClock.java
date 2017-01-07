@@ -396,7 +396,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public void setTimeRatio(double ratio) {
         if (ratio >= 0.0001D && ratio <= 500000D) {
-            timeRatio = ratio;
+            timeRatio = Math.round(ratio*100D)/100D;
             //System.out.println("timeRatio : " + timeRatio + " ");
         }
         else throw new IllegalArgumentException("Time ratio out of bounds ");
@@ -514,22 +514,24 @@ public class MasterClock implements Serializable { // Runnable,
 	            sleepTime = timeBetweenUpdates - t2 + t1 - overSleepTime;
 	            //System.out.print ("sleep : " + sleepTime/1_000_000 + "ms\t");
 
-	            if (sleepTime > 0 && keepRunning) {
-		            // Pause simulation to allow other threads to complete.
-		            try {
-		                //Thread.yield();
-		                //Thread.sleep(SLEEP_TIME);
-						TimeUnit.NANOSECONDS.sleep(sleepTime);
+	            if (sleepTime > 0) {
+	            	if (keepRunning) {
+			            // Pause simulation to allow other threads to complete.
+			            try {
+			                //Thread.yield();
+			                //Thread.sleep(SLEEP_TIME);
+							TimeUnit.NANOSECONDS.sleep(sleepTime);
+			            }
+			            //catch (Exception e) {
+			            //    logger.log(Level.WARNING, "program terminated while running sleep() in MasterClock.run() ", e);
+			            //}
+			            catch (InterruptedException e) {
+			            	Thread.currentThread().interrupt();
+			            }
+	
+			            overSleepTime = (System.nanoTime() - t2) - sleepTime;
+	
 		            }
-		            //catch (Exception e) {
-		            //    logger.log(Level.WARNING, "program terminated while running sleep() in MasterClock.run() ", e);
-		            //}
-		            catch (InterruptedException e) {
-		            	Thread.currentThread().interrupt();
-		            }
-
-		            overSleepTime = (System.nanoTime() - t2) - sleepTime;
-
 	            }
 
 	            else { // last frame went beyond the PERIOD
@@ -546,8 +548,9 @@ public class MasterClock implements Serializable { // Runnable,
 
 	         // 2015-07-03 Added skipping the sleep time if the statusUpdate() or other processes take too long
 	            int skips = 0;
-	            while ((excess > timeBetweenUpdates ) && (skips < maxFrameSkips)) {
+	            while ((excess > timeBetweenUpdates) && (skips < maxFrameSkips)) {
 	            	excess -= timeBetweenUpdates;
+	            	// Make up one lost frame by calling statusUpdate()
 	            	statusUpdate();
 	            	skips++;
 	            }
@@ -594,7 +597,7 @@ public class MasterClock implements Serializable { // Runnable,
             // TODO: how to prevent crashing autosaveTimer ? 
             // will it help by restarting the autosaveTimer ?
             //sim.getAutosaveTimer().playFromStart();
-            logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
+            //logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
         }
 
         if (saveType != 0) {
@@ -780,9 +783,9 @@ public class MasterClock implements Serializable { // Runnable,
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
         if (isPaused)
-			Simulation.instance().getAutosaveTimer().pause();
+			sim.getAutosaveTimer().pause();
 		else
-			Simulation.instance().getAutosaveTimer().play();
+			sim.getAutosaveTimer().play();
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.
@@ -929,14 +932,16 @@ public class MasterClock implements Serializable { // Runnable,
     /**
      * Prepare object for garbage collection.
      */
-    public void destroy() {
-       marsTime = null;
-       initialMarsTime = null;
-       earthTime = null;
-       uptimer = null;
-       listeners.clear();
-       listeners = null;
-       file = null;
-       clockListenerExecutor = null;
+	public void destroy() {
+		config = null;
+    	sim = null;
+    	marsTime = null;
+    	initialMarsTime = null;
+    	earthTime = null;
+    	uptimer = null;
+    	//listeners.clear();
+    	listeners = null;
+    	file = null;
+    	clockListenerExecutor = null;
     }
 }

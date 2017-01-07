@@ -5,7 +5,7 @@ http://mars-sim.sourceforge.net/
 
 ------------------------------------------------------
 
-## v3.1.0 (build ____) Snapshot Preview 5 - 2016-__-__
+## v3.1.0 (build 38__) Snapshot Preview 5 - 2017-01-__
 
 
 ### KNOWN LIMITATION :
@@ -14,7 +14,7 @@ http://mars-sim.sourceforge.net/
 
 2. The Main Menu's 3D Mars Globe has shadow artifact when running in linux (due to unknown recent Java JDK changes)
 
-3. User must have 64-bit Java SE installed.
+3. User must have 64-bit Java SE or JDK installed.
 
 ### NEW FEATURES :
 

@@ -85,11 +85,12 @@ implements ClockListener {
 	/** the "default" ratio that will be set at 50, the middle of the scale. */
 	public static double ratioatmid = 500D; // default value = 500D This avoids maven test error
 
+	// Data members
+	private int solElapsedCache = 0;
+	
 	private String northernSeasonTip, northernSeasonCache = "";
 	private String southernSeasonTip, southernSeasonCache = "";
 	
-	// Data members
-	private int solElapsedCache = 0;
 	private Simulation sim;
 	/** Master Clock. */
 	private MasterClock masterClock;
@@ -241,7 +242,6 @@ implements ClockListener {
 
 		//balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);//Msg.getString("TimeWindow.season.toolTip"), BalloonToolTip.Orientation.RIGHT_ABOVE); //$NON-NLS-1$
 
-		
 		// Create Earth time panel
 		JPanel earthTimePane = new JPanel(new BorderLayout());
 		earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
@@ -541,18 +541,19 @@ implements ClockListener {
 			return null;
 	}
 	
+	@SuppressWarnings("restriction")
 	@Override
 	public void clockPulse(double time) {
-		if (mainScene != null) {
-			Platform.runLater(() -> {
+		//if (mainScene != null) {
+			//Platform.runLater(() -> {
 				updateTime(time);
-			});
-		}
-		else {
-			SwingUtilities.invokeLater(() -> {
-				updateTime(time);
-			});
-		}	
+			//});
+		//}
+		//else {
+			//SwingUtilities.invokeLater(() -> {
+				//updateTime(time);
+			//});
+		//}	
 	}
 
 	/**
