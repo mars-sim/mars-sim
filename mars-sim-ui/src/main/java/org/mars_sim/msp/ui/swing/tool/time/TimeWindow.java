@@ -115,7 +115,7 @@ implements ClockListener {
 	/** label for uptimer. */
 	private JLabel uptimeLabel;
 	/** label for pulses per second label. */
-	private JLabel pulsespersecondLabel;
+	private JLabel pulsespersecondLabel, pulsesLabel;
 	
 	private JLabel pulseHeaderLabel;
 	/** slider for pulse. */
@@ -290,12 +290,16 @@ implements ClockListener {
 		pulsespersecondLabel = new JLabel(pulsePerSecond, JLabel.CENTER);
 		pulsespersecondPane.add(pulsespersecondLabel, BorderLayout.CENTER);
 
+		String pulses = formatter.format(masterClock.getPulses());
+		pulsesLabel = new JLabel(pulses, JLabel.CENTER);
+		pulsespersecondPane.add(pulsesLabel, BorderLayout.SOUTH);
+
 		// Create uptime panel
 		JPanel pulsePane = new JPanel(new BorderLayout());
 		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(pulsePane, BorderLayout.SOUTH);
 
-		pulsespersecondPane.add(pausePane, BorderLayout.SOUTH);
+		//pulsespersecondPane.add(pausePane, BorderLayout.SOUTH);
 
 		//String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
 		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
@@ -589,6 +593,8 @@ implements ClockListener {
 		if (masterClock != null) {
 			DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 			String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
+			String pulses = formatter.format(masterClock.getPulses());
+			pulsesLabel.setText(pulses);
 			pulsespersecondLabel.setText(pulsePerSecond);
 		}
 

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Simulation;
+
 
 /**
  * The UpTimer class keeps track of how long an instance of the simulation
@@ -42,7 +44,10 @@ public class UpTimer implements Serializable {
 
 	private transient boolean paused = true;
 
-    public UpTimer() {
+	private MasterClock masterClock;// = Simulation.instance().getMasterClock();
+	
+    public UpTimer(MasterClock masterclock) {
+    	this.masterClock = masterclock;
         this.setPaused(false);
         lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
     }
@@ -67,9 +72,39 @@ public class UpTimer implements Serializable {
      * @return simulation running time formatted in a string. ex "6 days 5:32:58"
      */
     public String getUptime() {
+    	StringBuilder result = new StringBuilder();
 
+        if (days > 0) {
+        	result.append(days);
+        	result.append("d ");
+        }
+
+        if (hours < 10) {
+        	result.append("0");
+        }
+
+    	result.append(hours);
+    	result.append("h ");
+        
+        if (minutes < 10) {
+        	result.append("0");
+        }
+
+    	result.append(minutes);
+    	result.append("m ");
+    	
+        if (seconds < 10) {
+        	result.append("0");
+        }
+
+    	result.append(seconds);
+    	result.append("s ");
+    	
+        return result.toString();
+/*    		
         String minstr = "" + minutes;
-        if (minutes < 10) minstr = "0" + minutes;
+        if (minutes < 10) 
+        	minstr = "0" + minutes;
 
         String secstr = "" + seconds;
         if (seconds < 10) secstr = "0" + seconds;
@@ -82,6 +117,9 @@ public class UpTimer implements Serializable {
 
         String hourstr = "" + hours;
         return daystr + hourstr + ":" + minstr + ":" + secstr;
+*/
+    	
+        
     }
 
     public long getUptimeMillis() {
@@ -98,6 +136,8 @@ public class UpTimer implements Serializable {
             else {
                 logger.severe("Too long since last time pulse, clearing update time");
                 thiscall = lastcall = System.nanoTime() / NANOSECONDS_PER_MILLISECONDS;
+                // 2017-01-09 Add calling resetTotalPulses()
+                masterClock.resetTotalPulses();
                 return uptime;
             }
         }

@@ -124,7 +124,7 @@ public class MasterClock implements Serializable { // Runnable,
         earthTime = new EarthClock(config.getEarthStartDateTime());
 
         // Create an Uptime Timer
-        uptimer = new UpTimer();
+        uptimer = new UpTimer(this);
 
         // Create listener list.
         listeners = Collections.synchronizedList(new CopyOnWriteArrayList<ClockListener>());
@@ -389,6 +389,11 @@ public class MasterClock implements Serializable { // Runnable,
         return totalPulses;
     }
 
+    // 2017-01-09 Add resetTotalPulses()
+	public void resetTotalPulses() {
+		totalPulses = totalPulses/2;
+	}
+	
     /**
      * setTimeRatio is for setting the Masterclock's time ratio directly. It is a double
      * indicating the simetime:realtime ratio. 1000 means 1000 sim time minutes elapse for
@@ -828,13 +833,18 @@ public class MasterClock implements Serializable { // Runnable,
         return ((double) totalPulses / (uptimer.getUptimeMillis() / 1000D));
     }
 
+    public double getPulses() {
+        //System.out.println("pulsespersecond: "+((double) totalPulses / (uptimer.getUptimeMillis()/1000 ) ));
+        return ((double) totalPulses);
+    }
+    
     /**
      * Update the milliseconds elapsed since last time pulse.
      */
     private void updateElapsedMilliseconds() {
-    	if ( uptimer == null) {
+    	if (uptimer == null) {
     		//System.out.println("MasterClock : uptimer == null");
-    		uptimer = new UpTimer();
+    		uptimer = new UpTimer(this);
     	}
         long tnow = uptimer.getUptimeMillis();
         elapsedMilliseconds = tnow - elapsedlast;
