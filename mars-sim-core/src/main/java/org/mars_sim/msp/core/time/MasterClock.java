@@ -138,31 +138,31 @@ public class MasterClock implements Serializable { // Runnable,
         double ratio = config.getSimulationTimeRatio();
         double ms = config.getTimeBetweenUpdates();
         if (Simulation.NUM_THREADS == 1) {
-        	setTimeRatio(ratio/24D);
-            setTimeBetweenUpdates(ms*16D);
-        }
-        if (Simulation.NUM_THREADS == 2) {
-        	setTimeRatio(ratio/18D);
+        	setTimeRatio(ratio/12D);
             setTimeBetweenUpdates(ms*12D);
         }
+        if (Simulation.NUM_THREADS == 2) {
+        	setTimeRatio(ratio/10D);
+            setTimeBetweenUpdates(ms*10D);
+        }
         else if (Simulation.NUM_THREADS <= 3) {
-        	setTimeRatio(ratio/12D);
+        	setTimeRatio(ratio/8D);
             setTimeBetweenUpdates(ms*8D);
         }
         else if (Simulation.NUM_THREADS <= 4) {
-        	setTimeRatio(ratio/8D);
+        	setTimeRatio(ratio/6D);
             setTimeBetweenUpdates(ms*6D);
         }
         else if (Simulation.NUM_THREADS <= 6) {
-        	setTimeRatio(ratio/6D);
+        	setTimeRatio(ratio/4D);
             setTimeBetweenUpdates(ms*4D);
         }
         else if (Simulation.NUM_THREADS <= 8) {
-        	setTimeRatio(ratio/4D);
+        	setTimeRatio(ratio/2D);
             setTimeBetweenUpdates(ms*2D);
         }
         else if (Simulation.NUM_THREADS <= 12) {
-        	setTimeRatio(ratio/2D);
+        	setTimeRatio(ratio);
             setTimeBetweenUpdates(ms);
         }
         else {

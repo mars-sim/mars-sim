@@ -2,9 +2,9 @@
  * Mars Simulation Project
  * TimeWindow.java
  * @version 3.08 2015-09-22
-
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.ui.swing.tool.time;
 
 import java.awt.BorderLayout;
@@ -65,6 +65,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
+	public static final String ONE_REAL_SEC = "1 real sec -> ";
+	
 	/** the max ratio the sim can be set at. */
 	public static final double maxratio = 10800d;
 
@@ -301,17 +303,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		pulsespersecondPane.add(pausePane, BorderLayout.SOUTH);
 
-		// String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
-		// MarsClock.convertSecondsToMillisols(master.getTimeRatio())
-		// ).toString() ;
+		StringBuilder s0 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
 		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-		String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + "
-																		// [x" +
-																		// factor
-																		// +
-																		// "]";
-		final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
+		s0.append(ONE_REAL_SEC);
+		s0.append(masterClock.getTimeString(ratio));
+
+		final JLabel pulseCurRatioLabel = new JLabel(s0.toString(), JLabel.CENTER);
 		pulsePane.add(pulseCurRatioLabel, BorderLayout.CENTER);
 
 		// Create pulse header label
@@ -329,16 +327,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 
+				StringBuilder s0 = new StringBuilder();
 				double ratio = masterClock.getTimeRatio();
 				String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-				String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// +
-																				// "
-																				// [x"
-																				// +
-																				// factor
-																				// +
-																				// "]";
-				pulseCurRatioLabel.setText(s);
+				s0.append(ONE_REAL_SEC);
+				s0.append(masterClock.getTimeString(ratio));
+				pulseCurRatioLabel.setText(s0.toString());
 
 				pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
 
@@ -364,17 +358,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 				try {
 					setTimeRatioFromSlider(pulseSlider.getValue());
 
+					StringBuilder s0 = new StringBuilder();
 					double ratio = masterClock.getTimeRatio();
 					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-					String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// +
-																					// "
-																					// [x"
-																					// +
-																					// factor
-																					// +
-																					// "]";
-					pulseCurRatioLabel.setText(s);
-
+					s0.append(ONE_REAL_SEC);
+					s0.append(masterClock.getTimeString(ratio));
+					pulseCurRatioLabel.setText(s0.toString());
+					
 					pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
 
 					/*
