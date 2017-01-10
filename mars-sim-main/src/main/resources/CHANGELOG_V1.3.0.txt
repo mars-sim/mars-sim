@@ -14,7 +14,7 @@ http://mars-sim.sourceforge.net/
 
 2. Main Menu's 3D Mars Globe may display shadow artifact when running in linux (due to unknown recent JavaFX changes)
 
-3. User must have 64-bit Java 8 SE or JDK installed (not compatible with 32-bit Java 8 or any versions of OpenJDK).
+3. User must have 64-bit Java 8 SE or JDK (at least 1.8.0.60 version) installed. Currently, it's not compatible with 32-bit Java 8 or any versions of OpenJDK.
 
 
 
@@ -34,7 +34,7 @@ http://mars-sim.sourceforge.net/
 
 1. Enable lower clock speed cpu such as Dual Core Pentium/Celeron to run mars-sim.
 
-
+2. Prevent mars-sim from attempting to run in any java VM version below 1.8.0.60. 
 
 ------------------------------------------------------
 

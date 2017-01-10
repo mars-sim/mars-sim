@@ -83,10 +83,11 @@ implements ClockListener, Serializable {
 
     /** Version string. */
     public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
-
     /** Build string. */
     public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
-
+    /** Java version string. */
+    public final static String JAVA_VERSION = com.sun.javafx.runtime.VersionInfo.getRuntimeVersion();
+    
     /** Default save filename. */
     public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
     public final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
@@ -116,7 +117,7 @@ implements ClockListener, Serializable {
     public final static String title = Msg.getString(
             "Simulation.title", VERSION
             + " - Build " + BUILD
-            + " - Java SE " + com.sun.javafx.runtime.VersionInfo.getRuntimeVersion()
+            + " - Java " + JAVA_VERSION
             + " - " + NUM_THREADS + " CPU thread(s)"
             ); //$NON-NLS-1$
 

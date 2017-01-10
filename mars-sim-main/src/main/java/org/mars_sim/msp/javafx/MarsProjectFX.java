@@ -263,38 +263,62 @@ public class MarsProjectFX extends Application  {
         //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
+        
     	logger.info(Simulation.title);
     	
-		argList = Arrays.asList(args);
-        newSim = argList.contains("-new");      
-        loadSim = argList.contains("-load");     
-		generateHTML = argList.contains("-html");
-		//savedSim = argList.contains(".sim");
-		
-		if (generateHTML)
-			headless = true;
-		else
-			headless = argList.contains("-headless");
+    	String vendor = System.getProperty("java.vendor");	
+        //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
+    	
+        String major, minor, update, build;
 
-    	int size = argList.size();   	
-    	boolean flag = true;
-		for (int i= 0; i<size; i++) {
-			if (argList.get(i).contains(".sim")) {
-				if (flag) {
-					loadFileString = argList.get(i);
-					savedSim = true;
-					flag = false;
-				}
-				else {
-					logger.info("Cannot load more than one saved sim. ");
-			        Platform.exit();
-			        System.exit(1);
-				}
-			}
-		}
-  	
-	   	sim.startSimExecutor();
-	   	sim.getSimExecutor().execute(new SimulationTask());
+        String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b");
+        		//System.getProperty("java.runtime.version").split("\\.|_|-b");
+
+        major = javaVersionElements[0];
+        minor   = javaVersionElements[1];
+        update  = javaVersionElements[2];
+        build   = javaVersionElements[3];
+        
+    	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
+    	if (!major.equals("8") || Double.parseDouble(update) < 60.0) {	
+    		logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.60. Terminating...");
+	        Platform.exit();
+	        System.exit(1);
+    	}
+    	
+    	else {
+    		argList = Arrays.asList(args);
+            newSim = argList.contains("-new");      
+            loadSim = argList.contains("-load");     
+    		generateHTML = argList.contains("-html");
+    		//savedSim = argList.contains(".sim");
+    		
+    		if (generateHTML)
+    			headless = true;
+    		else
+    			headless = argList.contains("-headless");
+
+        	int size = argList.size();   	
+        	boolean flag = true;
+    		for (int i= 0; i<size; i++) {
+    			if (argList.get(i).contains(".sim")) {
+    				if (flag) {
+    					loadFileString = argList.get(i);
+    					savedSim = true;
+    					flag = false;
+    				}
+    				else {
+    					logger.info("Cannot load more than one saved sim. ");
+    			        Platform.exit();
+    			        System.exit(1);
+    				}
+    			}
+    		}
+      	
+    	   	sim.startSimExecutor();
+    	   	sim.getSimExecutor().execute(new SimulationTask());
+    	}
+ 
     }
 
 	public class SimulationTask implements Runnable {
