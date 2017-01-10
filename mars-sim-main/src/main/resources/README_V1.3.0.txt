@@ -4,13 +4,21 @@ http://mars-sim.sourceforge.net/
 
 ---------------------------------------------------------------------
 
+** Minimum Requirements **
+
+- Dual Core Pentium 2.2GHz or above
+
+- 64-bit Java 8 (jre1.8.0_60 or above) 
+
+---------------------------------------------------------------------
+
 ** Installation **
 
 - This Java application requires the latest 64-bit Java Runtime Environment (JRE) or 
 Java SE Development Kit (JDK) version 8. 
 
-- Note that mars-sim currently does not work with OpenJDK 8. Please
-use oracle-java8 instead. 
+- Note that mars-sim currently does not work with OpenJDK 7/8/9 or Java 9
+Please use oracle's java 8 instead. 
 
 - The latest JVM can be freely downloaded from Oracle at:
 http://www.oracle.com/technetwork/java/javase/downloads/index.html

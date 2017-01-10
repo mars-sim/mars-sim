@@ -46,17 +46,16 @@ import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import javafx.application.Platform;
 
 /**
- * The TimeWindow is a tool window that displays the current
- * Martian and Earth time.<br/>
- * The numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
- * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
- * Below 20, the simulation goes in slow motion, 1:0.0004 is around the slowest. The increments may be
- * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
- * and lots of settlers die.
+ * The TimeWindow is a tool window that displays the current Martian and Earth
+ * time.<br/>
+ * The numbers below have been tweaked with some care. At 20, the realworld:sim
+ * ratio is 1:1 above 20, the numbers start climbing logarithmically maxing out
+ * at around 100K this is really fast Below 20, the simulation goes in slow
+ * motion, 1:0.0004 is around the slowest. The increments may be so small at
+ * this point that events can't progress at all. When run too quickly, lots of
+ * accidents occur, and lots of settlers die.
  */
-public class TimeWindow
-extends ToolWindow
-implements ClockListener {
+public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -64,13 +63,13 @@ implements ClockListener {
 	private static Logger logger = Logger.getLogger(TimeWindow.class.getName());
 
 	/** Tool name. */
-	public static final String NAME = Msg.getString("TimeWindow.title");		 //$NON-NLS-1$
+	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
 	/** the max ratio the sim can be set at. */
 	public static final double maxratio = 10800d;
 
 	/** the minimum ratio the sim can be set at. */
-	private static final double minfracratio = 0.01d;//0.001d;
+	private static final double minfracratio = 0.01d;// 0.001d;
 
 	/** the largest fractional ratio the sim can be set at. */
 	private static final double maxfracratio = 0.98d;
@@ -83,14 +82,15 @@ implements ClockListener {
 	private static final double maxfracpos = minslider - 1d;
 
 	/** the "default" ratio that will be set at 50, the middle of the scale. */
-	public static double ratioatmid = 500D; // default value = 500D This avoids maven test error
+	public static double ratioatmid = 500D; // default value = 500D This avoids
+											// maven test error
 
 	// Data members
 	private int solElapsedCache = 0;
-	
+
 	private String northernSeasonTip, northernSeasonCache = "";
 	private String southernSeasonTip, southernSeasonCache = "";
-	
+
 	private Simulation sim;
 	/** Master Clock. */
 	private MasterClock masterClock;
@@ -116,7 +116,7 @@ implements ClockListener {
 	private JLabel uptimeLabel;
 	/** label for pulses per second label. */
 	private JLabel pulsespersecondLabel, pulsesLabel;
-	
+
 	private JLabel pulseHeaderLabel;
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
@@ -129,7 +129,9 @@ implements ClockListener {
 
 	/**
 	 * Constructs a TimeWindow object
-	 * @param desktop the desktop pane
+	 * 
+	 * @param desktop
+	 *            the desktop pane
 	 */
 	public TimeWindow(final MainDesktopPane desktop) {
 		// Use TimeWindow constructor
@@ -138,7 +140,7 @@ implements ClockListener {
 
 		ratioatmid = Simulation.instance().getMasterClock().getTimeRatio();
 
-		//new ClockTool();
+		// new ClockTool();
 
 		// Set window resizable to false.
 		setResizable(false);
@@ -197,7 +199,7 @@ implements ClockListener {
 		emptyL.setMinimumSize(new Dimension(140, 15));
 		emptyP.setMinimumSize(new Dimension(140, 15));
 		calendarMonthPane.add(emptyP, BorderLayout.SOUTH);
-		
+
 		JPanel southPane = new JPanel(new BorderLayout());
 		mainPane.add(southPane, BorderLayout.SOUTH);
 
@@ -214,33 +216,29 @@ implements ClockListener {
 		marsSeasonPane.add(marsSeasonLabel, BorderLayout.NORTH);
 
 		// Create Northern season label
-		northernSeasonLabel = new JLabel(
-			Msg.getString(
-				"TimeWindow.northernHemisphere", //$NON-NLS-1$
-				marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)
-			), JLabel.CENTER
-		);
+		northernSeasonLabel = new JLabel(Msg.getString("TimeWindow.northernHemisphere", //$NON-NLS-1$
+				marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE)), JLabel.CENTER);
 		marsSeasonPane.add(northernSeasonLabel, BorderLayout.CENTER);
 
-/*		
-		String str = "<html>\t\tEarth vs Mars "
-					+ "<br>\tSpring : 93 days vs 199 days"
-					+ "<br>\tSummer : 94 days vs 184 days"
-					+ "<br>\tFall : 89 days vs 146 days"
-					+ "<br>\tWinter : 89 days vs 158 days</html>";
-*/		
-		//balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);//Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+		/*
+		 * String str = "<html>\t\tEarth vs Mars " +
+		 * "<br>\tSpring : 93 days vs 199 days" +
+		 * "<br>\tSummer : 94 days vs 184 days" +
+		 * "<br>\tFall : 89 days vs 146 days" +
+		 * "<br>\tWinter : 89 days vs 158 days</html>";
+		 */
+		// balloonToolTip.createBalloonTip(northernSeasonLabel,
+		// northernSeasonTip);//Msg.getString("TimeWindow.season.toolTip"));
+		// //$NON-NLS-1$
 
 		// Create Southern season label
-		southernSeasonLabel = new JLabel(
-			Msg.getString(
-				"TimeWindow.southernHemisphere", //$NON-NLS-1$
-				marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)
-			), JLabel.CENTER
-		);
+		southernSeasonLabel = new JLabel(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
+				marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)), JLabel.CENTER);
 		marsSeasonPane.add(southernSeasonLabel, BorderLayout.SOUTH);
 
-		//balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);//Msg.getString("TimeWindow.season.toolTip"), BalloonToolTip.Orientation.RIGHT_ABOVE); //$NON-NLS-1$
+		// balloonToolTip.createBalloonTip(southernSeasonLabel,
+		// southernSeasonTip);//Msg.getString("TimeWindow.season.toolTip"),
+		// BalloonToolTip.Orientation.RIGHT_ABOVE); //$NON-NLS-1$
 
 		// Create Earth time panel
 		JPanel earthTimePane = new JPanel(new BorderLayout());
@@ -290,23 +288,30 @@ implements ClockListener {
 		pulsespersecondLabel = new JLabel(pulsePerSecond, JLabel.CENTER);
 		pulsespersecondPane.add(pulsespersecondLabel, BorderLayout.CENTER);
 
-		String pulses = formatter.format(masterClock.getPulses());
-		pulsesLabel = new JLabel(pulses, JLabel.CENTER);
-		pulsespersecondPane.add(pulsesLabel, BorderLayout.SOUTH);
+		/*
+		 * String pulses = formatter.format(masterClock.getPulses());
+		 * pulsesLabel = new JLabel(pulses, JLabel.CENTER);
+		 * pulsespersecondPane.add(pulsesLabel, BorderLayout.SOUTH);
+		 */
 
 		// Create uptime panel
 		JPanel pulsePane = new JPanel(new BorderLayout());
 		pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
 		simulationPane.add(pulsePane, BorderLayout.SOUTH);
 
-		//pulsespersecondPane.add(pausePane, BorderLayout.SOUTH);
+		pulsespersecondPane.add(pausePane, BorderLayout.SOUTH);
 
-		//String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
-		//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
+		// String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
+		// MarsClock.convertSecondsToMillisols(master.getTimeRatio())
+		// ).toString() ;
 		double ratio = masterClock.getTimeRatio();
 		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-		String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
-		final JLabel pulseCurRatioLabel = new JLabel(s , JLabel.CENTER);
+		String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + "
+																		// [x" +
+																		// factor
+																		// +
+																		// "]";
+		final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
 		pulsePane.add(pulseCurRatioLabel, BorderLayout.CENTER);
 
 		// Create pulse header label
@@ -318,27 +323,33 @@ implements ClockListener {
 
 		northPanel.add(speedLabel);
 		northPanel.add(pulseHeaderLabel);
-		
+
 		pulseCurRatioLabel.addMouseListener(new MouseInputAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				
+
 				double ratio = masterClock.getTimeRatio();
 				String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-				String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+				String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// +
+																				// "
+																				// [x"
+																				// +
+																				// factor
+																				// +
+																				// "]";
 				pulseCurRatioLabel.setText(s);
-				
+
 				pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
 
-/*				
-				if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-					pulseCurRatioLabel.setText("1 Real Second : " + String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
-				}
-				else {
-					pulseCurRatioLabel.setText("1 Real Second : " + masterClock.getTimeString(masterClock.getTimeRatio()));
-				}
-*/				
+				/*
+				 * if (pulseCurRatioLabel.getText().contains(":")) {
+				 * //$NON-NLS-1$ pulseCurRatioLabel.setText("1 Real Second : " +
+				 * String.format(Msg.getString("TimeWindow.timeFormat"),
+				 * masterClock.getTimeRatio())); //$NON-NLS-1$ } else {
+				 * pulseCurRatioLabel.setText("1 Real Second : " +
+				 * masterClock.getTimeString(masterClock.getTimeRatio())); }
+				 */
 			}
 		});
 
@@ -355,22 +366,28 @@ implements ClockListener {
 
 					double ratio = masterClock.getTimeRatio();
 					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-					String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// + " [x" + factor + "]";
+					String s = "1 Real Sec -> " + masterClock.getTimeString(ratio);// +
+																					// "
+																					// [x"
+																					// +
+																					// factor
+																					// +
+																					// "]";
 					pulseCurRatioLabel.setText(s);
-					
+
 					pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
 
-	/*				
-					if (pulseCurRatioLabel.getText().contains(":")) { //$NON-NLS-1$
-						pulseCurRatioLabel.setText("1 Real Second : " + String.format(Msg.getString("TimeWindow.timeFormat"), masterClock.getTimeRatio())); //$NON-NLS-1$
-					}
-					else {
-						pulseCurRatioLabel.setText("1 Real Second : " + masterClock.getTimeString(masterClock.getTimeRatio()));
-					}
-	*/		
-				}
-				catch (Exception e2) {
-					logger.log(Level.SEVERE,e2.getMessage());
+					/*
+					 * if (pulseCurRatioLabel.getText().contains(":")) {
+					 * //$NON-NLS-1$
+					 * pulseCurRatioLabel.setText("1 Real Second : " +
+					 * String.format(Msg.getString("TimeWindow.timeFormat"),
+					 * masterClock.getTimeRatio())); //$NON-NLS-1$ } else {
+					 * pulseCurRatioLabel.setText("1 Real Second : " +
+					 * masterClock.getTimeString(masterClock.getTimeRatio())); }
+					 */
+				} catch (Exception e2) {
+					logger.log(Level.SEVERE, e2.getMessage());
 				}
 			}
 		});
@@ -382,153 +399,154 @@ implements ClockListener {
 
 		// Add 10 pixels to packed window width
 		Dimension windowSize = getSize();
-		setSize(new Dimension((int)windowSize.getWidth() + 40, (int) windowSize.getHeight()));
+		setSize(new Dimension((int) windowSize.getWidth() + 40, (int) windowSize.getHeight()));
 	}
 
 	/**
 	 * Sets the time ratio for the simulation based on the slider value.
-	 * @param sliderValue the slider value (1 to 100).
+	 * 
+	 * @param sliderValue
+	 *            the slider value (1 to 100).
 	 */
 	private void setTimeRatioFromSlider(int sliderValue) {
-	    double timeRatio = calculateTimeRatioFromSlider(sliderValue);
-	    //System.out.println("timeRatio : " + timeRatio);
+		double timeRatio = calculateTimeRatioFromSlider(sliderValue);
+		// System.out.println("timeRatio : " + timeRatio);
 		masterClock.setTimeRatio(timeRatio);
 	}
 
 	/**
 	 * Calculates a time ratio given a slider value.
-	 * @param sliderValue the slider value from 1 to 100.
+	 * 
+	 * @param sliderValue
+	 *            the slider value from 1 to 100.
 	 * @return time ratio value (simulation time / real time).
 	 */
 	public static double calculateTimeRatioFromSlider(int sliderValue) {
 
-	    double slope;
-        double offset;
-        double timeRatio;
+		double slope;
+		double offset;
+		double timeRatio;
 
-        // sliderValue should be in the range 1..100 inclusive, if not it defaults to
-        // 1:15 real:sim ratio
-        if ((sliderValue > 0) && (sliderValue <= 100)) {
-            if (sliderValue >= (midslider + minslider)) {
+		// sliderValue should be in the range 1..100 inclusive, if not it
+		// defaults to
+		// 1:15 real:sim ratio
+		if ((sliderValue > 0) && (sliderValue <= 100)) {
+			if (sliderValue >= (midslider + minslider)) {
 
-                // Creates exponential curve between ratioatmid and maxratio.
-                double a = ratioatmid;
-                double b = maxratio / ratioatmid;
-                double T = maxslider - midslider;
-                double expo = (sliderValue - minslider - midslider) / T;
-                timeRatio = a * Math.pow(b, expo);
-            }
-            else if (sliderValue >= minslider) {
+				// Creates exponential curve between ratioatmid and maxratio.
+				double a = ratioatmid;
+				double b = maxratio / ratioatmid;
+				double T = maxslider - midslider;
+				double expo = (sliderValue - minslider - midslider) / T;
+				timeRatio = a * Math.pow(b, expo);
+			} else if (sliderValue >= minslider) {
 
-                // Creates exponential curve between 1 and ratioatmid.
-                double a = 1D;
-                double b = ratioatmid;
-                double T = midslider;
-                double expo = (sliderValue - minslider) / T;
-                timeRatio = a * Math.pow(b, expo);
-            }
-            else {
-                // generates ratios < 1
-                offset = minfracratio;
-                slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
-                timeRatio = (sliderValue - minfracpos) * slope + offset;
-            }
-        }
-        else {
-            timeRatio = 15D;
-            throw new IllegalArgumentException(Msg.getString("TimeWindow.log.ratioError")); //$NON-NLS-1$
-        }
+				// Creates exponential curve between 1 and ratioatmid.
+				double a = 1D;
+				double b = ratioatmid;
+				double T = midslider;
+				double expo = (sliderValue - minslider) / T;
+				timeRatio = a * Math.pow(b, expo);
+			} else {
+				// generates ratios < 1
+				offset = minfracratio;
+				slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
+				timeRatio = (sliderValue - minfracpos) * slope + offset;
+			}
+		} else {
+			timeRatio = 15D;
+			throw new IllegalArgumentException(Msg.getString("TimeWindow.log.ratioError")); //$NON-NLS-1$
+		}
 
-        
-        return timeRatio;
+		return timeRatio;
 	}
 
 	/**
 	 * Moves the slider bar appropriately given the time ratio.
-	 * @param timeRatio the time ratio (simulation time / real time).
+	 * 
+	 * @param timeRatio
+	 *            the time ratio (simulation time / real time).
 	 */
 	public void setTimeRatioSlider(double timeRatio) {
-	    int sliderValue = calculateSliderValue(timeRatio);
-	    pulseSlider.setValue(sliderValue);
+		int sliderValue = calculateSliderValue(timeRatio);
+		pulseSlider.setValue(sliderValue);
 	}
 
 	/**
-	 * Calculates a slider value based on a time ratio.
-	 * Note: This method is the inverse of calculateTimeRatioFromSlider.
-	 * @param timeRatio time ratio (simulation time / real time). 
+	 * Calculates a slider value based on a time ratio. Note: This method is the
+	 * inverse of calculateTimeRatioFromSlider.
+	 * 
+	 * @param timeRatio
+	 *            time ratio (simulation time / real time).
 	 * @return slider value (1 to 100).
 	 */
 	public static int calculateSliderValue(double timeRatio) {
 
-	    int sliderValue = 1;
+		int sliderValue = 1;
 
-        // Moves the slider bar appropriately given the time ratio.
-        if (timeRatio < minfracratio) {
-            sliderValue = 1;
-        }
-        else if (timeRatio > maxratio) {
-            sliderValue = 100;
-        }
-        else if ((timeRatio >= ratioatmid) && (timeRatio <= maxratio)) {
-            double a = ratioatmid;
-            double b = maxratio / ratioatmid;
-            double T = maxslider - midslider;
-            double temp1 = timeRatio / a;
-            double expo = Math.log(temp1) / Math.log(b);
-            double temp2 = (expo * T) + minslider + midslider;
-            sliderValue = (int) Math.round(temp2);
-        }
-        else if ((timeRatio >= 1D) && (timeRatio <= ratioatmid)) {
-            double a = 1D;
-            double b = ratioatmid;
-            double T = midslider;
-            double temp1 = timeRatio / a;
-            double expo = Math.log(temp1) / Math.log(b);
-            double temp2 = (expo * T) + minslider;
-            sliderValue = (int) Math.round(temp2);
-        }
-        else {
-            double offset = minfracratio;
-            double slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
-            double temp1 = ((timeRatio - offset) / slope) + minfracpos;
-            sliderValue = (int) Math.round(temp1);
-        }
+		// Moves the slider bar appropriately given the time ratio.
+		if (timeRatio < minfracratio) {
+			sliderValue = 1;
+		} else if (timeRatio > maxratio) {
+			sliderValue = 100;
+		} else if ((timeRatio >= ratioatmid) && (timeRatio <= maxratio)) {
+			double a = ratioatmid;
+			double b = maxratio / ratioatmid;
+			double T = maxslider - midslider;
+			double temp1 = timeRatio / a;
+			double expo = Math.log(temp1) / Math.log(b);
+			double temp2 = (expo * T) + minslider + midslider;
+			sliderValue = (int) Math.round(temp2);
+		} else if ((timeRatio >= 1D) && (timeRatio <= ratioatmid)) {
+			double a = 1D;
+			double b = ratioatmid;
+			double T = midslider;
+			double temp1 = timeRatio / a;
+			double expo = Math.log(temp1) / Math.log(b);
+			double temp2 = (expo * T) + minslider;
+			sliderValue = (int) Math.round(temp2);
+		} else {
+			double offset = minfracratio;
+			double slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
+			double temp1 = ((timeRatio - offset) / slope) + minfracpos;
+			sliderValue = (int) Math.round(temp1);
+		}
 
-        return sliderValue;
+		return sliderValue;
 	}
 
 	public void setSeason() {
-		
+
 		String northernSeason = marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE);
 		String southernSeason = marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE);
-				
-		if (!northernSeasonCache.equals(northernSeason)) {			
+
+		if (!northernSeasonCache.equals(northernSeason)) {
 			northernSeasonCache = northernSeason;
-			
+
 			if (marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE) != null) {
-				northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere",  //$NON-NLS-1$
+				northernSeasonLabel.setText(Msg.getString("TimeWindow.northernHemisphere", //$NON-NLS-1$
 						northernSeason));
 			}
 
 			northernSeasonTip = getSeasonTip(northernSeason);
-			balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);//Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
-			
-		}
-		
+			balloonToolTip.createBalloonTip(northernSeasonLabel, northernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
+																					// //$NON-NLS-1$
 
-		if (!southernSeasonCache.equals(southernSeason)) {			
+		}
+
+		if (!southernSeasonCache.equals(southernSeason)) {
 			southernSeasonCache = southernSeason;
 
-			if (marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE) != null ) {
+			if (marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE) != null) {
 				southernSeasonLabel.setText(Msg.getString("TimeWindow.southernHemisphere", //$NON-NLS-1$
 						southernSeason));
 			}
 
-			southernSeasonTip = getSeasonTip(southernSeason);			
-			balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);//Msg.getString("TimeWindow.season.toolTip")); //$NON-NLS-1$
+			southernSeasonTip = getSeasonTip(southernSeason);
+			balloonToolTip.createBalloonTip(southernSeasonLabel, southernSeasonTip);// Msg.getString("TimeWindow.season.toolTip"));
+																					// //$NON-NLS-1$
 
 		}
-		
 
 	}
 
@@ -540,37 +558,39 @@ implements ClockListener {
 		else if (hemi.contains("Autumn"))
 			return Msg.getString("TimeWindow.season.autumn");
 		else if (hemi.contains("Winter"))
-			return Msg.getString("TimeWindow.season.winter");		
+			return Msg.getString("TimeWindow.season.winter");
 		else
 			return null;
 	}
-	
+
 	@SuppressWarnings("restriction")
 	@Override
 	public void clockPulse(double time) {
-		//if (mainScene != null) {
-			//Platform.runLater(() -> {
-				updateTime(time);
-			//});
-		//}
-		//else {
-			//SwingUtilities.invokeLater(() -> {
-				//updateTime(time);
-			//});
-		//}	
+		// if (mainScene != null) {
+		// Platform.runLater(() -> {
+		updateTime(time);
+		// });
+		// }
+		// else {
+		// SwingUtilities.invokeLater(() -> {
+		// updateTime(time);
+		// });
+		// }
 	}
 
 	/**
 	 * Updates date and time in Time Tool
+	 * 
 	 * @param time
 	 */
 	// 2015-01-09 Added updateTime()
 	public void updateTime(double time) {
 		if (marsTime != null) {
 			SwingUtilities.invokeLater(() -> {
-				if (marsTime != null) martianTimeLabel.setText(marsTime.getDateTimeStamp());
+				if (marsTime != null)
+					martianTimeLabel.setText(marsTime.getDateTimeStamp());
 			});
-	    	int solElapsed = marsTime.getSolElapsedFromStart();
+			int solElapsed = marsTime.getSolElapsedFromStart();
 			// 2015-02-24 Added solElapsedCache
 			if (solElapsed != solElapsedCache) {
 
@@ -586,15 +606,18 @@ implements ClockListener {
 		if (earthTime != null) {
 			if (earthTime.getTimeStamp() != null)
 				SwingUtilities.invokeLater(() -> {
-					if (earthTime != null) earthTimeLabel.setText(earthTime.getTimeStamp());
+					if (earthTime != null)
+						earthTimeLabel.setText(earthTime.getTimeStamp());
 				});
 		}
 
 		if (masterClock != null) {
 			DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
 			String pulsePerSecond = formatter.format(masterClock.getPulsesPerSecond());
-			String pulses = formatter.format(masterClock.getPulses());
-			pulsesLabel.setText(pulses);
+
+			// String pulses = formatter.format(masterClock.getPulses());
+			// pulsesLabel.setText(pulses);
+
 			pulsespersecondLabel.setText(pulsePerSecond);
 		}
 
@@ -602,42 +625,44 @@ implements ClockListener {
 			uptimeLabel.setText(uptimer.getUptime());
 		}
 
-		calendarDisplay.update();	
+		calendarDisplay.update();
 	}
-	
-	
 
-	// Called by Masterclock's firePauseChange() since TimeWindow is on clocklistener
-	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or .play()
+	// Called by Masterclock's firePauseChange() since TimeWindow is on
+	// clocklistener
+	// 2015-12-16 Revised pauseChange() to add getAutosaveTimeline().pause() or
+	// .play()
 	@Override
 	public void pauseChange(boolean isPaused) {
-		//logger.info("TimeWindow : calling pauseChange()");
+		// logger.info("TimeWindow : calling pauseChange()");
 		// Update pause/resume button text based on master clock pause state.
 		if (isPaused) {
 			if (mainScene != null && !masterClock.isSavingSimulation())
 				mainScene.showWaitStage(MainScene.PAUSED);
 			pauseButton.setText("  " + Msg.getString("TimeWindow.button.resume") + "  "); //$NON-NLS-1$
-			desktop.getMarqueeTicker().pauseMarqueeTimer(true);			
+			desktop.getMarqueeTicker().pauseMarqueeTimer(true);
 
-
-		} else {			
+		} else {
 			pauseButton.setText("    " + Msg.getString("TimeWindow.button.pause") + "    "); //$NON-NLS-1$
-			desktop.getMarqueeTicker().pauseMarqueeTimer(false);	
+			desktop.getMarqueeTicker().pauseMarqueeTimer(false);
 			if (mainScene != null)
 				mainScene.hideWaitStage(MainScene.PAUSED);
-	
+
 		}
 	}
 
 	/**
 	 * Enables/disables the pause button
-	 * @param value true or false
+	 * 
+	 * @param value
+	 *            true or false
 	 */
 	// 2015-12-07 Added enablePauseButton()
 	public void enablePauseButton(boolean value) {
 		pauseButton.setEnabled(value);
 		// Note : when a wizard or a dialog box is opened/close,
-		// need to call below to remove/add the ability to use ESC to unpause/pause
+		// need to call below to remove/add the ability to use ESC to
+		// unpause/pause
 		mainScene.setEscapeEventHandler(value, mainScene.getStage());
 	}
 

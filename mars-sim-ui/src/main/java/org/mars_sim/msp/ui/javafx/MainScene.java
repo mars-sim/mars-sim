@@ -676,8 +676,8 @@ public class MainScene {
         //AnchorPane.setLeftAnchor(earthTimeBar, sceneWidth.get()/2D);// - earthTimeBar.getPrefWidth());
         //AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
 
-        AnchorPane.setLeftAnchor(earthTimeBar, 5.0);
-        AnchorPane.setRightAnchor(marsTimeBar, 0.0);
+        AnchorPane.setRightAnchor(marsTimeBar, 30.0);
+        AnchorPane.setRightAnchor(earthTimeBar, marsTimeBar.getMinWidth());
         
         if (OS.contains("linux")) {
         	AnchorPane.setTopAnchor(earthTimeBar, 30.0);
@@ -805,9 +805,7 @@ public class MainScene {
 		//earthTimeLabel.setPrefSize(180, 30);
 		earthTime.setTextAlignment(TextAlignment.CENTER);
 		
-		Tooltip t = new Tooltip("Click to see Quick Info on Mars");
-		earthTime.setTooltip(t);
-		setQuickToolTip(earthTime, t);
+		setQuickToolTip(earthTime, "Click to see Quick Info on Mars");
 		
 		earthTimeBar.getChildren().add(earthTime);
 	}
@@ -850,10 +848,7 @@ public class MainScene {
 		
 		marsTime.setId("rich-orange");
 		marsTime.setTextAlignment(TextAlignment.CENTER);
-		
-		Tooltip t = new Tooltip("Click to see Quick Info on Mars");
-		marsTime.setTooltip(t);
-		setQuickToolTip(marsTime, t);
+		setQuickToolTip(marsTime, "Click to see Quick Info on Mars");
 
 		marsTimeBar.getChildren().add(marsTime);
 	}
@@ -862,9 +857,7 @@ public class MainScene {
 		cacheButton = new JFXToggleButton();
 		cacheButton.setText("Cache Off");
 		cacheButton.setSelected(false);
-		Tooltip t = new Tooltip("Caching Settlement Map even after switching to another tab");
-		cacheButton.setTooltip(t);
-		setQuickToolTip(cacheButton, t);
+		setQuickToolTip(cacheButton, "Retain Settlement Map after switching to another tab");
 		cacheButton.setOnAction(e -> {
 			if (cacheButton.isSelected()) {
 				cacheButton.setText("Cache On");
@@ -923,9 +916,8 @@ public class MainScene {
 		zoomSlider.setBlockIncrement(1);
 		zoomSlider.setOrientation(Orientation.VERTICAL);
 		zoomSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
-		Tooltip t2 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
-		zoomSlider.setTooltip(t2);
-		setQuickToolTip(zoomSlider, t2);
+
+		setQuickToolTip(zoomSlider, Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
 		
 		// detect dragging on zoom scroll bar
         zoomSlider.valueProperty().addListener(new ChangeListener<Number>() {
@@ -952,9 +944,7 @@ public class MainScene {
 		//sBox.setAlignment(Pos.CENTER_RIGHT);
 		//JFXListView<Settlement> list = new JFXListView<Settlement>();	
 		sBox.getStyleClass().add("jfx-combo-box");
-		Tooltip t2 = new Tooltip(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		sBox.setTooltip(t2);
-		setQuickToolTip(sBox, t2);
+		setQuickToolTip(sBox, Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		//ObservableList<Settlement> names = sim.getUnitManager().getSettlementOList();		
 		sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
 		sBox.setPromptText("Select a settlement to view");
@@ -1094,7 +1084,7 @@ public class MainScene {
 		minimapNodePane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
 		miniMapBtn = new JFXButton();
-		miniMapBtn.setTooltip(new Tooltip("Open mini-map below"));
+		setQuickToolTip(miniMapBtn, "Open Mars Navigator minimap below");
 		miniMapBtn.setOnAction(e -> {
 			
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
@@ -1157,7 +1147,7 @@ public class MainScene {
         });
 		
 		mapBtn = new JFXButton();
-		mapBtn.setTooltip(new Tooltip("Open settlement map below"));
+		setQuickToolTip(mapBtn, "Open settlement map below");
 		mapBtn.setOnAction(e -> {			
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 				//System.out.println("closing map tool.");
@@ -1646,9 +1636,9 @@ public class MainScene {
     public JFXPopup createFlyout() {
      	marsNetButton = new JFXButton();       
         //marsNetButton.setId("marsNetButton");
-        marsNetButton.setTooltip(new Tooltip ("Open MarsNet chat box"));
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
- 
+		setQuickToolTip(marsNetButton, "Open MarsNet chat box");
+
 		flyout = new JFXPopup();
 		flyout.setOpacity(.9);
 		flyout.setContent(createChatBox());
@@ -1748,9 +1738,8 @@ public class MainScene {
 		lastSaveLabel.setPrefSize(250, 25);
 		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
 		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
-		Tooltip t = new Tooltip ("Last time When the sim was (auto)saved");
-		lastSaveLabel.setTooltip(t);
-		setQuickToolTip(lastSaveLabel, t);
+
+		setQuickToolTip(lastSaveLabel, "Last time when the sim was (auto)saved");
 		
 		lastSaveBar.getChildren().add(lastSaveLabel);		
 /*
@@ -2565,7 +2554,12 @@ public class MainScene {
 		snackbar.fireEvent(new SnackbarEvent(msg, "UNDO",3000,(b)->{}));
 	}
 	
-
+	public void setQuickToolTip(Node n, String s) {	
+		Tooltip t = new Tooltip(s);
+		marsNetButton.setTooltip(t);
+		setQuickToolTip(n, t);
+	}
+	
 	/**
 	 * Speeds up the time it takes to display JavaFX's tooltip 
 	 * @param node

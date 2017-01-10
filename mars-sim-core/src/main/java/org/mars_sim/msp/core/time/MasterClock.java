@@ -391,7 +391,7 @@ public class MasterClock implements Serializable { // Runnable,
 
     // 2017-01-09 Add resetTotalPulses()
 	public void resetTotalPulses() {
-		totalPulses = totalPulses/2;
+		totalPulses = (totalPulses*3)/5;
 	}
 	
     /**

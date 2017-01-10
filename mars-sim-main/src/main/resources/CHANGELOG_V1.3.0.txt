@@ -5,30 +5,34 @@ http://mars-sim.sourceforge.net/
 
 ------------------------------------------------------
 
-## v3.1.0 (build 38__) Snapshot Preview 5 - 2017-01-__
+## v3.1.0 (build 3835) Snapshot Preview 5 - 2017-01-10
 
 
-### KNOWN LIMITATION :
+### KNOWN LIMITATIONS :
 
 1. The Graphic Mode cannot run under MacOSX due to some unknown bugs. However, it can still run under Headless Mode in MacOSX.
 
-2. The Main Menu's 3D Mars Globe has shadow artifact when running in linux (due to unknown recent Java JDK changes)
+2. Main Menu's 3D Mars Globe may display shadow artifact when running in linux (due to unknown recent JavaFX changes)
 
-3. User must have 64-bit Java SE or JDK installed.
+3. User must have 64-bit Java 8 SE or JDK installed (not compatible with 32-bit Java 8 or any versions of OpenJDK).
 
-### NEW FEATURES :
 
-1. Add country of origin for each settler
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Lower cpu utilization.
+1. Scale cpu utilization according to the available number of threads in the CPU.
+
+- Slower CPUs will have lower pulse per seconds and time ratio.
+
 
 ### UI IMPROVEMENT :
 
-1. Rework display of time ratio in Time Tool.
+1. Minor rework on the display in Time Tool.
+
 
 ### FIXES :
+
+1. Enable lower clock speed cpu such as Dual Core Pentium/Celeron to run mars-sim.
 
 
 
@@ -37,7 +41,7 @@ http://mars-sim.sourceforge.net/
 ## v3.1.0 (build 3817) Snapshot Preview 4 - 2016-12-05
 
 
-### Known Limitation :
+### KNOWN LIMITATIONS :
 
 1. The Graphic Mode cannot run under MacOSX due to some unknown bugs. However, it can still run under Headless Mode in MacOSX.
 
