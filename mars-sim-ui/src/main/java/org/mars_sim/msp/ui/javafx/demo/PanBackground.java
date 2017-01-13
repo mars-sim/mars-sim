@@ -14,12 +14,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-class Test extends StackPane {
+class PanTest extends StackPane {
   private Rectangle rect;
   private double pressedX, pressedY;
   private LongProperty frame = new SimpleLongProperty();
 
-  public Test() {
+  public PanTest() {
     setMinSize(600, 600);
     setStyle("-fx-border-color: blue;");
     Label count = new Label();
@@ -65,7 +65,7 @@ class Test extends StackPane {
 public class PanBackground extends Application {
   public static void main(String[] args) { launch(args); }
   @Override public void start(Stage stage) {
-    stage.setScene(new Scene(new Test()));
+    stage.setScene(new Scene(new PanTest()));
     stage.show();
   }
 }

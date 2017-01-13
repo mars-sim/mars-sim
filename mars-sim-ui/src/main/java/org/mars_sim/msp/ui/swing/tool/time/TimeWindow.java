@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.08 2015-09-22
+ * @version 3.1.0 2017-01-12
  * @author Scott Davis
  */
 
@@ -65,7 +65,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** Tool name. */
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
-	public static final String ONE_REAL_SEC = "1 real sec -> ";
+	public static final String ONE_REAL_SEC = "1 real sec equals ";
 	
 	/** the max ratio the sim can be set at. */
 	public static final double maxratio = 10800d;
@@ -558,13 +558,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public void clockPulse(double time) {
 		// if (mainScene != null) {
 		// Platform.runLater(() -> {
-		updateTime(time);
+		//updateTime(time);
 		// });
 		// }
 		// else {
-		// SwingUtilities.invokeLater(() -> {
-		// updateTime(time);
-		// });
+		SwingUtilities.invokeLater(() -> {
+			updateTime(time);
+		});
 		// }
 	}
 
@@ -576,17 +576,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	// 2015-01-09 Added updateTime()
 	public void updateTime(double time) {
 		if (marsTime != null) {
-			SwingUtilities.invokeLater(() -> {
-				if (marsTime != null)
+			//SwingUtilities.invokeLater(() -> {
+				if (marsTime.getDateTimeStamp() != null)
 					martianTimeLabel.setText(marsTime.getDateTimeStamp());
-			});
+			//});
 			int solElapsed = marsTime.getSolElapsedFromStart();
 			// 2015-02-24 Added solElapsedCache
 			if (solElapsed != solElapsedCache) {
-
-				if (marsTime.getMonthName() != null)
-					martianMonthLabel.setText(marsTime.getMonthName());
-
+				//SwingUtilities.invokeLater(() -> {
+					if (marsTime.getMonthName() != null)
+						martianMonthLabel.setText(marsTime.getMonthName());
+				//});
 				setSeason();
 
 				solElapsedCache = solElapsed;
@@ -595,10 +595,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		if (earthTime != null) {
 			if (earthTime.getTimeStamp() != null)
-				SwingUtilities.invokeLater(() -> {
+				//SwingUtilities.invokeLater(() -> {
 					if (earthTime != null)
 						earthTimeLabel.setText(earthTime.getTimeStamp());
-				});
+				//});
 		}
 
 		if (masterClock != null) {

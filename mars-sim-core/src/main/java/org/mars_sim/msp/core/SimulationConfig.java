@@ -247,8 +247,8 @@ public class SimulationConfig implements Serializable {
 			         d = Double.valueOf(str.trim()).doubleValue();
 			         //System.out.println("double d = " + d);
 			         
-			         if (d < 0.001 || d > 10_800)
-			 			throw new IllegalStateException("time_ratio must be between .0001 and 500,000.");
+			         if (d < 16D && d > 4096D)
+			 			throw new IllegalStateException("time_ratio must be between 16.0 and 4096.0");
 			         
 			      } catch (NumberFormatException nfe) {
 			         System.out.println("NumberFormatException found in time_ratio : " + nfe.getMessage());

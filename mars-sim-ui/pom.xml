@@ -173,6 +173,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		</dependency-->
 		<dependency>
 			<groupId>eu.hansolo</groupId>
+			<artifactId>tilesfx</artifactId>
+			<version>1.2.5</version>
+		</dependency>		
+		<dependency>
+			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
 			<version>7.3</version>
 		</dependency>

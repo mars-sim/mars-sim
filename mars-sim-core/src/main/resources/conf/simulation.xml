@@ -10,9 +10,13 @@
 		<!-- time-ratio (TR) is the simulation time ratio : the ratio of real time to sim time -->
 		<!-- It denotes the speed of the simulation -->
 		<!-- Value must be positive number between 0.001 and 10800 and cannot be zero -->
-		<!-- Default: 500.0 (for a cpu with 8+ threads. Will automatically set to a fraction of its value if having less threads-->
-		<time-ratio value="500.0" />
-		<!-- e.g. if TR = 500, 1 real second in your computer = 500 sim second in MSP  -->
+		<!-- Default: 512.0 -->
+		<time-ratio value="512" />
+		<!-- 1. time ratio will be re-scaled according to available # of threads (not # of cpu cores). 
+			 2. time ratio must be a multiple of 2.
+			 3. if time ratio is 512, then 1 real second equals 512 simulation second in mars-sim  
+			 4. Minimum is 16, maximum is 4096
+		-->
 
 		<!-- time-between-updates (TBU) is the ideal time interval between two successive updates [in milliseconds] -->
 		<!-- It is essentially the maximum sleep time between two game iterations or updates.

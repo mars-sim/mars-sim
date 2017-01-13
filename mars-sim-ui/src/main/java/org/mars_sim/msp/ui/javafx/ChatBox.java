@@ -119,11 +119,21 @@ public class ChatBox extends BorderPane {
     	//this.setHeight(height);
     	//super.setHeight(height);
     	
-    	this.setStyle("-fx-background-color: white;" 
-    	        		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
-    	        //		+ "-fx-text-fill: white;"
-          				+ "-fx-background-radius: 5px;"
-    	        );        
+    	//this.setStyle("-fx-background-color: white;" 
+    	//        		+ "-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.8), 10, 0, 0, 0);"
+    	//				+ "-fx-text-fill: white;"
+        //  			+ "-fx-background-radius: 5px;"
+    	//        		);
+    	
+		this.setStyle("-fx-background-color: grey;"//#7ebcea;" //#426ab7;"//
+				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+				+ "-fx-background-radius: 3px;"
+				+ "-fx-text-fill: black;"
+				+ "-fx-border-color: white;"
+	    		+ "-fx-border-radius: 3px;"
+	    		+ "-fx-border-width: 1px;"
+	    		+ "-fx-border-style: solid; "
+				);
     			
        	box_height[0] = 256; //mainScene.getFlyout().getContainerHeight();
     	box_height[1] = 512;//box_height[0] * 1.5D;

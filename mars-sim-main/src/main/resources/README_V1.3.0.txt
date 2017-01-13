@@ -1,12 +1,16 @@
 ** Mars Simulation Project **
-Copyright (C) 2016 Scott Davis
+Copyright (C) 2017 Scott Davis
 http://mars-sim.sourceforge.net/
 
 ---------------------------------------------------------------------
 
 ** Minimum Requirements **
 
-- Dual Core Pentium 2.2GHz or above
+- Dual Core Pentium/Celeron 
+
+- 1.5GHz or above
+
+- 1 GB RAM dedicated for running mars-sim
 
 - 64-bit Java 8 (jre1.8.0_60 or above) 
 

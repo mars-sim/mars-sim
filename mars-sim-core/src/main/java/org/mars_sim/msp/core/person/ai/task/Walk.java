@@ -804,21 +804,24 @@ implements Serializable {
     	if (person != null) {
             logger.finer(person + " walking rover interior phase.");
 
-
             // Check if person has reached destination location.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Rover rover = (Rover) person.getVehicle();
 
-            // Update rover destination if rover has moved and existing destination is no longer within rover.
-            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
-                // Determine new destination location within rover.
-                // TODO: Determine location based on activity spot?
-                Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
-                Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(),
-                        newRoverLoc.getY(), rover);
-                step.xLoc = relativeRoverLoc.getX();
-                step.yLoc = relativeRoverLoc.getY();
+            // 2017-01-12 working on resolving NullPointerException 
+            if (rover != null) {
+                // Update rover destination if rover has moved and existing destination is no longer within rover.
+                if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
+                    // Determine new destination location within rover.
+                    // TODO: Determine location based on activity spot?
+                    Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
+                    Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(),
+                            newRoverLoc.getY(), rover);
+                    step.xLoc = relativeRoverLoc.getX();
+                    step.yLoc = relativeRoverLoc.getY();
+                }	
             }
+
 
             Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
             Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);

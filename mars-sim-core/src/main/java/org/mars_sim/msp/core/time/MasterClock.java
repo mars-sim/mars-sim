@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.08 2015-09-22
+ * @version 3.1.0 2017-01-12
  * @author Scott Davis
  */
 
@@ -86,6 +86,8 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient List<ClockListener> listeners;
 	private transient List<ClockListenerTask> clockListenerTaskList =  new CopyOnWriteArrayList<>();
 
+	private double time_ratio;
+	
 	/** Martian Clock. */
 	private MarsClock marsTime;
 	/** Initial Martian time. */
@@ -138,35 +140,43 @@ public class MasterClock implements Serializable { // Runnable,
         double ratio = config.getSimulationTimeRatio();
         double ms = config.getTimeBetweenUpdates();
         if (Simulation.NUM_THREADS == 1) {
-        	setTimeRatio(ratio/12D);
-            setTimeBetweenUpdates(ms*12D);
+        	time_ratio = ratio/8D;
+        	setTimeRatio(time_ratio);
+            setTimeBetweenUpdates(ms*16D);
         }
         if (Simulation.NUM_THREADS == 2) {
-        	setTimeRatio(ratio/10D);
-            setTimeBetweenUpdates(ms*10D);
+        	time_ratio = ratio/8D;
+        	setTimeRatio(time_ratio);
+            setTimeBetweenUpdates(ms*12D);
         }
         else if (Simulation.NUM_THREADS <= 3) {
-        	setTimeRatio(ratio/8D);
+        	time_ratio = ratio/4D;
+        	setTimeRatio(time_ratio);
             setTimeBetweenUpdates(ms*8D);
         }
         else if (Simulation.NUM_THREADS <= 4) {
-        	setTimeRatio(ratio/6D);
-            setTimeBetweenUpdates(ms*6D);
-        }
-        else if (Simulation.NUM_THREADS <= 6) {
-        	setTimeRatio(ratio/4D);
+           	time_ratio = ratio/4D;
+        	setTimeRatio(time_ratio);
             setTimeBetweenUpdates(ms*4D);
         }
-        else if (Simulation.NUM_THREADS <= 8) {
-        	setTimeRatio(ratio/2D);
+        else if (Simulation.NUM_THREADS <= 6) {
+        	time_ratio = ratio/2D;
+        	setTimeRatio(time_ratio);
             setTimeBetweenUpdates(ms*2D);
         }
+        else if (Simulation.NUM_THREADS <= 8) {
+        	time_ratio = ratio/2D;
+        	setTimeRatio(time_ratio);
+            setTimeBetweenUpdates(ms);
+        }
         else if (Simulation.NUM_THREADS <= 12) {
-        	setTimeRatio(ratio);
+        	time_ratio = ratio;
+        	setTimeRatio(time_ratio);
             setTimeBetweenUpdates(ms);
         }
         else {
-        	setTimeRatio(ratio);
+        	time_ratio = ratio;
+        	setTimeRatio(time_ratio);
             setTimeBetweenUpdates(ms);
         }
         
@@ -400,7 +410,7 @@ public class MasterClock implements Serializable { // Runnable,
      * each real-world minute.
      */
     public void setTimeRatio(double ratio) {
-        if (ratio >= 0.0001D && ratio <= 500000D) {
+        if (ratio >= 16D && ratio <= 65536D) {
             timeRatio = Math.round(ratio*100D)/100D;
             //System.out.println("timeRatio : " + timeRatio + " ");
         }
@@ -886,9 +896,10 @@ public class MasterClock implements Serializable { // Runnable,
 */
         if (hours > 0) {
             b.append(String.format("%02d", hours)).append("h ");
-        } else {
-            b.append("00h ");
-        }
+        }    
+        //} else {
+        //    b.append("00h ");
+        //}
 
         if (minutes > 0) {
             b.append(String.format("%02d", minutes)).append("m ");
@@ -939,6 +950,10 @@ public class MasterClock implements Serializable { // Runnable,
 		return clockListenerExecutor;
 	}
 
+	public double getDefaultTimeRatio() {
+		return time_ratio;
+	}
+	
     /**
      * Prepare object for garbage collection.
      */

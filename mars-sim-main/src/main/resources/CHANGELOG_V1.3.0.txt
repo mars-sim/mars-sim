@@ -1,6 +1,12 @@
 Mars Simulation Project v3.1.0
-Copyright (C) 2016 Scott Davis
+Copyright (C) 2017 Scott Davis
 http://mars-sim.sourceforge.net/
+
+------------------------------------------------------
+
+## v3.1.0 (build 38__) Snapshot Preview 6 - 2017-01-__
+
+
 
 
 ------------------------------------------------------
@@ -198,7 +204,7 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 3. Added more first and last names (of various national origin) in people.xml for settlers from various sponsoring space agencies.
 
-4. Added new part "heat pipe" and used it throught the sim.
+4. Added new part "heat pipe" and used it throughout the sim.
 
 
 ### FIXES :
@@ -320,13 +326,10 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 14. Reworked Simulation Configuration Editor for choosing one sponsoring space agency for each settlement.
 
-15. Applied LZMA2 compression and reduced the size of saved sim by 5-10 times.
-
-
 
 ### FIXES/IMPROVEMENTS/OTHER CHANGES :
 
-1. Fixed temperation fluctuation with better algorithm for HVAC calculation.
+1. Fixed temperature fluctuation with better algorithm for HVAC calculation.
 
 2. Added placement of buildings for Transport Wizard in the Resupply Tool. 
 
@@ -351,3 +354,6 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 12. More internationalization.
 
 13. Improved multithreading.
+
+14. Applied LZMA2 compression and reduced the size of saved sim by 5-10 times.
+
