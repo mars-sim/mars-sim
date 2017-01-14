@@ -472,11 +472,16 @@ implements VehicleOperator, MissionMember, Serializable {
      */
     // 2017-01-03 Revise createBirthTimeString()
     private String createBirthTimeString() {
+    	StringBuilder s = new StringBuilder();
         // Set a birth time for the person
         int year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
         		//2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
+        s.append(year);
+        
         int month = RandomUtil.getRandomInt(11) + 1;
         String monthString = EarthClock.getMonthForInt(month-1);
+        s.append("-").append(monthString).append("-");
+        
         int day;
         if (month == 2) {
             if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
@@ -496,16 +501,29 @@ implements VehicleOperator, MissionMember, Serializable {
         	logger.warning( name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
         	day = 1;
         }
-
+        
+        if (day < 10) s.append(0);
+    	s.append(day).append(" ");
+        
         int hour = RandomUtil.getRandomInt(23);
+        if (hour < 10) s.append(0);
+    	s.append(hour).append(":");
+    	
         int minute = RandomUtil.getRandomInt(59);
+        if (minute < 10) s.append(0);
+    	s.append(minute).append(":");
+    	
         int second = RandomUtil.getRandomInt(59);
-
+        if (second < 10) s.append(0);
+    	s.append(second);
+    	
         //return month + "/" + day + "/" + year + " " + hour + ":"
         //+ minute + ":" + second;
         
-        return year + "-" + monthString + "-" + day + " " 
-        + hour + ":" + minute + ":" + second;
+        //return year + "-" + monthString + "-" + day + " " 
+        //+ hour + ":" + minute + ":" + second;
+    	
+    	return s.toString();
     }
 
     /**
