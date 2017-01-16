@@ -1,22 +1,22 @@
 # mars-sim
 
-The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars in a virtual environment. Each agent has various human-like characteristics, capable of making distinct decisions on a virtual Mars and interacting with one another. 
+The Mars Simulation Project is a Java based open source project that simulates the activities of the first generation of settlers on Mars in a virtual environment. Each agent has various human-like characteristics, capable of making distinct decisions on a virtual Mars and interacting with one another on the surface of Mars.
 
 
 ## Modeling and Simulation
 
-As a social simulation, mars-sim models in terms of a settler's career type, job role, technical skills, personality and temperament and relationship with one another as they go about their day-to-day lives. 
+As a semi-social simulation, mars-sim models mostly the professional interaction between the settlers in terms of their career type, job role, technical skills, personality, natural attribute, prior trainings, and relationship with one another as they strive on Mars.
 
-Player can create numerous settlements spreading across Mars, from a simple 4-person initial landing site, a mining site to more matured bases hosting higher functions. 
+Player may create numerous settlements spreading across the surface of Mars such as a simple 4-person initial landing base, a mining site, or a more self-contained settlement hosting higher functions. 
 
-These settlements have command structures, their own goals, and can trade with one another. 
+Each settlement has a command structure, a developmental objective, and it's only internal checks and balances to set the Value Points (VP) of each resources 
 
 
 ## Tasks and Missions
 
-At the base construction phase, most settlers will spend much of their time learning to "live off the land". They will be busy in maintenance, growing crops in greenhouses, and manufacturing needed parts and equipment from collected local resources. 
+Initially most settlers will spend much of their time learning to "live off the land". They will be busy in maintenance, ensuring life support resources are well balanced, growing crops in greenhouses, and manufacturing needed parts and equipment in workshops. 
 
-Settlers will also go out on rover missions to explore and study surrounding areas, prospect and mine mineral concentrations, and trade with neighboring settlements. 
+Settlers will also go out on rover missions to explore and study surrounding landscapes, prospect and mine minerals, and trade with neighboring settlements via trading missions. 
 
 
 ## Summary
@@ -30,12 +30,14 @@ We welcome anyone who would like to contribute mars-sim in coding or artwork/sou
 
 You may also join our facebook community at https://www.facebook.com/groups/125541663548/
 
-For a general description of this project, see ourproject web site at at http://mars-sim.sourceforge.net/ 
+See the new wiki at https://github.com/mars-sim/mars-sim/wiki
+
+For a general description of this project, see our project website at at http://mars-sim.sourceforge.net/ 
 
 
 ## Binaries Download 
 
-Check our latest 3.1.0 version snapshot at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/ 
+Check our latest 3.1.0 version preview at https://sourceforge.net/projects/mars-sim/files/mars-sim/3.1.0/ 
 
 
 
