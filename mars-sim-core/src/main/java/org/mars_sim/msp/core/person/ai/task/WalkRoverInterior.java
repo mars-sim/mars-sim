@@ -60,7 +60,7 @@ implements Serializable {
         LocationSituation location = person.getLocationSituation();
         if (location != LocationSituation.IN_VEHICLE) {
             throw new IllegalStateException(
-                    "WalkRoverInterior task started when person is not in a rover.");
+                    "WalkRoverInterior task started when " + person + " is not in a rover.");
         }
         
         // Initialize data members.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeMeta.java
- * @version 3.07 2015-03-01
+ * @version 3.1.0 2017-01-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;

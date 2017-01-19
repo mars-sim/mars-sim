@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReportingAuthorityType.java
- * @version 3.08 2015-11-29
+ * @version 3.1.0 2017-01-14
  * @author Manny Kung
  */
 

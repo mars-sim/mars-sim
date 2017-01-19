@@ -64,13 +64,13 @@ implements Serializable {
     private static int MAX_VALUE = 1;
 
     /** Stress jump resulting from being in an accident. */
-    public static final double ACCIDENT_STRESS = 40D;
+    public static final double ACCIDENT_STRESS = 10D;
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
     
-    public static final double MENTAL_BREAKDOWN = 90D;
+    public static final double MENTAL_BREAKDOWN = 100D;
     
-    private static final double COLLAPSE_IMMINENT = 3000D;
+    private static final double COLLAPSE_IMMINENT = 4000D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     private static final String PANIC_ATTACK = "Panic Attack";

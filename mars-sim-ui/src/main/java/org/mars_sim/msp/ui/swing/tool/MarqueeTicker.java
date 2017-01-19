@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarqueeTicker.java
- * @version 3.08 2015-12-22
+ * @version 3.1.0 2017-01-19
  * @author Manny Kung
  */
 

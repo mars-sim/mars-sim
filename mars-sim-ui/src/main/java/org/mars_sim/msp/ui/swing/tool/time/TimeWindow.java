@@ -577,15 +577,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public void updateTime(double time) {
 		if (marsTime != null) {
 			//SwingUtilities.invokeLater(() -> {
-				if (marsTime.getDateTimeStamp() != null)
-					martianTimeLabel.setText(marsTime.getDateTimeStamp());
+			String ts = marsTime.getDateTimeStamp();
+				if (!ts.equals("  ") && ts != null)
+					martianTimeLabel.setText(ts);
 			//});
 			int solElapsed = marsTime.getSolElapsedFromStart();
 			// 2015-02-24 Added solElapsedCache
 			if (solElapsed != solElapsedCache) {
 				//SwingUtilities.invokeLater(() -> {
-					if (marsTime.getMonthName() != null)
-						martianMonthLabel.setText(marsTime.getMonthName());
+				String mn = marsTime.getMonthName();
+					if (mn != null)
+						martianMonthLabel.setText(mn);
 				//});
 				setSeason();
 
@@ -594,10 +596,11 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 
 		if (earthTime != null) {
-			if (earthTime.getTimeStamp() != null)
+			String ts = earthTime.getTimeStamp();
+			if (ts != null)
 				//SwingUtilities.invokeLater(() -> {
-					if (earthTime != null)
-						earthTimeLabel.setText(earthTime.getTimeStamp());
+					//if (earthTime != null)
+						earthTimeLabel.setText(ts);
 				//});
 		}
 

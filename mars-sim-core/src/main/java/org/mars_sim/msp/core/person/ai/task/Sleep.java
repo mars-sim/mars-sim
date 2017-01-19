@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.08 2015-05-29
+ * @version 3.1.0 2017-01-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -113,7 +113,7 @@ public class Sleep extends Task implements Serializable {
         	Settlement s2 = person.getAssociatedSettlement();
         	
 			// check to see if a person is a trader or on a trading mission
-			if (!s1.equals(s2)) {
+			if (!s1.equals(s2) || s1 != s2) {
         		// yes he is a trader/guest (Case 1-3)
             	//logger.info(person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
 				// find a best empty (EU, ED) bed

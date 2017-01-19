@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainMenu.java
- * @version 3.08 2015-04-09
+ * @version 3.1.0 2017-01-19
  * @author Manny Kung
  */
 
@@ -292,18 +292,19 @@ public class MainMenu {
 	   stage.hide(); 
 	   // creates a mainScene instance
 	   mainScene = new MainScene(mainSceneStage);
-	   // goes to scenario config editor
+
 	   
 	   //marsProjectFX.handleNewSimulation();
-		logger.info("Creating a new sim in " + OS);	
-        try {
-            //SimulationConfig.loadConfig(); // located to prepare()
-           	Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
+	   //logger.info("Creating a new sim in " + OS);	
+       try {
+    	   //SimulationConfig.loadConfig(); // located to prepare()
+    	   // goes to scenario config editor
+    	   Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
            	
-        } catch (Exception e) {
-            e.printStackTrace();
-            exitWithError("Error : could not create a new simulation ", e);
-        }
+       } catch (Exception e) {
+    	   e.printStackTrace();
+    	   exitWithError("Error : could not create a new simulation ", e);
+       }
    }
 
 	public class ConfigEditorTask implements Runnable { 	

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 3.07 2015-02-24
-
+ * @version 3.1.0 2017-01-19
  * @author Scott Davis
  */
 
@@ -365,18 +364,18 @@ public class MarsClock implements Serializable {
         StringBuilder result = new StringBuilder();
 
         // 2016-11-23 Append padding zeros to orbit
-        if (orbit < 10)
+        if (orbit < 10) // then 000x
         	result.append("000");
-        else if (orbit < 100)
+        else if (orbit < 100) // then 00xx
         	result.append("00");
-        else 
+        else if (orbit < 1000) // then 0xxx
         	result.append("0");
         
         result.append(orbit).append("-").append(getMonthName()).append("-");
 
-        if(sol < 10){
+        if(sol < 10)
             result.append("0");
-        }
+        
         result.append(sol);
 //        // Append sol of month
 //        String solString = "" + sol;

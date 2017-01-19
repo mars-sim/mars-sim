@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.08 2015-04-24
+ * @version 3.1.0 2017-01-14
  * @author Scott Davis
  */
 
@@ -35,15 +35,20 @@ import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.reportingAuthority.AdvancingSpaceKnowledge;
 import org.mars_sim.msp.core.reportingAuthority.CNSAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.CSAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.DeterminingHabitability;
 import org.mars_sim.msp.core.reportingAuthority.DevelopingAdvancedTechnology;
 import org.mars_sim.msp.core.reportingAuthority.DevelopingSpaceActivity;
 import org.mars_sim.msp.core.reportingAuthority.ESAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.FindingLife;
 import org.mars_sim.msp.core.reportingAuthority.FindingMineral;
+import org.mars_sim.msp.core.reportingAuthority.ISROMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.JAXAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.MarsSocietyMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.NASAMissionControl;
+import org.mars_sim.msp.core.reportingAuthority.RKAMissionControl;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthority;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
+import org.mars_sim.msp.core.reportingAuthority.ResearchingHealthHazard;
 import org.mars_sim.msp.core.reportingAuthority.ResearchingSpaceApplication;
 import org.mars_sim.msp.core.reportingAuthority.SettlingMars;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -243,6 +248,7 @@ implements VehicleOperator, MissionMember, Serializable {
     
     // 2016-01-12 Added setupTrait()
     public void setupTrait() {
+    	// TODO: set up a set of genes that was passed onto this person from two hypothetical parents
        	int ID = 40;
     	boolean dominant = false;
     	  	
@@ -327,12 +333,12 @@ implements VehicleOperator, MissionMember, Serializable {
     public void setupHeight() {
        	int ID = 20;
     	boolean dominant = false;
-    	
+        // Set height of person as gender-correlated curve
         double dad_height = (this.gender == PersonGender.MALE ?
                 156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
                     146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
                 );       
-        // Set height of person as gender-correlated curve.
+
         double mom_height = (this.gender == PersonGender.MALE ?
                 156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
                     146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
@@ -387,11 +393,11 @@ implements VehicleOperator, MissionMember, Serializable {
     			ra.setMissionAgenda(new DevelopingSpaceActivity());
 
     		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ISRO) {
-    	        ra = new CSAMissionControl();
+    	        ra = new ISROMissionControl();
     	        ra.setMissionAgenda(new DevelopingAdvancedTechnology());   
 
     		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.JAXA) {
-    			ra = new ESAMissionControl();
+    			ra = new JAXAMissionControl();
     			ra.setMissionAgenda(new ResearchingSpaceApplication());
      			
     		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.NASA) {
@@ -401,8 +407,13 @@ implements VehicleOperator, MissionMember, Serializable {
      	        
     		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.MARS_SOCIETY) {
 	    		ra = new MarsSocietyMissionControl();
-	    		ra.setMissionAgenda(new SettlingMars());
+	    		ra.setMissionAgenda(new DeterminingHabitability());//SettlingMars());
+
+    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.RKA) {
+	    		ra = new RKAMissionControl();
+	    		ra.setMissionAgenda(new ResearchingHealthHazard());
     		}
+
     		else {
     		    // No reporting authority.
     		    ra = null;

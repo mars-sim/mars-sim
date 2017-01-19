@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 3.07 2015-01-21
+ * @version 3.1.0 2017-01-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -259,13 +259,12 @@ implements TableModelListener, ActionListener {
 
 
 		// Note: must define a starting size
-		setSize(new Dimension(1024, 512));
+		setSize(new Dimension(1280, 720));
 		setResizable(false);
 		setMaximizable(true);	
 
 		if (desktop.getMainScene() != null) {
 			setClosable(false);
-
 		}
 
 		setVisible(true);

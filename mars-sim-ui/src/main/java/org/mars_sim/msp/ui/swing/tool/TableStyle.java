@@ -179,7 +179,7 @@ public class TableStyle extends ZebraJTable{
 	    		selBack = new Color(144, 208, 229); // (144, 208, 229) is pale cyan; (70, 130, 180) is steelblue/dark sky blue
 	    		selFore = new Color(255, 255, 255); // (86, 105, 119) is grey blue; (133, 164, 242) is very pale light blue; 255 255 224 is LightYellow1
 	    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-	    		border = new Color(57, 105, 138);//Color.LIGHT_GRAY;	    		
+	    		border = new Color(165, 247, 233);//Color.WHITE;//new Color(57, 105, 138);//Color.LIGHT_GRAY;	    		
 	    		themeName = "Snow Blue";
 	    		
 	    	}
@@ -192,51 +192,24 @@ public class TableStyle extends ZebraJTable{
 	    		selBack = new Color(189,183,107); // 189,183,107 darkkhaki
 	    		selFore = new Color(255, 255, 224); // 255 255 224	LightYellow1
 	    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
-	    		border = new Color(101,75,0); //Color.orange;
+	    		border = new Color(243, 247, 136);//Color.WHITE; //new Color(101,75,0); //Color.orange;
 	    		themeName = "Mud Orange"; //Standard Nimrod";
 	    	}
 	
 		    // Get the TableColumn header to display sorted column
 		    theHeader = table.getTableHeader();
-		    theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
-		    theHeader.setDefaultRenderer(theRenderer);		
-			theHeader.setOpaque(false);	
-			theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );	
-			//theHeader.setBorder(BorderFactory.createLineBorder(border, 1));	
-		
         	
 	    	// TODO: why is it NOT working?
 			if (hBack != null) theHeader.setBackground(hBack);
 			if (hFore != null) theHeader.setForeground(hFore);
-
-			//theHeader.repaint();	
 			
-			/*	   	
-	    	JTableHeader header = null;
-	    	if (table.getTableHeader() != null)
-	    		header = table.getTableHeader();
-
-			header.setFont(new Font("Dialog", Font.BOLD, 12));
-			header.setBackground(new java.awt.Color(0, 167, 212));
-			header.setForeground(java.awt.Color.white);
-	*/
-			
-	/*
-				JTableHeader tableHeader = table.getTableHeader();
-			    if (tableHeader != null) {
-			    	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
-			    	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
-			    }
-	*/
-				// 2015-09-24 Align the content to the center of the cell
-				//DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-				//renderer.setHorizontalAlignment(SwingConstants.CENTER);
-				//renderer.setHorizontalAlignment(JLabel.CENTER);
-				//table.getColumnModel().getColumn(0).setCellRenderer(renderer);
-		    	//for (int i = 0; i < table.getColumnCount(); ++i) {
-		        //    table.getColumnModel().getColumn(i).setCellRenderer(renderer);
-		        //}
-		
+		    theRenderer = new TableHeaderRenderer(theHeader.getDefaultRenderer());
+		    theHeader.setDefaultRenderer(theRenderer);		
+		    // 2017-01-19 disable this will allow a gradient color on the header
+		    //theHeader.setOpaque(false);	
+			theHeader.setFont( new Font( "Dialog", Font.BOLD, 12 ) );	
+			theHeader.setBorder(BorderFactory.createLineBorder(border, 1));	
+			//theHeader.setBorder(new MatteBorder(1, 1, 0, 0, TableStyle.getBorderColor()));
 	
 			if (fore != null) table.setForeground(fore);
 			if (back != null) table.setBackground(back);
@@ -246,11 +219,10 @@ public class TableStyle extends ZebraJTable{
 
 			if (grid != null) table.setGridColor(grid);
 
-			//table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
-		
+			//table.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC		
 			table.setShowGrid(true);
 			table.setShowVerticalLines(true);			
-			//table.setBorder(BorderFactory.createLineBorder(border, 1));			
+			table.setBorder(BorderFactory.createLineBorder(border, 1));			
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 	    	
 			table.repaint();
@@ -292,12 +264,11 @@ class TableHeaderRenderer implements TableCellRenderer {
 				table, value, isSelected, hasFocus,
 				row, column);
 
-		// userful For JTables in person unit windows
+		// useful For JTables in person unit windows
 		if (theResult instanceof JLabel) {
 			// Must clear the icon if not sorted column. This is a renderer
 			// class used to render each column heading in turn.
 			JLabel cell = (JLabel) theResult;
-
 			//cell.setHorizontalAlignment(SwingConstants.CENTER); // not useful
 			//cell.setHorizontalAlignment(JLabel.CENTER); // not useful
 
@@ -306,15 +277,10 @@ class TableHeaderRenderer implements TableCellRenderer {
 			//cell.setFont(new Font("Helvetica Bold", Font.PLAIN,12)); //new Font("Arial", Font.BOLD, 12)); //Font.ITALIC
 			//cell.setForeground(Color.WHITE);
 			//cell.setBackground(new Color(255, 248, 220)); // 255 248 220 cornsilk1
-			MatteBorder border = new MatteBorder(1, 1, 0, 0, TableStyle.getBorderColor());
-			cell.setBorder(border);
+			cell.setBorder(new MatteBorder(1, 1, 0, 0, TableStyle.getBorderColor()));
+
 		}
 
-		//JTableHeader tableHeader = table.getTableHeader();
-	    //if (tableHeader != null) {
-	    //	tableHeader.setForeground(TableStyle.getHeaderForegroundColor());
-	    //	tableHeader.setBackground(TableStyle.getHeaderBackgroundColor());
-	    //}
 
 		return theResult;
 	}

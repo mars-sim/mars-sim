@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TableTab.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-01-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -347,9 +346,9 @@ extends MonitorTab {
         setSortColumn(0);
 
         // 2014-12-29 Added ColumnResizer
-     	//SwingUtilities.invokeLater(() -> {
-	    // 	adjustColumnPreferredWidths(table);
-	    //});
+     	SwingUtilities.invokeLater(() -> {
+	     	adjustColumnPreferredWidths(table);
+	    });
 
     }
 
@@ -362,7 +361,7 @@ extends MonitorTab {
         // Gets max width for cells in column as the preferred width
         TableColumnModel columnModel = table.getColumnModel();
         for (int col = 0; col < table.getColumnCount(); col++) {
-            int width = 100;
+            int width = 45;
             for (int row = 0; row < table.getRowCount(); row++) {
             	if (tableCellRenderer == null)
             		tableCellRenderer = table.getCellRenderer (row, col);

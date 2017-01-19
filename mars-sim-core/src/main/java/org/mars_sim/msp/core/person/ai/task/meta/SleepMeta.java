@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ShiftType;
 import org.mars_sim.msp.core.person.TaskSchedule;
 import org.mars_sim.msp.core.person.ai.job.Astronomer;
+import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.person.ai.task.Sleep;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.robot.Robot;
@@ -105,47 +106,47 @@ public class SleepMeta implements MetaTask, Serializable {
 
         	int now = (int) marsClock.getMillisol();
       	  	boolean isOnShiftNow = person.getTaskSchedule().isShiftHour(now);
+            boolean isOnCall = person.getTaskSchedule().getShiftType().equals(ShiftType.ON_CALL);
 
-            // Fatigue modifier.
             double fatigue = person.getFatigue();
-            
         	double stress = person.getStress();
         	
             // 1000 millisols is 24 hours, if a person hasn't slept for 24 hours,
             // he is supposed to want to sleep right away.
-        	if (fatigue > 1000D)
+        	if (fatigue > 1000D) {
         		proceed = true;
+        	}
+        	
+        	else {
+        		
+	        	int maxNumSleep = 0;
 
-        	int maxNumSleep = 0;
-            boolean isOnCall = person.getTaskSchedule().getShiftType().equals(ShiftType.ON_CALL);
-            if (isOnCall)
-            	maxNumSleep = 7;
-            else
-            	maxNumSleep = 3;
-
-            if (!proceed) {
-            	if (stress > 50D)
-            		proceed = true;
-            }
-            
-            if (!proceed && pc.getNumSleep() <= maxNumSleep) {
-            	// 2015-12-05 checks the current time against the sleep habit heat map
-    	    	int bestSleepTime[] = person.getBestKeySleepCycle();
-    	    	// check the two sleep time
-    	    	for (int time : bestSleepTime) {
-    		    	int diff = time - now;
-    		    	if (diff < 10 || diff > -10) {
-    		    		proceed = true;
-    		    		break;
-    		    	}
-    	    	}
-            }
-
+	        	if (isOnCall)
+	            	maxNumSleep = 7;
+	            else
+	            	maxNumSleep = 3;
+	
+	            if (stress > 50D)
+	            	proceed = true;
+	            
+	            if (pc.getNumSleep() <= maxNumSleep) {
+	            	// 2015-12-05 checks the current time against the sleep habit heat map
+	    	    	int bestSleepTime[] = person.getBestKeySleepCycle();
+	    	    	// check the two sleep time
+	    	    	for (int time : bestSleepTime) {
+	    		    	int diff = time - now;
+	    		    	if (diff < 10 || diff > -10) {
+	    		    		proceed = true;
+	    		    		break;
+	    		    	}
+	    	    	}
+	            }
+        	}
             
             if (proceed) {
 	            	
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result = (fatigue - 500D) / 10D + stress * 10D;
+	            result += (fatigue - 500D) / 10D + stress * 10D;
 	            
 	            // Check if person is an astronomer.
 	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);
@@ -212,10 +213,13 @@ public class SleepMeta implements MetaTask, Serializable {
 	        	Settlement s1 = person.getSettlement();
 	        	Settlement s2 = person.getAssociatedSettlement();
 	        	
+	        	// Note: !s1.equals(s2) is troublesome if s1 or s2 is null
+	        	
 				// check to see if a person is a trader or on a trading mission
-	        	if (s1 != s2) {
+				if (s1 != s2) {
+	        	//if (person.getMind().getJob() instanceof Trader) {
 	        		// yes he is a trader/guest
-	            	logger.fine("SleepMeta : " + person + " is a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
+	            	logger.fine("SleepMeta : " + person + " is a trader or a guest of a trade mission and will need to use an unoccupied bed randomly if being too tired.");
 	            	// Get a quarters that has an "unoccupied bed" (even if that bed has been designated to someone else)
 	            	quarters = Sleep.getBestAvailableQuarters(person, false);
 	            	
