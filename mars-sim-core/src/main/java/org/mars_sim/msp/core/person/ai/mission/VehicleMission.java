@@ -525,7 +525,7 @@ implements UnitListener {
 		        Person person = (Person) member;
 
 		        // Don't operate vehicle if person was the last operator.
-		        if (person != lastOperator) {
+		        if (person != lastOperator && vehicle != null) {
 		            // If vehicle doesn't currently have an operator, set this person as the operator.
 		            if (vehicle.getOperator() == null) {
 		                if (operateVehicleTask != null) {

@@ -119,14 +119,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/** label for pulses per second label. */
 	private JLabel pulsespersecondLabel, pulsesLabel;
 
-	private JLabel pulseHeaderLabel;
+	private JLabel timeRatioLabel, timeCompressionLabel;
+	
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
-
 	private JButton pauseButton;
-
 	private BalloonToolTip balloonToolTip;
-
 	private MainScene mainScene;
 
 	/**
@@ -309,81 +307,71 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		s0.append(ONE_REAL_SEC);
 		s0.append(masterClock.getTimeString(ratio));
 
-		final JLabel pulseCurRatioLabel = new JLabel(s0.toString(), JLabel.CENTER);
-		pulsePane.add(pulseCurRatioLabel, BorderLayout.CENTER);
+		timeCompressionLabel = new JLabel(s0.toString(), JLabel.CENTER);
+		pulsePane.add(timeCompressionLabel, BorderLayout.CENTER);
 
 		// Create pulse header label
 		JPanel northPanel = new JPanel(new GridLayout(2, 1));
 		JLabel speedLabel = new JLabel(Msg.getString("TimeWindow.simSpeed"), JLabel.CENTER); //$NON-NLS-1$
 
-		pulseHeaderLabel = new JLabel(Msg.getString("TimeWindow.pulseHeader", factor), JLabel.CENTER); //$NON-NLS-1$
+		timeRatioLabel = new JLabel(Msg.getString("TimeWindow.timeRatioHeader", factor), JLabel.CENTER); //$NON-NLS-1$
 		pulsePane.add(northPanel, BorderLayout.NORTH);
 
 		northPanel.add(speedLabel);
-		northPanel.add(pulseHeaderLabel);
-
-		pulseCurRatioLabel.addMouseListener(new MouseInputAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-
-				StringBuilder s0 = new StringBuilder();
-				double ratio = masterClock.getTimeRatio();
-				String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-				s0.append(ONE_REAL_SEC);
-				s0.append(masterClock.getTimeString(ratio));
-				pulseCurRatioLabel.setText(s0.toString());
-
-				pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
-
-				/*
-				 * if (pulseCurRatioLabel.getText().contains(":")) {
-				 * //$NON-NLS-1$ pulseCurRatioLabel.setText("1 Real Second : " +
-				 * String.format(Msg.getString("TimeWindow.timeFormat"),
-				 * masterClock.getTimeRatio())); //$NON-NLS-1$ } else {
-				 * pulseCurRatioLabel.setText("1 Real Second : " +
-				 * masterClock.getTimeString(masterClock.getTimeRatio())); }
-				 */
-			}
-		});
-
-		// Create pulse slider
-		int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
-		pulseSlider = new JSliderMW(1, 100, sliderpos);
-		pulseSlider.setMajorTickSpacing(20);
-		pulseSlider.setMinorTickSpacing(5);
-		pulseSlider.setPaintTicks(true);
-		pulseSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				try {
-					setTimeRatioFromSlider(pulseSlider.getValue());
-
+		northPanel.add(timeRatioLabel);
+		
+		if (mainScene == null) {
+	
+			timeCompressionLabel.addMouseListener(new MouseInputAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					super.mouseClicked(e);
+	
 					StringBuilder s0 = new StringBuilder();
 					double ratio = masterClock.getTimeRatio();
 					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 					s0.append(ONE_REAL_SEC);
 					s0.append(masterClock.getTimeString(ratio));
-					pulseCurRatioLabel.setText(s0.toString());
-					
-					pulseHeaderLabel.setText(Msg.getString("TimeWindow.pulseHeader", factor)); //$NON-NLS-1$
-
-					/*
-					 * if (pulseCurRatioLabel.getText().contains(":")) {
-					 * //$NON-NLS-1$
-					 * pulseCurRatioLabel.setText("1 Real Second : " +
-					 * String.format(Msg.getString("TimeWindow.timeFormat"),
-					 * masterClock.getTimeRatio())); //$NON-NLS-1$ } else {
-					 * pulseCurRatioLabel.setText("1 Real Second : " +
-					 * masterClock.getTimeString(masterClock.getTimeRatio())); }
-					 */
-				} catch (Exception e2) {
-					logger.log(Level.SEVERE, e2.getMessage());
+					timeCompressionLabel.setText(s0.toString());
+	
+					timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
+	
 				}
-			}
-		});
-		pulsePane.add(pulseSlider, BorderLayout.SOUTH);
-		setTimeRatioSlider(masterClock.getTimeRatio());
-
+			});
+	
+			
+			// Create pulse slider
+			int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
+			pulseSlider = new JSliderMW(1, 100, sliderpos);
+			pulseSlider.setEnabled(false);
+			pulseSlider.setMajorTickSpacing(20);
+			pulseSlider.setMinorTickSpacing(5);
+			pulseSlider.setPaintTicks(true);
+			pulseSlider.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					try {
+						
+						setTimeRatioFromSlider(pulseSlider.getValue()); // (int)(mainScene.getTimeRatio()/mainScene.getInitialTimeRatio()))
+	
+						StringBuilder s0 = new StringBuilder();
+						double ratio = masterClock.getTimeRatio();
+						String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+						s0.append(ONE_REAL_SEC);
+						s0.append(masterClock.getTimeString(ratio));
+						timeCompressionLabel.setText(s0.toString());		
+						timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
+	
+					} catch (Exception e2) {
+						logger.log(Level.SEVERE, e2.getMessage());
+					}
+				}
+			});
+		
+			pulsePane.add(pulseSlider, BorderLayout.SOUTH);
+			setTimeRatioSlider(masterClock.getTimeRatio());
+				
+		}
+		
 		// Pack window
 		pack();
 
@@ -406,7 +394,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Calculates a time ratio given a slider value.
-	 * 
 	 * @param sliderValue
 	 *            the slider value from 1 to 100.
 	 * @return time ratio value (simulation time / real time).
@@ -555,17 +542,19 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	@SuppressWarnings("restriction")
 	@Override
-	public void clockPulse(double time) {
-		// if (mainScene != null) {
-		// Platform.runLater(() -> {
-		//updateTime(time);
-		// });
-		// }
-		// else {
-		SwingUtilities.invokeLater(() -> {
-			updateTime(time);
-		});
-		// }
+	public void clockPulse(double time) {	
+
+		if (mainScene != null) {
+			StringBuilder s0 = new StringBuilder();
+			double ratio = masterClock.getTimeRatio();
+			String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+			s0.append(ONE_REAL_SEC);
+			s0.append(masterClock.getTimeString(ratio));		
+			timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
+			timeCompressionLabel.setText(s0.toString());
+		}
+
+		SwingUtilities.invokeLater(() -> updateTime(time));
 	}
 
 	/**
