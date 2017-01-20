@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkSettlementInterior.java
- * @version 3.08 2015-05-28
+ * @version 3.1.0 2017-01-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -54,10 +54,10 @@ implements Serializable {
 
 	// Static members
 	private static final double PERSON_WALKING_SPEED = 5D; // km / hr.
-	private static final double ROBOT_WALKING_SPEED = .5D; // km / hr.
+	private static final double ROBOT_WALKING_SPEED = 0.5; // km / hr.
 
 	private static final double VERY_SMALL_DISTANCE = .00001D;
-	private static final double STRESS_MODIFIER = -.1D;
+	private static final double STRESS_MODIFIER = -.2D;
 
 	// Data members
 	private Settlement settlement;

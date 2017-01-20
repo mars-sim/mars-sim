@@ -16,7 +16,7 @@ http://mars-sim.sourceforge.net/
 
 ### KNOWN LIMITATIONS :
 
-1. The Graphic Mode cannot run under MacOSX due to some unknown bugs. However, it can still run under Headless Mode in MacOSX.
+1. The Graphic Mode cannot run under MacOSX due to some unknown bugs when loading jfoenix's JFXTabPane. However, it can still run under Headless Mode in MacOSX.
 
 2. Main Menu's 3D Mars Globe may display shadow artifact when running in linux (due to unknown recent JavaFX changes)
 

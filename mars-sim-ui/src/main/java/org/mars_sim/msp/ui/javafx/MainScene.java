@@ -973,30 +973,34 @@ public class MainScene {
         timeSlider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
                 Number old_val, Number new_val) {
-				//double sliderValue = Math.round(new_val.doubleValue()*100.0)/100.0;
-            	double sliderValue = new_val.doubleValue();
-            	double ratio = initial_ratio/4D;
-            	StringBuilder s0 = new StringBuilder(); 
             	
-				if (sliderValue <= ratio) {
-					timeSlider.setValue(ratio);
-					masterClock.setTimeRatio(ratio);
-					s0.append(TXT).append((int)ratio).append(DEFAULT).append(default_ratio).append(" )");
+            	if (old_val != new_val) {
+					//double sliderValue = Math.round(new_val.doubleValue()*100.0)/100.0;
+	            	double sliderValue = new_val.doubleValue();
+	            	double ratio = initial_ratio/4D;
+	            	StringBuilder s0 = new StringBuilder(); 
+	            	double newValue = 0;
+	            	
+					if (sliderValue <= ratio) {
+						newValue = ratio;
+						// if it's below the minimum, set it to the minimum
+						timeSlider.setValue(newValue);
+					}
+					else {
+						newValue = sliderValue;
+					}				
+	
+					masterClock.setTimeRatio(newValue);
+					s0.append(TXT).append((int)newValue).append(DEFAULT).append(default_ratio).append(" )");
 					time_ratio_label.setText(s0.toString());
-				}
-				else {
-					masterClock.setTimeRatio(sliderValue);	
-					s0.append(TXT).append((int)sliderValue).append(DEFAULT).append(default_ratio).append(" )");
-					time_ratio_label.setText(s0.toString());
-				}				
-
-				
-				StringBuilder s1 = new StringBuilder();
-				ratio = masterClock.getTimeRatio();
-				String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-				s1.append(SEC).append(masterClock.getTimeString(ratio));
-				real_time_label.setText(s1.toString());
-				
+					
+					StringBuilder s1 = new StringBuilder();
+					//ratio = masterClock.getTimeRatio();
+					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), newValue); //$NON-NLS-1$
+					s1.append(SEC).append(masterClock.getTimeString(newValue));
+					real_time_label.setText(s1.toString());
+					
+            	}
             }
         });   
         

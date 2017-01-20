@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.08 2015-07-02
+ * @version 3.1.0 2017-01-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -231,7 +231,7 @@ implements Serializable {
                         adjustedInteriorPos.getY(), entity);
             }
         }
-        else if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()){
+        else if (LocationSituation.IN_SETTLEMENT == robot.getLocationSituation()) {
 
             // Walk to random building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(robot);
@@ -371,6 +371,7 @@ implements Serializable {
 
         setPhase(getWalkingStepPhase());
     }
+    
     public Walk(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
         super("Walking", robot, false, false, 0D, false, 0D);
 

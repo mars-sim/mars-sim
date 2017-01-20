@@ -20,10 +20,10 @@ public class RadiationSicknessMedication extends Medication implements Serializa
     public static final String NAME = "Radiation Sickness Medication";
     
     // Stress reduction amount.
-    private static final double STRESS_REDUCTION = -1.0D;
+    private static final double STRESS_REDUCTION = -1D;
     
     // Fatigue reduction amount.
-    private static final double FATIGUE_REDUCTION = -2.0D;
+    private static final double FATIGUE_REDUCTION = -2D;
     
     // Duration (millisols).
     private static final double DURATION = 200D;

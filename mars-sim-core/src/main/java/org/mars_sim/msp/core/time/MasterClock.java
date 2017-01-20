@@ -115,7 +115,7 @@ public class MasterClock implements Serializable { // Runnable,
         //logger.info("MasterClock's constructor is on " + Thread.currentThread().getName() + " Thread");
 
         long t0 = System.nanoTime();
-        
+
     	sim = Simulation.instance();
         // Initialize data members
         config = SimulationConfig.instance();
@@ -141,13 +141,13 @@ public class MasterClock implements Serializable { // Runnable,
         // Setting the initial time ratio.
         double ratio = config.getSimulationTimeRatio();
         double ms = config.getTimeBetweenUpdates();
-        
+
         //TODO: should also test the CPU speed to determine the TPS
-        
+
         long t1 = System.nanoTime();
         long diff = (long) ((t1 - t0) / 1_000D);
         logger.info("CPU Benchmark 1 : " + diff + " ms");
-        
+
         if (Simulation.NUM_THREADS == 1) {
         	time_ratio = ratio/8D;
         	setTimeRatio(time_ratio);
@@ -188,7 +188,7 @@ public class MasterClock implements Serializable { // Runnable,
         	setTimeRatio(time_ratio);
             setTimeBetweenUpdates(ms);
         }
-        
+
         // 2015-10-31 Added loading the values below from SimulationConfig
         setNoDelaysPerYield(config.getNoDelaysPerYield());
         setMaxFrameSkips(config.getMaxFrameSkips());

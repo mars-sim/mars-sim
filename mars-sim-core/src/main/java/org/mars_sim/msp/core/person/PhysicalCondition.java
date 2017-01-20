@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.08 2016-03-01
+ * @version 3.1.0 2017-01-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -70,7 +70,7 @@ implements Serializable {
     
     public static final double MENTAL_BREAKDOWN = 100D;
     
-    private static final double COLLAPSE_IMMINENT = 4000D;
+    private static final double COLLAPSE_IMMINENT = 5000D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     private static final String PANIC_ATTACK = "Panic Attack";
@@ -129,6 +129,7 @@ implements Serializable {
     private boolean alive;
     private boolean isStarving;
     private boolean isBatteryDepleting;
+    private boolean isStressedOut, isCollapsed;
 
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
@@ -263,9 +264,21 @@ implements Serializable {
 	                Complaint next = problem.timePassing(time, this);
 	
 	                if (problem.getCured() || (next != null)) {
-	                    problems.remove(problem.getIllness());
+	                	Complaint c = problem.getIllness();
+	                    problems.remove(c);
+	                    
+	                    // 2017-01-19 Added resetting isCollapsed and isStressedOut
+	                    if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
+	                    	isCollapsed = false;
+	                    
+	                    else if (c.getType() == ComplaintType.PANIC_ATTACK)
+	                    	isStressedOut = false;
+	                    
+	                    else if (c.getType() == ComplaintType.DEPRESSION)
+	                    	isStressedOut = false;
 	                }
 	
+	                
 	                // If a new problem, check it doesn't exist already
 	                if (next != null) {
 	                    newProblems.add(next);
@@ -328,14 +341,14 @@ implements Serializable {
 	        }
 	
 	        // If person is at high stress, check for mental breakdown.
-	        if (stress > MENTAL_BREAKDOWN) {
-	            checkForStressBreakdown(time);
-	        }
+	        if (isStressedOut)
+		        if (stress > MENTAL_BREAKDOWN)
+		            checkForStressBreakdown(time);
 	
 	        // 2016-03-01 check if person is at very high fatigue may collapse.
-	        if (fatigue > COLLAPSE_IMMINENT) {
-	            checkForHighFatigueCollapse(time);
-	        }
+	        if (isCollapsed)
+	        	if (fatigue > COLLAPSE_IMMINENT)
+	        		checkForHighFatigueCollapse(time);
 	        
 	        // Calculate performance and most serious illness.
 	        recalculate();
@@ -715,11 +728,11 @@ implements Serializable {
      * @param newFatigue New fatigue.
      */
     public void setFatigue(double newFatigue) {
-        if (fatigue != newFatigue) {
+        //if (fatigue != newFatigue) {
             fatigue = newFatigue;
-			if (person != null)
+			//if (person != null)
 	            person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
-        }
+        //}
     }
 
     /** Gets the person's hunger level
@@ -803,7 +816,7 @@ implements Serializable {
  
     	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
     	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
-    	// a person is limited to have either one of them
+    	// a person is limited to have only one of them at a time
         if (!problems.containsKey(panicAttack) && !problems.containsKey(depression)) {
 
             // Determine stress resilience modifier (0D - 2D).
@@ -812,7 +825,7 @@ implements Serializable {
             
             // 0 (strong) to 1 (weak)
             double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
-            
+            System.out.println("checkForStressBreakdown()'s resilienceModifier : " + resilienceModifier);
             double chance = 0;
             
             try {    
@@ -823,8 +836,12 @@ implements Serializable {
                 logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
             }
             
+            double value = chance / 10D * resilienceModifier;
+            System.out.println("checkForStressBreakdown()'s value : " + value);
             //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
-            if (RandomUtil.lessThanRandPercent(chance / 10D * resilienceModifier)) {
+            if (RandomUtil.lessThanRandPercent(value)) {
+            	
+            	isStressedOut = true;
 /*            	
                	if (fatigue < 200) 
             		fatigue = fatigue * 4;
@@ -845,7 +862,7 @@ implements Serializable {
                     	addMedicalComplaint(panicAttack);
                         //illnessEvent = true;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                        logger.info(person.getName() + " has a panic attack.");
+                        logger.info(person.getName() + " suffers from a panic attack.");
                         //System.out.println(person.getName() + " has a panic attack.");
                                            
                     }
@@ -896,7 +913,8 @@ implements Serializable {
             
             // a person with high endurance will be less likely to be collapse
             double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
-
+            System.out.println("checkForHighFatigueCollapse()'s modifier :" + modifier);
+            
             double chance = 0;
             
             try {              
@@ -906,7 +924,12 @@ implements Serializable {
                 logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
             }
             
-            if (RandomUtil.lessThanRandPercent(chance /5D * modifier)) {
+            double value = chance /5D * modifier;
+            
+            if (RandomUtil.lessThanRandPercent(value)) {
+            	
+                System.out.println("checkForHighFatigueCollapse()'s value :" + value);
+            	isCollapsed = true;
             //Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 /*                                	
              	if (stress < 10) 
@@ -914,8 +937,9 @@ implements Serializable {
             	else if (stress < 30) 
             		stress = stress * 1.5;
             	else if (stress < 50) 
-*/            		stress = stress * 1.2;
-                
+            		stress = stress * 1.2;
+*/
+            	
                 if (highFatigue != null) {
                     addMedicalComplaint(highFatigue);
                     //illnessEvent = true;
@@ -1061,7 +1085,7 @@ implements Serializable {
             if (stress > 90D) {
                 tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER/2;
             }
-            if (stress > 70D) {
+            else if (stress > 70D) {
                 tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER/4; 
                 //e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125  or  1.25%  on each frame
             }

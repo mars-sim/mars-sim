@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 3.07 2014-11-10
+ * @version 3.1.0 2017-01-19
  * @author Barry Evans
  */
 
@@ -256,7 +256,9 @@ public class HealthProblem implements Serializable {
             	duration = duration + duration * RandomUtil.getRandomDouble(.5)
             				- duration * RandomUtil.getRandomDouble(.5);
             else if (illness.getType() == ComplaintType.HEARTBURN
-            		|| illness.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
+            		|| illness.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE
+            		|| illness.getType() == ComplaintType.PANIC_ATTACK
+            		|| illness.getType() == ComplaintType.DEPRESSION)
             	duration = duration + duration * RandomUtil.getRandomDouble(.4)
 							- duration * RandomUtil.getRandomDouble(.4);
             else if (illness.getType() == ComplaintType.FLU)
