@@ -114,16 +114,19 @@ public class BrowserJFX {
     private final JTextField urlTF = new JTextField();
     private final JProgressBar progressBar = new JProgressBar();
 
+    private MainScene mainScene;
     private MainDesktopPane desktop;
     private WebView view;
     private WebEngine engine;  
     private WebHistory history;
+    
 
 	private ObservableList<WebHistory.Entry> entryList; 
 	
     public BrowserJFX(MainDesktopPane desktop) {
 
     	this.desktop = desktop;
+    	mainScene = desktop.getMainScene();
     	
         Platform.runLater(() -> {       
             view = new WebView();
@@ -135,8 +138,6 @@ public class BrowserJFX {
         
         initJFX();
         panel = init();
-        
-
         
         Platform.runLater(() -> {     
             btnGo.doClick(); // not useful
@@ -365,13 +366,13 @@ public class BrowserJFX {
 		                    // 2016-11-30 Fix the URL not being displayed correctly
 		                    textInputCache = input;
 		                    showURL();
-		                    desktop.getMainScene().getScene().setCursor(Cursor.HAND);
+		                    if (mainScene != null) mainScene.getScene().setCursor(Cursor.HAND);
 		                    //System.out.println("just clicked at a link");
 	                	}
                 	}
                 	
                 	else {
-                		desktop.getMainScene().getScene().setCursor(Cursor.DEFAULT);
+                		if (mainScene != null) mainScene.getScene().setCursor(Cursor.DEFAULT);
                 	}
 
                     return false;
@@ -438,7 +439,7 @@ public class BrowserJFX {
                         	// Note: it shows the content of the hyperlink (even before the user clicks on it.
                             String content = event.getData();
                             if (content != null && !content.isEmpty()) {
-                        		desktop.getMainScene().getScene().setCursor(Cursor.HAND);
+                            	if (mainScene != null) mainScene.getScene().setCursor(Cursor.HAND);
     		                    //System.out.println("now hovering over a link");
                             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
                             	if (content.contains("/docs/help")) { 
@@ -454,7 +455,7 @@ public class BrowserJFX {
                             }
                             
                             else {
-                            	desktop.getMainScene().getScene().setCursor(Cursor.DEFAULT);
+                            	if (mainScene != null) mainScene.getScene().setCursor(Cursor.DEFAULT);
                             	// if the mouse pointer is not on any hyperlink
                            		//System.out.println("The null content is " + content);                           	 
                             	statusBarLbl.setText(content);                    	

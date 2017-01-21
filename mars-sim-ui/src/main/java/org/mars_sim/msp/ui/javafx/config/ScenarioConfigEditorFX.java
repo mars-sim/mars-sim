@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScenarioConfigEditorFX.java
- * @version 3.08 2015-04-17
+ * @version 3.1.0 2017-01-21
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.javafx.config;
@@ -731,7 +731,7 @@ public class ScenarioConfigEditorFX {
 		double lo = SettlementRegistry.convertLatLong2Double(longitude);
 		
 		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, 
-				sponsor, latitude, longitude, 0);
+				sponsor, latitude, longitude);
 		// Send the newly created settlement to host server
 		if (multiplayerClient != null) {
 			// create an instance of SettlementRegistry

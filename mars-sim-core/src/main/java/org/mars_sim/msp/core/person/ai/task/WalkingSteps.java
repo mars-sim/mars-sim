@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkingSteps.java
- * @version 3.07 2014-10-10
+ * @version 3.1.0 2017-01-21
  * @author Scott Davis
  */
 

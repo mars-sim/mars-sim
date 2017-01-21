@@ -472,8 +472,9 @@ public class SimulationConfigEditor {
 			String longitude = (String) settlementTableModel.getValueAt(x, 5);
 			//String maxMSDStr = (String) settlementTableModel.getValueAt(x, 6);
 			//int maxMSD = Integer.parseInt(maxMSDStr);
-			int maxMSD = 0;
-			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, null, latitude, longitude, maxMSD);
+			//int maxMSD = 0;
+			String sponsor = (String) settlementTableModel.getValueAt(x, 6);
+			settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, sponsor, latitude, longitude);//, maxMSD);
 		}
 	}
 

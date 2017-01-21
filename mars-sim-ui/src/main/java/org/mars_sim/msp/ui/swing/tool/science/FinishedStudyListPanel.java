@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * FinishedStudyListPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.science;
@@ -27,6 +26,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A panel showing a selectable list of finished scientific studies.
@@ -87,6 +87,9 @@ extends JPanel {
 		
 		studyTable.setAutoCreateRowSorter(true);
 		
+		//2017-01-20 Added calling setTableStyle()
+		TableStyle.setTableStyle(studyTable);
+
 		listScrollPane.setViewportView(studyTable);
 	}
 

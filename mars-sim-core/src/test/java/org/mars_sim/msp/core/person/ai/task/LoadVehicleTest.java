@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleTest.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-01-21
  * @author Scott Davis
  */
 
@@ -68,7 +68,7 @@ extends TestCase {
         BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
 		
-		Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society (MS)");
+		Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
 		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);

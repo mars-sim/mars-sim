@@ -118,14 +118,19 @@ public class UnitManager implements Serializable {
 	private Map<String, Integer> equipmentNumberMap;
 	/** Map of vehicle types and their numbers. */
 	private Map<String, Integer> vehicleNumberMap;
-	/** Map of settlment names. */	
-	//private Map<String, List<String>> settlementNamesMap;
 
 	private Map<Integer, List<String>> marsSociety = new HashMap<>();
-	//private Map<Integer, List<String>> lastNames = new HashMap<>();
-	private Map<Integer, Map<Integer, List<String>>> firstNames = new HashMap<>();
-	private Map<Integer, List<String>> maleFirstNames = new HashMap<>();	
-	private Map<Integer, List<String>> femaleFirstNames = new HashMap<>();
+
+	private Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();	
+	private Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
+	
+	private Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
+	private Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
+	
+	private Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
+	private Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
+	
+	private List<String> countries = new ArrayList<>();
 	
 	private Settlement firstSettlement;	
 	private PersonConfig personConfig;
@@ -134,10 +139,8 @@ public class UnitManager implements Serializable {
 	private VehicleConfig vehicleConfig;
 	private RobotConfig robotConfig;
 
-	private Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
-	private Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
+
 	
-	//private MasterClock masterClock;
 	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
 
     //private transient ExecutorService settlementExecutor;
@@ -164,6 +167,8 @@ public class UnitManager implements Serializable {
 		//settlementExecutor = Executors.newSingleThreadExecutor();
 		//personExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 		//settlementExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+		
+
 	}
 
 	/**
@@ -173,6 +178,8 @@ public class UnitManager implements Serializable {
 	 *             in unable to load names.
 	 */
 	void constructInitialUnits() {
+		
+		createCountryList();
 		
 		// Initialize settlement and vehicle name lists
 		initializeSettlementNames();
@@ -248,9 +255,11 @@ public class UnitManager implements Serializable {
     // 2016-04-06 Added initializeLastNames()
 	private void initializeLastNames() {
 		try {
-			List<Map<Integer, List<String>>> list = personConfig.getLastNameList();//SPONSORS);	
-			lastNamesBySponsor = list.get(0);
-			lastNamesByCountry = list.get(1);
+			personConfig.retrieveLastNameList();
+			List<Map<Integer, List<String>>> lastNames = personConfig.getLastNames();
+			lastNamesBySponsor = lastNames.get(0);
+			lastNamesByCountry = lastNames.get(1);
+			
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
 		}
@@ -265,9 +274,13 @@ public class UnitManager implements Serializable {
 	private void initializeFirstNames() {
 		
 		try {
-			firstNames = personConfig.getFirstNameList();//SPONSORS);
-			maleFirstNames = firstNames.get(0);	
-			femaleFirstNames = firstNames.get(1);
+			personConfig.retrieveFirstNameList();
+			List<Map<Integer, List<String>>> firstNames = personConfig.getFirstNames();
+			maleFirstNamesBySponsor = firstNames.get(0);	
+			femaleFirstNamesBySponsor = firstNames.get(1);
+			maleFirstNamesByCountry = firstNames.get(2);	
+			femaleFirstNamesByCountry = firstNames.get(3);
+			
 		} catch (Exception e) {
 			throw new IllegalStateException("The first names list could not be loaded: " + e.getMessage(), e);
 		}		
@@ -740,9 +753,12 @@ public class UnitManager implements Serializable {
 			}
 
 			String sponsor = settlement.getSponsor();
-
+	    	//System.out.println("sponsor is " + sponsor);
+	    	
+			String country = getCountry(sponsor);
+			
 			// Create person and add to the unit manager.
-			Person person = new Person(name, gender, false, "Earth", settlement, sponsor); 
+			Person person = new Person(name, gender, country, settlement, sponsor); 
 			
 			// TODO: read fromfile
 			addUnit(person);
@@ -859,7 +875,8 @@ public class UnitManager implements Serializable {
 				while (settlement.getCurrentPopulationNum() < initPop) {
 					
 					String sponsor = settlement.getSponsor();
-					
+			    	//System.out.println("sponsor is " + sponsor);
+			    	
 					//2016-08-30 Check for any duplicate full Name
 					List<String> existingfullnames = new ArrayList<>();
 					Iterator<Person> j = getPeople().iterator();
@@ -874,6 +891,7 @@ public class UnitManager implements Serializable {
 					PersonGender gender = null;
 					Person person = null;
 					String fullname = null;
+					String country = getCountry(sponsor);
 					
 					// Make sure settlement name isn't already being used.
 					while (!isUniqueName) {
@@ -896,38 +914,41 @@ public class UnitManager implements Serializable {
 		
 						if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CNSA) {
 							last_list = lastNamesBySponsor.get(0);
-							male_first_list = maleFirstNames.get(0);
-							female_first_list = femaleFirstNames.get(0);
+							male_first_list = maleFirstNamesBySponsor.get(0);
+							female_first_list = femaleFirstNamesBySponsor.get(0);
 			    			
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CSA) {
 							last_list = lastNamesBySponsor.get(1);
-							male_first_list = maleFirstNames.get(1);
-							female_first_list = femaleFirstNames.get(1);
+							male_first_list = maleFirstNamesBySponsor.get(1);
+							female_first_list = femaleFirstNamesBySponsor.get(1);
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ESA) {
-							last_list = lastNamesBySponsor.get(2);
-							male_first_list = maleFirstNames.get(2);
-							female_first_list = femaleFirstNames.get(2);
+							
+							int countryID = getCountryID(country);
+							last_list = lastNamesByCountry.get(countryID);
+							male_first_list = maleFirstNamesByCountry.get(countryID);
+							female_first_list = femaleFirstNamesByCountry.get(countryID);
+							
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ISRO) {
 							last_list = lastNamesBySponsor.get(3);
-							male_first_list = maleFirstNames.get(3);
-							female_first_list = femaleFirstNames.get(3);
+							male_first_list = maleFirstNamesBySponsor.get(3);
+							female_first_list = femaleFirstNamesBySponsor.get(3);
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.JAXA) {
 							last_list = lastNamesBySponsor.get(4);
-							male_first_list = maleFirstNames.get(4);
-							female_first_list = femaleFirstNames.get(4);
+							male_first_list = maleFirstNamesBySponsor.get(4);
+							female_first_list = femaleFirstNamesBySponsor.get(4);
 	
 			    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.NASA) {
 							last_list = lastNamesBySponsor.get(5);
-							male_first_list = maleFirstNames.get(5);
-							female_first_list = femaleFirstNames.get(5);
+							male_first_list = maleFirstNamesBySponsor.get(5);
+							female_first_list = femaleFirstNamesBySponsor.get(5);
 	
 						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.RKA) {
 							last_list = lastNamesBySponsor.get(6);
-							male_first_list = maleFirstNames.get(6);
-							female_first_list = femaleFirstNames.get(6);
+							male_first_list = maleFirstNamesBySponsor.get(6);
+							female_first_list = femaleFirstNamesBySponsor.get(6);
 			     	    	
 			    		} else { // if belonging to the Mars Society		    		
 			    			skip = true;
@@ -966,7 +987,7 @@ public class UnitManager implements Serializable {
 						
 					}
 					
-					person = new Person(fullname, gender, false, "Earth", settlement, sponsor); // TODO: read from file
+					person = new Person(fullname, gender, country, settlement, sponsor); // TODO: read from file
 
 					Mind m = person.getMind();
 					// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models
@@ -2114,8 +2135,63 @@ public class UnitManager implements Serializable {
 		return 	FXCollections.observableArrayList(getSettlements());
 	}
 			
+	public String getCountry(String sponsor) {
+	
+		if (sponsor.equals("CNSA"))
+			return "China";		
+		else if (sponsor.equals("CSA"))
+			return "Canada";		
+		else if (sponsor.equals("ESA"))		
+			return countries.get(RandomUtil.getRandomInt(0, 21));
+		else if (sponsor.equals("ISRO"))
+			return "India";
+		else if (sponsor.equals("JAXA"))
+			return "Japan";				
+		else if (sponsor.equals("NASA"))
+			return "US";
+		else if (sponsor.equals("RKA"))
+			return "Russia";
+		else {
+			return "US";
+		}
+
+	}
 			
-			
+	// 2017-01-21 Add createCountryList();
+	public void createCountryList() {
+		
+		countries = new ArrayList<>();
+		
+		countries.add("Austria");
+		countries.add("Belgium");
+		countries.add("Czech Republic");
+		countries.add("Denmark");
+		countries.add("Estonia");
+		countries.add("Finland");
+		countries.add("France");
+		countries.add("Germany");
+		countries.add("Greece");
+		countries.add("Hungary");
+		countries.add("Ireland");
+		countries.add("Italy");
+		countries.add("Luxembourg");
+		countries.add("The Netherlands");
+		countries.add("Norway");
+		countries.add("Poland");
+		countries.add("Portugal");
+		countries.add("Romania");
+		countries.add("Spain");
+		countries.add("Sweden");
+		countries.add("Switzerland");
+		countries.add("UK");
+
+	}
+	
+	public int getCountryID(String country) {
+		return countries.indexOf(country);
+	}
+	
+	
 	//public ThreadPoolExecutor getPersonExecutor() {;
 	//	return personExecutor;
 	//}

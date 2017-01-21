@@ -492,10 +492,10 @@ implements Serializable, Transportable {
                 gender = PersonGender.MALE;
             }
 
-            String birthplace = "Earth"; //TODO: randomize from list of countries/federations.
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String sponsor = settlement.getSponsor();
-            Person immigrant = new Person(immigrantName, gender, false, birthplace, settlement, sponsor); //TODO: read from file
+            String country = Simulation.instance().getUnitManager().getCountry(sponsor);
+            Person immigrant = new Person(immigrantName, gender, country, settlement, sponsor); //TODO: read from file
 
             // Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();

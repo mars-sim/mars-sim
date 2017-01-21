@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelGeneral.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -65,7 +64,7 @@ extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(6, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(7, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
@@ -112,6 +111,18 @@ extends TabPanel {
 		birthLocationTF.setColumns(12);
 		infoPanel.add(birthLocationTF);
 
+		// Prepare country name label
+		JLabel countryNameLabel = new JLabel(Msg.getString("TabPanelGeneral.country"), JLabel.RIGHT); //$NON-NLS-1$
+		countryNameLabel.setSize(5, 2);
+		infoPanel.add(countryNameLabel);
+
+		// Prepare birth location label
+		String country = person.getCountry();
+		JTextField countryTF = new JTextField(Conversion.capitalize(country));
+		countryTF.setEditable(false);
+		countryTF.setColumns(15);
+		infoPanel.add(countryTF);
+		
 		// Prepare weight name label
 		JLabel weightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.weight"), JLabel.RIGHT); //$NON-NLS-1$
 		weightNameLabel.setSize(5, 2);

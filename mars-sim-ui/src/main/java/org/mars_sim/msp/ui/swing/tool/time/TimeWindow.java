@@ -343,7 +343,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			// Create pulse slider
 			int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
 			pulseSlider = new JSliderMW(1, 100, sliderpos);
-			pulseSlider.setEnabled(false);
+			//pulseSlider.setEnabled(false);
 			pulseSlider.setMajorTickSpacing(20);
 			pulseSlider.setMinorTickSpacing(5);
 			pulseSlider.setPaintTicks(true);

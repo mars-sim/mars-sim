@@ -52,12 +52,13 @@ public enum ReportingAuthorityType {
 	public static ReportingAuthorityType fromString(String name) {
 		if (name != null) {
 	    	for (ReportingAuthorityType ra : ReportingAuthorityType.values()) {
-	    	  if (name.equalsIgnoreCase(ra.name)) {
-	        	return ra;
-	        }
-	      }
-	    }
-	    return null;
+	    		if (name.equalsIgnoreCase(ra.name)) {
+	    			return ra;
+	    		}
+	    	}
+		}
+		
+		return null;
 	}
 
 }

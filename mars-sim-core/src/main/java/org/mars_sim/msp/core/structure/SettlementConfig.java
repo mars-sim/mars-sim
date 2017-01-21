@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.07 2015-04-17
+ * @version 3.1.0 2017-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -975,7 +975,7 @@ implements Serializable {
 	 * @param longitude the settlement longitude (ex. "47.0 W").
 	 */
 	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, 
-			String sponsor, String latitude, String longitude, int maxMSD) {
+			String sponsor, String latitude, String longitude) {
 	    InitialSettlement settlement = new InitialSettlement();
 	    settlement.name = name;
 	    settlement.template = template;

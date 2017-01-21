@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 3.1.0 2016-10-08
+ * @version 3.1.0 2017-01-21
  * @author Lars Naesbye Christensen
  */
 
@@ -148,7 +148,7 @@ ComponentListener {
 		}
 		
 		setSize(new Dimension(1024, 600));
-		setResizable(false);
+		setResizable(true);
 		setMaximizable(true);		
 		setVisible(true);
 

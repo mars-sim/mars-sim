@@ -104,7 +104,7 @@ implements VehicleOperator, MissionMember, Serializable {
     /** The person's name. */
     private String name;
     private String sponsor;
-    
+    private String country;
     private String bloodType;
     /** The person's achievement in scientific fields. */
     private Map<ScienceType, Double> scientificAchievement;
@@ -153,8 +153,8 @@ implements VehicleOperator, MissionMember, Serializable {
      * @param settlement {@link Settlement} the settlement the person is at
      * @throws Exception if no inhabitable building available at settlement.
      */
-    public Person(String name, PersonGender gender, boolean bornOnMars, 
-    		String birthplace, Settlement settlement, String sponsor) {
+    public Person(String name, PersonGender gender, String country,
+    		Settlement settlement, String sponsor) {
         //logger.info("Person's constructor is in " + Thread.currentThread().getName() + " Thread");
     	// Use Unit constructor
         super(name, settlement.getCoordinates());  
@@ -162,13 +162,17 @@ implements VehicleOperator, MissionMember, Serializable {
 
         // Initialize data members
         this.name = name;
-        this.bornOnMars = bornOnMars;
+        this.country = country;
         this.xLoc = 0D;
         this.yLoc = 0D;
         this.gender = gender;
-        this.birthplace = birthplace;
         this.associatedSettlement = settlement;
         this.sponsor = sponsor;
+        
+        if (country != null)
+        	birthplace = "Earth";
+        else
+        	birthplace = "Mars";
         
         sim = Simulation.instance();
         masterClock = sim.getMasterClock();
@@ -179,13 +183,7 @@ implements VehicleOperator, MissionMember, Serializable {
         }
         
         config = SimulationConfig.instance().getPersonConfiguration();
-
-        //if (Simulation.instance().getMasterClock() != null)
-        //	if (marsClock == null)
-        //		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-        //String birthTimeString = createBirthTimeString();
-        // birthTimeStamp = new EarthClock(birthTimeString);
-        
+    
         attributes = new NaturalAttributeManager(this);
 
         // 2015-02-27 Added JobHistory
@@ -378,6 +376,7 @@ implements VehicleOperator, MissionMember, Serializable {
     
     // 2016-08-12 Revised assignReportingAuthority()
     public void assignReportingAuthority() {
+    	//System.out.println(name + "'s RA is " + ReportingAuthorityType.fromString(sponsor));
     	if (ra == null) {
 
     		if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CNSA) {
@@ -415,7 +414,7 @@ implements VehicleOperator, MissionMember, Serializable {
     		}
 
     		else {
-    		    // No reporting authority.
+    		    System.out.println(name + " has no reporting authority!");
     		    ra = null;
     		}
     	}
@@ -1157,6 +1156,9 @@ implements VehicleOperator, MissionMember, Serializable {
 		this.bed = bed; 
 	}
 
+	public String getCountry() {
+		return country;
+	}
 	
     @Override
     public void destroy() {

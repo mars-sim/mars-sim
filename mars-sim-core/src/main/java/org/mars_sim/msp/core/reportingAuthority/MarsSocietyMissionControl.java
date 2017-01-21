@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsSocietyMissionControl.java
-  * @version 3.1.0 2017-01-14
+ * @version 3.1.0 2017-01-14
  * @author Manny Kung
  */
 

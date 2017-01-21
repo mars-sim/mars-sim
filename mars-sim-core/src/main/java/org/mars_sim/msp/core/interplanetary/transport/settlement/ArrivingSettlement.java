@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.08 2015-07-13
+ * @version 3.1.0 2017-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -347,7 +347,8 @@ implements Transportable, Serializable {
 			String birthplace = "Earth"; //TODO: randomize from list of countries/federations
 			String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender, null);
 			String sponsor = newSettlement.getSponsor();
-			Person immigrant = new Person(immigrantName, gender, false, birthplace, newSettlement, sponsor);
+			String country = unitManager.getCountry(sponsor);
+			Person immigrant = new Person(immigrantName, gender, country, newSettlement, sponsor);
 			
 			// Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();

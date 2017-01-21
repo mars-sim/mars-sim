@@ -92,7 +92,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
 
-        Person person = new Person("test person", PersonGender.MALE, true,"Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -162,7 +162,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
  
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -229,7 +229,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
       
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -304,7 +304,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
        
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -374,7 +374,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
                
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society (MS)");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -429,7 +429,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
                    
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society (MS)");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -509,7 +509,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
       
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -586,7 +586,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -663,7 +663,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -722,7 +722,7 @@ public class WalkingStepsTest extends TestCase {
         Rover rover2 = new Rover("Test Rover 2", "Explorer Rover", settlement);
         rover2.setParkedLocation(-50D, 20D, 15D);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(15D);
         person.setYLocation(-10D);
         settlement.getInventory().retrieveUnit(person);
@@ -805,7 +805,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(4D);
         person.setYLocation(4D);
         BuildingManager.addPersonOrRobotToBuildingSameLocation(person, building0);
@@ -879,7 +879,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         settlement.getInventory().retrieveUnit(person);
@@ -945,7 +945,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(50D);
         person.setYLocation(50D);
         settlement.getInventory().retrieveUnit(person);
@@ -1015,7 +1015,7 @@ public class WalkingStepsTest extends TestCase {
         // 2016-10-28 Added setupBuildingFunctionsMap()
         buildingManager.setupBuildingFunctionsMap();
        
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(0D);
         person.setYLocation(0D);
         settlement.getInventory().retrieveUnit(person);
@@ -1072,7 +1072,7 @@ public class WalkingStepsTest extends TestCase {
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
         
-        Person person = new Person("test person", PersonGender.MALE, false, "Earth", settlement, "Mars Society");
+        Person person = new Person("test person", PersonGender.MALE, null, settlement, "Mars Society (MS)");
         person.setXLocation(20D);
         person.setYLocation(15D);
         settlement.getInventory().retrieveUnit(person);
