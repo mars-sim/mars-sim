@@ -181,6 +181,12 @@ public class UnitManager implements Serializable {
 		
 		createCountryList();
 		
+		// Initialize name lists
+		initializeRobotNames();
+		initializePersonNames();
+		initializeLastNames();
+		initializeFirstNames();
+		
 		// Initialize settlement and vehicle name lists
 		initializeSettlementNames();
 		initializeVehicleNames();
@@ -191,13 +197,7 @@ public class UnitManager implements Serializable {
 		createInitialEquipment();
 		createInitialResources();
 		createInitialParts();
-		
-		// Initialize name lists
-		initializeRobotNames();
-		initializePersonNames();
-		initializeLastNames();
-		initializeFirstNames();
-		
+			
 		// Create pre-configured robots as stated in robots.xml
 		createPreconfiguredRobots();
 		// Create more robots to fill the settlement(s)
@@ -225,9 +225,9 @@ public class UnitManager implements Serializable {
 				
 				String name = i.next();			
 
-				ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);	
+				//ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);	
 				
-				if (sponsorType.equals(ReportingAuthorityType.MARS_SOCIETY)) {
+				//if (sponsorType.equals(ReportingAuthorityType.MARS_SOCIETY)) {
 				
 					PersonGender gender = personConfig.getPersonGender(name);
 					if (gender == PersonGender.MALE) {
@@ -236,7 +236,7 @@ public class UnitManager implements Serializable {
 						personFemaleNames.add(name);					
 					}				
 				
-				}
+				//}
 				
 				marsSociety.put(0, personMaleNames);
 				marsSociety.put(1, personFemaleNames);								
@@ -255,8 +255,7 @@ public class UnitManager implements Serializable {
     // 2016-04-06 Added initializeLastNames()
 	private void initializeLastNames() {
 		try {
-			personConfig.retrieveLastNameList();
-			List<Map<Integer, List<String>>> lastNames = personConfig.getLastNames();
+			List<Map<Integer, List<String>>> lastNames = personConfig.retrieveLastNameList();
 			lastNamesBySponsor = lastNames.get(0);
 			lastNamesByCountry = lastNames.get(1);
 			
@@ -274,8 +273,7 @@ public class UnitManager implements Serializable {
 	private void initializeFirstNames() {
 		
 		try {
-			personConfig.retrieveFirstNameList();
-			List<Map<Integer, List<String>>> firstNames = personConfig.getFirstNames();
+			List<Map<Integer, List<String>>> firstNames = personConfig.retrieveFirstNameList();
 			maleFirstNamesBySponsor = firstNames.get(0);	
 			femaleFirstNamesBySponsor = firstNames.get(1);
 			maleFirstNamesByCountry = firstNames.get(2);	
@@ -752,8 +750,9 @@ public class UnitManager implements Serializable {
 				}
 			}
 
+			// TODO: consider adding a sponsor designation in people.xml
 			String sponsor = settlement.getSponsor();
-	    	//System.out.println("sponsor is " + sponsor);
+			//System.out.println("sponsor is " + sponsor);
 	    	
 			String country = getCountry(sponsor);
 			
@@ -892,7 +891,9 @@ public class UnitManager implements Serializable {
 					Person person = null;
 					String fullname = null;
 					String country = getCountry(sponsor);
-					
+					//System.out.println("country is " + country);
+		    		//ReportingAuthorityType type = ReportingAuthorityType.fromString(sponsor);
+		    		
 					// Make sure settlement name isn't already being used.
 					while (!isUniqueName) {
 								
@@ -912,40 +913,42 @@ public class UnitManager implements Serializable {
 						List<String> male_first_list = new ArrayList<>();
 						List<String> female_first_list = new ArrayList<>();
 		
-						if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CNSA) {
+		    		
+						if (sponsor.contains("CNSA")) { //if (type == ReportingAuthorityType.CNSA) {
 							last_list = lastNamesBySponsor.get(0);
 							male_first_list = maleFirstNamesBySponsor.get(0);
 							female_first_list = femaleFirstNamesBySponsor.get(0);
 			    			
-						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CSA) {
+						} else if (sponsor.contains("CSA")) {//if (type == ReportingAuthorityType.CSA) {
 							last_list = lastNamesBySponsor.get(1);
 							male_first_list = maleFirstNamesBySponsor.get(1);
 							female_first_list = femaleFirstNamesBySponsor.get(1);
 	
-						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ESA) {
+						} else if (sponsor.contains("ESA")) {//if (type == ReportingAuthorityType.ESA) {
 							
+							//System.out.println("country is " + country);
 							int countryID = getCountryID(country);
+							//System.out.println("countryID is " + countryID);
 							last_list = lastNamesByCountry.get(countryID);
 							male_first_list = maleFirstNamesByCountry.get(countryID);
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
 							
-	
-						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ISRO) {
+						} else if (sponsor.contains("ISRO")) {//if (type == ReportingAuthorityType.ISRO) {
 							last_list = lastNamesBySponsor.get(3);
 							male_first_list = maleFirstNamesBySponsor.get(3);
 							female_first_list = femaleFirstNamesBySponsor.get(3);
 	
-						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.JAXA) {
+						} else if (sponsor.contains("JAXA")) {//if (type == ReportingAuthorityType.JAXA) {
 							last_list = lastNamesBySponsor.get(4);
 							male_first_list = maleFirstNamesBySponsor.get(4);
 							female_first_list = femaleFirstNamesBySponsor.get(4);
 	
-			    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.NASA) {
+			    		} else if (sponsor.contains("NASA")) {//if (type == ReportingAuthorityType.NASA) {
 							last_list = lastNamesBySponsor.get(5);
 							male_first_list = maleFirstNamesBySponsor.get(5);
 							female_first_list = femaleFirstNamesBySponsor.get(5);
 	
-						} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.RKA) {
+						} else if (sponsor.contains("RKA")) { //if (type == ReportingAuthorityType.RKA) {
 							last_list = lastNamesBySponsor.get(6);
 							male_first_list = maleFirstNamesBySponsor.get(6);
 							female_first_list = femaleFirstNamesBySponsor.get(6);
@@ -2137,23 +2140,24 @@ public class UnitManager implements Serializable {
 			
 	public String getCountry(String sponsor) {
 	
-		if (sponsor.equals("CNSA"))
+		if (sponsor.contains("CNSA"))//.equals(Msg.getString("ReportingAuthorityType.CNSA")))
 			return "China";		
-		else if (sponsor.equals("CSA"))
+		else if (sponsor.contains("CSA"))//.equals(Msg.getString("ReportingAuthorityType.CSA")))
 			return "Canada";		
-		else if (sponsor.equals("ESA"))		
-			return countries.get(RandomUtil.getRandomInt(0, 21));
-		else if (sponsor.equals("ISRO"))
+		else if (sponsor.contains("ESA"))//.equals(Msg.getString("ReportingAuthorityType.ESA")))		
+			return countries.get(RandomUtil.getRandomInt(6, 27));
+		else if (sponsor.contains("ISRO"))//.equals(Msg.getString("ReportingAuthorityType.ISRO")))
 			return "India";
-		else if (sponsor.equals("JAXA"))
+		else if (sponsor.contains("JAXA"))//.equals(Msg.getString("ReportingAuthorityType.JAXA")))
 			return "Japan";				
-		else if (sponsor.equals("NASA"))
+		else if (sponsor.contains("NASA"))//.equals(Msg.getString("ReportingAuthorityType.NASA")))
 			return "US";
-		else if (sponsor.equals("RKA"))
+		else if (sponsor.contains("RKA"))//.equals(Msg.getString("ReportingAuthorityType.RKA")))
 			return "Russia";
-		else {
+		else if (sponsor.contains("MS"))
 			return "US";
-		}
+		else
+			return "US";
 
 	}
 			
@@ -2161,6 +2165,13 @@ public class UnitManager implements Serializable {
 	public void createCountryList() {
 		
 		countries = new ArrayList<>();
+		
+		countries.add("China"); //0
+		countries.add("Canada"); //1
+		countries.add("India"); //2
+		countries.add("Japan"); //3
+		countries.add("US"); //4
+		countries.add("Russia"); //5
 		
 		countries.add("Austria");
 		countries.add("Belgium");

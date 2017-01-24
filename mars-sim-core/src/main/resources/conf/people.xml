@@ -2688,16 +2688,16 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 
 		<!-- 10 common UK surnames, taking into account individual countries -->
 
-		<last-name value="Brown"  sponsor="ESA" country="The United Kingdom" />	
-		<last-name value="Campbell"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Davies"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Evans"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Jones"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Robertson"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Smith"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Taylor"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Thomson"  sponsor="ESA" country="The United Kingdom" />
-		<last-name value="Wilson"  sponsor="ESA" country="The United Kingdom" />
+		<last-name value="Brown"  sponsor="ESA" country="UK" />	
+		<last-name value="Campbell"  sponsor="ESA" country="UK" />
+		<last-name value="Davies"  sponsor="ESA" country="UK" />
+		<last-name value="Evans"  sponsor="ESA" country="UK" />
+		<last-name value="Jones"  sponsor="ESA" country="UK" />
+		<last-name value="Robertson"  sponsor="ESA" country="UK" />
+		<last-name value="Smith"  sponsor="ESA" country="UK" />
+		<last-name value="Taylor"  sponsor="ESA" country="UK" />
+		<last-name value="Thomson"  sponsor="ESA" country="UK" />
+		<last-name value="Wilson"  sponsor="ESA" country="UK" />
 
 		<!-- top 22 common Indian surnames 
 		http://www.lowchensaustralia.com/names/popular-indian-names.htm
@@ -3053,7 +3053,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		
 	</last-name-list>
 
-	<!-- List of configured people -->
+	<!-- List of preconfigured people -->
 	<person-list>
 
 		<!-- Configured person -->
@@ -3062,12 +3062,19 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<!-- gender: the person's gender ("male" or "female") (optional) -->
 		<!-- personality-type: the person's MBTI personality type. (optional) -->
 		<!-- settlement: the person's starting settlement. Must be a named settlement configured in settlements.xml.  (optional) -->
+		<!-- sponsor: -->
+		<!-- country: -->
 		<!-- job: the person's permanent job. (optional) -->
 		<!-- favorite-main-dish: the person's favorite main dish. (optional) -->
 		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
 		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
 		<!-- favorite-activity: the person's favorite hobby. (optional) -->
-		<person name="Karen Andersen" crew ="alpha" gender="female" personality-type="ISTJ" settlement="Schiaparelli Point" job="Botanist"
+		<person name="Karen Andersen" 
+			crew ="alpha" 
+			gender="female" 
+			personality-type="ISTJ" 
+			settlement="Schiaparelli Point" 
+			job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
 			favorite-side-dish="Roasted Carrot Soup"
 			favorite-dessert="strawberry"

@@ -379,42 +379,44 @@ implements VehicleOperator, MissionMember, Serializable {
     	//System.out.println(name + "'s RA is " + ReportingAuthorityType.fromString(sponsor));
     	if (ra == null) {
 
-    		if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CNSA) {
+    		//ReportingAuthorityType type = ReportingAuthorityType.fromString(sponsor);
+    		
+    		if (sponsor.contains("CNSA")) {//type == ReportingAuthorityType.CNSA) {
     			ra = new CNSAMissionControl();
     			ra.setMissionAgenda(new FindingMineral());
     			
-    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.CSA) {
+    		} else if (sponsor.contains("CSA")) {//if (type == ReportingAuthorityType.CSA) {
     	        ra = new CSAMissionControl();
     	        ra.setMissionAgenda(new AdvancingSpaceKnowledge());   
 
-    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ESA) {
+    		} else if (sponsor.contains("ESA")) {//if (type == ReportingAuthorityType.ESA) {
     			ra = new ESAMissionControl();
     			ra.setMissionAgenda(new DevelopingSpaceActivity());
 
-    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.ISRO) {
+    		} else if (sponsor.contains("ISRO")) { //if (type == ReportingAuthorityType.ISRO) {
     	        ra = new ISROMissionControl();
     	        ra.setMissionAgenda(new DevelopingAdvancedTechnology());   
 
-    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.JAXA) {
+    		} else if (sponsor.contains("JAXA")) { //if (type == ReportingAuthorityType.JAXA) {
     			ra = new JAXAMissionControl();
     			ra.setMissionAgenda(new ResearchingSpaceApplication());
      			
-    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.NASA) {
+    		} else if (sponsor.contains("NASA")) {//if (type == ReportingAuthorityType.NASA) {
      	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
     	        ra = new NASAMissionControl();
     	        ra.setMissionAgenda(new FindingLife());   
      	        
-    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.MARS_SOCIETY) {
+    		} else if (sponsor.contains("MS")) {//if (type == ReportingAuthorityType.MARS_SOCIETY) {
 	    		ra = new MarsSocietyMissionControl();
 	    		ra.setMissionAgenda(new DeterminingHabitability());//SettlingMars());
 
-    		} else if (ReportingAuthorityType.fromString(sponsor) == ReportingAuthorityType.RKA) {
+    		} else if (sponsor.contains("RKA")) {//if (type == ReportingAuthorityType.RKA) {
 	    		ra = new RKAMissionControl();
 	    		ra.setMissionAgenda(new ResearchingHealthHazard());
     		}
 
     		else {
-    		    System.out.println(name + " has no reporting authority!");
+    		    logger.warning(name + " has no reporting authority!");
     		    ra = null;
     		}
     	}

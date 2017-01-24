@@ -921,7 +921,8 @@ implements Serializable {
 		InitialSettlement settlement = initialSettlements.get(index);
 		//if (settlement.randomName) return RANDOM;
 		//else 
-			return settlement.sponsor;
+		//System.out.println("settlement : sponsor is " + settlement.sponsor);
+		return settlement.sponsor;
 	}
 	else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 }

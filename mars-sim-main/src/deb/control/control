@@ -8,6 +8,6 @@ Maintainer: Scott Davis <scud1@users.sourceforge.net>
 Homepage: http://mars-sim.sourceforge.net
 Distribution: development
 Description: Mars Simulation Project
- A Java simulation of Martian exploration and colonization.  A GUI provides 
- the user with a view of the running simulation and the ability to interact 
+ A open source simulation of Martian exploration and colonization.  A GUI provides 
+ users with a view of the running simulation and the ability to interact 
  with it.

@@ -13,7 +13,7 @@ public class FindingMineral implements MissionAgenda, Serializable  {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "Finding Precious Mineral on Mars";
+	private final String name = "Finding Precious Minerals on Mars";
 
 	@Override
 	public String getObjectiveName() {

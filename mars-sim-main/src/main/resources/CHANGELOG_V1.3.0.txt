@@ -6,7 +6,9 @@ http://mars-sim.sourceforge.net/
 
 ## v3.1.0 (build 38__) Snapshot Preview 6 - 2017-01-__
 
+### CORE ENGINE IMPROVEMENTS :
 
+1. Add lists of first and last names for each of the 22 countries of ESA.
 
 
 ------------------------------------------------------
