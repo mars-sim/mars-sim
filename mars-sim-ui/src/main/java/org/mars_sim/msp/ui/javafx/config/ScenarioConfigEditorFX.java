@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScenarioConfigEditorFX.java
- * @version 3.1.0 2017-01-21
+ * @version 3.1.0 2017-01-24
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.javafx.config;
@@ -43,6 +43,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -385,7 +386,7 @@ public class ScenarioConfigEditorFX {
 		addButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-add.png"))));
 		setMouseCursor(addButton);
 		addButton.getStyleClass().add("button-small");
-		addButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.add"))); //$NON-NLS-1$
+		setQuickToolTip(addButton, Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
 		addButton.setOnAction((event) -> {
 			addNewSettlement();
 		});
@@ -396,7 +397,7 @@ public class ScenarioConfigEditorFX {
 		removeButton = new JFXButton();//"-");// Msg.getString("SimulationConfigEditor.button.remove")); //$NON-NLS-1$
 		removeButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/button-delete.png"))));
 		setMouseCursor(removeButton);
-		removeButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.remove"))); //$NON-NLS-1$
+		setQuickToolTip(removeButton, Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		// removeButton.setId("removeButton");
 		removeButton.getStyleClass().add("button-small");
    
@@ -424,7 +425,7 @@ public class ScenarioConfigEditorFX {
 		undoButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/red_undo_32.png"))));//button-undo.png"))));
 		undoButton.getStyleClass().add("button-mid");//-sign");
 		setMouseCursor(undoButton);
-		undoButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.undo"))); //$NON-NLS-1$
+		setQuickToolTip(undoButton, Msg.getString("SimulationConfigEditor.tooltip.undo"));//$NON-NLS-1$
 
 		undoButton.setOnAction((event) -> {
 			if (multiplayerClient != null && hasSettlement) {
@@ -450,9 +451,8 @@ public class ScenarioConfigEditorFX {
 		crewButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/people32.png"))));
 		setMouseCursor(crewButton);
 		crewButton.getStyleClass().add("button-mid");//-sign");//raised");
-		// alphaButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.crewEditor"));
-		// //$NON-NLS-1$
-		crewButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.crewEditor")));
+		setQuickToolTip(crewButton, Msg.getString("SimulationConfigEditor.tooltip.crewEditor")); //$NON-NLS-1$
+
 		// alphaButton.setStyle("-fx-font: 16 arial; -fx-base: #cce6ff;");
 		crewButton.setOnAction((event) -> {
 			editCrewProfile("alpha");
@@ -489,7 +489,7 @@ public class ScenarioConfigEditorFX {
 		startButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_48.png"))));
 		startButton.getStyleClass().add("button-large");
 		setMouseCursor(startButton);
-		startButton.setTooltip(new Tooltip(Msg.getString("SimulationConfigEditor.tooltip.newSim")));
+		setQuickToolTip(startButton, Msg.getString("SimulationConfigEditor.tooltip.newSim")); //$NON-NLS-1$
 		startButton.setId("startButton");
 		// 2015-10-15 Made "Enter" key to work like the space bar for firing the
 		// button on focus
@@ -1434,6 +1434,34 @@ public class ScenarioConfigEditorFX {
 		}
 	}
     
+	
+	/**
+	 * Sets up the JavaFX's tooltip 
+	 * @param node
+	 * @param tooltip's hint text
+	 */
+	public void setQuickToolTip(Node n, String s) {	
+		Tooltip tt = new Tooltip(s);
+		tt.getStyleClass().add("ttip");
+
+		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			
+		    @Override
+		    public void handle(MouseEvent event) {
+		        Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); //I position the tooltip at bottom right of the node (see below for explanation)
+		        tt.show(n, p.getX(), p.getY());
+		    }
+		});
+		n.setOnMouseExited(new EventHandler<MouseEvent>() {
+		 
+		    @Override
+		    public void handle(MouseEvent event) {
+		        tt.hide();
+		    }
+		});
+		
+	}
+	
 	public void destroy() {
 
 		startButton = null;

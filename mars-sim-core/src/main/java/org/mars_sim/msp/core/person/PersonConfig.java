@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.1.0 2016-10-27
+ * @version 3.1.0 2017-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person;
@@ -16,7 +16,9 @@ import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.reportingAuthority.ReportingAuthorityType;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -128,7 +130,7 @@ implements Serializable {
 	
 	private Map<String, Double> personalityDistribution;
 	
-	private List<String> personNameList;
+	private List<String> personNameList, countries;
 	private List<Map<Integer, List<String>>> lastNames;
 	private List<Map<Integer, List<String>>> firstNames;
 
@@ -1062,6 +1064,32 @@ implements Serializable {
 	}
 
 	/**
+	 * Gets the configured person's country.
+	 * @param index the person's index.
+	 * @return the job name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonCountry(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getCountry() != null)
+			return roster.get(crew_id).getTeam().get(index).getCountry();//alphaCrewJob.get(index) ;
+		else
+			return getValueAsString(index,COUNTRY);
+	}
+
+	/**
+	 * Gets the configured person's sponsor.
+	 * @param index the person's index.
+	 * @return the job name or null if none.
+	 * @throws Exception if error in XML parsing.
+	 */
+	public String getConfiguredPersonSponsor(int index, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getSponsor() != null)
+			return roster.get(crew_id).getTeam().get(index).getSponsor();//alphaCrewJob.get(index) ;
+		else
+			return getValueAsString(index,SPONSOR);
+	}
+	
+	/**
 	 * Gets the configured person's starting settlement.
 	 * @param index the person's index.
 	 * @return the settlement name or null if none.
@@ -1142,6 +1170,26 @@ implements Serializable {
 		//	alphaCrewJob.set(index, value);
 		//} else
 		//	alphaCrewJob.add(value);
+	}
+	
+	/*
+	 * Sets the country of a member of the alpha crew
+	 * @param index
+	 * @param country 
+	 */
+	public void setPersonCountry(int index,String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getCountry() == null) 
+			roster.get(crew_id).getTeam().get(index).setCountry(value);
+	}
+	
+	/*
+	 * Sets the sponsor of a member of the alpha crew
+	 * @param index
+	 * @param sponsor 
+	 */
+	public void setPersonSponsor(int index,String value, int crew_id) {
+		if (roster.get(crew_id).getTeam().get(index).getSponsor() == null) 
+			roster.get(crew_id).getTeam().get(index).setSponsor(value);
 	}
 	
 	/*
@@ -1354,6 +1402,77 @@ implements Serializable {
 	}
 	
 	
+	// 2017-01-21 Add createCountryList();
+	public List<String> createCountryList() {
+	
+		if (countries == null) {
+			countries = new ArrayList<>();
+		
+			countries.add("China"); //0
+			countries.add("Canada"); //1
+			countries.add("India"); //2
+			countries.add("Japan"); //3
+			countries.add("US"); //4
+			countries.add("Russia"); //5
+			
+			countries.add("Austria");
+			countries.add("Belgium");
+			countries.add("Czech Republic");
+			countries.add("Denmark");
+			countries.add("Estonia");
+			countries.add("Finland");
+			countries.add("France");
+			countries.add("Germany");
+			countries.add("Greece");
+			countries.add("Hungary");
+			countries.add("Ireland");
+			countries.add("Italy");
+			countries.add("Luxembourg");
+			countries.add("The Netherlands");
+			countries.add("Norway");
+			countries.add("Poland");
+			countries.add("Portugal");
+			countries.add("Romania");
+			countries.add("Spain");
+			countries.add("Sweden");
+			countries.add("Switzerland");
+			countries.add("UK");
+			
+		}
+		
+		return countries;
+	}
+	
+	public int getCountryID(String country) {
+		return countries.indexOf(country);
+	}
+	
+	public String convert2Sponsor(int id) {
+		
+		if (id == 0) { 
+			return Msg.getString("ReportingAuthorityType.CNSA");
+		}
+		else if (id == 1) { 
+			return Msg.getString("ReportingAuthorityType.CSA");
+		}
+		else if (id == 2) { 
+			return Msg.getString("ReportingAuthorityType.ISRO");
+		}
+		else if (id == 3) { 
+			return Msg.getString("ReportingAuthorityType.JAXA");
+		}
+		else if (id == 4) { 
+			return Msg.getString("ReportingAuthorityType.NASA");
+		}
+		else if (id == 5) { 
+			return Msg.getString("ReportingAuthorityType.RKA");
+		}
+		else { 
+			return Msg.getString("ReportingAuthorityType.ESA");
+		}
+		
+	}
+	
 	/*
 	 * Gets a list of last names by sponsors and by countries
 	 
@@ -1371,6 +1490,7 @@ implements Serializable {
 		return firstNames;
 	}
 	*/
+	
 	
     /**
      * Prepare object for garbage collection.

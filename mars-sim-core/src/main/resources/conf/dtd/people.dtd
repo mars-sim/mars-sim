@@ -81,6 +81,8 @@ gender-male-percentage, personality-types, person-name-list, first-name-list, la
 <!ATTLIST person gender (male|female) #IMPLIED>
 <!ATTLIST person personality-type CDATA #IMPLIED>
 <!ATTLIST person settlement CDATA #IMPLIED>
+<!ATTLIST person sponsor CDATA #IMPLIED>
+<!ATTLIST person country CDATA #IMPLIED>
 <!ATTLIST person job CDATA #IMPLIED>
 <!ATTLIST person favorite-main-dish CDATA #IMPLIED>
 <!ATTLIST person favorite-side-dish CDATA #IMPLIED>

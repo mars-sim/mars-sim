@@ -130,7 +130,7 @@ public class UnitManager implements Serializable {
 	private Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
 	private Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
 	
-	private List<String> countries = new ArrayList<>();
+	private List<String> countries;
 	
 	private Settlement firstSettlement;	
 	private PersonConfig personConfig;
@@ -150,7 +150,7 @@ public class UnitManager implements Serializable {
 	 * Constructor.
 	 */
 	public UnitManager() {
-		//logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
+		logger.info("UnitManager's constructor is in " + Thread.currentThread().getName() + " Thread");
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
 		listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
@@ -179,7 +179,7 @@ public class UnitManager implements Serializable {
 	 */
 	void constructInitialUnits() {
 		
-		createCountryList();
+		countries = personConfig.createCountryList();
 		
 		// Initialize name lists
 		initializeRobotNames();
@@ -750,16 +750,17 @@ public class UnitManager implements Serializable {
 				}
 			}
 
-			// TODO: consider adding a sponsor designation in people.xml
-			String sponsor = settlement.getSponsor();
+			// 2017-01-24 retrieve country & sponsor designation from people.xml (may be edited in CrewEditorFX)
+			String sponsor = personConfig.getConfiguredPersonSponsor(x, crew_id);
+			String country = personConfig.getConfiguredPersonCountry(x, crew_id);
+			//String sponsor = settlement.getSponsor();
 			//System.out.println("sponsor is " + sponsor);
-	    	
-			String country = getCountry(sponsor);
+			//String country = getCountry(sponsor);
 			
 			// Create person and add to the unit manager.
 			Person person = new Person(name, gender, country, settlement, sponsor); 
 			
-			// TODO: read fromfile
+			// TODO: read from file
 			addUnit(person);
 
 			//System.out.println("done with addUnit() in createConfiguredPeople() in UnitManager");
@@ -976,16 +977,15 @@ public class UnitManager implements Serializable {
 								
 						}
 							
+						// double checking if this name has already been in use
 						Iterator<String> k = existingfullnames.iterator();
 						while (k.hasNext()) {				
 							String n = k.next();
 							if (n.equals(fullname)) {
 								isUniqueName = false;
 								System.out.println("UnitManager : " + fullname + " is a duplicate name. Selecting another one...");
-								break;
+								//break;
 							}
-							//else
-							//	isUniqueName = true;
 						}
 						
 					}
@@ -2160,7 +2160,8 @@ public class UnitManager implements Serializable {
 			return "US";
 
 	}
-			
+	
+/*
 	// 2017-01-21 Add createCountryList();
 	public void createCountryList() {
 		
@@ -2197,6 +2198,7 @@ public class UnitManager implements Serializable {
 		countries.add("UK");
 
 	}
+	*/
 	
 	public int getCountryID(String country) {
 		return countries.indexOf(country);

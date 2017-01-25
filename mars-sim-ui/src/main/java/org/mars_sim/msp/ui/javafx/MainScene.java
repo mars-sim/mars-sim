@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainScene.java
- * @version 3.1.0 2016-10-26
+ * @version 3.1.0 2017-01-24
  * @author Lars Næsbye Christensen
  */
 
@@ -1071,27 +1071,27 @@ public class MainScene {
 		
 		rotateCWBtn = new JFXButton();
 		rotateCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.cw")))));	 //$NON-NLS-1$
-		Tooltip t0 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
-		rotateCWBtn.setTooltip(t0);
-		setQuickToolTip(rotateCWBtn, t0);
+		//Tooltip t0 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.clockwise")); //$NON-NLS-1$
+		//rotateCWBtn.setTooltip(t0);
+		setQuickToolTip(rotateCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.clockwise"));
 		rotateCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() + ROTATION_CHANGE);	
 		});
 		
 		rotateCCWBtn = new JFXButton();
 		rotateCCWBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.ccw")))));	//$NON-NLS-1$ 
-		Tooltip t1 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
-		rotateCCWBtn.setTooltip(t1);
-		setQuickToolTip(rotateCCWBtn, t1);
+		//Tooltip t1 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise")); //$NON-NLS-1$
+		//rotateCCWBtn.setTooltip(t1);
+		setQuickToolTip(rotateCCWBtn, Msg.getString("SettlementTransparentPanel.tooltip.counterClockwise"));
 		rotateCCWBtn.setOnAction(e -> {
 			mapPanel.setRotation(mapPanel.getRotation() - ROTATION_CHANGE);	
 		});
 		
 		recenterBtn = new JFXButton();
 		recenterBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(Msg.getString("img.recenter"))))); //$NON-NLS-1$	
-		Tooltip t2 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
-		recenterBtn.setTooltip(t2);
-		setQuickToolTip(recenterBtn, t2);
+		//Tooltip t2 = new Tooltip(Msg.getString("SettlementTransparentPanel.tooltip.recenter")); //$NON-NLS-1$
+		//recenterBtn.setTooltip(t2);
+		setQuickToolTip(recenterBtn, Msg.getString("SettlementTransparentPanel.tooltip.recenter"));
 		recenterBtn.setOnAction(e -> {
 			mapPanel.reCenter();
 			zoomSlider.setValue(0);
@@ -2753,20 +2753,13 @@ public class MainScene {
 		snackbar.fireEvent(new SnackbarEvent(msg, "UNDO",3000,(b)->{}));
 	}
 	
-	public void setQuickToolTip(Node n, String s) {	
-		Tooltip t = new Tooltip(s);
-		marsNetButton.setTooltip(t);
-		setQuickToolTip(n, t);
-	}
-	
 	/**
-	 * Speeds up the time it takes to display JavaFX's tooltip 
+	 * Sets up the JavaFX's tooltip 
 	 * @param node
-	 * @param tooltip
+	 * @param tooltip's hint text
 	 */
-	@SuppressWarnings("restriction")
-	public void setQuickToolTip(Node n, Tooltip tt) {
-		
+	public void setQuickToolTip(Node n, String s) {	
+		Tooltip tt = new Tooltip(s);
 		tt.getStyleClass().add("ttip");
 
 		n.setOnMouseEntered(new EventHandler<MouseEvent>() {

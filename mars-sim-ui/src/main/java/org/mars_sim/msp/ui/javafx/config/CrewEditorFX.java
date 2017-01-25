@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CrewEditorFX.java
- * @version 3.08 2015-03-30
+ * @version 3.1.0 2017-01-24
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.javafx.config;
@@ -16,6 +16,7 @@ import javafx.application.*;
 import javafx.beans.property.*;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.*;
 import javafx.scene.control.Label;
 import javafx.scene.effect.*;
@@ -23,6 +24,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.image.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -57,6 +59,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.ScrollPane;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -84,6 +87,13 @@ public class CrewEditorFX {
 
 	public static final int ALPHA_CREW = PersonConfig.ALPHA_CREW;
 
+	public static final int NAME_ROW = 1;
+	public static final int GENDER_ROW = 2;
+	public static final int JOB_ROW = 3;	
+	public static final int COUNTRY_ROW = 4;
+	public static final int PERSONALITY_ROW = 5;
+	public static final int DESTINATION_ROW = 6;
+	
 	private static final double BLUR_AMOUNT = 10;
 
 	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
@@ -102,13 +112,10 @@ public class CrewEditorFX {
 	private GridPane gridPane;
 
 	private List<JFXTextField> nameTF;
-	private JFXComboBox<String> jobsOListComboBox;
-	private JFXComboBox<String> genderOListComboBox;
+	private JFXComboBox<String> jobOListCB, genderOListCB, destinationCB, countryOListCB;
 	private JFXComboBox<String> destinationsOListComboBox = new JFXComboBox<String>();
-	private JFXComboBox<String> destinationCB;
 
-	private List<JFXComboBox<String>> genderList;
-	private List<JFXComboBox<String>> jobsList;
+	private List<JFXComboBox<String>> genderList, jobList, countryList;
 	
 	private List<SettlementBase> settlements;
 	private List<String> settlementNames = new ArrayList<String>();
@@ -136,8 +143,9 @@ public class CrewEditorFX {
 
 		nameTF = new ArrayList<JFXTextField>();
 		genderList = new ArrayList<JFXComboBox<String>>();
-		jobsList = new ArrayList<JFXComboBox<String>>();
-
+		jobList = new ArrayList<JFXComboBox<String>>();
+		countryList = new ArrayList<JFXComboBox<String>>();
+		
 		createGUI();
 
 	}
@@ -159,24 +167,24 @@ public class CrewEditorFX {
 		 */
 		scenarioConfigEditorFX.setCrewEditorOpen(true);
 
-		BorderPane borderAll = new BorderPane();
-		borderAll.setPadding(new Insets(5, 5, 5, 5));
+		BorderPane borderPane = new BorderPane();
+		borderPane.setPadding(new Insets(5, 5, 5, 5));
 
-		Label titleLabel = new Label("Crew Roster");// - Destination :
-													// Schiaparelli Point");
+		Label titleLabel = new Label("Alpha Crew Roster");
 		titleLabel.setAlignment(Pos.CENTER);
+		titleLabel.setPadding(new Insets(5, 5, 5, 15));
 
 		HBox hTop = new HBox();
 		hTop.setAlignment(Pos.CENTER);
 		hTop.getChildren().add(titleLabel);
-		borderAll.setTop(titleLabel);
+		borderPane.setTop(titleLabel);
 
 		// Create list panel.
 		gridPane = new GridPane();
 		gridPane.setPadding(new Insets(15, 15, 15, 15));
 		gridPane.setHgap(10.0);
 		gridPane.setVgap(10.0);
-		borderAll.setCenter(gridPane);
+		borderPane.setCenter(gridPane);
 
 		Label empty = new Label("");
 		Label slotOne = new Label("Slot 1");
@@ -200,34 +208,39 @@ public class CrewEditorFX {
 		Label name = new Label("Member :");
 		Label gender = new Label("Gender :");
 		Label job = new Label("Job :");
+		Label country = new Label("Country :");
 		Label personality = new Label("MBTI :");
 		// Label destination = new Label("Destination :");
 
 		setID(name);
 		setID(gender);
 		setID(job);
+		setID(country);
 		setID(personality);
 		// setID(destination);
 
 		GridPane.setConstraints(name, 0, 1);
 		GridPane.setConstraints(gender, 0, 2);
 		GridPane.setConstraints(job, 0, 3);
-		GridPane.setConstraints(personality, 0, 4);
-		gridPane.getChildren().addAll(name, gender, job, personality);
+		GridPane.setConstraints(country, 0, 4);
+		GridPane.setConstraints(personality, 0, 5);
+		gridPane.getChildren().addAll(name, gender, job, country, personality);
 		
 		setUpCrewName();
 		setUpCrewGender();
 		setUpCrewJob();
+		setUpCrewCountry();
 		for (int col = 1; col < SIZE_OF_CREW + 1; col++) {
 			setUpCrewPersonality(col);
 		}
-
+		
 		// Create commit button.
 		JFXButton commitButton = new JFXButton();
 		setMouseCursor(commitButton);
 		commitButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
 		commitButton.getStyleClass().add("button-mid");
-		commitButton.setTooltip(new Tooltip(Msg.getString("CrewEditorFX.tooltip.commit")));
+		//commitButton.setTooltip(new Tooltip(Msg.getString("CrewEditorFX.tooltip.commit")));
+		scenarioConfigEditorFX.setQuickToolTip(commitButton, Msg.getString("CrewEditorFX.tooltip.commit")); //$NON-NLS-1$
 		commitButton.setId("commitButton");
 		commitButton.setAlignment(Pos.CENTER);
 		commitButton.requestFocus();
@@ -278,11 +291,20 @@ public class CrewEditorFX {
 				personConfig.setPersonPersonality(i, personalityStr, ALPHA_CREW);
 
 				// String jobStr = jobTF.get(i).getText();
-				String jobStr = (String) jobsList.get(i).getValue();
+				String jobStr = (String) jobList.get(i).getValue();
 				// System.out.println(" job is " + jobStr);
 				// update PersonConfig with the new job
 				personConfig.setPersonJob(i, jobStr, ALPHA_CREW);
 
+				// 2017-01-24 countryStr and sponsorStr
+				String countryStr = (String) countryList.get(i).getValue();
+				// System.out.println(" country is " + countryStr);
+				// update PersonConfig with the new country
+				personConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
+				
+				String sponsorStr = personConfig.convert2Sponsor(personConfig.getCountryID(countryStr));
+				personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
+				
 				// 2015-11-13 Added setPersonDestination()
 				// String destinationStr = (String)
 				// destinationsList.get(i).getValue();
@@ -309,10 +331,11 @@ public class CrewEditorFX {
 		commitBox.setPadding(new Insets(10, 10, 25, 10));
 		commitBox.setAlignment(Pos.CENTER);
 		commitBox.getChildren().add(commitButton);
+		
 
 		Label destLabel = new Label("Settlement Destination :  ");
 		String dest = personConfig.getConfiguredPersonDestination(0, ALPHA_CREW);
-		destinationCB = setUpCB(5); // 5 = Destination
+		destinationCB = setUpCB(DESTINATION_ROW); // 6 = Destination
 		destinationCB.setValue(dest);
 
 		// Create button pane.
@@ -326,22 +349,32 @@ public class CrewEditorFX {
 		vBottom.setAlignment(Pos.CENTER);
 		vBottom.getChildren().addAll(destBox, commitBox);
 
-		borderAll.setBottom(vBottom);
+		borderPane.setBottom(vBottom);
 
+		
 		layout.setStyle("-fx-background-radius:20; -fx-background-color: null;");// -fx-background-color:
 																					// rgba(209,89,56,)");
 		// cyan blue: rgba(56, 176, 209, ");
 		// "-fx-background-color: null");
 		layout.setEffect(new DropShadow(10, Color.GREY));
-		layout.getChildren().addAll(borderAll);// background, borderAll);
+		layout.getChildren().addAll(borderPane);
 
-		Scene scene = new Scene(layout, Color.TRANSPARENT);
+	    ScrollPane scrollPane = new ScrollPane(layout); //borderPane);//
+	    //scrollPane.setFitToHeight(true);
+	    scrollPane.setFitToWidth(true);
+	    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);//setVisible(true);
+	    scrollPane.setMaxHeight(720);
+	    scrollPane.setMinWidth(800);
+		
+		Scene scene = new Scene(scrollPane, Color.TRANSPARENT);
 		scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");//
 		scene.getStylesheets().add("/fxui/css/crewEditorFXOrange.css");// configEditorFXOrange.css");//
 		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white
 											// border
 
 		stage = new Stage();
+		//stage.setMaxHeight(720);
+		//stage.setMinWidth(800);
 		stage.setScene(scene);
 		// stage.initStyle(StageStyle.TRANSPARENT);
 		stage.setOpacity(.9);
@@ -438,7 +471,7 @@ public class CrewEditorFX {
 			tf.setFocusColor(Color.rgb(225, 206, 30, 1));
 			tf.setId("textfield");
 			nameTF.add(tf);
-			gridPane.add(tf, i + 1, 1); // name's row = 1
+			gridPane.add(tf, i + 1, NAME_ROW); // name's row = 1
 			tf.setText(n);
 			// np.bindBidirectional(tf.textProperty());
 			// tf.textProperty().addListener((observable, oldValue, newValue) ->
@@ -456,20 +489,22 @@ public class CrewEditorFX {
 		// genderList.add("F");
 		List<String> genderList = Arrays.asList("M", "F");
 		ObservableList<String> genderOList = FXCollections.observableArrayList(genderList);
-		genderOListComboBox = new JFXComboBox<String>(genderOList);
+		genderOListCB = new JFXComboBox<String>(genderOList);
 
-		return genderOListComboBox;
+		return genderOListCB;
 	}
 
 	public JFXComboBox<String> setUpCB(int choice) {
 		JFXComboBox<String> m = null;
-		if (choice == 2)
+		if (choice == GENDER_ROW)
 			m = setUpGenderCB();
-		else if (choice == 3)
+		else if (choice == JOB_ROW)
 			m = setUpJobCB();
+		else if (choice == COUNTRY_ROW)
+			m = setUpCountryCB();
 		// else if (choice == 4)
 		// m = setUpPersonalityCB();
-		else if (choice == 5)
+		else if (choice == DESTINATION_ROW)
 			m = setUpDestinationCB();
 
 		final JFXComboBox<String> g = m;
@@ -482,7 +517,7 @@ public class CrewEditorFX {
 
 		return g;
 	}
-
+	
 	public void setUpCrewGender() {
 
 		String s[] = new String[SIZE_OF_CREW];
@@ -495,9 +530,9 @@ public class CrewEditorFX {
 			else
 				s[j] = "F";
 
-			JFXComboBox<String> g = setUpCB(2); // 2 = Gender
+			JFXComboBox<String> g = setUpCB(GENDER_ROW); // 2 = Gender
 			// g.setMaximumRowCount(2);
-			gridPane.add(g, j + 1, 2); // gender's row = 2
+			gridPane.add(g, j + 1, GENDER_ROW); // gender's row = 2
 			// genderOListComboBox.add(g);
 			g.setValue(s[j]);
 			genderList.add(g);
@@ -573,7 +608,7 @@ public class CrewEditorFX {
 			vbox.getChildren().add(titledPane);
 		}
 
-		gridPane.add(vbox, col, 4); // personality's row = 4
+		gridPane.add(vbox, col, PERSONALITY_ROW); // personality's row = 5
 	}
 
 	// 2015-10-07 Added getPersonality()
@@ -642,8 +677,8 @@ public class CrewEditorFX {
 		Collections.sort(jobs);
 
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
-		jobsOListComboBox = new JFXComboBox<String>(jobsOList);
-		return jobsOListComboBox;
+		jobOListCB = new JFXComboBox<String>(jobsOList);
+		return jobOListCB;
 
 		// AutoCompleteJFXComboBox<String> jobsACCB = new
 		// AutoCompleteComboBox<>(FXCollections.observableArrayList(jobs));
@@ -652,18 +687,44 @@ public class CrewEditorFX {
 
 		// return jobsFCB;
 	}
-
+	
 	public void setUpCrewJob() {
 
 		String n[] = new String[SIZE_OF_CREW];
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			n[i] = personConfig.getConfiguredPersonJob(i, ALPHA_CREW);
-			JFXComboBox<String> g = setUpCB(3); // 3 = Job
+			JFXComboBox<String> g = setUpCB(JOB_ROW); // 3 = Job
 			// g.setMaximumRowCount(8);
-			gridPane.add(g, i + 1, 3); // job's row = 3
+			gridPane.add(g, i + 1, JOB_ROW); // job's row = 3
 			g.setValue(n[i]);
-			jobsList.add(g);
+			jobList.add(g);
+		}
+	}
+
+	// 2017-01-24 Added setupCountryCB()
+	public JFXComboBox<String> setUpCountryCB() {
+
+		List<String> countries = personConfig.createCountryList();
+		Collections.sort(countries);
+
+		ObservableList<String> countryOList = FXCollections.observableArrayList(countries);
+		countryOListCB = new JFXComboBox<String>(countryOList);
+		return countryOListCB;
+
+	}
+
+	public void setUpCrewCountry() {
+
+		String n[] = new String[SIZE_OF_CREW];
+
+		for (int i = 0; i < SIZE_OF_CREW; i++) {
+			n[i] = personConfig.getConfiguredPersonCountry(i, ALPHA_CREW);
+			JFXComboBox<String> g = setUpCB(COUNTRY_ROW); // 4 = Country
+			// g.setMaximumRowCount(8);
+			gridPane.add(g, i + 1, COUNTRY_ROW); // country's row = 4
+			g.setValue(n[i]);
+			countryList.add(g);
 		}
 	}
 

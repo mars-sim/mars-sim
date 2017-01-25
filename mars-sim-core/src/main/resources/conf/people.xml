@@ -3062,18 +3062,20 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<!-- gender: the person's gender ("male" or "female") (optional) -->
 		<!-- personality-type: the person's MBTI personality type. (optional) -->
 		<!-- settlement: the person's starting settlement. Must be a named settlement configured in settlements.xml.  (optional) -->
-		<!-- sponsor: -->
-		<!-- country: -->
+		<!-- sponsor: the space agency or organization that sponsors this person (optional. "Mars Society (MS)" by default)-->
+		<!-- country: the nationality of this person (optional. "US" by default)-->
 		<!-- job: the person's permanent job. (optional) -->
 		<!-- favorite-main-dish: the person's favorite main dish. (optional) -->
 		<!-- favorite-side-dish: the person's favorite side dish. (optional) -->
 		<!-- favorite-dessert: the person's favorite dessert. (optional) -->
 		<!-- favorite-activity: the person's favorite hobby. (optional) -->
 		<person name="Karen Andersen" 
-			crew ="alpha" 
+			crew="alpha" 
 			gender="female" 
 			personality-type="ISTJ" 
 			settlement="Schiaparelli Point" 
+			sponsor="Mars Society (MS)"
+			country="US"
 			job="Botanist"
 			favorite-main-dish="Bean Sprout Garlic Stir Fry"
 			favorite-side-dish="Roasted Carrot Soup"
@@ -3149,7 +3151,11 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 			</relationship-list>
 		</person>
 		
-		<person name="Rik Declercq" crew ="alpha" gender="male" personality-type="ESTP" settlement="Schiaparelli Point" job="Chef"
+		<person name="Rik Declercq" crew ="alpha" gender="male" personality-type="ESTP" 
+			settlement="Schiaparelli Point" 
+			sponsor="Mars Society (MS)"
+			country="US"
+			job="Chef"
 			favorite-main-dish="Salsa Potato Salad" favorite-side-dish="Miso Soup" favorite-dessert="soymilk"
 			favorite-activity="Workout">
 			<personality-trait-list>
@@ -3169,7 +3175,11 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
             </skill-list>
        </person>
 
-        <person name="Leonardo DaVinci" crew ="alpha" gender="male" personality-type="INFJ" settlement="Schiaparelli Point" job="Engineer"
+        <person name="Leonardo DaVinci" crew ="alpha" gender="male" personality-type="INFJ" 
+        	settlement="Schiaparelli Point" 
+        	sponsor="Mars Society (MS)"
+			country="US"
+        	job="Engineer"
 			favorite-main-dish="Roasted Carrot Soup and Brown Rice" favorite-side-dish="Baby Carrots" favorite-dessert="craneberry juice"
 			favorite-activity="Research">
 			<personality-trait-list>
@@ -3192,7 +3202,11 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
             </skill-list>
         </person>
         
-        <person name="Lena LaGranda" crew ="alpha" gender="female" personality-type="ENFP" settlement="Schiaparelli Point" job="Technician"
+        <person name="Lena LaGranda" crew ="alpha" gender="female" personality-type="ENFP" 
+        	settlement="Schiaparelli Point" 
+        	sponsor="Mars Society (MS)"
+			country="US"
+        	job="Technician"
 			favorite-main-dish="Kidney Bean Fried Rice with Onion" favorite-side-dish="Peas and Onions" favorite-dessert="bluebbery muffin"
 			favorite-activity="Lab Experimentation">
 			<personality-trait-list>
