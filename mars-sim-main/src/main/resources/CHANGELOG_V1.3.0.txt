@@ -10,6 +10,9 @@ http://mars-sim.sourceforge.net/
 
 1. Add lists of first and last names for each of the 22 countries of ESA.
 
+2. Add ability to choose country for each member of alpha crew in Crew Editor.
+
+3. Add a sound control panel.
 
 ------------------------------------------------------
 

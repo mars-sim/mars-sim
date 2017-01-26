@@ -129,7 +129,8 @@ public class SettlementTableView {
 	}
 */ 
  
-    public TableView createGUI() {
+    @SuppressWarnings("restriction")
+	public TableView createGUI() {
 
 		for (int x = 0; x < NUM_COLUMNS; x++) {
 			TableColumn<Map, String> col = new TableColumn<>(headers[x]);
@@ -472,9 +473,9 @@ public class SettlementTableView {
    	public void destroy() {
    		
    		simulationConfig = null;
-   		settlements.clear(); 
+   		//settlements.clear(); 
    		settlements = null;
-   		allData.clear(); 
+   		//allData.clear(); 
    		allData = null;
    		table_view = null;
    	}

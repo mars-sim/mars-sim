@@ -171,6 +171,7 @@ import org.mars_sim.msp.ui.swing.DesktopPane;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.UIConfig;
+import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.StartUpLocation;
 import org.mars_sim.msp.ui.swing.tool.construction.ConstructionWizard;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
@@ -297,9 +298,9 @@ public class MainScene {
 	private JFXBadge badgeIcon;
 	private JFXSnackbar snackbar;
 	private JFXToggleButton cacheButton, calendarButton;
-	private JFXSlider zoomSlider, timeSlider;
-	private JFXButton miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn, menuButton;
-	private JFXPopup flyout, earthTimePopup, marsTimePopup; 
+	private JFXSlider zoomSlider, timeSlider, soundSlider;
+	private JFXButton soundBtn, miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn, speedButton;
+	private JFXPopup soundPopup, flyout, earthTimePopup, marsTimePopup; 
 	private JFXTabPane jfxTabPane;
 	
 	//private Button memBtn, clkBtn;
@@ -338,6 +339,8 @@ public class MainScene {
 	
 	private SettlementWindow settlementWindow; 
 	private SettlementMapPanel mapPanel;
+	
+	private AudioPlayer soundPlayer;
 	
 	private List<DesktopPane> desktops;
 	private ObservableList<Screen> screens;
@@ -509,21 +512,7 @@ public class MainScene {
 				SwingUtilities.invokeLater(() ->desktop.openToolWindow(TimeWindow.NAME));
 			}
 		});
-	    Nodes.addInputMap(root, f3);
-	    
-		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)), e -> {
-			boolean isMute = menuBar.getMuteItem().isSelected();
-			if (isMute) {	
-        		menuBar.getMuteItem().setSelected(false);
-        		desktop.getSoundPlayer().setMute(true);
-        	}
-        	else {
-        		menuBar.getMuteItem().setSelected(true);
-        		desktop.getSoundPlayer().setMute(false);
-        	}
-			
-		});
-	    Nodes.addInputMap(root, ctrlM);
+	    Nodes.addInputMap(root, f3);   
 
 		InputMap<KeyEvent> ctrlQ = consume(keyPressed(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN)), e -> {
         	popAQuote();
@@ -561,15 +550,35 @@ public class MainScene {
 	    Nodes.addInputMap(root, ctrlF);
 	    
 		InputMap<KeyEvent> ctrlUp = consume(keyPressed(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN)), e -> {
-			desktop.getSoundPlayer().volumeUp();
+			//soundPlayer.volumeUp();
+			soundSlider.setValue(soundSlider.getValue() + .5);
+			//soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() +.05));
 		});
 	    Nodes.addInputMap(root, ctrlUp);
 
 		InputMap<KeyEvent> ctrlDown = consume(keyPressed(new KeyCodeCombination(KeyCode.DOWN, KeyCombination.CONTROL_DOWN)), e -> {
-			desktop.getSoundPlayer().volumeDown();
+			//soundPlayer.volumeDown();
+			soundSlider.setValue(soundSlider.getValue() - .5);
+			//soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume() -.05));
 		});
 	    Nodes.addInputMap(root, ctrlDown);
 
+		InputMap<KeyEvent> ctrlM = consume(keyPressed(new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN)), e -> {
+			boolean isMute = menuBar.getMuteItem().isSelected();
+			if (isMute) {	
+        		menuBar.getMuteItem().setSelected(false);
+        		soundPlayer.setMute(true);
+        		soundSlider.setValue(0);
+        	}
+        	else {
+        		menuBar.getMuteItem().setSelected(true);
+        		soundPlayer.setMute(false);
+        		soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+        	}
+			
+		});
+	    Nodes.addInputMap(root, ctrlM);
+	    
 		//InputMap<KeyEvent> ctrlN = consume(keyPressed(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN)), e -> {
 		//	newSimulation();
 		//});
@@ -638,6 +647,9 @@ public class MainScene {
 		desktopPane.setMinWidth(sceneWidth.get());
 		// 2016-11-25 Setup root for embedding key events
 		root = new Pane();//Group();
+		
+        soundPlayer = desktop.getSoundPlayer();
+        
 		// 2016-11-14 Setup key events using wellbehavedfx
 		setupKeyEvents();		
 	    //2015-11-11 Added createFlyout()
@@ -647,12 +659,14 @@ public class MainScene {
 		// Create ControlFX's StatusBar
 		//statusBar = createStatusBar();
 		earthTimePopup = new JFXPopup();
+		soundPopup = new JFXPopup();
 
         createLastSaveBar();
 		createMarsTimeBar(); 
         createEarthTimeBar();
 
         createEarthTimeBox();
+        createSoundPopup();
         
         // Create menuBar
 		menuBar = new MainSceneMenu(this, desktop);
@@ -676,26 +690,29 @@ public class MainScene {
         //AnchorPane.setTopAnchor(badgeIcon, 0.0);
 
 		if (OS.contains("win")) { 
-	        AnchorPane.setTopAnchor(menuButton, 0.0);
+	        AnchorPane.setTopAnchor(speedButton, 0.0);
 	        AnchorPane.setTopAnchor(marsNetButton, 0.0);  
 	        AnchorPane.setTopAnchor(mapBtn, 0.0); 
-	        AnchorPane.setTopAnchor(miniMapBtn, 3.0); 
+	        AnchorPane.setTopAnchor(miniMapBtn, 0.0); 
 	        AnchorPane.setTopAnchor(lastSaveBar, 0.0);
+	        AnchorPane.setTopAnchor(soundBtn, -6.0);	        
 		}
 		else {
-	        AnchorPane.setTopAnchor(menuButton, -3.0);
+	        AnchorPane.setTopAnchor(speedButton, -3.0);
 	        AnchorPane.setTopAnchor(marsNetButton, -3.0);  
 	        AnchorPane.setTopAnchor(mapBtn, -3.0); 
 	        AnchorPane.setTopAnchor(miniMapBtn, -3.0); 
 	        AnchorPane.setTopAnchor(lastSaveBar, -3.0);
+	        AnchorPane.setTopAnchor(soundBtn, -9.0);	
 		}
 		
-        AnchorPane.setRightAnchor(menuButton, 5.0); 
-        AnchorPane.setRightAnchor(marsNetButton, 45.0);    
-        AnchorPane.setRightAnchor(mapBtn, 85.0);
-        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
-        AnchorPane.setRightAnchor(lastSaveBar, 140.0);
-
+        AnchorPane.setRightAnchor(speedButton, 5.0); 
+        AnchorPane.setRightAnchor(marsNetButton, 45.0);   
+        AnchorPane.setRightAnchor(soundBtn, 85.0);	
+        AnchorPane.setRightAnchor(mapBtn, 125.0);
+        AnchorPane.setRightAnchor(miniMapBtn, 165.0);
+        AnchorPane.setRightAnchor(lastSaveBar, 200.0);
+        
         //AnchorPane.setLeftAnchor(earthTimeBar, sceneWidth.get()/2D);// - earthTimeBar.getPrefWidth());
         //AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
         AnchorPane.setRightAnchor(marsTimeBar, 30.0);
@@ -713,9 +730,9 @@ public class MainScene {
         anchorDesktopPane.getChildren().addAll(
         		jfxTabPane, 
         		miniMapBtn, mapBtn, 
-        		marsNetButton, menuButton,
+        		marsNetButton, speedButton,
         		lastSaveBar, 
-        		earthTimeBar, marsTimeBar);//badgeIcon,borderPane, timeBar, snackbar
+        		earthTimeBar, marsTimeBar, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
         
 		root.getChildren().addAll(anchorDesktopPane);
 		
@@ -857,19 +874,11 @@ public class MainScene {
 	public void createEarthTimeBox() {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());		   
 
-		menuButton = new JFXButton();
-		setQuickToolTip(menuButton, "Options");
+		speedButton = new JFXButton();
+		setQuickToolTip(speedButton, "Simulation Speed");
 
-		menuButton.setOnAction(e -> {
-/*			if (earthTimeFlag) {
-				// TODO more here
-				earthTimeFlag = false;
-			}
-			else {
-				// TODO more here
-				earthTimeFlag = true;
-			}
-*/			
+		speedButton.setOnAction(e -> {
+	
             if (earthTimePopup.isVisible()) {
             	earthTimePopup.close();
             }
@@ -890,28 +899,13 @@ public class MainScene {
 	    		+ "-fx-border-style: solid; "
 				);
 		earthTimePane.setAlignment(Pos.CENTER);				
-		//BorderPane earthTimePane = new BorderPane();
-		//earthTimePane.setMinHeight(100);
 		earthTimePane.setPrefHeight(75);
-		//earthTimePane.setMaxHeight(100);
 		earthTimePane.setPrefWidth(earthTimeBar.getPrefWidth());
-/*		
-		if (OS.contains("linux")) {
-			earthTimePane.setPrefWidth(LINUX_WIDTH);		
-		}
-		else if (OS.contains("macos")) {
-			earthTimePane.setPrefWidth(MACOS_WIDTH);			
-		}	
-		else {
-			earthTimePane.setPrefWidth(WIN_WIDTH);		
-		}
-*/		
-		//earthTimePane.setPadding(new Insets(15, 15, 15, 15));
-  
+
 		//earthTimePopup.setOpacity(.5);
 		earthTimePopup.setContent(earthTimePane);
 		earthTimePopup.setPopupContainer(anchorDesktopPane);
-		earthTimePopup.setSource(menuButton);
+		earthTimePopup.setSource(speedButton);
         
 		// Set up a settlement view zoom bar
 		timeSlider = new JFXSlider();		
@@ -1011,6 +1005,109 @@ public class MainScene {
         earthTimePane.getChildren().addAll(vBox);
         //earthTimePane.setTop(timeSlider);
 	}
+	
+	
+	
+    /**
+     * Creates and returns the sound popup box
+     */
+	// 2017-01-25 Added createSoundPopup()
+	public void createSoundPopup() {
+		//logger.info("MainScene's createSoundPopup() is on " + Thread.currentThread().getName());		   
+
+		soundBtn = new JFXButton();
+		soundBtn.getStyleClass().add("button-raised");
+		Icon icon = new Icon("MUSIC");
+		icon.setCursor(Cursor.HAND);
+		//icon.setStyle("-fx-background-color: orange;");
+		//value.setPadding(new Insets(1));
+		soundBtn.setMaxSize(15, 15);
+		soundBtn.setGraphic(icon);
+		setQuickToolTip(soundBtn, "Sound volume Panel");
+
+		soundBtn.setOnAction(e -> {	
+            if (soundPopup.isVisible()) {
+            	soundPopup.close();
+            }
+            else {
+            	soundPopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
+            }
+            
+		});
+		
+		StackPane soundPane = new StackPane();
+		soundPane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
+				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+       			+ "-fx-background-radius: 10px;"
+				+ "-fx-text-fill: cyan;"
+				+ "-fx-border-color: white;"
+	    		+ "-fx-border-radius: 10px;"
+	    		+ "-fx-border-width: 3px;"
+	    		+ "-fx-border-style: solid; "
+				);
+		soundPane.setAlignment(Pos.CENTER);				
+		soundPane.setPrefHeight(75);
+		soundPane.setPrefWidth(250);
+
+		soundPopup.setContent(soundPane);
+		soundPopup.setPopupContainer(anchorDesktopPane);
+		soundPopup.setSource(soundBtn);
+        
+		// Set up a settlement view zoom bar
+		soundSlider = new JFXSlider();		
+		soundSlider.getStyleClass().add("jfx-slider");
+		soundSlider.setPrefHeight(220);
+		soundSlider.setPrefHeight(20);
+		soundSlider.setPadding(new Insets(0, 15, 0, 15));
+
+		soundSlider.setMin(0);
+		soundSlider.setMax(10);
+		soundSlider.setValue(convertVolume2Slider(soundPlayer.getVolume()));
+		soundSlider.setMajorTickUnit(1);
+		//soundSlider.setMinorTickCount();
+		soundSlider.setShowTickLabels(true);
+		soundSlider.setShowTickMarks(true);
+		soundSlider.setSnapToTicks(true);
+		soundSlider.setBlockIncrement(.5);
+		soundSlider.setOrientation(Orientation.HORIZONTAL);
+		soundSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
+
+		setQuickToolTip(soundSlider, "Adjust Sound Volume"); //$NON-NLS-1$
+			
+        Label header_label = new Label("SOUND VOLUME");
+        header_label.setStyle("-fx-text-fill: black;"
+        			+ "-fx-font-size: 12px;"
+        		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+        			+ "-fx-font-weight: normal;");
+        header_label.setPadding(new Insets(3, 0, 1, 10));
+
+		// detect dragging
+        soundSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            public void changed(ObservableValue<? extends Number> ov,
+                Number old_val, Number new_val) {
+            	   		
+            	if (old_val != new_val) {
+
+	            	float sliderValue = new_val.floatValue();
+	            	//System.out.println("sliderValue : " + sliderValue);
+	            	
+	            	if (sliderValue <= 0) {
+				        soundPlayer.setMute(true);
+					}
+					else {
+						soundPlayer.setMute(false);
+						soundPlayer.setVolume((float) convertSlider2Volume(sliderValue));
+					}
+            	}
+            }
+        });   
+        
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(header_label, soundSlider);
+        soundPane.getChildren().addAll(vBox);
+
+	}
+	
 	
 	public void createMarsTimeBar() {
 		marsTimeBar = new HBox();
@@ -1466,14 +1563,14 @@ public class MainScene {
 						miniMapBtn.fire();
 				}
 
-				AnchorPane.setRightAnchor(mapBtn, 85.0);
+				AnchorPane.setRightAnchor(mapBtn, 125.0);
 				if (OS.contains("win"))
 					AnchorPane.setTopAnchor(mapBtn, 0.0);   
 				else
 					AnchorPane.setTopAnchor(mapBtn, -3.0);
 				anchorDesktopPane.getChildren().addAll(mapBtn);
 
-		        AnchorPane.setRightAnchor(miniMapBtn, 125.0);
+		        AnchorPane.setRightAnchor(miniMapBtn, 165.0);
 				if (OS.contains("win"))
 					AnchorPane.setTopAnchor(miniMapBtn, 0.0);   
 				else
@@ -1798,14 +1895,14 @@ public class MainScene {
 		}
 		
 		if (theme == 6) {
-			menuButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_menu_24.png"))));
+			speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_menu_24.png"))));
 			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_globe_24.png"))));
 			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_map_24.png"))));
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_chat_24.png"))));
 			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_blue.css").toExternalForm());
 		}
 		else if (theme == 7) {
-			menuButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_menu_24.png"))));
+			speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_menu_24.png"))));
 			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_globe_24.png"))));
 			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_map_24.png"))));
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_chat_24.png"))));
@@ -1952,6 +2049,7 @@ public class MainScene {
 */		
 
 	}
+	
 	
 	/*
 	 * Creates the status bar for MainScene
@@ -2780,8 +2878,12 @@ public class MainScene {
 		
 	}
 	
-	public double getTimeRatio() {
-		return newTimeRatio;
+	public double convertSlider2Volume(double y) {
+		return .05*y + .5;
+	}	
+	
+	public double convertVolume2Slider(double x) {
+		return 20D*(x - .5);
 	}
 	
 	public double getInitialTimeRatio() {

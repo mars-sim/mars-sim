@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 3.08 2016-03-31
+ * @version 3.1.0 2017-01-24
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 
@@ -200,7 +200,9 @@ public class AudioPlayer {
 		});
 	}
 	
-	public void setVolume() {	
+	@SuppressWarnings("restriction")
+	public void setVolume() {
+		Platform.runLater(() -> {		
 		if(!isMute(false)) {
 			//logger.info("!isMute(false) is " + !isMute(false));
 			// 2016-09-28 Added backgroundSoundTrack
@@ -219,6 +221,7 @@ public class AudioPlayer {
 				}
 			
 		}
+		});
 	}
 	
 	/**
@@ -232,17 +235,17 @@ public class AudioPlayer {
 		if (volume > 1F)
 			volume = 1F;
 
-		this.volume = volume;
-		
+		this.volume = volume;	
+		//System.out.println("volume " + volume);	
 		if(!isMute(false)) {
 			//logger.info("!isMute(false) is " + !isMute(false));
 			// 2016-09-28 Added backgroundSoundTrack
 			if (backgroundSoundTrack != null)
 				if (!backgroundSoundTrack.isMute())	{
 					backgroundSoundTrack.setGain(volume);
-					System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
-					backgroundSoundTrack.resume();
-					backgroundSoundTrack.setMute(false);
+					//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
+					//backgroundSoundTrack.resume();
+					//backgroundSoundTrack.setMute(false);
 				}
 		}
 		else {
