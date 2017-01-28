@@ -87,7 +87,7 @@ extends ToolWindow {
 	
 	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
-	public static final int TIME_DELAY = 200;
+	public static final int TIME_DELAY = 330;
 
 	public static final int HORIZONTAL = 800;//630;
 	public static final int VERTICAL = 600;//590;

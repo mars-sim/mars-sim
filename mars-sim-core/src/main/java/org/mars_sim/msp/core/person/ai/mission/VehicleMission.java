@@ -755,38 +755,40 @@ implements UnitListener {
 	private boolean hasEnoughResources(Map<Resource, Number> neededResources) {
 		boolean result = true;
 
-		Inventory inv = vehicle.getInventory();
-
-		Iterator<Resource> iR = neededResources.keySet().iterator();
-		while (iR.hasNext() && result) {
-			Resource resource = iR.next();
-			if (resource instanceof AmountResource) {
-
-			    double amount = (Double) neededResources.get(resource);
-			    double amountStored = inv
-			            .getAmountResourceStored((AmountResource) resource, false);
-			    if (amountStored < amount) {
-			        logger.severe(vehicle.getName() + " does not have enough " + resource + 
-			                " to continue with " + getName() + " (required: " + amount + 
-			                " kg, stored: " + amountStored + " kg)");
-			        result = false;
-			    }
-			} 
-			else if (resource instanceof ItemResource) {
-				int num = (Integer) neededResources.get(resource);
-				int numStored = inv.getItemResourceNum((ItemResource) resource);
-				if (numStored < num) {
-					logger.severe(vehicle.getName() + " does not have enough " + resource + 
-							" to continue with " + getName() + " (required: " + num +
-							", stored: " + numStored + ")");
-					result = false;
+		if (vehicle != null) {
+			Inventory inv = vehicle.getInventory();
+	
+			Iterator<Resource> iR = neededResources.keySet().iterator();
+			while (iR.hasNext() && result) {
+				Resource resource = iR.next();
+				if (resource instanceof AmountResource) {
+	
+				    double amount = (Double) neededResources.get(resource);
+				    double amountStored = inv
+				            .getAmountResourceStored((AmountResource) resource, false);
+				    if (amountStored < amount) {
+				        logger.severe(vehicle.getName() + " does not have enough " + resource + 
+				                " to continue with " + getName() + " (required: " + amount + 
+				                " kg, stored: " + amountStored + " kg)");
+				        result = false;
+				    }
+				} 
+				else if (resource instanceof ItemResource) {
+					int num = (Integer) neededResources.get(resource);
+					int numStored = inv.getItemResourceNum((ItemResource) resource);
+					if (numStored < num) {
+						logger.severe(vehicle.getName() + " does not have enough " + resource + 
+								" to continue with " + getName() + " (required: " + num +
+								", stored: " + numStored + ")");
+						result = false;
+					}
+				} else {
+					throw new IllegalStateException(getPhase()
+							+ " : Unknown resource type: " + resource);
 				}
-			} else {
-				throw new IllegalStateException(getPhase()
-						+ " : Unknown resource type: " + resource);
 			}
-		}
 
+		}
 		return result;
 	}
 

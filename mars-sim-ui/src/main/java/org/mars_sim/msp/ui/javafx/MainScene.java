@@ -161,6 +161,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.UpTimer;
 import org.mars_sim.msp.ui.javafx.BorderSlideBar;
 import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.javafx.notification.MessagePopup;
@@ -185,6 +186,7 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementMapPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementTransparentPanel;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
+import org.mars_sim.msp.ui.swing.tool.time.MarsCalendarDisplay;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.person.PlannerWindow;
@@ -238,6 +240,8 @@ public class MainScene {
 	private static final String MARS_DATE_TIME = "MARS  :  ";
 	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 	public static final String UMST = " (UMST)";
+	public static final String UPTIME = "Simulation UpTime : ";
+	public static final String TPS = "TPS : ";
 	
 	private static int theme = 7; // 6 is snow blue; 7 is the mud orange with nimrod
 
@@ -248,6 +252,7 @@ public class MainScene {
 	
 
 	private int count = 0;
+	private int solElapsedCache = 0;
 	private int memMax;
 	private int memTotal;
 	private int memUsed, memUsedCache;
@@ -290,8 +295,8 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
-	private Button earthTimeButton, marsTime;
-	private Label lastSaveLabel;
+	private Button earthTimeButton, marsTimeButton;
+	private Label lastSaveLabel, monthLabel, TPSLabel, upTimeLabel;
 	private Text memUsedText;
 	
 	private JFXComboBox<Settlement> sBox;
@@ -300,7 +305,7 @@ public class MainScene {
 	private JFXToggleButton cacheButton, calendarButton;
 	private JFXSlider zoomSlider, timeSlider, soundSlider;
 	private JFXButton soundBtn, miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn, speedButton;
-	private JFXPopup soundPopup, flyout, earthTimePopup, marsTimePopup; 
+	private JFXPopup soundPopup, flyout, marsCalendarPopup, simSpeedPopup;// marsTimePopup; 
 	private JFXTabPane jfxTabPane;
 	
 	//private Button memBtn, clkBtn;
@@ -319,7 +324,8 @@ public class MainScene {
 	private NotificationPane notificationPane;
 
 	private DecimalFormat twoDigitFormat = new DecimalFormat(Msg.getString("twoDigitFormat")); //$NON-NLS-1$
-
+	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TimeWindow.decimalFormat")); //$NON-NLS-1$
+	
 	private MainDesktopPane desktop;
 	private MainSceneMenu menuBar;
 
@@ -341,6 +347,8 @@ public class MainScene {
 	private SettlementMapPanel mapPanel;
 	
 	private AudioPlayer soundPlayer;
+	private MarsCalendarDisplay calendarDisplay;
+	private UpTimer uptimer;
 	
 	private List<DesktopPane> desktops;
 	private ObservableList<Screen> screens;
@@ -354,7 +362,7 @@ public class MainScene {
 		//logger.info("MainScene's constructor() is on " + Thread.currentThread().getName() + " Thread");
 		this.stage = stage;
 		this.isMainSceneDoneLoading = false;
-
+		
 		sceneWidth = new SimpleDoubleProperty(DEFAULT_WIDTH);
 		sceneHeight = new SimpleDoubleProperty(DEFAULT_HEIGHT);
 		
@@ -427,9 +435,11 @@ public class MainScene {
 	 */
 	public void prepareOthers() {
 		//logger.info("MainScene's prepareOthers() is on " + Thread.currentThread().getName() + " Thread");
+		uptimer = masterClock.getUpTimer();
 		startEarthTimer();
 		transportWizard = new TransportWizard(this, desktop);
 		constructionWizard = new ConstructionWizard(this, desktop);
+		
 	}
 
 	
@@ -658,7 +668,7 @@ public class MainScene {
         //EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(), chatBox);		
 		// Create ControlFX's StatusBar
 		//statusBar = createStatusBar();
-		earthTimePopup = new JFXPopup();
+		simSpeedPopup = new JFXPopup();
 		soundPopup = new JFXPopup();
 
         createLastSaveBar();
@@ -875,15 +885,15 @@ public class MainScene {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());		   
 
 		speedButton = new JFXButton();
-		setQuickToolTip(speedButton, "Simulation Speed");
+		setQuickToolTip(speedButton, "Open Time Panel");
 
 		speedButton.setOnAction(e -> {
 	
-            if (earthTimePopup.isVisible()) {
-            	earthTimePopup.close();
+            if (simSpeedPopup.isVisible()) {
+            	simSpeedPopup.close();
             }
             else {
-            	earthTimePopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
+            	simSpeedPopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
             }
             
 		});
@@ -899,20 +909,20 @@ public class MainScene {
 	    		+ "-fx-border-style: solid; "
 				);
 		earthTimePane.setAlignment(Pos.CENTER);				
-		earthTimePane.setPrefHeight(75);
+		earthTimePane.setPrefHeight(100);
 		earthTimePane.setPrefWidth(earthTimeBar.getPrefWidth());
 
 		//earthTimePopup.setOpacity(.5);
-		earthTimePopup.setContent(earthTimePane);
-		earthTimePopup.setPopupContainer(anchorDesktopPane);
-		earthTimePopup.setSource(speedButton);
+		simSpeedPopup.setContent(earthTimePane);
+		simSpeedPopup.setPopupContainer(anchorDesktopPane);
+		simSpeedPopup.setSource(speedButton);
         
 		// Set up a settlement view zoom bar
 		timeSlider = new JFXSlider();		
 		timeSlider.getStyleClass().add("jfx-slider");
 		timeSlider.setPrefHeight(180);
 		timeSlider.setPrefHeight(20);
-		timeSlider.setPadding(new Insets(0, 15, 0, 15));
+		timeSlider.setPadding(new Insets(0, 5, 0, 5));
 	
 		initial_time_ratio = Simulation.instance().getMasterClock().getTimeRatio();
 
@@ -931,12 +941,12 @@ public class MainScene {
 
 		setQuickToolTip(timeSlider, "Adjust Time Ratio"); //$NON-NLS-1$
 			
-        Label header_label = new Label("SIMULATION SPEED");
+        Label header_label = new Label("TIME PANEL");
         header_label.setStyle("-fx-text-fill: black;"
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-        header_label.setPadding(new Insets(3, 0, 1, 10));
+        header_label.setPadding(new Insets(3, 0, 1, 0));
 		
 		String DEFAULT = " ( Default : ";
         int default_ratio = (int)masterClock.getDefaultTimeRatio();
@@ -947,7 +957,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-		time_ratio_label.setPadding(new Insets(3, 0, 1, 15));
+		time_ratio_label.setPadding(new Insets(3, 0, 1, 0));
 		s0.append(TXT).append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(" )");
 		time_ratio_label.setText(s0.toString());
 		
@@ -957,7 +967,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"        		
         			+ "-fx-font-weight: italic;");
-        real_time_label.setPadding(new Insets(1, 0, 1, 15));
+        real_time_label.setPadding(new Insets(3, 3, 3, 3));
 
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
@@ -1000,10 +1010,29 @@ public class MainScene {
             }
         });   
         
+        
+        TPSLabel = new Label();
+        TPSLabel.setStyle("-fx-text-fill: #065185;"
+    			+ "-fx-font-size: 12px;"
+    		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"        		
+    			+ "-fx-font-weight: italic;");
+        TPSLabel.setPadding(new Insets(3, 3, 3, 3));		
+		TPSLabel.setText(TPS + formatter.format(masterClock.getPulsesPerSecond()));
+
+        upTimeLabel = new Label();
+        upTimeLabel.setStyle("-fx-text-fill: #065185;"
+    			+ "-fx-font-size: 12px;"
+    		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"        		
+    			+ "-fx-font-weight: italic;");
+        upTimeLabel.setPadding(new Insets(3, 3, 3, 3));
+        if (uptimer != null)
+        upTimeLabel.setText(UPTIME + uptimer.getUptime());
+		
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(header_label, time_ratio_label, real_time_label, timeSlider);
-        earthTimePane.getChildren().addAll(vBox);
-        //earthTimePane.setTop(timeSlider);
+		vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(header_label, time_ratio_label, timeSlider, real_time_label, TPSLabel, upTimeLabel);
+        earthTimePane.getChildren().addAll(vBox);    
+        
 	}
 	
 	
@@ -1103,6 +1132,7 @@ public class MainScene {
         });   
         
         VBox vBox = new VBox();
+		vBox.setAlignment(Pos.CENTER);
         vBox.getChildren().addAll(header_label, soundSlider);
         soundPane.getChildren().addAll(vBox);
 
@@ -1122,7 +1152,6 @@ public class MainScene {
 			marsTimeBar.setPrefSize(230, 32);			
 		}
 
-	
 		if (masterClock == null) {
 			masterClock = sim.getMasterClock();
 		}
@@ -1131,24 +1160,70 @@ public class MainScene {
 			marsClock = masterClock.getMarsClock();
 		}
 
-
-		marsTime = new Button();//Label();
-		marsTime.setOnAction(e -> {
-			if (marsTimeFlag) {
+		marsCalendarPopup = new JFXPopup();
+		marsTimeButton = new Button();//Label();
+		marsTimeButton.setOnAction(e -> {
+			//if (marsTimeFlag) {
 				// TODO more here
-				marsTimeFlag = false;
-			}
-			else {
+			//	marsTimeFlag = false;
+			//}
+			//else {
 				// TODO more here
-				marsTimeFlag = true;
-			}
+			//	marsTimeFlag = true;
+			//}
+            if (marsCalendarPopup.isVisible()) {
+            	marsCalendarPopup.close();
+            }
+            else {
+            	marsCalendarPopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -20, 25);
+            }
 		});
+	
+		calendarDisplay = new MarsCalendarDisplay(marsClock, desktop);
 		
-		marsTime.setId("rich-orange");
-		marsTime.setTextAlignment(TextAlignment.CENTER);
+		SwingNode calNode = new SwingNode();
+		calNode.setContent(calendarDisplay);
+		
+        Label header_label = new Label("CALENDAR PANEL");
+        header_label.setStyle("-fx-text-fill: black;"
+        			+ "-fx-font-size: 12px;"
+        		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+        			+ "-fx-font-weight: normal;");
+        header_label.setPadding(new Insets(3, 0, 1, 0));
+        
+		monthLabel = new Label(marsClock.getMonthName());
+		monthLabel.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+				+ "-fx-text-fill: orange;");
+		
+		
+		VBox vBox = new VBox();
+		vBox.setAlignment(Pos.CENTER);
+		vBox.getChildren().addAll(header_label, monthLabel, calNode);
+		
+		StackPane calendarPane = new StackPane(vBox);		
+		calendarPane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
+				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+       			+ "-fx-background-radius: 10px;"
+				+ "-fx-text-fill: cyan;"
+				+ "-fx-border-color: white;"
+	    		+ "-fx-border-radius: 10px;"
+	    		+ "-fx-border-width: 3px;"
+	    		+ "-fx-border-style: solid; "
+				);
+		calendarPane.setAlignment(Pos.CENTER);				
+		calendarPane.setPrefHeight(170);
+		calendarPane.setPrefWidth(180);
+		calendarPane.setPadding(new Insets(5, 5, 10, 5));
+
+		marsCalendarPopup.setContent(calendarPane);
+		marsCalendarPopup.setPopupContainer(anchorDesktopPane);
+		marsCalendarPopup.setSource(marsTimeButton);
+		
+		marsTimeButton.setId("rich-orange");
+		marsTimeButton.setTextAlignment(TextAlignment.CENTER);
 		//setQuickToolTip(marsTime, "Click to see Quick Info on Mars");
 
-		marsTimeBar.getChildren().add(marsTime);
+		marsTimeBar.getChildren().add(marsTimeButton);
 	}
 	
 	public void createFXButtons() {
@@ -1863,8 +1938,8 @@ public class MainScene {
 		earthTimeButton.getStylesheets().clear();
 		earthTimeButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
 
-		marsTime.getStylesheets().clear();
-		marsTime.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+		marsTimeButton.getStylesheets().clear();
+		marsTimeButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
 	
 		lastSaveLabel.getStylesheets().clear();
 		lastSaveLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
@@ -2136,10 +2211,28 @@ public class MainScene {
 	 */
 	public void updateTimeLabels() {
 
+		calendarDisplay.update();
+		
+		TPSLabel.setText(TPS + formatter.format(masterClock.getPulsesPerSecond()));
+
+		upTimeLabel.setText(UPTIME + uptimer.getUptime());
+			
+		int solElapsed = marsClock.getSolElapsedFromStart();
+		if (solElapsed != solElapsedCache) {
+			
+			if (solElapsed == 1) {
+				String mn = marsClock.getMonthName();
+				if (mn != null)
+					monthLabel.setText(mn);
+			}
+			
+			solElapsedCache = solElapsed;
+		}
+		
 		StringBuilder m = new StringBuilder();
         m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(" ")
         	.append(marsClock.getTrucatedTimeString()).append(UMST);
-		marsTime.setText(m.toString());		
+		marsTimeButton.setText(m.toString());		
 		
 		StringBuilder e = new StringBuilder();
         e.append(EARTH_DATE_TIME).append(earthClock.getTimeStamp2());

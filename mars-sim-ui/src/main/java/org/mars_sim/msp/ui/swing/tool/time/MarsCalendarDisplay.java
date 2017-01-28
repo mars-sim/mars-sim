@@ -18,7 +18,7 @@ import java.awt.*;
  * The Mars Calendar Display class shows the current month
  * in a panel for the {@link TimeWindow} class.
  */
-class MarsCalendarDisplay
+public class MarsCalendarDisplay
 extends JComponent {
 
 	/** default serial id. */
@@ -34,7 +34,7 @@ extends JComponent {
 	/** The Sol of month cache. */
 	private int solOfMonthCache;
 
-	private int theme;
+	private int themeCache = 0;
 
 	private Color baseColor, midColor, darkColor;
 
@@ -68,50 +68,57 @@ extends JComponent {
 	public void update() {
 
 		if (mainScene != null) {
-			theme = MainScene.getTheme();
+			int theme = MainScene.getTheme();
 
-			if (theme == 1) {
-				// green theme
-				baseColor = Color.orange;
-				midColor = new Color(104, 114, 77); // 74, 140, 94
-				darkColor = new Color(73, 97, 0);
-			}
-			else if (theme == 2) {
-				// red theme
-				baseColor = Color.red;
-				midColor = new Color(255, 102, 102); // pink orange
-				darkColor = new Color(51, 25, 0); // dark brown
-			}
-			else if (theme == 3) {
-				//  brownish theme
-				baseColor = Color.orange;
-				midColor = new Color(210, 117, 101); // orange pink
-				darkColor = new Color(140, 94, 74); // greyish brown pink
-			}
-
-			else if (theme == 4) {
-				// grey theme
-				baseColor = Color.gray;
-				midColor = Color.lightGray;
-				darkColor = Color.DARK_GRAY;
-			}
-			else if (theme == 5) {
-				// purple theme
-				baseColor = Color.magenta;
-				midColor = new Color(112, 76, 103);
-				darkColor = new Color(51, 0, 51);
-			}
-			else if (theme == 6) {
-				// blue theme
-				baseColor = Color.cyan;
-				midColor = new Color(99, 125, 150);
-				darkColor = new Color(101, 139, 210);
-			}
-			else if (theme == 7) {
-				// pale olive theme
-				baseColor = Color.orange;
-				midColor = new Color(152, 149, 92);
-				darkColor = new Color(138, 141, 74);
+			if (theme != themeCache) {
+				
+				theme = themeCache;
+							
+				if (theme == 1) {
+					// green theme
+					baseColor = Color.orange;
+					midColor = new Color(104, 114, 77); // 74, 140, 94
+					darkColor = new Color(73, 97, 0);
+				}
+				else if (theme == 2) {
+					// red theme
+					baseColor = Color.red;
+					midColor = new Color(255, 102, 102); // pink orange
+					darkColor = new Color(51, 25, 0); // dark brown
+				}
+				else if (theme == 3) {
+					//  brownish theme
+					baseColor = Color.orange;
+					midColor = new Color(210, 117, 101); // orange pink
+					darkColor = new Color(140, 94, 74); // greyish brown pink
+				}
+	
+				else if (theme == 4) {
+					// grey theme
+					baseColor = Color.gray;
+					midColor = Color.lightGray;
+					darkColor = Color.DARK_GRAY;
+				}
+				else if (theme == 5) {
+					// purple theme
+					baseColor = Color.magenta;
+					midColor = new Color(112, 76, 103);
+					darkColor = new Color(51, 0, 51);
+				}
+				else if (theme == 6) {
+					// blue theme
+					baseColor = Color.cyan;
+					midColor = new Color(99, 125, 150);
+					darkColor = new Color(101, 139, 210);
+				}
+				else if (theme == 7) {
+					// pale olive theme
+					baseColor = Color.orange;
+					midColor = new Color(152, 149, 92);
+					darkColor = new Color(138, 141, 74);
+				}
+				
+				repaint();
 			}
 		}
 
@@ -159,7 +166,7 @@ extends JComponent {
 		}
 
 		// Set up week letter font
-		Font weekFont = new Font("SansSerif", Font.PLAIN, 10);
+		Font weekFont = new Font("Arial", Font.ITALIC, 10);
 		FontMetrics weekMetrics = getFontMetrics(weekFont);
 		int weekHeight = weekMetrics.getAscent();
 
@@ -168,7 +175,7 @@ extends JComponent {
 		char[] weekLetters = {'S', 'P', 'D', 'T', 'H', 'V', 'J'};
 		for (int x=0; x < 7; x++) {
 			int letterWidth = weekMetrics.charWidth(weekLetters[x]);
-			g.drawString("" + weekLetters[x], (20 * x) + 11 - (letterWidth / 2), weekHeight - 1);
+			g.drawString("" + weekLetters[x], (20 * x) + 11 - (letterWidth / 2), weekHeight + 1);
 		}
 
 		// Set up Sol number font
