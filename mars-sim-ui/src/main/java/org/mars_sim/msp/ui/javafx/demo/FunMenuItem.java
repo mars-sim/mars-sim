@@ -61,7 +61,7 @@ public class FunMenuItem extends StackPane {
         this(null);
     }
     public FunMenuItem(final Ikon CODE) {
-        getStylesheets().add(FunMenuItem.class.getResource("/funmenu/funmenu.css").toExternalForm());
+        getStylesheets().add(FunMenuItem.class.getResource("/css/funmenu.css").toExternalForm());
         iconColor = new SimpleStyleableObjectProperty<>(ICON_COLOR, this, "iconColor");
         iconCode  = CODE;
         init();

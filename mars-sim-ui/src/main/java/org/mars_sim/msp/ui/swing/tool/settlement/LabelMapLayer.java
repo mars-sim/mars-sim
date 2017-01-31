@@ -62,7 +62,7 @@ implements SettlementMapLayer {
 	private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(237, 114, 38); //greyish orange
 	private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);
 	
-	private static final Color VEHICLE_LABEL_COLOR = new Color(127, 0, 127); // magenta-purple
+	private static final Color VEHICLE_LABEL_COLOR = new Color(249, 134, 134); // light-red //127, 0, 127); // magenta-purple
 	private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 150);//(255, 255, 255, 190);
 
 	static final Color PERSON_LABEL_COLOR = new Color(12, 140, 133); // dull cyan

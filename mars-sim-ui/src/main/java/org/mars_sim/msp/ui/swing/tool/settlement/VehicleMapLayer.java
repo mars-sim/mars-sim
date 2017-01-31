@@ -42,7 +42,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class VehicleMapLayer implements SettlementMapLayer {
 
 	// Static members
-	private static final Color VEHICLE_COLOR = Color.RED;
+	private static final Color VEHICLE_COLOR = new Color(249, 134, 134);//Color.RED;
 
 	// Data members
 	private SettlementMapPanel mapPanel;

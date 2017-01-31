@@ -145,8 +145,8 @@ implements Serializable {
                     boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
                     boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
                     goodEVASuit = roverSuit || wearingSuit;
+                    
                     if (goodEVASuit) {
-
                         // Walk to nearest emergency airlock in settlement.
                         Airlock airlock = settlement.getClosestAvailableAirlock(person);
                         if (airlock != null) {

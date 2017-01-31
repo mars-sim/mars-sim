@@ -295,7 +295,7 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
-	private Button earthTimeButton, marsTimeButton;
+	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
 	private Label lastSaveLabel, monthLabel, TPSLabel, upTimeLabel;
 	private Text memUsedText;
 	
@@ -1144,12 +1144,12 @@ public class MainScene {
 		//marsTimeBar.setId("rich-orange");
 		marsTimeBar.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			marsTimeBar.setMinWidth(270);
-			marsTimeBar.setPrefSize(270, 32);			
+			marsTimeBar.setMinWidth(290);
+			marsTimeBar.setPrefSize(290, 32);			
 		}
 		else {
-			marsTimeBar.setMinWidth(230);
-			marsTimeBar.setPrefSize(230, 32);			
+			marsTimeBar.setMinWidth(250);
+			marsTimeBar.setPrefSize(250, 32);			
 		}
 
 		if (masterClock == null) {
@@ -1223,7 +1223,23 @@ public class MainScene {
 		marsTimeButton.setTextAlignment(TextAlignment.CENTER);
 		//setQuickToolTip(marsTime, "Click to see Quick Info on Mars");
 
-		marsTimeBar.getChildren().add(marsTimeButton);
+		//northHemi = new Button("\u25D2");
+		//northHemi.setId("button-orange");
+		//northHemi.setStyle("-fx-text-fill: black;"
+    	//		+ "-fx-font-size: 24px;"
+    	//	    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+    	//		+ "-fx-font-weight: bold;");
+		//northHemi.setTextAlignment(TextAlignment.CENTER);
+		
+		//southHemi = new Button("\u25D3");
+		//southHemi.setId("button-orange");
+		//southHemi.setStyle("-fx-text-fill: black;"
+    	//		+ "-fx-font-size: 24px;"
+    	//	    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
+    	//		+ "-fx-font-weight: bold;");
+		//southHemi.setTextAlignment(TextAlignment.CENTER);
+		
+		marsTimeBar.getChildren().add(marsTimeButton);//addAll(northHemi, southHemi, marsTimeButton);
 	}
 	
 	public void createFXButtons() {
@@ -1935,25 +1951,16 @@ public class MainScene {
 
 		jfxTabPane.getStylesheets().clear();
 		
-		earthTimeButton.getStylesheets().clear();
-		earthTimeButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
-
-		marsTimeButton.getStylesheets().clear();
-		marsTimeButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
-	
-		lastSaveLabel.getStylesheets().clear();
-		lastSaveLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		
-		miniMapBtn.getStylesheets().clear();
-		miniMapBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		mapBtn.getStylesheets().clear();
-		mapBtn.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		cacheButton.getStylesheets().clear();
-		cacheButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		settlementBox.getStylesheets().clear();
-		settlementBox.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
-		mapLabelBox.getStylesheets().clear();
-		mapLabelBox.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		//setStylesheet(northHemi, cssFile);
+		//setStylesheet(southHemi, cssFile);
+		setStylesheet(marsTimeButton, cssFile);
+		setStylesheet(earthTimeButton, cssFile);
+		setStylesheet(lastSaveLabel, cssFile);
+		setStylesheet(miniMapBtn, cssFile);
+		setStylesheet(mapBtn, cssFile);
+		setStylesheet(cacheButton, cssFile);
+		setStylesheet(settlementBox, cssFile);
+		setStylesheet(mapLabelBox, cssFile);
 			
 		
 		if (settlementWindow == null) {
@@ -1987,6 +1994,36 @@ public class MainScene {
 		chatBox.update();    
 		
 	}
+	
+	public void setStylesheet(Button b, String cssFile) {
+		b.getStylesheets().clear();
+		b.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}
+
+	public void setStylesheet(JFXButton b, String cssFile) {
+		b.getStylesheets().clear();
+		b.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}
+	
+	public void setStylesheet(StackPane sp, String cssFile) {
+		sp.getStylesheets().clear();
+		sp.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}
+	
+	public void setStylesheet(VBox vb, String cssFile) {
+		vb.getStylesheets().clear();
+		vb.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}
+	
+	public void setStylesheet(JFXToggleButton b, String cssFile) {
+		b.getStylesheets().clear();
+		b.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}
+	
+	public void setStylesheet(Label l, String cssFile) {
+		l.getStylesheets().clear();
+		l.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+	}	
 	
 	/**
 	 * Creates and starts the earth timer

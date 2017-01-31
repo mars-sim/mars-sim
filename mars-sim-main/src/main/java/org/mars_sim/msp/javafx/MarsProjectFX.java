@@ -252,7 +252,8 @@ public class MarsProjectFX extends Application  {
      * Initiates any tasks or methods on a JavaFX-Launcher Thread
      * @see javafx.application.Application#init()
      */
-    @Override
+    @SuppressWarnings("restriction")
+	@Override
     public void init() throws Exception {
 	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
 	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
@@ -269,15 +270,44 @@ public class MarsProjectFX extends Application  {
     	String vendor = System.getProperty("java.vendor");	
         //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
     	
-        String major, minor, update, build;
+        String major, minor, update, build, dateStamp;
 
-        String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b");
+        String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
         		//System.getProperty("java.runtime.version").split("\\.|_|-b");
-
+        //System.out.println(javaVersionElements);
+        
         major = javaVersionElements[0];
         minor   = javaVersionElements[1];
         update  = javaVersionElements[2];
-        build   = javaVersionElements[3];
+        build = javaVersionElements[3];
+        dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
+        
+        System.out.println("Major : " + major);
+        System.out.println("Minor : " + minor);
+        System.out.println("Update : " + update);
+        
+        if (build.contains("(")) {
+            System.out.println("Date Stamp : " + dateStamp);
+        }
+        else {
+            System.out.println("build : " + build);
+        }
+        
+
+        
+/*        
+        if (Double.parseDouble(update) > 60) {
+
+        }
+
+        else {
+        	String[] partTwo = javaVersionElements[3].split(" (");
+        	build = partTwo[0];
+        	dateStamp = partTwo[1];
+            System.out.println("build : " + build);
+            System.out.println("dateStamp : " + dateStamp);          
+        }
+*/        
         
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
     	if (!major.equals("8") || Double.parseDouble(update) < 60.0) {	

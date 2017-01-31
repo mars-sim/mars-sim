@@ -61,7 +61,7 @@ public class FunMenuDemo extends Application {
         
         Scene scene = new Scene(pane);
  		scene.setFill(Color.TRANSPARENT);
-        //scene.getStylesheets().add(FunMenuDemo.class.getResource("/funmenu/styles.css").toExternalForm());
+        //scene.getStylesheets().add(FunMenuDemo.class.getResource("/css/styles.css").toExternalForm());
 
         //stage.setTitle("FunMenu");
 		stage.initStyle (StageStyle.TRANSPARENT);

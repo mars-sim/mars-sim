@@ -88,7 +88,7 @@ public class FunMenu extends Region {
     // ******************** Constructors **************************************
     @SuppressWarnings("restriction")
 	public FunMenu() {
-        getStylesheets().add(FunMenu.class.getResource("/funmenu/funmenu.css").toExternalForm());
+        getStylesheets().add(FunMenu.class.getResource("/css/funmenu.css").toExternalForm());
         getStyleClass().setAll("fun-menu");
         aspectRatio         = PREFERRED_HEIGHT / PREFERRED_WIDTH;
         keepAspect          = true;

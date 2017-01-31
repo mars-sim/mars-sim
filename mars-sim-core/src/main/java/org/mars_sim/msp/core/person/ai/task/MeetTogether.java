@@ -166,16 +166,15 @@ implements Serializable {
     	    	
     	if (candidate.getBuildingLocation() != null) {
     		
-    		if (candidate.getBuildingLocation().getBuildingType().toLowerCase().contains("Astronomy"))  {
+    		//if (!candidate.getBuildingLocation().getBuildingType().toLowerCase().contains("Astronomy"))  {
 	        	Building b = candidate.getBuildingLocation();
 			
 		        //System.out.println(person.getName() + " is going to meet " + candidate.getName() + " at " + b.getNickName());
-		  		
-				setDescription(Msg.getString("Task.description.meetTogether.detail", candidate.getName())); //$NON-NLS-1$
-		
+		  			
 				walkToActivitySpotInBuilding(b, BuildingFunction.LIFE_SUPPORT, false);
-		
-				
+
+				setDescription(Msg.getString("Task.description.meetTogether.detail", candidate.getName())); //$NON-NLS-1$
+			
 		        if (isDone()) {
 		            return time;
 		        }
@@ -196,7 +195,7 @@ implements Serializable {
 			            relationship.setPersonOpinion(candidate, currentOpinion + RandomUtil.getRandomDouble(1));
 		 
 		        }
-	    	}
+	    	//}
 	    }
 	        
         return 0D;
