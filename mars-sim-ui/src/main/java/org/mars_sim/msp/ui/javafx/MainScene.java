@@ -296,7 +296,7 @@ public class MainScene {
 	private Thread newSimThread;
 
 	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
-	private Label lastSaveLabel, monthLabel, TPSLabel, upTimeLabel;
+	private Label lastSaveLabel, monthLabel, yearLabel, TPSLabel, upTimeLabel;
 	private Text memUsedText;
 	
 	private JFXComboBox<Settlement> sBox;
@@ -1162,6 +1162,7 @@ public class MainScene {
 
 		marsCalendarPopup = new JFXPopup();
 		marsTimeButton = new Button();//Label();
+		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
 		marsTimeButton.setOnAction(e -> {
 			//if (marsTimeFlag) {
 				// TODO more here
@@ -1184,21 +1185,32 @@ public class MainScene {
 		SwingNode calNode = new SwingNode();
 		calNode.setContent(calendarDisplay);
 		
-        Label header_label = new Label("CALENDAR PANEL");
+        Label header_label = new Label("MARTIAN CALENDAR");
         header_label.setStyle("-fx-text-fill: black;"
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-        header_label.setPadding(new Insets(3, 0, 1, 0));
+        header_label.setPadding(new Insets(0, 0, 1, 0));
         
-		monthLabel = new Label(marsClock.getMonthName());
+		monthLabel = new Label("Month : " + marsClock.getMonthName());
+		monthLabel.setPadding(new Insets(2, 0, 2, 5));
 		monthLabel.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-				+ "-fx-text-fill: orange;");
+    			+ "-fx-font-size: 12px;"
+				+ "-fx-text-fill: #654b00;");
 		
+		yearLabel = new Label("Year : " + marsClock.getOrbitString());
+		yearLabel.setPadding(new Insets(2, 5, 2, 0));
+		yearLabel.setStyle("-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
+    			+ "-fx-font-size: 12px;"
+				+ "-fx-text-fill: #654b00;");
+		
+		HBox hBox = new HBox();
+		hBox.setAlignment(Pos.CENTER);
+		hBox.getChildren().addAll(yearLabel, monthLabel);
 		
 		VBox vBox = new VBox();
 		vBox.setAlignment(Pos.CENTER);
-		vBox.getChildren().addAll(header_label, monthLabel, calNode);
+		vBox.getChildren().addAll(header_label, hBox, calNode);
 		
 		StackPane calendarPane = new StackPane(vBox);		
 		calendarPane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
@@ -2144,6 +2156,7 @@ public class MainScene {
 		oldLastSaveStamp = oldLastSaveStamp.replace("_", " ");
 		
 		lastSaveLabel = new Label();
+		lastSaveLabel.setId("save-label");
 		lastSaveLabel.setMaxWidth(Double.MAX_VALUE);
 		lastSaveLabel.setMinWidth(250);
 		lastSaveLabel.setPrefSize(250, 25);
@@ -2259,8 +2272,12 @@ public class MainScene {
 			
 			if (solElapsed == 1) {
 				String mn = marsClock.getMonthName();
-				if (mn != null)
-					monthLabel.setText(mn);
+				if (mn != null) {
+					monthLabel.setText("Month : " + mn);
+					if (mn.equals("Adir")) {
+						yearLabel.setText("Year : " + marsClock.getOrbitString());
+					}
+				}
 			}
 			
 			solElapsedCache = solElapsed;

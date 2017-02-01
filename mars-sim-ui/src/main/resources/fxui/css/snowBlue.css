@@ -314,7 +314,7 @@
     -fx-background-insets: 0,1,2,3;
     -fx-background-radius: 3,2,2,2;
     -fx-padding: 3 10 3 10;
-    -fx-text-fill: white;
+    -fx-text-fill: #7ebcea;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
@@ -354,5 +354,21 @@
     -fx-padding: 0 0 0 0;
     -fx-text-fill: #654b00;
     -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+#rich-orange:hover {
+    -fx-text-fill: black;
+}
+#rich-blue:hover {
+    -fx-text-fill: white;
+}
+
+#save-label {
+    -fx-background-insets: 0,1,2,3;
+    -fx-background-radius: 3,2,2,2;
+    -fx-padding: 3 10 3 10;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
     -fx-font-weight: bold;
 }

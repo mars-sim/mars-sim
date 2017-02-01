@@ -1,10 +1,8 @@
 /**
  * Mars Simulation Project
  * MarsProjectStarter.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-01-31
  * @author Scott Davis
- * $LastChangedDate$
- * $LastChangedRevision$
  */
 
 package org.mars_sim.msp;
@@ -21,13 +19,34 @@ import java.util.List;
  */
 public class MarsProjectStarter {
 
-	/**
-	 * @param args
-	 */
+	
     public static void main(String[] args) {
-
+    	
         StringBuilder command = new StringBuilder();
 
+    	String manpage = "java -jar mars-sim-main-[version/build].jar\n"
+			+ "                    (Note : to start a new sim)\n"
+			+ "   or  java -jar jarfile [args...]\n"
+			+ "                    (Note : to start mars-sim with arguments)\n"
+			+ "\n"
+			+ "  where args include :\n"
+			+ "\n"
+			+ "    new	        start a new sim\n"
+			+ "                    (Note : this is the default start. Whenever arg 'load' is not\n"
+			+ "                            provided for, 'new' will be automatically appended.)\n" 
+			+ "    headless	    run in console mode and without an user interface (UI)\n" 
+			+ "    0            256MB Min, 1024MB Max\n" 
+			+ "    1            256MB Min, 512MB Max\n" 
+			+ "    2            256MB Min, 768MB Max\n" 
+			+ "    3            256MB Min, 1024MB Max (by default)\n" 
+			+ "    4            256MB Min, 1536MB Max\n" 
+			+ "    5            256MB Min, 2048MB Max\n"
+			+ "    load         open the File Chooser at the \\.mars-sim\\saved\\\n"
+			+ "                 and wait for user to choose a saved sim\n"
+			+ "    123.sim      load the sim with filename '123.sim'\n"
+			+ "                    (Note 4 : '123.sim' must be located in the same folder\n"  
+			+ "                              as the jarfile.)\n";
+			
         String javaHome = System.getenv("JAVA_HOME");
         if (javaHome != null) {
             if (javaHome.contains(" ")) javaHome = "\"" + javaHome;
@@ -91,11 +110,16 @@ public class MarsProjectStarter {
 	            command.append(" -Xmx1024m");
 	        }
 	        
+	        if (argList.contains("help")) {
+	        	//command.append(" -help");
+	        	System.out.println(manpage);
+	        }
 	        
-	        if (argList.contains("html")) {
+	        else if (argList.contains("html")) {
 	        	//command.append(" -new");	        	
 	        	command.append(" -html");
 	        }
+	        
 	        else {
 	        
 		        if (argList.contains("headless"))
@@ -103,6 +127,7 @@ public class MarsProjectStarter {
 		        
 		        if (argList.contains("new"))
 		        	command.append(" -new");
+		        	
 		        else if (argList.contains("load")) {
 		        	command.append(" -load");
 		        
@@ -116,6 +141,7 @@ public class MarsProjectStarter {
 		        		command.append(" " + fileName);
 		        	}
 		        }
+		        
 		        else {
 		        	//System.out.println("Note: it's missing 'new' or 'load'. Assume you want to start a new sim now.");
 		        	command.append(" -new");

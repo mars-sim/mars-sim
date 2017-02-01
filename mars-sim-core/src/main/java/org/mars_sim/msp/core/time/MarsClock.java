@@ -386,45 +386,65 @@ public class MarsClock implements Serializable {
     }
 
     /**
+     * Gets the current orbit string.
+     * ex. "0013"
+     * @return current orbit string
+     */
+    public String getOrbitString() {
+        StringBuilder s = new StringBuilder();
+
+        // 2016-11-23 Append padding zeros to orbit
+        if (orbit < 10) // then 000x
+        	s.append("000");
+        else if (orbit < 100) // then 00xx
+        	s.append("00");
+        else if (orbit < 1000) // then 0xxx
+        	s.append("0");
+        
+        s.append(orbit);
+        
+        return s.toString();
+    }
+    
+    /**
      * Gets the date string of a given time.
      * ex. "13-Adir-05"
      * @return date string
      */
     public static String getDateString(MarsClock time) {
-        StringBuilder result = new StringBuilder();
+        StringBuilder s = new StringBuilder();
         int orbit = time.getOrbit();
         int sol = time.getSolOfMonth();
         String month = time.getMonthName();
 
         // Append orbit
-        result.append(orbit).append("-").append(month).append("-");
+        s.append(orbit).append("-").append(month).append("-");
 
         if(sol < 10){
-            result.append("0");
+            s.append("0");
         }
-        result.append(sol);
+        s.append(sol);
 
-        return result.toString();
+        return s.toString();
     }
-
     
     /** Returns the current time string.
      *  ex. "0056"
      */
 	public String getTrucatedTimeString() {
-        StringBuilder b = new StringBuilder();
+        StringBuilder s = new StringBuilder();
         int tb = (int)millisol;
-        b.append(tb);
+        s.append(tb);
         if (millisol > 100D) 
-            b.insert(0,"0");
+            s.insert(0,"0");
         else if (millisol > 10D)
-            b.insert(0,"00");
+            s.insert(0,"00");
         else if (millisol == 100D) 
             ;
         else 
-        	b.insert(0,"000");
+        	s.insert(0,"000");
         
-        return b.toString();
+        return s.toString();
 	}
 	
     /** Returns the current time string.

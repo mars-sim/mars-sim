@@ -574,7 +574,7 @@ public class MasterClock implements Serializable { // Runnable,
 	            int skips = 0;
 	            while ((excess > timeBetweenUpdates) && (skips < maxFrameSkips)) {
 	            	excess -= timeBetweenUpdates;
-	            	logger.info("Making up a lost frame by calling statusUpdate() again. skips :" + skips);
+	            	logger.warning("Making up a lost frame by calling statusUpdate() again. skips :" + skips);
 	            	// Make up a lost frame by calling statusUpdate() again
 	            	statusUpdate();
 	            	skips++;
