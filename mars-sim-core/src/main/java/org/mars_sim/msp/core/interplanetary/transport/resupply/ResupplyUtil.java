@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyUtil.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -25,7 +25,10 @@ public final class ResupplyUtil {
     // Average transit time for resupply missions from Earth to Mars [in sols]
     public static int AVG_TRANSIT_TIME = SimulationConfig.instance().getAverageTransitTime();
     public static int MAX_NUM_SOLS_PLANNED = 2007; // 669 * 3 = 2007
-    		
+    
+    // TODO: implement calculation of transit time at http://www.jpl.nasa.gov/edu/teach/activity/lets-go-to-mars-calculating-launch-windows/
+    
+    
 	/**
 	 * Private constructor for utility class.
 	 */

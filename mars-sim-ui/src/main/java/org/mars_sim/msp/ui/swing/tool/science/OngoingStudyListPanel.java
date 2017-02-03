@@ -99,6 +99,7 @@ extends JPanel {
 	 * Updates the panel.
 	 */
 	void update() {
+		TableStyle.setTableStyle(studyTable);
 		studyTableModel.update();
 		// Make sure study is selected.
 		selectScientificStudy(scienceWindow.getScientificStudy(), false);

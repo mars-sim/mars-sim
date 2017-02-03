@@ -85,6 +85,13 @@ extends ToolWindow {
 	
 	public static final String CSS_FILE = "/fxui/css/nimrodskin.css";
 	
+	public static final String SOL  = " Sol : ";
+	public static final String POPULATION  = "  Population : ";
+	public static final String CAP  = "  Capacity : ";
+	public static final String POINTER = "\t\t\tPointer at (";
+	public static final String COMMA = ", ";
+	public static final String CLOSE_PARENT = ")";
+	
 	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
 	public static final int TIME_DELAY = 330;
@@ -302,10 +309,10 @@ extends ToolWindow {
 		String capText = "" + cap;
 	     
 	    // 2015-02-09 Added leftLabel
-	    solLabel.setText(" Sol : " + statusText + " ");
-	    popLabel.setText(" Population : " + populationText + " ");
-	    capLabel.setText(" Capacity : " + capText + " ");
-	    xyLabel.setText("\t\tPointer at (" + xCoor + ", " + yCoor + ")" + " ");
+	    solLabel.setText(SOL+ statusText);
+	    popLabel.setText(POPULATION + populationText);
+	    capLabel.setText(CAP + capText);
+	    xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
 	    //yLabel.setText(", " + yCoor + ")" + " ");
 
 		solLabel.setTooltip(new Tooltip ("Mission Day"));
@@ -413,23 +420,23 @@ extends ToolWindow {
     	
 	    
 	    if (sol != s) {
-		    solLabel.setText(" Sol : " + s + " ");
+		    solLabel.setText(SOL + s);
 		    sol = s;
 	    }
 	    
 	
 	    if (pop != p) {
-		    popLabel.setText(" Population : " + p + " ");
+		    popLabel.setText(POPULATION + p);
 		    pop = p;
 	    }
 	    
 	    if (cap != c) {
-		    capLabel.setText(" Capacity : " + c + " ");
+		    capLabel.setText(CAP + c);
 		    cap = c;
 	    }
 	    
 	    if (xCoor != 0 && yCoor != 0)
-	    	xyLabel.setText("\t\t\tPointer at (" + xCoor + ", " + yCoor + ")" + " ");
+	    	xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
 	    else
 	    	xyLabel.setText("");
 	    //yLabel.setText(", " + yCoor + ")" + " ");

@@ -140,7 +140,7 @@ implements Serializable {
 	 * @param personDoc the person config DOM document.
 	 */
 	public PersonConfig(Document personDoc) {
-	    logger.info("PersonConfig's constructor is on " + Thread.currentThread().getName());
+	    //logger.info("PersonConfig's constructor is on " + Thread.currentThread().getName());
 
 		this.personDoc = personDoc;
 		

@@ -206,11 +206,35 @@ public class MarsProjectFX extends Application  {
 	
     static String[] args;
 
+	private static final String manpage = "\n> java -jar mars-sim-main-[version/build].jar\n"
+		+ "                    (Note : start a new sim)\n"
+		+ "   or  \n"
+		+ "\n"		
+		+ "> java -jar jarfile [args...]\n"
+		+ "                    (Note : start mars-sim with arguments)\n"
+		+ "\n"
+		+ "  where args include :\n"
+		+ "\n"
+		+ "    new             start a new sim (by default)\n"
+		+ "                    (Note : Whenever arg 'load' is not provided for,\n"
+		+ "                            'new' will be automatically appended.)\n" 
+		+ "    headless        run in console mode and without an user interface (UI)\n" 
+		+ "    0               256MB Min, 1024MB Max (by default)\n" 
+		+ "    1               256MB Min, 512MB Max\n" 
+		+ "    2               256MB Min, 768MB Max\n" 
+		+ "    3               256MB Min, 1024MB Max\n" 
+		+ "    4               256MB Min, 1536MB Max\n" 
+		+ "    5               256MB Min, 2048MB Max\n"
+		+ "    load            open the File Chooser at the \\.mars-sim\\saved\\ and wait for\n"
+		+ "                    user to choose a saved sim\n"
+		+ "    load 123.sim    load the sim with filename '123.sim'\n"
+		+ "                    (Note : '123.sim' must be located at the same folder\n"  
+		+ "                            as the jarfile.)\n";
+
     /** true if displaying graphic user interface. */
     private boolean headless = false, newSim = false, loadSim = false, savedSim = false;
-
     /** true if help documents should be generated from config xml files. */
-    private boolean generateHTML = false;
+    private boolean generateHTML = false, helpPage = false;
 
     private boolean isDone;
 
@@ -322,12 +346,12 @@ public class MarsProjectFX extends Application  {
             newSim = argList.contains("-new");      
             loadSim = argList.contains("-load");     
     		generateHTML = argList.contains("-html");
+    		helpPage = argList.contains("-help");
     		//savedSim = argList.contains(".sim");
     		
-    		if (generateHTML)
+    		if (generateHTML || helpPage || argList.contains("-headless"))
     			headless = true;
-    		else
-    			headless = argList.contains("-headless");
+
 
         	int size = argList.size();   	
         	boolean flag = true;
@@ -366,7 +390,7 @@ public class MarsProjectFX extends Application  {
 	   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
         SimulationConfig.loadConfig();
         
-	    if (!headless) { 
+	    if (!headless) {
 	    	// Using GUI mode
 	    	//logger.info("Running " + OS + " in GUI mode");
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
@@ -381,7 +405,7 @@ public class MarsProjectFX extends Application  {
 		   		// CASE E //
 	   		}
 		   	
-		} else { 
+		} else {
 			// Using -headless (GUI-less mode)
 			if (newSim) {
 		   		// CASE A //
@@ -444,12 +468,21 @@ public class MarsProjectFX extends Application  {
 		    	    // this will generate html files for in-game help based on config xml files
 		    	    // 2016-04-16 Relocated the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
 		    	    HelpGenerator.generateHtmlHelpFiles();
+			        Platform.exit();
+			        System.exit(1);
 
 		        } catch (Exception e) {
 		            e.printStackTrace();
 		            exitWithError("Could not generate help files ", e);
 		        }
-			}			
+			}
+			else if (helpPage) {
+		   		// CASE D //
+				//logger.info("Displaying help instructions in headless mode in " + OS);
+	        	System.out.println(manpage);
+		        Platform.exit();
+		        System.exit(1);
+			}
 		}
 	}
 
@@ -520,7 +553,7 @@ public class MarsProjectFX extends Application  {
 		}
 	   	
 		else {
-		   	logger.info("loading default.sim in headless mode and skip loading the Main Menu");	
+		   	logger.info("Entering headless mode and skip loading the Main Menu");	
 		   	if (newSim) {
 		   	// CASE A //
 	   		}
@@ -529,6 +562,9 @@ public class MarsProjectFX extends Application  {
 	   		}
 			else if (generateHTML) {
 		   		// CASE C //
+			}
+			else if (helpPage) {
+		   		// CASE D //
 			}
 		}
 	}

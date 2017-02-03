@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyConfig.java
- * @version 3.08 2015-02-16
+ * @version 3.1.0 2017-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
