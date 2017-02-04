@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionWindow.java
- * @version 3.08 2015-03-23
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -153,7 +153,7 @@ extends ToolWindow {
 		setResizable(false);
 		
 		if (desktop.getMainScene() != null) {
-			setClosable(false);
+			//setClosable(false);
 		}
 
 		setVisible(true);	

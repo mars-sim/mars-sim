@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TableProperties.java
- * @version 3.08 2015-10-18
+ * @version 3.1.0 2017-02-03
  * @author Barry Evans
  */
 
@@ -103,7 +103,8 @@ class TableProperties extends JInternalFrame {
         
         // 2016-10-22 Add to its own tab pane
         if (desktop.getMainScene() != null)
-        	desktop.getMainScene().getDesktops().get(0).add(this);
+        	desktop.add(this);
+        	//desktop.getMainScene().getDesktops().get(0).add(this);
         else 
         	desktop.add(this);
     }

@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * MapPanel.java
- * @version 3.08 2015-07-01
-
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 
@@ -38,11 +37,9 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
 
-public class MapPanel
-extends JPanel
-implements
+public class MapPanel extends JPanel implements ClockListener {
 //Runnable,
-ClockListener {
+
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -52,9 +49,8 @@ ClockListener {
 
 	public final static int MAP_BOX_HEIGHT = 300;
 	public final static int MAP_BOX_WIDTH = 300;
-
 	private static int dragx, dragy;
-
+	
 	private static double PERIOD_IN_MILLISOLS;
 	
 	// Data members

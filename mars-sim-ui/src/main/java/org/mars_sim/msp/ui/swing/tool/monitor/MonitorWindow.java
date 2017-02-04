@@ -259,12 +259,12 @@ implements TableModelListener, ActionListener {
 
 
 		// Note: must define a starting size
-		setSize(new Dimension(1280, 720));
+		setSize(new Dimension(1280, 680));
 		setResizable(false);
 		setMaximizable(true);	
 
 		if (desktop.getMainScene() != null) {
-			setClosable(false);
+			//setClosable(false);
 		}
 
 		setVisible(true);

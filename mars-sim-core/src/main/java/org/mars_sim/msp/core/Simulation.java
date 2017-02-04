@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.1.0 2016-09-30
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -77,7 +77,7 @@ implements ClockListener, Serializable {
 	public static final int OTHER = 0; // load other file
 	public static final int SAVE_DEFAULT = 1; // save as default.sim
 	public static final int SAVE_AS = 2; // save with other name
-	public static final int AUTOSAVE_DEFAULT = 3; // save as default.sim
+	public static final int AUTOSAVE_AS_DEFAULT = 3; // save as default.sim
 	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
 
@@ -129,7 +129,7 @@ implements ClockListener, Serializable {
 
     private double fileSize;
 
-    private boolean defaultLoad = false;
+    private boolean defaultLoad = false, justSaved = true;
 
     private boolean initialSimulationCreated = false;
 
@@ -627,7 +627,7 @@ implements ClockListener, Serializable {
         	logger.info("Saving as " + file);
         }
         
-        else if (type == AUTOSAVE_DEFAULT) {
+        else if (type == AUTOSAVE_AS_DEFAULT) {
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
             logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
         	
@@ -725,6 +725,9 @@ implements ClockListener, Serializable {
 		 
         sim.proceed();
 
+        // 2017-02-03 Added justSaved
+     	justSaved = true;
+     	
 		// 2015-12-18 Check if it was previously on pause       
 		boolean now = masterClock.isPaused();
 		if (!previous) {
@@ -871,10 +874,100 @@ implements ClockListener, Serializable {
         }
     }
 
-    @Override
-    public void pauseChange(boolean isPaused) {
-        // Do nothing
+	
+	public String getLastSave() {
+		if (lastSave == null || lastSave.equals(""))
+			return "None";
+		else {
+			StringBuilder sb = new StringBuilder();
+			int l = lastSave.length();
+			String s = lastSave.substring(l-8, l);
+			sb.append(s.substring(0, 2)).append(":").append(s.substring(2, 4)) 
+			.append(" ").append(s.substring(6, 8)).append(" (local time)");
+			return sb.toString();	
+		}
+	}
+	
+	/*
+	 * 
+	 */
+	//2015-01-07 Added startAutosaveTimer()
+    //2016-04-28 Relocated the autosave timer from MainMenu to here
+	@SuppressWarnings("restriction")
+	public void startAutosaveTimer(boolean autosaveDefault) {
+        //logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
+		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
+		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock, 
+		// instead of directly call saveSimulation() here in Simulation
+		
+		if (autosaveTimer != null) {
+			autosaveTimer.stop();
+			autosaveTimer = null;
+		}
+		
+		if (autosaveDefault) {
+			autosaveTimer = new Timeline(
+				new KeyFrame(Duration.seconds(60 * autosave_minute),
+						ae -> masterClock.saveSimulation(AUTOSAVE_AS_DEFAULT, null)));
+			//autosaveTimer = FxTimer.runLater(
+    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
+    		//        () -> masterClock.saveSimulation(null));
+			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+	        //.subscribe(tick -> masterClock.saveSimulation(null));
+		}
+		else {
+			autosaveTimer = new Timeline(
+				new KeyFrame(Duration.seconds(60 * autosave_minute),
+						ae -> masterClock.saveSimulation(AUTOSAVE, null)));
+			//autosaveTimer = FxTimer.runLater(
+    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
+    		//        () -> masterClock.autosaveSimulation());
+			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
+	        //.subscribe(tick -> masterClock.autosaveSimulation());
+		}
+		
+		// Note1: Infinite Timeline might result in a memory leak if not stopped properly.
+		// Note2: All the objects with animated properties would NOT be garbage collected.
+		
+		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
+		autosaveTimer.play();
+
+	}
+
+
+/*
+    // 2015-10-08 Added testConsole() for outputting text messages to mars-simmers
+    public void testConsole() {
+    	if (jc == null) {
+    		jc = new JConsole(60,30);
+	    	jc.setCursorVisible(true);
+	    	jc.setCursorBlink(true);
+	    	jc.write("Welcome to Mars Simulation Project!\n\n");
+	    	jc.write("Dear Mars-simmer,\n\nSee hidden logs below. Have fun!\n\n",Color.GREEN,Color.BLACK);
+	    	//System.out.println("Normal output");
+	    	//jc.setCursorPos(0, 0);
+
+	    	//jc.captureStdOut();
+	    	//System.out.println("Captured output");
+
+	    	Frames.display(jc,"MSP Output Console");
+
+	    	//jc.write("after the fact\n");
+    	}
     }
+
+    public JConsole getJConsole() {
+    	return jc;
+    }
+*/
+
+	/**
+	 * Gets the Timer instance of the autosave timer.
+	 * @return autosaveTimeline
+	 */
+	public Timeline getAutosaveTimer() {
+		return autosaveTimer;
+	}
 
     /**
      * Get the planet Mars.
@@ -999,102 +1092,23 @@ implements ClockListener, Serializable {
     //	return clockScheduler;
     //}
 
-/*
-    // 2015-10-08 Added testConsole() for outputting text messages to mars-simmers
-    public void testConsole() {
-    	if (jc == null) {
-    		jc = new JConsole(60,30);
-	    	jc.setCursorVisible(true);
-	    	jc.setCursorBlink(true);
-	    	jc.write("Welcome to Mars Simulation Project!\n\n");
-	    	jc.write("Dear Mars-simmer,\n\nSee hidden logs below. Have fun!\n\n",Color.GREEN,Color.BLACK);
-	    	//System.out.println("Normal output");
-	    	//jc.setCursorPos(0, 0);
 
-	    	//jc.captureStdOut();
-	    	//System.out.println("Captured output");
+	public boolean getJustSaved() {
+		return justSaved;
+	}
 
-	    	Frames.display(jc,"MSP Output Console");
-
-	    	//jc.write("after the fact\n");
-    	}
+	public void setJustSaved(boolean value) {
+		justSaved = value;
+	}
+		
+    @Override
+    public void pauseChange(boolean isPaused) {
+        // Do nothing
     }
-
-    public JConsole getJConsole() {
-    	return jc;
-    }
-*/
-	
-	//2015-01-07 Added startAutosaveTimer()
-    //2016-04-28 Relocated the autosave timer from MainMenu to here
-	public void startAutosaveTimer(boolean autosaveDefault) {
-        //logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
-		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
-		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock, 
-		// instead of directly call saveSimulation() here in Simulation
-		
-		if (autosaveTimer != null) {
-			autosaveTimer.stop();
-			autosaveTimer = null;
-		}
-		
-		if (autosaveDefault) {
-			autosaveTimer = new Timeline(
-				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.saveSimulation(AUTOSAVE_DEFAULT, null)));
-			//autosaveTimer = FxTimer.runLater(
-    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
-    		//        () -> masterClock.saveSimulation(null));
-			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
-	        //.subscribe(tick -> masterClock.saveSimulation(null));
-		}
-		else {
-			autosaveTimer = new Timeline(
-				new KeyFrame(Duration.seconds(60 * autosave_minute),
-						ae -> masterClock.saveSimulation(AUTOSAVE, null)));
-			//autosaveTimer = FxTimer.runLater(
-    		//		java.time.Duration.ofMinutes(60 * autosave_minute),
-    		//        () -> masterClock.autosaveSimulation());
-			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
-	        //.subscribe(tick -> masterClock.autosaveSimulation());
-		}
-		
-		// Note1: Infinite Timeline might result in a memory leak if not stopped properly.
-		// Note2: All the objects with animated properties would NOT be garbage collected.
-		
-		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
-		autosaveTimer.play();
-
-	}
-
-	/**
-	 * Gets the Timer instance of the autosave timer.
-	 * @return autosaveTimeline
-	 */
-	public Timeline getAutosaveTimer() {
-		return autosaveTimer;
-	}
-	
-	public String getLastSave() {
-		if (lastSave == null || lastSave.equals(""))
-			return "None";
-		else {
-			int l = lastSave.length();
-			String s = lastSave.substring(l-8, l);
-			String new_s = s.substring(0, 2) 
-					+ ":" + s.substring(2, 4) 
-					//+ ":" + s.substring(4, 6) 
-					+ " "
-					+ s.substring(6, 8)
-					+ " (local time)";
-			return new_s;	
-		}
-	}
-	
+    
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
-	
     public void destroyOldSimulation() {
     	//logger.info("starting Simulation's destroyOldSimulation()");
 

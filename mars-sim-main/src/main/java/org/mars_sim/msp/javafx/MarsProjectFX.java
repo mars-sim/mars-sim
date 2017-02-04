@@ -305,7 +305,7 @@ public class MarsProjectFX extends Application  {
         update  = javaVersionElements[2];
         build = javaVersionElements[3];
         dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
-        
+/*       
         System.out.println("Major : " + major);
         System.out.println("Minor : " + minor);
         System.out.println("Update : " + update);
@@ -316,7 +316,7 @@ public class MarsProjectFX extends Application  {
         else {
             System.out.println("build : " + build);
         }
-        
+*/        
 
         
 /*        

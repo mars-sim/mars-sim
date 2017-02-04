@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyWindow.java
- * @version 3.08 2015-03-21
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -147,7 +147,7 @@ implements ListSelectionListener {
 		setMaximizable(true);
 		
 		if (desktop.getMainScene() != null) {
-			setClosable(false);
+			//setClosable(false);
 			setMinimumSize(new Dimension(640, 640));
 			setSize(new Dimension(768, 640));	
 		}

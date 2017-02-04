@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.1.0 2016-10-01
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -406,9 +406,8 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		try { guideWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
-		
-		
-		if (mainScene != null) {
+				
+//		if (mainScene != null) {
 			
 			// Prepare monitor tool window
 			MonitorWindow monitorWindow = new MonitorWindow(this);
@@ -433,7 +432,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			toolWindows.add(resupplyWindow);
 
 		   	//logger.info("toolWindows.add(resupplyWindow)");
-
+/*
 		}
 		else {
 			
@@ -463,7 +462,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		   	//logger.info("toolWindows.add(guideWindow)");
 		}
-
+*/
 
 		// Prepare Mars Viewer window
 		//MarsViewer marsViewer = new MarsViewer(this);
@@ -571,7 +570,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 								window.setSize(config.getInternalWindowDimension(toolName));
 							}
 						} else {
-							System.out.println("Go to whatever location");
+							System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
 							if (toolName.equals(TimeWindow.NAME))
 								window.setLocation(getStartingLocation(window));
 							else	
@@ -584,22 +583,26 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				if (mainScene != null) {
 					// 2016-10-22 These 2 tools are in the Main Tab
 					if (toolName.equals(SearchWindow.NAME)
-							|| toolName.equals(TimeWindow.NAME)){
+							|| toolName.equals(TimeWindow.NAME)
+							|| toolName.equals(MonitorWindow.NAME)
+							|| toolName.equals(MissionWindow.NAME)
+							|| toolName.equals(ResupplyWindow.NAME)
+							|| toolName.equals(ScienceWindow.NAME) ){
+						
 						add(window, 0);	
 					}
-					else if (toolName.equals(MonitorWindow.NAME)) {
-						mainScene.getDesktops().get(0).add(window, 0);
-						
-					}
-					else if (toolName.equals(MissionWindow.NAME)) {
-						mainScene.getDesktops().get(1).add(window, 0);
-					}
+					//else if (toolName.equals(MonitorWindow.NAME)) {
+					//	mainScene.getDesktops().get(0).add(window, 0);				
+					//}
+					//else if (toolName.equals(MissionWindow.NAME)) {
+					//	mainScene.getDesktops().get(1).add(window, 0);
+					//}
 					//else if (toolName.equals(SettlementWindow.NAME)) {
 					//	mainScene.getDesktops().get(2).add(window, 0);
 					//}
-					else if (toolName.equals(ResupplyWindow.NAME)) {
-						mainScene.getDesktops().get(2).add(window, 0);
-					}
+					//else if (toolName.equals(ResupplyWindow.NAME)) {
+					//	mainScene.getDesktops().get(2).add(window, 0);
+					//}
 					//else if (toolName.equals(ScienceWindow.NAME)) {
 					//	mainScene.getDesktops().get(4).add(window, 0);
 					//}
@@ -608,7 +611,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 					//}				
 					
 				}
-				else {
+				else { // in case of classic swing mode for MainWindow
 					add(window, 0);	
 				}
 				
@@ -642,52 +645,49 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
-					//mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
-					
+					//mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);				
 				}
 
+				else if (toolName.equals(SettlementWindow.NAME)) {
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
+					//mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+				}
+				
 				else if (toolName.equals(SearchWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.MAIN_TAB);
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(TimeWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.MAIN_TAB);
 					mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(MonitorWindow.NAME)) {
-					if (mainScene.isMainSceneDone()) {
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MONITOR_TAB);
-					}
-					//mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
+					if (mainScene.isMainSceneDone())
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//MONITOR_TAB);
+					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(MissionWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MISSION_TAB);
-					//mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
-				}
-				
-				else if (toolName.equals(SettlementWindow.NAME)) {
-					//System.out.println("MainDesktopPane : opening map tool");
-					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
-					//mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.MISSION_TAB);
+					mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.RESUPPLY_TAB);
-					//mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.RESUPPLY_TAB);
+					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(ScienceWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.SCIENCE_TAB);
-					//mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
+						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.SCIENCE_TAB);
+					mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(GuideWindow.NAME)) {
@@ -711,11 +711,12 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			try { window.setClosed(true); }
 			catch (java.beans.PropertyVetoException e) {}
 		}
-	    // 2015-10-01 Added Platform.runLater()
+/*
+		// 2015-10-01 Added Platform.runLater()
 		if (mainScene != null) {
 			//System.out.println(toolName + " is running closeToolWindow().");
 			Platform.runLater(() -> {
-/*
+
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(false);
 				}
@@ -744,9 +745,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
 				}
-*/				
+				
 			});
 		}
+*/		
 		});
 	}
 
@@ -825,7 +827,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			
 		// go to the main tab
 		if (mainScene != null) 
-			Platform.runLater(() -> mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB));
+			Platform.runLater(() -> mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB));//.MAIN_TAB));
 
 		playSound(unit);
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.08 2015-06-29
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.navigator;
@@ -16,6 +16,8 @@ import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.MemoryImageSource;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -40,16 +42,14 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  * The Globe Display class displays a graphical globe of Mars in the Navigator
  * tool.
  */
-class GlobeDisplay
-extends JComponent
-implements ClockListener {
+public class GlobeDisplay extends JComponent implements ClockListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
-	private static final double PERIOD_IN_MILLISOLS = 500D / MarsClock.SECONDS_IN_MILLISOL;
+	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_IN_MILLISOL;
 	
 	public final static int GLOBE_BOX_HEIGHT = 300;
 	public final static int GLOBE_BOX_WIDTH = 300;
@@ -109,7 +109,7 @@ implements ClockListener {
 	private Image dbImage = null;
 	private Image starfield;
 
-	private boolean isOpenCache = false;
+	private boolean isOpenCache = false; //justLoaded = true, 
 	//private int difxCache, difyCache;
 	private double globeCircumference;
     private double rho;
@@ -135,7 +135,7 @@ implements ClockListener {
 		//starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
 
-		//Simulation.instance().getMasterClock().addClockListener(this);
+		Simulation.instance().getMasterClock().addClockListener(this);
 		
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
@@ -159,9 +159,6 @@ implements ClockListener {
 		shadingArray = new int[width * height *2 *2];
 		showDayNightShading = true;
 
-		// Initially show real surface globe
-		showSurf();
-
 		addMouseMotionListener(new MouseAdapter() {
 
 			@Override
@@ -172,8 +169,8 @@ implements ClockListener {
 				dify = dragy - y;				
 				dragx = x;
 				dragy = y;
-				//System.out.println("x is " + x + "   y is " + y);
-				//System.out.println("difx is " + difx + "   dify is " + dify);
+				System.out.println("x is " + x + "   y is " + y);
+				System.out.println("difx is " + difx + "   dify is " + dify);
 				if ((difx != 0) || (dify != 0)
 						&& x < 250 && y < 250) {
 
@@ -219,7 +216,18 @@ implements ClockListener {
 				e.consume();
 			}
 		});
-
+		
+		// Initially show real surface globe
+		showSurf();
+		
+		//drawSphere();
+/*
+		MouseEvent me = new MouseEvent(this, 0, 0, 0, 150, 150, 1, false);
+		for (MouseListener ml: this.getMouseListeners())
+		    ml.mousePressed(me);
+		for (MouseMotionListener l: this.getMouseMotionListeners())
+		    l.mouseDragged(me);
+*/
 	}
 
 	/**
@@ -298,28 +306,21 @@ implements ClockListener {
 			} else {
 				//System.out.println("recreate is false");	
 				//try {
-					boolean open = desktop.isToolWindowOpen(NavigatorWindow.NAME);
-					if (isOpenCache != open) {
-						isOpenCache = open;
-						if (open) {
-							paintDoubleBuffer();
-							repaint();
-						}
-					}
+					//boolean open = desktop.isToolWindowOpen(NavigatorWindow.NAME);
+					//if (isOpenCache != open) {
+					//	isOpenCache = open;
+					//	if (open) {
+							drawSphere();
+							//paintDoubleBuffer();
+							//repaint();
+					//	}
+					//}
 				//	Thread.sleep(5000l);
 				//} catch (InterruptedException e) {
 					//e.printStackTrace(); // if enable, will print sleep interrupted
 				//}
-				
-				
 			}
-			
-
-
-
-		}
-			
-		
+		}	
 	}
 
 /*
@@ -383,7 +384,6 @@ implements ClockListener {
 		else {
 			return;
 		}
-				
 
 
 		if (showDayNightShading) {
@@ -435,7 +435,6 @@ implements ClockListener {
 
 		//if (surfaceFeatures == null)
 		//	surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
-
 
 		// Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
@@ -631,6 +630,27 @@ implements ClockListener {
 		}
 	}
 
+	//public void setJustLoaded(boolean value) {
+	//	justLoaded = true;
+	//}
+	
+	@Override
+	public void clockPulse(double time) {
+		timeCache = timeCache + time;
+		if (timeCache > PERIOD_IN_MILLISOLS) {
+			//System.out.println("calling GlobeDisplay's clockPulse()");
+			updateDisplay();
+			//justLoaded = false;
+			timeCache = 0;
+		}	
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/**
 	 * Prepare globe for deletion.
 	 */
@@ -645,21 +665,5 @@ implements ClockListener {
 		dbg = null;
 		dbImage = null;
 		starfield = null;
-	}
-
-	@Override
-	public void clockPulse(double time) {
-		timeCache = timeCache + time;
-		if (timeCache > PERIOD_IN_MILLISOLS) {
-			//System.out.println("calling GlobeDisplay's clockPulse()");
-			updateDisplay();
-			timeCache = 0;
-		}	
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused) {
-		// TODO Auto-generated method stub
-		
 	}
 }

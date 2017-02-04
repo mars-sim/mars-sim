@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.07 2014-12-01
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -320,9 +320,15 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table model.
-			DefaultTableModel tableModel = new DefaultTableModel();
+			DefaultTableModel tableModel = new DefaultTableModel() {
+			    @Override
+			    public boolean isCellEditable(int row, int column) {
+			       //all cells false
+			       return false;
+			    }
+			};
 			tableModel.addColumn("Building Type");
-			tableModel.addColumn("Num");
+			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
 			List<String> buildingTypes = new ArrayList<String>(buildingMap.keySet());
@@ -386,9 +392,15 @@ implements ClockListener, HistoricalEventListener {
 			}
 
 			// Create table model.
-			DefaultTableModel tableModel = new DefaultTableModel();
+			DefaultTableModel tableModel = new DefaultTableModel(){
+			    @Override
+			    public boolean isCellEditable(int row, int column) {
+			       //all cells false
+			       return false;
+			    }
+			};
 			tableModel.addColumn("Vehicle Type");
-			tableModel.addColumn("Num");
+			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
 			List<String> vehicleTypes = new ArrayList<String>(vehicleMap.keySet());
@@ -438,9 +450,15 @@ implements ClockListener, HistoricalEventListener {
 			equipmentPanel.add(equipmentLabel, BorderLayout.NORTH);
 
 			// Create table model.
-			DefaultTableModel tableModel = new DefaultTableModel();
+			DefaultTableModel tableModel = new DefaultTableModel() {
+			    @Override
+			    public boolean isCellEditable(int row, int column) {
+			       //all cells false
+			       return false;
+			    }
+			};
 			tableModel.addColumn("Equipment Type");
-			tableModel.addColumn("Num");
+			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
 			List<String> equipmentTypes = new ArrayList<String>(equipment.keySet());
@@ -490,7 +508,13 @@ implements ClockListener, HistoricalEventListener {
 			resourcesPanel.add(resourcesLabel, BorderLayout.NORTH);
 
 			// Create table model.
-			DefaultTableModel tableModel = new DefaultTableModel();
+			DefaultTableModel tableModel = new DefaultTableModel(){
+			    @Override
+			    public boolean isCellEditable(int row, int column) {
+			       //all cells false
+			       return false;
+			    }
+			};
 			tableModel.addColumn("Resource Type");
 			tableModel.addColumn("Amount");
 
@@ -545,9 +569,15 @@ implements ClockListener, HistoricalEventListener {
 			partsPanel.add(partsLabel, BorderLayout.NORTH);
 
 			// Create table model.
-			DefaultTableModel tableModel = new DefaultTableModel();
+			DefaultTableModel tableModel = new DefaultTableModel() {
+			    @Override
+			    public boolean isCellEditable(int row, int column) {
+			       //all cells false
+			       return false;
+			    }
+			};
 			tableModel.addColumn("Part Type");
-			tableModel.addColumn("Num");
+			tableModel.addColumn("Quantity");
 
 			// Populate table model with data.
 			List<Part> partTypes = new ArrayList<Part>(parts.keySet());

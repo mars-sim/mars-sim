@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolWindow.java
- * @version 3.07 2015-06-05
-
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.toolWindow;
@@ -31,6 +30,7 @@ import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 
 import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.SingleSelectionModel;
 
 /**
  * The ToolWindow class is an abstract UI window for a tool.
@@ -53,6 +53,7 @@ extends JInternalFrame {
 	
 	protected MainScene mainScene;
 	protected MonitorWindow monitorWindow;
+	private SingleSelectionModel ssm;
 
 	/** True if window is open. */
 	protected boolean opened;
@@ -95,9 +96,11 @@ extends JInternalFrame {
 
 		opened = false;
 
-		if (mainScene != null)
+		if (mainScene != null) {
 			msm = mainScene.getMainSceneMenu();
-
+			//ssm = mainScene.getJFXTabPane().getSelectionModel();
+		}
+			
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		//setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -155,25 +158,37 @@ extends JInternalFrame {
 
 		if (mainScene != null && !masterClock.isPaused()) {
 
-			if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MAIN_TAB)) {
+			if (ssm == null)
+				ssm = mainScene.getJFXTabPane().getSelectionModel();
+			
+			if (ssm.isSelected(MainScene.MAIN_TAB)) {
 				closeMaps();
 				//System.out.println("ToolWindow : closing other tools !");
-				desktop.closeToolWindow(MonitorWindow.NAME);
-				desktop.closeToolWindow(ResupplyWindow.NAME);
-				desktop.closeToolWindow(ScienceWindow.NAME);
-				desktop.closeToolWindow(MissionWindow.NAME);
+				//desktop.closeToolWindow(MonitorWindow.NAME);
+				//desktop.closeToolWindow(ResupplyWindow.NAME);
+				//desktop.closeToolWindow(ScienceWindow.NAME);
+				//desktop.closeToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
 			
-			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MAP_TAB)) {
+			else if (ssm.isSelected(MainScene.MAP_TAB)) {
 				//System.out.println("ToolWindow : closing other tools !");
-				desktop.closeToolWindow(MonitorWindow.NAME);
-				desktop.closeToolWindow(ResupplyWindow.NAME);
-				desktop.closeToolWindow(ScienceWindow.NAME);
-				desktop.closeToolWindow(MissionWindow.NAME);
+				//desktop.closeToolWindow(MonitorWindow.NAME);
+				//desktop.closeToolWindow(ResupplyWindow.NAME);
+				//desktop.closeToolWindow(ScienceWindow.NAME);
+				//desktop.closeToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
-			
+
+			else if (ssm.isSelected(MainScene.HELP_TAB)) {
+				closeMaps();
+				//desktop.openToolWindow(GuideWindow.NAME);
+				//desktop.closeToolWindow(MonitorWindow.NAME);
+				//desktop.closeToolWindow(ResupplyWindow.NAME);
+				//desktop.closeToolWindow(ScienceWindow.NAME);
+				//desktop.closeToolWindow(MissionWindow.NAME);
+			}
+/*			
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MONITOR_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(MonitorWindow.NAME);
@@ -182,7 +197,7 @@ extends JInternalFrame {
 				desktop.closeToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
-			
+		
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MISSION_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(MissionWindow.NAME);
@@ -204,21 +219,13 @@ extends JInternalFrame {
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.SCIENCE_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(ScienceWindow.NAME);
-				desktop.closeToolWindow(MonitorWindow.NAME);
-				desktop.closeToolWindow(ResupplyWindow.NAME);
-				desktop.closeToolWindow(MissionWindow.NAME);
+				//desktop.closeToolWindow(MonitorWindow.NAME);
+				//desktop.closeToolWindow(ResupplyWindow.NAME);
+				//desktop.closeToolWindow(MissionWindow.NAME);
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
 
-			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.HELP_TAB)) {
-				closeMaps();
-				//desktop.openToolWindow(GuideWindow.NAME);
-				desktop.closeToolWindow(MonitorWindow.NAME);
-				desktop.closeToolWindow(ResupplyWindow.NAME);
-				desktop.closeToolWindow(ScienceWindow.NAME);
-				desktop.closeToolWindow(MissionWindow.NAME);
-			}
-
+*/
 			
 			if(this.isVisible() || this.isShowing() ) {
 				//System.out.println("this.getToolName() is "+ this.getToolName());

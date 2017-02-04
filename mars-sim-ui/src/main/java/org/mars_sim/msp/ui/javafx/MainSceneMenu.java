@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowFX.java
- * @version 3.08 2015-05-30
+ * @version 3.1.0 2017-02-03
  * @author Lars Næsbye Christensen
  */
 
@@ -60,9 +60,10 @@ public class MainSceneMenu extends MenuBar  {
 	
 	private boolean fMenuVisible = false;
 	
-	private CheckMenuItem marsNavigatorItem, searchToolItem, timeToolItem, settlementMapToolItem;
-							//monitorToolItem, missionToolItem, 
-							//scienceToolItem, resupplyToolItem;
+	private CheckMenuItem searchToolItem, timeToolItem, 
+							marsNavigatorItem, settlementMapToolItem,
+							monitorToolItem, missionToolItem, 
+							scienceToolItem, resupplyToolItem;
 							//marsViewerItem, webToolItem;
 
 	private CheckMenuItem showFullScreenItem, notificationItem, muteItem;
@@ -136,28 +137,26 @@ public class MainSceneMenu extends MenuBar  {
         //marsNavigatorItem.setAccelerator(new KeyCodeCombination(KeyCode.F1));
 
         searchToolItem = createMenuItem("Search Tool", SearchWindow.NAME);
-        searchToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F2));
+        //searchToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F2));
 
         timeToolItem = createMenuItem("Time Tool", TimeWindow.NAME);
-        timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
-
-/*         
-        settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
-        settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
-
-       
+        //timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
+        
+        //settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
+        //settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
+      
         monitorToolItem = createMenuItem("Monitor Tool", MonitorWindow.NAME);
-        monitorToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
+        //monitorToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
 
         missionToolItem = createMenuItem("Mission Tool", MissionWindow.NAME);
-        missionToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F5));
+        //missionToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F5));
 
         scienceToolItem = createMenuItem("Science Tool", ScienceWindow.NAME);
-        scienceToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
+        //scienceToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F6));
 
         resupplyToolItem = createMenuItem("Resupply Tool", ResupplyWindow.NAME);
-        resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F8));
-*/
+        //resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
+
         //marsViewerItem = createMenuItem("Mars Viewer", MarsViewer.NAME);
         //marsViewerItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
@@ -165,10 +164,10 @@ public class MainSceneMenu extends MenuBar  {
         //webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
 
-        menuTools.getItems().addAll(searchToolItem,timeToolItem);
-        		//marsNavigatorItem, settlementMapToolItem);
-        		//monitorToolItem, missionToolItem,
-        		//scienceToolItem, resupplyToolItem);
+        menuTools.getItems().addAll(searchToolItem, timeToolItem,
+        		//marsNavigatorItem, settlementMapToolItem,
+        		monitorToolItem, missionToolItem,
+        		scienceToolItem, resupplyToolItem);
         		//, marsViewerItem, webToolItem);
 
 
@@ -484,7 +483,7 @@ public class MainSceneMenu extends MenuBar  {
 		return settlementMapToolItem;
 	}
 	
-/*
+
 	public CheckMenuItem getMonitorToolItem() {
 		return monitorToolItem;
 	}
@@ -500,7 +499,7 @@ public class MainSceneMenu extends MenuBar  {
 	public CheckMenuItem getResupplyToolItem() {
 		return resupplyToolItem;
 	}
-*/
+
 	//public CheckMenuItem getMarsViewerItem() {
 	//	return marsViewerItem;
 	//}
@@ -552,15 +551,13 @@ public class MainSceneMenu extends MenuBar  {
 			getTimeToolItem().setSelected(false);
 		}
 		
-/*
+		//else if (toolName.equals(SettlementWindow.NAME)) {
+		//	getSettlementMapToolItem().setSelected(false);
+		//}
 		
-		else if (toolName.equals(SettlementWindow.NAME)) {
-			getSettlementMapToolItem().setSelected(false);
-		}
-		
-		else if (toolName.equals(NavigatorWindow.NAME)) {
-			getMarsNavigatorItem().setSelected(false);
-		}
+		//else if (toolName.equals(NavigatorWindow.NAME)) {
+		//	getMarsNavigatorItem().setSelected(false);
+		//}
 
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			getMonitorToolItem().setSelected(false);
@@ -575,15 +572,15 @@ public class MainSceneMenu extends MenuBar  {
 			getScienceToolItem().setSelected(false);
 		}
 
-
 		else if (toolName.equals(ResupplyWindow.NAME)) {
 			getResupplyToolItem().setSelected(false);
 		}
 
+
 		//else if (toolName.equals(MarsViewer.NAME)) {
 		//	getMarsViewerItem().setSelected(false);
 		//}
-*/
+
     }
 
     public CheckMenuItem getMuteItem() {
@@ -607,16 +604,15 @@ public class MainSceneMenu extends MenuBar  {
 		else if (toolName.equals(TimeWindow.NAME)) {
 			return getTimeToolItem();
 		}
-/*		
+				
+		//else if (toolName.equals(SettlementWindow.NAME)) {
+		//	return getSettlementMapToolItem();
+		//}
 		
-		else if (toolName.equals(SettlementWindow.NAME)) {
-			return getSettlementMapToolItem();
-		}
-		
-		else if (toolName.equals(NavigatorWindow.NAME)) {
+		//else if (toolName.equals(NavigatorWindow.NAME)) {
 			//System.out.println("closing nav");
-			return getMarsNavigatorItem();
-		}
+		//	return getMarsNavigatorItem();
+		//}
 		
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			return getMonitorToolItem();
@@ -630,15 +626,14 @@ public class MainSceneMenu extends MenuBar  {
 			return getScienceToolItem();
 		}
 
-
 		else if (toolName.equals(ResupplyWindow.NAME)) {
 			return getResupplyToolItem();
 		}
 
-		else if (toolName.equals(MarsNode.NAME)) {
-			return getSettlementMapToolItem();
-		}
-*/
+		//else if (toolName.equals(MarsNode.NAME)) {
+		//	return getSettlementMapToolItem();
+		//}
+
 		//else if (toolName.equals(Browser.NAME)) {
 		//	return getResupplyToolItem();
 		//}

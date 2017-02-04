@@ -616,6 +616,10 @@ implements ActionListener {
 		globeNav.showGlobe(newCoords);
 	}
 
+	public GlobeDisplay getGlobeDisplay() {
+		return globeNav;
+	}
+	
 	/** ActionListener method overridden */
 	public void actionPerformed(ActionEvent event) {
 
@@ -943,6 +947,7 @@ implements ActionListener {
 	public MainDesktopPane getDesktop() {
 		return desktop;
 	}
+	
 	
 	public void destroy() {
 		map.destroy();

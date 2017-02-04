@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceWindow.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.science;
@@ -69,8 +68,8 @@ extends ToolWindow {
 		studyDetailPane = new StudyDetailPanel(this);
 		mainPane.add(studyDetailPane, BorderLayout.CENTER);
 
-		if (desktop.getMainScene() != null)
-			setClosable(false);
+		//if (desktop.getMainScene() != null)
+			//setClosable(false);
 
 		setMinimumSize(new Dimension(480, 480));
 		setMaximizable(true);

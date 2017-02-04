@@ -387,33 +387,32 @@ implements ActionListener, MenuListener {
 		else if (selectedItem == loadItem) mainWindow.loadSimulation(false);
 		else if (selectedItem == loadAutosaveItem) mainWindow.loadSimulation(true);
 
-		if (selectedItem == marsNavigatorItem) {
+		else if (selectedItem == marsNavigatorItem) {
 			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
 			else desktop.closeToolWindow(NavigatorWindow.NAME);
 		}
 
-		if (selectedItem == searchToolItem) {
+		else if (selectedItem == searchToolItem) {
 			if (searchToolItem.isSelected()) desktop.openToolWindow(SearchWindow.NAME);
 			else desktop.closeToolWindow(SearchWindow.NAME);
 		}
 
-		if (selectedItem == timeToolItem) {
+		else if (selectedItem == timeToolItem) {
 			if (timeToolItem.isSelected()) desktop.openToolWindow(TimeWindow.NAME);
 			else desktop.closeToolWindow(TimeWindow.NAME);
 		}
 
-		if (selectedItem == monitorToolItem) {
+		else if (selectedItem == monitorToolItem) {
 			if (monitorToolItem.isSelected()) desktop.openToolWindow(MonitorWindow.NAME);
 			else desktop.closeToolWindow(MonitorWindow.NAME);
 		}
 
-
-		if (selectedItem == missionToolItem) {
+		else if (selectedItem == missionToolItem) {
 			if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
 			else desktop.closeToolWindow(MissionWindow.NAME);
 		}
 
-		if (selectedItem == settlementToolItem) {
+		else if (selectedItem == settlementToolItem) {
 			if (settlementToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
 			else desktop.closeToolWindow(SettlementWindow.NAME);
 		}
@@ -423,12 +422,12 @@ implements ActionListener, MenuListener {
 		//	else desktop.closeToolWindow(BuildingEditorWindow.NAME);
 		//}
 
-		if (selectedItem == scienceToolItem) {
+		else if (selectedItem == scienceToolItem) {
 			if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
 			else desktop.closeToolWindow(ScienceWindow.NAME);
 		}
 
-		if (selectedItem == resupplyToolItem) {
+		else if (selectedItem == resupplyToolItem) {
 			if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
 			else desktop.closeToolWindow(ResupplyWindow.NAME);
 		}
@@ -438,44 +437,44 @@ implements ActionListener, MenuListener {
 		//	else desktop.closeToolWindow(MarsViewer.NAME);
 		//}
 
-		if (selectedItem == showUnitBarItem) {
+		else if (selectedItem == showUnitBarItem) {
 			desktop.getMainWindow().getUnitToolBar().setVisible(showUnitBarItem.isSelected());
 		}
 
-		if (selectedItem == showToolBarItem) {
+		else if (selectedItem == showToolBarItem) {
 			desktop.getMainWindow().getToolToolBar().setVisible(showToolBarItem.isSelected());
 		}
 
 
-		if (selectedItem == volumeUpItem) {
+		else if (selectedItem == volumeUpItem) {
 			float oldvolume = desktop.getSoundPlayer().getVolume();
 			desktop.getSoundPlayer().setVolume(oldvolume+0.05F);
 		}
 
-		if (selectedItem == volumeDownItem) {
+		else if (selectedItem == volumeDownItem) {
 			float oldvolume = desktop.getSoundPlayer().getVolume();
 			desktop.getSoundPlayer().setVolume(oldvolume-0.05F);
 		}
 
-		if (selectedItem == muteItem) {
+		else if (selectedItem == muteItem) {
 			desktop.getSoundPlayer().setMute(muteItem.isSelected());
 		}
 
-		if (selectedItem == aboutMspItem) {
+		else if (selectedItem == aboutMspItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
 			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
 			ourGuide.setURL(Msg.getString("doc.about")); //$NON-NLS-1$
 		}
 
-		if (selectedItem == guideItem) {
+		else if (selectedItem == guideItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
 			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
 			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
 		}
 
-		if (selectedItem == tutorialItem) {
+		else if (selectedItem == tutorialItem) {
 			desktop.openToolWindow(GuideWindow.NAME);
 			GuideWindow ourGuide;
 			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);

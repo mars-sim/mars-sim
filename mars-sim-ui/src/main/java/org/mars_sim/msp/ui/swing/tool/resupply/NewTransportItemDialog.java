@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NewTransportItemDialog.java
- * @version 3.08 2015-06-30
+ * @version 3.1.0 2017-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -134,11 +134,12 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 
         // 2016-10-22 Add to its own tab pane
         if (desktop.getMainScene() != null)
-        	desktop.getMainScene().getDesktops().get(2).add(this);
+        	desktop.add(this);
+        	//desktop.getMainScene().getDesktops().get(2).add(this);
         else 
         	desktop.add(this);    
 	    
-		Dimension desktopSize = desktop.getMainScene().getDesktops().get(2).getParent().getSize();
+		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;

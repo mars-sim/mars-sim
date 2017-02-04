@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ColumnSelector.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-02-03
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -142,7 +141,8 @@ extends ModalInternalFrame {
 */	    
         // 2016-10-22 Add to its own tab pane
         if (desktop.getMainScene() != null)
-        	desktop.getMainScene().getDesktops().get(0).add(this);
+        	desktop.add(this);
+        	//desktop.getMainScene().getDesktops().get(0).add(this);
         else 
         	desktop.add(this);
 	    

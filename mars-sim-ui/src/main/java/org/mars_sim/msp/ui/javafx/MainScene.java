@@ -117,6 +117,8 @@ import java.awt.Graphics;
 import java.awt.Paint;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
@@ -219,10 +221,10 @@ public class MainScene {
 	
 	public static final int MAIN_TAB = 0;
 	public static final int MAP_TAB = 1;
-	public static final int MONITOR_TAB = 2;
-	public static final int MISSION_TAB = 3;
-	public static final int RESUPPLY_TAB = 4;
-	public static final int SCIENCE_TAB = 5;
+	//public static final int MONITOR_TAB = 2;
+	//public static final int MISSION_TAB = 3;
+	//public static final int RESUPPLY_TAB = 4;
+	//public static final int SCIENCE_TAB = 5;
 	public static final int HELP_TAB = 6;
 	
 	public static final int LOADING = 0;
@@ -240,8 +242,8 @@ public class MainScene {
 	private static final String MARS_DATE_TIME = "MARS  :  ";
 	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 	public static final String UMST = " (UMST)";
-	public static final String UPTIME = "Simulation UpTime : ";
-	public static final String TPS = "TPS : ";
+	public static final String UPTIME = "UpTime : ";
+	public static final String TPS = "Ticks Per Sec : ";
 	
 	private static int theme = 7; // 6 is snow blue; 7 is the mud orange with nimrod
 
@@ -302,7 +304,7 @@ public class MainScene {
 	private JFXComboBox<Settlement> sBox;
 	private JFXBadge badgeIcon;
 	private JFXSnackbar snackbar;
-	private JFXToggleButton cacheButton, calendarButton;
+	private JFXToggleButton cacheButton, calendarButton; //pinButton
 	private JFXSlider zoomSlider, timeSlider, soundSlider;
 	private JFXButton soundBtn, miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn, speedButton;
 	private JFXPopup soundPopup, flyout, marsCalendarPopup, simSpeedPopup;// marsTimePopup; 
@@ -345,6 +347,7 @@ public class MainScene {
 	
 	private SettlementWindow settlementWindow; 
 	private SettlementMapPanel mapPanel;
+	private NavigatorWindow nw;
 	
 	private AudioPlayer soundPlayer;
 	private MarsCalendarDisplay calendarDisplay;
@@ -524,6 +527,46 @@ public class MainScene {
 		});
 	    Nodes.addInputMap(root, f3);   
 
+		InputMap<KeyEvent> f4 = consume(keyPressed(F4), e -> {
+			if (desktop.isToolWindowOpen(MonitorWindow.NAME))
+				SwingUtilities.invokeLater(() ->desktop.closeToolWindow(MonitorWindow.NAME));
+			else {
+				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				SwingUtilities.invokeLater(() ->desktop.openToolWindow(MonitorWindow.NAME));
+			}
+		});
+	    Nodes.addInputMap(root, f4);  
+	    
+		InputMap<KeyEvent> f5 = consume(keyPressed(F5), e -> {
+			if (desktop.isToolWindowOpen(MissionWindow.NAME))
+				SwingUtilities.invokeLater(() ->desktop.closeToolWindow(MissionWindow.NAME));
+			else {
+				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				SwingUtilities.invokeLater(() ->desktop.openToolWindow(MissionWindow.NAME));
+			}
+		});
+	    Nodes.addInputMap(root, f5);  
+	    
+		InputMap<KeyEvent> f6 = consume(keyPressed(F6), e -> {
+			if (desktop.isToolWindowOpen(ScienceWindow.NAME))
+				SwingUtilities.invokeLater(() ->desktop.closeToolWindow(ScienceWindow.NAME));
+			else {
+				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				SwingUtilities.invokeLater(() ->desktop.openToolWindow(ScienceWindow.NAME));
+			}
+		});
+	    Nodes.addInputMap(root, f6);  
+	    
+		InputMap<KeyEvent> f7 = consume(keyPressed(F7), e -> {
+			if (desktop.isToolWindowOpen(ResupplyWindow.NAME))
+				SwingUtilities.invokeLater(() ->desktop.closeToolWindow(ResupplyWindow.NAME));
+			else {
+				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				SwingUtilities.invokeLater(() ->desktop.openToolWindow(ResupplyWindow.NAME));
+			}
+		});
+	    Nodes.addInputMap(root, f7); 
+	    
 		InputMap<KeyEvent> ctrlQ = consume(keyPressed(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN)), e -> {
         	popAQuote();
         	desktopPane.requestFocus();	
@@ -739,7 +782,7 @@ public class MainScene {
         
         anchorDesktopPane.getChildren().addAll(
         		jfxTabPane, 
-        		miniMapBtn, mapBtn, 
+        		//miniMapBtn, mapBtn, 
         		marsNetButton, speedButton,
         		lastSaveBar, 
         		earthTimeBar, marsTimeBar, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
@@ -885,7 +928,7 @@ public class MainScene {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());		   
 
 		speedButton = new JFXButton();
-		setQuickToolTip(speedButton, "Open Time Panel");
+		setQuickToolTip(speedButton, "Open l");
 
 		speedButton.setOnAction(e -> {
 	
@@ -941,7 +984,7 @@ public class MainScene {
 
 		setQuickToolTip(timeSlider, "Adjust Time Ratio"); //$NON-NLS-1$
 			
-        Label header_label = new Label("TIME PANEL");
+        Label header_label = new Label("SPEED PANEL");
         header_label.setStyle("-fx-text-fill: black;"
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
@@ -1255,6 +1298,21 @@ public class MainScene {
 	}
 	
 	public void createFXButtons() {
+/*
+		pinButton = new JFXToggleButton();
+		pinButton.setText("Pin Off");
+		pinButton.setSelected(false);
+		setQuickToolTip(pinButton, "Pin Minimap");
+		pinButton.setOnAction(e -> {
+			if (pinButton.isSelected()) {
+				pinButton.setText("Pin On");
+				//openMap();
+				//cacheButton.setTextFill(Paint.OPAQUE);
+			}
+			else
+				cacheButton.setText("Pin Off");
+		});
+*/		
 		cacheButton = new JFXToggleButton();
 		cacheButton.setText("Cache Off");
 		cacheButton.setSelected(false);
@@ -1468,22 +1526,26 @@ public class MainScene {
 		
 		jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		jfxTabPane.getStyleClass().add("jfx-tab-pane");
-					
+			
 		mainTab = new Tab();
 		mainTab.setText("Main");
 		mainTab.setContent(desktopPane);
 		
-		
 		// set up mapTab
-		Tab mapTab = new Tab();		
-		anchorMapTabPane = new AnchorPane();
+		anchorMapTabPane = new AnchorPane();	
 		anchorMapTabPane.setStyle("-fx-background-color: black; ");
-
+		
+		Tab mapTab = new Tab();		
+		mapTab.setText("Map");
+		mapTab.setContent(anchorMapTabPane);
+		
 		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
+		
 		minimapNode = new SwingNode();
 		minimapNodePane = new StackPane(minimapNode);
 		minimapNodePane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
+		
 		miniMapBtn = new JFXButton();
 		setQuickToolTip(miniMapBtn, "Open Mars Navigator Minimap below");
 		miniMapBtn.setOnAction(e -> {
@@ -1559,12 +1621,13 @@ public class MainScene {
 			}
 
 		});
-		 
-        
-		mapTab.setText("Map");
-		mapTab.setContent(anchorMapTabPane);
 		
- 
+		//desktop.openToolWindow(MonitorWindow.NAME);
+		//desktop.openToolWindow(MissionWindow.NAME);
+		//desktop.openToolWindow(ResupplyWindow.NAME);
+		//desktop.openToolWindow(ScienceWindow.NAME);
+		
+/*
 		// set up monitor tab
 		MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
 		monNode = new SwingNode();		
@@ -1605,7 +1668,7 @@ public class MainScene {
 		resupplyTab.setContent(resupplyPane);
 
 		//desktop.openToolWindow(ResupplyWindow.NAME);
-		
+	
 		
 		// set up science tab
 		ScienceWindow sciWin = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
@@ -1621,7 +1684,7 @@ public class MainScene {
 		scienceTab.setContent(sciencePane);
 	
 		//desktop.openToolWindow(ScienceWindow.NAME);	
-		
+*/			
 		
 		// set up help tab
 		GuideWindow guideWin = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
@@ -1634,15 +1697,24 @@ public class MainScene {
 
 		//desktop.openToolWindow(GuideWindow.NAME);
 		
-		jfxTabPane.getTabs().addAll(mainTab, mapTab, monTab, missionTab, resupplyTab, scienceTab, guideTab);	
+		jfxTabPane.getTabs().addAll(
+				mainTab,
+				mapTab, 
+				//monTab,
+				//missionTab, 
+				//resupplyTab, 
+				//scienceTab, 
+				guideTab);	
 		
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+
 			if (newTab == mainTab) {	
 				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 				anchorMapTabPane.getChildren().removeAll(cacheButton);
 				desktopPane.requestFocus();
 			}
 			
+/*			
 			else if (newTab == monTab) {	
 				if (!desktop.isToolWindowOpen(MonitorWindow.NAME)) {
 					desktop.openToolWindow(MonitorWindow.NAME);
@@ -1653,7 +1725,7 @@ public class MainScene {
 				anchorMapTabPane.getChildren().removeAll(cacheButton);
 
 			}
-			
+*/			
 			else if (newTab == mapTab) {
 				
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {			       
@@ -1662,8 +1734,11 @@ public class MainScene {
 				}
 
 				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {				       
-					if (isCacheButtonOn())
+					if (isCacheButtonOn()) {
 						miniMapBtn.fire();
+						if (nw == null) nw = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
+						nw.getGlobeDisplay().drawSphere();//updateDisplay();
+					}
 				}
 
 				AnchorPane.setRightAnchor(mapBtn, 125.0);
@@ -1686,7 +1761,7 @@ public class MainScene {
 				anchorMapTabPane.getChildren().addAll(cacheButton);
 
 			}
-			
+/*		
 			else if (newTab == missionTab) {	
 				if (!desktop.isToolWindowOpen(MissionWindow.NAME)) {
 					desktop.openToolWindow(MissionWindow.NAME);
@@ -1716,7 +1791,8 @@ public class MainScene {
 				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
-			
+
+*/			
 			else if (newTab == guideTab) {	
 				if (!desktop.isToolWindowOpen(GuideWindow.NAME)) {
 					desktop.openToolWindow(GuideWindow.NAME);
@@ -1726,9 +1802,13 @@ public class MainScene {
 				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
+			else {
+				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    anchorMapTabPane.getChildren().removeAll(cacheButton);
+			}
 		});
 		
-		//jfxTabPane.getSelectionModel().select(mainTab);
+		//jfxTabPane.getSelectionModel().select(guideTab);
 		
 		// NOTE: if a tab is NOT selected, should close that tool as well to save cpu utilization
 		// this is done in ToolWindow's update(). It allows for up to 1 second of delay, in case user open and close the same repeated.
@@ -1841,7 +1921,8 @@ public class MainScene {
 		else
 			return false;
 	}
-	
+
+/*	
 	public void createDesktops() {
 		desktops = new ArrayList<DesktopPane>();		
 		int size = 3;	
@@ -1854,6 +1935,7 @@ public class MainScene {
 	public List<DesktopPane> getDesktops() {
 		return desktops;
 	}
+*/
 	
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
@@ -2293,11 +2375,14 @@ public class MainScene {
 		earthTimeButton.setText(e.toString());
 		
 		//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
-		String newLastSaveStamp = sim.getLastSave();
-		if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
-			oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
-			lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
-			//System.out.print("updated last save time stamp");
+		if (sim.getJustSaved()) {
+			String newLastSaveStamp = sim.getLastSave();
+			if (!oldLastSaveStamp.equals(newLastSaveStamp)) {
+				sim.setJustSaved(false);
+				oldLastSaveStamp = newLastSaveStamp.replace("_", " ");
+				lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
+				//System.out.print("updated last save time stamp");
+			}
 		}
 	}
 
@@ -2654,7 +2739,7 @@ public class MainScene {
 	}
 
 	private void createSwingNode() {
-		createDesktops();
+		//createDesktops();
 		desktop = new MainDesktopPane(this);
 		SwingUtilities.invokeLater(() -> {			
 			swingNode.setContent(desktop);
@@ -3058,7 +3143,7 @@ public class MainScene {
 		loadingCircleStage = null;
 		savingCircleStage = null;
 		pausingCircleStage = null;
-		mainTab = null;
+		//mainTab = null;
 		//nodeTab = null;
 		//dndTabPane = null;
 		timeline = null;

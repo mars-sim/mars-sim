@@ -4,7 +4,7 @@ http://mars-sim.sourceforge.net/
 
 ------------------------------------------------------
 
-## v3.1.0 (build 38__) Snapshot Preview 6 - 2017-01-__
+## v3.1.0 (build 38__) Snapshot Preview 6 - 2017-02-__
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -12,7 +12,11 @@ http://mars-sim.sourceforge.net/
 
 2. Add ability to choose country for each member of alpha crew in Crew Editor.
 
-3. Add a sound control panel.
+### UI IMPROVEMENT :
+
+1. Add sound control panel, calendar panel and speed panel.
+
+2. Consolidate various tools into the Main tabs. Reduce the # of available tabs to 3.
 
 ------------------------------------------------------
 
