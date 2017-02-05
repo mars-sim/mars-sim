@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.SingleSelectionModel;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
@@ -42,6 +43,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+//import javax.swing.SingleSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -148,6 +150,8 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	private OrbitViewer orbitViewer;
 	private BrowserJFX browserJFX;
 	private EventTableModel eventTableModel;
+	
+	private SingleSelectionModel ssm;
 	//private final ReentrantLock transportLock = new ReentrantLock();
     //private int transportCount = 0;
 	//private final ReentrantLock constructionLock = new ReentrantLock();
@@ -205,6 +209,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		if (mainScene == null)	
 			prepareAnnouncementWindow();
+		
 	   	//logger.info("MainDesktopPane's init() is done ");
 	}
 	
@@ -638,62 +643,73 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	    // 2015-12-07 Added below to check the corresponding menu item
 		if (mainScene != null) {
+			if (ssm == null) 
+				ssm = mainScene.getJFXTabPane().getSelectionModel();
 			//System.out.println(toolName + " is running openToolWindow().");
 			Platform.runLater(() -> {
 				
 				// 2016-10-22 Opening the first 3 tools will switch to the Desktop Tab
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
+						if (!ssm.isSelected(MainScene.MAP_TAB))
+							ssm.select(MainScene.MAP_TAB);
 					//mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);				
 				}
 
 				else if (toolName.equals(SettlementWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB);
+						if (!ssm.isSelected(MainScene.MAP_TAB))
+							ssm.select(MainScene.MAP_TAB);
 					//mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(SearchWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.MAIN_TAB);
+						if (!ssm.isSelected(MainScene.MAIN_TAB))
+							ssm.select(MainScene.MAIN_TAB);//.MAIN_TAB);
 					mainScene.getMainSceneMenu().getSearchToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(TimeWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.MAIN_TAB);
+						if (!ssm.isSelected(MainScene.MAIN_TAB))
+							ssm.select(MainScene.MAIN_TAB);//.MAIN_TAB);
 					mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//MONITOR_TAB);
+						if (!ssm.isSelected(MainScene.MAIN_TAB))
+							ssm.select(MainScene.MAIN_TAB);//MONITOR_TAB);
 					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(MissionWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.MISSION_TAB);
+						if (!ssm.isSelected(MainScene.MAIN_TAB))
+							ssm.select(MainScene.MAIN_TAB);//.MISSION_TAB);
 					mainScene.getMainSceneMenu().getMissionToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.RESUPPLY_TAB);
+						if (!ssm.isSelected(MainScene.MAIN_TAB))
+							ssm.select(MainScene.MAIN_TAB);//.RESUPPLY_TAB);
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(ScienceWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);//.SCIENCE_TAB);
+						if (!ssm.isSelected(MainScene.MAIN_TAB))
+							ssm.select(MainScene.MAIN_TAB);//.SCIENCE_TAB);
 					mainScene.getMainSceneMenu().getScienceToolItem().setSelected(true);
 				}
 
 				else if (toolName.equals(GuideWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
-						mainScene.getJFXTabPane().getSelectionModel().select(MainScene.HELP_TAB);
-					//mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
+						if (!ssm.isSelected(MainScene.HELP_TAB))
+							ssm.select(MainScene.HELP_TAB);
+					mainScene.getMainSceneMenu().getHelpBrowserItem().setSelected(true);
 				}
 			});		
 		}
@@ -826,8 +842,11 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 			
 		// go to the main tab
-		if (mainScene != null) 
-			Platform.runLater(() -> mainScene.getJFXTabPane().getSelectionModel().select(MainScene.MAP_TAB));//.MAIN_TAB));
+		if (mainScene != null) {
+			if (ssm == null) 
+				ssm = mainScene.getJFXTabPane().getSelectionModel();
+			Platform.runLater(() -> ssm.select(MainScene.MAIN_TAB));
+		}
 
 		playSound(unit);
 

@@ -61,9 +61,10 @@ public class MainSceneMenu extends MenuBar  {
 	private boolean fMenuVisible = false;
 	
 	private CheckMenuItem searchToolItem, timeToolItem, 
-							marsNavigatorItem, settlementMapToolItem,
+							//marsNavigatorItem, settlementMapToolItem,
 							monitorToolItem, missionToolItem, 
-							scienceToolItem, resupplyToolItem;
+							scienceToolItem, resupplyToolItem,
+							guideToolItem;
 							//marsViewerItem, webToolItem;
 
 	private CheckMenuItem showFullScreenItem, notificationItem, muteItem;
@@ -157,19 +158,20 @@ public class MainSceneMenu extends MenuBar  {
         resupplyToolItem = createMenuItem("Resupply Tool", ResupplyWindow.NAME);
         //resupplyToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F7));
 
+        guideToolItem = createMenuItem("Help Browser", GuideWindow.NAME);
+        
         //marsViewerItem = createMenuItem("Mars Viewer", MarsViewer.NAME);
         //marsViewerItem.setAccelerator(new KeyCodeCombination(KeyCode.F9));
 
         //webToolItem = new CheckMenuItem("Web Tool");
         //webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
-
         menuTools.getItems().addAll(searchToolItem, timeToolItem,
         		//marsNavigatorItem, settlementMapToolItem,
         		monitorToolItem, missionToolItem,
-        		scienceToolItem, resupplyToolItem);
+        		scienceToolItem, resupplyToolItem,
+        		guideToolItem);
         		//, marsViewerItem, webToolItem);
-
 
         // --- Menu Settings
         Menu menuSettings = new Menu("Settings");
@@ -208,7 +210,6 @@ public class MainSceneMenu extends MenuBar  {
         
         skinThemeItem.getItems().addAll(sixItem, sevenItem);//, oneItem, twoItem, threeItem, fourItem, fiveItem);
 
-
         //CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         //showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
         //CheckMenuItem showToolBarItem = new CheckMenuItem("Show Tool Bar");
@@ -228,7 +229,6 @@ public class MainSceneMenu extends MenuBar  {
 
         SeparatorMenuItem SeparatorMenuItem6 = new SeparatorMenuItem();
 
-        
         volumeUpItem = new MenuItem("Volume Up");
         volumeUpItem.setAccelerator(new KeyCodeCombination(KeyCode.UP, KeyCombination.CONTROL_DOWN));
         volumeDownItem = new MenuItem("Volume Down");
@@ -241,7 +241,7 @@ public class MainSceneMenu extends MenuBar  {
         		SeparatorMenuItem5, 
         		notificationItem,
         		SeparatorMenuItem6, 
-        		volumeUpItem, volumeDownItem,muteItem); // showUnitBarItem,showToolBarItem,
+        		volumeUpItem, volumeDownItem, muteItem); // showUnitBarItem,showToolBarItem,
 
 
 /*        
@@ -467,9 +467,9 @@ public class MainSceneMenu extends MenuBar  {
 	}
 
     // 2015-06-05 Added 8 get_() method below
-	public CheckMenuItem getMarsNavigatorItem() {
-		return marsNavigatorItem;
-	}
+	//public CheckMenuItem getMarsNavigatorItem() {
+	//	return marsNavigatorItem;
+	//}
 
 	public CheckMenuItem getSearchToolItem() {
 		return searchToolItem;
@@ -479,9 +479,9 @@ public class MainSceneMenu extends MenuBar  {
 		return timeToolItem;
 	}
 	
-	public CheckMenuItem getSettlementMapToolItem() {
-		return settlementMapToolItem;
-	}
+	//public CheckMenuItem getSettlementMapToolItem() {
+	//	return settlementMapToolItem;
+	//}
 	
 
 	public CheckMenuItem getMonitorToolItem() {
@@ -500,6 +500,10 @@ public class MainSceneMenu extends MenuBar  {
 		return resupplyToolItem;
 	}
 
+	public CheckMenuItem getHelpBrowserItem() {
+		return guideToolItem;
+	}
+	
 	//public CheckMenuItem getMarsViewerItem() {
 	//	return marsViewerItem;
 	//}
@@ -576,6 +580,9 @@ public class MainSceneMenu extends MenuBar  {
 			getResupplyToolItem().setSelected(false);
 		}
 
+		else if (toolName.equals(GuideWindow.NAME)) {
+			getHelpBrowserItem().setSelected(false);
+		}
 
 		//else if (toolName.equals(MarsViewer.NAME)) {
 		//	getMarsViewerItem().setSelected(false);
@@ -630,6 +637,10 @@ public class MainSceneMenu extends MenuBar  {
 			return getResupplyToolItem();
 		}
 
+		else if (toolName.equals(GuideWindow.NAME)) {
+			return getHelpBrowserItem();
+		}
+		
 		//else if (toolName.equals(MarsNode.NAME)) {
 		//	return getSettlementMapToolItem();
 		//}

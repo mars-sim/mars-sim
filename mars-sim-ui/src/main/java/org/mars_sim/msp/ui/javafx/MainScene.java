@@ -225,7 +225,7 @@ public class MainScene {
 	//public static final int MISSION_TAB = 3;
 	//public static final int RESUPPLY_TAB = 4;
 	//public static final int SCIENCE_TAB = 5;
-	public static final int HELP_TAB = 6;
+	public static final int HELP_TAB = 2;
 	
 	public static final int LOADING = 0;
 	public static final int SAVING = 1;
@@ -498,12 +498,15 @@ public class MainScene {
 	// 2016-11-14 Setup key events using wellbehavedfx
 	public void setupKeyEvents() {
 		InputMap<KeyEvent> f1 = consume(keyPressed(F1), e -> {
-			if (desktop.isToolWindowOpen(GuideWindow.NAME))
+			jfxTabPane.getSelectionModel().select(MainScene.HELP_TAB);
+/*
+ 			if (desktop.isToolWindowOpen(GuideWindow.NAME))
 				SwingUtilities.invokeLater(() -> desktop.closeToolWindow(GuideWindow.NAME));
 			else {
 				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
 				SwingUtilities.invokeLater(() -> desktop.openToolWindow(GuideWindow.NAME));
 			}
+*/			
 		});
 	    Nodes.addInputMap(root, f1);
 	    
@@ -928,7 +931,7 @@ public class MainScene {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());		   
 
 		speedButton = new JFXButton();
-		setQuickToolTip(speedButton, "Open l");
+		setQuickToolTip(speedButton, "Open Speed Panel");
 
 		speedButton.setOnAction(e -> {
 	
@@ -1069,10 +1072,10 @@ public class MainScene {
     			+ "-fx-font-weight: italic;");
         upTimeLabel.setPadding(new Insets(3, 3, 3, 3));
         if (uptimer != null)
-        upTimeLabel.setText(UPTIME + uptimer.getUptime());
+        upTimeLabel.setText (UPTIME + uptimer.getUptime());
 		
         VBox vBox = new VBox();
-		vBox.setAlignment(Pos.CENTER);
+		vBox.setAlignment(Pos.TOP_LEFT);
         vBox.getChildren().addAll(header_label, time_ratio_label, timeSlider, real_time_label, TPSLabel, upTimeLabel);
         earthTimePane.getChildren().addAll(vBox);    
         
@@ -1794,14 +1797,15 @@ public class MainScene {
 
 */			
 			else if (newTab == guideTab) {	
+				
 				if (!desktop.isToolWindowOpen(GuideWindow.NAME)) {
 					desktop.openToolWindow(GuideWindow.NAME);
-					//guideNode.setContent(guideWin); 
 				}
 			       
 				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
+			
 			else {
 				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			    anchorMapTabPane.getChildren().removeAll(cacheButton);
