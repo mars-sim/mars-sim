@@ -71,14 +71,15 @@ ComponentListener {
 	//        "help" + File.separator + "userguide.html");
 	/* [landrus, 27.11.09]: load the url in the constructor. */
 	private URL guideURL, aboutURL, tutorialURL, shortcutsURL;
-	private String discussionURLstring, projectsiteURLstring;
+	private String discussionURLstring, wikiURLstring, projectsiteURLstring;
 
 	private JButton shortcutsButton = new JButton(Msg.getString("GuideWindow.button.shortcuts")); //$NON-NLS-1$
 	private JButton aboutButton = new JButton(Msg.getString("GuideWindow.button.about")); //$NON-NLS-1$
 	private JButton tutorialButton = new JButton(Msg.getString("GuideWindow.button.tutorial")); //$NON-NLS-1$
 	private JButton userguideButton = new JButton(Msg.getString("GuideWindow.button.userguide")); //$NON-NLS-1$
 	private JButton projectsiteButton = new JButton(Msg.getString("GuideWindow.button.projectsite")); //$NON-NLS-1$
-	private JButton discussionButton = new JButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
+	//private JButton discussionButton = new JButton(Msg.getString("GuideWindow.button.discussion")); //$NON-NLS-1$
+	private JButton wikiButton = new JButton(Msg.getString("GuideWindow.button.wiki")); //$NON-NLS-1$
 	
 	private BrowserJFX browser;
 	private JPanel browserPanel;
@@ -95,9 +96,10 @@ ComponentListener {
 		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
 		aboutURL = getClass().getResource(Msg.getString("doc.about")); //$NON-NLS-1$
 		tutorialURL = getClass().getResource(Msg.getString("doc.tutorial")); //$NON-NLS-1$
-		discussionURLstring = Msg.getString("url.discussion"); //$NON-NLS-1$
 		projectsiteURLstring = Msg.getString("url.projectsite"); //$NON-NLS-1$
-
+		//discussionURLstring = Msg.getString("url.discussion"); //$NON-NLS-1$
+		wikiURLstring = Msg.getString("url.wiki"); //$NON-NLS-1$
+		
 		browser = desktop.getBrowserJFX();
 		browserPanel = browser.getPanel();//.init();
 
@@ -121,9 +123,12 @@ ComponentListener {
 		projectsiteButton.setToolTipText(Msg.getString("GuideWindow.tooltip.projectsite")); //$NON-NLS-1$
 		projectsiteButton.addActionListener(this);
 
-		discussionButton.setToolTipText(Msg.getString("GuideWindow.tooltip.discussion")); //$NON-NLS-1$
-		discussionButton.addActionListener(this);
+		//discussionButton.setToolTipText(Msg.getString("GuideWindow.tooltip.discussion")); //$NON-NLS-1$
+		//discussionButton.addActionListener(this);
 
+		wikiButton.setToolTipText(Msg.getString("GuideWindow.tooltip.wiki")); //$NON-NLS-1$
+		wikiButton.addActionListener(this);
+		
 		// A toolbar to hold all our buttons
 		JPanel toolPanel = new JPanel();
 		toolPanel.add(aboutButton);
@@ -131,7 +136,8 @@ ComponentListener {
 		toolPanel.add(userguideButton);
 		toolPanel.add(shortcutsButton);
 		toolPanel.add(projectsiteButton);
-		toolPanel.add(discussionButton);
+		toolPanel.add(wikiButton);
+		//toolPanel.add(discussionButton);
 	
 		mainPane.add(browserPanel, BorderLayout.CENTER);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
@@ -222,14 +228,20 @@ ComponentListener {
 				browser.inputURLType(projectsiteURLstring);
 				browser.showURL();
 			});
-			
+/*			
 		} else if (source == this.discussionButton) {
 			Platform.runLater(()-> {
 				browser.setTextInputCache(discussionURLstring);
 				browser.inputURLType(discussionURLstring);
 				browser.showURL();
 			});
-
+*/
+		} else if (source == this.wikiButton) {
+			Platform.runLater(()-> {
+				browser.setTextInputCache(wikiURLstring);
+				browser.inputURLType(wikiURLstring);
+				browser.showURL();
+			});
 		}
 		
 	}

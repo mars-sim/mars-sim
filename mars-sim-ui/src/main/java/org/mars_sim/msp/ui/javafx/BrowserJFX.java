@@ -105,14 +105,14 @@ public class BrowserJFX {
 
     public volatile String textInputCache, addressURLText, statusBarURLText, inputCache;
     
-    private final JFXPanel jfxPanel = new JFXPanel();
+    private JFXPanel jfxPanel = new JFXPanel();
     private JPanel panel = new JPanel(new BorderLayout());
-    private final JLabel statusBarLbl = new JLabel();
-    private final JButton btnGo = new JButton("Go");
-    private final JButton btnForward = new JButton(">");
-    private final JButton btnBack = new JButton("<");
-    private final JTextField urlTF = new JTextField();
-    private final JProgressBar progressBar = new JProgressBar();
+    private JLabel statusBarLbl = new JLabel();
+    private JButton btnGo = new JButton("Go");
+    private JButton btnForward = new JButton(">");
+    private JButton btnBack = new JButton("<");
+    private JTextField urlTF = new JTextField();
+    private JProgressBar progressBar = new JProgressBar();
 
     private MainScene mainScene;
     private MainDesktopPane desktop;
@@ -301,33 +301,23 @@ public class BrowserJFX {
 		}
 		
 		else {
-
+			isLocalHtml = false;
 			isInternal = false;
 			
-			boolean status = input.toLowerCase().contains(HTTPS_HEADER);          	
+			boolean https = input.toLowerCase().contains(HTTPS_HEADER);          	
+			boolean http = input.toLowerCase().contains(HTTP_HEADER);          	
 			
 			// Type 2 is a remote url 
-			if (status) {
-				isLocalHtml = false;
+			if (https || http) {
+
 				determineURL(input, REMOTE_HTML);
 			}
-			else {
-				status = input.toLowerCase().contains(HTTP_HEADER);          	
-				//pos = input.toLowerCase().indexOf(HTTP_HEADER.toLowerCase());
-				
-				// Type 2 is a remote url 
-				if (status) {
-					isLocalHtml = false;
-					determineURL(input, REMOTE_HTML);
-				}
-				else {
-		    		System.out.println("parseInput() : URL_type is " + URL_type);
-					// Type 3 could be a remote url that has no "http://" or an invalid input
-					// e.g. type in google.com
-					isLocalHtml = false;
-					// will need to add http://
-					determineURL(input, UNKNOWN);									
-				}				
+			else {	
+	    		System.out.println("parseInput() : URL_type is " + URL_type);
+				// Type 3 could be a remote url that has no "http://" or an invalid input
+				// e.g. type in google.com
+				// will need to add http://
+				determineURL(input, UNKNOWN);												
 			}
 			
 			
@@ -644,20 +634,20 @@ public class BrowserJFX {
     	isInternal = false;
     	
         Platform.runLater(()-> {
-			boolean status = content.toLowerCase().contains(HTTPS_HEADER) 
-					|| content.toLowerCase().contains(HTTP_HEADER);          	
+			//boolean status = content.toLowerCase().contains(HTTPS_HEADER) 
+			//		|| content.toLowerCase().contains(HTTP_HEADER);          	
 		
-			if (status) {
+			//if (status) {
 				engine.load(content);
 				updateButtons();
 				textInputCache = content;
 				statusBarURLText = content;
         		statusBarLbl.setText(content);
-			}
+			//}
 			
-			else {
-				System.out.println("loadRemoteURL()'s content is " + content);		
-			}
+			//else {
+			//	System.out.println("loadRemoteURL()'s content is " + content);		
+			//}
         });
         
     }
@@ -844,6 +834,24 @@ public class BrowserJFX {
     public void setTextInputCache(String value) {
     	textInputCache = value;
     }
+    
+    public void destroy() {
+        jfxPanel = null;
+        panel = null;
+        statusBarLbl = null;
+        btnGo = null;
+        btnForward = null;
+        btnBack = null;
+        urlTF = null;
+        progressBar = null;
+        mainScene = null;
+        desktop = null;
+        view = null;
+        engine = null;
+        history = null;
+        entryList = null;
+    }
+
 }
 
 class TicketSubmission {

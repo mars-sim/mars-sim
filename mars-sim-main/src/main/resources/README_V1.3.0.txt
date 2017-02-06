@@ -12,7 +12,7 @@ http://mars-sim.sourceforge.net/
 
 - 1 GB RAM dedicated for running mars-sim
 
-- 64-bit Java 8 (jre1.8.0_60 or above) 
+- 64-bit Java 8 (jre1.8.0_91 or above) 
 
 ---------------------------------------------------------------------
 

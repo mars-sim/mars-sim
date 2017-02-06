@@ -334,9 +334,9 @@ public class MarsProjectFX extends Application  {
 */        
         
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!major.equals("8") || Double.parseDouble(update) < 60.0) {	
-    		logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.60. Terminating...");
-    		System.out.println("Note: mars-sim requires at least Java 8.0.60. Terminating...");
+    	if (!major.equals("8") || Double.parseDouble(update) < 91.0) {	
+    		logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.91. Terminating...");
+    		System.out.println("Note: mars-sim requires at least Java 8.0.91. Terminating...");
     		Platform.exit();
 	        System.exit(1);
     	}
