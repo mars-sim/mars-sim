@@ -23,6 +23,7 @@
 	-fx-background: rgb(50, 50, 50);
 	-fx-control-inner-background:  rgb(50, 50, 50);
 	-fx-accent: darkgoldenrod;
+	-fx-font-family: "Libeartion Mono" "Regular";
 	/*-fx-font-family: "Noto"; */
 }
 
@@ -317,6 +318,7 @@
     -fx-text-fill: #7ebcea;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
+    -fx-font-family: "Libeartion Mono";
 }
 #rich-blue Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);
@@ -336,6 +338,7 @@
     -fx-text-fill: #654b00;
     -fx-font-size: 12px;
     -fx-font-weight: bold;
+    -fx-font-family: "Libeartion Mono";
 }
 #rich-orange Text {
     -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);

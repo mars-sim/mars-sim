@@ -157,7 +157,7 @@ extends JInternalFrame {
 	public void update() {
 
 		if (mainScene != null && !masterClock.isPaused()) {
-
+/*
 			if (ssm == null)
 				ssm = mainScene.getJFXTabPane().getSelectionModel();
 			
@@ -188,7 +188,8 @@ extends JInternalFrame {
 				//desktop.closeToolWindow(ScienceWindow.NAME);
 				//desktop.closeToolWindow(MissionWindow.NAME);
 			}
-/*			
+
+			
 			else if (mainScene.getJFXTabPane().getSelectionModel().isSelected(MainScene.MONITOR_TAB)) {
 				closeMaps();
 				//desktop.openToolWindow(MonitorWindow.NAME);
@@ -227,7 +228,7 @@ extends JInternalFrame {
 
 */
 			
-			if(this.isVisible() || this.isShowing() ) {
+			if ( this.isVisible() || this.isShowing() ) {
 				//System.out.println("this.getToolName() is "+ this.getToolName());
 				// Note: need to refresh the table column/row header
 				if (this.getToolName().equals(MonitorWindow.NAME))
@@ -243,9 +244,9 @@ extends JInternalFrame {
 					// Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException when pressing the terminate button in eclipse
 					//monitorWindow.tabChanged(false); // create time lag, draw artifact and search text out of focus
 				// create time lag, draw artifact and search text out of focus			
-				}
+			}
 
-			else if(!this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {
+			else if ( !this.isVisible() || !this.isShowing() ) { // || !this.isSelected()) { // || this.wasOpened()) {
 				//System.out.println(name + " is not visible");
 				Platform.runLater(() -> {
 					if (msm == null)
@@ -268,5 +269,12 @@ extends JInternalFrame {
 	/**
 	 * Prepares tool window for deletion.
 	 */
-	public void destroy() {}
+	public void destroy() {
+		item = null;
+		msm = null;
+		desktop = null; 
+		masterClock = null;
+		mainScene = null;
+		monitorWindow = null;
+	}
 }

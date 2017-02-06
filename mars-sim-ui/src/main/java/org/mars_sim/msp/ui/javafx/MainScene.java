@@ -286,7 +286,7 @@ public class MainScene {
     //private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
 	private Pane root;
-	private StackPane settlementBox, chatBoxPane, desktopPane, mapNodePane, minimapNodePane;
+	private StackPane settlementBox, chatBoxPane, desktopPane, mapStackPane, minimapNodePane;
 	//private BorderPane borderPane;
 	private FlowPane flowPane;
 	private AnchorPane anchorDesktopPane, anchorMapTabPane ;
@@ -812,7 +812,7 @@ public class MainScene {
 		anchorMapTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
 		anchorMapTabPane.prefWidthProperty().bind(scene.widthProperty());
 		
-		mapNodePane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
+		mapStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
 		//mapNodePane.prefWidthProperty().bind(scene.widthProperty());
 		
 		//mapNodePane.heightProperty().addListener((observable, oldValue, newValue) -> {
@@ -870,6 +870,7 @@ public class MainScene {
 		earthTimeBar = new HBox();
 		//earthTimeBar.setId("rich-blue");
 		earthTimeBar.setMaxWidth(Double.MAX_VALUE);
+		
 		if (OS.contains("linux")) {
 			earthTimeBar.setMinWidth(LINUX_WIDTH);
 			earthTimeBar.setPrefSize(LINUX_WIDTH, 32);			
@@ -891,7 +892,9 @@ public class MainScene {
 			earthClock = masterClock.getEarthClock();
 		}
 
-		earthTimeButton = new Button();//Label();
+		earthTimeButton = new Button();
+		//setQuickToolTip(earthTimeButton, "Click to see Quick Info on Mars");
+		
 /*		earthTimeButton.setOnAction(e -> {
 			if (earthTimeFlag) {
 				// TODO more here
@@ -912,12 +915,10 @@ public class MainScene {
 		});
 */
 		earthTimeButton.setId("rich-blue");
-		//earthTimeLabel.setMaxWidth(Double.MAX_VALUE);
+		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
 		//earthTimeLabel.setMinWidth(180);
 		//earthTimeLabel.setPrefSize(180, 30);
-		earthTimeButton.setTextAlignment(TextAlignment.CENTER);
-		
-		//setQuickToolTip(earthTimeButton, "Click to see Quick Info on Mars");
+		earthTimeButton.setTextAlignment(TextAlignment.LEFT);
 		
 		earthTimeBar.getChildren().add(earthTimeButton);
 	}
@@ -932,16 +933,13 @@ public class MainScene {
 
 		speedButton = new JFXButton();
 		setQuickToolTip(speedButton, "Open Speed Panel");
-
 		speedButton.setOnAction(e -> {
-	
             if (simSpeedPopup.isVisible()) {
             	simSpeedPopup.close();
             }
             else {
             	simSpeedPopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
-            }
-            
+            }           
 		});
 		
 		StackPane earthTimePane = new StackPane();
@@ -1190,14 +1188,18 @@ public class MainScene {
 		//marsTimeBar.setId("rich-orange");
 		marsTimeBar.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
-			marsTimeBar.setMinWidth(290);
-			marsTimeBar.setPrefSize(290, 32);			
+			marsTimeBar.setMinWidth(LINUX_WIDTH);
+			marsTimeBar.setPrefSize(LINUX_WIDTH, 32);			
 		}
+		else if (OS.contains("macos")) {
+			marsTimeBar.setMinWidth(MACOS_WIDTH);
+			marsTimeBar.setPrefSize(MACOS_WIDTH, 32);			
+		}	
 		else {
-			marsTimeBar.setMinWidth(250);
-			marsTimeBar.setPrefSize(250, 32);			
-		}
-
+			marsTimeBar.setMinWidth(WIN_WIDTH);
+			marsTimeBar.setPrefSize(WIN_WIDTH, 32);			
+		}	
+	
 		if (masterClock == null) {
 			masterClock = sim.getMasterClock();
 		}
@@ -1208,6 +1210,7 @@ public class MainScene {
 
 		marsCalendarPopup = new JFXPopup();
 		marsTimeButton = new Button();//Label();
+		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
 		marsTimeButton.setOnAction(e -> {
 			//if (marsTimeFlag) {
@@ -1278,7 +1281,7 @@ public class MainScene {
 		marsCalendarPopup.setSource(marsTimeButton);
 		
 		marsTimeButton.setId("rich-orange");
-		marsTimeButton.setTextAlignment(TextAlignment.CENTER);
+		marsTimeButton.setTextAlignment(TextAlignment.LEFT);
 		//setQuickToolTip(marsTime, "Click to see Quick Info on Mars");
 
 		//northHemi = new Button("\u25D2");
@@ -1368,7 +1371,7 @@ public class MainScene {
 		zoomSlider.getStyleClass().add("jfx-slider");
 		//zoom.setMinHeight(100);
 		//zoom.setMaxHeight(200);
-		zoomSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
+		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
 		zoomSlider.setMin(-10);
 		zoomSlider.setMax(10);
 		zoomSlider.setValue(0);
@@ -1572,25 +1575,21 @@ public class MainScene {
 		mapPanel = settlementWindow.getMapPanel();
 		
 		mapNode = new SwingNode();
-		mapNodePane = new StackPane(mapNode);
-		mapNodePane.setStyle("-fx-background-color: black; ");
+		mapStackPane = new StackPane(mapNode);
+		mapStackPane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 		
-		createFXButtons();
-		
-		createFXSettlementComboBox();
-		
+		createFXButtons();		
+		createFXSettlementComboBox();	
 		createFXZoomSlider();
-
 		createFXMapLabelBox();
 		
         // detect mouse wheel scrolling
-        mapNodePane.setOnScroll(new EventHandler<ScrollEvent>() {
+        mapStackPane.setOnScroll(new EventHandler<ScrollEvent>() {
             public void handle(ScrollEvent event) {
 		                       
-                if (event.getDeltaY() == 0) {
+                if (event.getDeltaY() == 0)
                     return;
-                }
   
  				double direction = event.getDeltaY();
  				
@@ -1604,9 +1603,7 @@ public class MainScene {
 					if (zoomSlider.getValue() < zoomSlider.getMax())
 						zoomSlider.setValue( (zoomSlider.getValue() + 1));
 				}
-
-                //event.consume();
-                
+                //event.consume();            
             }
         });
 		
@@ -1616,7 +1613,7 @@ public class MainScene {
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 				//System.out.println("closing map tool.");
 				desktop.closeToolWindow(SettlementWindow.NAME);
-				anchorMapTabPane.getChildren().removeAll(settlementBox, mapLabelBox, mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
+				anchorMapTabPane.getChildren().removeAll(settlementBox, mapLabelBox, mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
 			}
 			
 			else {					
@@ -1671,7 +1668,6 @@ public class MainScene {
 		resupplyTab.setContent(resupplyPane);
 
 		//desktop.openToolWindow(ResupplyWindow.NAME);
-	
 		
 		// set up science tab
 		ScienceWindow sciWin = (ScienceWindow) desktop.getToolWindow(ScienceWindow.NAME);
@@ -1708,15 +1704,17 @@ public class MainScene {
 				//resupplyTab, 
 				//scienceTab, 
 				guideTab);	
-		
+
+
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
-			if (newTab == mainTab) {	
-				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-				anchorMapTabPane.getChildren().removeAll(cacheButton);
+			if (newTab == mainTab) {
 				desktopPane.requestFocus();
+				closeMaps();
+				desktop.closeToolWindow(GuideWindow.NAME);
+				//anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+				//anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
-			
 /*			
 			else if (newTab == monTab) {	
 				if (!desktop.isToolWindowOpen(MonitorWindow.NAME)) {
@@ -1731,19 +1729,23 @@ public class MainScene {
 */			
 			else if (newTab == mapTab) {
 				
-				if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {			       
+/*				
+				if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+					System.out.println("settlement map was closed");
 					if (isCacheButtonOn())
 						mapBtn.fire();
 				}
 
-				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {				       
+				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {	
+					System.out.println("minimap was closed");
 					if (isCacheButtonOn()) {
 						miniMapBtn.fire();
 						if (nw == null) nw = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 						nw.getGlobeDisplay().drawSphere();//updateDisplay();
 					}
 				}
-
+*/
+				
 				AnchorPane.setRightAnchor(mapBtn, 125.0);
 				if (OS.contains("win"))
 					AnchorPane.setTopAnchor(mapBtn, 0.0);   
@@ -1763,6 +1765,17 @@ public class MainScene {
 		        
 				anchorMapTabPane.getChildren().addAll(cacheButton);
 
+				desktop.closeToolWindow(GuideWindow.NAME);
+			}
+			
+			else if (newTab == guideTab) {	
+				
+				if (!desktop.isToolWindowOpen(GuideWindow.NAME))
+					desktop.openToolWindow(GuideWindow.NAME);
+			       
+				closeMaps();
+				//anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    //anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
 /*		
 			else if (newTab == missionTab) {	
@@ -1794,22 +1807,12 @@ public class MainScene {
 				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
-
-*/			
-			else if (newTab == guideTab) {	
-				
-				if (!desktop.isToolWindowOpen(GuideWindow.NAME)) {
-					desktop.openToolWindow(GuideWindow.NAME);
-				}
-			       
-				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			    anchorMapTabPane.getChildren().removeAll(cacheButton);
-			}
-			
+*/
 			else {
 				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
 			    anchorMapTabPane.getChildren().removeAll(cacheButton);
 			}
+			
 		});
 		
 		//jfxTabPane.getSelectionModel().select(guideTab);
@@ -1822,20 +1825,19 @@ public class MainScene {
 	public void openMap() {
 		
 		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-			mapNodePane.prefWidthProperty().unbind();
-			mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(2));							
+			mapStackPane.prefWidthProperty().unbind();
+			mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(2));							
 		}
 		else {
-			mapNodePane.prefWidthProperty().unbind();
-			mapNodePane.prefWidthProperty().bind(scene.widthProperty().subtract(1));			
-		}
-		
+			mapStackPane.prefWidthProperty().unbind();
+			mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));			
+		}		
 		
 		desktop.openToolWindow(SettlementWindow.NAME);
 		mapNode.setContent(settlementWindow); 
 
-        AnchorPane.setRightAnchor(mapNodePane, 0.0);
-        AnchorPane.setTopAnchor(mapNodePane, 0.0);   
+        AnchorPane.setRightAnchor(mapStackPane, 0.0);
+        AnchorPane.setTopAnchor(mapStackPane, 0.0);   
 
         AnchorPane.setRightAnchor(zoomSlider, 55.0);
         AnchorPane.setTopAnchor(zoomSlider, 350.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);    
@@ -1864,7 +1866,7 @@ public class MainScene {
 	        if (node == settlementBox) {
 	        	hasSettlements = true;
 	        }
-	        else if (node == mapNodePane) {
+	        else if (node == mapStackPane) {
 	        	hasMap = true;
 	        }
 	        else if (node == zoomSlider) {
@@ -1879,7 +1881,7 @@ public class MainScene {
 		}
 			
 		if (!hasMap)
-			anchorMapTabPane.getChildren().addAll(mapNodePane);
+			anchorMapTabPane.getChildren().addAll(mapStackPane);
 
 		if (!hasSettlements) {
 			anchorMapTabPane.getChildren().addAll(settlementBox);
@@ -1908,13 +1910,15 @@ public class MainScene {
 	}
 
 	public void closeMaps() {
-		if (!cacheButton.isSelected()) {
+		anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
+	    anchorMapTabPane.getChildren().removeAll(cacheButton);
+	    if (!isCacheButtonOn()) {
+			Platform.runLater(() -> {
+				anchorMapTabPane.getChildren().removeAll(mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane, settlementBox, mapLabelBox);
+			});
 			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
-			Platform.runLater(() -> {
-				anchorMapTabPane.getChildren().removeAll(mapNodePane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane, settlementBox, mapLabelBox);
-			});
 		}
 	}
 	
