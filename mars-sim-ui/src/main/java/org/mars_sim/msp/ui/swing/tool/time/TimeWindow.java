@@ -550,7 +550,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 			s0.append(ONE_REAL_SEC);
 			s0.append(masterClock.getTimeString(ratio));		
-			if (factor != null) timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
+			if (timeRatioLabel != null) timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
 			timeCompressionLabel.setText(s0.toString());
 		}
 

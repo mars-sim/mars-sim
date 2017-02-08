@@ -61,7 +61,7 @@ public class MainSceneMenu extends MenuBar  {
 	private boolean fMenuVisible = false;
 	
 	private CheckMenuItem searchToolItem, timeToolItem, 
-							//marsNavigatorItem, settlementMapToolItem,
+							marsNavigatorItem, settlementMapToolItem,
 							monitorToolItem, missionToolItem, 
 							scienceToolItem, resupplyToolItem,
 							guideToolItem;
@@ -134,7 +134,7 @@ public class MainSceneMenu extends MenuBar  {
         Menu menuTools = new Menu("Tools");
 
         // 2015-06-05 Switched to using method createMenuItem()
-        //marsNavigatorItem = createMenuItem("Mars Navigator", NavigatorWindow.NAME);
+        marsNavigatorItem = createMenuItem("Mars Navigator", NavigatorWindow.NAME);
         //marsNavigatorItem.setAccelerator(new KeyCodeCombination(KeyCode.F1));
 
         searchToolItem = createMenuItem("Search Tool", SearchWindow.NAME);
@@ -143,7 +143,7 @@ public class MainSceneMenu extends MenuBar  {
         timeToolItem = createMenuItem("Time Tool", TimeWindow.NAME);
         //timeToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F3));
         
-        //settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
+        settlementMapToolItem = createMenuItem("Settlement Map Tool", SettlementWindow.NAME);
         //settlementMapToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F4));
       
         monitorToolItem = createMenuItem("Monitor Tool", MonitorWindow.NAME);
@@ -167,7 +167,7 @@ public class MainSceneMenu extends MenuBar  {
         //webToolItem.setAccelerator(new KeyCodeCombination(KeyCode.F10));
 
         menuTools.getItems().addAll(searchToolItem, timeToolItem,
-        		//marsNavigatorItem, settlementMapToolItem,
+        		marsNavigatorItem, settlementMapToolItem,
         		monitorToolItem, missionToolItem,
         		scienceToolItem, resupplyToolItem,
         		guideToolItem);
@@ -467,9 +467,9 @@ public class MainSceneMenu extends MenuBar  {
 	}
 
     // 2015-06-05 Added 8 get_() method below
-	//public CheckMenuItem getMarsNavigatorItem() {
-	//	return marsNavigatorItem;
-	//}
+	public CheckMenuItem getMarsNavigatorItem() {
+		return marsNavigatorItem;
+	}
 
 	public CheckMenuItem getSearchToolItem() {
 		return searchToolItem;
@@ -479,9 +479,9 @@ public class MainSceneMenu extends MenuBar  {
 		return timeToolItem;
 	}
 	
-	//public CheckMenuItem getSettlementMapToolItem() {
-	//	return settlementMapToolItem;
-	//}
+	public CheckMenuItem getSettlementMapToolItem() {
+		return settlementMapToolItem;
+	}
 	
 
 	public CheckMenuItem getMonitorToolItem() {
@@ -555,13 +555,13 @@ public class MainSceneMenu extends MenuBar  {
 			getTimeToolItem().setSelected(false);
 		}
 		
-		//else if (toolName.equals(SettlementWindow.NAME)) {
-		//	getSettlementMapToolItem().setSelected(false);
-		//}
+		else if (toolName.equals(SettlementWindow.NAME)) {
+			getSettlementMapToolItem().setSelected(false);
+		}
 		
-		//else if (toolName.equals(NavigatorWindow.NAME)) {
-		//	getMarsNavigatorItem().setSelected(false);
-		//}
+		else if (toolName.equals(NavigatorWindow.NAME)) {
+			getMarsNavigatorItem().setSelected(false);
+		}
 
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			getMonitorToolItem().setSelected(false);
@@ -612,14 +612,14 @@ public class MainSceneMenu extends MenuBar  {
 			return getTimeToolItem();
 		}
 				
-		//else if (toolName.equals(SettlementWindow.NAME)) {
-		//	return getSettlementMapToolItem();
-		//}
+		else if (toolName.equals(SettlementWindow.NAME)) {
+			return getSettlementMapToolItem();
+		}
 		
-		//else if (toolName.equals(NavigatorWindow.NAME)) {
+		else if (toolName.equals(NavigatorWindow.NAME)) {
 			//System.out.println("closing nav");
-		//	return getMarsNavigatorItem();
-		//}
+			return getMarsNavigatorItem();
+		}
 		
 		else if (toolName.equals(MonitorWindow.NAME)) {
 			return getMonitorToolItem();

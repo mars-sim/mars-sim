@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -142,7 +143,13 @@ ComponentListener {
 		mainPane.add(browserPanel, BorderLayout.CENTER);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
 		
+		setResizable(true);
+		setMaximizable(true);		
+		setVisible(true);
 		
+		setMinimumSize(new Dimension(800, 600));
+		setSize(new Dimension(1024, 600));
+
 		if (desktop.getMainScene() != null)
 			setClosable(false);		
 		else {
@@ -152,14 +159,9 @@ ComponentListener {
 		    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 		    setLocation(width, height);
 		}
-		
-		setSize(new Dimension(1024, 600));
-		setResizable(true);
-		setMaximizable(true);		
-		setVisible(true);
 
 		// Pack window.
-		pack();
+		//pack(); // this will shrink the window to one line tall in swing mode
 		
 	}
 

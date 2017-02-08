@@ -653,14 +653,14 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAP_TAB))
 							ssm.select(MainScene.MAP_TAB);
-					//mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);				
+					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);				
 				}
 
 				else if (toolName.equals(SettlementWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAP_TAB))
 							ssm.select(MainScene.MAP_TAB);
-					//mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
+					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
 				
 				else if (toolName.equals(SearchWindow.NAME)) {

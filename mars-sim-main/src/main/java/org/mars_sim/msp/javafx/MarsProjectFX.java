@@ -255,7 +255,7 @@ public class MarsProjectFX extends Application  {
      * Default Constructor
      */
     public MarsProjectFX() {
-	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
+	   	logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
     	marsProjectFX = this;
 /*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -279,7 +279,7 @@ public class MarsProjectFX extends Application  {
     @SuppressWarnings("restriction")
 	@Override
     public void init() throws Exception {
-	   	//logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
+	   	logger.info("MarsProjectFX's init() is on " + Thread.currentThread().getName() );
 	   	// INFO: MarsProjectFX's init() is on JavaFX-Launcher Thread
 		setLogging();
 		setDirectory();

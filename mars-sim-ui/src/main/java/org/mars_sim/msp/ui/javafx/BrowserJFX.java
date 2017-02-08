@@ -82,7 +82,6 @@ public class BrowserJFX {
     public static final int LOCAL_HTML = 1;
     public static final int REMOTE_HTML = 2;
     public static final int UNKNOWN = 3;
-
     
     public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
     public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
@@ -107,6 +106,7 @@ public class BrowserJFX {
     
     private JFXPanel jfxPanel = new JFXPanel();
     private JPanel panel = new JPanel(new BorderLayout());
+    
     private JLabel statusBarLbl = new JLabel();
     private JButton btnGo = new JButton("Go");
     private JButton btnForward = new JButton(">");
@@ -120,24 +120,22 @@ public class BrowserJFX {
     private WebEngine engine;  
     private WebHistory history;
     
-
 	private ObservableList<WebHistory.Entry> entryList; 
 	
     public BrowserJFX(MainDesktopPane desktop) {
-
     	this.desktop = desktop;
     	mainScene = desktop.getMainScene();
     	
         Platform.runLater(() -> {       
             view = new WebView();
             engine = view.getEngine();          
+        	logger.info("Web Engine supported : " + engine.getUserAgent());
             history = engine.getHistory();    
             entryList = history.getEntries();
-        	//logger.info("Web Engine supported : " + engine.getUserAgent());
         });
         
         initJFX();
-        panel = init();
+        panel = initJPanel();
         
         Platform.runLater(() -> {     
             btnGo.doClick(); // not useful
@@ -158,7 +156,7 @@ public class BrowserJFX {
     }
     
     // 2016-04-22 Added ability to interpret internal commands
-    public JPanel init() {
+    public JPanel initJPanel() {
         
         ActionListener al = new ActionListener() {
             @Override

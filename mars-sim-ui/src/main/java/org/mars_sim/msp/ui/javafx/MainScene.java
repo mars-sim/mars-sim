@@ -286,10 +286,10 @@ public class MainScene {
     //private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
 	private Pane root;
-	private StackPane settlementBox, chatBoxPane, desktopPane, mapStackPane, minimapNodePane;
+	private StackPane settlementBox, chatBoxPane, mainAnchorPane, mapStackPane, minimapStackPane;
 	//private BorderPane borderPane;
 	private FlowPane flowPane;
-	private AnchorPane anchorDesktopPane, anchorMapTabPane ;
+	private AnchorPane rootAnchorPane, mapAnchorPane ;
 	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
 	private Stage stage, loadingCircleStage, savingCircleStage, pausingCircleStage;
 	private Scene scene;
@@ -572,7 +572,7 @@ public class MainScene {
 	    
 		InputMap<KeyEvent> ctrlQ = consume(keyPressed(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN)), e -> {
         	popAQuote();
-        	desktopPane.requestFocus();	
+        	mainAnchorPane.requestFocus();	
 		});
 	    Nodes.addInputMap(root, ctrlQ);
 
@@ -697,10 +697,10 @@ public class MainScene {
 		swingNode = new SwingNode();
 		createSwingNode();
 
-		desktopPane = new StackPane();
-		desktopPane.getChildren().add(swingNode);
-		desktopPane.setMinHeight(sceneHeight.get());
-		desktopPane.setMinWidth(sceneWidth.get());
+		mainAnchorPane = new StackPane();
+		mainAnchorPane.getChildren().add(swingNode);
+		mainAnchorPane.setMinHeight(sceneHeight.get());
+		mainAnchorPane.setMinWidth(sceneWidth.get());
 		// 2016-11-25 Setup root for embedding key events
 		root = new Pane();//Group();
 		
@@ -731,7 +731,7 @@ public class MainScene {
 		// Create jfxTabPane
 		createJFXTabs();	
 
-		anchorDesktopPane = new AnchorPane();
+		rootAnchorPane = new AnchorPane();
 
 		if (OS.contains("mac")) {   
 			((MenuBar)menuBar).useSystemMenuBarProperty().set(true);  
@@ -783,14 +783,14 @@ public class MainScene {
         	AnchorPane.setTopAnchor(marsTimeBar, 35.0);
         }
         
-        anchorDesktopPane.getChildren().addAll(
+        rootAnchorPane.getChildren().addAll(
         		jfxTabPane, 
         		//miniMapBtn, mapBtn, 
         		marsNetButton, speedButton,
         		lastSaveBar, 
         		earthTimeBar, marsTimeBar, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
         
-		root.getChildren().addAll(anchorDesktopPane);
+		root.getChildren().addAll(rootAnchorPane);
 		
     	scene = new Scene(root, sceneWidth.get(), sceneHeight.get());//, Color.BROWN);
 
@@ -805,12 +805,12 @@ public class MainScene {
 		jfxTabPane.prefHeightProperty().bind(scene.heightProperty());//.subtract(35));//73));
 		jfxTabPane.prefWidthProperty().bind(scene.widthProperty());
 
-		desktopPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));
-		desktopPane.prefWidthProperty().bind(scene.widthProperty());
+		mainAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));
+		mainAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 
 		// anchorTabPane is within jfxTabPane
-		anchorMapTabPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
-		anchorMapTabPane.prefWidthProperty().bind(scene.widthProperty());
+		mapAnchorPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
+		mapAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 		
 		mapStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
 		//mapNodePane.prefWidthProperty().bind(scene.widthProperty());
@@ -958,7 +958,7 @@ public class MainScene {
 
 		//earthTimePopup.setOpacity(.5);
 		simSpeedPopup.setContent(earthTimePane);
-		simSpeedPopup.setPopupContainer(anchorDesktopPane);
+		simSpeedPopup.setPopupContainer(rootAnchorPane);
 		simSpeedPopup.setSource(speedButton);
         
 		// Set up a settlement view zoom bar
@@ -1123,7 +1123,7 @@ public class MainScene {
 		soundPane.setPrefWidth(250);
 
 		soundPopup.setContent(soundPane);
-		soundPopup.setPopupContainer(anchorDesktopPane);
+		soundPopup.setPopupContainer(rootAnchorPane);
 		soundPopup.setSource(soundBtn);
         
 		// Set up a settlement view zoom bar
@@ -1277,7 +1277,7 @@ public class MainScene {
 		calendarPane.setPadding(new Insets(5, 5, 10, 5));
 
 		marsCalendarPopup.setContent(calendarPane);
-		marsCalendarPopup.setPopupContainer(anchorDesktopPane);
+		marsCalendarPopup.setPopupContainer(rootAnchorPane);
 		marsCalendarPopup.setSource(marsTimeButton);
 		
 		marsTimeButton.setId("rich-orange");
@@ -1526,30 +1526,30 @@ public class MainScene {
 		String cssFile = null;
         
         if (desktop.getMainScene().getTheme() == 6)
-        	cssFile = "/css/jfx_blue.css";
+        	cssFile = "/fxui/css/jfx_blue.css";
         else
-        	cssFile = "/css/jfx_orange.css";
+        	cssFile = "/fxui/css/jfx_orange.css";
 		
 		jfxTabPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		jfxTabPane.getStyleClass().add("jfx-tab-pane");
 			
 		mainTab = new Tab();
 		mainTab.setText("Main");
-		mainTab.setContent(desktopPane);
+		mainTab.setContent(mainAnchorPane);
 		
 		// set up mapTab
-		anchorMapTabPane = new AnchorPane();	
-		anchorMapTabPane.setStyle("-fx-background-color: black; ");
+		mapAnchorPane = new AnchorPane();	
+		mapAnchorPane.setStyle("-fx-background-color: black; ");
 		
 		Tab mapTab = new Tab();		
 		mapTab.setText("Map");
-		mapTab.setContent(anchorMapTabPane);
+		mapTab.setContent(mapAnchorPane);
 		
 		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 		
 		minimapNode = new SwingNode();
-		minimapNodePane = new StackPane(minimapNode);
-		minimapNodePane.setStyle("-fx-background-color: black; ");
+		minimapStackPane = new StackPane(minimapNode);
+		minimapStackPane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
 		
 		miniMapBtn = new JFXButton();
@@ -1558,15 +1558,15 @@ public class MainScene {
 			
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 				desktop.closeToolWindow(NavigatorWindow.NAME);
-				anchorMapTabPane.getChildren().removeAll(minimapNodePane);
+				mapAnchorPane.getChildren().removeAll(minimapStackPane);
 			}
 			
 			else {
 				desktop.openToolWindow(NavigatorWindow.NAME);
 				minimapNode.setContent(navWin); 
-		        AnchorPane.setLeftAnchor(minimapNodePane, 3.0);
-		        AnchorPane.setTopAnchor(minimapNodePane, 0.0); // 45.0  
-		        anchorMapTabPane.getChildren().addAll(minimapNodePane);
+		        AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
+		        AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0  
+		        mapAnchorPane.getChildren().addAll(minimapStackPane);
 		        minimapNode.toFront();
 			}
 		});
@@ -1613,7 +1613,10 @@ public class MainScene {
 			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 				//System.out.println("closing map tool.");
 				desktop.closeToolWindow(SettlementWindow.NAME);
-				anchorMapTabPane.getChildren().removeAll(settlementBox, mapLabelBox, mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
+				mapAnchorPane.getChildren().removeAll(mapStackPane,
+						settlementBox, mapLabelBox,  
+						zoomSlider, 
+						rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
 			}
 			
 			else {					
@@ -1709,7 +1712,7 @@ public class MainScene {
 		jfxTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 
 			if (newTab == mainTab) {
-				desktopPane.requestFocus();
+				mainAnchorPane.requestFocus();
 				closeMaps();
 				desktop.closeToolWindow(GuideWindow.NAME);
 				//anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
@@ -1751,19 +1754,19 @@ public class MainScene {
 					AnchorPane.setTopAnchor(mapBtn, 0.0);   
 				else
 					AnchorPane.setTopAnchor(mapBtn, -3.0);
-				anchorDesktopPane.getChildren().addAll(mapBtn);
+				rootAnchorPane.getChildren().addAll(mapBtn);
 
 		        AnchorPane.setRightAnchor(miniMapBtn, 165.0);
 				if (OS.contains("win"))
 					AnchorPane.setTopAnchor(miniMapBtn, 0.0);   
 				else
 					AnchorPane.setTopAnchor(miniMapBtn, -3.0);  
-				anchorDesktopPane.getChildren().addAll(miniMapBtn);
+				rootAnchorPane.getChildren().addAll(miniMapBtn);
 
 		        AnchorPane.setRightAnchor(cacheButton, 15.0);
 		        AnchorPane.setTopAnchor(cacheButton, 15.0);  // 55.0 
 		        
-				anchorMapTabPane.getChildren().addAll(cacheButton);
+				mapAnchorPane.getChildren().addAll(cacheButton);
 
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
@@ -1809,8 +1812,8 @@ public class MainScene {
 			}
 */
 			else {
-				anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			    anchorMapTabPane.getChildren().removeAll(cacheButton);
+				rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    mapAnchorPane.getChildren().removeAll(cacheButton);
 			}
 			
 		});
@@ -1826,7 +1829,7 @@ public class MainScene {
 		
 		if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 			mapStackPane.prefWidthProperty().unbind();
-			mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapNodePane.widthProperty()).subtract(2));							
+			mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapStackPane.widthProperty()).subtract(2));							
 		}
 		else {
 			mapStackPane.prefWidthProperty().unbind();
@@ -1861,7 +1864,7 @@ public class MainScene {
         boolean hasMap = false, hasZoom = false, hasButtons = false, 
         		hasSettlements = false, hasMapLabel = false;
         
-        for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
+        for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
 
 	        if (node == settlementBox) {
 	        	hasSettlements = true;
@@ -1881,22 +1884,22 @@ public class MainScene {
 		}
 			
 		if (!hasMap)
-			anchorMapTabPane.getChildren().addAll(mapStackPane);
+			mapAnchorPane.getChildren().addAll(mapStackPane);
 
 		if (!hasSettlements) {
-			anchorMapTabPane.getChildren().addAll(settlementBox);
+			mapAnchorPane.getChildren().addAll(settlementBox);
 		}
 		
 		if (!hasMapLabel)
-			anchorMapTabPane.getChildren().addAll(mapLabelBox);
+			mapAnchorPane.getChildren().addAll(mapLabelBox);
 			        				
 		if (!hasZoom)
-			anchorMapTabPane.getChildren().addAll(zoomSlider);
+			mapAnchorPane.getChildren().addAll(zoomSlider);
         
 		if (!hasButtons)
-			anchorMapTabPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
+			mapAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
 		
-		for (Node node : anchorMapTabPane.getChildrenUnmodifiable()) {
+		for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
 	        if (node == cacheButton) {
 	        	node.toFront();
 	        }
@@ -1910,11 +1913,11 @@ public class MainScene {
 	}
 
 	public void closeMaps() {
-		anchorDesktopPane.getChildren().removeAll(miniMapBtn, mapBtn);
-	    anchorMapTabPane.getChildren().removeAll(cacheButton);
+		rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
+	    mapAnchorPane.getChildren().removeAll(cacheButton);
 	    if (!isCacheButtonOn()) {
 			Platform.runLater(() -> {
-				anchorMapTabPane.getChildren().removeAll(mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapNodePane, settlementBox, mapLabelBox);
+				mapAnchorPane.getChildren().removeAll(mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapStackPane, settlementBox, mapLabelBox);
 			});
 			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
@@ -2039,7 +2042,7 @@ public class MainScene {
 	 */
 	// 2015-08-29 Added updateThemeColor()
 	public void updateThemeColor(int theme, Color txtColor, Color txtColor2, String cssFile) {
-		desktopPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+		mainAnchorPane.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		if (!OS.contains("mac"))
 			menuBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		
@@ -2083,14 +2086,14 @@ public class MainScene {
 			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_globe_24.png"))));
 			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_map_24.png"))));
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_chat_24.png"))));
-			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_blue.css").toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
 		}
 		else if (theme == 7) {
 			speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_menu_24.png"))));
 			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_globe_24.png"))));
 			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_map_24.png"))));
 			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_chat_24.png"))));
-			jfxTabPane.getStylesheets().add(getClass().getResource("/css/jfx_orange.css").toExternalForm());
+			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_orange.css").toExternalForm());
 		}
 		
 		chatBox.update();    
@@ -2155,7 +2158,7 @@ public class MainScene {
 		flyout = new JFXPopup();
 		flyout.setOpacity(.9);
 		flyout.setContent(createChatBox());
-		flyout.setPopupContainer(anchorDesktopPane);
+		flyout.setPopupContainer(rootAnchorPane);
 		flyout.setSource(marsNetButton);		
    	
 		//chatBox.update();
@@ -2313,7 +2316,7 @@ public class MainScene {
 
 		return statusBar;
 	}
-	 */
+
 
 	public NotificationPane getNotificationPane() {
 		return notificationPane;
@@ -2321,7 +2324,7 @@ public class MainScene {
 
 	public Node createNotificationPane() {
 		// wrap the dndTabPane inside notificationNode
-		notificationPane = new NotificationPane(desktopPane);
+		notificationPane = new NotificationPane(mainAnchorPane);
 
 		String imagePath = getClass().getResource("/notification/notification-pane-warning.png").toExternalForm();
 		ImageView image = new ImageView(imagePath);
@@ -2344,7 +2347,7 @@ public class MainScene {
 	public String getControlStylesheetURL() {
 		return "/org/controlsfx/control/notificationpane.css";
 	}
-
+*/
 
 	/*
 	 * Updates Earth and Mars time label in the earthTimeBar and marsTimeBar
@@ -2875,7 +2878,7 @@ public class MainScene {
 	}
 
 	public AnchorPane getAnchorPane() {
-		return anchorDesktopPane;
+		return rootAnchorPane;
 	}
 	
 	public MenuBar getMenuBar() {
@@ -3024,7 +3027,7 @@ public class MainScene {
 		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
 		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
 		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
-		if (anchorDesktopPane == null) {
+		if (rootAnchorPane == null) {
 			StackPane pane = new StackPane();//starfield);
 			pane.setPrefHeight(sceneWidth.get());
 			pane.setPrefWidth(sceneHeight.get());
@@ -3143,8 +3146,8 @@ public class MainScene {
 		flyout = null;
 		marsNetButton = null;
 		chatBox = null;
-		desktopPane = null;
-		anchorDesktopPane = null;
+		mainAnchorPane = null;
+		rootAnchorPane = null;
 		//borderPane = null;
 		newSimThread = null;
 		stage = null;
@@ -3162,7 +3165,5 @@ public class MainScene {
 		marsNode = null;
 		transportWizard = null;
 		constructionWizard = null;
-
 	}
-
 }
