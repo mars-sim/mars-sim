@@ -92,7 +92,7 @@
 }
 
 .button-broadcast{
-    -fx-background-color: 
+    -fx-background-color:
         linear-gradient(#7ebcea, #2f4b8f),
         linear-gradient(#426ab7, #263e75),
         linear-gradient(#395cab, #223768);
@@ -112,7 +112,7 @@
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     -fx-text-fill: #a2b3db;
-    -fx-background-color: transparent;    
+    -fx-background-color: transparent;
 /*    -fx-fill            : transparent;    */
 }
 
@@ -121,7 +121,7 @@
     -fx-font-size       : 1.0em;
     -fx-font-family : "Liberation Mono";
     -fx-content-display : left;
-    -fx-graphic-text-gap: 7;	
+    -fx-graphic-text-gap: 7;
     -fx-text-fill       : -foreground-color;
     -fx-background-color: transparent;
 }
@@ -150,7 +150,7 @@
 }
 
 .label-large {
-    -fx-background-color: 
+    -fx-background-color:
         linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
         linear-gradient(#020b02, #3a3a3a),
         linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
@@ -165,13 +165,13 @@
 }
 
 .label-medium {
-    -fx-background-color: 
+    -fx-background-color:
         linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
         linear-gradient(#020b02, #3a3a3a),
         linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
         linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
     -fx-background-insets: 1,1,1,1;
-    -fx-background-radius: 2,2,2,2;  
+    -fx-background-radius: 2,2,2,2;
     -fx-padding: 5 5 5 5;
     -fx-font-family: "Helvetica";
     -fx-font-size: 14px;
@@ -181,7 +181,7 @@
 }
 
 .label-small {
-    -fx-background-color: 
+    -fx-background-color:
         linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
         linear-gradient(#020b02, #3a3a3a),
         linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
@@ -224,7 +224,7 @@
   	-fx-background-color: #00ff00;
   	-fx-snap-to-ticks : true;
     -fx-font-size: 14px;
-    -fx-text-fill: #00ff00;;    
+    -fx-text-fill: #00ff00;
 }
 
 
@@ -267,25 +267,25 @@
 	-fx-font-size: 12.0;
 }
 
-.combo-box-base  
+.combo-box-base
 {
     -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
     -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: white;    
+    -fx-text-fill: white;
     -fx-background-radius: 5, 5, 5, 5;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-padding: 0;
     -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
-.jfx-combo-box .list-cell 
+.jfx-combo-box .list-cell
 {
 	-fx-font-size: 15.0;
 	-fx-background: white;
     -fx-background-color: transparent;
     -fx-text-fill: cyan;
     -fx-padding: 2 2 2 2;
-    -fx-cell-size: 1.66667em; 
+    -fx-cell-size: 1.66667em;
 }
 
 .check-box {
@@ -299,7 +299,7 @@
     -fx-background-insets: 0,1,2;
     -fx-background-radius: 0 0 13 0;
     -fx-padding: 0.333333em 0.666667em 0.333333em 0.666667em; /* 4 8 4 8 */
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );	
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
 }
 
 .page-corner {
@@ -307,7 +307,7 @@
 }
 
 #rich-blue {
-    -fx-background-color: 
+    -fx-background-color:
         #000000,
         linear-gradient(#7ebcea, #2f4b8f),
         linear-gradient(#426ab7, #263e75),
@@ -325,7 +325,7 @@
 }
 
 #rich-orange {
-    -fx-background-color: 
+    -fx-background-color:
         #000000,
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
@@ -345,7 +345,7 @@
 }
 
 #button-orange {
-    -fx-background-color: 
+    -fx-background-color:
         #000000,
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
