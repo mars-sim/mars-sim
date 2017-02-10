@@ -61,18 +61,18 @@ extends UnitTableModel {
 	// Column indexes
 	/** Person name column. */
 	private final static int NAME = 0;
-	/** Location column. */
-	private final static int LOCATION = 1;
-	/** Role column. */
-	private final static int ROLE = 2;
+	/** Task column. */
+	private final static int TASK = 1;
+	/** Mission column. */
+	private final static int MISSION = 2;
 	/** Job column. */
 	private final static int JOB = 3;
+	/** Role column. */
+	private final static int ROLE = 4;
 	/** Shift column. */
-	private final static int SHIFT = 4;
-	/** Task column. */
-	private final static int TASK = 5;
-	/** Mission column. */
-	private final static int MISSION = 6;
+	private final static int SHIFT = 5;
+	/** Location column. */
+	private final static int LOCATION = 6;
 	/** Gender column. */
 	private final static int GENDER = 7;
 	/** Personality column. */
@@ -401,126 +401,129 @@ extends UnitTableModel {
 			Boolean isStarving = person.getPhysicalCondition().isStarving();
 
 			switch (columnIndex) {
-			case NAME : {
-				result = person.getName();
-			} break;
 
-			case GENDER : {
-				String genderStr = person.getGender().getName();
-				String letter;
-				if (genderStr.equals("male")) letter = "M";
-				else letter = "F";
-				result = letter;
-			} break;
-
-			case PERSONALITY : {
-				result = person.getMind().getMBTI().getTypeString();
-			} break;
-
-			case HUNGER : {
-				double hunger = person.getPhysicalCondition().getHunger();
-		        double energy = person.getPhysicalCondition().getEnergy();
-				//result = new Float(hunger).intValue();
-				if (isDead)	result = "";
-				else if (isStarving) result = "Starving";
-				else result = getHungerStatus(hunger, energy);
-			} break;
-
-			case FATIGUE : {
-				double fatigue = person.getPhysicalCondition().getFatigue();
-				//result = new Float(fatigue).intValue();
-			if (isDead)	result = "";
-					else result = getFatigueStatus(fatigue);
-			} break;
-
-			case STRESS : {
-				double stress = person.getPhysicalCondition().getStress();
-				//result = new Double(stress).intValue();
-				if (isDead)	result = "";
-					else result = getStressStatus(stress);
-			} break;
-
-			case PERFORMANCE : {
-				double performance = person.getPhysicalCondition().getPerformanceFactor();
-				//result = new Float(performance * 100D).intValue();
-				if (isDead)	result = "";
-					else result = getPerformanceStatus(performance* 100D);
-			} break;
-
-			case HEALTH : {
-
-				result = person.getPhysicalCondition().getHealthSituation();
-			} break;
-
-			case LOCATION : {
-				LocationSituation locationSituation = person.getLocationSituation();
-				if (locationSituation == LocationSituation.IN_SETTLEMENT) {
-					if (person.getSettlement() != null) result = person.getSettlement().getName();
-				}
-				else if (locationSituation == LocationSituation.IN_VEHICLE) {
-					if (person.getVehicle() != null) result = person.getVehicle().getName();
-				}
-				else result = locationSituation.getName();
-			} break;
-
-			case ROLE : {
-				if (person.getPhysicalCondition().isDead())
-					result = "N/A";
-				else {
-					Role role = person.getRole();
-					if (role != null) {
-					    result = role.getType();
+				case TASK : {
+					// If the Person is dead, there is no Task Manager
+					TaskManager mgr = person.getMind().getTaskManager();
+					result = ((mgr != null)? mgr.getTaskName() : null); //getFilteredTaskName() //getTaskDescription(false)  // .getTaskClassName()
+	/*				if (mgr != null) {
+						String s = mgr.getTaskName();
+						if (!s.toLowerCase().contains("walk"))
+							result = s;
+						//else
+						//	result = null;
 					}
-					else {
-					    result = null;
-					}
-				}
-			} break;
-
-			case JOB : {
-				// If person is dead, get job from death info.
-				if (person.getPhysicalCondition().isDead())
-					result = person.getPhysicalCondition().getDeathDetails().getJob();
-				else {
-					if (person.getMind().getJob() != null) result = person.getMind().getJob().getName(person.getGender());
-					else result = null;
-				}
-			} break;
-
-			case SHIFT : {
-				// If person is dead, disable it.
-				if (person.getPhysicalCondition().isDead())
-					result = ShiftType.OFF; //person.getPhysicalCondition().getDeathDetails().getJob();
-				else {
-					ShiftType shift = person.getTaskSchedule().getShiftType();
-					if (shift != null) result = shift;
-					else result = null;
-				}
-			} break;
-
-			case TASK : {
-				// If the Person is dead, there is no Task Manager
-				TaskManager mgr = person.getMind().getTaskManager();
-				result = ((mgr != null)? mgr.getTaskName() : null); //getFilteredTaskName() //getTaskDescription(false)  // .getTaskClassName()		 	
-/*				if (mgr != null) {
-					String s = mgr.getTaskName();
-					if (!s.toLowerCase().contains("walk"))
-						result = s;
 					//else
 					//	result = null;
-				}
-				//else
-				//	result = null;
-*/
-			} break;
+	*/
+				} break;
 
-			case MISSION : {
-				Mission mission = person.getMind().getMission();
-				if (mission != null) {
-					result = mission.getDescription();
-				}
-			} break;
+				case MISSION : {
+					Mission mission = person.getMind().getMission();
+					if (mission != null) {
+						result = mission.getDescription();
+					}
+				} break;
+
+
+				case NAME : {
+					result = person.getName();
+				} break;
+
+				case GENDER : {
+					String genderStr = person.getGender().getName();
+					String letter;
+					if (genderStr.equals("male")) letter = "M";
+					else letter = "F";
+					result = letter;
+				} break;
+
+				case PERSONALITY : {
+					result = person.getMind().getMBTI().getTypeString();
+				} break;
+
+				case HUNGER : {
+					double hunger = person.getPhysicalCondition().getHunger();
+			        double energy = person.getPhysicalCondition().getEnergy();
+					//result = new Float(hunger).intValue();
+					if (isDead)	result = "";
+					else if (isStarving) result = "Starving";
+					else result = getHungerStatus(hunger, energy);
+				} break;
+
+				case FATIGUE : {
+					double fatigue = person.getPhysicalCondition().getFatigue();
+					//result = new Float(fatigue).intValue();
+				if (isDead)	result = "";
+						else result = getFatigueStatus(fatigue);
+				} break;
+
+				case STRESS : {
+					double stress = person.getPhysicalCondition().getStress();
+					//result = new Double(stress).intValue();
+					if (isDead)	result = "";
+						else result = getStressStatus(stress);
+				} break;
+
+				case PERFORMANCE : {
+					double performance = person.getPhysicalCondition().getPerformanceFactor();
+					//result = new Float(performance * 100D).intValue();
+					if (isDead)	result = "";
+						else result = getPerformanceStatus(performance* 100D);
+				} break;
+
+				case HEALTH : {
+
+					result = person.getPhysicalCondition().getHealthSituation();
+				} break;
+
+				case LOCATION : {
+					LocationSituation locationSituation = person.getLocationSituation();
+					if (locationSituation == LocationSituation.IN_SETTLEMENT) {
+						if (person.getSettlement() != null) result = person.getSettlement().getName();
+					}
+					else if (locationSituation == LocationSituation.IN_VEHICLE) {
+						if (person.getVehicle() != null) result = person.getVehicle().getName();
+					}
+					else result = locationSituation.getName();
+				} break;
+
+				case ROLE : {
+					if (person.getPhysicalCondition().isDead())
+						result = "N/A";
+					else {
+						Role role = person.getRole();
+						if (role != null) {
+						    result = role.getType();
+						}
+						else {
+						    result = null;
+						}
+					}
+				} break;
+
+				case JOB : {
+					// If person is dead, get job from death info.
+					if (person.getPhysicalCondition().isDead())
+						result = person.getPhysicalCondition().getDeathDetails().getJob();
+					else {
+						if (person.getMind().getJob() != null) result = person.getMind().getJob().getName(person.getGender());
+						else result = null;
+					}
+				} break;
+
+				case SHIFT : {
+					// If person is dead, disable it.
+					if (person.getPhysicalCondition().isDead())
+						result = ShiftType.OFF; //person.getPhysicalCondition().getDeathDetails().getJob();
+					else {
+						ShiftType shift = person.getTaskSchedule().getShiftType();
+						if (shift != null) result = shift;
+						else result = null;
+					}
+				} break;
 			}
+
 		}
 
 		return result;

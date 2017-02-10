@@ -42,135 +42,135 @@ import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
  **--------------------------------------------------------------
  *
  * 1. main() 								-- on Main Thread
- * 2. Default Constructor 					-- on JavaFX Application Thread 
+ * 2. Default Constructor 					-- on JavaFX Application Thread
  * 3. init()								-- on JavaFX-Launcher Thread
  * 	- new SimulationTask()					-- on pool-2-thread-1
  * 	- prepare()								-- on pool-2-thread-1
  * 	- SimulationConfig.loadConfig()			-- on pool-2-thread-1
  *  - Simulation.createNewSimulation()		-- on pool-2-thread-1
  *  - startSimulation(true)					-- on pool-2-thread-1
- * 4. Simulation's start() 					-- on JavaFX Application Thread 
- * 
+ * 4. Simulation's start() 					-- on JavaFX Application Thread
+ *
  * Note 1 : clockScheduler is initialized on Simulation's start()
- * Note 2 : autosave will save 
- * 
- **-------------------------------------------------------------- 
- * Case B : with '-headless' and '-load' switch, it will load the following : 
+ * Note 2 : autosave will save
+ *
+ **--------------------------------------------------------------
+ * Case B : with '-headless' and '-load' switch, it will load the following :
  **--------------------------------------------------------------
  *
  * 1. main() 								-- on Main Thread
- * 2. Default Constructor 					-- on JavaFX Application Thread 
+ * 2. Default Constructor 					-- on JavaFX Application Thread
  * 3. init()								-- on JavaFX-Launcher Thread
  * 	- new SimulationTask()					-- on pool-2-thread-1
  * 	- prepare()								-- on pool-2-thread-1
  * 	- SimulationConfig.loadConfig()			-- on pool-2-thread-1
  *  - Simulation.createNewSimulation()		-- on pool-2-thread-1
- *  
- *  Two Scenarios: 
- *  
+ *
+ *  Two Scenarios:
+ *
  *  (a). if user provides a particular filename for the saved sim,
  *  - handleLoadSimulation()				-- on pool-2-thread-1
- *  
+ *
  *  (b). if user DO NOT provide the filename, load 'default.sim',
  * 	- handleLoadSimulation()				-- on pool-2-thread-1
- * 
- * 
+ *
+ *
  *  - startSimulation(true)					-- on pool-2-thread-1
- *  
- * 4. start() 								-- on JavaFX Application Thread 
- * 
- * 
- * 
- * 6. start() 						-- on JavaFX Application Thread 
+ *
+ * 4. start() 								-- on JavaFX Application Thread
+ *
+ *
+ *
+ * 6. start() 						-- on JavaFX Application Thread
  * 7. initializeSimulation() 		-- on pool-2-thread-1
- * 8a. handleLoadDefaultSimulation() -- on pool-2-thread-1  
- * OR if user provides the filename of the saved sim 
+ * 8a. handleLoadDefaultSimulation() -- on pool-2-thread-1
+ * OR if user provides the filename of the saved sim
  * 8b. handleLoadSimulation()		-- on pool-2-thread-1
  * 9. startSimulation() 			-- on pool-2-thread-1
  * 10. Simulation's start()			-- on pool-2-thread-1
  *
- **-------------------------------------------------------------- 
- * Case C : with '-html' switch ('-headless' is optional in this case), it will load the following : 
+ **--------------------------------------------------------------
+ * Case C : with '-html' switch ('-headless' is optional in this case), it will load the following :
  **--------------------------------------------------------------
  *
  * 1. main() 						-- on Main Thread
- * 2. Default Constructor 			-- on JavaFX Application Thread 
+ * 2. Default Constructor 			-- on JavaFX Application Thread
  * 3. init()						-- on JavaFX-Launcher Thread
  * 	- new SimulationTask()			-- on pool-2-thread-1
  * 	- prepare()						-- on pool-2-thread-1
  * 	- SimulationConfig.loadConfig()	-- on pool-2-thread-1
- * 4. start() 						-- on JavaFX Application Thread 
- * 
- * 
- * 6. SimulationConfig.loadConfig() -- on pool-2-thread-1
- * 7. HelpGenerator.generateHtmlHelpFiles() in handleNewSimulation() 
- * 
+ * 4. start() 						-- on JavaFX Application Thread
  *
- **-------------------------------------------------------------- 
+ *
+ * 6. SimulationConfig.loadConfig() -- on pool-2-thread-1
+ * 7. HelpGenerator.generateHtmlHelpFiles() in handleNewSimulation()
+ *
+ *
+ **--------------------------------------------------------------
  * Case D_ (D1 or D2) : with only '-new' switch (GUI mode is implied), it will load the Main Menu,
  **--------------------------------------------------------------
- * 
+ *
  * 1. main() 						-- on Main Thread
- * 2. Default Constructor 			-- on JavaFX Application Thread 
+ * 2. Default Constructor 			-- on JavaFX Application Thread
  * 3. init()						-- on JavaFX-Launcher Thread
  * 	- new SimulationTask()			-- on pool-2-thread-1
  * 	- prepare()						-- on pool-2-thread-1
  * 	- SimulationConfig.loadConfig()	-- on pool-2-thread-1
- * 4. start() 						-- on JavaFX Application Thread 
+ * 4. start() 						-- on JavaFX Application Thread
  * 	- new MainMenu()				-- on JavaFX Application Thread
  * 	- MainMenu's initMainMenu() 				-- on JavaFX Application Thread
  * 	- MainMenu's setupMainSceneStage()			-- on JavaFX Application Thread
- * 
- * 
- * 
- **-------------------------------------------------------------- 
- * Case D1 : if choosing the first option 'New Sim' in the Main Menu to start a new sim,  
+ *
+ *
+ *
+ **--------------------------------------------------------------
+ * Case D1 : if choosing the first option 'New Sim' in the Main Menu to start a new sim,
  **--------------------------------------------------------------
  *
  * Step 1 to 4 : same as in Case D_
- * 
+ *
  * Upon choosing the 'New Sim' option in the Main Menu,
- * 
+ *
  * 5. MainMenu's runOne() 		 				-- on JavaFX Application Thread
  * 6. new MainScene()							-- on JavaFX Application Thread
- * 7. MarsProjectFX's handleNewSimulation()		-- on JavaFX Application Thread 
+ * 7. MarsProjectFX's handleNewSimulation()		-- on JavaFX Application Thread
  * 	- ConfigEditorTask's run()					-- on pool-2-thread-1
  * 8. new ScenarioConfigEditorFX()				-- on pool-2-thread-1
  * 	- LoadSimulationTask's run()				-- on pool-2-thread-1
  *  -- Simulation's createNewSimulation()		-- on pool-2-thread-1
  * 	-- Simulation's start()						-- on pool-2-thread-1
  * 9. MainMenu's finalizeMainScene()			-- on JavaFX Application Thread
- * 
- * 
- **-------------------------------------------------------------- 
- * Case D2 : if choosing the second option 'Load Sim' in the Main Menu to load a saved sim,  
+ *
+ *
  **--------------------------------------------------------------
- * 
+ * Case D2 : if choosing the second option 'Load Sim' in the Main Menu to load a saved sim,
+ **--------------------------------------------------------------
+ *
  * Step 1 to 4 : same as in Case D_
 
- * Upon choosing the 'Load Sim' option in the Main Menu, 
- * 
+ * Upon choosing the 'Load Sim' option in the Main Menu,
+ *
  * 5. MainMenu's runTwo() 		 				-- on JavaFX Application Thread
  * 6. loadSim(false)
  *  - new MainScene()							-- on JavaFX Application Thread
  * 7. In MainMenu's loadSim() 					-- on JavaFX Application Thread
- * 
+ *
  *  - Wait for user to select a saved sim to load in loadSim()...
- *  
+ *
  *  - Upon choosing a particular saved sim file,
- *  
+ *
  * 8. Main Menu's LoadSimulationTask's run()	-- on pool-2-thread-1
  *  - Simulation's createNewSimulation()		-- on pool-2-thread-1
  *  - Simulation's loadSimulation()				-- on pool-2-thread-1
- *  - Simulation's start(autosaveTimer)			-- on pool-2-thread-1     
+ *  - Simulation's start(autosaveTimer)			-- on pool-2-thread-1
  *  - finalizeMainScene()						-- on JavaFX Application Thread
- * 
- *-------------------------------------------------------------- 
- * Case E : with '-load' switch (GUI mode is implied), it will load the following : 
+ *
+ *--------------------------------------------------------------
+ * Case E : with '-load' switch (GUI mode is implied), it will load the following :
  **--------------------------------------------------------------
- * 
+ *
  * 1. main() 									-- on Main Thread
- * 2. Default Constructor 						-- on JavaFX Application Thread 
+ * 2. Default Constructor 						-- on JavaFX Application Thread
  * 3. init()									-- on JavaFX-Launcher Thread
  * 	- new SimulationTask()						-- on pool-2-thread-1
  * 	- prepare()									-- on pool-2-thread-1
@@ -180,17 +180,17 @@ import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
  * 	- MainMenu's setupMainSceneStage()			-- on JavaFX Application Thread
  * 	- MainMenu's loadSim() 						-- on JavaFX Application Thread
  * 5. In MainMenu's loadSim() 					-- on JavaFX Application Thread
- * 
+ *
  *  - Wait for user to select a saved sim to load in loadSim()...
- *  
+ *
  *  - Upon choosing a particular saved sim file,
- *  
+ *
  * 6. Main Menu's LoadSimulationTask's run()	-- on pool-2-thread-1
  *  - Simulation's loadSimulation()				-- on pool-2-thread-1
- *  - Simulation's start(autosaveTimer)			-- on pool-2-thread-1     
+ *  - Simulation's start(autosaveTimer)			-- on pool-2-thread-1
  *  - finalizeMainScene()						-- on JavaFX Application Thread
- *  
- *  
+ *
+ *
 */
 
 
@@ -203,13 +203,13 @@ public class MarsProjectFX extends Application  {
     private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-	
+
     static String[] args;
 
 	private static final String manpage = "\n> java -jar mars-sim-main-[version/build].jar\n"
 		+ "                    (Note : start a new sim)\n"
 		+ "   or  \n"
-		+ "\n"		
+		+ "\n"
 		+ "> java -jar jarfile [args...]\n"
 		+ "                    (Note : start mars-sim with arguments)\n"
 		+ "\n"
@@ -217,18 +217,18 @@ public class MarsProjectFX extends Application  {
 		+ "\n"
 		+ "    new             start a new sim (by default)\n"
 		+ "                    (Note : Whenever arg 'load' is not provided for,\n"
-		+ "                            'new' will be automatically appended.)\n" 
-		+ "    headless        run in console mode and without an user interface (UI)\n" 
-		+ "    0               256MB Min, 1024MB Max (by default)\n" 
-		+ "    1               256MB Min, 512MB Max\n" 
-		+ "    2               256MB Min, 768MB Max\n" 
-		+ "    3               256MB Min, 1024MB Max\n" 
-		+ "    4               256MB Min, 1536MB Max\n" 
+		+ "                            'new' will be automatically appended.)\n"
+		+ "    headless        run in console mode and without an user interface (UI)\n"
+		+ "    0               256MB Min, 1024MB Max (by default)\n"
+		+ "    1               256MB Min, 512MB Max\n"
+		+ "    2               256MB Min, 768MB Max\n"
+		+ "    3               256MB Min, 1024MB Max\n"
+		+ "    4               256MB Min, 1536MB Max\n"
 		+ "    5               256MB Min, 2048MB Max\n"
 		+ "    load            open the File Chooser at the \\.mars-sim\\saved\\ and wait for\n"
 		+ "                    user to choose a saved sim\n"
 		+ "    load 123.sim    load the sim with filename '123.sim'\n"
-		+ "                    (Note : '123.sim' must be located at the same folder\n"  
+		+ "                    (Note : '123.sim' must be located at the same folder\n"
 		+ "                            as the jarfile.)\n";
 
     /** true if displaying graphic user interface. */
@@ -239,7 +239,7 @@ public class MarsProjectFX extends Application  {
     private boolean isDone;
 
     private String loadFileString;
-    
+
     private MainMenu mainMenu;
 
     private List<String> argList;
@@ -255,7 +255,7 @@ public class MarsProjectFX extends Application  {
      * Default Constructor
      */
     public MarsProjectFX() {
-	   	logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
+	   	//logger.info("MarsProjectFX's constructor is on " + Thread.currentThread().getName());
     	marsProjectFX = this;
 /*
 		JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
@@ -284,42 +284,42 @@ public class MarsProjectFX extends Application  {
 		setLogging();
 		setDirectory();
         // general text antialiasing
-        System.setProperty("swing.aatext", "true");    
+        System.setProperty("swing.aatext", "true");
         //System.setProperty("awt.useSystemAAFontSettings","lcd"); // for newer VMs
         //Properties props = System.getProperties();
         //props.setProperty("swing.jlf.contentPaneTransparent", "true");
-        
+
     	logger.info(Simulation.title);
-    	
-    	String vendor = System.getProperty("java.vendor");	
+
+    	String vendor = System.getProperty("java.vendor");
         //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
-    	
+
         String major, minor, update, build, dateStamp;
 
         String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
         		//System.getProperty("java.runtime.version").split("\\.|_|-b");
         //System.out.println(javaVersionElements);
-        
+
         major = javaVersionElements[0];
         minor   = javaVersionElements[1];
         update  = javaVersionElements[2];
         build = javaVersionElements[3];
         dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
-/*       
+/*
         System.out.println("Major : " + major);
         System.out.println("Minor : " + minor);
         System.out.println("Update : " + update);
-        
+
         if (build.contains("(")) {
             System.out.println("Date Stamp : " + dateStamp);
         }
         else {
             System.out.println("build : " + build);
         }
-*/        
+*/
 
-        
-/*        
+
+/*
         if (Double.parseDouble(update) > 60) {
 
         }
@@ -329,31 +329,31 @@ public class MarsProjectFX extends Application  {
         	build = partTwo[0];
         	dateStamp = partTwo[1];
             System.out.println("build : " + build);
-            System.out.println("dateStamp : " + dateStamp);          
+            System.out.println("dateStamp : " + dateStamp);
         }
-*/        
-        
+*/
+
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!major.equals("8") || Double.parseDouble(update) < 91.0) {	
+    	if (!major.equals("8") || Double.parseDouble(update) < 91.0) {
     		logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.91. Terminating...");
     		System.out.println("Note: mars-sim requires at least Java 8.0.91. Terminating...");
     		Platform.exit();
 	        System.exit(1);
     	}
-    	
+
     	else {
     		argList = Arrays.asList(args);
-            newSim = argList.contains("-new");      
-            loadSim = argList.contains("-load");     
+            newSim = argList.contains("-new");
+            loadSim = argList.contains("-load");
     		generateHTML = argList.contains("-html");
     		helpPage = argList.contains("-help");
     		//savedSim = argList.contains(".sim");
-    		
+
     		if (generateHTML || helpPage || argList.contains("-headless"))
     			headless = true;
 
 
-        	int size = argList.size();   	
+        	int size = argList.size();
         	boolean flag = true;
     		for (int i= 0; i<size; i++) {
     			if (argList.get(i).contains(".sim")) {
@@ -369,11 +369,11 @@ public class MarsProjectFX extends Application  {
     				}
     			}
     		}
-      	
+
     	   	sim.startSimExecutor();
     	   	sim.getSimExecutor().execute(new SimulationTask());
     	}
- 
+
     }
 
 	public class SimulationTask implements Runnable {
@@ -389,7 +389,7 @@ public class MarsProjectFX extends Application  {
 	   	//INFO: MarsProjectFX's prepare() is on pool-2-thread-1 Thread
 	   	//new Simulation(); // NOTE: NOT supposed to start another instance of the singleton Simulation
         SimulationConfig.loadConfig();
-        
+
 	    if (!headless) {
 	    	// Using GUI mode
 	    	//logger.info("Running " + OS + " in GUI mode");
@@ -404,46 +404,46 @@ public class MarsProjectFX extends Application  {
 	   		else if (loadSim) {
 		   		// CASE E //
 	   		}
-		   	
+
 		} else {
 			// Using -headless (GUI-less mode)
 			if (newSim) {
 		   		// CASE A //
 				logger.info("Starting a new sim in headless mode in " + OS);
 				// Initialize the simulation.
-	        	Simulation.createNewSimulation(); 
+	        	Simulation.createNewSimulation();
 			    // Start the simulation.
 			    startSimulation(true);
 			}
 			else if (loadSim) {
 		   		// CASE B //
 				// Initialize the simulation.
-	        	Simulation.createNewSimulation(); 
-	        	
+	        	Simulation.createNewSimulation();
+
 	        	if (savedSim) {
-	        		
+
 	                File loadFile = new File(loadFileString);
-		                
-		            try {     	
+
+		            try {
 		            	// try to see if user enter his own saved sim after the "load" argument
-		                handleLoadSimulation(loadFile); 
+		                handleLoadSimulation(loadFile);
 
 		            } catch (Exception e) {
 		                e.printStackTrace();
 		                showError("Could not load the user's saved sim.", e);
-/*		                
+/*
 		                try {
 		                	// try loading default.sim instead
 		                	handleLoadDefaultSimulation();
 
 			            } catch (Exception e2) {
-			                showError("Could not load the default saved sim. Starting a new sim now. ", e2);		                
+			                showError("Could not load the default saved sim. Starting a new sim now. ", e2);
 			                handleNewSimulation();
 			            }
-*/			               
+*/
 		            }
 	        	}
-	        	
+
 	        	else {
 	        		// if user wants to load the default saved sim
 	        		try {
@@ -452,18 +452,18 @@ public class MarsProjectFX extends Application  {
 
 		            } catch (Exception e2) {
 		                e2.printStackTrace();
-		            	exitWithError("Could not load the default saved sim.", e2);	            	
-		                //showError("Could not load the default saved sim. Starting a new sim now. ", e2);           
+		            	exitWithError("Could not load the default saved sim.", e2);
+		                //showError("Could not load the default saved sim. Starting a new sim now. ", e2);
 		                //handleNewSimulation();
-		            }     		
+		            }
 	        	}
 			}
-			// 2016-06-06 Generated html files for in-game help 
+			// 2016-06-06 Generated html files for in-game help
 			else if (generateHTML) {
 		   		// CASE C //
 				logger.info("Generating help files in headless mode in " + OS);
 
-				try {					
+				try {
 		            SimulationConfig.loadConfig();
 		    	    // this will generate html files for in-game help based on config xml files
 		    	    // 2016-04-16 Relocated the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
@@ -489,71 +489,71 @@ public class MarsProjectFX extends Application  {
 	public void start(Stage primaryStage) {
 	   	//logger.info("MarsProjectFX's start() is on " + Thread.currentThread().getName());
 	   	if (!headless) {
-		   //logger.info("start() : in GUI mode, loading the Main Menu");			
-		    
+		   //logger.info("start() : in GUI mode, loading the Main Menu");
+
 	   		mainMenu = new MainMenu();//this);
-	   			   		
+
 	   		if (newSim) {
 		   		// CASE D1 and D2//
 	   	    	logger.info("Starting a new sim in GUI mode in " + OS);
 	   			mainMenu.initMainMenu(primaryStage);
 		   		mainMenu.setupMainSceneStage();
-		   		
-		   		// Now in the Main Menu, wait for user to pick either options 
-		   		// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX 
+
+		   		// Now in the Main Menu, wait for user to pick either options
+		   		// 1. 'New Sim' - call runOne(), go to ScenarioConfigEditorFX
 		   		// 2. 'Load Sim' -call runTwo(), need to call sim.runStartTask(false);
 	   		}
 	   		else if (loadSim) {
 		   		// CASE E //
 
-		   		mainMenu.setupMainSceneStage();		   		
-		   		
+		   		mainMenu.setupMainSceneStage();
+
 	        	if (savedSim) {
-	        		
+
 					logger.info("Loading user's saved sim in GUI mode in " + OS);
-					
+
 	        		File loadFile = new File(loadFileString);
-	                
-		            try {     	
+
+		            try {
 		            	// load loadFile directly without opening the FileChooser
 		            	mainMenu.loadSim(loadFile);
-		                
+
 		            } catch (Exception e) {
 		                e.printStackTrace();
 		                exitWithError("Could not load the user's saved sim. ", e);
-/*		                
+/*
 		                try {
 		                	// load FileChooser instead
-				   			mainMenu.loadSim(null);			   			
+				   			mainMenu.loadSim(null);
 				   			// Then wait for user to select a saved sim to load in loadSim();
-				   			
+
 			            } catch (Exception e2) {
-			            	exitWithError("Could not load the default saved sim. ", e2);                		            	
-			            }   
-*/			            
+			            	exitWithError("Could not load the default saved sim. ", e2);
+			            }
+*/
 		            }
-	        	} 
-	        	
-	        	else { 
+	        	}
+
+	        	else {
 	        		// if user wants to load the default saved sim
 					logger.info("Loading a saved sim with FileChooser in GUI mode in " + OS);
 
 	        		try {
 	                	// load FileChooser instead
-			   			mainMenu.loadSim(null);			   			
+			   			mainMenu.loadSim(null);
 			   			// Then wait for user to select a saved sim to load in loadSim();
-			   			
+
 		            } catch (Exception e2) {
 		                //e2.printStackTrace();
-		            	exitWithError("Could not load the default saved sim. ", e2);                
-		            	
-		            }   
+		            	exitWithError("Could not load the default saved sim. ", e2);
+
+		            }
 	        	}
-	   		}		    	    
+	   		}
 		}
-	   	
+
 		else {
-		   	logger.info("Entering headless mode and skip loading the Main Menu");	
+		   	logger.info("Entering headless mode and skip loading the Main Menu");
 		   	if (newSim) {
 		   	// CASE A //
 	   		}
@@ -579,9 +579,9 @@ public class MarsProjectFX extends Application  {
      */
     private void handleLoadDefaultSimulation() {
 		//logger.info("MarsProjectFX's handleLoadDefaultSimulation() is on "+Thread.currentThread().getName());
-		logger.info("Loading the default saved sim in headless mode in " + OS);	
+		logger.info("Loading the default saved sim in headless mode in " + OS);
 
-    	try {	
+    	try {
             // Load the default saved file "default.sim"
             sim.loadSimulation(null);
 
@@ -589,12 +589,12 @@ public class MarsProjectFX extends Application  {
             e.printStackTrace();
             exitWithError("Could not load default simulation", e);
         }
-    	
+
 	    // Start the simulation.
 	    startSimulation(true);
     }
 
- 
+
     /**
      * Loads the simulation from a save file.
      * @param argList the command argument list.
@@ -603,7 +603,7 @@ public class MarsProjectFX extends Application  {
     void handleLoadSimulation(File loadFile) throws Exception {
 		//logger.info("MarsProjectFX's handleLoadSimulation() is on "+Thread.currentThread().getName() );
     	// INFO: MarsProjectFX's handleLoadSimulation() is in JavaFX Application Thread Thread
-		logger.info("Loading user's saved sim in headless mode in " + OS);	
+		logger.info("Loading user's saved sim in headless mode in " + OS);
     	try {
 
             if (loadFile.exists() && loadFile.canRead()) {
@@ -612,7 +612,7 @@ public class MarsProjectFX extends Application  {
 			    // Start the simulation.
 			    startSimulation(true);
 
-            } else {         	
+            } else {
                 exitWithError("Could not load the simulation. The sim file " + loadFile +
                         " could not be read or found.", null);
             }
@@ -631,18 +631,18 @@ public class MarsProjectFX extends Application  {
 		//logger.info("MarsProjectFX's handleNewSimulation() is on "+Thread.currentThread().getName() );
 		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
 		//isDone = true;
-		logger.info("Creating a new sim in " + OS);	
+		logger.info("Creating a new sim in " + OS);
         try {
             //SimulationConfig.loadConfig(); // located to prepare()
            	sim.getSimExecutor().execute(new ConfigEditorTask());
-           	
+
         } catch (Exception e) {
             e.printStackTrace();
             exitWithError("Error : could not create a new simulation ", e);
         }
     }
 
-	public class ConfigEditorTask implements Runnable { 	
+	public class ConfigEditorTask implements Runnable {
 		  public void run() {
 			  //logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
 			  new ScenarioConfigEditorFX(mainMenu);

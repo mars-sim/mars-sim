@@ -125,7 +125,7 @@ public class PNotification {
         private void initGraphics() {
             scene = new Scene(new Region());
             scene.setFill(null);
-            scene.getStylesheets().add(this.getClass().getResource("/css/notifier.css").toExternalForm());
+            scene.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
             stage = new Stage();
         	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
             stage.initStyle(StageStyle.TRANSPARENT);

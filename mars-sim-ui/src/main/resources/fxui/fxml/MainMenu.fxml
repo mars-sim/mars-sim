@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8.0.60" 
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;" stylesheets="../css/mainmenu.css" xmlns="http://javafx.com/javafx/8.0.60"
 xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.config.controller.MainMenuController">
   <children>
       <BorderPane prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: transparent;">
@@ -77,11 +77,11 @@ xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.co
                         <Font name="Verdana Bold" size="36.0" />
                      </font>
                      <padding>
-                        <Insets top="20.0" />
+                        <Insets top="30.0" />
                      </padding>
-                                         
+
                      <effect>
-                     	<Bloom />                 
+                     	<Bloom />
                      </effect>
                   </Label>
                   <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="21.0" prefWidth="1024.0" text="Version 3.1.0" textAlignment="CENTER" textFill="#945f16">
@@ -134,7 +134,7 @@ xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.co
                      <effect>
                         <Bloom />
                      </effect></Button>
-<!--                     
+<!--
             <Button id="option" mnemonicParsing="false" onAction="#goToThree" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Network" textFill="#945f16">
                      <font>
                         <Font name="Corbel" size="20.0" />
@@ -156,7 +156,7 @@ xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.mars_sim.msp.ui.javafx.co
                      <effect>
                         <Bloom />
                      </effect></Button>
--->                     
+-->
             <Button id="option" maxHeight="30.0" mnemonicParsing="false" onAction="#exit" prefHeight="30.0" prefWidth="220.0" style="-fx-background-color: transparent;" text="Exit" textFill="#945f16" VBox.vgrow="ALWAYS">
                      <font>
                         <Font name="Corbel" size="20.0" />

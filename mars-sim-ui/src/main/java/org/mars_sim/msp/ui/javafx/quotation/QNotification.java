@@ -65,14 +65,14 @@ import javafx.util.Duration;
  */
 public class QNotification {
     public static Image QUOTE_ICON;
-  
+
     public final String       TITLE;
     public final String       MESSAGE;
     public Image        IMAGE;
-    
+
     // ******************** Constructors **************************************
     //public Notification() {}
-    
+
     public QNotification(final String TITLE, final String MESSAGE) {
         this(TITLE, MESSAGE, null);
     }
@@ -85,7 +85,7 @@ public class QNotification {
         this.IMAGE   = IMAGE;
     }
 
-    
+
     // ******************** Inner Classes *************************************
     public enum Notifier {
         INSTANCE;
@@ -109,7 +109,7 @@ public class QNotification {
    		double xPos = 0;
 		double yPos = 0;
 	    int count = 0;
-	    
+
 	    private TextArea		ta;
 
 
@@ -124,15 +124,15 @@ public class QNotification {
         private void init() {
             popupLifetime = Duration.millis(POPUP_IN_MILLISECONDS);
             popups = FXCollections.observableArrayList();
-            
+
             QUOTE_ICON   = new Image(this.getClass().getResourceAsStream("/icons/notification/blue_quote_64.png"));//quote_24.png"));
-  
+
         }
 
         private void initGraphics() {
             scene = new Scene(new Region());
             scene.setFill(null);
-            scene.getStylesheets().add(this.getClass().getResource("/css/notifier.css").toExternalForm());
+            scene.getStylesheets().add(this.getClass().getResource("/fxui/css/notifier.css").toExternalForm());
             stage = new Stage();
         	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
             stage.initStyle(StageStyle.TRANSPARENT);
@@ -150,11 +150,11 @@ public class QNotification {
             if (null != STAGE_REF) {
                 //INSTANCE.stage.initOwner(STAGE_REF);
                 Notifier.stageRef = STAGE_REF;
-                     		
-                // only need to add listener once 
+
+                // only need to add listener once
         		//stageRef.xProperty().addListener((obs, oldVal, newVal) -> System.out.println("X: " + newVal));
         		//stageRef.yProperty().addListener((obs, oldVal, newVal) -> System.out.println("Y: " + newVal));
-        	
+
             }
             Notifier.popupLocation = POPUP_LOCATION;
         }
@@ -176,7 +176,7 @@ public class QNotification {
         public static void setPane(final AnchorPane anchorPane) {
         	INSTANCE.anchorPane = anchorPane;
         }
-        
+
         /**
          * @param OFFSET_X  The horizontal shift required.
          * <br> The default is 0 px.
@@ -258,11 +258,11 @@ public class QNotification {
         public void notify(final QNotification NOTIFICATION) {
             //System.out.println("starting notify()");
             preOrder();
-            showPopup(NOTIFICATION);  
-            //showPopup(createUI(NOTIFICATION));  
+            showPopup(NOTIFICATION);
+            //showPopup(createUI(NOTIFICATION));
         }
 
-  
+
         /**
          * Show a Notification with the given parameters on the screen
          * @param TITLE
@@ -305,7 +305,7 @@ public class QNotification {
 	    public TextArea getTextArea() {
 	    	return ta;
 	    }
-	    
+
         /**
          * Creates and shows a popup with the data from the given Notification object
          * @param NOTIFICATION
@@ -313,7 +313,7 @@ public class QNotification {
         @SuppressWarnings("restriction")
 		private void showPopup(QNotification NOTIFICATION) {
             //System.out.println("starting showPopup(stage)");
-            
+
             Label title = new Label(NOTIFICATION.TITLE);
             title.getStyleClass().add("title");
 
@@ -332,7 +332,7 @@ public class QNotification {
             ta.setMinSize(width, height);
             ta.setEditable(false);
             ta.setWrapText(true);
-    		ta.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
+    		ta.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
             ta.positionCaret(0);
 
     		/*
@@ -390,7 +390,7 @@ public class QNotification {
 
             Timeline timeline = null;
             // 2016-06-17 Enabled indefinite popup e.g. Pause popup
-            if (popupLifetime != Duration.ZERO) {	          	
+            if (popupLifetime != Duration.ZERO) {
 	            timeline = new Timeline(kfBegin, kfEnd);
 	            timeline.setDelay(popupLifetime);
 	            timeline.setOnFinished(actionEvent -> Platform.runLater(() -> {
@@ -398,11 +398,11 @@ public class QNotification {
 	                popups.remove(POPUP);
 	            }));
             }
-            
+
             // Move popup to the right during fade out
             //POPUP.opacityProperty().addListener((observableValue, oldOpacity, opacity) -> popup.setX(popup.getX() + (1.0 - opacity.doubleValue()) * popup.getWidth()) );
 
-       	 
+
             if (stage.isShowing()) {
             	stage.toFront();
             } else {
@@ -411,11 +411,11 @@ public class QNotification {
 
             POPUP.show(stage);
 
-		
+
             if (popupLifetime != Duration.ZERO)
             	timeline.play();
-            	
-           	//System.out.println();            	
+
+           	//System.out.println();
         }
 
         private double getX() {
@@ -424,16 +424,16 @@ public class QNotification {
         	if (Screen.getScreens().size() == 2) {
            		w2 = Screen.getScreens().get(1).getBounds().getWidth();
         	}
-        	
+
         	// check if mainScene is on primary or secondary and set w0
         	double m = getMonitor(w2);
-        	double w0 = 0; 
+        	double w0 = 0;
 
         	if (m == 1)
         		w0 = w1;
         	else
         		w0 = w2;
-        		
+
     	    //System.out.println("width is " + w0);
 
             if (null == stageRef) return calcX( 0.0, w0 );
@@ -446,16 +446,16 @@ public class QNotification {
         	if (Screen.getScreens().size() == 2) {
            		h2 = Screen.getScreens().get(1).getBounds().getWidth();
         	}
-        	
+
         	// check if mainScene is on primary or secondary and set h0
         	double m = getMonitor(h2);
-        	double h0 = 0; 
+        	double h0 = 0;
 
         	if (m == 1)
         		h0 = h1;
         	else
         		h0 = h2;
-        		
+
     	    //System.out.println("height is " + h0);
 
             if (null == stageRef) return calcY( 0.0, h0 );
@@ -479,38 +479,38 @@ public class QNotification {
                 default: return 0.0;
             }
         }
-        
+
         //2016-06-27 Added getMonitor()
     	private int getMonitor(double position) {
     		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
     		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
     		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
-    		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
+    		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 
       		//System.out.println("count is "+ count);
-      		
+
     		if (count < 3) {
-          		
+
           		count++;
- 	 	       // only need to add listener once 
+ 	 	       // only need to add listener once
  		 		stageRef.xProperty().addListener((obs, oldVal, newVal) -> {
  		 			//System.out.println("X: " + newVal);
  		 			xPos = (double) newVal;
  		 		});
- 		 		
+
  		 		stageRef.yProperty().addListener((obs, oldVal, newVal) -> {
  		 			//System.out.println("y: " + newVal);
- 		 			yPos = (double) newVal;    			
+ 		 			yPos = (double) newVal;
  		 		});
- 		 		
+
 	    		StartUpLocation startUpLoc = new StartUpLocation(anchorPane.getPrefWidth(), anchorPane.getPrefHeight());
 	            double x = startUpLoc.getXPos();
 	            double y = startUpLoc.getYPos();
 	            // Set Only if X and Y are not zero and were computed correctly
-	         	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
-	         	//ObservableList<Screen> screens = Screen.getScreens();	
+	         	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1);
+	         	//ObservableList<Screen> screens = Screen.getScreens();
 	        	//System.out.println("# of monitors : " + screens.size());
-	
+
 
 	            if ( (Math.abs(x) < 2 * Double.MIN_VALUE) &&(Math.abs(y) < 2 * Double.MIN_VALUE)) {
 	           	   // xPos = 0 and yPos = 0 in startUpLocation, there may be 1 or more screens
@@ -518,9 +518,9 @@ public class QNotification {
 	            	//System.out.println("Your system has a 1-monitor setup. Window starting position is at monitor 1");
 	                return 1;
 	            }
-	            
+
 	            else {
-	          	   // in order for xPos != 0 and yPos != 0 in startUpLocation, there has to be more than 1 screen       
+	          	   // in order for xPos != 0 and yPos != 0 in startUpLocation, there has to be more than 1 screen
 
 	            	if (position > 0) {
 	            		// if position can be > 0, then it has 2 screens
@@ -532,13 +532,13 @@ public class QNotification {
 		                return 1;
 	            	}
 	            }
-	            
+
     		}
-           
+
     		else {
-    			// Caution: this works only if the window moves around  		
+    			// Caution: this works only if the window moves around
           		if (position > 0) {
-            		// if position can be > 0, then it's 
+            		// if position can be > 0, then it's
                     //System.out.println("Your system has a 2-monitor setup. Window is positioned at (" + xPos + ", " + yPos + ")");
                     return 2;
             	}
@@ -546,26 +546,26 @@ public class QNotification {
             		if (xPos > 1 || yPos > 1)
             			;//System.out.println("Your system has a 1-monitor setup. Window is positioned at (" + xPos + ", " + yPos + ")");
             		else
-               			;//System.out.println("Your system has a 1-monitor setup. Window is positioned at monitor");            			
+               			;//System.out.println("Your system has a 1-monitor setup. Window is positioned at monitor");
             		return 1;
             	}
-          		
-                
+
+
     		}
- 
+
 
     	}
-  
- 	   
-    }
-    
-	
 
-		
+
+    }
+
+
+
+
 	public void destroy() {
 
 		QUOTE_ICON = null;
 		IMAGE = null;
-	 
+
 	}
 }

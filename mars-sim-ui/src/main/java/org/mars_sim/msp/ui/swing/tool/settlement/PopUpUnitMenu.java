@@ -78,7 +78,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 	private JMenuItem itemOne, itemTwo, itemThree;
     private Unit unit;
-    
+
     private Settlement settlement;
 	private MainDesktopPane desktop;
 	private MainScene mainScene;
@@ -99,7 +99,7 @@ public class PopUpUnitMenu extends JPopupMenu {
         	mainScene = desktop.getMainScene();
 
         UIResource res = null;
-        
+
         if (mainScene != null) {
 	        if (mainScene.getTheme() == 7)
 	        	new BorderUIResource.LineBorderUIResource(Color.orange);
@@ -108,8 +108,8 @@ public class PopUpUnitMenu extends JPopupMenu {
         }
         else
         	new BorderUIResource.LineBorderUIResource(Color.blue);
-        	
-        
+
+
         UIManager.put("PopupMenu.border", res);
         //force to the Heavyweight Component or able for AWT Components
         this.setLightWeightPopupEnabled(false);
@@ -430,18 +430,18 @@ public class PopUpUnitMenu extends JPopupMenu {
 	 */
     public void createBuildingPanelFX(Building building) {
     	Stage stage = new Stage();
-    	
+
 		BuildingStage buildingPanel = new BuildingStage("Building Detail", building, desktop);
     	StackPane swingPane = new StackPane(buildingPanel.init());
 
-		
+
     	Scene scene = new Scene(swingPane, 400, 400, javafx.scene.paint.Color.TRANSPARENT);
-    	
+
 	    //stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 	   	//addDraggableNode(swingNode);
 	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 	   	stage.setTitle("Building Detail");
-		stage.initOwner(mainScene.getStage());
+		//stage.initOwner(mainScene.getStage()); // initOwner() causes problem if in full screen mode.
 	   	stage.initStyle(StageStyle.DECORATED);//.UTILITY); //UNIFIED);
 	   	//stage.initStyle(StageStyle.TRANSPARENT);
 		stage.setOpacity(.8);
