@@ -55,17 +55,17 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	 */
 	//2015-03-21 Switched from using JFrame to using desktop in param
 	public NewTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow) {
-	
+
 		// Use ModalInternalFrame constructor
         super("New Transport Item");
         this.resupplyWindow = resupplyWindow;
 
-		setSize(560, 500);
-		
+		setSize(580, 600);
+
 		 // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
         setContentPane(mainPane);
-	
+
 		// Set the border.
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
 
@@ -136,15 +136,15 @@ public class NewTransportItemDialog extends ModalInternalFrame {
         if (desktop.getMainScene() != null)
         	desktop.add(this);
         	//desktop.getMainScene().getDesktops().get(2).add(this);
-        else 
-        	desktop.add(this);    
-	    
+        else
+        	desktop.add(this);
+
 		Dimension desktopSize = desktop.getParent().getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
-	    
+
 	    setModal(true);
 	    setVisible(true);
 	}
@@ -176,7 +176,7 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	public void setCreateButton(boolean value) {
 		createButton.setEnabled(value);
 	}
-	
+
 	/**
 	 * Create the new transport item and close the dialog.
 	 */

@@ -1,14 +1,14 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlementEditingPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-02-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -53,6 +55,7 @@ import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 
 /**
  * A panel for creating or editing an arriving settlement.
@@ -66,7 +69,7 @@ extends TransportItemEditingPanel {
 	// Data members
 	private String errorString = new String();
 	private boolean validation_result = true;
-	
+
 	private JTextField nameTF;
 	private JComboBoxMW<String> templateCB;
 	private JRadioButton arrivalDateRB;
@@ -95,14 +98,14 @@ extends TransportItemEditingPanel {
 	private NewTransportItemDialog newTransportItemDialog;
 	private ArrivingSettlement settlement;
 	private List<SettlementRegistry> settlementList;
-	
+
 
 	/**
 	 * Constructor.
 	 * @param settlement the arriving settlement to modify
 	 * or null if creating a new one.
 	 */
-	public ArrivingSettlementEditingPanel(ArrivingSettlement settlement, ResupplyWindow resupplyWindow, 
+	public ArrivingSettlementEditingPanel(ArrivingSettlement settlement, ResupplyWindow resupplyWindow,
 			ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {
 		// User TransportItemEditingPanel constructor
 		super(settlement);
@@ -119,32 +122,38 @@ extends TransportItemEditingPanel {
 		JPanel topEditPane = new JPanel(new BorderLayout(10, 10));
 		add(topEditPane, BorderLayout.NORTH);
 
-		// Create top inner edit pane.
-		JPanel topInnerEditPane = new JPanel(new GridLayout(3, 1, 0, 10));
-		topEditPane.add(topInnerEditPane, BorderLayout.NORTH);
+		JPanel topPane = new JPanel(new BorderLayout(10, 10));//GridLayout(2, 1));
+		topEditPane.add(topPane, BorderLayout.NORTH);
+
+		// Create top spring layout.
+		JPanel topSpring = new JPanel(new SpringLayout());//GridLayout(3, 1, 0, 10));
+		topPane.add(topSpring, BorderLayout.NORTH);
 
 		// Create name pane.
-		JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		topInnerEditPane.add(namePane);
+		//JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		//topInnerEditPane.add(namePane);
 
 		// Create name title label.
-		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.settlementName")); //$NON-NLS-1$
-		namePane.add(nameTitleLabel);
+		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.settlementName"), JLabel.TRAILING); //$NON-NLS-1$
+		//namePane.add(nameTitleLabel);
+		topSpring.add(nameTitleLabel);
 
 		// Create name text field.
 		nameTF = new JTextField(new String(), 25);
 		if (settlement != null) {
 			nameTF.setText(settlement.getName());
 		}
-		namePane.add(nameTF);
+		//namePane.add(nameTF);
+		topSpring.add(nameTF);
 
 		// Create the template pane.
-		JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		topInnerEditPane.add(templatePane);
+		//JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		//topInnerEditPane.add(templatePane);
 
 		// Create template title label.
-		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.layoutTemplate")); //$NON-NLS-1$
-		templatePane.add(templateTitleLabel);
+		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.layoutTemplate"), JLabel.TRAILING); //$NON-NLS-1$
+		//templatePane.add(templateTitleLabel);
+		topSpring.add(templateTitleLabel);
 
 		// Create template combo box.
 		Vector<String> templateNames = new Vector<String>();
@@ -166,13 +175,42 @@ extends TransportItemEditingPanel {
 				updateTemplateLongitude((String) templateCB.getSelectedItem());
 			}
 		});
-		templatePane.add(templateCB);
+		//templatePane.add(templateCB);
+		topSpring.add(templateCB);
+
+
+		// 2017-02-11 Create sponsor label.
+		JLabel sponsorTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.sponsoringAgency"), JLabel.TRAILING); //$NON-NLS-1$
+		topSpring.add(sponsorTitleLabel);
+
+		// Create template combo box.
+		Vector<String> sponsorNames = new Vector<String>();
+		Iterator<String> ii = SimulationConfig.instance().getPersonConfiguration().createCountryList().iterator();
+		while (ii.hasNext()) {
+			sponsorNames.add(ii.next());
+		}
+		JComboBoxMW<String> sponsorCB = new JComboBoxMW<String>(sponsorNames);
+		if (settlement != null) {
+			sponsorCB.setSelectedItem(settlement.getTemplate());
+		}
+		sponsorCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+			}
+		});
+		topSpring.add(sponsorCB);
+
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(topSpring,
+		                                3, 2, //rows, cols
+		                                50, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
 
 		JPanel numPane = new JPanel(new GridLayout(1, 2));
-		topInnerEditPane.add(numPane);
+		//topInnerEditPane.add(numPane);
+		topPane.add(numPane, BorderLayout.CENTER);
 
 		// Create population panel.
-		JPanel populationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel populationPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
 		numPane.add(populationPane);
 
 		// Create population label.
@@ -180,7 +218,7 @@ extends TransportItemEditingPanel {
 		populationPane.add(populationLabel);
 
 		// Create robot number panel.
-		JPanel numOfRobotsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		JPanel numOfRobotsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
 		numPane.add(numOfRobotsPane);
 
 		// Create robot number label.
@@ -207,12 +245,12 @@ extends TransportItemEditingPanel {
 				}
 			}
 		}
-		populationTF = new JTextField(6);
+		populationTF = new JTextField(4);
 		populationTF.setText(Integer.toString(populationNum));
 		populationTF.setHorizontalAlignment(JTextField.RIGHT);
 		populationPane.add(populationTF);
 
-		numOfRobotsTF = new JTextField(6);
+		numOfRobotsTF = new JTextField(4);
 		numOfRobotsTF.setText(Integer.toString(numOfRobots));
 		numOfRobotsTF.setHorizontalAlignment(JTextField.RIGHT);
 		numOfRobotsPane.add(numOfRobotsTF);
@@ -325,7 +363,7 @@ extends TransportItemEditingPanel {
 		// Create sols text field.
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));
-		solsTF = new JTextField(6);
+		solsTF = new JTextField(4);
 		solsTF.setText(Integer.toString(solsDiff));
 		solsTF.setHorizontalAlignment(JTextField.RIGHT);
 		solsTF.setEnabled(false);
@@ -336,21 +374,34 @@ extends TransportItemEditingPanel {
 		solInfoLabel.setEnabled(false);
 		timeUntilArrivalPane.add(solInfoLabel);
 
+		JLabel emptyLabel = new JLabel("          ");
+
+		JPanel southPane = new JPanel(new GridLayout(1, 2, 10, 10));
+		topEditPane.add(southPane, BorderLayout.SOUTH);
+
 		// Create landing location panel.
-		JPanel landingLocationPane = new JPanel(new GridLayout(2, 1, 0, 10));
+		JPanel landingLocationPane = new JPanel(new SpringLayout());//new GridLayout(2, 5, 0, 10));
+		//landingLocationPane.setSize(300, 100);
+		//landingLocationPane.setMaximumSize(new Dimension(300, 100));
+		//landingLocationPane.setMinimumSize(new Dimension(300, 100));
 		landingLocationPane.setBorder(new TitledBorder(Msg.getString("ArrivingSettlementEditingPanel.landingLocation"))); //$NON-NLS-1$
-		topEditPane.add(landingLocationPane, BorderLayout.SOUTH);
+
+		southPane.add(landingLocationPane);
+		southPane.add(emptyLabel);
+
 
 		// Create latitude panel.
-		JPanel latitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		landingLocationPane.add(latitudePane);
+		//JPanel latitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		//landingLocationPane.add(latitudePane);
 
 		// Create latitude title label.
-		JLabel latitudeTitleLabel = new JLabel(Msg.getString("direction.latitude")); //$NON-NLS-1$
-		latitudePane.add(latitudeTitleLabel);
+		JLabel latitudeTitleLabel = new JLabel(Msg.getString("direction.latitude"), JLabel.TRAILING); //$NON-NLS-1$
+		//latitudePane.add(latitudeTitleLabel);
+		landingLocationPane.add(latitudeTitleLabel);
 
 		// Create latitude text field.
 		latitudeTF = new JTextField(4);
+		latitudeTitleLabel.setLabelFor(latitudeTF);
 /*		if (settlement != null) {
 			String latString = settlement.getLandingLocation().getFormattedLatitudeString();
 			System.out.println("ArrivingSettlementEditingPanel : latString is " + latString);
@@ -360,7 +411,8 @@ extends TransportItemEditingPanel {
 		}
 */
 		latitudeTF.setHorizontalAlignment(JTextField.RIGHT);
-		latitudePane.add(latitudeTF);
+		//latitudePane.add(latitudeTF);
+		landingLocationPane.add(latitudeTF);
 
 		// pull the degree sign into the comboboxes so it looks more like mars navigator window
 		String deg = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
@@ -380,18 +432,23 @@ extends TransportItemEditingPanel {
 			String dirString = latString.substring(latString.length() - 1, latString.length());
 			latitudeDirectionCB.setSelectedItem(dirString);
 		}
-		latitudePane.add(latitudeDirectionCB);
+		//latitudePane.add(latitudeDirectionCB);
+		landingLocationPane.add(latitudeDirectionCB);
 
 		// Create longitude panel.
-		JPanel longitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-		landingLocationPane.add(longitudePane);
+		//JPanel longitudePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		//landingLocationPane.add(longitudePane);
 
 		// Create longitude title label.
-		JLabel longitudeTitleLabel = new JLabel(Msg.getString("direction.longitude")); //$NON-NLS-1$
-		longitudePane.add(longitudeTitleLabel);
+		JLabel longitudeTitleLabel = new JLabel(Msg.getString("direction.longitude"), JLabel.TRAILING); //$NON-NLS-1$
+		//longitudePane.add(longitudeTitleLabel);
+		landingLocationPane.add(longitudeTitleLabel);
+		//landingLocationPane.add(emptyLabel);
+		//landingLocationPane.add(emptyLabel);
 
 		// Create longitude text field.
 		longitudeTF = new JTextField(4);
+		longitudeTitleLabel.setLabelFor(longitudeTF);
 /*		if (settlement != null) {
 			String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
 			System.out.println("ArrivingSettlementEditingPanel : lonString is " + lonString);
@@ -401,7 +458,8 @@ extends TransportItemEditingPanel {
 		}
 */
 		longitudeTF.setHorizontalAlignment(JTextField.RIGHT);
-		longitudePane.add(longitudeTF);
+		//longitudePane.add(longitudeTF);
+		landingLocationPane.add(longitudeTF);
 
 		// Create longitude direction combo box.
 		longitudeDirectionCB = new JComboBoxMW<String>();
@@ -417,7 +475,16 @@ extends TransportItemEditingPanel {
 			String dirString = lonString.substring(lonString.length() - 1, lonString.length());
 			longitudeDirectionCB.setSelectedItem(dirString);
 		}
-		longitudePane.add(longitudeDirectionCB);
+		//longitudePane.add(longitudeDirectionCB);
+		landingLocationPane.add(longitudeDirectionCB);
+		//landingLocationPane.add(emptyLabel);
+		//landingLocationPane.add(emptyLabel);
+
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(landingLocationPane,
+		                                2, 3, //rows, cols
+		                                20, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
 
 		// Create error pane.
 		JPanel errorPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
@@ -427,7 +494,7 @@ extends TransportItemEditingPanel {
 		errorLabel = new JLabel(new String());
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
-		
+
 	}
 
 	/**
@@ -562,7 +629,7 @@ extends TransportItemEditingPanel {
 		}
 
 		errorLabel.setText(errorString);
-		
+
 		// 2016-01-15 Implemented addChangeListener() to validate solsTF.
 		if (solsTF.isEnabled()) {
 			String timeArrivalString = solsTF.getText().trim();
@@ -576,7 +643,7 @@ extends TransportItemEditingPanel {
 			else {
 				//System.out.println("calling addChangeListener()");
 				addChangeListener(solsTF, e -> validateSolsTF(timeArrivalString));
-			
+
 				if (errorString == null)
 					validation_result = true;
 				else
@@ -638,7 +705,7 @@ extends TransportItemEditingPanel {
 	public void validateSolsTF(String timeArrivalString) {
 		//System.out.println("running validateSolsTF()");
 		errorString = null;
-	
+
 		try {
 
 			List<Integer> sols = new ArrayList<>();
@@ -658,35 +725,35 @@ extends TransportItemEditingPanel {
 				// 2016-01-14 Added checking if that sol has already been taken
 				JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
 				ListModel<?> model = jList.getModel();
-	     
+
 				for(int i=0; i < model.getSize(); i++){
-				     Transportable transportItem = (Transportable) model.getElementAt(i);  
+				     Transportable transportItem = (Transportable) model.getElementAt(i);
 
 					if ((transportItem != null)) {
 						if (transportItem instanceof Resupply) {
 							// Create modify resupply mission dialog.
 							Resupply resupply = (Resupply) transportItem;
-							MarsClock arrivingTime = resupply.getArrivalDate();							
+							MarsClock arrivingTime = resupply.getArrivalDate();
 							MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-							int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));									
+							int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));
 							sols.add(solsDiff);
-							
+
 						}
 						else if (transportItem instanceof ArrivingSettlement) {
 							// Create modify arriving settlement dialog.
 							ArrivingSettlement newS = (ArrivingSettlement) transportItem;
 							if (!newS.equals(settlement)) {
-								MarsClock arrivingTime = newS.getArrivalDate();										
+								MarsClock arrivingTime = newS.getArrivalDate();
 								MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-								int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));	
+								int solsDiff = (int) Math.round((MarsClock.getTimeDiff(arrivingTime, currentTime) / 1000D));
 								sols.add(solsDiff);
 							}
-						}								
-					}					     
+						}
+					}
 				}
-				
+
 				//System.out.println("sols.size() : " + sols.size() );
-				
+
 				Iterator<Integer> i = sols.iterator();
 				while (i.hasNext()) {
 					int sol = i.next();
@@ -700,7 +767,7 @@ extends TransportItemEditingPanel {
 						break;
 					}
 				}
-				
+
 				if (good) {
 					validation_result = true;
 					errorString = null;
@@ -717,21 +784,21 @@ extends TransportItemEditingPanel {
 		}
 
 	}
-	
+
 	public void enableButton(boolean value) {
 		if (modifyTransportItemDialog != null)
 			modifyTransportItemDialog.setCommitButton(value);
 		else if (newTransportItemDialog != null)
 			newTransportItemDialog.setCreateButton(value);
 	}
-	
+
 	/**
 	 * Installs a listener to receive notification when the text of any
 	 * {@code JTextComponent} is changed. Internally, it installs a
 	 * {@link DocumentListener} on the text component's {@link Document},
 	 * and a {@link PropertyChangeListener} on the text component to detect
 	 * if the {@code Document} itself is replaced.
-	 * 
+	 *
 	 * @param text any text component, such as a {@link JTextField}
 	 *        or {@link JTextArea}
 	 * @param changeListener a listener to receieve {@link ChangeEvent}s
@@ -778,7 +845,7 @@ extends TransportItemEditingPanel {
 	    Document d = text.getDocument();
 	    if (d != null) d.addDocumentListener(dl);
 	}
-	
+
 	/**
 	 * Validate that landing location is not equal to an existing settlement's location.
 	 * @return true if good landing location.
@@ -989,7 +1056,7 @@ extends TransportItemEditingPanel {
 		//System.out.println("fullLonString : " + fullLonString);
 		return new Coordinates(fullLatString, fullLonString);
 	}
-	
+
 	/**
 	 * Prepare this window for deletion.
 	 */
