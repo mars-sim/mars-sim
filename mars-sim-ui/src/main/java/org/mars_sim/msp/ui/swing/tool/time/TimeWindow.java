@@ -66,7 +66,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	public static final String NAME = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
 	public static final String ONE_REAL_SEC = "1 real sec equals ";
-	
+
 	/** the max ratio the sim can be set at. */
 	public static final double maxratio = 10800d;
 
@@ -120,7 +120,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	private JLabel pulsespersecondLabel, pulsesLabel;
 
 	private JLabel timeRatioLabel, timeCompressionLabel;
-	
+
 	/** slider for pulse. */
 	private JSliderMW pulseSlider;
 	private JButton pauseButton;
@@ -129,7 +129,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Constructs a TimeWindow object
-	 * 
+	 *
 	 * @param desktop
 	 *            the desktop pane
 	 */
@@ -319,27 +319,27 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 		northPanel.add(speedLabel);
 		northPanel.add(timeRatioLabel);
-		
+
 		if (mainScene == null) {
-	
+
 			timeCompressionLabel.addMouseListener(new MouseInputAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					super.mouseClicked(e);
-	
+
 					StringBuilder s0 = new StringBuilder();
 					double ratio = masterClock.getTimeRatio();
 					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 					s0.append(ONE_REAL_SEC);
 					s0.append(masterClock.getTimeString(ratio));
 					timeCompressionLabel.setText(s0.toString());
-	
+
 					timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
-	
+
 				}
 			});
-	
-			
+
+
 			// Create pulse slider
 			int sliderpos = calculateSliderValue(masterClock.getTimeRatio());
 			pulseSlider = new JSliderMW(1, 100, sliderpos);
@@ -350,28 +350,28 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			pulseSlider.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					try {
-						
+
 						setTimeRatioFromSlider(pulseSlider.getValue()); // (int)(mainScene.getTimeRatio()/mainScene.getInitialTimeRatio()))
-	
+
 						StringBuilder s0 = new StringBuilder();
 						double ratio = masterClock.getTimeRatio();
 						String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 						s0.append(ONE_REAL_SEC);
 						s0.append(masterClock.getTimeString(ratio));
-						timeCompressionLabel.setText(s0.toString());		
+						timeCompressionLabel.setText(s0.toString());
 						timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
-	
+
 					} catch (Exception e2) {
 						logger.log(Level.SEVERE, e2.getMessage());
 					}
 				}
 			});
-		
+
 			pulsePane.add(pulseSlider, BorderLayout.SOUTH);
 			setTimeRatioSlider(masterClock.getTimeRatio());
-				
+
 		}
-		
+
 		// Pack window
 		pack();
 
@@ -382,7 +382,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Sets the time ratio for the simulation based on the slider value.
-	 * 
+	 *
 	 * @param sliderValue
 	 *            the slider value (1 to 100).
 	 */
@@ -440,7 +440,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Moves the slider bar appropriately given the time ratio.
-	 * 
+	 *
 	 * @param timeRatio
 	 *            the time ratio (simulation time / real time).
 	 */
@@ -452,7 +452,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	/**
 	 * Calculates a slider value based on a time ratio. Note: This method is the
 	 * inverse of calculateTimeRatioFromSlider.
-	 * 
+	 *
 	 * @param timeRatio
 	 *            time ratio (simulation time / real time).
 	 * @return slider value (1 to 100).
@@ -542,16 +542,16 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	@SuppressWarnings("restriction")
 	@Override
-	public void clockPulse(double time) {	
+	public void clockPulse(double time) {
 
 		if (mainScene != null) {
 			StringBuilder s0 = new StringBuilder();
 			double ratio = masterClock.getTimeRatio();
 			String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 			s0.append(ONE_REAL_SEC);
-			s0.append(masterClock.getTimeString(ratio));		
+			s0.append(masterClock.getTimeString(ratio));
 			if (timeRatioLabel != null) timeRatioLabel.setText(Msg.getString("TimeWindow.timeRatioHeader", factor)); //$NON-NLS-1$
-			timeCompressionLabel.setText(s0.toString());
+			if (timeCompressionLabel != null) timeCompressionLabel.setText(s0.toString());
 		}
 
 		SwingUtilities.invokeLater(() -> updateTime(time));
@@ -559,7 +559,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Updates date and time in Time Tool
-	 * 
+	 *
 	 * @param time
 	 */
 	// 2015-01-09 Added updateTime()
@@ -635,7 +635,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
 	/**
 	 * Enables/disables the pause button
-	 * 
+	 *
 	 * @param value
 	 *            true or false
 	 */

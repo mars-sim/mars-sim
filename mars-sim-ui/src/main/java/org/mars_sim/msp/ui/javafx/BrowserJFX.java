@@ -96,6 +96,7 @@ public class BrowserJFX {
           + "body, h3{font-size:14pt;line-height:1.1em; color:white;}"
           + "h2{font-size:14pt; font-weight:700; line-height:1.2em; text-align:center; color:white;}"
           + "h3{font-weight:700; color:white;}"
+          + "h4{font-weight:500; color:white; line-height:0.8em;}"
           + "p{margin-left:13pt; color:white;}"
           + "hr{width:90%;}";
 

@@ -250,12 +250,10 @@ public class MainScene {
 	public static final String TR = "Time Ratio :";
 
 	private static int theme = 7; // 6 is snow blue; 7 is the mud orange with nimrod
-
 	public static int chatBoxHeight = 256;
 	public static int LINUX_WIDTH = 280;
 	public static int MACOS_WIDTH = 260;
 	public static int WIN_WIDTH = 240;
-
 
 	private int count = 0;
 	private int solElapsedCache = 0;
@@ -308,7 +306,7 @@ public class MainScene {
 	private JFXComboBox<Settlement> sBox;
 	private JFXBadge badgeIcon;
 	private JFXSnackbar snackbar;
-	private JFXToggleButton cacheButton, calendarButton; //pinButton
+	private JFXToggleButton cacheButton, calendarButton, minimapButton, sMapButton;
 	private JFXSlider zoomSlider, timeSlider, soundSlider;
 	private JFXButton soundBtn, miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn, speedButton;
 	private JFXPopup soundPopup, flyout, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
@@ -350,6 +348,7 @@ public class MainScene {
 	private MarsClock marsClock;
 
 	private SettlementWindow settlementWindow;
+	private NavigatorWindow navWin;
 	private SettlementMapPanel mapPanel;
 	private NavigatorWindow nw;
 
@@ -755,7 +754,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(mapBtn, 0.0);
 	        AnchorPane.setTopAnchor(miniMapBtn, 0.0);
 	        AnchorPane.setTopAnchor(lastSaveBar, 0.0);
-	        AnchorPane.setTopAnchor(soundBtn, -6.0);
+	        AnchorPane.setTopAnchor(soundBtn, -3.0);
 		}
 		else {
 	        AnchorPane.setTopAnchor(speedButton, -3.0);
@@ -763,7 +762,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(mapBtn, -3.0);
 	        AnchorPane.setTopAnchor(miniMapBtn, -3.0);
 	        AnchorPane.setTopAnchor(lastSaveBar, -3.0);
-	        AnchorPane.setTopAnchor(soundBtn, -9.0);
+	        AnchorPane.setTopAnchor(soundBtn, -6.0);
 		}
 
         AnchorPane.setRightAnchor(speedButton, 5.0);
@@ -1376,33 +1375,73 @@ public class MainScene {
 	}
 
 	public void createFXButtons() {
-/*
-		pinButton = new JFXToggleButton();
-		pinButton.setText("Pin Off");
-		pinButton.setSelected(false);
-		setQuickToolTip(pinButton, "Pin Minimap");
-		pinButton.setOnAction(e -> {
-			if (pinButton.isSelected()) {
-				pinButton.setText("Pin On");
-				//openMap();
-				//cacheButton.setTextFill(Paint.OPAQUE);
+
+		minimapButton = new JFXToggleButton();
+		//pinButton.setTextFill(Paint.OPAQUE);
+		minimapButton.setText("Minimap Off");
+		minimapButton.setSelected(false);
+		setQuickToolTip(minimapButton, "Pin Minimap");
+		minimapButton.setOnAction(e -> {
+			if (minimapButton.isSelected()) {
+				openMinimap();
 			}
-			else
-				cacheButton.setText("Pin Off");
+			else {
+				minimapButton.setText("Minimap Off");
+				desktop.closeToolWindow(NavigatorWindow.NAME);
+				mapAnchorPane.getChildren().remove(minimapStackPane);
+	    	    //minimapButton.setSelected(false);
+			}
+
+			//minimapButton.toFront();
+
 		});
-*/
+
+		sMapButton = new JFXToggleButton();
+		sMapButton.setText("Settlement Map Off");
+		sMapButton.setSelected(false);
+		setQuickToolTip(sMapButton, "Pin Settlement Map");
+		sMapButton.setOnAction(e -> {
+			if (sMapButton.isSelected()) {
+				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
+					openMap();
+				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+					//pinButton.setSelected(true);
+					openMinimap();
+				}
+			}
+			else {
+				sMapButton.setText("Settlement Map Off");
+				desktop.closeToolWindow(SettlementWindow.NAME);
+				mapAnchorPane.getChildren().removeAll(mapStackPane,
+						settlementBox, mapLabelBox,
+						zoomSlider,
+						rotateCWBtn, rotateCCWBtn, recenterBtn);
+				//sMapButton.setSelected(false);
+			}
+
+			//sMapButton.toFront();
+
+		});
+
 		cacheButton = new JFXToggleButton();
-		cacheButton.setText("Cache Off");
+		cacheButton.setText("Map Cache Off");
 		cacheButton.setSelected(false);
-		setQuickToolTip(cacheButton, "Retain Settlement Map after switching to another tab");
+		setQuickToolTip(cacheButton, "Retain Settlement Map and Minimap after switching to another tab");
 		cacheButton.setOnAction(e -> {
 			if (cacheButton.isSelected()) {
-				cacheButton.setText("Cache On");
-				openMap();
-				//cacheButton.setTextFill(Paint.OPAQUE);
+				cacheButton.setText("Map Cache On");
+				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
+					openMap();
+				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+					//pinButton.setSelected(true);
+					openMinimap();
+				}
+
+				minimapButton.toFront();
+				sMapButton.toFront();
 			}
 			else
-				cacheButton.setText("Cache Off");
+				cacheButton.setText("Map Cache Off");
 		});
 
 		rotateCWBtn = new JFXButton();
@@ -1617,10 +1656,11 @@ public class MainScene {
 		mapTab.setText("Map");
 		mapTab.setContent(mapAnchorPane);
 
-		NavigatorWindow navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
+		navWin = (NavigatorWindow) desktop.getToolWindow(NavigatorWindow.NAME);
 
 		minimapNode = new SwingNode();
 		minimapStackPane = new StackPane(minimapNode);
+		minimapNode.setContent(navWin);
 		minimapStackPane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
 
@@ -1630,16 +1670,13 @@ public class MainScene {
 
 			if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 				desktop.closeToolWindow(NavigatorWindow.NAME);
-				mapAnchorPane.getChildren().removeAll(minimapStackPane);
+				mapAnchorPane.getChildren().remove(minimapStackPane);
+				minimapButton.setSelected(false);
+				minimapButton.setText("Minimap Off");
 			}
 
 			else {
-				desktop.openToolWindow(NavigatorWindow.NAME);
-				minimapNode.setContent(navWin);
-		        AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
-		        AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0
-		        mapAnchorPane.getChildren().addAll(minimapStackPane);
-		        minimapNode.toFront();
+				openMinimap();
 			}
 		});
 
@@ -1648,6 +1685,7 @@ public class MainScene {
 
 		mapNode = new SwingNode();
 		mapStackPane = new StackPane(mapNode);
+		mapNode.setContent(settlementWindow);
 		mapStackPane.setStyle("-fx-background-color: black; ");
 		mapNode.setStyle("-fx-background-color: black; ");
 
@@ -1688,11 +1726,16 @@ public class MainScene {
 				mapAnchorPane.getChildren().removeAll(mapStackPane,
 						settlementBox, mapLabelBox,
 						zoomSlider,
-						rotateCWBtn, rotateCCWBtn, recenterBtn);//, minimapNodePane);
+						rotateCWBtn, rotateCCWBtn, recenterBtn);
+				sMapButton.setSelected(false);
+				sMapButton.setText("Settlement Map Off");
 			}
 
 			else {
 				openMap();
+				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+					openMinimap();
+				}
 			}
 
 		});
@@ -1835,10 +1878,16 @@ public class MainScene {
 					AnchorPane.setTopAnchor(miniMapBtn, -3.0);
 				rootAnchorPane.getChildren().addAll(miniMapBtn);
 
-		        AnchorPane.setRightAnchor(cacheButton, 15.0);
-		        AnchorPane.setTopAnchor(cacheButton, 15.0);  // 55.0
+		        AnchorPane.setRightAnchor(cacheButton, 25.0);
+		        AnchorPane.setTopAnchor(cacheButton, 45.0);  // 55.0
 
-				mapAnchorPane.getChildren().addAll(cacheButton);
+		        AnchorPane.setLeftAnchor(minimapButton, 10.0);
+		        AnchorPane.setTopAnchor(minimapButton, 10.0);  // 55.0
+
+		        AnchorPane.setRightAnchor(sMapButton, 15.0);
+		        AnchorPane.setTopAnchor(sMapButton, 10.0);  // 55.0
+
+				mapAnchorPane.getChildren().addAll(cacheButton, minimapButton, sMapButton);
 
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
@@ -1885,7 +1934,7 @@ public class MainScene {
 */
 			else {
 				rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			    mapAnchorPane.getChildren().removeAll(cacheButton);
+			    mapAnchorPane.getChildren().removeAll(cacheButton, minimapButton, sMapButton);
 			}
 
 		});
@@ -1897,105 +1946,152 @@ public class MainScene {
 
 	}
 
-	public void openMap() {
-
-		//if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-		//	mapStackPane.prefWidthProperty().unbind();
-		//	mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapStackPane.widthProperty()).subtract(2));
+	public void openMinimap() {
+		//if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+			desktop.openToolWindow(NavigatorWindow.NAME);
+			//minimapNode.setContent(navWin);
+		    AnchorPane.setLeftAnchor(minimapStackPane, 3.0);
+		    AnchorPane.setTopAnchor(minimapStackPane, 0.0); // 45.0
+		    boolean flag = false;
+		    for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
+		    	if (node == minimapStackPane) {
+		    		flag = true;
+		    		break;
+		    	}
+		    }
+	    	if (!flag)
+	    		mapAnchorPane.getChildren().addAll(minimapStackPane);
+			navWin.getGlobeDisplay().drawSphere();//updateDisplay();
+    	    navWin.toFront();
+    	    navWin.requestFocus();
+    	    minimapStackPane.toFront();
+    	    minimapButton.setSelected(true);
+			minimapButton.setText("Minimap On");
+    	    minimapButton.toFront();
 		//}
-		//else {
+	}
+
+	public void openMap() {
+		//if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+			//if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+			//	mapStackPane.prefWidthProperty().unbind();
+			//	mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapStackPane.widthProperty()).subtract(2));
+			//}
+			//else {
 			mapStackPane.prefWidthProperty().unbind();
 			mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));
+			//}
+
+			desktop.openToolWindow(SettlementWindow.NAME);
+			//mapNode.setContent(settlementWindow);
+
+	        AnchorPane.setRightAnchor(mapStackPane, 0.0);
+	        AnchorPane.setTopAnchor(mapStackPane, 0.0);
+
+	        AnchorPane.setRightAnchor(zoomSlider, 65.0);
+	        AnchorPane.setTopAnchor(zoomSlider, 350.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);
+
+	        AnchorPane.setRightAnchor(rotateCWBtn, 110.0);
+	        AnchorPane.setTopAnchor(rotateCWBtn, 300.0);
+
+	        AnchorPane.setRightAnchor(rotateCCWBtn, 30.0);
+	        AnchorPane.setTopAnchor(rotateCCWBtn, 300.0);
+
+	        AnchorPane.setRightAnchor(recenterBtn, 70.0);
+	        AnchorPane.setTopAnchor(recenterBtn, 300.0);
+
+	        AnchorPane.setRightAnchor(settlementBox, 15.0);//anchorMapTabPane.widthProperty().get()/2D - 110.0);//settlementBox.getWidth());
+	        AnchorPane.setTopAnchor(settlementBox, 100.0);
+
+	        AnchorPane.setRightAnchor(mapLabelBox, -10.0);
+	        AnchorPane.setTopAnchor(mapLabelBox, 140.0);
+
+
+	        boolean hasMap = false, hasZoom = false, hasButtons = false,
+	        		hasSettlements = false, hasMapLabel = false;
+
+	        ObservableList<Node> nodes = mapAnchorPane.getChildrenUnmodifiable();
+
+	        for (Node node : nodes) {
+
+		        if (node == settlementBox) {
+		        	hasSettlements = true;
+		        }
+		        else if (node == mapStackPane) {
+		        	hasMap = true;
+		        }
+		        else if (node == zoomSlider) {
+		        	hasZoom = true;
+		        }
+		        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
+		        	hasButtons = true;
+		        }
+		        else if (node == mapLabelBox)
+		        	hasMapLabel = true;
+
+			}
+
+			if (!hasMap)
+				mapAnchorPane.getChildren().addAll(mapStackPane);
+
+			if (!hasSettlements)
+				mapAnchorPane.getChildren().addAll(settlementBox);
+
+			if (!hasMapLabel)
+				mapAnchorPane.getChildren().addAll(mapLabelBox);
+
+			if (!hasZoom)
+				mapAnchorPane.getChildren().addAll(zoomSlider);
+
+			if (!hasButtons)
+				mapAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
+
+/*
+			for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
+		        if (node == cacheButton) {
+		        	node.toFront();
+		        }
+		        else if (node == minimapButton) {
+		        	node.toFront();
+		        }
+		        else if (node == sMapButton) {
+		        	node.toFront();
+		        }
+		        else if (node == settlementBox) {
+		        	node.toFront();
+		        }
+		        else if (node == mapLabelBox) {
+		        	node.toFront();
+		        }
+		    }
+*/
+			mapLabelBox.toFront();
+			settlementBox.toFront();
+			sMapButton.toFront();
+			cacheButton.toFront();
+			minimapButton.toFront();
+
+
+			sMapButton.setText("Settlement Map On");
+			sMapButton.setSelected(true);
 		//}
-
-		desktop.openToolWindow(SettlementWindow.NAME);
-		mapNode.setContent(settlementWindow);
-
-        AnchorPane.setRightAnchor(mapStackPane, 0.0);
-        AnchorPane.setTopAnchor(mapStackPane, 0.0);
-
-        AnchorPane.setRightAnchor(zoomSlider, 55.0);
-        AnchorPane.setTopAnchor(zoomSlider, 350.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);
-
-        AnchorPane.setRightAnchor(rotateCWBtn, 100.0);
-        AnchorPane.setTopAnchor(rotateCWBtn, 300.0);
-
-        AnchorPane.setRightAnchor(rotateCCWBtn, 20.0);
-        AnchorPane.setTopAnchor(rotateCCWBtn, 300.0);
-
-        AnchorPane.setRightAnchor(recenterBtn, 60.0);
-        AnchorPane.setTopAnchor(recenterBtn, 300.0);
-
-        AnchorPane.setRightAnchor(settlementBox, 15.0);//anchorMapTabPane.widthProperty().get()/2D - 110.0);//settlementBox.getWidth());
-        AnchorPane.setTopAnchor(settlementBox, 70.0);
-
-        AnchorPane.setRightAnchor(mapLabelBox, -10.0);
-        AnchorPane.setTopAnchor(mapLabelBox, 120.0);
-
-
-        boolean hasMap = false, hasZoom = false, hasButtons = false,
-        		hasSettlements = false, hasMapLabel = false;
-
-        for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
-
-	        if (node == settlementBox) {
-	        	hasSettlements = true;
-	        }
-	        else if (node == mapStackPane) {
-	        	hasMap = true;
-	        }
-	        else if (node == zoomSlider) {
-	        	hasZoom = true;
-	        }
-	        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
-	        	hasButtons = true;
-	        }
-	        else if (node == mapLabelBox)
-	        	hasMapLabel = true;
-
-		}
-
-		if (!hasMap)
-			mapAnchorPane.getChildren().addAll(mapStackPane);
-
-		if (!hasSettlements) {
-			mapAnchorPane.getChildren().addAll(settlementBox);
-		}
-
-		if (!hasMapLabel)
-			mapAnchorPane.getChildren().addAll(mapLabelBox);
-
-		if (!hasZoom)
-			mapAnchorPane.getChildren().addAll(zoomSlider);
-
-		if (!hasButtons)
-			mapAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
-
-		for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
-	        if (node == cacheButton) {
-	        	node.toFront();
-	        }
-	        if (node == settlementBox) {
-	        	node.toFront();
-	        }
-	        if (node == mapLabelBox) {
-	        	node.toFront();
-	        }
-	    }
-
-        minimapNode.toFront();
 	}
 
 	public void closeMaps() {
 		rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
-	    mapAnchorPane.getChildren().removeAll(cacheButton);
+	    mapAnchorPane.getChildren().removeAll(cacheButton, minimapButton, sMapButton);
 	    if (!isCacheButtonOn()) {
 			Platform.runLater(() -> {
-				mapAnchorPane.getChildren().removeAll(mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, minimapStackPane, settlementBox, mapLabelBox);
+				mapAnchorPane.getChildren().removeAll(minimapStackPane, mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
 			});
 			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
+			minimapButton.setSelected(false);
+			minimapButton.setText("Minimap Off");
+			sMapButton.setSelected(false);
+			sMapButton.setText("Settlement Map Off");
+
 		}
 	}
 
@@ -2138,6 +2234,8 @@ public class MainScene {
 		setStylesheet(miniMapBtn, cssFile);
 		setStylesheet(mapBtn, cssFile);
 		setStylesheet(cacheButton, cssFile);
+		setStylesheet(minimapButton, cssFile);
+		setStylesheet(sMapButton, cssFile);
 		setStylesheet(settlementBox, cssFile);
 		setStylesheet(mapLabelBox, cssFile);
 
