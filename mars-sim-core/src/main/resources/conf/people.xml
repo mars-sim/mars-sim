@@ -1325,7 +1325,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Viktorie" gender="female" sponsor="ESA" country="Czech Republic" />
 		<first-name value="Barbora" gender="female" sponsor="ESA" country="Czech Republic" />
 		
-		<first-name value="Sofia" gender="female" sponsor="ESA" country="Denmark" />
+		<first-name value="Sofie" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Alma" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Freja" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Anna" gender="female" sponsor="ESA" country="Denmark" />
@@ -1339,17 +1339,17 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<first-name value="Agnes" gender="female" sponsor="ESA" country="Denmark" />
 
 		<first-name value="Eva" gender="female" sponsor="ESA" country="Denmark" />
-		<first-name value="Hanna" gender="female" sponsor="ESA" country="Denmark" />
-		<first-name value="Maria" gender="female" sponsor="ESA" country="Denmark" />
-		<first-name value="Ró" gender="female" sponsor="ESA" country="Denmark" />
-		<first-name value="Elsa" gender="female" sponsor="ESA" country="Denmark" />
+		<first-name value="Hanne" gender="female" sponsor="ESA" country="Denmark" />
+		<first-name value="Marie" gender="female" sponsor="ESA" country="Denmark" />
+		<first-name value="Rosa" gender="female" sponsor="ESA" country="Denmark" />
+		<first-name value="Else" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Lea" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Ronja" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Isabella" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Lilja" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Liva" gender="female" sponsor="ESA" country="Denmark" />
 		<first-name value="Mia" gender="female" sponsor="ESA" country="Denmark" />
-		<first-name value="Rósa" gender="female" sponsor="ESA" country="Denmark" />	
+		<first-name value="Gitte" gender="female" sponsor="ESA" country="Denmark" />	
 
 		<first-name value="Sofia" gender="female" sponsor="ESA" country="Estonia" />
 		<first-name value="Eliise" gender="female" sponsor="ESA" country="Estonia" />
@@ -2453,7 +2453,7 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Veselý"  sponsor="ESA" country="Czech Republic" />
 		<last-name value="Černý"  sponsor="ESA" country="Czech Republic" />
 
-		<!-- 10 most common Danish surnames-->
+		<!-- 10 most common Danish surnames plus a little more-->
 
 		<last-name value="Andersen"  sponsor="ESA" country="Denmark" />
 		<last-name value="Christensen"  sponsor="ESA" country="Denmark" />
@@ -2465,6 +2465,9 @@ http://www.lpi.usra.edu/publications/reports/CB-979/cornell.pdf
 		<last-name value="Pedersen"  sponsor="ESA" country="Denmark" />
 		<last-name value="Rasmussen"  sponsor="ESA" country="Denmark" />
 		<last-name value="Sørensen"  sponsor="ESA" country="Denmark" />
+		<last-name value="Rovsing"  sponsor="ESA" country="Denmark" />
+		<last-name value="Krogh"  sponsor="ESA" country="Denmark" />
+		<last-name value="Lund"  sponsor="ESA" country="Denmark" />
 		
 		<!-- 10 most common Estonian surnames-->
 
