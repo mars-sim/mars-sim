@@ -724,7 +724,7 @@ public class MainScene {
 		createMarsTimeBar();
         createEarthTimeBar();
 
-        createEarthTimeBox();
+        createSpeedPanel();
         createSoundPopup();
 
         // Create menuBar
@@ -928,10 +928,10 @@ public class MainScene {
 
 
     /**
-     * Creates and returns the EarthTimeBox
+     * Creates and returns the panel for simulation speed and time info
      */
-	// 2017-01-12 Added createEarthTimeBox
-	public void createEarthTimeBox() {
+	// 2017-01-12 Added createSpeedPanel
+	public void createSpeedPanel() {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());
 
 		speedButton = new JFXButton();
@@ -945,8 +945,8 @@ public class MainScene {
             }
 		});
 
-		StackPane earthTimePane = new StackPane();
-		earthTimePane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
+		StackPane speedPane = new StackPane();
+		speedPane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
 				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
        			+ "-fx-background-radius: 10px;"
 				+ "-fx-text-fill: cyan;"
@@ -955,12 +955,12 @@ public class MainScene {
 	    		+ "-fx-border-width: 3px;"
 	    		+ "-fx-border-style: solid; "
 				);
-		earthTimePane.setAlignment(Pos.CENTER);
-		earthTimePane.setPrefHeight(100);
-		earthTimePane.setPrefWidth(earthTimeBar.getPrefWidth());
+		speedPane.setAlignment(Pos.CENTER);
+		speedPane.setPrefHeight(100);
+		speedPane.setPrefWidth(earthTimeBar.getPrefWidth());
 
 		//earthTimePopup.setOpacity(.5);
-		simSpeedPopup.setContent(earthTimePane);
+		simSpeedPopup.setContent(speedPane);
 		simSpeedPopup.setPopupContainer(rootAnchorPane);
 		simSpeedPopup.setSource(speedButton);
 
@@ -1037,7 +1037,7 @@ public class MainScene {
 
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
-		String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
+		//String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
 		s1.append(masterClock.getTimeString(ratio));
 		real_time_label.setText(s1.toString());
 
@@ -1068,7 +1068,7 @@ public class MainScene {
 
 					StringBuilder s1 = new StringBuilder();
 					//ratio = masterClock.getTimeRatio();
-					String factor = String.format(Msg.getString("TimeWindow.timeFormat"), newTimeRatio); //$NON-NLS-1$
+					//String factor = String.format(Msg.getString("TimeWindow.timeFormat"), newTimeRatio); //$NON-NLS-1$
 					s1.append(masterClock.getTimeString(newTimeRatio));
 					real_time_label.setText(s1.toString());
 
@@ -1146,7 +1146,7 @@ public class MainScene {
         VBox vBox = new VBox();
 		vBox.setAlignment(Pos.CENTER);
         vBox.getChildren().addAll(header_label, timeSlider, gridPane);
-        earthTimePane.getChildren().addAll(vBox);
+        speedPane.getChildren().addAll(vBox);
 
 	}
 
@@ -1633,6 +1633,7 @@ public class MainScene {
 		//logger.info("MainScene's createJFXTabs() is on " + Thread.currentThread().getName() + " Thread");
 
 		jfxTabPane = new JFXTabPane();
+		jfxTabPane.setPrefSize(sceneHeight.get(),sceneWidth.get());
 
 		String cssFile = null;
 

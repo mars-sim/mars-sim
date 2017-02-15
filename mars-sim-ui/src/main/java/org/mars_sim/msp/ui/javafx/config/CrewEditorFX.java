@@ -61,6 +61,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.ScrollPane;
 
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -89,11 +91,12 @@ public class CrewEditorFX {
 
 	public static final int NAME_ROW = 1;
 	public static final int GENDER_ROW = 2;
-	public static final int JOB_ROW = 3;	
-	public static final int COUNTRY_ROW = 4;
-	public static final int PERSONALITY_ROW = 5;
-	public static final int DESTINATION_ROW = 6;
-	
+	public static final int JOB_ROW = 3;
+	public static final int SPONSOR_ROW = 4;
+	public static final int COUNTRY_ROW = 5;
+	public static final int PERSONALITY_ROW = 6;
+	public static final int DESTINATION_ROW = 7;
+
 	private static final double BLUR_AMOUNT = 10;
 
 	private static final Effect frostEffect = new BoxBlur(BLUR_AMOUNT, BLUR_AMOUNT, 3);
@@ -104,7 +107,7 @@ public class CrewEditorFX {
 
 	// Data members
 	private boolean[][] personalityArray;
-	
+
 	private boolean goodToGo = true;
 
 	private String destinationStr;
@@ -112,21 +115,27 @@ public class CrewEditorFX {
 	private GridPane gridPane;
 
 	private List<JFXTextField> nameTF;
-	private JFXComboBox<String> jobOListCB, genderOListCB, destinationCB, countryOListCB;
+	private JFXComboBox<String> destinationCB;
 	private JFXComboBox<String> destinationsOListComboBox = new JFXComboBox<String>();
 
-	private List<JFXComboBox<String>> genderList, jobList, countryList;
-	
+	private List<JFXComboBox<String>> genderList, jobList, countryList, sponsorList;
+
 	private List<SettlementBase> settlements;
 	private List<String> settlementNames = new ArrayList<String>();
+
+	//private List<JFXComboBox<String>> sponsorCBs = new ArrayList<>();
+	//private List<JFXComboBox<String>> genderCBs = new ArrayList<>();
+	//private List<JFXComboBox<String>> jobCBs = new ArrayList<>();
+	//private List<JFXComboBox<String>> countryCBs = new ArrayList<>();
+
 
 	private ObservableList<String> destinationsOList;
 
 	private Stage stage;
-	
+
 	// private SimulationConfig config; // needed in the constructor
 	private ScenarioConfigEditorFX scenarioConfigEditorFX;
-	
+
 	private PersonConfig personConfig;
 
 	/**
@@ -142,10 +151,12 @@ public class CrewEditorFX {
 		personalityArray = new boolean[4][SIZE_OF_CREW];
 
 		nameTF = new ArrayList<JFXTextField>();
+
 		genderList = new ArrayList<JFXComboBox<String>>();
 		jobList = new ArrayList<JFXComboBox<String>>();
 		countryList = new ArrayList<JFXComboBox<String>>();
-		
+		sponsorList = new ArrayList<JFXComboBox<String>>();
+
 		createGUI();
 
 	}
@@ -191,7 +202,7 @@ public class CrewEditorFX {
 		Label slotTwo = new Label("Slot 2");
 		Label slotThree = new Label("Slot 3");
 		Label slotFour = new Label("Slot 4");
-		
+
 		setID(slotOne);
 		setID(slotTwo);
 		setID(slotThree);
@@ -208,6 +219,7 @@ public class CrewEditorFX {
 		Label name = new Label("Member :");
 		Label gender = new Label("Gender :");
 		Label job = new Label("Job :");
+		Label sponsor = new Label("Sponsor :");
 		Label country = new Label("Country :");
 		Label personality = new Label("MBTI :");
 		// Label destination = new Label("Destination :");
@@ -215,6 +227,7 @@ public class CrewEditorFX {
 		setID(name);
 		setID(gender);
 		setID(job);
+		setID(sponsor);
 		setID(country);
 		setID(personality);
 		// setID(destination);
@@ -222,18 +235,21 @@ public class CrewEditorFX {
 		GridPane.setConstraints(name, 0, 1);
 		GridPane.setConstraints(gender, 0, 2);
 		GridPane.setConstraints(job, 0, 3);
-		GridPane.setConstraints(country, 0, 4);
-		GridPane.setConstraints(personality, 0, 5);
-		gridPane.getChildren().addAll(name, gender, job, country, personality);
-		
+		GridPane.setConstraints(sponsor, 0, 4);
+		GridPane.setConstraints(country, 0, 5);
+		GridPane.setConstraints(personality, 0, 6);
+		gridPane.getChildren().addAll(name, gender, job, sponsor, country, personality);
+
 		setUpCrewName();
 		setUpCrewGender();
 		setUpCrewJob();
 		setUpCrewCountry();
+		setUpCrewSponsor();
+
 		for (int col = 1; col < SIZE_OF_CREW + 1; col++) {
 			setUpCrewPersonality(col);
 		}
-		
+
 		// Create commit button.
 		JFXButton commitButton = new JFXButton();
 		setMouseCursor(commitButton);
@@ -296,15 +312,24 @@ public class CrewEditorFX {
 				// update PersonConfig with the new job
 				personConfig.setPersonJob(i, jobStr, ALPHA_CREW);
 
-				// 2017-01-24 countryStr and sponsorStr
-				String countryStr = (String) countryList.get(i).getValue();
-				// System.out.println(" country is " + countryStr);
-				// update PersonConfig with the new country
-				personConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
-				
-				String sponsorStr = personConfig.convert2Sponsor(personConfig.getCountryID(countryStr));
+				// 2017-02-14 sponsorStr
+				String sponsorStr = (String) sponsorList.get(i).getValue();
+				//String sponsorStr = personConfig.convert2Sponsor(personConfig.getCountryID(countryStr));
 				personConfig.setPersonSponsor(i, sponsorStr, ALPHA_CREW);
-				
+
+				// 2017-01-24 countryStr
+				String countryStr = (String) countryList.get(i).getValue();
+				if (!isBlank(countryStr)) {
+					// System.out.println(" country is " + countryStr);
+					// update PersonConfig with the new country
+					personConfig.setPersonCountry(i, countryStr, ALPHA_CREW);
+					goodToGo = true && goodToGo;
+					// System.out.println("goodToGo is "+ goodToGo);
+				}
+				else {
+					goodToGo = false;
+				}
+
 				// 2015-11-13 Added setPersonDestination()
 				// String destinationStr = (String)
 				// destinationsList.get(i).getValue();
@@ -331,11 +356,11 @@ public class CrewEditorFX {
 		commitBox.setPadding(new Insets(10, 10, 25, 10));
 		commitBox.setAlignment(Pos.CENTER);
 		commitBox.getChildren().add(commitButton);
-		
+
 
 		Label destLabel = new Label("Settlement Destination :  ");
 		String dest = personConfig.getConfiguredPersonDestination(0, ALPHA_CREW);
-		destinationCB = setUpCB(DESTINATION_ROW); // 6 = Destination
+		destinationCB = setUpCB(DESTINATION_ROW, 0); // 6 = Destination
 		destinationCB.setValue(dest);
 
 		// Create button pane.
@@ -351,7 +376,7 @@ public class CrewEditorFX {
 
 		borderPane.setBottom(vBottom);
 
-		
+
 		layout.setStyle("-fx-background-radius:20; -fx-background-color: null;");// -fx-background-color:
 																					// rgba(209,89,56,)");
 		// cyan blue: rgba(56, 176, 209, ");
@@ -365,7 +390,7 @@ public class CrewEditorFX {
 	    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);//setVisible(true);
 	    scrollPane.setMaxHeight(720);
 	    scrollPane.setMinWidth(800);
-		
+
 		Scene scene = new Scene(scrollPane, Color.TRANSPARENT);
 		scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");//
 		scene.getStylesheets().add("/fxui/css/crewEditorFXOrange.css");// configEditorFXOrange.css");//
@@ -402,7 +427,7 @@ public class CrewEditorFX {
 
 	/**
 	 * Swaps the mouse cursor type between DEFAULT and HAND
-	 * 
+	 *
 	 * @param node
 	 */
 	public void setMouseCursor(Node node) {
@@ -454,8 +479,33 @@ public class CrewEditorFX {
 		return true;
 	}
 
-	public Stage getStage() {
-		return stage;
+	public JFXComboBox<String> setUpCB(int choice, int index) {
+		JFXComboBox<String> m = null;
+		if (choice == GENDER_ROW)
+			m = setUpGenderCB(index);
+		else if (choice == JOB_ROW)
+			m = setUpJobCB(index);
+		else if (choice == SPONSOR_ROW)
+			m = setUpSponsorCB(index);
+		else if (choice == COUNTRY_ROW)
+			m = setUpCountryCB(index);
+		// else if (choice == 4)
+		// m = setUpPersonalityCB();
+		else if (choice == DESTINATION_ROW)
+			m = setUpDestinationCB();
+
+		final JFXComboBox<String> g = m;
+		// g.setPadding(new Insets(10,10,10,10));
+		// g.setId("combobox");
+
+		if (g != null) {
+			g.setOnAction((event) -> {
+				String s = (String) g.getValue();
+				g.setValue(s);
+			});
+		}
+
+		return g;
 	}
 
 	@SuppressWarnings("restriction")
@@ -483,41 +533,19 @@ public class CrewEditorFX {
 		}
 	}
 
-	public JFXComboBox<String> setUpGenderCB() {
+	public JFXComboBox<String> setUpGenderCB(int index) {
 		// List<String> genderList = new ArrayList<String>(2);
 		// genderList.add("M");
 		// genderList.add("F");
 		List<String> genderList = Arrays.asList("M", "F");
 		ObservableList<String> genderOList = FXCollections.observableArrayList(genderList);
-		genderOListCB = new JFXComboBox<String>(genderOList);
+		JFXComboBox<String> cb = new JFXComboBox<String>(genderOList);
 
-		return genderOListCB;
+		//genderCBs.add(index, cb);
+
+		return cb;
 	}
 
-	public JFXComboBox<String> setUpCB(int choice) {
-		JFXComboBox<String> m = null;
-		if (choice == GENDER_ROW)
-			m = setUpGenderCB();
-		else if (choice == JOB_ROW)
-			m = setUpJobCB();
-		else if (choice == COUNTRY_ROW)
-			m = setUpCountryCB();
-		// else if (choice == 4)
-		// m = setUpPersonalityCB();
-		else if (choice == DESTINATION_ROW)
-			m = setUpDestinationCB();
-
-		final JFXComboBox<String> g = m;
-		// g.setPadding(new Insets(10,10,10,10));
-		// g.setId("combobox");
-		g.setOnAction((event) -> {
-			String s = (String) g.getValue();
-			g.setValue(s);
-		});
-
-		return g;
-	}
-	
 	public void setUpCrewGender() {
 
 		String s[] = new String[SIZE_OF_CREW];
@@ -530,12 +558,12 @@ public class CrewEditorFX {
 			else
 				s[j] = "F";
 
-			JFXComboBox<String> g = setUpCB(GENDER_ROW); // 2 = Gender
+			JFXComboBox<String> g = setUpCB(GENDER_ROW, j); // 2 = Gender
 			// g.setMaximumRowCount(2);
 			gridPane.add(g, j + 1, GENDER_ROW); // gender's row = 2
 			// genderOListComboBox.add(g);
 			g.setValue(s[j]);
-			genderList.add(g);
+			genderList.add(j, g);
 		}
 	}
 
@@ -651,7 +679,7 @@ public class CrewEditorFX {
 	}
 
 	// public FilterJFXComboBox<String> setUpJobCB() {
-	public JFXComboBox<String> setUpJobCB() {
+	public JFXComboBox<String> setUpJobCB(int index) {
 		/*
 		 * ObservableList<String> options = FXCollections.observableArrayList(
 		 * "Option 1", "Option 2", "Option 3" ); final ComboBox comboBox = new
@@ -677,8 +705,11 @@ public class CrewEditorFX {
 		Collections.sort(jobs);
 
 		ObservableList<String> jobsOList = FXCollections.observableArrayList(jobs);
-		jobOListCB = new JFXComboBox<String>(jobsOList);
-		return jobOListCB;
+		JFXComboBox<String> cb = new JFXComboBox<String>(jobsOList);
+
+		//jobCBs.add(index, cb);
+
+		return cb;
 
 		// AutoCompleteJFXComboBox<String> jobsACCB = new
 		// AutoCompleteComboBox<>(FXCollections.observableArrayList(jobs));
@@ -687,46 +718,135 @@ public class CrewEditorFX {
 
 		// return jobsFCB;
 	}
-	
+
 	public void setUpCrewJob() {
 
 		String n[] = new String[SIZE_OF_CREW];
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			n[i] = personConfig.getConfiguredPersonJob(i, ALPHA_CREW);
-			JFXComboBox<String> g = setUpCB(JOB_ROW); // 3 = Job
+			JFXComboBox<String> g = setUpCB(JOB_ROW, i); // 3 = Job
 			// g.setMaximumRowCount(8);
 			gridPane.add(g, i + 1, JOB_ROW); // job's row = 3
 			g.setValue(n[i]);
-			jobList.add(g);
+			jobList.add(i, g);
+		}
+	}
+
+	// 2017-02-14 Added setupSponsorCB()
+	@SuppressWarnings("unchecked")
+	public JFXComboBox<String> setUpSponsorCB(int index) {
+
+		List<String> sponsors = personConfig.createSponsorList();
+		Collections.sort(sponsors);
+
+		ObservableList<String> sponsorOList = FXCollections.observableArrayList(sponsors);
+
+		JFXComboBox<String> cb = new JFXComboBox<String>(sponsorOList);
+
+		//sponsorCBs.add(index, cb);
+
+		cb.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+			@Override
+            public void changed(ObservableValue ov, Object oldValue, Object newValue) {
+
+            	if (oldValue != newValue && newValue != null) {
+
+            		String sponsor = (String)newValue;
+            		//System.out.println("sponsor is " + sponsor);
+            		int code = -1;
+                	List list = new ArrayList<>();
+
+            		if (sponsor.contains("CNSA"))
+            			list.add("China");
+            		else if (sponsor.contains("CSA"))
+            			list.add("Canada");
+            		else if (sponsor.contains("ISRO"))
+            			list.add("India"); //2
+            		else if (sponsor.contains("JAXA"))
+                		list.add("Japan"); //3
+            		else if (sponsor.contains("MS"))
+            			code = 0;
+            		else if (sponsor.contains("NASA"))
+                		list.add("US"); //4
+            		else if (sponsor.contains("RKA"))
+                		list.add("Russia"); //5
+            		else if (sponsor.contains("ESA"))
+            			code = 1;
+
+
+            		if (code == 0) {
+            			list = personConfig.createCountryList();
+            		}
+            		else if (code == 1) {
+            			list = personConfig.createESACountryList();
+            		}
+
+            		Collections.sort(list);
+
+            		ObservableList<String> countryOList = FXCollections.observableArrayList(list);
+            		//System.out.println("list size is " + list.size());
+
+            		countryList.get(index).setItems(countryOList);
+            	}
+            }
+        });
+
+		return cb;
+	}
+
+	// 2017-02-14 Added setUpCrewSponsor()
+	public void setUpCrewSponsor() {
+
+		String n[] = new String[SIZE_OF_CREW];
+
+		for (int i = 0; i < SIZE_OF_CREW; i++) {
+			n[i] = personConfig.getConfiguredPersonSponsor(i, ALPHA_CREW);
+			JFXComboBox<String> g = setUpCB(SPONSOR_ROW, i); // 4 = sponsor
+			// g.setMaximumRowCount(8);
+			gridPane.add(g, i + 1, SPONSOR_ROW); // sponsor's row = 4
+			g.setValue(n[i]);
+			sponsorList.add(i, g);
 		}
 	}
 
 	// 2017-01-24 Added setupCountryCB()
-	public JFXComboBox<String> setUpCountryCB() {
+	public JFXComboBox<String> setUpCountryCB(int index) {
 
 		List<String> countries = personConfig.createCountryList();
 		Collections.sort(countries);
 
 		ObservableList<String> countryOList = FXCollections.observableArrayList(countries);
-		countryOListCB = new JFXComboBox<String>(countryOList);
-		return countryOListCB;
+		JFXComboBox<String> cb = new JFXComboBox<String>(countryOList);
+
+		//countryCBs.add(index, cb);
+		ValidationSupport validationSupport = new ValidationSupport();
+        validationSupport.registerValidator(cb, Validator.createEmptyValidator( "ComboBox Selection required"));
+	    validationSupport.validationResultProperty().addListener( (o, oldValue, newValue) -> {
+		    	if (newValue == null || newValue.equals(" "))
+		    		System.out.println("invalid choice of country of origin !");
+		    }
+	    );
+
+		return cb;
 
 	}
 
+	// 2017-01-24 Added setUpCrewCountry()
 	public void setUpCrewCountry() {
 
 		String n[] = new String[SIZE_OF_CREW];
 
 		for (int i = 0; i < SIZE_OF_CREW; i++) {
 			n[i] = personConfig.getConfiguredPersonCountry(i, ALPHA_CREW);
-			JFXComboBox<String> g = setUpCB(COUNTRY_ROW); // 4 = Country
+			JFXComboBox<String> g = setUpCB(COUNTRY_ROW, i); // 5 = Country
 			// g.setMaximumRowCount(8);
-			gridPane.add(g, i + 1, COUNTRY_ROW); // country's row = 4
+			gridPane.add(g, i + 1, COUNTRY_ROW); // country's row = 5
 			g.setValue(n[i]);
-			countryList.add(g);
+			countryList.add(i, g);
 		}
 	}
+
 
 	public JFXComboBox<String> setUpDestinationCB() {
 
@@ -736,6 +856,7 @@ public class CrewEditorFX {
 
 		return destinationsOListComboBox;
 	}
+
 
 	public void setupSettlementNames() {
 		// TODO: how to properly sense the change and rebuild the combobox
@@ -762,12 +883,12 @@ public class CrewEditorFX {
 
 /*
 	 * public void setUpCrewDestination() {
-	 * 
+	 *
 	 * //List<SettlementInfo> settlements =
 	 * scenarioConfigEditorFX.getSettlementTableModel().getSettlements(); //int
 	 * size = settlements.size(); //System.out.println("size is " + size);
 	 * String n[] = new String[SIZE_OF_CREW];
-	 * 
+	 *
 	 * for (int i = 0 ; i < SIZE_OF_CREW; i++) { n[i] =
 	 * personConfig.getConfiguredPersonDestination(i);
 	 * //System.out.println("n[i] is "+ n[i]); JFXComboBox<String> destinationCB =
@@ -875,6 +996,10 @@ public class CrewEditorFX {
 	/** records relative x and y co-ordinates. */
 	private static class Delta {
 		double x, y;
+	}
+
+	public Stage getStage() {
+		return stage;
 	}
 
 	/**

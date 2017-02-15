@@ -37,9 +37,9 @@ implements Serializable {
 	public static final int SIZE_OF_CREW = 4;
 	public static final int ALPHA_CREW = 0; ;
 
-	// 2016-06-25 Added a list of crew 
+	// 2016-06-25 Added a list of crew
 	private List<Crew> roster = new ArrayList<>();
-	
+
 	// Element names
 	private static final String LAST_NAME_LIST = "last-name-list";
 	private static final String FIRST_NAME_LIST = "first-name-list";
@@ -47,15 +47,15 @@ implements Serializable {
 	private static final String FIRST_NAME = "first-name";
 	private static final String PERSON_NAME_LIST = "person-name-list";
 	private static final String PERSON_NAME = "person-name";
-	
+
 	private static final String GENDER = "gender";
-	
+
 	private static final String SPONSOR = "sponsor";
 	private static final String COUNTRY = "country";
-	
+
 	private static final String LOW_O2_RATE = "low-activity-metaboic-load-o2-consumption-rate";
 	private static final String NOMINAL_O2_RATE = "nominal-activity-metaboic-load-o2-consumption-rate";
-	private static final String HIGH_O2_RATE = "high-activity-metaboic-load-o2-consumption-rate";	
+	private static final String HIGH_O2_RATE = "high-activity-metaboic-load-o2-consumption-rate";
 
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String WATER_USAGE_RATE = "water-usage-rate";
@@ -111,30 +111,30 @@ implements Serializable {
 
 	// for 3 types of metabolic loads
 	private double[] o2ConsumptionRate = new double[] {0,0,0};
-	// for water, dessert, food 
+	// for water, dessert, food
 	private double[] consumptionRates = new double[] {0,0,0};
 	// for grey2BlackWaterRatio, gender ratio
 	private double[] ratio = new double[] {0,0};
 	// for stress breakdown and high fatigue collapse chance
-	private double[] chance = new double[] {0,0};		
-	// for various time values 
+	private double[] chance = new double[] {0,0};
+	// for various time values
 	private double[] time = new double[] {0,0,0,0,0,0};
 	// for min and max temperature
 	private double[] temperature = new double[] {0,0};
-	
+
 	private double waterUsage = 0;
 
 	private double pressure = 0;
 
 	private Document personDoc;
-	
+
 	private Map<String, Double> personalityDistribution;
-	
-	private List<String> personNameList, countries;
+
+	private List<String> personNameList, countries, ESAcountries, sponsors;
 	private List<Map<Integer, List<String>>> lastNames;
 	private List<Map<Integer, List<String>>> firstNames;
 
-	
+
 	/**
 	 * Constructor
 	 * @param personDoc the person config DOM document.
@@ -143,12 +143,12 @@ implements Serializable {
 	    //logger.info("PersonConfig's constructor is on " + Thread.currentThread().getName());
 
 		this.personDoc = personDoc;
-		
+
 		getPersonNameList();
 		retrieveLastNameList();
 		retrieveFirstNameList();
 		createPersonalityDistribution();
-		
+
 	}
 
 	/**
@@ -177,7 +177,7 @@ implements Serializable {
 	 * Gets a list of first names for settlers.
 	 * @return List of first names.
 	 * @throws Exception if first names could not be found.
-	 
+
     //@SuppressWarnings("unchecked")
     // 2016-04-06 Added getFirstNameList()
 	public List<String> getFirstNameList() {
@@ -193,11 +193,11 @@ implements Serializable {
 			}
 		}
 
-		//System.out.println("done with getFirstNameList()");		
+		//System.out.println("done with getFirstNameList()");
 		return nameList;
 	}
 */
-    
+
 	/**
 	 * Retrieves a list of settlers' last names by sponsors and by countries.
 	 * @return List of last names.
@@ -207,60 +207,60 @@ implements Serializable {
 	public List<Map<Integer, List<String>>> retrieveLastNameList(){
 
 		if (lastNames == null) {
-	
+
 			lastNames = new ArrayList<Map<Integer, List<String>>>();
-			
+
 			List<List<String>> sponsors = new ArrayList<>();
 			for (int i= 0; i<7; i++){
 		    	List<String> list = new ArrayList<String>();
 				sponsors.add(list);
 			}
-	
+
 			// 2016-12-27 Added lists for countries
 			List<List<String>> countries = new ArrayList<>();
 			for (int i= 0; i<28; i++){
 		    	List<String> countryList = new ArrayList<String>();
 		    	countries.add(countryList);
 			}
-			
+
 	    	Element root = personDoc.getRootElement();
 			Element lastNameEl = root.getChild(LAST_NAME_LIST);
 			List<Element> lastNamesList = lastNameEl.getChildren(LAST_NAME);
-	
+
 			for (Element nameElement : lastNamesList) {
-				
+
 				String sponsor = nameElement.getAttributeValue(SPONSOR);
 				String name = nameElement.getAttributeValue(VALUE);
 				String country = nameElement.getAttributeValue(COUNTRY);
-				
+
 				if (sponsor.equals("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
-					sponsors.get(0).add(name);		
+					sponsors.get(0).add(name);
 				else if (sponsor.equals("CSA"))// && type[i] == ReportingAuthorityType.CSA)
-					sponsors.get(1).add(name);		
+					sponsors.get(1).add(name);
 				else if (sponsor.equals("ESA"))// && type[i] == ReportingAuthorityType.ESA)
-					sponsors.get(2).add(name);					
+					sponsors.get(2).add(name);
 				else if (sponsor.equals("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
-					sponsors.get(3).add(name);			
+					sponsors.get(3).add(name);
 				else if (sponsor.equals("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
-					sponsors.get(4).add(name);				
+					sponsors.get(4).add(name);
 				else if (sponsor.equals("NASA"))// && type[i] == ReportingAuthorityType.NASA)
-					sponsors.get(5).add(name);			
+					sponsors.get(5).add(name);
 				else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 					sponsors.get(6).add(name);
-	
-				
-				/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/		
+
+
+				/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/
 				if (country.equals("China")) countries.get(0).add(name);
 				else if (country.equals("Canada")) countries.get(1).add(name);
 				else if (country.equals("India")) countries.get(2).add(name);
 				else if (country.equals("Japan")) countries.get(3).add(name);
-				else if (country.equals("US")) countries.get(4).add(name);	
+				else if (country.equals("US")) countries.get(4).add(name);
 				else if (country.equals("Russia")) countries.get(5).add(name);
-				
-				/* ESA has 22 Member States. The national bodies responsible for space in 
-				these countries sit on ESA’s governing Council: Austria, Belgium, Czech Republic, 
-				Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, 
-				Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain, Sweden, 
+
+				/* ESA has 22 Member States. The national bodies responsible for space in
+				these countries sit on ESAï¿½s governing Council: Austria, Belgium, Czech Republic,
+				Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy,
+				Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain, Sweden,
 				Switzerland and the United Kingdom.*/
 				else if (country.equals("Austria")) countries.get(6).add(name);
 				else if (country.equals("Belgium")) countries.get(7).add(name);
@@ -284,25 +284,25 @@ implements Serializable {
 				else if (country.equals("Sweden")) countries.get(25).add(name);
 				else if (country.equals("Switzerland")) countries.get(26).add(name);
 				else if (country.equals("UK")) countries.get(27).add(name);
-				
+
 			}
-			
+
 			Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
 			Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
-			
+
 			for (int i= 0; i<7; i++){
 				lastNamesBySponsor.put(i, sponsors.get(i));
 			}
-	
+
 			for (int i= 0; i<28; i++){
 				lastNamesByCountry.put(i, countries.get(i));
 			}
-			
+
 			lastNames.add(lastNamesBySponsor);
 			lastNames.add(lastNamesByCountry);
 
 		}
-		
+
 		return lastNames;
 	}
 
@@ -314,83 +314,83 @@ implements Serializable {
 	 */
     //2017-01-21 Added retrievefirstNameList()
 	public List<Map<Integer, List<String>>> retrieveFirstNameList() {
-	
+
 		if (firstNames == null) {
-			
+
 			firstNames = new ArrayList<Map<Integer, List<String>>>();
-				
+
 			List<List<String>> malesBySponsor = new ArrayList<>();
 			for (int i= 0; i<7; i++){
 		    	List<String> list = new ArrayList<String>();
 				malesBySponsor.add(list);
 			}
-	
+
 			List<List<String>> femalesBySponsor = new ArrayList<>();
 			for (int i= 0; i<7; i++){
 		    	List<String> list = new ArrayList<String>();
 				femalesBySponsor.add(list);
 			}
-			
+
 			// 2017-01-21 Added lists for countries
 			List<List<String>> malesByCountry = new ArrayList<>();
 			for (int i= 0; i<28; i++){
 		    	List<String> countryList = new ArrayList<String>();
 		    	malesByCountry.add(countryList);
 			}
-	
+
 			List<List<String>> femalesByCountry = new ArrayList<>();
 			for (int i= 0; i<28; i++){
 		    	List<String> countryList = new ArrayList<String>();
 		    	femalesByCountry.add(countryList);
 			}
-			
+
 	    	//List<String> nameList = new ArrayList<String>();
 			Element root = personDoc.getRootElement();
 			Element firstNameEl = root.getChild(FIRST_NAME_LIST);
 			List<Element> firstNamesList = firstNameEl.getChildren(FIRST_NAME);
-	
+
 			for (Element nameElement : firstNamesList) {
-	
+
 				String gender = nameElement.getAttributeValue(GENDER);
 				String sponsor = nameElement.getAttributeValue(SPONSOR);
 				String name = nameElement.getAttributeValue(VALUE);
 				String country = nameElement.getAttributeValue(COUNTRY);
-				
+
 				if (gender.equals("male")) {
-					
+
 					if (sponsor.equals("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
 						malesBySponsor.get(0).add(name);
-					
+
 					else if (sponsor.equals("CSA"))// && type[i] == ReportingAuthorityType.CSA)
 						malesBySponsor.get(1).add(name);
-					
+
 					else if (sponsor.equals("ESA"))// && type[i] == ReportingAuthorityType.ESA)
 						malesBySponsor.get(2).add(name);
-						
+
 					else if (sponsor.equals("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
 						malesBySponsor.get(3).add(name);
-						
+
 					else if (sponsor.equals("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
-						malesBySponsor.get(4).add(name);	
-						
+						malesBySponsor.get(4).add(name);
+
 					else if (sponsor.equals("NASA"))// && type[i] == ReportingAuthorityType.NASA)
 						malesBySponsor.get(5).add(name);
-						
+
 					else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						malesBySponsor.get(6).add(name);
-						
-					/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/		
+
+					/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/
 					if (country.equals("China")) malesByCountry.get(0).add(name);
 					else if (country.equals("Canada")) malesByCountry.get(1).add(name);
 					else if (country.equals("India")) malesByCountry.get(2).add(name);
 					else if (country.equals("Japan")) malesByCountry.get(3).add(name);
-					else if (country.equals("US")) malesByCountry.get(4).add(name);	
+					else if (country.equals("US")) malesByCountry.get(4).add(name);
 					else if (country.equals("Russia")) malesByCountry.get(5).add(name);
-					
-					/* ESA has 22 Member States. The national bodies responsible for space in 
-					these countries sit on ESA’s governing Council: Austria, Belgium, Czech Republic, 
-					Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, 
-					Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain, Sweden, 
+
+					/* ESA has 22 Member States. The national bodies responsible for space in
+					these countries sit on ESAï¿½s governing Council: Austria, Belgium, Czech Republic,
+					Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy,
+					Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain, Sweden,
 					Switzerland and the United Kingdom.*/
 					else if (country.equals("Austria")) malesByCountry.get(6).add(name);
 					else if (country.equals("Belgium")) malesByCountry.get(7).add(name);
@@ -414,44 +414,44 @@ implements Serializable {
 					else if (country.equals("Sweden")) malesByCountry.get(25).add(name);
 					else if (country.equals("Switzerland")) malesByCountry.get(26).add(name);
 					else if (country.equals("UK")) malesByCountry.get(27).add(name);
-	
-					
+
+
 				} else if (gender.equals("female")) {
-					
+
 					if (sponsor.equals("CNSA"))// && type[i] == ReportingAuthorityType.CNSA)
 						femalesBySponsor.get(0).add(name);
-					
+
 					else if (sponsor.equals("CSA"))// && type[i] == ReportingAuthorityType.CSA)
 						femalesBySponsor.get(1).add(name);
-					
+
 					else if (sponsor.equals("ESA"))// && type[i] == ReportingAuthorityType.ESA)
 						femalesBySponsor.get(2).add(name);
-						
+
 					else if (sponsor.equals("ISRO"))// && type[i] == ReportingAuthorityType.ISRO)
 						femalesBySponsor.get(3).add(name);
-						
+
 					else if (sponsor.equals("JAXA"))// && type[i] == ReportingAuthorityType.JAXA)
-						femalesBySponsor.get(4).add(name);	
-						
+						femalesBySponsor.get(4).add(name);
+
 					else if (sponsor.equals("NASA"))// && type[i] == ReportingAuthorityType.NASA)
 						femalesBySponsor.get(5).add(name);
-						
+
 					else if (sponsor.equals("RKA"))// && type[i] == ReportingAuthorityType.RKA)
 						femalesBySponsor.get(6).add(name);
-	
-									
-					/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/		
+
+
+					/*CNSA,CSA,ISRO,JAXA,NASA,RKA*/
 					if (country.equals("China")) femalesByCountry.get(0).add(name);
 					else if (country.equals("Canada")) femalesByCountry.get(1).add(name);
 					else if (country.equals("India")) femalesByCountry.get(2).add(name);
 					else if (country.equals("Japan")) femalesByCountry.get(3).add(name);
 					else if (country.equals("US")) femalesByCountry.get(4).add(name);
 					else if (country.equals("Russia")) femalesByCountry.get(5).add(name);
-	
-					/* ESA has 22 Member States. The national bodies responsible for space in 
-					these countries sit on ESA’s governing Council: Austria, Belgium, Czech Republic, 
-					Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy, 
-					Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain, Sweden, 
+
+					/* ESA has 22 Member States. The national bodies responsible for space in
+					these countries sit on ESAï¿½s governing Council: Austria, Belgium, Czech Republic,
+					Denmark, Estonia, Finland, France, Germany, Greece, Hungary, Ireland, Italy,
+					Luxembourg, The Netherlands, Norway, Poland, Portugal, Romania, Spain, Sweden,
 					Switzerland and the United Kingdom.*/
 					else if (country.equals("Austria")) femalesByCountry.get(6).add(name);
 					else if (country.equals("Belgium")) femalesByCountry.get(7).add(name);
@@ -475,48 +475,48 @@ implements Serializable {
 					else if (country.equals("Sweden")) femalesByCountry.get(25).add(name);
 					else if (country.equals("Switzerland")) femalesByCountry.get(26).add(name);
 					else if (country.equals("UK")) femalesByCountry.get(27).add(name);
-					
-				}				
+
+				}
 			}
-			
+
 			Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
 			Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
 			Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
 			Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
-			
+
 			for (int i= 0; i<7; i++){
 				maleFirstNamesBySponsor.put(i, malesBySponsor.get(i));
 				femaleFirstNamesBySponsor.put(i, femalesBySponsor.get(i));
 			}
-			
+
 			firstNames.add(maleFirstNamesBySponsor);
 			firstNames.add(femaleFirstNamesBySponsor);
-			
+
 			for (int i= 0; i<28; i++){
 				maleFirstNamesByCountry.put(i, malesByCountry.get(i));
 				femaleFirstNamesByCountry.put(i, femalesByCountry.get(i));
 			}
-			
+
 			firstNames.add(maleFirstNamesByCountry);
 			firstNames.add(femaleFirstNamesByCountry);
 
 		}
-		
+
 		return firstNames;
 	}
-    
+
 	/**
 	 * Gets the sponsor of a given person name.
 	 * @param name the name of the person
-	 * @return the sponsor of the person 
+	 * @return the sponsor of the person
 	 */
 	//2015-11-29 Added getPersonSponsor
     @SuppressWarnings("unchecked")
 	public ReportingAuthorityType getPersonSponsor(String name) {
     	ReportingAuthorityType type = null;
-    	
+
     	Element root = personDoc.getRootElement();
-    	
+
 		Element personNameList = root.getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
 		for (Element nameElement : personNames ) {
@@ -524,38 +524,38 @@ implements Serializable {
 			String sponsor = null;
 			if (personName.equals(name))  {
 				sponsor = nameElement.getAttributeValue(SPONSOR);
-/*		
+/*
 				if (sponsor.equals("CNSA"))
 					type = ReportingAuthorityType.CNSA;
-	
+
 				else if (sponsor.equals("CSA"))
 					type = ReportingAuthorityType.CSA;
-	
-				else if (sponsor.equals("ESA"))				
+
+				else if (sponsor.equals("ESA"))
 					type = ReportingAuthorityType.ESA;
-				
+
 				else if (sponsor.equals("ISRO"))
 					type = ReportingAuthorityType.ISRO;
-	
-				else if (sponsor.equals("JAXA"))				
+
+				else if (sponsor.equals("JAXA"))
 					type = ReportingAuthorityType.JAXA;
-*/				
-				if (sponsor.equals("Mars Society (MS)"))				
+*/
+				if (sponsor.equals("Mars Society (MS)"))
 					type = ReportingAuthorityType.MARS_SOCIETY;
-/*				
+/*
 				else if (sponsor.equals("NASA"))
 					type = ReportingAuthorityType.NASA;
-	
-				else if (sponsor.equals("RKA"))				
+
+				else if (sponsor.equals("RKA"))
 					type = ReportingAuthorityType.RKA;
 */
 			}
-				
-		}	
-			
+
+		}
+
 		return type;
 	}
-    
+
 
 	/**
 	 * Gets the gender of a given person name.
@@ -607,7 +607,7 @@ implements Serializable {
 			return o2ConsumptionRate[0];
 		}
 	}
-	
+
 	/**
 	 * Gets the high oxygen consumption rate.
 	 * @return oxygen rate (kg/sol)
@@ -622,7 +622,7 @@ implements Serializable {
 			return o2ConsumptionRate[2];
 		}
 	}
-	
+
 	/**
 	 * Gets the water consumption rate.
 	 * @return water rate (kg/sol)
@@ -654,7 +654,7 @@ implements Serializable {
 
 	/**
 	 * Gets the grey to black water ratio.
-	 * @return ratio 
+	 * @return ratio
 	 * @throws Exception if the ratio could not be found.
 	 */
 	// 2015-12-04 Added getGrey2BlackWaterRatio()
@@ -667,7 +667,7 @@ implements Serializable {
 		}
 	}
 
-	
+
 	/**
 	 * Gets the food consumption rate.
 	 * @return food rate (kg/sol)
@@ -695,7 +695,7 @@ implements Serializable {
 			return consumptionRates[1];
 		}
 	}
-	
+
 	/**
 	 * Gets the oxygen deprivation time.
 	 * @return oxygen time in millisols.
@@ -835,7 +835,7 @@ implements Serializable {
 			return chance[0];
 		}
 	}
-	
+
 	/**
 	 * Gets the base percent chance that a person will collapse under high fatigue.
 	 * @return percent chance of a collapse per millisol.
@@ -895,11 +895,11 @@ implements Serializable {
 	 * Gets the average percentages for personality types
 	 * @param personalityDistribution map
 	 */
-	// 2016-10-30 Added loadPersonalityDistribution() 
+	// 2016-10-30 Added loadPersonalityDistribution()
 	public Map<String, Double> loadPersonalityDistribution() {
 		return personalityDistribution;
 	}
-	
+
 	/**
 	 * Loads the average percentages for personality types into a map.
 	 * @throws Exception if personality type cannot be found or percentages don't add up to 100%.
@@ -936,7 +936,7 @@ implements Serializable {
 		while (i.hasNext()) count+= personalityDistribution.get(i.next());
 		if (count != 100D)
 			throw new IllegalStateException("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
-		
+
 	}
 
 	/**
@@ -952,9 +952,9 @@ implements Serializable {
 		else return 0;
 	}
 
-	
+
 	/**
-	 * Get person's crew designation 
+	 * Get person's crew designation
 	 * @param index the person's index.
 	 * @return name or null if none.
 	 * @throws Exception if error in XML parsing.
@@ -962,42 +962,42 @@ implements Serializable {
 	public int getCrew(int index) {
 		// retrieve the person's crew designation
 		String crewString = getValueAsString(index, CREW);
-		
-		if (crewString == null) {			
+
+		if (crewString == null) {
 			throw new IllegalStateException("The crew designation of a person is null");
-			
+
 		}
-		else { 
-				
+		else {
+
 			boolean oldCrew = false;
-			
+
 			Iterator<Crew> i = roster.iterator();
 			while (i.hasNext()) {
 				Crew crew = i.next();
 				// if the name does not exist, create a new crew with this name
-				if (crewString.equals(crew.getName())) {				
-					oldCrew = true;						
+				if (crewString.equals(crew.getName())) {
+					oldCrew = true;
 					// add a new member
 					//Member m = new Member();
-					crew.add(new Member());				
+					crew.add(new Member());
 					break;
 				}
 			}
-	
+
 			// if this is crew name doesn't exist
 			if (!oldCrew) {
 				Crew c = new Crew(crewString);
 				c.add(new Member());
 				roster.add(c);
-			}		
-			
-			//System.out.println("crewString : " + crewString + "   crew size : " + roster.size());	
-			
+			}
+
+			//System.out.println("crewString : " + crewString + "   crew size : " + roster.size());
+
 			return roster.size() - 1;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Gets the configured person's name.
 	 * @param index the person's index.
@@ -1006,19 +1006,19 @@ implements Serializable {
 	 */
 	public String getConfiguredPersonName(int index, int crew_id) {
 		//System.out.println("roster.get(crew_id) : " + roster.get(crew_id));
-		//System.out.println("roster.get(crew_id).getTeam().get(index) : " + roster.get(crew_id).getTeam().get(index));		
-		//System.out.println("name : " + roster.get(crew_id).getTeam().get(index).getName());		
+		//System.out.println("roster.get(crew_id).getTeam().get(index) : " + roster.get(crew_id).getTeam().get(index));
+		//System.out.println("name : " + roster.get(crew_id).getTeam().get(index).getName());
 
 		if (roster.get(crew_id) != null) {
-			if (roster.get(crew_id).getTeam().get(index).getName() != null)	{	
-				return roster.get(crew_id).getTeam().get(index).getName();   
+			if (roster.get(crew_id).getTeam().get(index).getName() != null)	{
+				return roster.get(crew_id).getTeam().get(index).getName();
 			}
-			else {		
+			else {
 				return getValueAsString(index,NAME);
 			}
-			
+
 		}
-		else {		
+		else {
 			return getValueAsString(index,NAME);
 		}
 	}
@@ -1032,7 +1032,7 @@ implements Serializable {
 	public PersonGender getConfiguredPersonGender(int index, int crew_id) {
 		if (roster.get(crew_id).getTeam().get(index).getGender() != null)
 			return PersonGender.valueOfIgnoreCase(roster.get(crew_id).getTeam().get(index).getGender());//alphaCrewGender.get(index)) ;
-		else 
+		else
 			return PersonGender.valueOfIgnoreCase(getValueAsString(index,GENDER));
 	}
 
@@ -1049,7 +1049,7 @@ implements Serializable {
 			return getValueAsString(index,PERSONALITY_TYPE);
 	}
 
-	
+
 	/**
 	 * Gets the configured person's job.
 	 * @param index the person's index.
@@ -1088,7 +1088,7 @@ implements Serializable {
 		else
 			return getValueAsString(index,SPONSOR);
 	}
-	
+
 	/**
 	 * Gets the configured person's starting settlement.
 	 * @param index the person's index.
@@ -1098,7 +1098,7 @@ implements Serializable {
 	public String getConfiguredPersonDestination(int index, int crew_id) {
 		if (roster.get(crew_id).getTeam().get(index).getDestination() != null)
 			return roster.get(crew_id).getTeam().get(index).getDestination();//alphaCrewDestination.get(index);
-		else 
+		else
 			return getValueAsString(index,SETTLEMENT);
 	}
 
@@ -1108,27 +1108,27 @@ implements Serializable {
 	 * @param name
 	 */
 	public void setPersonName(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getName() == null) 
+		if (roster.get(crew_id).getTeam().get(index).getName() == null)
 			roster.get(crew_id).getTeam().get(index).setName(value);//alphaCrewName = new ArrayList<String>(SIZE_OF_CREW);
-		
+
 		//if (alphaCrewName.size() == SIZE_OF_CREW) {
 		//	alphaCrewName.set(index, value);
 		//} else
 		//	alphaCrewName.add(value);
-		
+
 	}
 
 	/*
 	 * Sets the personality of a member of the alpha crew
 	 * @param index
-	 * @param personality 
+	 * @param personality
 	 */
 	public void setPersonPersonality(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getmbti() == null) 
+		if (roster.get(crew_id).getTeam().get(index).getmbti() == null)
 			roster.get(crew_id).getTeam().get(index).setmbti(value);
-		
-		
-		//if (alphaCrewPersonality == null)  
+
+
+		//if (alphaCrewPersonality == null)
 		//	alphaCrewPersonality = new ArrayList<String>(SIZE_OF_CREW);
 		//if (alphaCrewPersonality.size() == SIZE_OF_CREW) {
 		//	alphaCrewPersonality.set(index, value);
@@ -1139,14 +1139,14 @@ implements Serializable {
 	/*
 	 * Sets the gender of a member of the alpha crew
 	 * @param index
-	 * @param gender 
+	 * @param gender
 	 */
 	public void setPersonGender(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getGender() == null) 
+		if (roster.get(crew_id).getTeam().get(index).getGender() == null)
 			roster.get(crew_id).getTeam().get(index).setGender(value);
-		
-		
-		//if (alphaCrewGender == null)  
+
+
+		//if (alphaCrewGender == null)
 		//	alphaCrewGender = new ArrayList<String>(SIZE_OF_CREW);
 		//if (alphaCrewGender.size() == SIZE_OF_CREW) {
 		//	alphaCrewGender.set(index, value);
@@ -1157,59 +1157,59 @@ implements Serializable {
 	/*
 	 * Sets the job of a member of the alpha crew
 	 * @param index
-	 * @param job 
+	 * @param job
 	 */
 	public void setPersonJob(int index,String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getJob() == null) 
+		if (roster.get(crew_id).getTeam().get(index).getJob() == null)
 			roster.get(crew_id).getTeam().get(index).setJob(value);
-		
-		
-		//if (alphaCrewJob == null)  
+
+
+		//if (alphaCrewJob == null)
 		//	alphaCrewJob = new ArrayList<String>(SIZE_OF_CREW);
 		//if (alphaCrewJob.size() == SIZE_OF_CREW) {
 		//	alphaCrewJob.set(index, value);
 		//} else
 		//	alphaCrewJob.add(value);
 	}
-	
+
 	/*
 	 * Sets the country of a member of the alpha crew
 	 * @param index
-	 * @param country 
+	 * @param country
 	 */
 	public void setPersonCountry(int index,String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getCountry() == null) 
+		if (roster.get(crew_id).getTeam().get(index).getCountry() == null)
 			roster.get(crew_id).getTeam().get(index).setCountry(value);
 	}
-	
+
 	/*
 	 * Sets the sponsor of a member of the alpha crew
 	 * @param index
-	 * @param sponsor 
+	 * @param sponsor
 	 */
 	public void setPersonSponsor(int index,String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getSponsor() == null) 
+		if (roster.get(crew_id).getTeam().get(index).getSponsor() == null)
 			roster.get(crew_id).getTeam().get(index).setSponsor(value);
 	}
-	
+
 	/*
 	 * Sets the destination of a member of the alpha crew
 	 * @param index
-	 * @param destination 
+	 * @param destination
 	 */
 	public void setPersonDestination(int index, String value, int crew_id) {
-		if (roster.get(crew_id).getTeam().get(index).getDestination() == null) 
+		if (roster.get(crew_id).getTeam().get(index).getDestination() == null)
 			roster.get(crew_id).getTeam().get(index).setDestination(value);
-				
-		
-		//if (alphaCrewDestination == null)  
+
+
+		//if (alphaCrewDestination == null)
 		//	alphaCrewDestination = new ArrayList<String>(SIZE_OF_CREW);
 		//if (alphaCrewDestination.size() == SIZE_OF_CREW) {
 		//	alphaCrewDestination.set(index, value);
 		//} else
 		//	alphaCrewDestination.add(value);
 	}
-	
+
 	/**
 	 * Gets a map of the configured person's natural attributes.
 	 * @param index the person's index.
@@ -1238,7 +1238,7 @@ implements Serializable {
 		return result;
 	}
 
-	
+
 	/**
 	 * Gets a map of the configured person's traits according to the Big Five Model.
 	 * @param index the person's index.
@@ -1267,7 +1267,7 @@ implements Serializable {
 		}
 		return result;
 	}
-    
+
 	/*
 	 * Gets the value of an element as a String
 	 * @param an element
@@ -1284,7 +1284,7 @@ implements Serializable {
 	/*
 	 * Gets the value of an element as a double
 	 * @param an element
-	 * @return a double 
+	 * @return a double
 	 */
 	private double getValueAsDouble(String child) {
 		Element root = personDoc.getRootElement();
@@ -1292,7 +1292,7 @@ implements Serializable {
 		String str = element.getAttributeValue(VALUE);
 		return Double.parseDouble(str);
 	}
-	
+
 	/**
 	 * Gets a map of the configured person's skills.
 	 * @param index the person's index.
@@ -1347,7 +1347,7 @@ implements Serializable {
 		return result;
 	}
 
-	
+
 	/**
 	 * Gets the configured person's favorite main dish.
 	 * @param index the person's index.
@@ -1355,13 +1355,13 @@ implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getFavoriteMainDish(int index, int crew_id) {
-			
+
 		if (roster.get(crew_id).getTeam().get(index).getMainDish() != null)
 			return roster.get(crew_id).getTeam().get(index).getMainDish() ;
 		else
 			return getValueAsString(index,MAIN_DISH);
 	}
-	
+
 	/**
 	 * Gets the configured person's favorite side dish.
 	 * @param index the person's index.
@@ -1387,7 +1387,7 @@ implements Serializable {
 		else
 			return getValueAsString(index,DESSERT);
 	}
-  
+
 	/**
 	 * Gets the configured person's favorite activity.
 	 * @param index the person's index.
@@ -1400,98 +1400,131 @@ implements Serializable {
 		else
 			return getValueAsString(index,ACTIVITY);
 	}
-	
-	
+
+
 	// 2017-01-21 Add createCountryList();
 	public List<String> createCountryList() {
-	
+
 		if (countries == null) {
 			countries = new ArrayList<>();
-		
+
 			countries.add("China"); //0
 			countries.add("Canada"); //1
 			countries.add("India"); //2
 			countries.add("Japan"); //3
 			countries.add("US"); //4
 			countries.add("Russia"); //5
-			
-			countries.add("Austria");
-			countries.add("Belgium");
-			countries.add("Czech Republic");
-			countries.add("Denmark");
-			countries.add("Estonia");
-			countries.add("Finland");
-			countries.add("France");
-			countries.add("Germany");
-			countries.add("Greece");
-			countries.add("Hungary");
-			countries.add("Ireland");
-			countries.add("Italy");
-			countries.add("Luxembourg");
-			countries.add("The Netherlands");
-			countries.add("Norway");
-			countries.add("Poland");
-			countries.add("Portugal");
-			countries.add("Romania");
-			countries.add("Spain");
-			countries.add("Sweden");
-			countries.add("Switzerland");
-			countries.add("UK");
-			
+
+			countries.addAll(createESACountryList());
+
 		}
-		
+
 		return countries;
 	}
-	
+
+	// 2017-01-21 Add createCountryList();
+	public List<String> createESACountryList() {
+
+		if (ESAcountries == null) {
+			ESAcountries = new ArrayList<>();
+
+			ESAcountries.add("Austria");
+			ESAcountries.add("Belgium");
+			ESAcountries.add("Czech Republic");
+			ESAcountries.add("Denmark");
+			ESAcountries.add("Estonia");
+			ESAcountries.add("Finland");
+			ESAcountries.add("France");
+			ESAcountries.add("Germany");
+			ESAcountries.add("Greece");
+			ESAcountries.add("Hungary");
+			ESAcountries.add("Ireland");
+			ESAcountries.add("Italy");
+			ESAcountries.add("Luxembourg");
+			ESAcountries.add("The Netherlands");
+			ESAcountries.add("Norway");
+			ESAcountries.add("Poland");
+			ESAcountries.add("Portugal");
+			ESAcountries.add("Romania");
+			ESAcountries.add("Spain");
+			ESAcountries.add("Sweden");
+			ESAcountries.add("Switzerland");
+			ESAcountries.add("UK");
+
+		}
+
+		return ESAcountries;
+	}
+
 	public int getCountryID(String country) {
 		return countries.indexOf(country);
 	}
-	
+
 	public String convert2Sponsor(int id) {
-		
-		if (id == 0) { 
+
+		if (id == 0) {
 			return Msg.getString("ReportingAuthorityType.CNSA");
 		}
-		else if (id == 1) { 
+		else if (id == 1) {
 			return Msg.getString("ReportingAuthorityType.CSA");
 		}
-		else if (id == 2) { 
+		else if (id == 2) {
 			return Msg.getString("ReportingAuthorityType.ISRO");
 		}
-		else if (id == 3) { 
+		else if (id == 3) {
 			return Msg.getString("ReportingAuthorityType.JAXA");
 		}
-		else if (id == 4) { 
+		else if (id == 4) {
 			return Msg.getString("ReportingAuthorityType.NASA");
 		}
-		else if (id == 5) { 
+		else if (id == 5) {
 			return Msg.getString("ReportingAuthorityType.RKA");
 		}
-		else { 
+		else {
 			return Msg.getString("ReportingAuthorityType.ESA");
 		}
-		
+
 	}
-	
+
+	// 2017-02-14 Add createSponsorList();
+	public List<String> createSponsorList() {
+
+		if (sponsors == null) {
+			sponsors = new ArrayList<>();
+
+			sponsors.add(Msg.getString("ReportingAuthorityType.CNSA"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.CSA"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.ISRO"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.JAXA"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.MarsSociety"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.NASA"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.RKA"));
+			sponsors.add(Msg.getString("ReportingAuthorityType.ESA"));
+
+		}
+
+		return sponsors;
+	}
+
 	/*
 	 * Gets a list of last names by sponsors and by countries
-	 
+
 	// 2017-01-21 Added getLastNames()
 	public List<Map<Integer, List<String>>> getLastNames() {
 		return lastNames;
 	}
 	*/
-	
+
 	/*
 	 * Gets a list of first names by sponsors and by countries
-	
+
 	// 2017-01-21 Added getFirstNames()
 	public List<Map<Integer, List<String>>> getFirstNames() {
 		return firstNames;
 	}
 	*/
-	
-	
+
+
     /**
      * Prepare object for garbage collection.
      */

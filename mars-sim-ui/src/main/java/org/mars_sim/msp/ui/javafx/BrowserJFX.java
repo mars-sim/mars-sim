@@ -339,6 +339,8 @@ public class BrowserJFX {
 
 	                	if (event.getURL() != null) {
 
+		                    if (mainScene != null) mainScene.getScene().setCursor(Cursor.HAND);
+
 		                	input = event.getURL().toString(); // can get NullPointerException on some links.
 
 		                	if (input.toLowerCase().contains(HTTP_HEADER.toLowerCase())
@@ -351,11 +353,10 @@ public class BrowserJFX {
 		    				}
 
 		                    updateButtons();
-
 		                    // 2016-11-30 Fix the URL not being displayed correctly
 		                    textInputCache = input;
+
 		                    showURL();
-		                    if (mainScene != null) mainScene.getScene().setCursor(Cursor.HAND);
 		                    //System.out.println("just clicked at a link");
 	                	}
                 	}
