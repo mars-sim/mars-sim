@@ -1404,7 +1404,7 @@ public class MainScene {
 			if (sMapButton.isSelected()) {
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
 					openMap();
-				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
+				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 					//pinButton.setSelected(true);
 					openMinimap();
 				}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelPowerGrid.java
- * @version 3.08 2015-05-08
+ * @version 3.1.0 2017-02-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -46,6 +47,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -61,6 +63,11 @@ extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static final String kW = " kW";
+	private static final String kWh = " kWhr";
+	private static final String PERCENT_PER_SOL = " % per sol";
+	private static final String PERCENT = " %";
 
 	// Data Members
 	private JTable powerTable ;
@@ -136,8 +143,8 @@ extends TabPanel {
 		//powerLabelPanel.setBorder(new MarsPanelBorder());
 		//topContentPanel.add(powerLabelPanel);
 
-		// Prepare power info panel.
-		JPanel powerInfoPanel = new JPanel(new GridLayout(6, 2, 0, 0));
+		// Prepare spring layout power info panel.
+		JPanel powerInfoPanel = new JPanel(new SpringLayout());//GridLayout(6, 2, 0, 0));
 		powerInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(powerInfoPanel);
 
@@ -147,9 +154,9 @@ extends TabPanel {
 		powerInfoPanel.add(powerGeneratedLabel);
 
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerGeneratedTF = new JTextField(formatter.format(powerGeneratedCache));
+		powerGeneratedTF = new JTextField(formatter.format(powerGeneratedCache) + kW);
 		powerGeneratedTF.setEditable(false);
-		powerGeneratedTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		powerGeneratedTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper1.add(powerGeneratedTF);
 		powerInfoPanel.add(wrapper1);
 
@@ -159,9 +166,9 @@ extends TabPanel {
 		powerInfoPanel.add(powerUsedLabel);
 
 		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		powerUsedTF = new JTextField(formatter.format(powerUsedCache));
+		powerUsedTF = new JTextField(formatter.format(powerUsedCache) + kW);
 		powerUsedTF.setEditable(false);
-		powerUsedTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		powerUsedTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper2.add(powerUsedTF);
 		powerInfoPanel.add(wrapper2);
 
@@ -171,9 +178,9 @@ extends TabPanel {
 		powerInfoPanel.add(energyStorageCapacityLabel);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStorageCapacityTF = new JTextField(formatter.format(energyStorageCapacityCache));
+		energyStorageCapacityTF = new JTextField(formatter.format(energyStorageCapacityCache) + kWh);
 		energyStorageCapacityTF.setEditable(false);
-		energyStorageCapacityTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		energyStorageCapacityTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper3.add(energyStorageCapacityTF);
 		powerInfoPanel.add(wrapper3);
 
@@ -183,9 +190,9 @@ extends TabPanel {
 		powerInfoPanel.add(energyStoredLabel);
 
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		energyStoredTF = new JTextField(formatter.format(energyStoredCache));
+		energyStoredTF = new JTextField(formatter.format(energyStoredCache) + kWh);
 		energyStoredTF.setEditable(false);
-		energyStoredTF.setPreferredSize(new Dimension(60, 24));//setColumns(20);
+		energyStoredTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper4.add(energyStoredTF);
 		powerInfoPanel.add(wrapper4);
 
@@ -197,9 +204,9 @@ extends TabPanel {
 		powerInfoPanel.add(electricEfficiencyLabel);
 
 		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		solarCellEfficiencyTF = new JTextField(formatter2.format(solarCellEfficiencyCache*100D));
+		solarCellEfficiencyTF = new JTextField(formatter2.format(solarCellEfficiencyCache*100D) + PERCENT);
 		solarCellEfficiencyTF.setEditable(false);
-		solarCellEfficiencyTF.setPreferredSize(new Dimension(50, 24));//setColumns(20);
+		solarCellEfficiencyTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper5.add(solarCellEfficiencyTF);
 		powerInfoPanel.add(wrapper5);
 
@@ -209,9 +216,9 @@ extends TabPanel {
 		powerInfoPanel.add(degradRateLabel);
 
 		JPanel wrapper6 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		degradRateTF = new JTextField(formatter3.format(degradRate*100D));
+		degradRateTF = new JTextField(formatter3.format(degradRate*100D) + PERCENT_PER_SOL);
 		degradRateTF.setEditable(false);
-		degradRateTF.setPreferredSize(new Dimension(50, 24));//setColumns(20);
+		degradRateTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
 		wrapper6.add(degradRateTF);
 		powerInfoPanel.add(wrapper6);
 
@@ -256,7 +263,7 @@ extends TabPanel {
         //if (!MainScene.OS.equals("linux")) {
         //	powerTable.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
-        
+
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(powerTable);
 
@@ -266,6 +273,12 @@ extends TabPanel {
      	TableSearchable searchable = SearchableUtils.installSearchable(powerTable);
         searchable.setPopupTimeout(5000);
      	searchable.setCaseSensitive(false);
+
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(powerInfoPanel,
+		                                6, 2, //rows, cols
+		                                80, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
 
 	}
 
@@ -302,35 +315,35 @@ extends TabPanel {
 		double gen = powerGrid.getGeneratedPower();
 		if (powerGeneratedCache != gen) {
 			powerGeneratedCache = gen;
-			powerGeneratedTF.setText(formatter.format(powerGeneratedCache));
+			powerGeneratedTF.setText(formatter.format(powerGeneratedCache) + kW);
 		}
 
 		// Update power used TF.
 		double req = powerGrid.getRequiredPower();
 		if (powerUsedCache != req) {
 			powerUsedCache = req;
-			powerUsedTF.setText(formatter.format(powerUsedCache));
+			powerUsedTF.setText(formatter.format(powerUsedCache) + kW);
 		}
 
 		// Update power storage capacity TF.
 		double cap = powerGrid.getStoredEnergyCapacity();
 		if (energyStorageCapacityCache != cap) {
 			energyStorageCapacityCache = cap;
-			energyStorageCapacityTF.setText(formatter.format(energyStorageCapacityCache));
+			energyStorageCapacityTF.setText(formatter.format(energyStorageCapacityCache) + kWh);
 		}
 
 		// Update power stored TF.
 		double store = powerGrid.getStoredEnergy();
 		if (energyStoredCache != store ) {
 			energyStoredCache = store;
-			energyStoredTF.setText(formatter.format(energyStoredCache));
+			energyStoredTF.setText(formatter.format(energyStoredCache) + kWh);
 		}
 
 		// Update solar cell efficiency TF
 		double eff = getAverageEfficiency();
 		if (solarCellEfficiencyCache != eff) {
 			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(formatter2.format(eff*100D));
+			solarCellEfficiencyTF.setText(formatter2.format(eff*100D) + PERCENT);
 		}
 		// Update power table.
 		powerTableModel.update();

@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.ui.steelseries.gauges.Radial2Top;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
@@ -54,7 +56,7 @@ extends TabPanel {
 
 		Person person = (Person) unit;
 
-		// Create general label panel.
+		// Create general panel.
 		JPanel generalLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(generalLabelPanel);
 
@@ -63,8 +65,8 @@ extends TabPanel {
 		generalLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		generalLabelPanel.add(generalLabel);
 
-		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(7, 2, 0, 0));
+		// Prepare spring layout info panel.
+		JPanel infoPanel = new JPanel(new SpringLayout());//GridLayout(7, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 
@@ -122,7 +124,7 @@ extends TabPanel {
 		countryTF.setEditable(false);
 		countryTF.setColumns(15);
 		infoPanel.add(countryTF);
-		
+
 		// Prepare weight name label
 		JLabel weightNameLabel = new JLabel(Msg.getString("TabPanelGeneral.weight"), JLabel.RIGHT); //$NON-NLS-1$
 		weightNameLabel.setSize(5, 2);
@@ -170,6 +172,11 @@ extends TabPanel {
 		BMITF.setColumns(12);
 		infoPanel.add(BMITF);
 
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(infoPanel,
+		                                7, 2, //rows, cols
+		                                50, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
 	}
 
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopulationTabPanel.java
- * @version 3.08 2015-03-15
+ * @version 3.1.0 2017-02-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -34,6 +35,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -98,8 +100,8 @@ implements MouseListener, ActionListener {
 		        populationCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		populationCountPanel.add(populationCapLabel);
 
-		// Create population display panel
-		JPanel populationDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		// Create spring layout population display panel
+		JPanel populationDisplayPanel = new JPanel(new SpringLayout());//FlowLayout(FlowLayout.LEFT));
 		populationDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(populationDisplayPanel);
 
@@ -122,6 +124,12 @@ implements MouseListener, ActionListener {
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelPopulation.tooltip.monitor")); //$NON-NLS-1$
 		populationDisplayPanel.add(monitorButton);
+
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(populationDisplayPanel,
+		                                1, 2, //rows, cols
+		                                30, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
 	}
 
 	/**

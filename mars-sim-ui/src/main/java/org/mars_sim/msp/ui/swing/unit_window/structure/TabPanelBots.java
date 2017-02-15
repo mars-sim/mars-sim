@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelBots.java
- * @version 3.07 2015-01-21
+ * @version 3.1.0 2017-02-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -26,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SpringLayout;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
@@ -34,6 +35,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 //import org.mars_sim.msp.ui.swing.tool.monitor.personTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
@@ -98,8 +100,9 @@ implements MouseListener, ActionListener {
 		        robotCapacityCache), JLabel.CENTER); //$NON-NLS-1$
 		robotCountPanel.add(robotCapLabel);
 
-		// Create robot display panel
-		JPanel robotDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+		// Create spring layout robot display panel
+		JPanel robotDisplayPanel = new JPanel(new SpringLayout());//FlowLayout(FlowLayout.LEFT));
 		robotDisplayPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(robotDisplayPanel);
 
@@ -122,6 +125,12 @@ implements MouseListener, ActionListener {
 		monitorButton.addActionListener(this);
 		monitorButton.setToolTipText(Msg.getString("TabPanelBots.tooltip.monitor")); //$NON-NLS-1$
 		robotDisplayPanel.add(monitorButton);
+
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(robotDisplayPanel,
+		                                1, 2, //rows, cols
+		                                30, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
 	}
 
 	/**

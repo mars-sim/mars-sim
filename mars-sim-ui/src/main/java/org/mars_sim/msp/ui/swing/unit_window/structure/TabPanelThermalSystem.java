@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelThermalSystem.java
- * @version 3.08 2015-05-08
+ * @version 3.1.0 2017-02-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
@@ -46,6 +48,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.ColumnResizer;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -60,6 +63,10 @@ extends TabPanel {
 	private static final long serialVersionUID = 1L;
 	// default logger.
 	//private static Logger logger = Logger.getLogger(TabPanelThermalSystem.class.getName());
+
+	private static final String kW = " kW";
+	private static final String PERCENT_PER_SOL = " % per sol";
+	private static final String PERCENT = " %";
 
 	// Data cache
 
@@ -95,6 +102,9 @@ extends TabPanel {
 
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelThermalSystem.decimalFormat")); //$NON-NLS-1$
 	private DecimalFormat formatter2 = new DecimalFormat(Msg.getString("decimalFormat2")); //$NON-NLS-1$
+
+	// 2017-02-14 Added the use of uneditable JTextField
+	private JTextField heatGenTF, powerGenTF, electricEffTF, solarEffTF, cellDegradTF;
 
 
 	/** The settlement's Heating System */
@@ -139,34 +149,67 @@ extends TabPanel {
 		thermalSystemLabelPanel.add(thermalSystemLabel);
 
 		// Prepare heat info panel.
-		JPanel heatInfoPanel = new JPanel(new GridLayout(6, 1, 0, 0));
+		JPanel heatInfoPanel = new JPanel(new SpringLayout());//GridLayout(6, 1, 0, 0));
 		heatInfoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(heatInfoPanel);
 
 		// Prepare heat generated label.
 		heatGenCache = thermalSystem.getGeneratedHeat();
-		heatGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatGen", formatter.format(heatGenCache)), JLabel.CENTER); //$NON-NLS-1$
+		heatGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalHeatGen"), JLabel.RIGHT); //$NON-NLS-1$
 		heatInfoPanel.add(heatGenLabel);
+
+		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		heatGenTF = new JTextField(formatter.format(heatGenCache) + kW);
+		heatGenTF.setEditable(false);
+		heatGenTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		wrapper1.add(heatGenTF);
+		heatInfoPanel.add(wrapper1);
 
 		// Prepare power generated label.
 		powerGenCache = thermalSystem.getGeneratedPower();
-		powerGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalPowerGen", formatter.format(powerGenCache)), JLabel.CENTER); //$NON-NLS-1$
+		powerGenLabel = new JLabel(Msg.getString("TabPanelThermalSystem.totalPowerGen"), JLabel.RIGHT); //$NON-NLS-1$
 		heatInfoPanel.add(powerGenLabel);
 
+		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		powerGenTF = new JTextField(formatter.format(powerGenCache) + kW);
+		powerGenTF.setEditable(false);
+		powerGenTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		wrapper2.add(powerGenTF);
+		heatInfoPanel.add(wrapper2);
 
 		double eff_electric_Heating = getAverageEfficiencyElectricHeat();
-		eff_electric_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency", formatter2.format(eff_electric_Heating*100D)), JLabel.CENTER); //$NON-NLS-1$
+		eff_electric_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
 		heatInfoPanel.add(eff_electric_heat_Label);
 
+		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		electricEffTF = new JTextField(formatter.format(eff_electric_Heating*100D) + PERCENT);
+		electricEffTF.setEditable(false);
+		electricEffTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		wrapper3.add(electricEffTF);
+		heatInfoPanel.add(wrapper3);
+
 		double eff_solar_heat =  getAverageEfficiencySolarHeating();
-		eff_solar_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency",  formatter2.format(eff_solar_heat*100D)), JLabel.CENTER); //$NON-NLS-1$
+		eff_solar_heat_Label = new JLabel(Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency"), JLabel.RIGHT); //$NON-NLS-1$
 		heatInfoPanel.add(eff_solar_heat_Label);
+
+		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		solarEffTF = new JTextField(formatter.format(eff_solar_heat*100D) + PERCENT);
+		solarEffTF.setEditable(false);
+		solarEffTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		wrapper4.add(solarEffTF);
+		heatInfoPanel.add(wrapper4);
 
 		// Prepare degradation rate label.
 		double degradRate = SolarHeatSource.DEGRADATION_RATE_PER_SOL;
-		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelThermalSystem.degradRate", formatter2.format(degradRate*100D)), JLabel.CENTER); //$NON-NLS-1$
+		JLabel degradRateLabel = new JLabel(Msg.getString("TabPanelThermalSystem.degradRate"), JLabel.RIGHT); //$NON-NLS-1$
 		heatInfoPanel.add(degradRateLabel);
 
+		JPanel wrapper5 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+		cellDegradTF = new JTextField(formatter.format(degradRate*100D) + PERCENT_PER_SOL);
+		cellDegradTF.setEditable(false);
+		cellDegradTF.setPreferredSize(new Dimension(120, 24));//setColumns(20);
+		wrapper5.add(cellDegradTF);
+		heatInfoPanel.add(wrapper5);
 
 		// Prepare heat storage capacity label.
 		//thermalStorageCapacityCache = thermalSystem.getStoredHeatCapacity();
@@ -213,6 +256,11 @@ extends TabPanel {
 
 		heatScrollPane.setViewportView(heatTable);
 
+		//Lay out the spring panel.
+		SpringUtilities.makeCompactGrid(heatInfoPanel,
+		                                5, 2, //rows, cols
+		                                80, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
 	}
 
 
@@ -273,37 +321,37 @@ extends TabPanel {
 		double heat = thermalSystem.getGeneratedHeat();
 		if (heatGenCache != heat) {
 				heatGenCache = heat;
-			heatGenLabel.setText(
-				Msg.getString("TabPanelThermalSystem.totalHeatGen", //$NON-NLS-1$
-				formatter.format(heatGenCache)
-				));
+			heatGenTF.setText(
+				//Msg.getString("TabPanelThermalSystem.totalHeatGen", //$NON-NLS-1$
+				formatter.format(heatGenCache) + kW
+				);
 		}
 
 		double power = thermalSystem.getGeneratedPower();
 		if (powerGenCache != power) {
 			powerGenCache = power;
-			powerGenLabel.setText(
-				Msg.getString("TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
-				formatter.format(powerGenCache)
-				));
+			powerGenTF.setText(
+				//Msg.getString("TabPanelThermalSystem.totalPowerGen", //$NON-NLS-1$
+				formatter.format(powerGenCache) + kW
+				);
 		}
 
 		double eheat = getAverageEfficiencyElectricHeat()*100D;
 		if (eheatCache != eheat) {
 			eheatCache = eheat;
-			eff_electric_heat_Label.setText(
-				Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency",  //$NON-NLS-1$
-				formatter2.format(eheat)
-				));
+			electricEffTF.setText(
+				//Msg.getString("TabPanelThermalSystem.electricHeatingEfficiency",  //$NON-NLS-1$
+				formatter2.format(eheat) + PERCENT
+				);
 		}
 
 		double epower = getAverageEfficiencySolarHeating()*100D;
 		if (epowerCache != epower) {
 			epowerCache = epower;
-			eff_solar_heat_Label.setText(
-				Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency",  //$NON-NLS-1$
-				formatter2.format(epower)
-				));
+			solarEffTF.setText(
+				//Msg.getString("TabPanelThermalSystem.solarHeatingEfficiency",  //$NON-NLS-1$
+				formatter2.format(epower) + PERCENT
+				);
 		}
 		// CANNOT USE thermalSystem class to compute the individual building heat usage
 		// NOT possible (?) to know individual building's HeatMode (FULL_POWER or POWER_OFF) by calling thermalSystem
