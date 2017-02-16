@@ -8,7 +8,7 @@ http://mars-sim.sourceforge.net/
 
 ### KNOWN LIMITATIONS :
 
-1. The Tabs cannot be clicked in MacOSX due to unknown bugs in TabPane. One can still have access to all the Tools in MacOS's top menu.
+1. The Tabs cannot be clicked in MacOSX due to unknown bugs in JavaFX's TabPane. One can still have access to all the Tools in MacOS's top menu.
 
 2. Main Menu's 3D Mars Globe may display shadow artifact when running in linux (due to unknown recent JavaFX changes)
 
@@ -19,13 +19,17 @@ http://mars-sim.sourceforge.net/
 
 1. Add lists of first and last names for each of the 22 countries of ESA.
 
-2. Add ability to choose country for each member of alpha crew in Crew Editor.
+2. Add combo box for choosing country and sponsorship for each member of the Alpha Crew in Crew Editor.
 
 ### UI IMPROVEMENT :
 
 1. Add sound control panel, calendar panel and speed panel.
 
 2. Consolidate various tools into the Main tabs. Reduce the # of available tabs to 3.
+
+### FIXES :
+
+1. Make any new settlements show up in the Settlement Combobox in the Settlement Map.
 
 ------------------------------------------------------
 
@@ -58,7 +62,7 @@ http://mars-sim.sourceforge.net/
 
 1. Enable lower clock speed cpu such as Dual Core Pentium/Celeron to run mars-sim.
 
-2. Prevent mars-sim from attempting to run in any java VM version below 1.8.0.60. 
+2. Prevent mars-sim from attempting to run in any java VM version below 1.8.0.60.
 
 ------------------------------------------------------
 
@@ -89,9 +93,9 @@ A. New Modeling
 
 B. New UI elements
 
-1. Add a tab bar on top and segregate most Tools into their own tabs. 
+1. Add a tab bar on top and segregate most Tools into their own tabs.
 
-2. Add Earth and Mars Date/Time bar anchored near top center. 
+2. Add Earth and Mars Date/Time bar anchored near top center.
 
 3. The 'Mars Navigator Tool' is renamed 'Navigator Minimap' and now has two maps stacked up on top of each other.
 
@@ -107,37 +111,37 @@ B. New UI elements
 1. Optimize numerous method calls for less cpu utilization.
 
 2. Re-enable doing various scientific research tasks while inside a moving/non-moving vehicle (albeit with penalty).
- 
+
 3. Re-implement validation of all table cells in simulation configuration editor.
- 
+
 4. Mute/unmute the background music when the game is paused/resume.
 
 5. Implement how choosing the settlement's objective would affect the VP (and production) of related goods.
 
 6. Re-implement validation of settlements' name, population and # of bots entries in configuration editor.
- 
+
 7. Re-implement validation of latitude and longitude in the configuration editor.
- 
+
 8. Improve the Good Value Points (VS) updates for waste water, cooking consumables and others.
 
-9. Add supplies of black water, grey water and regolith at the beginning of a new sim. 
+9. Add supplies of black water, grey water and regolith at the beginning of a new sim.
 
 
 
 ## UI IMPROVEMENT
 
 1. Sync up UI updates better in each frame and with better multi-threading.
- 
-2. Remove top menu bar. Remove status bar. 
+
+2. Remove top menu bar. Remove status bar.
 
 3. Replace the old swing UI elements with new JavaFX UI in Settlement Map.
-  
-  
-  
+
+
+
 
 ### FIXES :
 
-1. Lessen the likelihood of bots moving frequently from one building to another. 
+1. Lessen the likelihood of bots moving frequently from one building to another.
 
 2. Remove duplicate calling of building update in each frame.
 
@@ -148,11 +152,11 @@ B. New UI elements
 5. Fix width and height determination of the quotation popup under different screen resolution. Add a scrollbar and text autowrapping.
 
 6. Fix the latest URL not being displayed correctly in the address bar of Help Browswer.
-  
+
 7. Resolve a major linux UI issue. Can now switch between the Orange and Blue themes just like in Windows OS.
 
 
-  
+
 ------------------------------------------------------
 
 ## v3.1.0 (build 3743) Snapshot Preview 3 - 2016-10-13
@@ -163,9 +167,9 @@ B. New UI elements
 /y1 --> 256 pixels (by default)
 /y2 --> 512 pixels
 /y3 --> 768 pixels
-/y4 --> 1024 pixels 
+/y4 --> 1024 pixels
 
-2. Added new user's keyword "settlement"/"vehicle"/"rover" in the chat box for reporting # of settlements in total and their names and to query the total # and types of vehicles/rovers (parked and/or on mission). 
+2. Added new user's keyword "settlement"/"vehicle"/"rover" in the chat box for reporting # of settlements in total and their names and to query the total # and types of vehicles/rovers (parked and/or on mission).
 
 3. Added animated loading/saving/paused indicators.
 
@@ -185,10 +189,10 @@ B. New UI elements
 
 ### IMPROVEMENTS:
 
-1. Refactored the meteorite impact calculation in MeteoriteImpactImpl.java and completed Part I and II below. (Part III still in-work). 
+1. Refactored the meteorite impact calculation in MeteoriteImpactImpl.java and completed Part I and II below. (Part III still in-work).
 
 Note: any observable impact will increase the stress level of the settlers on that building if his/her natural attribute of courage and emotional stability are not high enough.
- 
+
 Part I : Calculate the probability of impact per square meter per sol on the settlement, assuming the meteorite has an average impact velocity of 1km/s, critical diameter of .0016 cm and average density of 1 g/cm^3, per NASA study.
 
 Part II: Calculate how far the incoming meteorite may penetrate the wall of a building
@@ -200,9 +204,9 @@ http://data.spaceappschallenge.org/ICES.pdf
 
 Source 2: 1963 NASA Technical Note D-1463 Meteoroid Hazard
 http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19630002110.pdf
-		
 
-2. Minimized or prevented EVA operations during intense Galactic Cosmic Rays (GCR) and Solar Energetic Particles (SEP) events for reducing radiation exposure. Refactored probability of exposure to conform better to NASA study. 
+
+2. Minimized or prevented EVA operations during intense Galactic Cosmic Rays (GCR) and Solar Energetic Particles (SEP) events for reducing radiation exposure. Refactored probability of exposure to conform better to NASA study.
 
 See Curiosity's Radiation Assessment Detector (RAD) http://www.boulder.swri.edu/~hassler/rad/
 http://www.swri.org/3pubs/ttoday/Winter13/pdfs/MarsRadiation.pdf
@@ -233,7 +237,7 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 3. Fixed inability to save as default.sim and as other file names.
 
-4. Fixed NullPointerException in Career Tab of a deceased person when opening the Person Window. 
+4. Fixed NullPointerException in Career Tab of a deceased person when opening the Person Window.
 
 5. Fixed NullPointerException in Location Tab of a vehicle in some cases when opening the Vehicle Window.
 
@@ -262,7 +266,7 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 ### NEW FEATURES :
 
-1. Added several new crops. 
+1. Added several new crops.
 
 2. Added several new meals.
 
@@ -296,7 +300,7 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 17. Added the new concept of "role" for each settler.
 
-18. Added a hierachical structure in each settlement and assigned a role to each settler. 
+18. Added a hierachical structure in each settlement and assigned a role to each settler.
 
 19. Added radiation exposure tracking for each settler (in the existing "Health" tab).
 
@@ -314,7 +318,7 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 
 
-### UI CHANGES : 
+### UI CHANGES :
 
 1. Added detection of the 2nd monitor/LCD.
 
@@ -349,11 +353,11 @@ http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settle
 
 1. Fixed temperature fluctuation with better algorithm for HVAC calculation.
 
-2. Added placement of buildings for Transport Wizard in the Resupply Tool. 
+2. Added placement of buildings for Transport Wizard in the Resupply Tool.
 
-3. Can choose settlement in Crew Editor. 
+3. Can choose settlement in Crew Editor.
 
-4. Supported multiple event notification popups. Can be stacked on top of each other. Effect of fading in and out effect. 
+4. Supported multiple event notification popups. Can be stacked on top of each other. Effect of fading in and out effect.
 
 5. Further Refined crop modeling algorithm in greenhouse operation.
 

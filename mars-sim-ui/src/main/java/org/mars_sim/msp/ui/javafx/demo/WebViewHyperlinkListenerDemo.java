@@ -65,7 +65,7 @@ public class WebViewHyperlinkListenerDemo extends Application {
 		WebView webView = new WebView();
 		webView.getEngine().getLoadWorker().stateProperty().addListener(
 				(obs, o, n) -> System.out.println("WEB VIEW WORKER STATUS: " + n));
-		webView.getEngine().load("https://en.wikipedia.org/wiki/Main_Page");
+		webView.getEngine().load("https://en.wikipedia.org/wiki/Main_Page"); //"https://sourceforge.net/p/mars-sim/discussion/");//
 		return webView;
 	}
 

@@ -102,7 +102,7 @@ public class SwingFXWebView extends JPanel {
                 // Set up the embedded browser:
                 browser = new WebView();
                 webEngine = browser.getEngine();
-                webEngine.load("http://www.google.com");
+                webEngine.load("https://sourceforge.net/p/mars-sim/discussion/");//"http://www.google.com");
 
                 ObservableList<Node> children = root.getChildren();
                 children.add(browser);

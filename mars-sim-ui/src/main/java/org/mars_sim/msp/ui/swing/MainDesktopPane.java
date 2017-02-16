@@ -194,7 +194,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		setDesktopManager(new MainDesktopManager());
 
 		// Set component listener
-		//addComponentListener(this);
+		addComponentListener(this);
 
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
@@ -206,7 +206,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		// Initialize firstDisplay to true
 		firstDisplay = true;
 
-		setPreferredSize(new Dimension(1280, 1024));
+		if (mainScene != null)
+			setPreferredSize(new Dimension(MainScene.DEFAULT_WIDTH, MainScene.DEFAULT_HEIGHT));
+		else
+			setPreferredSize(new Dimension(1280, 768));
 
 		prepareListeners();
 

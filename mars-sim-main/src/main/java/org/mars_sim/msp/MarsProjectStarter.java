@@ -64,27 +64,27 @@ public class MarsProjectStarter {
 
         else {
 
-	        if (argList.contains("5")) {// || argList.contains("5 ")) {
+	        if (argList.contains("5") || argList.contains("-5")) {// || argList.contains("5 ")) {
 	            command.append(" -Xms256m");
 	            command.append(" -Xmx2048m");
 	        }
-	        else if (argList.contains("4")) {
+	        else if (argList.contains("4") || argList.contains("-4")) {
 	            command.append(" -Xms256m");
 	            command.append(" -Xmx1536m");
 	        }
-	        else if (argList.contains("3")) {
+	        else if (argList.contains("3") || argList.contains("-3")) {
 	            command.append(" -Xms256m");
 	            command.append(" -Xmx1024m");
 	        }
-	        else if (argList.contains("2")) {
+	        else if (argList.contains("2") || argList.contains("-2")) {
 	            command.append(" -Xms256m");
 	            command.append(" -Xmx768m");
 	        }
-	        else if (argList.contains("1")) {
+	        else if (argList.contains("1") || argList.contains("-1")) {
 	            command.append(" -Xms256m");
 	            command.append(" -Xmx512m");
 	        }
-	        else if (argList.contains("0")) {
+	        else if (argList.contains("0") || argList.contains("-0")) {
 	            command.append(" -Xms256m");
 	            command.append(" -Xmx1024m");
 	        }
@@ -94,25 +94,25 @@ public class MarsProjectStarter {
 	            command.append(" -Xmx1024m");
 	        }
 
-	        if (argList.contains("help")) {
+	        if (argList.contains("help") || argList.contains("-help")) {
 	        	command.append(" -help");
 	        	//System.out.println(manpage);
 	        }
 
-	        else if (argList.contains("html")) {
+	        else if (argList.contains("html") || argList.contains("-html")) {
 	        	//command.append(" -new");
 	        	command.append(" -html");
 	        }
 
 	        else {
 
-		        if (argList.contains("headless"))
+		        if (argList.contains("headless") || argList.contains("-headless"))
 		        	command.append(" -headless");
 
-		        if (argList.contains("new"))
+		        if (argList.contains("new") || argList.contains("-new"))
 		        	command.append(" -new");
 
-		        else if (argList.contains("load")) {
+		        else if (argList.contains("load") || argList.contains("-load")) {
 		        	command.append(" -load");
 
 		        	// 2016-10-06 Appended the name of loadFile to the end of the command stream so that MarsProjectFX can read it.

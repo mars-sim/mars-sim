@@ -77,6 +77,7 @@ public class BrowserJFX {
     public static final String MSP_HEADER = "msp://";
     public static final String HTTP_HEADER = "http://";
     public static final String HTTPS_HEADER = "https://";
+    public static final String DOCS_HELP_DIR = "/docs/help/";
 
     public static final int INTERNAL_COMMAND = 0;
     public static final int LOCAL_HTML = 1;
@@ -85,6 +86,7 @@ public class BrowserJFX {
 
     public static final String DEFAULT_JQUERY_MIN_VERSION = "1.7.2";
     public static final String JQUERY_LOCATION = "http://code.jquery.com/jquery-1.7.2.min.js";
+
 
 
     private static final String CSS =
@@ -120,8 +122,12 @@ public class BrowserJFX {
     private WebView view;
     private WebEngine engine;
     private WebHistory history;
+    private GuideWindow ourGuide;
 
 	private ObservableList<WebHistory.Entry> entryList;
+
+
+	// see http://www.java2s.com/Tutorials/Java/JavaFX/1500__JavaFX_WebEngine.htm
 
     public BrowserJFX(MainDesktopPane desktop) {
     	this.desktop = desktop;
@@ -167,8 +173,9 @@ public class BrowserJFX {
 
         		String input = urlTF.getText().trim();
 
-        		if (input.contains("/docs/help/") && input.contains(".html")) {
-        			GuideWindow ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+        		if (input.contains(DOCS_HELP_DIR) && input.contains(".html")) {
+        			if (ourGuide == null)
+        				ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
         			ourGuide.setURL(input); //$NON-NLS-1$
         		}
         		else {
@@ -240,7 +247,7 @@ public class BrowserJFX {
     				|| input.equals(GLOBE_FILE)) {
     			parseInput(input, INTERNAL_COMMAND);
     		}
-    		else if (input.contains("/docs/help")) { //"file:/")) {
+    		else if (input.contains(DOCS_HELP_DIR)) { //"file:/")) {
     				parseInput(input, LOCAL_HTML);
     		}
 
@@ -327,14 +334,14 @@ public class BrowserJFX {
     @SuppressWarnings("restriction")
 	private void initJFX() {
 
-    	java.net.CookieHandler.setDefault(null);
+    	//java.net.CookieHandler.setDefault(null);
 
         Platform.runLater(() -> {
 
                 WebViewHyperlinkListener eventPrintingListener = event -> {
 
                 	if (event.getEventType() == EventType.ACTIVATED) {
-
+                		//System.out.println("BrowserJFX : WebViewHyperlinkListener is activated");
                 		String input = null;
 
 	                	if (event.getURL() != null) {
@@ -373,6 +380,7 @@ public class BrowserJFX {
                 view.setStyle("-fx-background-color: #656565;"
                 		+ " -fx-font-color: white;"
                 		+ " -fx-border-color: #00a7c8");
+                		//+ " -webkit-scrollbar: orange;");
 
 /*
                 Button reloadB = new Button("Refresh");
@@ -424,7 +432,7 @@ public class BrowserJFX {
                 engine.setOnStatusChanged(new EventHandler<WebEvent<String>>() {
                     @Override
                     public void handle(final WebEvent<String> event) {
-                        SwingUtilities.invokeLater(()->{
+                        SwingUtilities.invokeLater(()-> {
                         	//System.out.println("BrowserJFX : hovering over a hyperlink, calling setOnStatusChanged() to display its url on the status bar");
                         	// Note: it shows the content of the hyperlink (even before the user clicks on it.
                             String content = event.getData();
@@ -432,7 +440,7 @@ public class BrowserJFX {
                             	if (mainScene != null) mainScene.getScene().setCursor(Cursor.HAND);
     		                    //System.out.println("now hovering over a link");
                             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-                            	if (content.contains("/docs/help")) {
+                            	if (content.contains(DOCS_HELP_DIR)) {
                             		int i = content.indexOf("docs")-1;
                             		//System.out.println("shortened content is " + content.substring(i, content.length()));
                             		statusBarLbl.setText(content.substring(i, content.length()));
@@ -458,25 +466,31 @@ public class BrowserJFX {
                     @Override
                     public void changed(ObservableValue<? extends String> ov, String oldValue, final String newValue) {
 
-                    	Platform.runLater(()-> {
-	                        JSObject jsobj = (JSObject) engine.executeScript("window");
-	        				jsobj.setMember("JavaBridge", new TicketSubmission());
-                    	});
+                    	if (oldValue != newValue) {
+                            if (newValue.contains(DOCS_HELP_DIR + "ticket.html")) {
+                        		//System.out.println("BrowserJFX : locationProperty() change");
+		                    	Platform.runLater(()-> {
+			                        JSObject jsobj = (JSObject) engine.executeScript("window");
+			        				jsobj.setMember("JavaBridge", new TicketSubmission());
+		                    	});
+                            }
 
-                    	//SwingUtilities.invokeLater(() ->{
+	                    	//SwingUtilities.invokeLater(() ->{
                     		textInputCache = newValue;
                        		//showURL();
                     	//});
+                    	}
                     }
                 });
 
                 engine.getLoadWorker().workDoneProperty().addListener(new ChangeListener<Number>() {
                     @Override
                     public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, final Number newValue) {
-                        SwingUtilities.invokeLater(()->{
-                        	//System.out.println("workDoneProperty()");
-                                progressBar.setValue(newValue.intValue());
-                        });
+                    	if (oldValue != newValue)
+	                    	SwingUtilities.invokeLater(()->{
+	                        	//System.out.println("BrowserJFX : workDoneProperty() change");
+	                                progressBar.setValue(newValue.intValue());
+	                        });
                     }
                 });
 
@@ -484,8 +498,14 @@ public class BrowserJFX {
                 	@Override
 	                public void changed(ObservableValue<? extends Throwable> o, Throwable old, final Throwable value) {
 	                	if (engine.getLoadWorker().getState() == FAILED) {
-	                		SwingUtilities.invokeLater(()-> {
-	                				//System.out.println("BrowserJFX : worker.getState() == FAILED, calling exceptionProperty()");
+	                		//SwingUtilities.invokeLater(()-> {
+	                			if (engine.getLocation() != null)
+	                				System.out.println("BrowserJFX : worker.getState() == FAILED in exceptionProperty() : "
+	                						+ engine.getLocation());
+	                			if (value != null)
+	                				System.out.println(" : " + value.getMessage()
+	                                        + ".  Loading error...");
+
 	/*                				JOptionPane.showMessageDialog(
 	                                            panel,
 	                                            (value != null) ?
@@ -494,7 +514,7 @@ public class BrowserJFX {
 	                                            "Loading error...",
 	                                            JOptionPane.ERROR_MESSAGE);
 	*/
-		                		});
+		                		//});
 		                	}
 		                }
 		            }
@@ -516,17 +536,18 @@ public class BrowserJFX {
                         @Override
                         public void changed(ObservableValue<? extends State> ov,
                             State oldState, State newState) {
-                                if (newState == State.SUCCEEDED) {
-                                //if (newState != oldState) {
-                                	String input = getCurrentURL();
-                                	//System.out.println("BrowserJFX's stateProperty()");
-                            		if (input.contains("/docs/help")) {
-                            			isLocalHtml = true;
-                                    	// Note: after hours of experiments, it's found that the only "safe" way
-                            			// (without causing NullPointerException) is to call addCSS()
-                            			// through stateProperty() here.
-                            			addCSS();
-                            		}
+                                if (oldState != newState) {
+                                	if (newState == State.SUCCEEDED) {
+	                                	String input = getCurrentURL();
+	                                	//System.out.println("BrowserJFX's stateProperty()");
+	                            		if (input.contains(DOCS_HELP_DIR)) {
+	                            			isLocalHtml = true;
+	                                    	// Note: after hours of experiments, it's found that the only "safe" way
+	                            			// (without causing NullPointerException) is to call addCSS()
+	                            			// through stateProperty() here.
+	                            			addCSS();
+	                            		}
+                                	}
                                 }
                             }
                         }
@@ -545,7 +566,7 @@ public class BrowserJFX {
         //System.out.println("urlTF is " + urlTF.getText());
         //System.out.println("textInputCache is " + textInputCache);
 
-    	if (content.contains("/docs/help")) {
+    	if (content.contains(DOCS_HELP_DIR)) {
     		isLocalHtml = true;
     		int i = content.indexOf("docs")-1;
             String shortened = content.substring(i, content.length());
@@ -582,6 +603,9 @@ public class BrowserJFX {
     	//logger.info("BrowserJFX's addCSS() is on " + Thread.currentThread().getName() );
     	if (isLocalHtml) {// && go_flag && !isInternal) {
 		   	//System.out.println("adding css");
+
+            //engine.executeScript(CSS);
+
 			Document doc = engine.getDocument() ;
 			//SwingUtilities.invokeLater(() -> {
 			    Element styleNode = doc.createElement("style");
@@ -592,6 +616,7 @@ public class BrowserJFX {
 			    if (doc.getDocumentElement().getElementsByTagName("HEAD").item(0) != null)
 			    	doc.getDocumentElement().getElementsByTagName("HEAD").item(0).appendChild(styleNode);
 			//});
+
 	   }
     }
 
@@ -614,7 +639,7 @@ public class BrowserJFX {
 	    	}
 	    	else if (URL_type == UNKNOWN) {
 	    		try {
-	    			if (!href.contains("/docs/help")) {
+	    			if (!href.contains(DOCS_HELP_DIR)) {
 		    			// assume the text in the address bar has no 'http://'
 		    			URL url = new URL(HTTP_HEADER + href);
 		    			addressURLText = url.toExternalForm();
@@ -639,11 +664,14 @@ public class BrowserJFX {
 
 			//if (status) {
 				engine.load(content);
+				//System.out.println("just loading a https page");
 				updateButtons();
 				textInputCache = content;
 				statusBarURLText = content;
-        		statusBarLbl.setText(content);
-			//}
+                SwingUtilities.invokeLater(()-> statusBarLbl.setText(content));
+				//System.out.println("just set the statusbar label");
+
+                //}
 
 			//else {
 			//	System.out.println("loadRemoteURL()'s content is " + content);
@@ -662,7 +690,7 @@ public class BrowserJFX {
             textInputCache = content;
             if (content != null && !content.isEmpty()) {
             	// 2016-06-07 Truncated off the initial portion of the path to look more "user-friendly"/improve viewing comfort.
-            	if (content.contains("/docs/help")) {
+            	if (content.contains(DOCS_HELP_DIR)) {
             		int i = content.indexOf("docs")-1;
                     addressURLText = content;
             		statusBarURLText = content.substring(i, content.length());
