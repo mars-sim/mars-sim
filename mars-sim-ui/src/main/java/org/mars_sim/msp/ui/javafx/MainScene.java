@@ -1540,6 +1540,10 @@ public class MainScene {
 
 	}
 
+	public void changeSBox() {
+		sBox.itemsProperty().setValue(sim.getUnitManager().getSettlementOList());
+	}
+
 	public void createFXMapLabelBox() {
 
 		mapLabelBox = new VBox();

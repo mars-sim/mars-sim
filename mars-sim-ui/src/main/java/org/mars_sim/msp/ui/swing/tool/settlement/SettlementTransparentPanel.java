@@ -99,19 +99,19 @@ public class SettlementTransparentPanel extends JComponent {
 	private JComboBoxMW<?> settlementListBox;
 	/** Combo box model. */
 	private SettlementComboBoxModel settlementCBModel;
-	
+
 	private JCustomCheckBoxMenuItem buildingLabelMenuItem, personLabelMenuItem, constructionLabelMenuItem, vehicleLabelMenuItem, robotLabelMenuItem ;
 
 	private SettlementMapPanel mapPanel;
-	private DesktopPane desktop;
+	private MainDesktopPane desktop;
 	private MainScene mainScene;
 	//private Settlement settlement;
 
-    public SettlementTransparentPanel(DesktopPane desktop, SettlementMapPanel mapPanel) {
+    public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
 
         this.mapPanel = mapPanel;
         this.desktop = desktop;
-        this.mainScene = ((MainDesktopPane) desktop).getMainScene();
+        this.mainScene = desktop.getMainScene();
 
 		setDoubleBuffered(true);
 
@@ -130,14 +130,14 @@ public class SettlementTransparentPanel extends JComponent {
 	    	public Dimension getPreferredSize() {
 	    		return new Dimension(50, 100);
 	    	};
-	    }; 	
+	    };
 
         buildLabelPane();
         buildSettlementNameComboBox();
         buildInfoP();
         buildrenameBtn();
         buildZoomSlider();
-        buildButtonPane();       
+        buildButtonPane();
 
 		nameBtnPane = new JPanel(new FlowLayout());
 		nameBtnPane.setBackground(new Color(0,0,0));
@@ -161,16 +161,16 @@ public class SettlementTransparentPanel extends JComponent {
 		box.setOpaque(false);
 	    box.add(settlementPanel);
 	    box.add(nameBtnPane);
-	    
+
 	    mapPanel.add(box, BorderLayout.NORTH);
-	
+
 	    controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 	    controlCenterPane.setBackground(new Color(0,0,0));//,0));
 	    controlCenterPane.setOpaque(false);
         controlCenterPane.setPreferredSize(new Dimension(50, 200));
         controlCenterPane.setSize(new Dimension(50, 200));
         controlCenterPane.add(zoomSlider);
-        
+
 	    controlPane = new JPanel(new BorderLayout());//GridLayout(2,1,10,2));
 	    controlPane.setBackground(new Color(0,0,0));//,0));
 		controlPane.setOpaque(false);
@@ -187,7 +187,7 @@ public class SettlementTransparentPanel extends JComponent {
         eastPane.add(emptyLabel, BorderLayout.NORTH);
         eastPane.add(emptyLabel, BorderLayout.SOUTH);
         eastPane.add(controlPane, BorderLayout.CENTER);
-        	
+
         mapPanel.add(eastPane, BorderLayout.EAST);
         // Make panel drag-able
 //  	ComponentMover cmZoom = new ComponentMover(zoomPane);
@@ -317,7 +317,7 @@ public class SettlementTransparentPanel extends JComponent {
 
     }
 */
-	
+
     public void buildZoomSlider() {
 
         UIDefaults sliderDefaults = new UIDefaults();
@@ -485,7 +485,7 @@ public class SettlementTransparentPanel extends JComponent {
 		recenterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				mapPanel.reCenter();
-				
+
 				if (mainScene != null) {
 					mainScene.getZoom().setValue(0);
 				}
@@ -548,7 +548,7 @@ public class SettlementTransparentPanel extends JComponent {
 
 		labelPane.add(labelsButton);
 
-		
+
 		labelPane.add(emptyLabel);
 	}
     /*
@@ -744,7 +744,7 @@ public class SettlementTransparentPanel extends JComponent {
 					if (newName == null || newName.trim() == "" || (newName.trim().length() == 0)) {
 						//System.out.println("newName is " + newName);
 						newName = askNameFX(oldName);
-	
+
 						if (newName == null || newName.trim() == "" || (newName.trim().length() == 0))
 							return;
 						else
@@ -947,12 +947,12 @@ public class SettlementTransparentPanel extends JComponent {
 	public JComboBoxMW<?> getSettlementListBox() {
 		return settlementListBox;
 	}
-	
+
 /*
 	public JCustomCheckBoxMenuItem getBuildingLabelMenuItem() {
 		return buildingLabelMenuItem;
 	}
-	
+
 	public JCustomCheckBoxMenuItem getPersonLabelMenuItem () {
 		return personLabelMenuItem ;
 	}
@@ -960,15 +960,15 @@ public class SettlementTransparentPanel extends JComponent {
 	public JCustomCheckBoxMenuItem getConstructionLabelMenuItem () {
 		return constructionLabelMenuItem ;
 	}
-	
+
 	public JCustomCheckBoxMenuItem getVehicleLabelMenuItem () {
 		return vehicleLabelMenuItem ;
 	}
-	
+
 	public JCustomCheckBoxMenuItem getRobotLabelMenuItem () {
 		return robotLabelMenuItem ;
 	}
-*/	
+*/
 	/**
 	 * Prepare class for deletion.
 	 */

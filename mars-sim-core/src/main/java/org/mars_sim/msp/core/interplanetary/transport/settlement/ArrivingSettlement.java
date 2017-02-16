@@ -292,7 +292,7 @@ implements Transportable, Serializable {
 
 		// Create new immigrants with arriving settlement.
 		createNewImmigrants(newSettlement);
-		
+
 		// Create new robots.
 		createNewRobots(newSettlement);
 
@@ -322,7 +322,7 @@ implements Transportable, Serializable {
 		//System.out.println("ArrivingSettlement.java : createNewSettlement() : scenarioID is " + scenarioID);
 		// TODO: add the option of choosing sponsor
 		String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
-		
+
 		Settlement newSettlement = new Settlement(name, scenarioID, template, sponsor, landingLocation, populationNum, numOfRobots);
 		unitManager.addUnit(newSettlement);
 
@@ -350,7 +350,7 @@ implements Transportable, Serializable {
 			String sponsor = newSettlement.getSponsor();
 			String country = unitManager.getCountry(sponsor);
 			Person immigrant = new Person(immigrantName, gender, country, newSettlement, sponsor);
-			
+
 			// Initialize favorites and preferences.
             Favorite favorites = immigrant.getFavorite();
             favorites.setFavoriteMainDish(favorites.getRandomMainDish());
@@ -358,21 +358,21 @@ implements Transportable, Serializable {
             favorites.setFavoriteDessert(favorites.getRandomDessert());
             favorites.setFavoriteActivity(favorites.getRandomActivity());
             immigrant.getPreference().initializePreference();
-            
+
             // Assign a job by calling getInitialJob
             immigrant.getMind().getInitialJob(JobManager.MISSION_CONTROL);
-			
+
 			unitManager.addUnit(immigrant);
 			relationshipManager.addNewImmigrant(immigrant, immigrants);
 			immigrants.add(immigrant);
 			logger.info(immigrantName + " arrives on Mars at " + newSettlement.getName());
 		}
-		
+
 		// Update command/governance and work shift schedules at settlement with new immigrants.
         if (immigrants.size() > 0) {
-            
+
             int popSize = newSettlement.getAllAssociatedPeople().size();
-            
+
             // Reset specialist positions at settlement.
             ChainOfCommand cc = newSettlement.getChainOfCommand();
             Iterator<Person> i = newSettlement.getAllAssociatedPeople().iterator();
@@ -381,30 +381,34 @@ implements Transportable, Serializable {
                 if (popSize >= UnitManager.POPULATION_WITH_MAYOR) {
                     cc.set7Divisions(true);
                     cc.assignSpecialiststo7Divisions(person);
-                } 
+                }
                 else {
                     cc.set3Divisions(true);
                     cc.assignSpecialiststo3Divisions(person);
                 }
             }
-            
-            // Reset command/government system at settlement.
-            unitManager.establishSettlementGovernance(newSettlement);
-            
+
+			// 2016-12-21 Added calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
+			newSettlement.updateAllAssociatedPeople();
+			newSettlement.updateAllAssociatedRobots();
+
             // Reset work shift schedules at settlement.
             unitManager.setupShift(newSettlement, popSize);
+
+            // Reset command/government system at settlement.
+            unitManager.establishSettlementGovernance(newSettlement);
         }
 	}
-	
+
 	/**
 	 * Create the new settlement's robots.
 	 * @param newSettlement the new settlement.
 	 */
 	private void createNewRobots(Settlement newSettlement) {
-	    
+
         UnitManager unitManager = Simulation.instance().getUnitManager();
 	    for (int x = 0; x < numOfRobots; x++) {
-	        
+
 	        // Get a robotType randomly
             RobotType robotType = unitManager.getABot(newSettlement, numOfRobots);
 

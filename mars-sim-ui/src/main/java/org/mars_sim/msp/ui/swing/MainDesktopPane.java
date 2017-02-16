@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -101,7 +102,7 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  * along with the tool bars, by the main window.
  */
 public class MainDesktopPane
-extends DesktopPane 
+extends JDesktopPane
 implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	/** default serial id. */
@@ -110,20 +111,20 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
 	private static final double PERIOD_IN_MILLISOLS = 750D / MarsClock.SECONDS_IN_MILLISOL;
-	
+
 	// Data members
 	private double timeCache = 0;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
 	/** True if this MainDesktopPane hasn't been displayed yet. */
-	//private boolean firstDisplay;
+	private boolean firstDisplay;
 	/** List of open or buttoned unit windows. */
 	private Collection<UnitWindow> unitWindows;
 	/** List of tool windows. */
 	private Collection<ToolWindow> toolWindows;
 	/** ImageIcon that contains the tiled background. */
-	//private ImageIcon backgroundImageIcon;
+	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
-	//private JLabel backgroundLabel;
+	private JLabel backgroundLabel;
 
 	/* The desktop update thread. */
 //	private UpdateThread updateThread;
@@ -144,13 +145,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	private TimeWindow timeWindow;
 	private Building building;
 	//private Settlement settlement;
-	private MainWindow mainWindow;	
+	private MainWindow mainWindow;
 	private MainScene mainScene;
 	private MarqueeTicker marqueeTicker;
 	private OrbitViewer orbitViewer;
 	private BrowserJFX browserJFX;
 	private EventTableModel eventTableModel;
-	
+
 	private SingleSelectionModel ssm;
 	//private final ReentrantLock transportLock = new ReentrantLock();
     //private int transportCount = 0;
@@ -175,7 +176,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 * @param mainScene the main scene
 	 */
 	public MainDesktopPane(MainScene mainScene) {
-		super(mainScene);
+		//super(mainScene);
 	   	//logger.info("MainDesktopPane's constructor is on " + Thread.currentThread().getName() + " Thread");
 		this.mainScene = mainScene;
 
@@ -186,13 +187,36 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	public void init() {
 	   	//logger.info("init() is on " + Thread.currentThread().getName() + " Thread");
 
+		// Set background color to black
+		setBackground(Color.black);
+
+		// set desktop manager
+		setDesktopManager(new MainDesktopManager());
+
+		// Set component listener
+		//addComponentListener(this);
+
+		// Create background label and set it to the back layer
+		backgroundImageIcon = new ImageIcon();
+		backgroundLabel = new JLabel(backgroundImageIcon);
+		add(backgroundLabel, Integer.MIN_VALUE);
+		backgroundLabel.setLocation(0, 0);
+		moveToBack(backgroundLabel);
+
+		// Initialize firstDisplay to true
+		firstDisplay = true;
+
+		setPreferredSize(new Dimension(1280, 1024));
+
+		prepareListeners();
+
 		// Initialize data members
 		soundPlayer = new AudioPlayer(this);
 		soundPlayer.playInBackground(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_MUSIC1); // play our intro music
 
 		// Prepare tool windows.
 		toolWindows = new ArrayList<ToolWindow>();
-		
+
 		browserJFX = new BrowserJFX(this);
 
 		prepareToolWindows();
@@ -200,19 +224,19 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		unitWindows = new ArrayList<UnitWindow>();
 		// Create update thread.
 		setupToolWindowTasks();
-		
+
 		Simulation.instance().getMasterClock().addClockListener(this);
-		
+
 		//updateThread = new UpdateThread(this);
 		//updateThread.setRun(true);
 		//updateThread.start();
 
-		if (mainScene == null)	
+		if (mainScene == null)
 			prepareAnnouncementWindow();
-		
+
 	   	//logger.info("MainDesktopPane's init() is done ");
 	}
-	
+
 /*
 	public BufferedImage loadPartBufferedImage() {
 
@@ -261,7 +285,146 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		return image;
 	}
 */
-	
+
+
+
+	/**
+	 * Create background tile when MainDesktopPane is first
+	 * displayed. Recenter logoLabel on MainWindow and set
+	 * backgroundLabel to the size of MainDesktopPane.
+	 * @param e the component event
+	 */
+	@Override
+	public void componentResized(ComponentEvent e) {
+
+		// If displayed for the first time, create background image tile.
+		// The size of the background tile cannot be determined during construction
+		// since it requires the MainDesktopPane be displayed first.
+		if (firstDisplay) {
+			ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
+			Dimension screen_size =
+				Toolkit.getDefaultToolkit().getScreenSize();
+			Image backgroundImage =
+				createImage((int) screen_size.getWidth(),
+						(int) screen_size.getHeight());
+			Graphics backgroundGraphics = backgroundImage.getGraphics();
+
+			for (int x = 0; x < backgroundImage.getWidth(this);
+			x += baseImageIcon.getIconWidth()) {
+				for (int y = 0; y < backgroundImage.getHeight(this);
+				y += baseImageIcon.getIconHeight()) {
+					backgroundGraphics.drawImage(
+							baseImageIcon.getImage(), x, y, this);
+				}
+			}
+
+			backgroundImageIcon.setImage(backgroundImage);
+
+			backgroundLabel.setSize(getSize());
+
+			firstDisplay = false;
+		}
+
+		// Set the backgroundLabel size to the size of the desktop
+		backgroundLabel.setSize(getSize());
+
+	}
+
+
+	// Additional Component Listener methods implemented but not used.
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		logger.info("DesktopPane : componentMoved()");
+		updateToolWindow();
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		logger.info("DesktopPane : componentShown()");
+		JInternalFrame[] frames = this.getAllFrames();
+		for (JInternalFrame f : frames) {
+			//((ToolWindow)f).update();
+			f.updateUI();
+			SwingUtilities.updateComponentTreeUI(f);
+		}
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {}
+
+	public void updateToolWindow() {
+		logger.info("DesktopPane : updateToolWindow()");
+		JInternalFrame[] frames = this.getAllFrames();
+		for (JInternalFrame f : frames) {
+			//f.updateUI();
+			//SwingUtilities.updateComponentTreeUI(f);
+			((ToolWindow)f).update();
+		}
+	}
+
+	@Override
+	public Component add(Component comp) {
+		super.add(comp);
+		centerJIF(comp);
+		return comp;
+	}
+
+	public void centerJIF(Component comp) {
+	    Dimension desktopSize = getSize();
+	    Dimension jInternalFrameSize = comp.getSize();
+	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
+	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
+	    comp.setLocation(width, height);
+	    comp.setVisible(true);
+	}
+
+	public void unitManagerUpdate(UnitManagerEvent event) {
+/*
+		if (event.getUnit() instanceof Settlement) {
+
+			//removeAllElements();
+			UnitManager unitManager = Simulation.instance().getUnitManager();
+			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+			Collections.sort(settlements);
+
+			Iterator<Settlement> i = settlements.iterator();
+			while (i.hasNext()) {
+				i.next().removeUnitListener(this);
+			}
+			Iterator<Settlement> j = settlements.iterator();
+			while (j.hasNext()) {
+				j.next().addUnitListener(this);
+			}
+		}
+*/
+		Object unit = event.getUnit();
+		if (unit instanceof Settlement) {
+
+			Settlement settlement = (Settlement) unit;
+			UnitManagerEventType eventType = event.getEventType();
+
+			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
+				//System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
+				settlement.addUnitListener(this);
+
+				if (mainScene != null) {
+					mainScene.changeSBox();
+				}
+
+			}
+			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
+				//System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
+				settlement.removeUnitListener(this);
+
+				if (mainScene != null) {
+					mainScene.changeSBox();
+				}
+			}
+
+			updateToolWindow();
+		}
+	}
+
 	/**
 	 * sets up this class with two listeners
 	 */
@@ -353,7 +516,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	@Override
 	public void componentHidden(ComponentEvent e) {}
 */
-	
+
 	/*
 	 * Creates tool windows
 	 */
@@ -362,7 +525,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		if (toolWindows != null)
 			toolWindows.clear();
-		
+
 	   	//logger.info("toolWindows.clear()");
 
 		// Prepare navigator window
@@ -411,9 +574,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		try { guideWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(guideWindow);
-				
+
 //		if (mainScene != null) {
-			
+
 			// Prepare monitor tool window
 			MonitorWindow monitorWindow = new MonitorWindow(this);
 			try { monitorWindow.setClosed(true); }
@@ -440,7 +603,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 /*
 		}
 		else {
-			
+
 			// Prepare monitor tool window
 			MonitorWindow monitorWindow = new MonitorWindow(this);
 			try { monitorWindow.setClosed(true); }
@@ -528,7 +691,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	/**
 	 * Return true if an unit window is open.
-	 * @param unit window 
+	 * @param unit window
 	 * @return true true if the unit window is open
 	 */
 	public boolean isUnitWindowOpen(UnitWindow w) {
@@ -538,7 +701,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Return true if tool window is open.
 	 * @param toolName the name of the tool window
@@ -578,13 +741,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 							System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
 							if (toolName.equals(TimeWindow.NAME))
 								window.setLocation(getStartingLocation(window));
-							else	
+							else
 								window.setLocation(getRandomLocation(window));
 						}
 					}
 					window.setWasOpened(true);
 				}
-				
+
 				if (mainScene != null) {
 					// 2016-10-22 These 2 tools are in the Main Tab
 					if (toolName.equals(SearchWindow.NAME)
@@ -593,11 +756,11 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 							|| toolName.equals(MissionWindow.NAME)
 							|| toolName.equals(ResupplyWindow.NAME)
 							|| toolName.equals(ScienceWindow.NAME) ){
-						
-						add(window, 0);	
+
+						add(window, 0);
 					}
 					//else if (toolName.equals(MonitorWindow.NAME)) {
-					//	mainScene.getDesktops().get(0).add(window, 0);				
+					//	mainScene.getDesktops().get(0).add(window, 0);
 					//}
 					//else if (toolName.equals(MissionWindow.NAME)) {
 					//	mainScene.getDesktops().get(1).add(window, 0);
@@ -613,21 +776,21 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 					//}
 					//else if (toolName.equals(GuideWindow.NAME)) {
 					//	mainScene.getDesktops().get(5).add(window, 0);
-					//}				
-					
+					//}
+
 				}
 				else { // in case of classic swing mode for MainWindow
-					add(window, 0);	
+					add(window, 0);
 				}
-				
+
 				try {
 					window.setClosed(false);
 				}
 				catch (Exception e) { logger.log(Level.SEVERE,e.toString()); }
 			}
-			
+
 			window.show();
-			
+
 			// bring to front if it overlaps with other windows
 			try {
 				window.setSelected(true);
@@ -635,7 +798,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				// ignore if setSelected is vetoed
 			}
 		}
-		
+
 		window.getContentPane().validate();
 		window.getContentPane().repaint();
 		validate();
@@ -643,17 +806,17 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 	    // 2015-12-07 Added below to check the corresponding menu item
 		if (mainScene != null) {
-			if (ssm == null) 
+			if (ssm == null)
 				ssm = mainScene.getJFXTabPane().getSelectionModel();
 			//System.out.println(toolName + " is running openToolWindow().");
 			Platform.runLater(() -> {
-				
+
 				// 2016-10-22 Opening the first 3 tools will switch to the Desktop Tab
 				if (toolName.equals(NavigatorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAP_TAB))
 							ssm.select(MainScene.MAP_TAB);
-					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);				
+					mainScene.getMainSceneMenu().getMarsNavigatorItem().setSelected(true);
 				}
 
 				else if (toolName.equals(SettlementWindow.NAME)) {
@@ -662,7 +825,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 							ssm.select(MainScene.MAP_TAB);
 					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(true);
 				}
-				
+
 				else if (toolName.equals(SearchWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
@@ -676,14 +839,14 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 							ssm.select(MainScene.MAIN_TAB);//.MAIN_TAB);
 					mainScene.getMainSceneMenu().getTimeToolItem().setSelected(true);
 				}
-				
+
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
 							ssm.select(MainScene.MAIN_TAB);//MONITOR_TAB);
 					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(true);
 				}
-				
+
 				else if (toolName.equals(MissionWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
@@ -697,7 +860,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 							ssm.select(MainScene.MAIN_TAB);//.RESUPPLY_TAB);
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(true);
 				}
-				
+
 				else if (toolName.equals(ScienceWindow.NAME)) {
 					if (mainScene.isMainSceneDone())
 						if (!ssm.isSelected(MainScene.MAIN_TAB))
@@ -711,7 +874,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 							ssm.select(MainScene.HELP_TAB);
 					mainScene.getMainSceneMenu().getHelpBrowserItem().setSelected(true);
 				}
-			});		
+			});
 		}
 	}
 
@@ -744,7 +907,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(SettlementWindow.NAME)) {
 					mainScene.getMainSceneMenu().getSettlementMapToolItem().setSelected(false);
 				}
-				
+
 
 				else if (toolName.equals(MonitorWindow.NAME)) {
 					mainScene.getMainSceneMenu().getMonitorToolItem().setSelected(false);
@@ -761,10 +924,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				else if (toolName.equals(ResupplyWindow.NAME)) {
 					mainScene.getMainSceneMenu().getResupplyToolItem().setSelected(false);
 				}
-				
+
 			});
 		}
-*/		
+*/
 		});
 	}
 
@@ -828,7 +991,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			unitWindows.add(tempWindow);
 
 			// Create new unit button in tool bar if necessary
-			if (mainWindow != null) 
+			if (mainWindow != null)
 				mainWindow.createUnitButton(unit);
 		}
 
@@ -840,10 +1003,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			tempWindow.moveToFront();
 		} catch (java.beans.PropertyVetoException e) {}
 
-			
+
 		// go to the main tab
 		if (mainScene != null) {
-			if (ssm == null) 
+			if (ssm == null)
 				ssm = mainScene.getJFXTabPane().getSelectionModel();
 			Platform.runLater(() -> ssm.select(MainScene.MAIN_TAB));
 		}
@@ -851,7 +1014,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		playSound(unit);
 
 	}
-	
+
 	/**
 	 * Set up playing a sound clip for the unit
 	 * @param unit the unit the window is for.
@@ -859,7 +1022,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	// 2016-09-28 Added playSound()
 	@SuppressWarnings("restriction")
 	public void playSound(Unit unit) {
-		
+
 		if (mainScene != null) {
 			Platform.runLater(() -> {
 				//logger.info("playSound() is on " + Thread.currentThread().getName());
@@ -871,7 +1034,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				soundPlayer.play(soundFilePath);
 			});
 		}
-		
+
 		else {
 			SwingUtilities.invokeLater(() -> {
 				//logger.info("playSound() is on " + Thread.currentThread().getName());
@@ -880,11 +1043,11 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				if ((soundFilePath != null) && soundFilePath.length() != 0) {
 					soundFilePath = SoundConstants.SOUNDS_ROOT_PATH + soundFilePath;
 				}
-				soundPlayer.play(soundFilePath);	
+				soundPlayer.play(soundFilePath);
 			});
 		}
-		
-		
+
+
 	}
 
 	/**
@@ -928,7 +1091,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		}
 
 		// Have main window dispose of unit button
-		if (mainWindow != null) 
+		if (mainWindow != null)
 			mainWindow.disposeUnitButton(unit);
 	}
 
@@ -944,7 +1107,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			window.dispose();
 
 			// Have main window dispose of unit button
-			if (mainWindow != null) 
+			if (mainWindow != null)
 				mainWindow.disposeUnitButton(window.getUnit());
 		}
 	}
@@ -979,7 +1142,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			}
 		}
 	}
-*/	
+*/
 /*
 	class UpdateThreadTask implements Runnable {
 		public static final long SLEEP_TIME = 1; // 1 second.
@@ -1033,24 +1196,24 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		unitWindowExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1); //newCachedThreadPool();
 
 	}
-	
+
 	private void runUnitWindowExecutor() {
-		
+
 		if (!unitWindows.isEmpty()) {
-			
+
 			// set up unitWindowExecutor
 			setupUnitWindowExecutor();
-	
+
 			// Update all unit windows.
 			unitWindows.forEach(u -> {
 				if (isUnitWindowOpen(u))
 					if ( !unitWindowExecutor.isTerminated() || !unitWindowExecutor.isShutdown() )
 						unitWindowExecutor.execute(new UnitWindowTask(u));
 			});
-	
-			if (!unitWindowExecutor.isShutdown()) 
+
+			if (!unitWindowExecutor.isShutdown())
 				unitWindowExecutor.shutdown();
-			
+
 		}
 	}
 
@@ -1101,7 +1264,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			setupToolWindowTasks();
 
 		toolWindowTaskList.forEach(t -> {
-			// if a tool window is opened, run its executor 
+			// if a tool window is opened, run its executor
 			if (isToolWindowOpen(t.getToolWindow().getToolName()))
 				if ( !toolWindowExecutor.isTerminated() || !toolWindowExecutor.isShutdown() )
 					toolWindowExecutor.execute(t);
@@ -1162,10 +1325,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 //		updateThread.setRun(false);
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 
-        if (!toolWindowExecutor.isShutdown()) 
+        if (!toolWindowExecutor.isShutdown())
         	toolWindowExecutor.shutdown();
         if (unitWindowExecutor != null)
-        	if (!unitWindowExecutor.isShutdown()) 
+        	if (!unitWindowExecutor.isShutdown())
         		unitWindowExecutor.shutdown();
 		//logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
 		toolWindowTaskList.clear();
@@ -1210,12 +1373,12 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		logger.info(Msg.getString("MainDesktopPane.desktop.thread.shutdown")); //$NON-NLS-1$
         //threadPoolExecutor.shutdown();
 
-        if (!toolWindowExecutor.isShutdown()) 
+        if (!toolWindowExecutor.isShutdown())
         	toolWindowExecutor.shutdown();
         if (unitWindowExecutor != null)
-        	if (!unitWindowExecutor.isShutdown()) 
+        	if (!unitWindowExecutor.isShutdown())
         		unitWindowExecutor.shutdown();
-        
+
         // Restart update threads.
         setupToolWindowTasks();
 //		updateThread.setRun(true);
@@ -1256,10 +1419,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 
 		// 2016-11-24 populate windows in grid=like starting position
 		int w = desktop_size.width - window_size.width;
-		int rX = RandomUtil.getRandomInt(w/20) * 20;				
+		int rX = RandomUtil.getRandomInt(w/20) * 20;
 				//(int) Math.round(Math.random() *
 				//);
-		
+
 		int rY = 55 + RandomUtil.getRandomInt(5) * 20;
 				//(desktop_size.height - window_size.height));
 
@@ -1307,9 +1470,9 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	 */
 	public void openAnnouncementWindow(String announcement) {
 		announcementWindow.setAnnouncement(announcement);
-				
+
 		if (mainScene != null) {
-			
+
 		} else {
 			announcementWindow.pack();
 			add(announcementWindow, 0);
@@ -1321,7 +1484,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			announcementWindow.pack();
 			announcementWindow.setVisible(true);
 			validate();
-			repaint();		
+			repaint();
 		}
 	}
 
@@ -1405,10 +1568,10 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			// Note: SwingUtilities.invokeLater(()) doesn't allow guide windows to be centered for javaFX mode in Windows PC (but not in other platform)
 
 			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-			openToolWindow(GuideWindow.NAME);	
-			
+			openToolWindow(GuideWindow.NAME);
+
 			if (mainScene != null) {
-				
+
 				//int Xloc = (int)((mainScene.getStage().getScene().getWidth() - ourGuide.getWidth()) * .5D);
 				//int Yloc = (int)((mainScene.getStage().getScene().getHeight() - ourGuide.getHeight()) * .5D);
 				int Xloc = (int)((mainScene.getWidth() - ourGuide.getWidth()) * .5D);
@@ -1520,7 +1683,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		return marqueeTicker;
 	}
 
-	
+
 	// 2014-12-19 Added unitUpdate()
 	@SuppressWarnings("restriction")
 	@Override // @Override needed for Main window
@@ -1542,8 +1705,8 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 				//Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
 			}
 
-		} 
-		
+		}
+
 		else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
 			isTransportingBuilding = false;
             //disposeAnnouncementWindow();
@@ -1583,45 +1746,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		// repaint(); // raise cpu util% way too much for putting it here
 	}
 
-/*
-	@Override
-	public void unitManagerUpdate(UnitManagerEvent event) {
-/*
-		if (event.getUnit() instanceof Settlement) {
 
-			//removeAllElements();
-			UnitManager unitManager = Simulation.instance().getUnitManager();
-			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
-			Collections.sort(settlements);
-
-			Iterator<Settlement> i = settlements.iterator();
-			while (i.hasNext()) {
-				i.next().removeUnitListener(this);
-			}
-			Iterator<Settlement> j = settlements.iterator();
-			while (j.hasNext()) {
-				j.next().addUnitListener(this);
-			}
-		}
-*/
-		//repaint(); // raise some cpu util% but not too bad
-/*
-		Object unit = event.getUnit();
-		if (unit instanceof Settlement) {
-			Settlement settlement = (Settlement) unit;
-			UnitManagerEventType eventType = event.getEventType();
-			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
-				//System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
-				settlement.addUnitListener(this);
-			}
-			else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
-				//System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
-				settlement.removeUnitListener(this);
-			}
-		}
-	}
-*/
-	
 	public TimeWindow getTimeWindow() {
 		return timeWindow;
 	}
@@ -1629,30 +1754,30 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 	public Collection<ToolWindow> getToolWindowsList() {
 		return toolWindows;
 	}
-	
+
 	public boolean isOrbitViewerOn() {
 		if (orbitViewer == null)
 			return false;
 		else
 			return true;
 	}
-	
+
 	public void setOrbitViewer(OrbitViewer orbitViewer) {
 		this.orbitViewer = orbitViewer;
 	}
-	
+
 	public BrowserJFX getBrowserJFX() {
 		return browserJFX;
 	}
-	
+
 	public void setEventTableModel(EventTableModel eventTableModel) {
 		this.eventTableModel = eventTableModel;
 	}
-	
+
 	public EventTableModel getEventTableModel() {
 		return eventTableModel;
 	}
-	
+
 
 	@Override
 	public void clockPulse(double time) {
@@ -1661,13 +1786,13 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 			//logger.info("time : " + time);//calling update()");
 			update();
 			timeCache = 0;
-		}	
+		}
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void destroy() {
@@ -1680,5 +1805,5 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		mainScene = null;
 		eventTableModel = null;
 	}
-	
+
 }

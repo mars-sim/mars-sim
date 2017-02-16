@@ -82,16 +82,16 @@ extends ToolWindow {
 
 	/** Tool name. */
 	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
-	
+
 	public static final String CSS_FILE = "/fxui/css/nimrodskin.css";
-	
+
 	public static final String SOL  = " Sol : ";
 	public static final String POPULATION  = "  Population : ";
 	public static final String CAP  = "  Capacity : ";
 	public static final String POINTER = "\t\t\tPointer at (";
 	public static final String COMMA = ", ";
 	public static final String CLOSE_PARENT = ")";
-	
+
 	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 
 	public static final int TIME_DELAY = 330;
@@ -104,14 +104,14 @@ extends ToolWindow {
 	private double widthCache;
 	private double heightCache;
 	private double xCoor, yCoor;
-	
+
 	private DoubleProperty width = new SimpleDoubleProperty(HORIZONTAL);
 	private DoubleProperty height = new SimpleDoubleProperty(VERTICAL);
-	
+
     private String marsDateString, marsTimeString;
 
     private boolean isBound;
-    
+
     //private JStatusBar statusBar;
     private Label solLabel, popLabel, capLabel, xyLabel, timeLabel, dateLabel;
     private JPanel subPanel;
@@ -134,7 +134,7 @@ extends ToolWindow {
 	private StackPane stack;
 	private StatusBar statusBar;
 	private Timeline timeline;
-	
+
 	/**
 	 * Constructor.
 	 * @param desktop the main desktop panel.
@@ -147,7 +147,7 @@ extends ToolWindow {
 
     	if (marsClock == null)
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-    	
+
         //balloonToolTip = new BalloonToolTip();
 
         init();
@@ -168,7 +168,7 @@ extends ToolWindow {
 		    //bi.setNorthPane(null);
 		    //setBorder(null);
 		}
-	    
+
 		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
 	    //getRootPane().setOpaque(false);
@@ -182,7 +182,7 @@ extends ToolWindow {
 	    //mainPanel.setOpaque(false);
 	    //mainPanel.setBackground(new Color(0,0,0,128));
 		setContentPane(mainPanel);
-		
+
 		subPanel = new JPanel(new BorderLayout());
 	    mainPanel.add(subPanel, BorderLayout.CENTER);
 	    //subPanel.setOpaque(false);
@@ -190,14 +190,14 @@ extends ToolWindow {
 	    subPanel.setBackground(java.awt.Color.BLACK);
 
 		mapPanel = new SettlementMapPanel(desktop, this);
-	
+
 		//2016-06-14 Added SpotlightLayerUI
 		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
 		JLayer<JPanel> jlayer = new JLayer<JPanel>(mapPanel, layerUI);
     	subPanel.add(jlayer, BorderLayout.CENTER);
     	//subPanel.add(mapPanel, BorderLayout.CENTER);
-    	
- /*   	
+
+ /*
 		// 2015-01-07 Added statusBar
         statusBar = new JStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);
@@ -227,11 +227,11 @@ extends ToolWindow {
     	subPanel.add(marqueeTicker, BorderLayout.SOUTH);
 
 		jfxPanel = new JFXPanel();
-		
+
         Platform.runLater(new Runnable(){
             @Override
             public void run() {
-            	
+
                 stack = new StackPane();
                 stack.setStyle(
              		   "-fx-border-style: 2px; "
@@ -239,30 +239,30 @@ extends ToolWindow {
                 			+ "-fx-background-color: transparent; "
                 			+ "-fx-background-radius: 2px;"
              		   );
-  
+
                 solLabel = new Label();
-                popLabel = new Label(); 
+                popLabel = new Label();
                 capLabel = new Label();
         	    xyLabel = new Label();
         		timeLabel = new Label();
-                
+
         		// Create ControlFX's StatusBar
         		statusBar = createStatusBar();
             	startMarsTimer();
-            	
+
                 stack.getChildren().add(statusBar);
-                
+
                 scene = new Scene(stack, HORIZONTAL, 30);//mainPanel.getWidth(), mainPanel.getHeight());
-                
+
                 scene.setFill(javafx.scene.paint.Color.TRANSPARENT);//.BLACK);
                 jfxPanel.setScene(scene);
 
             }
         });
-  
+
         mainPanel.add(jfxPanel, BorderLayout.SOUTH);
 
-		if (mainScene != null) {			
+		if (mainScene != null) {
 			setSize(new Dimension((int)width.get(), (int)height.get()));
 			setPreferredSize(new Dimension((int)width.get(), (int)height.get()));
 			setMinimumSize(new Dimension(HORIZONTAL/2, VERTICAL/2));
@@ -278,14 +278,14 @@ extends ToolWindow {
 			setResizable(true);
 			setMaximizable(true);
 		}
-		
+
 		setVisible(true);
 
 		pack();
 
 	}
 
-	
+
 	/*
 	 * Creates the status bar for MainScene
 	 */
@@ -293,21 +293,21 @@ extends ToolWindow {
 	public StatusBar createStatusBar() {
 		if (statusBar == null) {
 			statusBar = new StatusBar();
-			statusBar.getStylesheets().add(getClass().getResource(CSS_FILE).toExternalForm());		
+			statusBar.getStylesheets().add(getClass().getResource(CSS_FILE).toExternalForm());
 			statusBar.setText("");
 		}
-		
+
     	if (marsClock == null)
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-    	
+
     	sol = marsClock.getSolElapsedFromStart();
     	pop = mapPanel.getSettlement().getAllAssociatedPeople().size();
     	cap = mapPanel.getSettlement().getPopulationCapacity();
-    	
+
 		String statusText = "" + sol;
 		String populationText = "" + pop;
 		String capText = "" + cap;
-	     
+
 	    // 2015-02-09 Added leftLabel
 	    solLabel.setText(SOL+ statusText);
 	    popLabel.setText(POPULATION + populationText);
@@ -319,22 +319,22 @@ extends ToolWindow {
 		popLabel.setTooltip(new Tooltip ("Population of this Settlement"));
 		capLabel.setTooltip(new Tooltip ("Max Number of Beds/Quarters in this Settlement"));
 		xyLabel.setTooltip(new Tooltip ("x and y meters from center of a Building (Updated when Right-Click inside)"));
-		
+
 		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
-		statusBar.getLeftItems().add(solLabel);		
+		statusBar.getLeftItems().add(solLabel);
 		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 
 		statusBar.getLeftItems().add(popLabel);
-		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));	
+		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 
 		statusBar.getLeftItems().add(capLabel);
-		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));	
+		statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 
 		statusBar.getLeftItems().add(xyLabel);
 		//statusBar.getLeftItems().add(yLabel);
-		//statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));	
+		//statusBar.getLeftItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 
-/*		
+/*
     	marsDateString = marsClock.getDateString();
     	marsTimeString = marsClock.getTrucatedTimeString();
     	// For now, we denoted Martian Time in UMST as in Mars Climate Database Time. It's given as Local True Solar Time at longitude 0, LTST0
@@ -350,17 +350,17 @@ extends ToolWindow {
 		statusBar.getRightItems().add(timeLabel);
 		statusBar.getRightItems().add(new Separator(javafx.geometry.Orientation.VERTICAL));
 */
-		
+
 		Color c = Color.rgb(156,77,0);
 		//String c = orange.toString().replace("0x", "");
 		//System.out.println("c is " + c.toString().replace("0x", "")); // 9c4d00ff
-		
+
 		solLabel.setTextFill(c);
 		popLabel.setTextFill(c);
 		capLabel.setTextFill(c);
 		xyLabel.setTextFill(c);
 		timeLabel.setTextFill(c);
-		
+
 
 /*
  * 		using setStyle("-fx-text-fill: orange;") will not allow
@@ -377,7 +377,7 @@ extends ToolWindow {
 		xyLabel.setStyle("-fx-text-inner-color: orange;");
 		timeLabel.setStyle("-fx-text-inner-color: orange;");
 */
-		
+
 		return statusBar;
 	}
 
@@ -385,24 +385,24 @@ extends ToolWindow {
 	 * Updates the cpu loads, memory usage and time text in the status bar
 	 */
 	public void updateStatusBarText() {
- 
+
 		if (mainScene != null) {
 			if (mainScene.isMainSceneDone() && !isBound) {
 				isBound = true;
 				height.bind(mainScene.getScene().heightProperty());
-				width.bind(mainScene.getScene().widthProperty());	
+				width.bind(mainScene.getScene().widthProperty());
 			}
 		}
-		
+
 		if (widthCache != width.get() || heightCache != height.get()) {
 			setSize(new Dimension((int)width.get(), (int)height.get()));
 			widthCache = width.get();
 			heightCache = height.get();
 		}
-	/*	
+	/*
 		String d = marsClock.getDateString();
 		String t = marsClock.getTrucatedTimeString();
-		
+
 		if (!marsTimeString.equals(t)) {
 			timeLabel.setText("  " + d + "  " + t + MILLISOLS_UMST);
 			marsTimeString = t;
@@ -413,35 +413,35 @@ extends ToolWindow {
 			marsDateString = d;
 			marsTimeString = t;
 		}
-	*/	
+	*/
     	int s = marsClock.getSolElapsedFromStart();
     	int p = mapPanel.getSettlement().getAllAssociatedPeople().size();
     	int c = mapPanel.getSettlement().getPopulationCapacity();
-    	
-	    
+
+
 	    if (sol != s) {
 		    solLabel.setText(SOL + s);
 		    sol = s;
 	    }
-	    
-	
+
+
 	    if (pop != p) {
 		    popLabel.setText(POPULATION + p);
 		    pop = p;
 	    }
-	    
+
 	    if (cap != c) {
 		    capLabel.setText(CAP + c);
 		    cap = c;
 	    }
-	    
+
 	    if (xCoor != 0 && yCoor != 0)
 	    	xyLabel.setText(POINTER + xCoor + COMMA + yCoor + CLOSE_PARENT);
 	    else
 	    	xyLabel.setText("");
 	    //yLabel.setText(", " + yCoor + ")" + " ");
 	}
-	
+
 	/**
 	 * Creates and starts the Mars timer
 	 */
@@ -454,7 +454,7 @@ extends ToolWindow {
 
 	}
 
-/*	
+/*
 	// 2015-02-05 Added showMarsTime()
 	public void showMarsTime() {
 		// 2015-01-07 Added Martian Time on status bar
@@ -484,8 +484,8 @@ extends ToolWindow {
     		marsTimer.start();
     	}
 	}
-*/	
-	
+*/
+
 	/**
 	 * Gets the settlement map panel.
 	 * @return the settlement map panel.
@@ -525,7 +525,7 @@ extends ToolWindow {
 			statusBar.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 		}
 	}
-	
+
 	public void setXCoor(double x) {
 		this.xCoor = x;
 	}
@@ -543,11 +543,11 @@ extends ToolWindow {
 			timeLabel.setTextFill(c);
 		}
 	}
-	
+
 	////public void setDesktop(MainDesktopPane desktop) {
 	//	this.desktop = desktop;
 	//}
-	
+
 	@Override
 	public void destroy() {
 		//marsTimer.stop();

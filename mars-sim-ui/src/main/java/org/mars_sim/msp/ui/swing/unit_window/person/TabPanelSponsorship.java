@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelSponsorship.java
- * @version 3.08 2015-10-05
+ * @version 3.1.0 2017-02-14
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;

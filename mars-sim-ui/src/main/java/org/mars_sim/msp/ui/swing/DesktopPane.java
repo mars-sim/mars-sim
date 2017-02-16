@@ -96,9 +96,11 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  */
 public class DesktopPane
 extends JDesktopPane
-implements ComponentListener, 
+//implements
+//ComponentListener
 //UnitListener,
-UnitManagerListener {
+//UnitManagerListener
+{
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -108,15 +110,15 @@ UnitManagerListener {
 	/** True if this MainDesktopPane hasn't been displayed yet. */
 	private boolean firstDisplay;
 	private boolean isTransportingBuilding = false, isConstructingSite = false;
-	
+
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
 	private JLabel backgroundLabel;
 
 	private Building building;
-	
+
 	private MainScene mainScene;
-	
+
 	/**
 	 * Constructor 1 for setting up javaFX desktop
 	 * @param mainScene the main scene
@@ -127,7 +129,7 @@ UnitManagerListener {
 
 		initialize();
 	}
-	
+
 	public void initialize() {
 		// Set background color to black
 		setBackground(Color.black);
@@ -136,8 +138,8 @@ UnitManagerListener {
 		setDesktopManager(new MainDesktopManager());
 
 		// Set component listener
-		addComponentListener(this);
-	
+		//addComponentListener(this);
+
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
 		backgroundLabel = new JLabel(backgroundImageIcon);
@@ -147,7 +149,7 @@ UnitManagerListener {
 
 		// Initialize firstDisplay to true
 		firstDisplay = true;
-		
+
 		setPreferredSize(new Dimension(1280, 1024));
 
 		prepareListeners();
@@ -157,10 +159,10 @@ UnitManagerListener {
 	 * Constructor 2 for setting up swing desktop
 	 */
 	public DesktopPane() {
-		
+
 		initialize();
 	}
-	
+
 	/** Returns the MainScene instance
 	 *  @return MainScene instance
 	 */
@@ -174,7 +176,7 @@ UnitManagerListener {
 	 * displayed. Recenter logoLabel on MainWindow and set
 	 * backgroundLabel to the size of MainDesktopPane.
 	 * @param e the component event
-	 */
+
 	@Override
 	public void componentResized(ComponentEvent e) {
 
@@ -208,8 +210,8 @@ UnitManagerListener {
 
 		// Set the backgroundLabel size to the size of the desktop
 		backgroundLabel.setSize(getSize());
-
 	}
+*/
 
 	/**
 	 * sets up this class with two listeners
@@ -219,8 +221,8 @@ UnitManagerListener {
 	   	//logger.info("MainDesktopPane's prepareListeners() is on " + Thread.currentThread().getName() + " Thread");
 
 		// Add addUnitManagerListener()
-		UnitManager unitManager = Simulation.instance().getUnitManager();
-		unitManager.addUnitManagerListener(this);
+		//UnitManager unitManager = Simulation.instance().getUnitManager();
+		//unitManager.addUnitManagerListener(this);
 /*
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
@@ -236,14 +238,15 @@ UnitManagerListener {
 */
 	   	//logger.info("MainDesktopPane's prepareListeners() is done");
 	}
-	
+
+/*
 	// Additional Component Listener methods implemented but not used.
 	@Override
 	public void componentMoved(ComponentEvent e) {
 		logger.info("DesktopPane : componentMoved()");
 		updateToolWindow();
 	}
-	
+
 	@Override
 	public void componentShown(ComponentEvent e) {
 		logger.info("DesktopPane : componentShown()");
@@ -254,16 +257,16 @@ UnitManagerListener {
 			SwingUtilities.updateComponentTreeUI(f);
 		}
 	}
-	
+
 	@Override
 	public void componentHidden(ComponentEvent e) {}
-
+*/
 	public void updateToolWindow() {
 		logger.info("DesktopPane : updateToolWindow()");
 		JInternalFrame[] frames = this.getAllFrames();
 		for (JInternalFrame f : frames) {
-			//f.updateUI();	
-			//SwingUtilities.updateComponentTreeUI(f);		
+			//f.updateUI();
+			//SwingUtilities.updateComponentTreeUI(f);
 			((ToolWindow)f).update();
 		}
 	}
@@ -274,7 +277,7 @@ UnitManagerListener {
 		centerJIF(comp);
 		return comp;
 	}
-	
+
 	public void centerJIF(Component comp) {
 	    Dimension desktopSize = getSize();
 	    Dimension jInternalFrameSize = comp.getSize();
@@ -283,7 +286,7 @@ UnitManagerListener {
 	    comp.setLocation(width, height);
 	    comp.setVisible(true);
 	}
-	
+
 	public void unitManagerUpdate(UnitManagerEvent event) {
 
 		Object unit = event.getUnit();
@@ -291,7 +294,7 @@ UnitManagerListener {
 /*
 			Settlement settlement = (Settlement) unit;
 			UnitManagerEventType eventType = event.getEventType();
-			
+
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
 				//System.out.println("MainDesktopPane : " + settlement.getName() + " just added");
 				settlement.addUnitListener(this);
@@ -300,7 +303,7 @@ UnitManagerListener {
 				//System.out.println("MainDesktopPane : " + settlement.getName() + " just deleted");
 				settlement.removeUnitListener(this);
 			}
-*/			
+*/
 			updateToolWindow();
 		}
 	}
@@ -317,7 +320,7 @@ UnitManagerListener {
 			//settlement = mgr.getSettlement();
 
 			if (!isTransportingBuilding) {
-				isTransportingBuilding = true;	
+				isTransportingBuilding = true;
 				mainScene.openTransportWizard(mgr);
 				Simulation.instance().getTransportManager().setIsTransportingBuilding(false);
 			}
