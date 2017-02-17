@@ -87,7 +87,7 @@ implements ClockListener, Serializable {
     public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
     /** Java version string. */
     public final static String JAVA_VERSION = com.sun.javafx.runtime.VersionInfo.getRuntimeVersion();
-    
+
     /** Default save filename. */
     public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
     public final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
@@ -139,11 +139,11 @@ implements ClockListener, Serializable {
     private String loadBuild;// = "unknown";
 
     private String lastSave = null;
-    
+
     // 2016-07-26 Added transient to avoid serialization error
 	//private transient Timeline autosaveTimeline;
 	private transient Timeline autosaveTimer;
-		
+
     // Transient data members (aren't stored in save file)
     /** All historical info. */
     private transient HistoricalEventManager eventManager;
@@ -284,7 +284,7 @@ implements ClockListener, Serializable {
         }
 
         isUpdating = false;
-        
+
         //2016-09-30 Copied build version. Usable for comparison when loading a saved sim
         SimulationConfig.instance().build = Simulation.BUILD;
     }
@@ -324,38 +324,38 @@ implements ClockListener, Serializable {
 	}
 
 
-    public void runLoadConfigTask() { 	
+    public void runLoadConfigTask() {
     	startSimExecutor();
     	simExecutor.execute(new LoadConfigTask());
-   	
+
     }
 
-	public class LoadConfigTask implements Runnable {		
-		LoadConfigTask() {}	
+	public class LoadConfigTask implements Runnable {
+		LoadConfigTask() {}
 		public void run() {
 		   	//logger.info("SimConfigTask's run() is on " + Thread.currentThread().getName());
 			SimulationConfig.loadConfig();
 		}
 	}
-	
-	
-	public void runStartTask(boolean autosaveDefault) { 	
+
+
+	public void runStartTask(boolean autosaveDefault) {
     	simExecutor.execute(new StartTask(autosaveDefault));
     }
 
 	public class StartTask implements Runnable {
 		boolean autosaveDefault;
-	
+
 		StartTask(boolean autosaveDefault) {
 			this.autosaveDefault = autosaveDefault;
 		}
-		
+
 		public void run() {
 		   	//logger.info("StartTask's run() is on " + Thread.currentThread().getName());
 			start(autosaveDefault);
 		}
 	}
-		
+
     /**
      * Start the simulation.
      */
@@ -374,7 +374,7 @@ implements ClockListener, Serializable {
         masterClock.startClockListenerExecutor();
 
         if (clockScheduler == null || clockScheduler.isShutdown() || clockScheduler.isTerminated()) {
-	        
+
         	//if (NUM_THREADS <= 3)
         		clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
         		//clockScheduler = (ThreadPoolExecutor) Executors.newSingleThreadExecutor();
@@ -382,15 +382,15 @@ implements ClockListener, Serializable {
         	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);// newSingleThreadExecutor();// newCachedThreadPool(); //
         	//else if (NUM_THREADS <= 16)
         	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(3);// newSingleThreadExecutor();// newCachedThreadPool(); //
-        	//else 
+        	//else
         	//	clockScheduler = (ThreadPoolExecutor) Executors.newFixedThreadPool(4);// newSingleThreadExecutor();// newCachedThreadPool(); //
-   
+
         	clockScheduler.execute(masterClock.getClockThreadTask());
        }
- 
+
         //2016-04-28 Relocated the autosave timer from MainMenu to here
 		startAutosaveTimer(autosaveDefault);
-		
+
     }
 
 
@@ -434,12 +434,12 @@ implements ClockListener, Serializable {
             try {
 
                 sim.readFromFile(f);
-                             
+
             } catch (ClassNotFoundException e2) {
             	logger.log(Level.SEVERE, "Quitting mars-sim with Class Not Found Exception when loading the simulation! " + " : " + e2.getMessage());
     	        Platform.exit();
-    	        System.exit(1);  
-    	        
+    	        System.exit(1);
+
             } catch (IOException e1) {
             	logger.log(Level.SEVERE, "Quitting mars-sim with I/O error when loading the simulation! " + " : " + e1.getMessage());
     	        Platform.exit();
@@ -450,16 +450,16 @@ implements ClockListener, Serializable {
     	        Platform.exit();
     	        System.exit(1);
 	        }
-            
+
         }
-        
+
         else{
         	logger.log(Level.SEVERE, "Quitting mars-sim. The saved sim cannot be read or found. ");
             //throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + //$NON-NLS-1$ //$NON-NLS-2$
             //        f.getPath() + " is not accessible");
             Platform.exit();
             System.exit(1);
-            
+
         }
 
     }
@@ -472,13 +472,13 @@ implements ClockListener, Serializable {
      */
    	// 2016-03-22 Replace gzip with xz compression (based on LZMA2)
     private synchronized void readFromFile(File file) throws ClassNotFoundException, IOException {
-    	//logger.info("Simulation : running readFromFile()");      
+    	//logger.info("Simulation : running readFromFile()");
         byte[] buf = new byte[8192];
         ObjectInputStream ois = null;
         FileInputStream in = null;
 
         boolean no_go = false;
-        
+
         try {
         	//System.out.println("Simulation : inside try. starting decompressing");
             in = new FileInputStream(file);
@@ -487,22 +487,22 @@ implements ClockListener, Serializable {
             // anyway, BufferedInputStream doesn't seem to be
             // needed here to improve performance.
             // in = new BufferedInputStream(in);
-        	XZInputStream xzin = new XZInputStream(in, 256 * 1024);              
+        	XZInputStream xzin = new XZInputStream(in, 256 * 1024);
             // limit memory usage to 256 MB
-           
+
             // define a temporary uncompressed file
             File uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
-            // Decompress a xz compressed file 
-            FileOutputStream fos = new FileOutputStream(uncompressed);                
+            // Decompress a xz compressed file
+            FileOutputStream fos = new FileOutputStream(uncompressed);
 
             int size;
             while ((size = xzin.read(buf)) != -1)
             	fos.write(buf, 0, size);
-   
+
             ois = new ObjectInputStream(new FileInputStream(uncompressed));
-                 
+
             // Load intransient objects.
-            SimulationConfig.setInstance((SimulationConfig) ois.readObject());	
+            SimulationConfig.setInstance((SimulationConfig) ois.readObject());
            	//System.out.println("Simulation : inside try. starting loading objects");
 
             malfunctionFactory = (MalfunctionFactory) ois.readObject();
@@ -517,16 +517,16 @@ implements ClockListener, Serializable {
             unitManager = (UnitManager) ois.readObject();
             masterClock = (MasterClock) ois.readObject();
             //eventManager = (HistoricalEventManager) ois.readObject();
- 
+
 	        if (ois != null) {
 	            ois.close();
 	        }
             // Close FileInputStream (directly or indirectly via XZInputStream, it doesn't matter).
             in.close();
             xzin.close();
-            fos.close();     
+            fos.close();
             uncompressed.delete();
-   
+
         	// Compute the size of the saved sim
 			fileSize = (file.length() / 1000D);
 			String fileStr = "";
@@ -535,22 +535,22 @@ implements ClockListener, Serializable {
 				fileStr = Math.round(fileSize*10.0)/10.0 + " KB";
 			else
 				fileStr = Math.round(fileSize)/10.0 + " MB";
-			
+
 			//logger.info("The saved sim has a size of "+ fileStr);
-		
+
             loadBuild = SimulationConfig.instance().build;
         	if (loadBuild == null)
         		loadBuild = "unknown";
-            
-			logger.info("  Build : " + loadBuild + "   Size : "+ fileStr);
-        	
+
+			logger.info("Note : this sim file was made in build " + loadBuild + " (size : "+ fileStr + ")");
+
         	if (instance().BUILD.equals(loadBuild))
-        		logger.info("Running mars-sim and loading a saved sim in Build " + loadBuild);
+        		logger.info("Proceed to loading the saved sim");
         	else
-        		logger.warning("Running mars-sim in Build " + Simulation.BUILD + " but loading a saved sim in Build " + loadBuild);
- 
+        		logger.warning("Attempting to load the saved sim made in build " + loadBuild + " while running mars-sim in build " + Simulation.BUILD + " but ");
+
         } catch (FileNotFoundException e) {
-        	logger.log(Level.SEVERE, "Quitting mars-sim. " + file + " cannot be found : ", e.getMessage());
+        	logger.log(Level.SEVERE, "Quitting mars-sim since " + file + " cannot be found : ", e.getMessage());
             Platform.exit();
             System.exit(1);
 
@@ -562,25 +562,25 @@ implements ClockListener, Serializable {
         } catch (IOException e) {
         	logger.log(Level.SEVERE, "Quitting mars-sim. I/O error when decompressing " + file + " : " + e.getMessage());
             Platform.exit();
-            System.exit(1);           
-        	
+            System.exit(1);
+
 	    } catch (NullPointerException e) {
 	    	logger.log(Level.SEVERE, "Quitting mars-sim. Uull pointer error when loading " + file + " : " + e.getMessage());
 	        Platform.exit();
-	        System.exit(1);           
+	        System.exit(1);
 
 	    } catch (Exception e) {
 	    	no_go = true;
 	    	logger.log(Level.SEVERE, "Quitting mars-sim with errors when loading " + file + " : " + e.getMessage());
 	        Platform.exit();
-	        System.exit(1);           
-	    } 
-        
+	        System.exit(1);
+	    }
+
         if (!no_go) {
 	        // Initialize transient data.
 	        instance().initializeTransientData();
 	        instance().initialSimulationCreated = true;
-	        isUpdating = false;        
+	        isUpdating = false;
         }
 	}
 
@@ -593,7 +593,7 @@ implements ClockListener, Serializable {
     public synchronized void saveSimulation(int type, File file) throws IOException {
         logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
     	//System.out.println("file is " + file);
-        
+
     	// 2015-12-18 Check if it was previously on pause
 		boolean previous = masterClock.isPaused();
 		// Pause simulation.
@@ -612,9 +612,9 @@ implements ClockListener, Serializable {
         if (type == SAVE_DEFAULT) {
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
             logger.info("Saving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
- 
+
         }
-        
+
         else if (type == SAVE_AS) {
         	//System.out.println("file is " + file);
         	String f = file.getName();
@@ -626,50 +626,50 @@ implements ClockListener, Serializable {
         	//System.out.println("file is " + file);
         	logger.info("Saving as " + file);
         }
-        
+
         else if (type == AUTOSAVE_AS_DEFAULT) {
             file = new File(DEFAULT_DIR, DEFAULT_FILE + DEFAULT_EXTENSION);
             logger.info("Autosaving as " + DEFAULT_FILE + DEFAULT_EXTENSION);
-        	
+
         }
 
         else if (type == AUTOSAVE) {
             String autosaveFilename = lastSave
-            		+ "_sol" + masterClock.getMarsClock().getSolElapsedFromStart() 
+            		+ "_sol" + masterClock.getMarsClock().getSolElapsedFromStart()
             		+ "_r" + BUILD
             		+ DEFAULT_EXTENSION;
             file = new File(AUTOSAVE_DIR, autosaveFilename);
             logger.info("Autosaving as " + autosaveFilename);
-        	
+
         }
 
         // if the autosave/default save directory does not exist, create one now
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
-        
+
         ObjectOutputStream oos = null;
         FileInputStream fis = null;
         FileOutputStream fos = new FileOutputStream(file);
         XZOutputStream xzout = null;
         File uncompressed = null;
-        
+
         try {
-        	
+
             // 2016-03-22 Replace gzip with xz compression (based on LZMA2)
             // See (1) http://stackoverflow.com/questions/5481487/how-to-use-lzma-sdk-to-compress-decompress-in-java
             //     (2) http://tukaani.org/xz/xz-javadoc/
-            
+
             // STEP 1: combine all objects into one single uncompressed file, namely "default"
             uncompressed = new File(DEFAULT_DIR, TEMP_FILE);
-            
+
             // if the default save directory does not exist, create one now
             if (!uncompressed.getParentFile().exists()) {
             	uncompressed.getParentFile().mkdirs();
             }
-                     
-        	oos = new ObjectOutputStream(new FileOutputStream(uncompressed));           
- 
+
+        	oos = new ObjectOutputStream(new FileOutputStream(uncompressed));
+
             // Store the in-transient objects.
             oos.writeObject(SimulationConfig.instance());
             //oos.writeObject(eventManager);
@@ -686,27 +686,27 @@ implements ClockListener, Serializable {
 
             oos.flush();
             //oos.close();
-            
+
             // STEP 2: convert the uncompressed file into a fis
-            fis = new FileInputStream(uncompressed);           
-			LZMA2Options options = new LZMA2Options();		
-			// Set to 6. For mid sized archives (>8mb), 7 works better. 		
-			options.setPreset(6); 
+            fis = new FileInputStream(uncompressed);
+			LZMA2Options options = new LZMA2Options();
+			// Set to 6. For mid sized archives (>8mb), 7 works better.
+			options.setPreset(6);
 			xzout = new XZOutputStream(fos, options);
-			
+
 			// STEP 3: set up buffer and create outxz and save as a .sim file
 			byte[] buf = new byte[8192];
 			int size;
 			while ((size = fis.read(buf)) != -1)
-			   xzout.write(buf, 0, size);	
-			
-			xzout.finish();				
-			
+			   xzout.write(buf, 0, size);
+
+			xzout.finish();
+
 
         } catch (IOException e){
             logger.log(Level.SEVERE, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
             throw e;
-            
+
         //} finally {
         //    if (oos != null) {
         //        oos.close();
@@ -720,15 +720,15 @@ implements ClockListener, Serializable {
         //fos.close(); // fos closed automatically
         if (oos != null) {
             oos.close();
-        } 
+        }
 		xzout.close();
-		 
+
         sim.proceed();
 
         // 2017-02-03 Added justSaved
      	justSaved = true;
-     	
-		// 2015-12-18 Check if it was previously on pause       
+
+		// 2015-12-18 Check if it was previously on pause
 		boolean now = masterClock.isPaused();
 		if (!previous) {
 			if (now) {
@@ -772,7 +772,7 @@ implements ClockListener, Serializable {
         }
     }
 
-    
+
     /*
      * Stops and removes the master clock and pauses the simulation
      */
@@ -806,7 +806,7 @@ implements ClockListener, Serializable {
         UpTimer ut = null;
         if (masterClock != null)
         	ut = masterClock.getUpTimer();
-        
+
         if (ut != null && !masterClock.isPaused()) {
 
             ut.updateTime();
@@ -874,7 +874,7 @@ implements ClockListener, Serializable {
         }
     }
 
-	
+
 	public String getLastSave() {
 		if (lastSave == null || lastSave.equals(""))
 			return "None";
@@ -882,14 +882,14 @@ implements ClockListener, Serializable {
 			StringBuilder sb = new StringBuilder();
 			int l = lastSave.length();
 			String s = lastSave.substring(l-8, l);
-			sb.append(s.substring(0, 2)).append(":").append(s.substring(2, 4)) 
+			sb.append(s.substring(0, 2)).append(":").append(s.substring(2, 4))
 			.append(" ").append(s.substring(6, 8)).append(" (local time)");
-			return sb.toString();	
+			return sb.toString();
 		}
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	//2015-01-07 Added startAutosaveTimer()
     //2016-04-28 Relocated the autosave timer from MainMenu to here
@@ -897,14 +897,14 @@ implements ClockListener, Serializable {
 	public void startAutosaveTimer(boolean autosaveDefault) {
         //logger.info("Simulation's startAutosaveTimer() is on " + Thread.currentThread().getName());
 		autosave_minute = SimulationConfig.instance().getAutosaveInterval();
-		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock, 
+		// Note: should call masterClock's saveSimulation() to first properly interrupt the masterClock,
 		// instead of directly call saveSimulation() here in Simulation
-		
+
 		if (autosaveTimer != null) {
 			autosaveTimer.stop();
 			autosaveTimer = null;
 		}
-		
+
 		if (autosaveDefault) {
 			autosaveTimer = new Timeline(
 				new KeyFrame(Duration.seconds(60 * autosave_minute),
@@ -925,10 +925,10 @@ implements ClockListener, Serializable {
 			//EventStreams.ticks(java.time.Duration.ofMinutes(60 * autosave_minute))
 	        //.subscribe(tick -> masterClock.autosaveSimulation());
 		}
-		
+
 		// Note1: Infinite Timeline might result in a memory leak if not stopped properly.
 		// Note2: All the objects with animated properties would NOT be garbage collected.
-		
+
 		autosaveTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
 		autosaveTimer.play();
 
@@ -1100,12 +1100,12 @@ implements ClockListener, Serializable {
 	public void setJustSaved(boolean value) {
 		justSaved = value;
 	}
-		
+
     @Override
     public void pauseChange(boolean isPaused) {
         // Do nothing
     }
-    
+
     /**
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
@@ -1164,12 +1164,12 @@ implements ClockListener, Serializable {
             eventManager = null;
         }
 
-/*        
+/*
         if (managerExecutor != null) {
             managerExecutor.shutdownNow();
             managerExecutor = null;
         }
-*/        
+*/
     	//logger.info("Simulation's destroyOldSimulation() is done");
     }
 

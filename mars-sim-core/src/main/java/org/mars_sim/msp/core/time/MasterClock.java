@@ -64,7 +64,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient volatile boolean isPaused = false;
 	/** Simulation/real-time ratio. */
 	private volatile double timeRatio = 0D;
-	//private int count = 0;	
+	//private int count = 0;
 	private long timeBetweenUpdates = 0L;
 	private int noDelaysPerYield = 0;
 	private int maxFrameSkips = 0;
@@ -87,7 +87,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient List<ClockListenerTask> clockListenerTaskList =  new CopyOnWriteArrayList<>();
 
 	private double time_ratio;
-	
+
 	/** Martian Clock. */
 	private MarsClock marsTime;
 	/** Initial Martian time. */
@@ -102,10 +102,10 @@ public class MasterClock implements Serializable { // Runnable,
 	private ClockThreadTask clockThreadTask;
 
 	private transient ThreadPoolExecutor clockListenerExecutor;
-	
-	private Simulation sim; 
+
+	private Simulation sim;
 	private SimulationConfig config;
-	
+
     /**
      * Constructor
      *
@@ -319,12 +319,12 @@ public class MasterClock implements Serializable { // Runnable,
      * Checks if in the process of loading a simulation.
      *
      * @return true if loading simulation.
-     
+
     public boolean isLoadingSimulation() {
         return loadSimulation;
     }
 */
-    
+
     /**
      * Sets the save simulation flag and the file to save to.
      * @param file save to file or null if default file.
@@ -412,7 +412,7 @@ public class MasterClock implements Serializable { // Runnable,
 	public void resetTotalPulses() {
 		totalPulses = (totalPulses*3)/5;
 	}
-	
+
     /**
      * setTimeRatio is for setting the Masterclock's time ratio directly. It is a double
      * indicating the simetime:realtime ratio. 1000 means 1000 sim time minutes elapse for
@@ -552,9 +552,9 @@ public class MasterClock implements Serializable { // Runnable,
 			            catch (InterruptedException e) {
 			            	Thread.currentThread().interrupt();
 			            }
-	
+
 			            overSleepTime = (System.nanoTime() - t2) - sleepTime;
-	
+
 		            }
 	            }
 
@@ -578,10 +578,10 @@ public class MasterClock implements Serializable { // Runnable,
 	            	// Make up a lost frame by calling statusUpdate() again
 	            	statusUpdate();
 	            	skips++;
-	            }         
-	            // 2017-01-19 set excess to zero to prevent getting stuck in the above while loop after waking up from power saving 
+	            }
+	            // 2017-01-19 set excess to zero to prevent getting stuck in the above while loop after waking up from power saving
 	            excess = 0;
-	            
+
 	        } // end of while
 	    } // end of run
     }
@@ -590,9 +590,9 @@ public class MasterClock implements Serializable { // Runnable,
     private void statusUpdate() {
         //logger.info("MasterClock's statusUpdate() is on " + Thread.currentThread().getName() + " Thread");
     	// Note: it's s on pool-4-thread-1 Thread
-    	//count++; 
+    	//count++;
    		//System.out.println("count : " + count);
-    	
+
         long lastTimeDiff;
 
         if (!isPaused) {
@@ -614,55 +614,55 @@ public class MasterClock implements Serializable { // Runnable,
             	if (timePulse > 0)
             		marsTime.addTime(timePulse);
             }
-		  	if (!isPaused 
-		  			|| !clockListenerExecutor.isTerminating() 
-		  			|| !clockListenerExecutor.isTerminated() 
+		  	if (!isPaused
+		  			|| !clockListenerExecutor.isTerminating()
+		  			|| !clockListenerExecutor.isTerminated()
 		  			|| !clockListenerExecutor.isShutdown() )
 		  		fireClockPulse(timePulse);
 
             long endTime = System.nanoTime();
             lastTimeDiff = (long) ((endTime - startTime) / 1_000_000D);
-            // TODO: how to prevent crashing autosaveTimer ? 
+            // TODO: how to prevent crashing autosaveTimer ?
             // will it help by restarting the autosaveTimer ?
-            //sim.getAutosaveTimer().playFromStart();
+            //Simulation.instance().getAutosaveTimer().playFromStart();
             //logger.finest("Pulse #" + totalPulses + " time: " + lastTimeDiff + " ms");
         }
 
         if (saveType != 0) {
             // Save the simulation as default.sim
             try {
-                sim.saveSimulation(saveType, file);                
+                Simulation.instance().saveSimulation(saveType, file);
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Could not save the simulation as " 
+                logger.log(Level.SEVERE, "Could not save the simulation as "
                         + (file == null ? "null" : file.getPath()), e);
                 e.printStackTrace();
             }
-            
+
             saveType = 0;
         }
 
-/*        
+/*
         else if (loadSimulation) {
             // Load the simulation from a file.
             if (file.exists() && file.canRead()) {
-                sim.loadSimulation(file);
+                Simulation.instance().loadSimulation(file);
                	//logger.info("just done running Simulation's loadSimulation().");
-                //sim.start(false);
+                //Simulation.instance().start(false);
             }
             else {
                 logger.warning("Cannot access file " + file.getPath() + ", not reading");
             }
-            
+
             loadSimulation = false;
         }
 
 */
-        
+
         // Exit program if exitProgram flag is true.
         if (exitProgram) {
             //exitProgram = false;
-        	if (sim.getAutosaveTimer() != null)
-        		sim.getAutosaveTimer().stop();
+        	if (Simulation.instance().getAutosaveTimer() != null)
+        		Simulation.instance().getAutosaveTimer().stop();
             System.exit(0);
         }
 
@@ -811,9 +811,9 @@ public class MasterClock implements Serializable { // Runnable,
     	//System.out.println("MasterClock : calling setPaused()");
         uptimer.setPaused(isPaused);
         if (isPaused)
-			sim.getAutosaveTimer().pause();
+			Simulation.instance().getAutosaveTimer().pause(); // note: using sim (instead of Simulation.instance()) won't work when loading a saved sim.
 		else
-			sim.getAutosaveTimer().play();
+			Simulation.instance().getAutosaveTimer().play();
     	//if (isPaused) System.out.println("MasterClock.java : setPaused() : isPause is true");
         this.isPaused = isPaused;
         // Fire pause change to all clock listeners.
@@ -860,7 +860,7 @@ public class MasterClock implements Serializable { // Runnable,
         //System.out.println("pulsespersecond: "+((double) totalPulses / (uptimer.getUptimeMillis()/1000 ) ));
         return ((double) totalPulses);
     }
-    
+
     /**
      * Update the milliseconds elapsed since last time pulse.
      */
@@ -909,7 +909,7 @@ public class MasterClock implements Serializable { // Runnable,
 */
         if (hours > 0) {
             b.append(String.format("%02d", hours)).append("h ");
-        }    
+        }
         //} else {
         //    b.append("00h ");
         //}
@@ -922,7 +922,7 @@ public class MasterClock implements Serializable { // Runnable,
 
         //b.append(String.format("%5.3f", secs));
         b.append(String.format("%05.2f", secs) + "s");
-        
+
         return b.toString();
     }
 
@@ -944,7 +944,7 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public void endClockListenerExecutor() {
     	clockListenerExecutor.shutdownNow();
-    	//sim.getUnitManager().getPersonExecutor().shutdownNow();
+    	//Simulation.instance().getUnitManager().getPersonExecutor().shutdownNow();
 /*
     	if ( clockListenerExecutor.isTerminating() )
 			try {
@@ -958,7 +958,7 @@ public class MasterClock implements Serializable { // Runnable,
     		///
 */
     }
-    
+
 
 	public ThreadPoolExecutor getClockListenerExecutor() {
 		return clockListenerExecutor;
@@ -967,7 +967,7 @@ public class MasterClock implements Serializable { // Runnable,
 	public double getDefaultTimeRatio() {
 		return time_ratio;
 	}
-	
+
     /**
      * Prepare object for garbage collection.
      */

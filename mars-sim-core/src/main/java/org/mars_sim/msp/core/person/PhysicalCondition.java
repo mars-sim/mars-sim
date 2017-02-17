@@ -67,17 +67,17 @@ implements Serializable {
     public static final double ACCIDENT_STRESS = 10D;
 
     public static final double FOOD_RESERVE_FACTOR = 1.5D;
-    
+
     public static final double MENTAL_BREAKDOWN = 100D;
-    
+
     private static final double COLLAPSE_IMMINENT = 5000D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
-    private static final String PANIC_ATTACK = "Panic Attack";
+    //private static final String PANIC_ATTACK = "Panic Attack";
 
-    private static final String DEPRESSION = "Depression";
+    //private static final String DEPRESSION = "Depression";
 
-    private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
+    //private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
 
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
@@ -113,7 +113,7 @@ implements Serializable {
     private double performance;
 
     private double inclination_factor;
-    
+
     private double personStarvationTime;
 
     // 2015-02-23 Added hygiene
@@ -149,7 +149,7 @@ implements Serializable {
 	private MarsClock marsClock;
 
 	private static PersonConfig personConfig;
-	private AmountResource foodAR;
+	//private AmountResource foodAR;
 
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
@@ -160,13 +160,13 @@ implements Serializable {
      * @param newPerson The person requiring a physical presence.
      */
     // 2015-04-29 Added RadiationExposure();
-    public PhysicalCondition(Person newPerson) { 	
+    public PhysicalCondition(Person newPerson) {
 
         alive = true;
-        
+
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-        
+
     	radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
 
@@ -175,22 +175,23 @@ implements Serializable {
 
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
-        
+
         fatigue = RandomUtil.getRandomRegressionInteger(1000) * .5;
         stress = RandomUtil.getRandomRegressionInteger(100) * .2;
         hunger = RandomUtil.getRandomRegressionInteger(1000) * .5;
         kJoules = 500D + RandomUtil.getRandomRegressionInteger(2000);
-        
+
         // 2015-02-23 Added hygiene (not used yet)
         hygiene = RandomUtil.getRandomDouble(100D);
 
         medicationList = new ArrayList<Medication>();
 
         personConfig = SimulationConfig.instance().getPersonConfiguration();
+
         foodDryMassPerServing = personConfig.getFoodConsumptionRate() / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
         try {
-        	personStarvationTime =  1000D * (personConfig.getStarvationStartTime()  
+        	personStarvationTime =  1000D * (personConfig.getStarvationStartTime()
         			+ RandomUtil.getRandomDouble(1.0) - RandomUtil.getRandomDouble(1.0));
             //System.out.println("personStarvationTime : "+ Math.round(personStarvationTime*10.0)/10.0);
         }
@@ -198,7 +199,7 @@ implements Serializable {
             e.printStackTrace(System.err);
         }
 
-    	foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+    	//foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 
     }
 
@@ -241,50 +242,50 @@ implements Serializable {
 	    		suppressHabit = 0;
 	    		solCache = solElapsed;
 	    	}
-	
+
 	        boolean illnessEvent = false;
-	
+
 	        radiation.timePassing(time);
-	
+
 	        // Check the existing problems
 	        if (!problems.isEmpty()) {
 	            // Throw illness event if any problems already exist.
 	            illnessEvent = true;
-	
+
 	            List<Complaint> newProblems = new ArrayList<Complaint>();
 	            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
-	
+
 	            Iterator<HealthProblem> iter = currentProblems.iterator();
 	            while(!isDead() && iter.hasNext()) {
 	                HealthProblem problem = iter.next();
-	
+
 	                // Advance each problem, they may change into a worse problem.
 	                // If the current is completed or a new problem exists then
 	                // remove this one.
 	                Complaint next = problem.timePassing(time, this);
-	
+
 	                if (problem.getCured() || (next != null)) {
 	                	Complaint c = problem.getIllness();
 	                    problems.remove(c);
-	                    
+
 	                    // 2017-01-19 Added resetting isCollapsed and isStressedOut
 	                    if (c.getType() == ComplaintType.HIGH_FATIGUE_COLLAPSE)
 	                    	isCollapsed = false;
-	                    
+
 	                    else if (c.getType() == ComplaintType.PANIC_ATTACK)
 	                    	isStressedOut = false;
-	                    
+
 	                    else if (c.getType() == ComplaintType.DEPRESSION)
 	                    	isStressedOut = false;
 	                }
-	
-	                
+
+
 	                // If a new problem, check it doesn't exist already
 	                if (next != null) {
 	                    newProblems.add(next);
 	                }
 	            }
-	
+
 	            // Add the new problems
 	            Iterator<Complaint> newIter = newProblems.iterator();
 	            while(newIter.hasNext()) {
@@ -292,16 +293,18 @@ implements Serializable {
 	                illnessEvent = true;
 	            }
 	        }
-	
+
 	        // Has the person died ?
 	        //if (isDead()) return false;
-	
+
 	        // See if any random illnesses happen.
 	        List<Complaint> randomAilments = checkForRandomAilments(time);
 	        if (randomAilments.size() > 0) {
 	            illnessEvent = true;
 	        }
-	
+
+	        personConfig = SimulationConfig.instance().getPersonConfiguration();
+
 	        // Consume necessary oxygen and water.
 	        try {
 	            if (consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D)))
@@ -316,21 +319,21 @@ implements Serializable {
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
 	        }
-	
+
 	        // Build up fatigue & hunger for given time passing.
 	        setFatigue(fatigue + time);
 	        setHunger(hunger + time);
-	
+
 	        // normal bodily function consume a minute amount of energy
 	        // even if a person does not perform any tasks
 	        // Note: removing this as reduce energy is already handled
 	        // in the TaskManager and people are always performing tasks
 	        // unless dead. - Scott
 	        //reduceEnergy(time);
-	
+
 	        checkStarvation(hunger);
 	        //System.out.println("PhysicalCondition : hunger : "+ Math.round(hunger*10.0)/10.0);
-	
+
 	        // Add time to all medications affecting the person.
 	        Iterator<Medication> i = medicationList.iterator();
 	        while (i.hasNext()) {
@@ -339,26 +342,26 @@ implements Serializable {
 	                i.remove();
 	            }
 	        }
-	
+
 	        // If person is at high stress, check for mental breakdown.
 	        if (isStressedOut)
 		        if (stress > MENTAL_BREAKDOWN)
 		            checkForStressBreakdown(time);
-	
+
 	        // 2016-03-01 check if person is at very high fatigue may collapse.
 	        if (isCollapsed)
 	        	if (fatigue > COLLAPSE_IMMINENT)
 	        		checkForHighFatigueCollapse(time);
-	        
+
 	        // Calculate performance and most serious illness.
 	        recalculate();
-	
+
 	        if (illnessEvent) {
 	            person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 	        }
 
     	}
-    	
+
         return (alive);
 
         //return (!isDead());
@@ -380,7 +383,7 @@ implements Serializable {
             Complaint complaint = i.next();
             double probability = complaint.getProbability();
             // TODO: need to be more task-based or location-based ?
-            
+
             // Check that medical complaint has a probability > zero.
             if (probability > 0D) {
 
@@ -490,10 +493,10 @@ implements Serializable {
 
     	//AmountResource foodAR = AmountResource.findAmountResource(foodType);
         double foodEaten = amount;
-        double foodAvailable = inv.getAmountResourceStored(foodAR, false);
+        double foodAvailable = inv.getAmountResourceStored(AmountResource.foodAR, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(foodAR);
+        inv.addAmountDemandTotalRequest(AmountResource.foodAR);
 
         if (foodAvailable < 0.01D) {
            throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");
@@ -506,10 +509,10 @@ implements Serializable {
 
             foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
             // subtract food from container
-            inv.retrieveAmountResource(foodAR, foodEaten);
+            inv.retrieveAmountResource(AmountResource.foodAR, foodEaten);
 
     		// 2015-01-09 addDemandRealUsage()
-    		inv.addAmountDemand(foodAR, foodEaten);
+    		inv.addAmountDemand(AmountResource.foodAR, foodEaten);
         }
     }
 
@@ -763,7 +766,7 @@ implements Serializable {
                 else if (hunger < 200D) {
                     HealthProblem illness = problems.get(starvation);
                     if (illness != null) {
-                        illness.startRecovery();                      
+                        illness.startRecovery();
                         //person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
@@ -813,7 +816,7 @@ implements Serializable {
      */
     // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
     private void checkForStressBreakdown(double time) {
- 
+
     	Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
     	Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
     	// a person is limited to have only one of them at a time
@@ -822,55 +825,55 @@ implements Serializable {
             // Determine stress resilience modifier (0D - 2D).
             int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
             int emotStability = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EMOTIONAL_STABILITY);
-            
+
             // 0 (strong) to 1 (weak)
             double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
             System.out.println("checkForStressBreakdown()'s resilienceModifier : " + resilienceModifier);
             double chance = 0;
-            
-            try {    
+
+            try {
             	// 0 to 100
-            	chance = personConfig.getStressBreakdownChance();                
-            } 
+            	chance = personConfig.getStressBreakdownChance();
+            }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
             }
-            
+
             double value = chance / 10D * resilienceModifier;
             System.out.println("checkForStressBreakdown()'s value : " + value);
             //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
             if (RandomUtil.lessThanRandPercent(value)) {
-            	
+
             	isStressedOut = true;
-/*            	
-               	if (fatigue < 200) 
+/*
+               	if (fatigue < 200)
             		fatigue = fatigue * 4;
-            	else if (fatigue < 400) 
+            	else if (fatigue < 400)
             		fatigue = fatigue * 2;
-            	else if (fatigue < 600) 
+            	else if (fatigue < 600)
             		fatigue = fatigue * 1.2;
-*/           	               	                	
+*/
             	double rand = RandomUtil.getRandomDouble(1.0) + inclination_factor;
-            	
+
             	if (rand < 0.5) {
-            		                               				
+
             		//Complaint panicAttack = getMedicalManager().getComplaintByName(ComplaintType.PANIC_ATTACK);
                     if (panicAttack != null) {
                     	if (inclination_factor > -.5)
                     		inclination_factor = inclination_factor - .05;
-                        
+
                     	addMedicalComplaint(panicAttack);
                         //illnessEvent = true;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                         logger.info(person.getName() + " suffers from a panic attack.");
                         //System.out.println(person.getName() + " has a panic attack.");
-                                           
+
                     }
-                    else 
+                    else
                     	logger.log(Level.SEVERE, "Could not find 'Panic Attack' medical complaint in 'conf/medical.xml'");
-            		
+
             	} else {
-            		
+
                     //Complaint depression = getMedicalManager().getComplaintByName(ComplaintType.DEPRESSION);
                     if (depression != null) {
                     	if (inclination_factor < .5)
@@ -881,20 +884,20 @@ implements Serializable {
                         logger.info(person.getName() + " has an episode of depression.");
                         //System.out.println(person.getName() + " has an episode of depression.");
                     }
-                    else 
+                    else
                     	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
             	}
-            
-            
+
+
             } else {
-/*            	
-               	if (fatigue < 200) 
+/*
+               	if (fatigue < 200)
             		fatigue = fatigue * 2;
-            	else if (fatigue < 400) 
-            		fatigue = fatigue * 1.5;         	
+            	else if (fatigue < 400)
+            		fatigue = fatigue * 1.5;
 */
-            }    
-        }      
+            }
+        }
     }
 
     /**
@@ -910,55 +913,55 @@ implements Serializable {
             // Calculate the modifier (from 10D to 0D) Note that the base high-fatigue-collapse-chance is 5%
             int endurance = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ENDURANCE);
             int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
-            
+
             // a person with high endurance will be less likely to be collapse
             double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
             System.out.println("checkForHighFatigueCollapse()'s modifier :" + modifier);
-            
+
             double chance = 0;
-            
-            try {              
-            	chance = personConfig.getHighFatigueCollapseChance();                
-            } 
+
+            try {
+            	chance = personConfig.getHighFatigueCollapseChance();
+            }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
             }
-            
+
             double value = chance /5D * modifier;
-            
+
             if (RandomUtil.lessThanRandPercent(value)) {
-            	
+
                 System.out.println("checkForHighFatigueCollapse()'s value :" + value);
             	isCollapsed = true;
             //Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
-/*                                	
-             	if (stress < 10) 
+/*
+             	if (stress < 10)
              		stress = stress * 1.8;
-            	else if (stress < 30) 
+            	else if (stress < 30)
             		stress = stress * 1.5;
-            	else if (stress < 50) 
+            	else if (stress < 50)
             		stress = stress * 1.2;
 */
-            	
+
                 if (highFatigue != null) {
                     addMedicalComplaint(highFatigue);
                     //illnessEvent = true;
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     logger.info(person.getName() + " collapses because of high fatigue exhaustion.");
                 }
-                else 
+                else
                 	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
             }
             else {
-            	
-/*            	
-            	if (stress < 10) 
+
+/*
+            	if (stress < 10)
              		stress = stress * 1.5;
-            	else if (stress < 30) 
+            	else if (stress < 30)
             		stress = stress * 1.3;
-            	else if (stress < 50) 
+            	else if (stress < 50)
             		stress = stress * 1.1;
-*/                	                	
+*/
             }
         }
     }
@@ -1077,8 +1080,8 @@ implements Serializable {
                 tempPerformance -= (fatigue - 1400D) * FATIGUE_PERFORMANCE_MODIFIER /2;
             }
             else if (fatigue > 800D) {
-                tempPerformance -= (fatigue - 800D) * FATIGUE_PERFORMANCE_MODIFIER /4; 
-                // e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 -> reduces by 1.25% on each frame  
+                tempPerformance -= (fatigue - 800D) * FATIGUE_PERFORMANCE_MODIFIER /4;
+                // e.g. f = 1000, p = 1.0 - 500 * .0001/4 = 1.0 - 0.05/4 = 1.0 - .0125 -> reduces by 1.25% on each frame
             }
 
             // High stress reduces performance.
@@ -1086,11 +1089,11 @@ implements Serializable {
                 tempPerformance -= (stress - 90D) * STRESS_PERFORMANCE_MODIFIER/2;
             }
             else if (stress > 70D) {
-                tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER/4; 
+                tempPerformance -= (stress - 70D) * STRESS_PERFORMANCE_MODIFIER/4;
                 //e.g. p = 100 - 10 * .005 /3 = 1 - .05/4 -> reduces by .0125  or  1.25%  on each frame
             }
         }
-        
+
 
         if (tempPerformance < 0D) {
             tempPerformance = 0D;
@@ -1162,7 +1165,7 @@ implements Serializable {
         return config.getPowerConsumptionRate();
     }
      */
-    
+
     /**
      * Gets a list of medication affecting the person.
      * @return list of medication.
