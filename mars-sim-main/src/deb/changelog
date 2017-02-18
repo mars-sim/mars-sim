@@ -1,7 +1,13 @@
-mars-sim-main (3.1.0) unstable; urgency=low
+mars-sim-main (3.1.0-p6) unstable; Urgency : low
 
-  * Version 3.1.0 Snapshot Preview 5 debian package release.
- -- Manny Kung <mkung@users.sourceforge.net>  Sat, 21 Jan 2017 17:37:40 -0700
+  * Version 3.07 debian package release.
+ -- Scott Davis <scud1@users.sourceforge.net>  Sun, 18 Jan 2015 00:00:00 -0700
+
+  * Version 3.06 debian package release.
+ -- Scott Davis <scud1@users.sourceforge.net>  Mon, 12 May 2014 00:00:00 -0700
+
+   * Version 3.05 debian package release.
+ -- Scott Davis <scud1@users.sourceforge.net>  Sun, 15 Sep 2013 00:00:00 -0700
 
   * Initial debian package release.
  -- Scott Davis <scud1@users.sourceforge.net>  Wed, 31 Jul 2013 14:04:40 -0700

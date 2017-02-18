@@ -50,11 +50,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>fxgraphics2d</artifactId>
             <version>1.3</version>
         </dependency-->
-		<!--dependency>		
+		<!--dependency>
 		    <groupId>com.object-refinery</groupId>
 		    <artifactId>orsoncharts</artifactId>
 		    <version>1.5</version>
- 		</dependency-->   
+ 		</dependency-->
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout-swing</artifactId>
@@ -65,7 +65,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <groupId>com.miglayout</groupId>
 		    <artifactId>miglayout-javafx</artifactId>
 		    <version>5.0</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
@@ -94,29 +94,29 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <!--  		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.21</version>		
+			<version>1.7.21</version>
 		</dependency>
---> 	
+-->
 <!-- load nimrodlf 1.2d from mars-sim's maven-repo
 		<dependency>
 			<groupId>com.nilo.plaf.nimrod</groupId>
 			<artifactId>nimrod</artifactId>
 			<version>1.2d</version>
-		</dependency>		
---> 		
-<!-- load nimrodlf 1.2c from mars-sim's maven-repo--> 
+		</dependency>
+-->
+<!-- load nimrodlf 1.2c from mars-sim's maven-repo-->
 		<dependency>
 			<groupId>com.plaf.nimrod</groupId>
 			<artifactId>nimrodlf</artifactId>
 			<version>1.2c</version>
-		</dependency>	
-<!-- 				
+		</dependency>
+<!--
 		<dependency>
 			<groupId>com.sibvisions.external.jvxfx</groupId>
 			<artifactId>dndtabpane</artifactId>
 			<version>0.1</version>
 		</dependency>
- -->		
+ -->
 		<dependency>
 			<groupId>com.sibvisions.jvx</groupId>
 			<artifactId>jfxtensions</artifactId>
@@ -137,17 +137,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>fontawesomefx</artifactId>
 		    <version>8.9</version>
 		</dependency>
--->		
+-->
 	    <dependency>
 	        <groupId>org.testfx</groupId>
 	        <artifactId>testfx-core</artifactId>
-	        <version>4.0.4-alpha</version>
+	        <version>4.0.5-alpha</version>
 	        <scope>test</scope>
 	    </dependency>
 		<dependency>
 			<groupId>org.testfx</groupId>
 			<artifactId>testfx-junit</artifactId>
-			<version>4.0.4-alpha</version>
+			<version>4.0.5-alpha</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -175,7 +175,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>eu.hansolo</groupId>
 			<artifactId>tilesfx</artifactId>
 			<version>1.3.1</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>Medusa</artifactId>
@@ -201,13 +201,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>LibFX</artifactId>
 		    <version>0.3.0</version>
 		</dependency>
-<!--	NEEDED for spring boot			
+<!--	NEEDED for spring boot
 	  <dependency>
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-cli</artifactId>
 		  <version>${springboot.version}</version>
-	  </dependency> 
-		<dependency>	
+	  </dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 			<version>${springboot.version}</version>
@@ -221,13 +221,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  <groupId>org.springframework.boot</groupId>
 		  <artifactId>spring-boot-starter-actuator</artifactId>
 		  <version>${springboot.version}</version>
-	  </dependency>		
-		<dependency>	
+	  </dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${springboot.version}</version>
 		</dependency>
-		<dependency>	
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 			<version>${springboot.version}</version>
@@ -236,7 +236,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
 			<version>1.3</version>
-		</dependency>        
+		</dependency>
 		<dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
@@ -253,9 +253,9 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         	<groupId>org.mapstruct</groupId>
         	<artifactId>mapstruct</artifactId>
         	<version>${org.mapstruct.version}</version>
-    	</dependency>		
+    	</dependency>
 -->
-<!--	NOT NEEDED for spring boot	
+<!--	NOT NEEDED for spring boot
        <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-webmvc</artifactId>
@@ -274,7 +274,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  <groupId>org.thymeleaf</groupId>
 		  <artifactId>thymeleaf</artifactId>
 		  <version>3.0.1</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 		    <groupId>org.thymeleaf</groupId>
 		    <artifactId>thymeleaf-spring4</artifactId>
@@ -284,31 +284,31 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  3.0.1-SNAPSHOT
 		  2.1.4.RELEASE
 		  </version>
-		</dependency>		
+		</dependency>
 -->
-<!-- load jfoenix stored at mars-sim's maven-repo-snapshot --> 
+<!-- load jfoenix stored at mars-sim's maven-repo-snapshot -->
 		<dependency>
 			<groupId>insidefx.undecorator</groupId>
 			<artifactId>undecorator</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-<!-- load jfoenix from mars-sim's maven-repo-snapshot --> 
+<!-- load jfoenix from mars-sim's maven-repo-snapshot -->
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
 			<version>1.1.0</version>
-		</dependency>		
-<!-- The following artifacts are Needed by jfoenix --> 
+		</dependency>
+<!-- The following artifacts are Needed by jfoenix -->
 		<dependency>
 		    <groupId>de.jensd</groupId>
 		    <artifactId>fontawesomefx</artifactId>
 		    <version>8.0.10</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>datafx</artifactId>
 		    <version>8.0.7</version>
-		</dependency>			
+		</dependency>
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>flow</artifactId>
@@ -318,7 +318,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <groupId>io.datafx</groupId>
 		    <artifactId>core</artifactId>
 		    <version>8.0.7</version>
-		</dependency>			
+		</dependency>
 		<dependency>
 		    <groupId>net.orfjackal.retrolambda</groupId>
 		    <artifactId>retrolambda</artifactId>
@@ -329,56 +329,56 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>javax.inject</artifactId>
 		    <version>2.5.0-b05</version>
 		</dependency>
-<!-- The above artifacts are Needed by jfoenix --> 
-<!-- The following artifacts are Needed by olmectron's material design --> 				
+<!-- The above artifacts are Needed by jfoenix -->
+<!-- The following artifacts are Needed by olmectron's material design -->
 	 	<dependency>
 		    <groupId>io.github.endreman0</groupId>
 		    <artifactId>java-json</artifactId>
 		    <version>0.13.0</version>
-		</dependency>	
+		</dependency>
 		<!--dependency>
 		    <groupId>org.jfxtras</groupId>
 		    <artifactId>jfxtras-labs</artifactId>
 		    <version>8.0-r6-SNAPSHOT</version>
-		</dependency-->	
-<!-- The above artifacts are Needed by olmectron's material design -->			
+		</dependency-->
+<!-- The above artifacts are Needed by olmectron's material design -->
 		<dependency>
 		    <groupId>de.codecentric.centerdevice</groupId>
 		    <artifactId>centerdevice-nsmenufx</artifactId>
 		    <version>2.1.4</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>eu.mihosoft.jfx.scaledfx</groupId>
 			<artifactId>scaledfx</artifactId>
 			<version>0.4</version>
-		</dependency>	
-<!-- for enzo's funmenu --> 		
+		</dependency>
+<!-- for enzo's funmenu -->
 		<dependency>
 			<groupId>org.kordamp.ikonli</groupId>
 			<artifactId>ikonli-core</artifactId>
 			<version>1.8.0</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-material-pack</artifactId>
 		    <version>1.8.0</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-materialdesign-pack</artifactId>
 		    <version>1.8.0</version>
-		</dependency>	
+		</dependency>
 	    <dependency>
 	        <groupId>org.kordamp.ikonli</groupId>
 	        <artifactId>ikonli-javafx</artifactId>
 	        <version>1.8.0</version>
-	    </dependency>	
-<!-- for enzo's FunMenu and SubmitButton--> 				  
+	    </dependency>
+<!-- for enzo's FunMenu and SubmitButton-->
 		<dependency>
 		    <groupId>org.kordamp.ikonli</groupId>
 		    <artifactId>ikonli-fontawesome-pack</artifactId>
 		    <version>1.8.0</version>
-		</dependency>   					
+		</dependency>
 		<dependency>
 			<groupId>org.fxmisc.cssfx</groupId>
 			<artifactId>cssfx</artifactId>
@@ -395,18 +395,18 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<groupId>org.codehaus.izpack</groupId>
 			<artifactId>izpack-maven-plugin</artifactId>
 			<version>5.0.10</version>
-		</dependency-->	
-<!-- https://mvnrepository.com/artifact/com.gluonhq/charm-down-desktop -->		
+		</dependency-->
+<!-- https://mvnrepository.com/artifact/com.gluonhq/charm-down-desktop -->
 		<!-- dependency>
 			<groupId>com.gluonhq</groupId>
 			<artifactId>charm-down-desktop</artifactId>
 			<version>2.0.1</version>
-		</dependency-->		
+		</dependency-->
 		<dependency>
 		    <groupId>com.guigarage</groupId>
 		    <artifactId>responsivefx</artifactId>
 		    <version>0.8</version>
-		</dependency>		
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
@@ -418,7 +418,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-		</repository>	
+		</repository>
 		<!-->repository>
 			<id>jme3-repo</id>
 			<name>JME3 maven repo</name>
@@ -447,7 +447,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
-        </repository>        
+        </repository>
 		<repository>
 	        <id>spring-snapshots</id>
 	        <name>Spring Snapshots</name>
@@ -455,17 +455,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	        <snapshots>
 	            <enabled>true</enabled>
 	        </snapshots>
-	    </repository> 
+	    </repository>
 	    <repository>
 	    <!-- jcenter required by ikonli-javafx -->
 	        <id>central</id>
 	        <name>jcenter</name>
 	        <url>http://jcenter.bintray.com</url>
-	    </repository>   
+	    </repository>
 		<repository>
 	        <id>in-sidefx</id>
 	        <url>https://dl.bintray.com/in-sidefx/maven/</url>
-	    </repository>        
+	    </repository>
 		<repository>
 			<id>bintray</id>
 			<name>Medusa</name>
@@ -476,6 +476,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<releases>
                 <enabled>true</enabled>
             </releases>
-		</repository>	     	    
+		</repository>
 	</repositories>
 </project>
