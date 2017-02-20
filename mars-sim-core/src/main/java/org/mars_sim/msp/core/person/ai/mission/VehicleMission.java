@@ -69,13 +69,13 @@ implements UnitListener {
 	private Vehicle vehicle;
 	/** The last operator of this vehicle in the mission. */
 	private VehicleOperator lastOperator;
-	
+
 	private MissionMember startingMember;
 	/** True if vehicle has been loaded. */
 	protected boolean loadedFlag = false;
 	/** True if vehicle's emergency beacon has been turned on */
     //private boolean isBeaconOn = false;
-    
+
 	/** Vehicle traveled distance at start of mission. */
 	private double startingTravelledDistance;
 
@@ -91,20 +91,20 @@ implements UnitListener {
 		super(name, startingMember, minPeople);
 
 		this.startingMember = startingMember;
-		
+
 		// Add mission phases.
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
 		addPhase(DISEMBARKING);
 
 
-		// Reserve a vehicle.	 
+		// Reserve a vehicle.
 		if (!reserveVehicle(startingMember)) {
 		    endMission(NO_RESERVABLE_VEHICLES);
 		}
 
 	}
-	
+
 
 	protected VehicleMission(String name, MissionMember startingMember, int minPeople,
 			Vehicle vehicle) {
@@ -112,7 +112,7 @@ implements UnitListener {
 		super(name, startingMember, minPeople);
 
 		this.startingMember = startingMember;
-		
+
 		// Add mission phases.
 		addPhase(EMBARKING);
 		addPhase(TRAVELLING);
@@ -333,28 +333,28 @@ implements UnitListener {
 		if (hasVehicle()) {
 			// if user hit the "End Mission" button to abort the mission
 			if (reason.equals(Mission.USER_ABORTED_MISSION)) {
-				logger.info("User just aborted the mission. Switching to emergency mode to go to the nearest settlement.");	
+				logger.info("User just aborted the mission. Switching to emergency mode to go to the nearest settlement.");
 				// will recursively call endMission() with a brand new "reason"
-				determineEmergencyDestination(startingMember);	
-				
+				determineEmergencyDestination(startingMember);
+
 			}
-			
+
 			else if (reason.equals(Mission.NOT_ENOUGH_RESOURCES_TO_CONTINUE)
 					|| reason.equals(Mission.UNREPAIRABLE_MALFUNCTION)
 					|| reason.equals(Mission.NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND)) {
 				// Set emergency beacon if vehicle is not at settlement.
 				// TODO: need to find out if there are other matching reasons for setting emergency beacon.
 				if (vehicle.getSettlement() == null) {
-					// if the vehicle somewhere on Mars and is outside the settlement 
+					// if the vehicle somewhere on Mars and is outside the settlement
 					if (!vehicle.isEmergencyBeacon()) {
 						//if the emergency beacon is off
 						// Question: could the emergency beacon itself be broken ?
 						if (!vehicle.isBeingTowed()) {
 							setEmergencyBeacon(null, vehicle, true);
 							logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
-							//don't end the mission yet 
+							//don't end the mission yet
 						}
-						
+
 						else {
 							// is being towed,  wait till the journey is over
 							//don't end the mission yet
@@ -363,12 +363,12 @@ implements UnitListener {
 					}
 
 					else {
-						// if the emergency beacon is on, 
+						// if the emergency beacon is on,
 						//don't end the mission yet
 						//logger.info(vehicle + "'s emergency beacon is on. awaiting the response for rescue right now.");
 					}
 				}
-				
+
 				else {
 					// if the vehicle is still somewhere inside the settlement when it got broken down
 					// TODO: wait till the repair is done and the mission may resume ?!?
@@ -376,27 +376,32 @@ implements UnitListener {
 					super.endMission(reason);
 				}
 			}
-			
+
 			else {
-				// for ALL OTHER REASONS 
+				// for ALL OTHER REASONS
 	            //setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
 				leaveVehicle();
 				super.endMission(reason);
 			}
 		}
-		
+
 		//else if (reason.equals(Mission.SUCCESSFULLY_DISEMBARKED)) {
 			//logger.info("Returning the control of " + vehicle + " to the settlement");
        //     setPhaseEnded(true);
 			//leaveVehicle();
 		//	super.endMission(reason);
 		//}
-		
-		else { // if vehicles are NOT available 
+
+		else { // if vehicles are NOT available
 			//Questions : what are the typical cases here ?
-			//logger.info("No vehicle is available. reason for ending the mission : " + reason); 			
+			//logger.info("No vehicle is available. reason for ending the mission : " + reason);
             //setPhaseEnded(true); // TODO: will setPhaseEnded cause NullPointerException ?
+
+			// Case : if a vehicle is parked at a settlement and had an accident and was repaired,
+			//somehow this mission did not end and the Mission Tool shows the Regolith mission was still on-going
+			//and the occupants did not leave the vehicle.
 			super.endMission(reason);
+
 		}
 	}
 
@@ -411,8 +416,8 @@ implements UnitListener {
 		}
 
 		try {
-			return LoadVehicleGarage.isFullyLoaded(getRequiredResourcesToLoad(), 
-					getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), 
+			return LoadVehicleGarage.isFullyLoaded(getRequiredResourcesToLoad(),
+					getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(),
 					getOptionalEquipmentToLoad(), vehicle, vehicle.getSettlement());
 		} catch (Exception e) {
 			throw new IllegalStateException(getPhase().getName(), e);
@@ -471,12 +476,12 @@ implements UnitListener {
 		if (EMBARKING.equals(getPhase())) {
 			startTravelToNextNode();
 			setPhase(VehicleMission.TRAVELLING);
-			setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+			setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
 					getNextNavpoint().getDescription())); //$NON-NLS-1$
 		} else if (TRAVELLING.equals(getPhase())) {
 			if (getCurrentNavpoint().isSettlementAtNavpoint()) {
 				setPhase(VehicleMission.DISEMBARKING);
-				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+				setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
 						getCurrentNavpoint().getDescription())); //$NON-NLS-1$
 			}
 		} else if (DISEMBARKING.equals(getPhase())) {
@@ -515,12 +520,12 @@ implements UnitListener {
 				reachedDestination = vehicle.getCoordinates().equals(
 						destination.getLocation());
 			}
-			
+
 			malfunction = vehicle.getMalfunctionManager().hasMalfunction();
 		}
-		
+
 		if (!reachedDestination && !malfunction) {
-		    
+
 		    if (member instanceof Person) {
 		        Person person = (Person) member;
 
@@ -542,7 +547,7 @@ implements UnitListener {
 		                        destination.getLocation())) {
 		                    operateVehicleTask.setDestination(destination
 		                            .getLocation());
-		                    setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+		                    setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
 		                            getNextNavpoint().getDescription())); //$NON-NLS-1$
 		                }
 		            }
@@ -571,7 +576,7 @@ implements UnitListener {
 			endMission(UNREPAIRABLE_MALFUNCTION);
 		}
 	}
-	
+
 	/**
 	 * Gets a new instance of an OperateVehicle task for the person.
 	 * @param member the mission member operating the vehicle.
@@ -648,7 +653,7 @@ implements UnitListener {
 	protected final double getAverageVehicleSpeedForOperators() {
 
 	    double result = 0D;
-	    
+
 		double totalSpeed = 0D;
 		int count = 0;
 		Iterator<MissionMember> i = getMembers().iterator();
@@ -663,7 +668,7 @@ implements UnitListener {
 		if (count > 0) {
 		    result = totalSpeed / (double) count;
 		}
-		
+
 		return result;
 	}
 
@@ -757,27 +762,27 @@ implements UnitListener {
 
 		if (vehicle != null) {
 			Inventory inv = vehicle.getInventory();
-	
+
 			Iterator<Resource> iR = neededResources.keySet().iterator();
 			while (iR.hasNext() && result) {
 				Resource resource = iR.next();
 				if (resource instanceof AmountResource) {
-	
+
 				    double amount = (Double) neededResources.get(resource);
 				    double amountStored = inv
 				            .getAmountResourceStored((AmountResource) resource, false);
 				    if (amountStored < amount) {
-				        logger.severe(vehicle.getName() + " does not have enough " + resource + 
-				                " to continue with " + getName() + " (required: " + amount + 
+				        logger.severe(vehicle.getName() + " does not have enough " + resource +
+				                " to continue with " + getName() + " (required: " + amount +
 				                " kg, stored: " + amountStored + " kg)");
 				        result = false;
 				    }
-				} 
+				}
 				else if (resource instanceof ItemResource) {
 					int num = (Integer) neededResources.get(resource);
 					int numStored = inv.getItemResourceNum((ItemResource) resource);
 					if (numStored < num) {
-						logger.severe(vehicle.getName() + " does not have enough " + resource + 
+						logger.severe(vehicle.getName() + " does not have enough " + resource +
 								" to continue with " + getName() + " (required: " + num +
 								", stored: " + numStored + ")");
 						result = false;
@@ -793,7 +798,7 @@ implements UnitListener {
 	}
 
 	/**
-	 * Determines the emergency destination settlement for the mission if one is reachable, 
+	 * Determines the emergency destination settlement for the mission if one is reachable,
 	 * otherwise sets the emergency beacon and ends the mission.
 	 * @param member the mission member performing the mission.
 	 */
@@ -845,7 +850,7 @@ implements UnitListener {
 			endMission(NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND);
 		}
 	}
-	
+
 	/**
      * Sets the vehicle's emergency beacon on or off.
      * @param member the mission member performing the mission.
@@ -853,10 +858,10 @@ implements UnitListener {
      * @param beaconOn true if beacon is on, false if not.
      */
 	public void setEmergencyBeacon(MissionMember member, Vehicle vehicle, boolean beaconOn) {
-	    
+
 		// Creating mission emergency beacon event.
 		HistoricalEvent newEvent = new MissionHistoricalEvent(member, this, EventType.MISSION_EMERGENCY_BEACON);
-         
+
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 		if (beaconOn) {
 			logger.info("Emergency beacon activated on " + vehicle.getName());
@@ -868,7 +873,7 @@ implements UnitListener {
 		vehicle.setEmergencyBeacon(beaconOn);
 
 	}
-	
+
 	/**
 	 * Update mission to the next navpoint destination.
 	 */
@@ -876,7 +881,7 @@ implements UnitListener {
 		if (operateVehicleTask != null) {
 			operateVehicleTask.setDestination(getNextNavpoint().getLocation());
 		}
-		setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+		setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
 				getNextNavpoint().getDescription())); //$NON-NLS-1$
 	}
 
@@ -973,9 +978,9 @@ implements UnitListener {
 	 * @return equipment and their number.
 	 */
 	public Map<Class, Integer> getOptionalEquipmentToLoad() {
-	    
+
 	    Map<Class, Integer> result = new HashMap<Class, Integer>();
-	    
+
 	    // Add containers needed for optional amount resources.
 	    Map<Resource, Number> optionalResources = getOptionalResourcesToLoad();
 	    Iterator<Resource> i = optionalResources.keySet().iterator();
@@ -987,15 +992,15 @@ implements UnitListener {
 	            Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(amountResource);
 	            double capacity = ContainerUtil.getContainerCapacity(containerClass);
 	            int numContainers = (int) Math.ceil(amount / capacity);
-	            
+
 	            if (result.containsKey(containerClass)) {
 	                numContainers += result.get(containerClass);
 	            }
-	            
+
 	            result.put(containerClass, numContainers);
 	        }
 	    }
-	    
+
 		return result;
 	}
 

@@ -173,7 +173,7 @@ public class Preference implements Serializable {
 			MetaTask metaTask = i.next();
 
 			// Set them up in random
-			result = RandomUtil.getRandomInt(-3, 2);
+			result = RandomUtil.getRandomInt(-2, 2);
 
 			// Note: the preference score on a metaTask is modified by a person's natural attributes
 			// TODO: turn these hardcoded relationship between attributes and task preferences into a XML/JSON file
@@ -231,14 +231,15 @@ public class Preference implements Serializable {
 				// need patience and stability to administer healing
 				result += (int)((se + ss)/2D);
 
-			if (metaTask instanceof RequestMedicalTreatmentMeta)
+			if (metaTask instanceof RequestMedicalTreatmentMeta
+					|| metaTask instanceof YogaMeta)
 				// if a person is stress-resilient and relatively emotional stable,
 				// he will more likely endure pain and less likely ask to be medicated.
 				result -= (int)se;
 
 			if (metaTask instanceof RelaxMeta
 				|| metaTask instanceof PlayHoloGameMeta
-				|| metaTask instanceof SleepMeta
+				//|| metaTask instanceof SleepMeta
 				|| metaTask instanceof ListenToMusicMeta
 				|| metaTask instanceof WorkoutMeta
 				|| metaTask instanceof YogaMeta
@@ -250,11 +251,6 @@ public class Preference implements Serializable {
 			if (metaTask instanceof ConnectWithEarthMeta
 				||	metaTask instanceof HaveConversationMeta)
 				result += (int)ca;
-
-			if (metaTask instanceof WorkoutMeta
-				|| metaTask instanceof PlayHoloGameMeta
-				|| metaTask instanceof YogaMeta)
-				result +=(int)ag;
 
 			// Artistic quality
 			if (metaTask instanceof ConstructBuildingMeta
@@ -269,8 +265,16 @@ public class Preference implements Serializable {
 				|| metaTask instanceof TendGreenhouseMeta)
 				result += (int)art;
 
-			if (result > 9)
-				result = 9;
+			if (metaTask instanceof WorkoutMeta
+				|| metaTask instanceof PlayHoloGameMeta)
+				result +=(int)ag;
+
+
+
+			if (result > 7)
+				result = 7;
+			else if (result < -7)
+				result = -7;
 
 			String s = getStringName(metaTask);
 			if (!stringNameMap.containsKey(s)) {
@@ -340,7 +344,7 @@ public class Preference implements Serializable {
 			// preference scores are not static. They are influenced by priority scores
 			result += checkScheduledTask(metaTask);
 		}
-		
+
 		return result;
 	}
 
@@ -408,7 +412,7 @@ public class Preference implements Serializable {
 		//System.out.println(ss + " <-- " + s);
 		return ss;
 	}
-	
+
 
 	public void scheduleTask(String s, int t1, int t2, boolean onceOnly, int priority) {
 
@@ -465,7 +469,7 @@ public class Preference implements Serializable {
     }
 
     /**
-     * Checks if this task is due 
+     * Checks if this task is due
      * @param MetaTask
      * @return true if it does
      */
@@ -482,7 +486,7 @@ public class Preference implements Serializable {
     }
 
     /**
-     * Flag this task as being due or not due 
+     * Flag this task as being due or not due
      * @param MetaTask
      * @param true if it is due
      */

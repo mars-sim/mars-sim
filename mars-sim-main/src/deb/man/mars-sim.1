@@ -1,39 +1,52 @@
 .\" Please adjust this date whenever revising the manpage.
-.TH MARS-SIM 1 "Jan 21, 2017"
+.TH MARS-SIM 1 "Jan 21, 2017" "version 0.2"
 .SH NAME
 mars-sim \- A Simulation of the Future Human Settlement on the Red Planet.
 .SH SYNOPSIS
 .B mars-sim
 .SH DESCRIPTION
-This manual page briefly documents the \fBMars Simulation Project\fP, a Mars 
-settlement simulator.  The Mars Simulation Project is a free software Java 
-project to create a simulation of future human settlement of Mars.
+.TP This manual page briefly documents the \fBMars Simulation Project\fP, a Martian
+settlement simulator.
 .PP
-The Mars Simulation Project is a social simulation modeling the professional 
-relationship and behaviors of scientists, engineers, doctors, technicians, etc. 
-as they go about their day-to-day lives in a virtual Martian environment. There 
-are many different settlements spreading out across the planet, ranging from simple 
-4-person initial landing habitats to more mature bases hosting dozens of people
-and advanced buildings. The settlers spend much of their time maintaining
-their settlements, growing crops in their greenhouses, and
-manufacturing needed parts and equipment from collected local
-resources.  They also go out on rover missions to explore and study
-the surrounding area, prospect and mine mineral concentrations, and
-trade with their neighboring settlements. Mars is a harsh and
-dangerous world, and the settlers have to contend with accidents,
-equipment malfunctions, illnesses, injuries, and even death.  Survival
-depends on the settlers working together, building relationships,
-improving skills and balancing the needs of their settlements.
+.TP The Mars Simulation Project is a Java based open source project that simulates the
+activities of the first generation of settlers on Mars in a virtual environment.
+Each agent has various human-like characteristics, capable of making distinct decisions
+on a virtual Mars and interacting with one another on the surface of Mars.
 .PP
-http://mars-sim.sourceforge.net
+Modeling and Simulation
+.TP As a semi-social simulation, mars-sim models mostly the professional interaction
+between the settlers in terms of their career type, job role, technical skills,
+personality, natural attribute, prior training, and relationship with one another as
+they strive on Mars.
+.PP
+.TP Player may create numerous settlements spreading across the surface of Mars such as a
+simple 4-person initial landing base, a mining site, or a more self-contained settlement
+hosting higher functions.
+.PP
+.TP Each settlement has a command structure, a developmental objective, and it's only
+internal checks and balances to set the Value Points (VP) of each resources.
+.PP
+Tasks and Missions
+.TP Initially most settlers will spend much of their time learning to "live off the land".
+They will be busy in maintenance, ensuring life support resources are well balanced,
+growing crops in greenhouses, and manufacturing needed parts and equipment in workshops.
+.PP
+.TP Settlers will also go out on rover missions to explore and study surrounding landscapes,
+prospect and mine minerals, and trade with neighboring settlements via trading missions.
+Summary
+.TP Mars is a harsh world but is certainly less unforgiving than our Moon. Settlers come
+face-to-face with accidents, equipment malfunctions, illnesses, injuries, and even death.
+Survival depends on how well they work together, improve their survival skills and balance
+individual vs. settlement needs. See project website at http://mars-sim.sourceforge.net and
+https://github.com/mars-sim/mars-sim for details on this open source project.
 .SH OVERVIEW
-At the start, a spinning Mars globe appear with the main menu. By hovering the mouse 
-cursor over it, the menu options appear. Select "New Sim" and the Configuration Editor 
-will pop open. In the Configuration Editor, user may add/delete settlements and configure 
-the initial conditions. Click the person button to open the Crew Editor to customize 
-the settlers. Click the center button will start the simulation. At the start of the 
-simulation, a help browser will open and user is encouraged to go through the tutorial 
-and user guide that explains the basics of the simulation.
+.TP At the start, a spinning Mars globe appears under the title/version. By hovering the
+mouse cursor over it, the main menu appears on the lower right. Select "New Sim" and the
+Config Editor will pop open. In the editor, user may add/delete settlements and configure
+initial conditions. Click the person button to open the Crew Editor to customize the alpha
+crew members and choose what settlement to send the crew. Click the start button will
+begin the simulation. A Main Window will appear with the help browser open. User may go
+through the tutorial/user guide that explain the concept and basic mechanics of the mars-sim.
 .SH AUTHOR
 This manpage was written for Debian GNU/Linux system by Scott Davis
 <scud1@users.sourceforge.net> and edited by Lars Naesbye Christensen <lars@naesbye.dk>

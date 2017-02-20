@@ -56,6 +56,7 @@ implements Serializable {
 	public static String USER_ABORTED_MISSION = "User aborted mission";
 	public static String UNREPAIRABLE_MALFUNCTION = "unrepairable malfunction";
 	public static String NO_RESERVABLE_VEHICLES = "No reservable vehicles";
+	public static String NO_AVAILABLE_VEHICLES = "No available vehicles";
 	public static String NOT_ENOUGH_RESOURCES_TO_CONTINUE = "Not enough resources to continue";
 	public static String NO_EMERGENCY_SETTLEMENT_DESTINATION_FOUND = "No emergency settlement destination found.";
 	

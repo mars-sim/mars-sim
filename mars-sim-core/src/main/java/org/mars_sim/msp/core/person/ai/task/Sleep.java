@@ -81,13 +81,13 @@ public class Sleep extends Task implements Serializable {
 
     private static Simulation sim = Simulation.instance();
 	private static MasterClock masterClock;// = sim.getMasterClock();
-	private static MarsClock marsClock; 
+	private static MarsClock marsClock;
 
     /**
      * Constructor.
      * @param person the person to perform the task
      */
-    //         	
+    //
 	// 2016-07-02 Organized into 9 branching decisions
     //A bed can be either empty(E) or occupied(O), either unmarked(U) or designated(D).
 	// thus a 2x2 matrix with 4 possibilities: EU, ED, OU, OD
@@ -95,29 +95,29 @@ public class Sleep extends Task implements Serializable {
 	public Sleep(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, true,
                 (250D + RandomUtil.getRandomDouble(80D)));
-        
+
         if (masterClock == null)
         	masterClock = sim.getMasterClock();
-        
+
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
-    	
+
         //boolean walkSite = false;
 
         timeFactor = 3D; // TODO: should vary this factor by person
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        		
+
         	Settlement s1 = person.getSettlement();
         	Settlement s2 = person.getAssociatedSettlement();
-        	
+
 			// check to see if a person is a trader or on a trading mission
 			if (!s1.equals(s2) || s1 != s2) {
         		// yes he is a trader/guest (Case 1-3)
             	//logger.info(person + " is a guest of a trade mission and will use an unoccupied bed randomly.");
 				// find a best empty (EU, ED) bed
-				Building q2 = getBestAvailableQuarters(person, false); 
+				Building q2 = getBestAvailableQuarters(person, false);
 
 				if (q2 != null) {
                 	// find a best empty, unmarked (EU) bed
@@ -126,7 +126,7 @@ public class Sleep extends Task implements Serializable {
                 		// Case 1 : (the BEST case for a guest) the settlement does have one or more empty, unmarked (EU) bed(s)
 		            	accommodations = (LivingAccommodations) q1.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 		        		walkToActivitySpotInBuilding(q1, BuildingFunction.LIVING_ACCOMODATIONS, false);
-		                Building startBuilding = BuildingManager.getBuilding(person);                                  
+		                Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 1: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q1);
 
                 	}
@@ -136,14 +136,14 @@ public class Sleep extends Task implements Serializable {
                 		// TODO : will split into Case 2a and Case 2b.
                 		accommodations = (LivingAccommodations) q2.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 		        		walkToActivitySpotInBuilding(q2, BuildingFunction.LIVING_ACCOMODATIONS, false);
-		                Building startBuilding = BuildingManager.getBuilding(person);                                  
+		                Building startBuilding = BuildingManager.getBuilding(person);
 		                //logger.fine("Case 2: " + person + " is walking from " + startBuilding + " to use his/her temporary quarters at " + q2);
 
-                	}            	
-		
+                	}
+
 	                accommodations.addSleeper(person, true);
 	                //walkSite = true;
-                
+
 				} else {
                 	// Case 3 : the settlement has NO empty bed(s). OU and/or OD only
                 	//logger.info("Case 3: " + person + " couldn't find an empty bed at all. Will find a spot to fall asleep wherever he/she likes.");
@@ -152,26 +152,26 @@ public class Sleep extends Task implements Serializable {
                     // Just walk to a random location.
                     walkToRandomLocation(true);
                 }
-				
+
 			} else {
 				// He/she is an inhabitant in this settlement
-				
+
 	        	// 2016-01-10 Added checking if a person has a designated bed
-	            Building pq = person.getQuarters();    
-	            
+	            Building pq = person.getQuarters();
+
 	            if (pq != null) {
 	            	// This person has his quarters assigned with a designated bed
 	            	//logger.fine(person + " does have a designated bed at " + pq.getNickName());
-	
-		            // check if this bed is currently empty or occupied (either ED or OD)  
-	                Point2D bed = person.getBed();  
+
+		            // check if this bed is currently empty or occupied (either ED or OD)
+	                Point2D bed = person.getBed();
 	            	accommodations = (LivingAccommodations) pq.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
-	                boolean empty = accommodations.isActivitySpotEmpty(bed);	            	
-	            			
+	                boolean empty = accommodations.isActivitySpotEmpty(bed);
+
 	            	if (empty) {
-		            	// Case 4: this designated bed is currently empty (ED)         		
-		                Building startBuilding = BuildingManager.getBuilding(person);           
-	      
+		            	// Case 4: this designated bed is currently empty (ED)
+		                Building startBuilding = BuildingManager.getBuilding(person);
+
 		                //logger.info("Case 4: " + person + " is walking from " + startBuilding + " to his private quarters at " + pq);
 		            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
 		                accommodations.addSleeper(person, false);
@@ -184,33 +184,33 @@ public class Sleep extends Task implements Serializable {
 	                    // Just walk to a random location.
 	                    walkToRandomLocation(true);
 	            	}
-	            	
+
 
 	            } else {
 	            	// this inhabitant has never been assigned a quarter and does not have a designated bed so far
 	            	//logger.fine(person + " has never been designated a bed so far");
-	            	
+
 	            	// find an empty (either marked or unmarked) bed
 	            	Building q7 = getBestAvailableQuarters(person, false);
 
 	            	if (q7 != null) {
 	            		// yes it has empty (either marked or unmarked) bed
-	  
+
 	                	// find an empty unmarked bed
 	            		Building q6 = getBestAvailableQuarters(person, true);
-		            	
+
 		            	if (q6 != null) {
 			            	// Case 6: an empty unmarked bed is available for assigning to the person
-		              	
+
 			            	//logger.info(q6.getNickName() + " has empty, unmarked bed (ED) that can be assigned to " + person);
   			            	//addSubTask(new WalkSettlementInterior(person, quarters, bed.getX(), bed.getY()));
 			            	//person.setQuarters(q6);
-			                //Point2D bed = person.getBed();   		            	
+			                //Point2D bed = person.getBed();
 			            	accommodations = (LivingAccommodations) q6.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 			            	accommodations.addSleeper(person, false);
 			            	walkToBed(accommodations, person, true);
 			        		//walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);
-			                Building startBuilding = BuildingManager.getBuilding(person);                                  
+			                Building startBuilding = BuildingManager.getBuilding(person);
 			                //logger.info("Case 6: " + person + " is walking from " + startBuilding + " to use his/her new quarters at " + q6);
 
 		            	} else {
@@ -221,7 +221,7 @@ public class Sleep extends Task implements Serializable {
 /*
 			            	accommodations = (LivingAccommodations) q7.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 			        		walkToActivitySpotInBuilding(q7, BuildingFunction.LIVING_ACCOMODATIONS, false);
-			                Building startBuilding = BuildingManager.getBuilding(person);                                  
+			                Building startBuilding = BuildingManager.getBuilding(person);
 			                logger.info("Case 7a: " + person + " is walking from " + startBuilding + " to use someone else's quarters at " + q7);
 			                accommodations.addSleeper(person, false);
 */
@@ -233,7 +233,7 @@ public class Sleep extends Task implements Serializable {
 
 
 	                } else {
-	
+
                 		// Case 8 : no empty bed at all
                     	logger.info("Case 8: " + person + " couldn't find an empty bed at all. will look for a spot to fall asleep.");
                     	// TODO: should allow him/her to sleep in gym or anywhere.
@@ -243,14 +243,14 @@ public class Sleep extends Task implements Serializable {
 	            }
 			}
         }
-        
+
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             // If person is in rover, walk to passenger activity spot.
             if (person.getVehicle() instanceof Rover) {
                 walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
             }
         }
-        
+
 
         previousTime = marsClock.getMillisol();
 
@@ -278,7 +278,7 @@ public class Sleep extends Task implements Serializable {
                         station = currentStation;
                         station.addSleeper();
 
-                        // Check if rover is currently at an activity spot for the robotic station.
+                        // Check if robot is currently at an activity spot for the robotic station.
                         if (currentStation.hasActivitySpots() && !currentStation.isAtActivitySpot(robot)) {
                             // Walk to an available activity spot.
                             walkToActivitySpotInBuilding(currentBuilding, true);
@@ -286,23 +286,27 @@ public class Sleep extends Task implements Serializable {
                     }
                 }
             }
-
-            if (!atStation) {
+            else {
+            //if (!atStation) {
                 Building building = getAvailableRoboticStationBuilding(robot);
                 if (building != null) {
                     //System.out.println("building.toString() is " + building.toString() );
-                    walkToActivitySpotInBuilding(building, true);
-                    // TODO: need to add activity spots in every building or walkToActivitySpotInBuilding(building, false) will fail
-                    // and create java.lang.NullPointerException
                     station = (RoboticStation) building.getFunction(BuildingFunction.ROBOTIC_STATION);
-                    station.addSleeper();
+                    if (station != null) {
+                    	// TODO: see https://github.com/mars-sim/mars-sim/issues/22
+                    	 // Question: why would the method below cause RepairBot to walk outside the settlement to a vehicle ?
+	                    walkToActivitySpotInBuilding(building, true);
+	                    // TODO: need to add activity spots in every building or walkToActivitySpotInBuilding(building, false) will fail
+	                    // and create java.lang.NullPointerException
+	                    station.addSleeper();
+                    }
                 }
             }
         }
 
         if (masterClock == null)
         	masterClock = sim.getMasterClock();
-        
+
 		if (marsClock == null)
 			marsClock = masterClock.getMarsClock();
 
@@ -352,10 +356,10 @@ public class Sleep extends Task implements Serializable {
     private double sleepingPhase(double time) {
         if (masterClock == null)
         	masterClock = sim.getMasterClock();
-        
+
 		if (marsClock == null)
-			marsClock = masterClock.getMarsClock();// needed for loading a saved sim 
-		
+			marsClock = masterClock.getMarsClock();// needed for loading a saved sim
+
 		if (person != null) {
 	        // Reduce person's fatigue
 	        double newFatigue = person.getPhysicalCondition().getFatigue() - (timeFactor * time);
@@ -438,13 +442,13 @@ public class Sleep extends Task implements Serializable {
             quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings, unmarked);
             if (quartersBuildings.size() > 0) {
                 quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
-                if (unmarked) 
+                if (unmarked)
                 	;//logger.info("Stage 1: it has empty and unmarked (EU) beds");
                 else
                 	;//logger.info("Stage 1: it has empty (either unmarked or designated) beds");
             }
             else if (quartersBuildings.isEmpty())
-                if (unmarked) 
+                if (unmarked)
                 	;//logger.info("Stage 1: no buildings has empty and unmarked (EU) beds");
                 else
                 	;//logger.info("Stage 1: no buildings has empty (either unmarked or designated) beds");
@@ -453,28 +457,28 @@ public class Sleep extends Task implements Serializable {
                 Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, quartersBuildings);
                 result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
-                if (unmarked) 
+                if (unmarked)
                 	;//logger.info("Stage 2: it has empty and unmarked (EU) beds");
                 else
                 	;//logger.info("Stage 2: it has empty (either unmarked or designated) beds");
-            } 
+            }
             else if (quartersBuildings.isEmpty())
-                if (unmarked) 
+                if (unmarked)
                 	;//logger.info("Stage 2: no buildings has empty and unmarked (EU) beds");
                 else
                 	;//logger.info("Stage 2: no buildings has empty (either unmarked or designated) beds");
-                                
+
             if (result != null)
                 ;//logger.info("Stage 3: " + result.getNickName() + " has a bed available : " + result.getNickName());
             else
             	;//logger.info("Stage 3: no buildings are available");
 
         }
-        
+
 
         return result;
     }
-    
+
     public static Building getAvailableRoboticStationBuilding(Robot robot) {
 
         Building result = null;
@@ -509,7 +513,7 @@ public class Sleep extends Task implements Serializable {
     /**
      * Gets living accommodations with empty beds from a list of buildings with the living accommodations function.
      * @param buildingList list of buildings with the living accommodations function.
-     * @param unmarked does the person wants an unmarked(aka undesignated) bed or not. 
+     * @param unmarked does the person wants an unmarked(aka undesignated) bed or not.
      * @return list of buildings with empty beds.
      */
     private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList, boolean unmarked) {
@@ -522,7 +526,7 @@ public class Sleep extends Task implements Serializable {
             		.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
             // 2016-01-10 Added checking if an unmarked bed is wanted
             if (unmarked) {
-	            if (quarters.getSleepers() < quarters.getBeds() 
+	            if (quarters.getSleepers() < quarters.getBeds()
 	            		&& quarters.hasAnUnmarkedBed()) {
 	                result.add(building);
 	            }
@@ -531,7 +535,7 @@ public class Sleep extends Task implements Serializable {
 	                result.add(building);
 	            }
             }
-            
+
         }
 
         return result;

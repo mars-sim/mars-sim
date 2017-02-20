@@ -97,7 +97,7 @@ public class UnitManager implements Serializable {
 
 	// Data members
 	//private int solCache;
-	/** Flag true if the class has just been deserialized */ 
+	/** Flag true if the class has just been deserialized */
 	public transient boolean justReloaded = true;
 	/** Collection of all units. */
 	private Collection<Unit> units;
@@ -121,18 +121,18 @@ public class UnitManager implements Serializable {
 
 	private Map<Integer, List<String>> marsSociety = new HashMap<>();
 
-	private Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();	
+	private Map<Integer, List<String>> maleFirstNamesBySponsor = new HashMap<>();
 	private Map<Integer, List<String>> femaleFirstNamesBySponsor = new HashMap<>();
-	
+
 	private Map<Integer, List<String>> maleFirstNamesByCountry = new HashMap<>();
 	private Map<Integer, List<String>> femaleFirstNamesByCountry = new HashMap<>();
-	
+
 	private Map<Integer, List<String>> lastNamesBySponsor = new HashMap<>();
 	private Map<Integer, List<String>> lastNamesByCountry = new HashMap<>();
-	
+
 	private List<String> countries;
-	
-	private Settlement firstSettlement;	
+
+	private Settlement firstSettlement;
 	private PersonConfig personConfig;
 	private SettlementConfig settlementConfig;
 	private RelationshipManager relationshipManager;
@@ -140,12 +140,12 @@ public class UnitManager implements Serializable {
 	private RobotConfig robotConfig;
 
 
-	
+
 	//private EmotionJSONConfig emotionJSONConfig;// = new EmotionJSONConfig();
 
     //private transient ExecutorService settlementExecutor;
 	//private transient ThreadPoolExecutor personExecutor, settlementExecutor;
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -167,7 +167,7 @@ public class UnitManager implements Serializable {
 		//settlementExecutor = Executors.newSingleThreadExecutor();
 		//personExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 		//settlementExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
-		
+
 
 	}
 
@@ -178,15 +178,15 @@ public class UnitManager implements Serializable {
 	 *             in unable to load names.
 	 */
 	void constructInitialUnits() {
-		
+
 		countries = personConfig.createCountryList();
-		
+
 		// Initialize name lists
 		initializeRobotNames();
 		initializePersonNames();
 		initializeLastNames();
 		initializeFirstNames();
-		
+
 		// Initialize settlement and vehicle name lists
 		initializeSettlementNames();
 		initializeVehicleNames();
@@ -197,13 +197,13 @@ public class UnitManager implements Serializable {
 		createInitialEquipment();
 		createInitialResources();
 		createInitialParts();
-			
+
 		// Create pre-configured robots as stated in robots.xml
 		createPreconfiguredRobots();
 		// Create more robots to fill the settlement(s)
-		createInitialRobots();	
+		createInitialRobots();
 		// Create pre-configured settlers as stated in people.xml
-		createPreconfiguredPeople();		
+		createPreconfiguredPeople();
 		// Create more settlers to fill the settlement(s)
 		createInitialPeople();
 	}
@@ -219,27 +219,27 @@ public class UnitManager implements Serializable {
 
 			personMaleNames = new ArrayList<String>();
 			personFemaleNames = new ArrayList<String>();
-			
+
 			Iterator<String> i = personNames.iterator();
 			while (i.hasNext()) {
-				
-				String name = i.next();			
 
-				//ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);	
-				
+				String name = i.next();
+
+				//ReportingAuthorityType sponsorType = personConfig.getPersonSponsor(name);
+
 				//if (sponsorType.equals(ReportingAuthorityType.MARS_SOCIETY)) {
-				
+
 					PersonGender gender = personConfig.getPersonGender(name);
 					if (gender == PersonGender.MALE) {
 						personMaleNames.add(name);
 					} else if (gender == PersonGender.FEMALE) {
-						personFemaleNames.add(name);					
-					}				
-				
+						personFemaleNames.add(name);
+					}
+
 				//}
-				
+
 				marsSociety.put(0, personMaleNames);
-				marsSociety.put(1, personFemaleNames);								
+				marsSociety.put(1, personFemaleNames);
 			}
 
 		} catch (Exception e) {
@@ -258,7 +258,7 @@ public class UnitManager implements Serializable {
 			List<Map<Integer, List<String>>> lastNames = personConfig.retrieveLastNameList();
 			lastNamesBySponsor = lastNames.get(0);
 			lastNamesByCountry = lastNames.get(1);
-			
+
 		} catch (Exception e) {
 			throw new IllegalStateException("The last names list could not be loaded: " + e.getMessage(), e);
 		}
@@ -271,21 +271,21 @@ public class UnitManager implements Serializable {
 	 */
     // 2016-04-06 Added initializeFirstNames()
 	private void initializeFirstNames() {
-		
+
 		try {
 			List<Map<Integer, List<String>>> firstNames = personConfig.retrieveFirstNameList();
-			maleFirstNamesBySponsor = firstNames.get(0);	
+			maleFirstNamesBySponsor = firstNames.get(0);
 			femaleFirstNamesBySponsor = firstNames.get(1);
-			maleFirstNamesByCountry = firstNames.get(2);	
+			maleFirstNamesByCountry = firstNames.get(2);
 			femaleFirstNamesByCountry = firstNames.get(3);
-			
+
 		} catch (Exception e) {
 			throw new IllegalStateException("The first names list could not be loaded: " + e.getMessage(), e);
-		}		
+		}
 		//System.out.println("done with initializeFirstNames()");
 	}
 
-	
+
 	/**
 	 * Initializes the list of possible robot names.
 	 * @throws Exception if unable to load name list.
@@ -386,7 +386,7 @@ public class UnitManager implements Serializable {
 				usedNames.add(si.next().getName());
 			}
 			unitName = "Settlement";
-			
+
 		} else if (unitType == UnitType.VEHICLE) {
 			if (baseName != null) {
 				int number = 1;
@@ -395,7 +395,7 @@ public class UnitManager implements Serializable {
 				}
 				vehicleNumberMap.put(baseName, number);
 				return baseName + " " + number;
-				
+
 			} else {
 				initialNameList = vehicleNames;
 				Iterator<Vehicle> vi = getVehicles().iterator();
@@ -404,7 +404,7 @@ public class UnitManager implements Serializable {
 				}
 				unitName = "Vehicle";
 			}
-			
+
 		} else if (unitType == UnitType.PERSON) {
 			if (PersonGender.MALE == gender) {
 				initialNameList = personMaleNames;
@@ -440,7 +440,7 @@ public class UnitManager implements Serializable {
 				equipmentNumberMap.put(baseName, number);
 				return baseName + " " + number;
 			}
-			
+
 		} else {
 			throw new IllegalArgumentException("Improper unitType");
 		}
@@ -491,7 +491,7 @@ public class UnitManager implements Serializable {
 				// Get settlement template
 				String template = settlementConfig.getInitialSettlementTemplate(x);
 				String sponsor = settlementConfig.getInitialSettlementSponsor(x);
-				
+
 				// Get settlement longitude
 				double longitude = 0D;
 				String longitudeStr = settlementConfig.getInitialSettlementLongitude(x);
@@ -669,26 +669,26 @@ public class UnitManager implements Serializable {
 	 */
 	private void createPreconfiguredPeople() {
 		Settlement settlement = null;
-		
-		if (personConfig == null) // FOR PASSING MAVEN TEST	
+
+		if (personConfig == null) // FOR PASSING MAVEN TEST
 			personConfig = SimulationConfig.instance().getPersonConfiguration();
 		//RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
 		//EmotionJSONConfig emotionJSONConfig = new EmotionJSONConfig();
 
 		//Crew crew = new Crew("Alpha");
 		// TODO: will setting a limit on # crew to 7 be easier ?
-				
+
 		int size = personConfig.getNumberOfConfiguredPeople();
-		
+
 		//int crew_id = -1;
 
 		// Create all configured people.
 		for (int x = 0; x < size; x++) {
-			
+
 			// Get person's name (required)
 			int crew_id = personConfig.getCrew(x);
 			//System.out.println("crew_id : " + crew_id);
-			
+
 			// Get person's name (required)
 			String name = personConfig.getConfiguredPersonName(x, crew_id);
 			if (name == null) {
@@ -741,7 +741,7 @@ public class UnitManager implements Serializable {
 						newSettlement = tempSettlement;
 					}
 				}
-				
+
 				if (newSettlement != null) {
 					settlement = newSettlement;
 				} else {
@@ -756,26 +756,26 @@ public class UnitManager implements Serializable {
 			//String sponsor = settlement.getSponsor();
 			//System.out.println("sponsor is " + sponsor);
 			//String country = getCountry(sponsor);
-			
+
 			// Create person and add to the unit manager.
-			Person person = new Person(name, gender, country, settlement, sponsor); 
-			
+			Person person = new Person(name, gender, country, settlement, sponsor);
+
 			// TODO: read from file
 			addUnit(person);
 
 			//System.out.println("done with addUnit() in createConfiguredPeople() in UnitManager");
-			
+
 			relationshipManager.addInitialSettler(person, settlement);
-			
+
 			// Set person's job (if any).
 			String jobName = personConfig.getConfiguredPersonJob(x, crew_id);
 			if (jobName != null) {
 				Job job = JobManager.getJob(jobName);
 				if (job != null) {
 					// 2016-04-16 Designate a specific job to a person
-					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED ,JobManager.MISSION_CONTROL);					
+					person.getMind().setJob(job, true, JobManager.MISSION_CONTROL, JobAssignmentType.APPROVED ,JobManager.MISSION_CONTROL);
 					// Assign a job to a person based on settlement's need
-					//person.getMind().getInitialJob(JobManager.MISSION_CONTROL);				
+					//person.getMind().getInitialJob(JobManager.MISSION_CONTROL);
 				}
 			}
 
@@ -791,7 +791,7 @@ public class UnitManager implements Serializable {
 			person.getFavorite().setFavoriteActivity(activity);
 			//System.out.println("done with setFavorite_() in createConfiguredPeople() in UnitManager");
 
-	
+
 			// 2015-11-23 Set the person's configured Big Five Personality traits (if any).
 			Map<String, Integer> bigFiveMap = personConfig.getBigFiveMap(x);
 			if (bigFiveMap != null) {
@@ -808,7 +808,7 @@ public class UnitManager implements Serializable {
 			if (personalityType != null) {
 				person.getMind().getMBTI().setTypeString(personalityType);
 			}
-				
+
 			// 2016-11-05 Call syncUpExtraversion() to sync up the extraversion score between the two personality models
 			person.getMind().getMBTI().syncUpExtraversion();
 
@@ -843,11 +843,11 @@ public class UnitManager implements Serializable {
 			//person.setEmotionalStates(emotionJSONConfig.getEmotionalStates());
 
 		}
-		
+
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		settlement.updateAllAssociatedPeople();
 		settlement.updateAllAssociatedRobots();
-				
+
 		//System.out.println("b4 calling createConfiguredRelationships() in UnitManager");
 		// Create all configured relationships.
 		createConfiguredRelationships();
@@ -873,20 +873,20 @@ public class UnitManager implements Serializable {
 
 				// Fill up the settlement by creating more people
 				while (settlement.getCurrentPopulationNum() < initPop) {
-					
+
 					String sponsor = settlement.getSponsor();
 			    	//System.out.println("sponsor is " + sponsor);
-			    	
+
 					//2016-08-30 Check for any duplicate full Name
 					List<String> existingfullnames = new ArrayList<>();
 					Iterator<Person> j = getPeople().iterator();
-					while (j.hasNext()) {				
+					while (j.hasNext()) {
 						String n = j.next().getName();
 						existingfullnames.add(n);
 					}
-					
+
 					//System.out.println("done creating a namelist.");
-					
+
 					boolean isUniqueName = false;
 					PersonGender gender = null;
 					Person person = null;
@@ -894,17 +894,17 @@ public class UnitManager implements Serializable {
 					String country = getCountry(sponsor);
 					//System.out.println("country is " + country);
 		    		//ReportingAuthorityType type = ReportingAuthorityType.fromString(sponsor);
-		    		
+
 					// Make sure settlement name isn't already being used.
 					while (!isUniqueName) {
-								
+
 						isUniqueName = true;
-						
+
 						gender = PersonGender.FEMALE;
 						if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 							gender = PersonGender.MALE;
 						}
-	
+
 						String lastN = null;
 						String firstN = null;
 
@@ -913,57 +913,56 @@ public class UnitManager implements Serializable {
 						List<String> last_list = new ArrayList<>();
 						List<String> male_first_list = new ArrayList<>();
 						List<String> female_first_list = new ArrayList<>();
-		
-		    		
+
+
 						if (sponsor.contains("CNSA")) { //if (type == ReportingAuthorityType.CNSA) {
 							last_list = lastNamesBySponsor.get(0);
 							male_first_list = maleFirstNamesBySponsor.get(0);
 							female_first_list = femaleFirstNamesBySponsor.get(0);
-			    			
+
 						} else if (sponsor.contains("CSA")) {//if (type == ReportingAuthorityType.CSA) {
 							last_list = lastNamesBySponsor.get(1);
 							male_first_list = maleFirstNamesBySponsor.get(1);
 							female_first_list = femaleFirstNamesBySponsor.get(1);
-	
+
 						} else if (sponsor.contains("ESA")) {//if (type == ReportingAuthorityType.ESA) {
-							
 							//System.out.println("country is " + country);
 							int countryID = getCountryID(country);
 							//System.out.println("countryID is " + countryID);
 							last_list = lastNamesByCountry.get(countryID);
 							male_first_list = maleFirstNamesByCountry.get(countryID);
 							female_first_list = femaleFirstNamesByCountry.get(countryID);
-							
+
 						} else if (sponsor.contains("ISRO")) {//if (type == ReportingAuthorityType.ISRO) {
 							last_list = lastNamesBySponsor.get(3);
 							male_first_list = maleFirstNamesBySponsor.get(3);
 							female_first_list = femaleFirstNamesBySponsor.get(3);
-	
+
 						} else if (sponsor.contains("JAXA")) {//if (type == ReportingAuthorityType.JAXA) {
 							last_list = lastNamesBySponsor.get(4);
 							male_first_list = maleFirstNamesBySponsor.get(4);
 							female_first_list = femaleFirstNamesBySponsor.get(4);
-	
+
 			    		} else if (sponsor.contains("NASA")) {//if (type == ReportingAuthorityType.NASA) {
 							last_list = lastNamesBySponsor.get(5);
 							male_first_list = maleFirstNamesBySponsor.get(5);
 							female_first_list = femaleFirstNamesBySponsor.get(5);
-	
+
 						} else if (sponsor.contains("RKA")) { //if (type == ReportingAuthorityType.RKA) {
 							last_list = lastNamesBySponsor.get(6);
 							male_first_list = maleFirstNamesBySponsor.get(6);
 							female_first_list = femaleFirstNamesBySponsor.get(6);
-			     	    	
-			    		} else { // if belonging to the Mars Society		    		
+
+			    		} else { // if belonging to the Mars Society
 			    			skip = true;
 				    		fullname = getNewName(UnitType.PERSON, null, gender, null);
 			    		}
-							
+
 						if (!skip) {
-							
+
 			    			int rand0 = RandomUtil.getRandomInt(last_list.size()-1);
 			    			lastN = last_list.get(rand0);
-			    			
+
 			    			if (gender == PersonGender.MALE) {
 				    			int rand1 = RandomUtil.getRandomInt(male_first_list.size()-1);
 			    				firstN = male_first_list.get(rand1);
@@ -972,14 +971,14 @@ public class UnitManager implements Serializable {
 				    			int rand1 = RandomUtil.getRandomInt(female_first_list.size()-1);
 			    				firstN = female_first_list.get(rand1);
 			    			}
-							
+
 			    			fullname = firstN + " " + lastN;
-								
+
 						}
-							
+
 						// double checking if this name has already been in use
 						Iterator<String> k = existingfullnames.iterator();
-						while (k.hasNext()) {				
+						while (k.hasNext()) {
 							String n = k.next();
 							if (n.equals(fullname)) {
 								isUniqueName = false;
@@ -987,9 +986,9 @@ public class UnitManager implements Serializable {
 								//break;
 							}
 						}
-						
+
 					}
-					
+
 					person = new Person(fullname, gender, country, settlement, sponsor); // TODO: read from file
 
 					Mind m = person.getMind();
@@ -999,7 +998,7 @@ public class UnitManager implements Serializable {
 					addUnit(person);
 
 					relationshipManager.addInitialSettler(person, settlement);
-					
+
 					Favorite f = person.getFavorite();
 					// 2015-02-27 and 2015-03-24 Added Favorite class
 					String mainDish = f.getRandomMainDish();
@@ -1031,14 +1030,14 @@ public class UnitManager implements Serializable {
 						cc.set3Divisions(true);
 						cc.assignSpecialiststo3Divisions(person);
 					}
-						
+
 
 				}
-				
+
 				// 2016-12-21 Added calling updateAllAssociatedPeople(), not getAllAssociatedPeople()()
 				settlement.updateAllAssociatedPeople();
 				settlement.updateAllAssociatedRobots();
-				
+
 				// 2015-07-02 Added setupShift()
 				setupShift(settlement, initPop);
 
@@ -1374,7 +1373,7 @@ public class UnitManager implements Serializable {
 				throw new IllegalStateException("Robot name is null");
 			}
 			// System.out.println("name is "+ name);
-			
+
 			// Get robotType
 			//RobotType robotType = getABot(size);
 			RobotType robotType = robotConfig.getConfiguredRobotType(x);
@@ -1409,7 +1408,7 @@ public class UnitManager implements Serializable {
 				return;
 			}
 
-			
+
 			// If settlement does not have initial robot capacity, try
 			// another settlement.
 			if (settlement.getInitialNumOfRobots() <= settlement.getCurrentNumOfRobots()) {
@@ -1428,7 +1427,7 @@ public class UnitManager implements Serializable {
 					return;
 				//}
 			}
-			
+
 			// 2015-03-02 Added "if (settlement != null)" to stop the last
 			// instance of robot from getting overwritten
 			if (settlement != null) {
@@ -1516,8 +1515,8 @@ public class UnitManager implements Serializable {
 
 					//System.out.println("robotType is "+robotType.toString());
 					Robot robot = new Robot(getNewName(UnitType.ROBOT, null, null, robotType), robotType, "Mars",
-							settlement, settlement.getCoordinates()); 
-					
+							settlement, settlement.getCoordinates());
+
 					addUnit(robot);
 					// System.out.println("UnitManager : createInitialRobots() :
 					// a robot is added in " + settlement);
@@ -1542,7 +1541,7 @@ public class UnitManager implements Serializable {
 	public RobotType getABot(Settlement s, int max) {
 
 		int[] numBots = new int[]{0,0,0,0,0,0,0};
-/*		
+/*
 		int numChefbot = 0;
 		int numConstructionbot = 0;
 		int numDeliverybot = 0;
@@ -1551,7 +1550,7 @@ public class UnitManager implements Serializable {
 		int numMedicbot = 0;
 		int numRepairbot = 0;
 */
-		
+
 		RobotType robotType = null;
 
 		// find out how many in each robot type
@@ -1571,29 +1570,29 @@ public class UnitManager implements Serializable {
 			else if (robot.getRobotType() == RobotType.DELIVERYBOT)
 				numBots[5]++;
 			else if (robot.getRobotType() == RobotType.CONSTRUCTIONBOT)
-				numBots[6]++;	
+				numBots[6]++;
 		}
-		
+
 		// determine the robotType
 		if (max <= 4) {
 			if (numBots[0] < 1)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 1) 
+			else if (numBots[1] < 1)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 1)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 1) 
+			else if (numBots[3] < 1)
 				robotType = RobotType.CHEFBOT;
 		}
 
 		else if (max <= 6) {
 			if (numBots[0] < 1)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 1) 
+			else if (numBots[1] < 1)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 1)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 1) 
+			else if (numBots[3] < 1)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 1)
 				robotType = RobotType.MEDICBOT;
@@ -1606,11 +1605,11 @@ public class UnitManager implements Serializable {
 		else if (max <= 9) {
 			if (numBots[0] < 2)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 2) 
+			else if (numBots[1] < 2)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 1)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 1) 
+			else if (numBots[3] < 1)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 1)
 				robotType = RobotType.MEDICBOT;
@@ -1619,15 +1618,15 @@ public class UnitManager implements Serializable {
 			else if (numBots[6] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
-		
+
 		else if (max <= 12) {
 			if (numBots[0] < 3)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 3) 
+			else if (numBots[1] < 3)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 2)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 1) 
+			else if (numBots[3] < 1)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 1)
 				robotType = RobotType.MEDICBOT;
@@ -1640,11 +1639,11 @@ public class UnitManager implements Serializable {
 		else if (max <= 18) {
 			if (numBots[0] < 5)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 4) 
+			else if (numBots[1] < 4)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 4)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 2) 
+			else if (numBots[3] < 2)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 1)
 				robotType = RobotType.MEDICBOT;
@@ -1653,16 +1652,16 @@ public class UnitManager implements Serializable {
 			else if (numBots[6] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
-		
+
 		else if (max <= 24) {
-			
+
 			if (numBots[0] < 7)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 6) 
+			else if (numBots[1] < 6)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 5)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 3) 
+			else if (numBots[3] < 3)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 1)
 				robotType = RobotType.MEDICBOT;
@@ -1675,11 +1674,11 @@ public class UnitManager implements Serializable {
 		else if (max <= 36) {
 			if (numBots[0] < 9)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 9) 
+			else if (numBots[1] < 9)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 7)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 5) 
+			else if (numBots[3] < 5)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 3)
 				robotType = RobotType.MEDICBOT;
@@ -1688,15 +1687,15 @@ public class UnitManager implements Serializable {
 			else if (numBots[6] < 1)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
-		
+
 		else if (max <= 48) {
 			if (numBots[0] < 11)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 11) 
+			else if (numBots[1] < 11)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 10)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 7) 
+			else if (numBots[3] < 7)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 4)
 				robotType = RobotType.MEDICBOT;
@@ -1705,15 +1704,15 @@ public class UnitManager implements Serializable {
 			else if (numBots[6] < 2)
 				robotType = RobotType.CONSTRUCTIONBOT;
 		}
-		
+
 		else {
 			if (numBots[0] < 11)
 				robotType = RobotType.MAKERBOT;
-			else if (numBots[1] < 11) 
+			else if (numBots[1] < 11)
 				robotType = RobotType.GARDENBOT;
 			else if (numBots[2] < 10)
 				robotType = RobotType.REPAIRBOT;
-			else if (numBots[3] < 7) 
+			else if (numBots[3] < 7)
 				robotType = RobotType.CHEFBOT;
 			else if (numBots[4] < 4)
 				robotType = RobotType.MEDICBOT;
@@ -1758,11 +1757,11 @@ public class UnitManager implements Serializable {
 			robotType = RobotType.MEDICBOT;
 		else if (numRepairbot < 5 && rand < 15) // 12, 13, 14,
 			robotType = RobotType.REPAIRBOT;
-		else {// if a particular robottype already exceeded the limit			
+		else {// if a particular robottype already exceeded the limit
 			RandomUtil.getRandomInt(15);
 			robotType = RobotType.MAKERBOT;
 		}
-*/			
+*/
 
 		if (robotType == null) {
 			System.out.println("robotType : null");
@@ -1784,7 +1783,7 @@ public class UnitManager implements Serializable {
 		// Create all configured people relationships.
 		for (int x = 0; x < size; x++) {
 			try {
-								
+
 				// Get person's name
 				String name = personConfig.getConfiguredPersonName(x, PersonConfig.ALPHA_CREW);
 				if (name == null) {
@@ -1865,10 +1864,10 @@ public class UnitManager implements Serializable {
 			}
 			justReloaded = false;
 		}
- 		
+
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext()) {
-	
+
 			Unit unit = i.next();
 			if (unit instanceof Building) {
 				//Building b = (Building) unit;
@@ -1876,15 +1875,15 @@ public class UnitManager implements Serializable {
 				//settlementExecutor.execute(new SettlementTask(s, time));
 				//b.timePassing(time);
 				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());	
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());
 			}
-			//else if (unit instanceof Settlement) {	
+			//else if (unit instanceof Settlement) {
 			//	Settlement s = (Settlement) unit;
 				//final long time0 = System.nanoTime();
 			//	settlementExecutor.execute(new SettlementTask(s, time));
 			//	s.timePassing(time);
 				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + s.getName());	
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + s.getName());
 			//}
 			//else if (unit instanceof Person) {
 			//	Person p = (Person) unit;
@@ -1892,7 +1891,7 @@ public class UnitManager implements Serializable {
 				//personExecutor.execute(new PersonTask(p, time));
 			//	p.timePassing(time);
 				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());	
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());
 			//}
 			//else if (unit instanceof Robot) {
 			//	Robot r = (Robot) unit;
@@ -1900,11 +1899,11 @@ public class UnitManager implements Serializable {
 				//personExecutor.execute(new PersonTask(p, time));
 			//	r.timePassing(time);
 				//final long time1 = System.nanoTime();
-				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());	
+				//System.out.println("It takes " + (time1-time0)/1.0e3 + " milliseconds to process " + p.getName());
 			//}
-			else	
+			else
 				unit.timePassing(time);
-			
+
 		}
 /*
 		if (masterClock == null)
@@ -1921,7 +1920,7 @@ public class UnitManager implements Serializable {
 		}
 */
 	}
-	
+
 
 	public class SettlementTask implements Runnable {
 		Settlement s;
@@ -1954,7 +1953,7 @@ public class UnitManager implements Serializable {
 		}
 	}
 */
-	
+
 	/**
 	 * Get number of settlements
 	 *
@@ -2128,7 +2127,7 @@ public class UnitManager implements Serializable {
 		return result;
 	}
 
-	
+
 	public ReportingAuthorityType[] getSponsors() {
 		return SPONSORS;
 	}
@@ -2137,19 +2136,19 @@ public class UnitManager implements Serializable {
 	public ObservableList<Settlement> getSettlementOList() {
 		return 	FXCollections.observableArrayList(getSettlements());
 	}
-			
+
 	public String getCountry(String sponsor) {
-	
+
 		if (sponsor.contains("CNSA"))//.equals(Msg.getString("ReportingAuthorityType.CNSA")))
-			return "China";		
+			return "China";
 		else if (sponsor.contains("CSA"))//.equals(Msg.getString("ReportingAuthorityType.CSA")))
-			return "Canada";		
-		else if (sponsor.contains("ESA"))//.equals(Msg.getString("ReportingAuthorityType.ESA")))		
+			return "Canada";
+		else if (sponsor.contains("ESA"))//.equals(Msg.getString("ReportingAuthorityType.ESA")))
 			return countries.get(RandomUtil.getRandomInt(6, 27));
 		else if (sponsor.contains("ISRO"))//.equals(Msg.getString("ReportingAuthorityType.ISRO")))
 			return "India";
 		else if (sponsor.contains("JAXA"))//.equals(Msg.getString("ReportingAuthorityType.JAXA")))
-			return "Japan";				
+			return "Japan";
 		else if (sponsor.contains("NASA"))//.equals(Msg.getString("ReportingAuthorityType.NASA")))
 			return "US";
 		else if (sponsor.contains("RKA"))//.equals(Msg.getString("ReportingAuthorityType.RKA")))
@@ -2160,20 +2159,20 @@ public class UnitManager implements Serializable {
 			return "US";
 
 	}
-	
+
 /*
 	// 2017-01-21 Add createCountryList();
 	public void createCountryList() {
-		
+
 		countries = new ArrayList<>();
-		
+
 		countries.add("China"); //0
 		countries.add("Canada"); //1
 		countries.add("India"); //2
 		countries.add("Japan"); //3
 		countries.add("US"); //4
 		countries.add("Russia"); //5
-		
+
 		countries.add("Austria");
 		countries.add("Belgium");
 		countries.add("Czech Republic");
@@ -2199,24 +2198,24 @@ public class UnitManager implements Serializable {
 
 	}
 	*/
-	
+
 	public int getCountryID(String country) {
 		return countries.indexOf(country);
 	}
-	
-	
+
+
 	//public ThreadPoolExecutor getPersonExecutor() {;
 	//	return personExecutor;
 	//}
-	
+
 	//public String getBuild() {
 	//	return build;
 	//}
-	
+
 	//public static void setBuild(String value) {
 	//	build = value;
 	//}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -2245,7 +2244,7 @@ public class UnitManager implements Serializable {
 		vehicleNumberMap.clear();
 		vehicleNumberMap = null;
 		//masterClock = null;
-		firstSettlement = null;	
+		firstSettlement = null;
 		personConfig = null;
 		settlementConfig = null;
 		relationshipManager = null;

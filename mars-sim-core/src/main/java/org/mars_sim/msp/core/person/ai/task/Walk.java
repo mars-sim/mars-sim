@@ -145,7 +145,7 @@ implements Serializable {
                     boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
                     boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
                     goodEVASuit = roverSuit || wearingSuit;
-                    
+
                     if (goodEVASuit) {
                         // Walk to nearest emergency airlock in settlement.
                         Airlock airlock = settlement.getClosestAvailableAirlock(person);
@@ -371,7 +371,7 @@ implements Serializable {
 
         setPhase(getWalkingStepPhase());
     }
-    
+
     public Walk(Robot robot, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
         super("Walking", robot, false, false, 0D, false, 0D);
 
@@ -721,12 +721,12 @@ implements Serializable {
 		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 		                walkingStepIndex++;
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Almost arriving at " + stepLocation + " in " + building.getNickName());
+	    	        	setDescription("Almost arriving at (" + step.xLoc + ", " + step.yLoc + ") in " + building.getNickName());
 		                setPhase(getWalkingStepPhase());
 		            }
 		            else {
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Arrived at " + stepLocation);
+	    	        	setDescription("Arrived at (" + step.xLoc + ", " + step.yLoc + ") in " + building.getNickName());
 		                endTask();
 		            }
 		        }
@@ -809,7 +809,7 @@ implements Serializable {
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Rover rover = (Rover) person.getVehicle();
 
-            // 2017-01-12 working on resolving NullPointerException 
+            // 2017-01-12 working on resolving NullPointerException
             if (rover != null) {
                 // Update rover destination if rover has moved and existing destination is no longer within rover.
                 if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
@@ -820,7 +820,7 @@ implements Serializable {
                             newRoverLoc.getY(), rover);
                     step.xLoc = relativeRoverLoc.getX();
                     step.yLoc = relativeRoverLoc.getY();
-                }	
+                }
             }
 
 
@@ -830,12 +830,12 @@ implements Serializable {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking back to the rover at " + stepLocation);
+    	        	setDescription("Walking back to the rover at (" + step.xLoc + ", " + step.yLoc + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arrived at " + stepLocation);
+    	        	setDescription("Arrived at (" + step.xLoc + ", " + step.yLoc + ")");
                     endTask();
                 }
             }
@@ -870,12 +870,12 @@ implements Serializable {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking back to the rover at " + stepLocation);
+    	        	setDescription("Walking back to the rover at (" + step.xLoc + ", " + step.yLoc + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arrived at " + stepLocation);
+    	        	setDescription("Arrived at (" + step.xLoc + ", " + step.yLoc + ")");
                     endTask();
                 }
             }
@@ -906,17 +906,20 @@ implements Serializable {
             // Check if person has reached destination location.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+            double x = person.getXLocation();
+            double y = person.getYLocation();
+
             Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
             if (LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking to " + stepLocation);
+    	        	setDescription("Walking to (" + step.xLoc + ", " + step.yLoc + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arriving at " + stepLocation);
+    	        	setDescription("Arriving at (" + step.xLoc + ", " + step.yLoc + ")");
                     endTask();
                 }
             }
@@ -924,8 +927,8 @@ implements Serializable {
             	if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
 	                logger.finer(person + " starting walk outside task.");
 		        	// 2015-11-11 setDescription()
-		        	setDescription("Walking Outside from " + personLocation + " to " + stepLocation);
-	                addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(),
+		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + step.xLoc + ", " + step.yLoc + ")");
+	                addSubTask(new WalkOutside(person, x, y,
 	                        step.xLoc, step.yLoc, true));
             	}
             	else {
@@ -943,16 +946,18 @@ implements Serializable {
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
             Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+            double x = robot.getXLocation();
+            double y = robot.getYLocation();
             if (LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking to " + stepLocation);
+    	        	setDescription("Walking to (" + step.xLoc + ", " + step.yLoc + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arriving at " + stepLocation);
+    	        	setDescription("Arriving at (" + step.xLoc + ", " + step.yLoc + ")");
                     endTask();
                 }
             }
@@ -960,8 +965,8 @@ implements Serializable {
             	if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
 	                logger.finer(robot + " starting walk outside task.");
 		        	// 2015-11-11 setDescription()
-		        	setDescription("Walking Outside from " + robotLocation + " to " + stepLocation);
-		        	addSubTask(new WalkOutside(robot, robot.getXLocation(), robot.getYLocation(),
+		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + step.xLoc + ", " + step.yLoc + ")");
+		        	addSubTask(new WalkOutside(robot, x, y,
 	                        step.xLoc, step.yLoc, true));
             	}
             	else {
@@ -1019,11 +1024,11 @@ implements Serializable {
 
         }
         else if (robot != null) {
-        	
 
-        	// 2016-01-12 robot is NOT allowed to leave the settlement 
+
+        	// 2016-01-12 robot is NOT allowed to leave the settlement
         	endTask();
-/*        	
+/*
             logger.finer(robot + " in exitingAirlockPhase()");
 
             // Check if robot has reached the outside of the airlock.

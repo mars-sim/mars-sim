@@ -68,12 +68,12 @@ extends VehicleMission {
 	// Data members
 	private Settlement startingSettlement;
 	private Map<AmountResource, Double> dessertResources;
-	
+
 	private static AmountResource oxygenAR = Rover.oxygenAR;
 	private static AmountResource waterAR = Rover.waterAR;
 	private static AmountResource foodAR = Rover.foodAR;
 	private static AmountResource methaneAR = Rover.methaneAR;
-    
+
 	/**
 	 * Constructor.
 	 * @param name the name of the mission.
@@ -83,7 +83,7 @@ extends VehicleMission {
 		// Use VehicleMission constructor.
 		super(name, startingMember, MIN_PEOPLE);
 	}
-	
+
 	/**
 	 * Constructor with min people.
 	 * @param name the name of the mission.
@@ -93,7 +93,7 @@ extends VehicleMission {
 	protected RoverMission(String name,  MissionMember startingMember, int minPeople) {
 		// Use VehicleMission constructor.
 		super(name, startingMember, minPeople);
-	}	
+	}
 	/**
 	 * Constructor with min people and rover.
 	 * @param name the name of the mission.
@@ -106,7 +106,7 @@ extends VehicleMission {
 		// Use VehicleMission constructor.
 		super(name, startingMember, minPeople, rover);
 	}
-	
+
 	/**
 	 * Gets the mission's rover if there is one.
 	 * @return vehicle or null if none.
@@ -145,7 +145,7 @@ extends VehicleMission {
 //		// if (hasEmergency()) setEmergencyDestination(true);
 //		super.performPhase(robot);
 //	}
-	
+
 	/**
 	 * Gets the available vehicle at the settlement with the greatest range.
 	 * @param settlement the settlement to check.
@@ -279,23 +279,23 @@ extends VehicleMission {
 		if (getVehicle() == null) {
 			//throw new NullPointerException("getVehicle() is null");
 			//logger.info(member.getName() + " can't find any vehicles in " + member.getSettlement());
-			endMission("no vehicle is available");
+			endMission(Mission.NO_AVAILABLE_VEHICLES);
 		}
 		//else if (getVehicle().getSettlement() == null)
 		//	throw new NullPointerException("getVehicle().getSettlement() is null");
-		
+
 		else {
-				
+
 			Settlement settlement = getVehicle().getSettlement();
 			if (settlement == null)
 				throw new IllegalStateException(Msg.getString("RoverMission.log.notAtSettlement",getPhase().getName())); //$NON-NLS-1$
-	
+
 			// Add the rover to a garage if possible.
 			if (BuildingManager.getBuilding(getVehicle()) == null) {
 				BuildingManager.addToRandomBuilding((Rover) getVehicle(),
 						getVehicle().getSettlement());
 			}
-	
+
 			// Load vehicle if not fully loaded.
 			if (!loadedFlag) {
 				if (isVehicleLoaded()) {
@@ -312,21 +312,21 @@ extends VehicleMission {
 								    // TODO Refactor.
 								    if (member instanceof Person) {
 								        Person person = (Person) member;
-								        assignTask(person, new LoadVehicleGarage(person, getVehicle(), 
-								                getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
+								        assignTask(person, new LoadVehicleGarage(person, getVehicle(),
+								                getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 								                getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 								    }
 								}
 								else {
 									// Check if it is day time.
 								    SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-								    if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) || 
+								    if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
 								            surface.inDarkPolarRegion(member.getCoordinates())) {
 								        // TODO Refactor.
 								        if (member instanceof Person) {
 								            Person person = (Person) member;
-								            assignTask(person, new LoadVehicleEVA(person, getVehicle(), 
-								                    getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
+								            assignTask(person, new LoadVehicleEVA(person, getVehicle(),
+								                    getRequiredResourcesToLoad(), getOptionalResourcesToLoad(),
 								                    getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
 								        }
 								    }
@@ -342,10 +342,10 @@ extends VehicleMission {
 				// If person is not aboard the rover, board rover.
 				if (member.getLocationSituation() != LocationSituation.IN_VEHICLE
 						&& member.getLocationSituation() != LocationSituation.BURIED) {
-	
+
 					// Move person to random location within rover.
 					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-					Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+					Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
 							vehicleLoc.getY(), getVehicle());
 					// TODO Refactor.
 					if (member instanceof Person) {
@@ -368,9 +368,9 @@ extends VehicleMission {
 	                        endMission(Msg.getString("RoverMission.log.unableToEnter",robot.getName(),getVehicle().getName())); //$NON-NLS-1$
 	                    }
 					}
-	
+
 					if (!isDone() && isRoverInAGarage()) {
-	
+
 						// Store one EVA suit for person (if possible).
 						if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
 							EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
@@ -385,10 +385,10 @@ extends VehicleMission {
 						}
 					}
 				}
-	
+
 				// If rover is loaded and everyone is aboard, embark from settlement.
 				if (!isDone() && loadedFlag && isEveryoneInRover()) {
-	
+
 					// Remove from garage if in garage.
 					Building garageBuilding = BuildingManager
 							.getBuilding(getVehicle());
@@ -396,7 +396,7 @@ extends VehicleMission {
 						VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
 						garage.removeVehicle(getVehicle());
 					}
-	
+
 					// Embark from settlement
 					settlement.getInventory().retrieveUnit(getVehicle());
 					setPhaseEnded(true);
@@ -443,10 +443,10 @@ extends VehicleMission {
 		    else if (member instanceof Robot) {
 		        destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Robot) member).getEntity();
 		    }
-		    
+
 			if (destinationBuilding != null) {
 				Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
+				Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 						destinationLoc.getY(), destinationBuilding);
 
 				// TODO Refactor.
@@ -456,13 +456,34 @@ extends VehicleMission {
 				        assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 				    }
 				    else {
-				        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",person.getName(),destinationBuilding.getName())); //$NON-NLS-1$
-				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",person.getName(),destinationBuilding.getName())); //$NON-NLS-1$
+
 				        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-				            person.getVehicle().getInventory().retrieveUnit(person);
+				        	Vehicle v = person.getVehicle();
+				            v.getInventory().retrieveUnit(person);
+					        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",person.getName(), v.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
 				        }
+				        else {
+				        	//
+				        	Building b = person.getBuildingLocation();
+				        	if (b != null)
+				        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",person.getName(), b.getNickName(), destinationBuilding.getNickName())); //$NON-NLS-1$
+				        	else {
+				        		Settlement s = person.getSettlement();
+				        		if (s == null) {
+				        			s = person.getAssociatedSettlement();
+				        			String ss = "the vincity of " + s.getName();
+					        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",person.getName(), ss, destinationBuilding.getNickName())); //$NON-NLS-1$
+				        		}
+				        	}
+
+				        }
+
 				        disembarkSettlement.getInventory().storeUnit(person);
 				        BuildingManager.addPersonOrRobotToBuilding(person, destinationBuilding, adjustedLoc.getX(), adjustedLoc.getY());
+
+				        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
+				        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be retrieved and moved back to the settlement in emergency?
+				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",person.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
 				    }
 				}
 				else if (member instanceof Robot) {
@@ -471,13 +492,42 @@ extends VehicleMission {
                         assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
                     }
                     else {
-                        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(),destinationBuilding.getName())); //$NON-NLS-1$
-                        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",robot.getName(),destinationBuilding.getName())); //$NON-NLS-1$
+
+				        if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+				        	Vehicle v = robot.getVehicle();
+				            v.getInventory().retrieveUnit(robot);
+					        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(), v.getName(), destinationBuilding.getNickName())); //$NON-NLS-1$
+				        }
+				        else {
+				        	Building b = robot.getBuildingLocation();
+				        	if (b != null)
+				        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(), b.getNickName(), destinationBuilding.getNickName())); //$NON-NLS-1$
+				        	else {
+				        		Settlement s = robot.getSettlement();
+				        		if (s == null) {
+				        			s = robot.getAssociatedSettlement();
+				        			String ss = "the vincity of " + s.getName();
+					        		logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(), ss, destinationBuilding.getNickName())); //$NON-NLS-1$
+				        		}
+				        	}
+				        }
+
+				        disembarkSettlement.getInventory().storeUnit(robot);
+				        BuildingManager.addPersonOrRobotToBuilding(robot, destinationBuilding, adjustedLoc.getX(), adjustedLoc.getY());
+
+				        // TODO : see https://github.com/mars-sim/mars-sim/issues/22
+				        // Question: How reasonable is it for a strapped personnel inside a broken vehicle to be retrieved and moved back to the settlement in emergency?
+				        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
+/*
+                        logger.severe(Msg.getString("RoverMission.log.unableWalkBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
+                        logger.severe(Msg.getString("RoverMission.log.emergencyEnterBuilding",robot.getName(),destinationBuilding.getNickName())); //$NON-NLS-1$
                         if (robot.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                             robot.getVehicle().getInventory().retrieveUnit(robot);
                         }
                         disembarkSettlement.getInventory().storeUnit(robot);
                         BuildingManager.addPersonOrRobotToBuilding(robot, destinationBuilding, adjustedLoc.getX(), adjustedLoc.getY());
+*/
+
                     }
                 }
 			}
@@ -495,7 +545,7 @@ extends VehicleMission {
 				Iterator<Person> i = rover.getCrew().iterator();
 				while (i.hasNext()) {
 					Person crewmember = i.next();
-					logger.severe(Msg.getString("RoverMission.log.emergencyEnterSettlement",crewmember.getName(),disembarkSettlement.getName())); //$NON-NLS-1$
+					logger.severe(Msg.getString("RoverMission.log.emergencyEnterSettlement", crewmember.getName(),disembarkSettlement.getName())); //$NON-NLS-1$
 					rover.getInventory().retrieveUnit(crewmember);
 					disembarkSettlement.getInventory().storeUnit(crewmember);
 					Building destinationBuilding = null;
@@ -506,7 +556,7 @@ extends VehicleMission {
 					else if (member instanceof Robot) {
 					    destinationBuilding = (Building) disembarkSettlement.getClosestAvailableAirlock((Robot) member).getEntity();
 					}
-					
+
 					if (destinationBuilding != null) {
 					    BuildingManager.addPersonOrRobotToBuildingRandomLocation(crewmember, destinationBuilding);
 					}
@@ -532,7 +582,7 @@ extends VehicleMission {
 							else {
 								// Check if it is day time.
 								SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-								if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) || 
+								if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
 										surface.inDarkPolarRegion(member.getCoordinates())) {
 								    // TODO Refactor.
 								    if (member instanceof Person) {
@@ -562,7 +612,7 @@ extends VehicleMission {
 					setPhaseEnded(true);
 				}
 			}
-		} 
+		}
 		else {
 			setPhaseEnded(true);
 		}
@@ -584,7 +634,7 @@ extends VehicleMission {
 		                getNextNavpoint().getLocation(),
 		                getCurrentLegStartingTime(), getCurrentLegDistance(),
 		                lastOperateVehicleTaskPhase);
-		    } 
+		    }
 		    else {
 		        result = new DriveGroundVehicle(person, getRover(),
 		                getNextNavpoint().getLocation(),
@@ -714,72 +764,72 @@ extends VehicleMission {
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		result.put(waterAR, waterAmount);
 
-		double foodAmount = PhysicalCondition.getFoodConsumptionRate() 
+		double foodAmount = PhysicalCondition.getFoodConsumptionRate()
 				* timeSols * crewNum; //  * PhysicalCondition.FOOD_RESERVE_FACTOR
 		if (useBuffer)
 			foodAmount *= Rover.getErrorMargin();
 		//AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
 		result.put(foodAR, foodAmount);
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public Map<Resource, Number> getOptionalResourcesToLoad() {
-	    
+
 	    Map<Resource, Number> result = super.getOptionalResourcesToLoad();
-       
+
 	    // Initialize dessert resources if necessary.
 	    if (dessertResources == null) {
 	        determineDessertResources();
 	    }
-	    
+
 	    // Add any dessert resources to optional resources to load.
 	    Iterator<AmountResource> i = dessertResources.keySet().iterator();
 	    while (i.hasNext()) {
 	        AmountResource dessert = i.next();
 	        double amount = dessertResources.get(dessert);
-	        
+
 	        if (result.containsKey(dessert)) {
 	            double initialAmount = (double) result.get(dessert);
 	            amount += initialAmount;
 	        }
-	        
+
 	        result.put(dessert, amount);
 	    }
-	    
+
 	    return result;
 	}
-	
+
 	/**
 	 * Determine an unprepared dessert resource to load on the mission.
 	 */
 	private AmountResource determineDessertResources() {
-	    
+
 	    dessertResources = new HashMap<AmountResource, Double>(1);
-	    
+
 	    // Determine estimate time for trip.
         double distance = getTotalRemainingDistance();
         double time = getEstimatedTripTime(true, distance);
         double timeSols = time / 1000D;
 
         int crewNum = getPeopleNumber();
-        
+
         // Determine dessert amount for trip.
         double dessertAmount =  PhysicalCondition.getDessertConsumptionRate() * crewNum * timeSols;
-        
-        // Put together a list of available unprepared dessert resources. 
+
+        // Put together a list of available unprepared dessert resources.
         List<AmountResource> dessertList = new ArrayList<AmountResource>();
         AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-        for (AmountResource ar : availableDesserts) {     
-            
+        for (AmountResource ar : availableDesserts) {
+
             // See if an unprepared dessert resource is available
             boolean isAvailable = Storage.retrieveAnResource(dessertAmount, ar, startingSettlement.getInventory(), false);
             if (isAvailable) {
-                dessertList.add(ar); 
+                dessertList.add(ar);
             }
         }
-        
+
         // Randomly choose an unprepared dessert resource from the available resources.
         AmountResource dessertAR = null;
         if (dessertList.size() > 0) {
@@ -787,11 +837,11 @@ extends VehicleMission {
         	dessertAR = dessertList.get(RandomUtil.getRandomInt(dessertList.size() - 1));
             //dessert = AmountResource.findAmountResource(dessertName);
         }
-        
+
         if (dessertAR != null) {
             dessertResources.put(dessertAR, dessertAmount);
         }
-        
+
         return dessertAR;
 	}
 
@@ -852,14 +902,14 @@ extends VehicleMission {
 			if (inv.getAmountResourceStored(foodAR, false) < 50D) {
 				hasBasicResources = false;
 			}
-		} 
+		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 
 		return hasBasicResources;
 	}
-	
+
     @Override
     protected void recruitMembersForMission(MissionMember startingMember) {
         super.recruitMembersForMission(startingMember);

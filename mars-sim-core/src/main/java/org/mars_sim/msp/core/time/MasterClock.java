@@ -419,7 +419,7 @@ public class MasterClock implements Serializable { // Runnable,
      * each real-world minute.
      */
     public void setTimeRatio(double ratio) {
-        if (ratio >= 16D && ratio <= 65536D) {
+        if (ratio >= 16D && ratio <= 4096D) {
             timeRatio = Math.round(ratio*100D)/100D;
             //System.out.println("timeRatio : " + timeRatio + " ");
         }
