@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   	<modelVersion>4.0.0</modelVersion>
   	<parent>
@@ -18,7 +18,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
 				<version>1.0-beta-8</version>
-<!--  for compiling with Java 8 
+<!--  for compiling with Java 8
 
 see http://stackoverflow.com/questions/31209479/maven-webstart-and-java-8-headaches
 see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-from-building-a-zip-file  -->
@@ -29,25 +29,25 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
                         <artifactId>webstart-pack200-impl</artifactId>
                         <version>1.0-beta-6</version>
 					</dependency>
-<!--  see http://www.mojohaus.org/webstart/webstart-maven-plugin/upgrade.html                      
- 
+<!--  see http://www.mojohaus.org/webstart/webstart-maven-plugin/upgrade.html
+
                     <dependency>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>keytool-api-1.7</artifactId>
                         <version>1.4</version>
                     </dependency>
-  
--->  					
+
+-->
 				</dependencies>
-				<configuration>				
- 
-<!--  TODO: how to enable using pack200 instead of just zip or gzip for better compression ? 
+				<configuration>
+
+<!--  TODO: how to enable using pack200 instead of just zip or gzip for better compression ?
 
 				<pack200>
 					<enabled>false</enabled>
 				</pack200>
---> 
-                				
+-->
+
 					<sign>
 						<keystore>../../../mars-sim.store</keystore>
 						<keypass>marssim</keypass>
@@ -57,11 +57,11 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 					<jnlp>
 						<outputFile>mars-sim.jnlp</outputFile>
 						<mainClass>org.mars_sim.msp.javafx.MarsProjectFX</mainClass>
-						
+
 <!--					<resources>
 							<property name="jnlp.packEnabled" value="true"/>
 						</resources>
--->						
+-->
 					</jnlp>
 				</configuration>
 			</plugin>
@@ -150,7 +150,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
                                     </mapper>
                                 </data>
                                 <data>
-                                	<src>${project.basedir}/src/deb/marsicon.png</src>
+                                	<src>${project.basedir}/src/deb/icon.png</src>
                                 	<type>file</type>
                                 	<mapper>
                                         <type>perm</type>
@@ -191,7 +191,7 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 		        </exclusion>
 			</exclusions>
 			<version>${junit.version}</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>net.sf.mars-sim</groupId>
 			<artifactId>mars-sim-ui</artifactId>
@@ -206,9 +206,9 @@ see http://stackoverflow.com/questions/7094181/how-to-prevent-maven-webstart-fro
 	    	<groupId>net.sf.mars-sim</groupId>
 	    	<artifactId>mars-sim-network</artifactId>
 	    	<version>${project.version}</version>
-	    </dependency>	    
+	    </dependency>
 	</dependencies>
-	
+
 	<repositories>
 	    <repository>
 	        <id>jcenter</id>

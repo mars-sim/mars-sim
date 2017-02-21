@@ -248,6 +248,7 @@ public class MainScene {
 	private static final String MARS_DATE_TIME = "MARS  :  ";
 	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
 	public static final String UMST = " (UMST)";
+	public static final String ONE_SPACE = " ";
 
 	public static final String UPTIME = "UpTime :";
 	public static final String TPS = "Ticks/s :";
@@ -256,9 +257,9 @@ public class MainScene {
 
 	private static int theme = 7; // 6 is snow blue; 7 is the mud orange with nimrod
 	public static int chatBoxHeight = 256;
-	public static int LINUX_WIDTH = 280;
-	public static int MACOS_WIDTH = 260;
-	public static int WIN_WIDTH = 240;
+	public static int LINUX_WIDTH = 270;
+	public static int MACOS_WIDTH = 230;
+	public static int WIN_WIDTH = 230;
 
 	private int count = 0;
 	private int solElapsedCache = 0;
@@ -777,7 +778,7 @@ public class MainScene {
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
-		else if (OS.contains("macos")) {
+		else if (OS.contains("mac")) {
 	        AnchorPane.setTopAnchor(speedBtn, 0.0);
 	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 	        //AnchorPane.setTopAnchor(mapBtn, -3.0);
@@ -897,11 +898,11 @@ public class MainScene {
 
 		if (OS.contains("linux")) {
 			earthTimeButton.setMinWidth(LINUX_WIDTH);
-			earthTimeButton.setPrefSize(LINUX_WIDTH, 33);
+			earthTimeButton.setPrefSize(LINUX_WIDTH, 29);
 		}
-		else if (OS.contains("macos")) {
+		else if (OS.contains("mac")) {
 			earthTimeButton.setMinWidth(MACOS_WIDTH);
-			earthTimeButton.setPrefSize(MACOS_WIDTH, 30);
+			earthTimeButton.setPrefSize(MACOS_WIDTH, 28);
 		}
 		else {
 			earthTimeButton.setMinWidth(WIN_WIDTH);
@@ -959,8 +960,8 @@ public class MainScene {
 		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
 		//earthTimeLabel.setMinWidth(180);
 		//earthTimeLabel.setPrefSize(180, 30);
-		earthTimeButton.setTextAlignment(TextAlignment.LEFT);
-
+		//earthTimeButton.setTextAlignment(TextAlignment.LEFT);
+		earthTimeButton.setAlignment(Pos.CENTER_LEFT);
 		//earthTimeBar.getChildren().add(earthTimeButton);
 	}
 
@@ -1318,11 +1319,11 @@ public class MainScene {
 		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
 			marsTimeButton.setMinWidth(LINUX_WIDTH);
-			marsTimeButton.setPrefSize(LINUX_WIDTH, 33);
+			marsTimeButton.setPrefSize(LINUX_WIDTH, 29);
 		}
-		else if (OS.contains("macos")) {
+		else if (OS.contains("mac")) {
 			marsTimeButton.setMinWidth(MACOS_WIDTH);
-			marsTimeButton.setPrefSize(MACOS_WIDTH, 30);
+			marsTimeButton.setPrefSize(MACOS_WIDTH, 28);
 		}
 		else {
 			marsTimeButton.setMinWidth(WIN_WIDTH);
@@ -1427,7 +1428,8 @@ public class MainScene {
 		marsCalendarPopup.setSource(marsTimeButton);
 
 		marsTimeButton.setId("rich-orange");
-		marsTimeButton.setTextAlignment(TextAlignment.LEFT);
+		//marsTimeButton.setTextAlignment(TextAlignment.LEFT);
+		marsTimeButton.setAlignment(Pos.CENTER_LEFT);
 		//setQuickToolTip(marsTime, "Click to see Quick Info on Mars");
 
 		//northHemi = new Button("\u25D2");
@@ -1713,6 +1715,8 @@ public class MainScene {
 
 		jfxTabPane = new JFXTabPane();
 		jfxTabPane.setPrefSize(sceneHeight.get(),sceneWidth.get());
+		if (OS.contains("mac"))
+			jfxTabPane.setVisible(false);
 
 		String cssFile = null;
 
@@ -2646,8 +2650,8 @@ public class MainScene {
 		}
 
 		StringBuilder m = new StringBuilder();
-        m.append(MARS_DATE_TIME).append(marsClock.getDateString()).append(" ")
-        	.append(marsClock.getTrucatedTimeString()).append(UMST);
+        m.append(MARS_DATE_TIME).append(marsClock.getDateString())//.append(ONE_SPACE)
+        	.append(marsClock.getTrucatedTimeStringUMST());
 		marsTimeButton.setText(m.toString());
 
 		StringBuilder e = new StringBuilder();

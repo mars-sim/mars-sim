@@ -73,7 +73,7 @@ public class MarsClock implements Serializable {
     private double millisol;
 
     private OrbitInfo orbitInfo;
-    
+
     private Simulation sim = Simulation.instance();
 
     private int solElapsed = 1;
@@ -176,7 +176,7 @@ public class MarsClock implements Serializable {
 
     /** Returns the number of sols of that given year
      *  @return the number of sol as an integer
-     
+
     // 2015-01-28 Added getSolOfYear()
     public static int getSolOfYear() {//MarsClock time) {
     	int result = 0;
@@ -195,7 +195,7 @@ public class MarsClock implements Serializable {
         return result;
     }
 */
-    
+
     /** Returns the total number of sols since the start of the simulation
      *  @return the total number of sol as an integer
      */
@@ -206,7 +206,7 @@ public class MarsClock implements Serializable {
         //	System.out.println("sol from start : " + solElapsed);
         }
     	return solElapsed;
-    
+
 /*
     	int result = 0;
 
@@ -232,10 +232,10 @@ public class MarsClock implements Serializable {
         return result;
 */
     }
-    
+
     /** Returns the total number of sols since the start of the simulation
      *  @return the total number of sol as an integer
-     
+
     // 2015-02-09 Added getTotalSol
     public static int getTotalSol(MarsClock time) {
 
@@ -259,7 +259,7 @@ public class MarsClock implements Serializable {
         return result;
     }
 */
-    
+
     /** Returns the number of sols for a given month and orbit.
      *  @param month the month number
      *  @param orbit the orbit number
@@ -370,12 +370,12 @@ public class MarsClock implements Serializable {
         	result.append("00");
         else if (orbit < 1000) // then 0xxx
         	result.append("0");
-        
+
         result.append(orbit).append("-").append(getMonthName()).append("-");
 
         if(sol < 10)
             result.append("0");
-        
+
         result.append(sol);
 //        // Append sol of month
 //        String solString = "" + sol;
@@ -400,12 +400,12 @@ public class MarsClock implements Serializable {
         	s.append("00");
         else if (orbit < 1000) // then 0xxx
         	s.append("0");
-        
+
         s.append(orbit);
-        
+
         return s.toString();
     }
-    
+
     /**
      * Gets the date string of a given time.
      * ex. "13-Adir-05"
@@ -427,7 +427,7 @@ public class MarsClock implements Serializable {
 
         return s.toString();
     }
-    
+
     /** Returns the current time string.
      *  ex. "0056"
      */
@@ -435,18 +435,39 @@ public class MarsClock implements Serializable {
         StringBuilder s = new StringBuilder();
         int tb = (int)millisol;
         s.append(tb);
-        if (millisol > 100D) 
+        if (millisol > 100D)
             s.insert(0,"0");
         else if (millisol > 10D)
             s.insert(0,"00");
-        else if (millisol == 100D) 
+        else if (millisol == 100D)
             ;
-        else 
+        else
         	s.insert(0,"000");
-        
+
         return s.toString();
 	}
-	
+
+
+    /** Returns the current time string.
+     *  ex. "0056"
+     */
+	public String getTrucatedTimeStringUMST() {
+        StringBuilder s = new StringBuilder(" ");
+        int tb = (int)millisol;
+        s.append(tb);
+        if (millisol > 100D)
+            s.insert(0,"0");
+        else if (millisol > 10D)
+            s.insert(0,"00");
+        else if (millisol == 100D)
+            ;
+        else
+        	s.insert(0,"000");
+
+        return s.append(" (UMST)").toString();
+	}
+
+
     /** Returns the current time string.
      *  ex. "056.349"
      */

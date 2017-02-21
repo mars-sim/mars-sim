@@ -6,14 +6,21 @@ http://mars-sim.sourceforge.net/
 
 ## v3.1.0 (build 38__) Snapshot Preview 6 - 2017-02-__
 
+### MINMUM REQUIREMENTS :
+
+1. Dual Core Pentium/Celeron
+
+2. 1.5GHz or above
+
+3. 1 GB RAM dedicated for running mars-sim
+
 ### KNOWN LIMITATIONS :
 
-1. The Tabs cannot be clicked in MacOSX due to unknown bugs in JavaFX's TabPane. One can still have access to all the Tools in MacOS's top menu.
+1. In MacOS, the Tab bar (housing Main, Map, and Help tabs) does NOT work and is prone to crash if clicking it. Must use MacOS top menu to gain access to the Tools.
 
-2. Main Menu's 3D Mars Globe may display shadow artifact when running in linux. May crash when attempting to change a text field.
+2. In Linux, the spinning 3D Mars Globe has unwanted black artifact. In the main window, clicking on some Swing UI elements such as JcomoboBox and JTextfield may crash the sim.
 
-3. User must have 64-bit 1.8.0.91 or higher version of Java 8 SE or JDK installed on the machine. It's not compatible with 32-bit Java 8 or any versions of OpenJDK.
-
+3. Not compatible with 32-bit Java 8 or any versions of OpenJDK/OpenJFX.
 
 ### CORE ENGINE IMPROVEMENTS :
 
@@ -25,11 +32,16 @@ http://mars-sim.sourceforge.net/
 
 1. Add sound control panel, calendar panel and speed panel.
 
-2. Consolidate various tools into the Main tabs. Reduce the # of available tabs to 3.
+2. Add map toggle button and minimap toggle button.
+
+3. Consolidate various tools into the Main tabs. Reduce the # of available tabs to 3.
 
 ### FIXES :
 
 1. Fix a bug preventing a new settlement from showing up in the Settlement combo box in Settlement Map.
+
+2. Fix displaying the most current activity description/phase and mission description/phase in Activity Tab in Person Window.
+
 
 ------------------------------------------------------
 
