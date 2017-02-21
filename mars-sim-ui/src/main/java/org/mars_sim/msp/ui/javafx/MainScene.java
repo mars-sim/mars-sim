@@ -1715,8 +1715,6 @@ public class MainScene {
 
 		jfxTabPane = new JFXTabPane();
 		jfxTabPane.setPrefSize(sceneHeight.get(),sceneWidth.get());
-		if (OS.contains("mac"))
-			jfxTabPane.setVisible(false);
 
 		String cssFile = null;
 
