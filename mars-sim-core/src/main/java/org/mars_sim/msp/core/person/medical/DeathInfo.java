@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathInfo.java
- * @version 3.07 2014-09-22
+ * @version 3.1.0 2017-02-20
  * @author Barry Evans
  */
 
@@ -47,7 +47,7 @@ implements Serializable {
     private String timeOfDeath;
     /** Medical cause of death. */
     private ComplaintType illness;
-    
+
     private String placeOfDeath;
     /** Container unit at time of death. */
     private Unit containerUnit;
@@ -64,10 +64,10 @@ implements Serializable {
     /** Phase of task at time of death. */
     private String taskPhase;
     /** Name of the most serious local emergency malfunction. */
-    private String malfunction; 
+    private String malfunction;
     /** gender at time of death. */
     private PersonGender gender;
-    
+
     private RobotType robotType;
 
     /**
@@ -76,18 +76,23 @@ implements Serializable {
      */
     public DeathInfo(Person person) {
 
+        this.gender = person.getGender();
+
         // Initialize data members
         timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 
         Complaint serious = person.getPhysicalCondition().getMostSerious();
         if (serious != null) illness = serious.getType();
 
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
-        	placeOfDeath = "Outside " + person.getBuriedSettlement();
-        else {
-            containerUnit = person.getContainerUnit();  
+        //if (person.getLocationSituation() == LocationSituation.DEAD)
+        //	placeOfDeath = "Outside " + person.getBuriedSettlement();
+        //else if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+        //	placeOfDeath = "Outside " + person.getBuriedSettlement();
+        //else {
+        	// such as died inside a vehicle
+            containerUnit = person.getContainerUnit();
             placeOfDeath = containerUnit.getName();
-        }
+        //}
 
         locationOfDeath = person.getCoordinates();
 
@@ -101,15 +106,20 @@ implements Serializable {
         }
 
         TaskManager taskMgr = mind.getTaskManager();
+
         if (taskMgr.hasTask()) {
-            task = taskMgr.getTaskName();
-            TaskPhase phase = taskMgr.getPhase();
-            if (phase != null) {
-                taskPhase = phase.getName();
-            }
-            else {
-                taskPhase = "";
-            }
+        	if (task == null)
+        		task = taskMgr.getTaskName();
+
+        	if (taskPhase == null) {
+	            TaskPhase phase = taskMgr.getPhase();
+	            if (phase != null) {
+	                taskPhase = phase.getName();
+	            }
+	            //else {
+	            //    taskPhase = "";
+	            //}
+        	}
         }
 
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -125,12 +135,34 @@ implements Serializable {
                     severity = m.getSeverity();
                 }
             }
+
+            else if (malfunctionMgr.hasEVAMalfunction()) {
+            	Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
+                if (m.getSeverity() > severity) {
+                    mostSerious = m;
+                    severity = m.getSeverity();
+                }
+            }
+
+            else if (malfunctionMgr.hasNormalMalfunction()) {
+            	Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
+                if (m.getSeverity() > severity) {
+                    mostSerious = m;
+                    severity = m.getSeverity();
+                }
+            }
+
+            else if (malfunctionMgr.hasMalfunction()) {
+            	Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
+                if (m.getSeverity() > severity) {
+                    mostSerious = m;
+                    severity = m.getSeverity();
+                }
+            }
         }
+
         if (mostSerious != null) malfunction = mostSerious.getName();
-        this.gender = person.getGender();
-        
-        
-        
+
     }
 
     public DeathInfo(Robot robot) {
@@ -143,7 +175,7 @@ implements Serializable {
 
         if (person.getLocationSituation() == LocationSituation.OUTSIDE) placeOfDeath = "Outside";
         else {
-            containerUnit = person.getContainerUnit();  
+            containerUnit = person.getContainerUnit();
             placeOfDeath = containerUnit.getName();
         }
 
@@ -160,14 +192,19 @@ implements Serializable {
 */
         BotTaskManager taskMgr = botMind.getBotTaskManager();
         if (taskMgr.hasTask()) {
-            task = taskMgr.getTaskName();
-            TaskPhase phase = taskMgr.getPhase();
-            if (phase != null) {
-                taskPhase = phase.getName();
-            }
-            else {
-                taskPhase = "";
-            }
+
+        	if (task == null)
+        		task = taskMgr.getTaskName();
+
+        	if (taskPhase == null) {
+	            TaskPhase phase = taskMgr.getPhase();
+	            if (phase != null) {
+	                taskPhase = phase.getName();
+	            }
+	            //else {
+	            //    taskPhase = "";
+	            //}
+        	}
         }
 
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(robot).iterator();
@@ -183,12 +220,39 @@ implements Serializable {
                     severity = m.getSeverity();
                 }
             }
+
+            else if (malfunctionMgr.hasEVAMalfunction()) {
+            	Malfunction m = malfunctionMgr.getMostSeriousEVAMalfunction();
+                if (m.getSeverity() > severity) {
+                    mostSerious = m;
+                    severity = m.getSeverity();
+                }
+            }
+
+            else if (malfunctionMgr.hasNormalMalfunction()) {
+            	Malfunction m = malfunctionMgr.getMostSeriousNormalMalfunction();
+                if (m.getSeverity() > severity) {
+                    mostSerious = m;
+                    severity = m.getSeverity();
+                }
+            }
+
+            else if (malfunctionMgr.hasMalfunction()) {
+            	Malfunction m = malfunctionMgr.getMostSeriousMalfunction();
+                if (m.getSeverity() > severity) {
+                    mostSerious = m;
+                    severity = m.getSeverity();
+                }
+            }
         }
+
         if (mostSerious != null) malfunction = mostSerious.getName();
-        
+
+
         this.robotType = robot.getRobotType();
-        
+
     }
+
     /**
      * Get the time death happened.
      * @return formatted time.
@@ -199,7 +263,7 @@ implements Serializable {
     }
 
     /**
-     * Gets the place the death happened.  
+     * Gets the place the death happened.
      * Either the name of the unit the person was in, or 'outside' if
      * the person died on an EVA.
      * @return place of death.
@@ -209,7 +273,7 @@ implements Serializable {
         else return "";
     }
 
-    /** 
+    /**
      * Gets the container unit at the time of death.
      * Returns null if none.
      * @return container unit
@@ -243,12 +307,12 @@ implements Serializable {
         if (job != null) return job.getName(gender);
         else return "";
     }
-    
+
     public String getRobotJob() {
         if (robotJob != null) return robotJob.getName(robotType);
         else return "";
     }
-    
+
     /**
      * Gets the mission the person was on at time of death.
      * @return mission name

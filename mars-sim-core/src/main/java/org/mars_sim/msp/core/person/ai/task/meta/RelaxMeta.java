@@ -49,7 +49,7 @@ public class RelaxMeta implements MetaTask, Serializable {
 	        marsClock = masterClock.getMarsClock();
         }
 	}
-	
+
     @Override
     public String getName() {
         return NAME;
@@ -65,15 +65,15 @@ public class RelaxMeta implements MetaTask, Serializable {
         double result = 0D;
 
         // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT 
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT
     		|| person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-        	
-            // Stress modifier
-            result += person.getStress() * 10D;
-            // fatigue modifier
-            result += person.getFatigue() / 10D;
 
-            
+            // Stress modifier
+            result += person.getStress() * 5D;
+            // fatigue modifier
+            result += (person.getFatigue()-200) / 50D;
+
+
             try {
                 Building recBuilding = Relax.getAvailableRecreationBuilding(person);
                 if (recBuilding != null) {
@@ -98,7 +98,7 @@ public class RelaxMeta implements MetaTask, Serializable {
         if (result > 0D) {
             result = result + result * person.getPreference().getPreferenceScore(this)/5D;
         }
-        
+
         if (result < 0) result = 0;
 
         return result;

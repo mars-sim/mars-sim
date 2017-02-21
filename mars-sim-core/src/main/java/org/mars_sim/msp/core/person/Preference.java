@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Preference.java
- * @version 3.08 2015-06-07
+ * @version 3.1.0 2017-02-20
  * @author Manny Kung
  */
 
@@ -92,6 +92,8 @@ public class Preference implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final String META = "Meta";
+
 	private int solCache = 0;
 
 	private NaturalAttributeManager naturalAttributeManager;
@@ -118,7 +120,6 @@ public class Preference implements Serializable {
 
 		metaTaskList = MetaTaskUtil.getMetaTasks();
 		metaTaskStringList = new ArrayList<>();
-
 		//metaMissionList = MetaMissionUtil.getMetaMissions();
 
 		scoreMap = new ConcurrentHashMap<>();
@@ -133,7 +134,6 @@ public class Preference implements Serializable {
 		//scheduleTask("ConnectWithEarthMeta", 700, 950);
 
 		//System.out.println("done with Preference's constructor");
-
 	}
 
 	/*
@@ -268,8 +268,6 @@ public class Preference implements Serializable {
 			if (metaTask instanceof WorkoutMeta
 				|| metaTask instanceof PlayHoloGameMeta)
 				result +=(int)ag;
-
-
 
 			if (result > 7)
 				result = 7;
@@ -514,7 +512,7 @@ public class Preference implements Serializable {
     	MetaTask result = null;
     	String name = task.getTaskName();
     	//System.out.println(" task name is " + name);
-    	result = MetaTaskUtil.getMetaTask(name + "Meta");
+    	result = MetaTaskUtil.getMetaTask(name + META);
     	return result;
     }
 }

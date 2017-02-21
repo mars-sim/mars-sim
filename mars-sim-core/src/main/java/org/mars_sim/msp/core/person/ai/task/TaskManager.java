@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.08 2015-02-11
+ * @version 3.1.0 2017-02-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -62,7 +62,7 @@ implements Serializable {
 	private transient Map<MetaTask, Double> taskProbCache;
 	private transient List<MetaTask> mtListCache;
 	private transient List<MetaTask> oldAnyHourTasks, oldNonWorkTasks, oldWorkTasks;
-	
+
 	private Person person = null;
 
 	/**
@@ -81,7 +81,7 @@ implements Serializable {
 		timeCache = null;
 		taskProbCache = new HashMap<MetaTask, Double>();
 		totalProbCache = 0D;
-		
+
 		if (Simulation.instance().getMasterClock() != null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // marsClock won't pass maven test
 	}
@@ -120,7 +120,7 @@ implements Serializable {
 	 * @return task name
 	 */
 	public String getFilteredTaskName() {
-		String s = getTaskName(); 
+		String s = getTaskName();
 		if (s.toLowerCase().contains("walk")) {
 			if (lastTask != null) {
 				s = lastTask.getName();
@@ -137,7 +137,7 @@ implements Serializable {
 			return s;
 
 	}
-	
+
 	/**
 	 * Returns the name of the current task for UI purposes.
 	 * Returns a blank string if there is no current task.
@@ -159,14 +159,14 @@ implements Serializable {
 	 */
 	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
-			String doAction = currentTask.getDescription(subTask);
-
-			return doAction;
+			//String doAction = currentTask.getDescription(subTask);
+			//return doAction;
+			return currentTask.getDescription(subTask);
 		} else {
 			return "";
 		}
 	}
-	
+
 	/**
 	 * Returns the current task phase if there is one.
 	 * Returns null if current task has no phase.
@@ -208,13 +208,13 @@ implements Serializable {
 	@SuppressWarnings("null")
 	public void recordTask() {
 		String taskDescription = getTaskDescription(true);//currentTask.getDescription(); //
-		String taskName = getTaskClassName();//currentTask.getTaskName(); //
+		String taskName = getTaskClassName();//getTaskClassName();//currentTask.getTaskName(); //
 		String taskPhase = null;
 
 		if (!taskName.toLowerCase().contains("walk")) {//.equals("WalkRoverInterior")
 				//&& !taskName.equals("WalkSettlementInterior")
 				//&& !taskName.equals("WalkSteps")) { // filter off Task phase "Walking" due to its excessive occurrences
-			if (!taskDescription.equals(taskDescriptionCache) 
+			if (!taskDescription.equals(taskDescriptionCache)
 					&& !taskDescription.toLowerCase().contains("walk") //.equals("Walking inside a settlement")
 					&& !taskDescription.equals("")) {
 
@@ -225,9 +225,9 @@ implements Serializable {
 					if (!taskPhase.equals(taskPhaseCache)) {
 						taskPhaseCache = taskPhase;
 					}
-					
+
 				}
-				
+
 				person.getTaskSchedule().recordTask(taskName, taskDescription, taskPhase);
 				taskDescriptionCache = taskDescription;
 			}
@@ -252,9 +252,10 @@ implements Serializable {
 			taskNameCache = currentTask.getTaskName();
 			taskDescriptionCache = currentTask.getDescription();
 
-			if (currentTask.getPhase() != null)
-				if (currentTask.getPhase().getName() != null)
-					taskPhaseCache = currentTask.getPhase().getName();
+			TaskPhase tp = currentTask.getPhase();
+			if (tp != null)
+				if (tp.getName() != null)
+					taskPhaseCache = tp.getName();
 				else
 					taskPhaseCache = "";
 			else
@@ -461,10 +462,10 @@ implements Serializable {
 		}
 
 		double r = RandomUtil.getRandomDouble(totalProbability);
-		
+
 		MetaTask selectedMetaTask = null;
 		//System.out.println("size of metaTask : " + taskProbCache.size());
-		
+
 /*
 		taskProbCache.keySet().forEach(mt -> {
 			double probWeight = taskProbCache.get(mt);
@@ -487,16 +488,16 @@ implements Serializable {
 				r -= probWeight;
 			}
 		}
-		
+
 		if (selectedMetaTask == null) {
 			throw new IllegalStateException(mind.getPerson() +
 						" could not determine a new task.");
-		} 
+		}
 		else {
 			// Call constructInstance of the selected Meta Task to commence the ai task
 			result = selectedMetaTask.constructInstance(mind.getPerson());
 		}
-		
+
 		// Clear time cache.
 		timeCache = null;
 		return result;
@@ -530,7 +531,7 @@ implements Serializable {
 		    boolean isOff = person.getTaskSchedule().getShiftType().equals(ShiftType.OFF);
 		    boolean isShiftHour = true;
 
-/*		    
+/*
 		    //2016-10-04 Checked if the job is changed
 		    List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 		    String newJob = "";
@@ -555,10 +556,10 @@ implements Serializable {
 		    //	newNonWorkTasks = MetaTaskUtil.getNonWorkHourTasks();
 		    //	oldAllWorkTasks = newAllWorkTasks;
 		    //	oldNonWorkTasks = newNonWorkTasks;
-		    //}		    	
-		    //else {	    	
 		    //}
-		    
+		    //else {
+		    //}
+
 		    if (isOnCall) {
 		    	if (jobChanged) {
 			    	newAnyHourTasks = MetaTaskUtil.getAnyHourTasks();
@@ -600,8 +601,8 @@ implements Serializable {
 			    	//mtList = MetaTaskUtil.getNonWorkHourTasks();
 			    }
 		    }
-*/		    
-		    
+*/
+
 		    if (isOnCall) {
 		    	mtList = MetaTaskUtil.getAnyHourTasks();
 		    }
@@ -616,20 +617,20 @@ implements Serializable {
 			    	mtList = MetaTaskUtil.getWorkHourTasks();
 			    }
 			    else {
-			    	mtList = MetaTaskUtil.getNonWorkHourTasks();		    	
+			    	mtList = MetaTaskUtil.getNonWorkHourTasks();
 			    }
 		    }
-		    
+
 		    //if (mtList == null)
 		    	//System.out.println("mtList is null");
-	    	
+
 		    if (mtListCache != mtList && mtList != null) {
 		    	//System.out.println("mtListCache : " + mtListCache);
 		    	//System.out.println("mtList : " + mtList);
 		    	mtListCache = mtList;
 		    	taskProbCache = new HashMap<MetaTask, Double>(mtListCache.size());
 		    }
-/*		    
+/*
 			if (taskProbCache == null) {
 		    	System.out.println("mtListCache : " + mtListCache);
 		    	System.out.println("mtList : " + mtList);
@@ -637,7 +638,7 @@ implements Serializable {
 			}
 
 
-			// Note: one cannot compare the difference between two lists with .equals() 
+			// Note: one cannot compare the difference between two lists with .equals()
 		    if (mtListCache == null || !mtListCache.equals(mtList)) {
 		    	System.out.println("mtListCache : " + mtListCache);
 		    	System.out.println("mtList : " + mtList);

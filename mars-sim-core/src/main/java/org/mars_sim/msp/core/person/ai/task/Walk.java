@@ -716,17 +716,19 @@ implements Serializable {
 		        WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		        Building building = BuildingManager.getBuilding(person);
 		        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-		        Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+		        double x = Math.round(step.xLoc * 100.0)/100.0;
+		        double y = Math.round(step.yLoc * 100.0)/100.0;
+		        Point2D stepLocation = new Point2D.Double(x, y);
 		        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
 		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 		                walkingStepIndex++;
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Almost arriving at (" + step.xLoc + ", " + step.yLoc + ") in " + building.getNickName());
+	    	        	setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
 		                setPhase(getWalkingStepPhase());
 		            }
 		            else {
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Arrived at (" + step.xLoc + ", " + step.yLoc + ") in " + building.getNickName());
+	    	        	setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
 		                endTask();
 		            }
 		        }
@@ -734,7 +736,7 @@ implements Serializable {
 		        	if (building != null) { // && step.building != null) {
 			        	// Going from building to step.building
 			        	setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
-			            addSubTask(new WalkSettlementInterior(person, step.building, step.xLoc, step.yLoc));
+			            addSubTask(new WalkSettlementInterior(person, step.building, x, y));
 		        	}
 		            else if (building == null) {
 		    			logger.info(person + " is not in a building.");
@@ -753,17 +755,19 @@ implements Serializable {
 		        WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		        Building building = BuildingManager.getBuilding(robot);
 		        Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-		        Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+		        double x = Math.round(step.xLoc * 100.0)/100.0;
+		        double y = Math.round(step.yLoc * 100.0)/100.0;
+		        Point2D stepLocation = new Point2D.Double(x, y);
 		        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
 		            if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
 		                walkingStepIndex++;
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Almost arriving at " + stepLocation + " in " + building.getNickName());
+	    	        	setDescription("Almost arriving at (" + x + ", " + y + ") in " + building.getNickName());
 		                setPhase(getWalkingStepPhase());
 		            }
 		            else {
 	    	        	// 2015-11-11 setDescription()
-	    	        	setDescription("Arrived at " + stepLocation);
+	    	        	setDescription("Arrived at (" + x + ", " + y + ") in " + building.getNickName());
 		                endTask();
 		            }
 		        }
@@ -771,7 +775,7 @@ implements Serializable {
 		        	if (building != null) { // && step.building != null) {
 			        	// Going from building to step.building
 			        	setDescription("Walking inside from " + building.getNickName() + " to " + step.building.getNickName());
-			            addSubTask(new WalkSettlementInterior(robot, step.building, step.xLoc, step.yLoc));
+			            addSubTask(new WalkSettlementInterior(robot, step.building, x, y));
 		        	}
 		        	else if (building == null) {
 		        		logger.info(robot + " is not in a building");
@@ -825,23 +829,26 @@ implements Serializable {
 
 
             Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-            Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+	        double x = Math.round(step.xLoc * 100.0)/100.0;
+	        double y = Math.round(step.yLoc * 100.0)/100.0;
+	        Point2D stepLocation = new Point2D.Double(x, y);
+            //Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
             if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking back to the rover at (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Walking back to the rover at (" + x + ", " + y + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arrived at (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Arrived at (" + x + ", " + y + ")");
                     endTask();
                 }
             }
             else {
                 logger.finer("Starting walk rover interior from Walk.walkingRoverInteriorPhase.");
-                addSubTask(new WalkRoverInterior(person, step.rover, step.xLoc, step.yLoc));
+                addSubTask(new WalkRoverInterior(person, step.rover, x, y));
             }
 
     	}
@@ -865,23 +872,26 @@ implements Serializable {
             }
 
             Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-            Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+            //Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+	        double x = Math.round(step.xLoc * 100.0)/100.0;
+	        double y = Math.round(step.yLoc * 100.0)/100.0;
+	        Point2D stepLocation = new Point2D.Double(x, y);
             if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking back to the rover at (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Walking back to the rover at (" + x + ", " + y + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arrived at (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Arrived at (" + x + ", " + y + ")");
                     endTask();
                 }
             }
             else {
                 logger.finer("Starting walk rover interior from Walk.walkingRoverInteriorPhase.");
-                addSubTask(new WalkRoverInterior(robot, step.rover, step.xLoc, step.yLoc));
+                addSubTask(new WalkRoverInterior(robot, step.rover, x, y));
             }
 
     	}
@@ -909,17 +919,20 @@ implements Serializable {
             double x = person.getXLocation();
             double y = person.getYLocation();
 
-            Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+	        double xx = Math.round(step.xLoc * 100.0)/100.0;
+	        double yy = Math.round(step.yLoc * 100.0)/100.0;
+	        Point2D stepLocation = new Point2D.Double(xx, yy);
+            //Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
             if (LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking to (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Walking to (" + xx + ", " + yy + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arriving at (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Arriving at (" + xx + ", " + yy + ")");
                     endTask();
                 }
             }
@@ -927,9 +940,9 @@ implements Serializable {
             	if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
 	                logger.finer(person + " starting walk outside task.");
 		        	// 2015-11-11 setDescription()
-		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + step.xLoc + ", " + step.yLoc + ")");
+		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", " + yy + ")");
 	                addSubTask(new WalkOutside(person, x, y,
-	                        step.xLoc, step.yLoc, true));
+	                        xx, yy, true));
             	}
             	else {
           	      logger.severe(person + " is not outside.");
@@ -945,19 +958,22 @@ implements Serializable {
             // Check if robot has reached destination location.
             WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
             Point2D robotLocation = new Point2D.Double(robot.getXLocation(), robot.getYLocation());
-            Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+	        double xx = Math.round(step.xLoc * 100.0)/100.0;
+	        double yy = Math.round(step.yLoc * 100.0)/100.0;
+	        Point2D stepLocation = new Point2D.Double(xx, yy);
+            //Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
             double x = robot.getXLocation();
             double y = robot.getYLocation();
             if (LocalAreaUtil.areLocationsClose(robotLocation, stepLocation)) {
                 if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                     walkingStepIndex++;
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Walking to (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Walking to (" + xx + ", " + yy + ")");
                     setPhase(getWalkingStepPhase());
                 }
                 else {
     	        	// 2015-11-11 setDescription()
-    	        	setDescription("Arriving at (" + step.xLoc + ", " + step.yLoc + ")");
+    	        	setDescription("Arriving at (" + xx + ", " + yy + ")");
                     endTask();
                 }
             }
@@ -965,9 +981,9 @@ implements Serializable {
             	if (robot.getLocationSituation() == LocationSituation.OUTSIDE) {
 	                logger.finer(robot + " starting walk outside task.");
 		        	// 2015-11-11 setDescription()
-		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + step.xLoc + ", " + step.yLoc + ")");
+		        	setDescription("Walking Outside from (" + x + ", " + y + ") to (" + xx + ", " + yy + ")");
 		        	addSubTask(new WalkOutside(robot, x, y,
-	                        step.xLoc, step.yLoc, true));
+	                        xx, yy, true));
             	}
             	else {
             		logger.severe(robot + " is not outside.");

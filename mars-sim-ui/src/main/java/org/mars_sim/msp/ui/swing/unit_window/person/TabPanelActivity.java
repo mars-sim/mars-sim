@@ -130,25 +130,27 @@ implements ActionListener {
 		JLabel taskLabel = new JLabel(Msg.getString("TabPanelActivity.task"), JLabel.CENTER); //$NON-NLS-1$
 		taskPanel.add(taskLabel, BorderLayout.NORTH);
 
+		String taskText = "";
 		// Prepare task text area
 		if (dead)
-			taskTextCache = deathInfo.getTask();
+			taskText = deathInfo.getTask();
 		else {
 			if (person != null) {
 				String t = mind.getTaskManager().getTaskDescription(false);
 				//if (!t.toLowerCase().contains("walk"))
-					taskTextCache = t;
+					taskText = t;
 			}
 
 			else if (robot != null) {
 				String t = botMind.getBotTaskManager().getTaskDescription(false);
 				//if (!t.toLowerCase().contains("walk"))
-					taskTextCache = t;
+					taskText = t;
 			}
 		}
 
 		taskTextArea = new JTextArea(2, 20);
-		if (taskTextCache != null) taskTextArea.setText(taskTextCache);
+		//if (taskText != null)
+		taskTextArea.setText(taskText);
 		taskTextArea.setLineWrap(true);
 		taskTextArea.setEditable(false);
 		taskPanel.add(new JScrollPane(taskTextArea), BorderLayout.CENTER);
@@ -161,29 +163,31 @@ implements ActionListener {
 		JLabel taskPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.taskPhase"), JLabel.CENTER); //$NON-NLS-1$
 		taskPhasePanel.add(taskPhaseLabel, BorderLayout.NORTH);
 
+		String taskPhaseText = "";
 		// Prepare task phase text area
 		if (dead) {
-		    taskPhaseCache = deathInfo.getTaskPhase();
+		    taskPhaseText = deathInfo.getTaskPhase();
 		}
 		else {
 
 			TaskPhase phase = null;
 
-				if (person != null)
-					phase = mind.getTaskManager().getPhase();
-				else if (robot != null)
-					phase = botMind.getBotTaskManager().getPhase();
+			if (person != null)
+				phase = mind.getTaskManager().getPhase();
+			else if (robot != null)
+				phase = botMind.getBotTaskManager().getPhase();
 
 
 		    if (phase != null) {
-		        taskPhaseCache = phase.getName();
+		        taskPhaseText = phase.getName();
 		    }
 		    else {
-		        taskPhaseCache = "";
+		        taskPhaseText = "";
 		    }
 		}
 		taskPhaseArea = new JTextArea(2, 20);
-		if (taskPhaseCache != null) taskPhaseArea.setText(taskPhaseCache);
+		//if (taskPhaseText != null)
+		taskPhaseArea.setText(taskPhaseText);
 		taskPhaseArea.setLineWrap(true);
 		taskPhaseArea.setEditable(false);
 		taskPhasePanel.add(new JScrollPane(taskPhaseArea), BorderLayout.CENTER);
@@ -207,31 +211,34 @@ implements ActionListener {
 
 		// Prepare mission text area
 
+		String missionText = "";
+
 		if (person != null) {
 
 			if (dead)
-				missionTextCache = deathInfo.getMission();
+				missionText = deathInfo.getMission();
 
 			else if (mind.getMission() != null)  {
-				missionTextCache = mind.getMission().getDescription();
-				if (missionTextCache == null)
-					missionTextCache = "None";
+				missionText = mind.getMission().getDescription();
+				//if (missionText == null)
+				//	missionText = "";
 			}
 		}
 		else if (robot != null) {
 
 			if (dead)
-				missionTextCache = deathInfo.getMission();
+				missionText = deathInfo.getMission();
 
 			else if (botMind.getMission() != null)  {
-				missionTextCache = botMind.getMission().getDescription();
-				if (missionTextCache == null)
-					missionTextCache = "None";
+				missionText = botMind.getMission().getDescription();
+				//if (missionText == null)
+				//	missionText = "";
 			}
 		}
 
 		missionTextArea = new JTextArea(2, 20);
-		if (missionTextCache != null) missionTextArea.setText(missionTextCache);
+		//if (missionText != null)
+		missionTextArea.setText(missionText);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
 		missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
@@ -244,25 +251,26 @@ implements ActionListener {
 		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.missionPhase"), JLabel.CENTER); //$NON-NLS-1$
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 
-
+		String missionPhaseText = "";
 		if (person != null) {
 			// Prepare mission phase text area
 			if (dead)
-				missionPhaseCache = deathInfo.getMissionPhase();
+				missionPhaseText = deathInfo.getMissionPhase();
 			else if (mind.getMission() != null)
-				missionPhaseCache = mind.getMission().getPhaseDescription();
+				missionPhaseText = mind.getMission().getPhaseDescription();
 		}
 		else if (robot != null) {
 			// Prepare mission phase text area
 			if (dead)
-				missionPhaseCache = deathInfo.getMissionPhase();
+				missionPhaseText = deathInfo.getMissionPhase();
 			else if (botMind.getMission() != null)
-				missionPhaseCache = botMind.getMission().getPhaseDescription();
+				missionPhaseText = botMind.getMission().getPhaseDescription();
 		}
 
 
 		missionPhaseTextArea = new JTextArea(2, 20);
-		if (missionPhaseCache != null) missionPhaseTextArea.setText(missionPhaseCache);
+		//if (missionPhase.equals(""))
+		missionPhaseTextArea.setText(missionPhaseText);
 		missionPhaseTextArea.setLineWrap(true);
 		missionPhaseTextArea.setEditable(false);
 		missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
@@ -337,22 +345,22 @@ implements ActionListener {
 
 		Mission mission = null;
 
-		String newTaskText = null;
-		String newTaskPhase = null;
-		String newMissionText = null;
-		String newMissionPhase = null;
+		String newTaskText = "";
+		String newTaskPhase = "";
+		String newMissionText = "";
+		String newMissionPhase = "";
 
 		// Prepare task text area
 		if (dead) {
 			if (deathInfo.getTask() == null || deathInfo.getTask().equals(""))
-				taskTextCache = "None " + DEAD_PHRASE;
+				newTaskText = "None " + DEAD_PHRASE;
 			else
-				taskTextCache = deathInfo.getTask() + DEAD_PHRASE;
+				newTaskText = deathInfo.getTask() + DEAD_PHRASE;
 
 			if (deathInfo.getTaskPhase() == null || deathInfo.getTaskPhase().equals(""))
-				taskPhaseCache = "None " + DEAD_PHRASE;
+				newTaskPhase = "None " + DEAD_PHRASE;
 			else
-				taskPhaseCache = deathInfo.getTaskPhase() + DEAD_PHRASE;
+				newTaskPhase = deathInfo.getTaskPhase() + DEAD_PHRASE;
 		}
 		else {
 
@@ -375,7 +383,7 @@ implements ActionListener {
 				newTaskText = botTaskManager.getTaskDescription(false);
 			}
 
-		    TaskPhase phase;
+		    TaskPhase phase = null;
 
 			if (person != null)
 			    phase = taskManager.getPhase();
@@ -384,59 +392,62 @@ implements ActionListener {
 
 
 		    if (phase != null) {
-		        taskPhaseCache = phase.getName();
+		    	newTaskPhase = phase.getName();
 		    }
 		    else {
-		        taskPhaseCache = "";
+		    	newTaskPhase = "";
 		    }
 
 		}
 
 		//if (!newTaskText.toLowerCase().contains("walk")) {
-			if (taskTextCache.equals("") && !taskTextCache.equals(newTaskText)) {
-				taskTextArea.setText(taskTextCache);
+			if (!newTaskText.equals("") && !taskTextCache.equals(newTaskText)) {
 				taskTextCache = newTaskText;
+				taskTextArea.setText(taskTextCache);
 			}
 
-			if (taskPhaseCache.equals("") && !taskPhaseCache.equals(newTaskPhase))  {
-				taskPhaseArea.setText(taskPhaseCache);
+			if (!newTaskPhase.equals("") && !taskPhaseCache.equals(newTaskPhase))  {
 				taskPhaseCache = newTaskPhase;
+				taskPhaseArea.setText(taskPhaseCache);
 			}
 		//}
 
 		// Update mission text area if necessary.
 		if (dead) {
 			if (deathInfo.getMission() == null || deathInfo.getMission().equals(""))
-				missionTextCache = "None " + DEAD_PHRASE;
+				newMissionText = "None " + DEAD_PHRASE;
 			else
-				missionTextCache = deathInfo.getMission() + DEAD_PHRASE;
+				newMissionText = deathInfo.getMission() + DEAD_PHRASE;
 
 			if (deathInfo.getMissionPhase() == null || deathInfo.getMissionPhase().equals(""))
-				missionPhaseCache = "None " + DEAD_PHRASE;
+				newMissionPhase = "None " + DEAD_PHRASE;
 			else
-				missionPhaseCache = deathInfo.getMissionPhase() + DEAD_PHRASE;
+				newMissionPhase = deathInfo.getMissionPhase() + DEAD_PHRASE;
 		}
 
 		else {
+			mission = null;
+
 			if (mission != null)
-				missionTextCache = mission.getDescription();
+				newMissionText = mission.getDescription();
 			else
-				missionTextCache = ""; //$NON-NLS-1$
+				newMissionText = ""; //$NON-NLS-1$
 
 			if (mission != null)
-				missionPhaseCache = mission.getPhaseDescription();
-			else missionPhaseCache = ""; //$NON-NLS-1$
+				newMissionPhase = mission.getPhaseDescription();
+			else
+				newMissionPhase = ""; //$NON-NLS-1$
 		}
 
 
-		if ((missionTextCache != null) && !missionTextCache.equals(newMissionText)) {
-			missionTextArea.setText(missionTextCache);
+		if (!newMissionText.equals("") && !missionTextCache.equals(newMissionText)) {
 			missionTextCache = newMissionText;
+			missionTextArea.setText(missionTextCache);
 		}
 
-		if ((missionPhaseCache != null) && !missionPhaseCache.equals(newMissionPhase)) {
-			missionPhaseTextArea.setText(missionPhaseCache);
+		if (!newMissionPhase.equals("") && !missionPhaseCache.equals(newMissionPhase)) {
 			missionPhaseCache = newMissionPhase;
+			missionPhaseTextArea.setText(missionPhaseCache);
 		}
 
 /*

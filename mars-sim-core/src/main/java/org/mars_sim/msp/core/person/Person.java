@@ -85,15 +85,15 @@ implements VehicleOperator, MissionMember, Serializable {
 
     // Data members
     private boolean bornOnMars;
-    /** True if person is dead and buried. */
-    private boolean isBuried;
+    /** True if person is declared dead and buried. */
+    private boolean isBuried, declaredDead;
     /** The age of a person */
     private int age;
-    
+
 	private int solCache = 1;
     /** The height of the person (in cm). */
     private double height;
-    /** The height of the person (in kg). */ 
+    /** The height of the person (in kg). */
     private double weight;
     /** Settlement X location (meters) from settlement center. */
     private double xLoc;
@@ -139,12 +139,12 @@ implements VehicleOperator, MissionMember, Serializable {
     private ReportingAuthority ra;
     private Building quarters;
     private Point2D bed;
-    
+
     private static Simulation sim = Simulation.instance();
     private static MarsClock marsClock;
     private static EarthClock earthClock;
     private static MasterClock masterClock;
-    
+
     /**
      * Constructs a Person object at a given settlement.
      * @param name the person's name
@@ -157,7 +157,7 @@ implements VehicleOperator, MissionMember, Serializable {
     		Settlement settlement, String sponsor) {
         //logger.info("Person's constructor is in " + Thread.currentThread().getName() + " Thread");
     	// Use Unit constructor
-        super(name, settlement.getCoordinates());  
+        super(name, settlement.getCoordinates());
         super.setDescription(settlement.getName());
 
         // Initialize data members
@@ -168,12 +168,12 @@ implements VehicleOperator, MissionMember, Serializable {
         this.gender = gender;
         this.associatedSettlement = settlement;
         this.sponsor = sponsor;
-        
+
         if (country != null)
         	birthplace = "Earth";
         else
         	birthplace = "Mars";
-        
+
         sim = Simulation.instance();
         masterClock = sim.getMasterClock();
         if (masterClock != null) { // to avoid NullPointerException during maven test
@@ -181,9 +181,9 @@ implements VehicleOperator, MissionMember, Serializable {
         	earthClock = masterClock.getEarthClock();
             birthTimeStamp = new EarthClock(createBirthTimeString());
         }
-        
+
         config = SimulationConfig.instance().getPersonConfiguration();
-    
+
         attributes = new NaturalAttributeManager(this);
 
         // 2015-02-27 Added JobHistory
@@ -207,32 +207,32 @@ implements VehicleOperator, MissionMember, Serializable {
         //preference.initializePreference();
 
         assignReportingAuthority();
-        
+
         //2016-01-13 Set up chromosomes
         paternal_chromosome = new HashMap<>();
         maternal_chromosome = new HashMap<>();
         setupChromosomeMap();
-        
+
         // Put person in proper building.
         settlement.getInventory().storeUnit(this);
         //setAssociatedSettlement(settlement); // will cause suffocation when reloading a saved sim
         BuildingManager.addToRandomBuilding(this, settlement); // why failed ? testWalkingStepsRoverToExterior(org.mars_sim.msp.core.person.ai.task.WalkingStepsTest)
-     
+
         support = getLifeSupportType();
     }
 
-    
+
     //2016-01-13 Added setupChromosomeMap()
     public void setupChromosomeMap() {
 
     	if (bornOnMars) {
-    		
+
     	}
     	else {
 
     		// Biochemistry: id 0 - 19
     		setupBloodType();
-			
+
 			// Physical Characteristics: id 20 - 39
 			setupHeight();
 			setupWeight();
@@ -240,33 +240,33 @@ implements VehicleOperator, MissionMember, Serializable {
 			// Personality traits: id 40 - 59
 			setupTrait();
     	}
-		
+
     }
-    
-    
+
+
     // 2016-01-12 Added setupTrait()
     public void setupTrait() {
     	// TODO: set up a set of genes that was passed onto this person from two hypothetical parents
        	int ID = 40;
     	boolean dominant = false;
-    	  	
+
         // Set inventory total mass capacity based on the person's strength.
         int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
         getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
-        
-        
+
+
     	int rand = RandomUtil.getRandomInt(100);
-    	
+
 		Gene trait1_G = new Gene(this, ID, "Trait 1", true, dominant, "Introvert", rand);
 		paternal_chromosome.put(ID, trait1_G);
-	
+
     }
-    
+
     // 2016-01-12 Added setupBloodType()
     public void setupBloodType() {
        	int ID = 1;
     	boolean dominant = false;
-		
+
 		String dad_bloodType = null;
 		int rand = RandomUtil.getRandomInt(2);
 		if (rand == 0) {
@@ -280,13 +280,13 @@ implements VehicleOperator, MissionMember, Serializable {
 		else if (rand == 2) {
 			dad_bloodType = "O";
 			dominant = false;
-		}	
-		
+		}
+
 		// Biochemistry 0 - 19
-		Gene dad_bloodType_G = new Gene(this, ID, "Blood Type", true, dominant, dad_bloodType, 0);	
+		Gene dad_bloodType_G = new Gene(this, ID, "Blood Type", true, dominant, dad_bloodType, 0);
 		paternal_chromosome.put(ID, dad_bloodType_G);
 
-		
+
 		String mom_bloodType = null;
 		rand = RandomUtil.getRandomInt(2);
 		if (rand == 0) {
@@ -300,12 +300,12 @@ implements VehicleOperator, MissionMember, Serializable {
 		else if (rand == 2) {
 			mom_bloodType = "O";
 			dominant = false;
-		}	
-		
+		}
+
 		Gene mom_bloodType_G = new Gene(this, 0, "Blood Type", false, dominant, mom_bloodType, 0);
 		maternal_chromosome.put(0, mom_bloodType_G);
 
-		
+
 		if (dad_bloodType.equals("A") && mom_bloodType.equals("A"))
 			bloodType = "A";
 		else if (dad_bloodType.equals("A") && mom_bloodType.equals("B"))
@@ -324,9 +324,9 @@ implements VehicleOperator, MissionMember, Serializable {
 			bloodType = "B";
 		else if (dad_bloodType.equals("O") && mom_bloodType.equals("O"))
 			bloodType = "O";
-		
+
     }
-    
+
     // 2016-01-12 Added setupHeight()
     public void setupHeight() {
        	int ID = 20;
@@ -335,59 +335,59 @@ implements VehicleOperator, MissionMember, Serializable {
         double dad_height = (this.gender == PersonGender.MALE ?
                 156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
                     146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
-                );       
+                );
 
         double mom_height = (this.gender == PersonGender.MALE ?
                 156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
                     146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
-                );      
-	
+                );
+
     	Gene dad_height_G = new Gene(this, ID, "Height", true, dominant, null, dad_height);
     	paternal_chromosome.put(ID, dad_height_G);
-		
+
     	Gene mom_height_G = new Gene(this, ID, "Height", false, dominant, null, mom_height);
     	maternal_chromosome.put(ID, mom_height_G);
-    	
-        height = (dad_height + mom_height) / 2D;      
+
+        height = (dad_height + mom_height) / 2D;
 
     }
-    
+
 
     // 2016-01-12 Added setupWeight()
     public void setupWeight() {
     	int ID = 21;
 
     	boolean dominant = false;
-    	
-        double dad_weight = 56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D;   
+
+        double dad_weight = 56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D;
         double mom_weight = 56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D;
-	
+
     	Gene dad_weight_G = new Gene(this, ID, "Weight", true, dominant, null, dad_weight);
     	paternal_chromosome.put(ID, dad_weight_G);
-		
+
     	Gene mom_weight_G = new Gene(this, ID, "Weight", false, dominant, null, mom_weight);
     	maternal_chromosome.put(ID, mom_weight_G);
-    	
+
     	// Set base mass of person from 58 to 76, peaking at 67 kg.
-        weight = (dad_weight + mom_weight) / 2D;   
+        weight = (dad_weight + mom_weight) / 2D;
         setBaseMass(weight);
 
     }
-    
+
     // 2016-08-12 Revised assignReportingAuthority()
     public void assignReportingAuthority() {
     	//System.out.println(name + "'s RA is " + ReportingAuthorityType.fromString(sponsor));
     	if (ra == null) {
 
     		//ReportingAuthorityType type = ReportingAuthorityType.fromString(sponsor);
-    		
+
     		if (sponsor.contains("CNSA")) {//type == ReportingAuthorityType.CNSA) {
     			ra = new CNSAMissionControl();
     			ra.setMissionAgenda(new FindingMineral());
-    			
+
     		} else if (sponsor.contains("CSA")) {//if (type == ReportingAuthorityType.CSA) {
     	        ra = new CSAMissionControl();
-    	        ra.setMissionAgenda(new AdvancingSpaceKnowledge());   
+    	        ra.setMissionAgenda(new AdvancingSpaceKnowledge());
 
     		} else if (sponsor.contains("ESA")) {//if (type == ReportingAuthorityType.ESA) {
     			ra = new ESAMissionControl();
@@ -395,17 +395,17 @@ implements VehicleOperator, MissionMember, Serializable {
 
     		} else if (sponsor.contains("ISRO")) { //if (type == ReportingAuthorityType.ISRO) {
     	        ra = new ISROMissionControl();
-    	        ra.setMissionAgenda(new DevelopingAdvancedTechnology());   
+    	        ra.setMissionAgenda(new DevelopingAdvancedTechnology());
 
     		} else if (sponsor.contains("JAXA")) { //if (type == ReportingAuthorityType.JAXA) {
     			ra = new JAXAMissionControl();
     			ra.setMissionAgenda(new ResearchingSpaceApplication());
-     			
+
     		} else if (sponsor.contains("NASA")) {//if (type == ReportingAuthorityType.NASA) {
      	    	// if he's an NASA astronaut, set mission agenda to FindingLife as follows:
     	        ra = new NASAMissionControl();
-    	        ra.setMissionAgenda(new FindingLife());   
-     	        
+    	        ra.setMissionAgenda(new FindingLife());
+
     		} else if (sponsor.contains("MS")) {//if (type == ReportingAuthorityType.MARS_SOCIETY) {
 	    		ra = new MarsSocietyMissionControl();
 	    		ra.setMissionAgenda(new DeterminingHabitability());//SettlingMars());
@@ -489,11 +489,11 @@ implements VehicleOperator, MissionMember, Serializable {
         int year = EarthClock.getCurrentYear(earthClock) - RandomUtil.getRandomInt(22, 62);
         		//2003 + RandomUtil.getRandomInt(10) + RandomUtil.getRandomInt(10);
         s.append(year);
-        
+
         int month = RandomUtil.getRandomInt(11) + 1;
         String monthString = EarthClock.getMonthForInt(month-1);
         s.append("-").append(monthString).append("-");
-        
+
         int day;
         if (month == 2) {
             if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
@@ -513,28 +513,28 @@ implements VehicleOperator, MissionMember, Serializable {
         	logger.warning( name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
         	day = 1;
         }
-        
+
         if (day < 10) s.append(0);
     	s.append(day).append(" ");
-        
+
         int hour = RandomUtil.getRandomInt(23);
         if (hour < 10) s.append(0);
     	s.append(hour).append(":");
-    	
+
         int minute = RandomUtil.getRandomInt(59);
         if (minute < 10) s.append(0);
     	s.append(minute).append(":");
-    	
+
         int second = RandomUtil.getRandomInt(59);
         if (second < 10) s.append(0);
     	s.append(second);
-    	
+
         //return month + "/" + day + "/" + year + " " + hour + ":"
         //+ minute + ":" + second;
-        
-        //return year + "-" + monthString + "-" + day + " " 
+
+        //return year + "-" + monthString + "-" + day + " "
         //+ hour + ":" + minute + ":" + second;
-    	
+
     	return s.toString();
     }
 
@@ -543,7 +543,9 @@ implements VehicleOperator, MissionMember, Serializable {
      */
     public LocationSituation getLocationSituation() {
         if (isBuried)
-            return LocationSituation.BURIED;
+            return LocationSituation.OUTSIDE;
+        else if (declaredDead)
+            return LocationSituation.DEAD;
         else {
             Unit container = getContainerUnit();
             if (container == null)
@@ -595,8 +597,9 @@ implements VehicleOperator, MissionMember, Serializable {
     // 2015-12-04 Changed getSettlement() to fit the original specs of the Location Matrix
     public Settlement getSettlement() {
         if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-     	   Settlement settlement = (Settlement) getContainerUnit();
-     	   return settlement;
+     	   //Settlement settlement = (Settlement) getContainerUnit();
+     	   //return settlement;
+     	   return  (Settlement) getContainerUnit();
         }
 
         else if (getLocationSituation() == LocationSituation.OUTSIDE)
@@ -609,7 +612,7 @@ implements VehicleOperator, MissionMember, Serializable {
      	   return settlement;
         }
 
-        else if (getLocationSituation() == LocationSituation.BURIED) {
+        else if (getLocationSituation() == LocationSituation.DEAD) {
      	   return null;
         }
 
@@ -648,6 +651,8 @@ implements VehicleOperator, MissionMember, Serializable {
     public void buryBody() {
         Unit containerUnit = getContainerUnit();
         if (containerUnit != null) {
+        	// TODO: if a person is dead inside a vehicle that's outside on Mars,
+        	// he should NOT be retrieved until the body arrives at a settlement
             containerUnit.getInventory().retrieveUnit(this);
         }
         isBuried = true;
@@ -660,7 +665,17 @@ implements VehicleOperator, MissionMember, Serializable {
      */
     void setDead() {
         mind.setInactive();
-        buryBody();
+        declaredDead = true;
+
+        if (quarters != null) {
+            LivingAccommodations accommodations = (LivingAccommodations) quarters.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
+            accommodations.getBedMap().remove(this);
+            quarters = null;
+        }
+
+        if (bed != null)
+        	bed = null;
+
     }
 
     /**
@@ -671,7 +686,7 @@ implements VehicleOperator, MissionMember, Serializable {
 		//logger.info("Person's timePassing() is in " + Thread.currentThread().getName() + " Thread");
     	//System.out.println("Container Unit : " + this.getContainerUnit());
 		//final long time0 = System.nanoTime();
-			
+
        	// 2015-06-29 Added calling taskSchedule
     	//taskSchedule.timePassing(time);
 
@@ -681,7 +696,7 @@ implements VehicleOperator, MissionMember, Serializable {
             support = getLifeSupportType();
             // Pass the time in the physical condition first as this may
             // result in death.
-            
+
             // if alive
             if (health.timePassing(time, support)) {//, config)) {
 
@@ -693,7 +708,7 @@ implements VehicleOperator, MissionMember, Serializable {
 	                mind.timePassing(time);
             	} catch(Exception ex)  {
         			ex.printStackTrace();
-        		}         		
+        		}
 
         		// check for the passing of each day
         		int solElapsed = marsClock.getSolElapsedFromStart();
@@ -704,17 +719,12 @@ implements VehicleOperator, MissionMember, Serializable {
         			solCache = solElapsed;
         		}
             }
-            else {
-                // Person has died as a result of physical condition
+
+            else if (!declaredDead)
                 setDead();
-                if (quarters != null) {
-	                LivingAccommodations accommodations = (LivingAccommodations) quarters.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);        
-	                accommodations.getBedMap().remove(this);
-	                quarters = null;
-                }
-                if (bed != null)
-                	bed = null;              
-            }
+
+            else if (!isBuried)
+                buryBody();
         }
 
 		//final long time1 = System.nanoTime();
@@ -789,7 +799,7 @@ implements VehicleOperator, MissionMember, Serializable {
         //EarthClock earthClock = Simulation.instance().getMasterClock().getEarthClock();
         int age = earthClock.getYear() - birthTimeStamp.getYear() - 1;
         if (earthClock.getMonth() >= birthTimeStamp.getMonth())
-        	if (earthClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth()) 
+        	if (earthClock.getDayOfMonth() >= birthTimeStamp.getDayOfMonth())
                	age++;
 
         return age;
@@ -997,11 +1007,11 @@ implements VehicleOperator, MissionMember, Serializable {
                 newSettlement.addPerson(this);
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
             }
-            
+
             // set description for this person
             if (associatedSettlement == null) {
             	setBuriedSettlement(oldSettlement);
-            	super.setDescription("Dead");  
+            	super.setDescription("Dead");
             }
             else
             	super.setDescription(associatedSettlement.getName());
@@ -1143,25 +1153,25 @@ implements VehicleOperator, MissionMember, Serializable {
 	}
 
 	public Building getQuarters() {
-		return quarters; 
+		return quarters;
 	}
 
 	public void setQuarters(Building quarters) {
-		this.quarters = quarters; 
+		this.quarters = quarters;
 	}
 
 	public Point2D getBed() {
-		return bed; 
+		return bed;
 	}
 
 	public void setBed(Point2D bed) {
-		this.bed = bed; 
+		this.bed = bed;
 	}
 
 	public String getCountry() {
 		return country;
 	}
-	
+
     @Override
     public void destroy() {
         super.destroy();

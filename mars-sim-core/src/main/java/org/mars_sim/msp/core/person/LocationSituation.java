@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * LocationSituation.java
+ * @version 3.1.0 2017-02-20
+ * @author Barry Evans
+ */
 package org.mars_sim.msp.core.person;
 
 import org.mars_sim.msp.core.Msg;
@@ -12,7 +18,7 @@ public enum LocationSituation {
 	IN_SETTLEMENT (Msg.getString("LocationSituation.inSettlement")), //$NON-NLS-1$
 	IN_VEHICLE (Msg.getString("LocationSituation.inVehicle")), //$NON-NLS-1$
 	OUTSIDE (Msg.getString("LocationSituation.outside")), //$NON-NLS-1$
-	BURIED (Msg.getString("LocationSituation.buried")); //$NON-NLS-1$
+	DEAD (Msg.getString("LocationSituation.buried")); //$NON-NLS-1$
 
 	private String name;
 

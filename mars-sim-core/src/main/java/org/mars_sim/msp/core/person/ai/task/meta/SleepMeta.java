@@ -146,7 +146,7 @@ public class SleepMeta implements MetaTask, Serializable {
             if (proceed) {
 
 	        	// the desire to go to bed increase linearly after 12 hours of wake time
-	            result += (fatigue - 500D) / 10D + stress * 10D;
+	            result += (fatigue - 500D) / 5D + stress * 10D;
 
 	            // Check if person is an astronomer.
 	            boolean isAstronomer = (person.getMind().getJob() instanceof Astronomer);

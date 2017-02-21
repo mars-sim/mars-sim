@@ -95,7 +95,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     /** Settlement Y location (meters) from settlement center. */
     private double yLoc;
     /** True if robot is dead and buried. */
-    private boolean isBuried;
+    private boolean isInoperable;
 	private boolean isSalvaged;
 
     /** The robot's achievement in scientific fields. */
@@ -127,12 +127,12 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     private LifeSupportType support ;
 
     private MarsClock marsClock;
-    
+
     private EarthClock earthClock;
-    
+
     private MasterClock masterClock;
-    
-  
+
+
     /**
      * Constructs a robot object at a given settlement.
      * @param name the robot's name
@@ -157,12 +157,12 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         // Initialize data members
         xLoc = 0D;
         yLoc = 0D;
-        isBuried = false;
+        isInoperable = false;
 
         masterClock = Simulation.instance().getMasterClock();
         marsClock = masterClock.getMarsClock();
         earthClock = masterClock.getEarthClock();
-        
+
         config = SimulationConfig.instance().getRobotConfiguration();
         support = getLifeSupportType();
 
@@ -236,18 +236,18 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         	logger.warning( name + "'s date of birth is on the day 0th. Incremementing to the 1st.");
         	day = 1;
         }
-        
+
         if (day < 10) s.append(0);
     	s.append(day).append(" ");
-        
+
         int hour = RandomUtil.getRandomInt(23);
         if (hour < 10) s.append(0);
     	s.append(hour).append(":");
-    	
+
         int minute = RandomUtil.getRandomInt(59);
         if (minute < 10) s.append(0);
     	s.append(minute).append(":");
-    	
+
         int second = RandomUtil.getRandomInt(59);
         if (second < 10) s.append(0);
     	s.append(second);
@@ -255,7 +255,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         //return month + "/" + day + "/" + year + " " + hour + ":"
         //+ minute + ":" + second;
 
-        //return year + "-" + monthString + "-" + day + " " 
+        //return year + "-" + monthString + "-" + day + " "
         //+ hour + ":" + minute + ":" + second;
 
     	return s.toString();
@@ -265,8 +265,8 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
      * @return {@link LocationSituation} the robot's location
      */
     public LocationSituation getLocationSituation() {
-        if (isBuried)
-            return LocationSituation.BURIED;
+        if (isInoperable)
+            return LocationSituation.IN_SETTLEMENT;
         else {
             Unit container = getContainerUnit();
             if (container == null)
@@ -331,7 +331,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     	   return settlement;
        }
 
-       else if (getLocationSituation() == LocationSituation.BURIED) {
+       else if (getLocationSituation() == LocationSituation.DEAD) {
     	   return null;
        }
 
@@ -369,7 +369,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         if (containerUnit != null) {
             containerUnit.getInventory().retrieveUnit(this);
         }
-        isBuried = true;
+        isInoperable = true;
         setAssociatedSettlement(null);
     }
 
@@ -635,10 +635,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
                 newSettlement.addRobot(this);
                 newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
             }
-            
+
             // set description for this robot
             if (associatedSettlement == null) {
-            	super.setDescription("Inoperable");  
+            	super.setDescription("Inoperable");
             }
             else
             	super.setDescription(associatedSettlement.getName());
@@ -768,12 +768,12 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 	    skill = (int) Math.round(skill / 7D);
 	    return skill;
 	}
-    
+
 	public SkillManager getSkillManager() {
 		return botMind.getSkillManager();
 	}
-	
-	
+
+
     @Override
     public void destroy() {
         super.destroy();

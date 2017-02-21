@@ -22,7 +22,7 @@ public class WalkMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.walk"); //$NON-NLS-1$
@@ -48,17 +48,17 @@ public class WalkMeta implements MetaTask, Serializable {
         }
         else if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
             // If person is inside a settlement building, may walk to a random location within settlement.
-            result = 3D;
+            result = 2D;
         }
         else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             // If person is inside a rover, may walk to random location within rover.
-            result = 3D;
+            result = 1D;
         }
 
         // 2015-06-07 Added Preference modifier
         if (result > 0)
         	result = result + result*person.getPreference().getPreferenceScore(this)/5D;
-        
+
         if (result < 0) result = 0;
 
         return result;

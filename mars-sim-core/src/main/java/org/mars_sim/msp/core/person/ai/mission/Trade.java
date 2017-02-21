@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-02-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -104,10 +104,10 @@ implements Serializable {
     public Trade(MissionMember startingMember) {
         // Use RoverMission constructor.
         super(DEFAULT_DESCRIPTION, startingMember);
-                 
+
         // Set the mission capacity.
         setMissionCapacity(MAX_MEMBERS);
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingMember.getSettlement());            
+        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingMember.getSettlement());
         if (availableSuitNum < getMissionCapacity()) {
             setMissionCapacity(availableSuitNum);
         }
@@ -117,7 +117,7 @@ implements Serializable {
 
         if (!isDone()) {
 
-            // Initialize data members 	
+            // Initialize data members
             setStartingSettlement(startingMember.getSettlement());
 
             // Get trading settlement
@@ -125,13 +125,13 @@ implements Serializable {
             if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
-                setDescription(Msg.getString("Mission.description.trade.detail", 
+                setDescription(Msg.getString("Mission.description.trade.detail",
                         tradingSettlement.getName())); //$NON-NLS-1$
                 TRADE_PROFIT_CACHE.remove(getStartingSettlement());
                 TRADE_PROFIT_CACHE.remove(tradingSettlement);
                 TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
                 TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
-            } 
+            }
             else {
                 endMission("Could not determine trading settlement.");
             }
@@ -164,8 +164,8 @@ implements Serializable {
             }
 
             // Recruit additional members to mission.
-            if (!isDone()) { 	
-                recruitMembersForMission(startingMember);          	              
+            if (!isDone()) {
+                recruitMembersForMission(startingMember);
             }
         }
 
@@ -178,7 +178,7 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingMember != null && getRover() != null) {
@@ -186,7 +186,7 @@ implements Serializable {
             }
         }
     }
-    
+
     /*
 	public Trade(Person startingPerson) {
         // Use RoverMission constructor.
@@ -212,7 +212,7 @@ implements Serializable {
             if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
-                setDescription(Msg.getString("Mission.description.trade.detail", 
+                setDescription(Msg.getString("Mission.description.trade.detail",
                         tradingSettlement.getName())); //$NON-NLS-1$
                 TRADE_PROFIT_CACHE.remove(getStartingSettlement());
                 TRADE_PROFIT_CACHE.remove(tradingSettlement);
@@ -264,7 +264,7 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingPerson != null && getRover() != null) {
@@ -297,7 +297,7 @@ implements Serializable {
             if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
-                setDescription(Msg.getString("Mission.description.trade.detail", 
+                setDescription(Msg.getString("Mission.description.trade.detail",
                         tradingSettlement.getName())); //$NON-NLS-1$
                 TRADE_PROFIT_CACHE.remove(getStartingSettlement());
                 TRADE_PROFIT_CACHE.remove(tradingSettlement);
@@ -335,9 +335,9 @@ implements Serializable {
             }
 
             // Recruit additional people to mission.
-            
+
             // TODO: Tentatively, robot may go on solo delivery mission. May change later
-            
+
             //if (!isDone()) {
             //    recruitPeopleForMission(robot);
             //}
@@ -352,7 +352,7 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (robot != null && getRover() != null) {
@@ -370,7 +370,7 @@ implements Serializable {
      * @param description the mission's description.
      * @param sellGoods map of mission sell goods and integer amounts.
      * @param buyGoods map of mission buy goods and integer amounts
-     
+
     public Trade(Collection<Person> members, Settlement startingSettlement, Settlement tradingSettlement,
             Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
         // Use RoverMission constructor.
@@ -416,7 +416,7 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             Person startingPerson = (Person) members.toArray()[0];
@@ -430,7 +430,7 @@ implements Serializable {
             Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
         // Use RoverMission constructor.
         super(description, (MissionMember) members.toArray()[0], 1, rover);
-        
+
         Person person = null;
         Robot robot = null;
 
@@ -453,7 +453,7 @@ implements Serializable {
                 tradingSettlement.getName()));
 
         // Add mission members.
-        
+
         Iterator<MissionMember> i = members.iterator();
         while (i.hasNext()) {
             MissionMember member = i.next();
@@ -484,16 +484,16 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             MissionMember startingMember = (MissionMember) members.toArray()[0];
             if (startingMember != null && getRover() != null) {
-                logger.info(startingMember.getName() + " starting Trade mission on " + getRover().getName());         
+                logger.info(startingMember.getName() + " starting Trade mission on " + getRover().getName());
             }
-        } 
+        }
     }
-    
+
     /**
      * Determines a new phase for the mission when the current phase has ended.
      */
@@ -501,40 +501,40 @@ implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 if (outbound) {
                     setPhase(TRADE_DISEMBARKING);
-                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                             tradingSettlement.getName())); //$NON-NLS-1$
                 } else {
                     setPhase(VehicleMission.DISEMBARKING);
-                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                             getCurrentNavpoint().getDescription())); //$NON-NLS-1$
                 }
             }
         } else if (TRADE_DISEMBARKING.equals(getPhase())) {
             setPhase(TRADE_NEGOTIATING);
-            setPhaseDescription(Msg.getString("Mission.phase.tradeNegotiating.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.tradeNegotiating.description",
                     tradingSettlement.getName())); //$NON-NLS-1$
         } else if (TRADE_NEGOTIATING.equals(getPhase())) {
             setPhase(UNLOAD_GOODS);
-            setPhaseDescription(Msg.getString("Mission.phase.unloadGoods.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.unloadGoods.description",
                     tradingSettlement.getName())); //$NON-NLS-1$
         } else if (UNLOAD_GOODS.equals(getPhase())) {
             setPhase(LOAD_GOODS);
-            setPhaseDescription(Msg.getString("Mission.phase.loadGoods.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.loadGoods.description",
                     tradingSettlement.getName())); //$NON-NLS-1$
         } else if (LOAD_GOODS.equals(getPhase())) {
             setPhase(TRADE_EMBARKING);
-            setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                     tradingSettlement.getName())); //$NON-NLS-1$
         } else if (TRADE_EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase())) {
             endMission(SUCCESSFULLY_DISEMBARKED);
@@ -588,13 +588,13 @@ implements Serializable {
 
         // Have person exit rover if necessary.
         if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
-            
+
             // Get random inhabitable building at trading settlement.
             Building destinationBuilding = tradingSettlement.getBuildingManager().
                     getRandomAirlockBuilding();
             if (destinationBuilding != null) {
                 Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
+                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
                         destinationLoc.getY(), destinationBuilding);
                 // TODO Refactor.
                 if (member instanceof Person) {
@@ -641,15 +641,15 @@ implements Serializable {
 //
 //        // Have robot exit rover if necessary.
 //        if (robot.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
-//            
+//
 //            // Get random inhabitable building at trading settlement.
 //            Building destinationBuilding = tradingSettlement.getBuildingManager().
 //                    getRandomAirlockBuilding();
 //            if (destinationBuilding != null) {
 //                Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-//                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
+//                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
 //                        destinationLoc.getY(), destinationBuilding);
-//                
+//
 //                if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
 //                    assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
 //                }
@@ -682,7 +682,7 @@ implements Serializable {
                         fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
                         setPhaseEnded(true);
                     }
-                } 
+                }
                 else {
                     if (startNegotiationTime == null) {
                         startNegotiationTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
@@ -692,11 +692,11 @@ implements Serializable {
                         // TODO Refactor.
                         if (member instanceof Person) {
                             Person person = (Person) member;
-                            negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(), 
+                            negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(),
                                     sellLoad, person, settlementTrader);
                             assignTask(person, negotiationTask);
                         }
-                    } 
+                    }
                     else {
                         MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
                         double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
@@ -731,17 +731,17 @@ implements Serializable {
 //                        fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
 //                        setPhaseEnded(true);
 //                    }
-//                } 
+//                }
 //                else {
 //                    if (startNegotiationTime == null) {
 //                        startNegotiationTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 //                    }
 //                    Robot settlementTrader = getSettlementRobotTrader();
 //                    if (settlementTrader != null) {
-//                        negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(), 
+//                        negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(),
 //                                sellLoad, robot, settlementTrader);
 //                        assignTask(robot, negotiationTask);
-//                    } 
+//                    }
 //                    else {
 //                        MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 //                        double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
@@ -791,7 +791,7 @@ implements Serializable {
                     else {
                         // Check if it is day time.
                         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                        if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) || 
+                        if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
                                 surface.inDarkPolarRegion(member.getCoordinates())) {
                             // TODO Refactor.
                             if (member instanceof Person) {
@@ -804,7 +804,7 @@ implements Serializable {
                     return;
                 }
             }
-        } 
+        }
         else {
             setPhaseEnded(true);
         }
@@ -826,7 +826,7 @@ implements Serializable {
 //                    else {
 //                        // Check if it is day time.
 //                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-//                        if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) || 
+//                        if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) ||
 //                                surface.inDarkPolarRegion(robot.getCoordinates())) {
 //                            assignTask(robot, new UnloadVehicleEVA(robot, getRover()));
 //                        }
@@ -835,7 +835,7 @@ implements Serializable {
 //                    return;
 //                }
 //            }
-//        } 
+//        }
 //        else {
 //            setPhaseEnded(true);
 //        }
@@ -870,7 +870,7 @@ implements Serializable {
                         else {
                             // Check if it is day time.
                             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                            if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) || 
+                            if ((surface.getSolarIrradiance(member.getCoordinates()) > 0D) ||
                                     surface.inDarkPolarRegion(member.getCoordinates())) {
                                 // TODO Refactor.
                                 if (member instanceof Person) {
@@ -911,7 +911,7 @@ implements Serializable {
 //                        else {
 //                            // Check if it is day time.
 //                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-//                            if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) || 
+//                            if ((surface.getSolarIrradiance(robot.getCoordinates()) > 0D) ||
 //                                    surface.inDarkPolarRegion(robot.getCoordinates())) {
 //                                assignTask(robot, new LoadVehicleEVA(robot, getVehicle(), getRequiredResourcesToLoad(),
 //                                        getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
@@ -967,12 +967,12 @@ implements Serializable {
     private void performTradeEmbarkingPhase(MissionMember member) {
 
         // If person is not aboard the rover, board rover.
-        if (!isDone() && member.getLocationSituation() != LocationSituation.IN_VEHICLE && 
-                member.getLocationSituation() != LocationSituation.BURIED) {
+        if (!isDone() && member.getLocationSituation() != LocationSituation.IN_VEHICLE &&
+                member.getLocationSituation() != LocationSituation.DEAD) {
 
             // Move person to random location within rover.
             Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
                     vehicleLoc.getY(), getVehicle());
             // TODO Refactor.
             if (member instanceof Person) {
@@ -995,7 +995,7 @@ implements Serializable {
                     endMission(robot.getName() + " unable to enter rover " + getVehicle());
                 }
             }
-            
+
             if (!isDone() && isRoverInAGarage()) {
 
                 // Store one EVA suit for person (if possible).
@@ -1031,12 +1031,12 @@ implements Serializable {
 //    private void performTradeEmbarkingPhase(Robot robot) {
 //
 //        // If robot is not aboard the rover, board rover.
-//        if (!isDone() && robot.getLocationSituation() != LocationSituation.IN_VEHICLE && 
+//        if (!isDone() && robot.getLocationSituation() != LocationSituation.IN_VEHICLE &&
 //                robot.getLocationSituation() != LocationSituation.BURIED) {
 //
 //            // Move robot to random location within rover.
 //            Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-//            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+//            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
 //                    vehicleLoc.getY(), getVehicle());
 //            if (Walk.canWalkAllSteps(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
 //                assignTask(robot, new Walk(robot, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
@@ -1045,7 +1045,7 @@ implements Serializable {
 //                logger.severe(robot.getName() + " unable to enter rover " + getVehicle());
 //                endMission(robot.getName() + " unable to enter rover " + getVehicle());
 //            }
-//            
+//
 //            if (!isDone() && isRoverInAGarage()) {
 //
 //                // Store one EVA suit for robot (if possible).
@@ -1115,7 +1115,7 @@ implements Serializable {
 //            }
 //        }
 //    }
-    
+
     @Override
     protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
 
@@ -1145,7 +1145,7 @@ implements Serializable {
 //
 //        super.performDisembarkToSettlementPhase(robot, disembarkSettlement);
 //    }
-    
+
     @Override
     public void endMission(String reason) {
         super.endMission(reason);
@@ -1159,7 +1159,7 @@ implements Serializable {
         }
     }
 
-    /** 
+    /**
      * Gets the type of vehicle in a load.
      * @param buy true if buy load, false if sell load.
      * @return vehicle type or null if none.
@@ -1290,7 +1290,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(MissionMember member) {
         boolean result = super.isCapableOfMission(member);
-        
+
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -1300,7 +1300,7 @@ implements Serializable {
             }
             result = atStartingSettlement;
         }
-        
+
         return result;
     }
 

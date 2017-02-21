@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReadMeta.java
- * @version 3.08 2015-06-28
+ * @version 3.1.0 2017-02-20
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -51,20 +51,17 @@ public class ReadMeta implements MetaTask, Serializable {
 
         	result += 5D;
 
-        	if (person.getLocationSituation() == LocationSituation.IN_VEHICLE)  {
-        	
-		        if (result > 0)
-		        	result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
-	        	
-        	}
-        	
+        	if (person.getLocationSituation() == LocationSituation.IN_VEHICLE)
+        		result *= RandomUtil.getRandomDouble(2); // more likely than not if on a vehicle
+
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
-			
+
 	        // Effort-driven task modifier.
 	        //result *= person.getPerformanceRating();
 
             String fav = person.getFavorite().getFavoriteActivity();
+            // The 3 favorite activities drive the person to want to read
             if (fav.equalsIgnoreCase("Research")) {
                 result *= 2D;
             }
@@ -73,19 +70,27 @@ public class ReadMeta implements MetaTask, Serializable {
             }
             else if (fav.equalsIgnoreCase("Lab Experimentation")) {
                 result *= 1.5D;
-            }                
-            
+            }
+
             // 2015-06-07 Added Preference modifier
             if (result > 0D) {
                 result = result + result * person.getPreference().getPreferenceScore(this)/5D;
             }
-            
-         	if (condition.getFatigue() > 1200D)
-         		result = result - 20D;
 
-         	if (condition.getStress() > 75D)
-         		result = result - 10D;
-         	
+         	if (condition.getFatigue() > 1200D)
+         		result/=1.5;
+         	else if (condition.getFatigue() > 2000D)
+         		result/=2D;
+         	else if (condition.getFatigue() > 3000D)
+         		result/=3D;
+
+         	if (condition.getStress() > 55D)
+         		result/=1.5;
+         	else if (condition.getStress() > 75D)
+         		result/=2D;
+         	else if (condition.getStress() > 90D)
+         		result/=3D;
+
 	        if (result < 0) result = 0;
 
         }

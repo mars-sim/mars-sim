@@ -152,7 +152,7 @@ public class ScenarioConfigEditorFX {
 	private TableView<?> tableView;
 	private ScrollBar bar;
 	private TableViewCombo tableViewCombo;
-	
+
 	private List<SettlementRegistry> settlementList;
 
 	/**
@@ -357,19 +357,19 @@ public class ScenarioConfigEditorFX {
 		topHB.setAlignment(Pos.CENTER);
 		topVB.getChildren().addAll(topHB, titleLabel); // gameModeLabel
 		borderAll.setTop(topVB);
-	
-		// 2016-08-09 Added TableViewCombo, TableView	
-		tableViewCombo = new TableViewCombo(this);		
-		tableView = tableViewCombo.createGUI();	
+
+		// 2016-08-09 Added TableViewCombo, TableView
+		tableViewCombo = new TableViewCombo(this);
+		tableView = tableViewCombo.createGUI();
 		tableView.setMaxHeight(200);
-		tableView.setPrefHeight(200);		
+		tableView.setPrefHeight(200);
 		borderAll.setCenter(tableView);//bar);
 
-		//SpreadsheetView ssv = settlementTableView.createGUI();	
+		//SpreadsheetView ssv = settlementTableView.createGUI();
 		//ssv.setMaxHeight(200);
-		//ssv.setPrefHeight(200);		
+		//ssv.setPrefHeight(200);
 		//borderAll.setCenter(ssv);
-		
+
 		// Create configuration button outer panel.
 		BorderPane borderButtons = new BorderPane();
 		borderAll.setLeft(borderButtons);
@@ -400,13 +400,13 @@ public class ScenarioConfigEditorFX {
 		setQuickToolTip(removeButton, Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
 		// removeButton.setId("removeButton");
 		removeButton.getStyleClass().add("button-small");
-   
+
 		removeButton.setOnAction((event) -> {
 			//ObservableList list = settlementTableView.getTableView().getSelectionModel().getSelectedIndices();
 			int index = -1;
 			index = tableViewCombo.getTableView().getSelectionModel().getSelectedIndex();
 			//System.out.println("index is " + index);
-				
+
 			if (index > -1) {
 				boolean isYes = confirmDeleteDialog("Removing settlement", "Are you sure you want to do this?");
 				if (isYes) {
@@ -445,7 +445,7 @@ public class ScenarioConfigEditorFX {
 		});
 		// vbCenter.getChildren().add(defaultButton);
 		//vbTopLeft.getChildren().add(refreshDefaultButton);
-		
+
 		// 2014-12-15 Added Edit Alpha Crew button.
 		crewButton = new JFXButton();//Msg.getString("SimulationConfigEditor.button.crewEditor")); //$NON-NLS-1$
 		crewButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/people32.png"))));
@@ -459,7 +459,7 @@ public class ScenarioConfigEditorFX {
 		});
 		// bottomButtonPanel.getChildren().add(alphaButton);
 		//vbTopLeft.getChildren().add(crewButton);
-		
+
 		// Create configuration button inner bottom panel.
 		VBox vbCenter = new VBox();
 		vbCenter.setSpacing(10);
@@ -472,9 +472,9 @@ public class ScenarioConfigEditorFX {
 
 		// Create error label.
 		errorLabel = new Label(" "); //$NON-NLS-1$
-		errorLabel.setAlignment(Pos.CENTER); 
+		errorLabel.setAlignment(Pos.CENTER);
 		// errorLabel.set//setColor(Color.RED);
-		errorLabel.setStyle("-fx-color: red; -fx-base: #ff5400;"); // -fx-font: 15 arial; 
+		errorLabel.setStyle("-fx-color: red; -fx-base: #ff5400;"); // -fx-font: 15 arial;
 		bottomPanel.setTop(errorLabel);
 
 		// Create the bottom button panel.
@@ -515,10 +515,10 @@ public class ScenarioConfigEditorFX {
 			//	tableCellEditor.stopCellEditing();
 			//}
 
-			//checkForErrors();		
+			//checkForErrors();
 			//System.out.println("hasError is " + hasError);
 
-			if (!hasError) {			
+			if (!hasError) {
 				// create wait indicators
 				Platform.runLater(() -> {
 					mainScene.createIndicator();
@@ -526,7 +526,7 @@ public class ScenarioConfigEditorFX {
 				});
 
 				setConfiguration();
-				
+
 				// scene.setCursor(Cursor.WAIT); //Change cursor to wait style
 
 				CompletableFuture.supplyAsync(() -> submitTask());
@@ -543,18 +543,18 @@ public class ScenarioConfigEditorFX {
 		removeButton.setMaxWidth(Double.MAX_VALUE);
 		undoButton.setMaxWidth(Double.MAX_VALUE);
 		crewButton.setMaxWidth(Double.MAX_VALUE);
-		startButton.setMaxWidth(Double.MAX_VALUE);		
-		
+		startButton.setMaxWidth(Double.MAX_VALUE);
+
 		TilePane tileButtons = new TilePane(Orientation.HORIZONTAL);
 		tileButtons.setPadding(new Insets(5, 5, 5, 5));
 		tileButtons.setHgap(200.0);
 		tileButtons.setVgap(3.0);
 		tileButtons.getChildren().addAll(
-				undoButton, 
+				undoButton,
 				startButton,
 				crewButton);
 		tileButtons.setAlignment(Pos.CENTER);
-		
+
 		bottomPanel.setBottom(tileButtons);
 
 		// pane.getChildren().add(borderAll);
@@ -562,7 +562,7 @@ public class ScenarioConfigEditorFX {
 		// return borderAll;
 	}
 
-	
+
 	public int submitTask() {
 		Simulation.instance().getSimExecutor().execute(new SimulationTask());
 		return 1;
@@ -593,7 +593,7 @@ public class ScenarioConfigEditorFX {
 			// jme.setupJME();
 		}
 	}
-	
+
 	/**
 	 * Swaps the mouse cursor type between DEFAULT and HAND
 	 * @param node
@@ -608,7 +608,7 @@ public class ScenarioConfigEditorFX {
 		});
 	}
 
-	
+
 /*
 	@SuppressWarnings("serial")
 	private void createSwingNode(final SwingNode swingNode) {
@@ -620,7 +620,7 @@ public class ScenarioConfigEditorFX {
 		swingNode.setContent(settlementScrollPane);
 	}
 */
-	
+
 	/**
 	 * Adds a new settlement with default values.
 	 */
@@ -678,20 +678,20 @@ public class ScenarioConfigEditorFX {
 		//tableViewCombo.loadDefaultSettlements();
 		tableView = tableViewCombo.createGUI();
 		tableView.setMaxHeight(200);
-		tableView.setPrefHeight(200);		
+		tableView.setPrefHeight(200);
 		borderAll.setCenter(tableView);//bar);
 		updateSettlementNames();
 	}
 
 	/**
 	 * Sets the existing settlements loaded from others client machine.
-	 
+
 	private void setExistingSettlements() {
 		settlementTableModel.loadExistingSettlements();
 		updateSettlementNames();
 	}
 */
-	
+
 	/**
 	 * Set the simulation configuration based on dialog choices.
 	 */
@@ -702,7 +702,7 @@ public class ScenarioConfigEditorFX {
 		//for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
 		//System.out.println("rows : "+ settlementTableView.getRowCount());
 		//System.out.println("rows : "+ settlementTableView.getTableView().getItems().size());
-		for (int x = 0; x < tableViewCombo.getRowCount(); x++) {			
+		for (int x = 0; x < tableViewCombo.getRowCount(); x++) {
 			if (multiplayerClient != null) {
 				if (hasSettlement && x < settlementList.size())
 					; // do nothing to the existing settlements from other clients
@@ -729,8 +729,8 @@ public class ScenarioConfigEditorFX {
 		int numOfRobots = Integer.parseInt(robot);
 		double lat = SettlementRegistry.convertLatLong2Double(latitude);
 		double lo = SettlementRegistry.convertLatLong2Double(longitude);
-		
-		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots, 
+
+		settlementConfig.addInitialSettlement(name, template, populationNum, numOfRobots,
 				sponsor, latitude, longitude);
 		// Send the newly created settlement to host server
 		if (multiplayerClient != null) {
@@ -740,7 +740,7 @@ public class ScenarioConfigEditorFX {
 			multiplayerClient.sendNew(newS);
 		}
 	}
-	
+
 	/**
 	 * Close and dispose dialog window.
 	 */
@@ -812,7 +812,7 @@ public class ScenarioConfigEditorFX {
 			determineNewSettlementLatitude(),
 			determineNewSettlementLongitude()
 		);
-		
+
 		return base;
 	}
 
@@ -951,10 +951,10 @@ public class ScenarioConfigEditorFX {
 		String result = "Mars Society (MS)";
 		return result;
 	}
-	
+
 	/**
 	 * Determines a new settlement's latitude.
-	 * 
+	 *
 	 * @return latitude string.
 	 */
 	private String determineNewSettlementLatitude() {
@@ -976,7 +976,7 @@ public class ScenarioConfigEditorFX {
 
 	/**
 	 * Determines a new settlement's longitude.
-	 * 
+	 *
 	 * @return longitude string.
 	 */
 	private String determineNewSettlementLongitude() {
@@ -1075,7 +1075,7 @@ public class ScenarioConfigEditorFX {
 		return settlementTableModel;
 	}
 */
-	
+
 	//public SettlementTableView getSettlementTableView() {
 	//	return tableViewCombo;
 	//}
@@ -1083,7 +1083,7 @@ public class ScenarioConfigEditorFX {
 	public TableViewCombo getTableViewCombo() {
 		return tableViewCombo;
 	}
-	
+
 	public MainMenu getMainMenu() {
 		return mainMenu;
 	}
@@ -1091,7 +1091,7 @@ public class ScenarioConfigEditorFX {
 	public int getRowCount() {
 		return tableViewCombo.getRowCount();
 	}
-	   
+
     private ScrollBar getVerticalScrollbar(TableView<?> table) {
         ScrollBar result = null;
         for (Node n : table.lookupAll(".scroll-bar")) {
@@ -1101,10 +1101,10 @@ public class ScenarioConfigEditorFX {
                     result = bar;
                 }
             }
-        }        
+        }
         return result;
     }
-    
+
     void scrolled(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
         double value = newValue.doubleValue();
         //System.out.println("Scrolled to " + value);
@@ -1116,7 +1116,7 @@ public class ScenarioConfigEditorFX {
             //bar.setValue(targetValue / items.size());
         }
     }
-    
+
 	/**
 	 * Sets an edit-check error.
 	 * @param errorString the error description.
@@ -1133,7 +1133,7 @@ public class ScenarioConfigEditorFX {
     	}
 		//});
 	}
-	
+
 	/**
 	 * Clears all edit-check errors.
 	 */
@@ -1147,7 +1147,7 @@ public class ScenarioConfigEditorFX {
         //});
 	}
 
-	
+
 	/**
 	 * Check for errors in table settlement values.
 	 */
@@ -1172,7 +1172,7 @@ public class ScenarioConfigEditorFX {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 					return;
 				}
-				
+
 				// check if the last character is a digit, if digit, setError
 				if (Character.isDigit(latStr.charAt(latStr.length() - 1))){
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
@@ -1181,7 +1181,7 @@ public class ScenarioConfigEditorFX {
 							));
 					return;
 				}
-				
+
 				if (!latStr.endsWith(Msg.getString("direction.northShort")) &&
 				        !latStr.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
 					setError(Msg.getString(
@@ -1190,7 +1190,7 @@ public class ScenarioConfigEditorFX {
 							Msg.getString("direction.southShort") //$NON-NLS-1$
 						));
 				}
-				
+
 				else {
 					String numLatitude = latStr.substring(0, latStr.length() - 1);
 					try {
@@ -1206,19 +1206,25 @@ public class ScenarioConfigEditorFX {
 						return;
 					}
 				}
-				
+
 				// check if the second from the last character is a whitespace or not, if not true, setError
 				if (latStr.charAt(latStr.length() - 2) != ' '){
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 					return;
 				}
 
-				// check if the third from the last character is a digit or not, if not true, setError
-				if (!Character.isDigit(latStr.charAt(latStr.length() - 3))){
+				if (latStr.length() > 2) {
+					// check if the third from the last character is a digit or not, if not true, setError
+					if (!Character.isDigit(latStr.charAt(latStr.length() - 3))){
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+						return;
+					}
+				}
+				else {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 					return;
 				}
-				
+
 				// check if the fourth from the last character is a whitespace or not, if not true, setError
 				if (latStr.charAt(latStr.length() - 4) != '.'){
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
@@ -1230,15 +1236,15 @@ public class ScenarioConfigEditorFX {
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 					return;
 				}
-				
+
 				String longStr = tableViewCombo.getAllData().get(x).getLongitude().toString().trim().toUpperCase();;
 
-				
+
 				if (longStr == null || longStr.length() < 2 ) {
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 					return;
 				}
-				
+
 				// check if the last character is a digit or a letter, if digit, setError
 				if (Character.isDigit(longStr.charAt(longStr.length() - 1))){
 					setError(Msg.getString(
@@ -1248,7 +1254,7 @@ public class ScenarioConfigEditorFX {
 							));
 					return;
 				}
-				
+
 				else {
 					String numLong = longStr.substring(0, longStr.length() - 1);
 					try {
@@ -1265,7 +1271,6 @@ public class ScenarioConfigEditorFX {
 					}
 				}
 
-				
 				// check if the second from the last character is a digit or a letter, if a letter, setError
 				if (Character.isLetter(longStr.charAt(longStr.length() - 2))){
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
@@ -1273,11 +1278,17 @@ public class ScenarioConfigEditorFX {
 				}
 
 				// check if the third from the last character is a digit or not, if not true, setError
-				if (!Character.isDigit(longStr.charAt(longStr.length() - 3))){
+				if (longStr.length() > 2) {
+					if (!Character.isDigit(longStr.charAt(longStr.length() - 3))){
+						setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
+						return;
+					}
+				}
+				else {
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
 					return;
 				}
-				
+
 				// check if the fourth from the last character is a whitespace or not, if not true, setError
 				if (longStr.charAt(longStr.length() - 4) != '.'){
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
@@ -1293,7 +1304,7 @@ public class ScenarioConfigEditorFX {
 				if (x + 1 < size ) {
 					// if it has another settlement after this one
 					String latNextStr = tableViewCombo.getAllData().get(x+1).getLatitude().toString().trim().toUpperCase();;
-	
+
 					if ( latNextStr == null || latNextStr.length() < 2) {
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 						return;
@@ -1302,9 +1313,9 @@ public class ScenarioConfigEditorFX {
 						repeated = true;
 						break;
 					}
-					
+
 					else {
-						
+
 						String numLat = latStr.substring(0, latStr.length() - 1);
 						String numLatNext = latNextStr.substring(0, latNextStr.length() - 1);
 						try {
@@ -1316,29 +1327,29 @@ public class ScenarioConfigEditorFX {
 								setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
 								return;
 							}
-							
+
 							else if (doubleLatNext == 0 && doubleLat == 0) {
 								repeated = true;
 								break;
-								
-							} 
-							
+
+							}
+
 							else if (doubleLatNext == doubleLat) {
 								repeated = true;
 								break;
 							}
 						}
-						
+
 						catch(NumberFormatException e) {
 							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
 							e.printStackTrace();
 							return;
-						}					
-						
+						}
+
 					}
 
 					String longNextStr = tableViewCombo.getAllData().get(x+1).getLongitude().toString().trim().toUpperCase();;
-					
+
 					if ( longNextStr == null ||  longNextStr.length() < 2) {
 						setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 						return;
@@ -1360,19 +1371,19 @@ public class ScenarioConfigEditorFX {
 								setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
 								return;
 							}
-							
+
 							else if (doubleLongNext == 0 && doubleLong == 0) {
 								repeated = true;
 								break;
-								
-							} 
-							
+
+							}
+
 							else if (doubleLongNext == doubleLong) {
 								repeated = true;
 								break;
 							}
 						}
-						
+
 						catch(NumberFormatException e) {
 							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
 							e.printStackTrace();
@@ -1433,19 +1444,19 @@ public class ScenarioConfigEditorFX {
 			}
 		}
 	}
-    
-	
+
+
 	/**
-	 * Sets up the JavaFX's tooltip 
+	 * Sets up the JavaFX's tooltip
 	 * @param node
 	 * @param tooltip's hint text
 	 */
-	public void setQuickToolTip(Node n, String s) {	
+	public void setQuickToolTip(Node n, String s) {
 		Tooltip tt = new Tooltip(s);
 		tt.getStyleClass().add("ttip");
 
 		n.setOnMouseEntered(new EventHandler<MouseEvent>() {
-			
+
 		    @Override
 		    public void handle(MouseEvent event) {
 		        Point2D p = n.localToScreen(n.getLayoutBounds().getMaxX(), n.getLayoutBounds().getMaxY()); //I position the tooltip at bottom right of the node (see below for explanation)
@@ -1453,15 +1464,15 @@ public class ScenarioConfigEditorFX {
 		    }
 		});
 		n.setOnMouseExited(new EventHandler<MouseEvent>() {
-		 
+
 		    @Override
 		    public void handle(MouseEvent event) {
 		        tt.hide();
 		    }
 		});
-		
+
 	}
-	
+
 	public void destroy() {
 
 		startButton = null;

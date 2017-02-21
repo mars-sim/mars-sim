@@ -975,7 +975,7 @@ public class MainScene {
 
 		//timeSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
 		timeSlider.setMin(0);//initial_ratio/16D);
-		timeSlider.setMax(initial_time_ratio*16D);
+		timeSlider.setMax(initial_time_ratio*8D);
 		timeSlider.setValue(initial_time_ratio);
 		timeSlider.setMajorTickUnit(initial_time_ratio*2D);
 		//timeSlider.setMinorTickCount((int)(Math.round(initial_ratio/8D*100.0)/100.0));

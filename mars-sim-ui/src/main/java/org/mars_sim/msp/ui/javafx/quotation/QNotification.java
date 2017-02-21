@@ -297,7 +297,8 @@ public class QNotification {
                 switch (popupLocation) {
                     case TOP_LEFT: case TOP_CENTER: case TOP_RIGHT: popups.get(i).setY(popups.get(i).getY() + height + spacingY); break;
                     //case BOTTOM_LEFT: case BOTTOM_CENTER: case BOTTOM_RIGHT: popups.get(i).setY(popups.get(i).getY() + spacingY); break;
-                    default: popups.get( i ).setY( popups.get( i ).getY() - height - spacingY);
+                    //case CENTER_LEFT: case CENTER: case CENTER_RIGHT: popups.get(i).setY(..); break;
+                    default: popups.get(i).setY(popups.get(i).getY() - height - spacingY);
                 }
             }
         }

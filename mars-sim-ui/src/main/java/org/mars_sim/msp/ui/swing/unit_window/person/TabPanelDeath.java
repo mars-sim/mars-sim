@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelDeath.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-02-20
  * @author Scott Davis
  */
 
@@ -26,7 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-/** 
+/**
  * The TabPanelDeath is a tab panel with info about a person's death.
  */
 public class TabPanelDeath
@@ -37,13 +36,13 @@ implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	private JTextField causeTF, timeTF, malTF;
-	
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelDeath(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelDeath(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelDeath.title"), //$NON-NLS-1$
@@ -73,7 +72,7 @@ implements ActionListener {
 		// Prepare cause label
 		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause"), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(causeLabel);
-		
+
 		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
         causeTF = new JTextField();
         causeTF.setText(death.getIllness().getName());
@@ -95,7 +94,7 @@ implements ActionListener {
         timeTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper2.add(timeTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper2);
-        
+
 		// Prepare malfunction label
 		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny"), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(malfunctionLabel);
@@ -108,7 +107,7 @@ implements ActionListener {
         malTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper3.add(malTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper3);
-        
+
 		// Prepare bottom content panel
 		JPanel bottomContentPanel = new JPanel(new BorderLayout(0, 0));
 		centerContentPanel.add(bottomContentPanel, BorderLayout.CENTER);
@@ -157,11 +156,11 @@ implements ActionListener {
 		Coordinates deathLocation = death.getLocationOfDeath();
 
 		// Prepare latitude label
-		JLabel latitudeLabel = new JLabel(Msg.getString("TabPanelDeath.latitude") + deathLocation.getFormattedLatitudeString(), JLabel.CENTER); //$NON-NLS-1$
+		JLabel latitudeLabel = new JLabel(Msg.getString("TabPanelDeath.latitude")  + " " + deathLocation.getFormattedLatitudeString(), JLabel.CENTER); //$NON-NLS-1$
 		locationCoordsPanel.add(latitudeLabel);
 
 		// Prepare longitude label
-		JLabel longitudeLabel = new JLabel(Msg.getString("TabPanelDeath.longitude") + deathLocation.getFormattedLongitudeString(), JLabel.CENTER); //$NON-NLS-1$
+		JLabel longitudeLabel = new JLabel(Msg.getString("TabPanelDeath.longitude")  + " " + deathLocation.getFormattedLongitudeString(), JLabel.CENTER); //$NON-NLS-1$
 		locationCoordsPanel.add(longitudeLabel);
 
 		// Add empty panel
@@ -173,7 +172,7 @@ implements ActionListener {
 	 */
 	public void update() {}
 
-	/** 
+	/**
 	 * Action event occurs.
 	 * @param event the action event
 	 */

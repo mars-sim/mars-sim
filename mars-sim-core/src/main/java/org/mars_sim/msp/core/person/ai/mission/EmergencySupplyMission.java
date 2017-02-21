@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @version 3.08 2015-07-08
+ * @version 3.1.0 2017-02-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -105,9 +105,9 @@ implements Serializable {
 	private static AmountResource methaneAR = Rover.methaneAR;//AmountResource.findAmountResource("methane");
 	//private static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
 	//private static AmountResource iceAR = AmountResource.findAmountResource("ice");
-	
+
     private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-    
+
     /**
      * Constructor.
      * @param startingPerson the person starting the settlement.
@@ -115,33 +115,33 @@ implements Serializable {
     public EmergencySupplyMission(Person startingPerson) {
         // Use RoverMission constructor.
         super(DEFAULT_DESCRIPTION, startingPerson);
-        
+
         // Set the mission capacity.
         setMissionCapacity(MAX_MEMBERS);
         int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
         if (availableSuitNum < getMissionCapacity()) {
             setMissionCapacity(availableSuitNum);
         }
-        
+
         outbound = true;
-        
+
         if (!isDone()) {
-        
+
             // Initialize data members
             setStartingSettlement(startingPerson.getSettlement());
-            
+
             // Determine emergency settlement.
             emergencySettlement = findSettlementNeedingEmergencySupplies(getStartingSettlement(), getRover());
-            
+
             if (emergencySettlement != null) {
-            
+
                 // Update mission information for emergency settlement.
                 addNavpoint(new NavPoint(emergencySettlement.getCoordinates(), emergencySettlement,
                         emergencySettlement.getName()));
-                
+
                 // Determine emergency supplies.
                 determineNeededEmergencySupplies();
-            
+
                 // Recruit additional members to mission.
                 if (!isDone()) {
                     recruitMembersForMission(startingPerson);
@@ -151,7 +151,7 @@ implements Serializable {
                 endMission("No settlement could be found to deliver emergency supplies to.");
             }
         }
-        
+
         // Add emergency supply mission phases.
         addPhase(SUPPLY_DELIVERY_DISEMBARKING);
         addPhase(SUPPLY_DELIVERY);
@@ -160,16 +160,16 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " starting emergency supply mission from " + getStartingSettlement() + 
+                logger.info(startingPerson.getName() + " starting emergency supply mission from " + getStartingSettlement() +
                         " to " + getEmergencySettlement() + " using " + getRover().getName());
             }
         }
     }
-    
+
     /**
      * Constructor with explicit parameters.
      * @param members collection of mission members.
@@ -178,14 +178,14 @@ implements Serializable {
      * @param rover the rover used on the mission.
      * @param description the mission's description.
      */
-    public EmergencySupplyMission(Collection<Person> members, Settlement startingSettlement, 
-            Settlement emergencySettlement, Map<Good, Integer> emergencyGoods, 
+    public EmergencySupplyMission(Collection<Person> members, Settlement startingSettlement,
+            Settlement emergencySettlement, Map<Good, Integer> emergencyGoods,
             Rover rover, String description) {
         // Use RoverMission constructor.
         super(description, (Person) members.toArray()[0], 1, rover);
-        
+
         outbound = true;
-        
+
         // Initialize data members
         setStartingSettlement(startingSettlement);
 
@@ -195,17 +195,17 @@ implements Serializable {
         if (availableSuitNum < getMissionCapacity()) {
             setMissionCapacity(availableSuitNum);
         }
-        
+
         // Set emergency settlement.
         this.emergencySettlement = emergencySettlement;
         addNavpoint(new NavPoint(emergencySettlement.getCoordinates(), emergencySettlement,
                 emergencySettlement.getName()));
-        
+
         // Determine emergency supplies.
         emergencyResources = new HashMap<AmountResource, Double>();
         emergencyParts = new HashMap<Part, Integer>();
         emergencyEquipment = new HashMap<Class, Integer>();
-        
+
         Iterator<Good> j = emergencyGoods.keySet().iterator();
         while (j.hasNext()) {
             Good good = j.next();
@@ -236,13 +236,13 @@ implements Serializable {
                 }
             }
         }
-        
+
         // Add mission members.
         Iterator<Person> i = members.iterator();
         while (i.hasNext()) {
             i.next().getMind().setMission(this);
         }
-        
+
         // Add emergency supply mission phases.
         addPhase(SUPPLY_DELIVERY_DISEMBARKING);
         addPhase(SUPPLY_DELIVERY);
@@ -251,58 +251,58 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description",
                 getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             Person startingPerson = (Person) members.toArray()[0];
             if (startingPerson != null && getRover() != null) {
-                logger.info(startingPerson.getName() + " starting emergency supply mission from " + getStartingSettlement() + 
+                logger.info(startingPerson.getName() + " starting emergency supply mission from " + getStartingSettlement() +
                         " to " + getEmergencySettlement() + "on " + getRover().getName());
             }
         }
     }
-    
+
     @Override
     protected void determineNewPhase() {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 if (outbound) {
                     setPhase(SUPPLY_DELIVERY_DISEMBARKING);
-                    setPhaseDescription(Msg.getString("Mission.phase.supplyDeliveryDisembarking.description", 
+                    setPhaseDescription(Msg.getString("Mission.phase.supplyDeliveryDisembarking.description",
                             emergencySettlement.getName())); //$NON-NLS-1$
                 } else {
                     setPhase(VehicleMission.DISEMBARKING);
-                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description",
                             getCurrentNavpoint().getDescription())); //$NON-NLS-1$
                 }
             }
         } else if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
             setPhase(SUPPLY_DELIVERY);
-            setPhaseDescription(Msg.getString("Mission.phase.supplyDelivery.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.supplyDelivery.description",
                     emergencySettlement.getName())); //$NON-NLS-1$
         } else if (SUPPLY_DELIVERY.equals(getPhase())) {
             setPhase(LOAD_RETURN_TRIP_SUPPLIES);
-            setPhaseDescription(Msg.getString("Mission.phase.loadReturnTripSupplies.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.loadReturnTripSupplies.description",
                     emergencySettlement.getName())); //$NON-NLS-1$
         } else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
             setPhase(RETURN_TRIP_EMBARKING);
-            setPhaseDescription(Msg.getString("Mission.phase.returnTripEmbarking.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.returnTripEmbarking.description",
                     emergencySettlement.getName())); //$NON-NLS-1$
         } else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description",
                     getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase())) {
             endMission(SUCCESSFULLY_DISEMBARKED);
         }
     }
-    
+
     @Override
     protected void performPhase(MissionMember member) {
         super.performPhase(member);
@@ -331,7 +331,7 @@ implements Serializable {
             }
         }
     }
-    
+
     @Override
     protected void performDisembarkToSettlementPhase(MissionMember member, Settlement disembarkSettlement) {
 
@@ -346,7 +346,7 @@ implements Serializable {
 
         super.performDisembarkToSettlementPhase(member, disembarkSettlement);
     }
-    
+
     /**
      * Perform the supply delivery disembarking phase.
      * @param member the member performing the phase.
@@ -365,15 +365,15 @@ implements Serializable {
 
         // Have member exit rover if necessary.
         if (member.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
-            
+
             // Get random inhabitable building at emergency settlement.
             Building destinationBuilding = emergencySettlement.getBuildingManager().
                     getRandomAirlockBuilding();
             if (destinationBuilding != null) {
                 Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
-                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
+                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(),
                         destinationLoc.getY(), destinationBuilding);
-                
+
                 if (member instanceof Person) {
                     Person person = (Person) member;
                     if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
@@ -404,13 +404,13 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
-    
+
     /**
      * Perform the supply delivery phase.
      * @param member the mission member performing the phase.
      */
     private void performSupplyDeliveryPhase(MissionMember member) {
-        
+
         // Unload towed vehicle (if necessary).
         if (getRover().getTowedVehicle() != null) {
             emergencyVehicle.setReservedForMission(false);
@@ -419,7 +419,7 @@ implements Serializable {
             emergencySettlement.getInventory().storeUnit(emergencyVehicle);
             emergencyVehicle.determinedSettlementParkedLocationAndFacing();
         }
-        
+
         // Unload rover if necessary.
         boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
         if (!roverUnloaded) {
@@ -434,7 +434,7 @@ implements Serializable {
                     else {
                         // Check if it is day time.
                         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                        if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
+                        if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) ||
                                 surface.inDarkPolarRegion(person.getCoordinates())) {
                             assignTask(person, new UnloadVehicleEVA(person, getRover()));
                         }
@@ -443,7 +443,7 @@ implements Serializable {
 
                 return;
             }
-        } 
+        }
         else {
             outbound = false;
             addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
@@ -451,13 +451,13 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
-    
+
     /**
      * Perform the load return trip supplies phase.
      * @param member the mission member performing the phase.
      */
     private void performLoadReturnTripSuppliesPhase(MissionMember member) {
-        
+
         if (!isDone() && !isVehicleLoaded()) {
 
             // Check if vehicle can hold enough supplies for mission.
@@ -474,7 +474,7 @@ implements Serializable {
                         else {
                             // Check if it is day time.
                             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                            if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) || 
+                            if ((surface.getSolarIrradiance(person.getCoordinates()) > 0D) ||
                                     surface.inDarkPolarRegion(person.getCoordinates())) {
                                 assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
                                         getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
@@ -489,21 +489,21 @@ implements Serializable {
             setPhaseEnded(true);
         }
     }
-    
-    
+
+
     /**
      * Perform the return trip embarking phase.
      * @param member the mission member performing the phase.
      */
     private void performReturnTripEmbarkingPhase(MissionMember member) {
-        
+
         // If person is not aboard the rover, board rover.
-        if (member.getLocationSituation() != LocationSituation.IN_VEHICLE && 
-                member.getLocationSituation() != LocationSituation.BURIED) {
+        if (member.getLocationSituation() != LocationSituation.IN_VEHICLE &&
+                member.getLocationSituation() != LocationSituation.DEAD) {
 
             // Move person to random location within rover.
             Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+            Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(),
                     vehicleLoc.getY(), getVehicle());
             // TODO Refactor
             if (member instanceof Person) {
@@ -526,7 +526,7 @@ implements Serializable {
                     endMission(robot.getName() + " unable to enter rover " + getVehicle());
                 }
             }
-            
+
             if (isRoverInAGarage()) {
 
                 // Store one EVA suit for person (if possible).
@@ -585,9 +585,9 @@ implements Serializable {
 
                         // Find what emergency supplies are needed at settlement.
                         Map<AmountResource, Double> emergencyResourcesNeeded = getEmergencyResourcesNeeded(settlement);
-                        Map<Class<? extends Container>, Integer> emergencyContainersNeeded = 
+                        Map<Class<? extends Container>, Integer> emergencyContainersNeeded =
                                 getContainersRequired(emergencyResourcesNeeded);
-                        
+
                         if (!emergencyResourcesNeeded.isEmpty()) {
 
                             // Check if starting settlement has enough supplies itself to send emergency supplies.
@@ -603,7 +603,7 @@ implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Checks if a settlement has sufficient supplies to send an emergency supply mission.
      * @param startingSettlement the starting settlement.
@@ -614,9 +614,9 @@ implements Serializable {
     private static boolean hasEnoughSupplies(Settlement startingSettlement,
             Map<AmountResource, Double> emergencyResourcesNeeded,
             Map<Class<? extends Container>, Integer> emergencyContainersNeeded) {
-       
+
         boolean result = true;
-        
+
         // Check if settlement has enough extra resources to send as emergency supplies.
         Iterator<AmountResource> i = emergencyResourcesNeeded.keySet().iterator();
         while (i.hasNext() && result) {
@@ -632,7 +632,7 @@ implements Serializable {
                 result = false;
             }
         }
-        
+
         // Check if settlement has enough empty containers to hold emergency resources.
         Iterator<Class<? extends Container>> j = emergencyContainersNeeded.keySet().iterator();
         while (j.hasNext() && result) {
@@ -644,21 +644,21 @@ implements Serializable {
                 result = false;
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the amount of a resource needed at the starting settlement.
      * @param startingSettlement the starting settlement.
      * @param resource the amount resource.
      * @return amount (kg) needed.
      */
-    private static double getResourceAmountNeededAtStartingSettlement(Settlement startingSettlement, 
+    private static double getResourceAmountNeededAtStartingSettlement(Settlement startingSettlement,
             AmountResource resource) {
-        
+
         double result = 0D;
-        
+
         if (resource.isLifeSupport()) {
             double amountNeededSol = 0D;
             //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
@@ -683,7 +683,7 @@ implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -693,9 +693,9 @@ implements Serializable {
      * @return true if current emergency supply mission.
      */
     private static boolean hasCurrentEmergencySupplyMission(Settlement settlement) {
-        
+
         boolean result = false;
-        
+
         Iterator<Mission> i = Simulation.instance().getMissionManager().getMissions().iterator();
         while (i.hasNext()) {
             Mission mission = i.next();
@@ -707,18 +707,18 @@ implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Determines needed emergency supplies at the destination settlement.
      */
     private void determineNeededEmergencySupplies() {
-        
+
         // Determine emergency resources needed.
         emergencyResources = getEmergencyResourcesNeeded(emergencySettlement);
-        
+
         // Determine containers needed to hold emergency resources.
         Map<Class<? extends Container>, Integer> containers = getContainersRequired(emergencyResources);
         emergencyEquipment = new HashMap<Class, Integer>(containers.size());
@@ -728,20 +728,20 @@ implements Serializable {
             int number = containers.get(container);
             emergencyEquipment.put(container, number);
         }
-        
+
         // Determine emergency parts needed.
         emergencyParts = getEmergencyPartsNeeded(emergencySettlement);
     }
-    
+
     /**
      * Gets the emergency resource supplies needed at a settlement.
      * @param settlement the settlement
      * @return map of resources and amounts needed.
      */
     private static Map<AmountResource, Double> getEmergencyResourcesNeeded(Settlement settlement) {
-        
+
         Map<AmountResource, Double> result = new HashMap<AmountResource, Double>();
-        
+
         double solsMonth = MarsClock.SOLS_IN_MONTH_LONG;
         int numPeople = settlement.getAllAssociatedPeople().size();
         //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
@@ -750,10 +750,10 @@ implements Serializable {
        // AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         double oxygenAmountNeeded = config.getNominalO2ConsumptionRate() * numPeople * solsMonth;
         double oxygenAmountAvailable = settlement.getInventory().getAmountResourceStored(oxygenAR, false);
- 
+
         // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(oxygenAR);
-        
+
         oxygenAmountAvailable += getResourcesOnMissions(settlement, oxygenAR);
         if (oxygenAmountAvailable < oxygenAmountNeeded) {
             double oxygenAmountEmergency = oxygenAmountNeeded - oxygenAmountAvailable;
@@ -762,15 +762,15 @@ implements Serializable {
             }
             result.put(oxygenAR, oxygenAmountEmergency);
         }
-        
+
         // Determine water amount needed.
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double waterAmountNeeded = config.getWaterConsumptionRate() * numPeople * solsMonth;
         double waterAmountAvailable = settlement.getInventory().getAmountResourceStored(waterAR, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(waterAR);  
-        
+        inv.addAmountDemandTotalRequest(waterAR);
+
         waterAmountAvailable += getResourcesOnMissions(settlement, waterAR);
         if (waterAmountAvailable < waterAmountNeeded) {
             double waterAmountEmergency = waterAmountNeeded - waterAmountAvailable;
@@ -779,7 +779,7 @@ implements Serializable {
             }
             result.put(waterAR, waterAmountEmergency);
         }
-        
+
         // Determine food amount needed.
         //AmountResource food = AmountResource.findAmountResource(LifeSupportType.FOOD);
         double foodAmountNeeded = config.getFoodConsumptionRate() * numPeople * solsMonth;
@@ -787,7 +787,7 @@ implements Serializable {
 
         // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(foodAR);
-        
+
         foodAmountAvailable += getResourcesOnMissions(settlement, foodAR);
         if (foodAmountAvailable < foodAmountNeeded) {
             double foodAmountEmergency = foodAmountNeeded - foodAmountAvailable;
@@ -796,7 +796,7 @@ implements Serializable {
             }
             result.put(foodAR, foodAmountEmergency);
         }
-        
+
         // Determine methane amount needed.
         //AmountResource methane = AmountResource.findAmountResource("methane");
         double methaneAmountNeeded = VEHICLE_FUEL_DEMAND;
@@ -804,7 +804,7 @@ implements Serializable {
 
         // 2015-01-09 Added addDemandTotalRequest()
         inv.addAmountDemandTotalRequest(methaneAR);
-        
+
         methaneAmountAvailable += getResourcesOnMissions(settlement, methaneAR);
         if (methaneAmountAvailable < methaneAmountNeeded) {
             double methaneAmountEmergency = methaneAmountNeeded - methaneAmountAvailable;
@@ -813,10 +813,10 @@ implements Serializable {
             }
             result.put(methaneAR, methaneAmountEmergency);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the amount of a resource on associated rover missions.
      * @param settlement the settlement.
@@ -825,7 +825,7 @@ implements Serializable {
      */
     private static double getResourcesOnMissions(Settlement settlement, AmountResource resource) {
         double result = 0D;
-        
+
         MissionManager manager = Simulation.instance().getMissionManager();
         Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
         while (i.hasNext()) {
@@ -844,10 +844,10 @@ implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the containers required to hold a collection of resources.
      * @param resources the map of resources and their amounts.
@@ -855,13 +855,13 @@ implements Serializable {
      */
     private static Map<Class<? extends Container>, Integer> getContainersRequired(
             Map<AmountResource, Double> resources) {
-        
+
         Map<Class<? extends Container>, Integer> result = new HashMap<Class<? extends Container>, Integer>();
-        
+
         Iterator<AmountResource> i = resources.keySet().iterator();
         while (i.hasNext()) {
             AmountResource resource = i.next();
-            
+
             Class<? extends Container> containerClass = ContainerUtil.getContainerClassToHoldResource(resource);
             if (containerClass != null) {
                 double resourceAmount = resources.get(resource);
@@ -873,24 +873,24 @@ implements Serializable {
                 throw new IllegalStateException("No container found to hold resource: " + resource);
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the emergency part supplies needed at a settlement.
      * @param settlement the settlement
      * @return map of parts and numbers needed.
      */
     private static Map<Part, Integer> getEmergencyPartsNeeded(Settlement settlement) {
-        
+
         Map<Part, Integer> result = new HashMap<Part, Integer>();
-        
+
         // Get all malfunctionables associated with settlement.
         Iterator<Malfunctionable> i = MalfunctionFactory.getAssociatedMalfunctionables(settlement).iterator();
         while (i.hasNext()) {
             Malfunctionable entity = i.next();
-        
+
             // Determine parts needed but not available for repairs.
             Iterator<Malfunction> j = entity.getMalfunctionManager().getMalfunctions().iterator();
             while (j.hasNext()) {
@@ -908,7 +908,7 @@ implements Serializable {
                     }
                 }
             }
-            
+
             // Determine parts needed but not available for maintenance.
             Map<Part, Integer> maintParts = entity.getMalfunctionManager().getMaintenanceParts();
             Iterator<Part> l = maintParts.keySet().iterator();
@@ -923,10 +923,10 @@ implements Serializable {
                 }
             }
         }
-            
+
         return result;
     }
-    
+
     /**
      * Gets the settlement that emergency supplies are being delivered to.
      * @return settlement
@@ -934,7 +934,7 @@ implements Serializable {
     public Settlement getEmergencySettlement() {
         return emergencySettlement;
     }
-    
+
     @Override
     public Settlement getAssociatedSettlement() {
         return getStartingSettlement();
@@ -943,10 +943,10 @@ implements Serializable {
     @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
-        
+
         return new HashMap<Class, Integer>(0);
     }
-    
+
     @Override
     protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
         int result = super.compareVehicles(firstVehicle, secondVehicle);
@@ -973,14 +973,14 @@ implements Serializable {
 
         return result;
     }
-    
+
     @Override
     public Map<Resource, Number> getRequiredResourcesToLoad() {
         Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(true);
-        
+
         // Add any emergency resources needed.
         if (outbound && (emergencyResources != null)) {
-            
+
             Iterator<AmountResource> i = emergencyResources.keySet().iterator();
             while (i.hasNext()) {
                 AmountResource resource = i.next();
@@ -991,10 +991,10 @@ implements Serializable {
                 result.put(resource, amount);
             }
         }
-        
+
         return result;
     }
-    
+
     @Override
     public Map<Resource, Number> getOptionalResourcesToLoad() {
 
@@ -1016,15 +1016,15 @@ implements Serializable {
 
         return result;
     }
-    
+
     @Override
     public Map<Class, Integer> getRequiredEquipmentToLoad() {
-        
+
         Map<Class, Integer> result = getEquipmentNeededForRemainingMission(true);
-        
+
         // Add any emergency equipment needed.
         if (outbound && (emergencyEquipment != null)) {
-            
+
             Iterator<Class> i = emergencyEquipment.keySet().iterator();
             while (i.hasNext()) {
                 Class equipment = i.next();
@@ -1035,17 +1035,17 @@ implements Serializable {
                 result.put(equipment, num);
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the emergency supplies as a goods map.
      * @return map of goods and amounts.
      */
     public Map<Good, Integer> getEmergencySuppliesAsGoods() {
         Map<Good, Integer> result = new HashMap<Good, Integer>();
-        
+
         // Add emergency resources.
         Iterator<AmountResource> i = emergencyResources.keySet().iterator();
         while (i.hasNext()) {
@@ -1054,7 +1054,7 @@ implements Serializable {
             Good resourceGood = GoodsUtil.getResourceGood(resource);
             result.put(resourceGood, (int) amount);
         }
-        
+
         // Add emergency parts.
         Iterator<Part> j = emergencyParts.keySet().iterator();
         while (j.hasNext()) {
@@ -1063,7 +1063,7 @@ implements Serializable {
             Good partGood = GoodsUtil.getResourceGood(part);
             result.put(partGood, number);
         }
-        
+
         // Add emergency equipment.
         Iterator<Class> k = emergencyEquipment.keySet().iterator();
         while (k.hasNext()) {
@@ -1072,16 +1072,16 @@ implements Serializable {
             Good equipmentGood = GoodsUtil.getEquipmentGood(equipmentClass);
             result.put(equipmentGood, number);
         }
-        
+
         // Add emergency vehicle.
         if (emergencyVehicle != null) {
             Good vehicleGood = GoodsUtil.getVehicleGood(emergencyVehicle.getDescription());
             result.put(vehicleGood, 1);
         }
-        
+
         return result;
     }
-    
+
     @Override
     public void endMission(String reason) {
         super.endMission(reason);
@@ -1094,11 +1094,11 @@ implements Serializable {
             }
         }
     }
-    
+
     @Override
     protected boolean isCapableOfMission(MissionMember member) {
         boolean result = super.isCapableOfMission(member);
-        
+
         if (result) {
             boolean atStartingSettlement = false;
             if (member.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -1108,26 +1108,26 @@ implements Serializable {
             }
             result = atStartingSettlement;
         }
-        
+
         return result;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
 
         emergencySettlement = null;
-        
+
         if (emergencyResources != null) {
             emergencyResources.clear();
             emergencyResources = null;
         }
-        
+
         if (emergencyEquipment != null) {
             emergencyEquipment.clear();
             emergencyEquipment = null;
         }
-        
+
         if (emergencyParts != null) {
             emergencyParts.clear();
             emergencyParts = null;
