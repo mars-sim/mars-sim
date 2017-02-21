@@ -407,6 +407,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>responsivefx</artifactId>
 		    <version>0.8</version>
 		</dependency>
+		<dependency>
+		<!-- see http://jiconfont.github.io/javafx -->
+		    <groupId>com.github.jiconfont</groupId>
+		    <artifactId>jiconfont-javafx</artifactId>
+		    <version>1.0.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.github.jiconfont</groupId>
+		    <artifactId>jiconfont-font_awesome</artifactId>
+		    <version>4.7.0.0</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>

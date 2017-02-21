@@ -34,9 +34,11 @@ import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
+//import org.controlsfx.glyphfont.FontAwesome;
 import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
+//import org.kordamp.ikonli.fontawesome.FontAwesome;
 
 import com.sun.management.OperatingSystemMXBean;
 
@@ -96,6 +98,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.geometry.HPos;
 
 import javafx.util.Duration;
+import jiconfont.icons.FontAwesome;
+import jiconfont.javafx.IconFontFX;
+import jiconfont.javafx.IconNode;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.DoubleProperty;
@@ -299,6 +304,7 @@ public class MainScene {
 	private File fileLocn = null;
 	private Thread newSimThread;
 
+	private IconNode soundIcon, marsNetIcon, speedIcon;
 	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
 	private Label lastSaveLabel, monthLabel, yearLabel, TPSLabel, upTimeLabel;
 	private Text memUsedText;
@@ -306,9 +312,9 @@ public class MainScene {
 	private JFXComboBox<Settlement> sBox;
 	private JFXBadge badgeIcon;
 	private JFXSnackbar snackbar;
-	private JFXToggleButton cacheButton, calendarButton, minimapButton, sMapButton;
+	private JFXToggleButton cacheToggle, calendarButton, minimapToggle, mapToggle;
 	private JFXSlider zoomSlider, timeSlider, soundSlider;
-	private JFXButton soundBtn, miniMapBtn, mapBtn, marsNetButton, rotateCWBtn, rotateCCWBtn, recenterBtn, speedButton;
+	private JFXButton soundBtn, miniMapBtn, mapBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;
 	private JFXPopup soundPopup, flyout, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 
@@ -316,7 +322,7 @@ public class MainScene {
 	//private StatusBar statusBar;
 	//private Flyout flyout;
 	//private CheckComboBox<String> mapLabelBox;
-	private HBox lastSaveBar, earthTimeBar, marsTimeBar;
+	private HBox lastSaveBar;//, earthTimeBar, marsTimeBar;
 	private VBox mapLabelBox;
 	private ChatBox chatBox;
 	//private DndTabPane dndTabPane;
@@ -711,6 +717,9 @@ public class MainScene {
 
 		// 2016-11-14 Setup key events using wellbehavedfx
 		setupKeyEvents();
+
+		IconFontFX.register(FontAwesome.getIconFont());
+
 	    //2015-11-11 Added createFlyout()
 		flyout = createFlyout();
         flag = false;
@@ -749,49 +758,62 @@ public class MainScene {
         //AnchorPane.setTopAnchor(badgeIcon, 0.0);
 
 		if (OS.contains("win")) {
-	        AnchorPane.setTopAnchor(speedButton, 0.0);
-	        AnchorPane.setTopAnchor(marsNetButton, 0.0);
-	        AnchorPane.setTopAnchor(mapBtn, 0.0);
-	        AnchorPane.setTopAnchor(miniMapBtn, 0.0);
+	        AnchorPane.setTopAnchor(speedBtn, 3.0);
+	        AnchorPane.setTopAnchor(marsNetBtn, 3.0);
+	       // AnchorPane.setTopAnchor(mapBtn, 0.0);
+	        //AnchorPane.setTopAnchor(miniMapBtn, 0.0);
 	        AnchorPane.setTopAnchor(lastSaveBar, 0.0);
-	        AnchorPane.setTopAnchor(soundBtn, -3.0);
+	        AnchorPane.setTopAnchor(soundBtn, 3.0);
+        	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
+        	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
-		else {
-	        AnchorPane.setTopAnchor(speedButton, -3.0);
-	        AnchorPane.setTopAnchor(marsNetButton, -3.0);
-	        AnchorPane.setTopAnchor(mapBtn, -3.0);
-	        AnchorPane.setTopAnchor(miniMapBtn, -3.0);
+		else if (OS.contains("linux")) {
+	        AnchorPane.setTopAnchor(speedBtn, 0.0);
+	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
+	        //AnchorPane.setTopAnchor(mapBtn, -3.0);
+	        //AnchorPane.setTopAnchor(miniMapBtn, -3.0);
 	        AnchorPane.setTopAnchor(lastSaveBar, -3.0);
-	        AnchorPane.setTopAnchor(soundBtn, -6.0);
+	        AnchorPane.setTopAnchor(soundBtn, 0.0);
+        	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
+        	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
+		}
+		else if (OS.contains("macos")) {
+	        AnchorPane.setTopAnchor(speedBtn, 0.0);
+	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
+	        //AnchorPane.setTopAnchor(mapBtn, -3.0);
+	        //AnchorPane.setTopAnchor(miniMapBtn, -3.0);
+	        AnchorPane.setTopAnchor(lastSaveBar, -3.0);
+	        AnchorPane.setTopAnchor(soundBtn, 0.0);
+        	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
+        	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
 		}
 
-        AnchorPane.setRightAnchor(speedButton, 5.0);
-        AnchorPane.setRightAnchor(marsNetButton, 45.0);
+        AnchorPane.setRightAnchor(speedBtn, 5.0);
+        AnchorPane.setRightAnchor(marsNetBtn, 45.0);
         AnchorPane.setRightAnchor(soundBtn, 85.0);
-        AnchorPane.setRightAnchor(mapBtn, 125.0);
-        AnchorPane.setRightAnchor(miniMapBtn, 165.0);
-        AnchorPane.setRightAnchor(lastSaveBar, 200.0);
-
+        //AnchorPane.setRightAnchor(mapBtn, 125.0);
+        //AnchorPane.setRightAnchor(miniMapBtn, 165.0);
         //AnchorPane.setLeftAnchor(earthTimeBar, sceneWidth.get()/2D);// - earthTimeBar.getPrefWidth());
         //AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
-        AnchorPane.setRightAnchor(marsTimeBar, 30.0);
-        AnchorPane.setRightAnchor(earthTimeBar, marsTimeBar.getMinWidth());
-
+        AnchorPane.setRightAnchor(marsTimeButton, 125.0);
+        AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 125);
+        AnchorPane.setRightAnchor(lastSaveBar,  marsTimeButton.getMinWidth() +  marsTimeButton.getMinWidth() + 125);
+/*
         if (OS.contains("linux")) {
-        	AnchorPane.setTopAnchor(earthTimeBar, 30.0);
-        	AnchorPane.setTopAnchor(marsTimeBar, 30.0);
+        	AnchorPane.setTopAnchor(earthTimeButton, 30.0);
+        	AnchorPane.setTopAnchor(marsTimeButton, 30.0);
         }
         else {
-        	AnchorPane.setTopAnchor(earthTimeBar, 35.0);
-        	AnchorPane.setTopAnchor(marsTimeBar, 35.0);
+        	AnchorPane.setTopAnchor(earthTimeButton, 35.0);
+        	AnchorPane.setTopAnchor(marsTimeButton, 35.0);
         }
-
+*/
         rootAnchorPane.getChildren().addAll(
         		jfxTabPane,
         		//miniMapBtn, mapBtn,
-        		marsNetButton, speedButton,
+        		marsNetBtn, speedBtn,
         		lastSaveBar,
-        		earthTimeBar, marsTimeBar, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
+        		earthTimeButton, marsTimeButton, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 		root.getChildren().addAll(rootAnchorPane);
 
@@ -870,6 +892,22 @@ public class MainScene {
 	}
 
 	public void createEarthTimeBar() {
+		earthTimeButton = new Button();
+		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
+
+		if (OS.contains("linux")) {
+			earthTimeButton.setMinWidth(LINUX_WIDTH);
+			earthTimeButton.setPrefSize(LINUX_WIDTH, 33);
+		}
+		else if (OS.contains("macos")) {
+			earthTimeButton.setMinWidth(MACOS_WIDTH);
+			earthTimeButton.setPrefSize(MACOS_WIDTH, 30);
+		}
+		else {
+			earthTimeButton.setMinWidth(WIN_WIDTH);
+			earthTimeButton.setPrefSize(WIN_WIDTH, 33);
+		}
+/*
 		earthTimeBar = new HBox();
 		//earthTimeBar.setId("rich-blue");
 		earthTimeBar.setMaxWidth(Double.MAX_VALUE);
@@ -886,7 +924,7 @@ public class MainScene {
 			earthTimeBar.setMinWidth(WIN_WIDTH);
 			earthTimeBar.setPrefSize(WIN_WIDTH, 32);
 		}
-
+*/
 		if (masterClock == null) {
 			masterClock = sim.getMasterClock();
 		}
@@ -895,7 +933,7 @@ public class MainScene {
 			earthClock = masterClock.getEarthClock();
 		}
 
-		earthTimeButton = new Button();
+		//earthTimeButton = new Button();
 		//setQuickToolTip(earthTimeButton, "Click to see Quick Info on Mars");
 
 /*		earthTimeButton.setOnAction(e -> {
@@ -923,7 +961,7 @@ public class MainScene {
 		//earthTimeLabel.setPrefSize(180, 30);
 		earthTimeButton.setTextAlignment(TextAlignment.LEFT);
 
-		earthTimeBar.getChildren().add(earthTimeButton);
+		//earthTimeBar.getChildren().add(earthTimeButton);
 	}
 
 
@@ -934,9 +972,16 @@ public class MainScene {
 	public void createSpeedPanel() {
 		//logger.info("MainScene's createEarthTimeBox() is on " + Thread.currentThread().getName());
 
-		speedButton = new JFXButton();
-		setQuickToolTip(speedButton, "Open Speed Panel");
-		speedButton.setOnAction(e -> {
+		speedBtn = new JFXButton();
+		speedIcon = new IconNode(FontAwesome.CLOCK_O);
+		speedIcon.setIconSize(20);
+		//speedIcon.setFill(Color.YELLOW);
+		//speedIcon.setStroke(Color.WHITE);
+
+		speedBtn.setMaxSize(20, 20);
+		speedBtn.setGraphic(speedIcon);
+		setQuickToolTip(speedBtn, "Open Speed Panel");
+		speedBtn.setOnAction(e -> {
             if (simSpeedPopup.isVisible()) {
             	simSpeedPopup.close();
             }
@@ -957,12 +1002,12 @@ public class MainScene {
 				);
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
-		speedPane.setPrefWidth(earthTimeBar.getPrefWidth());
+		speedPane.setPrefWidth(earthTimeButton.getPrefWidth());
 
 		//earthTimePopup.setOpacity(.5);
 		simSpeedPopup.setContent(speedPane);
 		simSpeedPopup.setPopupContainer(rootAnchorPane);
-		simSpeedPopup.setSource(speedButton);
+		simSpeedPopup.setSource(speedBtn);
 
 		// Set up a settlement view zoom bar
 		timeSlider = new JFXSlider();
@@ -1150,7 +1195,13 @@ public class MainScene {
 
 	}
 
-
+    public static Label createIconLabel(String iconName, int iconSize){
+        return LabelBuilder.create()
+                .text(iconName)
+                .styleClass("icons")
+                .style("-fx-font-size: " + iconSize + "px;")
+                .build();
+    }
 
     /**
      * Creates and returns the sound popup box
@@ -1161,12 +1212,19 @@ public class MainScene {
 
 		soundBtn = new JFXButton();
 		soundBtn.getStyleClass().add("button-raised");
-		Icon icon = new Icon("MUSIC");
-		icon.setCursor(Cursor.HAND);
+		//Icon icon = new Icon("MUSIC");
+		//icon.setCursor(Cursor.HAND);
 		//icon.setStyle("-fx-background-color: orange;");
 		//value.setPadding(new Insets(1));
-		soundBtn.setMaxSize(15, 15);
-		soundBtn.setGraphic(icon);
+		//Label bell = createIconLabel("\uf0a2", 15);
+		//IconFontFX.register(FontAwesome.getIconFont());
+		soundIcon = new IconNode(FontAwesome.BELL_O);
+		soundIcon.setIconSize(20);
+		//soundIcon.setFill(Color.YELLOW);
+		//soundIcon.setStroke(Color.WHITE);
+
+		soundBtn.setMaxSize(20, 20);
+		soundBtn.setGraphic(soundIcon);
 		setQuickToolTip(soundBtn, "Sound volume Panel");
 
 		soundBtn.setOnAction(e -> {
@@ -1255,8 +1313,25 @@ public class MainScene {
 
 
 	public void createMarsTimeBar() {
-		marsTimeBar = new HBox();
+		marsTimeButton = new Button();
+
+		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
+		if (OS.contains("linux")) {
+			marsTimeButton.setMinWidth(LINUX_WIDTH);
+			marsTimeButton.setPrefSize(LINUX_WIDTH, 33);
+		}
+		else if (OS.contains("macos")) {
+			marsTimeButton.setMinWidth(MACOS_WIDTH);
+			marsTimeButton.setPrefSize(MACOS_WIDTH, 30);
+		}
+		else {
+			marsTimeButton.setMinWidth(WIN_WIDTH);
+			marsTimeButton.setPrefSize(WIN_WIDTH, 33);
+		}
+
+		//marsTimeBar = new HBox();
 		//marsTimeBar.setId("rich-orange");
+/*
 		marsTimeBar.setMaxWidth(Double.MAX_VALUE);
 		if (OS.contains("linux")) {
 			marsTimeBar.setMinWidth(LINUX_WIDTH);
@@ -1270,7 +1345,7 @@ public class MainScene {
 			marsTimeBar.setMinWidth(WIN_WIDTH);
 			marsTimeBar.setPrefSize(WIN_WIDTH, 32);
 		}
-
+*/
 		if (masterClock == null) {
 			masterClock = sim.getMasterClock();
 		}
@@ -1280,8 +1355,8 @@ public class MainScene {
 		}
 
 		marsCalendarPopup = new JFXPopup();
-		marsTimeButton = new Button();//Label();
-		marsTimeButton.setMaxWidth(Double.MAX_VALUE);
+		//marsTimeButton = new Button();//Label();
+		//marsTimeButton.setMaxWidth(Double.MAX_VALUE);
 		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
 		marsTimeButton.setOnAction(e -> {
 			//if (marsTimeFlag) {
@@ -1371,22 +1446,22 @@ public class MainScene {
     	//		+ "-fx-font-weight: bold;");
 		//southHemi.setTextAlignment(TextAlignment.CENTER);
 
-		marsTimeBar.getChildren().add(marsTimeButton);//addAll(northHemi, southHemi, marsTimeButton);
+		//marsTimeBar.getChildren().add(marsTimeButton);//addAll(northHemi, southHemi, marsTimeButton);
 	}
 
 	public void createFXButtons() {
 
-		minimapButton = new JFXToggleButton();
+		minimapToggle = new JFXToggleButton();
 		//pinButton.setTextFill(Paint.OPAQUE);
-		minimapButton.setText("Minimap Off");
-		minimapButton.setSelected(false);
-		setQuickToolTip(minimapButton, "Pin Minimap");
-		minimapButton.setOnAction(e -> {
-			if (minimapButton.isSelected()) {
+		minimapToggle.setText("Minimap Off");
+		minimapToggle.setSelected(false);
+		setQuickToolTip(minimapToggle, "Pin Minimap");
+		minimapToggle.setOnAction(e -> {
+			if (minimapToggle.isSelected()) {
 				openMinimap();
 			}
 			else {
-				minimapButton.setText("Minimap Off");
+				minimapToggle.setText("Minimap Off");
 				desktop.closeToolWindow(NavigatorWindow.NAME);
 				mapAnchorPane.getChildren().remove(minimapStackPane);
 	    	    //minimapButton.setSelected(false);
@@ -1396,12 +1471,12 @@ public class MainScene {
 
 		});
 
-		sMapButton = new JFXToggleButton();
-		sMapButton.setText("Settlement Map Off");
-		sMapButton.setSelected(false);
-		setQuickToolTip(sMapButton, "Pin Settlement Map");
-		sMapButton.setOnAction(e -> {
-			if (sMapButton.isSelected()) {
+		mapToggle = new JFXToggleButton();
+		mapToggle.setText("Settlement Map Off");
+		mapToggle.setSelected(false);
+		setQuickToolTip(mapToggle, "Pin Settlement Map");
+		mapToggle.setOnAction(e -> {
+			if (mapToggle.isSelected()) {
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
 					openMap();
 				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
@@ -1410,7 +1485,7 @@ public class MainScene {
 				}
 			}
 			else {
-				sMapButton.setText("Settlement Map Off");
+				mapToggle.setText("Settlement Map Off");
 				desktop.closeToolWindow(SettlementWindow.NAME);
 				mapAnchorPane.getChildren().removeAll(mapStackPane,
 						settlementBox, mapLabelBox,
@@ -1423,13 +1498,13 @@ public class MainScene {
 
 		});
 
-		cacheButton = new JFXToggleButton();
-		cacheButton.setText("Map Cache Off");
-		cacheButton.setSelected(false);
-		setQuickToolTip(cacheButton, "Retain Settlement Map and Minimap after switching to another tab");
-		cacheButton.setOnAction(e -> {
-			if (cacheButton.isSelected()) {
-				cacheButton.setText("Map Cache On");
+		cacheToggle = new JFXToggleButton();
+		cacheToggle.setText("Map Cache Off");
+		cacheToggle.setSelected(false);
+		setQuickToolTip(cacheToggle, "Retain Settlement Map and Minimap after switching to another tab");
+		cacheToggle.setOnAction(e -> {
+			if (cacheToggle.isSelected()) {
+				cacheToggle.setText("Map Cache On");
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
 					openMap();
 				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
@@ -1437,11 +1512,11 @@ public class MainScene {
 					openMinimap();
 				}
 
-				minimapButton.toFront();
-				sMapButton.toFront();
+				minimapToggle.toFront();
+				mapToggle.toFront();
 			}
 			else
-				cacheButton.setText("Map Cache Off");
+				cacheToggle.setText("Map Cache Off");
 		});
 
 		rotateCWBtn = new JFXButton();
@@ -1668,7 +1743,7 @@ public class MainScene {
 		minimapNode.setContent(navWin);
 		minimapStackPane.setStyle("-fx-background-color: black; ");
 		minimapNode.setStyle("-fx-background-color: black; ");
-
+/*
 		miniMapBtn = new JFXButton();
 		setQuickToolTip(miniMapBtn, "Open Mars Navigator Minimap below");
 		miniMapBtn.setOnAction(e -> {
@@ -1684,7 +1759,7 @@ public class MainScene {
 				openMinimap();
 			}
 		});
-
+*/
 		settlementWindow = (SettlementWindow) desktop.getToolWindow(SettlementWindow.NAME);
 		mapPanel = settlementWindow.getMapPanel();
 
@@ -1721,7 +1796,7 @@ public class MainScene {
                 //event.consume();
             }
         });
-
+/*
 		mapBtn = new JFXButton();
 		setQuickToolTip(mapBtn, "Open Settlement Map below");
 		mapBtn.setOnAction(e -> {
@@ -1744,7 +1819,7 @@ public class MainScene {
 			}
 
 		});
-
+*/
 		//desktop.openToolWindow(MonitorWindow.NAME);
 		//desktop.openToolWindow(MissionWindow.NAME);
 		//desktop.openToolWindow(ResupplyWindow.NAME);
@@ -1869,6 +1944,7 @@ public class MainScene {
 				}
 */
 
+/*
 				AnchorPane.setRightAnchor(mapBtn, 125.0);
 				if (OS.contains("win"))
 					AnchorPane.setTopAnchor(mapBtn, 0.0);
@@ -1882,17 +1958,17 @@ public class MainScene {
 				else
 					AnchorPane.setTopAnchor(miniMapBtn, -3.0);
 				rootAnchorPane.getChildren().addAll(miniMapBtn);
+*/
+		        AnchorPane.setRightAnchor(cacheToggle, 25.0);
+		        AnchorPane.setTopAnchor(cacheToggle, 45.0);  // 55.0
 
-		        AnchorPane.setRightAnchor(cacheButton, 25.0);
-		        AnchorPane.setTopAnchor(cacheButton, 45.0);  // 55.0
+		        AnchorPane.setLeftAnchor(minimapToggle, 10.0);
+		        AnchorPane.setTopAnchor(minimapToggle, 10.0);  // 55.0
 
-		        AnchorPane.setLeftAnchor(minimapButton, 10.0);
-		        AnchorPane.setTopAnchor(minimapButton, 10.0);  // 55.0
+		        AnchorPane.setRightAnchor(mapToggle, 15.0);
+		        AnchorPane.setTopAnchor(mapToggle, 10.0);  // 55.0
 
-		        AnchorPane.setRightAnchor(sMapButton, 15.0);
-		        AnchorPane.setTopAnchor(sMapButton, 10.0);  // 55.0
-
-				mapAnchorPane.getChildren().addAll(cacheButton, minimapButton, sMapButton);
+				mapAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, mapToggle);
 
 				desktop.closeToolWindow(GuideWindow.NAME);
 			}
@@ -1938,8 +2014,8 @@ public class MainScene {
 			}
 */
 			else {
-				rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
-			    mapAnchorPane.getChildren().removeAll(cacheButton, minimapButton, sMapButton);
+				//rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
+			    mapAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
 			}
 
 		});
@@ -1970,9 +2046,9 @@ public class MainScene {
     	    navWin.toFront();
     	    navWin.requestFocus();
     	    minimapStackPane.toFront();
-    	    minimapButton.setSelected(true);
-			minimapButton.setText("Minimap On");
-    	    minimapButton.toFront();
+    	    minimapToggle.setSelected(true);
+			minimapToggle.setText("Minimap On");
+    	    minimapToggle.toFront();
 		//}
 	}
 
@@ -2072,19 +2148,19 @@ public class MainScene {
 */
 			mapLabelBox.toFront();
 			settlementBox.toFront();
-			sMapButton.toFront();
-			cacheButton.toFront();
-			minimapButton.toFront();
+			mapToggle.toFront();
+			cacheToggle.toFront();
+			minimapToggle.toFront();
 
 
-			sMapButton.setText("Settlement Map On");
-			sMapButton.setSelected(true);
+			mapToggle.setText("Settlement Map On");
+			mapToggle.setSelected(true);
 		//}
 	}
 
 	public void closeMaps() {
-		rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
-	    mapAnchorPane.getChildren().removeAll(cacheButton, minimapButton, sMapButton);
+		//rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
+	    mapAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
 	    if (!isCacheButtonOn()) {
 			Platform.runLater(() -> {
 				mapAnchorPane.getChildren().removeAll(minimapStackPane, mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
@@ -2092,17 +2168,17 @@ public class MainScene {
 			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
-			minimapButton.setSelected(false);
-			minimapButton.setText("Minimap Off");
-			sMapButton.setSelected(false);
-			sMapButton.setText("Settlement Map Off");
+			minimapToggle.setSelected(false);
+			minimapToggle.setText("Minimap Off");
+			mapToggle.setSelected(false);
+			mapToggle.setText("Settlement Map Off");
 
 		}
 	}
 
 
 	public boolean isCacheButtonOn() {
-		if (cacheButton.isSelected())
+		if (cacheToggle.isSelected())
 			return true;
 		else
 			return false;
@@ -2236,11 +2312,11 @@ public class MainScene {
 		setStylesheet(marsTimeButton, cssFile);
 		setStylesheet(earthTimeButton, cssFile);
 		setStylesheet(lastSaveLabel, cssFile);
-		setStylesheet(miniMapBtn, cssFile);
-		setStylesheet(mapBtn, cssFile);
-		setStylesheet(cacheButton, cssFile);
-		setStylesheet(minimapButton, cssFile);
-		setStylesheet(sMapButton, cssFile);
+		//setStylesheet(miniMapBtn, cssFile);
+		//setStylesheet(mapBtn, cssFile);
+		setStylesheet(cacheToggle, cssFile);
+		setStylesheet(minimapToggle, cssFile);
+		setStylesheet(mapToggle, cssFile);
 		setStylesheet(settlementBox, cssFile);
 		setStylesheet(mapLabelBox, cssFile);
 
@@ -2259,17 +2335,29 @@ public class MainScene {
 		}
 
 		if (theme == 6) {
-			speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_menu_24.png"))));
-			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_globe_24.png"))));
-			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_map_24.png"))));
-			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_chat_24.png"))));
+			speedIcon.setFill(Color.LAVENDER);
+			speedBtn.setGraphic(speedIcon);
+			//speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_menu_24.png"))));
+			//miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_globe_24.png"))));
+			//mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_map_24.png"))));
+			//marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_chat_24.png"))));
+			marsNetIcon.setFill(Color.LAVENDER);
+			marsNetBtn.setGraphic(marsNetIcon);
+			soundIcon.setFill(Color.LAVENDER);
+			soundBtn.setGraphic(soundIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
 		}
 		else if (theme == 7) {
-			speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_menu_24.png"))));
-			miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_globe_24.png"))));
-			mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_map_24.png"))));
-			marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_chat_24.png"))));
+			speedIcon.setFill(Color.YELLOW);
+			speedBtn.setGraphic(speedIcon);
+			//speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_menu_24.png"))));
+			//miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_globe_24.png"))));
+			//mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_map_24.png"))));
+			//marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_chat_24.png"))));
+			marsNetIcon.setFill(Color.YELLOW);
+			marsNetBtn.setGraphic(marsNetIcon);
+			soundIcon.setFill(Color.YELLOW);
+			soundBtn.setGraphic(soundIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_orange.css").toExternalForm());
 		}
 
@@ -2327,19 +2415,23 @@ public class MainScene {
      */
     //2015-11-11 Added createFlyout()
     public JFXPopup createFlyout() {
-     	marsNetButton = new JFXButton();
+     	marsNetBtn = new JFXButton();
+		marsNetIcon = new IconNode(FontAwesome.COMMENTING_O);
+		marsNetIcon.setIconSize(20);
+		//marsNetIcon.setStroke(Color.WHITE);
+
         //marsNetButton.setId("marsNetButton");
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
-		setQuickToolTip(marsNetButton, "Open MarsNet Chat Box");
+		setQuickToolTip(marsNetBtn, "Open MarsNet Chat Box");
 
 		flyout = new JFXPopup();
 		flyout.setOpacity(.9);
 		flyout.setContent(createChatBox());
 		flyout.setPopupContainer(rootAnchorPane);
-		flyout.setSource(marsNetButton);
+		flyout.setSource(marsNetBtn);
 
 		//chatBox.update();
-        marsNetButton.setOnAction(e -> {
+        marsNetBtn.setOnAction(e -> {
             if (!flag)
             	chatBox.update();
 
@@ -2419,7 +2511,7 @@ public class MainScene {
 	 */
 	public void createLastSaveBar() {
 		lastSaveBar = new HBox();
-		lastSaveBar.setPadding(new Insets(5,20,5,20));
+		lastSaveBar.setPadding(new Insets(5,5,5,5));
 
 		//2016-09-15 Added oldLastSaveStamp
 		oldLastSaveStamp = sim.getLastSave();
@@ -2428,8 +2520,8 @@ public class MainScene {
 		lastSaveLabel = new Label();
 		lastSaveLabel.setId("save-label");
 		lastSaveLabel.setMaxWidth(Double.MAX_VALUE);
-		lastSaveLabel.setMinWidth(250);
-		lastSaveLabel.setPrefSize(250, 25);
+		lastSaveLabel.setMinWidth(220);
+		lastSaveLabel.setPrefSize(220, 20);
 		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
 		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
 
@@ -3321,7 +3413,7 @@ public class MainScene {
 		lastSaveBar = null;
 		//statusBar = null;
 		flyout = null;
-		marsNetButton = null;
+		marsNetBtn = null;
 		chatBox = null;
 		mainAnchorPane = null;
 		rootAnchorPane = null;
