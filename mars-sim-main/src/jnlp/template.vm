@@ -9,7 +9,7 @@
     <description kind="one-line">Mars Simulation Project</description>
     <description kind="short">Mars Simulation Project</description>
     <description kind="tooltip">Mars Simulation Project</description>
-    <icon href="marsicon.png" width="64" height="64"/>
+    <icon href="icon.png" width="64" height="64"/>
     <vendor>Mars Simulation Project</vendor>
       <offline-allowed/>
       <shortcut online="true">

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 3.08 2015-03-28
+ * @version 3.1.0 2017-02-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -154,7 +154,7 @@ extends JPanel {
 		JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JButton renameBtn = new JButton(Msg.getString(
 				"BuildingPanel.renameBuilding.renameButton")); //$NON-NLS-1$
-		renameBtn.setPreferredSize(new Dimension(60, 20));
+		renameBtn.setPreferredSize(new Dimension(70, 20));
 		renameBtn.setFont(new Font("Serif", Font.PLAIN, 9));
 	    renameBtn.setBackground(Color.GRAY);
 	    renameBtn.addActionListener(new ActionListener() {

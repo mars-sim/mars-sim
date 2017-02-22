@@ -323,7 +323,7 @@ public class MainScene {
 	//private StatusBar statusBar;
 	//private Flyout flyout;
 	//private CheckComboBox<String> mapLabelBox;
-	private HBox lastSaveBar;//, earthTimeBar, marsTimeBar;
+	//private HBox lastSaveBar;//, earthTimeBar, marsTimeBar;
 	private VBox mapLabelBox;
 	private ChatBox chatBox;
 	//private DndTabPane dndTabPane;
@@ -763,7 +763,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 3.0);
 	       // AnchorPane.setTopAnchor(mapBtn, 0.0);
 	        //AnchorPane.setTopAnchor(miniMapBtn, 0.0);
-	        AnchorPane.setTopAnchor(lastSaveBar, 0.0);
+	        AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 	        AnchorPane.setTopAnchor(soundBtn, 3.0);
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
@@ -773,7 +773,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 	        //AnchorPane.setTopAnchor(mapBtn, -3.0);
 	        //AnchorPane.setTopAnchor(miniMapBtn, -3.0);
-	        AnchorPane.setTopAnchor(lastSaveBar, -3.0);
+	        AnchorPane.setTopAnchor(lastSaveLabel, 1.0);
 	        AnchorPane.setTopAnchor(soundBtn, 0.0);
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
@@ -783,7 +783,7 @@ public class MainScene {
 	        AnchorPane.setTopAnchor(marsNetBtn, 0.0);
 	        //AnchorPane.setTopAnchor(mapBtn, -3.0);
 	        //AnchorPane.setTopAnchor(miniMapBtn, -3.0);
-	        AnchorPane.setTopAnchor(lastSaveBar, -3.0);
+	        AnchorPane.setTopAnchor(lastSaveLabel, 0.0);
 	        AnchorPane.setTopAnchor(soundBtn, 0.0);
         	AnchorPane.setTopAnchor(earthTimeButton, 1.0);
         	AnchorPane.setTopAnchor(marsTimeButton, 1.0);
@@ -798,7 +798,7 @@ public class MainScene {
         //AnchorPane.setLeftAnchor(marsTimeBar, sceneWidth.get()/2D - marsTimeBar.getPrefWidth());
         AnchorPane.setRightAnchor(marsTimeButton, 125.0);
         AnchorPane.setRightAnchor(earthTimeButton, marsTimeButton.getMinWidth() + 125);
-        AnchorPane.setRightAnchor(lastSaveBar,  marsTimeButton.getMinWidth() +  marsTimeButton.getMinWidth() + 125);
+        AnchorPane.setRightAnchor(lastSaveLabel,  marsTimeButton.getMinWidth() +  marsTimeButton.getMinWidth() + 125);
 /*
         if (OS.contains("linux")) {
         	AnchorPane.setTopAnchor(earthTimeButton, 30.0);
@@ -813,7 +813,7 @@ public class MainScene {
         		jfxTabPane,
         		//miniMapBtn, mapBtn,
         		marsNetBtn, speedBtn,
-        		lastSaveBar,
+        		lastSaveLabel,
         		earthTimeButton, marsTimeButton, soundBtn);//badgeIcon,borderPane, timeBar, snackbar
 
 		root.getChildren().addAll(rootAnchorPane);
@@ -2512,8 +2512,8 @@ public class MainScene {
 	 * Creates the time bar for MainScene
 	 */
 	public void createLastSaveBar() {
-		lastSaveBar = new HBox();
-		lastSaveBar.setPadding(new Insets(5,5,5,5));
+		//lastSaveBar = new HBox();
+		//lastSaveBar.setPadding(new Insets(5,5,5,5));
 
 		//2016-09-15 Added oldLastSaveStamp
 		oldLastSaveStamp = sim.getLastSave();
@@ -2522,14 +2522,27 @@ public class MainScene {
 		lastSaveLabel = new Label();
 		lastSaveLabel.setId("save-label");
 		lastSaveLabel.setMaxWidth(Double.MAX_VALUE);
-		lastSaveLabel.setMinWidth(220);
-		lastSaveLabel.setPrefSize(220, 20);
+		//lastSaveLabel.setMinWidth(220);
+        if (OS.contains("linux")) {
+            lastSaveLabel.setMinWidth(LINUX_WIDTH);
+            lastSaveLabel.setPrefSize(LINUX_WIDTH, 29);
+        }
+        else if (OS.contains("mac")) {
+            lastSaveLabel.setMinWidth(MACOS_WIDTH);
+            lastSaveLabel.setPrefSize(MACOS_WIDTH, 28);
+        }
+        else {
+            lastSaveLabel.setMinWidth(WIN_WIDTH);
+            lastSaveLabel.setPrefSize(WIN_WIDTH, 33);
+        }
+		//lastSaveLabel.setPrefSize(220, 20);
+        lastSaveLabel.setAlignment(Pos.CENTER_LEFT);
 		lastSaveLabel.setTextAlignment(TextAlignment.LEFT);
 		lastSaveLabel.setText(LAST_SAVED + oldLastSaveStamp);
 
 		setQuickToolTip(lastSaveLabel, "Last time when the sim was (auto)saved");
 
-		lastSaveBar.getChildren().add(lastSaveLabel);
+		//lastSaveBar.getChildren().add(lastSaveLabel);
 /*
 		memMax = (int) Math.round(Runtime.getRuntime().maxMemory()) / 1000000;
 		memFree = (int) Math.round(Runtime.getRuntime().freeMemory()) / 1000000;
@@ -3412,7 +3425,7 @@ public class MainScene {
 	    memUsedText = null;
 		//memBtn = null;
 		//clkBtn = null;
-		lastSaveBar = null;
+		//lastSaveBar = null;
 		//statusBar = null;
 		flyout = null;
 		marsNetBtn = null;
