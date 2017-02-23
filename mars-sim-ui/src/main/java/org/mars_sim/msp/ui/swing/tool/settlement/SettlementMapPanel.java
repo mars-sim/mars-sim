@@ -303,7 +303,7 @@ implements ClockListener {
 
 					 if (evt.isPopupTrigger()) {
 						 setCursor(new Cursor(Cursor.HAND_CURSOR));
-						 repaint();
+						 //repaint();
 						 doPop(evt);
 					 }
 				}
@@ -327,7 +327,7 @@ implements ClockListener {
 		    }
 
 		    //2015-01-14 Added vehicle detection
-		    private void doPop(final MouseEvent evt){
+		    private void doPop(final MouseEvent evt) {
 		    	//System.out.println("doPop()");
 		    	final ConstructionSite site = selectConstructionSiteAt(evt.getX(), evt.getY());
 		    	final Building building = selectBuildingAt(evt.getX(), evt.getY());
@@ -463,7 +463,7 @@ implements ClockListener {
 		yPos += realYDiff;
 
 		//paintDoubleBuffer();
-		repaint();
+		//repaint();
 	}
 
 	/**
@@ -494,7 +494,7 @@ implements ClockListener {
 
 
 			////paintDoubleBuffer();
-			//repaint();
+			repaint();
 		}
 		return selectedPerson;
 	}
@@ -526,7 +526,7 @@ implements ClockListener {
 			selectRobot(selectedRobot);
 
 			////paintDoubleBuffer();
-			//repaint();
+			repaint();
 		}
 		return selectedRobot;
 	}
@@ -741,7 +741,7 @@ implements ClockListener {
 				selectedVehicle = vehicle;
 
 				////paintDoubleBuffer();
-				//repaint();
+				repaint();
 			}
 		}
 		return selectedVehicle;
@@ -783,7 +783,7 @@ implements ClockListener {
 				selectedVehicle = vehicle;
 
 				////paintDoubleBuffer();
-				//repaint();
+				repaint();
 			}
 		}
 		return selectedVehicle;
@@ -1044,7 +1044,7 @@ implements ClockListener {
 		if (timeCache > PERIOD_IN_MILLISOLS) {
 			//System.out.println("calling SettlementMapPanel's clockPulse()");
 			// Repaint map panel
-			repaint();
+			//repaint();
 			timeCache = 0;
 		}
 	}

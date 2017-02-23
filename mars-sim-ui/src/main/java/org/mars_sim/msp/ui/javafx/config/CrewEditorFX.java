@@ -19,6 +19,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.effect.*;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -28,6 +30,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -85,6 +88,9 @@ public class CrewEditorFX {
 	/** Tool name. */
 	public static final String TITLE = "Crew Editor";
 
+	public static final int COMBOBOX_WIDTH = 270;
+	public static final int HEIGHT = 720;
+	public static final int WIDTH = 1024;
 	public static final int SIZE_OF_CREW = PersonConfig.SIZE_OF_CREW;
 
 	public static final int ALPHA_CREW = PersonConfig.ALPHA_CREW;
@@ -216,7 +222,10 @@ public class CrewEditorFX {
 		// Note: don't forget to add children to gridpane
 		gridPane.getChildren().addAll(empty, slotOne, slotTwo, slotThree, slotFour);
 
-		Label name = new Label("Member :");
+		Label name = new Label("Name :");
+		name.setPrefWidth(65);
+		name.setMaxWidth(65);
+		name.setMinWidth(65);
 		Label gender = new Label("Gender :");
 		Label job = new Label("Job :");
 		Label sponsor = new Label("Sponsor :");
@@ -388,21 +397,25 @@ public class CrewEditorFX {
 	    //scrollPane.setFitToHeight(true);
 	    scrollPane.setFitToWidth(true);
 	    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);//setVisible(true);
-	    scrollPane.setMaxHeight(720);
-	    scrollPane.setMinWidth(800);
+	    scrollPane.setPrefHeight(HEIGHT);
+	    scrollPane.setPrefWidth(WIDTH);
+	    scrollPane.setMinHeight(HEIGHT);
+	    scrollPane.setMinWidth(WIDTH);
 
-		Scene scene = new Scene(scrollPane, Color.TRANSPARENT);
+		Scene scene = new Scene(scrollPane);//, HEIGHT, WIDTH); // Color.TRANSPARENT
 		scene.getStylesheets().add("/fxui/css/configEditorFXOrange.css");//
 		scene.getStylesheets().add("/fxui/css/crewEditorFXOrange.css");// configEditorFXOrange.css");//
 		scene.setFill(Color.TRANSPARENT); // needed to eliminate the white
 											// border
 
 		stage = new Stage();
-		//stage.setMaxHeight(720);
+		stage.setMaxHeight(800);
+		stage.setMaxWidth(1366);
+		//stage.setMinHeight(720);
 		//stage.setMinWidth(800);
 		stage.setScene(scene);
 		// stage.initStyle(StageStyle.TRANSPARENT);
-		stage.setOpacity(.9);
+		stage.setOpacity(.95);
 		stage.sizeToScene();
 		stage.toFront();
 		stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));// toString()));
@@ -743,6 +756,31 @@ public class CrewEditorFX {
 		ObservableList<String> sponsorOList = FXCollections.observableArrayList(sponsors);
 
 		JFXComboBox<String> cb = new JFXComboBox<String>(sponsorOList);
+		//2017-02-22 Add the use of COMBOBOX_WIDTH
+		cb.setCellFactory(
+		        new Callback<ListView<String>, ListCell<String>>() {
+		            @Override public ListCell<String> call(ListView<String> param) {
+		                final ListCell<String> cell = new ListCell<String>() {
+		                    {
+		                        super.setPrefWidth(COMBOBOX_WIDTH);
+		                    }
+		                    @Override public void updateItem(String item,
+		                        boolean empty) {
+		                            super.updateItem(item, empty);
+		                            if (item != null) {
+		                                setText(item);
+		                                //if (item.contains("")) {
+		                                //    setTextFill(Color.RED);
+		                                //}
+		                            }
+		                            else {
+		                                setText(null);
+		                            }
+		                        }
+		            };
+		            return cell;
+		        }
+		    });
 
 		//sponsorCBs.add(index, cb);
 
