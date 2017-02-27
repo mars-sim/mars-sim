@@ -334,11 +334,12 @@ public class MarsProjectFX extends Application  {
 */
 
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!major.equals("8") || Double.parseDouble(update) < 91.0) {
-    		logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.91. Terminating...");
-    		System.out.println("Note: mars-sim requires at least Java 8.0.91. Terminating...");
-    		Platform.exit();
-	        System.exit(1);
+    	if (!major.equals("8") || Double.parseDouble(update) < 72.0) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.72. Terminating...");
+    		//System.out.println("Note: mars-sim requires at least Java 8.0.72. Terminating...");
+    		exitWithError("Note: mars-sim requires at least Java 8.0.72. Terminated.");
+    		//Platform.exit();
+	        //System.exit(1);
     	}
 
     	else {
@@ -363,9 +364,7 @@ public class MarsProjectFX extends Application  {
     					flag = false;
     				}
     				else {
-    					logger.info("Cannot load more than one saved sim. ");
-    			        Platform.exit();
-    			        System.exit(1);
+    					exitWithError("Cannot load more than one saved sim.");
     				}
     			}
     		}
@@ -468,6 +467,7 @@ public class MarsProjectFX extends Application  {
 		    	    // this will generate html files for in-game help based on config xml files
 		    	    // 2016-04-16 Relocated the following to handleNewSimulation() right before calling ScenarioConfigEditorFX.
 		    	    HelpGenerator.generateHtmlHelpFiles();
+		    	    logger.info("Done creating help files.");
 			        Platform.exit();
 			        System.exit(1);
 
@@ -671,6 +671,16 @@ public class MarsProjectFX extends Application  {
     }
 
     /**
+     * Exit the simulation with an error message.
+     * @param message the error message.
+     */
+    private void exitWithError(String message) {
+        logger.log(Level.SEVERE, message);
+        Platform.exit();
+        System.exit(1);
+    }
+
+    /**
      * Show a modal error message dialog.
      * @param message the error message.
      * @param e the thrown exception or null if none.
@@ -683,11 +693,11 @@ public class MarsProjectFX extends Application  {
             logger.log(Level.SEVERE, message);
         }
 
-        if (!headless) {
-        	if (!OS.contains("mac"))
-        		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        //if (!headless) {
+        //	if (!OS.contains("mac"))
+        //		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         	// Warning: cannot load the editor in macosx if it was a JDialog
-        }
+        //}
     }
 
     public void setDirectory() {

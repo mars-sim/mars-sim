@@ -76,23 +76,32 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final String JOB = Msg.getString("icon.job");
 	private static final String ROLE = Msg.getString("icon.role");
 	private static final String SHIFT = Msg.getString("icon.shift");
-	
+
 	private static final String TITLE = Msg.getString("icon.title");
-	
-	private String oldRoleString = "", 
+	private static final String ONE_SPACE = " ";
+	private static final String TWO_SPACES = "  ";
+	private static final String DEAD =	"Dead";
+	private static final String SHIFT_FROM = " Shift :  (From ";
+	private static final String TO = " to ";
+	private static final String MILLISOLS = " millisols)";
+	private static final String SHIFT_ANYTIME = " Shift :  Anytime";
+	private static final String ONE_SPACE_SHIFT = " Shift";
+
+	private String oldRoleString = "",
 					oldJobString = "",
 					oldTownString = "";
 	private ShiftType oldShiftType = null;
 	private JLabel townLabel;
     private JLabel jobLabel;
     private JLabel roleLabel;
-    private JLabel shiftLabel; 
-	
+    private JLabel shiftLabel;
+
 	/** Main window. */
 	protected MainDesktopPane desktop;
 	/** Unit for this window. */
 	protected Unit unit;
 	protected SlidePaneFactory factory;
+	protected MainScene mainScene;
 
     /**
      * Constructor
@@ -107,11 +116,12 @@ public abstract class UnitWindow extends JInternalFrame {
 
         // Initialize data members
         this.desktop = desktop;
+        mainScene = desktop.getMainScene();
         this.unit = unit;
-        
+
 	    this.setMaximumSize(new Dimension(480, 580));
 	    this.setPreferredSize(new Dimension(480, 580));
-	    
+
         // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
         //BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
         //titlePane.setOpaque(true);
@@ -122,17 +132,17 @@ public abstract class UnitWindow extends JInternalFrame {
         // Create main panel
         JPanel mainPane = new JPanel();//new BorderLayout());
         mainPane.setBorder(new MarsPanelBorder());//setBorder(MainDesktopPane.newEmptyBorder());
- 
+
         setContentPane(mainPane);
-        
+
         //getContentPane().setBackground(THEME_COLOR);
 
         // Create name panel
-        //namePanel = new JPanel(new BorderLayout(0, 0));     
+        //namePanel = new JPanel(new BorderLayout(0, 0));
         namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         namePanel.setPreferredSize(new Dimension(465,196));
         namePanel.setBorder(null);
-        factory = SlidePaneFactory.getInstance();  
+        factory = SlidePaneFactory.getInstance();
         factory.add(namePanel,"Status", getImage(TITLE), false);
 
         //namePanel.setBackground(THEME_COLOR);
@@ -145,16 +155,16 @@ public abstract class UnitWindow extends JInternalFrame {
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         String name = "";
         //if (unit instanceof Vehicle)
-        	name = " " + Conversion.capitalize(unit.getShortenedName()) + " ";
+        	name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
         //else
         //	name = " " + Conversion.capitalize(unit.getName()) + " ";
-        
+
         JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEFT);
         nameLabel.setOpaque(true);
-        
+
         Font font = null;
-        
-		if (MainScene.OS.contains("linux")) {   
+
+		if (MainScene.OS.contains("linux")) {
 			new Font("DIALOG", Font.BOLD, 8);
 		}
 		else {
@@ -173,76 +183,76 @@ public abstract class UnitWindow extends JInternalFrame {
         //namePanel.add(nameLabel, BorderLayout.WEST);
         namePanel.add(nameLabel);
 
-        JLabel empty = new JLabel(" ");
+        JLabel empty = new JLabel(ONE_SPACE);
         namePanel.add(empty);
         empty.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
+
         // Create description label if necessary.
         if (hasDescription) {
             if (unit instanceof Person) {
-            	     	
+
             	JLabel townIconLabel = new JLabel();
             	townIconLabel.setToolTipText("Associated Settlement");
             	setImage(TOWN, townIconLabel);
-            	 
+
             	JLabel jobIconLabel = new JLabel();
             	jobIconLabel.setToolTipText("Job");
             	setImage(JOB, jobIconLabel);
-            	
+
             	JLabel roleIconLabel = new JLabel();
             	roleIconLabel.setToolTipText("Role");
             	setImage(ROLE, roleIconLabel);
-            	
+
             	JLabel shiftIconLabel = new JLabel();
             	shiftIconLabel.setToolTipText("Work Shift");
-            	setImage(SHIFT, shiftIconLabel);          	
-            	
+            	setImage(SHIFT, shiftIconLabel);
+
             	JPanel townPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
             	JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            	JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
-            	JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));      
+            	JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            	JPanel shiftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
             	townLabel = new JLabel();
              	townLabel.setFont(font);
-            	
+
              	jobLabel = new JLabel();
                 jobLabel.setFont(font);
-                
+
                 roleLabel = new JLabel();
                 roleLabel.setFont(font);
-                
+
                 shiftLabel = new JLabel();
                 shiftLabel.setFont(font);
-                
+
             	statusUpdate();
-            	
+
                 townPanel.add(townIconLabel);
                 townPanel.add(townLabel);
                 townPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                
+
                 jobPanel.add(jobIconLabel);
                 jobPanel.add(jobLabel);
                 jobPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                
+
                 rolePanel.add(roleIconLabel);
                 rolePanel.add(roleLabel);
                 rolePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                
+
                 shiftPanel.add(shiftIconLabel);
                 shiftPanel.add(shiftLabel);
                 shiftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-                
+
             	JPanel rowPanel = new JPanel(new GridLayout(4,1,0,0));
             	rowPanel.setBorder(new MarsPanelBorder());
-            	
+
             	rowPanel.add(townPanel);//, FlowLayout.LEFT);
             	rowPanel.add(rolePanel);//, FlowLayout.LEFT);
             	rowPanel.add(shiftPanel);//, FlowLayout.LEFT);
             	rowPanel.add(jobPanel);//, FlowLayout.LEFT);
-            	
+
                 namePanel.add(rowPanel);
                 rowPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-                
+
 
             }
         }
@@ -285,35 +295,35 @@ public abstract class UnitWindow extends JInternalFrame {
         ImageIcon imageIcon = new ImageIcon(img);
     	label.setIcon(imageIcon);
 	}
-	
+
 	public Image getImage(String imageLocation) {
         URL resource = ImageLoader.class.getResource(imageLocation);
         Toolkit kit = Toolkit.getDefaultToolkit();
         Image img = kit.createImage(resource);
         return (new ImageIcon(img)).getImage();
 	}
-	
+
     private ImageIcon createImageIcon(String path, String description) {
         java.net.URL imgURL = getClass().getResource(path);
         if (imgURL != null) {
         	if (description != null)
         		return new ImageIcon(imgURL, description);
-        	else 
+        	else
         		return new ImageIcon(imgURL);
         } else {
             System.err.println("Couldn't find file: " + path);
             return null;
         }
     }
-    
-    public void statusUpdate() {   
-        	
+
+    public void statusUpdate() {
+
     	Person p = (Person) unit;
-   	
+
     	String townString = null;
-    	
+
     	if (p.getPhysicalCondition().isDead())
-    		townString = "Buried";// + p.getBuriedSettlement();
+    		townString = DEAD;// + p.getBuriedSettlement();
     	else
     		townString = Conversion.capitalize(unit.getDescription());
     	//System.out.println("Description is : " + text);
@@ -321,58 +331,58 @@ public abstract class UnitWindow extends JInternalFrame {
         	oldJobString = townString;
         	if (townString.length() > 40)
         		townString = townString.substring(0, 40);
-        	townLabel.setText("  " + townString);// , JLabel.CENTER);
+        	townLabel.setText(TWO_SPACES + townString);// , JLabel.CENTER);
         }
-        
+
         String jobString = p.getMind().getJob().getName(p.getGender());
         if (!oldJobString.equals(jobString)) {
         	oldJobString = jobString;
-        	jobLabel.setText("  " + jobString);// , JLabel.CENTER);
+        	jobLabel.setText(TWO_SPACES + jobString);// , JLabel.CENTER);
         }
-        
+
         String roleString = p.getRole().getType().getName();
         if (!oldRoleString.equals(roleString)) {
 /*            int l = roleString.length();
             if (l >= 15) {
                 if (roleString.contains("Chief of Safety")
                 	|| roleString.contains("Chief of Supply"))
-                	roleString = roleString.substring(0, 15);              
+                	roleString = roleString.substring(0, 15);
                 else if (l >= 16 && roleString.contains("Chief of Mission"))
                 	roleString = "Chief of Mission";
                 else if (l >= 18 && roleString.contains("Chief of Logistics"))
                 	roleString = "Chief of Logistics";
             }
-*/            
+*/
            	oldRoleString = roleString;
-	        roleLabel.setText("  " + roleString);
+	        roleLabel.setText(TWO_SPACES + roleString);
         }
-        
+
         ShiftType newShiftType = p.getTaskSchedule().getShiftType();
         if (oldShiftType != newShiftType) {
         	oldShiftType = newShiftType;
-        	shiftLabel.setText("  " + newShiftType.getName() + getTimePeriod(newShiftType));
+        	shiftLabel.setText(TWO_SPACES + newShiftType.getName() + getTimePeriod(newShiftType));
         }
     }
-    
+
     public String getTimePeriod(ShiftType shiftType) {
     	String time = null;
     	if (shiftType.equals(ShiftType.A))
-    		time = " Shift :  (From " + TaskSchedule.A_START + " to " + TaskSchedule.A_END + " millisols)";
+    		time = SHIFT_FROM + TaskSchedule.A_START + TO + TaskSchedule.A_END + MILLISOLS;
     	else if (shiftType.equals(ShiftType.B))
-    		time = " Shift :  (From " + TaskSchedule.B_START + " to " + TaskSchedule.B_END + " millisols)";
+    		time = SHIFT_FROM + TaskSchedule.B_START + TO + TaskSchedule.B_END + MILLISOLS;
     	else if (shiftType.equals(ShiftType.X))
-    		time = " Shift :  (From " + TaskSchedule.X_START + " to " + TaskSchedule.Y_END + " millisols)";
+    		time = SHIFT_FROM + TaskSchedule.X_START + TO + TaskSchedule.Y_END + MILLISOLS;
     	else if (shiftType.equals(ShiftType.Y))
-    		time = " Shift :  (From " + TaskSchedule.Y_START + " to " + TaskSchedule.Y_END + " millisols)";
+    		time = SHIFT_FROM + TaskSchedule.Y_START + TO + TaskSchedule.Y_END + MILLISOLS;
     	else if (shiftType.equals(ShiftType.Z))
-    		time = " Shift :  (From " + TaskSchedule.Z_START + " to " + TaskSchedule.Z_END + " millisols)";
+    		time = SHIFT_FROM + TaskSchedule.Z_START + TO + TaskSchedule.Z_END + MILLISOLS;
     	else if (shiftType.equals(ShiftType.ON_CALL))
-    		time = " Shift :  Anytime";
+    		time = SHIFT_ANYTIME;
     	else
-    		time = " Shift";	
+    		time = ONE_SPACE_SHIFT;
     	return time;
     }
-    
+
     /**
      * Adds a tab panel to the center panel.
      *
@@ -417,27 +427,29 @@ public abstract class UnitWindow extends JInternalFrame {
      */
     public void update() {
 		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()
-    	SwingUtilities.invokeLater(() -> {	
+    	SwingUtilities.invokeLater(() -> {
 	    	// Update each of the tab panels.
 	        for (TabPanel tabPanel : tabPanels) {
 	        	tabPanel.update();
 	        }
-	        
+
 	        if (unit instanceof Person) {
 	        	statusUpdate();
 	        }
     	});
-    	
-    	int theme = desktop.getMainScene().getTheme();
+
+    	int theme = mainScene.getTheme();
     	if (theme != themeCache) {
 	    	if (theme == 0 || theme == 6) {
 	        	factory.update(new Color(0xC6D9D9));
+	        	themeCache = theme;
 			}
 			else if (theme == 7) {
-		    	factory.update(new Color(0xC1BF9D));	
+		    	factory.update(new Color(0xC1BF9D));
+	        	themeCache = theme;
 			}
     	}
-    	
+
 
     }
 
@@ -545,7 +557,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	 */
 	public void destroy() {
 		namePanel = null;
-        if (tabPanels != null) 
+        if (tabPanels != null)
         	tabPanels.clear();
 		tabPanels = null;
 		centerPanel = null;
