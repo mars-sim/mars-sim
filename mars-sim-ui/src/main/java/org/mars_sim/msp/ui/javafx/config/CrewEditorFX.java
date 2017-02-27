@@ -86,7 +86,7 @@ import de.jonato.jfxc.controls.combobox.FilterComboBox;
 public class CrewEditorFX {
 
 	/** Tool name. */
-	public static final String TITLE = "Crew Editor";
+	public static final String TITLE = "Crew Editor for Alpha Crew";
 
 	public static final int COMBOBOX_WIDTH = 270;
 	public static final int HEIGHT = 720;
@@ -187,6 +187,7 @@ public class CrewEditorFX {
 		BorderPane borderPane = new BorderPane();
 		borderPane.setPadding(new Insets(5, 5, 5, 5));
 
+/*
 		Label titleLabel = new Label("Alpha Crew Roster");
 		titleLabel.setAlignment(Pos.CENTER);
 		titleLabel.setPadding(new Insets(5, 5, 5, 15));
@@ -195,7 +196,7 @@ public class CrewEditorFX {
 		hTop.setAlignment(Pos.CENTER);
 		hTop.getChildren().add(titleLabel);
 		borderPane.setTop(titleLabel);
-
+*/
 		// Create list panel.
 		gridPane = new GridPane();
 		gridPane.setPadding(new Insets(15, 15, 15, 15));
@@ -205,9 +206,13 @@ public class CrewEditorFX {
 
 		Label empty = new Label("");
 		Label slotOne = new Label("Slot 1");
+		slotOne.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		Label slotTwo = new Label("Slot 2");
+		slotTwo.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		Label slotThree = new Label("Slot 3");
+		slotThree.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		Label slotFour = new Label("Slot 4");
+		slotFour.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 
 		setID(slotOne);
 		setID(slotTwo);
@@ -223,14 +228,20 @@ public class CrewEditorFX {
 		gridPane.getChildren().addAll(empty, slotOne, slotTwo, slotThree, slotFour);
 
 		Label name = new Label("Name :");
-		name.setPrefWidth(65);
-		name.setMaxWidth(65);
-		name.setMinWidth(65);
+		name.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
+		name.setPrefWidth(70);
+		name.setMaxWidth(70);
+		name.setMinWidth(70);
 		Label gender = new Label("Gender :");
+		gender.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		Label job = new Label("Job :");
+		job.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		Label sponsor = new Label("Sponsor :");
+		sponsor.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		Label country = new Label("Country :");
+		country.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		Label personality = new Label("MBTI :");
+		personality.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;-fx-text-fill: green;");
 		// Label destination = new Label("Destination :");
 
 		setID(name);
@@ -362,28 +373,30 @@ public class CrewEditorFX {
 
 		// Create button pane.
 		HBox commitBox = new HBox();
-		commitBox.setPadding(new Insets(10, 10, 25, 10));
+		commitBox.setPadding(new Insets(2, 10, 2, 10));
 		commitBox.setAlignment(Pos.CENTER);
 		commitBox.getChildren().add(commitButton);
 
 
 		Label destLabel = new Label("Settlement Destination :  ");
+		destLabel.setStyle("-fx-font-size: 17px; -fx-font-weight: bold;-fx-text-fill: green;");
 		String dest = personConfig.getConfiguredPersonDestination(0, ALPHA_CREW);
 		destinationCB = setUpCB(DESTINATION_ROW, 0); // 6 = Destination
 		destinationCB.setValue(dest);
 
 		// Create button pane.
-		HBox destBox = new HBox();
-		destBox.setPadding(new Insets(10, 10, 10, 10));
-		destBox.setAlignment(Pos.CENTER);
-		destBox.getChildren().addAll(destLabel, destinationCB);
-
-		VBox vBottom = new VBox();
-		vBottom.setPadding(new Insets(10, 10, 25, 10));
-		vBottom.setAlignment(Pos.CENTER);
-		vBottom.getChildren().addAll(destBox, commitBox);
-
-		borderPane.setBottom(vBottom);
+		HBox hDestBox = new HBox();
+		hDestBox.setPadding(new Insets(10, 10, 10, 10));
+		hDestBox.setAlignment(Pos.CENTER);
+		hDestBox.getChildren().addAll(destLabel, destinationCB, commitBox);
+/*
+		VBox vDestBox = new VBox();
+		vDestBox.setPadding(new Insets(10, 10, 25, 10));
+		vDestBox.setAlignment(Pos.CENTER);
+		vDestBox.getChildren().addAll(hDestBox, commitBox);
+*/
+		//borderPane.setBottom(vDestBox);
+		borderPane.setTop(hDestBox);
 
 
 		layout.setStyle("-fx-background-radius:20; -fx-background-color: null;");// -fx-background-color:
@@ -966,7 +979,7 @@ public class CrewEditorFX {
 				"Create a new question for drop shadow effects.\n\nDrag to move\n\nDouble click to close");
 		label.setPadding(new Insets(10));
 
-		label.setStyle("-fx-font-size: 15px; -fx-text-fill: green;");
+		label.setStyle("-fx-font-size: 14px; -fx-text-fill: green;");
 		label.setMaxWidth(250);
 		label.setWrapText(true);
 

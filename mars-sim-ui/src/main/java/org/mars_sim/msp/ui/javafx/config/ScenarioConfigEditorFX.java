@@ -1225,16 +1225,20 @@ public class ScenarioConfigEditorFX {
 					return;
 				}
 
-				// check if the fourth from the last character is a whitespace or not, if not true, setError
-				if (latStr.charAt(latStr.length() - 4) != '.'){
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
-					return;
+				if (latStr.length() > 3) {
+					// check if the fourth from the last character is a whitespace or not, if not true, setError
+					if (latStr.charAt(latStr.length() - 4) != '.'){
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+						return;
+					}
 				}
 
-				// check if the fifth from the last character is a digit or not, if not true, setError
-				if (!Character.isDigit(latStr.charAt(latStr.length() - 5))){
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
-					return;
+				if (latStr.length() > 4) {
+					// check if the fifth from the last character is a digit or not, if not true, setError
+					if (!Character.isDigit(latStr.charAt(latStr.length() - 5))){
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+						return;
+					}
 				}
 
 				String longStr = tableViewCombo.getAllData().get(x).getLongitude().toString().trim().toUpperCase();;
@@ -1289,16 +1293,20 @@ public class ScenarioConfigEditorFX {
 					return;
 				}
 
-				// check if the fourth from the last character is a whitespace or not, if not true, setError
-				if (longStr.charAt(longStr.length() - 4) != '.'){
-					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
-					return;
+				if (longStr.length() > 3) {
+					// check if the fourth from the last character is a whitespace or not, if not true, setError
+					if (longStr.charAt(longStr.length() - 4) != '.'){
+						setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
+						return;
+					}
 				}
 
-				// check if the fifth from the last character is a digit or not, if not true, setError
-				if (!Character.isDigit(longStr.charAt(longStr.length() - 5))){
-					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
-					return;
+				if (longStr.length() > 4) {
+					// check if the fifth from the last character is a digit or not, if not true, setError
+					if (!Character.isDigit(longStr.charAt(longStr.length() - 5))){
+						setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
+						return;
+					}
 				}
 
 				if (x + 1 < size ) {
