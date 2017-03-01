@@ -174,7 +174,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>tilesfx</artifactId>
-			<version>1.3.5</version>
+			<version>1.3.6</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.hansolo</groupId>

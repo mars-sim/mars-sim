@@ -91,10 +91,10 @@ implements Serializable {
 	// Random value indicator.
 	public static final String RANDOM = "random";
 
-	private double[] rover_values = new double[] {0,0}; 
+	private double[] rover_values = new double[] {0,0};
 
-	private double[][] life_support_values = new double[2][7]; 
-	
+	private double[][] life_support_values = new double[2][7];
+
 	// Data members
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
@@ -104,7 +104,7 @@ implements Serializable {
 	private Map<String, List<String>> settlementNamesMap = new HashMap<>();
 	private Map<Integer, String> scenarioMap = new HashMap<>();
 	private Map<Integer, String> settlementMap = new HashMap<>();
-	
+
 	private Document settlementDoc;
 
 	//private MultiplayerClient multiplayerClient;
@@ -158,31 +158,31 @@ implements Serializable {
 	// 2016-10-14 loadMissionControl()
     @SuppressWarnings("unchecked")
 	public double[] loadMissionControl() {
-    	
+
 		if (rover_values[0] != 0) {
 			//System.out.println("using saved rover_values");
 			return rover_values;
 		}
-		
+
 		else {
 			Element root = settlementDoc.getRootElement();
 			Element missionControlElement = root.getChild(MISSION_CONTROL);
 			Element lifeSupportRange = (Element) missionControlElement.getChild(ROVER_LIFE_SUPPORT_RANGE_ERROR_MARGIN);
 			Element fuelRange = (Element) missionControlElement.getChild(ROVER_FUEL_RANGE_ERROR_MARGIN);
-			
+
 			rover_values[0] = Double.parseDouble(lifeSupportRange.getAttributeValue(VALUE));
 			if (rover_values[0] < 1.0 || rover_values[0] > 15.0 )
 				rover_values[0] = 5.0;
-			
-			
+
+
 			rover_values[1]= Double.parseDouble(fuelRange.getAttributeValue(VALUE));
 			if (rover_values[1] < 1.0 || rover_values[1] > 10.0 )
 				rover_values[1] = 3.0;
-			
+
 			return rover_values;
 		}
     }
-    	
+
 	/**
 	 * Load the life support requirements from the XML document.
 	 * @return an array of double.
@@ -191,11 +191,11 @@ implements Serializable {
 	// 2016-12-11 loadLifeSupportRequirements()
     @SuppressWarnings("unchecked")
 	public double[][] loadLifeSupportRequirements() {
-    	
+
 		if (life_support_values[0][0] != 0) {
 			return life_support_values;
 		}
-		
+
 		else {
 			Element root = settlementDoc.getRootElement();
 			Element req = root.getChild(LIFE_SUPPORT_REQUIREMENTS);
@@ -208,30 +208,30 @@ implements Serializable {
 					TEMPERATURE,
 					RELATIVE_HUMIDITY,
 					VENTILATION};
-			
+
 			for (int i = 0; i < 7; i++) {
 				life_support_values = getValues(req, types[i], i);
 			}
-			
+
 			return life_support_values;
 		}
     }
-    
+
     public double[][] getValues(Element element, String name, int i) {
     	double[][] result = new double[2][7];
-    	
+
 		Element e1 = (Element) element.getChild(name);
-		
+
 		result[0][i] = Double.parseDouble(e1.getAttributeValue(LOW));
 		//if (result[0] < 1.0 || result[0] > 15.0 )
 		//	result[0] = 101.0;
-		
+
 		result[1][i] = Double.parseDouble(e1.getAttributeValue(HIGH));
 		//if (result[0] < 1.0 || result[0] > 15.0 )
 		//	result[0] = 99.0;
-		
+
 		return result;
-/*			
+/*
 		TOTAL_PRESSURE; // low="99.9" high="102.7" />
 		PARTIAL_PRESSURE_OF_O2 ; //low="19.5" high="23.1" />
 		PARTIAL_PRESSURE_OF_N2 ;// low="79" high="79"/>
@@ -239,9 +239,9 @@ implements Serializable {
 		TEMPERATURE ;// low="18.3" high="23.9"/>
 		RELATIVE_HUMIDITY ; //low="30" high="70"/>
 		VENTILATION ;//
-*/			
+*/
     }
-    
+
 	/**
 	 * Load the settlement templates from the XML document.
 	 * @param settlementDoc DOM document with settlement configuration.
@@ -264,20 +264,20 @@ implements Serializable {
 		    if (scenarioMap.containsKey(scenarioID) ) {
 		        throw new IllegalStateException("Error in SettlementConfig.xml: scenarioID in settlement template " + settlementTemplateName + " is not unique.");
 		    }
-		    else 
+		    else
 		    	scenarioMap.put(scenarioID, settlementTemplateName);
-		    		
+
 		    int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
 		    int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
 		    // 2014-10-29 Added scenarioID
 			SettlementTemplate template = new SettlementTemplate(settlementTemplateName, scenarioID, defaultPopulation, defaultNumOfRobots);
 			settlementTemplates.add(template);
-					
+
 			Set<Integer> existingIDs = new HashSet<Integer>();
 			// 2015-12-13 Added buildingTypeIDMap
 			Map<String, Integer> buildingTypeIDMap = new HashMap<>();
-				   
+
 			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
 
@@ -295,7 +295,7 @@ implements Serializable {
 				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
-				
+
 			    // 2014-10-28  Changed id to bid
 			    int bid = Integer.parseInt(buildingElement.getAttributeValue(ID));
 			    if (existingIDs.contains(bid)) {
@@ -303,9 +303,9 @@ implements Serializable {
 			    }
 			    else
 			    	existingIDs.add(bid);
-			    			    
+
 				String buildingType = buildingElement.getAttributeValue(TYPE);
-			
+
 				if (buildingTypeIDMap.containsKey(buildingType)) {
 					int last = buildingTypeIDMap.get(buildingType);
 					buildingTypeIDMap.put(buildingType, last + 1);
@@ -494,7 +494,7 @@ implements Serializable {
 			}
 			initialSettlement.numOfRobots = numOfRobots;
 
-/*			
+/*
 			// 2015-10-04 Added MSD element
 			Element maxMSDElement = settlementElement.getChild(SPONSOR);
 			String maxMSDStr = maxMSDElement.getAttributeValue(NAME);
@@ -505,12 +505,12 @@ implements Serializable {
 			}
 			initialSettlement.maxMSD = maxMSD;
 */
-			
+
 			Element sponsorElement = settlementElement.getChild(SPONSOR);
 			String sponsor = sponsorElement.getAttributeValue(NAME);
 			initialSettlement.sponsor = sponsor;
 
-			
+
 
 			initialSettlements.add(initialSettlement);
 		}
@@ -562,7 +562,7 @@ implements Serializable {
 			arrivingSettlement.populationNumber = number;
 
 			Element numOfRobotsElement = settlementElement.getChild(NUM_OF_ROBOTS);
-			String numOfRobotsStr = populationElement.getAttributeValue(ROBOTS_NUMBER);
+			String numOfRobotsStr = numOfRobotsElement.getAttributeValue(ROBOTS_NUMBER);
 			int numOfRobots = Integer.parseInt(numOfRobotsStr);
 			if (numOfRobots < 0) {
 				throw new IllegalStateException("numOfRobots cannot be less than zero: " + number);
@@ -577,12 +577,12 @@ implements Serializable {
 			}
 			arrivingSettlement.maxMSD = number;
 */
-			
+
 			Element sponsorElement = settlementElement.getChild(SPONSOR);
 			String sponsor = sponsorElement.getAttributeValue(NAME);
 			arrivingSettlement.sponsor = sponsor;
 
-			
+
 			newArrivingSettlements.add(arrivingSettlement);
 		}
 	}
@@ -599,13 +599,13 @@ implements Serializable {
 		List<Element> settlementNameNodes = settlementNameList.getChildren(SETTLEMENT_NAME);
 		for (Element settlementNameElement : settlementNameNodes) {
 			String name = settlementNameElement.getAttributeValue(VALUE);
-			String sponsor = settlementNameElement.getAttributeValue(SPONSOR);			
-			
-			// (Skipped) match sponsor to the corresponding element in sponsor list			
-			// load names list 
-			List<String> oldlist = settlementNamesMap.get(sponsor);			
+			String sponsor = settlementNameElement.getAttributeValue(SPONSOR);
+
+			// (Skipped) match sponsor to the corresponding element in sponsor list
+			// load names list
+			List<String> oldlist = settlementNamesMap.get(sponsor);
 			// add the settlement name
-			if (oldlist == null) { //oldlist.isEmpty() || 
+			if (oldlist == null) { //oldlist.isEmpty() ||
 				List<String> newlist = new ArrayList<>();
 				newlist.add(name);
 				settlementNamesMap.put(sponsor, newlist);
@@ -614,13 +614,13 @@ implements Serializable {
 				oldlist.add(name);
 				settlementNamesMap.put(sponsor, oldlist);
 			}
-			
+
 			int newID = settlementMap.size() + 1;
 			settlementMap.put(newID, name);
 		}
 
 	}
-    
+
 	/**
 	 * Obtains the key of a value in a particular map
 	 * @param map
@@ -639,8 +639,8 @@ implements Serializable {
                 }
             }
         }
-    	
-    	return result;    	
+
+    	return result;
     }
 
     /**
@@ -659,7 +659,7 @@ implements Serializable {
             		settlementMap.put(key, newName);
                 }
             }
-        }  		   	
+        }
     }
 
 	/**
@@ -920,14 +920,14 @@ implements Serializable {
 	if ((index >= 0) && (index < initialSettlements.size())) {
 		InitialSettlement settlement = initialSettlements.get(index);
 		//if (settlement.randomName) return RANDOM;
-		//else 
+		//else
 		//System.out.println("settlement : sponsor is " + settlement.sponsor);
 		return settlement.sponsor;
 	}
 	else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 }
 
-	
+
 	/**
 	 * Gets the maximum number of Mars Society delegates for an initial settlement.
 	 * @param index the index of the initial settlement.
@@ -943,7 +943,7 @@ implements Serializable {
 		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
 	}
 	 */
-	
+
 	/**
 	 * Gets a list of possible settlement names.
 	 * @return list of settlement names as strings
@@ -960,7 +960,7 @@ implements Serializable {
 	public List<String> getSettlementNameList(String sponsor) {
 		return new ArrayList<String>(settlementNamesMap.get(sponsor));
 	}
-	
+
 	/**
 	 * Clears the list of initial settlements.
 	 */
@@ -975,18 +975,18 @@ implements Serializable {
 	 * @param latitude the settlement latitude (ex. "10.3 S").
 	 * @param longitude the settlement longitude (ex. "47.0 W").
 	 */
-	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots, 
+	public void addInitialSettlement(String name, String template, int populationNum, int numOfRobots,
 			String sponsor, String latitude, String longitude) {
 	    InitialSettlement settlement = new InitialSettlement();
 	    settlement.name = name;
 	    settlement.template = template;
 	    settlement.populationNumber = populationNum;
 	    settlement.numOfRobots = numOfRobots;
-	    settlement.sponsor = sponsor;	    
+	    settlement.sponsor = sponsor;
 	    //System.out.println("SettmaxMSDg : numOfRobots is " + numOfRobots);
 	    //settlement.scenarioID = scenarioMap.get(template);
 	    settlement.scenarioID = getMapKey(scenarioMap, template);
-	    
+
 		// take care to internationalize the coordinates
 		latitude = latitude.replace("N",Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
 		latitude = latitude.replace("S",Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1028,15 +1028,15 @@ implements Serializable {
 		private boolean randomName = false;
 		private boolean randomLongitude = false;
 		private boolean randomLatitude = false;
-		
+
 		private String name;
 		private String template;
 		private String longitude;
 		private String latitude;
 		private int populationNumber;
-		private int numOfRobots;		
+		private int numOfRobots;
 		private String sponsor = Msg.getString("ReportingAuthorityType.MarsSociety"); //$NON-NLS-1$ //"Mars Society (MS)";
-		
+
 		//private int maxMSD;
 		private int scenarioID;
 	}
@@ -1051,7 +1051,7 @@ implements Serializable {
 		private boolean randomName = false;
 		private boolean randomLongitude = false;
 		private boolean randomLatitude = false;
-		
+
 		private String name;
 		private String template;
 		private double arrivalTime;

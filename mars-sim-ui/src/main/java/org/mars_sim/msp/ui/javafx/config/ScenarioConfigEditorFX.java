@@ -970,7 +970,7 @@ public class ScenarioConfigEditorFX {
 		double phi = Coordinates.getRandomLatitude();
 		String formattedLatitude = Coordinates.getFormattedLatitudeString(phi);
 		int degreeIndex = formattedLatitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		return formattedLatitude.substring(0, degreeIndex) + " "
+		return formattedLatitude.substring(0, degreeIndex)// + " "
 				+ formattedLatitude.substring(degreeIndex + 1, formattedLatitude.length());
 	}
 
@@ -992,7 +992,7 @@ public class ScenarioConfigEditorFX {
 		double theta = Coordinates.getRandomLongitude();
 		String formattedLongitude = Coordinates.getFormattedLongitudeString(theta);
 		int degreeIndex = formattedLongitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
-		return formattedLongitude.substring(0, degreeIndex) + " "
+		return formattedLongitude.substring(0, degreeIndex)// + " "
 				+ formattedLongitude.substring(degreeIndex + 1, formattedLongitude.length());
 	}
 
@@ -1209,6 +1209,7 @@ public class ScenarioConfigEditorFX {
 
 				// check if the second from the last character is a whitespace or not, if not true, setError
 				if (latStr.charAt(latStr.length() - 2) != ' '){
+					//System.out.println("has no whitespace");
 					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 					return;
 				}
@@ -1216,18 +1217,20 @@ public class ScenarioConfigEditorFX {
 				if (latStr.length() > 2) {
 					// check if the third from the last character is a digit or not, if not true, setError
 					if (!Character.isDigit(latStr.charAt(latStr.length() - 3))){
+						//System.out.println(">2");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
 				}
-				else {
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
-					return;
-				}
+				//else {
+				//	setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+				//	return;
+				//}
 
 				if (latStr.length() > 3) {
 					// check if the fourth from the last character is a whitespace or not, if not true, setError
 					if (latStr.charAt(latStr.length() - 4) != '.'){
+						//System.out.println(">3");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
@@ -1236,6 +1239,7 @@ public class ScenarioConfigEditorFX {
 				if (latStr.length() > 4) {
 					// check if the fifth from the last character is a digit or not, if not true, setError
 					if (!Character.isDigit(latStr.charAt(latStr.length() - 5))){
+						//System.out.println(">4");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
@@ -1288,10 +1292,10 @@ public class ScenarioConfigEditorFX {
 						return;
 					}
 				}
-				else {
-					setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
-					return;
-				}
+				//else {
+				//	setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
+				//	return;
+				//}
 
 				if (longStr.length() > 3) {
 					// check if the fourth from the last character is a whitespace or not, if not true, setError
