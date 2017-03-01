@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.javafx.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -120,20 +121,14 @@ public class CrewEditorFX {
 
 	private GridPane gridPane;
 
-	private List<JFXTextField> nameTF;
+	private JFXButton commitButton;
 	private JFXComboBox<String> destinationCB;
 	private JFXComboBox<String> destinationsOListComboBox = new JFXComboBox<String>();
 
 	private List<JFXComboBox<String>> genderList, jobList, countryList, sponsorList;
-
+	private List<JFXTextField> nameTF;
 	private List<SettlementBase> settlements;
 	private List<String> settlementNames = new ArrayList<String>();
-
-	//private List<JFXComboBox<String>> sponsorCBs = new ArrayList<>();
-	//private List<JFXComboBox<String>> genderCBs = new ArrayList<>();
-	//private List<JFXComboBox<String>> jobCBs = new ArrayList<>();
-	//private List<JFXComboBox<String>> countryCBs = new ArrayList<>();
-
 
 	private ObservableList<String> destinationsOList;
 
@@ -143,6 +138,8 @@ public class CrewEditorFX {
 	private ScenarioConfigEditorFX scenarioConfigEditorFX;
 
 	private PersonConfig personConfig;
+
+	private ValidationSupport vs;
 
 	/**
 	 * Constructor.
@@ -271,7 +268,7 @@ public class CrewEditorFX {
 		}
 
 		// Create commit button.
-		JFXButton commitButton = new JFXButton();
+		commitButton = new JFXButton();
 		setMouseCursor(commitButton);
 		commitButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream("/fxui/icons/round_play_32.png"))));
 		commitButton.getStyleClass().add("button-mid");
@@ -449,6 +446,7 @@ public class CrewEditorFX {
 		// background.setImage(copyBackground(stage));
 		// background.setEffect(frostEffect);
 		// makeDraggable(stage, layout);
+
 	}
 
 	/**
@@ -528,6 +526,29 @@ public class CrewEditorFX {
 			g.setOnAction((event) -> {
 				String s = (String) g.getValue();
 				g.setValue(s);
+
+				vs = new ValidationSupport();
+		        vs.registerValidator(g, Validator.createEmptyValidator( "ComboBox Selection required"));
+/*
+		        vs.validationResultProperty().addListener( (o, wasInvalid, isNowInvalid) -> {
+			    	//Collection<?> c
+			    	boolean b = o.getValue().getMessages().contains("ComboBox Selection required");
+			    	if (b)
+			    		System.out.println("Missing ComboBox Selection(s) in Crew Editor. Please double check!");
+				    	//if (o.getValue() == null || o.getValue().equals(""))
+				    	//	System.out.println("invalid choice of country of origin !");
+				    }
+			    );
+*/
+			    vs.invalidProperty().addListener((obs, wasInvalid, isNowInvalid) -> {
+			        if (isNowInvalid) {
+			            System.out.println("Missing a comboBox selection in Crew Editor!");
+			        } else {
+			            System.out.println("That comboBox selection is now valid");
+			        }
+			    });
+
+				commitButton.disableProperty().bind(vs.invalidProperty());
 			});
 		}
 
@@ -779,16 +800,27 @@ public class CrewEditorFX {
 		                    }
 		                    @Override public void updateItem(String item,
 		                        boolean empty) {
-		                            super.updateItem(item, empty);
+		                    	super.updateItem(item, empty);
 		                            if (item != null) {
+		                            	//System.out.println("item != null");
 		                                setText(item);
-		                                //if (item.contains("")) {
-		                                //    setTextFill(Color.RED);
-		                                //}
+/*
+ 		                                if (empty) {// || item.equals("")) {
+			                            	//System.out.println("empty is true.");
+		                                    setTextFill(Color.RED);
+		                                }
+		                                else {
+			                            	//System.out.println("empty is false.");
+		                                    setTextFill(Color.BLACK);
+		                                }
+*/
 		                            }
 		                            else {
+		                            	//System.out.println("item = null");
 		                                setText(null);
+	                                    //setTextFill(Color.RED);
 		                            }
+
 		                        }
 		            };
 		            return cell;
@@ -797,16 +829,16 @@ public class CrewEditorFX {
 
 		//sponsorCBs.add(index, cb);
 
-		cb.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+		cb.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 			@Override
-            public void changed(ObservableValue ov, Object oldValue, Object newValue) {
+            public void changed(ObservableValue<?> ov, Object oldValue, Object newValue) {
 
             	if (oldValue != newValue && newValue != null) {
 
             		String sponsor = (String)newValue;
             		//System.out.println("sponsor is " + sponsor);
             		int code = -1;
-                	List list = new ArrayList<>();
+                	List<String> list = new ArrayList<>();
 
             		if (sponsor.contains("CNSA"))
             			list.add("China");
@@ -869,16 +901,19 @@ public class CrewEditorFX {
 
 		ObservableList<String> countryOList = FXCollections.observableArrayList(countries);
 		JFXComboBox<String> cb = new JFXComboBox<String>(countryOList);
-
-		//countryCBs.add(index, cb);
-		ValidationSupport validationSupport = new ValidationSupport();
-        validationSupport.registerValidator(cb, Validator.createEmptyValidator( "ComboBox Selection required"));
-	    validationSupport.validationResultProperty().addListener( (o, oldValue, newValue) -> {
-		    	if (newValue == null || newValue.equals(" "))
-		    		System.out.println("invalid choice of country of origin !");
+/*
+		ValidationSupport vs = new ValidationSupport();
+        vs.registerValidator(cb, Validator.createEmptyValidator( "ComboBox Selection required"));
+	    vs.validationResultProperty().addListener( (o, oldValue, newValue) -> {
+	    	//Collection<?> c
+	    	boolean b = o.getValue().getMessages().contains("ComboBox Selection required");
+	    	if (b)
+	    		System.out.println("Missing ComboBox Selection(s) for country in Crew Editor. Please double check!");
+		    	//if (o.getValue() == null || o.getValue().equals(""))
+		    	//	System.out.println("invalid choice of country of origin !");
 		    }
 	    );
-
+*/
 		return cb;
 
 	}
@@ -894,6 +929,7 @@ public class CrewEditorFX {
 			// g.setMaximumRowCount(8);
 			gridPane.add(g, i + 1, COUNTRY_ROW); // country's row = 5
 			g.setValue(n[i]);
+
 			countryList.add(i, g);
 		}
 	}
