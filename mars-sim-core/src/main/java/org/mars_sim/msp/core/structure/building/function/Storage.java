@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 3.07 2015-03-07
+ * @version 3.1.0 2017-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -142,12 +142,12 @@ implements Serializable {
 			if (currentStorageDemand < storageAmount) {
 			    buildingStorageNeeded = currentStorageDemand;
 			}
-			
+
 			double storageValue = buildingStorageNeeded / 1000D;
 
 			result += storageValue;
 		}
-		
+
 		return result;
 	}
 
@@ -258,7 +258,7 @@ implements Serializable {
 		return result;
 	}
 
-	
+
     /**
      * Stores a resource
      * @param name
@@ -275,7 +275,7 @@ implements Serializable {
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
 				amount = remainingCapacity;
-				result = false; 
+				result = false;
 			    //logger.info(name + " storage is full!");
 			}
 			else {
@@ -306,7 +306,7 @@ implements Serializable {
 	    	AmountResource nameAR = AmountResource.findAmountResource(name);
 	        double amountStored = inv.getAmountResourceStored(nameAR, false);
 	    	inv.addAmountDemandTotalRequest(nameAR);
-	    	
+
 	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
 	     		// TODO: how to report it only 3 times and quit the reporting ?
 	    		//logger.warning("No more " + name);
@@ -347,7 +347,7 @@ implements Serializable {
     	try {
 	        double amountStored = inv.getAmountResourceStored(ar, false);
 	    	inv.addAmountDemandTotalRequest(ar);
-	    	
+
 	    	if (Math.round(amountStored * 100000.0 ) / 100000.0 < 0.00001) {
 	     		// TODO: how to report it only 3 times and quit the reporting ?
 	    		//logger.warning("No more " + name);
@@ -373,7 +373,7 @@ implements Serializable {
 
     	return result;
     }
-    
+
 	@Override
 	public void destroy() {
 		super.destroy();

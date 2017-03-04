@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -73,6 +74,8 @@ extends VehicleMission {
 	private static AmountResource waterAR = Rover.waterAR;
 	private static AmountResource foodAR = Rover.foodAR;
 	private static AmountResource methaneAR = Rover.methaneAR;
+
+	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 
 	/**
 	 * Constructor.
@@ -820,7 +823,7 @@ extends VehicleMission {
 
         // Put together a list of available unprepared dessert resources.
         List<AmountResource> dessertList = new ArrayList<AmountResource>();
-        AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+        //availableDesserts = AmountResource.getArrayOfDessertsAR();
         for (AmountResource ar : availableDesserts) {
 
             // See if an unprepared dessert resource is available

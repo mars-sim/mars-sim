@@ -17,7 +17,7 @@
 <!ELEMENT person EMPTY>
 <!ATTLIST person number CDATA #REQUIRED>
 <!ELEMENT resource EMPTY>
-<!ATTLIST resource type CDATA #REQUIRED>
+<!ATTLIST resource name CDATA #REQUIRED>
 <!ATTLIST resource amount CDATA #REQUIRED>
 <!ELEMENT part EMPTY>
 <!ATTLIST part type CDATA #REQUIRED>

@@ -9,7 +9,7 @@
 	<!-- The average amount of carbon dioxide (kg) needed by a crop per square meter area in each Martian Sol -->
 	<!-- Default: 2.0 -->
 	<carbon-dioxide-consumption-rate value ="2.0" />
-	
+
 	<!-- The average amount of oxygen (kg) needed by a crop per square meter area in each Martian Sol -->
 	<!-- Default: 2.0 -->
 	<oxygen-consumption-rate value="2.0" />
@@ -35,256 +35,7 @@
 			daily-PAR : [ mol / m^2 / day ]
 -->
 
-		<crop name="Cabbage"
-	 	  	growing-time="85.0"
-	    	crop-category="leaves"
-	    	edible-biomass="75.78"
-	    	edible-water-content=".92"
-	    	inedible-biomass="6.74"
-	    	daily-PAR="17.28"
-	    	/>
-	
-		<crop name="Carrot"
-	    	growing-time="74.83"
-	    	crop-category="roots"
-	    	edible-biomass="40"
-	    	edible-water-content=".88"
-	    	inedible-biomass="59.87"
-	    	daily-PAR="32.4"
-	    	/>
-	
-		<crop name="Swiss Chard"
-	    	growing-time="45.0"
-	    	crop-category="leaves"
-	    	edible-biomass="87.50"
-	    	edible-water-content=".92"
-	    	inedible-biomass="37.69"
-	    	daily-PAR="17.28"
-	    	/>
-	
-		<crop name="Celery"
-	    	growing-time="75.0"
-	    	crop-category="stems"
-	    	edible-biomass="103.27"
-	    	edible-water-content=".90"
-	    	inedible-biomass="11.47"
-	    	daily-PAR="17.28"
-	    	/>
-	
-	    <crop name="Kidney bean"
-	    	growing-time="85.0"
-	    	crop-category="legumes"
-	    	edible-biomass="11.11"
-	    	edible-water-content=".10"
-	    	inedible-biomass="150.0"
-	     	daily-PAR="25.92"
-	    	/>
-	
-	    <crop name="Green Onion"
-	    	growing-time="70.0"
-	    	crop-category="spices"
-	    	edible-biomass="81.82"
-	    	edible-water-content=".89"
-	    	inedible-biomass="10.0"
-	     	daily-PAR="17.28"
-	    	/>
-	   	<!-- 1. Harvest between 70-90 days
-	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ -->
 
-	    <crop name="Lettuce"
-	    	growing-time="28.0"
-	    	crop-category="leaves"
-	    	edible-biomass="35"
-	    	edible-water-content=".95"
-	    	inedible-biomass="5"
-	     	daily-PAR="17.28"
-	     	/>
-	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
-	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
-	    	 10 kg / week yield for greenhouse  -->
-
-	    <crop name="White Onion"
-	    	growing-time="150.0"
-	    	crop-category="bulbs"
-	    	edible-biomass="81.82"
-	    	edible-water-content=".89"
-	    	inedible-biomass="22.50"
-	     	daily-PAR="17.28"
-	    	/>
-	    	<!-- 1. Onions are a cold-season crop
-		    	ref : http://www.almanac.com/plant/onions
-	    	 2. 170 days : 
-	    	 	ref : http://alliumnet.com/images/onion%20growth%20stages.pdf
-			 3. K_C varies in each growth stage
-			 	ref : http://naldc.nal.usda.gov/download/31109/PDF  -->
-
-	    <crop name="Peas"
-	        growing-time="75.0"
-	    	crop-category="legumes"
-	    	edible-biomass="12.20"
-	    	edible-water-content=".79"
-	    	inedible-biomass="161.00"
-	     	daily-PAR="25.92"
-	    	/>
-			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
-
-	    <crop name="Peanut"
-	        growing-time="104.0"
-	    	crop-category="legumes"
-	    	edible-biomass="6"
-	    	edible-water-content=".056"
-	    	inedible-biomass="18"
-	     	daily-PAR="32.4"
-	    	/>
-	
-	     <crop name="Rice"
-	        growing-time="100.0"
-	    	crop-category="grains"
-	    	edible-biomass="10.3"
-	    	edible-water-content=".12"
-	    	inedible-biomass="38"
-	     	daily-PAR="34.56"
-	    	/>
-		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf -->
-	
-	    <crop name="Wheat"
-	        growing-time="80"
-	    	crop-category="grains"
-	    	edible-biomass="13"
-	    	edible-water-content=".12"
-	    	inedible-biomass="26"
-	     	daily-PAR="69.12"
-	    	/>
-		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
-		
-	    <crop name="Potato"
-	    	growing-time="100.0"
-	    	crop-category="tubers"
-	    	edible-biomass="35"
-	    	edible-water-content=".79"
-	    	inedible-biomass="15"
-	     	daily-PAR="34.56"
-	    	/>
-	
-	    <crop name="Sweet Potato"
-	    	growing-time="120.0"
-	    	crop-category="tubers"
-	    	edible-biomass="25"
-	    	edible-water-content=".79"
-	    	inedible-biomass="10"
-	     	daily-PAR="34.56"
-	    	/>
-
-	    <crop name="Yam"
-	    	growing-time="200.0"
-	    	crop-category="tubers"
-	    	edible-biomass="15"
-	    	edible-water-content=".79"
-	    	inedible-biomass="5"
-	     	daily-PAR="34.56"
-	    	/>
-	    	    	
-	     <crop name="Soybean"
-	        growing-time="93"
-	    	crop-category="legumes"
-	    	edible-biomass="10"
-	    	edible-water-content=".10"
-	    	inedible-biomass="13"
-	    	daily-PAR="34.56"
-	    	/>
-	
-	    <crop name="Garlic"
-	        growing-time="85"
-	    	crop-category="bulbs"
-	    	edible-biomass="5.5"
-	    	edible-water-content=".58"
-	    	inedible-biomass="2.0"
-	    	daily-PAR="17.28"
-	    	/>
-	    	<!-- http://pharmascope.org/ijrls/index.php/announce/download/202
-	    		 http://nutritiondata.self.com/facts/vegetables-and-vegetable-products/2446/2 -->
-	    	<!-- http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
-	    	5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space, -->
-	
-	    <crop name="Sesame"
-	        growing-time="100"
-	    	crop-category="flowers"
-	    	edible-biomass="7.2"
-	    	edible-water-content=".4"
-	    	inedible-biomass="15.0"
-	    	daily-PAR="17.28"
-	    	/>
-	    	<!--http://en.wiki2.org/wiki/Sesame
-	    	~50 to 80 seeds per capsule
-	    	7.2 Metric Ton/hectare -->
-	
-	    <crop name="Tomato"
-	        growing-time="80"
-	    	crop-category="fruits"
-	    	edible-biomass="17"
-	    	edible-water-content=".948"
-	    	inedible-biomass="20"
-	    	daily-PAR="32.4"
-	    	/>
-	    	<!-- http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
-	    	 484 MT/ha for earth greenhouse
-	    	 but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
-	    	  -->
-	
-	   <crop name="Sugarcane"
-	        growing-time="180"
-	    	crop-category="grasses"
-	    	edible-biomass="100"
-	    	edible-water-content=".75"
-	    	inedible-biomass="200"
-	    	daily-PAR="34.56"
-	    	/>
-	    	<!-- http://www.fao.org/docrep/005/x4988e/x4988e01.htm
-	    	http://www.fao.org/es/faodef/fdef03e.HTM
-	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants. The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
-	    	The protein and fat content of both beets and cane is almost nil.
-	    	100-300 Metric Ton/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%)
-	    	  -->
-	
-	
-	     <crop name="Ginger"
-	        growing-time="180"
-	    	crop-category="roots"
-	    	edible-biomass="18"
-	    	edible-water-content=".12"
-	    	inedible-biomass="2"
-	    	daily-PAR="17.28"
-	    	/>
-	    	<!-- http://faostat.fao.org/site/339/default.aspx
-	    	http://agritech.tnau.ac.in/org_farm/orgfarm_ginger.html
-	    	http://www.tis-gdv.de/tis_e/ware/gewuerze/ingwerfr/ingwerfr.htm
-	   		1. Average yields in central Jamaica are 13-18 tonnes/ hectare
-	    	2. Harvesting is done from the 6th month onwards.
-	    	3.  TODO: making ginger Tea
-	
-	    	 -->
-
-	    	<!-- http://en.wiki2.org/wiki/Quinoa
-	    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
-	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
-	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
-	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
-	    	3. TODO:
-	    	 -->
-	
-	   	<crop name="Strawberry"
-	        growing-time="45"
-	    	crop-category="fruits"
-	    	edible-biomass="60"
-	    	edible-water-content=".92"
-	    	inedible-biomass="20"
-	    	daily-PAR="25.92"
-	    	/>
-	    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
-	    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
-	    	TODO:
-	    	 -->
-	
 	   	<crop name="Blueberry"
 	        growing-time="600"
 	    	crop-category="fruits"
@@ -300,11 +51,39 @@
 	    	6k - 8k per acre or ~10-14k per hectare
 	    	The irrigated planting on good blueberry soil reaches a peak
 			production of 8,000 pounds per acre
-	
-	    	TODO: multi-year plants
-	
+
+	    	TODO: multi-year plant
 	    	 -->
-	
+
+
+		<crop name="Cabbage"
+	 	  	growing-time="85.0"
+	    	crop-category="leaves"
+	    	edible-biomass="75.78"
+	    	edible-water-content=".92"
+	    	inedible-biomass="6.74"
+	    	daily-PAR="17.28"
+	    	/>
+
+		<crop name="Carrot"
+	    	growing-time="74.83"
+	    	crop-category="roots"
+	    	edible-biomass="40"
+	    	edible-water-content=".88"
+	    	inedible-biomass="59.87"
+	    	daily-PAR="32.4"
+	    	/>
+
+		<crop name="Celery"
+	    	growing-time="75.0"
+	    	crop-category="stems"
+	    	edible-biomass="103.27"
+	    	edible-water-content=".90"
+	    	inedible-biomass="11.47"
+	    	daily-PAR="17.28"
+	    	/>
+
+
 	   	<crop name="Cranberry"
 	        growing-time="300"
 	    	crop-category="fruits"
@@ -327,11 +106,52 @@
 	    	inedible-biomass="10"
 	    	daily-PAR="25.92"
 	    	/>
-	    	<!-- 
+	    	<!--
 	    	http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pepino.aspx#tabs-2
 	    	http://teca.fao.org/sites/default/files/technology_files/High%20yielding%20vegetable%20varieties.pdf
 	    	-->
-	
+
+
+	    <crop name="Garlic"
+	        growing-time="85"
+	    	crop-category="bulbs"
+	    	edible-biomass="5.5"
+	    	edible-water-content=".58"
+	    	inedible-biomass="2.0"
+	    	daily-PAR="17.28"
+	    	/>
+	    	<!-- http://pharmascope.org/ijrls/index.php/announce/download/202
+	    		 http://nutritiondata.self.com/facts/vegetables-and-vegetable-products/2446/2 -->
+	    	<!-- http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
+	    		5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space, -->
+
+
+	     <crop name="Ginger"
+	        growing-time="180"
+	    	crop-category="roots"
+	    	edible-biomass="18"
+	    	edible-water-content=".12"
+	    	inedible-biomass="2"
+	    	daily-PAR="17.28"
+	    	/>
+	    	<!-- http://faostat.fao.org/site/339/default.aspx
+	    	http://agritech.tnau.ac.in/org_farm/orgfarm_ginger.html
+	    	http://www.tis-gdv.de/tis_e/ware/gewuerze/ingwerfr/ingwerfr.htm
+	   		1. Average yields in central Jamaica are 13-18 tonnes/ hectare
+	    	2. Harvesting is done from the 6th month onwards.
+	    	3.  TODO: making ginger Tea
+
+	    	 -->
+
+	    	<!-- http://en.wiki2.org/wiki/Quinoa
+	    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
+	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
+	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
+	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
+	    	3. TODO:
+	    	 -->
+
+
 		<crop name="Green Bell Pepper"
 			growing-time= "40"
 			crop-category="fruits"
@@ -340,7 +160,41 @@
 			inedible-biomass="20"
 	    	daily-PAR="25.92"
 			/>
-	
+
+	    <crop name="Green Onion"
+	    	growing-time="70.0"
+	    	crop-category="spices"
+	    	edible-biomass="81.82"
+	    	edible-water-content=".89"
+	    	inedible-biomass="10.0"
+	     	daily-PAR="17.28"
+	    	/>
+	   	<!-- 1. Harvest between 70-90 days
+	   			Ref : http://www.veggiegardener.com/veggies/green-onions/ -->
+
+
+	    <crop name="Kidney bean"
+	    	growing-time="85.0"
+	    	crop-category="legumes"
+	    	edible-biomass="11.11"
+	    	edible-water-content=".10"
+	    	inedible-biomass="150.0"
+	     	daily-PAR="25.92"
+	    	/>
+
+	    <crop name="Lettuce"
+	    	growing-time="28.0"
+	    	crop-category="leaves"
+	    	edible-biomass="35"
+	    	edible-water-content=".95"
+	    	inedible-biomass="5"
+	     	daily-PAR="17.28"
+	     	/>
+	    	<!-- see http://www.ba.ars.usda.gov/hb66/lettuce.pdf
+	    	http://www.fieldrobotics.org/~ssingh/VF/Challenges_in_Vertical_Farming/Schedule_files/GIACOMELLI.pdf
+	    	 10 kg / week yield for greenhouse  -->
+
+
 		<crop name="Morel Mushroom"
 	    	growing-time="15.0"
 	    	crop-category="fungi"
@@ -354,7 +208,51 @@
 	    	https://www.sciencenews.org/article/morel-mushroom-may-grow-crop-its-own?mode=magazine&context=189396
 	    	Strands of the thick-footed morel fungus serve as a highway for...six times as dense...common soil bacteria.
 	      	-->
-	
+
+	    <crop name="Peanut"
+	        growing-time="104.0"
+	    	crop-category="legumes"
+	    	edible-biomass="6"
+	    	edible-water-content=".056"
+	    	inedible-biomass="18"
+	     	daily-PAR="32.4"
+	    	/>
+
+	    <crop name="Peas"
+	        growing-time="75.0"
+	    	crop-category="legumes"
+	    	edible-biomass="12.20"
+	    	edible-water-content=".79"
+	    	inedible-biomass="161.00"
+	     	daily-PAR="25.92"
+	    	/>
+			<!-- https://www.ag.ndsu.edu/NorthCentralREC/crop-production-extension/Pea%20Growth_Stages_Considerations.pdf -->
+
+	    <crop name="Potato"
+	    	growing-time="100.0"
+	    	crop-category="tubers"
+	    	edible-biomass="35"
+	    	edible-water-content=".79"
+	    	inedible-biomass="15"
+	     	daily-PAR="34.56"
+	    	/>
+
+	     <crop name="Quinoa"
+	        growing-time="90.0"
+	    	crop-category="grains"
+	    	edible-biomass="5"
+	    	edible-water-content=".12"
+	    	inedible-biomass="38"
+	     	daily-PAR="69.12"
+	    	/>
+	    	<!-- http://en.wiki2.org/wiki/Quinoa
+	    	http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19940015664.pdf
+	    	https://www.hort.purdue.edu/newcrop/proceedings1996/V3-632.html
+	    	1. The seed yield (often around 3 t/ha up to 5 t/ha) is comparable to wheat yields in the Andean areas.
+	    	2. The plants are allowed to stand until they are dry and the grain has reached a moisture content below 10%.
+	    	3. TODO:-->
+
+
 		<crop name="Radish"
 	    	growing-time="25.0"
 	    	crop-category="roots"
@@ -363,7 +261,7 @@
 	    	inedible-biomass="7"
 	    	daily-PAR="15"
 	    	/>
-	
+
 	  <crop name="Red Beet"
 	        growing-time="42"
 	    	crop-category="roots"
@@ -372,17 +270,147 @@
 	    	inedible-biomass="10"
 	    	daily-PAR="34.56"
 	    	/>
-	
-	
+
+	     <crop name="Rice"
+	        growing-time="100.0"
+	    	crop-category="grains"
+	    	edible-biomass="10.3"
+	    	edible-water-content=".12"
+	    	inedible-biomass="38"
+	     	daily-PAR="34.56"
+	    	/>
+		<!-- stages breakdown : http://www.uaex.edu/publications/pdf/mp192/chapter-2.pdf -->
+
+
+	    <crop name="Sesame"
+	        growing-time="100"
+	    	crop-category="flowers"
+	    	edible-biomass="7.2"
+	    	edible-water-content=".4"
+	    	inedible-biomass="15.0"
+	    	daily-PAR="17.28"
+	    	/>
+	    	<!--http://en.wiki2.org/wiki/Sesame
+	    	~50 to 80 seeds per capsule
+	    	7.2 Metric Ton/hectare -->
+
+
+	     <crop name="Soybean"
+	        growing-time="93"
+	    	crop-category="legumes"
+	    	edible-biomass="10"
+	    	edible-water-content=".10"
+	    	inedible-biomass="13"
+	    	daily-PAR="34.56"
+	    	/>
+
+	   	<crop name="Strawberry"
+	        growing-time="45"
+	    	crop-category="fruits"
+	    	edible-biomass="60"
+	    	edible-water-content=".92"
+	    	inedible-biomass="20"
+	    	daily-PAR="25.92"
+	    	/>
+	    	<!-- http://www.greentechmedia.com/articles/read/the-farm-of-the-future-will-grow-plants-vertically-and-hydroponically
+	    	http://extension.psu.edu/business/ag-alternatives/horticulture/fruits/strawberry-production
+	    	TODO:
+	    	 -->
+
+	   <crop name="Sugarcane"
+	        growing-time="180"
+	    	crop-category="grasses"
+	    	edible-biomass="100"
+	    	edible-water-content=".75"
+	    	inedible-biomass="200"
+	    	daily-PAR="34.56"
+	    	/>
+	    	<!-- http://www.fao.org/docrep/005/x4988e/x4988e01.htm
+	    	http://www.fao.org/es/faodef/fdef03e.HTM
+	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants. The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
+	    	The protein and fat content of both beets and cane is almost nil.
+	    	100-300 Metric Ton/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%)
+	    	  -->
+
+
+	    <crop name="Sweet Potato"
+	    	growing-time="120.0"
+	    	crop-category="tubers"
+	    	edible-biomass="25"
+	    	edible-water-content=".79"
+	    	inedible-biomass="10"
+	     	daily-PAR="34.56"
+	    	/>
+
+
+		<crop name="Swiss Chard"
+	    	growing-time="45.0"
+	    	crop-category="leaves"
+	    	edible-biomass="87.50"
+	    	edible-water-content=".92"
+	    	inedible-biomass="37.69"
+	    	daily-PAR="17.28"
+	    	/>
+
+
+
+	    <crop name="Tomato"
+	        growing-time="80"
+	    	crop-category="fruits"
+	    	edible-biomass="17"
+	    	edible-water-content=".948"
+	    	inedible-biomass="20"
+	    	daily-PAR="32.4"
+	    	/>
+	    	<!-- http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
+	    	 484 MT/ha for earth greenhouse
+	    	 but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
+	    	  -->
+
+		    <crop name="Wheat"
+	        growing-time="80"
+	    	crop-category="grains"
+	    	edible-biomass="13"
+	    	edible-water-content=".12"
+	    	inedible-biomass="26"
+	     	daily-PAR="69.12"
+	    	/>
+		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
+
+
+	    <crop name="White Onion"
+	    	growing-time="150.0"
+	    	crop-category="bulbs"
+	    	edible-biomass="81.82"
+	    	edible-water-content=".89"
+	    	inedible-biomass="22.50"
+	     	daily-PAR="17.28"
+	    	/>
+	    	<!-- 1. Onions are a cold-season crop
+		    	ref : http://www.almanac.com/plant/onions
+	    	 2. 170 days :
+	    	 	ref : http://alliumnet.com/images/onion%20growth%20stages.pdf
+			 3. K_C varies in each growth stage
+			 	ref : http://naldc.nal.usda.gov/download/31109/PDF  -->
+
+
+	    <crop name="Yam"
+	    	growing-time="200.0"
+	    	crop-category="tubers"
+	    	edible-biomass="15"
+	    	edible-water-content=".79"
+	    	inedible-biomass="5"
+	     	daily-PAR="34.56"
+	    	/>
 	<!--
 	Beetroot conservative: 14; likely: 18 target yield: 25
 	   TODO: multi-year plants
 	-->
-	
+
 	<!-- Rhizomes vs. roots
 	    	 Tumeric
 	    	 Green Pepper
-	    	 Radish  	 
+	    	 Radish
 	    	 broccoli : http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/brocoli.aspx
 	-->
 	</crop-list>
@@ -427,21 +455,21 @@
 8.  Photosynthetically active radiation (PAR) is light with a wavelength between 300/400 nm and 700 nm
 
 	Researchers measure instantaneous light in micro-moles (μmol) per square
-	meter (m-2) per second (s-1), or: μmol·m-2·s-1 of PAR. 
-	
-	This “quantum” unit quantifies the number of photons (individual particles of energy) 
+	meter (m-2) per second (s-1), or: μmol·m-2·s-1 of PAR.
+
+	This “quantum” unit quantifies the number of photons (individual particles of energy)
 	used in photosynthesis that fall on a square meter (10.8 square feet) every second.
 
 	This light measurement is an instantaneous reading.
 
 	Daily light integral (DLI) or Daily PAR is the amount of PAR received
-	each day as a function of light intensity (instantaneous light: μmol·m-2·s-1) and duration (day). 
+	each day as a function of light intensity (instantaneous light: μmol·m-2·s-1) and duration (day).
 	It is expressed	as moles of light (mol) per square meter (m-2) per day (d-1), or: mol·m-2·d-1 (moles per day).
-	The DLI concept is like a rain gauge. 
-	
+	The DLI concept is like a rain gauge.
+
 	Just as a rain gauge collects the total rain in a particular location over
-	a period of time, so DLI measures the total amount of PAR received in a day. 
-	
+	a period of time, so DLI measures the total amount of PAR received in a day.
+
 	Greenhouse growers can use	light meters to measure the number of light photons that accumulate in a square meter over a 24-hour period.
 
 10.	Total water use and water requirement:
@@ -474,20 +502,20 @@
 		Y – Yield obtained for the given quantity of factor ‘x’ and
 		C – Proportionality constant that depends on the nature of the growth factor
 
-	In mars-sim, 
-	
+	In mars-sim,
+
 		Maximum harvest = max harvest mass [kg per day] * crop's growing day,
-		
+
 		Max harvest mass is daily modified by the availability of
-		
+
 		1. fertilizer
 		2. water
 		3. CO2
 		4. O2
 		5. sunlight
 		6. planting/daily tending work required vs. served
-		
-		
+
+
 13. Prior to mars-sim version 3.1.0, there are 4 standard phases of a food crop:
 
 	a. Planting
@@ -497,7 +525,7 @@
 
 	In reality, each crop may have unique growth stages or phenology.
 
-	e.g. 	for onion, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/cebolla.aspx#tabs-2 
+	e.g. 	for onion, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/cebolla.aspx#tabs-2
 			for lettuce, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/lechuga.aspx#tabs-2
 			for potato, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/papa.aspx#tabs-4
 			for pepper, see http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/pimiento.aspx#tabs-4
@@ -507,23 +535,23 @@
 
 
 	For definition of Plant Phenology, see
-	https://www.usanpn.org/files/shared/files/Schnelle_PlantPhenology_Ch1_english.pdf					
+	https://www.usanpn.org/files/shared/files/Schnelle_PlantPhenology_Ch1_english.pdf
 
-14. For "root" crop-category such as sweet potato, 
+14. For "root" crop-category such as sweet potato,
 	http://keys.lucidcentral.org/keys/sweetpotato/key/Sweetpotato%20Diagnotes/Media/Html/TheCrop/AboutTheCrop/Botany/Crop%20development.htm
 
 15. According to the Food and Agriculture Organization of the United Nation (http://www.fao.org/docrep/X5642E/x5642e06.htm),
 	there is 9 types of vegetable crops based on edible part:
 
 	a. Root vegetables (carrots, beetroot, radish)
-	b. Tuber vegetables (Yam, Irish potato) 
+	b. Tuber vegetables (Yam, Irish potato)
 	c. Corm (Taro)
 	d. Stem vegetable (Asparagus)
 	e  Leaf vegetables (Lettuce, Amaranth)
 	f  Bulb vegetable (Onion, garlic)
 	g. Fruit vegetable (Tomato, okra)
 	h. Flower vegetables (Broccoli, Cauliflower)
-	i. Seed vegetable (Berus, Peas)	
+	i. Seed vegetable (Berus, Peas)
 
 	for root/tuber/corm, see https://en.wikipedia.org/wiki/List_of_root_vegetables
 
@@ -543,55 +571,55 @@
 	grasses
 	fungi
 	spices
-		
+
 16. Tissue Culture – Technology Harnessed for Potato Seed Production
-	http://keaneanjournalofscience.in/?p=131		
+	http://keaneanjournalofscience.in/?p=131
 
 17. transplant vs. direct sow
 	http://www.passthepistil.com/transplanting-seedlings-vs-direct-sowing-seeds/
 
-18. Annuals - Plants that perform their entire life cycle from seed to flower 
-	to seed within a single growing season. All roots, stems and leaves of the plant die annually. 
+18. Annuals - Plants that perform their entire life cycle from seed to flower
+	to seed within a single growing season. All roots, stems and leaves of the plant die annually.
 	Only the dormant seed bridges the gap between one generation and the next.
 
-19. Perennials - Plants that persist for many growing seasons. Generally the top portion of 
-	the plant dies back each winter and regrows the following spring from the same root system 
-	(e.g. Purple Coneflower). Many perennial plants do keep their leaves year round and offer 
-	attractive borders and groundcover (e.g. Tickseed, Shasta and Ox-Eyed Daisy). 
+19. Perennials - Plants that persist for many growing seasons. Generally the top portion of
+	the plant dies back each winter and regrows the following spring from the same root system
+	(e.g. Purple Coneflower). Many perennial plants do keep their leaves year round and offer
+	attractive borders and groundcover (e.g. Tickseed, Shasta and Ox-Eyed Daisy).
 
 	NOTE: WHEN STARTING PERENNIAL PLANTS FROM SEED, BLOOMS WILL BE OBSERVED IN EITHER THE SPRING
-	OR SUMMER OF THE SECOND YEAR AND EACH YEAR THEREAFTER (e.g. Ox-Eyed Daisy planted in the 
+	OR SUMMER OF THE SECOND YEAR AND EACH YEAR THEREAFTER (e.g. Ox-Eyed Daisy planted in the
 	spring of 1996 will not bloom until the spring of 1997).
 
-20. Biennials - Plants which require two years to complete their life cycle. First season growth 
-	results in a small rosette of leaves near the soil surface. During the second season's 
+20. Biennials - Plants which require two years to complete their life cycle. First season growth
+	results in a small rosette of leaves near the soil surface. During the second season's
 	growth stem elongation, flowering and seed formation occur followed by the entire plant's death.
 
-	Carrots, parsley, and onions are biennial crops.	
+	Carrots, parsley, and onions are biennial crops.
 
-21. Annual/Perennial - A plant can behave as an annual or a perennial depending on local climatic 
+21. Annual/Perennial - A plant can behave as an annual or a perennial depending on local climatic
 	and geographic growing conditions. In the southern portion of the United States, these plants
 	tend to grow much quicker than in the north due to the warmer weather and extended growing season.
 
-	For example: a Black-Eyed Susan would behave as an annual if grown in Louisiana; whereas, 
-	if grown in Ohio, a Black-Eyed Susan would behave as a perennial.	
-	
+	For example: a Black-Eyed Susan would behave as an annual if grown in Louisiana; whereas,
+	if grown in Ohio, a Black-Eyed Susan would behave as a perennial.
+
 	See http://aggie-horticulture.tamu.edu/wildseed/growing/annual.html
-	
-22. For a variety of vegetable crop fact sheets, 
-	see http://aggie-horticulture.tamu.edu/vegetable/easy-gardening-series/	
+
+22. For a variety of vegetable crop fact sheets,
+	see http://aggie-horticulture.tamu.edu/vegetable/easy-gardening-series/
 
 	For fruits and nuts,
 	see http://aggie-horticulture.tamu.edu/fruit-nut/
 
 23. For harvesting, handling and Storing vegetables,
 	see http://aggie-horticulture.tamu.edu/vegetable/files/2013/09/EHT-071.pdf
-	
+
 24. Using Growing Degree Days to Predict Plant Stages
-	see http://store.msuextension.org/publications/AgandNaturalResources/MT200103AG.pdf	
-	
+	see http://store.msuextension.org/publications/AgandNaturalResources/MT200103AG.pdf
+
 25. Peach Tree:
-	see http://hortsci.ashspublications.org/content/43/6/1813.full	
+	see http://hortsci.ashspublications.org/content/43/6/1813.full
 -->
 
 </crop-configuration>

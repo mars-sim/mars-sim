@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 3.07 2015-01-15
+ * @version 3.1.0 2017-03-03
  * @author Scott Davis
  */
 
@@ -31,42 +31,64 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
+    public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
+    public static final String FOOD_WASTE = "food waste";
+    public static final String GREY_WATER = "grey water";
+    public static final String TABLE_SALT = "table salt";
+    public static final String SOLID_WASTE = "solid waste";
+    public static final String NAPKIN = "napkin";
 
 	static AmountResourceConfig amountResourceConfig;
-	
+
 	// Data members
 	private static int count = 0;
 	// 2016-12-02 Added id
 	private int id;
-	
+
 	private int hashcode = -1;
 	// 2014-11-25 Added edible
 	private boolean edible;
-	
+
 	private boolean lifeSupport;
-	
+
 	private String name;
 	// 2016-06-28 Added type
 	private String type;
-	
+
 	private String description;
 
 	private Phase phase;
-	
+
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
 	public static AmountResource waterAR;
 	public static AmountResource carbonDioxideAR;
-	
+
+    public static AmountResource tableSaltAR;
+    public static AmountResource NaClOAR;
+    public static AmountResource greyWaterAR;
+    public static AmountResource foodWasteAR;
+    public static AmountResource solidWasteAR;
+    public static AmountResource napkinAR;
+
 	public AmountResource() {
 		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
-		
+
 		foodAR = findAmountResource(LifeSupportType.FOOD);
 		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);
 		waterAR = findAmountResource(LifeSupportType.WATER);
 		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);
+
+        tableSaltAR = findAmountResource(TABLE_SALT);
+        napkinAR = findAmountResource(NAPKIN);
+        solidWasteAR = findAmountResource(SOLID_WASTE);
+        foodWasteAR = findAmountResource(FOOD_WASTE);
+        greyWaterAR = findAmountResource(GREY_WATER);
+        NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE);
+
+
 	}
-	
+
 	/**
 	 * Constructor with life support parameter.
 	 * @param name the resource's name
@@ -101,7 +123,7 @@ implements Serializable {
 	public int getID() {
 		return id;
 	}
-	
+
 	/**
 	 * Gets the resource's name.
 	 * @return name of resource.
@@ -176,7 +198,7 @@ implements Serializable {
 		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
 	}
 */
-	
+
 	/**
 	 * Finds an amount resource by id.
 	 * @param id the resource's id.
@@ -188,36 +210,36 @@ implements Serializable {
 		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
 		//AmountResource result = null;
 		//Map<Integer, AmountResource> map = getAmountResourcesIDMap();
-		//result = getAmountResourcesIDMap().get(id);		
+		//result = getAmountResourcesIDMap().get(id);
 		//if (result != null) return result;
 		//else throw new IllegalStateException("Resource: " + id + " could not be found.");
 		return getAmountResourcesIDMap().get(id);
 	}
 
-	
+
 	/**
 	 * Finds an amount resource by name.
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
- */	
+ */
 	public static AmountResource findAmountResource(String name) {
 		//count++;
-		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
+		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
 		//getAmountResources().forEach(r -> {
 		//	if (r.getName().equals(name.toLowerCase()))
 		//		return r;
-		//});	
+		//});
 		// 2016-12-08 Using Java 8 stream
 		return getAmountResources()
 				.stream()
 				//.parallelStream()
 				.filter(item -> item.getName().equals(name.toLowerCase()))
-				.findFirst().get();	
+				.findFirst().get();
 		//return amountResourceConfig.getAmountResourcesMap().get(name.toLowerCase());
 	}
 
-	
+
 	/**
 	 * Finds an amount resource by name.
 	 * @param name the name of the resource.
@@ -226,7 +248,7 @@ implements Serializable {
 	 */
 	public static int findIDbyAmountResourceName(String name) {
 		//count++;
-		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);		
+		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
 		//Map<Integer, String> map = getIDNameMap();
 		//Object result = null;
 		//result = getKeyByValue(getIDNameMap(), name.toLowerCase());
@@ -234,8 +256,8 @@ implements Serializable {
 		//else throw new IllegalStateException("Resource: " + name + " could not be found.");
 		return (int)(getKeyByValue(getIDNameMap(), name.toLowerCase()));
 	}
-	
-	
+
+
 	/**
 	 * Returns the first matched key from a given value in a map for one-to-one relationship
 	 * @param map
@@ -250,7 +272,7 @@ implements Serializable {
 	    }
 	    return null;
 	}
-	
+
 	/**
 	 * Returns a set of keys from a given value in a map using Java 8 stream
 	 * @param map
@@ -264,7 +286,7 @@ implements Serializable {
 	              .map(Map.Entry::getKey)
 	              .collect(Collectors.toSet());
 	}
-	
+
 	/**
 	 * Gets a ummutable set of all the amount resources.
 	 * @return set of amount resources.
@@ -274,7 +296,7 @@ implements Serializable {
 		//return Collections.unmodifiableSet(set);
 		return Collections.unmodifiableSet(amountResourceConfig.getAmountResources());
 	}
-	
+
 	/**
 	 * gets a sorted map of all amount resource names by calling
 	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
@@ -283,7 +305,7 @@ implements Serializable {
 	public static Map<Integer, String> getIDNameMap() {
 		return amountResourceConfig.getIDNameMap();
 	}
-	
+
 	/**
 	 * gets a sorted map of all amount resources by calling
 	 * {@link AmountResourceConfig#getAmountResourcesIDMap()}.
@@ -292,7 +314,7 @@ implements Serializable {
 	public static Map<Integer, AmountResource> getAmountResourcesIDMap() {
 		return amountResourceConfig.getAmountResourcesIDMap();
 	}
-	
+
 	/**
 	 * gets a sorted map of all amount resources by calling
 	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
@@ -337,4 +359,7 @@ implements Serializable {
 	public int hashCode() {
 		return hashcode;
 	}
+
+
+
 }

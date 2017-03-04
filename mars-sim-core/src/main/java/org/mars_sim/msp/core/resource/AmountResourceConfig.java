@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceConfig.java
- * @version 3.07 2015-02-24
+ * @version 3.1.0 2017-03-03
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final long serialVersionUID = 123L;
 
 	// Element names
-	private static final String TISSUE_CULTURE = "tissue culture"; 
+	private static final String TISSUE_CULTURE = "tissue culture";
 	private static final String RESOURCE = "resource";
 	private static final String NAME = "name";
 	private static final String PHASE = "phase";
@@ -37,19 +37,17 @@ public class AmountResourceConfig implements Serializable {
 	private static final String EDIBLE = "edible";
 	// 2016-06-28 Added TYPE
 	private static final String TYPE = "type";
-	
+
 	private static int id;
 
 	// Data members.
 	private Set<AmountResource> resources = new TreeSet<AmountResource>();
-	
-	private Map<String, AmountResource> amountResourceMap;
 
+	private Map<String, AmountResource> amountResourceMap;
 	private Map<Integer, AmountResource> amountResourceIDMap;
-	
 	private Map<Integer, String> IDNameMap;
 
-	
+
 	/**
 	 * Constructor
 	 * @param amountResourceDoc the amount resource XML document.
@@ -59,8 +57,8 @@ public class AmountResourceConfig implements Serializable {
 		id = 0;
 
 		loadAmountResources(amountResourceDoc);
-			
-		amountResourceMap = new HashMap<String,AmountResource>();		
+
+		amountResourceMap = new HashMap<String,AmountResource>();
 		for (AmountResource resource : resources) {
 			amountResourceMap.put(resource.getName(), resource);
 		}
@@ -91,11 +89,11 @@ public class AmountResourceConfig implements Serializable {
 			String name = resourceElement.getAttributeValue(NAME).toLowerCase();
 			// 2016-06-28 Added type
 			String type = resourceElement.getAttributeValue(TYPE);
-		
+
 			String description = resourceElement.getText();
 			// Get phase.
 			String phaseString = resourceElement.getAttributeValue(PHASE).toUpperCase();
-			
+
 			Phase phase = Phase.valueOf(phaseString);
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
@@ -110,7 +108,7 @@ public class AmountResourceConfig implements Serializable {
 				resources.add(new AmountResource(id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
 				// TODO: may set edible to true
 			}
-			
+
 		}
 	}
 
@@ -129,9 +127,9 @@ public class AmountResourceConfig implements Serializable {
 	public Map<String, AmountResource> getAmountResourcesMap() {
 //		if (!amountResourceMap.isEmpty())
 			return amountResourceMap;
-/*		
+/*
 		else {
-			Map<String, AmountResource> map = new HashMap<String,AmountResource>();		
+			Map<String, AmountResource> map = new HashMap<String,AmountResource>();
 			for (AmountResource resource : resources) {
 				map.put(resource.getName(), resource);
 			}
@@ -141,7 +139,7 @@ public class AmountResourceConfig implements Serializable {
 		}
 */
 	}
-	
+
 	/**
 	 * an alphabetically ordered map of all amount resources by id.
 	 * @return {@link Map}<{@link Integer},{@link AmountResource}>
@@ -149,7 +147,7 @@ public class AmountResourceConfig implements Serializable {
 	public Map<Integer, AmountResource> getAmountResourcesIDMap() {
 //		if (!amountResourceIDMap.isEmpty())
 			return amountResourceIDMap;
-/*		
+/*
 		else {
 			Map<Integer, AmountResource> map = new HashMap<Integer, AmountResource>();
 			for (AmountResource resource : resources) {
@@ -159,9 +157,9 @@ public class AmountResourceConfig implements Serializable {
 			//System.out.println("amountResourcesIDMap constructed");
 			return map;
 		}
-*/		
+*/
 	}
-	
+
 	/**
 	 * an alphabetically ordered map of all resource names by id.
 	 * @return {@link Map}<{@link Integer},{@link String}>
@@ -169,7 +167,7 @@ public class AmountResourceConfig implements Serializable {
 	public Map<Integer, String> getIDNameMap() {
 //		if (!IDNameMap.isEmpty())
 			return IDNameMap;
-/*		
+/*
 		else {
 			Map<Integer, String> map = new HashMap<Integer, String>();
 			for (AmountResource resource : resources) {
@@ -179,7 +177,7 @@ public class AmountResourceConfig implements Serializable {
 			//System.out.println("IDNameMap constructed");
 			return map;
 		}
-*/		
+*/
 	}
-	
+
 }

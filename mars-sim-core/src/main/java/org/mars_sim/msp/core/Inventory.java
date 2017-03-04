@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.07 2015-01-09
+ * @version 3.1.0 2017-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -1024,7 +1024,7 @@ implements Serializable {
             else {
                 result = false;
             }
-            
+
             if (unit == owner) {
                 result = false;
             }
@@ -1504,7 +1504,7 @@ implements Serializable {
         	containerStored = amountResourceContainersStoredCache.get(resource);
         }
         else {
-        	
+
         }
 
         stored += containerStored;

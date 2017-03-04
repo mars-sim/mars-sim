@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-03-03
  * @author Scott Davis
  */
 
@@ -46,6 +45,7 @@ import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -65,13 +65,14 @@ class StartingSettlementPanel extends WizardPanel {
 
 	/** The wizard panel name. */
 	private final static String NAME = "Starting Settlement";
-	
+
 	// Data members.
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JLabel errorMessageLabel;
 
-	
+	public static AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -239,11 +240,11 @@ class StartingSettlementPanel extends WizardPanel {
 				try {
 					Settlement settlement = (Settlement) getUnit(row);
 					Inventory inv = settlement.getInventory();
-					if (column == 0) 
+					if (column == 0)
 						result = settlement.getName();
-					else if (column == 1) 
+					else if (column == 1)
 						result = settlement.getCurrentPopulationNum();
-					else if (column == 2) 
+					else if (column == 2)
 						result = inv.findNumUnitsOfClass(Rover.class);
 					if (column == 3) {
 						//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
@@ -264,7 +265,7 @@ class StartingSettlementPanel extends WizardPanel {
 						//AmountResource methane = AmountResource.findAmountResource("methane");
 						result = (int) inv.getAmountResourceStored(Rover.methaneAR, false);
 					}
-					else if (column == 8) 
+					else if (column == 8)
 						result = inv.findNumUnitsOfClass(EVASuit.class);
 
 					String type = getWizard().getMissionData().getType();
@@ -273,7 +274,7 @@ class StartingSettlementPanel extends WizardPanel {
 						if (column == 8)
 							result = inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true);
 					}
-					else if (type.equals(MissionDataBean.ICE_MISSION) || 
+					else if (type.equals(MissionDataBean.ICE_MISSION) ||
 							type.equals(MissionDataBean.REGOLITH_MISSION)) {
 						if (column == 8)
 							result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
@@ -298,19 +299,19 @@ class StartingSettlementPanel extends WizardPanel {
 
 			return result;
 		}
-		
-	
+
+
 		/**
 		 * Determine an unprepared dessert resource to load on the mission.
 		 */
 		private double determineHighestDessertResources(Inventory inv) {
-				
+
 			double highestAmount = 0;
 	        AmountResource dessertAR = null;
 
-	        AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-	        for (AmountResource ar : availableDesserts) {     
-	            
+	        //AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+	        for (AmountResource ar : availableDesserts) {
+
 	        	double amount = inv.getAmountResourceStored(ar, false);
 	        	if (highestAmount <= amount) {
 	        		highestAmount = amount;
@@ -318,23 +319,23 @@ class StartingSettlementPanel extends WizardPanel {
 	        	}
 
 	        }
-	        
+
 	        return highestAmount;
 		}
-		
+
 		/**
 		 * Determine an unprepared dessert resource to load on the mission.
 		 */
 		private Map<AmountResource, Double> determineDessertResources(Inventory inv) {
-		     
+
 			Map<AmountResource, Double> dessert = new HashMap<AmountResource, Double>(1);
-			
+
 			double highestAmount = 0;
 	        AmountResource dessertAR = null;
 
-	        AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
-	        for (AmountResource ar : availableDesserts) {     
-	            
+	        //AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
+	        for (AmountResource ar : availableDesserts) {
+
 	        	double amount = inv.getAmountResourceStored(ar, false);
 	        	if (highestAmount <= amount) {
 	        		highestAmount = amount;
@@ -342,9 +343,9 @@ class StartingSettlementPanel extends WizardPanel {
 	        	}
 
 	        }
-	        
+
 	        dessert.put(dessertAR, highestAmount);
-	        
+
 	        return dessert;
 		}
 
@@ -357,7 +358,7 @@ class StartingSettlementPanel extends WizardPanel {
 			}
 			String type = getWizard().getMissionData().getType();
 			if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
-			else if (type.equals(MissionDataBean.ICE_MISSION) || 
+			else if (type.equals(MissionDataBean.ICE_MISSION) ||
 					type.equals(MissionDataBean.REGOLITH_MISSION)) columns.add("Bags");
 			else if (type.equals(MissionDataBean.MINING_MISSION)) {
 				columns.add("Bags");
@@ -413,20 +414,20 @@ class StartingSettlementPanel extends WizardPanel {
 				String type = getWizard().getMissionData().getType();
 				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
 					if (column == 9) {
-						if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) < 
+						if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) <
 								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
 					}
 				}
-				else if (type.equals(MissionDataBean.ICE_MISSION) || 
+				else if (type.equals(MissionDataBean.ICE_MISSION) ||
 						type.equals(MissionDataBean.REGOLITH_MISSION)) {
 					if (column == 9) {
-						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
+						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
 				}
 				else if (type.equals(MissionDataBean.MINING_MISSION)) {
 					if (column == 9) {
-						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
+						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) <
 								CollectIce.REQUIRED_BAGS) result = true;
 					}
 					if (column == 10) {

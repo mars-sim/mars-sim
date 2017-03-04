@@ -61,7 +61,7 @@ public class ResupplyConfig implements Serializable {
 
     	// 2016-12-03 Call to just initialize amountResourceConfig in this constructor
     	new AmountResource();
-       	
+
         resupplyTemplates = new ArrayList<ResupplyTemplate>();
         loadResupplyTemplates(resupplyDoc, partPackageConfig);
     }
@@ -109,8 +109,8 @@ public class ResupplyConfig implements Serializable {
                         .getAttributeValue(FACING));
 
                 String scenario = "A";
-                if (NAME.equals("Mars Direct Base resupply 3"))
-                		scenario = "A";
+                //if (NAME.toLowerCase().equals("Mars Direct Base Resupply 3".toLowerCase()))
+                //	scenario = "A";
                 // TODO: need to rework how "scenario" and "scenarioID" are applied
 
                 // 2014-10-28 Added buildingType (at the buildingNickName position)
@@ -153,9 +153,10 @@ public class ResupplyConfig implements Serializable {
             // Load resources
             List<Element> resourceNodes = resupplyElement.getChildren(RESOURCE);
             for (Element resourceElement : resourceNodes) {
-                String resourceType = resourceElement.getAttributeValue(TYPE);
+                String resourceName = resourceElement.getAttributeValue(NAME);
+                //System.out.println("resourceName is " + resourceName);
                 AmountResource resource = AmountResource
-                        .findAmountResource(resourceType);
+                        .findAmountResource(resourceName);
                 double resourceAmount = Double.parseDouble(resourceElement
                         .getAttributeValue(AMOUNT));
                 if (template.resources.containsKey(resource))

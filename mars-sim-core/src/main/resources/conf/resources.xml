@@ -7,7 +7,7 @@
 
 	<!-- Potable water -->
 	<!-- name - the name of the resource. -->
-	<!-- type - the type of the resource (optional). -->	
+	<!-- type - the type of the resource (optional). -->
 	<!-- phase - the normal phase of the resource as used. -->
 	<!--         Possible values: "solid", "liquid" or "gas" -->
 	<!-- life-support - Is the resource used for life support? -->
@@ -18,8 +18,8 @@
 	<resource name="water" phase="liquid" life-support="true">potable water</resource>
 	<resource name="oxygen" phase="gas" life-support="true" />
 	<resource name="carbon dioxide" phase="gas" life-support="true"/>
-	
-	
+
+
 	<!-- Other Gas Resources -->
 	<resource name="carbon monoxide" phase="gas" />
 	<resource name="ethylene" phase="gas" />
@@ -56,7 +56,7 @@
 	<resource name="yeast" type="food" phase="solid" edible="true">Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
 
 <!-- Soybean-derived food resources -->
-	<resource name="okara" type="dfood" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
+	<resource name="okara" type="food" phase="solid" edible="true">The Soy Pulp consisting of insoluble parts of the soybean which
 		 after pureed Soybean are filtered in the production of soymilk and tofu.</resource>
 	<resource name="soybean ash" type="food" phase="solid" edible="true">Soybean extract composed of mainly Potassium, Phosphorus, Magnesium, and Calcium.</resource>
 	<resource name="soybean oil" type="food" phase="liquid" edible="true">Oil derived from Soybean.</resource>
@@ -108,8 +108,8 @@
 	<resource name="cabbage" type="crop" phase="solid" edible="true"></resource>
 	<resource name="carrot" type="crop" phase="solid" edible="true"></resource>
 	<resource name="celery" type="crop" phase="solid" edible="true"></resource>
-	<resource name="cucumber" type="crop" phase="solid" edible="true"></resource>
 	<resource name="cranberry" type="crop" phase="solid" edible="true"></resource>
+	<resource name="cucumber" type="crop" phase="solid" edible="true"></resource>
 	<resource name="garlic" type="crop" phase="solid" edible="true"></resource>
 	<resource name="ginger" type="crop" phase="solid" edible="true"></resource>
 	<resource name="green bell pepper" type="crop" phase="solid" edible="true"></resource>
@@ -117,8 +117,8 @@
 	<resource name="kidney bean" type="crop" phase="solid" edible="true"></resource>
 	<resource name="lettuce" type="crop" phase="solid" edible="true"></resource>
 	<resource name="morel mushroom" type="crop" phase="solid" edible="true"></resource>
-	<resource name="peas" type="crop" phase="solid" edible="true"></resource>
 	<resource name="peanut" type="crop" phase="solid" edible="true"></resource>
+	<resource name="peas" type="crop" phase="solid" edible="true"></resource>
 	<resource name="potato" type="crop" phase="solid" edible="true"></resource>
 	<resource name="quinoa" type="crop" phase="solid" edible="true">A nutritious grain having most amino acids</resource>
 	<resource name="radish" type="crop" phase="solid" edible="true"></resource>

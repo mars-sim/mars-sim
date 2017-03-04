@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 3.08 2015-03-24
+ * @version 3.1.0 2017-03-03
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -38,6 +38,7 @@ import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
@@ -150,7 +151,7 @@ extends UnitTableModel {
 	private AmountResource methaneAR = AmountResource.findAmountResource("methane");
 	private AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
 	private AmountResource iceAR = AmountResource.findAmountResource("ice");
-	
+
 	/**
 	 * Constructs a VehicleTableModel object. It creates the list of possible
 	 * Vehicles from the Unit manager.
@@ -234,8 +235,9 @@ extends UnitTableModel {
 		    			AmountResource [] availableDesserts = PreparingDessert.getArrayOfDessertsAR();
 		    	        for(AmountResource n : availableDesserts) {
 		    	        	//if (n.getName().equals(ar.getName())) {
-		    	        	if (n.equals(ar)) {
-				    			double amount = resourceMap.get(ar);
+		    	        	//if (n.equals(ar)) {
+			    	        if (n == ar) {
+		    	        		double amount = resourceMap.get(ar);
 				    			//System.out.println("i = " + i + "   " + n + " : " + amount);
 		    	        		sum += amount;
 		    	    			break;

@@ -39,8 +39,8 @@
 		<!-- Resource provided in this resupply. -->
 		<!-- type: the type of resource (see resources.txt) -->
 		<!-- amount: the amount of the resource (kg) -->
-		<resource type="hydrogen" amount="1000.0" />
-		<resource type="food" amount="1657.0" />
+		<resource name="hydrogen" amount="1000.0" />
+		<resource name="food" amount="1657.0" />
 
 		<!-- Part packages (see part_packages.xml) -->
 		<!-- name: the part package name. -->
@@ -66,8 +66,8 @@
 		<equipment type="Large Bag" number="140" />
 		<equipment type="Specimen Box" number="140" />
 		<person number="4" />
-		<resource type="hydrogen" amount="1000.0" />
-		<resource type="food" amount="1657.0" />
+		<resource name="hydrogen" amount="1000.0" />
+		<resource name="food" amount="1657.0" />
 		<part-package name="package 3" number="1" />
 	</resupply>
 
@@ -110,8 +110,8 @@
 		<equipment type="Large Bag" number="260" />
 		<equipment type="Specimen Box" number="260" />
 		<person number="12" />
-		<resource type="hydrogen" amount="1000.0" />
-		<resource type="food" amount="4970.0" />
+		<resource name="hydrogen" amount="1000.0" />
+		<resource name="food" amount="4970.0" />
 		<part-package name="package 4" number="1" />
 	</resupply>
 

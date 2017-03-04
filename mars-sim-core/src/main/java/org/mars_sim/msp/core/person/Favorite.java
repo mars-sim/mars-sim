@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Favorite.java
- * @version 3.08 2015-03-24
+ * @version 3.1.0 2017-03-03
  * @author Manny Kung
  */
 
@@ -12,12 +12,14 @@ import java.util.List;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.HotMeal;
 import org.mars_sim.msp.core.structure.building.function.cooking.MealConfig;
 import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDessert;
 
 public class Favorite implements Serializable {
-	
+
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
@@ -25,13 +27,13 @@ public class Favorite implements Serializable {
 	private String favoriteSideDish;
 	private String favoriteDessert;
 	private String favoriteActivity;
-	
+
 	private List<HotMeal> mealConfigMealList;
 	private String[] availableDesserts;
-	
-	private String[] availableActivities = 
+
+	private String[] availableActivities =
     	{ 	"Tending Plants",
-			"Workout",		
+			"Workout",
 			"Research",
 			"Field Work",
 			"Tinkering",
@@ -41,12 +43,12 @@ public class Favorite implements Serializable {
 			"Operations"
 		};
 
-	public Favorite(Person person) {	
+	public Favorite(Person person) {
     	MealConfig mealConfig = SimulationConfig.instance().getMealConfiguration();
         mealConfigMealList = mealConfig.getMealList();
-        availableDesserts = PreparingDessert.getArrayOfDesserts();	    	
+        availableDesserts = PreparingDessert.getArrayOfDesserts();
 	}
-	
+
 	public String getRandomMainDish() {
 		String result = "";
     	int num = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
@@ -54,32 +56,32 @@ public class Favorite implements Serializable {
 		return result;
 	}
 
-	
+
 	public String getRandomSideDish() {
 		String result = "";
     	int num = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
-		result = mealConfigMealList.get(num).getMealName();		
+		result = mealConfigMealList.get(num).getMealName();
 		return result;
 	}
 
 	public String getRandomDessert() {
-		String result = "";		 
-    	int rand = RandomUtil.getRandomInt(availableDesserts.length - 1); 
-    	result = availableDesserts[rand];		
+		String result = "";
+    	int rand = RandomUtil.getRandomInt(availableDesserts.length - 1);
+    	result = availableDesserts[rand];
 		return result;
 	}
 
 	public String getRandomActivity() {
-		String result = "";		 
-    	int num = RandomUtil.getRandomInt(availableActivities.length - 1); 
-		result = availableActivities[num];		
+		String result = "";
+    	int num = RandomUtil.getRandomInt(availableActivities.length - 1);
+		result = availableActivities[num];
 		return result;
 	}
-	
+
 	public String getFavoriteMainDish() {
 		return favoriteMainDish;
 	}
-	
+
 	public String getFavoriteSideDish() {
 		return favoriteSideDish;
 	}
@@ -87,28 +89,28 @@ public class Favorite implements Serializable {
 	public String getFavoriteDessert() {
 		return favoriteDessert;
 	}
-	
+
 	public String getFavoriteActivity() {
 		return favoriteActivity;
 	}
-	
+
 	public void setFavoriteMainDish(String name) {
 		favoriteMainDish = name;
 	}
-	
+
 	public void setFavoriteSideDish(String name) {
 		favoriteSideDish = name;
 	}
-	
+
 	public void setFavoriteDessert(String name) {
 		favoriteDessert = name;
-	}	
-	
+	}
+
 	public void setFavoriteActivity(String name) {
 		favoriteActivity = name;
-	}		
-	
-	
+	}
+
+
 }
 
 

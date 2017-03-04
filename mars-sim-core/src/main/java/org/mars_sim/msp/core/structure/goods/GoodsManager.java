@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.08 2015-03-02
+ * @version 3.1.0 2017-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.goods;
@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Phase;
@@ -143,7 +144,7 @@ public class GoodsManager implements Serializable {
     //private static final String resource_name = "regolith";
 
     // Data members
-    // 2016-11-02 Added modifiers due to Settlement Development Objectives 
+    // 2016-11-02 Added modifiers due to Settlement Development Objectives
     private double cropFarm_factor = 1;
     private double manufacturing_factor = 1;
     private double research_factor = 1;
@@ -166,7 +167,7 @@ public class GoodsManager implements Serializable {
 
     private static Simulation sim = Simulation.instance();
     private static SimulationConfig simulationConfig = SimulationConfig.instance();
-    private static BuildingConfig config = simulationConfig.getBuildingConfiguration();
+    private static BuildingConfig buildingConfig = simulationConfig.getBuildingConfiguration();
     private static CropConfig cropConfig = simulationConfig.getCropConfiguration();
     private static MealConfig mealConfig = simulationConfig.getMealConfiguration();
     private static PersonConfig personConfig = simulationConfig.getPersonConfiguration();
@@ -174,15 +175,16 @@ public class GoodsManager implements Serializable {
     private static MissionManager missionManager = sim.getMissionManager();
     private static VehicleConfig vehicleConfig = simulationConfig.getVehicleConfiguration();
     private static UnitManager unitManager = Simulation.instance().getUnitManager();
-    
+
+    private static AmountResource oxygenAR = AmountResource.oxygenAR; //findAmountResource(LifeSupportType.OXYGEN);
+    private static AmountResource waterAR = AmountResource.waterAR; //.findAmountResource(LifeSupportType.WATER);
+    private static AmountResource foodAR = AmountResource.foodAR; //.findAmountResource(LifeSupportType.FOOD);
+    private static AmountResource carbonDioxideAR = AmountResource.carbonDioxideAR; //findAmountResource("carbon dioxide");
+
     private static AmountResource iceAR;// = AmountResource.findAmountResource("ice");
     private static AmountResource regolithAR;// = AmountResource.findAmountResource("regolith");
-    private static AmountResource oxygenAR;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-    private static AmountResource waterAR;// = AmountResource.findAmountResource(LifeSupportType.WATER);
-    private static AmountResource foodAR;// = AmountResource.findAmountResource(LifeSupportType.FOOD);
     private static AmountResource toiletTissueAR;// = AmountResource.findAmountResource("toilet tissue");
     private static AmountResource methaneAR;// = AmountResource.findAmountResource("methane");
-    private static AmountResource carbonDioxideAR;// = AmountResource.findAmountResource("carbon dioxide");
     private static AmountResource soilAR;// = AmountResource.findAmountResource("soil");
     private static AmountResource fertilizerAR;// = AmountResource.findAmountResource("fertilizer");
     private static AmountResource greyWaterAR;// = AmountResource.findAmountResource("grey water");
@@ -195,25 +197,25 @@ public class GoodsManager implements Serializable {
         inv = settlement.getInventory();
        	//count++;
     	//System.out.println(" calling GoodsManager.java " + count + " times");
-         
+
         sim = Simulation.instance();
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = sim.getMasterClock().getMarsClock();
         //marsClock = sim.getMasterClock().getMarsClock();
     	missionManager = sim.getMissionManager();
-    	
+
         iceAR = AmountResource.findAmountResource("ice");
         regolithAR = AmountResource.findAmountResource("regolith");
-        oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-        waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-        foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+        //oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+        //waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+        //foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
         toiletTissueAR = AmountResource.findAmountResource("toilet tissue");
         methaneAR = AmountResource.findAmountResource("methane");
-        carbonDioxideAR = AmountResource.findAmountResource("carbon dioxide");
+        //carbonDioxideAR = AmountResource.findAmountResource("carbon dioxide");
         soilAR = AmountResource.findAmountResource("soil");
         fertilizerAR = AmountResource.findAmountResource("fertilizer");
         greyWaterAR = AmountResource.findAmountResource("grey water");
-        
+
         populateGoodsValues();
     }
 
@@ -358,7 +360,7 @@ public class GoodsManager implements Serializable {
         double tradeDemand = 0;
 
         // 2015-01-15 Added solElapsed
-		if (marsClock == null) 
+		if (marsClock == null)
 			marsClock = Simulation.instance().getMasterClock().getMarsClock(); // needed for loading a saved sim
         int solElapsed = marsClock.getSolElapsedFromStart();
         // System.out.println("GoodManager : solElapsed : "+ solElapsed);
@@ -395,7 +397,7 @@ public class GoodsManager implements Serializable {
 
             // Add potable water usage demand if applicable.
             projectedDemand += getPotableWaterUsageDemand(resource);
-            
+
             // Add toiletry usage demand if applicable.
             projectedDemand += getToiletryUsageDemand(resource);
 
@@ -407,7 +409,7 @@ public class GoodsManager implements Serializable {
 
             // Add resource processing demand.
             projectedDemand += getResourceProcessingDemand(resource);
-            
+
             // Add manufacturing demand.
             projectedDemand += getResourceManufacturingDemand(resource);
 
@@ -590,7 +592,7 @@ public class GoodsManager implements Serializable {
         }
         else return 0D;
     }
-    
+
     /**
      * Gets the toilet tissue usage demand.
      * @param resource the resource to check.
@@ -602,7 +604,7 @@ public class GoodsManager implements Serializable {
             double amountNeededSol = LivingAccommodations.TOILET_WASTE_PERSON_SOL;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getCurrentPopulationNum();
-            return numPeople * amountNeededOrbit; 
+            return numPeople * amountNeededOrbit;
         }
         else return 0D;
     }
@@ -667,19 +669,19 @@ public class GoodsManager implements Serializable {
 
         return demand;
     }
-    
+
     public void setCropFarmFactor(double value) {
     	cropFarm_factor = value * cropFarm_factor;
     }
-    
+
     public void setManufacturingFactor(double value) {
     	manufacturing_factor = value * manufacturing_factor;
     }
-    
+
     public void setTransportationFactor(double value) {
     	transportation_factor = value * transportation_factor;
     }
-    
+
     public void setResearchFactor(double value) {
     	research_factor = value * research_factor;
     }
@@ -687,7 +689,7 @@ public class GoodsManager implements Serializable {
     public void setTradeFactor(double value) {
     	trade_factor = value * trade_factor;
     }
-    
+
     public void setFreeMarketFactor(double value) {
     	freeMarket_factor = value * freeMarket_factor;
     }
@@ -696,20 +698,20 @@ public class GoodsManager implements Serializable {
     	tourism_factor = value * tourism_factor;
     }
 
-    
-    
+
+
     public double getCropFarmFactor() {
     	return cropFarm_factor;
     }
-    
+
     public double getManufacturingFactor() {
     	return manufacturing_factor;
     }
-    
+
     public double getTransportationFactor() {
     	return transportation_factor;
     }
-    
+
     public double getResearchFactor() {
     	return research_factor;
     }
@@ -717,19 +719,19 @@ public class GoodsManager implements Serializable {
     public double getTradeFactor() {
     	return trade_factor;
     }
-    
+
     //public double getFreeMarketFactor() {
     //	return freeMarket_factor;
     //}
-    
+
     public double getTourismFactor() {
     	return tourism_factor;
     }
-        
+
     private double getIndividualFarmDemand(AmountResource resource, Farming farm) {
-        
+
         double demand = 0D;
-        
+
         // Create all farming resources.
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         //AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
@@ -737,11 +739,11 @@ public class GoodsManager implements Serializable {
         //AmountResource soil = AmountResource.findAmountResource("soil");
         //AmountResource fertilizer = AmountResource.findAmountResource("fertilizer");
         //AmountResource greyWater = AmountResource.findAmountResource("grey water");
-        
+
         double averageGrowingCyclesPerOrbit = farm.getAverageGrowingCyclesPerOrbit();
         double totalCropArea = farm.getGrowingArea();
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-        
+
         if (resource.equals(waterAR)) {
             // Average water consumption rate of crops per orbit using total growing area.
             demand = cropConfig.getWaterConsumptionRate() * totalCropArea * solsInOrbit;
@@ -774,7 +776,7 @@ public class GoodsManager implements Serializable {
             int numCropTypes = cropConfig.getCropList().size();
             demand = Farming.TISSUE_PER_SQM * (totalCropArea / numCropTypes) * averageGrowingCyclesPerOrbit;
         }
-        
+
         return demand;
     }
 
@@ -821,14 +823,14 @@ public class GoodsManager implements Serializable {
             }
 
             double resourceInputRate = process.getMaxInputResourceRate(resource);
-            
+
             // Determine value of required process power.
             double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
 
             double totalInputsValue = (outputValue - powerValue) * RESOURCE_PROCESSING_INPUT_FACTOR;
-            
+
             if (totalInputsValue > 0D) {
                 double demandMillisol = resourceInputRate;
                 double demandSol = demandMillisol * 1000D;
@@ -934,7 +936,7 @@ public class GoodsManager implements Serializable {
             }
 
             double resourceAmount = 0D;
-            
+
             double totalItems = 0D;
             Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
             while (k.hasNext()) {
@@ -949,7 +951,7 @@ public class GoodsManager implements Serializable {
             double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
-            
+
             double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor * MANUFACTURING_INPUT_FACTOR;
 
             if (totalInputsValue > 0D) {
@@ -1001,7 +1003,7 @@ public class GoodsManager implements Serializable {
             double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
-            
+
             double totalInputsValue = (outputsValue - powerValue) * trade_factor * cropFarm_factor * FOOD_PRODUCTION_INPUT_FACTOR;
 
             if (totalInputsValue > 0D) {
@@ -1022,7 +1024,7 @@ public class GoodsManager implements Serializable {
 
         String r = resource.getName().toLowerCase();
 
-        if (r.equals(Cooking.TABLE_SALT)) {
+        if (r.equals(AmountResource.TABLE_SALT)) {
             // Assuming a person takes 2.5 meals per sol
             demand = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR * 3D * Cooking.AMOUNT_OF_SALT_PER_MEAL;
         }
@@ -1073,19 +1075,21 @@ public class GoodsManager implements Serializable {
         AmountResource[] dessert = PreparingDessert.getArrayOfDessertsAR();
         boolean hasDessert = false;
 
-        for(AmountResource ar : dessert) {
-        	if (ar.getName().equalsIgnoreCase(resource.getName())) {
-        		hasDessert = true;
-        		break;
-        	}
-        }
-        	
-        if (hasDessert) {
-            //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-            double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
-            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-            int numPeople = settlement.getAllAssociatedPeople().size();
-            demand = numPeople * amountNeededOrbit * DESSERT_FACTOR;
+        if (dessert[0] != null) {
+	        for(AmountResource ar : dessert) {
+	        	if (ar.getName().equalsIgnoreCase(resource.getName())) {
+	        		hasDessert = true;
+	        		break;
+	        	}
+	        }
+
+	        if (hasDessert) {
+	            //PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+	            double amountNeededSol = personConfig.getDessertConsumptionRate() / dessert.length;
+	            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+	            int numPeople = settlement.getAllAssociatedPeople().size();
+	            demand = numPeople * amountNeededOrbit * DESSERT_FACTOR;
+	        }
         }
 
         return demand;
@@ -1774,9 +1778,9 @@ public class GoodsManager implements Serializable {
             double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
-            
+
             double totalInputsValue = (outputsValue - powerValue) * trade_factor * manufacturing_factor * MANUFACTURING_INPUT_FACTOR;
-            
+
             if (totalInputsValue > 0D) {
                 double partNum = partInput.getAmount();
 
@@ -1851,7 +1855,7 @@ public class GoodsManager implements Serializable {
             double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
             double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
             double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
-            
+
             double totalInputsValue = (outputsValue - powerValue) * trade_factor * cropFarm_factor * FOOD_PRODUCTION_INPUT_FACTOR;
             if (totalInputsValue > 0D) {
                 double partNum = partInput.getAmount();
@@ -2648,7 +2652,7 @@ public class GoodsManager implements Serializable {
             double bestTradeValue = 0D;
 
             if (unitManager == null)
-            	unitManager = sim.getUnitManager(); // needed for loading a saved sim    
+            	unitManager = sim.getUnitManager(); // needed for loading a saved sim
             Iterator<Settlement> i = unitManager.getSettlements().iterator();
             while (i.hasNext()) {
                 Settlement tempSettlement = i.next();

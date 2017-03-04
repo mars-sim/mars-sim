@@ -1226,7 +1226,7 @@ public class MainScene {
 
 		soundBtn.setMaxSize(20, 20);
 		soundBtn.setGraphic(soundIcon);
-		setQuickToolTip(soundBtn, "Sound volume Panel");
+		setQuickToolTip(soundBtn, "Open Sound Panel");
 
 		soundBtn.setOnAction(e -> {
             if (soundPopup.isVisible()) {
