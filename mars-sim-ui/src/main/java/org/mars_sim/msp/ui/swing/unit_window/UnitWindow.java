@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitWindow.java
- * @version 3.08 2015-06-26
+ * @version 3.1.0 2017-03-04
  * @author Scott Davis
  */
 

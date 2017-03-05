@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanel.java
- * @version 3.07 2015-01-14
-
+ * @version 3.1.0 2017-03-04
  * @author Scott Davis
  */
 
@@ -56,7 +55,7 @@ public abstract class TabPanel extends JScrollPane {
         this.tabToolTip = tabToolTip;
         this.unit = unit;
         this.desktop = desktop;
-       
+
         // Create the view panel
         viewPanel = new JPanel(new BorderLayout(0, 0));
         //viewPanel.setBackground(THEME_COLOR);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 3.08 2015-06-24
+ * @version 3.1.0 2017-03-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing;
@@ -60,7 +60,7 @@ public class UIConfig {
 	private static final String FILE_NAME = "ui_settings.xml";
 
     private static final String FILE_NAME_DTD = "ui_settings.dtd";
- 
+
     // UI config elements and attributes.
     private static final String UI = "ui";
     private static final String USE_DEFAULT = "use-default";
@@ -83,7 +83,9 @@ public class UIConfig {
 
     private Document configDoc;
 
-    /** 
+    private MainDesktopPane desktop;
+
+    /**
      * Private singleton constructor.
      */
     private UIConfig() {
@@ -96,7 +98,7 @@ public class UIConfig {
      */
     public void parseFile() {
     	FileInputStream stream = null;
-    	
+
         try {
         	/* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
              * because this will work properly. */
@@ -118,8 +120,9 @@ public class UIConfig {
      * @param mainWindow the main window.
      */
     public void saveFile(MainWindow mainWindow) {
+        desktop = mainWindow.getDesktop();
         FileOutputStream stream = null;
-        
+
         try {
             Document outputDoc = new Document();
             DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
@@ -129,12 +132,9 @@ public class UIConfig {
             outputDoc.setRootElement(uiElement);
 
             uiElement.setAttribute(USE_DEFAULT, "false"); //FIXME lechimp 10/9/13: why is this always set to false upon save?
-    		
-            
             uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainWindow.getToolToolBar().isVisible()));
             uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainWindow.getUnitToolBar().isVisible()));
 
-            
             Element mainWindowElement = new Element(MAIN_WINDOW);
             uiElement.addContent(mainWindowElement);
 
@@ -142,11 +142,11 @@ public class UIConfig {
             mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainWindow.getFrame().getY()));
             mainWindowElement.setAttribute(WIDTH, Integer.toString(mainWindow.getFrame().getWidth()));
             mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainWindow.getFrame().getHeight()));
-   
+
             Element volumeElement = new Element(VOLUME);
             uiElement.addContent(volumeElement);
 
-            AudioPlayer player = mainWindow.getDesktop().getSoundPlayer();
+            AudioPlayer player = desktop.getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getVolume()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute(false)));
 
@@ -154,7 +154,6 @@ public class UIConfig {
             uiElement.addContent(internalWindowsElement);
 
             // Add all internal windows.
-            MainDesktopPane desktop = mainWindow.getDesktop();
             JInternalFrame[] windows = desktop.getAllFrames();
             for (JInternalFrame window1 : windows) {
                 if (window1.isVisible() || window1.isIcon()) {
@@ -186,17 +185,17 @@ public class UIConfig {
              * because this will work properly. Also we will have to copy the ui_settings.dtd to this folder
              * because in a webstart environment, the user has no initial data in his dirs. */
             File configFile = new File(DIRECTORY, FILE_NAME);
-            
+
             // Create save directory if it doesn't exist.
             if (!configFile.getParentFile().exists()) {
             	configFile.getParentFile().mkdirs();
             }
-            
+
             // Copy /dtd/ui_settings.dtd resource to save directory.
             // Always do this as we don't know when the local saved dtd file is out of date.
             InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
             IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
-            
+
             XMLOutputter fmt = new XMLOutputter();
             fmt.setFormat(Format.getPrettyFormat());
             stream = new FileOutputStream(configFile);
@@ -209,14 +208,15 @@ public class UIConfig {
             IOUtils.closeQuietly(stream);
         }
     }
-    
+
     /**
      * Creates an XML document for the UI configuration and saves it to a file.
      * @param mainScene the Main Scene.
      */
     public void saveFile(MainScene mainScene) {
+        desktop = mainScene.getDesktop();
         FileOutputStream stream = null;
-        
+
         try {
             Document outputDoc = new Document();
             DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
@@ -226,12 +226,12 @@ public class UIConfig {
             outputDoc.setRootElement(uiElement);
 
             uiElement.setAttribute(USE_DEFAULT, "false"); //FIXME lechimp 10/9/13: why is this always set to false upon save?
-    		
-            
+
+
             //uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(mainScene.getToolToolBar().isVisible()));
             //uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(mainScene.getUnitToolBar().isVisible()));
 
-            
+
             Element mainWindowElement = new Element(MAIN_WINDOW);
             uiElement.addContent(mainWindowElement);
 
@@ -239,11 +239,11 @@ public class UIConfig {
            // mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(mainScene.getFrame().getY()));
             //mainWindowElement.setAttribute(WIDTH, Integer.toString(mainScene.getFrame().getWidth()));
             //mainWindowElement.setAttribute(HEIGHT, Integer.toString(mainScene.getFrame().getHeight()));
-   
+
             Element volumeElement = new Element(VOLUME);
             uiElement.addContent(volumeElement);
 
-            AudioPlayer player = mainScene.getDesktop().getSoundPlayer();
+            AudioPlayer player = desktop.getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getVolume()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute(false)));
 
@@ -251,7 +251,6 @@ public class UIConfig {
             uiElement.addContent(internalWindowsElement);
 
             // Add all internal windows.
-            MainDesktopPane desktop = mainScene.getDesktop();          
             JInternalFrame[] windows = desktop.getAllFrames();
             for (JInternalFrame window1 : windows) {
                 Element windowElement = new Element(WINDOW);
@@ -281,17 +280,17 @@ public class UIConfig {
              * because this will work properly. Also we will have to copy the ui_settings.dtd to this folder
              * because in a webstart environment, the user has no initial data in his dirs. */
             File configFile = new File(DIRECTORY, FILE_NAME);
-            
+
             // Create save directory if it doesn't exist.
             if (!configFile.getParentFile().exists()) {
             	configFile.getParentFile().mkdirs();
             }
-            
+
             // Copy /dtd/ui_settings.dtd resource to save directory.
             // Always do this as we don't know when the local saved dtd file is out of date.
             InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
             IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
-            
+
             XMLOutputter fmt = new XMLOutputter();
             fmt.setFormat(Format.getPrettyFormat());
             stream = new FileOutputStream(configFile);
@@ -307,14 +306,14 @@ public class UIConfig {
 
     /**
      * Checks if UI should use default configuration.
-     * 
+     *
      * @return true if default.
      */
     public boolean useUIDefault() {
         try {
             Element root = configDoc.getRootElement();
             return Boolean.parseBoolean(root.getAttributeValue(USE_DEFAULT));
-        } 
+        }
         catch (Exception e) {
             return true;
         }
@@ -324,14 +323,14 @@ public class UIConfig {
 
     /**
      * Checks if UI should show the Tool bar.
-     * 
+     *
      * @return true if default.
      */
     public boolean showToolBar(){
         try {
             Element root = configDoc.getRootElement();
             return Boolean.parseBoolean(root.getAttributeValue(SHOW_TOOL_BAR));
-        } 
+        }
         catch (Exception e) {
             return true;
         }
@@ -339,23 +338,23 @@ public class UIConfig {
 
     /**
      * Checks if UI should show the Unit bar.
-     * 
+     *
      * @return true if default.
      */
     public boolean showUnitBar(){
         try {
             Element root = configDoc.getRootElement();
             return Boolean.parseBoolean(root.getAttributeValue(SHOW_UNIT_BAR));
-        } 
+        }
         catch (Exception e) {
             return true;
         }
     }
-    
-    
+
+
     /**
      * Gets the screen location of the main window origin.
-     * 
+     *
      * @return location.
      */
     public Point getMainWindowLocation() {
@@ -365,7 +364,7 @@ public class UIConfig {
             int x = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_X));
             int y = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_Y));
             return new Point(x, y);
-        } 
+        }
         catch (Exception e) {
             return new Point(0, 0);
         }
@@ -373,7 +372,7 @@ public class UIConfig {
 
     /**
      * Gets the size of the main window.
-     * 
+     *
      * @return size.
      */
     public Dimension getMainWindowDimension() {
@@ -383,7 +382,7 @@ public class UIConfig {
             int width = Integer.parseInt(mainWindow.getAttributeValue(WIDTH));
             int height = Integer.parseInt(mainWindow.getAttributeValue(HEIGHT));
             return new Dimension(width, height);
-        } 
+        }
         catch (Exception e) {
             return new Dimension(300, 300);
         }
@@ -391,7 +390,7 @@ public class UIConfig {
 
     /**
      * Gets the sound volume level.
-     * 
+     *
      * @return volume (0 (silent) to 1 (loud)).
      */
     public float getVolume() {
@@ -399,7 +398,7 @@ public class UIConfig {
             Element root = configDoc.getRootElement();
             Element volume = root.getChild(VOLUME);
             return Float.parseFloat(volume.getAttributeValue(SOUND));
-        } 
+        }
         catch (Exception e) {
             return 50F;
         }
@@ -407,7 +406,7 @@ public class UIConfig {
 
     /**
      * Checks if sound volume is set to mute.
-     * 
+     *
      * @return true if mute.
      */
     public boolean isMute() {
@@ -415,7 +414,7 @@ public class UIConfig {
             Element root = configDoc.getRootElement();
             Element volume = root.getChild(VOLUME);
             return Boolean.parseBoolean(volume.getAttributeValue(MUTE));
-        } 
+        }
         catch (Exception e) {
             return false;
         }
@@ -423,7 +422,7 @@ public class UIConfig {
 
     /**
      * Checks if an internal window is displayed.
-     * 
+     *
      * @param windowName the window name.
      * @return true if displayed.
      */
@@ -445,7 +444,7 @@ public class UIConfig {
                 }
             }
             return result;
-        } 
+        }
         catch (Exception e) {
             return false;
         }
@@ -453,7 +452,7 @@ public class UIConfig {
 
     /**
      * Gets the origin location of an internal window on the desktop.
-     * 
+     *
      * @param windowName the window name.
      * @return location.
      */
@@ -476,7 +475,7 @@ public class UIConfig {
                 }
             }
             return result;
-        } 
+        }
         catch (Exception e) {
             return new Point(0, 0);
         }
@@ -484,7 +483,7 @@ public class UIConfig {
 
     /**
      * Gets the z order of an internal window on the desktop.
-     * 
+     *
      * @param windowName the window name.
      * @return z order (lower number represents higher up)
      */
@@ -504,7 +503,7 @@ public class UIConfig {
                 }
             }
             return result;
-        } 
+        }
         catch (Exception e) {
             return -1;
         }
@@ -512,7 +511,7 @@ public class UIConfig {
 
     /**
      * Gets the size of an internal window.
-     * 
+     *
      * @param windowName the window name.
      * @return size.
      */
@@ -535,7 +534,7 @@ public class UIConfig {
                 }
             }
             return result;
-        } 
+        }
         catch (Exception e) {
             return new Dimension(0, 0);
         }
@@ -543,7 +542,7 @@ public class UIConfig {
 
     /**
      * Gets the internal window type.
-     * 
+     *
      * @param windowName the window name.
      * @return "unit" or "tool".
      */
@@ -563,7 +562,7 @@ public class UIConfig {
                 }
             }
             return result;
-        } 
+        }
         catch (Exception e) {
             return "";
         }
@@ -571,7 +570,7 @@ public class UIConfig {
 
     /**
      * Checks if internal window is configured.
-     * 
+     *
      * @param windowName the window name.
      * @return true if configured.
      */
@@ -591,7 +590,7 @@ public class UIConfig {
                 }
             }
             return result;
-        } 
+        }
         catch (Exception e) {
             return false;
         }
@@ -599,7 +598,7 @@ public class UIConfig {
 
     /**
      * Gets all of the internal window names.
-     * 
+     *
      * @return list of window names.
      */
     @SuppressWarnings("unchecked")
@@ -616,7 +615,7 @@ public class UIConfig {
                 }
             }
             return result;
-        } 
+        }
         catch (Exception e) {
             return result;
         }
