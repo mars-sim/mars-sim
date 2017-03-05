@@ -463,7 +463,7 @@ public class ScenarioConfigEditorFX {
 		// Create configuration button inner bottom panel.
 		VBox vbCenter = new VBox();
 		vbCenter.setSpacing(10);
-		vbCenter.setPadding(new Insets(0, 10, 10, 10));
+		vbCenter.setPadding(new Insets(0, 10, 0, 10));
 		borderButtons.setBottom(vbCenter);
 
 		// Create bottom panel.
@@ -546,7 +546,7 @@ public class ScenarioConfigEditorFX {
 		startButton.setMaxWidth(Double.MAX_VALUE);
 
 		TilePane tileButtons = new TilePane(Orientation.HORIZONTAL);
-		tileButtons.setPadding(new Insets(5, 5, 5, 5));
+		tileButtons.setPadding(new Insets(0, 5, 0, 5));
 		tileButtons.setHgap(200.0);
 		tileButtons.setVgap(3.0);
 		tileButtons.getChildren().addAll(

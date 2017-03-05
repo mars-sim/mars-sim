@@ -13,20 +13,20 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<VBox fx:id="rootClientArea" 
-maxHeight="400" maxWidth="1024" minHeight="400.0" minWidth="1024.0"  prefHeight="400.0" prefWidth="1024.0"
+<VBox fx:id="rootClientArea"
+maxHeight="400" maxWidth="1024" minHeight="370.0" minWidth="1024.0"  prefHeight="370.0" prefWidth="1024.0"
 styleClass="clientarea-background" stylesheets="@demoapp.css"
 xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <AnchorPane id="title" pickOnBounds="false"  style="-fx-background-color: #654b00; -fx-text-fill: white;" 
+    <AnchorPane id="title" pickOnBounds="false"  style="-fx-background-color: #654b00; -fx-text-fill: white;"
     maxHeight="30" maxWidth="4096" minHeight="30.0" minWidth="1024" prefHeight="30.0" prefWidth="1024"
     AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" >
       <children>
       </children>
     </AnchorPane>
-    <!-- AnchorPane id="anchorRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+    <!-- AnchorPane id="anchorRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
     prefHeight="300.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1"-->
-    <AnchorPane id="anchorRoot" pickOnBounds="false" prefHeight="300.0" prefWidth="4096" 
+    <AnchorPane id="anchorRoot" pickOnBounds="false" prefHeight="280.0" prefWidth="4096"
         AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" >
     <children>
     </children>
