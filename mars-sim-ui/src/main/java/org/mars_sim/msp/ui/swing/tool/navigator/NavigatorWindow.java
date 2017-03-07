@@ -167,11 +167,11 @@ implements ActionListener {
 		    //setBorder(null);
 		    
 			// Prepare content pane
-			JPanel mainPane = new JPanel();
+			JPanel wholePane = new JPanel();
 			//mainPane.setLayout(new BorderLayout());
-			mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
+			wholePane.setLayout(new BoxLayout(wholePane, BoxLayout.Y_AXIS));
 			//mainPane.setBorder(new MarsPanelBorder());
-			setContentPane(mainPane);
+			setContentPane(wholePane);
 			
 			// Prepare globe display
 			globeNav = new GlobeDisplay(this);
@@ -183,29 +183,32 @@ implements ActionListener {
 			globePane.add(globeNav);
 			
 			globePane.setAlignmentX(Component.CENTER_ALIGNMENT);
-			mainPane.add(globePane);//, BorderLayout.NORTH);
+			wholePane.add(globePane);//, BorderLayout.NORTH);
 			
 			///////////////////////////////////////////////////////////////////////////
-			// Prepare surface map display
-			//JPanel mapPane = new JPanel(new BorderLayout(0, 0));
-			//mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-			//		new LineBorder(Color.gray)));
-			//mainPane.add(mapPane, BorderLayout.CENTER);
 
-			mapPaneInner = new JPanel(new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT, 0, 0));//
-			//mapPaneInner = new JPanel();//new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT, 0, 0));//
-			//mapPaneInner.setLayout(new BoxLayout(mapPaneInner, BoxLayout.Y_AXIS));
-			mapPaneInner.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-					new LineBorder(Color.gray)));
+			mapPaneInner = new JPanel(new BorderLayout(0, 0)); //FlowLayout(FlowLayout.LEFT, 0, 0));
+			//mapPaneInner.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+			//		new LineBorder(Color.gray)));
 			mapPaneInner.setBackground(Color.black);
 			mapPaneInner.setOpaque(true);
+			mapPaneInner.setAlignmentX(CENTER_ALIGNMENT);
+			mapPaneInner.setAlignmentY(CENTER_ALIGNMENT);
 	//		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 	
+			
+			JPanel detailPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			detailPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
+					new LineBorder(Color.gray)));
+			detailPane.setBackground(Color.black);
+			detailPane.setOpaque(true);
+			detailPane.add(mapPaneInner);
+			
 			map = new MapPanel(500L);
 			map.setNavWin(this);
 			map.addMouseListener(new mapListener());
 			map.addMouseMotionListener(new mouseMotionListener());
-			map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+			//map.setCursor(new Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 	
 			// Create map layers.
 			unitIconLayer = new UnitIconMapLayer(map);
@@ -229,7 +232,7 @@ implements ActionListener {
 			//mapPaneInner.setAlignmentX(Component.CENTER_ALIGNMENT);
 			mapPaneInner.add(map, BorderLayout.CENTER);
 			//mapPane.add(mapPaneInner, BorderLayout.CENTER);
-			mainPane.add(mapPaneInner);//, BorderLayout.CENTER);
+			wholePane.add(detailPane);//, BorderLayout.CENTER);
 			
 
 			///////////////////////////////////////////////////////////////////////////
@@ -239,7 +242,7 @@ implements ActionListener {
 			bottomPane.setLayout(new BoxLayout(bottomPane, BoxLayout.Y_AXIS));
 			//bottomPane.setBorder(new EmptyBorder(0, 3, 0, 0));
 			bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
-			mainPane.add(bottomPane);//, BorderLayout.SOUTH);
+			wholePane.add(bottomPane);//, BorderLayout.SOUTH);
 			//mapPaneInner.add(bottomPane, BorderLayout.SOUTH);
 			
 			///////////////////////////////////////////////////////////////////////////

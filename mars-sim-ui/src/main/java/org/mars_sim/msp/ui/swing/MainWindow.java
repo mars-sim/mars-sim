@@ -67,6 +67,7 @@ public class MainWindow extends JComponent {
 
 	/** Icon image filename for main window. */
 	private static final String ICON_IMAGE = "/images/LanderHab.png";
+	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 
 	// Data members
@@ -141,7 +142,10 @@ public class MainWindow extends JComponent {
 		// Set look and feel of UI.
 		useDefault = UIConfig.INSTANCE.useUIDefault();
 
-		setLookAndFeel(false, true);
+		if (OS.contains("linux"))
+			setLookAndFeel(false, false);
+		else
+			setLookAndFeel(false, true);
 
 		// Set the icon image for the frame.
 		setIconImage();
@@ -408,7 +412,7 @@ public class MainWindow extends JComponent {
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread(Msg.getString("MainWindow.thread.loadSim")) { //$NON-NLS-1$
 				@Override
-				public void run() { 					
+				public void run() {
 					loadSimulationProcess(ans);
 				}
 			};
@@ -425,16 +429,16 @@ public class MainWindow extends JComponent {
 			delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);
 		}
 */
-		
+
 	}
 
 	/**
 	 * Performs the process of loading a simulation.
 	 */
 	private void loadSimulationProcess(boolean autosave) {
-		
+
 		Simulation.instance().stop();
-        
+
 		String dir = null;
 
 		String title = null;
@@ -454,7 +458,7 @@ public class MainWindow extends JComponent {
 
 			// Break up the creation of the new simulation, to allow interfering with the single steps.
 			Simulation.instance().endSimulation();
-		
+
 			try {
 			    desktop.clearDesktop();
 
@@ -469,10 +473,10 @@ public class MainWindow extends JComponent {
 			    logger.severe(e.getMessage());
 			    e.printStackTrace(System.err);
 			}
-			
+
         	//Simulation.createNewSimulation();
 			Simulation.instance().loadSimulation(chooser.getSelectedFile());
-			
+
 			while (Simulation.instance().getMasterClock() == null) {//while (masterClock.isLoadingSimulation()) {
 				try {
 					Thread.sleep(300L);
@@ -480,7 +484,7 @@ public class MainWindow extends JComponent {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
 				}
 			}
-			
+
 			desktop.disposeAnnouncementWindow();
 
 			try {
@@ -491,7 +495,7 @@ public class MainWindow extends JComponent {
                 logger.severe(e.getMessage());
                 e.printStackTrace(System.err);
             }
-			
+
 			Simulation.instance().start(false);
 
 			startEarthTimer();
@@ -500,7 +504,7 @@ public class MainWindow extends JComponent {
 	        //GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
 	        //ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
 		}
-		
+
 
 	}
 
@@ -512,7 +516,7 @@ public class MainWindow extends JComponent {
 			newSimThread = new Thread(Msg.getString("MainWindow.thread.newSim")) { //$NON-NLS-1$
 				@Override
 				public void run() {
-					newSimulationProcess();				
+					newSimulationProcess();
 					//Simulation.instance().runStartTask(false);
 				}
 			};
@@ -527,8 +531,8 @@ public class MainWindow extends JComponent {
 		//	int seconds = 1;
 		//	delayLaunchTimer.schedule(new StatusBar(), seconds * 1000);
 		//}
-			
-        //earthTimer.start();			
+
+        //earthTimer.start();
 	}
 
 	/**
@@ -536,7 +540,7 @@ public class MainWindow extends JComponent {
 	 */
 	void newSimulationProcess() {
 		logger.info("newSimulationProces() is on " + Thread.currentThread().getName());
-		  
+
 		if (
 			JOptionPane.showConfirmDialog(
 				desktop,
@@ -552,10 +556,10 @@ public class MainWindow extends JComponent {
 			// Break up the creation of the new simulation, to allow interfering with the single steps.
 			Simulation.instance().endSimulation();
 			Simulation.instance().endMasterClock();
-			
+
 			desktop.closeAllToolWindow();
 			desktop.disposeAnnouncementWindow();
-			
+
 			try {
 			    desktop.clearDesktop();
 
@@ -570,7 +574,7 @@ public class MainWindow extends JComponent {
 			    logger.severe(e.getMessage());
 			    e.printStackTrace(System.err);
 			}
-			
+
 /*
 			while (Simulation.instance().getMasterClock() == null) {//while (masterClock.isLoadingSimulation()) {
 				try {
@@ -579,20 +583,20 @@ public class MainWindow extends JComponent {
 					logger.log(Level.WARNING, Msg.getString("MainWindow.log.waitInterrupt"), e); //$NON-NLS-1$
 				}
 			}
-*/			
+*/
 
-			
+
 	        try {
 	        	Simulation.instance().startSimExecutor();
 	        	//Simulation.instance().runLoadConfigTask();
 	        	Simulation.instance().getSimExecutor().submit(new SimConfigTask(this));
-	        	
+
 	        } catch (Exception e) {
 	        	logger.warning("error in restarting a new sim.");
 	            e.printStackTrace();
 	        }
-	
-	        
+
+
 			try {
                 desktop.resetDesktop();
             }
@@ -601,7 +605,7 @@ public class MainWindow extends JComponent {
                 logger.severe(e.getMessage());
                 e.printStackTrace(System.err);
             }
-			
+
 			// Open user guide tool.
             //desktop.openToolWindow(GuideWindow.NAME);
             //GuideWindow ourGuide = (GuideWindow) desktop.getToolWindow(GuideWindow.NAME);
@@ -609,12 +613,12 @@ public class MainWindow extends JComponent {
 		}
 	}
 
-	public class SimConfigTask implements Runnable {	
+	public class SimConfigTask implements Runnable {
 		MainWindow win;
 		SimConfigTask(MainWindow win) {
 			this.win = win;
 		}
-		
+
 		public void run() {
 		   	//logger.info("SimConfigTask's run() is on " + Thread.currentThread().getName());
 			SimulationConfig.loadConfig();
@@ -625,7 +629,7 @@ public class MainWindow extends JComponent {
           //});
 		}
 	}
-	
+
 	/**
 	 * Save the current simulation. This displays a FileChooser to select the
 	 * location to save the simulation if the default is not to be used.
@@ -850,7 +854,7 @@ public class MainWindow extends JComponent {
 		transportWizard.deliverBuildings(buildingManager);
 
 	}
-	
+
 	public void openConstructionWizard(BuildingConstructionMission mission) { // ConstructionManager constructionManager,
 		logger.info("MainWindow's openConstructionWizard() is in " + Thread.currentThread().getName() + " Thread");
 		constructionWizard.selectSite(mission);

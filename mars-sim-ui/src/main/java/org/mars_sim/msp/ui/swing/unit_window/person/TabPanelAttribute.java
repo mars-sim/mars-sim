@@ -141,8 +141,9 @@ extends TabPanel {
 		//attributeTable.getColumnModel().getColumn(1).setCellRenderer(renderer);
 
 		// 2015-06-08 Added setTableStyle()
-		attributeTable = TableStyle.setTableStyle(attributeTable);
-
+        TableStyle.setTableStyle(attributeTable);
+        update();
+        //attributeTableModel.update();
 	}
 
 	/**
@@ -153,7 +154,7 @@ extends TabPanel {
 		TableStyle.setTableStyle(attributeTable);
 		attributeTableModel.update();
 	}
-	
+
 }
 
 /**
@@ -164,12 +165,12 @@ extends AbstractTableModel {
 
 	private List<Map<String, NaturalAttribute>> n_attributes;
 	private List<Map<String, RoboticAttribute>> r_attributes;
-	
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	private NaturalAttributeManager n_manager;
 	private RoboticAttributeManager r_manager;
-	
+
     Person person = null;
     Robot robot = null;
 
@@ -182,7 +183,7 @@ extends AbstractTableModel {
         if (unit instanceof Person) {
          	person = (Person) unit;
          	n_manager = person.getNaturalAttributeManager();
-         	
+
     		n_attributes = new ArrayList<Map<String, NaturalAttribute>>();
 			for (NaturalAttribute value : NaturalAttribute.values()) {
 				Map<String,NaturalAttribute> map = new TreeMap<String,NaturalAttribute>();
@@ -199,11 +200,11 @@ extends AbstractTableModel {
 				}
 			);
         }
-        
+
         else if (unit instanceof Robot) {
         	robot = (Robot) unit;
         	r_manager = robot.getRoboticAttributeManager();
-        	
+
     		r_attributes = new ArrayList<Map<String, RoboticAttribute>>();
 			for (RoboticAttribute value : RoboticAttribute.values()) {
 				Map<String, RoboticAttribute> map = new TreeMap<String, RoboticAttribute>();
@@ -267,7 +268,7 @@ extends AbstractTableModel {
 				return null;
 
 		}
-		
+
 		else if (column == 1) {
 			if (person != null)
 				return getLevelString(n_manager.getAttribute(n_attributes.get(row).values().iterator().next()));
@@ -275,9 +276,9 @@ extends AbstractTableModel {
 			else if (robot != null)
 				return getLevelString(r_manager.getAttribute(r_attributes.get(row).values().iterator().next()));
 			else
-				return null;			
+				return null;
 		}
-		
+
 		else return null;
 	}
 	/*
@@ -296,7 +297,7 @@ extends AbstractTableModel {
 		else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
 		return result;
 	}
-	
+
 	/**
 	 * Prepares the job history of the person
 	 * @param

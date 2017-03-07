@@ -292,7 +292,7 @@ implements ActionListener {
 
 			// 2015-10-30 Added checking if user already submitted rating or submitted a job reassignment that's still not being reviewed
 			checkingJobRating(list);
-			
+
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 
@@ -305,7 +305,7 @@ implements ActionListener {
 				starRater.setEnabled(false);
 
 			}
-			else 
+			else
 				// 2015-10-30 Added checking for the status of Job Reassignment
 				checkingJobReassignment(person, list);
 		}
@@ -369,9 +369,7 @@ implements ActionListener {
 		//}
 		// 2015-06-08 Added setTableStyle()
 		TableStyle.setTableStyle(table);
-
 		update();
-
 		jobHistoryTableModel.update();
 
 	}
@@ -449,7 +447,7 @@ implements ActionListener {
         	Vehicle vehicle = (Vehicle) person.getContainerUnit();
         	settlement = vehicle.getSettlement();
         }
-        
+
       //List<JobAssignment> jobAssignmentList = person.getJobHistory().getJobAssignmentList();
     	int last = list.size()-1;
 
@@ -457,7 +455,7 @@ implements ActionListener {
 
         pop = settlement.getAllAssociatedPeople().size();
 
-        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {     	
+        if (pop > UnitManager.POPULATION_WITH_COMMANDER) {
 
         	if (status.equals(JobAssignmentType.PENDING)) {
         		statusCache = JobAssignmentType.PENDING;
@@ -526,8 +524,8 @@ implements ActionListener {
     				; // do nothing. at the start of sim
     		    } //if (statusCache.equals(JobAssignmentType.PENDING))
 
-	        } else  { 
-	        	//2016-04-20 update the jobComboBox if pop is less than POPULATION_WITH_COMMANDER) 	        	
+	        } else  {
+	        	//2016-04-20 update the jobComboBox if pop is less than POPULATION_WITH_COMMANDER)
 	        	String selectedJobStr = list.get(last).getJobType();
 	        	jobCache = selectedJobStr; // must update the jobCache prior to setSelectedItem or else a new job reassignment will be submitted in
 			    jobComboBox.setSelectedItem(selectedJobStr);
@@ -676,7 +674,7 @@ implements ActionListener {
 
 						//System.out.println("Yes they are diff");
 						jobCache = selectedJobStr;
-						
+
 						// updates the jobHistoryList in jobHistoryTableModel
 						jobHistoryTableModel.update();
 

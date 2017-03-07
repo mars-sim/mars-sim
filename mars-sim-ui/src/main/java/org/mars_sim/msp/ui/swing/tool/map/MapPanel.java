@@ -50,9 +50,9 @@ public class MapPanel extends JPanel implements ClockListener {
 	public final static int MAP_BOX_HEIGHT = 300;
 	public final static int MAP_BOX_WIDTH = 300;
 	private static int dragx, dragy;
-	
+
 	private static double PERIOD_IN_MILLISOLS;
-	
+
 	// Data members
 	private double timeCache = 0;
 	private boolean mapError;
@@ -78,7 +78,7 @@ public class MapPanel extends JPanel implements ClockListener {
 	private Image dbImage = null;
 	private long refreshRate;
 	private double rho = CannedMarsMap.PIXEL_RHO;
-	
+
 	private ThreadPoolExecutor executor;
 
 	public MapPanel(long refreshRate) {
@@ -87,10 +87,10 @@ public class MapPanel extends JPanel implements ClockListener {
 		executor = (ThreadPoolExecutor) Executors.newCachedThreadPool(); // newFixedThreadPool(1); //
 
 		Simulation.instance().getMasterClock().addClockListener(this);
-		
+
 		this.refreshRate = refreshRate;
 		PERIOD_IN_MILLISOLS = refreshRate / MarsClock.SECONDS_IN_MILLISOL;
-		
+
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
 		topoMap = new TopoMarsMap(this);
@@ -102,8 +102,8 @@ public class MapPanel extends JPanel implements ClockListener {
 		update = true;
 		centerCoords = new Coordinates(HALF_PI, 0D);
 
-		
-		//setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT ));
+
+		setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT ));
 		setBackground(Color.BLACK);
 		setOpaque(true);
 	}
@@ -116,7 +116,7 @@ public class MapPanel extends JPanel implements ClockListener {
 		//showMap(centerCoords);
 		setMapType(getMapType());
 		map.drawMap(centerCoords);
-		
+
 		// 2015-06-26 Note: need navWin prior to calling addMouseMotionListener()
 		addMouseMotionListener(new MouseAdapter() {
 
@@ -138,12 +138,12 @@ public class MapPanel extends JPanel implements ClockListener {
 
 					//if (!executor.isTerminated() || !executor.isShutdown() )
 					//	executor.execute(new MapTask());
-					
+
 					map.drawMap(centerCoords);
 
 					paintDoubleBuffer();
 					repaint();
-					
+
 				}
 			}
 		});
@@ -307,7 +307,7 @@ public class MapPanel extends JPanel implements ClockListener {
 			repaint();
 		}
 	}
-	
+
 	/**
 	 * Updates the current display
 
@@ -398,7 +398,7 @@ public class MapPanel extends JPanel implements ClockListener {
                 	//while (i.hasNext()) {
                 	//   i.next().displayLayer(centerCoords, mapType, dbg);
                 	//}
-                	
+
                 	for (MapLayer l : mapLayers) {
                 		l.displayLayer(centerCoords, mapType, dbg);
                 	}
@@ -496,13 +496,13 @@ public class MapPanel extends JPanel implements ClockListener {
 			//System.out.println("calling MapPanel's clockPulse()");
 			updateDisplay();
 			timeCache = 0;
-		}	
+		}
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

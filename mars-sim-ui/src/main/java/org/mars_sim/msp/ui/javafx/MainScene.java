@@ -222,6 +222,7 @@ public class MainScene {
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
+	public static final int SYSTEM_THEME = 0;
 	public static final int NIMROD_THEME = 1;
 	public static final int NIMBUS_THEME = 2;
 
@@ -315,7 +316,7 @@ public class MainScene {
 	private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, calendarButton, minimapToggle, mapToggle;
 	private JFXSlider zoomSlider, timeSlider, soundSlider;
-	private JFXButton soundBtn, miniMapBtn, mapBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn;
+	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn; // miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, flyout, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 
@@ -666,10 +667,18 @@ public class MainScene {
 	    Nodes.addInputMap(root, ctrlX);
 
 		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)), e -> {
-			if (theme == 6)
-				changeTheme(7);
-			else if (theme == 7)
-				changeTheme(6);
+			if (OS.contains("linux")) {
+				if (theme == 6)
+					setTheme(0);
+				else if (theme == 0)
+					setTheme(6);
+			}
+			else {
+				if (theme == 6)
+					setTheme(7);
+				else if (theme == 7)
+					setTheme(6);
+			}
 		});
 	    Nodes.addInputMap(root, ctrlT);
 
@@ -1463,9 +1472,10 @@ public class MainScene {
 				openMinimap();
 			}
 			else {
-				minimapToggle.setText("Minimap Off");
-				desktop.closeToolWindow(NavigatorWindow.NAME);
-				mapAnchorPane.getChildren().remove(minimapStackPane);
+				closeMinimap();
+				//minimapToggle.setText("Minimap Off");
+				//desktop.closeToolWindow(NavigatorWindow.NAME);
+				//mapAnchorPane.getChildren().remove(minimapStackPane);
 	    	    //minimapButton.setSelected(false);
 			}
 
@@ -1480,20 +1490,15 @@ public class MainScene {
 		mapToggle.setOnAction(e -> {
 			if (mapToggle.isSelected()) {
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
-					openMap();
+					openSettlementMap();
 				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 					//pinButton.setSelected(true);
+					//closeMinimap();
 					openMinimap();
 				}
 			}
 			else {
-				mapToggle.setText("Settlement Map Off");
-				desktop.closeToolWindow(SettlementWindow.NAME);
-				mapAnchorPane.getChildren().removeAll(mapStackPane,
-						settlementBox, mapLabelBox,
-						zoomSlider,
-						rotateCWBtn, rotateCCWBtn, recenterBtn);
-				//sMapButton.setSelected(false);
+				closeSettlementMap();
 			}
 
 			//sMapButton.toFront();
@@ -1508,11 +1513,13 @@ public class MainScene {
 			if (cacheToggle.isSelected()) {
 				cacheToggle.setText("Map Cache On");
 				if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
-					openMap();
+					openSettlementMap();
 				if (!desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
 					//pinButton.setSelected(true);
 					openMinimap();
 				}
+				else
+		    	    minimapStackPane.toFront();
 
 				minimapToggle.toFront();
 				mapToggle.toFront();
@@ -2054,81 +2061,74 @@ public class MainScene {
 		//}
 	}
 
-	public void openMap() {
-		//if (!desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-			//if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-			//	mapStackPane.prefWidthProperty().unbind();
-			//	mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(minimapStackPane.widthProperty()).subtract(2));
-			//}
-			//else {
-			mapStackPane.prefWidthProperty().unbind();
-			mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));
-			//}
+	public void openSettlementMap() {
 
-			desktop.openToolWindow(SettlementWindow.NAME);
-			//mapNode.setContent(settlementWindow);
+		mapStackPane.prefWidthProperty().unbind();
+		mapStackPane.prefWidthProperty().bind(scene.widthProperty().subtract(1));
 
-	        AnchorPane.setRightAnchor(mapStackPane, 0.0);
-	        AnchorPane.setTopAnchor(mapStackPane, 0.0);
+		desktop.openToolWindow(SettlementWindow.NAME);
+		//mapNode.setContent(settlementWindow);
 
-	        AnchorPane.setRightAnchor(zoomSlider, 65.0);
-	        AnchorPane.setTopAnchor(zoomSlider, 350.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);
+        AnchorPane.setRightAnchor(mapStackPane, 0.0);
+        AnchorPane.setTopAnchor(mapStackPane, 0.0);
 
-	        AnchorPane.setRightAnchor(rotateCWBtn, 110.0);
-	        AnchorPane.setTopAnchor(rotateCWBtn, 300.0);
+        AnchorPane.setRightAnchor(zoomSlider, 65.0);
+        AnchorPane.setTopAnchor(zoomSlider, 350.0);//(mapNodePane.heightProperty().get() - zoomSlider.heightProperty().get())*.4d);
 
-	        AnchorPane.setRightAnchor(rotateCCWBtn, 30.0);
-	        AnchorPane.setTopAnchor(rotateCCWBtn, 300.0);
+        AnchorPane.setRightAnchor(rotateCWBtn, 110.0);
+        AnchorPane.setTopAnchor(rotateCWBtn, 300.0);
 
-	        AnchorPane.setRightAnchor(recenterBtn, 70.0);
-	        AnchorPane.setTopAnchor(recenterBtn, 300.0);
+        AnchorPane.setRightAnchor(rotateCCWBtn, 30.0);
+        AnchorPane.setTopAnchor(rotateCCWBtn, 300.0);
 
-	        AnchorPane.setRightAnchor(settlementBox, 15.0);//anchorMapTabPane.widthProperty().get()/2D - 110.0);//settlementBox.getWidth());
-	        AnchorPane.setTopAnchor(settlementBox, 100.0);
+        AnchorPane.setRightAnchor(recenterBtn, 70.0);
+        AnchorPane.setTopAnchor(recenterBtn, 300.0);
 
-	        AnchorPane.setRightAnchor(mapLabelBox, -10.0);
-	        AnchorPane.setTopAnchor(mapLabelBox, 140.0);
+        AnchorPane.setRightAnchor(settlementBox, 15.0);//anchorMapTabPane.widthProperty().get()/2D - 110.0);//settlementBox.getWidth());
+        AnchorPane.setTopAnchor(settlementBox, 100.0);
+
+        AnchorPane.setRightAnchor(mapLabelBox, -10.0);
+        AnchorPane.setTopAnchor(mapLabelBox, 140.0);
 
 
-	        boolean hasMap = false, hasZoom = false, hasButtons = false,
-	        		hasSettlements = false, hasMapLabel = false;
+        boolean hasMap = false, hasZoom = false, hasButtons = false,
+        		hasSettlements = false, hasMapLabel = false;
 
-	        ObservableList<Node> nodes = mapAnchorPane.getChildrenUnmodifiable();
+        ObservableList<Node> nodes = mapAnchorPane.getChildrenUnmodifiable();
 
-	        for (Node node : nodes) {
+        for (Node node : nodes) {
 
-		        if (node == settlementBox) {
-		        	hasSettlements = true;
-		        }
-		        else if (node == mapStackPane) {
-		        	hasMap = true;
-		        }
-		        else if (node == zoomSlider) {
-		        	hasZoom = true;
-		        }
-		        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
-		        	hasButtons = true;
-		        }
-		        else if (node == mapLabelBox)
-		        	hasMapLabel = true;
+	        if (node == settlementBox) {
+	        	hasSettlements = true;
+	        }
+	        else if (node == mapStackPane) {
+	        	hasMap = true;
+	        }
+	        else if (node == zoomSlider) {
+	        	hasZoom = true;
+	        }
+	        else if (node == recenterBtn || node == rotateCWBtn || node == rotateCCWBtn) {
+	        	hasButtons = true;
+	        }
+	        else if (node == mapLabelBox)
+	        	hasMapLabel = true;
 
-			}
+		}
 
-			if (!hasMap)
-				mapAnchorPane.getChildren().addAll(mapStackPane);
+		if (!hasMap)
+			mapAnchorPane.getChildren().addAll(mapStackPane);
 
-			if (!hasSettlements)
-				mapAnchorPane.getChildren().addAll(settlementBox);
+		if (!hasSettlements)
+			mapAnchorPane.getChildren().addAll(settlementBox);
 
-			if (!hasMapLabel)
-				mapAnchorPane.getChildren().addAll(mapLabelBox);
+		if (!hasMapLabel)
+			mapAnchorPane.getChildren().addAll(mapLabelBox);
 
-			if (!hasZoom)
-				mapAnchorPane.getChildren().addAll(zoomSlider);
+		if (!hasZoom)
+			mapAnchorPane.getChildren().addAll(zoomSlider);
 
-			if (!hasButtons)
-				mapAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
-
+		if (!hasButtons)
+			mapAnchorPane.getChildren().addAll(rotateCWBtn, rotateCCWBtn, recenterBtn);
 /*
 			for (Node node : mapAnchorPane.getChildrenUnmodifiable()) {
 		        if (node == cacheButton) {
@@ -2148,34 +2148,56 @@ public class MainScene {
 		        }
 		    }
 */
-			mapLabelBox.toFront();
-			settlementBox.toFront();
-			mapToggle.toFront();
-			cacheToggle.toFront();
-			minimapToggle.toFront();
+		mapLabelBox.toFront();
+		settlementBox.toFront();
+		mapToggle.toFront();
+		cacheToggle.toFront();
+		minimapToggle.toFront();
 
+		mapToggle.setText("Settlement Map On");
+		mapToggle.setSelected(true);
 
-			mapToggle.setText("Settlement Map On");
-			mapToggle.setSelected(true);
-		//}
+	}
+
+	public void closeMinimap() {
+		desktop.closeToolWindow(NavigatorWindow.NAME);
+		Platform.runLater(() -> {
+			mapAnchorPane.getChildren().remove(minimapStackPane);
+			minimapToggle.setSelected(false);
+			minimapToggle.setText("Minimap Off");
+		    jfxTabPane.requestFocus();
+		});
+		//System.out.println("closing minimap...");
+	}
+
+	public void closeSettlementMap() {
+		desktop.closeToolWindow(SettlementWindow.NAME);
+		Platform.runLater(() -> {
+			mapAnchorPane.getChildren().removeAll(mapStackPane,
+					settlementBox, mapLabelBox,
+					zoomSlider,
+					rotateCWBtn, rotateCCWBtn, recenterBtn);
+			mapToggle.setSelected(false);
+			mapToggle.setText("Settlement Map Off");
+			jfxTabPane.requestFocus();
+		});
 	}
 
 	public void closeMaps() {
-		//rootAnchorPane.getChildren().removeAll(miniMapBtn, mapBtn);
 	    mapAnchorPane.getChildren().removeAll(cacheToggle, minimapToggle, mapToggle);
 	    if (!isCacheButtonOn()) {
-			Platform.runLater(() -> {
-				mapAnchorPane.getChildren().removeAll(minimapStackPane, mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
-			});
-			//System.out.println("closing both maps...");
 			desktop.closeToolWindow(SettlementWindow.NAME);
 			desktop.closeToolWindow(NavigatorWindow.NAME);
-			minimapToggle.setSelected(false);
-			minimapToggle.setText("Minimap Off");
-			mapToggle.setSelected(false);
-			mapToggle.setText("Settlement Map Off");
-
+			Platform.runLater(() -> {
+				mapAnchorPane.getChildren().removeAll(minimapStackPane, mapStackPane, zoomSlider, rotateCWBtn, rotateCCWBtn, recenterBtn, settlementBox, mapLabelBox);
+				//System.out.println("closing both maps...");
+				minimapToggle.setSelected(false);
+				minimapToggle.setText("Minimap Off");
+				mapToggle.setSelected(false);
+				mapToggle.setText("Settlement Map Off");
+			});
 		}
+	    jfxTabPane.requestFocus(); // rootAnchorPane //jfxTabPane
 	}
 
 
@@ -2186,20 +2208,6 @@ public class MainScene {
 			return false;
 	}
 
-/*
-	public void createDesktops() {
-		desktops = new ArrayList<DesktopPane>();
-		int size = 3;
-		for (int i= 0; i < size; i++ ){
-		   DesktopPane d = new DesktopPane(this);
-		   desktops.add(d);
-		}
-	}
-
-	public List<DesktopPane> getDesktops() {
-		return desktops;
-	}
-*/
 
 	/*
 	 * Sets the theme skin after calling stage.show() at the start of the sim
@@ -2212,26 +2220,18 @@ public class MainScene {
 		// (2). the inability of loading the tab icons of the Monitor Tool at the beginning
 		// Also, when clicking a tab at the first time, a NullPointerException results)
 		// TODO: find out if it has to do with nimrodlf and/or JIDE-related
-		changeTheme(theme);
+		if (OS.contains("linux"))
+			setTheme(0);
+		else
+			setTheme(7);
 		//logger.info("done with MainScene's initializeTheme()");
 	}
 
 	/*
-	 * Changes the theme skin of desktop
+	 * Sets the theme skin of the desktop
 	 */
-	public void changeTheme(int theme) {
+	public void setTheme(int theme) {
 		this.theme = theme;
-
-		SwingUtilities.invokeLater(() -> {
-			// 2016-06-17 Added checking for OS.
-			// Note: NIMROD theme lib doesn't work on linux
-			//if (OS.equals("linux")) {
-			//	this.theme = 0;
-			//	setLookAndFeel(NIMBUS_THEME);
-			//}
-			//else
-				setLookAndFeel(NIMROD_THEME);
-		});
 
 		//desktopPane.getStylesheets().clear();
 
@@ -2241,11 +2241,10 @@ public class MainScene {
 
 		String cssFile;
 
-		//logger.info("MainScene's changeTheme()");
 		if (theme == 0) { //  snow blue
 			// for numbus theme
 			cssFile = "/fxui/css/snowBlue.css";
-			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
+			updateThemeColor(0, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
 			lookAndFeelTheme = "snowBlue";
 
 		} else if (theme == 1) { // olive green
@@ -2287,6 +2286,16 @@ public class MainScene {
 
 		}
 
+		SwingUtilities.invokeLater(() -> {
+			// 2016-06-17 Added checking for OS.
+			if (OS.contains("linux")) {
+				// Note: NIMROD theme lib doesn't work on linux
+				setLookAndFeel(NIMBUS_THEME);
+			}
+			else
+				setLookAndFeel(NIMROD_THEME);
+		});
+
 		//logger.info("done with MainScene's changeTheme()");
 	}
 
@@ -2303,12 +2312,11 @@ public class MainScene {
 		// orange theme : F4BA00
 		// blue theme : 3291D2
 
-		//String color = txtColor.toString().replace("0x", "");
+		//String color = txtColor.replace("0x", "");
+
 		//timeLabel.setTextFill(txtColor2);
 		//lastSaveLabel.setTextFill(txtColor2);
-
 		jfxTabPane.getStylesheets().clear();
-
 		//setStylesheet(northHemi, cssFile);
 		//setStylesheet(southHemi, cssFile);
 		setStylesheet(marsTimeButton, cssFile);
@@ -2336,20 +2344,7 @@ public class MainScene {
 			settlementWindow.setStatusBarTheme(cssFile);
 		}
 
-		if (theme == 6) {
-			speedIcon.setFill(Color.LAVENDER);
-			speedBtn.setGraphic(speedIcon);
-			//speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_menu_24.png"))));
-			//miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_globe_24.png"))));
-			//mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_map_24.png"))));
-			//marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_chat_24.png"))));
-			marsNetIcon.setFill(Color.LAVENDER);
-			marsNetBtn.setGraphic(marsNetIcon);
-			soundIcon.setFill(Color.LAVENDER);
-			soundBtn.setGraphic(soundIcon);
-			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
-		}
-		else if (theme == 7) {
+		if (theme == 7) {
 			speedIcon.setFill(Color.YELLOW);
 			speedBtn.setGraphic(speedIcon);
 			//speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_menu_24.png"))));
@@ -2361,6 +2356,20 @@ public class MainScene {
 			soundIcon.setFill(Color.YELLOW);
 			soundBtn.setGraphic(soundIcon);
 			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_orange.css").toExternalForm());
+		}
+
+		else {
+			speedIcon.setFill(Color.LAVENDER);
+			speedBtn.setGraphic(speedIcon);
+			//speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_menu_24.png"))));
+			//miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_globe_24.png"))));
+			//mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_map_24.png"))));
+			//marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_chat_24.png"))));
+			marsNetIcon.setFill(Color.LAVENDER);
+			marsNetBtn.setGraphic(marsNetIcon);
+			soundIcon.setFill(Color.LAVENDER);
+			soundBtn.setGraphic(soundIcon);
+			jfxTabPane.getStylesheets().add(getClass().getResource("/fxui/css/jfx_blue.css").toExternalForm());
 		}
 
 		chatBox.update();
@@ -2941,7 +2950,7 @@ public class MainScene {
 	public void setLookAndFeel(int choice) {
 		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 		boolean changed = false;
-		if (choice == NIMBUS_THEME) { // theme == "nativeLookAndFeel"
+		if (choice == SYSTEM_THEME) { // theme == "nativeLookAndFeel"
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 				changed = true;
@@ -2969,13 +2978,13 @@ public class MainScene {
 					 * java.awt.Color(20,20,20)); nt.setPrimary3(new
 					 * java.awt.Color(30,30,30)); NimRODLookAndFeel NimRODLF =
 					 * new NimRODLookAndFeel(); NimRODLF.setCurrentTheme( nt);
-					 */
+
 					if (theme == 0 || theme == 6) {
 						lookAndFeelTheme = "snowBlue";
 					}
 					else if (theme == 7)
 						lookAndFeelTheme = "nimrod"; // note that nimrod.theme uses all default parameter except overriding the opacity with 220.
-
+					*/
 					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
 					NimRODLookAndFeel nf = new NimRODLookAndFeel();
 					nf.setCurrentTheme(nt);
@@ -2986,7 +2995,7 @@ public class MainScene {
 			} catch (Exception e) {
 				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
 			}
-		} else if (choice == 2) {
+		} else if (choice == NIMBUS_THEME) {
 			try {
 				boolean foundNimbus = false;
 				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -3365,7 +3374,7 @@ public class MainScene {
 	public void setSettlement(Settlement s) {
 		Platform.runLater(() -> {
 			//if (!desktop.isToolWindowOpen(SettlementWindow.NAME))
-			openMap();
+			openSettlementMap();
 			sBox.getSelectionModel().select(s);
 		});
 	}

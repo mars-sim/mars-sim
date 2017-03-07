@@ -358,7 +358,7 @@ public class MainSceneMenu extends MenuBar  {
         });
 
         sixItem.setOnAction(e -> {
-        	mainScene.changeTheme(6);
+        	mainScene.setTheme(6);
 
     		//SwingUtilities.invokeLater(() -> {
             //	mainScene.getSwingNode().setContent(desktop);
@@ -367,7 +367,7 @@ public class MainSceneMenu extends MenuBar  {
         });
 
         sevenItem.setOnAction(e -> {
-        	mainScene.changeTheme(7);
+        	mainScene.setTheme(7);
 
     		//SwingUtilities.invokeLater(() -> {
             //	mainScene.getSwingNode().setContent(desktop);

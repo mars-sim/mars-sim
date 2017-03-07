@@ -1527,6 +1527,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 			UnitWindow window = i.next();
 			SwingUtilities.updateComponentTreeUI(window);
+            window.update();
 		}
 	}
 

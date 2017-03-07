@@ -274,6 +274,7 @@ public abstract class UnitWindow extends JInternalFrame {
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
         factory.add(centerPanel,"Details", getImage(TITLE), true);
+        update();
 
         //mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.
@@ -426,6 +427,21 @@ public abstract class UnitWindow extends JInternalFrame {
      * Updates this window.
      */
     public void update() {
+    	int theme = mainScene.getTheme();
+    	if (theme != themeCache) {
+	    	if (theme == 0) {
+	        	factory.update(new Color(0xD6D9DF));
+	        	themeCache = theme;
+			}
+    		if (theme == 6) {
+	        	factory.update(new Color(0xC6D9D9));
+	        	themeCache = theme;
+			}
+			else if (theme == 7) {
+		    	factory.update(new Color(0xC1BF9D));
+	        	themeCache = theme;
+			}
+    	}
 		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()
     	SwingUtilities.invokeLater(() -> {
 	    	// Update each of the tab panels.
@@ -437,20 +453,6 @@ public abstract class UnitWindow extends JInternalFrame {
 	        	statusUpdate();
 	        }
     	});
-
-    	int theme = mainScene.getTheme();
-    	if (theme != themeCache) {
-	    	if (theme == 0 || theme == 6) {
-	        	factory.update(new Color(0xC6D9D9));
-	        	themeCache = theme;
-			}
-			else if (theme == 7) {
-		    	factory.update(new Color(0xC1BF9D));
-	        	themeCache = theme;
-			}
-    	}
-
-
     }
 
 

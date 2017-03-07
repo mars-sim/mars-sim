@@ -50,7 +50,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(GlobeDisplay.class.getName());
 	private static double PERIOD_IN_MILLISOLS = 10D * 500D / MarsClock.SECONDS_IN_MILLISOL;
-	
+
 	public final static int GLOBE_BOX_HEIGHT = 300;
 	public final static int GLOBE_BOX_WIDTH = 300;
 
@@ -109,11 +109,11 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	private Image dbImage = null;
 	private Image starfield;
 
-	private boolean isOpenCache = false; //justLoaded = true, 
+	private boolean isOpenCache = false; //justLoaded = true,
 	//private int difxCache, difyCache;
 	private double globeCircumference;
     private double rho;
-	
+
 	/**
 	 * Constructor.
 	 * @param navwin the navigator window.
@@ -124,19 +124,19 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 		this.navwin = navwin;
 		this.desktop = navwin.getDesktop();
-		
+
 		// Initialize data members
 		this.width = GLOBE_BOX_WIDTH;
 		this.height = GLOBE_BOX_HEIGHT;
 
 		globeCircumference = height *2;
 	    rho = globeCircumference / (2D * Math.PI);
-	    
+
 		//starfield = ImageLoader.getImage("starfield.gif"); //TODO: localize
 		starfield = ImageLoader.getImage(Msg.getString("img.mars.starfield300")); //$NON-NLS-1$
 
 		Simulation.instance().getMasterClock().addClockListener(this);
-		
+
 		if (surfaceFeatures == null)
 			surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 
@@ -166,11 +166,11 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				int difx, dify, x = e.getX(), y = e.getY();
 
 				difx = dragx - x;
-				dify = dragy - y;				
+				dify = dragy - y;
 				dragx = x;
 				dragy = y;
-				System.out.println("x is " + x + "   y is " + y);
-				System.out.println("difx is " + difx + "   dify is " + dify);
+				//System.out.println("x is " + x + "   y is " + y);
+				//System.out.println("difx is " + difx + "   dify is " + dify);
 				if ((difx != 0) || (dify != 0)
 						&& x < 250 && y < 250) {
 
@@ -179,13 +179,13 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				    //double rho = globeCircumference / (2D * Math.PI);
                     centerCoords = centerCoords.convertRectToSpherical(
                             (double) difx, (double) dify, rho);
-                    
+
 					recreate = false;
-					
+
 					// Regenerate globe if recreate is true, then display
 					drawSphere();
 
-					
+
 				}
 
 				//e.consume();
@@ -194,7 +194,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		});
 
 		addMouseListener(new MouseAdapter() {
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 				//System.out.println("mousepressed X = " + e.getX());
@@ -202,7 +202,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				dragx = e.getX();
 				dragy = e.getY();
 				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				
+
 				e.consume();
 			}
 
@@ -212,14 +212,14 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 				dragy = 0;
 				navwin.updateCoords(centerCoords);
 				navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				
+
 				e.consume();
 			}
 		});
-		
+
 		// Initially show real surface globe
 		showSurf();
-		
+
 		//drawSphere();
 /*
 		MouseEvent me = new MouseEvent(this, 0, 0, 0, 150, 150, 1, false);
@@ -273,7 +273,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 	/**
 	 * Starts display update thread (or creates a new one if necessary)
-	 
+
 	private void updateDisplay() {
 		if ((showThread == null) || (!showThread.isAlive())) {
 			showThread = new Thread(this, Msg.getString("GlobeDisplay.thread.globe")); //$NON-NLS-1$
@@ -283,7 +283,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 		}
 	}
 */
-	
+
 	/**
 	 * the run method for the runnable interface
 	 */
@@ -298,13 +298,13 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 //	public void refreshLoop() {
 		if (keepRunning) {
 			if (recreate) {
-				//System.out.println("recreate is true");		
+				//System.out.println("recreate is true");
 				recreate = false;
 				// Regenerate globe if recreate is true, then display
 				drawSphere();
-				
+
 			} else {
-				//System.out.println("recreate is false");	
+				//System.out.println("recreate is false");
 				//try {
 					//boolean open = desktop.isToolWindowOpen(NavigatorWindow.NAME);
 					//if (isOpenCache != open) {
@@ -320,7 +320,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 					//e.printStackTrace(); // if enable, will print sleep interrupted
 				//}
 			}
-		}	
+		}
 	}
 
 /*
@@ -342,16 +342,16 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 
 */
 	public void drawSphere() {
-	
+
 		if (topo) {
 			topoSphere.drawSphere(centerCoords);
 		} else {
 			marsSphere.drawSphere(centerCoords);
 		}
-		
+
 		paintDoubleBuffer();
 		repaint();
-		
+
 	}
 
 	/*
@@ -549,13 +549,13 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			//g.drawLine(90, 74, 149, 74);
 			//g.drawLine(74, 0, 74, 57);
 			//g.drawLine(74, 90, 74, 149);
-			
-			g.drawRect(118, 118, 66, 66);			
-			g.drawLine(0, 150, 117, 150);		
+
+			g.drawRect(118, 118, 66, 66);
+			g.drawLine(0, 150, 117, 150);
 			g.drawLine(184, 150, 299, 150);
 			g.drawLine(150, 0, 150, 117);
 			g.drawLine(150, 185, 150, 300);
-			
+
 		}
 
 		// use prepared font
@@ -633,7 +633,7 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 	//public void setJustLoaded(boolean value) {
 	//	justLoaded = true;
 	//}
-	
+
 	@Override
 	public void clockPulse(double time) {
 		timeCache = timeCache + time;
@@ -642,15 +642,15 @@ public class GlobeDisplay extends JComponent implements ClockListener {
 			updateDisplay();
 			//justLoaded = false;
 			timeCache = 0;
-		}	
+		}
 	}
 
 	@Override
 	public void pauseChange(boolean isPaused) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	/**
 	 * Prepare globe for deletion.
 	 */
