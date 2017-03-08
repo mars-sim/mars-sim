@@ -317,7 +317,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>com.jfoenix</groupId>
 			<artifactId>jfoenix</artifactId>
-			<version>1.1.0</version>
+			<version>1.2.0</version>
 		</dependency>
 <!-- The following artifacts are Needed by jfoenix -->
 		<dependency>
@@ -328,17 +328,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>datafx</artifactId>
-		    <version>8.0.7</version>
+		    <version>8.0b8</version>
 		</dependency>
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>flow</artifactId>
-		    <version>8.0.7</version>
+		    <version>8.0b8</version>
 		</dependency>
 		<dependency>
 		    <groupId>io.datafx</groupId>
 		    <artifactId>core</artifactId>
-		    <version>8.0.7</version>
+		    <version>8.0b8</version>
 		</dependency>
 		<dependency>
 		<!-- https://github.com/orfjackal/retrolambda

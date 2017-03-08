@@ -317,7 +317,7 @@ public class MainScene {
 	private JFXToggleButton cacheToggle, calendarButton, minimapToggle, mapToggle;
 	private JFXSlider zoomSlider, timeSlider, soundSlider;
 	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn; // miniMapBtn, mapBtn,
-	private JFXPopup soundPopup, flyout, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
+	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
 
 	//private Button memBtn, clkBtn;
@@ -731,13 +731,11 @@ public class MainScene {
 		IconFontFX.register(FontAwesome.getIconFont());
 
 	    //2015-11-11 Added createFlyout()
-		flyout = createFlyout();
+		marsNetBox = createFlyout();
         flag = false;
         //EffectUtilities.makeDraggable(flyout.getScene().getRoot().getStage(), chatBox);
 		// Create ControlFX's StatusBar
 		//statusBar = createStatusBar();
-		simSpeedPopup = new JFXPopup();
-		soundPopup = new JFXPopup();
 
         createLastSaveBar();
 		createMarsTimeBar();
@@ -857,6 +855,7 @@ public class MainScene {
 		return scene;
 	}
 
+/*
 	public void createJFXSnackbar() {
 		snackbar = new JFXSnackbar();
 		//snackbar.getStylesheets().clear();
@@ -900,6 +899,7 @@ public class MainScene {
 			}
 		});
 	}
+*/
 
 	public void createEarthTimeBar() {
 		earthTimeButton = new Button();
@@ -992,11 +992,11 @@ public class MainScene {
 		speedBtn.setGraphic(speedIcon);
 		setQuickToolTip(speedBtn, "Open Speed Panel");
 		speedBtn.setOnAction(e -> {
-            if (simSpeedPopup.isVisible()) {
-            	simSpeedPopup.close();
+            if (simSpeedPopup.isShowing()) {
+            	simSpeedPopup.hide();//close();
             }
             else {
-            	simSpeedPopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
+            	simSpeedPopup.show(speedBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
             }
 		});
 
@@ -1005,7 +1005,7 @@ public class MainScene {
 				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
        			+ "-fx-background-radius: 10px;"
 				+ "-fx-text-fill: cyan;"
-				+ "-fx-border-color: white;"
+				+ "-fx-border-color: transparent;"
 	    		+ "-fx-border-radius: 10px;"
 	    		+ "-fx-border-width: 3px;"
 	    		+ "-fx-border-style: solid; "
@@ -1014,10 +1014,12 @@ public class MainScene {
 		speedPane.setPrefHeight(100);
 		speedPane.setPrefWidth(earthTimeButton.getPrefWidth());
 
+		simSpeedPopup = new JFXPopup(speedPane);
+
 		//earthTimePopup.setOpacity(.5);
-		simSpeedPopup.setContent(speedPane);
-		simSpeedPopup.setPopupContainer(rootAnchorPane);
-		simSpeedPopup.setSource(speedBtn);
+		//simSpeedPopup.setContent(speedPane);
+		//simSpeedPopup.setPopupContainer(rootAnchorPane);
+		//simSpeedPopup.setSource(speedBtn);
 
 		// Set up a settlement view zoom bar
 		timeSlider = new JFXSlider();
@@ -1238,11 +1240,11 @@ public class MainScene {
 		setQuickToolTip(soundBtn, "Open Sound Panel");
 
 		soundBtn.setOnAction(e -> {
-            if (soundPopup.isVisible()) {
-            	soundPopup.close();
+            if (soundPopup.isShowing()) {
+            	soundPopup.hide();//close();
             }
             else {
-            	soundPopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
+            	soundPopup.show(soundBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
             }
 
 		});
@@ -1252,7 +1254,7 @@ public class MainScene {
 				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
        			+ "-fx-background-radius: 10px;"
 				+ "-fx-text-fill: cyan;"
-				+ "-fx-border-color: white;"
+				+ "-fx-border-color: transparent;"
 	    		+ "-fx-border-radius: 10px;"
 	    		+ "-fx-border-width: 3px;"
 	    		+ "-fx-border-style: solid; "
@@ -1261,9 +1263,10 @@ public class MainScene {
 		soundPane.setPrefHeight(75);
 		soundPane.setPrefWidth(250);
 
-		soundPopup.setContent(soundPane);
-		soundPopup.setPopupContainer(rootAnchorPane);
-		soundPopup.setSource(soundBtn);
+		soundPopup = new JFXPopup(soundPane);
+		//soundPopup.setContent(soundPane);
+		//soundPopup.setPopupContainer(rootAnchorPane);
+		//soundPopup.setSource(soundBtn);
 
 		// Set up a settlement view zoom bar
 		soundSlider = new JFXSlider();
@@ -1364,26 +1367,6 @@ public class MainScene {
 			marsClock = masterClock.getMarsClock();
 		}
 
-		marsCalendarPopup = new JFXPopup();
-		//marsTimeButton = new Button();//Label();
-		//marsTimeButton.setMaxWidth(Double.MAX_VALUE);
-		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
-		marsTimeButton.setOnAction(e -> {
-			//if (marsTimeFlag) {
-				// TODO more here
-			//	marsTimeFlag = false;
-			//}
-			//else {
-				// TODO more here
-			//	marsTimeFlag = true;
-			//}
-            if (marsCalendarPopup.isVisible()) {
-            	marsCalendarPopup.close();
-            }
-            else {
-            	marsCalendarPopup.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -20, 25);
-            }
-		});
 
 		calendarDisplay = new MarsCalendarDisplay(marsClock, desktop);
 
@@ -1422,7 +1405,7 @@ public class MainScene {
 				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
        			+ "-fx-background-radius: 10px;"
 				+ "-fx-text-fill: cyan;"
-				+ "-fx-border-color: white;"
+				+ "-fx-border-color: transparent;"
 	    		+ "-fx-border-radius: 10px;"
 	    		+ "-fx-border-width: 3px;"
 	    		+ "-fx-border-style: solid; "
@@ -1432,9 +1415,30 @@ public class MainScene {
 		calendarPane.setPrefWidth(180);
 		calendarPane.setPadding(new Insets(5, 5, 10, 5));
 
-		marsCalendarPopup.setContent(calendarPane);
-		marsCalendarPopup.setPopupContainer(rootAnchorPane);
-		marsCalendarPopup.setSource(marsTimeButton);
+		marsCalendarPopup = new JFXPopup(calendarPane);
+		//marsTimeButton = new Button();//Label();
+		//marsTimeButton.setMaxWidth(Double.MAX_VALUE);
+		setQuickToolTip(marsTimeButton, "Click to open Martian calendar");
+		marsTimeButton.setOnAction(e -> {
+			//if (marsTimeFlag) {
+				// TODO more here
+			//	marsTimeFlag = false;
+			//}
+			//else {
+				// TODO more here
+			//	marsTimeFlag = true;
+			//}
+            if (marsCalendarPopup.isShowing()) {
+            	marsCalendarPopup.hide();//close();
+            }
+            else {
+            	marsCalendarPopup.show(marsTimeButton, PopupVPosition.TOP, PopupHPosition.RIGHT, -20, 25);
+            }
+		});
+
+		//marsCalendarPopup.setContent(calendarPane);
+		//marsCalendarPopup.setPopupContainer(rootAnchorPane);
+		//marsCalendarPopup.setSource(marsTimeButton);
 
 		marsTimeButton.setId("rich-orange");
 		//marsTimeButton.setTextAlignment(TextAlignment.LEFT);
@@ -2435,19 +2439,19 @@ public class MainScene {
         //marsNetButton.setPadding(new Insets(0, 0, 0, 0)); // Warning : this significantly reduce the size of the button image
 		setQuickToolTip(marsNetBtn, "Open MarsNet Chat Box");
 
-		flyout = new JFXPopup();
-		flyout.setOpacity(.9);
-		flyout.setContent(createChatBox());
-		flyout.setPopupContainer(rootAnchorPane);
-		flyout.setSource(marsNetBtn);
+		marsNetBox = new JFXPopup(createChatBox());
+		//rootAnchorPane.getChildren().add(marsNetBox);
+		marsNetBox.setOpacity(.9);
+		//marsNetBox.setPopupContainer(rootAnchorPane);
+		//marsNetBox.setSource(marsNetBtn);
 
 		//chatBox.update();
         marsNetBtn.setOnAction(e -> {
             if (!flag)
             	chatBox.update();
 
-            if (flyout.isVisible()) {
-                flyout.close();
+            if (marsNetBox.isShowing()) {//.isVisible()) {
+                marsNetBox.hide();//.close();
             }
             else {
             	openChatBox();
@@ -2455,7 +2459,7 @@ public class MainScene {
 
         });
 
-        return flyout;
+        return marsNetBox;
     }
 
     public void openChatBox() {
@@ -2466,7 +2470,7 @@ public class MainScene {
 		}
         chatBox.getAutoFillTextBox().getTextbox().clear();
         chatBox.getAutoFillTextBox().getTextbox().requestFocus();
-    	flyout.show(PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
+    	marsNetBox.show(marsNetBtn, PopupVPosition.TOP, PopupHPosition.RIGHT, -15, 35);
     }
 
 
@@ -2483,7 +2487,7 @@ public class MainScene {
     //}
 
     public JFXPopup getFlyout() {
-    	return flyout;
+    	return marsNetBox;
     }
 
     /*
@@ -3382,11 +3386,11 @@ public class MainScene {
 	//public CheckComboBox<String> getMapLabelBox() {
 	//	return mapLabelBox;
 	//}
-
+/*
 	public void sendSnackBar(String msg) {
 		snackbar.fireEvent(new SnackbarEvent(msg, "UNDO",3000,(b)->{}));
 	}
-
+*/
 	/**
 	 * Sets up the JavaFX's tooltip
 	 * @param node
@@ -3426,6 +3430,10 @@ public class MainScene {
 		return initial_time_ratio;
 	}
 
+	public JFXButton getMarsNetBtn() {
+		return marsNetBtn;
+	}
+
 	public void destroy() {
 		quote = null;
 		messagePopup = null;
@@ -3436,7 +3444,7 @@ public class MainScene {
 		//clkBtn = null;
 		//lastSaveBar = null;
 		//statusBar = null;
-		flyout = null;
+		marsNetBox = null;
 		marsNetBtn = null;
 		chatBox = null;
 		mainAnchorPane = null;

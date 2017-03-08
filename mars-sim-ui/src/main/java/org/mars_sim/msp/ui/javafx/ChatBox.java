@@ -279,7 +279,7 @@ public class ChatBox extends BorderPane {
 	    	settlementCache = null;
     	}
 
-        mainScene.getFlyout().close();//.dismiss();
+        mainScene.getFlyout().hide();//.close();//.dismiss();
         //mainScene.ToggleMarsNetButton(false);
     }
 
@@ -1152,7 +1152,7 @@ public class ChatBox extends BorderPane {
      		mainScene.setChatBoxPaneHeight(box_height[0]);
      		closeChatBox(false);
      		//mainScene.ToggleMarsNetButton(true);
-     		mainScene.getFlyout().show(PopupVPosition.TOP, PopupHPosition.RIGHT, -50, 20);
+     		mainScene.getFlyout().show(mainScene.getMarsNetBtn(), PopupVPosition.TOP, PopupHPosition.RIGHT, -50, 20);
 
 
 /*

@@ -1,6 +1,7 @@
 ** Mars Simulation Project **
 Copyright (C) 2017 Scott Davis
-http://mars-sim.sourceforge.net/
+https://mars-sim.github.io
+https://github.com/mars-sim/mars-sim
 
 ---------------------------------------------------------------------
 
@@ -26,6 +27,35 @@ Please use oracle's java 8 instead.
 
 - The latest JVM can be freely downloaded from Oracle at:
 http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+---------------------------------------------------------------------
+
+** Command-Line Arguments Summary **
+
+> java -jar mars-sim-main-[version/build].jar
+                    (Note : start a new sim)
+   or
+
+> java -jar jarfile [args...]
+                    (Note : start mars-sim with arguments)
+
+  where args include :
+
+    new             start a new sim (by default)
+                    (Note : Whenever arg 'load' is not provided for,
+                            'new' will be automatically appended)
+    headless        run in console mode and without an user interface (UI)
+    0               256MB Min, 1024MB Max (by default)
+    1               256MB Min, 512MB Max
+    2               256MB Min, 768MB Max
+    3               256MB Min, 1024MB Max
+    4               256MB Min, 1536MB Max
+    5               256MB Min, 2048MB Max
+    load            open the File Chooser at the \.mars-sim\saved\ and wait for
+                    user to choose a saved sim
+    load 123.sim    load the sim with filename '123.sim'
+                    (Note : '123.sim' must be located at the same folder
+                            as the jarfile)
 
 ---------------------------------------------------------------------
 
