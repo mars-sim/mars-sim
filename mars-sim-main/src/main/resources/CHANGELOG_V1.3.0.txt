@@ -4,21 +4,21 @@ http://mars-sim.sourceforge.net/
 
 ------------------------------------------------------
 
-## v3.1.0 (build 38__) Snapshot Preview 6 - 2017-02-__
+## v3.1.0-Preview 6 (build 38__) - 2017-03-__
 
-### MINMUM REQUIREMENTS :
+### MINIMUM REQUIREMENTS :
 
 1. Dual Core Pentium/Celeron
 
 2. 1.5GHz or above
 
-3. 1 GB RAM dedicated for running mars-sim
+3. 500 MB to 1.25 GB RAM dedicated for running mars-sim
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, the Tab bar (housing Main, Map, and Help tabs) does NOT work and is prone to crash if clicking it. Must use MacOS top menu to gain access to the Tools.
+1. In MacOS, the Tab bar (housing Main, Map, and Help tabs) does NOT work and is prone to crash if clicking it. Must use MacOS top menu to gain access to each Tool.
 
-2. In Linux, the spinning 3D Mars Globe has unwanted black artifact. In the main window, clicking on some Swing UI elements such as JcomoboBox and JTextfield may crash the sim.
+2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact. In the main window, users cannot type in text or numbers in some textfields.
 
 3. Not compatible with 32-bit Java 8 or any versions of OpenJDK/OpenJFX.
 
@@ -42,6 +42,7 @@ http://mars-sim.sourceforge.net/
 
 2. Fix displaying the most current activity description/phase and mission description/phase in Activity Tab in Person Window.
 
+3. Fix crash due to nimrod bug by switching to nimbus theme in linux.
 
 ------------------------------------------------------
 

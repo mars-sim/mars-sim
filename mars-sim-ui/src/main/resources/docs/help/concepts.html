@@ -9,33 +9,33 @@
 <TT>
 <H2>Simulation Concepts</H2>
 <hr>
-<P>Mars Simulation Project is a Java-based open source project that simulates the activities of the first 
+<P>Mars Simulation Project is a Java-based open source project that simulates the activities of the first
 generation of settlers on Mars.</P>
 
 <H4>Modeling and Simulation</H4>
 
-<P>As a social simulation, mars-sim strives to create credible abstract computer models of a settler's career type, 
-job role, technical skills, personality/temperament and relationship with one another as they 
-go about their daily lives.</P> 
+<P>As a social simulation, mars-sim strives to create credible abstract computer models of a settler's career type,
+job role, technical skills, personality/temperament and relationship with one another as they
+go about their daily lives.</P>
 
 <P>Each agent has various human-like characteristics, capable of making distinct decisions and
  interacting with one another and perform taks and mission within the settlement and on the surface
  of Mars. See <a href="modeling.html">Modeling</A> for details.</P>
 
 <P>On a powerful machine, player may create numerous settlements spreading across <a href="mars.html">Mars</A>,
- from a simple 4-person initial landing site, or a mining site to more matured bases 
+ from a simple 4-person initial landing site, or a mining site to more matured bases
  with buildings hosting various functions.</P>
 
-<P>Each <a href="settlers.html">settler</A> is associated with a particular settlement. Each settlement has buildings and vehicles 
-as assets, a leadership structure (i.e. commander, sub-commander, chiefs and specialists) 
+<P>Each <a href="settlers.html">settler</A> is associated with a particular settlement. Each settlement has buildings and vehicles
+as assets, a leadership structure (i.e. commander, sub-commander, chiefs and specialists)
 and a stated goal or objective which will cause it to specialize in a particular kind of outputs.</P>
 
-<P>Settlements trade goods and network with one another. In each trade mission, goods are exchanged and Value Points (VP) 
-are calculated for the two involving settlements. VP is the proto-currency system used in mars-sim. 
+<P>Settlements trade goods and network with one another. In each trade mission, goods are exchanged and Value Points (VP)
+are calculated for the two involving settlements. VP is the proto-currency system used in mars-sim.
 Each resource worths a certain amount of VP and the VP of each resource is dynamic and changes over time,
  based on the demand and availability of that resource. </P>
-  
-  
+
+
 <H4>Architecture</H4>
 
 <P>mars-sim is composed of the following constructs or archetypes : </P>
@@ -48,14 +48,14 @@ Each resource worths a certain amount of VP and the VP of each resource is dynam
   <li>Equipment</li>
 </UL>
   <br>
-    
+
 <H4>B. 3 types of Structure</H4>
 <UL>
   <LI><a href="settlements.html">Settlements</A></LI>
   <LI><a href="buildings.html">Buildings</A></LI>
   <li><a href="construction_sites.html">Construction Sites</a></li>
 </UL>
-  Note : Landmarks are currently unexplorable<br>  
+  Note : Landmarks are currently unexplorable<br>
   <br>
 
 <H4>C. 8 types of Equipment</H4>
@@ -70,7 +70,7 @@ Each resource worths a certain amount of VP and the VP of each resource is dynam
   <li>Building Kit</li>
   <li>Robots</li>
 </UL>
-  <br>  
+  <br>
 
 <H4>D. 3 categories of Supplies</H4>
 <UL>
@@ -80,38 +80,38 @@ Each resource worths a certain amount of VP and the VP of each resource is dynam
   <li><a href="resources.html">Resources</a></li>
   <li><a href="parts.html">Parts</a></li>
 </UL>
-  <br> 
+  <br>
 
 <H4>E. 2 types of Resources</H4>
 <UL>
   <li>Item Resources</li>
   <li>Amount Resources</li>
 </UL>
-  <br> 
+  <br>
 
 <H4>F. 1 type of Item Resources</H4>
 <UL>
   <li><a href="parts.html">Parts</a></li>
 </UL>
-  <br> 
+  <br>
 
 <H4>G. Various types of Amount Resources</H4>
 <UL>
   <li>Gas, Liquid, Solid</li>
   <li>Cooking Condiment</li>
-  <li>Chemical Compounds</li> 
+  <li>Chemical Compounds</li>
   <li>Mineral Concentration</li>
   <li>Building/Construction Material</li>
   <li>Drugs/Supplements</li>
   <li>Bio-organism</li>
-  <li>Crops</li> 
-  <li>Utility items from crop harvest</li> 
+  <li>Crops</li>
+  <li>Utility items from crop harvest</li>
   <li>Derived food resources from crop harvest</li>
-  <li>Wastes</li> 
+  <li>Wastes</li>
 </UL>
-  Note 1: Meals are not Amount Resources but Java Objects made up of various Amount Resources 
-  <br> 
-
+  Note 1: Meals are not Amount Resources but Java Objects made up of various Amount Resources
+  <br>
+  <br>
 
 <H4>H. 3 types of Processes</H4>
 <UL>
@@ -119,14 +119,14 @@ Each resource worths a certain amount of VP and the VP of each resource is dynam
   <li><a href="food_productions.html">Food Productions</a> for producing derived food products as well as non-edible items/resources for daily use.</li>
   <li>Resource Processes, for generating gases and liquids and solids.</li>
 </UL>
-  <br>   
+  <br>
 
 <H4>I. 2 types of Ground Vehicle</H4>
 <UL>
   <li><a href="vehicle_Light_Utility_Vehicle.html">Light Utility Vehicle (LUV)</a></li>
   <li><a href="roversinfo.html">Rover</a></li>
 </UL>
-  <br> 
+  <br>
 
 <H4>J. 3 types of Rover</H4>
 <UL>
@@ -134,27 +134,28 @@ Each resource worths a certain amount of VP and the VP of each resource is dynam
   <li><a href="vehicle_Explorer_Rover.html">Explorer Rover</a></li>
   <li><a href="vehicle_Transport_Rover.html">Transport Rover</a></li>
 </UL>
-  <br> 
-    
-<H4>K. Profile of a settler</H4>
-<UL>
-  <li>Job</li>
-  <li>Role</li>
-  <li>Personality : by Five Factor Model(FFM) and MBTI models</li>
-  <li>Natural Attributes</li>
-  <li>Preference : an afinity score on each of the 40+ available Tasks</li>
-  <li>Favorite Activities : 8 available types</li>
-  <li>Choice of Meals : 12+ available types</li>  
-  <LI><a href="skills.html">Skills</A></LI>
-</UL>
-  <br> 
-  
-<H4>L. 2 types of Activities</H4>
+  <br>
+
+<H4>K. 2 types of Activities</H4>
 <UL>
   <LI><a href="missions.html">Missions</A> : 12 available types</LI>
-  <li>Tasks : 40+ available types</li>
+  <li>Tasks : 56 metatasks and 77 available tasks</li>
 </UL>
-  <br> 
+  <br>
+
+
+<H4>L. Settler's Profile</H4>
+<UL>
+  <li>Job : 16 available types</li>
+  <li>Role : 18 available types</li>
+  <li>Personality : (a) Five Factor Model(FFM) and (b) Myers-Briggs Type Indicator (MBTI) models</li>
+  <li>Natural Attributes : 14 available types</li>
+  <li>Preference : an affinity score for each of the 56 available meta tasks</li>
+  <li>Favorite Activities : 8 available types</li>
+  <li>Choice of Meals (Primary & Secondary): 12+ available types</li>
+  <LI><a href="skills.html">Skills : 17 available types</A></LI>
+</UL>
+  <br>
 
 <hr>
 </TT>
