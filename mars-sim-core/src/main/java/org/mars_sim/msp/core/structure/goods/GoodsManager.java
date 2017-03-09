@@ -204,14 +204,15 @@ public class GoodsManager implements Serializable {
         //marsClock = sim.getMasterClock().getMarsClock();
     	missionManager = sim.getMissionManager();
 
-        iceAR = AmountResource.findAmountResource("ice");
-        regolithAR = AmountResource.findAmountResource("regolith");
         //oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
         //waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
         //foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
+    	//carbonDioxideAR = AmountResource.findAmountResource("carbon dioxide");
+
+        iceAR = AmountResource.findAmountResource("ice");
+        regolithAR = AmountResource.findAmountResource("regolith");
         toiletTissueAR = AmountResource.findAmountResource("toilet tissue");
         methaneAR = AmountResource.findAmountResource("methane");
-        //carbonDioxideAR = AmountResource.findAmountResource("carbon dioxide");
         soilAR = AmountResource.findAmountResource("soil");
         fertilizerAR = AmountResource.findAmountResource("fertilizer");
         greyWaterAR = AmountResource.findAmountResource("grey water");

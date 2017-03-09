@@ -82,7 +82,6 @@ implements VehicleOperator, MissionMember, Serializable {
 	private static transient Logger logger = Logger.getLogger(Person.class.getName());
     /** The base carrying capacity (kg) of a person. */
     private final static double BASE_CAPACITY = 60D;
-
     // Data members
     private boolean bornOnMars;
     /** True if person is declared dead and buried. */
@@ -91,6 +90,8 @@ implements VehicleOperator, MissionMember, Serializable {
     private int age;
 
 	private int solCache = 1;
+
+    private int[] emotional_states;
     /** The height of the person (in cm). */
     private double height;
     /** The height of the person (in kg). */
@@ -111,9 +112,7 @@ implements VehicleOperator, MissionMember, Serializable {
     private Map<Integer, Gene> paternal_chromosome;
     private Map<Integer, Gene> maternal_chromosome;
 
-    private int[] emotional_states;
     private LifeSupportType support;
-
     /** The gender of the person (male or female). */
     private PersonGender gender;
     /** The birth time of the person. */
@@ -126,19 +125,22 @@ implements VehicleOperator, MissionMember, Serializable {
     private Mind mind;
     /** Person's physical condition. */
     private PhysicalCondition health;
-    private Building diningBuilding;
     private Cooking kitchenWithMeal;
     private PreparingDessert kitchenWithDessert;
     private PersonConfig config;// = SimulationConfig.instance().getPersonConfiguration();
     private Favorite favorite;
     private TaskSchedule taskSchedule;
     private JobHistory jobHistory;
-    private Settlement buriedSettlement;
     private Role role;
     private Preference preference;
     private ReportingAuthority ra;
-    private Building quarters;
     private Point2D bed;
+
+    private Settlement buriedSettlement;
+    private Building quarters;
+    private Building diningBuilding;
+    private Building currentBuilding;
+
 
     private static Simulation sim = Simulation.instance();
     private static MarsClock marsClock;
@@ -1099,22 +1101,33 @@ implements VehicleOperator, MissionMember, Serializable {
 	  */
 	// 2015-05-18 Added getBuildingLocation()
     public Building getBuildingLocation() {
-        Building result = null;
-        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = getSettlement().getBuildingManager();
-            result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
-            //List<Building> buildings = manager.getBuildings();
-            //Iterator<Building> i = buildings.iterator();
-            // while (i.hasNext()) {
-            //	Building b = i.next();
-            //	String buildingType = b.getBuildingType();
-            //}
-        }
-
-        return result;
+        return currentBuilding;
     }
 
+	/**
+	  * Computes the building the person is currently located at
+	  * Returns null if outside of a settlement
+	  * @return building
+	  */
+	// 2017-03-08 Added setCurrentBuilding()
+	public Building computeCurrentBuilding() {
+		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			BuildingManager manager = getSettlement().getBuildingManager();
+			currentBuilding = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+		}
 
+		return currentBuilding;
+	}
+
+	/**
+	  * Computes the building the person is currently located at
+	  * Returns null if outside of a settlement
+	  * @return building
+	  */
+	// 2017-03-08 Added setCurrentBuilding()
+	public void setCurrentBuilding(Building building) {
+		currentBuilding = building;
+	}
 
     @Override
     public String getTaskDescription() {

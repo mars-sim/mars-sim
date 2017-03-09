@@ -74,8 +74,8 @@ import org.mars_sim.msp.core.vehicle.VehicleType;
  * f The Settlement class represents a settlement unit on virtual Mars. It
  * contains information related to the state of the settlement.
  */
-public class Settlement 
-extends Structure 
+public class Settlement
+extends Structure
 implements Serializable, LifeSupportType, Objective {
 
 	/** default serial id. */
@@ -91,7 +91,7 @@ implements Serializable, LifeSupportType, Objective {
 	// PersonConfig.java?
 	private static final double MIN_TEMP = 0.0D;
 	private static final double MAX_TEMP = 48.0D;
-	
+
 	public static final int SOL_PER_REFRESH = 5;
 	private static final int SAMPLING_FREQ = 250; // in millisols
 	public static final int NUM_CRITICAL_RESOURCES = 9;
@@ -118,10 +118,11 @@ implements Serializable, LifeSupportType, Objective {
 	private int sumOfCurrentManuProcesses = 0;
 	private int cropsNeedingTendingCache = 5;
 	private int millisolCache = -5;
-	
+
 	/** Goods manager update time. */
 	private double goodsManagerUpdateTime = 0D;
-	
+	private double currentPressure = NORMAL_AIR_PRESSURE;
+
 	/**
 	 * Amount of time (millisols) that the settlement has had zero population.
 	 */
@@ -143,11 +144,11 @@ implements Serializable, LifeSupportType, Objective {
 	/* Flag showing if the instance of Settlement has just been deserialized */
 	public transient boolean justReloadedPeople = true;
 	public transient boolean justReloadedRobots = true;
-	
+
 	private boolean[] exposed = {false, false, false};
 
 	private ObjectiveType objectiveType;
-	
+
 	private String sponsor;
 	private String objectiveName;
 	/** The settlement template name. */
@@ -162,7 +163,7 @@ implements Serializable, LifeSupportType, Objective {
 			, Msg.getString("ObjectiveType.trade")
 			, Msg.getString("ObjectiveType.freeMarket")
 			};
-	
+
 	//private int[] resourceArray = new int[9];
 	//private int[] solArray = new int[30];
 	//private double[] samplePointArray = new double[(int)1000/RECORDING_FREQUENCY];
@@ -184,7 +185,7 @@ implements Serializable, LifeSupportType, Objective {
 	private Inventory inv;
 	private ChainOfCommand chainOfCommand;
 	private CompositionOfAir compositionOfAir;
-	
+
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MissionManager missionManager = sim.getMissionManager();
@@ -192,7 +193,7 @@ implements Serializable, LifeSupportType, Objective {
 
 	private Weather weather;// = sim.getMars().getWeather();
 	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
-	
+
 	/** The settlement's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 
@@ -203,7 +204,7 @@ implements Serializable, LifeSupportType, Objective {
 	private Collection<Person> allAssociatedPeople = new ConcurrentLinkedQueue<Person>();
 	// 2016-12-22 Added allAssociatedRobots
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
-	
+
 	// constructor 0
 	public Settlement() {
 		super(null, null);
@@ -213,7 +214,7 @@ implements Serializable, LifeSupportType, Objective {
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 	}
-	
+
 	/**
 	 * Constructor for subclass extension.
 	 * @param name the settlement's name
@@ -236,7 +237,7 @@ implements Serializable, LifeSupportType, Objective {
 		// logger.info("constructor 1 : count is " + count);
 	}
 */
-	
+
 	// Constructor 2 for maven testing. Called by MockSettlement
 	// 2014-10-28 Added settlement id
 	protected Settlement(String name, int scenarioID, Coordinates location) {
@@ -272,16 +273,16 @@ implements Serializable, LifeSupportType, Objective {
 		this.initialPopulation = populationNumber;
 		// count++;
 		// logger.info("constructor 3 : count is " + count);
-		
+
 		marsClock = sim.getMasterClock().getMarsClock();
 		weather = sim.getMars().getWeather();
-		
+
 		inv = getInventory();
 		unitManager = Simulation.instance().getUnitManager();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
-		
+
 		// Set inventory total mass capacity.
 		inv.addGeneralCapacity(Double.MAX_VALUE);
 		// Initialize building manager
@@ -302,7 +303,7 @@ implements Serializable, LifeSupportType, Objective {
 		chainOfCommand = new ChainOfCommand(this);
 		// 2015-12-29 Added CompositionOfAir
 		compositionOfAir = new CompositionOfAir(this);
-		
+
 		// 2016-01-16 Added setObjective()
 		//objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
@@ -399,7 +400,7 @@ implements Serializable, LifeSupportType, Objective {
 
 		return result;
 	}
-	
+
 	/**
 	 * Gets the current population number of the settlement
 	 * @return the number of inhabitants
@@ -530,30 +531,33 @@ implements Serializable, LifeSupportType, Objective {
 	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
-		boolean result = true;
-			
+		//boolean result = true;
+
 		//if (AmountResource.oxygenAR == null)
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 		//	oxygenAR = LifeSupportType.oxygenAR;
 		if (inv.getAmountResourceStored(oxygenAR, false) <= 0D)
-			result = false;	
-		
+			return false;
+
 		//if (AmountResource.waterAR == null)
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 		//	waterAR = LifeSupportType.waterAR;
 		if (inv.getAmountResourceStored(waterAR, false) <= 0D)
-			result = false;
-	
-		
+			return false;
+
+
 		// TODO: check against indoor air pressure
-		// if (getAirPressure() != NORMAL_AIR_PRESSURE)
+		if (getAirPressure() <= 25331.25)// NORMAL_AIR_PRESSURE) ?
+			return false;
 		// result = false;
 		// TODO: check if this is working
 		// 2014-11-28 Added MAX_TEMP
-		// if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
+		if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
+			return false;
 		// result = false;
 
-		return result;
+		return true;
+		//return result;
 	}
 
 	/**
@@ -613,7 +617,6 @@ implements Serializable, LifeSupportType, Objective {
 		if (waterTaken > waterLeft)
 			waterTaken = waterLeft;
 		inv.retrieveAmountResource(waterAR, waterTaken);
-
 		// 2015-01-09 Added addDemandTotalRequest()
 		inv.addAmountDemandTotalRequest(waterAR);
 		// 2015-01-09 addDemandRealUsage()
@@ -625,19 +628,45 @@ implements Serializable, LifeSupportType, Objective {
 	/**
 	 * Gets the air pressure of the life support system.
 	 *
+	 * @return air pressure (kPa)
+	 */
+	// 2017-03-07 Add getTotalPressure()
+	public double getTotalPressure() {
+		double result = 0;
+		List<Building> buildings = buildingManager.getBuildingsWithLifeSupport();
+		int size = buildings.size();
+		Iterator<Building> k = buildings.iterator();
+		while (k.hasNext()) {
+			Building b = k.next();
+			int id = b.getInhabitable_id();
+			double [] tp = compositionOfAir.getTotalPressure();
+			double p = tp[id];
+			result += p;
+		}
+		// convert from atm to kPascal
+		return result * CompositionOfAir.kPASCAL_PER_ATM / size;
+	}
+
+	/**
+	 * Gets the air pressure of the life support system.
+	 *
 	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
-		double result = NORMAL_AIR_PRESSURE;
+		//double result = NORMAL_AIR_PRESSURE; // = 101325.0
+		// Note: min = 25331.25
+/*
 		if (weather == null)
 			weather = sim.getMars().getWeather();
 		//double ambient = sim.getMars().getWeather().getAirPressure(getCoordinates());
 		double ambient = weather.getAirPressure(getCoordinates());
-
 		if (result < ambient)
 			return ambient;
 		else
 			return result;
+*/
+		//System.out.println("currentPressure is " + currentPressure);
+		return currentPressure;
 	}
 
 	/**
@@ -647,11 +676,11 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public double getTemperature() {
 		List<Building> buildings = buildingManager.getBuildingsWithThermal();
-		
+
 		double total_t_area = 0;
 		double total_area = 0;
         Iterator<Building> i = buildings.iterator();
-        
+
         while (i.hasNext()) {
             Building b = i.next();
             double a = b.getFloorArea();
@@ -659,7 +688,7 @@ implements Serializable, LifeSupportType, Objective {
             total_area = total_area + a;
             total_t_area = total_t_area + a*t;
         }
-		
+
         return total_t_area / total_area;
 /*
 		double result = NORMAL_TEMP; // (malfunctionManager.getTemperatureModifier() / 100D);
@@ -672,13 +701,13 @@ implements Serializable, LifeSupportType, Objective {
 			return ambient;
 		else
 			return result;
-					
+
 		return result;
 */
-   
+
 	}
 
-	
+
 	/**
 	 * Perform time-related processes
 	 *
@@ -688,17 +717,17 @@ implements Serializable, LifeSupportType, Objective {
 	 *             if error during time passing.
 	 */
 	public void timePassing(double time) {
-/*		
+/*
         int m = (int) marsClock.getMillisol();
         if (millisolCache != m) {
         	millisolCache = m;
     	    // 2016-10-28 Added cropsNeedingTendingCache
-    		cropsNeedingTendingCache = getCropsNeedingTending();  		
+    		cropsNeedingTendingCache = getCropsNeedingTending();
         }
 */
 		// If settlement is overcrowded, increase inhabitant's stress.
 		// TODO: should the number of robots be accounted for here?
-		
+
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
 		if (overCrowding > 0) {
 			double stressModifier = .1D * overCrowding * time;
@@ -717,7 +746,7 @@ implements Serializable, LifeSupportType, Objective {
 			if (zeroPopulationTime > 1000D) {
 				if (powerGrid.getPowerMode() != PowerMode.POWER_DOWN)
 					powerGrid.setPowerMode(PowerMode.POWER_DOWN);
-				if (thermalSystem.getHeatMode() != HeatMode.HEAT_OFF)				
+				if (thermalSystem.getHeatMode() != HeatMode.HEAT_OFF)
 					thermalSystem.setHeatMode(HeatMode.HEAT_OFF);
 			}
 		} else {
@@ -740,10 +769,10 @@ implements Serializable, LifeSupportType, Objective {
 
 		// Sample a data point every SAMPLE_FREQ (in millisols)
 	    int millisols =  (int) marsClock.getMillisol();
-	    
+
 	    int remainder = millisols % SAMPLING_FREQ ;
 	    if (remainder == 0)
-	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load 
+	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load
 	    		// take a sample for each critical resource
 	    		sampleAllResources();
 
@@ -751,7 +780,7 @@ implements Serializable, LifeSupportType, Objective {
 	    // Compute whether a baseline, GCR, or SEP event has occurred
 	    remainder = millisols % RadiationExposure.RADIATION_CHECK_FREQ ;
 	    if (remainder == 0)
-	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load 
+	    	if (millisols != 1000) // will NOT check for radiation at the exact 1000 millisols in order to balance the simulation load
 	    		checkRadiationProbability(time);
 
 	    // Updates the goodsManager twice per sol at random time.
@@ -762,7 +791,9 @@ implements Serializable, LifeSupportType, Objective {
 
 	    // 2015-12-29 Added CompositionOfAir
 	    compositionOfAir.timePassing(time);
-		
+
+	    currentPressure = getTotalPressure()*1000D;
+
 	}
 
 	public void sampleAllResources() {
@@ -959,11 +990,11 @@ implements Serializable, LifeSupportType, Objective {
 			refreshResourceStat();
 
 			refreshSleepMap(solElapsed);
-			
+
 			//getSupplyDemandSampleReport(solElapsed);
-			
+
 			refreshDataMap(solElapsed);
-			
+
 			solCache = solElapsed;
 
 		}
@@ -981,9 +1012,9 @@ implements Serializable, LifeSupportType, Objective {
 			//counter30--;
 		//}
 		//else
-		//	counter30++;		
+		//	counter30++;
 	}
-	
+
 	public void refreshSleepMap(int solElapsed) {
 		// 2015-12-05 Called inflateSleepHabit()
 		// Update the sleep pattern once every x number of days
@@ -994,8 +1025,8 @@ implements Serializable, LifeSupportType, Objective {
 			}
 		}
 	}
-	
-	
+
+
 	public void printWorkShift(String sol) {
 		logger.info(sol+ " " + getName() + "'s Work Shift " +  "-- A:" + numA + " B:" + numB
 				+ ", X:" + numX + " Y:" + numY + " Z:" + numZ + ", OnCall:" + numOnCall);// + " Off:" + off);
@@ -1179,7 +1210,7 @@ implements Serializable, LifeSupportType, Objective {
 	public void refreshDataMap(int solElapsed) {
 		// Clear maps once every x number of days
 		if (solElapsed % SOL_PER_REFRESH == 0) {
-			// True if solElapsed is an exact multiple of x		
+			// True if solElapsed is an exact multiple of x
 			// Carry out the daily average of the previous 5 days
 			inv.compactAmountSupplyAmountMap(SOL_PER_REFRESH);
 			inv.clearAmountSupplyRequestMap();
@@ -1199,9 +1230,9 @@ implements Serializable, LifeSupportType, Objective {
 	 * @param time
 	 */
 	private void updateGoodsManager(double time) {
-	    
+
 	    goodsManagerUpdateTime += time;
-	    
+
 		// Randomly update goods manager twice per Sol.
 	    double timeThreshold = 250D + RandomUtil.getRandomDouble(250D);
 		if (!goodsManager.isInitialized() || (goodsManagerUpdateTime > timeThreshold)) {
@@ -1249,35 +1280,35 @@ implements Serializable, LifeSupportType, Objective {
     /**
      * Gets a collection of people who are available for social conversation in the same/another building
      * in the same/another settlement
-     * @param Person initiator the initiator of this conversation 
-     * @param boolean checkIdle true if the invitee is idling/relaxing (false if the invitee is in a chat) 
+     * @param Person initiator the initiator of this conversation
+     * @param boolean checkIdle true if the invitee is idling/relaxing (false if the invitee is in a chat)
      * @param boolean sameBuilding true if the invitee is at the same building as the initiator (false if it doesn't matter)
-     * @param boolean allSettlement true if the collection includes all settlements (false if only the initiator's settlement) 
+     * @param boolean allSettlement true if the collection includes all settlements (false if only the initiator's settlement)
      * @return person a collection of invitee(s)
      */
     // 2016-03-01 Added getChattingPeople()
     public Collection<Person> getChattingPeople(Person initiator, boolean checkIdle, boolean sameBuilding, boolean allSettlements) {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-        Iterator<Person> i; 
-        // TODO: set up rules that allows 
-        
+        Iterator<Person> i;
+        // TODO: set up rules that allows
+
         if (allSettlements) {
         	// could be either radio (non face-to-face) conversation, don't care
-        	i = unitManager.getPeople().iterator(); 
+        	i = unitManager.getPeople().iterator();
         	sameBuilding = false;
         }
         else {
         	// the only initiator's settlement
         	// may be radio or face-to-face conversation
-        	i = getInhabitants().iterator(); 
+        	i = getInhabitants().iterator();
         }
-        
+
         while (i.hasNext()) {
             Person person = i.next();
             if (person.getLocationStateType() == LocationStateType.INSIDE_BUILDING
             	&& initiator.getLocationStateType() == LocationStateType.INSIDE_BUILDING) {
             	Task task = person.getMind().getTaskManager().getTask();
-            	
+
             	if (sameBuilding) {
             	// face-to-face conversation
                     if (initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
@@ -1287,7 +1318,7 @@ implements Serializable, LifeSupportType, Objective {
                     			//| task instanceof Workout
                     			) {
                     			if (!person.equals(initiator))
-                    				people.add(person); 
+                    				people.add(person);
                     		}
     		            }
     	                else {
@@ -1300,7 +1331,7 @@ implements Serializable, LifeSupportType, Objective {
     	                }
                     }
 	            }
-            	
+
 	            else {
             	// may be radio (non face-to-face) conversation
                      //if (!initiator.getBuildingLocation().equals(person.getBuildingLocation())) {
@@ -1309,7 +1340,7 @@ implements Serializable, LifeSupportType, Objective {
                 			| task instanceof Read
                 			| task instanceof Workout) {
                 			if (!person.equals(initiator))
-                				people.add(person); 
+                				people.add(person);
                 		}
 		            }
 	                else {
@@ -1320,14 +1351,14 @@ implements Serializable, LifeSupportType, Objective {
 	               				people.add(person);
 	               		}
 	                }
-            	}          
+            	}
             }
         }
 
         return people;
     }
-    
-    
+
+
 	/**
 	 * Gets the settlement's building manager.
 	 *
@@ -1576,7 +1607,7 @@ implements Serializable, LifeSupportType, Objective {
 			//System.out.println("allAssociatedPeople.isEmpty() is true");
 			// using java 8 stream
 			return updateAllAssociatedPeople();
-/*			
+/*
 			Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 			//if (unitManager == null) // for passing maven test
 			//	unitManager = Simulation.instance().getUnitManager();
@@ -1601,25 +1632,25 @@ implements Serializable, LifeSupportType, Objective {
 		//Collection<Person> result = new ConcurrentLinkedQueue<Person>();
 		//if (unitManager == null) // NOT needed for passing maven test
 		//	unitManager = Simulation.instance().getUnitManager();
-		
+
 		// using java 8 stream
 		Collection<Person> result = unitManager.getPeople()
 				.stream()
 				.filter(p-> p.getAssociatedSettlement() == this)
 				.collect(Collectors.toList());
-/*		
+/*
 		Iterator<Person> i = unitManager.getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getAssociatedSettlement() == this)
 				result.add(person);
 		}
-*/		
+*/
 		allAssociatedPeople = result;
 		justReloadedPeople = false;
 		return result;
 	}
-	
+
 	public void addPerson(Person p){
 		allAssociatedPeople.add(p);
 	}
@@ -1635,7 +1666,7 @@ implements Serializable, LifeSupportType, Objective {
 	public void removeRobot(Robot r){
 		allAssociatedRobots.remove(r);
 	}
-	
+
 	/**
 	 * Checks if the settlement has a particular person
 	 * @param a person
@@ -1760,15 +1791,15 @@ implements Serializable, LifeSupportType, Objective {
 	public List<Person> returnPersonList(String aName) {
 		List<Person> personList = new ArrayList<>();
 		aName = aName.trim();
-		
+
 		// 2016-06-15 Checked if "," is presented in  "last, first"
 		if (aName.contains(", ")) {
 			int index = aName.indexOf(",");
 			String last = aName.substring(0, index);
-			String first = aName.substring(index + 2, aName.length());			
+			String first = aName.substring(index + 2, aName.length());
 			aName = first + " " + last;
 		}
-		
+
 		String initial = null;
 		boolean hasASpace = aName.contains(" ");
 		int found = 0;
@@ -1846,12 +1877,12 @@ implements Serializable, LifeSupportType, Objective {
 			        }
 				}
 
-				// Case 4: if aName is a last name		
+				// Case 4: if aName is a last name
 				if (first.equalsIgnoreCase(aName)) {
 					//found++;
 					personList.add(person);
 				}
-				
+
 				// Case 5: if aName is a first name
 				else if (last != null)
 					if (last.equalsIgnoreCase(aName)) {
@@ -2080,9 +2111,9 @@ implements Serializable, LifeSupportType, Objective {
 		else {
 			//System.out.println("allAssociatedPeople.isEmpty() is true");
 			// using java 8 stream
-			return updateAllAssociatedRobots();		
+			return updateAllAssociatedRobots();
 		}
-/*			
+/*
 		Collection<Robot> result = new ConcurrentLinkedQueue<Robot>();
 		Iterator<Robot> i = unitManager.getRobots().iterator();
 		while (i.hasNext()) {
@@ -2092,7 +2123,7 @@ implements Serializable, LifeSupportType, Objective {
 		}
 
 		return result;
-*/		
+*/
 	}
 
 	/**
@@ -2111,7 +2142,7 @@ implements Serializable, LifeSupportType, Objective {
 		justReloadedRobots = false;
 		return result;
 	}
-	
+
 	/**
 	 * Gets all vehicles currently on mission and are associated with this settlement.
 	 *
@@ -2156,10 +2187,10 @@ implements Serializable, LifeSupportType, Objective {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	// 2016-10-06 Created getLUVs()
 	public Collection<Vehicle> getLUVs(int mode) {
 		Collection<Vehicle> LUVs = new ArrayList<Vehicle>();
@@ -2187,12 +2218,12 @@ implements Serializable, LifeSupportType, Objective {
 		}
 		return LUVs;
 	}
-	
+
 	// 2016-10-06 Created getCargoRovers()
 	public List<Vehicle> getCargoRovers(int mode) {
 
 		List<Vehicle> rovers = new ArrayList<Vehicle>();
-		
+
 		if (mode == 0 || mode == 1) {
 			Collection<Vehicle> parked = getParkedVehicles();
 			Iterator<Vehicle> i = parked.iterator();
@@ -2206,7 +2237,7 @@ implements Serializable, LifeSupportType, Objective {
 				//}
 			}
 		}
-		
+
 		if (mode == 0 || mode == 2) {
 			Collection<Vehicle> onMission = getMissionVehicles();
 			Iterator<Vehicle> j = onMission.iterator();
@@ -2221,7 +2252,7 @@ implements Serializable, LifeSupportType, Objective {
 		}
 		return rovers;
 	}
-	
+
 	// 2016-10-06 Created getTransportRovers()
 	public List<Vehicle> getTransportRovers(int mode) {
 		List<Vehicle> rovers = new ArrayList<Vehicle>();
@@ -2239,7 +2270,7 @@ implements Serializable, LifeSupportType, Objective {
 				//}
 			}
 		}
-		
+
 		if (mode == 0 || mode == 2) {
 			Collection<Vehicle> onMission = getMissionVehicles();
 			Iterator<Vehicle> j = onMission.iterator();
@@ -2254,7 +2285,7 @@ implements Serializable, LifeSupportType, Objective {
 		}
 		return rovers;
 	}
-	
+
 	// 2016-10-06 Created getExplorerRovers()
 	public List<Vehicle> getExplorerRovers(int mode) {
 		List<Vehicle> rovers = new ArrayList<Vehicle>();
@@ -2272,9 +2303,9 @@ implements Serializable, LifeSupportType, Objective {
 				//}
 			}
 		}
-		
+
 		if (mode == 0 || mode == 2) {
-			Collection<Vehicle> onMission = getMissionVehicles();	
+			Collection<Vehicle> onMission = getMissionVehicles();
 			Iterator<Vehicle> j = onMission.iterator();
 			while (j.hasNext()) {
 				Vehicle vehicle = j.next();
@@ -2287,7 +2318,7 @@ implements Serializable, LifeSupportType, Objective {
 		}
 		return rovers;
 	}
-	
+
 	/**
 	 * Sets the mission creation override flag.
 	 *
@@ -2930,30 +2961,30 @@ implements Serializable, LifeSupportType, Objective {
 	    double mag_variation2 = 1 + RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING) - RandomUtil.getRandomDouble(RadiationExposure.SEP_CHANCE_SWING);
 	    if (mag_variation2 < 0)
 	    	mag_variation2 = 0;
-	    
+
 	    // Galactic cosmic rays (GCRs) event
-  		double chance1 = RadiationExposure.GCR_PERCENT * ratio * mag_variation1; // normally 1.22% 
+  		double chance1 = RadiationExposure.GCR_PERCENT * ratio * mag_variation1; // normally 1.22%
 	    // Solar energetic particles (SEPs) event
 		double chance2 = RadiationExposure.SEP_PERCENT * ratio * mag_variation2; // 0.122 %
-		// Baseline radiation event 
+		// Baseline radiation event
 		double chance0 = 100 - chance1 - chance2; //RadiationExposure.BASELINE_PERCENT * ratio * (variation1 + variation2); // average 3.53%
  		if (chance0 < 0)
  			chance0 = 0;
-		
-		// Baseline radiation event 
+
+		// Baseline radiation event
    	    // Note: RadiationExposure.BASELINE_CHANCE_PER_100MSOL_DURING_EVA * time / 100D
 		if (RandomUtil.lessThanRandPercent(chance0)) {
-	    	//System.out.println("chance0 : " + chance0); 
+	    	//System.out.println("chance0 : " + chance0);
 	    	exposed[0] = true;
 	    	//logger.info("An unspecified low-dose radiation event is detected by the radiation sensor grid on " + getName());
 	    	this.fireUnitUpdate(UnitEventType.LOW_DOSE_EVENT);
 	    }
 	    else
 	    	exposed[0] = false;
-	    
+
 	    // Galactic cosmic rays (GCRs) event
 	    //double rand2 = Math.round(RandomUtil.getRandomDouble(100) * 100.0)/100.0;
-	   	//System.out.println("chance1 : " + chance1); 
+	   	//System.out.println("chance1 : " + chance1);
 	    if (RandomUtil.lessThanRandPercent(chance1)) {
 	    	exposed[1] = true;
 	    	logger.info("An GCR event is detected by the radiation sensor grid on " + getName());
@@ -2978,26 +3009,26 @@ implements Serializable, LifeSupportType, Objective {
 	public CompositionOfAir getCompositionOfAir() {
 		return compositionOfAir;
 	}
-	
+
 	/**
      * Checks if wash water needs rationing at the settlement due to low water supplies.
      * @return true if water rationing.
      */
     public boolean isWashWaterRationing() {
         boolean result = false;
-        
+
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
         double storedWater = inv.getAmountResourceStored(waterAR, false);
-        
-        //PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration(); 
-        double requiredDrinkingWaterOrbit = personconfig.getWaterConsumptionRate() * getCurrentPopulationNum() * 
+
+        //PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
+        double requiredDrinkingWaterOrbit = personconfig.getWaterConsumptionRate() * getCurrentPopulationNum() *
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-        
+
         // If stored water is less than 10% of required drinking water for Orbit, wash water should be rationed.
         if (storedWater < (requiredDrinkingWaterOrbit * .1D)) {
             result = true;
         }
-        
+
         return result;
     }
 
@@ -3005,7 +3036,7 @@ implements Serializable, LifeSupportType, Objective {
 	public void setObjective(ObjectiveType objectiveType) {
 		//System.out.println(name + "'s objective is " + objectiveType.toString());
 		this.objectiveType = objectiveType;
-		
+
 		// reset all to 1
 		goodsManager.setCropFarmFactor(1);
 		goodsManager.setManufacturingFactor(1);
@@ -3013,7 +3044,7 @@ implements Serializable, LifeSupportType, Objective {
 		goodsManager.setTransportationFactor(1);
 		goodsManager.setTradeFactor(1);
 		goodsManager.setFreeMarketFactor(1);
-		
+
 		if (objectiveType == ObjectiveType.CROP_FARM) {
 			goodsManager.setCropFarmFactor(1.5);
 		}
@@ -3037,7 +3068,7 @@ implements Serializable, LifeSupportType, Objective {
 		else if (objectiveType == ObjectiveType.TOURISM) {
 			goodsManager.setTourismFactor(1.5);
 		}
-		
+
 		//else if (objectiveType == ObjectiveType.FREE_MARKET) {
 		//	goodsManager.setFreeMarketFactor(1.5);
 		//}
@@ -3048,12 +3079,12 @@ implements Serializable, LifeSupportType, Objective {
 	public ObjectiveType getObjective() {
 		return objectiveType;
 	}
-	
+
 	// 2016-05-08 Added getObjectiveBuildingType()
 	public String getObjectiveBuildingType() {
-		
+
 		// TODO: check if a particular building has existed, if yes, build the next relevant building
-		if (objectiveType == ObjectiveType.CROP_FARM) 
+		if (objectiveType == ObjectiveType.CROP_FARM)
 			return "inground greenhouse";//"Inflatable Greenhouse";
 		// alternatives : "Large Greenhouse"
 		else if (objectiveType == ObjectiveType.MANUFACTURING)
@@ -3063,18 +3094,18 @@ implements Serializable, LifeSupportType, Objective {
 			return "mining lab"; //Laboratory";
 		// alternatives : "Mining Lab", "Astronomy Observatory"
 		else if (objectiveType == ObjectiveType.TRANSPORTATION_HUB)
-			return "loading dock garage"; 
+			return "loading dock garage";
 		// alternatives :"Garage";
 		else if (objectiveType == ObjectiveType.TRADE_TOWN)
-			return "storage shed";		
+			return "storage shed";
 		else if (objectiveType == ObjectiveType.TOURISM)
-			return "loading dock garage"; 		
+			return "loading dock garage";
 		//else if (objectiveType == ObjectiveType.FREE_MARKET)
 		//	return "";
-		
-		
-		// Future alternatives : 
-		
+
+
+		// Future alternatives :
+
 		//else if (objectiveType == ObjectiveType.POWER_HUB)
 		//	return "";
 		//else if (objectiveType == ObjectiveType.RESIDENTIAL_DISTRICT)
@@ -3091,7 +3122,7 @@ implements Serializable, LifeSupportType, Objective {
 	public String[] getObjectiveArray() {
 		return objectiveArray;
 	}
-	
+
 	public String getSponsor() {
 		return sponsor;
 	}
@@ -3112,13 +3143,13 @@ implements Serializable, LifeSupportType, Objective {
      */
     // 2016-10-28 Modified, added caching and relocated from TendGreenhouse
     public int getCropsNeedingTending() {
-        int result = 0; 	
-	
+        int result = 0;
+
         int m = (int) marsClock.getMillisol();
         if (millisolCache + 5 >= m) {
-        	result = cropsNeedingTendingCache;  		
+        	result = cropsNeedingTendingCache;
     	}
-        
+
     	else {
         	millisolCache = m;
 	        for (Building b : buildingManager.getBuildings(BuildingFunction.FARMING)) {
@@ -3129,21 +3160,21 @@ implements Serializable, LifeSupportType, Objective {
 	                }
 	            }
 	        }
-        	cropsNeedingTendingCache = result;  
+        	cropsNeedingTendingCache = result;
     	}
-        //System.out.println("getCropsNeedingTending() : result is " + result); 
+        //System.out.println("getCropsNeedingTending() : result is " + result);
         return result;
     }
-    
+
     // 2016-10-28 Added getCropsNeedingTendingCache()
     public int getCropsNeedingTendingCache() {
     	return cropsNeedingTendingCache;
     }
-    
+
     //public String toString() {
     //	return name;
     //}
-    
+
 	@Override
 	public void destroy() {
 		super.destroy();

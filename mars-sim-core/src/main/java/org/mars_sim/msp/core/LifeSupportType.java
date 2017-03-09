@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupportType.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-03-08
  * @author Barry Evans
  */
 package org.mars_sim.msp.core;
@@ -27,7 +26,7 @@ public interface LifeSupportType {
 	public static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
 	public static AmountResource carbonDioxideAR = AmountResource.carbonDioxideAR;//findAmountResource(LifeSupportType.CO2);
 
-	
+
 	/**
 	 * Returns true if life support is working properly and is not out
 	 * of oxygen or water.

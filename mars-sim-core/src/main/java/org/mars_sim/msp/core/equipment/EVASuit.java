@@ -57,7 +57,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	private Weather weather ;
 	private AmountResource oxygenResource;
 	private AmountResource waterResource;
-	
+
 	/**
 	 * Constructor.
 	 * @param location the location of the EVA suit.
@@ -75,10 +75,10 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
-	
-		oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);	
+
+		oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-		
+
 		// Set the resource capacities of the EVA suit.
 		getInventory().addAmountResourceTypeCapacity(oxygenResource,OXYGEN_CAPACITY);
 		getInventory().addAmountResourceTypeCapacity(waterResource,WATER_CAPACITY);
@@ -119,7 +119,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 			result = false;
 		}
 		double p = getAirPressure();
-		if (p > NORMAL_AIR_PRESSURE * 1.05 || p < NORMAL_AIR_PRESSURE * .95) {
+		if (p > NORMAL_AIR_PRESSURE * 1.5 || p < NORMAL_AIR_PRESSURE * .5) {
 			logger.info(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
 			result = false;
 		}
@@ -128,7 +128,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 			logger.info(this.getName() + " detected improper temperature at " + Math.round(t *10D)/10D);
 			result = false;
 		}
-		
+
 
 		return result;
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelTabPanelAirComposition.java
- * @version 3.08 2015-12-29
+ * @version 3.1.0 2017-03-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -115,7 +115,7 @@ extends TabPanel {
 		infoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(infoPanel);
 
-		totalPressureCache = getTotalPressure();
+		totalPressureCache = settlement.getAirPressure();//getTotalPressure();
 		totalPressureLabel = new JLabel(Msg.getString("TabPanelAirComposition.label.totalPressure", fmt2.format(totalPressureCache)), JLabel.CENTER); //$NON-NLS-1$
 		infoPanel.add(totalPressureLabel);
 
@@ -177,30 +177,12 @@ extends TabPanel {
 		//if (!MainScene.OS.equals("linux")) {
 		//	table.getTableHeader().setDefaultRenderer(new MultisortTableHeaderCellRenderer());
 		//}
-		
+
 		TableStyle.setTableStyle(table);
 
 		scrollPane.setViewportView(table);
 
 	}
-
-
-	public double getTotalPressure() {
-		double result = 0;
-		List<Building> buildings = manager.getBuildingsWithLifeSupport();
-		int size = buildings.size();
-		Iterator<Building> k = buildings.iterator();
-		while (k.hasNext()) {
-			Building b = k.next();
-			int id = b.getInhabitable_id();
-			double [] tp = air.getTotalPressure();
-			double p = tp[id];
-			result += p;
-		}
-		// convert from atm to kPascal
-		return result * CompositionOfAir.kPASCAL_PER_ATM / size;
-	}
-
 
 	public double getComposition(int gas) {
 		double result = 0;
@@ -278,7 +260,7 @@ extends TabPanel {
 			}
 
 
-			double totalPressure = getTotalPressure();
+			double totalPressure = settlement.getAirPressure(); //getTotalPressure();
 			if (totalPressureCache != totalPressure) {
 				totalPressureCache = totalPressure;
 				totalPressureLabel.setText(

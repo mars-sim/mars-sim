@@ -48,16 +48,10 @@ implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
-
     /** Sleep Habit maximum value. */
     private static int MAX_WEIGHT = 30;
     /** Sleep Habit Map resolution. */
     private static int SLEEP_MAP_RESOLUTION = 20;
-
-    private static double INFLATION = 1.15;
-
-	private int solCache = 0;
-
     /** Life support minimum value. */
     private static int MIN_VALUE = 0;
     /** Life support maximum value. */
@@ -71,34 +65,39 @@ implements Serializable {
     public static final double MENTAL_BREAKDOWN = 100D;
 
     private static final double COLLAPSE_IMMINENT = 5000D;
+    /** Performance modifier for hunger. */
+    private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
+    /** Performance modifier for fatigue. */
+    private static final double FATIGUE_PERFORMANCE_MODIFIER = .0001D;
+    /** Performance modifier for stress. */
+    private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
 
     /** TODO The anxiety attack health complaint should be an enum or smth. */
     //private static final String PANIC_ATTACK = "Panic Attack";
-
     //private static final String DEPRESSION = "Depression";
-
     //private static final String HIGH_FATIGUE_COLLAPSE = "High Fatigue Collapse";
 
     /** Period of time (millisols) over which random ailments may happen. */
     private static double RANDOM_AILMENT_PROBABILITY_TIME = 100000D;
-
     // Each meal has 0.1550 kg and has 2525 kJ. Thus each 1 kg has 16290.323 kJ
     public static double FOOD_COMPOSITION_ENERGY_RATIO = 16290.323;
     //public static int MAX_KJ = 16290; //  1kg of food has ~16290 kJ (see notes on people.xml under <food-consumption-rate value="0.62" />)
-
     public static double ENERGY_FACTOR = 0.8D;
 
-    /** Performance modifier for hunger. */
-    private static final double HUNGER_PERFORMANCE_MODIFIER = .0001D;
+    private static double INFLATION = 1.15;
 
-    /** Performance modifier for fatigue. */
-    private static final double FATIGUE_PERFORMANCE_MODIFIER = .0001D;
-
-    /** Performance modifier for stress. */
-    private static final double STRESS_PERFORMANCE_MODIFIER = .005D;
+	private static double o2_consumption;
+	private static double h2o_consumption;
+	private static double minimum_air_pressure;
+	private static double min_temperature;
+	private static double max_temperature;
+	private static double food_consumption;
+	private static double dessert_consumption;
 
 
     // Data members
+
+	private int solCache = 0;
 	private int numSleep = 0;
 	private int suppressHabit = 0;
 	private int spaceOut = 0;
@@ -121,28 +120,25 @@ implements Serializable {
 
     // 2015-01-12 Person's energy level
     private double kJoules;
-    private double foodDryMassPerServing;
-    private double robotBatteryDrainTime;
 
+    private double foodDryMassPerServing;
 
     /** True if person is alive. */
     private boolean alive;
-    private boolean isStarving;
-    private boolean isBatteryDepleting;
-    private boolean isStressedOut, isCollapsed;
 
+    private boolean isStarving;
+
+    private boolean isStressedOut, isCollapsed;
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
     /** Injury/Illness effecting person. */
     private HashMap<Complaint, HealthProblem> problems;
-
     /** Person owning this physical. */
     private Person person;
     /** Details of persons death. */
     private DeathInfo deathDetails;
     /** Most serious problem. */
     private HealthProblem serious;
-
     // 2015-04-29 Added RadiationExposure
     private RadiationExposure radiation;
 
@@ -188,7 +184,16 @@ implements Serializable {
 
         personConfig = SimulationConfig.instance().getPersonConfiguration();
 
-        foodDryMassPerServing = personConfig.getFoodConsumptionRate() / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
+        // 2017-03-08 Add rates
+        o2_consumption = personConfig.getNominalO2ConsumptionRate();
+        h2o_consumption = personConfig.getWaterConsumptionRate();
+        minimum_air_pressure = personConfig.getMinAirPressure();
+        min_temperature = personConfig.getMinTemperature();
+        max_temperature = personConfig.getMaxTemperature();
+        food_consumption = personConfig.getFoodConsumptionRate();
+        dessert_consumption = personConfig.getDessertConsumptionRate();
+
+        foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
         try {
         	personStarvationTime =  1000D * (personConfig.getStarvationStartTime()
@@ -303,21 +308,24 @@ implements Serializable {
 	            illnessEvent = true;
 	        }
 
-	        personConfig = SimulationConfig.instance().getPersonConfiguration();
+	        //2017-02-16 Replace the use of the old PersonConfig instances in PhysicalCondition.
+	        //if (personConfig == null)
+	        //	personConfig = SimulationConfig.instance().getPersonConfiguration();
 
 	        // Consume necessary oxygen and water.
 	        try {
-	            if (consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D)))
+	            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
 	                logger.log(Level.SEVERE, person.getName() + " has insufficient oxygen.");
-	            if (consumeWater(support, getWaterConsumptionRate() * (time / 1000D)))
+	            if (consumeWater(support, h2o_consumption * (time / 1000D)))
 	                logger.log(Level.SEVERE, person.getName() + " has insufficient water.");
-	            if (requireAirPressure(support, personConfig.getMinAirPressure()))
+	            if (requireAirPressure(support, minimum_air_pressure))
 	                logger.log(Level.SEVERE, person.getName() + " has insufficient air pressure.");
-	            if (requireTemperature(support, personConfig.getMinTemperature(), personConfig.getMaxTemperature()))
+	            if (requireTemperature(support, min_temperature, max_temperature))
 	                logger.log(Level.SEVERE, person.getName() + " cannot survive long at this high/low temperature.");
 	        }
 	        catch (Exception e) {
 	            logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
+                e.printStackTrace();
 	        }
 
 	        // Build up fatigue & hunger for given time passing.
@@ -420,40 +428,6 @@ implements Serializable {
             recalculate();
         }
     }
-
-//    // 2014-11-28 Added consumeDessert()
-//    @SuppressWarnings("unused")
-//	public void consumeDessert(double amount, Unit container) {
-//        Inventory inv = container.getSettlementInventory();
-//
-//    	if (container == null) throw new IllegalArgumentException("container is null");
-//
-//		AmountResource soymilkAR = AmountResource.findAmountResource("Soymilk");
-//
-//		double foodEaten = amount;
-//		double soymilkAvailable = inv.getAmountResourceStored(soymilkAR, false);
-//
-//		// 2015-01-09 Added addDemandTotalRequest()
-//    	inv.addAmountDemandTotalRequest(soymilkAR);
-//
-//		//System.out.println("PhysicalCondition : " + container.getName() + " has " + soymilkAvailable + " kg soymilk. ");
-//
-//		if (soymilkAvailable < 0.01D) {
-//			throw new IllegalStateException( container.getName() + " has " + " very little soymilk remaining!");
-//		}
-//		else {
-//			// if container has less than enough food, finish up all food in the container
-//			if (foodEaten > soymilkAvailable)
-//				foodEaten = soymilkAvailable;
-//
-//			foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
-//			// subtract food from container
-//			inv.retrieveAmountResource(soymilkAR, foodEaten);
-//
-//			// 2015-01-09 addDemandRealUsage()
-//		   	inv.addAmountDemand(soymilkAR, foodEaten);
-//		}
-//    }
 
 
     /**
@@ -1121,8 +1095,9 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getOxygenConsumptionRate() {
-        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return personConfig.getNominalO2ConsumptionRate();
+    	//if (personConfig == null)
+    	//	personConfig = SimulationConfig.instance().getPersonConfiguration();
+        return o2_consumption;//personConfig.getNominalO2ConsumptionRate();
     }
 
     /**
@@ -1131,8 +1106,9 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getWaterConsumptionRate() {
-        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return personConfig.getWaterConsumptionRate();
+    	//if (personConfig == null)
+    	//	personConfig = SimulationConfig.instance().getPersonConfiguration();;
+        return h2o_consumption; //personConfig.getWaterConsumptionRate();
     }
 
     /**
@@ -1141,8 +1117,9 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getFoodConsumptionRate() {
-        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return personConfig.getFoodConsumptionRate();
+    	//if (personConfig == null)
+    	//	personConfig = SimulationConfig.instance().getPersonConfiguration();
+        return food_consumption;//personConfig.getFoodConsumptionRate();
     }
 
     /**
@@ -1151,20 +1128,10 @@ implements Serializable {
      * @throws Exception if error in configuration.
      */
     public static double getDessertConsumptionRate() {
-        //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        return personConfig.getDessertConsumptionRate();
+    	//if (personConfig == null)
+    	//	personConfig = SimulationConfig.instance().getPersonConfiguration();
+        return dessert_consumption;//personConfig.getDessertConsumptionRate();
     }
-
-    /**
-     * Gets the power consumption rate per Sol.
-     * @return power consumed (kJ/Sol)
-     * @throws Exception if error in configuration.
-
-    public static double getPowerConsumptionRate() {
-        RobotConfig config = SimulationConfig.instance().getRobotConfiguration();
-        return config.getPowerConsumptionRate();
-    }
-     */
 
     /**
      * Gets a list of medication affecting the person.

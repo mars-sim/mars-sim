@@ -115,8 +115,6 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
     private String birthplace;
     /** The birth time of the robot. */
     private EarthClock birthTimeStamp;
-    /** The settlement the robot is currently associated with. */
-    private Settlement associatedSettlement;
 
     private TaskSchedule taskSchedule;
 
@@ -132,6 +130,10 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
     private MasterClock masterClock;
 
+    /** The settlement the robot is currently associated with. */
+    private Settlement associatedSettlement;
+
+    private Building currentBuilding;
 
     /**
      * Constructs a robot object at a given settlement.
@@ -519,11 +521,12 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
             }
         }
 
-        // TODO: turn off the checking of oxygen and water for robot
         // Get first life support unit that checks out.
         Iterator<LifeSupportType> j = lifeSupportUnits.iterator();
         while (j.hasNext() && (result == null)) {
             LifeSupportType goodUnit = j.next();
+            // TODO: turn off the checking of oxygen and water for robot.
+            // Rather check for power
             if (goodUnit.lifeSupportCheck()) {
                 result = goodUnit;
             }
@@ -725,26 +728,40 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 
 
 	/**
-	  * Gets the building the robot is located at
+	  * Gets the building the person is located at
 	  * Returns null if outside of a settlement
 	  * @return building
 	  */
-	// 2015-10-78 Added getBuildingLocation()
-    public Building getBuildingLocation() {
-        Building result = null;
-        if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = getSettlement().getBuildingManager();
-            result = manager.getBuildingAtPosition(getXLocation(), getYLocation());
-            //List<Building> buildings = manager.getBuildings();
-            //Iterator<Building> i = buildings.iterator();
-            // while (i.hasNext()) {
-            //	Building b = i.next();
-            //	String buildingType = b.getBuildingType();
-            //}
-        }
+	// 2015-05-18 Added getBuildingLocation()
+	public Building getBuildingLocation() {
+		return currentBuilding;
+	}
 
-        return result;
-    }
+	/**
+	  * Computes the building the person is currently located at
+	  * Returns null if outside of a settlement
+	  * @return building
+	  */
+	// 2017-03-08 Added setCurrentBuilding()
+	public Building computeCurrentBuilding() {
+		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			BuildingManager manager = getSettlement().getBuildingManager();
+			currentBuilding = manager.getBuildingAtPosition(getXLocation(), getYLocation());
+		}
+
+		return currentBuilding;
+	}
+
+	/**
+	  * Computes the building the person is currently located at
+	  * Returns null if outside of a settlement
+	  * @return building
+	  */
+	// 2017-03-08 Added setCurrentBuilding()
+	public void setCurrentBuilding(Building building) {
+		currentBuilding = building;
+	}
+
 
 	@Override
     public String getTaskDescription() {
