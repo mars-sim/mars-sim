@@ -23,10 +23,10 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
  * characteristics of this problem.
  */
 public class HealthProblem implements Serializable {
-	
+
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     private static Logger logger = Logger.getLogger(HealthProblem.class.getName());
 
     private static final int DEGRADING = 0;
@@ -41,7 +41,7 @@ public class HealthProblem implements Serializable {
     private double          timePassed;     // Current time of state
     private double          duration;       // Length of the current state
     private MedicalAid      usedAid;        // Any aid being used
-    private boolean         requiresBedRest; // Does recovery require bed rest? 
+    private boolean         requiresBedRest; // Does recovery require bed rest?
 
     /**
      * Create a new Health Problem that relates to a single Physical
@@ -60,14 +60,14 @@ public class HealthProblem implements Serializable {
         duration = illness.getDegradePeriod();
         usedAid = null;
         requiresBedRest = false;
-        
+
         // Create medical event for health problem.
 		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-        
+
         logger.finest(person.getName() + " has a new health problem of " + complaint.getType().toString());
     }
-    
+
     /**
      * Sets the health problem state.
      * @param newState the new state of the health problem.
@@ -77,7 +77,7 @@ public class HealthProblem implements Serializable {
     	sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, illness);
 		logger.finer(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
     }
-    
+
     /**
      * Is the problem in a degrading state.
      * @return true if degrading
@@ -100,7 +100,10 @@ public class HealthProblem implements Serializable {
      * @return Percentage value.
      */
     public int getHealthRating() {
-        if (duration > 0) return (int)((timePassed * 100D) / duration);
+    	int d = (int)((timePassed * 100D) / duration);
+    	if (d > 100)
+    		d = 100;
+        if (duration > 0) return d;
         else return 100;
     }
 
@@ -135,7 +138,7 @@ public class HealthProblem implements Serializable {
     public boolean getRecovering() {
         return (state == RECOVERING);
     }
-    
+
     /**
      * Checks if the recovery requires bed rest.
      * @return true if requires bed rest.
@@ -143,7 +146,7 @@ public class HealthProblem implements Serializable {
     public boolean requiresBedRest() {
         return requiresBedRest;
     }
-    
+
     /**
      * Adds time to bed rest recovery.
      * @param bedRestTime the time resting in bed. (millisols)
@@ -151,7 +154,7 @@ public class HealthProblem implements Serializable {
     public void addBedRestRecoveryTime(double bedRestTime) {
         if ((state == RECOVERING) && requiresBedRest) {
             timePassed += bedRestTime;
-            
+
             // If fully recovered, set health problem as cured.
             if (timePassed >= duration) {
                 setCured();
@@ -174,7 +177,7 @@ public class HealthProblem implements Serializable {
     public String getSituation() {
     	return toString();
     }
-    
+
     /**
      * Gets a string representing this illness's current state.
      *
@@ -182,7 +185,7 @@ public class HealthProblem implements Serializable {
      */
     public String getStateString() {
         switch(state) {
-            case DEGRADING: 
+            case DEGRADING:
                 return "Degrading";
             case TREATMENT:
                 return "Treatment";
@@ -208,14 +211,14 @@ public class HealthProblem implements Serializable {
         duration = treatmentLength;
         timePassed = 0D;
         setState(TREATMENT);
-        
+
         // Create medical event for treatment.
 		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
-        
+
 		logger.info("Begins treating " + getSufferer().getName() + " for " + toString());
     }
-    
+
     /**
      * Stops the treatment for now.
      */
@@ -229,13 +232,13 @@ public class HealthProblem implements Serializable {
             }
         }
     }
-    
+
     /**
      * Start degrading the health problem.
      */
     private void startDegrading() {
     	setState(DEGRADING);
-    	
+
     	// Create medical event for degrading.
 		MedicalEvent degradingEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_DEGRADES);
 		Simulation.instance().getEventManager().registerNewEvent(degradingEvent);
@@ -245,11 +248,11 @@ public class HealthProblem implements Serializable {
      * This is now moving to a recovery state.
      */
     public void startRecovery() {
-        
+
         if ((state == DEGRADING) || (state == TREATMENT)) {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
-            
+
             // 2016-09-22 Randomized the duration and varied it according to the complaint type
             if (illness.getType() == ComplaintType.COLD
             		|| illness.getType() == ComplaintType.FEVER)
@@ -267,35 +270,35 @@ public class HealthProblem implements Serializable {
             else
             	duration = duration + duration * RandomUtil.getRandomDouble(.2)
 							- duration * RandomUtil.getRandomDouble(.2);
-            
+
             timePassed = 0D;
             if (duration > 0D) {
             	setState(RECOVERING);
-            	
+
 				if ((usedAid != null)) {
 					if (usedAid.getProblemsBeingTreated().contains(this)) {
 						usedAid.stopTreatment(this);
 					}
 					usedAid = null;
 				}
-				
+
 				// Check if recovery requires bed rest.
 				requiresBedRest = illness.requiresBedRestRecovery();
-            	
+
             	// Create medical event for recovering.
 				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_RECOVERY);
 				Simulation.instance().getEventManager().registerNewEvent(recoveringEvent);
-            } 
+            }
             else setCured();
         }
     }
-    
+
     /**
      * Sets the state of the health problem to cured.
      */
     private void setCured() {
     	setState(CURED);
-    	
+
     	// Create medical event for cured.
 		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED);
 		Simulation.instance().getEventManager().registerNewEvent(curedEvent);
@@ -312,13 +315,13 @@ public class HealthProblem implements Serializable {
         Complaint result = null;
 
         if ((state == DEGRADING) && !isEnvironmentalProblem()) {
-            // If no required treatment, 
+            // If no required treatment,
             Treatment treatment = getIllness().getRecoveryTreatment();
             if (treatment == null) {
                 startRecovery();
             }
         }
-        
+
         if (!(requiresBedRest && (state == RECOVERING))) {
             timePassed += time;
         }
@@ -348,13 +351,16 @@ public class HealthProblem implements Serializable {
                         }
                         usedAid = null;
                     }
-                    logger.info(sufferer + " illness " + illness + " degrading to " + nextPhase);
 
                     if (nextPhase == null) {
+                        logger.info(sufferer + " is suffering from " + illness);
                         setState(DEAD);
                         condition.setDead(this);
                     }
-                    else result = nextPhase;
+                    else {
+                        logger.info(sufferer + " is suffering from " + illness + ". Degrading to " + nextPhase);
+                    	result = nextPhase;
+                    }
                 }
             }
         }
@@ -384,22 +390,22 @@ public class HealthProblem implements Serializable {
         }
         else buffer.append(illness.getType());
 
-        buffer.append(" (");
+        buffer.append(" at ");
         buffer.append(getHealthRating());
-        buffer.append("%)");
+        buffer.append("%");
 
         return buffer.toString();
     }
-    
+
     /**
      * Checks if this problem is an environmental problem.
-     * 
+     *
      * @return true if environmental problem.
      */
     public boolean isEnvironmentalProblem() {
         return Simulation.instance().getMedicalManager().isEnvironmentalComplaint(illness);
     }
-    
+
 
     public void destroy() {
     	illness = null;

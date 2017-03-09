@@ -15,6 +15,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -193,21 +194,28 @@ implements ActionListener {
 		taskPhasePanel.add(new JScrollPane(taskPhaseArea), BorderLayout.CENTER);
 
 		// Prepare mission top panel
-		JPanel missionTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		missionTopPanel.setBorder(new MarsPanelBorder());
+		JPanel missionTopPanel = new JPanel(new BorderLayout(0, 0));//new FlowLayout(FlowLayout.CENTER));
+		//missionTopPanel.setBorder(new MarsPanelBorder());
 		activityPanel.add(missionTopPanel);
 
-		// Prepare mission left panel
-		JPanel missionLeftPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-		missionTopPanel.add(missionLeftPanel, BorderLayout.CENTER);
+		// Prepare mission center panel
+		JPanel missionCenterPanel = new JPanel(new BorderLayout(0, 0));//new FlowLayout(FlowLayout.CENTER));
+		//missionCenterPanel.setBorder(new MarsPanelBorder());
+
+		missionTopPanel.add(new JPanel(), BorderLayout.NORTH);
+		missionTopPanel.add(missionCenterPanel, BorderLayout.CENTER);
+		missionTopPanel.add(new JPanel(), BorderLayout.SOUTH);
+		missionTopPanel.add(new JPanel(), BorderLayout.EAST);
+		missionTopPanel.add(new JPanel(), BorderLayout.WEST);
 
 		// Prepare mission panel
-		JPanel missionPanel = new JPanel(new BorderLayout(0, 0));
-		missionLeftPanel.add(missionPanel);
+		JPanel missionTextPanel = new JPanel(new BorderLayout(0, 0));
+		//missionLeftPanel.add(missionTextPanel);
+		missionCenterPanel.add(missionTextPanel, BorderLayout.CENTER);
 
 		// Prepare mission label
 		JLabel missionLabel = new JLabel(Msg.getString("TabPanelActivity.mission"), JLabel.CENTER); //$NON-NLS-1$
-		missionPanel.add(missionLabel, BorderLayout.NORTH);
+		missionTextPanel.add(missionLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area
 
@@ -241,11 +249,12 @@ implements ActionListener {
 		missionTextArea.setText(missionText);
 		missionTextArea.setLineWrap(true);
 		missionTextArea.setEditable(false);
-		missionPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
+		missionTextPanel.add(new JScrollPane(missionTextArea), BorderLayout.CENTER);
 
 		// Prepare mission phase panel
 		JPanel missionPhasePanel = new JPanel(new BorderLayout(0, 0));
-		missionLeftPanel.add(missionPhasePanel);
+		//missionLeftPanel.add(missionPhasePanel);
+		missionCenterPanel.add(missionPhasePanel, BorderLayout.SOUTH);
 
 		// Prepare mission phase label
 		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.missionPhase"), JLabel.CENTER); //$NON-NLS-1$
@@ -275,9 +284,10 @@ implements ActionListener {
 		missionPhaseTextArea.setEditable(false);
 		missionPhasePanel.add(new JScrollPane(missionPhaseTextArea), BorderLayout.CENTER);
 
+
 		// Prepare mission button panel.
-		JPanel missionButtonPanel = new JPanel(new GridLayout(2, 1, 0, 2));
-		missionTopPanel.add(missionButtonPanel);
+		JPanel missionButtonPanel = new JPanel(new GridLayout(1, 8, 10, 10));
+		missionCenterPanel.add(missionButtonPanel, BorderLayout.NORTH);
 
 		// Prepare mission tool button.
 		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
@@ -294,11 +304,13 @@ implements ActionListener {
 			missionButton.setEnabled(botMind.getMission() != null);
 		}
 
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
 		missionButtonPanel.add(missionButton);
 
 		// Prepare mission monitor button
 		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
-		monitorButton.setMargin(new Insets(1, 1, 1, 1));
+		monitorButton.setMargin(new Insets(5, 5, 5, 5));
 		//monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		//balloonToolTip.createBalloonTip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
@@ -310,7 +322,12 @@ implements ActionListener {
 			monitorButton.setEnabled(botMind.getMission() != null);
 		}
 
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
 		missionButtonPanel.add(monitorButton);
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
+
 	}
 
 	/**

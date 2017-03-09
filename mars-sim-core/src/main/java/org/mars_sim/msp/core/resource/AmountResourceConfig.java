@@ -38,11 +38,12 @@ public class AmountResourceConfig implements Serializable {
 	// 2016-06-28 Added TYPE
 	private static final String TYPE = "type";
 
+	private static final String CROP = "crop";
+
 	private static int id;
 
 	// Data members.
 	private Set<AmountResource> resources = new TreeSet<AmountResource>();
-
 	private Map<String, AmountResource> amountResourceMap;
 	private Map<Integer, AmountResource> amountResourceIDMap;
 	private Map<Integer, String> IDNameMap;
@@ -102,7 +103,7 @@ public class AmountResourceConfig implements Serializable {
 			// 2014-11-25 Added edible
 			resources.add(new AmountResource(id, name, type, description, phase, lifeSupport, edible));
 
-			if (type != null && type.toLowerCase().equals("crop")) {
+			if (type != null && type.toLowerCase().equals(CROP)) {
 				id++;
 				// Create new tissue culture for each crop.
 				resources.add(new AmountResource(id, name + " " + TISSUE_CULTURE, TISSUE_CULTURE, description, phase, lifeSupport, false));
@@ -180,4 +181,10 @@ public class AmountResourceConfig implements Serializable {
 */
 	}
 
+	public void destroy() {
+		resources = null;
+		amountResourceMap = null;
+		amountResourceIDMap = null;
+		IDNameMap = null;
+	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelDashboard.java
- * @version 3.07 2014-12-01
+ * @version 3.1.0 2017-03-08
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -95,7 +95,7 @@ public class TabPanelDashboard extends TabPanel {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param settlement
 	 *            {@link Settlement} the settlement this tab panel is for.
 	 * @param desktop
@@ -177,12 +177,12 @@ public class TabPanelDashboard extends TabPanel {
 
 	public void createButtonPane() {
 		ToggleGroup group = new ToggleGroup();
-		
+
 		buttonBox = new VBox();
-		
+
 		headerBox = new VBox();
 		String header = "Select a new objective below: ";
-		headerLabel = new Label(header);		
+		headerLabel = new Label(header);
 		headerBox.getChildren().add(headerLabel);
 		int size = objectives.length;
 		for (int i = 0; i < size; i++) {
@@ -200,14 +200,14 @@ public class TabPanelDashboard extends TabPanel {
 			toggleBtn.setMaxHeight(90);
 			toggleBtn.setMaxWidth(90);
 			toggleBtn.setToggleGroup(group);
-			
+
 			group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 			    public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {
 
-			    	if (group.getSelectedToggle() != null) {					
+			    	if (group.getSelectedToggle() != null) {
 			    		if (toggleBtn.isSelected()) {
 							commitObjective();
-						}					
+						}
 			         }
 			     }
 			});
@@ -234,7 +234,7 @@ public class TabPanelDashboard extends TabPanel {
 			}
 			else
 				toggleBtn.setSelected(false);
-			
+
 		}
 
 		optionBox = new VBox();
@@ -242,27 +242,27 @@ public class TabPanelDashboard extends TabPanel {
 		hbox1 = new HBox();
 		hbox0.getChildren().addAll(buttons.get(0), buttons.get(1), buttons.get(2));
 		hbox1.getChildren().addAll(buttons.get(3), buttons.get(4), buttons.get(5));
-	
+
 		objBox = new VBox();
 		objLabel = new Label("Current Choice : " + settlement.getObjective().toString());
 		objBox.getChildren().add(objLabel);
-		
+
 		createCommitButton();
 
 		commitPane = new StackPane(commitButton);
 		commitPane.setPrefSize(100, 50);
 		optionBox.getChildren().addAll(hbox0, hbox1, commitPane);
 		buttonBox.getChildren().addAll(headerBox, optionBox, objBox);
-		
+
 /*
 		TitledPane titledPane = new TitledPane(header, options);
 		titledPane.setStyle("-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
 				+ "-fx-background-radius: 2px;");
 		titledPane.setTooltip(new Tooltip("The direction where the settlement would devote its surplus resources"));
 		// titledPane.setId("titledpane");
-		// titledPane.setPrefSize(100, 100);	
+		// titledPane.setPrefSize(100, 100);
 		buttonBox.getChildren().add(titledPane);
-*/		
+*/
 
 	}
 
@@ -273,12 +273,12 @@ public class TabPanelDashboard extends TabPanel {
         	if (!running) {
         		timer.start();
                 running = true;
-                commitButton.setDisable(true);		
+                commitButton.setDisable(true);
         	}
- 
+
         	e.consume();
 		});
-		
+
 		commitButton.statusProperty().addListener(o -> System.out.println(commitButton.getStatus()));
 
 		progress = 0;
@@ -290,7 +290,7 @@ public class TabPanelDashboard extends TabPanel {
 					progress += 0.005;
 					commitButton.setProgress(progress);
 					lastTimerCall = now;
-					
+
                     if (toggle) {
                         if (progress > 0.75) {
                             progress = 0;
@@ -302,7 +302,7 @@ public class TabPanelDashboard extends TabPanel {
                             // reset back to the old objective
                             resetButton();
                         }
-                        
+
                     } else {
                         if (progress > 1) {
                             progress = 0;
@@ -326,11 +326,11 @@ public class TabPanelDashboard extends TabPanel {
 			if (objectives[i].equals(settlement.getObjective())) {
 				buttons.get(i).setSelected(true);
 			}
-		}		
+		}
 	}
-	
+
 	public void commitObjective() {
-		
+
 		if (buttons.size() == 6) {
 			// after all the toggleBtn has been setup
 			int index = -1;
@@ -339,9 +339,9 @@ public class TabPanelDashboard extends TabPanel {
 					index = j;
 				}
 			}
-		
+
 			ObjectiveType type = null;
-		
+
 			if (index == 0)
 				type = ObjectiveType.CROP_FARM;
 			else if (index == 1)
@@ -354,14 +354,14 @@ public class TabPanelDashboard extends TabPanel {
 				type = ObjectiveType.TRADE_TOWN;
 			else if (index == 5)
 				type = ObjectiveType.TOURISM;
-		
+
 			settlement.setObjective(type);
 			//System.out.println("index : " + index);// + "    type is " + type.toString());
 			//System.out.println("Resetting " + settlement + "'s objective to " + settlement.getObjective().toString());
 		}
 	}
-	
-	
+
+
 	/*
 	 * Display the initial system greeting and update the css style
 	 */
@@ -376,10 +376,10 @@ public class TabPanelDashboard extends TabPanel {
 			});
 		}
 
-		int theme = MainScene.getTheme(); 
+		int theme = MainScene.getTheme();
 		if (themeCache != theme) {
 			themeCache = theme;
-			if (theme == 6) { 
+			if (theme == 6) {
 				String cssFile = "/fxui/css/snowBlue.css";
 				String color = "-fx-border-style: 2px; " + "-fx-background-color: white;" + "-fx-border-color: white;"
 						+ "-fx-background-radius: 2px;";
@@ -392,9 +392,9 @@ public class TabPanelDashboard extends TabPanel {
 				hbox0.getStylesheets().clear();
 				optionBox.getStylesheets().clear();
 				headerLabel.getStylesheets().clear();
-				objLabel.getStylesheets().clear();			
-				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
-				objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+				objLabel.getStylesheets().clear();
+				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+				objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 				//headerLabel.setId("rich-blue");
 				//objLabel.setId("rich-blue");
 				headerLabel.getStyleClass().add("label-medium");
@@ -408,11 +408,11 @@ public class TabPanelDashboard extends TabPanel {
 				hbox1.setStyle(color);
 				hbox0.setStyle(color);
 				optionBox.setStyle(color);
-				//String cssFile ="/fxui/css/snowBlue.css"; 
+				//String cssFile ="/fxui/css/snowBlue.css";
 				//commitButton.getStylesheets().clear();
 				//commitButton.getStyleClass().add("button-broadcast");
-				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
-			} else if (theme == 0 || theme == 7) { 
+				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+			} else if (theme == 0 || theme == 7) {
 				String cssFile = "/fxui/css/nimrodskin.css";
 				String color = "-fx-border-style: 2px; " + "-fx-background-color: #c1bf9d;" + "-fx-border-color: #c1bf9d;"
 						+ "-fx-background-radius: 2px;";
@@ -426,7 +426,7 @@ public class TabPanelDashboard extends TabPanel {
 				optionBox.getStylesheets().clear();
 				headerLabel.getStylesheets().clear();
 				objLabel.getStylesheets().clear();
-				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());	
+				headerLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 				objLabel.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 				//headerLabel.setId("rich-orange");
 				//objLabel.setId("rich-orange");
@@ -443,7 +443,7 @@ public class TabPanelDashboard extends TabPanel {
 				optionBox.setStyle(color);
 				//String cssFile ="/fxui/css/nimrodskin.css"; commitButton.getStylesheets().clear();
 				//commitButton.getStyleClass().add("button-broadcast");
-				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm()); 
+				//commitButton.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 			}
 		}
 

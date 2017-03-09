@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.07 2014-11-13
+ * @version 3.1.0 2017-03-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -40,7 +40,7 @@ implements MedicalAid, Serializable {
     private MedicalStation medicalStation;
 
 	public static AmountResource toxicWasteAR = AmountResource.findAmountResource("toxic waste");
-	
+
     /**
      * Constructor.
      * @param building the building this function is for.
@@ -167,14 +167,14 @@ implements MedicalAid, Serializable {
 
     @Override
     public boolean canTreatProblem(HealthProblem problem) {
-        return medicalStation.canTreatProblem(problem);	
+        return medicalStation.canTreatProblem(problem);
     }
 
     @Override
     public void requestTreatment(HealthProblem problem) {
         medicalStation.requestTreatment(problem);
     }
-    
+
     @Override
     public void cancelRequestTreatment(HealthProblem problem) {
         medicalStation.cancelRequestTreatment(problem);
@@ -189,17 +189,17 @@ implements MedicalAid, Serializable {
     public void stopTreatment(HealthProblem problem) {
         medicalStation.stopTreatment(problem);
     }
-    
+
     @Override
     public List<Person> getRestingRecoveryPeople() {
         return medicalStation.getRestingRecoveryPeople();
     }
-    
+
     @Override
     public void startRestingRecovery(Person person) {
         medicalStation.startRestingRecovery(person);
     }
-    
+
     @Override
     public void stopRestingRecovery(Person person) {
         medicalStation.stopRestingRecovery(person);

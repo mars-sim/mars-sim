@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.08 2015-06-17
+ * @version 3.1.0 2017-03-09
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -112,7 +112,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		this.desktop = desktop;
 
 		desktop.setEventTableModel(this);
-		
+
 		//count++;
 		// Update the cached events.
 		updateCachedEvents();
@@ -407,7 +407,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 						        if (event.getType() == EventType.MALFUNCTION_UNFIXED) {
 						            willNotify = true;
 						        }
-						        
+
 						        type = 0;
 						    }
 
@@ -421,11 +421,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 						                (event.getType() == EventType.MEDICAL_DEATH)) {
 						            willNotify = true;
 						        }
-						        
+
 						        type = 1;
 						    }
 						}
-						
+
 						if (willNotify)
 							Platform.runLater(new NotifyFXLauncher(header, message, type));
 
@@ -539,31 +539,31 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 		private String message;
 		private Pos pos = null;
 		private int type = -1;
-		ImageView v = null; 
-		
+		ImageView v = null;
+
 
 		private NotifyFXLauncher(String header, String message, int type) {
 			this.header = header;
 			this.message = message;
 	   	    this.type = type;
-	   	    
+
 			if (type == 0) {
 				pos = Pos.BOTTOM_LEFT;
 		   	    v = new ImageView(getClass().getResource("/icons/notification/medical_48.png").toExternalForm());
 
 			}
-			
+
 			else if (type == 1) {
 				pos = Pos.BOTTOM_RIGHT;
 				v = new ImageView(getClass().getResource("/icons/notification/malfunction_48.png").toExternalForm());
 
 			}
-	    	
+
 			else {
 				pos = Pos.TOP_LEFT;
 
 			}
-			
+
 		}
 
 	    public void run() {
@@ -577,7 +577,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    		.onAction(new EventHandler<ActionEvent>() {
 	    			@Override
 	    			public void handle(ActionEvent event){
-	    				System.out.println("You clicked on the message'" + message + "'.");
+	    				System.out.println("[Placeholder] You just clicked on the message '" + message + "'.");
 	    			}
 	    		})
 	    		.graphic(v)
@@ -585,7 +585,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    		.owner(desktop.getMainScene().getStage())
 	    		.show();
 	    	}
-	    	
+
 	    	else {
 		    	Notifications.create()
 	    		.title(header)
@@ -594,7 +594,7 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	    		.onAction(new EventHandler<ActionEvent>() {
 	    			@Override
 	    			public void handle(ActionEvent event){
-	    				System.out.println("You clicked on the message'" + message + "'.");
+	    				System.out.println("[Placeholder] You just clicked on the message '" + message + "'.");
 	    			}
 	    		})
 	    		.owner(desktop.getMainScene().getStage())
@@ -631,11 +631,11 @@ implements MonitorModel, HistoricalEventListener, ClockListener {
 	public void setNoFiring(boolean value) {
 		noFiring = value;
 	}
-	
+
 	public boolean isNoFiring() {
 		return noFiring;
 	}
-	
+
 	/**
 	 * Prepares the model for deletion.
 	 */

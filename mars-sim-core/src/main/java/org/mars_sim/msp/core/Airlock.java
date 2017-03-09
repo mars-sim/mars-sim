@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 3.07 2014-10-10
+ * @version 3.1.0 2017-03-09
  * @author Scott Davis
  */
 
@@ -223,7 +223,7 @@ public abstract class Airlock implements Serializable {
 
     				}
 					else if (awaitingOuterDoor.get(0) instanceof Robot) {
-						
+
 						Robot robot = (Robot) awaitingOuterDoor.get(0);
 	                    awaitingOuterDoor.remove(robot);
 	                    if (awaitingOuterDoor.contains(robot)) {
@@ -377,14 +377,14 @@ public abstract class Airlock implements Serializable {
                 while (i.hasNext()) {
                      Unit occupant = i.next();
                      if (occupant instanceof Robot) {
-                    	 Robot robot = (Robot) occupant;          
-                    	 logger.finer("Airlock has been " + getState() + ". " + robot.getName() + " at " + getEntity() + " is about to call exitAirlock()");                  	 
+                    	 Robot robot = (Robot) occupant;
+                    	 logger.finer("Airlock has been " + getState() + ". " + robot.getName() + " at " + getEntity() + " is about to call exitAirlock()");
                      }
                      else if (occupant instanceof Person) {
                     	 Person person = (Person) occupant;
-                     	 logger.finer("Airlock has been " + getState() + ". " + person.getName() + " at " + getEntity() + " is about to call exitAirlock()");                  	                     
+                     	 logger.finer("Airlock has been " + getState() + ". " + person.getName() + " at " + getEntity() + " is about to call exitAirlock()");
                      }
-                     
+
                      exitAirlock(occupant);
                 }
 
@@ -404,7 +404,7 @@ public abstract class Airlock implements Serializable {
      */
     protected abstract void exitAirlock(Unit occupant);
     //protected abstract void exitAirlock(Robot robot);
-    
+
     /**
      * Checks if the airlock's outer door is locked.
      * @return true if outer door is locked
@@ -484,7 +484,7 @@ public abstract class Airlock implements Serializable {
         }
     }
 
-    
+
     /**
      * Adds person to queue awaiting airlock by outer door.
      * @param person the person to add to the awaiting queue.

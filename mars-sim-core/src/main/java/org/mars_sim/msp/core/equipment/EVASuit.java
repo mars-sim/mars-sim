@@ -36,6 +36,8 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 	// Static members
 	public static final String TYPE = "EVA Suit";
+	public static final String LIFE_SUPOORT = "Life Support";
+
 	/** Unloaded mass of EVA suit (kg.). */
 	public static final double EMPTY_MASS = 45D;
 	/** Oxygen capacity (kg.). */
@@ -55,8 +57,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	/** The equipment's malfunction manager. */
 	protected MalfunctionManager malfunctionManager;
 	private Weather weather ;
-	private AmountResource oxygenResource;
-	private AmountResource waterResource;
+
+	//private AmountResource oxygenResource;
+	//private AmountResource waterResource;
 
 	/**
 	 * Constructor.
@@ -70,18 +73,18 @@ implements LifeSupportType, Serializable, Malfunctionable {
 
 		// Add scope to malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
-		malfunctionManager.addScopeString("EVA Suit");
-		malfunctionManager.addScopeString("Life Support");
+		malfunctionManager.addScopeString(TYPE);
+		malfunctionManager.addScopeString(LIFE_SUPOORT);
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
 
-		oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
+		//oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		//waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
 
 		// Set the resource capacities of the EVA suit.
-		getInventory().addAmountResourceTypeCapacity(oxygenResource,OXYGEN_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(waterResource,WATER_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(AmountResource.oxygenAR, OXYGEN_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(AmountResource.waterAR, WATER_CAPACITY);
 
 	}
 
@@ -101,12 +104,12 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	 */
 	public boolean lifeSupportCheck() {
 		boolean result = true;
-
-		if (getInventory().getAmountResourceStored(oxygenResource, false) <= 0D) {
+/*
+		if (getInventory().getAmountResourceStored(AmountResource.oxygenAR, false) <= 0D) {
 			logger.info(this.getName() + " ran out of oxygen.");
 			result = false;
 		}
-		if (getInventory().getAmountResourceStored(waterResource, false) <= 0D) {
+		if (getInventory().getAmountResourceStored(AmountResource.waterAR, false) <= 0D) {
 			logger.info(this.getName() + " ran out of water.");
 			result = false;
 		}
@@ -118,6 +121,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 			logger.info(this.getName() + "'s water flow sensor detected malfunction.");
 			result = false;
 		}
+*/
 		double p = getAirPressure();
 		if (p > NORMAL_AIR_PRESSURE * 1.5 || p < NORMAL_AIR_PRESSURE * .5) {
 			logger.info(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
@@ -150,18 +154,18 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public double provideOxygen(double oxygenTaken) {
 		//double oxygenTaken = oxygenTaken;
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenLeft = getInventory().getAmountResourceStored(oxygenResource, false);
+		double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.oxygenAR, false);
 
 
 		if (oxygenTaken > oxygenLeft) {
 			oxygenTaken = oxygenLeft;
 		}
 
-		getInventory().retrieveAmountResource(oxygenResource, oxygenTaken);
+		getInventory().retrieveAmountResource(AmountResource.oxygenAR, oxygenTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(oxygenResource);
+		getInventory().addAmountDemandTotalRequest(AmountResource.oxygenAR);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(oxygenResource, oxygenTaken);
+		getInventory().addAmountDemand(AmountResource.oxygenAR, oxygenTaken);
 
 		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
@@ -175,17 +179,17 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public double provideWater(double waterTaken)  {
 		//double waterTaken = waterTaken;
 		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double waterLeft = getInventory().getAmountResourceStored(waterResource, false);
+		double waterLeft = getInventory().getAmountResourceStored(AmountResource.waterAR, false);
 
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
 
-		getInventory().retrieveAmountResource(waterResource, waterTaken);
+		getInventory().retrieveAmountResource(AmountResource.waterAR, waterTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(waterResource);
+		getInventory().addAmountDemandTotalRequest(AmountResource.waterAR);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(waterResource, waterTaken);
+		getInventory().addAmountDemand(AmountResource.waterAR, waterTaken);
 
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
@@ -249,13 +253,13 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		boolean result = true;
 
 		//AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygen = getInventory().getAmountResourceStored(oxygenResource, false);
+		double oxygen = getInventory().getAmountResourceStored(AmountResource.oxygenAR, false);
 		if (oxygen != OXYGEN_CAPACITY) {
 			result = false;
 		}
 
 		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double water = getInventory().getAmountResourceStored(waterResource, false);
+		double water = getInventory().getAmountResourceStored(AmountResource.waterAR, false);
 		if (water != WATER_CAPACITY) {
 			result = false;
 		}

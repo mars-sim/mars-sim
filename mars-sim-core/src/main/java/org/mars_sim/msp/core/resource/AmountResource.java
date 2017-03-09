@@ -31,14 +31,23 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
-    public static final String SODIUM_HYPOCHLORITE = "sodium hypochlorite";
-    public static final String FOOD_WASTE = "food waste";
-    public static final String GREY_WATER = "grey water";
-    public static final String TABLE_SALT = "table salt";
-    public static final String SOLID_WASTE = "solid waste";
-    public static final String NAPKIN = "napkin";
 
-	static AmountResourceConfig amountResourceConfig;
+    public static final int FOOD = 1;
+    public static final int WATER = 2;
+    public static final int OXYGEN =  3;
+    public static final int CO2 = 4;
+
+    public static final int METHANE = 8;
+    public static final int ICE = 12;
+    public static final int REGOLITH = 142;
+    public static final int ROCK_SAMLE = 143;
+
+    public static final int FOOD_WASTE = 16;
+    public static final int SOLID_WASTE = 17;
+    public static final int GREY_WATER = 19;
+    public static final int TABLE_SALT = 23;
+    public static final int SODIUM_HYPOCHLORITE = 145;
+    public static final int NAPKIN = 150;
 
 	// Data members
 	private static int count = 0;
@@ -58,6 +67,11 @@ implements Serializable {
 	private String description;
 
 	private Phase phase;
+/*
+	private AmountResource[] ARs = new AmountResource[2];
+	private int[] ARs_int = new int[14];
+*/
+	private static AmountResourceConfig amountResourceConfig;
 
 	public static AmountResource foodAR;
 	public static AmountResource oxygenAR;
@@ -71,22 +85,61 @@ implements Serializable {
     public static AmountResource solidWasteAR;
     public static AmountResource napkinAR;
 
+	public static AmountResource methaneAR;
+	public static AmountResource regolithAR;
+    public static AmountResource iceAR;
+    public static AmountResource rockSamplesAR;
+
 	public AmountResource() {
+		//System.out.print("0");
 		amountResourceConfig = SimulationConfig.instance().getResourceConfiguration();
 
-		foodAR = findAmountResource(LifeSupportType.FOOD);
-		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);
-		waterAR = findAmountResource(LifeSupportType.WATER);
-		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);
+		foodAR = findAmountResource(LifeSupportType.FOOD);			// 1
+		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
+		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
+		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);	// 4
 
-        tableSaltAR = findAmountResource(TABLE_SALT);
-        napkinAR = findAmountResource(NAPKIN);
-        solidWasteAR = findAmountResource(SOLID_WASTE);
-        foodWasteAR = findAmountResource(FOOD_WASTE);
-        greyWaterAR = findAmountResource(GREY_WATER);
-        NaClOAR = findAmountResource(SODIUM_HYPOCHLORITE);
+        foodWasteAR = findAmountResource("food waste");			// 16
+        solidWasteAR = findAmountResource("solid waste");		// 17
+        greyWaterAR = findAmountResource("grey water");			// 19
+        tableSaltAR = findAmountResource("table salt"); 		// 23
+        NaClOAR = findAmountResource("sodium hypochlorite");	// 145
+        napkinAR = findAmountResource("napkin");				// 150
 
+    	methaneAR = findAmountResource("methane");			// 8
+        iceAR = findAmountResource("ice");					// 12
+    	regolithAR = findAmountResource("regolith");		// 142
+        rockSamplesAR = findAmountResource("rock samples");	// 143
+		//System.out.print("0");
+/*
+        ARs = new AmountResource[] {
+        		foodAR,
+        		oxygenAR,
+				waterAR,
+				carbonDioxideAR,
+		        tableSaltAR,
+		        napkinAR,
+		        solidWasteAR,
+		        foodWasteAR,
+		        greyWaterAR,
+		        NaClOAR,
+		    	methaneAR,
+		    	regolithAR,
+		        iceAR,
+		        rockSamplesAR
+        	};
 
+        for (int i=0; i< 14; i++) {
+        //for (AmountResource ar : ARs) {
+        	int n = findIDbyAmountResourceName(ARs[i].getName());
+        	ARs_int[i] = n;
+        }
+
+        for (int i=0; i< 14; i++) {
+        //for (int n : ar_int) {
+        	System.out.println(ARs[i] + " : " + ARs_int[i]);
+		}
+*/
 	}
 
 	/**
@@ -360,6 +413,20 @@ implements Serializable {
 		return hashcode;
 	}
 
+	public void destroy() {
+		phase = null;
+		amountResourceConfig = null;
+		foodAR = null;
+		oxygenAR = null;
+		waterAR = null;
+		carbonDioxideAR = null;
+	    tableSaltAR = null;
+	    NaClOAR = null;
+	    greyWaterAR = null;
+	    foodWasteAR = null;
+	    solidWasteAR = null;
+	    napkinAR = null;
+	}
 
 
 }

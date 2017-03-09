@@ -46,6 +46,10 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    public static final String WELL = "Well";
+    public static final String DEAD = "Dead : ";
+    public static final String ILL = "Ill : ";
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
     /** Sleep Habit maximum value. */
@@ -93,7 +97,8 @@ implements Serializable {
 	private static double max_temperature;
 	private static double food_consumption;
 	private static double dessert_consumption;
-
+	private static double highFatigueCollapseChance;
+    private static double stressBreakdownChance;
 
     // Data members
 
@@ -114,10 +119,8 @@ implements Serializable {
     private double inclination_factor;
 
     private double personStarvationTime;
-
     // 2015-02-23 Added hygiene
     private double hygiene; /** Person's hygiene factor (0.0 - 100.0 */
-
     // 2015-01-12 Person's energy level
     private double kJoules;
 
@@ -128,7 +131,10 @@ implements Serializable {
 
     private boolean isStarving;
 
-    private boolean isStressedOut, isCollapsed;
+    private boolean isStressedOut = false, isCollapsed = false;
+
+    private String name;
+
     /** List of medication affecting the person. */
     private List<Medication> medicationList;
     /** Injury/Illness effecting person. */
@@ -144,9 +150,6 @@ implements Serializable {
 
 	private MarsClock marsClock;
 
-	private static PersonConfig personConfig;
-	//private AmountResource foodAR;
-
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
 
@@ -157,6 +160,8 @@ implements Serializable {
      */
     // 2015-04-29 Added RadiationExposure();
     public PhysicalCondition(Person newPerson) {
+        person = newPerson;
+    	name = newPerson.getName();
 
         alive = true;
 
@@ -167,7 +172,6 @@ implements Serializable {
         radiation.initializeWithRandomDose();
 
         deathDetails = null;
-        person = newPerson;
 
         problems = new HashMap<Complaint, HealthProblem>();
         performance = 1.0D;
@@ -182,7 +186,7 @@ implements Serializable {
 
         medicationList = new ArrayList<Medication>();
 
-        personConfig = SimulationConfig.instance().getPersonConfiguration();
+        PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
 
         // 2017-03-08 Add rates
         o2_consumption = personConfig.getNominalO2ConsumptionRate();
@@ -192,6 +196,9 @@ implements Serializable {
         max_temperature = personConfig.getMaxTemperature();
         food_consumption = personConfig.getFoodConsumptionRate();
         dessert_consumption = personConfig.getDessertConsumptionRate();
+
+        stressBreakdownChance = personConfig.getStressBreakdownChance();
+        highFatigueCollapseChance = personConfig.getHighFatigueCollapseChance();
 
         foodDryMassPerServing = food_consumption / (double) Cooking.NUMBER_OF_MEAL_PER_SOL;
 
@@ -236,7 +243,7 @@ implements Serializable {
      * @param support life support system.
      * @return True still alive.
      */
-    boolean timePassing(double time, LifeSupportType support) {
+    public void timePassing(double time, LifeSupportType support) {
 
     	if (alive) {
 	      	// 2015-12-05 check for the passing of each day
@@ -261,7 +268,7 @@ implements Serializable {
 	            List<HealthProblem> currentProblems = new ArrayList<HealthProblem>(problems.values());
 
 	            Iterator<HealthProblem> iter = currentProblems.iterator();
-	            while(!isDead() && iter.hasNext()) {
+	            while(iter.hasNext()) {
 	                HealthProblem problem = iter.next();
 
 	                // Advance each problem, they may change into a worse problem.
@@ -308,25 +315,29 @@ implements Serializable {
 	            illnessEvent = true;
 	        }
 
-	        //2017-02-16 Replace the use of the old PersonConfig instances in PhysicalCondition.
-	        //if (personConfig == null)
-	        //	personConfig = SimulationConfig.instance().getPersonConfiguration();
+	        if (illnessEvent) {
+	            person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+	        }
 
-	        // Consume necessary oxygen and water.
-	        try {
-	            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
-	                logger.log(Level.SEVERE, person.getName() + " has insufficient oxygen.");
-	            if (consumeWater(support, h2o_consumption * (time / 1000D)))
-	                logger.log(Level.SEVERE, person.getName() + " has insufficient water.");
-	            if (requireAirPressure(support, minimum_air_pressure))
-	                logger.log(Level.SEVERE, person.getName() + " has insufficient air pressure.");
-	            if (requireTemperature(support, min_temperature, max_temperature))
-	                logger.log(Level.SEVERE, person.getName() + " cannot survive long at this high/low temperature.");
-	        }
-	        catch (Exception e) {
-	            logger.log(Level.SEVERE,person.getName() + " - Error in lifesupport needs: " + e.getMessage());
-                e.printStackTrace();
-	        }
+	    	if (alive) {
+		        // Check life support system
+		        try {
+/*
+		            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
+		                logger.log(Level.SEVERE, name + " has insufficient oxygen.");
+		            if (consumeWater(support, h2o_consumption * (time / 1000D)))
+		                logger.log(Level.SEVERE, name + " has insufficient water.");
+*/
+		            if (requireAirPressure(support, minimum_air_pressure))
+		                logger.log(Level.SEVERE, name + " is under insufficient air pressure.");
+		            if (requireTemperature(support, min_temperature, max_temperature))
+		                logger.log(Level.SEVERE, name + " cannot survive long at this extreme temperature.");
+		        }
+		        catch (Exception e) {
+		            logger.log(Level.SEVERE, name + "'s life support system is failing !");// + e.getMessage());
+	                e.printStackTrace();
+		        }
+	    	}
 
 	        // Build up fatigue & hunger for given time passing.
 	        setFatigue(fatigue + time);
@@ -352,27 +363,20 @@ implements Serializable {
 	        }
 
 	        // If person is at high stress, check for mental breakdown.
-	        if (isStressedOut)
+	        if (!isStressedOut)
 		        if (stress > MENTAL_BREAKDOWN)
 		            checkForStressBreakdown(time);
 
 	        // 2016-03-01 check if person is at very high fatigue may collapse.
-	        if (isCollapsed)
+	        if (!isCollapsed)
 	        	if (fatigue > COLLAPSE_IMMINENT)
 	        		checkForHighFatigueCollapse(time);
 
 	        // Calculate performance and most serious illness.
 	        recalculate();
 
-	        if (illnessEvent) {
-	            person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-	        }
-
     	}
 
-        return (alive);
-
-        //return (!isDead());
     }
 
 
@@ -382,6 +386,10 @@ implements Serializable {
      * @return list of ailments occurring.  May be empty.
      */
     private List<Complaint> checkForRandomAilments(double time) {
+
+    	// TODO: create a history of past ailments a person suffers from.
+    	// TODO: create a history of potential ailments a person is likely to suffer from.
+
 
         List<Complaint> result = new ArrayList<Complaint>(0);
 
@@ -407,7 +415,7 @@ implements Serializable {
                     		ailment = "an " + ailment.toLowerCase();
                     	else
                     		ailment = "a " + ailment.toLowerCase();
-                        logger.info(person + " came down with " + ailment);
+                        logger.info(person + " comes down with " + ailment);
                         addMedicalComplaint(complaint);
                         result.add(complaint);
                     }
@@ -509,7 +517,8 @@ implements Serializable {
      */
     private boolean consumeOxygen(LifeSupportType support, double amount) {
         double amountRecieved = support.provideOxygen(amount);
-
+        //System.out.println(amountRecieved + " ");
+        //if (support == null) System.out.println("support : "+ support);
         return checkResourceConsumption(amountRecieved, amount / 2D,
                 MIN_VALUE, getMedicalManager().getSuffocation());
     }
@@ -785,7 +794,6 @@ implements Serializable {
 
     /**
      * Checks if person has an anxiety attack due to too much stress.
-     * @param personConfig the person configuration.
      * @param time the time passing (millisols)
      */
     // 2016-06-15 Expanded Anxiety Attack into either Panic Attack or Depression
@@ -802,19 +810,19 @@ implements Serializable {
 
             // 0 (strong) to 1 (weak)
             double resilienceModifier = (double) (100.0 - resilience *.6 - emotStability *.4) / 100D;
-            System.out.println("checkForStressBreakdown()'s resilienceModifier : " + resilienceModifier);
+            //System.out.println("checkForStressBreakdown()'s resilienceModifier : " + resilienceModifier);
+/*
             double chance = 0;
-
             try {
             	// 0 to 100
-            	chance = personConfig.getStressBreakdownChance();
+            	chance = stressBreakdownChance;
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Could not read 'stress-breakdown-chance' element in 'conf/people.xml': " + e.getMessage());
             }
-
-            double value = chance / 10D * resilienceModifier;
-            System.out.println("checkForStressBreakdown()'s value : " + value);
+*/
+            double value = stressBreakdownChance / 10D * resilienceModifier;
+            //System.out.println("checkForStressBreakdown()'s value : " + value);
             //if (RandomUtil.getRandomInt(100) < chance * resilienceModifier) {
             if (RandomUtil.lessThanRandPercent(value)) {
 
@@ -839,8 +847,8 @@ implements Serializable {
                     	addMedicalComplaint(panicAttack);
                         //illnessEvent = true;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                        logger.info(person.getName() + " suffers from a panic attack.");
-                        //System.out.println(person.getName() + " has a panic attack.");
+                        logger.info(name + " suffers from a panic attack.");
+                        //System.out.println(name + " has a panic attack.");
 
                     }
                     else
@@ -855,8 +863,8 @@ implements Serializable {
                     	addMedicalComplaint(depression);
                         //illnessEvent = true;
                         person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                        logger.info(person.getName() + " has an episode of depression.");
-                        //System.out.println(person.getName() + " has an episode of depression.");
+                        logger.info(name + " has an episode of depression.");
+                        //System.out.println(name + " has an episode of depression.");
                     }
                     else
                     	logger.log(Level.SEVERE,"Could not find 'Depression' medical complaint in 'conf/medical.xml'");
@@ -876,7 +884,6 @@ implements Serializable {
 
     /**
      * Checks if person has very high fatigue.
-     * @param personConfig the person configuration.
      * @param time the time passing (millisols)
      */
     // 2016-03-01 checkForHighFatigue
@@ -890,8 +897,8 @@ implements Serializable {
 
             // a person with high endurance will be less likely to be collapse
             double modifier = (double) (100 - endurance * .6 - strength *.4) / 100D;
-            System.out.println("checkForHighFatigueCollapse()'s modifier :" + modifier);
-
+            //System.out.println("checkForHighFatigueCollapse()'s modifier :" + modifier);
+/*
             double chance = 0;
 
             try {
@@ -900,14 +907,13 @@ implements Serializable {
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Could not read 'high-fatigue-collapse-chance' element in 'conf/people.xml': " + e.getMessage());
             }
-
-            double value = chance /5D * modifier;
+*/
+            double value = highFatigueCollapseChance /5D * modifier;
 
             if (RandomUtil.lessThanRandPercent(value)) {
-
-                System.out.println("checkForHighFatigueCollapse()'s value :" + value);
+                //System.out.println("checkForHighFatigueCollapse()'s value :" + value);
             	isCollapsed = true;
-            //Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
+            	//Complaint highFatigue = getMedicalManager().getComplaintByName(ComplaintType.HIGH_FATIGUE_COLLAPSE);
 /*
              	if (stress < 10)
              		stress = stress * 1.8;
@@ -921,7 +927,7 @@ implements Serializable {
                     addMedicalComplaint(highFatigue);
                     //illnessEvent = true;
                     person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-                    logger.info(person.getName() + " collapses because of high fatigue exhaustion.");
+                    logger.info(name + " collapses because of high fatigue exhaustion.");
                 }
                 else
                 	logger.log(Level.SEVERE,"Could not find 'High Fatigue Collapse' medical complaint in 'conf/medical.xml'");
@@ -953,7 +959,7 @@ implements Serializable {
 
         deathDetails = new DeathInfo(person);
 
-        logger.severe(person + " dies due to " + illness);
+        logger.severe(person + " died due to " + illness);
 
         // Create medical event for death.
         MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
@@ -986,13 +992,13 @@ implements Serializable {
      * @return A string containing the current illness if any.
      */
     public String getHealthSituation() {
-        String situation = "Well";
+        String situation = WELL;
         if (serious != null) {
             if (isDead()) {
-                situation = "DEAD : " + serious.getIllness().getType().toString();
+                situation = DEAD + serious.getIllness().getType().toString();
             }
             else {
-                situation = "ILL : " + serious.getSituation();
+                situation = ILL + serious.getSituation();
             }
             //else situation = "Not Well";
         }
@@ -1331,7 +1337,7 @@ implements Serializable {
         problems = null;
         serious = null;
         person = null;
-        personConfig = null;
+        //personConfig = null;
         //if (medicationList != null) medicationList.clear();
         medicationList = null;
     }

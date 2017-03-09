@@ -5,14 +5,14 @@ import org.mars_sim.msp.core.Msg;
 /**
  * Mars Simulation Project
  * ComplaintType.java
- * @version 3.08 2016-06-15
+ * @version 3.1.0 2017-03-09
  * @author Manny Kung
  *
  */
 public enum ComplaintType {
 
-	
-	// Environmental 
+
+	// Environmental
 	SUFFOCATION  					(Msg.getString("ComplaintType.suffocation")), //$NON-NLS-1$
 	DEHYDRATION  					(Msg.getString("ComplaintType.dehydration")), //$NON-NLS-1$
 	STARVATION  					(Msg.getString("ComplaintType.starvation")), //$NON-NLS-1$
@@ -20,8 +20,8 @@ public enum ComplaintType {
 	FREEZING  						(Msg.getString("ComplaintType.freezing")), //$NON-NLS-1$
 	HEAT_STROKE  					(Msg.getString("ComplaintType.heatStroke")), //$NON-NLS-1$
 
-	
-	// Illnesses
+
+	// Medical Illnesses
 	APPENDICITIS					(Msg.getString("ComplaintType.appendicitis")), //$NON-NLS-1$
 	RUPTURED_APPENDIX				(Msg.getString("ComplaintType.rupturedAppendix")), //$NON-NLS-1$
 	MENINGITIS						(Msg.getString("ComplaintType.meningitis")), //$NON-NLS-1$
@@ -41,9 +41,10 @@ public enum ComplaintType {
 	DEPRESSION						(Msg.getString("ComplaintType.depression")), //$NON-NLS-1$
 	HIGH_FATIGUE_COLLAPSE			(Msg.getString("ComplaintType.highFatigueCollapse")), //$NON-NLS-1$
 	FOOD_POISONING					(Msg.getString("ComplaintType.foodPoisoning")), //$NON-NLS-1$
-	HEARTBURN						(Msg.getString("ComplaintType.heartburn")); //$NON-NLS-1$
-	
-	
+	HEARTBURN						(Msg.getString("ComplaintType.heartburn")), //$NON-NLS-1$
+	HYPOXEMIA  						(Msg.getString("ComplaintType.hypoxemia")) //$NON-NLS-1$
+	;
+
 	private String name;
 
 	private ComplaintType(String name) {
@@ -54,11 +55,11 @@ public enum ComplaintType {
 		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
-	
+
 	public String toString() {
 		return this.name;
 	}
-		
+
 	public static ComplaintType fromString(String name) {
 		if (name != null) {
 	    	for (ComplaintType b : ComplaintType.values()) {
@@ -69,7 +70,7 @@ public enum ComplaintType {
 	    }
 	    return null;
 	}
-	
+
 	/**
 	 * A common method for all enums since they can't have another base class
 	 * @param <T> Enum type
@@ -86,7 +87,7 @@ public enum ComplaintType {
 	    }
 	    return null;
 	}
-	
+
 	public static ComplaintType convertFromString(String name) {
 	    return getEnumFromString(ComplaintType.class, name);
 	}

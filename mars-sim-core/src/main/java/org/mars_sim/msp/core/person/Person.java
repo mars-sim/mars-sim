@@ -544,6 +544,22 @@ implements VehicleOperator, MissionMember, Serializable {
      * @return {@link LocationSituation} the person's location
      */
     public LocationSituation getLocationSituation() {
+    	Unit container = getContainerUnit();
+    	if (container == null)
+    		return LocationSituation.OUTSIDE;
+    	else if (container instanceof Settlement)
+    		return LocationSituation.IN_SETTLEMENT;
+    	else if (container instanceof Vehicle)
+    		return LocationSituation.IN_VEHICLE;
+    	else {
+    		if (isBuried)
+                return LocationSituation.OUTSIDE;
+            else if (declaredDead)
+                return LocationSituation.DEAD;
+            else
+            	return null;
+    	}
+/*
         if (isBuried)
             return LocationSituation.OUTSIDE;
         else if (declaredDead)
@@ -558,6 +574,7 @@ implements VehicleOperator, MissionMember, Serializable {
                 return LocationSituation.IN_VEHICLE;
         }
         return null;
+*/
     }
 
     /**
@@ -693,14 +710,16 @@ implements VehicleOperator, MissionMember, Serializable {
     	//taskSchedule.timePassing(time);
 
         // If Person is dead, then skip
-        if (health.getDeathDetails() == null) {
+        if (!health.isDead()) {//health.getDeathDetails() == null) {
 
             support = getLifeSupportType();
             // Pass the time in the physical condition first as this may
             // result in death.
 
+            health.timePassing(time, support);
+
             // if alive
-            if (health.timePassing(time, support)) {//, config)) {
+            if (!health.isDead()) {//, config)) {
 
             	// 2015-06-29 Added calling preference
             	preference.timePassing(time);

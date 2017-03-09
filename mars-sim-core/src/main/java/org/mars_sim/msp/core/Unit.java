@@ -71,7 +71,7 @@ implements Serializable, Comparable<Unit> {
 
 	// 2016-11-21 Added LocationStateType
 	private LocationStateType currentStateType;
-	
+
 	/** Unit listeners. */
 	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 
@@ -93,7 +93,7 @@ implements Serializable, Comparable<Unit> {
 		listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
 
 		this.identifier = getNextIdentifier();
-	
+
 		// Initialize data members from parameters
 		this.name = name;
 		this.description = name;
@@ -102,9 +102,9 @@ implements Serializable, Comparable<Unit> {
 		this.inventory = new Inventory(this);
 
 		this.location = new Coordinates(0D, 0D);
-		
+
 		if (location != null) {
-			this.location.setCoords(location);	
+			this.location.setCoords(location);
 			this.inventory.setCoordinates(location);
 		}
 
@@ -120,11 +120,11 @@ implements Serializable, Comparable<Unit> {
 			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 		else if (this instanceof Settlement)
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-		
-/*		
+
+/*
 		insideBuilding = new InsideBuilding(this);
 		insideVehicleOutsideOnMars = new InsideVehicleOutsideOnMars(this);
-		insideVehicleInSettlement = new InsideVehicleInSettlement(this);		
+		insideVehicleInSettlement = new InsideVehicleInSettlement(this);
 		outsideOnMars = new OutsideOnMars(this);
 		settlementVicinity = new SettlementVicinity(this);
 		insideSettlement =  new InsideSettlement(this);
@@ -142,7 +142,7 @@ implements Serializable, Comparable<Unit> {
 			currentState = insideSettlement;
 		else if (this instanceof Vehicle)
 			currentState = settlementVicinity;
-*/		
+*/
 	}
 
 
@@ -153,7 +153,7 @@ implements Serializable, Comparable<Unit> {
 	public int getIdentifier() {
 		return identifier;
 	}
-	
+
 	/**
 	 * Change the unit's name
 	 * @param newName new name
@@ -193,37 +193,37 @@ implements Serializable, Comparable<Unit> {
 	public String getShortenedName() {
 		name = name.trim();
 		int num = name.length();
-		
+
 		boolean hasSpace = name.matches("^\\s*$");
-		
+
 		if (hasSpace) {
 			int space = name.indexOf(" ");
-			
+
 			String oldFirst = name.substring(0, space);
-			String oldLast = name.substring(space+1, num);		
+			String oldLast = name.substring(space+1, num);
 			String newFirst = oldFirst;
 			String newLast = oldLast;
 			String newName = name;
-			
+
 			if (num > 20) {
-				
+
 				if (oldFirst.length() > 10) {
 					newFirst = oldFirst.substring(0, 10);
 				}
 				else if (oldLast.length() > 10) {
 					newLast = oldLast.substring(0, 10);
-				}			
-				newName = newFirst + " " + newLast;				
+				}
+				newName = newFirst + " " + newLast;
 				//System.out.println("oldName : " + name + "    newName : " + newName);
 			}
-			
+
 			return newName;
 		}
-		
+
 		else
 			return name;
 	}
-	
+
 	/**
 	 * Sets the unit's name
 	 * @param name new name
@@ -616,10 +616,10 @@ implements Serializable, Comparable<Unit> {
 	 */
 	public void updatePersonState(Unit newContainer) {
 		Unit oldContainer = this.containerUnit;
-		
+
 		// Case 1
 		if (oldContainer instanceof Settlement && newContainer == null)
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY; 
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 
 		// Case 2
 		else if (oldContainer == null && newContainer instanceof Settlement)
@@ -632,7 +632,7 @@ implements Serializable, Comparable<Unit> {
 		// Case 8
 		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
 			currentStateType = LocationStateType.INSIDE_VEHICLE;
-		
+
 		else if (oldContainer instanceof Vehicle && newContainer == null) {
 			// Case 4
 			if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
@@ -642,7 +642,7 @@ implements Serializable, Comparable<Unit> {
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 			else
 				System.err.println("Unit : " + name + " was no longer on a vehicle.");
-			
+
 		}
 
 		// Case 7
@@ -659,7 +659,7 @@ implements Serializable, Comparable<Unit> {
 
 		// Case 1
 		if (oldContainer instanceof Settlement && newContainer == null)
-			currentStateType = LocationStateType.SETTLEMENT_VICINITY; 
+			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 
 		// Case 2
 		else if (oldContainer == null && newContainer instanceof Settlement)
@@ -672,7 +672,7 @@ implements Serializable, Comparable<Unit> {
 		// Case 8
 		else if (oldContainer instanceof Settlement && newContainer instanceof Vehicle)
 			currentStateType = LocationStateType.INSIDE_VEHICLE;
-		
+
 		else if (oldContainer instanceof Vehicle && newContainer == null) {
 			// Case 4
 			if (oldContainer.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY)
@@ -680,11 +680,11 @@ implements Serializable, Comparable<Unit> {
 			// Case 6
 			else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
-			
-			else {			
-				System.err.println("Unit : " + name + " was no longer on a vehicle.");			
+
+			else {
+				System.err.println("Unit : " + name + " was no longer on a vehicle.");
 			}
-				
+
 		}
 
 		// Case 7
@@ -706,7 +706,7 @@ implements Serializable, Comparable<Unit> {
 		// Case 12
 		else if (oldContainer instanceof Person && newContainer instanceof Settlement)
 			currentStateType = LocationStateType.INSIDE_BUILDING;
-		
+
 	}
 
 
@@ -725,16 +725,16 @@ implements Serializable, Comparable<Unit> {
 			}
 			else
 				// Case 4
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;	
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 		}
-			
+
 		else {
 			// Case 3
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		}
 
 
-/*		
+/*
 		// Case 1
 		if (oldContainer instanceof Settlement && newContainer == null)
 			currentStateType = LocationStateType.SETTLEMENT_VICINITY;
@@ -748,10 +748,10 @@ implements Serializable, Comparable<Unit> {
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 			// Case 4
 			else
-				currentStateType = LocationStateType.SETTLEMENT_VICINITY;	
+				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 		}
 */
-		
+
 	}
 
 
@@ -791,7 +791,7 @@ implements Serializable, Comparable<Unit> {
 		return name;
 	}
 
-	
+
 	public synchronized boolean hasUnitListener(UnitListener listener) {
 		if(listeners == null) return false;
 		return listeners.contains(listener);
@@ -901,8 +901,8 @@ implements Serializable, Comparable<Unit> {
 	public LocationState getInsideVehicleInSettlement() {
 		return insideVehicleInSettlement;
 	}
-	
-	
+
+
 	public LocationState getInsideBuilding() {
 		return insideBuilding;
 	}
@@ -968,7 +968,7 @@ implements Serializable, Comparable<Unit> {
 		currentState.transferFromVehicleToPerson();
 	}
 */
-	
+
 	public LocationSituation getLocationSituation() {
 		return null;
 	}
@@ -992,11 +992,11 @@ implements Serializable, Comparable<Unit> {
 	public Settlement getBuriedSettlement(){
 		return null;
 	}
-	
+
 	public LocationStateType getLocationStateType() {
 		return currentStateType;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

@@ -243,6 +243,8 @@ public class MainScene {
 
 	private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
 
+	private static final String PAUSE = "PAUSE";
+	private static final String ESC_TO_RESUME = "ESC to resume";
 	private static final String PAUSE_MSG = " [PAUSE]";// : ESC to resume]";
 	private static final String LAST_SAVED = "Last Saved : ";
 	private static final String EARTH_DATE_TIME = "EARTH  :  ";
@@ -262,6 +264,8 @@ public class MainScene {
 	public static int MACOS_WIDTH = 230;
 	public static int WIN_WIDTH = 230;
 
+	public static boolean menuBarVisible = false;
+
 	private int count = 0;
 	private int solElapsedCache = 0;
 	private int memMax;
@@ -276,7 +280,6 @@ public class MainScene {
 	private boolean isMuteCache;
 	private boolean earthTimeFlag = false, marsTimeFlag = false, flag = true;
 	private boolean isMainSceneDoneLoading = false;
-	public static boolean menuBarVisible = false;
 	private boolean isMarsNetOpen = false;
 	private boolean onMenuBarCache = false;
 	private boolean isFullScreenCache = false;
@@ -295,7 +298,7 @@ public class MainScene {
     //private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
 	private Pane root;
-	private StackPane settlementBox, chatBoxPane, mainAnchorPane, mapStackPane, minimapStackPane;
+	private StackPane settlementBox, chatBoxPane, mainAnchorPane, mapStackPane, minimapStackPane, speedPane, soundPane, calendarPane;
 	//private BorderPane borderPane;
 	private FlowPane flowPane;
 	private AnchorPane rootAnchorPane, mapAnchorPane ;
@@ -358,14 +361,13 @@ public class MainScene {
 	private SettlementWindow settlementWindow;
 	private NavigatorWindow navWin;
 	private SettlementMapPanel mapPanel;
-	private NavigatorWindow nw;
 
 	private AudioPlayer soundPlayer;
 	private MarsCalendarDisplay calendarDisplay;
 	private UpTimer uptimer;
 
-	private List<DesktopPane> desktops;
-	private ObservableList<Screen> screens;
+	//private List<DesktopPane> desktops;
+	//private ObservableList<Screen> screens;
 
 	/**
 	 * Constructor for MainScene
@@ -1000,16 +1002,8 @@ public class MainScene {
             }
 		});
 
-		StackPane speedPane = new StackPane();
-		speedPane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
-				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-       			+ "-fx-background-radius: 10px;"
-				+ "-fx-text-fill: cyan;"
-				+ "-fx-border-color: transparent;"
-	    		+ "-fx-border-radius: 10px;"
-	    		+ "-fx-border-width: 3px;"
-	    		+ "-fx-border-style: solid; "
-				);
+		speedPane = new StackPane();
+		speedPane.getStyleClass().add("jfx-popup-container");
 		speedPane.setAlignment(Pos.CENTER);
 		speedPane.setPrefHeight(100);
 		speedPane.setPrefWidth(earthTimeButton.getPrefWidth());
@@ -1249,16 +1243,8 @@ public class MainScene {
 
 		});
 
-		StackPane soundPane = new StackPane();
-		soundPane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
-				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-       			+ "-fx-background-radius: 10px;"
-				+ "-fx-text-fill: cyan;"
-				+ "-fx-border-color: transparent;"
-	    		+ "-fx-border-radius: 10px;"
-	    		+ "-fx-border-width: 3px;"
-	    		+ "-fx-border-style: solid; "
-				);
+		soundPane = new StackPane();
+		soundPane.getStyleClass().add("jfx-popup-container");
 		soundPane.setAlignment(Pos.CENTER);
 		soundPane.setPrefHeight(75);
 		soundPane.setPrefWidth(250);
@@ -1400,16 +1386,8 @@ public class MainScene {
 		vBox.setAlignment(Pos.CENTER);
 		vBox.getChildren().addAll(header_label, hBox, calNode);
 
-		StackPane calendarPane = new StackPane(vBox);
-		calendarPane.setStyle("-fx-background-color: black;"//#7ebcea;" //#426ab7;"//
-				+ "-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));"
-       			+ "-fx-background-radius: 10px;"
-				+ "-fx-text-fill: cyan;"
-				+ "-fx-border-color: transparent;"
-	    		+ "-fx-border-radius: 10px;"
-	    		+ "-fx-border-width: 3px;"
-	    		+ "-fx-border-style: solid; "
-				);
+		calendarPane = new StackPane(vBox);
+		calendarPane.getStyleClass().add("jfx-popup-container");
 		calendarPane.setAlignment(Pos.CENTER);
 		calendarPane.setPrefHeight(170);
 		calendarPane.setPrefWidth(180);
@@ -1567,7 +1545,7 @@ public class MainScene {
 
 		// Set up a settlement view zoom bar
 		zoomSlider = new JFXSlider();
-		zoomSlider.getStyleClass().add("jfx-slider");
+		//zoomSlider.getStyleClass().add("jfx-slider");
 		//zoom.setMinHeight(100);
 		//zoom.setMaxHeight(200);
 		zoomSlider.prefHeightProperty().bind(mapStackPane.heightProperty().multiply(.3d));
@@ -2323,16 +2301,27 @@ public class MainScene {
 		jfxTabPane.getStylesheets().clear();
 		//setStylesheet(northHemi, cssFile);
 		//setStylesheet(southHemi, cssFile);
+
 		setStylesheet(marsTimeButton, cssFile);
 		setStylesheet(earthTimeButton, cssFile);
+
 		setStylesheet(lastSaveLabel, cssFile);
 		//setStylesheet(miniMapBtn, cssFile);
 		//setStylesheet(mapBtn, cssFile);
 		setStylesheet(cacheToggle, cssFile);
 		setStylesheet(minimapToggle, cssFile);
 		setStylesheet(mapToggle, cssFile);
+
 		setStylesheet(settlementBox, cssFile);
 		setStylesheet(mapLabelBox, cssFile);
+
+		setStylesheet(speedPane, cssFile);
+		setStylesheet(calendarPane, cssFile);
+		setStylesheet(soundPane, cssFile);
+
+		setStylesheet(timeSlider, cssFile);
+		//setStylesheet(zoomSlider, cssFile);
+		setStylesheet(soundSlider, cssFile);
 
 
 		if (settlementWindow == null) {
@@ -2378,6 +2367,12 @@ public class MainScene {
 
 		chatBox.update();
 
+	}
+
+
+	public void setStylesheet(JFXSlider s, String cssFile) {
+		s.getStylesheets().clear();
+		s.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
 	}
 
 	public void setStylesheet(Button b, String cssFile) {
@@ -2862,10 +2857,10 @@ public class MainScene {
 
 	public void startPausePopup() {
 		//System.out.println("calling startPausePopup(): messagePopup.numPopups() is " + messagePopup.numPopups());
-		if (messagePopup.numPopups() == 0) {
+		if (messagePopup.numPopups() < 1) {
             // Note: (NOT WORKING) popups.size() is always zero no matter what.
 			Platform.runLater(() ->
-				messagePopup.popAMessage("PAUSE", "ESC to resume", " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
+				messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
 			);
 		}
 	}

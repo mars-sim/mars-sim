@@ -70,29 +70,21 @@ public class EatMeal extends Task implements Serializable {
     private static final double DESSERT_STRESS_MODIFIER = -.4D;
     private static final int NUMBER_OF_MEAL_PER_SOL = 4;
     private static final int NUMBER_OF_DESSERT_PER_SOL = 4;
-
     /** The proportion of the task for eating a meal. */
     private static final double MEAL_EATING_PROPORTION = .75D;
-
     /** The proportion of the task for eating dessert. */
     private static final double DESSERT_EATING_PROPORTION = .25D;
-
     /** Percentage chance that preserved food has gone bad. */
     private static final double PRESERVED_FOOD_BAD_CHANCE = 5D;
-
     /** Percentage chance that unprepared dessert has gone bad. */
     private static final double UNPREPARED_DESSERT_BAD_CHANCE = 10D;
-
     /** Mass (kg) of single napkin for meal. */
     private static final double NAPKIN_MASS = .0025D;
 
+    private static double totalfood;
+    private static double totalDessert;
+
     // Data members
-    private CookedMeal cookedMeal;
-    private PreparedDessert nameOfDessert;
-    private AmountResource unpreparedDessertAR;
-    private boolean hasNapkin;
-    private Cooking kitchen;
-    private PreparingDessert dessertKitchen;
     private double totalMealEatingTime = 0D;
     private double mealEatingDuration = 0D;
     private double totalDessertEatingTime = 0D;
@@ -100,7 +92,16 @@ public class EatMeal extends Task implements Serializable {
     private double startingHunger;
     private double currentHunger;
 
-    private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+    private boolean hasNapkin;
+
+    private CookedMeal cookedMeal;
+    private PreparedDessert nameOfDessert;
+    private AmountResource unpreparedDessertAR;
+    private Cooking kitchen;
+    private PreparingDessert dessertKitchen;
+    private Inventory inv;
+
+    //private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
     /**
      * Constructor.
@@ -118,15 +119,20 @@ public class EatMeal extends Task implements Serializable {
         }
 
         // Initialize data members.
-        mealEatingDuration = getDuration() * MEAL_EATING_PROPORTION;
-        dessertEatingDuration = getDuration() * DESSERT_EATING_PROPORTION;
+        double dur = getDuration();
+        mealEatingDuration = dur * MEAL_EATING_PROPORTION;
+        dessertEatingDuration = dur * DESSERT_EATING_PROPORTION;
         startingHunger = person.getPhysicalCondition().getHunger();
         currentHunger = startingHunger;
+
+        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        totalfood = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
+        totalDessert = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 
         // Take napkin from inventory if available.
         Unit container = person.getTopContainerUnit();
         if (container != null) {
-            Inventory inv = container.getInventory();
+            inv = container.getInventory();
             hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, AmountResource.napkinAR, inv, true);
         }
 
@@ -324,17 +330,18 @@ public class EatMeal extends Task implements Serializable {
 
         // Determine total preserved food amount eaten during this meal.
         //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        double totalFoodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
+        //double totalFoodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
 
         // Proportion of meal being eaten over this time period.
         double mealProportion = eatingTime / mealEatingDuration;
 
         // Food amount eaten over this period of time.
-        double foodAmount = totalFoodAmount * mealProportion;
+        double foodAmount = totalfood * mealProportion;
 
-        Unit containerUnit = person.getTopContainerUnit();
-        if (containerUnit != null) {
-            Inventory inv = containerUnit.getInventory();
+        //Unit containerUnit = person.getTopContainerUnit();
+        //if (containerUnit != null) {
+        if (inv != null) {
+            //Inventory inv = containerUnit.getInventory();
 
             // Take preserved food from inventory if it is available.
             if (Storage.retrieveAnResource(foodAmount, AmountResource.foodAR, inv, true)) {
@@ -474,13 +481,13 @@ public class EatMeal extends Task implements Serializable {
 
         // Determine total unprepared dessert amount eaten during this meal.
         //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-        double totalDessertAmount = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
+        //double totalDessertAmount = config.getDessertConsumptionRate() / NUMBER_OF_DESSERT_PER_SOL;
 
         // Determine dessert resource type if not known.
         if (unpreparedDessertAR == null) {
 
             // Determine list of available dessert resources.
-            List<AmountResource> availableDessertResources = getAvailableDessertResources(totalDessertAmount);
+            List<AmountResource> availableDessertResources = getAvailableDessertResources(totalDessert);
             if (availableDessertResources.size() > 0) {
 
                 // Randomly choose available dessert resource.
@@ -498,12 +505,11 @@ public class EatMeal extends Task implements Serializable {
             double dessertProportion = eatingTime / dessertEatingDuration;
 
             // Dessert amount eaten over this period of time.
-            double dessertAmount = totalDessertAmount * dessertProportion;
-
-            Unit containerUnit = person.getTopContainerUnit();
-            if (containerUnit != null) {
-                Inventory inv = containerUnit.getInventory();
-
+            double dessertAmount = totalDessert * dessertProportion;
+            //Unit containerUnit = person.getTopContainerUnit();
+            //if (containerUnit != null) {
+            if (inv != null) {
+                //Inventory inv = containerUnit.getInventory();
                 // Take dessert resource from inventory if it is available.
                 if (Storage.retrieveAnResource(dessertAmount, unpreparedDessertAR, inv, true)) {
 
@@ -544,9 +550,10 @@ public class EatMeal extends Task implements Serializable {
 
         List<AmountResource> result = new ArrayList<AmountResource>();
 
-        Unit containerUnit = person.getTopContainerUnit();
-        if (containerUnit != null) {
-            Inventory inv = containerUnit.getInventory();
+        //Unit containerUnit = person.getTopContainerUnit();
+        //if (containerUnit != null) {
+        if (inv != null) {
+            //Inventory inv = containerUnit.getInventory();
 /*
 
             int size = ARs.length;
@@ -671,13 +678,15 @@ public class EatMeal extends Task implements Serializable {
      */
     public static boolean isPreservedFoodAvailable(Person person) {
         boolean result = false;
+
         Unit containerUnit = person.getTopContainerUnit();
         if (containerUnit != null) {
             try {
                 Inventory inv = containerUnit.getInventory();
+
                 //PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
-                result = Storage.retrieveAnResource(foodAmount, AmountResource.foodAR, inv, false);
+                //double foodAmount = config.getFoodConsumptionRate() / NUMBER_OF_MEAL_PER_SOL;
+                result = Storage.retrieveAnResource(totalfood, AmountResource.foodAR, inv, false);
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -703,9 +712,10 @@ public class EatMeal extends Task implements Serializable {
 
         // Throw away napkin waste if one was used.
         if (hasNapkin) {
-            Unit container = person.getTopContainerUnit();
-            if (container != null) {
-                Inventory inv = container.getInventory();
+            //Unit containerUnit = person.getTopContainerUnit();
+            //if (containerUnit != null) {
+            if (inv != null) {
+                //Inventory inv = containerUnit.getInventory();
                 Storage.storeAnResource(NAPKIN_MASS, AmountResource.solidWasteAR, inv);
             }
         }

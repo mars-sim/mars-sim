@@ -68,22 +68,7 @@ implements Serializable {
     // amount of water in kg per dessert during preparation and clean-up
     public static final double WATER_USAGE_PER_DESSERT = 1.0;
 
-    private List<PreparedDessert> servingsOfDessertList;
-
-    private boolean makeNoMoreDessert = false;
-
-	private int dessertCounterPerSol = 0;
-	private int solCache = 1;
-    private int cookCapacity;
-	private double preparingWorkTime; // used in numerous places
-    @SuppressWarnings("unused")
-	private int NumOfServingsCache; // used in timePassing
     private static double dessertMassPerServing;
-    private String producerName;
-
-    private Building building;
-    private Settlement settlement;
-    private Inventory inv ;
 
     // 2015-01-03 Added availableDesserts
     private static String [] availableDesserts =
@@ -100,13 +85,13 @@ implements Serializable {
 
     public static AmountResource [] availableDessertsAR =
     	{
-    		AmountResource.findAmountResource(availableDesserts[0]),
-    		AmountResource.findAmountResource(availableDesserts[1]),
-    		AmountResource.findAmountResource(availableDesserts[2]),
-    		AmountResource.findAmountResource(availableDesserts[3]),
-    		AmountResource.findAmountResource(availableDesserts[4]),
-    		AmountResource.findAmountResource(availableDesserts[5])
-    	};
+	    	AmountResource.findAmountResource("soymilk"),
+			AmountResource.findAmountResource("sugarcane juice"),
+			AmountResource.findAmountResource("strawberry"),
+			AmountResource.findAmountResource("granola bar"),
+			AmountResource.findAmountResource("blueberry muffin"),
+			AmountResource.findAmountResource("cranberry juice")
+		};
 
 	// TODO: get the real world figure on each serving
     // arbitrary percent of dry mass of the corresponding dessert/beverage.
@@ -119,6 +104,27 @@ implements Serializable {
 			0.5,
 			0.02
 		};
+
+
+    private boolean makeNoMoreDessert = false;
+
+	private int dessertCounterPerSol = 0;
+	private int solCache = 1;
+    private int cookCapacity;
+    private int NumOfServingsCache; // used in timePassing
+
+	private double preparingWorkTime; // used in numerous places
+
+    private String producerName;
+
+
+    private Building building;
+    private Settlement settlement;
+    private Inventory inv ;
+
+    private List<PreparedDessert> servingsOfDessertList;
+
+
 
     /**
      * Constructor.

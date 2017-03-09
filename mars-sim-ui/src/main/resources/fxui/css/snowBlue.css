@@ -1,8 +1,8 @@
 /**
  * Mars Simulation Project
- * mainskin.css
+ * snowBlue.css
  * General CSS classes for MSP UI
- * @version 3.08 2015-01-27
+ * @version 3.1.0 2017-03-08
  * @author Lars Næsbye Christensen
  */
 
@@ -171,7 +171,7 @@
         linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
         linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
     -fx-background-insets: 1,1,1,1;
-    -fx-background-radius: 2,2,2,2;
+    -fx-background-radius: 5,5,5,5;
     -fx-padding: 5 5 5 5;
     -fx-font-family: "Helvetica";
     -fx-font-size: 14px;
@@ -205,34 +205,27 @@
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
-  	-fx-toggle-color: #00cc66;
+  	-fx-toggle-color: #03a9f4;
     -fx-background-color: transparent;
-    -fx-text-fill: #00cc66;
+    -fx-text-fill: #03a9f4;
     -fx-font-weight: bold;
 }
 
 .jfx-toggle-button{
-  	-fx-text-fill: GREY;
+  	-fx-text-fill: grey;
   	-fx-background-color: transparent;
 }
 
 .jfx-button {
-	-fx-toggle-color: #00ff00;
+	-fx-toggle-color: #03a9f4;
 }
 
 .jfx-slider {
-  	-fx-background-color: #00ff00;
+  	-fx-background-color: white;
   	-fx-snap-to-ticks : true;
     -fx-font-size: 14px;
-    -fx-text-fill: #00ff00;
+    -fx-text-fill: #7ebcea;
 }
-
-
-/*******************************************************************************
- *                                                                             *
- * JFX Slider                                                                  *
- *                                                                             *
- ******************************************************************************/
 
 .svg-slider .thumb{
 	-fx-stroke : black;
@@ -242,18 +235,12 @@
 	-fx-opacity: 0.4;
 }
 
-/*******************************************************
-*                           						   *
-* For the main demo sliders 						   *
-*                          							   *
-*******************************************************/
-
 .jfx-slider-style {
 	-fx-indicator-position: right;
 }
 
 .jfx-slider-style > .thumb {
-	-fx-background-color:#03a9f4;
+	-fx-background-color: #03a9f4;
 }
 
 .jfx-slider-style .track {
@@ -263,8 +250,19 @@
 }
 
 .jfx-slider-style .sliderValue {
-	-fx-stroke: #00cc66;
+	-fx-stroke: #7ebcea;
 	-fx-font-size: 12.0;
+}
+
+.jfx-popup-container{
+	-fx-background-color: black;
+	-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));
+    -fx-background-radius: 10px;
+	-fx-text-fill: cyan;
+	-fx-border-color: transparent;
+	-fx-border-radius: 10px;
+	-fx-border-width: 3px;
+	-fx-border-style: solid;
 }
 
 .combo-box-base
@@ -283,7 +281,7 @@
 	-fx-font-size: 15.0;
 	-fx-background: white;
     -fx-background-color: transparent;
-    -fx-text-fill: cyan;
+    -fx-text-fill: #03a9f4;
     -fx-padding: 2 2 2 2;
     -fx-cell-size: 1.66667em;
 }
@@ -291,7 +289,7 @@
 .check-box {
     -fx-font-size: 12;
     -fx-font-weight: italic;
-    -fx-text-fill: cyan;
+    -fx-text-fill: #03a9f4;
 }
 
 .ttip{

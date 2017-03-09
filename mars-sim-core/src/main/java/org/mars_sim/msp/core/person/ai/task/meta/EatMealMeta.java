@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMealMeta.java
- * @version 3.08 2015-06-18
+ * @version 3.1.0 2017-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -24,7 +24,7 @@ public class EatMealMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.eatMealMeta"); //$NON-NLS-1$
@@ -72,7 +72,7 @@ public class EatMealMeta implements MetaTask, Serializable {
                     // If no cooked meal, check if preserved food is available to eat.
                     if (!EatMeal.isPreservedFoodAvailable(person)) {
                         // If no preserved food, person can't eat a meal.
-                        result = 0D;
+                        //result = 0D;
                         return 0;
                     }
                 }
@@ -89,7 +89,7 @@ public class EatMealMeta implements MetaTask, Serializable {
                 if (result > 0D) {
                     result = result + result * person.getPreference().getPreferenceScore(this)/5D;
                 }
-             
+
                 if (result < 0) result = 0;
 
             }
@@ -97,7 +97,8 @@ public class EatMealMeta implements MetaTask, Serializable {
             else if (!EatMeal.isPreservedFoodAvailable(person)) {
 
                 // If no preserved food available, cannot eat a meal.
-                result = 0D;
+                //result = 0D;
+                return 0;
             }
 	    }
 

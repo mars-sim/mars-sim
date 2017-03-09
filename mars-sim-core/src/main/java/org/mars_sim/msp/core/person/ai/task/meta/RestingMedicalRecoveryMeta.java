@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RestingMedicalRecoveryMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-03-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -29,7 +29,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.restingMedicalRecovery"); //$NON-NLS-1$
@@ -62,7 +62,7 @@ public class RestingMedicalRecoveryMeta implements MetaTask, Serializable {
         if (bedRestNeeded) {
 
             result = 200D;
-            
+
             // Determine if any available medical aids can be used for bed rest.
             if (hasUsefulMedicalAids(person)) {
 

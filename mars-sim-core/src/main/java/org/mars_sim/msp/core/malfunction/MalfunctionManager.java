@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.07 2015-01-09
+ * @version 3.1.0 2017-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -62,6 +62,11 @@ implements Serializable {
 	/** Factor for chance of accident due to wear condition. */
 	private static double WEAR_ACCIDENT_FACTOR = 1D;
 
+	private static final String OXYGEN = "Oxygen";
+	private static final String WATER = "Water";
+	private static final String PRESSURE = "Air Pressure";
+	private static final String TEMPERATURE = "Temperature";
+
 	// Data members
 	/** The owning entity. */
 	private Malfunctionable entity;
@@ -96,11 +101,11 @@ implements Serializable {
 	private double waterFlowModifier = 100D;
 	private double airPressureModifier = 100D;
 	private double temperatureModifier = 100D;
-	
+
 	private MasterClock masterClock;
 	private MarsClock startTime;
 	private MarsClock currentTime;
-	
+
 	/**
 	 * Constructor.
 	 * @param entity the malfunctionable entity.
@@ -402,7 +407,7 @@ implements Serializable {
 		if (RandomUtil.lessThanRandPercent(chance)) {
 			int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
 			logger.info(entity.getName() + " is behind on maintenance.  "
-					+ "Time since last maintenance: " + solsLastMaint 
+					+ "Time since last maintenance: " + solsLastMaint
 					+ " sols.  Condition: " + wearCondition + " %");
 			addMalfunction();
 		}
@@ -476,14 +481,14 @@ implements Serializable {
 				Malfunction malfunction = i.next();
 				if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
 					Map<String, Double> effects = malfunction.getLifeSupportEffects();
-					if (effects.get("Oxygen") != null)
-						tempOxygenFlowModifier += effects.get("Oxygen");
-					if (effects.get("Water") != null)
-						tempWaterFlowModifier += effects.get("Water");
-					if (effects.get("Air Pressure") != null)
-						tempAirPressureModifier += effects.get("Air Pressure");
-					if (effects.get("Temperature") != null)
-						tempTemperatureModifier += effects.get("Temperature");
+					if (effects.get(OXYGEN) != null)
+						tempOxygenFlowModifier += effects.get(OXYGEN);
+					if (effects.get(WATER) != null)
+						tempWaterFlowModifier += effects.get(WATER);
+					if (effects.get(PRESSURE) != null)
+						tempAirPressureModifier += effects.get(PRESSURE);
+					if (effects.get(TEMPERATURE) != null)
+						tempTemperatureModifier += effects.get(TEMPERATURE);
 				}
 			}
 		}
@@ -546,9 +551,9 @@ implements Serializable {
 			if (Conversion.checkVowel(name))
 				name = "in an " + name;
 			else
-				name = "in a " + name;	
+				name = "in a " + name;
 		}
-		
+
 		logger.info("An accident occurs " + name);
 
 		// Multiple malfunctions may have occurred.
@@ -643,7 +648,7 @@ implements Serializable {
 			double probability = malfunction.getMedicalComplaints().get(type);
 			MedicalManager medic = Simulation.instance().getMedicalManager();
 			// 2016-06-15 Replaced the use of String name with ComplaintType
-			Complaint complaint = medic.getComplaintByName(type);			
+			Complaint complaint = medic.getComplaintByName(type);
 			if (complaint != null) {
 				// Get people who can be affected by this malfunction.
 				Iterator<Person> i2 = entity.getAffectedPeople().iterator();
@@ -777,7 +782,7 @@ implements Serializable {
 	 */
 	public double getEstimatedNumberOfMalfunctionsPerOrbit() {
 		double avgMalfunctionsPerOrbit = 0D;
-		
+
 		// Note : the elaborate if-else conditions below is for passing the maven test
 		if (masterClock == null)
 			masterClock = Simulation.instance().getMasterClock();
@@ -786,10 +791,10 @@ implements Serializable {
 				startTime = masterClock.getInitialMarsTime();
 			if (currentTime == null)
 				currentTime = masterClock.getMarsClock();
-			
+
 			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
 			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-		
+
 			if (totalTimeOrbits < 1D) {
 				avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
 			}
@@ -797,7 +802,7 @@ implements Serializable {
 				avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
 			}
 		}
-		
+
 		return avgMalfunctionsPerOrbit;
 	}
 
@@ -817,10 +822,10 @@ implements Serializable {
 				startTime = masterClock.getInitialMarsTime();
 			if (currentTime == null)
 				currentTime = masterClock.getMarsClock();
-			
+
 			double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
 			double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-	
+
 			if (totalTimeOrbits < 1D) {
 				avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;
 			}
@@ -828,7 +833,7 @@ implements Serializable {
 				avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
 			}
 		}
-		
+
 		return avgMaintenancesPerOrbit;
 	}
 

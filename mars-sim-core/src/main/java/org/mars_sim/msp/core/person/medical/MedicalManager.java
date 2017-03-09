@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalManager.java
- * @version 3.07 2014-11-13
+ * @version 3.1.0 2017-03-09
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.medical;
@@ -26,7 +26,7 @@ implements Serializable {
 
 	private static final Logger logger = Logger.getLogger(MedicalManager.class.getName());
 
-	public final static int MINSPERDAY = (24 * 60);
+	public final static int MINUTES_PER_DAY = 24 * 60;
 
 	/** Possible Complaints. */
 	//private HashMap<String, Complaint> complaints = new HashMap<String, Complaint>();
@@ -73,7 +73,7 @@ implements Serializable {
 	//public void run() {
 		initMedical();
 	}
-	
+
 	/**
 	 * Initialise the Medical Complaints from the configuration.
 	 * @throws exception if not able to initialize complaints.
@@ -85,7 +85,7 @@ implements Serializable {
 		MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
         //logger.info("initMedical() : Done with initializing all three configs");
-        
+
 		// Quite serious, 70, and has a 80% performance factor.
 		// Zero recovery as death will result if unchecked.
 		starvation = createEnvironmentComplaint(ComplaintType.STARVATION, 70, (personConfig
@@ -93,7 +93,6 @@ implements Serializable {
 				.getStarvationStartTime()) * 1000D, 80);
 
 		// Most serious complaint, 100, and has a 25% performance factor, i.e.
-		// Person can be nothing.
 		suffocation = createEnvironmentComplaint(ComplaintType.SUFFOCATION, 100, personConfig
 				.getOxygenDeprivationTime(), 25);
 
@@ -117,7 +116,7 @@ implements Serializable {
 		heatStroke = createEnvironmentComplaint(ComplaintType.HEAT_STROKE, 80, 100D, 40);
 
 		//logger.info("initMedical() : adding Treatments");
-		
+
 		// Create treatments from medical config.
 		Iterator<Treatment> i = medicalConfig.getTreatmentList().iterator();
 		while (i.hasNext())
@@ -129,9 +128,9 @@ implements Serializable {
 		Iterator<Complaint> j = medicalConfig.getComplaintList().iterator();
 		while (j.hasNext())
 			addComplaint(j.next());
-		
+
 		//logger.info("initMedical() : Done.");
-	      	
+
 	}
 
 	/**
@@ -139,7 +138,7 @@ implements Serializable {
 	 * result in death hence have no next phase and no recovery period, when the environment changes, the complaint is
 	 * resolved.
 	 */
-	private Complaint createEnvironmentComplaint(ComplaintType type, //String name, 
+	private Complaint createEnvironmentComplaint(ComplaintType type, //String name,
 			int seriousness,
 			double degrade, double performance) {
 		return new Complaint(type, seriousness, degrade, 0D, 0D, performance,
@@ -149,7 +148,7 @@ implements Serializable {
 	/**
 	 * Package friendly factory method.
 	 */
-	void createComplaint(ComplaintType type, //String name, // 
+	void createComplaint(ComplaintType type, //String name, //
 			int seriousness, double degrade,
 			double recovery, double probability, double performance,
 			boolean bedRest, Treatment recoveryTreatment, Complaint next) {
@@ -201,7 +200,7 @@ implements Serializable {
 			)
 		);
 	}
-	
+
 	/**
 	 * Gets a list of all medical complaints.
 	 * @return list of complaints.

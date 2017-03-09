@@ -34,41 +34,41 @@ public class RadiationExposure implements Serializable {
      * Note: Mars rover Curiosity received an average dose of 300 milli-sieverts (mSv) over the 180-day journey.
      * 300 mSv is equivalent to 24 CAT scans, or more than 15x
      * the annual radiation limit for a worker in a nuclear power plant.
-     * 
-     * 
+     *
+     *
      * 1000 millirem = 1 rem
      * 1 Sievert (Sv) is 100 rem
      * 1000 mSv = 1 Sv
      * 500 mSv = 50 rem
      * 10 mSv = 1 rem
-     * 
+     *
      * GRAY UNIT (Gy)
-     * 
+     *
      * Exposure from x-rays or gamma rays is measured in units of roentgens. For example:
      * Total body exposure of 100 roentgens/rad or 1 Gray unit (Gy) causes radiation sickness.
-     * Total body exposure of 400 roentgens/rad (or 4 Gy) causes radiation sickness and death in half of the individuals who are exposed. 
-     * Without medical treatment, nearly everyone who receives more than this amount of radiation will die within 30 days. 
+     * Total body exposure of 400 roentgens/rad (or 4 Gy) causes radiation sickness and death in half of the individuals who are exposed.
+     * Without medical treatment, nearly everyone who receives more than this amount of radiation will die within 30 days.
      * 100,000 roentgens/rad (1,000 Gy) causes almost immediate unconsciousness and death within an hour.
-     * 
-     * 
+     *
+     *
      * REM
-     *     
+     *
      * A prompt dose of up to 75 rem result in no apparent health effects.
      * Between 75 and 200 rem, radiation sickness results (symptoms are vomiting, fatigue, loss of appetite.
      * Almost everyone recovers within a few weeks.
      * At 300 rem, some fatalities start to appear, rising to 50% at 450 rem and 80% at 600 rem
      * Almost no one survives dose of 1,000 rem or more.
-     * 
-     * Living at sea level receives an annual dose of 150 millirem (or .15 rem), 
+     *
+     * Living at sea level receives an annual dose of 150 millirem (or .15 rem),
      * versus 300 millirem (or .3 rem) on top of a mountain.
-     *   
-     * According to one study, for every 100 rem received, the likelihood of fatal cancer is 1.8% within 30 years. 
-     * 
-     * If a Mars Direct mission uses Conjunction trajectory, the estimated round trip mission radiation dose 
+     *
+     * According to one study, for every 100 rem received, the likelihood of fatal cancer is 1.8% within 30 years.
+     *
+     * If a Mars Direct mission uses Conjunction trajectory, the estimated round trip mission radiation dose
      * varies between 41 and 62 rem, depending upon whether the Sun is at solar min or solar max phase of its 11-year cycle.
-     * 
-     * If an astronaut gets a typical dose of 50 rem over the course of a 2.5 years Mars mission, 
-     * the chance of getting a fatal cancer due to that exposure is 50/100 * 1.81% = .905%.   
+     *
+     * If an astronaut gets a typical dose of 50 rem over the course of a 2.5 years Mars mission,
+     * the chance of getting a fatal cancer due to that exposure is 50/100 * 1.81% = .905%.
      */
 
     /* Probability of getting hit by GCG/SPE radiation within an interval of 100 milliSol
@@ -79,7 +79,7 @@ public class RadiationExposure implements Serializable {
      *
      * In comparison, RAD data show an average GCR dose equivalent rate of
      * 1.8 millisieverts per day on the journey to Mars
-     * 
+     *
      * References :
      * Ref_A : http://www.michaeleisen.org/blog/wp-content/uploads/2013/12/Science-2013-Hassler-science.1244797.pdf
      * Ref_B : http://www.mars-one.com/faq/health-and-ethics/how-much-radiation-will-the-settlers-be-exposed-to
@@ -93,41 +93,41 @@ public class RadiationExposure implements Serializable {
     // On MSL, SEPs is only 5% of GCRs, not like 10% (=25/2.5) here
 
 	public static final int RADIATION_CHECK_FREQ = 50; // in millisols
-	
+
 	public static final double SEP_CHANCE_SWING = 2D; // can be twice as much. probability of occurrence modifier (arbitrary)
 	public static final double GCR_CHANCE_SWING = 3D; // can be three times as much. probability of occurrence modifier (arbitrary)
-	        
+
     // Baseline radiation
     public static final double BASELINE_PERCENT = 72.5; //[in %] calculated
-    
+
     // Galactic cosmic rays (GCRs) events
     // Based on Ref_A's DAT data, ~25% of the GCR for the one day duration of the event.
     public static final double GCR_PERCENT = 25; //[in %] based on DAT
-  
+
     // Solar energetic particles (SEPs) events
     public static final double SEP_PERCENT = 2.5; //[in %] arbitrary
-    
-    
+
+
     public static final double BASELINE_RAD_PER_SOL = .1; //  [in mSv] arbitrary
-    
+
     // Based on Ref_A's DAT data, the average GCR dose equivalent rate on the Mars surface
     // is 0.64 ± 0.12 mSv/day. The dose equivalent is 50 μSv,
     public static final double GCR_RAD_PER_SOL = .64; //  [in mSv] based on DAT
     public static final double GCR_RAD_SWING = .12; //  [in mSv] based on DAT
- 
+
     // Note : frequency and intensity of SEP events is sporadic and difficult to predict.
     // Its flux varies by several orders of magnitude and are typically dominated by protons,
-    public static final double SEP_RAD_PER_SOL = .21; //  [in mSv] 
+    public static final double SEP_RAD_PER_SOL = .21; //  [in mSv]
     public static final double SEP_SWING_FACTOR = 1000; // assuming 3 orders of magnitude (arbitrary)
-    // since orders of magnitude are written in powers of 10. 
+    // since orders of magnitude are written in powers of 10.
     // e.g. the order of magnitude of 1500 is 3, since 1500 may be written as 1.5 × 10^3.
     // e.g. the order of magnitude of 1000 is 3, since 1500 may be written as 1.0 × 10^3.
-    
+
     // SPE onset times on the order of minutes to hours and durations of hours to days.
 
-    // Additional notes : 
-    // Ref_A assumes absorbed dose of ~150 mGy/year at the Martian surface. 
-    // Pavlov et al. assumed an absorbed dose of 50 ±5 mGy/year. 
+    // Additional notes :
+    // Ref_A assumes absorbed dose of ~150 mGy/year at the Martian surface.
+    // Pavlov et al. assumed an absorbed dose of 50 ±5 mGy/year.
     // The actual absorbed dose measured by the RAD is 76 mGy/yr at the surface.
 
 
@@ -173,11 +173,11 @@ public class RadiationExposure implements Serializable {
 		this.person = condition.getPerson();
 		this.condition = condition;
 		dose = new double[3][3];
-		
-		
+
+
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
-    	
+
 		//if (masterClock == null)
 		//	masterClock = Simulation.instance().getMasterClock();
 
@@ -367,9 +367,9 @@ public class RadiationExposure implements Serializable {
        	    double shield_factor = 0;
 
       	    // TODO: account for the effect of atmosphere pressure on radiation dosage as shown by RAD data
-    		//RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
 
-    		boolean[] exposed = person.getSettlement().getExposed();
+       	    // TODO: compute radiation if a person steps outside of a rover on a mission somewhere on Mars
+    		boolean[] exposed = person.getAssociatedSettlement().getExposed();
 
     		if (exposed[1])
 	    		shield_factor = RandomUtil.getRandomDouble(1) ; // arbitrary
@@ -402,14 +402,14 @@ public class RadiationExposure implements Serializable {
 			    	    	exposure = baselevel + RandomUtil.getRandomInt(-1,1)
 			    	    		* RandomUtil.getRandomDouble(baselevel/3D); // arbitrary
 		    	    	}
-		    	    	
+
 		    	    	exposure = Math.round(exposure*10000.0)/10000.0;
 
 		    	    	addDose(j, exposure);
 		    	    	//System.out.println("rand is "+ rand);
 		    	    	if (i != 0) { // show logger.info for the GCR or SEP event only {
-			    	    	logger.info(person.getName() + " was exposed to " + exposure 
-			    	    			+ " mSv dose of radiation in body region " 
+			    	    	logger.info(person.getName() + " was exposed to " + exposure
+			    	    			+ " mSv dose of radiation in body region "
 			    	    			+ i + " during an EVA operation near " + person.getAssociatedSettlement());
 			    	    	person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
 		    	    	}

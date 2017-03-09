@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RequestMedicalTreatment.java
- * @version 3.07 2015-01-06
+ * @version 3.1.0 2017-03-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -40,36 +40,36 @@ public class RequestMedicalTreatment extends Task implements Serializable {
 
     /** default logger. */
     private static Logger logger = Logger.getLogger(RequestMedicalTreatment.class.getName());
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.requestMedicalTreatment"); //$NON-NLS-1$
-    
+
     /** Task phases. */
     private static final TaskPhase WAITING_FOR_TREATMENT = new TaskPhase(Msg.getString(
             "Task.phase.waitingForMedicalTreatment")); //$NON-NLS-1$
     private static final TaskPhase TREATMENT = new TaskPhase(Msg.getString(
             "Task.phase.receivingMedicalTreatment")); //$NON-NLS-1$
-    
+
     /** Maximum waiting duration in millisols. */
     private static final double MAX_WAITING_DURATION = 200D;
-    
+
     // Data members.
     private MedicalAid medicalAid;
     private double waitingDuration;
-    
-    /** 
+
+    /**
      * Constructor.
      * @param person the person to perform the task
      */
     public RequestMedicalTreatment(Person person) {
         super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
-        
+
         // Choose available medical aid for treatment.
         medicalAid = determineMedicalAid();
-        
+
         if (medicalAid != null) {
-            
+
             if (medicalAid instanceof MedicalCare) {
                 // Walk to medical care building.
                 MedicalCare medicalCare = (MedicalCare) medicalAid;
@@ -81,7 +81,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 // Walk to medical activity spot in rover.
                 Vehicle vehicle = ((SickBay) medicalAid).getVehicle();
                 if (vehicle instanceof Rover) {
-                    
+
                     // Walk to rover sick bay activity spot.
                     walkToSickBayActivitySpotInRover((Rover) vehicle, false);
                 }
@@ -91,13 +91,13 @@ public class RequestMedicalTreatment extends Task implements Serializable {
             logger.severe("Medical aid could not be determined.");
             endTask();
         }
-        
+
         // Initialize phase.
         addPhase(WAITING_FOR_TREATMENT);
         addPhase(TREATMENT);
         setPhase(WAITING_FOR_TREATMENT);
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -113,44 +113,44 @@ public class RequestMedicalTreatment extends Task implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Determines a medical aid to wait for treatment at.
      * @return medical aid.
      */
     private MedicalAid determineMedicalAid() {
-        
+
         MedicalAid result = null;
-        
+
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             result = determineMedicalAidAtSettlement();
         }
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             result = determineMedicalAidInVehicle();
         }
-        
+
         return result;
     }
-    
+
     /**
      * Determines a medical aid at a settlement.
      * @return medical aid.
      */
     private MedicalAid determineMedicalAidAtSettlement() {
-        
+
         MedicalAid result = null;
-        
+
         List<MedicalAid> goodMedicalAids = new ArrayList<MedicalAid>();
-        
+
         // Check all medical care buildings.
         Iterator<Building> i = person.getSettlement().getBuildingManager().getBuildings(
                 BuildingFunction.MEDICAL_CARE).iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            
+
             // Check if building currently has a malfunction.
             boolean malfunction = building.getMalfunctionManager().hasMalfunction();
-            
+
             // Check if enough beds for patient.
             MedicalCare medicalCare = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
             int numPatients = medicalCare.getPatientNum();
@@ -165,30 +165,30 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                         canTreatProblems = true;
                     }
                 }
-                
+
                 if (canTreatProblems) {
                     goodMedicalAids.add(medicalCare);
                 }
             }
         }
-        
+
         // Randomly select an valid medical care building.
         if (goodMedicalAids.size() > 0) {
             int index = RandomUtil.getRandomInt(goodMedicalAids.size() - 1);
             result = goodMedicalAids.get(index);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Determines a medical aid in a vehicle.
      * @return medical aid.
      */
     private MedicalAid determineMedicalAidInVehicle() {
-        
+
         MedicalAid result = null;
-        
+
         if (person.getVehicle() instanceof Rover) {
             Rover rover = (Rover) person.getVehicle();
             if (rover.hasSickBay()) {
@@ -204,26 +204,26 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                             canTreatProblems = true;
                         }
                     }
-                    
+
                     if (canTreatProblems) {
                         result = sickBay;
                     }
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Performs the waiting for treatment phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left over after performing the phase.
      */
     private double waitingForTreatmentPhase(double time) {
-        
+
         double remainingTime = 0D;
-        
+
         // Check if any health problems are currently being treated.
         boolean underTreatment = false;
         Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
@@ -233,13 +233,13 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 underTreatment = true;
             }
         }
-        
+
         if (underTreatment) {
             setPhase(TREATMENT);
             remainingTime = time;
         }
         else {
-            
+
             // Check if health problems are awaiting treatment.
             Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
             while (j.hasNext()) {
@@ -251,7 +251,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                     }
                 }
             }
-            
+
             waitingDuration += time;
             if (waitingDuration >= MAX_WAITING_DURATION) {
                 // End task if longer than maximum waiting duration.
@@ -259,19 +259,19 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 endTask();
             }
         }
-        
+
         return remainingTime;
     }
-    
+
     /**
      * Performs the treatment phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left over after performing the phase.
      */
     private double treatmentPhase(double time) {
-        
+
         double remainingTime = 0D;
-        
+
         // Check if any health problems are currently being treated.
         boolean underTreatment = false;
         Iterator<HealthProblem> i = person.getPhysicalCondition().getProblems().iterator();
@@ -281,9 +281,9 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 underTreatment = true;
             }
         }
-        
+
         if (!underTreatment) {
-            
+
             // Check if person still has health problems needing treatment.
             boolean treatableProblems = false;
             Iterator<HealthProblem> j = person.getPhysicalCondition().getProblems().iterator();
@@ -293,7 +293,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                     treatableProblems = true;
                 }
             }
-            
+
             if (treatableProblems) {
                 // If any remaining treatable problems, wait for treatment.
                 setPhase(WAITING_FOR_TREATMENT);
@@ -304,10 +304,10 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                 endTask();
             }
         }
-        
+
         return remainingTime;
     }
-    
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.MEDICAL_CARE;
@@ -328,14 +328,14 @@ public class RequestMedicalTreatment extends Task implements Serializable {
     protected void addExperience(double time) {
         // Do nothing
     }
-    
+
     @Override
     public void endTask() {
         super.endTask();
-        
+
         // Remove person from medical aid.
         if (medicalAid != null) {
-            
+
             // Cancel any treatment requests of the person.
             Iterator<HealthProblem> i = medicalAid.getProblemsAwaitingTreatment().iterator();
             while (i.hasNext()) {
@@ -344,7 +344,7 @@ public class RequestMedicalTreatment extends Task implements Serializable {
                     medicalAid.cancelRequestTreatment(problem);
                 }
             }
-            
+
             // Stop any treatment of health problems of the person.
             Iterator<HealthProblem> j = medicalAid.getProblemsBeingTreated().iterator();
             while (j.hasNext()) {

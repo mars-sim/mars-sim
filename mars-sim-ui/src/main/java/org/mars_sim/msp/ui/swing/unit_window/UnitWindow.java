@@ -86,6 +86,8 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final String MILLISOLS = " millisols)";
 	private static final String SHIFT_ANYTIME = " Shift :  Anytime";
 	private static final String ONE_SPACE_SHIFT = " Shift";
+	private static final String STATUS = "Status";
+	private static final String DETAILS = "Details";
 
 	private String oldRoleString = "",
 					oldJobString = "",
@@ -126,37 +128,37 @@ public abstract class UnitWindow extends JInternalFrame {
         //BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
         //titlePane.setOpaque(true);
         //titlePane.setBackground(new Color(250, 213, 174)); // light pale orange
-
         tabPanels = new ArrayList<TabPanel>();
 
         // Create main panel
         JPanel mainPane = new JPanel();//new BorderLayout());
         mainPane.setBorder(new MarsPanelBorder());//setBorder(MainDesktopPane.newEmptyBorder());
-
         setContentPane(mainPane);
-
         //getContentPane().setBackground(THEME_COLOR);
 
         // Create name panel
         //namePanel = new JPanel(new BorderLayout(0, 0));
-        namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        namePanel.setPreferredSize(new Dimension(465,196));
-        namePanel.setBorder(null);
-        factory = SlidePaneFactory.getInstance();
-        factory.add(namePanel,"Status", getImage(TITLE), false);
-
+        namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        //namePanel.setPreferredSize(new Dimension(465,196));
         //namePanel.setBackground(THEME_COLOR);
         //namePanel.setBorder(new MarsPanelBorder());
-        mainPane.add(factory);//, BorderLayout.CENTER);
         //mainPane.add(namePanel, BorderLayout.NORTH);
         //mainPane.setBackground(THEME_COLOR);
 
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-        String name = "";
-        //if (unit instanceof Vehicle)
-        	name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
-        //else
+        String name = ONE_SPACE + Conversion.capitalize(unit.getShortenedName()) + ONE_SPACE;
+        if (unit instanceof Person) {
+            namePanel.setPreferredSize(new Dimension(465,160));
+        }
+        else
+            namePanel.setPreferredSize(new Dimension(465,70));
+
+        namePanel.setBorder(null);
+        factory = SlidePaneFactory.getInstance();
+        factory.add(namePanel, STATUS, getImage(TITLE), false);
+        mainPane.add(factory);//, BorderLayout.CENTER);
+
         //	name = " " + Conversion.capitalize(unit.getName()) + " ";
 
         JLabel nameLabel = new JLabel(name, displayInfo.getButtonIcon(unit), SwingConstants.LEFT);
@@ -273,7 +275,7 @@ public abstract class UnitWindow extends JInternalFrame {
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
-        factory.add(centerPanel,"Details", getImage(TITLE), true);
+        factory.add(centerPanel, DETAILS, getImage(TITLE), true);
         update();
 
         //mainPane.add(centerPanel, BorderLayout.CENTER);

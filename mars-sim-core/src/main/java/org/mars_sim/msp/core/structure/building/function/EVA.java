@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVA.java
- * @version 3.07 2014-12-06
+ * @version 3.1.0 2017-03-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -32,13 +32,14 @@ implements Serializable {
 
 	private Airlock airlock;
 
-	public static AmountResource methaneAR = AmountResource.findAmountResource("methane");
-	public static AmountResource regolithAR = AmountResource.findAmountResource("regolith");
-	public static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-    public static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
-    public static AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
-    public static AmountResource iceAR = AmountResource.findAmountResource("ice");
-    public static AmountResource rockSamplesAR = AmountResource.findAmountResource("rock samples");
+	public static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+    public static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
+    public static AmountResource foodAR = AmountResource.foodAR;//findAmountResource(LifeSupportType.FOOD);
+
+	public static AmountResource methaneAR = AmountResource.methaneAR;//findAmountResource("methane");
+	public static AmountResource regolithAR = AmountResource.regolithAR;//findAmountResource("regolith");
+    public static AmountResource iceAR = AmountResource.iceAR;//findAmountResource("ice");
+    public static AmountResource rockSamplesAR = AmountResource.rockSamplesAR;//findAmountResource("rock samples");
 
 	/**
 	 * Constructor
@@ -59,7 +60,7 @@ implements Serializable {
 		double exteriorXLoc = config.getAirlockExteriorXLoc(building.getBuildingType());
 		double exteriorYLoc = config.getAirlockExteriorYLoc(building.getBuildingType());
 
-		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc, 
+		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc,
 				interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
 	}
 

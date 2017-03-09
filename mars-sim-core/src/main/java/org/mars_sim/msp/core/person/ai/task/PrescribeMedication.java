@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.07 2015-02-17
+ * @version 3.1.0 2017-03-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -51,7 +51,7 @@ implements Serializable {
 
 	private static final double AVERAGE_MEDICAL_WASTE = .1;
 	private static final String TOXIC_WASTE = "toxic waste";
-	
+
     /** Task phases. */
     private static final TaskPhase MEDICATING = new TaskPhase(Msg.getString(
             "Task.phase.medicating")); //$NON-NLS-1$
@@ -70,62 +70,62 @@ implements Serializable {
 	public PrescribeMedication(Person person) {
         // Use task constructor.
         super(NAME, person, true, false, STRESS_MODIFIER, true, 10D);
-        
+
         // Determine patient needing medication.
         patient = determinePatient(person);
         if (patient != null) {
             // Determine medication to prescribe.
             medication = determineMedication(patient);
-            
+
             // If in settlement, move doctor to building patient is in.
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                
+
                 // Walk to patient's building.
                 walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
-            
+
             logger.info(person.getName() + " is prescribing " + medication.getName()
-                    + " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName() 
+                    + " to " + patient.getName() + " in " + patient.getBuildingLocation().getNickName()
                     + " at " + patient.getSettlement());
         }
         else {
             endTask();
         }
-        
+
         // Initialize phase
         addPhase(MEDICATING);
         setPhase(MEDICATING);
     }
-    
+
 	public PrescribeMedication(Robot robot) {
         // Use task constructor.
         super(NAME, robot, true, false, STRESS_MODIFIER, true, 10D);
-        
+
         // Determine patient needing medication.
         patient = determinePatient(robot);
         if (patient != null) {
             // Determine medication to prescribe.
             medication = determineMedication(patient);
-            
+
             // If in settlement, move doctor to building patient is in.
             if (robot.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                
+
                 // Walk to patient's building.
                 walkToRandomLocInBuilding(BuildingManager.getBuilding(patient), false);
             }
-            
-            logger.info(robot.getName() + " prescribing " + medication.getName() + 
+
+            logger.info(robot.getName() + " prescribing " + medication.getName() +
                     " to " + patient.getName());
         }
         else {
             endTask();
         }
-        
+
         // Initialize phase
         addPhase(MEDICATING);
         setPhase(MEDICATING);
     }
-    
+
     /**
      * Determines if there is a patient nearby needing medication.
      * @param doctor the doctor prescribing the medication.
@@ -133,7 +133,7 @@ implements Serializable {
      */
     public static Person determinePatient(Person doctor) {
         Person result = null;
-        
+
         // Get possible patient list.
         // Note: Doctor can also prescribe medication for himself.
         Collection<Person> patientList = null;
@@ -148,7 +148,7 @@ implements Serializable {
                 patientList = crewVehicle.getCrew();
             }
         }
-        
+
         // Determine patient.
         if (patientList != null) {
             Iterator<Person> i = patientList.iterator();
@@ -163,13 +163,13 @@ implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     public static Person determinePatient(Robot doctor) {
         Person result = null;
-        
+
         // Get possible patient list.
         // Note: Doctor can also prescribe medication for himself.
         Collection<Person> patientList = null;
@@ -184,7 +184,7 @@ implements Serializable {
                 patientList = crewVehicle.getCrew();
             }
         }
-        
+
         // Determine patient.
         if (patientList != null) {
             Iterator<Person> i = patientList.iterator();
@@ -199,11 +199,11 @@ implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
-    
-  
+
+
     /**
      * Determines a medication for the patient.
      * @param patient the patient to medicate.
@@ -213,25 +213,25 @@ implements Serializable {
         // Only allow anti-stress medication for now.
         return new AntiStressMedication(patient);
     }
-    
+
     /**
      * Performs the medicating phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      */
     private double medicatingPhase(double time) {
-        
+
         // If duration, provide medication.
         if (getDuration() <= (getTimeCompleted() + time)) {
             if (patient != null) {
                 if (medication != null) {
                     PhysicalCondition condition = patient.getPhysicalCondition();
-                    
+
                     // Check if patient already has taken medication.
                     if (!condition.hasMedication(medication.getName())) {
                         // Medicate patient.
                         condition.addMedication(medication);
-                        
+
                         produceMedicalWaste();
                     }
                 }
@@ -239,36 +239,36 @@ implements Serializable {
             }
             else throw new IllegalStateException ("patient is null");
         }
-        
+
         // Add experience.
         addExperience(time);
-        
+
         return 0D;
     }
 
-	
+
 	public void produceMedicalWaste() {
 	    Unit containerUnit = null;
-		if (person != null) 
+		if (person != null)
 		       containerUnit = person.getContainerUnit();
 		else if (robot != null)
 			containerUnit = robot.getContainerUnit();
-        
+
         if (containerUnit != null) {
             Inventory inv = containerUnit.getInventory();
             storeAnResource(AVERAGE_MEDICAL_WASTE, TOXIC_WASTE, inv);
-            //System.out.println("PrescribeMedication.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);  
+            //System.out.println("PrescribeMedication.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);
 	     }
 	}
-	
-	   
+
+
 	// 2015-02-06 Added storeAnResource()
 	public boolean storeAnResource(double amount, String name, Inventory inv) {
 		boolean result = false;
 		try {
-			AmountResource ar = AmountResource.findAmountResource(name);      
+			AmountResource ar = AmountResource.findAmountResource(name);
 			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, false, false);
-			
+
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the amount, set remaining capacity to full
 				amount = remainingCapacity;
@@ -283,10 +283,10 @@ implements Serializable {
 		} catch (Exception e) {
     		logger.log(Level.SEVERE,e.getMessage());
 		}
-		
+
 		return result;
-	}	    
-    
+	}
+
     @Override
     protected void addExperience(double time) {
         // Add experience to "Medical" skill
@@ -294,20 +294,20 @@ implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 10D;
         int experienceAptitude = 0;
-		if (person != null) 
+		if (person != null)
 			experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-		            NaturalAttribute.EXPERIENCE_APTITUDE);		       			
+		            NaturalAttribute.EXPERIENCE_APTITUDE);
 		else if (robot != null)
 			experienceAptitude = robot.getRoboticAttributeManager().getAttribute(
 					RoboticAttribute.EXPERIENCE_APTITUDE);
-        
+
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-		if (person != null) 
-			person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);			
+		if (person != null)
+			person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);
 		else if (robot != null)
 			robot.getBotMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);
-		
+
     }
 
     @Override
@@ -320,11 +320,11 @@ implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
     	SkillManager manager = null;
-		if (person != null) 
-		    manager = person.getMind().getSkillManager();			
+		if (person != null)
+		    manager = person.getMind().getSkillManager();
 		else if (robot != null)
 			manager = robot.getBotMind().getSkillManager();
-        
+
 		return manager.getEffectiveSkillLevel(SkillType.MEDICINE);
     }
 
@@ -340,11 +340,11 @@ implements Serializable {
             return time;
         }
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         patient = null;
         medication = null;
     }

@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * nimrodskin.css
  * General CSS classes for MSP UI
- * @version 3.08 2015-01-27
+ * @version 3.1.0 2017-03-08
  * @author Lars Næsbye Christensen
  */
 
@@ -84,7 +84,7 @@
 
 
 .button-broadcast{
-    -fx-background-color: 
+    -fx-background-color:
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
         linear-gradient(#ffea6a, #efaa22),
@@ -106,7 +106,7 @@
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     -fx-text-fill: #f4f13f;
-    -fx-background-color: transparent;    
+    -fx-background-color: transparent;
 /*    -fx-fill            : transparent;    */
 }
 
@@ -115,7 +115,7 @@
     -fx-font-size       : 1.0em;
     -fx-font-family : "Liberation Mono";
     -fx-content-display : left;
-    -fx-graphic-text-gap: 7;	
+    -fx-graphic-text-gap: 7;
     -fx-text-fill       : -foreground-color;
     -fx-background-color: transparent;
 }
@@ -144,7 +144,7 @@
 }
 
 .label-large {
-    -fx-background-color: 
+    -fx-background-color:
         linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
         linear-gradient(#020b02, #3a3a3a),
         linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
@@ -159,13 +159,13 @@
 }
 
 .label-medium {
-    -fx-background-color: 
-        linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
+    -fx-background-color:
+        linear-gradient(#686868 0%, #232723 25%, #c1bf9d 75%, #757575 100%),
         linear-gradient(#020b02, #3a3a3a),
-        linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
-        linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #d7d7d7 100%);
+        linear-gradient(#c1bf9d 0%, #c2c2c2 20%, #c1bf9d 80%, #c8c8c8 100%),
+        linear-gradient(#f5f5f5 0%, #dbdbdb 50%, #cacaca 51%, #c1bf9d 100%);
     -fx-background-insets: 1,1,1,1;
-    -fx-background-radius: 2,2,2,2;
+    -fx-background-radius: 5,5,5,5;
     -fx-padding: 5 5 5 5;
     -fx-font-family: "Helvetica";
     -fx-font-size: 14px;
@@ -175,7 +175,7 @@
 }
 
 .label-small {
-    -fx-background-color: 
+    -fx-background-color:
         linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
         linear-gradient(#020b02, #3a3a3a),
         linear-gradient(#b9b9b9 0%, #c2c2c2 20%, #afafaf 80%, #c8c8c8 100%),
@@ -193,15 +193,15 @@
 	-fx-background-color: #c1bf9d;
     -fx-border-insets: 5;
     -fx-border-width: 2;
-    
+
 }
 
 .jfx-toggle-button:focused,
 .jfx-toggle-button:selected,
 .jfx-toggle-button:selected:focused {
-  	-fx-toggle-color: #00cc66;
+  	-fx-toggle-color: yellow;
     -fx-background-color: transparent;
-    -fx-text-fill: #00cc66;
+    -fx-text-fill: yellow;
     -fx-font-weight: bold;
 }
 
@@ -211,23 +211,17 @@
 }
 
 .jfx-button {
-	-fx-toggle-color: #00ff00;
+	-fx-toggle-color: #f8c202;
 }
 
 .jfx-slider {
-  	-fx-background-color: #00ff00;
+  	-fx-background-color: white;
   	-fx-snap-to-ticks : true;
     -fx-font-size: 14px;
-    -fx-text-fill: #00ff00;  
+    -fx-text-fill: white;
 }
 
-/*******************************************************************************
- *                                                                             *
- * JFX Slider                                                                  *
- *                                                                             *
- ******************************************************************************/
-
-.svg-slider .thumb{
+.jfx-slider .svg-slider .thumb{
 	-fx-stroke : black;
 	-fx-fill : black;
 }
@@ -235,18 +229,12 @@
 	-fx-opacity: 0.4;
 }
 
-/*******************************************************
-*                           						   *
-* For the main demo sliders 						   *
-*                          							   *
-*******************************************************/
-
 .jfx-slider-style {
 	-fx-indicator-position: right;
 }
 
 .jfx-slider-style > .thumb {
-	-fx-background-color:#03a9f4;
+	-fx-background-color: grey;
 }
 
 .jfx-slider-style .track {
@@ -260,25 +248,36 @@
 	-fx-font-size: 12.0;
 }
 
-.combo-box-base  
+.jfx-popup-container{
+	-fx-background-color: black;
+	-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));
+    -fx-background-radius: 10px;
+	-fx-text-fill: yellow;
+	-fx-border-color: transparent;
+	-fx-border-radius: 10px;
+	-fx-border-width: 3px;
+	-fx-border-style: solid;
+}
+
+.combo-box-base
 {
     -fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";
     -fx-background-color: transparent, transparent, transparent, transparent;
-    -fx-text-fill: white;    
+    -fx-text-fill: white;
     -fx-background-radius: 5, 5, 5, 5;
     -fx-background-insets: 0 0 0 0, 0, 0, 0;
     -fx-padding: 0;
-    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);    
+    -fx-effect: dropshadow( three-pass-box , rgba(255,255,255,0.2) , 1, 0.0 , 0 , 1);
 }
 
-.jfx-combo-box .list-cell 
+.jfx-combo-box .list-cell
 {
 	-fx-font-size: 15.0;
 	-fx-background: white;
     -fx-background-color: transparent;
     -fx-text-fill: yellow;
     -fx-padding: 2 2 2 2;
-    -fx-cell-size: 1.66667em; 
+    -fx-cell-size: 1.66667em;
 }
 
 .check-box {
@@ -292,7 +291,7 @@
 	-fx-background-insets: 0,1,2;
     -fx-background-radius: 0 0 13 0;
     -fx-padding: 0.333333em 0.666667em 0.333333em 0.666667em; /* 4 8 4 8 */
-    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );	
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 8, 0.0 , 0 , 0 );
 }
 
 .page-corner {
@@ -302,11 +301,11 @@
 .jfx-snackbar-content {
 	-fx-background-color: white; /* #323232; */
     -fx-padding: 5;
-    -fx-spacing: 5;	
+    -fx-spacing: 5;
 }
 
 .jfx-snackbar-toast {
-	-fx-text-fill: black;	
+	-fx-text-fill: black;
 }
 
 .jfx-snackbar-action {
@@ -314,7 +313,7 @@
 }
 
 #rich-blue {
-    -fx-background-color: 
+    -fx-background-color:
         #000000,
         linear-gradient(#7ebcea, #2f4b8f),
         linear-gradient(#426ab7, #263e75),
@@ -331,7 +330,7 @@
 }
 
 #rich-orange {
-    -fx-background-color: 
+    -fx-background-color:
         #000000,
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),
@@ -350,7 +349,7 @@
 }
 
 #button-orange {
-    -fx-background-color: 
+    -fx-background-color:
         #000000,
         linear-gradient(#ffd65b, #e68400),
         linear-gradient(#ffef84, #f2ba44),

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Complaint.java
- * @version 3.07 2014-11-13
+ * @version 3.1.0 2017-03-09
  * @author Barry Evans
  */
 
@@ -19,7 +19,7 @@ public class Complaint implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /**
      * The maximum probability rating. This allows the complaint to be specified
      * to 1/10th of a percentage.
@@ -58,15 +58,15 @@ public class Complaint implements Serializable {
      * @param recoveryTreatment Any treatment that is needed for recovery.
      * @param next The complaint that this degrades into unless checked.
      */
-    Complaint(//String name, 
+    Complaint(//String name,
     		ComplaintType type,
     		int seriousness,
-                             double degrade, 
+                             double degrade,
                              double recovery,
                              double probability,
                              double performance,
                              boolean bedRestRecovery,
-                             Treatment recoveryTreatment, 
+                             Treatment recoveryTreatment,
                              Complaint next) {
         //this.name = name;
         this.type = type;
@@ -81,7 +81,7 @@ public class Complaint implements Serializable {
         this.probability = probability;
         this.recoveryTreatment = recoveryTreatment;
     }
-    
+
     /**
      * Constructor using string to store next complaint.
      * @param name name of complaint
@@ -94,11 +94,11 @@ public class Complaint implements Serializable {
      * @param performance performance factor
      * @param bedRestRecovery True if bed rest is required during recovery.
      */
-    Complaint(//String name, 
+    Complaint(//String name,
     		ComplaintType type,
-    		int seriousness, double degrade, double recovery, 
-    		double probability, Treatment recoveryTreatment, 
-    		//String nextStr, 
+    		int seriousness, double degrade, double recovery,
+    		double probability, Treatment recoveryTreatment,
+    		//String nextStr,
     		ComplaintType nextStr,
     		double performance, boolean bedRestRecovery) {
     	//this.name = name;
@@ -110,7 +110,7 @@ public class Complaint implements Serializable {
 		this.probability = probability;
 		this.bedRestRecovery = bedRestRecovery;
 		this.recoveryTreatment = recoveryTreatment;
-		this.nextPhaseStr = nextStr; 
+		this.nextPhaseStr = nextStr;
     }
 
 	/**
@@ -145,7 +145,7 @@ public class Complaint implements Serializable {
         return type;
     }
 
-    
+
     /**
      * Get the next complaint that this complaint developers into.
      * @return The next complaint, if null then death results.
@@ -153,7 +153,7 @@ public class Complaint implements Serializable {
     public Complaint getNextPhase() {
         return nextPhase;
     }
-    
+
     /**
      * Gets the next complaintType.
      * @return complaint type
@@ -193,7 +193,7 @@ public class Complaint implements Serializable {
     public double getRecoveryPeriod() {
         return recoveryPeriod;
     }
-    
+
     /**
      * Checks if recovery requires bed rest.
      * @return true if bed rest required.

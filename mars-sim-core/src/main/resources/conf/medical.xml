@@ -8,11 +8,11 @@
 	<medical-complaint-list>
 
 		<!-- Appendicitis is a painful infection of the appendix,
-		     which, if left untreated, can lead to a ruptured appendix. 
+		     which, if left untreated, can lead to a ruptured appendix.
 
-		     WARNINGT : the name of the medical-complaint must not be changed		     
+		     WARNINGT : the name of the medical-complaint must not be changed
 		-->
-		
+
 		<medical-complaint name="Appendicitis">
 
 			<!-- Seriousness of complaint (required) -->
@@ -25,9 +25,9 @@
 			<!-- Recovery time (once cured, if necessary) (sols) (required) -->
 			<recovery-time value="14.0" />
 
-			<!-- Random probability of this complaint occurring on its own. (required) 
+			<!-- Random probability of this complaint occurring on its own. (required)
 				if > 0, use checkForRandomAilments() in PhysicalCondition to create this ailment,
-				regardless the situation, 
+				regardless the situation,
 				if = 0.0, use other means -->
 			<!-- Values: 0.0 (no chance) to 100.0 (very likely) -->
 			<probability value="0.5" />
@@ -241,7 +241,7 @@
 			<probability value="0.0" />
 			<performance-percent value="10.0" />
 			<bed-rest-recovery value="true" />
-			<treatment-type value="Hospitalization" />			
+			<treatment-type value="Hospitalization" />
 		</medical-complaint>
 
 
@@ -253,7 +253,7 @@
 			<probability value="2.0" />
 			<performance-percent value="40.0" />
 			<bed-rest-recovery value="true" />
-			<treatment-type value="Hospitalization" />			
+			<treatment-type value="Hospitalization" />
 		</medical-complaint>
 
 		<!-- 2016-06-16 Heartburn occurs in stressful situations. (This should vary according to the individual)-->
@@ -263,12 +263,26 @@
 			<recovery-time value="0.5" />
 			<probability value="5.0" />
 			<performance-percent value="80.0" />
-			<bed-rest-recovery value="false" />		
+			<bed-rest-recovery value="false" />
+		</medical-complaint>
+
+		<!-- 2017-03-09 Add Hypoxemia
+				Hypoxemia refers to insufficient oxygen in the blood. Thus any cause that influences the rate or volume
+				 of air entering the lungs (ventilation) or any cause that influences the transfer of air from the
+				 lungs to the blood may cause hypoxemia.-->
+		<!-- The effects do not last long.-->
+		<medical-complaint name="Hypoxemia">
+			<seriousness value="80" />
+			<recovery-time value="1.5" />
+			<probability value="1.0" />
+			<performance-percent value="20.0" />
+			<bed-rest-recovery value="true" />
+			<treatment-type value="Hospitalization" />
 		</medical-complaint>
 
 <!-- Future:
 	1. Medium cut ?
-	2. 
+	2.
 	3.
 	4.
 -->
@@ -355,7 +369,7 @@
         	<treatment-time value="1.0" />
         	<self-admin value="true" />
         </treatment>
-        
+
 	</treatment-list>
 
 </medical>

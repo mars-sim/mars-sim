@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.07 2015-02-27
+ * @version 3.1.0 2017-03-09
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -448,7 +448,7 @@ implements Serializable {
 		return result;
 	}
 */
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -98,6 +98,9 @@ implements Serializable, LifeSupportType, Objective {
 	private static final int RESOURCE_STAT_SOLS = 12;
 	private static final int SOL_SLEEP_PATTERN_REFRESH = 3;
 
+	public static double water_consumption;
+	public static double minimum_air_pressure;
+
 	/*
 	 * Amount of time (millisols) required for periodic maintenance. private
 	 * static final double MAINTENANCE_TIME = 1000D;
@@ -156,12 +159,12 @@ implements Serializable, LifeSupportType, Objective {
 	private String name;
 	//private ObservableList<String> objectivesOList;
 	private final String[] objectiveArray = new String[]{
-			Msg.getString("ObjectiveType.crop")
-			, Msg.getString("ObjectiveType.manu")
-			, Msg.getString("ObjectiveType.research")
-			, Msg.getString("ObjectiveType.transportation")
-			, Msg.getString("ObjectiveType.trade")
-			, Msg.getString("ObjectiveType.freeMarket")
+			Msg.getString("ObjectiveType.crop"),
+			Msg.getString("ObjectiveType.manu"),
+			Msg.getString("ObjectiveType.research"),
+			Msg.getString("ObjectiveType.transportation"),
+			Msg.getString("ObjectiveType.trade"),
+			Msg.getString("ObjectiveType.freeMarket")
 			};
 
 	//private int[] resourceArray = new int[9];
@@ -182,14 +185,19 @@ implements Serializable, LifeSupportType, Objective {
 	// 2014-10-17 Added heating system
 	/** The settlement's heating system. */
 	protected ThermalSystem thermalSystem;
-	private Inventory inv;
+	private Inventory inv = getInventory();
 	private ChainOfCommand chainOfCommand;
 	private CompositionOfAir compositionOfAir;
 
 	private static Simulation sim = Simulation.instance();
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MissionManager missionManager = sim.getMissionManager();
-	private static PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
+
+	//public AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
+	//public AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
+	//public AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER); //waterAR;//
+	//public AmountResource carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
+
 
 	private Weather weather;// = sim.getMars().getWeather();
 	private MarsClock marsClock;// = sim.getMasterClock().getMarsClock();
@@ -205,11 +213,11 @@ implements Serializable, LifeSupportType, Objective {
 	// 2016-12-22 Added allAssociatedRobots
 	private Collection<Robot> allAssociatedRobots = new ConcurrentLinkedQueue<Robot>();
 
-	// constructor 0
+	// constructor 0 for ConstructionStageTest
 	public Settlement() {
 		super(null, null);
 		unitManager = Simulation.instance().getUnitManager();
-		inv = getInventory();
+		//inv = getInventory();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
@@ -249,7 +257,7 @@ implements Serializable, LifeSupportType, Objective {
 			unitManager = Simulation.instance().getUnitManager();
 		if (missionManager == null) // for passing maven test
 			missionManager = Simulation.instance().getMissionManager();
-		inv = getInventory();
+		//inv = getInventory();
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		//updateAllAssociatedPeople(); // comment out to pass maven test
 		//updateAllAssociatedRobots(); // comment out to pass maven test
@@ -277,14 +285,19 @@ implements Serializable, LifeSupportType, Objective {
 		marsClock = sim.getMasterClock().getMarsClock();
 		weather = sim.getMars().getWeather();
 
-		inv = getInventory();
+		//inv = getInventory();
 		unitManager = Simulation.instance().getUnitManager();
+
+		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+		water_consumption = personConfig.getWaterConsumptionRate();
+        minimum_air_pressure = personConfig.getMinAirPressure();
+
 		// 2016-12-21 Call updateAllAssociatedPeople()
 		updateAllAssociatedPeople();
 		updateAllAssociatedRobots();
 
 		// Set inventory total mass capacity.
-		inv.addGeneralCapacity(Double.MAX_VALUE);
+		getInventory().addGeneralCapacity(Double.MAX_VALUE);
 		// Initialize building manager
 		buildingManager = new BuildingManager(this);
 		// Initialize building connector manager.
@@ -536,18 +549,20 @@ implements Serializable, LifeSupportType, Objective {
 		//if (AmountResource.oxygenAR == null)
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 		//	oxygenAR = LifeSupportType.oxygenAR;
+		//if (oxygenAR == null) System.out.println("o2");
 		if (inv.getAmountResourceStored(oxygenAR, false) <= 0D)
 			return false;
 
 		//if (AmountResource.waterAR == null)
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 		//	waterAR = LifeSupportType.waterAR;
+		//if (waterAR == null) System.out.println("h2o");
 		if (inv.getAmountResourceStored(waterAR, false) <= 0D)
 			return false;
 
 
 		// TODO: check against indoor air pressure
-		if (getAirPressure() <= 25331.25)// NORMAL_AIR_PRESSURE) ?
+		if (getAirPressure() <= minimum_air_pressure)// 25331.25)// NORMAL_AIR_PRESSURE) ?
 			return false;
 		// result = false;
 		// TODO: check if this is working
@@ -580,6 +595,7 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideOxygen(double amountRequested) {
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenTaken = amountRequested;
+		//if (oxygenAR == null) System.out.println("o2");
 		double oxygenLeft = inv.getAmountResourceStored(oxygenAR, false);
 		if (oxygenTaken > oxygenLeft)
 			oxygenTaken = oxygenLeft;
@@ -717,6 +733,7 @@ implements Serializable, LifeSupportType, Objective {
 	 *             if error during time passing.
 	 */
 	public void timePassing(double time) {
+		inv = getInventory();
 /*
         int m = (int) marsClock.getMillisol();
         if (millisolCache != m) {
@@ -3021,7 +3038,7 @@ implements Serializable, LifeSupportType, Objective {
         double storedWater = inv.getAmountResourceStored(waterAR, false);
 
         //PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
-        double requiredDrinkingWaterOrbit = personconfig.getWaterConsumptionRate() * getCurrentPopulationNum() *
+        double requiredDrinkingWaterOrbit = water_consumption * getCurrentPopulationNum() *
                 MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 
         // If stored water is less than 10% of required drinking water for Orbit, wash water should be rationed.
@@ -3206,9 +3223,9 @@ implements Serializable, LifeSupportType, Objective {
 		thermalSystem = null;
 
 		template = null;
-		if (scientificAchievement != null) {
-			scientificAchievement.clear();
-		}
+		//if (scientificAchievement != null) {
+		//	scientificAchievement.clear();
+		//}
 		scientificAchievement = null;
 	}
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedicationMeta.java
- * @version 3.08 2015-06-08
+ * @version 3.1.0 2017-03-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -25,7 +25,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.prescribeMedication"); //$NON-NLS-1$
@@ -61,7 +61,7 @@ public class PrescribeMedicationMeta implements MetaTask, Serializable {
                 if (result > 0D) {
                     result = result + result * person.getPreference().getPreferenceScore(this)/5D;
                 }
-                
+
                 if (result < 0) result = 0;
             }
         }

@@ -29,6 +29,8 @@ import org.mars_sim.msp.core.robot.RobotType;
 import org.mars_sim.msp.core.robot.ai.BotMind;
 import org.mars_sim.msp.core.robot.ai.job.RobotJob;
 import org.mars_sim.msp.core.robot.ai.task.BotTaskManager;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class represents the status of a Person when death occurs. It records
@@ -84,15 +86,17 @@ implements Serializable {
         Complaint serious = person.getPhysicalCondition().getMostSerious();
         if (serious != null) illness = serious.getType();
 
-        //if (person.getLocationSituation() == LocationSituation.DEAD)
-        //	placeOfDeath = "Outside " + person.getBuriedSettlement();
-        //else if (person.getLocationSituation() == LocationSituation.OUTSIDE)
-        //	placeOfDeath = "Outside " + person.getBuriedSettlement();
-        //else {
+        if (person.getLocationSituation() == LocationSituation.DEAD)
+        	placeOfDeath = "On Mars";
+        else if (person.getLocationSituation() == LocationSituation.OUTSIDE)
+        	placeOfDeath = "On Mars";
+        else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
+        	placeOfDeath = "" + person.getBuriedSettlement();
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
         	// such as died inside a vehicle
             containerUnit = person.getContainerUnit();
             placeOfDeath = containerUnit.getName();
-        //}
+        }
 
         locationOfDeath = person.getCoordinates();
 

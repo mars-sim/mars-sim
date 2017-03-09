@@ -122,7 +122,7 @@ public class MainMenu {
 	private static Logger logger = Logger.getLogger(MainMenu.class.getName());
 
 	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-	
+
     private static final int WIDTH = 1024;//768-20;
     private static final int HEIGHT = 768-50;
 
@@ -155,7 +155,7 @@ public class MainMenu {
 	public MainMenuController mainMenuController;
 
 	public SpinningGlobe spinningGlobe;
-	
+
     public MainMenu() {//MarsProjectFX marsProjectFX) {
        	//logger.info("MainMenu's constructor is on " + Thread.currentThread().getName());
     	//this.marsProjectFX = marsProjectFX;
@@ -259,15 +259,15 @@ public class MainMenu {
 	   stage.setTitle(Simulation.title);
        stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
        //NOTE: OR use svg file with stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab.svg").toString()));
-       stage.setScene(mainMenuScene);     
+       stage.setScene(mainMenuScene);
        //2016-02-07 Added calling setMonitor()
-       setMonitor(stage);   
+       setMonitor(stage);
        stage.centerOnScreen();
        stage.show();
 
    }
 
-	
+
 	public void setupMainSceneStage() {
 	       mainSceneStage = new Stage();
 	       mainSceneStage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
@@ -289,61 +289,61 @@ public class MainMenu {
    public void runOne() {
 	   //logger.info("MainMenu's runOne() is on " + Thread.currentThread().getName());
 	   stage.setIconified(true);
-	   stage.hide(); 
+	   stage.hide();
 	   // creates a mainScene instance
 	   mainScene = new MainScene(mainSceneStage);
 
-	   
+
 	   //marsProjectFX.handleNewSimulation();
-	   //logger.info("Creating a new sim in " + OS);	
+	   //logger.info("Creating a new sim in " + OS);
        try {
     	   //SimulationConfig.loadConfig(); // located to prepare()
     	   // goes to scenario config editor
     	   Simulation.instance().getSimExecutor().execute(new ConfigEditorTask());
-           	
+
        } catch (Exception e) {
     	   e.printStackTrace();
     	   exitWithError("Error : could not create a new simulation ", e);
        }
    }
 
-	public class ConfigEditorTask implements Runnable { 	
+	public class ConfigEditorTask implements Runnable {
 		  public void run() {
 			  //logger.info("MarsProjectFX's ConfigEditorTask's run() is on " + Thread.currentThread().getName() );
-			  new ScenarioConfigEditorFX(mainMenu); //marsProjectFX, 
+			  new ScenarioConfigEditorFX(mainMenu); //marsProjectFX,
 		  }
 	}
-	
+
    public void runTwo() {
 	   //logger.info("MainMenu's runTwo() is on " + Thread.currentThread().getName());
 	   mainMenuScene.setCursor(Cursor.WAIT);
-		
+
 	   stage.setIconified(true);
 	   stage.hide();
-		
+
 	   loadSim(null);
-	   
+
        mainMenuScene.setCursor(Cursor.DEFAULT); //Change cursor to default style
-	   
+
    }
 
 
    /*
     * Loads the simulation file via the terminal or FileChooser.
-    *  
+    *
     * @param selectedFile the saved sim
     */
    public void loadSim(File selectedFile) {
 	   //logger.info("MainMenu's loadSim() is on " + Thread.currentThread().getName());
 	   Platform.runLater(() -> mainScene = new MainScene(mainSceneStage));
-	
+
 	   String dir = Simulation.DEFAULT_DIR;
 	   String title = null;
 
 	   try {
-		   
+
 		   if (selectedFile == null) {
-			   
+
 			   FileChooser chooser = new FileChooser();
 				// chooser.setInitialFileName(dir);
 				// Set to user directory or go to default if cannot access
@@ -351,53 +351,53 @@ public class MainMenu {
 			   File userDirectory = new File(dir);
 			   chooser.setInitialDirectory(userDirectory);
 			   chooser.setTitle(title); // $NON-NLS-1$
-	
+
 				// Set extension filter
 			   FileChooser.ExtensionFilter simFilter = new FileChooser.ExtensionFilter(
 						"Simulation files (*.sim)", "*.sim");
 			   FileChooser.ExtensionFilter allFilter = new FileChooser.ExtensionFilter(
 						"all files (*.*)", "*.*");
-	
+
 			   chooser.getExtensionFilters().addAll(simFilter, allFilter);
-	
+
 			   // Show open file dialog
-			   selectedFile = chooser.showOpenDialog(stage); 
+			   selectedFile = chooser.showOpenDialog(stage);
 		   }
-		   
+
 		   else {
 	   			// if user wants to load the default saved sim
-			   
+
 		   }
-  
+
 	   } catch (NullPointerException e) {
 	       System.err.println("NullPointerException in loading sim. " + e.getMessage());
 	       Platform.exit();
-	       System.exit(1); 	  
-	       
+	       System.exit(1);
+
 	   } catch (Exception e) {
 	       System.err.println("Exception in loading sim. " + e.getMessage());
 	       Platform.exit();
-	       System.exit(1); 
-	   }	   
-	   
+	       System.exit(1);
+	   }
+
 	   if (selectedFile != null) {
-			
+
 			final File fileLocn = selectedFile;
-		
+
 			Platform.runLater(() -> {
 				mainScene.createIndicator();
 				mainScene.showWaitStage(MainScene.LOADING);
 			});
-			
+
 			CompletableFuture.supplyAsync(() -> submitTask(fileLocn, false));
-	        
+
 		}
-	   
-		else {			
+
+		else {
 			logger.info("No file was selected. Loading is cancelled");
 	        Platform.exit();
 	        System.exit(1);
-			//return;		
+			//return;
 		}
 
    }
@@ -406,32 +406,32 @@ public class MainMenu {
 		Simulation.instance().getSimExecutor().execute(new LoadSimulationTask(fileLocn, autosaveDefaultName));
 		return 1;
 	}
-   
+
 	/*
-	 * Loads the rest of the methods in MainScene. 
+	 * Loads the rest of the methods in MainScene.
 	*/
    public void finalizeMainScene() {
-	   
+
 		Platform.runLater(() -> {
-	   
+
 			prepareScene();
-			
-			mainScene.initializeTheme();						
+
+			mainScene.initializeTheme();
 			mainScene.prepareOthers();
 			//2016-02-07 Added calling setMonitor() for screen detection
 			// Note: setMonitor is needed for placing quotation pop at top right corner
 			setMonitor(mainSceneStage);
 			//mainSceneStage.setResizable(false);
 			mainSceneStage.centerOnScreen();
-			mainSceneStage.setTitle(Simulation.title);		
+			mainSceneStage.setTitle(Simulation.title);
 			mainSceneStage.show();
 			mainSceneStage.requestFocus();
 
-			mainScene.openInitialWindows();		   
-			   
+			mainScene.openInitialWindows();
+
 			mainScene.hideWaitStage(MainScene.LOADING);
 		});
-	   
+
    }
 
    /*
@@ -441,37 +441,38 @@ public class MainMenu {
 	public class LoadSimulationTask implements Runnable {
 		File fileLocn;
 		boolean autosaveDefaultName;
-		
+
 		LoadSimulationTask(File fileLocn, boolean autosaveDefaultName){
 			this.fileLocn = fileLocn;
 			this.autosaveDefaultName = autosaveDefaultName;
 		}
-		
+
 		public void run() {
 			//logger.info("LoadSimulationTask is on " + Thread.currentThread().getName() + " Thread");
-			
+
+			Simulation sim = Simulation.instance();
    			// Initialize the simulation.
-			Simulation.instance().createNewSimulation(); 
-			
+			sim.createNewSimulation();
+
 			try {
 				// Loading settlement data from the default saved simulation
-				Simulation.instance().loadSimulation(fileLocn); // null means loading "default.sim"
-			
+				sim.loadSimulation(fileLocn); // null means loading "default.sim"
+
 	        } catch (Exception e) {
 	            //e.printStackTrace();
 	            exitWithError("Error : could not create a new simulation ", e);
 	        }
-			
-			Simulation.instance().start(autosaveDefaultName);
-			
-			while (Simulation.instance().getMasterClock() == null)
+
+			sim.start(autosaveDefaultName);
+
+			while (sim.getMasterClock() == null)
 				try {
 					TimeUnit.MILLISECONDS.sleep(200L);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			
+
 			finalizeMainScene();
 		}
 	}
@@ -485,13 +486,13 @@ public class MainMenu {
 		//mainScene.prepareMainScene();
 		UIConfig.INSTANCE.useUIDefault();
 		// creates and initialize scene
-		Scene mainSceneScene = mainScene.initializeScene();	
+		Scene mainSceneScene = mainScene.initializeScene();
 		// switch from the main menu's scene to the main scene's scene
 		mainSceneStage.setScene(mainSceneScene);
 
 	}
 
-	
+
    public void runThree() {
 	   //logger.info("MainMenu's runThree() is on " + Thread.currentThread().getName() + " Thread");
 	   Simulation.instance().getSimExecutor().submit(new MultiplayerTask());
@@ -550,34 +551,34 @@ public class MainMenu {
 		   if (myScreenController instanceof MainMenuController )
 			   mainMenuController = (MainMenuController) myScreenController;
    }
-   
+
 	public void chooseScreen(int num) {
-		
-		ObservableList<Screen> screens = Screen.getScreens();//.getScreensForRectangle(xPos, yPos, 1, 1); 
+
+		ObservableList<Screen> screens = Screen.getScreens();//.getScreensForRectangle(xPos, yPos, 1, 1);
     	Screen currentScreen = screens.get(num);
 		Rectangle2D rect = currentScreen.getVisualBounds();
-		
+
 		Screen primaryScreen = Screen.getPrimary();
 	}
-	
+
 	public void setMonitor(Stage stage) {
 		// Issue: how do we tweak mars-sim to run on the "active" monitor as chosen by user ?
 		// "active monitor is defined by whichever computer screen the mouse pointer is or where the command console that starts mars-sim.
 		// by default MSP runs on the primary monitor (aka monitor 0 as reported by windows os) only.
-		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762 
+		// see http://stackoverflow.com/questions/25714573/open-javafx-application-on-active-screen-or-monitor-in-multi-screen-setup/25714762#25714762
 
 		if (root == null) {
 	       root = new StackPane();//starfield);
 	       root.setPrefHeight(WIDTH);
 	       root.setPrefWidth(HEIGHT);
 		}
-		
+
 		StartUpLocation startUpLoc = new StartUpLocation(root.getPrefWidth(), root.getPrefHeight());
         double xPos = startUpLoc.getXPos();
         double yPos = startUpLoc.getYPos();
         // Set Only if X and Y are not zero and were computed correctly
-     	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1); 
-     	//ObservableList<Screen> screens = Screen.getScreens();	
+     	//ObservableList<Screen> screens = Screen.getScreensForRectangle(xPos, yPos, 1, 1);
+     	//ObservableList<Screen> screens = Screen.getScreens();
     	//System.out.println("# of monitors : " + screens.size());
 
         if (xPos != 0 && yPos != 0) {
@@ -587,10 +588,10 @@ public class MainMenu {
         } else {
             //System.out.println("calling centerOnScreen()");
             //System.out.println("Monitor 1:    x : " + xPos + "   y : " + yPos);
-        }  
+        }
         stage.centerOnScreen();
 	}
-	
+
 	public Stage getCircleStage() {
 		return circleStage;
 	}
@@ -637,7 +638,7 @@ public class MainMenu {
         	// Warning: cannot load the editor in macosx if it was a JDialog
         //}
     }
- 	
+
 	public void destroy() {
 
 		root = null;
