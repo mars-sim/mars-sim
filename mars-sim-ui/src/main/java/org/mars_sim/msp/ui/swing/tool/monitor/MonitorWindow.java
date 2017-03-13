@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -72,17 +73,24 @@ implements TableModelListener, ActionListener {
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
 	// 2015-06-20 Added an custom icon for each tab
-	public static final String PEOPLE_ICON = "people_32";
-	public static final String BOT_ICON = "bot_32";
-	public static final String BUS_ICON = "bus_32";
-	public static final String BASE_ICON = "base_32";
-	public static final String CARROT_ICON = "carrot_32";
-	public static final String TRASH_ICON = "trash_32";
-	public static final String CENTERMAP_ICON = "centermap_32";
-	public static final String FIND_ICON = "find_32";
-	public static final String BRIEFCASE_ICON = "briefcase_32";
-	public static final String COLUMN_ICON = "column_32";
-	public static final String FILTER_ICON = "filter_32";
+	public static final String BASE_ICON = "base_24";
+	public static final String BOT_ICON = "bot_24";
+	public static final String MISSION_ICON = "briefcase_24";
+	public static final String VEHICLE_ICON = "bus_24";
+	public static final String CROP_ICON = "carrot_24";
+    public static final String EVENT_ICON = "flag_24";
+    public static final String FOOD_ICON = "food_24";
+	public static final String PEOPLE_ICON = "people_24";
+	public static final String TRADE_ICON = "trade_24";
+
+	public static final String TRASH_ICON = "trash_24";
+	public static final String CENTERMAP_ICON = "centermap_24";
+	public static final String FIND_ICON = "find_24";
+	public static final String COLUMN_ICON = "column_24";
+	public static final String FILTER_ICON = "filter_24";
+
+	public static final String BAR_ICON = "bar_24"; //$NON-NLS-1$
+	public static final String PIE_ICON = "pie_24"; //$NON-NLS-1$
 
 	// Data members
 	//private JTabbedPane tabsSection;
@@ -134,28 +142,36 @@ implements TableModelListener, ActionListener {
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
+		// Create a status panel
+		statusPanel = new JPanel();
+		statusPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
+		mainPane.add(statusPanel, BorderLayout.SOUTH);
+
 		// Create toolbar
-		JToolBar toolbar = new JToolBar();
-		toolbar.setFloatable(false);
-		mainPane.add(toolbar, BorderLayout.NORTH);
+		//JToolBar toolbar = new JToolBar();
+		//toolbar.setFloatable(false);
+		//mainPane.add(toolbar, BorderLayout.NORTH);
 
 		// Create graph button
-		buttonPie = new JButton(PieChartTab.PIEICON);
+		buttonPie = new JButton(ImageLoader.getNewIcon(PIE_ICON));
 		buttonPie.setToolTipText(Msg.getString("MonitorWindow.tooltip.singleColumnPieChart")); //$NON-NLS-1$
 		buttonPie.addActionListener(this);
-		toolbar.add(buttonPie);
+		//toolbar
+		statusPanel.add(buttonPie);
 
-		buttonBar = new JButton(BarChartTab.BARICON);
+		buttonBar = new JButton(ImageLoader.getNewIcon(BAR_ICON));
 		buttonBar.setToolTipText(Msg.getString("MonitorWindow.tooltip.multipleColumnBarChart")); //$NON-NLS-1$
 		buttonBar.addActionListener(this);
-		toolbar.add(buttonBar);
+		//toolbar
+		statusPanel.add(buttonBar);
 
 		//buttonRemoveTab = new JButton(ImageLoader.getIcon(Msg.getString("img.tabRemove"))); //$NON-NLS-1$
 		buttonRemoveTab = new JButton(ImageLoader.getNewIcon(TRASH_ICON)); //$NON-NLS-1$
 		buttonRemoveTab.setToolTipText(Msg.getString("MonitorWindow.tooltip.tabRemove")); //$NON-NLS-1$
 		buttonRemoveTab.addActionListener(this);
-		toolbar.add(buttonRemoveTab);
-		toolbar.addSeparator();
+		//toolbar
+		statusPanel.add(buttonRemoveTab);
+		//toolbar.addSeparator();
 
 		// Create buttons based on selection
 		//buttonMap = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
@@ -163,51 +179,58 @@ implements TableModelListener, ActionListener {
 		buttonMap.setMargin(new Insets(3, 4, 4, 4));
 		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
 		buttonMap.addActionListener(this);
-		toolbar.add(buttonMap);
+		//toolbar
+		statusPanel.add(buttonMap);
 
 		//buttonDetails = new JButton(ImageLoader.getIcon(Msg.getString("img.showDetails"))); //$NON-NLS-1$
 		buttonDetails = new JButton(ImageLoader.getNewIcon(FIND_ICON)); //$NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("MonitorWindow.tooltip.showDetails")); //$NON-NLS-1$
 		buttonDetails.addActionListener(this);
-		toolbar.add(buttonDetails);
+		//toolbar
+		statusPanel.add(buttonDetails);
 
 		//buttonMissions = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
-		buttonMissions = new JButton(ImageLoader.getNewIcon(BRIEFCASE_ICON)); //$NON-NLS-1$
+		buttonMissions = new JButton(ImageLoader.getNewIcon(MISSION_ICON)); //$NON-NLS-1$
 		buttonMissions.setToolTipText(Msg.getString("MonitorWindow.tooltip.mission")); //$NON-NLS-1$
 		buttonMissions.addActionListener(this);
-		toolbar.add(buttonMissions);
-		toolbar.addSeparator();
+		//toolbar
+		statusPanel.add(buttonMissions);
+		//toolbar.addSeparator();
 
 		//buttonProps = new JButton(ImageLoader.getIcon(Msg.getString("img.preferences"))); //$NON-NLS-1$
 		buttonProps = new JButton(ImageLoader.getNewIcon(COLUMN_ICON)); //$NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
 		buttonProps.addActionListener(this);
-		toolbar.add(buttonProps);
-		toolbar.addSeparator();
+		//toolbar
+		statusPanel.add(buttonProps);
+		//toolbar.addSeparator();
 
 		//buttonFilter = new JButton(ImageLoader.getIcon(Msg.getString("img.categoryFilter"))); //$NON-NLS-1$
 		buttonFilter = new JButton(ImageLoader.getNewIcon(FILTER_ICON)); //$NON-NLS-1$
 		buttonFilter.setToolTipText(Msg.getString("MonitorWindow.tooltip.categoryFilter")); //$NON-NLS-1$
 		buttonFilter.addActionListener(this);
-		toolbar.add(buttonFilter);
+		//toolbar
+		statusPanel.add(buttonFilter);
 
 		// Create tabbed pane for the table
-		tabsSection = new JideTabbedPane(JideTabbedPane.BOTTOM);
-		tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
-        LookAndFeelFactory.installJideExtension(LookAndFeelFactory.OFFICE2003_STYLE);
+		tabsSection = new JideTabbedPane(JideTabbedPane.TOP);
+		//tabsSection.setTabPlacement(JideTabbedPane.BOTTOM);
+		if (MainScene.OS.contains("win"))
+			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.EXTENSION_STYLE_OFFICE2007);//.OFFICE2003_STYLE);
+		else if (MainScene.OS.contains("mac"))
+			LookAndFeelFactory.installJideExtension();//.OFFICE2003_STYLE);
+		else if (MainScene.OS.contains("linux"))
+			LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE);//.OFFICE2003_STYLE);
+
 		tabsSection.setBoldActiveTab(true);
 		tabsSection.setScrollSelectedTabOnWheel(true);
+		tabsSection.setTabResizeMode(JideTabbedPane.RESIZE_MODE_COMPRESSED);
 		//tabsSection.setTabColorProvider(JideTabbedPane.ONENOTE_COLOR_PROVIDER);
-		tabsSection.setTabShape(JideTabbedPane.SHAPE_WINDOWS_SELECTED);
-		tabsSection.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
+		//tabsSection.setTabShape(JideTabbedPane.BUTTON_EAST);//.SHAPE_WINDOWS_SELECTED);
+		//tabsSection.setColorTheme(JideTabbedPane.COLOR_THEME_OFFICE2003); //COLOR_THEME_VSNET);
 		//tabsSection.setBackground(UIDefaultsLookup.getColor("control"));
 		tabsSection.setForeground(Color.DARK_GRAY);
 		mainPane.add(tabsSection, BorderLayout.CENTER);
-
-		// Create a status panel
-		statusPanel = new JPanel();
-		statusPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 1));
-		mainPane.add(statusPanel, BorderLayout.SOUTH);
 
 		// Status item for row
 		rowCount = new JLabel("  "); //$NON-NLS-1$
@@ -226,7 +249,7 @@ implements TableModelListener, ActionListener {
 		// 2015-01-21 Added RobotTableModel
 		addTab(new UnitTab(this, new RobotTableModel(unitManager, desktop), true, BOT_ICON));
 		// 2014-10-14 mkung: added FoodTableModel
-		addTab(new UnitTab(this, new CropTableModel(unitManager), true, CARROT_ICON));
+		addTab(new UnitTab(this, new CropTableModel(unitManager), true, CROP_ICON));
 		// 2014-11-29 Added notifyBox 2015-01-15 Added desktop
 		eventsTab = new EventTab(this, notifyBox, desktop);
 
@@ -242,7 +265,7 @@ implements TableModelListener, ActionListener {
 
 		addTab(new UnitTab(this, new SettlementTableModel(unitManager), true, BASE_ICON));
 
-		addTab(new UnitTab(this, new VehicleTableModel(unitManager), true, BUS_ICON));
+		addTab(new UnitTab(this, new VehicleTableModel(unitManager), true, VEHICLE_ICON));
 
 		// Open the people tab at the start of the sim
 		tabsSection.setSelectedIndex(6);
@@ -258,23 +281,25 @@ implements TableModelListener, ActionListener {
 		);
 
 
-		// Note: must define a starting size
-		setSize(new Dimension(1280, 680));
-		setResizable(false);
-		setMaximizable(true);	
+		// Note: must use setSize() to define a starting size
+		setSize(new Dimension(1280, 512));
+		setMinimumSize(new Dimension(768, 200));
+		setPreferredSize(new Dimension(1280, 512));
+		setResizable(true);
+		setMaximizable(true);
 
-		if (desktop.getMainScene() != null) {
+		//if (desktop.getMainScene() != null) {
 			//setClosable(false);
-		}
+		//}
 
 		setVisible(true);
-		
+
 		Dimension desktopSize = desktop.getSize();
 	    Dimension jInternalFrameSize = this.getSize();
 	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
 	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 	    setLocation(width, height);
-		
+
 	}
 
 	/**
@@ -325,28 +350,33 @@ implements TableModelListener, ActionListener {
 	 */
 	private void createBarChart() {
 		MonitorModel model = getSelected().getModel();
-		int columns[] = null;
+		int columns[] = ColumnSelector.createBarSelector(desktop, model);
 
 		//if (mainScene != null) {
-			columns = ColumnSelector.createBarSelector(desktop, model);
+		//	columns = ColumnSelector.createBarSelector(desktop, model);
 		//}
 
 		//else if (mainWindow != null) {
 			// Show modal column selector
 			//columns = ColumnSelector.createBarSelector(desktop, model);
 		//}
-
-		if (columns.length > 0) {
-			addTab(new BarChartTab(model, columns));
+		if (columns == null) {
+			//System.out.println("createBarChart() : columns = null");
+		}
+		else if (columns != null) {
+			if (columns.length > 0) {
+				addTab(new BarChartTab(model, columns));
+				//System.out.println("createBarChart() : just done calling new BarChartTab()");
+			}
 		}
 	}
 
 	private void createPieChart() {
 		MonitorModel model = getSelected().getModel();
-		int column = 0;
+		int column = ColumnSelector.createPieSelector(desktop, model);
 
 		//if (mainScene != null) {
-			column = ColumnSelector.createPieSelector(desktop, model);
+		//	column = ColumnSelector.createPieSelector(desktop, model);
 		//}
 
 		//else if (mainWindow != null) {
@@ -355,7 +385,11 @@ implements TableModelListener, ActionListener {
 		//}
 
 		if (column >= 0) {
+			//System.out.println("createPieChart() : column >= 0");
 			addTab(new PieChartTab(model, column));
+			//System.out.println("createPieChart() : just done calling new PieChartTab()");
+		} else {
+			//System.out.println("createPieChart() : column < 0");
 		}
 	}
 	/**
@@ -431,7 +465,7 @@ implements TableModelListener, ActionListener {
 	            TableStyle.setTableStyle(table);
 	            TableStyle.setTableStyle(new RowNumberTable(table));
 	            //System.out.println("Starting createSearchableBar() for "+ table);
-	
+
 				//statusPanel.remove(_tableSearchableBar);
 	            if (reloadSearch)
 	            	createSearchableBar(table);
@@ -512,7 +546,7 @@ implements TableModelListener, ActionListener {
 
 	private void addTab(MonitorTab newTab) {
 		tabs.add(newTab);
-		tabsSection.addTab(newTab.getName(), newTab.getIcon(), newTab);
+		tabsSection.addTab(newTab.getName(), newTab.getIcon(), newTab); //"", newTab.getIcon(), newTab);//
 		tabsSection.setSelectedIndex(tabs.size()-1);
 		tabChanged(true);
 	}

@@ -24,14 +24,12 @@ extends TableTab {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    public final static String ICON = "briefcase_32";
-
 	/**
 	 * Constructor.
 	 */
 	public MissionTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new MissionTableModel(), true, true, ICON);
+		super(window, new MissionTableModel(), true, true, MonitorWindow.MISSION_ICON);
 	}
 
 	/**

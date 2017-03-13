@@ -19,8 +19,6 @@ extends TableTab {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    public final static String ICON = "flag_32";
-
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window
@@ -33,7 +31,7 @@ extends TableTab {
 			new EventTableModel(Simulation.instance().getEventManager(), notifyBox, desktop),
 			true,
 			false,
-			ICON);
+			MonitorWindow.EVENT_ICON);
 
 	}
 

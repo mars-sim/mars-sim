@@ -28,15 +28,13 @@ implements UnitManagerListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public final static String ICON = "buy_32";
-
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
 	public TradeTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new TradeTableModel(), true, false, ICON);
+		super(window, new TradeTableModel(), true, false, MonitorWindow.TRADE_ICON);
 
 		// Override default cell renderer for format double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));

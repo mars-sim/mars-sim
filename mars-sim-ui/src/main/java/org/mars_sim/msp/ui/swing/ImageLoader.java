@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * ImageLoader.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-03-12
  * @author Barry Evans
  */
 
@@ -30,6 +29,7 @@ public class ImageLoader {
      */
     /* [landrus, 26.11.09]: use classloader compatible paths */
     public final static String IMAGE_DIR = "/images/";
+    public final static String MONITOR_ICONS_DIR = "/icons/monitor_tool/";
 
     /**
      * Static singleton
@@ -58,7 +58,7 @@ public class ImageLoader {
             if (found == null) {
                 String fileName = fullImageName.startsWith("/") ?
                 	fullImageName :
-                	"/icons/" + fullImageName ;
+                	MONITOR_ICONS_DIR + fullImageName ;
                 /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
                 URL resource = ImageLoader.class.getResource(fileName);//ClassLoader.getSystemResource(fileName);
                 found = new ImageIcon(resource);

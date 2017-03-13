@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelFavorite.java
- * @version 3.08 2015-03-26
+ * @version 3.1.0 2017-03-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -89,7 +89,7 @@ extends TabPanel {
 	private int start;
 	private int end;
 	private int theme;
-	
+
 	private boolean hideRepeated, hideRepeatedCache, isRealTimeUpdate;
 
 	private Integer selectedSol;
@@ -245,7 +245,7 @@ extends TabPanel {
     	today = taskSchedule.getSolCache();
     	todayInteger = (Integer) today ;
     	solList = new CopyOnWriteArrayList<Integer>();
-    		
+
 		for (int key : allActivities.keySet() ) {
 			solList.add(key);
 		}
@@ -253,14 +253,14 @@ extends TabPanel {
 		//solList.add(max + 1);
        	if (!solList.contains(today))
        		solList.add(today);
-       	
+
 /*
 		int size = schedules.size();
 		for (int i = 0 ; i < size + 1; i++ )
 			// size + 1 is needed to add today into solList
 			solList.add(i + 1);
 */
-		
+
     	// Create comboBoxModel
     	Collections.sort(solList, Collections.reverseOrder());
     	comboBoxModel = new DefaultComboBoxModel<Object>();
@@ -365,10 +365,10 @@ extends TabPanel {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		
-		if (desktop.getMainScene() != null) 
+
+		if (desktop.getMainScene() != null)
 			theme = desktop.getMainScene().getTheme();
-		
+
 		TableStyle.setTableStyle(table);
 
 		if (person != null) {
@@ -398,8 +398,8 @@ extends TabPanel {
 				desktop.updateToolWindowLF();
 			}
 */
-    		
-    		
+
+
 		}
 
     	today = taskSchedule.getSolCache();
@@ -408,10 +408,10 @@ extends TabPanel {
        	selectedSol = (Integer) solBox.getSelectedItem(); // necessary or else if (isRealTimeUpdate) below will have NullPointerException
 
        	// Update the sol combobox at the beginning of a new sol
-    	if (today != todayCache) { 
+    	if (today != todayCache) {
     		solList.clear();
            	if (!solList.contains(today))
-           		solList.add(today);         	
+           		solList.add(today);
     		//int max = todayCache;
     		for (int key : allActivities.keySet() ) {
     			//System.out.println("key is " + key);
@@ -423,16 +423,16 @@ extends TabPanel {
            	if (!solList.contains(today))
            		solList.add(today);
 /*
- * 			// Inserting and deleting is not working below           	
+ * 			// Inserting and deleting is not working below
     		int size = solList.size();
     		//System.out.println("size is " + size);
     		int max = TaskSchedule.NUM_SOLS;
     		if (size > max) {
-    			//System.out.println("Removing a Sol ");	
+    			//System.out.println("Removing a Sol ");
     			solList.remove(0); // remove the first item at index 0
     		}
-*/    				    	
-           	Collections.sort(solList, Collections.reverseOrder());            
+*/
+           	Collections.sort(solList, Collections.reverseOrder());
 	    	DefaultComboBoxModel<Object> newComboBoxModel = new DefaultComboBoxModel<Object>();
 			solList.forEach(s -> newComboBoxModel.addElement(s));
 
@@ -458,7 +458,7 @@ extends TabPanel {
        		isRealTimeUpdate = false;
        		realTimeBox.setSelected(false);
        	}
-       	
+
 		// Detects if the Hide Repeated box has changed. If yes, call for update
 		if (hideRepeatedCache != hideRepeated) {
 			hideRepeatedCache = hideRepeated;
@@ -476,7 +476,7 @@ extends TabPanel {
 
 	/**
 	 * Opens PlannerWindow
-	 
+
     // 2015-05-21 Added openPlannerWindow()
 	private void openPlannerWindow() {
 		// Create PlannerWindow
@@ -484,7 +484,7 @@ extends TabPanel {
 			plannerWindow = new PlannerWindow(unit, desktop, this);
 	}
 */
-    
+
 	class PromptComboBoxRenderer extends BasicComboBoxRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -522,7 +522,7 @@ extends TabPanel {
 				// 255,229,204 white-ish (super pale) yellow
 				// (37, 85, 118) navy blue
 				// 131,172,234 pale sky blue
-				
+
 				if (isSelected) {
 
 					if (theme == 6) {
@@ -535,7 +535,7 @@ extends TabPanel {
 					}
 
 		        } else {
-			          // unselected, and not the DnD drop location			        	
+			          // unselected, and not the DnD drop location
 					if (theme == 6) {
 						result.setForeground(new Color(37,85,118));// (37, 85, 118) navy blue
 				        result.setBackground(new Color(131,172,234,40)); // 131,172,234 pale sky blue
@@ -544,7 +544,7 @@ extends TabPanel {
 				        result.setForeground(new Color(184,134,11)); // 184,134,11 mud yellow
 			        	result.setBackground(new Color(255,229,204,40)); // 255,229,204 white-ish (super pale) yellow
 					}
-	
+
 		        }
 
 		        //result.setOpaque(false);
@@ -618,7 +618,7 @@ extends TabPanel {
 			return ss;
 		}
 
-		
+
 		/**
 		 * Prepares a list of activities done on the selected day
 		 * @param hideRepeatedTasks
@@ -634,7 +634,7 @@ extends TabPanel {
 			//OneTask currentTask = null;
 			OneActivity currentTask = null;
 			String currentDes = null;
-        	
+
 	        // Load previous day's schedule if selected
 			if (todaySol == selectedSol) {
 				// Load today's schedule
@@ -643,6 +643,7 @@ extends TabPanel {
 			}
 			else {
 				//tasks = new CopyOnWriteArrayList<OneTask>(schedules.get(selectedSol));
+				//List<OneActivity> list = ((List<?>)allActivities).search(1, (k,v) -> { if (k == selectedSol) return k;}); //.get(selectedSol));
 				activities = new CopyOnWriteArrayList<OneActivity>(allActivities.get(selectedSol));
 			}
 
@@ -686,31 +687,31 @@ extends TabPanel {
 		}
 
 	}
-	
+
 	/**
 	 * Prepares for deletion.
 	 */
 	public void destroy() {
-		if (solBox != null) 
+		if (solBox != null)
 			solBox.removeAllItems();
-		if (comboBoxModel != null) 
+		if (comboBoxModel != null)
 			comboBoxModel.removeAllElements();
 /*
-		if (tasks != null) 
+		if (tasks != null)
         	tasks.clear();
-        if (solList != null) 
-        	solList.clear();  
-        if (schedules != null) 
-        	schedules.clear(); 
-*/      
+        if (solList != null)
+        	solList.clear();
+        if (schedules != null)
+        	schedules.clear();
+*/
 		activities = null;
 		allActivities = null;
 		//todayActivities = null;
-		solBox = null; 
+		solBox = null;
 		comboBoxModel = null;
 		//tasks = null;
 		solList = null;
-		//schedules = null; 
+		//schedules = null;
         table = null;
         hideBox = null;
     	realTimeBox = null;
@@ -726,6 +727,6 @@ extends TabPanel {
 		balloonToolTip = null;
 
 	}
-	
+
 
 }

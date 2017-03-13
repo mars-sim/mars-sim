@@ -741,7 +741,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 								window.setSize(config.getInternalWindowDimension(toolName));
 							}
 						} else {
-							System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
+							//System.out.println("MainDesktopPane: TimeWindow opens at whatever location");
 							if (toolName.equals(TimeWindow.NAME))
 								window.setLocation(getStartingLocation(window));
 							else

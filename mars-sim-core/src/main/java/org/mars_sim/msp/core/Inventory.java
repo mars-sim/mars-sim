@@ -74,6 +74,11 @@ implements Serializable {
     private transient double totalInventoryMassCache;
     private transient boolean totalInventoryMassCacheDirty = true;
 
+    // TODO: Switch to using parallel operation in ConcurrentHashMap instead of HashMap.
+    // see https://dzone.com/articles/concurrenthashmap-in-java8
+    // see https://dzone.com/articles/how-concurrenthashmap-works-internally-in-java
+    // see https://dzone.com/articles/concurrenthashmap-isnt-always-enough
+
 	// 2015-01-09 Added 3 amount resource demand maps
 	private Map<String, Integer> amountDemandTotalRequestMap =  new HashMap<String, Integer>();
 	private Map<String, Integer> amountDemandMetRequestMap =  new HashMap<String, Integer>();

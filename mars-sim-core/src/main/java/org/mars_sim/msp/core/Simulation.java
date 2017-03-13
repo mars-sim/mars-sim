@@ -81,6 +81,7 @@ implements ClockListener, Serializable {
 	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
 
+	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
     /** Version string. */
     public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
     /** Build string. */

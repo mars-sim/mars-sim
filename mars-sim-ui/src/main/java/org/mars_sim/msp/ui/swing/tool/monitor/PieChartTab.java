@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PieChartView.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-03-12
  * @author Barry Evans
  */
 
@@ -53,9 +52,6 @@ class PieChartTab extends MonitorTab {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-    //public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
-	public final static Icon PIEICON = ImageLoader.getNewIcon("pie_32"); //$NON-NLS-1$
 
     /**
      * Minimum time (milliseconds) between chart updates
@@ -274,30 +270,30 @@ class PieChartTab extends MonitorTab {
      * @param column Index of the column to collate.
      */
     public PieChartTab(MonitorModel model, int column) {
-        super(model, false, PIEICON);
+        super(model, false, ImageLoader.getNewIcon(MonitorWindow.PIE_ICON));
 
         String title = model.getName() + " - " + model.getColumnName(column);
         setName(title);
 
         pieModel = new TablePieDataset(model, column);
-        
+
         chart = ChartFactory.createPieChart3D(null, pieModel, true, true, false);
         chart.setBackgroundPaint(getBackground());
-        
+
         pieModel.calculate();
 
-        // 2015-10-18 Changed to 3D pie 
+        // 2015-10-18 Changed to 3D pie
         final PiePlot3D plot = (PiePlot3D)chart.getPlot();
-        
+
         //plot.setCircular(false);
         //plot.setRadius(0.60);
         //plot.setSectionLabelType(PiePlot.PERCENT_LABELS);
-        
+
         plot.setStartAngle(270);
         plot.setDirection(Rotation.ANTICLOCKWISE);
         plot.setForegroundAlpha(0.6f);
         //plot.setInteriorGap(0.33);
-        
+
         pieModel.addChangeListener(plot);
 
         chartpanel = new ChartPanel(chart, true);
@@ -310,7 +306,7 @@ class PieChartTab extends MonitorTab {
         chartpanel.setMaximumDrawWidth(Integer.MAX_VALUE);
         chartpanel.setMinimumDrawHeight(0);
         chartpanel.setMaximumDrawHeight(Integer.MAX_VALUE);
-        	
+
 		JPanel fixedSizePane = new JPanel(new FlowLayout());
 		fixedSizePane.add(chartpanel);
 		fixedSizePane.addComponentListener(new ComponentAdapter() {
@@ -324,13 +320,13 @@ class PieChartTab extends MonitorTab {
                 fixedSizePane.revalidate();
             }
         });
-		
+
         add(fixedSizePane, BorderLayout.CENTER);
-        
+
         // 2015-10-18 Added rotator code
         final Rotator rotator = new Rotator(plot);
         rotator.start();
-
+		//System.out.println("PieChartTab : just done calling constructor");
     }
 
     /**
@@ -386,7 +382,7 @@ class PieChartTab extends MonitorTab {
 //*                                                                          *
 //* http://www.object-refinery.com/jfreechart/guide.html                     *
 //*                                                                          *
-//* Sales are used to provide funding for the JFreeChart project - please    * 
+//* Sales are used to provide funding for the JFreeChart project - please    *
 //* support us so that we can continue developing free software.             *
 //****************************************************************************
 
@@ -395,13 +391,13 @@ class PieChartTab extends MonitorTab {
 *
 */
 class Rotator extends Timer implements ActionListener {
-	
+
 	 /** The plot. */
 	 private PiePlot3D plot;
-	
+
 	 /** The angle. */
 	 private int angle = 270;
-	
+
 	 /**
 	  * Constructor.
 	  *
@@ -412,7 +408,7 @@ class Rotator extends Timer implements ActionListener {
 	     this.plot = plot;
 	     addActionListener(this);
 	 }
-	
+
 	 /**
 	  * Modifies the starting angle.
 	  *

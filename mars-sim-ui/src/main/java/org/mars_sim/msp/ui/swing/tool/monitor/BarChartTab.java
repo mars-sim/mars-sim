@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * BarChartTab.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-03-12
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -64,9 +63,6 @@ extends MonitorTab {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	//public final static Icon BARICON = ImageLoader.getIcon(Msg.getString("img.barChart")); //$NON-NLS-1$
-	public final static Icon BARICON = ImageLoader.getNewIcon("bar_32"); //$NON-NLS-1$
 
 	/** Maximum label length. */
 	private final static int MAXLABEL = 20; //12;
@@ -297,7 +293,7 @@ extends MonitorTab {
 
 	private TableBarDataset barModel = null;
 	private JFreeChart chart = null;
-	
+
 	//private JComponent chartpanel;
 
 	/**
@@ -306,53 +302,53 @@ extends MonitorTab {
 	 * @param columns Indexes of columns to display.
 	 */
 	public BarChartTab(MonitorModel model, int []columns) {
-		super(model, false, BARICON);
+		super(model, false, ImageLoader.getNewIcon(MonitorWindow.BAR_ICON));
 
 		String title = model.getName();
 		setName(title);
 
 		barModel = new TableBarDataset(model, columns);
 		chart = ChartFactory.createBarChart3D(null, null, null, barModel, PlotOrientation.VERTICAL, true, true, false);
-		
+
 		// 2015-10-18 Limits the size of the bar to 35% if there are only very few category
 		BarRenderer3D renderer = (BarRenderer3D) chart.getCategoryPlot().getRenderer();
 		renderer.setMaximumBarWidth(.1); // set maximum width to 10% of chart
 		//renderer.setItemMargin(-1);
-		
+
 		Plot plot = chart.getPlot();
 
-		// 2015-10-18 Adds set the range axis 
+		// 2015-10-18 Adds set the range axis
 		final ValueAxis rangeAxis = ((CategoryPlot) plot).getRangeAxis();//.getRangeAxis();
 		rangeAxis.setAutoTickUnitSelection(true);//setStandardTickUnits//(CategoryAxis.DEFAULT_CATEGORY_MARGIN);//createIntegerTickUnits());
 		rangeAxis.setTickLabelFont(new Font("Arial",Font.BOLD, 12));
 		rangeAxis.setUpperMargin(0.1); // in percentage
 		rangeAxis.setLowerMargin(0.05); // in percentage
-		
+
 		CategoryAxis domainAxis = ((CategoryPlot) plot).getDomainAxis();
-	
+
 		// 2015-10-18 set the label position to go sideway at 45 deg downward
 		domainAxis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_45); // DOWN_90);
 		domainAxis.setTickLabelFont(new Font("Calibri", Font.BOLD, 12));
-		domainAxis.setMaximumCategoryLabelWidthRatio(1); 
+		domainAxis.setMaximumCategoryLabelWidthRatio(1);
 		//domainAxis.setMaximumCategoryLabelLines(2);
 		domainAxis.setLowerMargin(0.01);
 	    domainAxis.setUpperMargin(0.01);
 	    domainAxis.setCategoryMargin(.5);
 	    //domainAxis.setItemMargin(0.2);
-	    
-	
+
+
 		// 2015-10-18 Adds label on each bar
 		//renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator()); // only work for 2D bar chart
-		//renderer.setBaseItemLabelsVisible(true); // only work for 2D bar chart		
+		//renderer.setBaseItemLabelsVisible(true); // only work for 2D bar chart
 		CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator();
 		renderer.setSeriesItemLabelGenerator(0, generator);
 		renderer.setSeriesItemLabelsVisible(0, true);
-		renderer.setSeriesPositiveItemLabelPosition(0, 
+		renderer.setSeriesPositiveItemLabelPosition(0,
 				new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_CENTER,
 						TextAnchor.BASELINE_CENTER, 0.0));
 		renderer.setItemLabelAnchorOffset(10);
-/*		
-		
+/*
+
   		TODO: implement interval marker for the ave high and ave low
 		IntervalMarker target = new IntervalMarker(average_low,average_high);
 		target.setLabelFont(new Font("SansSerif", Font.ITALIC, 11));
@@ -360,9 +356,9 @@ extends MonitorTab {
 		target.setLabelTextAnchor(TextAnchor.CENTER_LEFT);
 		((CategoryPlot) plot).addRangeMarker(target, Layer.BACKGROUND);
 */
-		
-	
-		// 2015-10-18 Adds tooltip generator 
+
+
+		// 2015-10-18 Adds tooltip generator
 		// this version only work for 2D bar chart, not 3D bar chart
 /*		renderer.setBaseToolTipGenerator(new CategoryToolTipGenerator() {
 		    public String generateToolTip(CategoryDataset dataset, int row, int column) {
@@ -370,10 +366,10 @@ extends MonitorTab {
 		     // TODO: use tooltip to show the corresponding value of a category
 		    }
 		});
-*/		
+*/
 		renderer.setBaseToolTipGenerator(new MyToolTipGenerator());
-		
-/*		
+
+/*
 		class CustomToolTipGenerator implements CategoryToolTipGenerator  {
 		    public String generateToolTip(CategoryDataset dataset, int row, int column)   {
 		           return row + ": " + column;
@@ -381,7 +377,7 @@ extends MonitorTab {
 		}
 		renderer.setSeriesToolTipGenerator(0,new CustomToolTipGenerator());
 */
-		
+
 		// Create a panel for chart
 		JComponent chartpanel = new ChartPanel(chart);
 		chart.setBackgroundPaint(getBackground());
@@ -389,7 +385,7 @@ extends MonitorTab {
 		// 2015-10-18 Adds zooming
 		((ChartPanel)chartpanel).setFillZoomRectangle(true);
 		((ChartPanel)chartpanel).setMouseWheelEnabled(true);
-		
+
 		// 2015-10-18 Prevents label scaling
 		((ChartPanel)chartpanel).setMaximumDrawHeight(10000);
 		((ChartPanel)chartpanel).setMaximumDrawWidth(10000);
@@ -402,18 +398,18 @@ extends MonitorTab {
 		// label width.
 		int columnWidth = barModel.getSeriesCount() * COLUMNWIDTH;
 		//System.out.println("columnWidth is " + columnWidth );
-		
+
 		if (columnWidth < LABELWIDTH) {
 			columnWidth = LABELWIDTH;
-		}	
+		}
 		//System.out.println("columnWidth is " + columnWidth );
-		
+
 		// Check the width for possible scrolling
 		int chartwidth = columnWidth * barModel.getCategoryCount();
 		//System.out.println("chartwidth is " + chartwidth );
-		
+
 		//JComponent scrollPane = null;
-				
+
 		if (chartwidth > SCROLLTHRESHOLD) {
 			// Scrolling will kick in, then fix the height so that it
 			// automatically adjusts to Scroll Viewport height; the width
@@ -424,9 +420,9 @@ extends MonitorTab {
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		}
 
-	
-	       
-/*		
+
+
+/*
 	       // 2015-10-18 Added setting below to keep the aspect ratio
         // see http://www.jfree.org/forum/viewtopic.php?f=3&t=115763
         // Chart will always be drawn to an off-screen buffer that is the same size as the ChartPanel, so no scaling will happen when the offscreen image is copied to the panel.
@@ -435,7 +431,7 @@ extends MonitorTab {
         //chartpanel.setMaximumDrawWidth(Integer.MAX_VALUE);
         //chartpanel.setMinimumDrawHeight(0);
         //chartpanel.setMaximumDrawHeight(Integer.MAX_VALUE);
-      	
+
 		JPanel fixedSizePane = new JPanel(new FlowLayout());
 		fixedSizePane.add(chartpanel);
 		fixedSizePane.addComponentListener(new ComponentAdapter() {
@@ -448,9 +444,11 @@ extends MonitorTab {
                 fixedSizePane.revalidate();
             }
         });
-*/  		
+*/
 		chartpanel.setPreferredSize(new Dimension(800, 0));
 		add(chartpanel, BorderLayout.CENTER);
+
+		//System.out.println("done with BarChartTab's constructor");
 	}
 
 
@@ -464,7 +462,7 @@ extends MonitorTab {
                 + super.generateToolTip(dataset,row,column);
         }
     }
- 
+
 
 	/**
 	 * Display the properties dialog that allows the data displayed to be

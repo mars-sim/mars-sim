@@ -217,7 +217,7 @@ import org.reactfx.util.Timer;
 public class MainScene {
 	private static Logger logger = Logger.getLogger(MainScene.class.getName());
 
-	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
+	public static String OS = Simulation.OS.toLowerCase();//System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
@@ -298,7 +298,10 @@ public class MainScene {
     //private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
 	private Pane root;
-	private StackPane settlementBox, chatBoxPane, mainAnchorPane, mapStackPane, minimapStackPane, speedPane, soundPane, calendarPane;
+	private StackPane mainAnchorPane, //monPane,
+					mapStackPane, minimapStackPane,
+					speedPane, soundPane, calendarPane,
+					settlementBox, chatBoxPane;
 	//private BorderPane borderPane;
 	private FlowPane flowPane;
 	private AnchorPane rootAnchorPane, mapAnchorPane ;
@@ -544,10 +547,15 @@ public class MainScene {
 	    Nodes.addInputMap(root, f3);
 
 		InputMap<KeyEvent> f4 = consume(keyPressed(F4), e -> {
-			if (desktop.isToolWindowOpen(MonitorWindow.NAME))
+			if (desktop.isToolWindowOpen(MonitorWindow.NAME)) {
 				SwingUtilities.invokeLater(() ->desktop.closeToolWindow(MonitorWindow.NAME));
+				//rootAnchorPane.getChildren().remove(monPane);
+			}
 			else {
 				//getJFXTabPane().getSelectionModel().select(MainScene.MAIN_TAB);
+				//rootAnchorPane.getChildren().add(monPane);
+		        //AnchorPane.setRightAnchor(monPane, 0.0);
+		        //AnchorPane.setBottomAnchor(monPane, 0.0);
 				SwingUtilities.invokeLater(() ->desktop.openToolWindow(MonitorWindow.NAME));
 			}
 		});
@@ -820,6 +828,7 @@ public class MainScene {
 */
         rootAnchorPane.getChildren().addAll(
         		jfxTabPane,
+        		//monPane,
         		//miniMapBtn, mapBtn,
         		marsNetBtn, speedBtn,
         		lastSaveLabel,
@@ -848,7 +857,9 @@ public class MainScene {
 		mapAnchorPane.prefWidthProperty().bind(scene.widthProperty());
 
 		mapStackPane.prefHeightProperty().bind(scene.heightProperty().subtract(35));//73));
-		//mapNodePane.prefWidthProperty().bind(scene.widthProperty());
+
+		//monPane.prefHeightProperty().bind(scene.heightProperty().divide(2));//.subtract(384));//73));
+		//monPane.prefWidthProperty().bind(scene.widthProperty());
 
 		//mapNodePane.heightProperty().addListener((observable, oldValue, newValue) -> {
     	//    System.out.println("mapNodePane height : " + newValue);
@@ -1787,50 +1798,23 @@ public class MainScene {
                 //event.consume();
             }
         });
-/*
-		mapBtn = new JFXButton();
-		setQuickToolTip(mapBtn, "Open Settlement Map below");
-		mapBtn.setOnAction(e -> {
-			if (desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-				//System.out.println("closing map tool.");
-				desktop.closeToolWindow(SettlementWindow.NAME);
-				mapAnchorPane.getChildren().removeAll(mapStackPane,
-						settlementBox, mapLabelBox,
-						zoomSlider,
-						rotateCWBtn, rotateCCWBtn, recenterBtn);
-				sMapButton.setSelected(false);
-				sMapButton.setText("Settlement Map Off");
-			}
 
-			else {
-				openMap();
-				if (desktop.isToolWindowOpen(NavigatorWindow.NAME)) {
-					openMinimap();
-				}
-			}
-
-		});
-*/
 		//desktop.openToolWindow(MonitorWindow.NAME);
 		//desktop.openToolWindow(MissionWindow.NAME);
 		//desktop.openToolWindow(ResupplyWindow.NAME);
 		//desktop.openToolWindow(ScienceWindow.NAME);
 
-/*
+
 		// set up monitor tab
-		MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
-		monNode = new SwingNode();
-	    JDesktopPane d0 = desktops.get(0);
-	    d0.add(monWin);
-		monNode.setContent(d0);
-		StackPane monPane = new StackPane(monNode);
-		Tab monTab = new Tab();
-		monTab.setText("Monitor");
-		monTab.setContent(monPane);
+		//MonitorWindow monWin = (MonitorWindow) desktop.getToolWindow(MonitorWindow.NAME);
+		//monNode = new SwingNode();
+		//monNode.setContent(monWin);
+		//monPane = new StackPane(monNode);
 
 		//desktop.openToolWindow(MonitorWindow.NAME);
 
-
+/*
+ *
 		// set up mission tab
 		MissionWindow missionWin = (MissionWindow) desktop.getToolWindow(MissionWindow.NAME);
 		missionNode = new SwingNode();
@@ -1962,6 +1946,9 @@ public class MainScene {
 				mapAnchorPane.getChildren().addAll(cacheToggle, minimapToggle, mapToggle);
 
 				desktop.closeToolWindow(GuideWindow.NAME);
+
+				//rootAnchorPane.getChildren().remove(monPane);
+				//desktop.closeToolWindow(MonitorWindow.NAME);
 			}
 
 			else if (newTab == guideTab) {

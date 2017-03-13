@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Role.java
- * @version 3.08 2015-05-19
+ * @version 3.1.0 2017-03-11
  * @author Manny Kung
  */
 package org.mars_sim.msp.core.person;
@@ -21,13 +21,18 @@ public class Role implements Serializable {
 
 	String name;
 	Person person;
-	
+
 	private MarsClock clock;
-	
+
 	private RoleType roleType;
 
     private Map<RoleType, MarsClock> roleHistory = new ConcurrentHashMap<>();
-	
+
+    // TODO: Use more methods of parallel operation in ConcurrentHashMap.
+    // see https://dzone.com/articles/concurrenthashmap-in-java8
+    // see https://dzone.com/articles/how-concurrenthashmap-works-internally-in-java
+    // see https://dzone.com/articles/concurrenthashmap-isnt-always-enough
+
 	public Role(Person person) { //, RoleType type) {
 		//this.type = type;
 		this.person = person;
@@ -67,7 +72,7 @@ public class Role implements Serializable {
 	        person.getAssociatedSettlement().getChainOfCommand().addRoleTypeMap(newType);
 	        person.fireUnitUpdate(UnitEventType.ROLE_EVENT, newType);
 	        relinquishOldRoleType(oldType);
-	        
+
 	       	// 2016-05-02 Added saving roleHistory
 	       	if (clock == null)
         		clock = Simulation.instance().getMasterClock().getMarsClock();

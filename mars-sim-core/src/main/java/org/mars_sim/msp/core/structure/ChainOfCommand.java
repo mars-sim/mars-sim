@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ChainOfCommand.java
- * @version 3.08 2015-05-12
+ * @version 3.1.0 2017-03-11
  * @author Manny Kung
  */
 
@@ -45,7 +45,7 @@ public class ChainOfCommand implements Serializable {
     private Map<RoleType, Integer> roleType;
 
     private Settlement settlement;
-    
+
     private UnitManager unitManager;
 
     /*
@@ -55,9 +55,9 @@ public class ChainOfCommand implements Serializable {
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
 		roleType = new ConcurrentHashMap<>();
-		
+
 		unitManager = Simulation.instance().getUnitManager();
-		
+
 		initializeRoleType();
 
 	}
@@ -463,10 +463,11 @@ public class ChainOfCommand implements Serializable {
 	 * Finds out the number of people already fill this roleType
 	 */
     public int getNumFilled(RoleType key) {
-    	int value = 0;
-    	if (roleType.containsKey(key))
-    		value = roleType.get(key);
-    	return value;
+    	//int value = 0;
+    	//if (roleType.containsKey(key))
+    	//	value = roleType.get(key);
+    	//return value;
+    	return roleType.getOrDefault(key, 0);
     }
 
 /*

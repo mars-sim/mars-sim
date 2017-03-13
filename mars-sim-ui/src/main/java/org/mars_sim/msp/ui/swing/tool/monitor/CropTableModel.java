@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropTableModel.java
- * @version 3.07 2015-02-18
+ * @version 3.1.0 2017-03-12
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -68,15 +68,15 @@ extends UnitTableModel {
 
 
 	private final static int BULBS = 3;
-	private final static int CORMS = 4;	
+	private final static int CORMS = 4;
 	private final static int FLOWERS = 5;
 	private final static int FRUITS = 6;
-	
-	private final static int FUNGI = 7;	
+
+	private final static int FUNGI = 7;
 	private final static int GRAINS = 8;
 	private final static int GRASSES = 9;
 	private final static int LEAVES = 10;
-	
+
 	private final static int LEGUMES = 11;
 	private final static int ROOTS = 12;
 	private final static int SEEDS = 13;
@@ -85,29 +85,29 @@ extends UnitTableModel {
 	private final static int STEMS = 15;
 	private final static int TUBERS = 16;
 
-/*	
+/*
 	enum CropsEnum {
 		BULBS,CORMS,FLOWERS,FRUITS,
 		FUNGI,GRAINS,GRASSES,LEAVES,
 		LEGUMES,ROOTS,SEEDS,SPICES,
 		STEMS,TUBERS;
-		
+
 	    //public static CropsEnum c(int ord) {
 	    //   return CropsEnum.values()[ord]; // less safe
 	    //}
 	}
-*/	
+*/
 
- 
+
 	String name = null;
 	int numHouse = 0;
 
-	
+
 	//private List<CropCategoryType> cropCategoryTypes = new ArrayList<CropCategoryType>(Arrays.asList(CropCategoryType.values()));
 
-	   
+
 	// 2014-11-25 Added NUMCROPTYPE
-	private static int numCropCat = CropCategoryType.values().length;// = 14 
+	private static int numCropCat = CropCategoryType.values().length;// = 14
 	/** The number of Columns. */
 	private static int column_count = numCropCat + 3;
 
@@ -123,28 +123,28 @@ extends UnitTableModel {
 		columnNames[NAME] = "Settlement";
 		columnTypes[NAME] = String.class;
 		columnNames[GREENHOUSES] = "Greenhouses";
-		columnTypes[GREENHOUSES] = Integer.class;		
+		columnTypes[GREENHOUSES] = Integer.class;
 		columnNames[CROPS] = "# Crops";
 		columnTypes[CROPS] = Integer.class;
-		
+
 		columnNames[BULBS] = "Bulbs";
 		columnTypes[BULBS] = Integer.class;
 		columnNames[CORMS] = "Corms";
 		columnTypes[CORMS] = Integer.class;
 		columnNames[FLOWERS] = "Flowers";
-		columnTypes[FLOWERS] = Integer.class;	
+		columnTypes[FLOWERS] = Integer.class;
 		columnNames[FRUITS] = "Fruits";
 		columnTypes[FRUITS] = Integer.class;
-		
+
 		columnNames[FUNGI] = "Fungi";
 		columnTypes[FUNGI] = Integer.class;
 		columnNames[GRAINS] = "Grains";
 		columnTypes[GRAINS] = Integer.class;
 		columnNames[GRASSES] = "Grasses";
 		columnTypes[GRASSES] = Integer.class;
-		columnNames[LEAVES] = "Legumes";
+		columnNames[LEAVES] = "Leaves";
 		columnTypes[LEAVES] = Integer.class;
-		
+
 		columnNames[LEGUMES] = "Legumes";
 		columnTypes[LEGUMES] = Integer.class;
 		columnNames[ROOTS] = "Roots";
@@ -153,22 +153,22 @@ extends UnitTableModel {
 		columnTypes[SEEDS] = Integer.class;
 		columnNames[SPICES] = "Spices";
 		columnTypes[SPICES] = Integer.class;
-		
+
 		columnNames[STEMS] = "Stems";
 		columnTypes[STEMS] = Integer.class;
 		columnNames[TUBERS] = "Tubers";
 		columnTypes[TUBERS] = Integer.class;
-/*		
+/*
 		columnTypes[CropsEnum.BULBS.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.BULBS.ordinal()+3] = "Bulbs";
 		columnTypes[CropsEnum.BULBS.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.CORMS.ordinal()+3] = "Corms";
 		columnTypes[CropsEnum.CORMS.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.FLOWERS.ordinal()+3] = "Flowers";
-		columnTypes[CropsEnum.FLOWERS.ordinal()+3] = Integer.class;	
+		columnTypes[CropsEnum.FLOWERS.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.FRUITS.ordinal()+3] = "Fruits";
 		columnTypes[CropsEnum.FRUITS.ordinal()+3] = Integer.class;
-		
+
 		columnNames[CropsEnum.FUNGI.ordinal()+3] = "Fungi";
 		columnTypes[CropsEnum.FUNGI.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.GRAINS.ordinal()+3] = "Grains";
@@ -177,7 +177,7 @@ extends UnitTableModel {
 		columnTypes[CropsEnum.GRASSES.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.LEAVES.ordinal()+3] = "Legumes";
 		columnTypes[CropsEnum.LEAVES.ordinal()+3] = Integer.class;
-		
+
 		columnNames[CropsEnum.LEGUMES.ordinal()+3] = "Legumes";
 		columnTypes[CropsEnum.LEGUMES.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.ROOTS.ordinal()+3] = "Roots";
@@ -186,15 +186,15 @@ extends UnitTableModel {
 		columnTypes[CropsEnum.SEEDS.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.SPICES.ordinal()+3] = "Spices";
 		columnTypes[CropsEnum.SPICES.ordinal()+3] = Integer.class;
-		
+
 		columnNames[CropsEnum.STEMS.ordinal()+3] = "Stems";
 		columnTypes[CropsEnum.STEMS.ordinal()+3] = Integer.class;
 		columnNames[CropsEnum.TUBERS.ordinal()+3] = "Tubers";
 		columnTypes[CropsEnum.TUBERS.ordinal()+3] = Integer.class;
-*/		
-		
+*/
+
 	};
-	
+
 	// Data members
 	private UnitManagerListener unitManagerListener;
 	private Map<Unit, List<Integer>> unitCache ;
@@ -202,7 +202,7 @@ extends UnitTableModel {
 	private Map<Settlement, Integer> cropMap;
 
 
-	
+
 	/*
 	 * Constructs a FoodTableModel model that displays all Settlements
 	 * in the simulation.
@@ -222,12 +222,12 @@ extends UnitTableModel {
 		unitManager.addUnitManagerListener(unitManagerListener);
 
 		cropMap = new ConcurrentHashMap<>();
-		
-		//CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();	
-		//cropCategoryTypes = cropConfig.getCropCategoryTypes();		
-		//numCropCat = cropCategoryTypes.size(); //ropConfig.getCropCategoryTypes().size();		
+
+		//CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
+		//cropCategoryTypes = cropConfig.getCropCategoryTypes();
+		//numCropCat = cropCategoryTypes.size(); //ropConfig.getCropCategoryTypes().size();
 		//column_count = numCropCat + 3;
-	
+
 	}
 
 	/**
@@ -303,8 +303,8 @@ extends UnitTableModel {
 					result = (Object) getTotalNumOfAllCrops(settle);
 				} break;
 
-				
-				
+
+
 				case BULBS : {
 					result = getValueAtColumn(rowIndex, "Bulbs");
 					} break;
@@ -316,17 +316,17 @@ extends UnitTableModel {
 				case FLOWERS : {
 					result = getValueAtColumn(rowIndex, "Flowers");
 					} break;
-								
+
 				case FRUITS : {
 					result = getValueAtColumn(rowIndex, "Fruits");
 					} break;
 
-					
-					
+
+
 				case FUNGI : {
 					result = getValueAtColumn(rowIndex, "Fungi");
 					} break;
-					
+
 				case GRAINS : {
 					result = getValueAtColumn(rowIndex, "Grains");
 				} break;
@@ -334,14 +334,14 @@ extends UnitTableModel {
 				case GRASSES : {
 					result = getValueAtColumn(rowIndex, "Grasses");
 				} break;
-			
+
 				case LEAVES : {
 					result = getValueAtColumn(rowIndex, "Leaves");
 				} break;
 
-				
-				
-				
+
+
+
 				case LEGUMES : {
 					result = getValueAtColumn(rowIndex, "Legumes");
 				} break;
@@ -353,13 +353,13 @@ extends UnitTableModel {
 				case SEEDS : {
 					result = getValueAtColumn(rowIndex, "Seeds");
 				} break;
-				
+
 				case SPICES : {
 					result = getValueAtColumn(rowIndex, "Spices");
 				} break;
 
-				
-				
+
+
 				case STEMS : {
 					result = getValueAtColumn(rowIndex, "Stems");
 				} break;
@@ -493,7 +493,7 @@ extends UnitTableModel {
 			            Crop crop = k.next();
 			            CropType cropType = crop.getCropType();
 			            String testCat = cropType.getCropCategoryType().getName();
-			            
+
 						//logger.info("setUpNewCropCache() : testCat is " + testCat ) ;
 			            int num = getGroupNum(testCat);
 						//logger.info("setUpNewCropCache() : num is " + num ) ;
@@ -642,7 +642,7 @@ extends UnitTableModel {
 	 * @param oldUnit Unit to remove from the model.
 	 */
 	protected void removeUnit(Unit oldUnit) {
-		if (unitCache == null) 
+		if (unitCache == null)
 			unitCache = new HashMap<Unit, List<Integer>>();
 		if (unitCache.containsKey(oldUnit)) {
 			List<Integer> cropCache = unitCache.get(oldUnit);

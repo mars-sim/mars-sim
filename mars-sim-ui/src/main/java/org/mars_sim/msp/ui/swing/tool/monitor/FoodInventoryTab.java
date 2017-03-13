@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FoodProductionTab.java
- * @version 3.07 2014-11-25
+ * @version 3.1.0 2017-03-12
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -27,15 +27,13 @@ implements UnitManagerListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    public final static String ICON = "spacefood_32";
-
 	/**
 	 * constructor.
 	 * @param window {@link MonitorWindow} the containing window.
 	 */
 	public FoodInventoryTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new FoodInventoryTableModel(), true, false, ICON);
+		super(window, new FoodInventoryTableModel(), true, false, MonitorWindow.FOOD_ICON);
 
 		// Override default cell renderer for format double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));

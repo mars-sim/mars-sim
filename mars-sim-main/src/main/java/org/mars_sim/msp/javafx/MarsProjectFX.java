@@ -202,8 +202,6 @@ public class MarsProjectFX extends Application  {
     /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProjectFX.class.getName());
 
-	public static final String OS = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-
     static String[] args;
 
 	private static final String manpage = "\n> java -jar mars-sim-main-[version/build].jar\n"
@@ -391,7 +389,7 @@ public class MarsProjectFX extends Application  {
 
 	    if (!headless) {
 	    	// Using GUI mode
-	    	//logger.info("Running " + OS + " in GUI mode");
+	    	//logger.info("Running " + Simulation.OS + " in GUI mode");
 	    	//System.setProperty("sun.java2d.opengl", "true"); // NOT WORKING IN MACCOSX
 	    	//System.setProperty("sun.java2d.ddforcevram", "true");
 	       	// Enable capability of loading of svg image using regular method
@@ -408,7 +406,7 @@ public class MarsProjectFX extends Application  {
 			// Using -headless (GUI-less mode)
 			if (newSim) {
 		   		// CASE A //
-				logger.info("Starting a new sim in headless mode in " + OS);
+				logger.info("Starting a new sim in headless mode in " + Simulation.OS);
 				// Initialize the simulation.
 	        	Simulation.createNewSimulation();
 			    // Start the simulation.
@@ -460,7 +458,7 @@ public class MarsProjectFX extends Application  {
 			// 2016-06-06 Generated html files for in-game help
 			else if (generateHTML) {
 		   		// CASE C //
-				logger.info("Generating help files in headless mode in " + OS);
+				logger.info("Generating help files in headless mode in " + Simulation.OS);
 
 				try {
 		            SimulationConfig.loadConfig();
@@ -478,7 +476,7 @@ public class MarsProjectFX extends Application  {
 			}
 			else if (helpPage) {
 		   		// CASE D //
-				//logger.info("Displaying help instructions in headless mode in " + OS);
+				//logger.info("Displaying help instructions in headless mode in " + Simulation.OS);
 	        	System.out.println(manpage);
 		        Platform.exit();
 		        System.exit(1);
@@ -495,7 +493,7 @@ public class MarsProjectFX extends Application  {
 
 	   		if (newSim) {
 		   		// CASE D1 and D2//
-	   	    	logger.info("Starting a new sim in GUI mode in " + OS);
+	   	    	logger.info("Starting a new sim in GUI mode in " + Simulation.OS);
 	   			mainMenu.initMainMenu(primaryStage);
 		   		mainMenu.setupMainSceneStage();
 
@@ -510,7 +508,7 @@ public class MarsProjectFX extends Application  {
 
 	        	if (savedSim) {
 
-					logger.info("Loading user's saved sim in GUI mode in " + OS);
+					logger.info("Loading user's saved sim in GUI mode in " + Simulation.OS);
 
 	        		File loadFile = new File(loadFileString);
 
@@ -536,7 +534,7 @@ public class MarsProjectFX extends Application  {
 
 	        	else {
 	        		// if user wants to load the default saved sim
-					logger.info("Loading a saved sim with FileChooser in GUI mode in " + OS);
+					logger.info("Loading a saved sim with FileChooser in GUI mode in " + Simulation.OS);
 
 	        		try {
 	                	// load FileChooser instead
@@ -579,7 +577,7 @@ public class MarsProjectFX extends Application  {
      */
     private void handleLoadDefaultSimulation() {
 		//logger.info("MarsProjectFX's handleLoadDefaultSimulation() is on "+Thread.currentThread().getName());
-		logger.info("Loading the default saved sim in headless mode in " + OS);
+		logger.info("Loading the default saved sim in headless mode in " + Simulation.OS);
 
     	try {
             // Load the default saved file "default.sim"
@@ -603,7 +601,7 @@ public class MarsProjectFX extends Application  {
     void handleLoadSimulation(File loadFile) throws Exception {
 		//logger.info("MarsProjectFX's handleLoadSimulation() is on "+Thread.currentThread().getName() );
     	// INFO: MarsProjectFX's handleLoadSimulation() is in JavaFX Application Thread Thread
-		logger.info("Loading user's saved sim in headless mode in " + OS);
+		logger.info("Loading user's saved sim in headless mode in " + Simulation.OS);
     	try {
 
             if (loadFile.exists() && loadFile.canRead()) {
@@ -631,7 +629,7 @@ public class MarsProjectFX extends Application  {
 		//logger.info("MarsProjectFX's handleNewSimulation() is on "+Thread.currentThread().getName() );
 		// MarsProjectFX's handleNewSimulation() is in JavaFX Application Thread Thread
 		//isDone = true;
-		logger.info("Creating a new sim in " + OS);
+		logger.info("Creating a new sim in " + Simulation.OS);
         try {
             //SimulationConfig.loadConfig(); // located to prepare()
            	sim.getSimExecutor().execute(new ConfigEditorTask());
@@ -694,7 +692,7 @@ public class MarsProjectFX extends Application  {
         }
 
         //if (!headless) {
-        //	if (!OS.contains("mac"))
+        //	if (!Simulation.OS.contains("mac"))
         //		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
         	// Warning: cannot load the editor in macosx if it was a JDialog
         //}
