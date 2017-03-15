@@ -49,19 +49,17 @@ See our new wiki pages at https://github.com/mars-sim/mars-sim/wiki
 ## Supported Platform
 
 * Windows
-* MacOS (known bugs in the tab selection)
-* Linux (without audio, known bugs in selecting certain swing components)
+* MacOS (known bugs when clicking on the tabs)
+* Linux (may or may not have audio)
 
 
 ## Development Prerequisites
 
 * Eclipse IDE
-* Subclipse or Subversive Team Provider (for SVN access)
 * m2eclipse (Maven/Eclipse integration)
 * Java Development Kit (JDK) 8u77 or up.
+See setting up development environment at https://github.com/mars-sim/mars-sim/wiki/Development-Environment for mars-sim.
 
-Note: we recommend setting up Eclipse (https://github.com/mars-sim/mars-sim/wiki/Setting-Up-Eclipse-IDE-via-SVN-Client) as the development environment for mars-sim.
 
-
-## Codebase
+## Official Codebase
 * https://github.com/mars-sim/mars-sim

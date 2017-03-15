@@ -59,6 +59,8 @@ public class TableViewCombo {
 
 	private TableView<SettlementBase> table_view;
 
+	private TableColumn<SettlementBase, String> latCol, longCol, settlerCol, botCol, templateCol;
+
 	private List<SettlementBase> settlements = new ArrayList<>();
 	private List<String> settlementNames;
 	//private Map<String, List<String>> settlementNamesMap = new HashMap<>();
@@ -104,7 +106,7 @@ public class TableViewCombo {
         nameCol = setCellFactory(nameCol);
         nameCol.setMinWidth(150);
 
-        TableColumn<SettlementBase, String> templateCol = new TableColumn<>(headers[1]);
+        templateCol = new TableColumn<>(headers[1]);
         templateCol.setCellValueFactory(cellData -> cellData.getValue().templateProperty());
         templateCol.setCellFactory(ComboBoxTableCell.forTableColumn(
         		templates.get(0).getTemplateName(),
@@ -115,7 +117,7 @@ public class TableViewCombo {
         		templates.get(5).getTemplateName()));
         templateCol.setMinWidth(250);
 
-        TableColumn<SettlementBase, String> settlerCol = new TableColumn<>(headers[2]);
+        settlerCol = new TableColumn<>(headers[2]);
         settlerCol.setCellValueFactory(cellData -> cellData.getValue().settlerProperty());
         //settlerCol.setCellFactory(TextFieldTableCell.forTableColumn());
         settlerCol = setCellFactory(settlerCol);
@@ -124,7 +126,7 @@ public class TableViewCombo {
         //private ValidationSupport validationSupport = new ValidationSupport();
 		//validationSupport.registerValidator(TextField, Validator.createEmptyValidator("Text is required"));
 
-        TableColumn<SettlementBase, String> botCol = new TableColumn<>(headers[3]);
+        botCol = new TableColumn<>(headers[3]);
         botCol.setCellValueFactory(cellData -> cellData.getValue().botProperty());
         //botCol.setCellFactory(TextFieldTableCell.forTableColumn());
         botCol = setCellFactory(botCol);
@@ -144,14 +146,14 @@ public class TableViewCombo {
         sponsorCol.setMinWidth(250);
 
 
-        TableColumn<SettlementBase, String> latCol = new TableColumn<>(headers[5]);
+        latCol = new TableColumn<>(headers[5]);
         latCol.setCellValueFactory(cellData -> cellData.getValue().latitudeProperty());
         //latCol.setCellFactory(TextFieldTableCell.forTableColumn());
         latCol = setCellFactory(latCol);
         latCol.setMinWidth(70);
 
 
-        TableColumn<SettlementBase, String> longCol = new TableColumn<>(headers[6]);
+        longCol = new TableColumn<>(headers[6]);
         longCol.setCellValueFactory(cellData -> cellData.getValue().longitudeProperty());
         //longCol.setCellFactory(TextFieldTableCell.forTableColumn());
         longCol = setCellFactory(longCol);
@@ -166,19 +168,57 @@ public class TableViewCombo {
 
         col.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<String>(){
             @Override
-            public String toString(String item) {
-            	editor.checkForErrors();
-                return item.toString();
+            public String toString(String s) {
+            	//System.out.println("Calling toString()");
+            	// TODO : how to find out which row ?
+            	//int index = templateCol.getRow();
+            	//String t = templateCol.getCellData(index);
+                return removeUnQualifiedChar(col, s);
             }
 
             @Override
-            public String fromString(String string) {
-                return string;
+            public String fromString(String s) {
+            	//System.out.println("Calling fromString()");
+                return removeUnQualifiedChar(col, s);
             }
 
         }));
 
         return col;
+	}
+
+	public String removeUnQualifiedChar(TableColumn<SettlementBase, String> col, String s) {
+    	if (col == latCol || (col == longCol)) {
+        	//System.out.println("Calling fromString()");
+    		s = s.replaceAll("[n]+", "N").replaceAll("[s]+", "S")
+    				.replaceAll("[e]+", "E").replaceAll("[w]+", "W")
+    	    		// remove multiple whitespace to a single whitespace
+    				.replaceAll("[ ]+", " ")
+    	    		// remove multiple dot to one single dot
+    				.replaceAll("[\\.]+", ".")
+    				//.replaceAll("[\\`\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\_\\+\\-\\=\\{\\}\\|\\;\\'\\:\\,\\/\\<\\>\\?]+", "");
+					//.replaceAll("[`~!@#$%^&*()_+-={}|;':,/<>?]+", "");
+    	    		// remove all underscores
+    				.replaceAll("[\\_]+", "")
+    	    		// remove everything except for dot, letters, digits, underscores and whitespace.
+    				.replaceAll("[^\\w\\s&&[^.]]+", "");
+    		//see http://stackoverflow.com/questions/13494912/java-regex-for-replacing-all-special-characters-except-underscore
+    	}
+    	else if (col == botCol || (col == settlerCol)) {
+        	//System.out.println("Calling fromString()");
+    		// remove multiple dot to one single dot
+    		// remove multiple whitespace to a single whitespace
+        	// remove a list of unqualified symbols
+    		//s = s.replaceAll("[ ]+", "").replaceAll("[!@#$%^&)_+-={}|;':,/<>?.]+", "");
+       		// remove all letters
+        	s = s.replaceAll("[a-zA-Z]+", "")
+    	    		// remove all whitespaces
+        			.replaceAll("[ ]+", "")
+    	    		// remove all punctuations
+        			.replaceAll("[^\\P{Punct}]+", "");//"\\p{P}\\p{S}", "");
+    	}
+    	editor.checkForErrors();
+		return s;
 	}
 
 	public TableView getTableView() {
