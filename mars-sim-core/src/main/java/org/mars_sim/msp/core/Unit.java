@@ -732,8 +732,6 @@ implements Serializable, Comparable<Unit> {
 			// Case 3
 			currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 		}
-
-
 /*
 		// Case 1
 		if (oldContainer instanceof Settlement && newContainer == null)
@@ -751,9 +749,7 @@ implements Serializable, Comparable<Unit> {
 				currentStateType = LocationStateType.SETTLEMENT_VICINITY;
 		}
 */
-
 	}
-
 
 	/**
 	 * Gets the unit's mass including inventory mass.
@@ -1007,7 +1003,7 @@ implements Serializable, Comparable<Unit> {
 		inventory.destroy();
 		inventory = null;
 		containerUnit = null;
-		if (listeners != null) listeners.clear();
+		//if (listeners != null) listeners.clear();
 		listeners = null;
 	}
 

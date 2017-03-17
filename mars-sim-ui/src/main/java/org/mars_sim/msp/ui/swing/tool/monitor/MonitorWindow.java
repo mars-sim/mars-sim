@@ -46,6 +46,7 @@ import org.mars_sim.msp.ui.swing.notification.NotificationWindow;
 import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 import com.jidesoft.plaf.LookAndFeelFactory;
 import com.jidesoft.plaf.UIDefaultsLookup;
@@ -73,24 +74,24 @@ implements TableModelListener, ActionListener {
 	public static final String NAME = Msg.getString("MonitorWindow.title"); //$NON-NLS-1$
 
 	// 2015-06-20 Added an custom icon for each tab
-	public static final String BASE_ICON = "base_24";
-	public static final String BOT_ICON = "bot_24";
-	public static final String MISSION_ICON = "briefcase_24";
-	public static final String VEHICLE_ICON = "bus_24";
-	public static final String CROP_ICON = "carrot_24";
-    public static final String EVENT_ICON = "flag_24";
-    public static final String FOOD_ICON = "food_24";
-	public static final String PEOPLE_ICON = "people_24";
-	public static final String TRADE_ICON = "trade_24";
+	public static final String BASE_ICON = Msg.getString("icon.base"); //$NON-NLS-1$
+	public static final String BOT_ICON = Msg.getString("icon.bot"); //$NON-NLS-1$
+	public static final String MISSION_ICON = Msg.getString("icon.mission"); //$NON-NLS-1$
+	public static final String VEHICLE_ICON = Msg.getString("icon.vehicle"); //$NON-NLS-1$
+	public static final String CROP_ICON = Msg.getString("icon.crop"); //$NON-NLS-1$
+    public static final String EVENT_ICON = Msg.getString("icon.event"); //$NON-NLS-1$
+    public static final String FOOD_ICON = Msg.getString("icon.food"); //$NON-NLS-1$
+	public static final String PEOPLE_ICON = Msg.getString("icon.people"); //$NON-NLS-1$
+	public static final String TRADE_ICON = Msg.getString("icon.trade"); //$NON-NLS-1$
 
-	public static final String TRASH_ICON = "trash_24";
-	public static final String CENTERMAP_ICON = "centermap_24";
-	public static final String FIND_ICON = "find_24";
-	public static final String COLUMN_ICON = "column_24";
-	public static final String FILTER_ICON = "filter_24";
+	public static final String TRASH_ICON = Msg.getString("icon.trash"); //$NON-NLS-1$
+	public static final String CENTERMAP_ICON = Msg.getString("icon.centermap"); //$NON-NLS-1$
+	public static final String FIND_ICON = Msg.getString("icon.find"); //$NON-NLS-1$
+	public static final String COLUMN_ICON = Msg.getString("icon.column"); //$NON-NLS-1$
+	public static final String FILTER_ICON = Msg.getString("icon.filter"); //$NON-NLS-1$
 
-	public static final String BAR_ICON = "bar_24"; //$NON-NLS-1$
-	public static final String PIE_ICON = "pie_24"; //$NON-NLS-1$
+	public static final String BAR_ICON = Msg.getString("icon.bar"); //$NON-NLS-1$
+	public static final String PIE_ICON = Msg.getString("icon.pie"); //$NON-NLS-1$
 
 	// Data members
 	//private JTabbedPane tabsSection;
@@ -311,7 +312,7 @@ implements TableModelListener, ActionListener {
 	 */
 	public void displayModel(UnitTableModel model) {
 		if (containsModel(model)) tabsSection.setSelectedIndex(getModelIndex(model));
-		else addTab(new UnitTab(this,model, false, "user_32"));
+		else addTab(new UnitTab(this,model, false, UnitWindow.USER));
 	}
 
 	/**

@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -29,7 +30,12 @@ public class ImageLoader {
      */
     /* [landrus, 26.11.09]: use classloader compatible paths */
     public final static String IMAGE_DIR = "/images/";
-    public final static String MONITOR_ICONS_DIR = "/icons/monitor_tool/";
+
+    //public final static String MONITOR_ICONS_DIR = File.separator
+    //											+ "icons"
+    //                                            + File.separator
+     //                                           + "monitor_tool"
+      //                                          + File.separator;
 
     /**
      * Static singleton
@@ -50,6 +56,7 @@ public class ImageLoader {
     }
 
     public static ImageIcon getNewIcon(String imagename) {
+        //System.out.println("imagename is " + imagename);
     	String ext = "png";
         String fullImageName = imagename.endsWith(ext) ?
             	imagename :
@@ -57,8 +64,10 @@ public class ImageLoader {
             ImageIcon found = iconCache.get(fullImageName);
             if (found == null) {
                 String fileName = fullImageName.startsWith("/") ?
-                	fullImageName :
-                	MONITOR_ICONS_DIR + fullImageName ;
+                    fullImageName :
+                    "/" + fullImageName ;
+                //System.out.println("fileName is " + fileName);
+                //String fileName = MONITOR_ICONS_DIR + fullImageName ;
                 /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
                 URL resource = ImageLoader.class.getResource(fileName);//ClassLoader.getSystemResource(fileName);
                 found = new ImageIcon(resource);

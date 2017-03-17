@@ -1933,7 +1933,9 @@ public class UnitManager implements Serializable {
 		public void run() {
 			try {
 				s.timePassing(time);
-			} catch (ConcurrentModificationException e) {} //Exception e) {}
+			} catch (ConcurrentModificationException e) {
+                logger.severe(e.getMessage());
+			} //Exception e) {}
 		}
 	}
 

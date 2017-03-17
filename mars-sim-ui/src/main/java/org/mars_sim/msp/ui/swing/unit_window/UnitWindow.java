@@ -71,7 +71,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	private JideTabbedPane centerPanel;
 
 	//private BufferedImage image;
-
+	public static final String USER = Msg.getString("icon.user");
 	private static final String TOWN = Msg.getString("icon.town");
 	private static final String JOB = Msg.getString("icon.job");
 	private static final String ROLE = Msg.getString("icon.role");
@@ -88,6 +88,8 @@ public abstract class UnitWindow extends JInternalFrame {
 	private static final String ONE_SPACE_SHIFT = " Shift";
 	private static final String STATUS = "Status";
 	private static final String DETAILS = "Details";
+	private static final String STATUS_ICON = Msg.getString("icon.status");
+	private static final String DETAILS_ICON = Msg.getString("icon.details");
 
 	private String oldRoleString = "",
 					oldJobString = "",
@@ -156,7 +158,7 @@ public abstract class UnitWindow extends JInternalFrame {
 
         namePanel.setBorder(null);
         factory = SlidePaneFactory.getInstance();
-        factory.add(namePanel, STATUS, getImage(TITLE), false);
+        factory.add(namePanel, STATUS, getImage(STATUS_ICON), false);
         mainPane.add(factory);//, BorderLayout.CENTER);
 
         //	name = " " + Conversion.capitalize(unit.getName()) + " ";
@@ -275,7 +277,7 @@ public abstract class UnitWindow extends JInternalFrame {
         //centerPanel.setBackground(UIDefaultsLookup.getColor("control"));
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
-        factory.add(centerPanel, DETAILS, getImage(TITLE), true);
+        factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
         update();
 
         //mainPane.add(centerPanel, BorderLayout.CENTER);
@@ -292,20 +294,23 @@ public abstract class UnitWindow extends JInternalFrame {
 	 * Sets weather image.
 	 */
 	public void setImage(String imageLocation, JLabel label) {
-        URL resource = ImageLoader.class.getResource(imageLocation);
-        Toolkit kit = Toolkit.getDefaultToolkit();
-        Image img = kit.createImage(resource);
-        ImageIcon imageIcon = new ImageIcon(img);
+		//URL resource = ImageLoader.class.getResource(imageLocation);
+        //Toolkit kit = Toolkit.getDefaultToolkit();
+        //Image img = kit.createImage(resource);
+        //ImageIcon imageIcon = new ImageIcon(img);
+        ImageIcon imageIcon = ImageLoader.getNewIcon(imageLocation);
     	label.setIcon(imageIcon);
 	}
 
 	public Image getImage(String imageLocation) {
-        URL resource = ImageLoader.class.getResource(imageLocation);
-        Toolkit kit = Toolkit.getDefaultToolkit();
-        Image img = kit.createImage(resource);
-        return (new ImageIcon(img)).getImage();
+        //URL resource = ImageLoader.class.getResource(imageLocation);
+        //Toolkit kit = Toolkit.getDefaultToolkit();
+        //Image img = kit.createImage(resource);
+        //return (new ImageIcon(img)).getImage();
+        return ImageLoader.getNewIcon(imageLocation).getImage();
 	}
 
+/*
     private ImageIcon createImageIcon(String path, String description) {
         java.net.URL imgURL = getClass().getResource(path);
         if (imgURL != null) {
@@ -318,7 +323,7 @@ public abstract class UnitWindow extends JInternalFrame {
             return null;
         }
     }
-
+*/
     public void statusUpdate() {
 
     	Person p = (Person) unit;

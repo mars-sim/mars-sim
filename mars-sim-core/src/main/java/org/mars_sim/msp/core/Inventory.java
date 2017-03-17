@@ -1810,21 +1810,21 @@ implements Serializable {
     public void destroy() {
 
         owner = null;
-        //if (containedUnits != null) containedUnits.clear();
+        if (containedUnits != null) containedUnits.clear();
         containedUnits = null;
-        //if (containedItemResources != null) containedItemResources.clear();
+        if (containedItemResources != null) containedItemResources.clear();
         containedItemResources = null;
         if (resourceStorage != null) resourceStorage.destroy();
         resourceStorage = null;
-        //if (amountResourceCapacityCache != null) amountResourceCapacityCache.clear();
+        if (amountResourceCapacityCache != null) amountResourceCapacityCache.clear();
         amountResourceCapacityCache = null;
-        //if (amountResourceCapacityCacheDirty != null) amountResourceCapacityCacheDirty.clear();
+        if (amountResourceCapacityCacheDirty != null) amountResourceCapacityCacheDirty.clear();
         amountResourceCapacityCacheDirty = null;
-        //if (amountResourceStoredCache != null) amountResourceStoredCache.clear();
+        if (amountResourceStoredCache != null) amountResourceStoredCache.clear();
         amountResourceStoredCache = null;
-        //if (amountResourceStoredCacheDirty != null) amountResourceStoredCacheDirty.clear();
+        if (amountResourceStoredCacheDirty != null) amountResourceStoredCacheDirty.clear();
         amountResourceStoredCacheDirty = null;
-        //if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
+        if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
         allStoredAmountResourcesCache = null;
     }
 

@@ -71,6 +71,9 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D interiorAirlockPos = null;
 
+	protected static AmountResource oxygenAR = AmountResource.oxygenAR;
+	protected static AmountResource waterAR = AmountResource.waterAR;
+
     /**
      * Constructor.
      * @param person the person to perform the task
@@ -627,31 +630,35 @@ implements Serializable {
                 Inventory entityInv = person.getContainerUnit().getInventory();
 
                 // Unload oxygen from suit.
-                AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                double oxygenAmount = suitInv.getAmountResourceStored(oxygen, false);
-                double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygen, true, false);
+                //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+                double oxygenAmount = suitInv.getAmountResourceStored(oxygenAR, false);
+                double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygenAR, true, false);
                 if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
                 try {
-                    suitInv.retrieveAmountResource(oxygen, oxygenAmount);
-                    entityInv.storeAmountResource(oxygen, oxygenAmount, true);
+                    suitInv.retrieveAmountResource(oxygenAR, oxygenAmount);
+                    entityInv.storeAmountResource(oxygenAR, oxygenAmount, true);
     				// 2015-01-15 Add addSupplyAmount()
-                    entityInv.addAmountSupplyAmount(oxygen, oxygenAmount);
+                    entityInv.addAmountSupplyAmount(oxygenAR, oxygenAmount);
 
                 }
-                catch (Exception e) {}
+                catch (Exception e) {
+                    logger.severe(e.getMessage());
+                }
 
                 // Unload water from suit.
-                AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-                double waterAmount = suitInv.getAmountResourceStored(water, false);
-                double waterCapacity = entityInv.getAmountResourceRemainingCapacity(water, true, false);
+                //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+                double waterAmount = suitInv.getAmountResourceStored(waterAR, false);
+                double waterCapacity = entityInv.getAmountResourceRemainingCapacity(waterAR, true, false);
                 if (waterAmount > waterCapacity) waterAmount = waterCapacity;
                 try {
-                    suitInv.retrieveAmountResource(water, waterAmount);
-                    entityInv.storeAmountResource(water, waterAmount, true);
+                    suitInv.retrieveAmountResource(waterAR, waterAmount);
+                    entityInv.storeAmountResource(waterAR, waterAmount, true);
     				// 2015-01-15 Add addSupplyAmount()
-                    entityInv.addAmountSupplyAmount(water, waterAmount);
+                    entityInv.addAmountSupplyAmount(waterAR, waterAmount);
                 }
-                catch (Exception e) {}
+                catch (Exception e) {
+                    logger.severe(e.getMessage());
+                }
 
                 // Return suit to entity's inventory.
                 // logger.finer(person.getName() + " putting away EVA suit into " + entity.getName());

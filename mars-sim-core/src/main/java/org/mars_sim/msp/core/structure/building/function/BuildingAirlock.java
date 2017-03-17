@@ -39,9 +39,6 @@ public class BuildingAirlock extends Airlock {
     private Point2D airlockInteriorPos;
     private Point2D airlockExteriorPos;
 
-	public static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-	public static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
-
     /**
      * Constructor
      * @param building the building this airlock of for.

@@ -1,6 +1,6 @@
 Mars Simulation Project v3.1.0
 Copyright (C) 2017 Scott Davis
-http://mars-sim.sourceforge.net/
+https://mars-sim.github.io/
 
 ------------------------------------------------------
 
@@ -16,9 +16,9 @@ http://mars-sim.sourceforge.net/
 
 ### KNOWN LIMITATIONS :
 
-1. In MacOS, the Tab bar (housing Main, Map, and Help tabs) does NOT work and is prone to crash if clicking it. Must use MacOS top menu to gain access to each Tool.
+1. In MacOS, the Tab bar (Main, Map, and Help tabs) does NOT work and will freeze mars-sim if clicking on it. Recommend using MacOS's style top menu to gain access to each Tool.
 
-2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact. In the main window, users cannot type in text or numbers in some textfields.
+2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact.
 
 3. Not compatible with 32-bit Java 8 or any versions of OpenJDK/OpenJFX.
 
@@ -27,6 +27,8 @@ http://mars-sim.sourceforge.net/
 1. Add lists of first and last names for each of the 22 countries of ESA.
 
 2. Add combo boxes for choosing country and sponsorship for each member of the Alpha Crew in Crew Editor.
+
+3. Add validation and partial correction of the textfield input of settler, bot, latitude and longitude in config editor.
 
 ### UI IMPROVEMENT :
 
@@ -42,7 +44,11 @@ http://mars-sim.sourceforge.net/
 
 2. Fix displaying the most current activity description/phase and mission description/phase in Activity Tab in Person Window.
 
-3. Fix crash due to nimrod bug by switching to nimbus theme in linux.
+3. Fix crash in linux due to bugs in nimrod L&F theme by using only nimbus L&F.
+
+4. Temporarily fix the error in loading a saved sim by disabling oxygen/water consumption check in settlement or in a EVAsuit (final fix still in-work)
+
+5. Reduce memory leak by caching more objects and icons.
 
 ------------------------------------------------------
 

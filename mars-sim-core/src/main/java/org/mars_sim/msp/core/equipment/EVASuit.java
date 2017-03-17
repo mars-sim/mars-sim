@@ -156,7 +156,6 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.oxygenAR, false);
 
-
 		if (oxygenTaken > oxygenLeft) {
 			oxygenTaken = oxygenLeft;
 		}
@@ -276,7 +275,7 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		Unit container = getContainerUnit();
 		if (container instanceof Person) {
 			Person person = (Person) container;
-			if (!person.getPhysicalCondition().isDead()) {
+			if (!person.isDead()) {
 				malfunctionManager.activeTimePassing(time);
 			}
 		}

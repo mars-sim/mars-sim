@@ -252,7 +252,7 @@ implements Serializable {
 				result = true;
 			}
 		} catch (Exception e) {
-    		logger.log(Level.SEVERE, "Issues with storeAnResource(AmountResource ar) on " + ar.getName() + e.getMessage());
+    		logger.log(Level.SEVERE, "Issues with storeAnResource() on " + ar.getName() + " : " + e.getMessage());
 		}
 
 		return result;
@@ -284,7 +284,7 @@ implements Serializable {
 				result = true;
 			}
 		} catch (Exception e) {
-    		logger.log(Level.SEVERE, "Issues with storeAnResource(String name) on " + name + e.getMessage());
+    		logger.log(Level.SEVERE, "Issues with storeAnResource() on " + name + " : " + e.getMessage());
 		}
 
 		return result;
@@ -325,8 +325,8 @@ implements Serializable {
 	    		}
 	    		result = true;
 	    	}
-	    }  catch (Exception e) {
-    		logger.log(Level.SEVERE, "Issues with retrieveAnResource(String name) on " + name + e.getMessage());
+	    } catch (Exception e) {
+    		logger.log(Level.SEVERE, "Issues with retrieveAnResource() on " + name + " : " + e.getMessage());
 	    }
 
     	return result;
@@ -366,9 +366,9 @@ implements Serializable {
 	    		}
 	    		result = true;
 	    	}
-	    }  catch (Exception e) {
+	    } catch (Exception e) {
 			e.printStackTrace(System.err);
-    		logger.log(Level.SEVERE, "Issues with retrieveAnResource(AmountResource ar) on " + ar.getName() + " : " + e.getMessage());
+    		logger.log(Level.SEVERE, "Issues with retrieveAnResource() on " + ar.getName() + " : " + e.getMessage());
 	    }
 
     	return result;

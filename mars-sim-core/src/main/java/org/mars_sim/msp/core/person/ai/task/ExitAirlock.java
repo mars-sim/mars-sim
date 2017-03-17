@@ -77,8 +77,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D exteriorAirlockPos = null;
 
-	protected static AmountResource oxygenAR = BuildingAirlock.oxygenAR;
-	protected static AmountResource waterAR = BuildingAirlock.waterAR;
+	protected static AmountResource oxygenAR = AmountResource.oxygenAR;
+	protected static AmountResource waterAR = AmountResource.waterAR;
 
     //private Person person = null;
     //private Robot robot = null;
@@ -511,7 +511,7 @@ implements Serializable {
         double remainingTime = time;
 
         if (person != null) {
- 
+
             if (airlock.inAirlock(person)) {
 
                 // Check if person is the airlock operator.
@@ -519,8 +519,8 @@ implements Serializable {
 
                     // If airlock has not been activated, activate it.
                     if (!airlock.isActivated()) {
-                        logger.finer(person + " is the operator activating the airlock.");                    
-                        airlock.activateAirlock(person);                     
+                        logger.finer(person + " is the operator activating the airlock.");
+                        airlock.activateAirlock(person);
                     }
 
                     // If person is airlock operator, add cycle time to airlock.
@@ -538,7 +538,7 @@ implements Serializable {
                 }
                 else {
                     // If person is not airlock operator, just wait.
-                    logger.finer(person+ " is not the operator and is waiting inside an airlock for the completion of the air cycle."); 
+                    logger.finer(person+ " is not the operator and is waiting inside an airlock for the completion of the air cycle.");
                     remainingTime = 0D;
                 }
             }
@@ -550,7 +550,7 @@ implements Serializable {
 
         }
         else if (robot != null) {
-  
+
             if (airlock.inAirlock(robot)) {
 
                  // Check if robot is the airlock operator.
@@ -577,7 +577,7 @@ implements Serializable {
                 }
                 else {
                     // If robot is not airlock operator, just wait.
-                    logger.finer(robot + " is not the operator and is waiting inside an airlock for the completion of the air cycle."); 
+                    logger.finer(robot + " is not the operator and is waiting inside an airlock for the completion of the air cycle.");
                 	remainingTime = 0D;
                 }
             }
@@ -725,21 +725,21 @@ implements Serializable {
         // Check if person is incapacitated.
         // TODO: if incapacitated, should someone else help this person to get out?
         else if (person.getPerformanceRating() == 0) {
-        	
+
         	result = false;
         	// TODO: how to prevent the logger statement below from being repeated multiple times?
         	logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() +
                 " due to crippling performance rating");
-        
+
             // 2016-02-28 Calling getNewAction(true, false) so as not to get "stuck" inside the airlock.
             try {
             	logger.info(person.getName() + " is nearly abandoning the action of exiting the airlock and switching to a new task");
-            	// 2016-10-07 Note: calling getNewAction() below is still considered "experimental" 
+            	// 2016-10-07 Note: calling getNewAction() below is still considered "experimental"
             	// It may have caused StackOverflowError if a very high fatigue person is stranded in the airlock and cannot go outside.
             	// Intentionally add a 5% performance boost
             	person.getPhysicalCondition().setPerformanceFactor(.05);
             	person.getMind().getNewAction(true, false);
-            	
+
             } catch (Exception e) {
                 logger.log(Level.WARNING, person + " could not get new action", e);
                 e.printStackTrace(System.err);
@@ -894,7 +894,9 @@ implements Serializable {
                 suitInv.storeAmountResource(oxygenAR, takenOxygen, true);
                 // not calling addSupplyAmount()
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+                logger.severe(e.getMessage());
+            }
 
             // Fill water in suit from entity's inventory.
             //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
@@ -912,7 +914,9 @@ implements Serializable {
                 suitInv.storeAmountResource(waterAR, takenWater, true);
                 // not calling addSupplyAmount()
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+                logger.severe(e.getMessage());
+            }
     	}
     	else if (robot != null) {
 

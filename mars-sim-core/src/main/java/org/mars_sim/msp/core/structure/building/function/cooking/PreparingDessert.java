@@ -407,6 +407,7 @@ implements Serializable {
 	  	// Put together a list of available dessert
         for(String n : availableDesserts) {
         	double amount = getDryMass(n);
+            //System.out.println("PreparingDessert : n is " + n);
         	boolean isAvailable = Storage.retrieveAnResource(amount, n, inv, false);
 
         	if (isAvailable) {
@@ -501,6 +502,7 @@ implements Serializable {
 
     	// Take out one serving of the selected dessert from storage.
         double dryMass = getDryMass(selectedDessert);
+        //System.out.println("PreparingDessert : selectedDessert is " + selectedDessert);
         Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
 
         MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
