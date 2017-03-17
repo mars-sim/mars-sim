@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OGGSoundClip.java
- * @version 3.08 2016-03-31
+ * @version 3.1.0 2017-03-17
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  * Based on JOrbisPlayer example source
  */
@@ -22,6 +22,8 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 
+import org.mars_sim.msp.ui.javafx.MainScene;
+
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
 import com.jcraft.jogg.StreamState;
@@ -32,7 +34,7 @@ import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
 
 public class OGGSoundClip {
-	
+
 	private static Logger logger = Logger.getLogger(OGGSoundClip.class.getName());
 
 	private final int BUFSIZE = 4096 * 2;
@@ -61,9 +63,10 @@ public class OGGSoundClip {
 
 	private boolean mute;
 	private boolean paused;
+
 	/**
 	 * Create a new clip based on a reference into the class path
-	 * 
+	 *
 	 * @param ref
 	 *            The reference into the class path which the OGG can be read
 	 *            from
@@ -81,7 +84,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Create a new clip based on a reference into the class path
-	 * 
+	 *
 	 * @param in
 	 *            The stream from which the OGG can be read from
 	 * @throws IOException
@@ -101,15 +104,15 @@ public class OGGSoundClip {
 	public float getGain() {
 		return gain;
 	}
-	
+
 	/**
 	 * Attempt to set the global gain for the playback. If the control is not
 	 * supported this method has no effect. 1.0 will set maximum gain, 0.0
 	 * minimum gain
-	 * 
+	 *
 	 * @param gain
 	 *            The gain value
-	           
+
 	public void setGain(float gain) {
 		if (gain != -1) {
 			if ((gain < 0) || (gain > 1)) {
@@ -140,9 +143,9 @@ public class OGGSoundClip {
 			e.printStackTrace();
 		}
 	}
- */ 
-	
-	
+ */
+
+
 	/**
 	 * Compute the gain value for the playback--based on the new value of volume in the increment or decrement of 0.05f.
 	 * @param volume the volume
@@ -154,72 +157,89 @@ public class OGGSoundClip {
 			volume = 1;
 		else if (volume < 0)
 			volume = 0;
-	
+
 		this.volume = volume;
-		
+
 		//System.out.println("volume : " + volume);
-		
+
 		if (outputLine == null) {
 			return;
 		}
 
 		try {
 			// Note: control is supposed to be in decibel (dB)
-			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+			//FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 
-			//  A positive gain amplifies (boosts) the signal's volume, 
-			//  A negative gain attenuates (cuts) it. 
-			// The gain setting defaults to a value of 0.0 dB, meaning the signal's loudness is unaffected. 
-			// Note that gain measures dB, not amplitude.
-			float max = control.getMaximum();
-			float min = control.getMinimum(); 
-											
-			float range = max - min;
-			float step = range/20f;
-			float num = volume/0.05f;			
-			float value = min + num * step;
-			
-			if (value < min)
-				value = min;
-			else if (value > max)
-				value = max;
-			
-			control.setValue(value);
-			
-			//System.out.println("max : " + max);
-			//System.out.println("min : " + min);
-			//System.out.println("range : " + range);
-			//System.out.println("step : " + step);
-			//System.out.println("value : " + value);
+			FloatControl control = null;
+			//DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
+			//SourceDataLine dataLine = (SourceDataLine) AudioSystem.getLine(info);
+			//outputLine.open();
+			// Adjust the volume on the output line.
+			if(outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+			    // If inside this if, the Master_Gain must be supported. Yes?
+				control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+			    // This line throws an exception. "Master_Gain not supported"
+				//control.setValue( 100.0F );
 
-			
+
+				//  A positive gain amplifies (boosts) the signal's volume,
+				//  A negative gain attenuates (cuts) it.
+				// The gain setting defaults to a value of 0.0 dB, meaning the signal's loudness is unaffected.
+				// Note that gain measures dB, not amplitude.
+				float max = control.getMaximum();
+				float min = control.getMinimum();
+
+				float range = max - min;
+				float step = range/20f;
+				float num = volume/0.05f;
+				float value = min + num * step;
+
+				if (value < min)
+					value = min;
+				else if (value > max)
+					value = max;
+
+				control.setValue(value);
+
+				//System.out.println("max : " + max);
+				//System.out.println("min : " + min);
+				//System.out.println("range : " + range);
+				//System.out.println("step : " + step);
+				//System.out.println("value : " + value);
+			}
+			else {
+				MainScene.disableSound();
+			}
+
+
 		} catch (IllegalArgumentException e) {
-			// gain not supported
+			// TODO: how to resolve 'IllegalArgumentException: Master Gain not supported' in ubuntu ?
 			e.printStackTrace();
+			MainScene.disableSound();
 		}
-		
+
 	}
 
 	public float getVolume() {
 		return volume;
 	}
 
-	/*	
-	public void setVolume() {	
+	/*
+	public void setVolume() {
 		try {
 		// use FloatControl.Type.VOLUME
 			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
 			float max = control.getMaximum();
-			float min = control.getMinimum(); 											
+			float min = control.getMinimum();
 			float range = max - min;
 			float value = min + (range * gain);
 			if (value < min)
 				value = min;
 			else if (value > max)
 				value = max;
-			
+
 			control.setValue(value);
-			
+
 			System.out.println("max : " + max);
 			System.out.println("min : " + min);
 			System.out.println("range : " + range);
@@ -229,12 +249,12 @@ public class OGGSoundClip {
 		}
 	}
 */
-	
+
 	/**
 	 * Attempt to set the balance between the two speakers. -1.0 is full left
 	 * speak, 1.0 if full right speaker. Anywhere in between moves between the
 	 * two speakers. If the control is not supported this method has no effect
-	 * 
+	 *
 	 * @param balance
 	 *            The balance value
 	 */
@@ -255,7 +275,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Check the state of the playback
-	 * 
+	 *
 	 * @return True if the playback has been stopped
 	 */
 	private boolean checkState() {
@@ -285,7 +305,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Check if the stream is paused
-	 * 
+	 *
 	 * @return True if the stream is paused
 	 */
 	public boolean isPaused() {
@@ -313,7 +333,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Check if the clip has been stopped
-	 * 
+	 *
 	 * @return True if the clip has been stopped
 	 */
 	public boolean stopped() {
@@ -322,7 +342,7 @@ public class OGGSoundClip {
 
 	/**
 	 * Initialise the OGG clip
-	 * 
+	 *
 	 * @param in
 	 *            The stream we're going to read from
 	 * @throws IOException
@@ -435,9 +455,10 @@ public class OGGSoundClip {
 	 */
 	private void initJavaSound(int channels, int rate) {
 		try {
-			AudioFormat audioFormat = new AudioFormat(rate, 16, channels, true, // PCM_Signed
+			AudioFormat audioFormat = new AudioFormat(rate, 16, channels,
+					true, // PCM_Signed
 					false // littleEndian
-			);
+					);
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
 			if (!AudioSystem.isLineSupported(info)) {
 				//throw new Exception("Line " + info + " not supported.");
@@ -529,7 +550,7 @@ public class OGGSoundClip {
 				logger.log(Level.SEVERE, "Audio Troubleshooting : have a speaker/headphone been plugged in ? "
 						+ "Please check your audio source.", e.getMessage());
 			}
-			
+
 			oy.wrote(bytes);
 
 			if (chained) {
@@ -760,5 +781,5 @@ public class OGGSoundClip {
 			super(msg);
 		}
 	}
-*/	
+*/
 }

@@ -321,7 +321,9 @@ public class MainScene {
 	private JFXBadge badgeIcon;
 	private JFXSnackbar snackbar;
 	private JFXToggleButton cacheToggle, calendarButton, minimapToggle, mapToggle;
-	private JFXSlider zoomSlider, timeSlider, soundSlider;
+	private JFXSlider zoomSlider, timeSlider;
+
+	private static JFXSlider soundSlider;
 	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn; // miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
@@ -365,7 +367,7 @@ public class MainScene {
 	private NavigatorWindow navWin;
 	private SettlementMapPanel mapPanel;
 
-	private AudioPlayer soundPlayer;
+	private static AudioPlayer soundPlayer;
 	private MarsCalendarDisplay calendarDisplay;
 	private UpTimer uptimer;
 
@@ -3414,6 +3416,11 @@ public class MainScene {
 
 	public JFXButton getMarsNetBtn() {
 		return marsNetBtn;
+	}
+
+	public static void disableSound() {
+		soundPlayer.enableMasterGain(false);
+		if (soundSlider != null) soundSlider.setDisable(true);//.setValue(0);
 	}
 
 	public void destroy() {

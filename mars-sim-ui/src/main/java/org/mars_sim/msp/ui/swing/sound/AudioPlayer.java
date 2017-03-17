@@ -28,21 +28,22 @@ public class AudioPlayer {
 	/** The current clip sound. */
 	private OGGSoundClip currentOGGSoundClip;
 	private OGGSoundClip backgroundSoundTrack;
-	
+
 	private MainDesktopPane desktop;
-	
+
 	/** The volume of the audio player (0.0 to 1.0) */
 	private float volume = .8f;
 
+	private static boolean hasMasterGain = true;
 
 	public AudioPlayer(MainDesktopPane desktop) {
 		//logger.info("constructor is on " + Thread.currentThread().getName());
 		this.desktop = desktop;
-		
+
 		currentOGGSoundClip = null;
 		backgroundSoundTrack = null;
-		
-	
+
+
 		if (UIConfig.INSTANCE.useUIDefault()) {
 			setMute(false);
 			setVolume(.8f);
@@ -60,7 +61,7 @@ public class AudioPlayer {
 	public void play(String filepath) {
 		//logger.info("play() is on " + Thread.currentThread().getName());
 		// 2016-09-27 Adde checking if it's set to mute.
-		
+
 		//if (!isMute()) {
 			if (desktop.getMainScene() != null) {
 					Platform.runLater(() -> {
@@ -68,7 +69,7 @@ public class AudioPlayer {
 						try {
 							currentOGGSoundClip = new OGGSoundClip(filepath);
 							if (!isMute(false)) {
-								// Use the state of the background sound track to determine if the sound effect should be played. 
+								// Use the state of the background sound track to determine if the sound effect should be played.
 								currentOGGSoundClip.play();
 								//logger.info("Just currentOGGSoundClip.play()");
 							}
@@ -78,14 +79,14 @@ public class AudioPlayer {
 						}
 					});
 			}
-			
+
 			else {
 				SwingUtilities.invokeLater(() -> {
 						//logger.info("play() is on " + Thread.currentThread().getName());
 						try {
 							currentOGGSoundClip = new OGGSoundClip(filepath);
 							if (!isMute(false)) {
-								// Use the state of the background sound track to determine if the sound effect should be played. 
+								// Use the state of the background sound track to determine if the sound effect should be played.
 								currentOGGSoundClip.play();
 								//logger.info("Just currentOGGSoundClip.play()");
 							}
@@ -93,7 +94,7 @@ public class AudioPlayer {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's play()", e.getMessage());
 
-						}	
+						}
 				});
 			}
 		//}
@@ -120,26 +121,26 @@ public class AudioPlayer {
 						}
 					});
 			}
-			
+
 			else {
 				SwingUtilities.invokeLater(() -> {
 						//logger.info("playInBackground() is on " + Thread.currentThread().getName());
 						try {
 							backgroundSoundTrack = new OGGSoundClip(filepath);
-							if (!isMute(false)) 
+							if (!isMute(false))
 								backgroundSoundTrack.loop();
 						} catch (IOException e) {
 							//e.printStackTrace();
 							logger.log(Level.SEVERE, "IOException in AudioPlayer's playInBackground()", e.getMessage());
-						}	
+						}
 				});
 			}
 		//}
 	}
-	
+
 	/**
 	 * Play the clip in a loop.
-	 * 
+	 *
 	 * @param filepath
 	 *            the filepath to the sound file.
 	 */
@@ -148,7 +149,7 @@ public class AudioPlayer {
 			// 2016-09-28 Replaced currentOGGSoundClip with backgroundSoundTrack for looping
 			backgroundSoundTrack = new OGGSoundClip(filepath);
 			backgroundSoundTrack.loop();
-			
+
 		} catch (IOException e) {
 			//e.printStackTrace();
 			logger.log(Level.SEVERE, "IOException in AudioPlayer's loop()", e.getMessage());
@@ -189,7 +190,7 @@ public class AudioPlayer {
 			setVolume();
 		});
 	}
-	
+
 	// 2016-09-28 volumeDown()
 	public void volumeDown() {
 		Platform.runLater(() -> {
@@ -199,31 +200,33 @@ public class AudioPlayer {
 			setVolume();
 		});
 	}
-	
+
 	@SuppressWarnings("restriction")
 	public void setVolume() {
-		Platform.runLater(() -> {		
-		if(!isMute(false)) {
-			//logger.info("!isMute(false) is " + !isMute(false));
-			// 2016-09-28 Added backgroundSoundTrack
-			if (backgroundSoundTrack != null)
-				if (!backgroundSoundTrack.isMute())	{
-					backgroundSoundTrack.setGain(volume);
-					//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
-					//backgroundSoundTrack.resume();//.play();
+		Platform.runLater(() -> {
+			if (hasMasterGain) {
+				if(!isMute(false)) {
+					//logger.info("!isMute(false) is " + !isMute(false));
+					// 2016-09-28 Added backgroundSoundTrack
+					if (backgroundSoundTrack != null)
+						if (!backgroundSoundTrack.isMute())	{
+							backgroundSoundTrack.setGain(volume);
+							//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
+							//backgroundSoundTrack.resume();//.play();
+						}
 				}
-		}
-		else {
-			if (currentOGGSoundClip != null)
-				if (!currentOGGSoundClip.isMute()) {
-					currentOGGSoundClip.setGain(volume);
-					//currentOGGSoundClip.resume();
+				else {
+					if (currentOGGSoundClip != null)
+						if (!currentOGGSoundClip.isMute()) {
+							currentOGGSoundClip.setGain(volume);
+							//currentOGGSoundClip.resume();
+						}
+
 				}
-			
-		}
+			}
 		});
 	}
-	
+
 	/**
 	 * Sets the volume of the audio player.
 	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
@@ -235,32 +238,35 @@ public class AudioPlayer {
 		if (volume > 1F)
 			volume = 1F;
 
-		this.volume = volume;	
-		//System.out.println("volume " + volume);	
-		if(!isMute(false)) {
-			//logger.info("!isMute(false) is " + !isMute(false));
-			// 2016-09-28 Added backgroundSoundTrack
-			if (backgroundSoundTrack != null)
-				if (!backgroundSoundTrack.isMute())	{
-					backgroundSoundTrack.setGain(volume);
-					//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
-					//backgroundSoundTrack.resume();
-					//backgroundSoundTrack.setMute(false);
+		this.volume = volume;
+		//System.out.println("volume " + volume);
+		if (hasMasterGain) {
+			if (!isMute(false)) {
+				//logger.info("!isMute(false) is " + !isMute(false));
+				// 2016-09-28 Added backgroundSoundTrack
+				if (backgroundSoundTrack != null) {
+					if (!backgroundSoundTrack.isMute())	{
+						backgroundSoundTrack.setGain(volume);
+						//System.out.println("backgroundSoundTrack is " + backgroundSoundTrack);
+						//backgroundSoundTrack.resume();
+						//backgroundSoundTrack.setMute(false);
+					}
 				}
+			}
+			else {
+				if (currentOGGSoundClip != null)
+					if (!currentOGGSoundClip.isMute())
+						currentOGGSoundClip.setGain(volume);
+
+			}
 		}
-		else {
-			if (currentOGGSoundClip != null)
-				if (!currentOGGSoundClip.isMute())
-					currentOGGSoundClip.setGain(volume);
-			
-		}
-		
+
 	}
 
-	
+
 	/**
 	 * Checks if the audio player is muted.
-	 * @param is it a sound effect 
+	 * @param is it a sound effect
 	 * @return true if muted.
 	 */
 	public boolean isMute(boolean isSoundEffect) {
@@ -270,7 +276,7 @@ public class AudioPlayer {
 				result = currentOGGSoundClip.isMute();
 			}
 		}
-		else { 
+		else {
 			// 2016-09-28 Added backgroundSoundTrack
 			if (backgroundSoundTrack != null) {
 				result = backgroundSoundTrack.isMute();
@@ -290,15 +296,19 @@ public class AudioPlayer {
 		// 2016-09-28 Added backgroundSoundTrack
 		if (backgroundSoundTrack != null) {
 			backgroundSoundTrack.setMute(mute);
-			if (backgroundSoundTrack.isPaused()) 
+			if (backgroundSoundTrack.isPaused())
 				backgroundSoundTrack.loop();
 		}
 
-		
+
 	}
 
 	public void cleanAudioPlayer() {
 		stop();
+	}
+
+	public void enableMasterGain(boolean value) {
+		hasMasterGain = value;
 	}
 
 }
