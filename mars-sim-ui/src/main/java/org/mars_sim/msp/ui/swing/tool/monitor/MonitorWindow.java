@@ -177,7 +177,7 @@ implements TableModelListener, ActionListener {
 		// Create buttons based on selection
 		//buttonMap = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		buttonMap = new JButton(ImageLoader.getNewIcon(CENTERMAP_ICON)); //$NON-NLS-1$
-		buttonMap.setMargin(new Insets(3, 4, 4, 4));
+		//buttonMap.setMargin(new Insets(3, 4, 4, 4));
 		buttonMap.setToolTipText(Msg.getString("MonitorWindow.tooltip.centerMap")); //$NON-NLS-1$
 		buttonMap.addActionListener(this);
 		//toolbar

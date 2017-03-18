@@ -7,13 +7,11 @@ https://github.com/mars-sim/mars-sim
 
 ** Minimum Requirements **
 
-- Dual Core Pentium/Celeron
+- Dual Core Pentium/Celeron 1.5GHz or above
 
-- 1.5GHz or above
+- 500 MB to 1.5 GB free RAM dedicated for running mars-sim
 
-- 1 GB RAM dedicated for running mars-sim
-
-- 64-bit Java 8 (jre or jdk 8u77 or higher)
+- 64-bit Oracle Java 8 (JRE or JDK 8u71 and higher) OR OpenJDK 8u71 with OpenJFX in linux
 
 ---------------------------------------------------------------------
 

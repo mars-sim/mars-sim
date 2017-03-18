@@ -87,12 +87,15 @@ implements ClockListener, Serializable {
     /** Build string. */
     public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
     /** Java version string. */
-    public final static String JAVA_VERSION = com.sun.javafx.runtime.VersionInfo.getRuntimeVersion();
-
+    public final static String JAVA_VERSION = com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
+    /** Vendor string. */
+    public final String VENDOR = System.getProperty("java.vendor");
+    /** Vendor string. */
+    public final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
     /** Default save filename. */
     public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
+    /** Default temp filename. */
     public final static String TEMP_FILE = Msg.getString("Simulation.tempFile"); //$NON-NLS-1$
-
     /** Default save filename extension. */
     public final static String DEFAULT_EXTENSION = Msg.getString("Simulation.defaultFile.extension"); //$NON-NLS-1$
 
@@ -118,8 +121,10 @@ implements ClockListener, Serializable {
     public final static String title = Msg.getString(
             "Simulation.title", VERSION
             + " - Build " + BUILD
-            + " - Java " + JAVA_VERSION
-            + " - " + NUM_THREADS + " CPU thread(s)"
+            //+ " - " + VENDOR
+            + " - " + OS_ARCH
+            + " " + JAVA_VERSION
+            + " - " + NUM_THREADS + " thread(s)"
             ); //$NON-NLS-1$
 
     private static final boolean debug = logger.isLoggable(Level.FINE);

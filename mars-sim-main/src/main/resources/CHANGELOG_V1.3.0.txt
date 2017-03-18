@@ -8,11 +8,12 @@ https://mars-sim.github.io/
 
 ### MINIMUM REQUIREMENTS :
 
-1. Dual Core Pentium/Celeron
+1. Dual Core Pentium/Celeron 1.5GHz or above
 
-2. 1.5GHz or above
+2. 500 MB to 1.5 GB free RAM dedicated for running mars-sim
 
-3. 500 MB to 1.25 GB RAM dedicated for running mars-sim
+3. 64-bit Oracle Java 8 (JRE or JDK 8u71 and higher) OR OpenJDK 8u71 with OpenJFX in linux
+
 
 ### KNOWN LIMITATIONS :
 
@@ -20,15 +21,17 @@ https://mars-sim.github.io/
 
 2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact.
 
-3. Not compatible with 32-bit Java 8 or any versions of OpenJDK/OpenJFX.
+3. Not compatible with 32-bit Java 8.
+
 
 ### CORE ENGINE IMPROVEMENTS :
 
-1. Add lists of first and last names for each of the 22 countries of ESA.
+1. Add lists of first and last names for each of the 22 countries of European Space Agency (ESA).
 
 2. Add combo boxes for choosing country and sponsorship for each member of the Alpha Crew in Crew Editor.
 
 3. Add validation and partial correction of the textfield input of settler, bot, latitude and longitude in config editor.
+
 
 ### UI IMPROVEMENT :
 
@@ -37,6 +40,7 @@ https://mars-sim.github.io/
 2. Add map toggle button and minimap toggle button.
 
 3. Consolidate various tools into the Main tabs. Reduce the # of available tabs to 3.
+
 
 ### FIXES :
 
@@ -49,6 +53,7 @@ https://mars-sim.github.io/
 4. Temporarily fix the error in loading a saved sim by disabling oxygen/water consumption check in settlement or in a EVAsuit (final fix still in-work)
 
 5. Reduce memory leak by caching more objects and icons.
+
 
 ------------------------------------------------------
 

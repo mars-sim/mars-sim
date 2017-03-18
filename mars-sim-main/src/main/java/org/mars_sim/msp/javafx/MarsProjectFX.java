@@ -289,32 +289,56 @@ public class MarsProjectFX extends Application  {
 
     	logger.info(Simulation.title);
 
-    	String vendor = System.getProperty("java.vendor");
         //System.getProperty("java.version").compareTo("1.7.0_45") >= 0;
 
-        String major, minor, update, build, dateStamp;
+        String major, minor, update, build = null, dateStamp = null;
 
+        // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
+
+        System.out.println("java.vm.specification.version :\t" + System.getProperty("java.vm.specification.version"));
+        System.out.println("java.vm.specification.vendor :\t" + System.getProperty("java.vm.specification.vendor"));
+        System.out.println("java.vm.specification.name :\t" + System.getProperty("java.vm.specification.name"));
+        System.out.println("java.vm.version :\t\t" + System.getProperty("java.vm.version"));
+        System.out.println("java.vm.vendor :\t\t" + System.getProperty("java.vm.vendor"));
+        System.out.println("java.vm.name :\t\t\t" + System.getProperty("java.vm.name"));
+        System.out.println("java.specification.version :\t" + System.getProperty("java.specification.version"));
+        System.out.println("java.specification.vendor :\t" + System.getProperty("java.specification.vendor"));
+        System.out.println("java.specification.name :\t" + System.getProperty("java.specification.name"));
+        System.out.println("java.version :\t\t\t" + System.getProperty("java.version"));
+        System.out.println("java.vendor :\t\t\t" + System.getProperty("java.vendor"));
+        System.out.println("java.class.version :\t\t" + System.getProperty("java.class.version"));
+
+        String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
+        System.out.println("os.arch :\t\t\t" + System.getProperty("os.arch"));
+        System.out.println("os.version :\t\t\t" + System.getProperty("os.version"));
         String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
-        		//System.getProperty("java.runtime.version").split("\\.|_|-b");
+        //System.getProperty("java.runtime.version").split("\\.|_|-b");
         //System.out.println(javaVersionElements);
 
+        // e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
         major = javaVersionElements[0];
         minor   = javaVersionElements[1];
         update  = javaVersionElements[2];
-        build = javaVersionElements[3];
-        dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
-/*
-        System.out.println("Major : " + major);
-        System.out.println("Minor : " + minor);
-        System.out.println("Update : " + update);
 
-        if (build.contains("(")) {
-            System.out.println("Date Stamp : " + dateStamp);
+        if (javaVersionElements[3] != null) {
+        	build = javaVersionElements[3];
+        	dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
         }
-        else {
-            System.out.println("build : " + build);
+
+        System.out.println("Major :\t\t\t\t" + major);
+        System.out.println("Minor :\t\t\t\t" + minor);
+        System.out.println("Update :\t\t\t" + update);
+
+        if (build != null) {
+	        if (build.contains("(")) {
+	            System.out.println("Date Stamp :\t\t\t" + dateStamp);
+	            //System.out.println("build : " + build);
+	        }
+	        else {
+	            System.out.println("Build :\t\t\t\t" + build);
+	        }
         }
-*/
+
 
 
 /*
@@ -332,10 +356,10 @@ public class MarsProjectFX extends Application  {
 */
 
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!major.equals("8") || Double.parseDouble(update) < 72.0) {
-    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.72. Terminating...");
-    		//System.out.println("Note: mars-sim requires at least Java 8.0.72. Terminating...");
-    		exitWithError("Note: mars-sim requires at least Java 8.0.72. Terminated.");
+    	if (!major.equals("8") || Double.parseDouble(update) < 71.0) {
+    		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.71. Terminating...");
+    		//System.out.println("Note: mars-sim requires at least Java 8.0.71. Terminating...");
+    		exitWithError("Note: mars-sim requires at least Java 8.0.71. Terminated.");
     		//Platform.exit();
 	        //System.exit(1);
     	}
