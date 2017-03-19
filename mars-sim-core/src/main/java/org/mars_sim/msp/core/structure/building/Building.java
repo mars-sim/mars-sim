@@ -94,13 +94,13 @@ LocalBoundedObject, InsidePathLocation {
 	private static Logger logger = Logger.getLogger(Building.class.getName());
 
 	// Assuming 20% chance for each person to witness or be conscious of the meteorite impact in an affected building
-	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20; 
+	public static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 	// The influx of meteorites entering Mars atmosphere can be estimated as
 	// log N = -0.689* log(m) + 4.17
-	// N is the number of meteorites per year having masses greater than m grams incident 
+	// N is the number of meteorites per year having masses greater than m grams incident
 	// on an area of 10^6 km2 (Bland and Smith, 2000).
 	// see initial implementation in MeteoriteImpactImpl class
-	
+
 	// Note: typical values of penetrationThicknessOnAL for a 1 g/cm^3, 1 km/s meteorite can be .0010 to 0.0022 meter
 	public static final double WALL_THICKNESS_ALUMINUM = 0.0000254; // typically between 10^-5 (.00001) and 10^-2 (.01) [in meters]
 	public static final double WALL_THICKNESS_INFLATABLE = 0.0000211;// [in meters]
@@ -152,16 +152,16 @@ LocalBoundedObject, InsidePathLocation {
 
     private Inventory b_inv, s_inv;
     private Settlement settlement;
-       
+
 	protected ThermalGeneration furnace;
 	protected LifeSupport lifeSupport;
-	protected RoboticStation roboticStation; 
+	protected RoboticStation roboticStation;
 	//private EVA eva;
-	
+
 	private static MarsClock marsClock;
 	private static MasterClock masterClock;
 	private static BuildingConfig buildingConfig;
-	 
+
 	protected PowerMode powerMode;
 	//2014-10-23  Modified thermal control parameters in the building */
 	protected HeatMode heatMode;
@@ -191,12 +191,12 @@ LocalBoundedObject, InsidePathLocation {
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 			if (lifeSupport == null) {
 				lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
-			    // 2015-12-30 Set up an inhabitable_building id for tracking composition of air	
+			    // 2015-12-30 Set up an inhabitable_building id for tracking composition of air
 				int id = manager.getNextInhabitableID();
 				setInhabitableID(id);
 			}
 		}
-		
+
 		// Set the instance of thermal generation function.
 		if (hasFunction(BuildingFunction.THERMAL_GENERATION))
 			if (furnace == null)
@@ -244,7 +244,7 @@ LocalBoundedObject, InsidePathLocation {
 			s_inv = settlement.getInventory();
 		if (b_inv == null) {
 			b_inv = super.getInventory(); // it's already been created in its super class
-			
+
 			if (buildingType.toLowerCase().contains("hallway") || buildingType.toLowerCase().contains("tunnel")) {
 				//b_inv = new Inventory(this);
 				b_inv.addGeneralCapacity(100);
@@ -283,7 +283,7 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
 		floorArea = length * width;
-		
+
 		baseLevel = buildingConfig.getBaseLevel(buildingType);
 		description = buildingConfig.getDescription(buildingType);
 
@@ -352,8 +352,8 @@ LocalBoundedObject, InsidePathLocation {
 	public Inventory getInventory() {
 		return manager.getSettlement().getInventory();
 	}
-	
-	
+
+
 	/**
      * Gets the description of a building.
      * @return String description
@@ -466,7 +466,7 @@ LocalBoundedObject, InsidePathLocation {
 
 		// Set cooking function.
 		if (buildingConfig.hasCooking(buildingType)) buildingFunctions.add(new Cooking(this));
-		
+
 		// Set preparing dessert function.
 		if (buildingConfig.hasCooking(buildingType)) buildingFunctions.add(new PreparingDessert(this));
 
@@ -513,26 +513,26 @@ LocalBoundedObject, InsidePathLocation {
 		boolean result = false;
         for (Function f : functions) {
         	if (f.getFunction() == functionType) {
-        		return true;		
+        		return true;
         	}
 		}
-		
 
-	
-/*		
+
+
+/*
 		functions.stream()
 		.filter((f) -> f.getFunction() == functionType)
 		.forEach((f) -> {
-        		return true;	
+        		return true;
 		});
-		
+
 
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			if (i.next().getFunction() == function)
 				return true;
 		}
-*/		
+*/
 		return result;
 	}
 
@@ -544,26 +544,26 @@ LocalBoundedObject, InsidePathLocation {
 	 */
 	public Function getFunction(BuildingFunction functionType) {
 		Function result = null;
-		
+
         for (Function f : functions) {
-        	if (f.getFunction() == functionType) {		
-        		return f;		
+        	if (f.getFunction() == functionType) {
+        		return f;
         	}
 		}
-/*		
+/*
 		functions.forEach(f -> {
 			if (f.getFunction() == functionType)
-        		return f;	
+        		return f;
 		});
-		
-        
+
+
 		Iterator<Function> i = functions.iterator();
 		while (i.hasNext()) {
 			Function function = i.next();
 			if (function.getFunction() == functionType)
 				result = function;
 		}
-*/		
+*/
 		//if (result != null) return result;
 		//else throw new IllegalStateException(buildingType + " does not have " + functionType);
 		return result;
@@ -580,7 +580,7 @@ LocalBoundedObject, InsidePathLocation {
 		}
 	}
 
-	
+
 	/**
 	 * Gets the building's building manager.
 	 * @return building manager
@@ -664,7 +664,7 @@ LocalBoundedObject, InsidePathLocation {
 	public double getFloorArea() {
 		return floorArea;
 	}
-	
+
 	@Override
 	public double getXLocation() {
 		return xLoc;
@@ -879,7 +879,7 @@ LocalBoundedObject, InsidePathLocation {
 				if (!people.contains(occupant)) people.add(occupant);
 			}
 		}
-/*		
+/*
 		// If building has life support, add all occupants of the building.
 		if (hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 			LifeSupport lifeSupport = (LifeSupport) getFunction(BuildingFunction.LIFE_SUPPORT);
@@ -946,7 +946,7 @@ LocalBoundedObject, InsidePathLocation {
 				if (!robots.contains(occupant)) robots.add(occupant);
 			}
 		}
-/*		
+/*
 		if (hasFunction(BuildingFunction.ROBOTIC_STATION)) {
 	       	RoboticStation roboticStation = (RoboticStation) getFunction(BuildingFunction.ROBOTIC_STATION);
 			Iterator<Robot> i = roboticStation.getRobotOccupants().iterator();
@@ -1008,6 +1008,8 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param time amount of time passing (in millisols)
 	 */
 	public void timePassing(double time) {
+		s_inv = settlement.getInventory();
+		b_inv = super.getInventory();
 		// Check for valid argument.
 		if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
 
@@ -1051,18 +1053,18 @@ LocalBoundedObject, InsidePathLocation {
 
         if (solElapsed != solCache) {
         	solCache = solElapsed;
-        	  
+
 			double probability  = floorArea * manager.getProbabilityOfImpactPerSQMPerSol();
 
 			// assume a degree of randomness centered at the probability can be 5 times as much
 			//probability = probability * ( 1 + RandomUtil.getRandomDouble(4) - RandomUtil.getRandomDouble(4));
 
-			// assume a gauissan profile 
+			// assume a gauissan profile
 			probability = probability * ( 1 + RandomUtil.getGaussianDouble());
 
 			if (probability < 0)
 				probability = 0;
-			
+
 			// probability is in percentage unit between 0% and 100%
 			if (RandomUtil.getRandomDouble(100D) <= probability) {
 				System.out.println(this.getNickName() + "'s probability of impact : "+ probability);// + "    rand : "+ rand);
@@ -1073,20 +1075,20 @@ LocalBoundedObject, InsidePathLocation {
 		}
 
         if (isImpactImminent) {
-        	
+
         	int now = (int) marsClock.getMillisol();
-            // Note: at the fastest sim speed, up to ~5 millisols may be skipped. 
+            // Note: at the fastest sim speed, up to ~5 millisols may be skipped.
         	// need to set up detection of the impactTimeInMillisol with a +/- 3 range.
         	if (now > moment_of_impact - 3 && now < moment_of_impact + 3) {
-	
+
 	        	// reset the boolean immmediately. This is for keeping track of whether the impact has occurred at msols
 				isImpactImminent = false;
-	
+
 				// find the length this meteorite can penetrate
 				double penetrated_length = manager.getWallPenetration();
-				
+
 				double wallThickness = 0;
-				
+
 				if (this.getBuildingType().toLowerCase().contains("greenhouse"))
 					// if it's a greenhouse
 					wallThickness = WALL_THICKNESS_INFLATABLE;
@@ -1096,12 +1098,12 @@ LocalBoundedObject, InsidePathLocation {
 				//System.out.println(getNickName() + "'s penetrated_length : " + penetrated_length);
 				//System.out.println(getNickName() + "'s WALL_THICKNESS_INFLATABLE : " + WALL_THICKNESS_INFLATABLE);
 				//System.out.println(getNickName() + "'s WALL_THICKNESS_ALUMINUM : " + WALL_THICKNESS_ALUMINUM);
-				
+
 				if (penetrated_length >= wallThickness) {
-					// Yes it's breached !			
-	
+					// Yes it's breached !
+
 		        	Malfunction item = MalfunctionFactory.getMeteoriteImpactMalfunction(MalfunctionFactory.METEORITE_IMPACT_DAMAGE);
-		
+
 		        	// Simulate the meteorite impact as a malfunction event for now
 					try {
 						malfunctionManager.getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
@@ -1109,33 +1111,33 @@ LocalBoundedObject, InsidePathLocation {
 					catch (Exception e) {
 						e.printStackTrace(System.err);
 					}
-					
+
 					HistoricalEvent newEvent = new MalfunctionEvent(this, item, true);
 					Simulation.instance().getEventManager().registerNewEvent(newEvent);
-		
+
 					//check if someone under this roof may have seen/affected by the impact
 					Iterator<Person> i = getInhabitants().iterator();
 					while (i.hasNext()) {
 						Person person = i.next();
 						if (RandomUtil.lessThanRandPercent(METEORITE_IMPACT_PROBABILITY_AFFECTED)) {
-							
+
 							// TODO: someone got hurt, declare medical emergency
 							// TODO: delineate the accidents from those listed in malfunction.xml
-							// currently, malfunction whether a person gets hurt is handled by Malfunction above						
-							
+							// currently, malfunction whether a person gets hurt is handled by Malfunction above
+
 							PhysicalCondition pc = person.getPhysicalCondition();
 				            int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
 				            int courage = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.COURAGE);
 				            double factor = 1 + RandomUtil.getRandomDouble(1) - resilience/100 - courage/100D;
 							if (factor > 1)
-								pc.setStress(person.getStress() * factor);						
-							
+								pc.setStress(person.getStress() * factor);
+
 							logger.info(person.getName() + " witnessed the latest meteorite impact in " + this + " at " + settlement);
 						}
 						else {
 							//logger.info(person.getName() + " did not witness the latest meteorite impact in " + this + " at " + settlement);
 						}
-						
+
 					}
         	}
 			}
@@ -1158,10 +1160,10 @@ LocalBoundedObject, InsidePathLocation {
 		if (functions.contains(function)) {
 	        functions.remove(function);
 	        // 2016-10-28 Add calling removeOneFunctionfromBFMap()
-	        manager.removeOneFunctionfromBFMap(this, function);    
+	        manager.removeOneFunctionfromBFMap(this, function);
 	    }
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */

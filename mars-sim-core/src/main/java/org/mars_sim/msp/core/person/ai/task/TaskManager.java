@@ -119,16 +119,18 @@ implements Serializable {
 	 * Returns the task name of the current or last task (one without the word "walk" in it).
 	 * @return task name
 	 */
+	// 2016-12-01 Added getFilteredTaskName()
 	public String getFilteredTaskName() {
 		String s = getTaskName();
 		if (s.toLowerCase().contains("walk")) {
+			// check if the last task is walking related
 			if (lastTask != null) {
 				s = lastTask.getName();
 				if (lastTask != null && !s.toLowerCase().contains("walk")) {
-					return "";
+					return s;
 				}
 				else
-					return s;
+					return "";
 			}
 			else
 				return "";
@@ -159,8 +161,6 @@ implements Serializable {
 	 */
 	public String getTaskDescription(boolean subTask) {
 		if (currentTask != null) {
-			//String doAction = currentTask.getDescription(subTask);
-			//return doAction;
 			return currentTask.getDescription(subTask);
 		} else {
 			return "";

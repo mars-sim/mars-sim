@@ -49,6 +49,8 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZInputStream;
 import org.tukaani.xz.XZOutputStream;
 
+import com.sun.javafx.runtime.VersionInfo;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -79,17 +81,20 @@ implements ClockListener, Serializable {
 	public static final int SAVE_AS = 2; // save with other name
 	public static final int AUTOSAVE_AS_DEFAULT = 3; // save as default.sim
 	public static final int AUTOSAVE = 4; // save with build info/date/time stamp
+    /** # of thread(s). */
 	public static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
-
+    /** Version string. */
 	public static final String OS = System.getProperty("os.name"); // e.g. 'linux', 'mac os x'
     /** Version string. */
     public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
     /** Build string. */
     public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
     /** Java version string. */
-    public final static String JAVA_VERSION = com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
+    public final static String JAVA_TAG = VersionInfo.getRuntimeVersion(); //e.g. "8.0.121-b13 (abcdefg)"; com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
+    /** Java version string. */
+    public final static String JAVA_VERSION = (JAVA_TAG.contains("(") ? JAVA_TAG.substring(0, JAVA_TAG.indexOf("(")-1) : JAVA_TAG);
     /** Vendor string. */
-    public final String VENDOR = System.getProperty("java.vendor");
+    //public final static String VENDOR = System.getProperty("java.vendor");
     /** Vendor string. */
     public final static String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
     /** Default save filename. */
@@ -124,7 +129,7 @@ implements ClockListener, Serializable {
             //+ " - " + VENDOR
             + " - " + OS_ARCH
             + " " + JAVA_VERSION
-            + " - " + NUM_THREADS + " thread(s)"
+            + " - " + NUM_THREADS + ((NUM_THREADS == 1) ? " CPU thread" : " CPU threads")
             ); //$NON-NLS-1$
 
     private static final boolean debug = logger.isLoggable(Level.FINE);
@@ -145,17 +150,14 @@ implements ClockListener, Serializable {
     private String loadBuild;// = "unknown";
 
     private String lastSave = null;
-
+    // Note: Transient data members (aren't stored in save file)
     // 2016-07-26 Added transient to avoid serialization error
-	//private transient Timeline autosaveTimeline;
 	private transient Timeline autosaveTimer;
-
-    // Transient data members (aren't stored in save file)
     /** All historical info. */
     private transient HistoricalEventManager eventManager;
 
     private transient ThreadPoolExecutor clockScheduler;
-    //private transient ThreadPoolExecutor managerExecutor;
+
     private transient ExecutorService simExecutor;
 
     // Intransient data members (stored in save file)

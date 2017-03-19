@@ -279,16 +279,28 @@ implements Serializable {
 	public static AmountResource findAmountResource(String name) {
 		//count++;
 		//if (count%50_000 == 0) System.out.println("# of calls on findAmountResource() : " + count);
+/*
+		AmountResource result = null;
+		Iterator<AmountResource> i = getAmountResources().iterator();
+		while (i.hasNext()) {
+			AmountResource resource = i.next();
+			if (resource.getName().equals(name.toLowerCase())) result = resource;
+		}
+		if (result != null) return result;
+		else throw new IllegalStateException("Resource: " + name + " could not be found.");
+
 		//getAmountResources().forEach(r -> {
 		//	if (r.getName().equals(name.toLowerCase()))
 		//		return r;
 		//});
+*/
 		// 2016-12-08 Using Java 8 stream
 		return getAmountResources()
 				.stream()
 				//.parallelStream()
 				.filter(item -> item.getName().equals(name.toLowerCase()))
-				.findFirst().get();
+				.findFirst().orElse(null);//.get();
+
 		//return amountResourceConfig.getAmountResourcesMap().get(name.toLowerCase());
 	}
 
@@ -415,7 +427,7 @@ implements Serializable {
 
 	public void destroy() {
 		phase = null;
-		amountResourceConfig = null;
+		//amountResourceConfig = null;
 		foodAR = null;
 		oxygenAR = null;
 		waterAR = null;

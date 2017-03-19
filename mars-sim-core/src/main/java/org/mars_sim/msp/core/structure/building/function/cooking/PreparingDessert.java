@@ -265,7 +265,9 @@ implements Serializable {
                     }
                 }
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+            	e.printStackTrace();
+            }
         }
 
         return result;
@@ -293,7 +295,9 @@ implements Serializable {
                     }
                 }
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+            	e.printStackTrace();
+            }
         }
 
         return result;
@@ -401,6 +405,7 @@ implements Serializable {
  	 * @return list of dessert names.
  	 */
  	public List<String> getAListOfDesserts() {
+ 		// TODO : turn this list into an array to speed up the operation
 
     	List<String> dessertList = new CopyOnWriteArrayList<>(); //ArrayList<String>();
 
@@ -411,6 +416,7 @@ implements Serializable {
         	boolean isAvailable = Storage.retrieveAnResource(amount, n, inv, false);
 
         	if (isAvailable) {
+            	//System.out.println("n is available");
         		dessertList.add(n);
         	}
         }
@@ -421,10 +427,10 @@ implements Serializable {
 	/**
 	 * Get a random dessert from a list of desserts.
 	 * @param dessertList the dessert list to randomly choose from.
-	 * @return random dessert name or "None" if no desserts available.
+	 * @return random dessert name or null if no desserts available.
 	 */
  	public static String getADessert(List<String> dessertList) {
-    	String selectedDessert = "None";
+    	String selectedDessert = null;
 
     	if (dessertList.size() > 0) {
     	    int index = RandomUtil.getRandomInt(dessertList.size() - 1);
@@ -456,8 +462,9 @@ implements Serializable {
 	        	makeNoMoreDessert = true;
 	        }
 	        else {
-	        	List<String> dessertList = getAListOfDesserts();
-	        	selectedDessert = makeADessert(getADessert(dessertList));
+	        	//List<String> dessertList = getAListOfDesserts();
+	        	//selectedDessert = makeADessert(getADessert(dessertList));
+	        	selectedDessert = makeADessert(getADessert(getAListOfDesserts()));
 	        }
     	}
 
@@ -502,24 +509,32 @@ implements Serializable {
 
     	// Take out one serving of the selected dessert from storage.
         double dryMass = getDryMass(selectedDessert);
-        //System.out.println("PreparingDessert : selectedDessert is " + selectedDessert);
-        Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
 
-        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-        // TODO: quality also dependent upon the hygiene of a person
-        int dessertQuality = getBestDessertSkill();
+        if (selectedDessert == null) {
+        	System.out.println("PreparingDessert : selectedDessert is " + selectedDessert);
+        	return null;
+        }
 
-        // Create a serving of dessert and add it into the list
-	    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, time, producerName, this));
+        else {
+	        Storage.retrieveAnResource(dryMass, selectedDessert, inv, true);
 
-	    useWater();
+	        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+	        // TODO: quality also dependent upon the hygiene of a person
+	        int dessertQuality = getBestDessertSkill();
 
-	    dessertCounterPerSol++;
-	    logger.fine("addWork() : new dessert just prepared : " + selectedDessert);
+	        // Create a serving of dessert and add it into the list
+		    servingsOfDessertList.add(new PreparedDessert(selectedDessert, dessertQuality, dryMass, time, producerName, this));
 
-	    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
+		    useWater();
 
-	    return selectedDessert;
+		    dessertCounterPerSol++;
+		    logger.fine("addWork() : new dessert just prepared : " + selectedDessert);
+
+		    preparingWorkTime -= PREPARE_DESSERT_WORK_REQUIRED;
+
+		    return selectedDessert;
+        }
+
     }
 
     // 2015-01-28 Added useWater()
@@ -584,7 +599,9 @@ implements Serializable {
                         }
                         settlement.setDessertsReplenishmentRate(rate);
                     }
-                    catch (Exception e) {}
+                    catch (Exception e) {
+                    	e.printStackTrace();
+                    }
                 }
             }
         }
@@ -626,7 +643,9 @@ implements Serializable {
 		    double mass = getDryMass(dessertName)  ;
             Storage.storeAnResource(mass, dessertName , inv);
 
-		} catch (Exception e) {}
+		} catch (Exception e) {
+        	e.printStackTrace();
+		}
 	}
 
     public int getTotalServingsOfDessertsToday() {
@@ -685,7 +704,7 @@ implements Serializable {
         building = null;
         inv = null;
         settlement = null;
-        servingsOfDessertList.clear();
+        //servingsOfDessertList.clear();
         servingsOfDessertList = null;
     }
 

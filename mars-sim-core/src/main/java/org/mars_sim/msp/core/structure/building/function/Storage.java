@@ -367,7 +367,7 @@ implements Serializable {
 	    		result = true;
 	    	}
 	    } catch (Exception e) {
-			e.printStackTrace(System.err);
+			//e.printStackTrace(System.err);
     		logger.log(Level.SEVERE, "Issues with retrieveAnResource() on " + ar.getName() + " : " + e.getMessage());
 	    }
 
@@ -378,7 +378,7 @@ implements Serializable {
 	public void destroy() {
 		super.destroy();
 
-		storageCapacity.clear();
+		//storageCapacity.clear();
 		storageCapacity = null;
 	}
 }

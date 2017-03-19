@@ -58,8 +58,8 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	protected MalfunctionManager malfunctionManager;
 	private Weather weather ;
 
-	//private AmountResource oxygenResource;
-	//private AmountResource waterResource;
+	private static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
 
 	/**
 	 * Constructor.
@@ -79,12 +79,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
 
-		//oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		//waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-
 		// Set the resource capacities of the EVA suit.
-		getInventory().addAmountResourceTypeCapacity(AmountResource.oxygenAR, OXYGEN_CAPACITY);
-		getInventory().addAmountResourceTypeCapacity(AmountResource.waterAR, WATER_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(oxygenAR, OXYGEN_CAPACITY);
+		getInventory().addAmountResourceTypeCapacity(waterAR, WATER_CAPACITY);
 
 	}
 
@@ -105,11 +102,11 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public boolean lifeSupportCheck() {
 		boolean result = true;
 /*
-		if (getInventory().getAmountResourceStored(AmountResource.oxygenAR, false) <= 0D) {
+		if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D) {
 			logger.info(this.getName() + " ran out of oxygen.");
 			result = false;
 		}
-		if (getInventory().getAmountResourceStored(AmountResource.waterAR, false) <= 0D) {
+		if (getInventory().getAmountResourceStored(waterAR, false) <= 0D) {
 			logger.info(this.getName() + " ran out of water.");
 			result = false;
 		}
@@ -154,17 +151,17 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public double provideOxygen(double oxygenTaken) {
 		//double oxygenTaken = oxygenTaken;
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygenLeft = getInventory().getAmountResourceStored(AmountResource.oxygenAR, false);
+		double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
 
 		if (oxygenTaken > oxygenLeft) {
 			oxygenTaken = oxygenLeft;
 		}
 
-		getInventory().retrieveAmountResource(AmountResource.oxygenAR, oxygenTaken);
+		getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(AmountResource.oxygenAR);
+		getInventory().addAmountDemandTotalRequest(oxygenAR);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(AmountResource.oxygenAR, oxygenTaken);
+		getInventory().addAmountDemand(oxygenAR, oxygenTaken);
 
 		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
@@ -178,17 +175,17 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public double provideWater(double waterTaken)  {
 		//double waterTaken = waterTaken;
 		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double waterLeft = getInventory().getAmountResourceStored(AmountResource.waterAR, false);
+		double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
 
 		if (waterTaken > waterLeft) {
 			waterTaken = waterLeft;
 		}
 
-		getInventory().retrieveAmountResource(AmountResource.waterAR, waterTaken);
+		getInventory().retrieveAmountResource(waterAR, waterTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(AmountResource.waterAR);
+		getInventory().addAmountDemandTotalRequest(waterAR);
 		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(AmountResource.waterAR, waterTaken);
+		getInventory().addAmountDemand(waterAR, waterTaken);
 
 		return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
 	}
@@ -252,13 +249,13 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		boolean result = true;
 
 		//AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-		double oxygen = getInventory().getAmountResourceStored(AmountResource.oxygenAR, false);
+		double oxygen = getInventory().getAmountResourceStored(oxygenAR, false);
 		if (oxygen != OXYGEN_CAPACITY) {
 			result = false;
 		}
 
 		//AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-		double water = getInventory().getAmountResourceStored(AmountResource.waterAR, false);
+		double water = getInventory().getAmountResourceStored(waterAR, false);
 		if (water != WATER_CAPACITY) {
 			result = false;
 		}

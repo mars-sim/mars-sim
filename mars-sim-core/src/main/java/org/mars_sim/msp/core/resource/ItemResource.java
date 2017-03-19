@@ -17,7 +17,7 @@ import java.util.TreeMap;
 import org.mars_sim.msp.core.SimulationConfig;
 
 /**
- * The ItemResource class represents a type of resource that is measured in units, 
+ * The ItemResource class represents a type of resource that is measured in units,
  * such as simple tools and parts.
  */
 public class ItemResource
@@ -32,7 +32,7 @@ implements Serializable {
 	public static final String SMALL_HAMMER = "small hammer";
 	public static final String SOCKET_WRENCH = "socket wrench";
 	public static final String PIPE_WRENCH = "pipe wrench";
-	
+
 	// Data members
 	private int id;
 	private double massPerItem;
@@ -41,17 +41,18 @@ implements Serializable {
 
 	private static PartConfig partConfig;
 	public static Part pneumaticDrill, backhoe, smallHammer, socketWrench, pipeWrench;
-  
-	
+
+
 	public ItemResource() {
 		partConfig = SimulationConfig.instance().getPartConfiguration();
+
 		pneumaticDrill = (Part) findItemResource(PNEUMATIC_DRILL);
-		backhoe = (Part) findItemResource(BACKHOE);	
+		backhoe = (Part) findItemResource(BACKHOE);
 		smallHammer = (Part) findItemResource(SMALL_HAMMER);
 		socketWrench = (Part) findItemResource(SOCKET_WRENCH);
-		pipeWrench = (Part) findItemResource(PIPE_WRENCH); 
+		pipeWrench = (Part) findItemResource(PIPE_WRENCH);
 	}
-	
+
 
 	/*
 	 * Default private constructor
@@ -61,7 +62,7 @@ implements Serializable {
 	}
 	 */
 
-	
+
 	/**
 	 * Constructor.
 	 * @param name the name of the resource.
@@ -82,7 +83,7 @@ implements Serializable {
 	public int getID() {
 		return id;
 	}
-	
+
 	/**
 	 * Gets the resource's name.
 	 * @return name of resource.
@@ -97,7 +98,7 @@ implements Serializable {
 		return description;
 	}
 
-	
+
 	/**
 	 * Gets the mass for an item of the resource.
 	 * @return mass (kg)
@@ -150,23 +151,23 @@ implements Serializable {
 		else throw new UnknownResourceName(name);
 	}
 	 */
-	
+
 	/**
 	 * Finds an item resource by name.
 	 * @param name the name of the resource.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
-	 */	 
+	 */
 	public static ItemResource findItemResource(String name) {
 		// 2016-12-08 Using Java 8 stream
 		return getItemResources()
 				.stream()
 				.filter(item -> item.getName().equals(name.toLowerCase()))
-				.findFirst().orElse(null);//.get();	
+				.findFirst().orElse(null);//.get();
 
 		//return getItemResourcesMap().get(name.toLowerCase());
 	}
-	
+
 	/**
 	 * Gets a ummutable collection of all the item resources.
 	 * @return collection of item resources.
@@ -174,11 +175,11 @@ implements Serializable {
 	//public static Set<ItemResource> getItemResources() {
 	//	return Collections.unmodifiableSet(partConfig.getItemResources());
 	//}
-	
+
 	public static Set<Part> getItemResources() {
 		return Collections.unmodifiableSet(partConfig.getItemResources());
 	}
-	
+
 	public static Map<String, Part> getItemResourcesMap() {
 		//if (partConfig == null) System.err.println("partConfig == null");
 		return partConfig.getItemResourcesMap();

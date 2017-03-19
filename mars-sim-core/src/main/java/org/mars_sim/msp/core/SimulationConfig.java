@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.mars.MineralMapConfig;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.medical.MedicalConfig;
 import org.mars_sim.msp.core.quotation.QuotationConfig;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.resource.PartPackageConfig;

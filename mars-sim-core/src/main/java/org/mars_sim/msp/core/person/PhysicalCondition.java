@@ -208,6 +208,7 @@ implements Serializable {
             //System.out.println("personStarvationTime : "+ Math.round(personStarvationTime*10.0)/10.0);
         }
         catch (Exception e) {
+        	//logger.severe("");
             e.printStackTrace(System.err);
         }
 

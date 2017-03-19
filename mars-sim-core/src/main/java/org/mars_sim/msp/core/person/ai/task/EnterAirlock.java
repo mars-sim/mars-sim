@@ -71,8 +71,8 @@ implements Serializable {
     private Point2D insideAirlockPos = null;
     private Point2D interiorAirlockPos = null;
 
-	protected static AmountResource oxygenAR = AmountResource.oxygenAR;
-	protected static AmountResource waterAR = AmountResource.waterAR;
+	private static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
 
     /**
      * Constructor.
@@ -629,6 +629,10 @@ implements Serializable {
                 Inventory personInv = person.getInventory();
                 Inventory entityInv = person.getContainerUnit().getInventory();
 
+                //System.out.println("suitInv : " + suitInv);
+                //System.out.println("personInv : " + personInv);
+                //System.out.println("entityInv : " + entityInv);
+
                 // Unload oxygen from suit.
                 //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
                 double oxygenAmount = suitInv.getAmountResourceStored(oxygenAR, false);
@@ -642,7 +646,7 @@ implements Serializable {
 
                 }
                 catch (Exception e) {
-                    logger.severe(e.getMessage());
+                    logger.severe("Oxygen is not available : " + e.getMessage());
                 }
 
                 // Unload water from suit.
@@ -657,7 +661,7 @@ implements Serializable {
                     entityInv.addAmountSupplyAmount(waterAR, waterAmount);
                 }
                 catch (Exception e) {
-                    logger.severe(e.getMessage());
+                    logger.severe("Water is not available : " + e.getMessage());
                 }
 
                 // Return suit to entity's inventory.

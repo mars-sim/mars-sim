@@ -405,7 +405,9 @@ extends UnitTableModel {
 				case TASK : {
 					// If the Person is dead, there is no Task Manager
 					TaskManager mgr = person.getMind().getTaskManager();
-					result = ((mgr != null)? mgr.getTaskName() : null); //getFilteredTaskName() //getTaskDescription(false)  // .getTaskClassName()
+					// calling mgr.getTaskDescription(true) removing a lot of 'Walking Interior'
+					result = ((mgr != null)? mgr.getTaskDescription(true) : null);
+					//result = ((mgr != null)? mgr.getTaskName() : null); //getFilteredTaskName() //getTaskDescription(false)  // .getTaskClassName()
 	/*				if (mgr != null) {
 						String s = mgr.getTaskName();
 						if (!s.toLowerCase().contains("walk"))

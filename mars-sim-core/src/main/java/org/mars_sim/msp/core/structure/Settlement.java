@@ -185,7 +185,7 @@ implements Serializable, LifeSupportType, Objective {
 	// 2014-10-17 Added heating system
 	/** The settlement's heating system. */
 	protected ThermalSystem thermalSystem;
-	private Inventory inv = getInventory();
+	//private Inventory inv = getInventory();
 	private ChainOfCommand chainOfCommand;
 	private CompositionOfAir compositionOfAir;
 
@@ -427,7 +427,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return Collection of inhabitants
 	 */
 	public Collection<Person> getInhabitants() {
-		return CollectionUtils.getPerson(inv.getContainedUnits());
+		return CollectionUtils.getPerson(getInventory().getContainedUnits());
 	}
 
 	/**
@@ -494,7 +494,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return Collection of robots
 	 */
 	public Collection<Robot> getRobots() {
-		return CollectionUtils.getRobot(inv.getContainedUnits());
+		return CollectionUtils.getRobot(getInventory().getContainedUnits());
 	}
 
 	/**
@@ -527,7 +527,7 @@ implements Serializable, LifeSupportType, Objective {
 	 * @return Collection of parked vehicles
 	 */
 	public Collection<Vehicle> getParkedVehicles() {
-		return CollectionUtils.getVehicle(inv.getContainedUnits());
+		return CollectionUtils.getVehicle(getInventory().getContainedUnits());
 	}
 
 	/**
@@ -550,14 +550,14 @@ implements Serializable, LifeSupportType, Objective {
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 		//	oxygenAR = LifeSupportType.oxygenAR;
 		//if (oxygenAR == null) System.out.println("o2");
-		if (inv.getAmountResourceStored(oxygenAR, false) <= 0D)
+		if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D)
 			return false;
 
 		//if (AmountResource.waterAR == null)
 			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
 		//	waterAR = LifeSupportType.waterAR;
 		//if (waterAR == null) System.out.println("h2o");
-		if (inv.getAmountResourceStored(waterAR, false) <= 0D)
+		if (getInventory().getAmountResourceStored(waterAR, false) <= 0D)
 			return false;
 
 
@@ -596,24 +596,24 @@ implements Serializable, LifeSupportType, Objective {
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenTaken = amountRequested;
 		//if (oxygenAR == null) System.out.println("o2");
-		double oxygenLeft = inv.getAmountResourceStored(oxygenAR, false);
+		double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
 		if (oxygenTaken > oxygenLeft)
 			oxygenTaken = oxygenLeft;
-		inv.retrieveAmountResource(oxygenAR, oxygenTaken);
+		getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		inv.addAmountDemandTotalRequest(oxygenAR);
+		getInventory().addAmountDemandTotalRequest(oxygenAR);
 		// 2015-01-09 addDemandRealUsage()
-		inv.addAmountDemand(oxygenAR, oxygenTaken);
+		getInventory().addAmountDemand(oxygenAR, oxygenTaken);
 
 		//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
 		double carbonDioxideProvided = oxygenTaken;
-		double carbonDioxideCapacity = inv.getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
+		double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
 		if (carbonDioxideProvided > carbonDioxideCapacity)
 			carbonDioxideProvided = carbonDioxideCapacity;
 
-		inv.storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
+		getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
 		// 2015-01-15 Add addSupplyAmount()
-		inv.addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+		getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
 		return oxygenTaken;
 	}
 
@@ -629,14 +629,14 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideWater(double amountRequested) {
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterTaken = amountRequested;
-		double waterLeft = inv.getAmountResourceStored(waterAR, false);
+		double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
 		if (waterTaken > waterLeft)
 			waterTaken = waterLeft;
-		inv.retrieveAmountResource(waterAR, waterTaken);
+		getInventory().retrieveAmountResource(waterAR, waterTaken);
 		// 2015-01-09 Added addDemandTotalRequest()
-		inv.addAmountDemandTotalRequest(waterAR);
+		getInventory().addAmountDemandTotalRequest(waterAR);
 		// 2015-01-09 addDemandRealUsage()
-		inv.addAmountDemand(waterAR, waterTaken);
+		getInventory().addAmountDemand(waterAR, waterTaken);
 
 		return waterTaken;
 	}
@@ -733,7 +733,7 @@ implements Serializable, LifeSupportType, Objective {
 	 *             if error during time passing.
 	 */
 	public void timePassing(double time) {
-		inv = getInventory();
+		//inv = getInventory();
 /*
         int m = (int) marsClock.getMillisol();
         if (millisolCache != m) {
@@ -852,7 +852,7 @@ implements Serializable, LifeSupportType, Objective {
 			}
 
 			AmountResource ar = AmountResource.findAmountResource(resource);
-			//double newAmount = inv.getAmountResourceStored(ar, false);
+			//double newAmount = getInventory().getAmountResourceStored(ar, false);
 			//setOneResource(resourceType, newAmount);
 	//}
 	/*
@@ -869,7 +869,7 @@ implements Serializable, LifeSupportType, Objective {
 				//if (list != null) {
 				if (todayMap.containsKey(resourceType)) {
 					List<Double> list = todayMap.get(resourceType);
-					double newAmount = inv.getAmountResourceStored(ar, false);
+					double newAmount = getInventory().getAmountResourceStored(ar, false);
 					list.add(newAmount);
 					//todayMap.put(resourceType, list); // is it needed?
 					//resourceStat.put(solCache, todayMap); // is it needed?
@@ -878,7 +878,7 @@ implements Serializable, LifeSupportType, Objective {
 
 				else {
 					List<Double> list = new ArrayList<>();
-					double newAmount = inv.getAmountResourceStored(ar, false);
+					double newAmount = getInventory().getAmountResourceStored(ar, false);
 					list.add(newAmount);
 					//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
 					todayMap.put(resourceType, list);
@@ -889,7 +889,7 @@ implements Serializable, LifeSupportType, Objective {
 			} else {
 				List<Double> list = new ArrayList<>();
 				Map<Integer, List<Double>> todayMap = new HashMap<>();
-				double newAmount = inv.getAmountResourceStored(ar, false);
+				double newAmount = getInventory().getAmountResourceStored(ar, false);
 				list.add(newAmount);
 				//System.out.println(resourceType + " : " + list.get(list.size()-1) + " added");
 				todayMap.put(resourceType, list);
@@ -1175,26 +1175,26 @@ implements Serializable, LifeSupportType, Objective {
 
 		// Sample supply and demand data on Potato and Water
 
-		double supplyAmount1 = inv.getAmountSupplyAmount(sample1);
-		double supplyAmount2 = inv.getAmountSupplyAmount(sample2);
+		double supplyAmount1 = getInventory().getAmountSupplyAmount(sample1);
+		double supplyAmount2 = getInventory().getAmountSupplyAmount(sample2);
 
-		int supplyRequest1 = inv.getAmountSupplyRequest(sample1);
-		int supplyRequest2 = inv.getAmountSupplyRequest(sample2);
+		int supplyRequest1 = getInventory().getAmountSupplyRequest(sample1);
+		int supplyRequest2 = getInventory().getAmountSupplyRequest(sample2);
 
-		double demandAmount1 = inv.getAmountDemandAmount(sample1);
-		double demandAmount2 = inv.getAmountDemandAmount(sample2);
+		double demandAmount1 = getInventory().getAmountDemandAmount(sample1);
+		double demandAmount2 = getInventory().getAmountDemandAmount(sample2);
 
-		// int totalRequest1 = inv.getDemandTotalRequest(sample1);
-		// int totalRequest2 = inv.getDemandTotalRequest(sample2);
+		// int totalRequest1 = getInventory().getDemandTotalRequest(sample1);
+		// int totalRequest2 = getInventory().getDemandTotalRequest(sample2);
 
-		int demandSuccessfulRequest1 = inv.getAmountDemandMetRequest(sample1);
-		int demandSuccessfulRequest2 = inv.getAmountDemandMetRequest(sample2);
+		int demandSuccessfulRequest1 = getInventory().getAmountDemandMetRequest(sample1);
+		int demandSuccessfulRequest2 = getInventory().getAmountDemandMetRequest(sample2);
 
-		// int numOfGoodsInDemandAmountMap = inv.getDemandAmountMapSize();
+		// int numOfGoodsInDemandAmountMap = getInventory().getDemandAmountMapSize();
 		// int numOfGoodsInDemandTotalRequestMap =
-		// inv.getDemandTotalRequestMapSize();
+		// getInventory().getDemandTotalRequestMapSize();
 		// int numOfGoodsInDemandSuccessfulRequestMap =
-		// inv.getDemandSuccessfulRequestMapSize();
+		// getInventory().getDemandSuccessfulRequestMapSize();
 
 		// logger.info(" numOfGoodsInDemandRequestMap : " +
 		// numOfGoodsInDemandTotalRequestMap);
@@ -1229,12 +1229,12 @@ implements Serializable, LifeSupportType, Objective {
 		if (solElapsed % SOL_PER_REFRESH == 0) {
 			// True if solElapsed is an exact multiple of x
 			// Carry out the daily average of the previous 5 days
-			inv.compactAmountSupplyAmountMap(SOL_PER_REFRESH);
-			inv.clearAmountSupplyRequestMap();
+			getInventory().compactAmountSupplyAmountMap(SOL_PER_REFRESH);
+			getInventory().clearAmountSupplyRequestMap();
 			// Carry out the daily average of the previous 5 days
-			inv.compactAmountDemandAmountMap(SOL_PER_REFRESH);
-			inv.clearAmountDemandTotalRequestMap();
-			inv.clearAmountDemandMetRequestMap();
+			getInventory().compactAmountDemandAmountMap(SOL_PER_REFRESH);
+			getInventory().clearAmountDemandTotalRequestMap();
+			getInventory().clearAmountDemandMetRequestMap();
 			// 2015-03-06 Added clearing of weather data map
 			weather.clearMap();
 			//logger.info(name + " : Compacted the settlement's supply demand data & cleared weather data.");
@@ -3035,7 +3035,7 @@ implements Serializable, LifeSupportType, Objective {
         boolean result = false;
 
         //AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
-        double storedWater = inv.getAmountResourceStored(waterAR, false);
+        double storedWater = getInventory().getAmountResourceStored(waterAR, false);
 
         //PersonConfig personconfig = SimulationConfig.instance().getPersonConfiguration();
         double requiredDrinkingWaterOrbit = water_consumption * getCurrentPopulationNum() *

@@ -631,9 +631,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	// Location Matrix
 	public Settlement getSettlement() {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			// Settlement settlement = (Settlement) getContainerUnit();
-			// return settlement;
-			return (Settlement) getContainerUnit();
+			Settlement settlement = (Settlement) getContainerUnit();
+			return settlement;
+			//return (Settlement) getContainerUnit();
 		}
 
 		else if (getLocationSituation() == LocationSituation.OUTSIDE)
@@ -641,8 +641,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
 			Vehicle vehicle = (Vehicle) getContainerUnit();
-			// Note: a vehicle's container unit may be null if it's outside a
-			// settlement
+			// Note: a vehicle's container unit may be null if it's outside a settlement
 			Settlement settlement = (Settlement) vehicle.getContainerUnit();
 			return settlement;
 		}

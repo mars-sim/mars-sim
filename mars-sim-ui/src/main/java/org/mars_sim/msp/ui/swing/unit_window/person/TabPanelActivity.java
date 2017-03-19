@@ -137,13 +137,13 @@ implements ActionListener {
 			taskText = deathInfo.getTask();
 		else {
 			if (person != null) {
-				String t = mind.getTaskManager().getTaskDescription(false);
+				String t = mind.getTaskManager().getTaskDescription(true);
 				//if (!t.toLowerCase().contains("walk"))
 					taskText = t;
 			}
 
 			else if (robot != null) {
-				String t = botMind.getBotTaskManager().getTaskDescription(false);
+				String t = botMind.getBotTaskManager().getTaskDescription(true);
 				//if (!t.toLowerCase().contains("walk"))
 					taskText = t;
 			}
@@ -393,11 +393,11 @@ implements ActionListener {
 			}
 
 			if (person != null) {
-				newTaskText = taskManager.getTaskDescription(false);
+				newTaskText = taskManager.getTaskDescription(true);
 			}
 
 			else if (robot != null) {
-				newTaskText = botTaskManager.getTaskDescription(false);
+				newTaskText = botTaskManager.getTaskDescription(true);
 			}
 
 		    TaskPhase phase = null;
@@ -420,12 +420,12 @@ implements ActionListener {
 		//if (!newTaskText.toLowerCase().contains("walk")) {
 			if (!newTaskText.equals("") && !taskTextCache.equals(newTaskText)) {
 				taskTextCache = newTaskText;
-				taskTextArea.setText(taskTextCache);
+				taskTextArea.setText(newTaskText);
 			}
 
 			if (!newTaskPhase.equals("") && !taskPhaseCache.equals(newTaskPhase))  {
 				taskPhaseCache = newTaskPhase;
-				taskPhaseArea.setText(taskPhaseCache);
+				taskPhaseArea.setText(newTaskPhase);
 			}
 		//}
 
@@ -443,7 +443,6 @@ implements ActionListener {
 		}
 
 		else {
-			mission = null;
 
 			if (mission != null)
 				newMissionText = mission.getDescription();
@@ -459,12 +458,12 @@ implements ActionListener {
 
 		if (!newMissionText.equals("") && !missionTextCache.equals(newMissionText)) {
 			missionTextCache = newMissionText;
-			missionTextArea.setText(missionTextCache);
+			missionTextArea.setText(newMissionText);
 		}
 
 		if (!newMissionPhase.equals("") && !missionPhaseCache.equals(newMissionPhase)) {
 			missionPhaseCache = newMissionPhase;
-			missionPhaseTextArea.setText(missionPhaseCache);
+			missionPhaseTextArea.setText(newMissionPhase);
 		}
 
 /*
