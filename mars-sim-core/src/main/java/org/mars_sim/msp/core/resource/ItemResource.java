@@ -39,6 +39,8 @@ implements Serializable {
 	private String name;
 	private String description;
 
+	private static Set<Part> set;
+
 	private static PartConfig partConfig;
 	public static Part pneumaticDrill, backhoe, smallHammer, socketWrench, pipeWrench;
 
@@ -177,7 +179,9 @@ implements Serializable {
 	//}
 
 	public static Set<Part> getItemResources() {
-		return Collections.unmodifiableSet(partConfig.getItemResources());
+		if (set == null)
+			set = Collections.unmodifiableSet(partConfig.getItemResources());
+		return set;
 	}
 
 	public static Map<String, Part> getItemResourcesMap() {

@@ -278,7 +278,7 @@ public abstract class UnitWindow extends JInternalFrame {
         centerPanel.setTabPlacement(JideTabbedPane.LEFT);
         //centerPanel.setBackground(THEME_COLOR);
         factory.add(centerPanel, DETAILS, getImage(DETAILS_ICON), true);
-        update();
+        //update();
 
         //mainPane.add(centerPanel, BorderLayout.CENTER);
         // add focusListener to play sounds and alert users of critical conditions.

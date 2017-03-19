@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RobotWindow.java
- * @version 3.07 2015-01-21
+ * @version 3.1.0 2017-03-19
  * @author Manny Kung
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -21,8 +21,10 @@ extends UnitWindow {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** Is robot dead? */
-	private boolean dead = false;
+	/** Is robot inoperable? */
+	private boolean inoperableCache = false;
+
+	private Robot robot;
 
 	/**
 	 * Constructor.
@@ -32,17 +34,19 @@ extends UnitWindow {
 	public RobotWindow(MainDesktopPane desktop, Robot robot) {
 		// Use UnitWindow constructor
 		super(desktop, robot, false);
+		this.robot = robot;
 
 		// Add tab panels
 		addTabPanel(new TabPanelActivity(robot, desktop));
 		addTabPanel(new TabPanelAttribute(robot, desktop));
 
-		// Add death tab panel if robot is dead.
+		// Add death tab panel if robot is inoperable.
 		if (robot.getSystemCondition().isInoperable()) {
-			dead = true;
-			//addTabPanel(new TabPanelDeath(robot, desktop));
+			inoperableCache = true;
+			addTabPanel(new TabPanelDeath(robot, desktop));
 		}
-		else dead = false;
+		else
+			inoperableCache = false;
 
 		addTabPanel(new InventoryTabPanel(robot, desktop));
 		addTopPanel(new LocationTabPanel(robot, desktop));
@@ -63,10 +67,10 @@ extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-		Robot robot = (Robot) unit;
-		if (!dead) {
+		//Robot robot = (Robot) unit;
+		if (!inoperableCache) {
 			if (robot.getSystemCondition().isInoperable()) {
-				dead = true;
+				inoperableCache = true;
 				addTabPanel(new TabPanelDeath(robot, desktop));
 			}
 		}

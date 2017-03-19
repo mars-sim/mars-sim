@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentWindow.java
- * @version 3.07 2014-12-06
-
+ * @version 3.1.0 2017-03-19
  * @author Scott Davis
  */
 
@@ -29,6 +28,7 @@ public class EquipmentWindow extends UnitWindow {
 	// Data members
 	private boolean salvaged;
 
+	private Equipment equipment;
     /**
      * Constructor
      *
@@ -38,25 +38,29 @@ public class EquipmentWindow extends UnitWindow {
     public EquipmentWindow(MainDesktopPane desktop, Equipment equipment) {
         // Use UnitWindow constructor
         super(desktop, equipment, false);
-        
+        this.equipment = equipment;
+
         // Add tab panels
-        addTopPanel(new LocationTabPanel(equipment, desktop));
-        addTabPanel(new InventoryTabPanel(equipment, desktop));
-        if (equipment instanceof Malfunctionable) 
+        addTabPanel(new LocationTabPanel(equipment, desktop));
+        //addTabPanel(new InventoryTabPanel(equipment, desktop));
+        if (equipment instanceof Malfunctionable)
         	addTabPanel(new MaintenanceTabPanel(equipment, desktop));
-        
+
         salvaged = equipment.isSalvaged();
-        if (salvaged) addTabPanel(new SalvageTabPanel(equipment, desktop));
+        if (salvaged)
+        	addTabPanel(new SalvageTabPanel(equipment, desktop));
+
+    	sortTabPanels();
     }
-    
+
     /**
      * Updates this window.
      */
+	@Override
     public void update() {
         super.update();
-        
         // Check if equipment has been salvaged.
-        Equipment equipment = (Equipment) getUnit();
+       // Equipment equipment = (Equipment) getUnit();
         if (!salvaged && equipment.isSalvaged()) {
             addTabPanel(new SalvageTabPanel(equipment, desktop));
             salvaged = true;

@@ -641,7 +641,7 @@ implements Serializable, Comparable<Unit> {
 			else if (oldContainer.getLocationStateType() == LocationStateType.OUTSIDE_ON_MARS)
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 			else
-				System.err.println("Unit : " + name + " was no longer on a vehicle.");
+				System.err.println("Person " + name + " was no longer on a vehicle.");
 
 		}
 
@@ -682,7 +682,7 @@ implements Serializable, Comparable<Unit> {
 				currentStateType = LocationStateType.OUTSIDE_ON_MARS;
 
 			else {
-				System.err.println("Unit : " + name + " was no longer on a vehicle.");
+				System.err.println("Equipment " + name + " was no longer on a vehicle.");
 			}
 
 		}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PlannerWindow.java
- * @version 3.08 2015-06-27
+ * @version 3.1.0 2017-03-19
  * @author Manny Kung
  */
 
@@ -378,12 +378,12 @@ implements InternalFrameListener, ActionListener {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-/*			
+/*
 			if (column == 0) return fmt.format(tasks.get(row).getStartTime());
 			//else if (column == 1) return tasks.get(row).getTaskName();
 			else if (column == 1) return tasks.get(row).getDescription();
-			else 
-*/				
+			else
+*/
 			return null;
 		}
 

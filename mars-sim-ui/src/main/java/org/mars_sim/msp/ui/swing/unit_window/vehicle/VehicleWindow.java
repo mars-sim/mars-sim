@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleWindow.java
- * @version 3.08 2015-03-24
+ * @version 3.1.0 2017-03-19
  * @author Scott Davis
  */
 
@@ -28,6 +28,8 @@ public class VehicleWindow extends UnitWindow {
 	// Data members
     private boolean salvaged;
 
+    private Vehicle vehicle;
+
     /**
      * Constructor
      *
@@ -37,6 +39,7 @@ public class VehicleWindow extends UnitWindow {
     public VehicleWindow(MainDesktopPane desktop, Vehicle vehicle) {
         // Use UnitWindow constructor
         super(desktop, vehicle, true);
+        this.vehicle = vehicle;
 
         // Add tab panels
         if (vehicle instanceof Crewable) {
@@ -74,9 +77,8 @@ public class VehicleWindow extends UnitWindow {
      */
     public void update() {
         super.update();
-
         // Check if equipment has been salvaged.
-        Vehicle vehicle = (Vehicle) getUnit();
+        //Vehicle vehicle = (Vehicle) getUnit();
         if (!salvaged && vehicle.isSalvaged()) {
             addTabPanel(new SalvageTabPanel(vehicle, desktop));
             salvaged = true;

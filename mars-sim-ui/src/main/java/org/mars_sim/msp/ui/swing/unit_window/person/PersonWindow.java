@@ -1,8 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonWindow.java
- * @version 3.07 2015-02-27
-
+ * @version 3.1.0 2017-03-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -23,7 +22,9 @@ extends UnitWindow {
 	private static final long serialVersionUID = 1L;
 
 	/** Is person dead? */
-	private boolean dead = false;
+	private boolean deadCache = false;
+
+	private Person person;
 
 	/**
 	 * Constructor.
@@ -33,6 +34,7 @@ extends UnitWindow {
 	public PersonWindow(MainDesktopPane desktop, Person person) {
 		// Use UnitWindow constructor
 		super(desktop, person, true);
+		this.person = person;
 
 		// Add tab panels
 		addTabPanel(new TabPanelActivity(person, desktop));
@@ -42,11 +44,12 @@ extends UnitWindow {
 		addTabPanel(new TabPanelCareer(person, desktop));
 
 		// Add death tab panel if person is dead.
-		if (person.getPhysicalCondition().isDead()) {
-			dead = true;
+		if (person.isDead()) {
+			deadCache = true;
 			addTabPanel(new TabPanelDeath(person, desktop));
 		}
-		else dead = false;
+		else
+			deadCache = false;
 
 		// 2015-02-27  Added TabPanelFavorite
 		addTabPanel(new TabPanelFavorite(person, desktop));
@@ -81,10 +84,10 @@ extends UnitWindow {
 	@Override
 	public void update() {
 		super.update();
-		Person person = (Person) unit;
-		if (!dead) {
-			if (person.getPhysicalCondition().isDead()) {
-				dead = true;
+		//Person person = (Person) unit;
+		if (!deadCache) {
+			if (person.isDead()) {
+				deadCache = true;
 				addTabPanel(new TabPanelDeath(person, desktop));
 			}
 		}

@@ -84,6 +84,7 @@ implements ActionListener {
 	//private static final String ON_A_MISSION_OUTSIDE = " on a mission outside";
 	private static final String OUTSIDE_ON_THE_SURFACE_OF_MARS = " outside on the surface of Mars";
 	private static final String STEPPED = " Stepped";
+	private static final String STORED = "Stored";
 
 	private static final String OUTSIDE_ON_A_MISSION = " outside on a mission ";
 	private static final String GONE = " gone ";
@@ -413,6 +414,8 @@ implements ActionListener {
         	Person p = null;
         	Robot r = null;
         	Vehicle v = null;
+        	Equipment e = null;
+
         	if (unit instanceof Person) {
         		p = (Person) unit;
     		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
@@ -567,10 +570,66 @@ implements ActionListener {
 
         			mapPanel.setShowVehicleLabels(true);
 
+        			//mapPanel.selectVehicleAt((int)xLoc, (int)yLoc);
             	}
         		else
         			desktop.centerMapGlobe(unit.getCoordinates());
-        	}
+
+	    	} else if (unit instanceof Equipment) {
+	    		e = (Equipment) unit;
+	    		SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+
+	    		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+	    			desktop.openToolWindow(SettlementWindow.NAME);
+	    			//System.out.println("Just open Settlement Map Tool");
+	    			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(e.getSettlement());
+
+/*
+	    			Building b = e.getBuildingLocation();
+	    			double xLoc = b.getXLocation();
+	    			double yLoc = b.getYLocation();
+	    			double scale = mapPanel.getScale();
+	    			mapPanel.reCenter();
+	    			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+	    			mapPanel.setShowBuildingLabels(true);
+
+	    			mapPanel.selectRobot(r);
+ */
+	        	}
+
+	    		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+
+	    			Vehicle vv = e.getVehicle();
+	    			if (vv.getSettlement() == null) {
+	    				// out there on a mission
+	    				desktop.centerMapGlobe(e.getCoordinates());
+	    			}
+	    			else {
+	    				// still parked inside a garage or within the premise of a settlement
+	        			desktop.openToolWindow(SettlementWindow.NAME);
+	        			//System.out.println("Just open Settlement Map Tool");
+	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+
+	        			double xLoc = vv.getXLocation();
+	        			double yLoc = vv.getYLocation();
+	        			double scale = mapPanel.getScale();
+	        			mapPanel.reCenter();
+	        			mapPanel.moveCenter(xLoc*scale, yLoc*scale);
+	        			mapPanel.setShowVehicleLabels(true);
+
+	        			//mapPanel.selectVehicleAt((int)xLoc, (int)yLoc);
+
+	        		}
+	        	}
+
+	    		else if (e.getLocationSituation() == LocationSituation.OUTSIDE) {
+
+	    		}
+
+	    		else
+	    			desktop.centerMapGlobe(e.getCoordinates());
+
+	    	}
         }
 
         // If the location button was pressed, open the unit window.
@@ -800,9 +859,11 @@ implements ActionListener {
 
     	else if (unit instanceof Equipment) {
     		Equipment e = (Equipment) unit;
+
     		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     			// case A
-    			loc = AT + e.getBuildingLocation().getNickName() + IN + topContainerCache;
+    			//loc = AT + e.getBuildingLocation().getNickName() + IN + topContainerCache;
+    			loc = STORED + AT + topContainerCache;
     		}
 
        		else if (e.getLocationSituation() == LocationSituation.IN_VEHICLE) {

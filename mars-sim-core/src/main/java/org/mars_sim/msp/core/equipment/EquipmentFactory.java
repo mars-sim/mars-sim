@@ -69,12 +69,12 @@ public final class EquipmentFactory {
 		}
 		if (Bag.TYPE.equalsIgnoreCase(type)) return new Bag(location);
 		else if (Barrel.TYPE.equalsIgnoreCase(type)) return new Barrel(location);
+		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return new BuildingKit(location);
 		else if (EVASuit.TYPE.equalsIgnoreCase(type)) return new EVASuit(location);
 		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return new GasCanister(location);
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return new LargeBag(location);
-		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
-		else if (BuildingKit.TYPE.equalsIgnoreCase(type)) return new BuildingKit(location);
 		else if (Robot.TYPE.equalsIgnoreCase(type)) return new Robot(null, null, null, null, location);
+		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
 		else throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 	}
 

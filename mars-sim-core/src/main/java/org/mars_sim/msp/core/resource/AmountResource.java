@@ -67,6 +67,8 @@ implements Serializable {
 	private String description;
 
 	private Phase phase;
+
+	private static Set<AmountResource> set;
 /*
 	private AmountResource[] ARs = new AmountResource[2];
 	private int[] ARs_int = new int[14];
@@ -357,9 +359,9 @@ implements Serializable {
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
-		//Set<AmountResource> set = amountResourceConfig.getAmountResources();
-		//return Collections.unmodifiableSet(set);
-		return Collections.unmodifiableSet(amountResourceConfig.getAmountResources());
+		if (set == null)
+			set = Collections.unmodifiableSet(amountResourceConfig.getAmountResources());
+		return set;
 	}
 
 	/**

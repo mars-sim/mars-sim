@@ -13,18 +13,21 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/** 
- * The Equipment class is an abstract class that represents  
+/**
+ * The Equipment class is an abstract class that represents
  * a useful piece of equipment, such as a EVA suit or a
  * medpack.
  */
@@ -40,7 +43,7 @@ implements Salvagable {
 	private SalvageInfo salvageInfo;
 
 	//private String name;
-	
+
 	/** Constructs an Equipment object
 	 *  @param name the name of the unit
 	 *  @param location the unit's location
@@ -62,7 +65,7 @@ implements Salvagable {
 		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
 		// Check all people.
-		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator(); 
+		Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			Task task = person.getMind().getTaskManager().getTask();
@@ -80,7 +83,7 @@ implements Salvagable {
 					if (!people.contains(person)) people.add(person);
 				}
 			}
-		}	
+		}
 
 		return people;
 	}
@@ -112,6 +115,84 @@ implements Salvagable {
 	 */
 	public SalvageInfo getSalvageInfo() {
 		return salvageInfo;
+	}
+
+	/**
+	 * Get settlement equipment is at, null if not at a settlement
+	 *
+	 * @return the equipment's settlement
+	 */
+	// 2017-03-19 Add getSettlement()
+	@Override
+	public Settlement getSettlement() {
+		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			Settlement settlement = (Settlement) getContainerUnit();
+			return settlement;
+			//return (Settlement) getContainerUnit();
+		}
+
+		else if (getLocationSituation() == LocationSituation.OUTSIDE)
+			return null;
+
+		else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
+			Vehicle vehicle = (Vehicle) getContainerUnit();
+			// Note: a vehicle's container unit may be null if it's outside a settlement
+			Settlement settlement = (Settlement) vehicle.getContainerUnit();
+			return settlement;
+		}
+
+		else if (getLocationSituation() == LocationSituation.DEAD) {
+			return null;
+		}
+
+		else {
+			System.err.println("Error in determining " + getName() + "'s getSettlement() ");
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the building the equipment is located at, null if outside of a
+	 * settlement
+	 *
+	 * @return building
+	 */
+	// 2017-03-19 Added getBuildingLocation()
+	@Override
+	public Building getBuildingLocation() {
+		// TODO: what building do you want to store equipment ?
+		return null;
+	}
+
+	/**
+	 * Get vehicle the equipment is in, null if not in vehicle
+	 *
+	 * @return the equipment's vehicle
+	 */
+	// 2017-03-19 Add getSettlement()
+	@Override
+	public Vehicle getVehicle() {
+		if (getLocationSituation() == LocationSituation.IN_VEHICLE)
+			return (Vehicle) getContainerUnit();
+		else
+			return null;
+	}
+
+	/**
+	 * Get the equipment's location
+	 */
+	@Override
+	public LocationSituation getLocationSituation() {
+		Unit container = getContainerUnit();
+		if (container instanceof Settlement)
+			return LocationSituation.IN_SETTLEMENT;
+		else if (container instanceof Vehicle)
+			return LocationSituation.IN_VEHICLE;
+		else if (container == null)
+			return LocationSituation.OUTSIDE;
+		else {
+			return null;
+		}
 	}
 
 	@Override
