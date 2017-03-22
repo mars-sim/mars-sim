@@ -182,14 +182,14 @@ public class BuildingConfig implements Serializable {
 	 */
 	public BuildingConfig(Document buildingDoc) {
 		this.buildingDoc = buildingDoc;
-		
+
 		generateBuildingFunctions();
 	}
 
 	public List<BuildingFunction> getBuildingFunctions() {
 		return functions;
 	}
-	
+
 	public void generateBuildingFunctions() {
 
 		functions = new ArrayList<>();
@@ -221,8 +221,8 @@ public class BuildingConfig implements Serializable {
 		functions.add(BuildingFunction.THERMAL_GENERATION);
 		functions.add(BuildingFunction.WASTE_DISPOSAL);
 	}
-	
-	
+
+
 	/**
 	 * Gets a set of all building types.
 	 * @return set of building types.

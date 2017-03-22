@@ -73,6 +73,9 @@ public class AmountResourceConfig implements Serializable {
 		for (AmountResource resource : resources) {
 			IDNameMap.put(resource.getID(), resource.getName());
 		}
+
+    	// 2016-12-03 Call to just initialize amountResourceConfig in this constructor
+    	//new AmountResource();
 	}
 
 	/**

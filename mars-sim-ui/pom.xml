@@ -195,7 +195,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>tilesfx</artifactId>
-			<version>1.3.8</version>
+			<version>1.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.hansolo</groupId>
@@ -449,6 +449,19 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>jiconfont-font_awesome</artifactId>
 		    <version>4.7.0.0</version>
 		</dependency>
+		<dependency>
+		<!-- see http://www.glazedlists.com/documentation/tutorial -->
+		    <groupId>net.java.dev.glazedlists</groupId>
+		    <artifactId>glazedlists_java16</artifactId>
+		    <version>1.10.0</version>
+		</dependency>
+        <dependency>
+        <!-- https://github.com/edvin/fxldemo
+       		 https://github.com/edvin/fxlauncher -->
+            <groupId>no.tornado</groupId>
+            <artifactId>fxlauncher</artifactId>
+            <version>1.0.15</version>
+        </dependency>
 	</dependencies>
 	<repositories>
 		<repository>

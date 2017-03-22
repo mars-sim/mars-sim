@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalIce.java
- * @version 3.07 2014-09-22
+ * @version 3.1.0 2017-03-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -62,8 +62,8 @@ implements Serializable {
 	/** Bag for collecting ice. */
 	private Bag bag;
 	private Settlement settlement;
-    
-    private static AmountResource iceAR = EVA.iceAR;
+
+    private static AmountResource iceAR = AmountResource.iceAR;
 
 	/**
 	 * Constructor.

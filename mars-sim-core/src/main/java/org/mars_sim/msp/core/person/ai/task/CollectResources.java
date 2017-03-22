@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResources.java
- * @version 3.08 2015-07-05
+ * @version 3.1.0 2017-03-21
  * @author Scott Davis
  */
 
@@ -278,7 +278,7 @@ implements Serializable {
         }
 
         // Modify collection rate by polar region if ice collecting.
-        if (resourceType.equals(EVA.iceAR)) {
+        if (resourceType.equals(AmountResource.iceAR)) {
             if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates())) {
                 samplesCollected *= 3D;
             }
@@ -336,7 +336,7 @@ implements Serializable {
             AmountResource resourceType) {
 
         boolean result = false;
-        
+
         if (member instanceof Person) {
             Person person = (Person) member;
 
@@ -367,16 +367,16 @@ implements Serializable {
             if (suit != null) {
                 carryMass += suit.getMass();
                 //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(EVA.oxygenAR, false, false);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(AmountResource.oxygenAR, false, false);
                 //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(EVA.waterAR, false, false);
+                carryMass += suit.getInventory().getAmountResourceRemainingCapacity(AmountResource.waterAR, false, false);
             }
             double carryCapacity = person.getInventory().getGeneralCapacity();
             boolean canCarryEquipment = (carryCapacity >= carryMass);
 
             result = (exitable && (sunlight || darkRegion) && !medical && containerAvailable && canCarryEquipment);
         }
-        
+
         return result;
     }
 

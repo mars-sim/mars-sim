@@ -627,8 +627,8 @@ public class UnitManager implements Serializable {
 						amount = capacity;
 					}
 					inv.storeAmountResource(resource, amount, true);
-					// 2015-01-15 Add addSupplyAmount()
-					inv.addAmountSupplyAmount(resource, amount);
+
+					//System.out.println(settlement.getName() + " -\t" + resource.getName() + " -\t" + amount + " / " + capacity);
 				}
 			}
 		} catch (Exception e) {

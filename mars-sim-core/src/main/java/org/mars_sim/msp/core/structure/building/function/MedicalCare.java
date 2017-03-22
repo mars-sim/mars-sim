@@ -39,7 +39,7 @@ implements MedicalAid, Serializable {
 
     private MedicalStation medicalStation;
 
-	public static AmountResource toxicWasteAR = AmountResource.findAmountResource("toxic waste");
+	//public static AmountResource toxicWasteAR = AmountResource.findAmountResource("toxic waste");
 
     /**
      * Constructor.

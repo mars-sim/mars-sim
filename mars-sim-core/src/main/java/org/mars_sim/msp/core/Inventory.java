@@ -1297,7 +1297,14 @@ implements Serializable {
             updateAmountResourceCapacityCache(resource);
         }
 
-        return amountResourceCapacityCache.get(resource);
+        // 2017-03-21 Check if amountResourceCapacityCache contains the resource
+        if (amountResourceCapacityCache.containsKey(resource))
+        	return amountResourceCapacityCache.get(resource);
+        else {
+        	amountResourceCapacityCache.put(resource, 0D);
+        	return 0;
+        }
+        //return amountResourceCapacityCache.get(resource);
     }
 
     /**
@@ -1347,19 +1354,27 @@ implements Serializable {
         if (amountResourceContainersStoredCache == null) {
             initializeAmountResourceStoredCache();
         }
-        if (amountResourceContainersStoredCacheDirty.get(resource)) {
-            if (containedUnits != null) {
-                for (Unit unit : containedUnits) {
-                    if (unit instanceof Container) {
-                        containedStored += unit.getInventory().getAmountResourceStored(resource, false);
-                    }
-                }
-            }
-            amountResourceContainersStoredCache.put(resource,  containedStored);
-            amountResourceContainersStoredCacheDirty.put(resource, false);
+
+        // 2017-03-21 Add checking for amountResourceContainersStoredCacheDirty and add if else clause
+        if (amountResourceContainersStoredCacheDirty.containsKey(resource)) {
+         	if (amountResourceContainersStoredCacheDirty.get(resource)) {
+	            if (containedUnits != null) {
+	                for (Unit unit : containedUnits) {
+	                    if (unit instanceof Container) {
+	                        containedStored += unit.getInventory().getAmountResourceStored(resource, false);
+	                    }
+	                }
+	            }
+	            amountResourceContainersStoredCache.put(resource,  containedStored);
+	            amountResourceContainersStoredCacheDirty.put(resource, false);
+	        }
+	        else {
+	            containedStored = amountResourceContainersStoredCache.get(resource);
+	        }
         }
         else {
-            containedStored = amountResourceContainersStoredCache.get(resource);
+            //amountResourceContainersStoredCacheDirty.put(resource, false);
+            //containedStored = amountResourceContainersStoredCache.get(resource);
         }
 
         // Limit container capacity to this inventory's remaining general capacity.
@@ -1471,7 +1486,17 @@ implements Serializable {
         if (!allowDirty && isAmountResourceStoredCacheDirty(resource)) {
             updateAmountResourceStoredCache(resource);
         }
-        return amountResourceStoredCache.get(resource);
+
+        // 2017-03-21 Check if amountResourceStoredCache contains the resource
+        if (amountResourceStoredCache.containsKey(resource))
+        	return amountResourceStoredCache.get(resource);
+        else {
+        	amountResourceCapacityCache.put(resource, 0D);
+        	return 0;
+        }
+
+        //return amountResourceStoredCache.get(resource);
+
     }
 
     /**
@@ -1487,7 +1512,7 @@ implements Serializable {
         }
 
         double containerStored = 0D;
-        // 2016-12-21 Add checking for null
+        // 2016-12-21 Add checking for amountResourceContainersStoredCacheDirty
         if (amountResourceContainersStoredCacheDirty.containsKey(resource)) {
 	        if (amountResourceContainersStoredCacheDirty.get(resource)) {
 	            if (containedUnits != null) {
@@ -1504,12 +1529,12 @@ implements Serializable {
 	            containerStored = amountResourceContainersStoredCache.get(resource);
 	        }
         }
-        // 2016-12-21 Add checking for null
+        // 2016-12-21 Add checking amountResourceContainersStoredCache
         else if (amountResourceContainersStoredCache.containsKey(resource)) {
         	containerStored = amountResourceContainersStoredCache.get(resource);
         }
         else {
-
+        	//containerStored = amountResourceContainersStoredCache.get(resource);
         }
 
         stored += containerStored;

@@ -64,6 +64,8 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient volatile boolean isPaused = false;
 	/** Simulation/real-time ratio. */
 	private volatile double timeRatio = 0D;
+	/** Simulation/real-time ratio. */
+	private volatile double defaultTimeRatio = 0D;
 	//private int count = 0;
 	private long timeBetweenUpdates = 0L;
 	private int noDelaysPerYield = 0;
@@ -86,7 +88,7 @@ public class MasterClock implements Serializable { // Runnable,
 	private transient List<ClockListener> listeners;
 	private transient List<ClockListenerTask> clockListenerTaskList =  new CopyOnWriteArrayList<>();
 
-	private double time_ratio;
+	//private double time_ratio;
 
 	/** Martian Clock. */
 	private MarsClock marsTime;
@@ -149,43 +151,43 @@ public class MasterClock implements Serializable { // Runnable,
         logger.info("CPU Benchmark 1 : " + diff + " ms");
 
         if (Simulation.NUM_THREADS == 1) {
-        	time_ratio = ratio/8D;
-        	setTimeRatio(time_ratio);
+        	defaultTimeRatio = ratio/8D;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms*16D);
         }
         else if (Simulation.NUM_THREADS == 2) {
-        	time_ratio = ratio/8D;
-        	setTimeRatio(time_ratio);
+        	defaultTimeRatio = ratio/8D;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms*12D);
         }
         else if (Simulation.NUM_THREADS <= 3) {
-        	time_ratio = ratio/4D;
-        	setTimeRatio(time_ratio);
+        	defaultTimeRatio = ratio/4D;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms*8D);
         }
         else if (Simulation.NUM_THREADS <= 4) {
-           	time_ratio = ratio/4D;
-        	setTimeRatio(time_ratio);
+           	defaultTimeRatio = ratio/4D;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms*4D);
         }
         else if (Simulation.NUM_THREADS <= 6) {
-        	time_ratio = ratio/2D;
-        	setTimeRatio(time_ratio);
+        	defaultTimeRatio = ratio/2D;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms*2D);
         }
         else if (Simulation.NUM_THREADS <= 8) {
-        	time_ratio = ratio/2D;
-        	setTimeRatio(time_ratio);
+        	defaultTimeRatio = ratio/2D;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms);
         }
         else if (Simulation.NUM_THREADS <= 12) {
-        	time_ratio = ratio;
-        	setTimeRatio(time_ratio);
+        	defaultTimeRatio = ratio;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms);
         }
         else {
-        	time_ratio = ratio;
-        	setTimeRatio(time_ratio);
+        	defaultTimeRatio = ratio;
+        	setTimeRatio(defaultTimeRatio);
             setTimeBetweenUpdates(ms);
         }
 
@@ -434,6 +436,15 @@ public class MasterClock implements Serializable { // Runnable,
      */
     public double getTimeRatio() {
         return timeRatio;
+    }
+
+    /**
+     * Gets the default simulation time ratio.
+     *
+     * @return ratio
+     */
+    public double getDefaultTimeRatio() {
+        return defaultTimeRatio;
     }
 
     /**
@@ -964,9 +975,6 @@ public class MasterClock implements Serializable { // Runnable,
 		return clockListenerExecutor;
 	}
 
-	public double getDefaultTimeRatio() {
-		return time_ratio;
-	}
 
     /**
      * Prepare object for garbage collection.

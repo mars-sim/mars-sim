@@ -1035,7 +1035,7 @@ public class MainScene {
 		timeSlider.setPrefHeight(20);
 		timeSlider.setPadding(new Insets(0, 5, 0, 5));
 
-		initial_time_ratio = Simulation.instance().getMasterClock().getTimeRatio();
+		initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
 
 		//timeSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
 		timeSlider.setMin(0);//initial_ratio/16D);

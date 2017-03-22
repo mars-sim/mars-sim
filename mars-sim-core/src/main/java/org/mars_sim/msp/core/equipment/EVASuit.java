@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.equipment;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -42,6 +43,8 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	public static final double EMPTY_MASS = 45D;
 	/** Oxygen capacity (kg.). */
 	private static final double OXYGEN_CAPACITY = 1D;
+	/** CO2 capacity (kg.). */
+	private static final double CO2_CAPACITY = 1D;
 	/** Water capacity (kg.). */
 	private static final double WATER_CAPACITY = 4D;
 	/** Normal air pressure (Pa). */
@@ -58,8 +61,9 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	protected MalfunctionManager malfunctionManager;
 	private Weather weather ;
 
-	private static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
-	private static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
+	private AmountResource oxygenAR;// = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN);
+	private AmountResource waterAR;// = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER);
+	private AmountResource carbonDioxideAR;
 
 	/**
 	 * Constructor.
@@ -79,10 +83,14 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);
 
+		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
+
 		// Set the resource capacities of the EVA suit.
 		getInventory().addAmountResourceTypeCapacity(oxygenAR, OXYGEN_CAPACITY);
 		getInventory().addAmountResourceTypeCapacity(waterAR, WATER_CAPACITY);
-
+		getInventory().addAmountResourceTypeCapacity(carbonDioxideAR, CO2_CAPACITY);
 	}
 
 	/**
@@ -100,38 +108,41 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	 * @throws Exception if error checking life support.
 	 */
 	public boolean lifeSupportCheck() {
-		boolean result = true;
-/*
-		if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D) {
-			logger.info(this.getName() + " ran out of oxygen.");
-			result = false;
-		}
-		if (getInventory().getAmountResourceStored(waterAR, false) <= 0D) {
-			logger.info(this.getName() + " ran out of water.");
-			result = false;
-		}
-		if (malfunctionManager.getOxygenFlowModifier() < 100D) {
-			logger.info(this.getName() + "'s oxygen flow sensor detected malfunction.");
-			result = false;
-		}
-		if (malfunctionManager.getWaterFlowModifier() < 100D) {
-			logger.info(this.getName() + "'s water flow sensor detected malfunction.");
-			result = false;
-		}
-*/
-		double p = getAirPressure();
-		if (p > NORMAL_AIR_PRESSURE * 1.5 || p < NORMAL_AIR_PRESSURE * .5) {
-			logger.info(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
-			result = false;
-		}
-		double t = getTemperature();
-		if (t > NORMAL_TEMP + 3 || t < NORMAL_TEMP - 3) {
-			logger.info(this.getName() + " detected improper temperature at " + Math.round(t *10D)/10D);
-			result = false;
-		}
+		//boolean result = true;
+        try {
+			if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D) {
+				logger.severe(this.getName() + " ran out of oxygen in EVASuit");
+				return false;
+			}
+			if (getInventory().getAmountResourceStored(waterAR, false) <= 0D) {
+				logger.info(this.getName() + " ran out of water in EVASuit.");
+				return false;
+			}
+			if (malfunctionManager.getOxygenFlowModifier() < 100D) {
+				logger.severe(this.getName() + "'s oxygen flow sensor detected malfunction.");
+				return false;
+			}
+			if (malfunctionManager.getWaterFlowModifier() < 100D) {
+				logger.severe(this.getName() + "'s water flow sensor detected malfunction.");
+				return false;
+			}
 
+			double p = getAirPressure();
+			if (p > NORMAL_AIR_PRESSURE * 1.5 || p < NORMAL_AIR_PRESSURE * .5) {
+				logger.severe(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
+				return false;
+			}
+			double t = getTemperature();
+			if (t > NORMAL_TEMP + 10 || t < NORMAL_TEMP - 10) {
+				logger.severe(this.getName() + " detected improper temperature at " + Math.round(t *10D)/10D);
+				return false;
+			}
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		return result;
+		return true;
 	}
 
 	/**
@@ -148,7 +159,8 @@ implements LifeSupportType, Serializable, Malfunctionable {
 	 * @return the amount of oxygen actually received from system (kg)
 	 * @throws Exception if error providing oxygen.
 	 */
-	public double provideOxygen(double oxygenTaken) {
+	public double provideOxygen(double amountRequested) {
+/*
 		//double oxygenTaken = oxygenTaken;
 		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
@@ -162,7 +174,34 @@ implements LifeSupportType, Serializable, Malfunctionable {
 		getInventory().addAmountDemandTotalRequest(oxygenAR);
 		// 2015-01-09 addDemandRealUsage()
 		getInventory().addAmountDemand(oxygenAR, oxygenTaken);
+*/
+		double oxygenTaken = amountRequested;
+		try {
+			//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+			//if (oxygenAR == null) System.out.println("o2");
+			double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
+			//System.out.println("oxygenLeft : " + oxygenLeft);
+			if (oxygenTaken > oxygenLeft)
+				oxygenTaken = oxygenLeft;
+			getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
+			// 2015-01-09 Added addDemandTotalRequest()
+			getInventory().addAmountDemandTotalRequest(oxygenAR);
+			// 2015-01-09 addDemandRealUsage()
+			getInventory().addAmountDemand(oxygenAR, oxygenTaken);
 
+			//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+			double carbonDioxideProvided = oxygenTaken;
+			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
+			if (carbonDioxideProvided > carbonDioxideCapacity)
+				carbonDioxideProvided = carbonDioxideCapacity;
+
+			getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
+			// 2015-01-15 Add addSupplyAmount()
+			getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+		}
+        catch (Exception e) {
+            logger.log(Level.SEVERE, this.getName() + " - Error in providing O2 needs: " + e.getMessage());
+        }
 		return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
 	}
 

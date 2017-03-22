@@ -294,7 +294,7 @@ public class MarsProjectFX extends Application  {
         String major, minor, update, build = null, dateStamp = null;
 
         // see http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getProperties%28%29
-
+/*
         System.out.println("java.vm.specification.version :\t" + System.getProperty("java.vm.specification.version"));
         System.out.println("java.vm.specification.vendor :\t" + System.getProperty("java.vm.specification.vendor"));
         System.out.println("java.vm.specification.name :\t" + System.getProperty("java.vm.specification.name"));
@@ -307,10 +307,11 @@ public class MarsProjectFX extends Application  {
         System.out.println("java.version :\t\t\t" + System.getProperty("java.version"));
         System.out.println("java.vendor :\t\t\t" + System.getProperty("java.vendor"));
         System.out.println("java.class.version :\t\t" + System.getProperty("java.class.version"));
-
+*/
         String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
-        System.out.println("os.arch :\t\t\t" + System.getProperty("os.arch"));
-        System.out.println("os.version :\t\t\t" + System.getProperty("os.version"));
+        //System.out.println("os.arch :\t\t\t" + System.getProperty("os.arch"));
+        //System.out.println("os.version :\t\t\t" + System.getProperty("os.version"));
+
         String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
         //System.getProperty("java.runtime.version").split("\\.|_|-b");
         //System.out.println(javaVersionElements);
@@ -324,7 +325,7 @@ public class MarsProjectFX extends Application  {
         	build = javaVersionElements[3];
         	dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
         }
-
+/*
         System.out.println("Major :\t\t\t\t" + major);
         System.out.println("Minor :\t\t\t\t" + minor);
         System.out.println("Update :\t\t\t" + update);
@@ -338,22 +339,8 @@ public class MarsProjectFX extends Application  {
 	            System.out.println("Build :\t\t\t\t" + build);
 	        }
         }
-
-
-
-/*
-        if (Double.parseDouble(update) > 60) {
-
-        }
-
-        else {
-        	String[] partTwo = javaVersionElements[3].split(" (");
-        	build = partTwo[0];
-        	dateStamp = partTwo[1];
-            System.out.println("build : " + build);
-            System.out.println("dateStamp : " + dateStamp);
-        }
 */
+
 
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
     	if (!major.equals("8") || Double.parseDouble(update) < 71.0) {

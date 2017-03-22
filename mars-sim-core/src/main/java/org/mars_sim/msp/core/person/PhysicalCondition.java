@@ -50,6 +50,11 @@ implements Serializable {
     public static final String DEAD = "Dead : ";
     public static final String ILL = "Ill : ";
 
+	public static final String OXYGEN = "oxygen";
+	public static final String WATER = "water";
+	public static final String FOOD = "food";
+	public static final String CO2 = "carbon dioxide";
+
     /** default logger. */
     private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
     /** Sleep Habit maximum value. */
@@ -150,6 +155,11 @@ implements Serializable {
 
 	private MarsClock marsClock;
 
+	private static AmountResource foodAR;// needed by Farming
+	//private static AmountResource oxygenAR;
+	//private static AmountResource waterAR;
+	//private static AmountResource carbonDioxideAR;
+
     // 2015-12-05 Added sleepHabitMap
     private Map<Integer, Integer> sleepCycleMap = new HashMap<>(); // set weight = 0 to MAX_WEIGHT
 
@@ -167,6 +177,11 @@ implements Serializable {
 
     	if (Simulation.instance().getMasterClock() != null) // for passing maven test
     		marsClock = Simulation.instance().getMasterClock().getMarsClock();
+
+		foodAR = AmountResource.findAmountResource(FOOD);			// 1
+		//waterAR = AmountResource.findAmountResource(WATER);		// 2
+		//oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
+		//carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
 
     	radiation = new RadiationExposure(this);
         radiation.initializeWithRandomDose();
@@ -211,8 +226,6 @@ implements Serializable {
         	//logger.severe("");
             e.printStackTrace(System.err);
         }
-
-    	//foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD);
 
     }
 
@@ -323,20 +336,20 @@ implements Serializable {
 	    	if (alive) {
 		        // Check life support system
 		        try {
-/*
+		        	//System.out.println("o2_consumption : " + o2_consumption * time / 1000D);
 		            if (consumeOxygen(support, o2_consumption * (time / 1000D)))
 		                logger.log(Level.SEVERE, name + " has insufficient oxygen.");
 		            if (consumeWater(support, h2o_consumption * (time / 1000D)))
 		                logger.log(Level.SEVERE, name + " has insufficient water.");
-*/
+
 		            if (requireAirPressure(support, minimum_air_pressure))
 		                logger.log(Level.SEVERE, name + " is under insufficient air pressure.");
 		            if (requireTemperature(support, min_temperature, max_temperature))
 		                logger.log(Level.SEVERE, name + " cannot survive long at this extreme temperature.");
 		        }
 		        catch (Exception e) {
-		            logger.log(Level.SEVERE, name + "'s life support system is failing !");// + e.getMessage());
 	                e.printStackTrace();
+		            logger.log(Level.SEVERE, name + "'s life support system is failing !");// + e.getMessage());
 		        }
 	    	}
 
@@ -476,10 +489,10 @@ implements Serializable {
 
     	//AmountResource foodAR = AmountResource.findAmountResource(foodType);
         double foodEaten = amount;
-        double foodAvailable = inv.getAmountResourceStored(AmountResource.foodAR, false);
+        double foodAvailable = inv.getAmountResourceStored(foodAR, false);
 
         // 2015-01-09 Added addDemandTotalRequest()
-        inv.addAmountDemandTotalRequest(AmountResource.foodAR);
+        inv.addAmountDemandTotalRequest(foodAR);
 
         if (foodAvailable < 0.01D) {
            throw new IllegalStateException("Warning: less than 0.01 kg dried food remaining!");
@@ -492,10 +505,10 @@ implements Serializable {
 
             foodEaten = Math.round(foodEaten * 1000000.0) / 1000000.0;
             // subtract food from container
-            inv.retrieveAmountResource(AmountResource.foodAR, foodEaten);
+            inv.retrieveAmountResource(foodAR, foodEaten);
 
     		// 2015-01-09 addDemandRealUsage()
-    		inv.addAmountDemand(AmountResource.foodAR, foodEaten);
+    		inv.addAmountDemand(foodAR, foodEaten);
         }
     }
 
@@ -518,8 +531,11 @@ implements Serializable {
      */
     private boolean consumeOxygen(LifeSupportType support, double amount) {
         double amountRecieved = support.provideOxygen(amount);
-        //System.out.println(amountRecieved + " ");
         //if (support == null) System.out.println("support : "+ support);
+        //boolean check = checkResourceConsumption(amountRecieved, amount / 2D,
+        //        MIN_VALUE, getMedicalManager().getSuffocation());
+        //System.out.println("O2 : " + amountRecieved + " : " + check);
+        //return check;
         return checkResourceConsumption(amountRecieved, amount / 2D,
                 MIN_VALUE, getMedicalManager().getSuffocation());
     }

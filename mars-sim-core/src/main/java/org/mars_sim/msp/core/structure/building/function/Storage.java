@@ -37,10 +37,41 @@ implements Serializable {
 
 	private static final BuildingFunction FUNCTION = BuildingFunction.STORAGE;
 
+	public static final String FERTILIZER = "fertilizer";
+	public static final String GREY_WATER = "grey water";
+    public static final String SOIL = "soil";
+    public static final String CROP_WASTE = "crop waste";
+
+	public static final String OXYGEN = "oxygen";
+	public static final String WATER = "water";
+	public static final String FOOD = "food";
+	public static final String CO2 = "carbon dioxide";
+
 	private double stockCapacity = 0;
 	//private static int count = 0;
 
 	private Map<AmountResource, Double> storageCapacity;
+
+	public static AmountResource foodAR;
+	public static AmountResource oxygenAR;
+	public static AmountResource waterAR;
+	public static AmountResource carbonDioxideAR;
+
+    public static AmountResource tableSaltAR;
+    public static AmountResource NaClOAR;
+    public static AmountResource greyWaterAR;
+    public static AmountResource foodWasteAR;
+    public static AmountResource solidWasteAR;
+    public static AmountResource napkinAR;
+
+	public static AmountResource methaneAR;
+	public static AmountResource regolithAR;
+    public static AmountResource iceAR;
+    public static AmountResource rockSamplesAR;
+
+    public static AmountResource cropWasteAR;
+    public static AmountResource fertilizerAR;
+	public static AmountResource soilAR;
 
 	/**
 	 * Constructor.
@@ -57,26 +88,36 @@ implements Serializable {
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
 		//Inventory inventory = building.getSettlementInventory();
-		Inventory inv = building.getBuildingManager().getSettlement().getInventory();
-
+		Settlement s = building.getBuildingManager().getSettlement();
+		Inventory inv = s.getInventory();
 		// 2015-03-07 Added stockCapacity
-	    stockCapacity = config.getStockCapacity(building.getBuildingType());
+	    //stockCapacity = config.getStockCapacity(building.getBuildingType());
 		//System.out.println("Storage.java : stockCapacity is " +stockCapacity);
 		// Get building resource capacity.
 		storageCapacity = config.getStorageCapacities(building.getBuildingType());
+
+		// Get initial resources in building.
+		//Inventory inv = building.getBuildingManager().getSettlement().getSettlementInventory();
+
 		Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
 		while (i1.hasNext()) {
 			AmountResource resource = i1.next();
 			//System.out.println("resource : " + resource.getName());
 			double currentCapacity = inv.getAmountResourceCapacity(resource, false);
-			//System.out.println("currentCapacity is "+currentCapacity);
-			double buildingCapacity = storageCapacity.get(resource);
-			//System.out.println("buildingCapacity is "+buildingCapacity);
-			inv.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
+			//double remainingCapacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+			//System.out.println("currentCapacity is "+ currentCapacity);
+			double maxCapacity = storageCapacity.get(resource);
+			//System.out.println(building.getNickName() + " :\t" + resource.getName() + " : " + currentCapacity + " : " + remainingCapacity + " : " + maxCapacity);
+			// A capacity of a resource in a settlement is the sum of the capacity of the same resource in all buildings of that settlement
+			inv.addAmountResourceTypeCapacity(resource, currentCapacity + maxCapacity);
+			//double newRCapacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+			//System.out.println(building.getNickName() + "'s resource-storage " + " - " + resource.getName() + " - max : " + maxCapacity);
+			//System.out.println("\t\t\t\t\t\t\t\t" + s.getName() + "'s resource-storage " + " - " + resource.getName() + " : increasing cap from " + currentCapacity + " to " + newRCapacity);
+
 		}
 
-		// Get initial resources in building.
-		//Inventory inv = building.getBuildingManager().getSettlement().getSettlementInventory();
+		//System.out.println();
+
 		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getBuildingType());
 		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 		while (i2.hasNext()) {
@@ -85,10 +126,40 @@ implements Serializable {
 			double initialResource = initialResources.get(resource);
 			//System.out.println("Storage.java : initialResource : " + initialResource);
 			double resourceCapacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
-			//System.out.println("Storage.java : resourceCapacity is "+resourceCapacity);
-			if (initialResource > resourceCapacity) initialResource = resourceCapacity;
+			//System.out.println("Storage.java : resourceCapacity : " + resourceCapacity);
+			//System.out.println("\t\t" + resource.getName() + " : " + initialResource + " : " + resourceCapacity);
+			if (initialResource > resourceCapacity)
+				initialResource = resourceCapacity;
 			inv.storeAmountResource(resource, initialResource, true);
+			//double newCapacity = inv.getAmountResourceCapacity(resource, false);
+			// NOTE : Just calling getAmountResourceStored() below is CRTICAL for initializing the Amount Resource cache in the inventory (via calling initializeAmountResourceStoredCache())
+			// without that, it will generate a string of NullPonterException when loading a saved sim.
+			//inv.getAmountResourceStored(resource, false);
+			//System.out.println(building.getNickName() + "'s resource-initial " + " -\t" + resource.getName() + "\t\t: " + stored + " / " + newCapacity);
 		}
+
+		//System.out.println();
+
+		foodAR = AmountResource.findAmountResource(FOOD);			// 1
+		waterAR = AmountResource.findAmountResource(WATER);		// 2
+		oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
+		carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
+
+        foodWasteAR = AmountResource.findAmountResource("food waste");			// 16
+        solidWasteAR = AmountResource.findAmountResource("solid waste");		// 17
+        greyWaterAR = AmountResource.findAmountResource("grey water");			// 19
+        tableSaltAR = AmountResource.findAmountResource("table salt"); 		// 23
+        NaClOAR = AmountResource.findAmountResource("sodium hypochlorite");	// 145
+        napkinAR = AmountResource.findAmountResource("napkin");				// 150
+
+    	methaneAR = AmountResource.findAmountResource("methane");			// 8
+        iceAR = AmountResource.findAmountResource("ice");					// 12
+    	regolithAR = AmountResource.findAmountResource("regolith");		// 142
+        rockSamplesAR = AmountResource.findAmountResource("rock samples");	// 143
+
+        cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
+        fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
+        soilAR = AmountResource.findAmountResource(SOIL);
 	}
 
 	/**
@@ -238,7 +309,7 @@ implements Serializable {
 	public static boolean storeAnResource(double amount, AmountResource ar, Inventory inv) {
 		boolean result = false;
 		try {
-			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, false);
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, true);
 
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
@@ -252,7 +323,8 @@ implements Serializable {
 				result = true;
 			}
 		} catch (Exception e) {
-    		logger.log(Level.SEVERE, "Issues with storeAnResource() on " + ar.getName() + " : " + e.getMessage());
+			e.printStackTrace(System.err);
+    		logger.log(Level.SEVERE, "Issues with storeAnResource(ar) on " + ar.getName() + " : " + e.getMessage());
 		}
 
 		return result;
@@ -270,7 +342,7 @@ implements Serializable {
 		boolean result = false;
 		try {
 			AmountResource ar = AmountResource.findAmountResource(name);
-			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, false);
+			double remainingCapacity = inv.getAmountResourceRemainingCapacity(ar, true, true);
 
 			if (remainingCapacity < amount) {
 			    // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
@@ -284,7 +356,8 @@ implements Serializable {
 				result = true;
 			}
 		} catch (Exception e) {
-    		logger.log(Level.SEVERE, "Issues with storeAnResource() on " + name + " : " + e.getMessage());
+			e.printStackTrace(System.err);
+    		logger.log(Level.SEVERE, "Issues with storeAnResource(name) on " + name + " : " + e.getMessage());
 		}
 
 		return result;
@@ -326,7 +399,8 @@ implements Serializable {
 	    		result = true;
 	    	}
 	    } catch (Exception e) {
-    		logger.log(Level.SEVERE, "Issues with retrieveAnResource() on " + name + " : " + e.getMessage());
+			e.printStackTrace(System.err);
+    		logger.log(Level.SEVERE, "Issues with retrieveAnResource(name) on " + name + " : " + e.getMessage());
 	    }
 
     	return result;
@@ -367,8 +441,8 @@ implements Serializable {
 	    		result = true;
 	    	}
 	    } catch (Exception e) {
-			//e.printStackTrace(System.err);
-    		logger.log(Level.SEVERE, "Issues with retrieveAnResource() on " + ar.getName() + " : " + e.getMessage());
+			e.printStackTrace(System.err);
+    		logger.log(Level.SEVERE, "Issues with retrieveAnResource(ar) on " + ar.getName() + " : " + e.getMessage());
 	    }
 
     	return result;

@@ -6,17 +6,17 @@
 
 	<!-- Typical mission control parameters for a settlement  -->
 	<mission-control>
-	
-		<!-- This vehicle range Error margin imposed on the life support/consumable. --> 
+
+		<!-- This vehicle range Error margin imposed on the life support/consumable. -->
 		<!-- The lower the value, the farther a rover can go  -->
 		<!-- default value : 5.0  Valid from 1.0 to 15.0 -->
 		<rover-life-support-range-error-margin value="5.0" />
-		
+
 		<!-- This vehicle range Error margin imposed on the fuel of the vehicle. -->
-		<!-- The lower the value, the farther a rover can go  -->		
+		<!-- The lower the value, the farther a rover can go  -->
 		<!-- default value : 3.0  Valid from 1.0 to 10.0 -->
 		<rover-fuel-range-error-margin value="3.0" />
-    
+
 	</mission-control>
 
 	<!-- (NOT IMPLEMENTED YET) Typical atmospheric requirements for a closed-loop habitat  -->
@@ -33,7 +33,7 @@
 		<relative-humidity low="30" high="70"/>
 		<!-- ventilation in m/s-->
 		<ventilation low="0.076" high="0.203"/>
-	
+
 	</life-support-requirements>
 
 	<!-- List of templates for settlements -->
@@ -106,8 +106,8 @@
 
 			<!-- Crop -->
 			<!-- No starting crops for this template. -->
-			
-			
+
+
 			<!-- Food Crop Tissue Culture-->
 			<resource type="blueberry tissue culture" amount="0.1" />
 			<resource type="cabbage tissue culture" amount="0.1" />
@@ -963,13 +963,16 @@
 			<building id="32" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
 			<building id="33" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
 			<building id="34" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
+
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
+
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="100" />
 			<equipment type="Barrel" number="100" />
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
+
 			<resource type="oxygen" amount="2245.0" />
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
@@ -1108,14 +1111,17 @@
 			<building id="36" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
 			<building id="37" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
 			<building id="38" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
+
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="2" />
+
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="100" />
 			<equipment type="Barrel" number="100" />
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
 			<equipment type="Specimen Box" number="100" />
+
 			<resource type="oxygen" amount="2245.0" />
 			<resource type="water" amount="69472.0" />
 			<resource type="food" amount="1656.0" />
@@ -1138,7 +1144,7 @@
 			<number-of-robots number="12" />
 			<!--max-MSD number="1" / -->
 			<sponsor name="Mars Society (MS)"/>
-			
+
 		</settlement>
 
 		<settlement name="Schiaparelli Point" template="Mars Direct Base (Phase 1)">
@@ -1176,7 +1182,7 @@
 		<settlement-name sponsor="NASA" value="Garvin Station" />
 		<settlement-name sponsor="NASA" value="Goddard Trading Post" />
 		<settlement-name sponsor="NASA" value="Ares One" />
-		
+
 		<settlement-name sponsor="Mars Society (MS)" value="Port Zubrin" />
 		<settlement-name sponsor="Mars Society (MS)" value="Burroughstown" />
 		<settlement-name sponsor="Mars Society (MS)" value="Asimov Base" />
@@ -1201,8 +1207,8 @@
 
 		<settlement-name sponsor="Mars Society (MS)" value="Mars One Base" />
 		<settlement-name sponsor="Mars Society (MS)" value="Watney Station" />
-		
-				
+
+
 	</settlement-name-list>
 
 </settlement-configuration>

@@ -21,10 +21,10 @@ public interface LifeSupportType {
 	public static final String FOOD = "food";
 	public static final String CO2 = "carbon dioxide";
 
-	public static AmountResource foodAR = AmountResource.foodAR;//findAmountResource(LifeSupportType.FOOD); //foodAR;//
-	public static AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
-	public static AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER); //waterAR;//
-	public static AmountResource carbonDioxideAR = AmountResource.carbonDioxideAR;//findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
+	//public AmountResource foodAR = AmountResource.foodAR;//findAmountResource(LifeSupportType.FOOD); //foodAR;//
+	//public AmountResource oxygenAR = AmountResource.oxygenAR;//findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
+	//public AmountResource waterAR = AmountResource.waterAR;//findAmountResource(LifeSupportType.WATER); //waterAR;//
+	//public AmountResource carbonDioxideAR = AmountResource.carbonDioxideAR;//findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
 
 	/**
 	 * Returns true if life support is working properly and is not out

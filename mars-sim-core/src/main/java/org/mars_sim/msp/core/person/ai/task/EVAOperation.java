@@ -69,7 +69,10 @@ implements Serializable {
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
- 
+	// 2017-03-22 WARNING: cannot use oxygenAR and waterAR in AmountResource or resulting in null.
+	private static AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+	private static AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+
 	/**
 	 * Constructor.
 	 * @param name the name of the task
@@ -112,11 +115,11 @@ implements Serializable {
         // Set initial phase.
         setPhase(WALK_TO_OUTSIDE_SITE);
     }
-    
+
     public EVAOperation(String name, Robot robot, boolean hasSiteDuration, double siteDuration) {
         super(name, robot, true, false, STRESS_MODIFIER, false, 0D);
 
-/*        
+/*
         // Initialize data members
         this.hasSiteDuration = hasSiteDuration;
         this.siteDuration = siteDuration;
@@ -150,8 +153,8 @@ implements Serializable {
 
         // Set initial phase.
         setPhase(WALK_TO_OUTSIDE_SITE);
-        
-*/        
+
+*/
     }
     /**
      * Check if EVA should end.
@@ -378,18 +381,18 @@ implements Serializable {
 
         try {
             // Check if EVA suit is at 15% of its oxygen capacity.
-            //AmountResource oxygenResource = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
-            double oxygenCap = suitInv.getAmountResourceCapacity(EVA.oxygenAR, false);
-            double oxygen = suitInv.getAmountResourceStored(EVA.oxygenAR, false);
+            //AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+            double oxygenCap = suitInv.getAmountResourceCapacity(oxygenAR, false);
+            double oxygen = suitInv.getAmountResourceStored(oxygenAR, false);
             if (oxygen <= (oxygenCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");
                 result = true;
             }
 
             // Check if EVA suit is at 15% of its water capacity.
-            //AmountResource waterResource = AmountResource.findAmountResource(LifeSupportType.WATER);
-            double waterCap = suitInv.getAmountResourceCapacity(EVA.waterAR, false);
-            double water = suitInv.getAmountResourceStored(EVA.waterAR, false);
+            //AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER);
+            double waterCap = suitInv.getAmountResourceCapacity(waterAR, false);
+            double water = suitInv.getAmountResourceStored(waterAR, false);
             if (water <= (waterCap * .15D)) {
                 logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");
                 result = true;
@@ -480,8 +483,10 @@ implements Serializable {
 
     	if (person != null) {
 
-    		RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
-    		re.checkForRadiation(time);
+    		//RadiationExposure re = person.getPhysicalCondition().getRadiationExposure();
+    		//re.checkForRadiation(time);
+
+    		person.getPhysicalCondition().getRadiationExposure().checkForRadiation(time);
 
     	} else if (robot != null) {
 
@@ -558,7 +563,7 @@ implements Serializable {
    protected void setStressModifier(double newStressModifier) {
        super.setStressModifier(stressModifier);
    }
-   
+
     @Override
     public void destroy() {
         super.destroy();

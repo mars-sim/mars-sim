@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploreSite.java
- * @version 3.08 2015-07-05
+ * @version 3.1.0 2017-03-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -64,7 +64,7 @@ implements Serializable {
     private ExploredLocation site;
     private Rover rover;
 
-    static AmountResource rockSamplesAR = EVA.rockSamplesAR;
+    //static AmountResource rockSamplesAR = EVA.AmountResource.rockSamplesAR;
 
     /**
      * Constructor.
@@ -136,9 +136,9 @@ implements Serializable {
      * @return true if person can explore a site.
      */
     public static boolean canExploreSite(MissionMember member, Rover rover) {
-        
+
         boolean result = false;
-        
+
         if (member instanceof Person) {
             Person person = (Person) member;
 
@@ -158,7 +158,7 @@ implements Serializable {
 
             result = (exitable && (sunlight || darkRegion) && !medical);
         }
-        
+
         return result;
     }
 
@@ -232,11 +232,11 @@ implements Serializable {
                 double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
                 //AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(
-                        rockSamplesAR, true, false);
+                        AmountResource.rockSamplesAR, true, false);
                 if (rockSampleMass < rockSampleCapacity)
-                    inv.storeAmountResource(rockSamplesAR, rockSampleMass, true);
+                    inv.storeAmountResource(AmountResource.rockSamplesAR, rockSampleMass, true);
    			 		// 2015-01-15 Add addSupplyAmount()
-                	inv.addAmountSupplyAmount(rockSamplesAR, rockSampleMass);
+                	inv.addAmountSupplyAmount(AmountResource.rockSamplesAR, rockSampleMass);
             }
         }
     }
@@ -308,7 +308,7 @@ implements Serializable {
             try {
                 //AmountResource rockSamples = ("rock samples");
                 double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(
-                        rockSamplesAR, false, false);
+                        AmountResource.rockSamplesAR, false, false);
 
                 if (remainingCapacity > mostCapacity) {
                     result = container;

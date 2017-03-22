@@ -96,11 +96,12 @@ public class EatMeal extends Task implements Serializable {
 
     private CookedMeal cookedMeal;
     private PreparedDessert nameOfDessert;
-    private AmountResource unpreparedDessertAR;
     private Cooking kitchen;
     private PreparingDessert dessertKitchen;
     private Inventory inv;
 
+    private static AmountResource unpreparedDessertAR;
+    private static AmountResource napkinAR = AmountResource.napkinAR;
     //private static PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 
     /**
@@ -133,7 +134,7 @@ public class EatMeal extends Task implements Serializable {
         Unit container = person.getTopContainerUnit();
         if (container != null) {
             inv = container.getInventory();
-            hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, AmountResource.napkinAR, inv, true);
+            hasNapkin = Storage.retrieveAnResource(NAPKIN_MASS, napkinAR, inv, true);
         }
 
         // Initialize task phase.

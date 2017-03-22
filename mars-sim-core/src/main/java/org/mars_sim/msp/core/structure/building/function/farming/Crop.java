@@ -46,9 +46,9 @@ public class Crop implements Serializable {
 	private static Logger logger = Logger.getLogger(Crop.class.getName());
 
 	// TODO Static members of crops should be initialized from some xml instead of being hard coded.
-	
+
 	// 2016-10-12 Added the limiting factor that determines how fast and how much PAR can be absorbed in one frame.
-	public static final double PHYSIOLOGICAL_LIMIT = 0.9; // 1 is max. if set to 1, a lot of lights will toggle on and off indesirably. 
+	public static final double PHYSIOLOGICAL_LIMIT = 0.9; // 1 is max. if set to 1, a lot of lights will toggle on and off indesirably.
 	public static final double TISSUE_EXTRACTED_PERCENT = .1D;
 
 	/** Amount of carbon dioxide needed per harvest mass. */
@@ -73,9 +73,21 @@ public class Crop implements Serializable {
 	// SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * 4.56 * (not 88775.244)/1e6 = 237.2217
     private static final double T_TOLERANCE = 3D;
 
+    public static final String TISSUE_CULTURE = "tissue culture";
+
+	public static final String FERTILIZER = "fertilizer";
+	public static final String GREY_WATER = "grey water";
+    public static final String SOIL = "soil";
+    public static final String CROP_WASTE = "crop waste";
+
+	public static final String OXYGEN = "oxygen";
+	public static final String WATER = "water";
+	public static final String FOOD = "food";
+	public static final String CO2 = "carbon dioxide";
+
 	// Data members
-    private double conversion_factor; 
-    
+    private double conversion_factor;
+
 	private int numLampCache;
     /** Current sol since the start of sim. */
 	private int solCache = 1;
@@ -109,7 +121,7 @@ public class Crop implements Serializable {
 	private double uPAR;
 	private double diseaseIndex = 0;
 	private String cropName, capitalizedCropName, tissue;
-	
+
 	/** Current phase of crop. */
 	private PhaseType phaseType;
 	private CropCategoryType cropCategoryType;
@@ -121,11 +133,32 @@ public class Crop implements Serializable {
 	private MarsClock marsClock;
 	private MasterClock masterClock;
 	private static CropConfig cropConfig;
-	   
+
 	private AmountResource cropAR, tissueAR;
-	
+
+	private static AmountResource foodAR;// needed by Farming
+	private static AmountResource oxygenAR;
+	private static AmountResource waterAR;
+	private static AmountResource carbonDioxideAR;
+
+    private static AmountResource tableSaltAR;
+    private static AmountResource NaClOAR;
+    private static AmountResource greyWaterAR;
+    private static AmountResource foodWasteAR;
+    private static AmountResource solidWasteAR;
+    private static AmountResource napkinAR;
+
+	private static AmountResource methaneAR;
+	private static AmountResource regolithAR;
+    private static AmountResource iceAR;
+    private static AmountResource rockSamplesAR;
+
+    private static AmountResource cropWasteAR; // needed by Farming, Crop
+    private static AmountResource fertilizerAR; // needed by Farming, Crop
+	private static AmountResource soilAR; // needed by Farming
+
 	private Map<Integer, Phase> phases = new HashMap<>();
-	
+
 	DecimalFormat fmt = new DecimalFormat("0.00000");
 
 	/**
@@ -136,7 +169,7 @@ public class Crop implements Serializable {
 	 * @param farm - Farm crop being grown in.
 	 * @param settlement - the settlement the crop is located at.
 	 * @param newCrop - true if this crop starts in it's planting phase.
-	 * @param tissuePercent the percentage of tissue culture available based on the requested amount
+	 * @param tissuePercent the percentage of ticarbonDioxideARure available based on the requested amount
 	 */
 	// Called by Farming.java constructor and timePassing()
 	// 2015-08-26 Added new param percentGrowth
@@ -151,11 +184,32 @@ public class Crop implements Serializable {
 		this.dailyMaxHarvest = dailyMaxHarvest;
 
 		cropName = cropType.getName();
-		tissue = cropName + " " + Farming.TISSUE_CULTURE;
-		
+		tissue = cropName + " " + TISSUE_CULTURE;
+
 		cropAR = AmountResource.findAmountResource(cropName);
 		tissueAR = AmountResource.findAmountResource(tissue);
-				
+
+		foodAR = AmountResource.findAmountResource(FOOD);			// 1
+		waterAR = AmountResource.findAmountResource(WATER);		// 2
+		oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
+		carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
+
+        foodWasteAR = AmountResource.findAmountResource("food waste");			// 16
+        solidWasteAR = AmountResource.findAmountResource("solid waste");		// 17
+        greyWaterAR = AmountResource.findAmountResource("grey water");			// 19
+        tableSaltAR = AmountResource.findAmountResource("table salt"); 		// 23
+        NaClOAR = AmountResource.findAmountResource("sodium hypochlorite");	// 145
+        napkinAR = AmountResource.findAmountResource("napkin");				// 150
+
+    	methaneAR = AmountResource.findAmountResource("methane");			// 8
+        iceAR = AmountResource.findAmountResource("ice");					// 12
+    	regolithAR = AmountResource.findAmountResource("regolith");		// 142
+        rockSamplesAR = AmountResource.findAmountResource("rock samples");	// 143
+
+        cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
+        fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
+        soilAR = AmountResource.findAmountResource(SOIL);
+
 		cropConfig = SimulationConfig.instance().getCropConfiguration();
 	    averageWaterNeeded = cropConfig.getWaterConsumptionRate();
 	    averageOxygenNeeded = cropConfig.getOxygenConsumptionRate();
@@ -182,52 +236,52 @@ public class Crop implements Serializable {
 		maxHarvest = dailyMaxHarvest * growingDay;
 
 		phases = cropType.getPhases();
-		
+
 		for (Phase p : phases.values()) {
 			p.setHarvestFactor(1);
 		}
-			
+
 		if (newCrop) {
-			phaseType = PhaseType.INCUBATION; 
+			phaseType = PhaseType.INCUBATION;
 			if (tissuePercent <= 0) {
 				// assume a max 2-day incubation period if no 0% tissue culture is available
 				growingTimeCompleted =  1000D * phases.get(0).getWorkRequired() ;
-				logger.info(capitalizedCropName 
-						+ " has no tissue culture left. Will require " 
+				logger.info(capitalizedCropName
+						+ " has no tissue culture left. Will require "
 						+ (int) growingTimeCompleted + " millisols to restock by incubation.");
 			}
-			
+
 			else if (tissuePercent >= 100) {
 				// assume zero day incubation period if 100% tissue culture is available
 				growingTimeCompleted = 0;
 				phaseType = PhaseType.PLANTING;
-				logger.info("Proceeds to transferring plantflets from " 
+				logger.info("Proceeds to transferring plantflets from "
 						+ capitalizedCropName + "'s tissue culture into the field.");
 			}
-			
+
 			else {
 				growingTimeCompleted = 1000D * phases.get(0).getWorkRequired() * (100D - tissuePercent) / 100D;
-				logger.info(capitalizedCropName + " needs " 
+				logger.info(capitalizedCropName + " needs "
 						+ (int) growingTimeCompleted + " millisols to clone more tissues before planting.");
 			}
-	
-		} 
-		
+
+		}
+
 		else {
-			// At the start of the sim, set up a crop's "initial" percentage of growth randomly 
+			// At the start of the sim, set up a crop's "initial" percentage of growth randomly
 			growingTimeCompleted = RandomUtil.getRandomDouble(growingTime);
-			
+
 			fractionalGrowthCompleted = growingTimeCompleted/growingTime;
 
 			int size = phases.size();
-			
+
 			for (int i= 0; i < size; i++) {
 				if (i < size-2 && fractionalGrowthCompleted * 100D <= getTotalPercent(i)) {
 					phaseType = cropType.getPhases().get(i).getPhaseType();
 					break;
 				}
 			}
-		
+
 			actualHarvest = maxHarvest * fractionalGrowthCompleted;
 		}
 
@@ -284,7 +338,7 @@ public class Crop implements Serializable {
 	 * @return food harvest (kg.)
 	 */
 	public double getMaxHarvest() {
-		return maxHarvest; 
+		return maxHarvest;
 	}
 
 	/**
@@ -303,13 +357,13 @@ public class Crop implements Serializable {
 		boolean result = false;
 		int phaseNum = getPhaseNum();
 /*
-		if (phaseType == PhaseType.INCUBATION 
-				|| phaseType == PhaseType.PLANTING 
-				|| phaseType == PhaseType.HARVESTING) 
+		if (phaseType == PhaseType.INCUBATION
+				|| phaseType == PhaseType.PLANTING
+				|| phaseType == PhaseType.HARVESTING)
 			result = true;
 
 		else {
-*/			if (phases.get(phaseNum).getWorkRequired() *.9 > currentPhaseWorkCompleted) 
+*/			if (phases.get(phaseNum).getWorkRequired() *.9 > currentPhaseWorkCompleted)
 				result = true;
 			else
 				result = false;
@@ -329,9 +383,9 @@ public class Crop implements Serializable {
 		// 0:bad, 1:good
 		double result = 0D;
 
-		int phaseNum = getPhaseNum();			
+		int phaseNum = getPhaseNum();
 		int length = phases.size();
-		
+
 		if (phaseNum > 2 && phaseNum < length - 1) {
 		// the two phases where the crop will spend most of the time
 			result = getHealth();
@@ -340,32 +394,32 @@ public class Crop implements Serializable {
 		else if (phaseNum == 2) {
 			if ( (growingTimeCompleted / growingTime) <= .02 ) {
 				// avoid initial spurious data
-				result = 1D; 
+				result = 1D;
 			}
 			else {
 				result = getHealth();
 			}
 		}
-		
+
 		else if (phaseType == PhaseType.INCUBATION) {
 			result = 1D;
 		}
-		
+
 		else if (phaseType == PhaseType.PLANTING) {
 			result = 1D;
 		}
-		
+
 		else if (phaseType == PhaseType.HARVESTING) {
 			result = 1D;
 		}
-		
+
 		else if (phaseType == PhaseType.FINISHED) {
 			result = 1D;
-		}	
-		
+		}
+
 		else
 			result = getHealth();
-	
+
 		if (result > 1D) result = 1D;
 		else if (result < 0D) result = 0D;
 
@@ -378,7 +432,7 @@ public class Crop implements Serializable {
 			logger.info("Crop " + capitalizedCropName + " at " + settlement.getName() + " died of poor health.");
 			// 2015-02-06 Added Crop Waste
 			double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
-			Storage.storeAnResource(amountCropWaste, Farming.cropWasteAR, inv);
+			Storage.storeAnResource(amountCropWaste, cropWasteAR, inv);
 			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 
 		}
@@ -389,12 +443,12 @@ public class Crop implements Serializable {
 			logger.info("The seedlings of " + capitalizedCropName + " at " + settlement.getName() + " did not survive.");
 			// 2015-02-06 Added Crop Waste
 			double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
-			Storage.storeAnResource(amountCropWaste, Farming.cropWasteAR, inv);
+			Storage.storeAnResource(amountCropWaste, cropWasteAR, inv);
 			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 			//actualHarvest = 0;
 			//growingTimeCompleted = 0;
 		}
-		
+
 		return result;
 	}
 
@@ -405,7 +459,7 @@ public class Crop implements Serializable {
 	public double getHealth() {
 		return (1 - diseaseIndex) * actualHarvest / maxHarvest * growingTime / growingTimeCompleted ;
 	}
-	
+
 	/**
 	 * Adds work time to the crops current phase.
 	 * @param workTime - Work time to be added (millisols)
@@ -418,33 +472,33 @@ public class Crop implements Serializable {
 
 		int phaseNum = getPhaseNum();
 		int length = phases.size();
-		
+
 		if (actualHarvest <= 0D) {
 			actualHarvest = 0;
 			growingTimeCompleted = 0;
 		}
 
 		if (phaseNum == 0) {
-			currentPhaseWorkCompleted += remainingWorkTime;		
-			
+			currentPhaseWorkCompleted += remainingWorkTime;
+
 			if (currentPhaseWorkCompleted >= phases.get(0).getWorkRequired()) {
 				remainingWorkTime = currentPhaseWorkCompleted - phases.get(0).getWorkRequired();
 				currentPhaseWorkCompleted = 0D;
 				phaseType = PhaseType.PLANTING;
-				
-			} else 
-				remainingWorkTime = 0D;	
+
+			} else
+				remainingWorkTime = 0D;
 		}
-		
+
 		else if (phaseNum == 1) {
 			currentPhaseWorkCompleted += remainingWorkTime;
-			
+
 			if (currentPhaseWorkCompleted >= phases.get(phaseNum).getWorkRequired()) {
 				remainingWorkTime = currentPhaseWorkCompleted - phases.get(phaseNum).getWorkRequired();
 				currentPhaseWorkCompleted = 0D;
 			}
 		}
-			
+
 		// 2015-02-15 Added GERMINATION
 		else if (phaseNum == 2) {
 			currentPhaseWorkCompleted += remainingWorkTime;
@@ -453,9 +507,9 @@ public class Crop implements Serializable {
 				remainingWorkTime = currentPhaseWorkCompleted - w;
 				currentPhaseWorkCompleted = w;
 			}
-			else 
+			else
 				remainingWorkTime = 0D;
-			
+
 		}
 
 		else if (phaseNum > 2 && phaseNum < length - 2) {
@@ -486,17 +540,17 @@ public class Crop implements Serializable {
 				Storage.storeAnResource(lastHarvest, cropAR, inv);
 				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(lastHarvest * 1000.0)/1000.0 + " kg. All Done.");
 				remainingWorkTime = overWorkTime;
-				logger.info("Finished harvesting " + capitalizedCropName 
-						+ " in " + farm.getBuilding().getNickName() 
+				logger.info("Finished harvesting " + capitalizedCropName
+						+ " in " + farm.getBuilding().getNickName()
 						+ " at " + settlement.getName());
-				
+
 				phaseType = PhaseType.FINISHED;
 				generateCropWaste(lastHarvest);
 
 				// 2015-10-13 Check to see if a botany lab is available
 				boolean done = checkBotanyLab();
 				if (!done)
-					logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName); 
+					logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName);
 
 			}
 			else { 	// continue the harvesting process
@@ -527,16 +581,16 @@ public class Crop implements Serializable {
 		}
 
 		if (hasEmptySpace) {
-			
+
 			hasEmptySpace = lab0.addResearcher();
 			if (hasEmptySpace) {
 				preserveCropTissue(lab0, true);
 				lab0.removeResearcher();
 			}
-			
-			done = true;			
+
+			done = true;
 		}
-		
+
 		else {
 			// Check available research slot in another lab located in another greenhouse
 			List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESEARCH);
@@ -552,7 +606,7 @@ public class Crop implements Serializable {
 							preserveCropTissue(lab1, true);
 							lab0.removeResearcher();
 						}
-						
+
 						// TODO: compute research ooints to determine if it can be carried out.
 						// int points += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
 						done = true;
@@ -583,7 +637,7 @@ public class Crop implements Serializable {
 				}
 			}
 		}
-		
+
 		return done;
 	}
 
@@ -605,14 +659,14 @@ public class Crop implements Serializable {
 
 		// 2015-10-13 if no dedicated research space is available, work can still be performed but productivity is cut half
 		if (hasSpace) {
-			logger.info(amount + " kg " + capitalizedCropName + " " + Farming.TISSUE_CULTURE + " extracted & cryo-preserved in " 
+			logger.info(amount + " kg " + capitalizedCropName + " " + TISSUE_CULTURE + " extracted & cryo-preserved in "
 					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 		}
 		else {
 			amount = amount / 2D;
-			logger.info("Not enough botany research space. Only " + amount + " kg (at reduced capacity) " 
-					+ capitalizedCropName + " " + Farming.TISSUE_CULTURE
-					+ " extracted & cryo-preserved in " 
+			logger.info("Not enough botany research space. Only " + amount + " kg (at reduced capacity) "
+					+ capitalizedCropName + " " + TISSUE_CULTURE
+					+ " extracted & cryo-preserved in "
 					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 		}
 	}
@@ -623,7 +677,7 @@ public class Crop implements Serializable {
 	public void generateCropWaste(double harvestMass) {
 		// 2015-02-06 Added Crop Waste
 		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() +cropType.getEdibleBiomass());
-		Storage.storeAnResource(amountCropWaste, Farming.cropWasteAR, inv);
+		Storage.storeAnResource(amountCropWaste, cropWasteAR, inv);
 		//logger.info("addWork() : " + cropName + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
 	}
 
@@ -641,13 +695,13 @@ public class Crop implements Serializable {
  * Case 2 : incubation phase
  * Case 3 : finished phase
  */
-		
+
 		if ((phaseNum > 1 && phaseNum < length - 2) || phaseNum == 2) {
 			if (time > 0D) {
 				growingTimeCompleted += time;
-		
+
 				int size = phases.size();
-				
+
 				for (int i = 0; i < size; i++) {
 					if (i < size-2 && growingTimeCompleted * 100D <= growingTime * getTotalPercent(i)) {
 						phaseType = cropType.getPhases().get(i).getPhaseType();
@@ -655,16 +709,16 @@ public class Crop implements Serializable {
 						break;
 					}
 				}
-				
+
 				if (phaseType != PhaseType.HARVESTING && growingTimeCompleted >= growingTime) {
-					//if (phaseType != PhaseType.GROWING) 
+					//if (phaseType != PhaseType.GROWING)
 					//System.out.println("phaseType is " + phaseType.getName());
 					phaseType = PhaseType.HARVESTING;
 					//System.out.println("Crop.java : Changed to Harvesting. growingTimeCompleted >= cropGrowingTime");
 					//System.out.println(growingTimeCompleted + " vs. " + cropGrowingTime);
 					currentPhaseWorkCompleted = 0D;
-					
-				} else if (growingTimeCompleted == 0) {				
+
+				} else if (growingTimeCompleted == 0) {
 					;
 
 				} else {
@@ -672,7 +726,7 @@ public class Crop implements Serializable {
 					int newSol = marsClock.getSolElapsedFromStart();
 					if (newSol != currentSol) {
 						// Compute health condition
-						getCondition();						
+						getCondition();
 						// TODO: why doing this at the end of a sol?
 						//double maxDailyHarvest = maxHarvest / cropGrowingDay;
 						phaseNum = getPhaseNum();
@@ -701,10 +755,10 @@ public class Crop implements Serializable {
 				}
 			}
 		}
-		
+
 		else if (phaseType == PhaseType.INCUBATION) {
 			growingTimeCompleted += time;
-			if (growingTimeCompleted >= phases.get(0).getWorkRequired()) {			
+			if (growingTimeCompleted >= phases.get(0).getWorkRequired()) {
 				phaseType = PhaseType.PLANTING;
 				currentPhaseWorkCompleted = 0D;
 			}
@@ -712,12 +766,12 @@ public class Crop implements Serializable {
 
 		else if (phaseType == PhaseType.PLANTING) {
 			growingTimeCompleted += time;
-			if (growingTimeCompleted >= phases.get(1).getWorkRequired()) {				
-				phaseType = phases.get(2).getPhaseType();		
+			if (growingTimeCompleted >= phases.get(1).getWorkRequired()) {
+				phaseType = phases.get(2).getPhaseType();
 				currentPhaseWorkCompleted = 0D;
 			}
 		}
-		
+
 		else if (phaseType == PhaseType.FINISHED) {
 			actualHarvest = 0;
 			growingTimeCompleted = 0;
@@ -778,9 +832,9 @@ public class Crop implements Serializable {
 	    // Gauge if there is enough sunlight
 	    double progress = cumulativeDailyPAR / dailyPARRequired; //[max is 1]
 	    double clock = currentMillisols / 1000D; //[max is 1]
-/*		logger.info("uPAR : "+ fmt.format(uPAR) 
+/*		logger.info("uPAR : "+ fmt.format(uPAR)
 				+ "\tdelta_PAR_sunlight : " + fmt.format(delta_PAR_sunlight)
-				+ "\tprogress : "+ fmt.format(progress) 
+				+ "\tprogress : "+ fmt.format(progress)
 				+ "\truler : " + fmt.format(clock));
 */
 	    // When enough PAR have been administered to the crop, the HPS_LAMP will turn off.
@@ -798,8 +852,8 @@ public class Crop implements Serializable {
 	    	if (uPAR > 40) { // if sunlight is available
 				turnOffLighting();
 	    		cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_sunlight ;
-	    		
-/*			    logger.info(cropType.getName() 
+
+/*			    logger.info(cropType.getName()
 			    		+ "\tcumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR)
 						+ "\tdelta_PAR_sunlight : "+ fmt.format(delta_PAR_sunlight));
 */
@@ -808,14 +862,14 @@ public class Crop implements Serializable {
 	    	else { //if no sunlight, turn on artificial lighting
 	    		//double conversion_factor = 1000D * wattToPhotonConversionRatio / MarsClock.SECONDS_IN_MILLISOL  ;
 	    		double PAR_outstanding_persqm_daily = dailyPARRequired - cumulativeDailyPAR; // in mol / m^2 /day
-				double delta_PAR_outstanding = PAR_outstanding_persqm_daily * (time / 1000D) * growingArea; 
+				double delta_PAR_outstanding = PAR_outstanding_persqm_daily * (time / 1000D) * growingArea;
 				// in mol needed at this delta time [mol] = [mol /m^2 /day] * [millisol] / [millisols /day] * m^2
 				double delta_kW = delta_PAR_outstanding / time / conversion_factor ;
 				// [kW] =  [mol] / [u mol /m^2 /s /(Wm^-2)] / [millisols] / [s /millisols]  = [W /u] * u * k/10e-3 = [kW];  since 1 u = 10e-6
 		    	// TODO: Typically, 5 lamps per square meter for a level of ~1000 mol/ m^2 /s
 				// 2016-10-12 Added PHYSIOLOGICAL_LIMIT sets a realistic limit for tuning how much PAR a food crop can absorb per frame.
 				// Note 1 : PHYSIOLOGICAL_LIMIT minimize too many lights turned on and off too frequently
-				// Note 2 : It serves to smooth out the instantaneous power demand over a period of time 
+				// Note 2 : It serves to smooth out the instantaneous power demand over a period of time
 		    	// each HPS_LAMP lamp supplies 400W has only 40% visible radiation efficiency
 				int numLamp = (int) (Math.ceil(delta_kW / kW_PER_HPS / VISIBLE_RADIATION_HPS / (1-BALLAST_LOSS_HPS) * PHYSIOLOGICAL_LIMIT));
 				// TODO: should also allow the use of LED_KIT for lighting
@@ -832,8 +886,8 @@ public class Crop implements Serializable {
 		    	double delta_PAR_supplied = supplykW * time  * conversion_factor / growingArea; // in mol / m2
 				// [ mol / m^2]  = [kW] * [u mol /m^2 /s /(Wm^-2)] * [millisols] * [s /millisols] /  [m^2] = k u mol / W / m^2 * (10e-3 / u / k) = [mol / m^-2]
 			    cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_supplied + delta_PAR_sunlight;
-				// [mol /m^2 /d]		    
-/*			    logger.info(cropType.getName() 
+				// [mol /m^2 /d]
+/*			    logger.info(cropType.getName()
 			    		+ "\tPAR_outstanding_persqm_daily : " + fmt.format(PAR_outstanding_persqm_daily)
 			    		+ "\tdelta_PAR_outstanding : " + fmt.format(delta_PAR_outstanding)
 						+ "\tdelta_kW : "+ fmt.format(delta_kW)
@@ -849,10 +903,10 @@ public class Crop implements Serializable {
 	    else {
 
 	    	turnOffLighting();
-			// move the curtain out to block excessive sunlight 
+			// move the curtain out to block excessive sunlight
 	    	//cumulativeDailyPAR = cumulativeDailyPAR + delta_PAR_sunlight;
-	    	
-/*		    logger.info(cropType.getName() 
+
+/*		    logger.info(cropType.getName()
 		    		+ "\tcumulativeDailyPAR : " + fmt.format(cumulativeDailyPAR));
 					//+ "\tdelta_PAR_sunlight : "+ fmt.format(delta_PAR_sunlight));
 */
@@ -877,18 +931,18 @@ public class Crop implements Serializable {
 			temperatureModifier = t_initial / T_NOW;
 		else if (T_NOW < (t_initial - T_TOLERANCE))
 			temperatureModifier = T_NOW / t_initial;
-		else 
+		else
 			// TODO: implement optimal growing temperature for each particular crop
 			temperatureModifier = 1.1;
 
 		// Determine harvest modifier according to amount of grey water available.
 
-		int phaseNum = getPhaseNum();			
+		int phaseNum = getPhaseNum();
 		int length = phases.size();
-				
+
 		double needFactor = 0;
 		// amount of grey water/water needed is also based on % of growth
-		if (phaseNum == 2) 
+		if (phaseNum == 2)
 		// if (phaseType == PhaseType.GERMINATION)
 			needFactor = .1;
 		else if (fractionalGrowthCompleted < .1 )
@@ -900,33 +954,33 @@ public class Crop implements Serializable {
 		else if (phaseNum > 2 && phaseNum < length - 2)
 		//else if (phaseType == PhaseType.GROWING)
 			needFactor = fractionalGrowthCompleted;
-	
+
 		// Calculate water usage
 		double waterRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageWaterNeeded;
-		double greyWaterAvailable = inv.getAmountResourceStored(Farming.greyWaterAR, false);
-		
+		double greyWaterAvailable = inv.getAmountResourceStored(greyWaterAR, false);
+
 		// First water crops with grey water if it is available.
 		double greyWaterUsed = waterRequired;
 		if (greyWaterUsed > greyWaterAvailable) {
 		    greyWaterUsed = greyWaterAvailable;
 		}
 		if (greyWaterUsed > 0D) {
-		    Storage.retrieveAnResource(greyWaterUsed, Farming.greyWaterAR, inv, true);
+		    Storage.retrieveAnResource(greyWaterUsed, greyWaterAR, inv, true);
 		}
-		
+
 		// If not enough grey water, use water mixed with fertilizer.
 		double waterUsed = 0D;
 		if (greyWaterUsed < waterRequired) {
-		    double waterAvailable = inv.getAmountResourceStored(Farming.waterAR, false);
+		    double waterAvailable = inv.getAmountResourceStored(waterAR, false);
 		    waterUsed = waterRequired - greyWaterUsed;
 		    if (waterUsed > waterAvailable) {
 		        waterUsed = waterAvailable;
 		    }
 		    if (waterUsed > 0D) {
-		        Storage.retrieveAnResource(waterUsed, Farming.waterAR, inv, true);
+		        Storage.retrieveAnResource(waterUsed, waterAR, inv, true);
 		    }
-		    
-		    double fertilizerAvailable = inv.getAmountResourceStored(Farming.fertilizerAR, false);
+
+		    double fertilizerAvailable = inv.getAmountResourceStored(fertilizerAR, false);
 		    double fertilizerRequired = FERTILIZER_NEEDED_WATERING * growingArea * time;
 		    double fertilizerUsed = fertilizerRequired;
 
@@ -934,48 +988,48 @@ public class Crop implements Serializable {
 		        fertilizerUsed = fertilizerAvailable;
 		    }
 		    if (fertilizerUsed > 0D) {
-		        Storage.retrieveAnResource(fertilizerUsed, Farming.fertilizerAR, inv, true);
+		        Storage.retrieveAnResource(fertilizerUsed, fertilizerAR, inv, true);
 		    }
 		}
-		
+
 		double totalWaterUsed = greyWaterUsed + waterUsed;
-		
-//		double waterAvailable = inv.getAmountResourceStored(waterAR, false);		
+
+//		double waterAvailable = inv.getAmountResourceStored(waterAR, false);
 //
 //		double waterUsed = waterRequired;
 //		if (waterRequired > waterAvailable) {
 //			// 2015-01-25 Added diff, waterUsed and consumeWater() when grey water is not available
 //			double diff = waterUsed - waterAvailable;
 //			waterUsed = waterAvailable;
-//		}	
-//		
+//		}
+//
 //		// Determine watering fertilizer needed when grey water isn't available.
 //		double wateringFertilizer = FERTILIZER_NEEDED_WATERING * growingArea * time;
-//			
+//
 //		Storage.retrieveAnResource(wateringFertilizer, FERTILIZER, inv, true);
 //		Storage.retrieveAnResource(waterRequired, LifeSupportType.WATER, inv, true);
-	
+
 		// Amount of water reclaimed through a Moisture Harvesting System inside the Greenhouse
 		// TODO: need more work
 		double waterReclaimed = waterRequired * growingArea * time / 1000D * MOISTURE_RECLAMATION_FRACTION;
-		Storage.storeAnResource(waterReclaimed, Farming.waterAR, inv);
+		Storage.storeAnResource(waterReclaimed, waterAR, inv);
 
 		double waterModifier = totalWaterUsed / waterRequired * .5D + .5D;
 		if (waterModifier > 1.1)
 			waterModifier = 1.1;
-			
-			
+
+
 		// Calculate O2 and CO2 usage
 		double o2Modifier = 0, co2Modifier = 0;
 
 		if (lightMemoryCache <= .5) {
 			double o2Required = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageOxygenNeeded;
-			double o2Available = inv.getAmountResourceStored(Farming.o2AR, false);
+			double o2Available = inv.getAmountResourceStored(oxygenAR, false);
 			double o2Used = o2Required;
 
 			if (o2Used > o2Available)
 				o2Used = o2Available;
-			Storage.retrieveAnResource(o2Used, Farming.o2AR, inv, true);
+			Storage.retrieveAnResource(o2Used, oxygenAR, inv, true);
 
 			o2Modifier =  o2Used / o2Required * .5D + .5D;
 			if (o2Modifier > 1.05)
@@ -983,20 +1037,20 @@ public class Crop implements Serializable {
 
 			// Determine the amount of co2 generated via gas exchange.
 			double co2Amount = o2Used * growingArea * time / 1000D * CO2_GENERATION_RATE;
-			Storage.storeAnResource(co2Amount, Farming.co2AR, inv);
+			Storage.storeAnResource(co2Amount, carbonDioxideAR, inv);
 		}
 
 		else if (lightMemoryCache > .5) {
 			// TODO: gives a better modeling of how the amount of light available will trigger photosynthesis that converts co2 to o2
 			// Determine harvest modifier by amount of carbon dioxide available.
 			double carbonDioxideRequired = needFactor * maxPeriodHarvest * growingArea * time / 1000D * averageCarbonDioxideNeeded;
-			double carbonDioxideAvailable = inv.getAmountResourceStored(Farming.co2AR, false);
+			double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxideAR, false);
 			double carbonDioxideUsed = carbonDioxideRequired;
 
 			if (carbonDioxideUsed > carbonDioxideAvailable)
 				carbonDioxideUsed = carbonDioxideAvailable;
 
-			Storage.retrieveAnResource(carbonDioxideUsed, Farming.co2AR, inv, true);
+			Storage.retrieveAnResource(carbonDioxideUsed, carbonDioxideAR, inv, true);
 
 			// TODO: allow higher concentration of co2 to be pumped to increase the harvest modifier to the harvest.
 			co2Modifier = carbonDioxideUsed / carbonDioxideRequired * .5D + .5D;
@@ -1006,7 +1060,7 @@ public class Crop implements Serializable {
 
 			// Determine the amount of oxygen generated via gas exchange.
 			double oxygenAmount = carbonDioxideUsed * growingArea * time / 1000D * OXYGEN_GENERATION_RATE;
-			Storage.storeAnResource(oxygenAmount, Farming.o2AR, inv);
+			Storage.storeAnResource(oxygenAmount, oxygenAR, inv);
 
 		}
 
@@ -1048,7 +1102,7 @@ public class Crop implements Serializable {
 	}
 
 	public int getPhaseNum() {
-		int phaseNum = 0; 
+		int phaseNum = 0;
 		for (Entry<Integer, Phase> entry : phases.entrySet()) {
 	        if (entry.getValue().getPhaseType() == phaseType) {
 	        	phaseNum = entry.getKey();
@@ -1056,7 +1110,7 @@ public class Crop implements Serializable {
 	    }
 		return phaseNum;
 	}
-	
+
 	public double getTotalPercent(int phase) {
 		double result = 0;
 		for (int i = 2; i < phase + 1; i++) {
@@ -1065,7 +1119,7 @@ public class Crop implements Serializable {
 		}
 		return result;
 	}
-	
+
 	public Map<Integer, Phase> getPhases() {
 		return phases;
 	}
@@ -1075,7 +1129,7 @@ public class Crop implements Serializable {
 	public void resetPAR() {
 		cumulativeDailyPAR = 0;
 	}
-	
+
 	/**
 	 * Prepare object for garbage collection.
 	 */
@@ -1093,6 +1147,6 @@ public class Crop implements Serializable {
 		cropConfig = null;
 		phases = null;
 		fmt = null;
-		
+
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * LoadVehicleEVA.java
- * @version 3.07 2015-03-01
+ * LoadVehicleAmountResource.java
+ * @version 3.1.0 2017-03-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -102,7 +102,7 @@ implements Serializable {
         if (roversNeedingEVASuits.size() > 0) {
             int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
             vehicle = roversNeedingEVASuits.get(roverIndex);
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
             requiredResources.put(VehicleMaintenance.waterAR, 40D);
@@ -117,7 +117,7 @@ implements Serializable {
         VehicleMission mission = getMissionNeedingLoading();
         if ((vehicle == null) && (mission != null)) {
             vehicle = mission.getVehicle();
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = mission.getRequiredResourcesToLoad();
             optionalResources = mission.getOptionalResourcesToLoad();
@@ -147,7 +147,7 @@ implements Serializable {
         if (roversNeedingEVASuits.size() > 0) {
             int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
             vehicle = roversNeedingEVASuits.get(roverIndex);
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
             requiredResources.put(AmountResource.findAmountResource(LifeSupportType.WATER), 40D);
@@ -162,7 +162,7 @@ implements Serializable {
         VehicleMission mission = getMissionNeedingLoading();
         if ((vehicle == null) && (mission != null)) {
             vehicle = mission.getVehicle();
-            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = mission.getRequiredResourcesToLoad();
             optionalResources = mission.getOptionalResourcesToLoad();
@@ -182,7 +182,7 @@ implements Serializable {
         else {
             endTask();
         }
-*/        
+*/
     }
 
     /**
@@ -200,7 +200,7 @@ implements Serializable {
         // Use Task constructor.
         super("Loading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
+        setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
                 vehicle.getName())); //$NON-NLS-1$
         this.vehicle = vehicle;
 
@@ -226,15 +226,15 @@ implements Serializable {
         // Initialize task phase
         addPhase(LOADING);
     }
-    
+
     public LoadVehicleEVA(Robot robot, Vehicle vehicle, Map<Resource, Number> requiredResources,
             Map<Resource, Number> optionalResources, Map<Class, Integer> requiredEquipment,
             Map<Class, Integer> optionalEquipment) {
         // Use Task constructor.
         super("Loading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-/*        
-        setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
+/*
+        setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
                 vehicle.getName())); //$NON-NLS-1$
         this.vehicle = vehicle;
 
@@ -259,8 +259,8 @@ implements Serializable {
 
         // Initialize task phase
         addPhase(LOADING);
-        
-*/        
+
+*/
     }
 
     /**
@@ -317,8 +317,8 @@ implements Serializable {
                         int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
                         if ((peopleOnboard > 0)) {
                             int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
-                            double water = roverInv.getAmountResourceStored(EVA.waterAR, false);
-                            double oxygen = roverInv.getAmountResourceStored(EVA.oxygenAR, false);
+                            double water = roverInv.getAmountResourceStored(AmountResource.waterAR, false);
+                            double oxygen = roverInv.getAmountResourceStored(AmountResource.oxygenAR, false);
                             if ((numSuits == 0) || (water < 40D) || (oxygen < 10D)) {
                                 result.add(rover);
                             }

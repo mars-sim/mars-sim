@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolithMeta.java
- * @version 3.07 2014-09-18
+ * @version 3.1.0 2017-03-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -28,7 +28,7 @@ public class CollectRegolithMeta implements MetaMission {
     /** Mission name */
     private static final String NAME = Msg.getString(
             "Mission.description.collectRegolith"); //$NON-NLS-1$
-    
+
     @Override
     public String getName() {
         return NAME;
@@ -41,21 +41,21 @@ public class CollectRegolithMeta implements MetaMission {
 
     @Override
     public double getProbability(Person person) {
-        
+
     	double result = 0;
-    	
+
         // Check if min number of EVA suits at settlement.
-        if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < 
+        if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) <
                 CollectRegolith.MIN_PEOPLE) {
             result = 0D;
         }
-        
-        else 
-        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class, 
+
+        else
+        	result = CollectResourcesMission.getNewMissionProbability(person, Bag.class,
                 CollectRegolith.REQUIRED_BAGS, CollectRegolith.MIN_PEOPLE, CollectRegolith.class);
-        
+
         if (result > 0D) {
-            
+
             // Don't start mission until after first Sol of the simulation.
             MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -63,7 +63,7 @@ public class CollectRegolithMeta implements MetaMission {
             if (totalTimeSols < 1D) {
                 result = 0;
             }
-            
+
             else {
 	            // Factor the value of regolith at the settlement.
 	            GoodsManager manager = person.getSettlement().getGoodsManager();
@@ -72,15 +72,15 @@ public class CollectRegolithMeta implements MetaMission {
 	            result *= value;
 	            if (result > 1D) {
 	                result = 1D;
-	                // TODO : why setting result to 1D ? 
+	                // TODO : why setting result to 1D ?
 	            }
             }
-            
+
         }
-        
+
         //if (result > 0)
         //	System.out.println("CollectRegolithMeta : " + result);
-        
+
         return result;
     }
 

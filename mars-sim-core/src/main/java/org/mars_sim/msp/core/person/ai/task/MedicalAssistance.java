@@ -68,6 +68,8 @@ implements Serializable {
 	private static final double STRESS_MODIFIER = .2D;
 	private static final double AVERAGE_MEDICAL_WASTE = .1;
 
+    public final static String TOXIC_WASTE = "toxic waste";
+
 	/** The medical station the person is at. */
 	private MedicalAid medical;
 	/** How long for treatment. */
@@ -75,6 +77,7 @@ implements Serializable {
 	/** Health problem to treat. */
 	private HealthProblem problem;
 
+    public static AmountResource toxicWasteAR;
 
 	/**
 	 * Constructor.
@@ -82,6 +85,8 @@ implements Serializable {
 	 */
 	public MedicalAssistance(Person person) {
 		super(NAME, person, true, true, STRESS_MODIFIER, true, 0D);
+
+        toxicWasteAR = AmountResource.findAmountResource(TOXIC_WASTE);
 
 		// Get a local medical aid that needs work.
 		List<MedicalAid> localAids = getNeedyMedicalAids(person);
@@ -417,7 +422,8 @@ implements Serializable {
         Unit containerUnit = person.getContainerUnit();
         if (containerUnit != null) {
             //Inventory inv = containerUnit.getInventory();
-            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, MedicalCare.toxicWasteAR, containerUnit.getInventory());
+        	//System.out.println("MedicalAssistance : toxicWasteAR is " + toxicWasteAR);
+            Storage.storeAnResource(AVERAGE_MEDICAL_WASTE, toxicWasteAR, containerUnit.getInventory());
             //System.out.println("MedicalAssistance.java : adding Toxic Waste : "+ AVERAGE_MEDICAL_WASTE);
 	     }
 	}

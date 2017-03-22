@@ -11,10 +11,10 @@
 <!ELEMENT power-required EMPTY>
 <!ATTLIST power-required base-power CDATA #REQUIRED>
 <!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
-<!ELEMENT functions (administration?, astronomical-observation?, building-connection?, 
-communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?, 
-ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
-management?, medical-care?, power-generation?, power-storage?, recreation?, research?, 
+<!ELEMENT functions (administration?, astronomical-observation?, building-connection?,
+communication?, cooking?, dining?, earth-return?, EVA?, exercise?, food-production?, farming?,
+ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?,
+management?, medical-care?, power-generation?, power-storage?, recreation?, research?,
 resource-processing?, robotic-station?, storage?, thermal-generation?, thermal-storage?, waste-disposal? )>
 <!ELEMENT administration (activity?)>
 <!ATTLIST administration population-support CDATA #REQUIRED>

@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -193,10 +194,11 @@ implements Serializable, LifeSupportType, Objective {
 	private static UnitManager unitManager = sim.getUnitManager();
 	private static MissionManager missionManager = sim.getMissionManager();
 
-	//public AmountResource foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
-	//public AmountResource oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
-	//public AmountResource waterAR = AmountResource.findAmountResource(LifeSupportType.WATER); //waterAR;//
-	//public AmountResource carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
+	// NOTE: cannot use 'static' for AmountResource or NullPointerException
+	public AmountResource foodAR;// = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
+	public AmountResource oxygenAR;// = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
+	public AmountResource waterAR;// = AmountResource.findAmountResource(LifeSupportType.WATER); //waterAR;//
+	public AmountResource carbonDioxideAR;// = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
 
 
 	private Weather weather;// = sim.getMars().getWeather();
@@ -321,6 +323,11 @@ implements Serializable, LifeSupportType, Objective {
 		//objectiveName = Msg.getString("ObjectiveType.crop");
 		setObjective(ObjectiveType.CROP_FARM);
 		logger.info("Setting " + this + "'s Objective to " + objectiveType.toString());
+
+		foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
+		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//
+		waterAR = AmountResource.findAmountResource(LifeSupportType.WATER); //waterAR;//
+		carbonDioxideAR = AmountResource.findAmountResource(LifeSupportType.CO2); //carbonDioxideAR;//
 
 	}
 
@@ -545,32 +552,40 @@ implements Serializable, LifeSupportType, Objective {
 	 */
 	public boolean lifeSupportCheck() {
 		//boolean result = true;
+        try {
+			//if (AmountResource.oxygenAR == null)
+				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
+			//	oxygenAR = LifeSupportType.oxygenAR;
+			//if (oxygenAR == null) System.out.println("o2");
+			if (getInventory().getAmountResourceStored(oxygenAR, true) <= 0D)
+				return false;
 
-		//if (AmountResource.oxygenAR == null)
-			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
-		//	oxygenAR = LifeSupportType.oxygenAR;
-		//if (oxygenAR == null) System.out.println("o2");
-		if (getInventory().getAmountResourceStored(oxygenAR, false) <= 0D)
-			return false;
-
-		//if (AmountResource.waterAR == null)
-			// 2016-08-27 Restructure for avoiding NullPointerException during maven test
-		//	waterAR = LifeSupportType.waterAR;
-		//if (waterAR == null) System.out.println("h2o");
-		if (getInventory().getAmountResourceStored(waterAR, false) <= 0D)
-			return false;
+			//if (AmountResource.waterAR == null)
+				// 2016-08-27 Restructure for avoiding NullPointerException during maven test
+			//	waterAR = LifeSupportType.waterAR;
+			//if (waterAR == null) System.out.println("h2o");
+			if (getInventory().getAmountResourceStored(waterAR, true) <= 0D)
+				return false;
 
 
-		// TODO: check against indoor air pressure
-		if (getAirPressure() <= minimum_air_pressure)// 25331.25)// NORMAL_AIR_PRESSURE) ?
-			return false;
-		// result = false;
-		// TODO: check if this is working
-		// 2014-11-28 Added MAX_TEMP
-		if (getTemperature() < MIN_TEMP || getTemperature() > MAX_TEMP)
-			return false;
-		// result = false;
-
+			// TODO: check against indoor air pressure
+			double p = getAirPressure();
+			if (p <= minimum_air_pressure) {// 25331.25)// NORMAL_AIR_PRESSURE) ?
+				logger.severe(this.getName() + " detected improper air pressure at " + Math.round(p *10D)/10D);
+				return false;
+			}
+			// result = false;
+			// TODO: check if this is working
+			// 2014-11-28 Added MAX_TEMP
+			double t = getTemperature();
+			if (t < MIN_TEMP || t > MAX_TEMP) {
+				return false;
+			}
+			// result = false;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 		return true;
 		//return result;
 	}
@@ -593,27 +608,34 @@ implements Serializable, LifeSupportType, Objective {
 	 *             if error providing oxygen.
 	 */
 	public double provideOxygen(double amountRequested) {
-		//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		double oxygenTaken = amountRequested;
-		//if (oxygenAR == null) System.out.println("o2");
-		double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
-		if (oxygenTaken > oxygenLeft)
-			oxygenTaken = oxygenLeft;
-		getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
-		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(oxygenAR);
-		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(oxygenAR, oxygenTaken);
+		try {
+			//AmountResource oxygen = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
+			//if (oxygenAR == null) System.out.println("o2");
+			double oxygenLeft = getInventory().getAmountResourceStored(oxygenAR, false);
+			//System.out.println("oxygenLeft : " + oxygenLeft);
+			if (oxygenTaken > oxygenLeft)
+				oxygenTaken = oxygenLeft;
+			getInventory().retrieveAmountResource(oxygenAR, oxygenTaken);
+			// 2015-01-09 Added addDemandTotalRequest()
+			getInventory().addAmountDemandTotalRequest(oxygenAR);
+			// 2015-01-09 addDemandRealUsage()
+			getInventory().addAmountDemand(oxygenAR, oxygenTaken);
 
-		//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
-		double carbonDioxideProvided = oxygenTaken;
-		double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
-		if (carbonDioxideProvided > carbonDioxideCapacity)
-			carbonDioxideProvided = carbonDioxideCapacity;
+			//AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
+			double carbonDioxideProvided = oxygenTaken;
+			double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxideAR, true, false);
+			if (carbonDioxideProvided > carbonDioxideCapacity)
+				carbonDioxideProvided = carbonDioxideCapacity;
 
-		getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
-		// 2015-01-15 Add addSupplyAmount()
-		getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+			getInventory().storeAmountResource(carbonDioxideAR, carbonDioxideProvided, true);
+			// 2015-01-15 Add addSupplyAmount()
+			getInventory().addAmountSupplyAmount(carbonDioxideAR, carbonDioxideProvided);
+		}
+        catch (Exception e) {
+            logger.log(Level.SEVERE, name + " - Error in providing O2 needs: " + e.getMessage());
+        }
+
 		return oxygenTaken;
 	}
 
@@ -629,14 +651,20 @@ implements Serializable, LifeSupportType, Objective {
 	public double provideWater(double amountRequested) {
 		//AmountResource water = AmountResource.findAmountResource(LifeSupportType.WATER);
 		double waterTaken = amountRequested;
-		double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
-		if (waterTaken > waterLeft)
-			waterTaken = waterLeft;
-		getInventory().retrieveAmountResource(waterAR, waterTaken);
-		// 2015-01-09 Added addDemandTotalRequest()
-		getInventory().addAmountDemandTotalRequest(waterAR);
-		// 2015-01-09 addDemandRealUsage()
-		getInventory().addAmountDemand(waterAR, waterTaken);
+		try {
+			double waterLeft = getInventory().getAmountResourceStored(waterAR, false);
+			if (waterTaken > waterLeft)
+				waterTaken = waterLeft;
+			getInventory().retrieveAmountResource(waterAR, waterTaken);
+			// 2015-01-09 Added addDemandTotalRequest()
+			getInventory().addAmountDemandTotalRequest(waterAR);
+			// 2015-01-09 addDemandRealUsage()
+			getInventory().addAmountDemand(waterAR, waterTaken);
+
+		}
+	    catch (Exception e) {
+	        logger.log(Level.SEVERE, name + " - Error in providing H2O needs: " + e.getMessage());
+	    }
 
 		return waterTaken;
 	}

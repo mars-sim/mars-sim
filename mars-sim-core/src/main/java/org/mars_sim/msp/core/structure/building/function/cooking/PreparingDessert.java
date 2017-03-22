@@ -52,6 +52,9 @@ implements Serializable {
 
     private static final BuildingFunction FUNCTION = BuildingFunction.PREPARING_DESSERT;
 
+	public static final String GREY_WATER = "grey water";
+    public static final String FOOD_WASTE = "food waste";
+	public static final String WATER = "water";
     /** The base amount of work time in milliSols (for cooking skill 0)
      * to prepare fresh dessert . */
     public static final double PREPARE_DESSERT_WORK_REQUIRED = 2D;
@@ -117,10 +120,13 @@ implements Serializable {
 
     private String producerName;
 
-
     private Building building;
     private Settlement settlement;
     private Inventory inv ;
+
+	private static AmountResource waterAR;
+    private static AmountResource greyWaterAR;
+    private static AmountResource foodWasteAR;
 
     private List<PreparedDessert> servingsOfDessertList;
 
@@ -143,6 +149,7 @@ implements Serializable {
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
         dessertMassPerServing = personConfig.getDessertConsumptionRate() / (double) NUM_OF_DESSERT_PER_SOL * DESSERT_SERVING_FRACTION;
 
+
         preparingWorkTime = 0D;
         servingsOfDessertList = new CopyOnWriteArrayList<>();
 
@@ -153,6 +160,9 @@ implements Serializable {
         // Load activity spots
         loadActivitySpots(buildingConfig.getCookingActivitySpots(building.getBuildingType()));
 
+		greyWaterAR = AmountResource.findAmountResource(GREY_WATER);
+		waterAR = AmountResource.findAmountResource(WATER);
+        foodWasteAR = AmountResource.findAmountResource(FOOD_WASTE);
     }
 
     public Inventory getInventory() {
@@ -410,14 +420,15 @@ implements Serializable {
     	List<String> dessertList = new CopyOnWriteArrayList<>(); //ArrayList<String>();
 
 	  	// Put together a list of available dessert
-        for(String n : availableDesserts) {
-        	double amount = getDryMass(n);
-            //System.out.println("PreparingDessert : n is " + n);
-        	boolean isAvailable = Storage.retrieveAnResource(amount, n, inv, false);
+        //for(String n : availableDesserts) {
+        for (int i=0; i< NUM_DESSERTS; i++) {
+        	double amount = dryMass[i];
+            ///System.out.println("PreparingDessert : it's " + availableDesserts[i]);
+        	boolean isAvailable = Storage.retrieveAnResource(amount, availableDessertsAR[i], inv, false);
 
         	if (isAvailable) {
             	//System.out.println("n is available");
-        		dessertList.add(n);
+        		dessertList.add(availableDesserts[i]);
         	}
         }
 
@@ -511,7 +522,7 @@ implements Serializable {
         double dryMass = getDryMass(selectedDessert);
 
         if (selectedDessert == null) {
-        	System.out.println("PreparingDessert : selectedDessert is " + selectedDessert);
+        	//System.out.println("PreparingDessert : selectedDessert is " + selectedDessert);
         	return null;
         }
 
@@ -540,9 +551,9 @@ implements Serializable {
     // 2015-01-28 Added useWater()
     public void useWater() {
     	//TODO: need to move the hardcoded amount to a xml file
-    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, AmountResource.waterAR, inv, true);
+    	Storage.retrieveAnResource(WATER_USAGE_PER_DESSERT, waterAR, inv, true);
 		double wasteWaterAmount = WATER_USAGE_PER_DESSERT * .95;
-		Storage.storeAnResource(wasteWaterAmount, AmountResource.greyWaterAR, inv);
+		Storage.storeAnResource(wasteWaterAmount, greyWaterAR, inv);
     }
 
 
@@ -573,7 +584,7 @@ implements Serializable {
                         double num = RandomUtil.getRandomDouble(8 * quality);
                         if (num < 1) {
                             // Throw out bad dessert as food waste.
-                            Storage.storeAnResource(getDryMass(dessert.getName()), AmountResource.foodWasteAR, inv);
+                            Storage.storeAnResource(getDryMass(dessert.getName()), foodWasteAR, inv);
                             logger.finest(getDryMass(dessert.getName()) + " kg "
                                     + dessert.getName()
                                     + " expired, turned bad and discarded at " + getBuilding().getNickName()

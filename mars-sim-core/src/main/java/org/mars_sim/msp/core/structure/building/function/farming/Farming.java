@@ -71,7 +71,7 @@ implements Serializable {
 
     private static final BuildingFunction FARMING_FUNCTION = BuildingFunction.FARMING;
     private static final BuildingFunction RESEARCH_FUNCTION = BuildingFunction.RESEARCH;
-  
+
 	public static final String FERTILIZER = "fertilizer";
 	public static final String GREY_WATER = "grey water";
     public static final String SOIL = "soil";
@@ -89,17 +89,19 @@ implements Serializable {
 
 	private static ItemResource LED_Item;
 	private static ItemResource HPS_Item;
-	
-	static AmountResource cropWasteAR;
-	static AmountResource soilAR;
-	static AmountResource waterAR;
-	public static AmountResource greyWaterAR;
-	static AmountResource fertilizerAR;
-	static AmountResource o2AR;
-	static AmountResource co2AR;
-    static AmountResource foodAR;
-    
-	
+
+	private static AmountResource cropWasteAR;
+	private static AmountResource soilAR;
+
+	private static AmountResource greyWaterAR;
+	private static AmountResource fertilizerAR;
+
+	private static AmountResource waterAR;
+	private static AmountResource o2AR;
+	private static AmountResource co2AR;
+	private static AmountResource foodAR;
+
+
 	private int numLEDInUse;
 	private int cacheNumLED;
 	private int numHPSinNeed;
@@ -111,9 +113,9 @@ implements Serializable {
     private double maxGrowingArea;
     private double remainingGrowingArea;
     private double totalMaxHarvest = 0;
-    
+
 	private boolean checkLED;
-	
+
     private String cropInQueue;
 
   	// 2014-12-09 Added cropInQueue, cropListInQueue
@@ -121,7 +123,7 @@ implements Serializable {
     private List<CropType> plantedCropList = new ArrayList<CropType>();
     private List<Crop> crops = new ArrayList<Crop>();
     //private Map<Crop, Double> cropAreaMap = new HashMap<Crop, Double>();
-    
+
     // 2016-11-30 Added cropAssignment and shiftAssignment
     //private Map<Unit, Crop> cropAssignment = new HashMap<Unit, Crop>();
     //private Map<Unit, ShiftType> shiftAssignment = new HashMap<Unit, ShiftType>();
@@ -155,7 +157,7 @@ implements Serializable {
 		fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
 		o2AR = AmountResource.findAmountResource(LifeSupportType.OXYGEN);
 		co2AR = AmountResource.findAmountResource(LifeSupportType.CO2);
-		
+
         this.building = building;
         this.settlement = building.getBuildingManager().getSettlement();
 		this.b_inv = building.getBuildingInventory();
@@ -172,14 +174,14 @@ implements Serializable {
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		if (cropTypeList == null) cropTypeList = cropConfig.getCropList();
         cropNum = buildingConfig.getCropNum(building.getBuildingType());
-       
+
         // Load activity spots
         loadActivitySpots(buildingConfig.getFarmingActivitySpots(building.getBuildingType()));
 
         for (int x = 0; x < cropNum; x++) {
          	// 2014-12-09 Added cropInQueue and changed method name to getNewCrop()
         	CropType cropType = getNewCrop(false);
-        	if (cropType == null) break;// for avoiding NullPointerException during maven test	
+        	if (cropType == null) break;// for avoiding NullPointerException during maven test
         	Crop crop = plantACrop(cropType, false, 0);
             crops.add(crop);
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
@@ -188,7 +190,7 @@ implements Serializable {
         // 2015-02-18 Created BeeGrowing
         // TODO: write codes to incorporate the idea of bee growing
         // beeGrowing = new BeeGrowing(this);
-        
+
 
     }
 
@@ -220,14 +222,14 @@ implements Serializable {
 					ct = c;
 			}
 		}
-*/		
+*/
 		//plantedCropList.add(ct);
 		return ct;
 	}
 
 
 	/**
-	 * Selects a new crop currently having the highest priority to be planted 
+	 * Selects a new crop currently having the highest priority to be planted
 	 * @return CropType
 	 */
 	// 2015-09-30 Revised the decision branch on how the crop type is chosen
@@ -237,7 +239,7 @@ implements Serializable {
 		CropType chosen = null;
 		double no_1_crop_VP = 0;
 		double no_2_crop_VP = 0;
-		
+
 		for (CropType c : cropTypeList) {
 			double cropVP = getCropValue(AmountResource.findAmountResource(c.getName()));
 			if (cropVP >= no_1_crop_VP) {
@@ -247,13 +249,13 @@ implements Serializable {
 				}
 				no_1_crop_VP = cropVP;
 				no_1_crop = c;
-				
+
 			} else if (cropVP > no_2_crop_VP) {
 				no_2_crop_VP = cropVP;
 				no_2_crop = c;
 			}
 		}
-		
+
 		CropType lastCT = null;
 		CropType last2CT = null;
 		boolean compareVP = false;
@@ -263,7 +265,7 @@ implements Serializable {
 			// get the last two planted crops
 			last2CT = plantedCropList.get(size-2);
 			lastCT = plantedCropList.get(size-1);
-			
+
 			if (no_1_crop == last2CT || no_1_crop == lastCT) {
 				// if highestCrop has already been selected once
 
@@ -303,9 +305,9 @@ implements Serializable {
 					compareVP = true;
 			}
 		}
-		
+
 		else {
-			
+
 		}
 
 		if (compareVP){
@@ -381,8 +383,8 @@ implements Serializable {
 		crop = new Crop(cropType, cropArea, dailyMaxHarvest, this, settlement, isNewCrop, percentAvailable);
 
 		plantedCropList.add(cropType);
-		
-		// remove the very first crop on the list to prevent uncheck blotting. 
+
+		// remove the very first crop on the list to prevent uncheck blotting.
 		plantedCropList.remove(0);
 
     	return crop;
@@ -437,19 +439,19 @@ implements Serializable {
     	String tissueName = cropType.getName() + " " + TISSUE_CULTURE;
     	//String name = Conversion.capitalize(cropType.getName()) + " " + TISSUE_CULTURE;
     	AmountResource tissueAR = AmountResource.findAmountResource(tissueName);
-    	
+
     	boolean available = false;
 
       	try {
 
 	        double amountStored = s_inv.getAmountResourceStored(tissueAR, false);
 			s_inv.addAmountDemandTotalRequest(tissueAR);
-	    	
+
 	    	if (amountStored < 0.0000000001) {
 	    		logger.warning("No more " + tissueName);
 	    		percent = 0;
 	    	}
-	    	
+
 	    	else if (amountStored < requestedAmount) {
 	    		available = true;
 	    		percent = amountStored / requestedAmount * 100D;
@@ -552,7 +554,7 @@ implements Serializable {
             Settlement settlement) {
 
         double result = 0D;
-        
+
         // Demand is farming area (m^2) needed to produce food for settlement population.
         double requiredFarmingAreaPerPerson = getFarmingAreaNeededPerPerson();
         double demand = requiredFarmingAreaPerPerson * settlement.getAllAssociatedPeople().size();
@@ -573,25 +575,25 @@ implements Serializable {
         }
 
         // Modify result by value (VP) of food at the settlement.
-        Good foodGood = GoodsUtil.getResourceGood(foodAR);
+        Good foodGood = GoodsUtil.getResourceGood(AmountResource.foodAR);
         double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
-        
+
         result = (demand / (supply + 1D)) * foodValue;
-        
+
         // TODO: investigating if other food group besides food should be added as well
-        
+
         return result;
     }
-    
+
     /**
      * Gets the average area (m^2) of farming surface required to sustain one person.
      * @return area (m^2) of farming surface.
      */
     public static double getFarmingAreaNeededPerPerson() {
-        
+
         // Determine average amount (kg) of food required per person per orbit.
         double neededFoodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
-        
+
         // Determine average amount (kg) of food produced per farm area (m^2).
         CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
         double totalFoodPerSolPerArea = 0D;
@@ -599,9 +601,9 @@ implements Serializable {
         for (CropType c : cropList)
             // Crop type average edible biomass (kg) per Sol.
             totalFoodPerSolPerArea += c.getEdibleBiomass() / 1000D;
-        
+
         double producedFoodPerSolPerArea = totalFoodPerSolPerArea / cropList.size();
-        
+
         return neededFoodPerSol / producedFoodPerSolPerArea;
     }
 
@@ -642,13 +644,13 @@ implements Serializable {
         // becoming very small double values and an endless loop occurs.
         while (((needyCrop = getNeedyCrop(lastCrop, unit)) != null)
         		&& (workTimeRemaining > .00001D)) {
-        	
+
         	if (lastCrop.getCropType() != needyCrop.getCropType()) {
-        		// 2016-11-29 update the name of the crop being worked on in the task description 
+        		// 2016-11-29 update the name of the crop being worked on in the task description
         		h.setCrop(needyCrop);
         		lastCrop = needyCrop;
         	}
-        	
+
             workTimeRemaining = needyCrop.addWork(workTimeRemaining);
         }
 
@@ -676,7 +678,7 @@ implements Serializable {
 	            	//	updateAssignmentMap(unit);
 	            	//	return c;
 	            	//}
-	                else	
+	                else
 	                	needyCrops.add(c);
             	}
             }
@@ -690,13 +692,13 @@ implements Serializable {
         return result;
     }
 /*
-    public void updateAssignmentMap(Unit unit) {   	
+    public void updateAssignmentMap(Unit unit) {
     }
 
     public void updateCropAssignment(Unit unit, Crop crop) {
     	cropAssignment.put(unit, crop);
     }
-*/    
+*/
     /**
      * Adds the crop harvest to the farm.
      * @param harvest: harvested food to add (kg.)
@@ -863,9 +865,9 @@ implements Serializable {
             //else //if (crop.getPhaseType() == PhaseType.GROWING || crop.getPhaseType() == PhaseType.GERMINATION)
             //	powerRequired += powerGrowingCrop + crop.getLightingPower();
         }
-        
+
         powerRequired += getTotalLightingPower();
-        
+
         // TODO: add separate auxiliary power for subsystem, not just lighting power
 
         return powerRequired;
@@ -904,7 +906,7 @@ implements Serializable {
         return powerRequired;
     }
 
-    
+
     /**
      * Gets the total growing area for all crops.
      * @return growing area in square meters
@@ -918,14 +920,14 @@ implements Serializable {
      * per orbit.
      */
     public double getAverageGrowingCyclesPerOrbit() {
-        
+
         double aveGrowingTime = Crop.getAverageCropGrowingTime();
         int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
         double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime; // e.g. 668 sols * 1000 / 50,000 millisols
-        
+
         return aveGrowingCyclesPerOrbit;
     }
-    
+
     /**
      * Gets the estimated maximum harvest for one orbit.
      * @return max harvest (kg)
@@ -935,7 +937,7 @@ implements Serializable {
         double totalMaxHarvest = 0D;
         for (Crop crop : crops)
             totalMaxHarvest += crop.getMaxHarvest();
-            
+
         return totalMaxHarvest * getAverageGrowingCyclesPerOrbit(); // 40 kg * 668 sols / 50
     }
 
@@ -960,10 +962,10 @@ implements Serializable {
 				lab0.removeResearcher();
 			}
 		}
-		
+
 		return proceed;
 	}
-	
+
 
     /**
      * Grow crop tissues
@@ -982,43 +984,43 @@ implements Serializable {
     	AmountResource tissueAR = AmountResource.findAmountResource(tissueName);
         double amountAvailable = s_inv.getAmountResourceStored(tissueAR, false);
         double amountExtracted = 0;
-    
+
         if (amountAvailable > 0 && amountAvailable < 1) {
         	// increase the amount of tissue culture by 10%
-        	amountExtracted = amountAvailable * 1.1;	
+        	amountExtracted = amountAvailable * 1.1;
         	// store the tissues
       		Storage.storeAnResource(amountExtracted, tissueAR, s_inv);
-      		
-    		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in " 
+
+    		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0D + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
     					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 
     		isDone = true;
         }
-        
+
         else if (amountAvailable < 0) {
         	// if no tissue culture is available, go extract some tissues from the crop
             double amount = s_inv.getAmountResourceStored(cropAR, false);
-            
-            amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * 10; 
-            
+
+            amountExtracted = STANDARD_AMOUNT_TISSUE_CULTURE * 10;
+
             if (amount > amountExtracted) {
             	// assume an arbitrary 10% of the mass of crop kg extracted will be developed into tissue culture
-            	Storage.retrieveAnResource(amountExtracted, cropAR, s_inv, true);       
+            	Storage.retrieveAnResource(amountExtracted, cropAR, s_inv, true);
             	// store the tissues
          		Storage.storeAnResource(STANDARD_AMOUNT_TISSUE_CULTURE, tissueAR, s_inv);
-          		
-        		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0 + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in " 
+
+        		logger.info("During sampling, " + Math.round(amountExtracted*100000.0)/100000.0 + " kg " + Conversion.capitalize(cropName + " " + TISSUE_CULTURE) + " isolated & cryo-preserved in "
         					+ lab.getBuilding().getNickName() + " at " + settlement.getName());
 
         		isDone = true;
             }
 
         }
-        
+
         return isDone;
 	}
-	
-	
+
+
     @Override
     public double getMaintenanceTime() {
         return maxGrowingArea * 5D;
@@ -1044,7 +1046,7 @@ implements Serializable {
     @Override
     public void destroy() {
         super.destroy();
-    	
+
         LED_Item = null;
     	HPS_Item = null;
     	cropWasteAR = null;
@@ -1064,23 +1066,23 @@ implements Serializable {
         while (i.hasNext()) {
             i.next().destroy();
         }
-        
+
         cropListInQueue = null;
-        
+
         Iterator<Crop> ii = crops.iterator();
         while (ii.hasNext()) {
             ii.next().destroy();
         }
 
         crops = null;
-        
+
         Iterator<CropType> iii = cropTypeList.iterator();
         while (iii.hasNext()) {
             iii.next().destroy();
         }
-        
+
         cropTypeList = null;
-        
+
         Iterator<CropType> iv = plantedCropList.iterator();
         while (iv.hasNext()) {
             iv.next().destroy();
