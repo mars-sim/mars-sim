@@ -17,11 +17,8 @@ https://github.com/mars-sim/mars-sim
 
 ** Installation **
 
-- This Java application requires the latest 64-bit Java Runtime Environment (JRE) or
-Java SE Development Kit (JDK) version 8.
-
-- Note that mars-sim currently does not work with OpenJDK 7/8/9 or Java 9
-Please use oracle's java 8 instead.
+- This Java application requires the latest 64-bit Java Runtime Environment (JRE),
+OpenJDK 8 with OpenJFX, or Java SE Development Kit (JDK) version 8.
 
 - The latest JVM can be freely downloaded from Oracle at:
 http://www.oracle.com/technetwork/java/javase/downloads/index.html

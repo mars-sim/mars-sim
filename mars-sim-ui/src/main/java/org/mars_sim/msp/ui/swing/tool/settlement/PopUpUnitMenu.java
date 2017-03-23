@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopUpUnitMenu.java
- * @version 3.08 2015-12-10
+ * @version 3.1.0 2017-03-22
  * @author Manny Kung
  */
 
@@ -35,10 +35,12 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.stage.StageStyle;
 import javafx.stage.Popup;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
@@ -61,6 +63,10 @@ import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
+import com.jfoenix.controls.JFXPopup;
+import com.jfoenix.controls.JFXPopup.PopupHPosition;
+import com.jfoenix.controls.JFXPopup.PopupVPosition;
+
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -68,6 +74,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 
@@ -215,16 +222,15 @@ public class PopUpUnitMenu extends JPopupMenu {
 			name = Conversion.capitalize(site.getDescription());
 	    }
 
-		double num = type.length() * 1.3D + name.length() * 1.3D + 100D + description.length() * 1.2D;
-		if (num > 450)
-			num = 450;
-		int frameHeight = (int) num;
+		double height = 100D + type.length() * 8D + name.length() * 1.3D + description.length() * 1.5D;
+		if (height > 450)
+			height = 450;
 
 
 		UnitDescriptionStage unitInfo = new UnitDescriptionStage(desktop);
 		BorderPane pane = (BorderPane) unitInfo.init(name, type, description);
 
-	   	Scene scene = new Scene(pane, 350, frameHeight, javafx.scene.paint.Color.TRANSPARENT);
+	   	Scene scene = new Scene(pane, 350, (int) height, javafx.scene.paint.Color.TRANSPARENT);
 	   	//scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
 	   	//swingPane.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
@@ -233,23 +239,25 @@ public class PopUpUnitMenu extends JPopupMenu {
 	   	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));//toString()));
 	   	//addDraggableNode(unitInfo);
 	   	stage.setTitle("Description");
-		stage.setOpacity(.8);
+		stage.setOpacity(.9);
 	   	//stage.initStyle(StageStyle.TRANSPARENT);
 	    stage.initStyle(StageStyle.DECORATED);
 		stage.setResizable(false);
 	   	stage.setScene(scene);
         stage.show();
+        stage.toFront();
 	   	stage.requestFocus();
 
-
-	   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
-	   	{
-	   	  @Override
-	   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
-	   	  {
-	   	    stage.close();
-	   	  }
-	   	});
+		if (!mainScene.OS.contains("linux")) {
+		   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
+		   	{
+		   	  @Override
+		   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+		   	  {
+		   	    stage.close();
+		   	  }
+		   	});
+		}
 
 
 	}
@@ -444,22 +452,22 @@ public class PopUpUnitMenu extends JPopupMenu {
 		//stage.initOwner(mainScene.getStage()); // initOwner() causes problem if in full screen mode.
 	   	stage.initStyle(StageStyle.DECORATED);//.UTILITY); //UNIFIED);
 	   	//stage.initStyle(StageStyle.TRANSPARENT);
-		stage.setOpacity(.8);
+		stage.setOpacity(.9);
 		stage.setResizable(false);
 	   	stage.setScene(scene);
         stage.show();
-
+        stage.toFront();
 	   	stage.requestFocus();
-
-	   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
-	   	{
-	   	  @Override
-	   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
-	   	  {
-	   	    stage.close();
-	   	  }
-	   	});
-
+		if (!mainScene.OS.contains("linux")) {
+		   	stage.focusedProperty().addListener(new ChangeListener<Boolean>()
+		   	{
+		   	  @Override
+		   	  public void changed(javafx.beans.value.ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+		   	  {
+		   	    stage.close();
+		   	  }
+		   	});
+		}
     }
 
     private void addDraggableNode(final Node node) {

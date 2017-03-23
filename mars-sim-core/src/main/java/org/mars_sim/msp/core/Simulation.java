@@ -90,7 +90,7 @@ implements ClockListener, Serializable {
     /** Build string. */
     public final static String BUILD = Msg.getString("Simulation.build"); //$NON-NLS-1$
     /** Java version string. */
-    public final static String JAVA_TAG = VersionInfo.getRuntimeVersion(); //e.g. "8.0.121-b13 (abcdefg)"; com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
+    public final static String JAVA_TAG = System.getProperty("java.version");//VersionInfo.getRuntimeVersion(); //e.g. "8.0.121-b13 (abcdefg)"; com.sun.javafx.runtime.VersionInfo.getRuntimeVersion(); // System.getProperty("java.version");/
     /** Java version string. */
     public final static String JAVA_VERSION = (JAVA_TAG.contains("(") ? JAVA_TAG.substring(0, JAVA_TAG.indexOf("(")-1) : JAVA_TAG);
     /** Vendor string. */

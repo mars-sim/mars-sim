@@ -37,6 +37,8 @@ import org.mars_sim.msp.ui.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.javafx.MainScene;
 import org.mars_sim.msp.ui.javafx.svg.SvgImageLoaderFactory;
 
+import com.sun.javafx.runtime.VersionInfo;
+
 /**--------------------------------------------------------------
  * Case A : with '-headless' and '-new' switch, it will load the following :
  **--------------------------------------------------------------
@@ -307,24 +309,25 @@ public class MarsProjectFX extends Application  {
         System.out.println("java.version :\t\t\t" + System.getProperty("java.version"));
         System.out.println("java.vendor :\t\t\t" + System.getProperty("java.vendor"));
         System.out.println("java.class.version :\t\t" + System.getProperty("java.class.version"));
+        System.out.println("VersionInfo.getRuntimeVersion() :\t\t" + VersionInfo.getRuntimeVersion());
 */
         String bit = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
         //System.out.println("os.arch :\t\t\t" + System.getProperty("os.arch"));
         //System.out.println("os.version :\t\t\t" + System.getProperty("os.version"));
 
-        String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
-        //System.getProperty("java.runtime.version").split("\\.|_|-b");
-        //System.out.println(javaVersionElements);
+        //String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|-b| ");
+        String[] javaVersionElements = Simulation.JAVA_VERSION.split("\\.|-|_| ");
 
         // e.g. 8.0.111 (Thu Nov 24 14:50:47 UTC 2016) in case of openjdk 8 in linux
         major = javaVersionElements[0];
         minor   = javaVersionElements[1];
         update  = javaVersionElements[2];
 
-        if (javaVersionElements[3] != null) {
+        if (javaVersionElements.length > 3) {
         	build = javaVersionElements[3];
         	dateStamp = Simulation.JAVA_VERSION.substring(Simulation.JAVA_VERSION.indexOf(build));
         }
+
 /*
         System.out.println("Major :\t\t\t\t" + major);
         System.out.println("Minor :\t\t\t\t" + minor);
@@ -343,7 +346,7 @@ public class MarsProjectFX extends Application  {
 
 
     	//if (!vendor.startsWith("Oracle") ||  // TODO: find out if other vendor's VM works
-    	if (!major.equals("8") || Double.parseDouble(update) < 71.0) {
+    	if (!minor.equals("8") || Double.parseDouble(build) < 71.0) {
     		//logger.log(Level.SEVERE, "Note: mars-sim requires at least Java 8.0.71. Terminating...");
     		//System.out.println("Note: mars-sim requires at least Java 8.0.71. Terminating...");
     		exitWithError("Note: mars-sim requires at least Java 8.0.71. Terminated.");

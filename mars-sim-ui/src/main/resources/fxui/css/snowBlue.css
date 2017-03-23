@@ -116,6 +116,18 @@
 /*    -fx-fill            : transparent;    */
 }
 
+#unit_description {
+/*	-fx-font: 10pt 'Corbel';				*/
+    -fx-font-size       : 1.2em;
+    -fx-font-family : "Liberation Mono";
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch;
+    -fx-text-fill: #a2b3db;
+    -fx-background-color: transparent;
+/*    -fx-fill            : transparent;    */
+}
+
+
 #quotation {
 /*	-fx-font: 14pt 'Corbel';    */
     -fx-font-size       : 1.0em;
