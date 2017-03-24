@@ -200,15 +200,21 @@ public class MainSceneMenu extends MenuBar  {
         RadioMenuItem fiveItem = new RadioMenuItem("Violet");
         fiveItem.setToggleGroup(skinThemeToggleGroup);
 */
+
         RadioMenuItem sixItem = new RadioMenuItem("Snow Blue");
         sixItem.setToggleGroup(skinThemeToggleGroup);
-        //sixItem.setSelected(true);
 
         RadioMenuItem sevenItem = new RadioMenuItem("Mud Orange");
         sevenItem.setToggleGroup(skinThemeToggleGroup);
-        sevenItem.setSelected(true);
 
-        skinThemeItem.getItems().addAll(sixItem, sevenItem);//, oneItem, twoItem, threeItem, fourItem, fiveItem);
+		if (MainScene.OS.contains("linux")) {
+	        sixItem.setSelected(true);
+	        skinThemeItem.getItems().addAll(sixItem);
+		}
+		else {
+	        sevenItem.setSelected(true);
+	        skinThemeItem.getItems().addAll(sixItem, sevenItem);
+		}
 
         //CheckMenuItem showUnitBarItem = new CheckMenuItem("Show Unit Bar");
         //showUnitBarItem.setAccelerator(new KeyCodeCombination(KeyCode.U, KeyCombination.CONTROL_DOWN));
@@ -359,21 +365,19 @@ public class MainSceneMenu extends MenuBar  {
 
         sixItem.setOnAction(e -> {
         	mainScene.setTheme(6);
-
     		//SwingUtilities.invokeLater(() -> {
             //	mainScene.getSwingNode().setContent(desktop);
     		//});
-
         });
 
-        sevenItem.setOnAction(e -> {
-        	mainScene.setTheme(7);
-
-    		//SwingUtilities.invokeLater(() -> {
-            //	mainScene.getSwingNode().setContent(desktop);
-    		//});
-
-        });
+		if (!MainScene.OS.contains("linux")) {
+	        sevenItem.setOnAction(e -> {
+	        	mainScene.setTheme(7);
+	    		//SwingUtilities.invokeLater(() -> {
+	            //	mainScene.getSwingNode().setContent(desktop);
+	    		//});
+	        });
+		}
 
         quotationItem.setOnAction(e -> {
         	mainScene.popAQuote();

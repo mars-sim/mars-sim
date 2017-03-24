@@ -220,18 +220,13 @@ public class MainScene {
 	public static String OS = Simulation.OS.toLowerCase();//System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
 
 	private static final int TIME_DELAY = SettlementWindow.TIME_DELAY;
-	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
-	public static final int SYSTEM_THEME = 0;
-	public static final int NIMROD_THEME = 1;
-	public static final int NIMBUS_THEME = 2;
+	private static final int SYSTEM_THEME = 0;
+	private static final int NIMROD_THEME = 1;
+	private static final int NIMBUS_THEME = 2;
 
 	public static final int MAIN_TAB = 0;
 	public static final int MAP_TAB = 1;
-	//public static final int MONITOR_TAB = 2;
-	//public static final int MISSION_TAB = 3;
-	//public static final int RESUPPLY_TAB = 4;
-	//public static final int SCIENCE_TAB = 5;
 	public static final int HELP_TAB = 2;
 
 	public static final int LOADING = 0;
@@ -241,6 +236,8 @@ public class MainScene {
 	public static final int DEFAULT_WIDTH = 1280;//1366;
 	public static final int DEFAULT_HEIGHT = 768;
 
+	private static final double ROTATION_CHANGE = Math.PI / 20D;
+
 	private static final String ROUND_BUTTONS_DIR = "/icons/round_buttons/";
 
 	private static final String PAUSE = "PAUSE";
@@ -249,16 +246,15 @@ public class MainScene {
 	private static final String LAST_SAVED = "Last Saved : ";
 	private static final String EARTH_DATE_TIME = "EARTH  :  ";
 	private static final String MARS_DATE_TIME = "MARS  :  ";
-	//public static final String MILLISOLS_UMST = " millisols (UMST) ";
-	public static final String UMST = " (UMST)";
-	public static final String ONE_SPACE = " ";
+	private static final String UMST = " (UMST)";
+	private static final String ONE_SPACE = " ";
 
-	public static final String UPTIME = "UpTime :";
-	public static final String TPS = "Ticks/s :";
-	public static final String SEC = "1 real sec :";
-	public static final String TR = "Time Ratio :";
+	private static final String UPTIME = "UpTime :";
+	private static final String TPS = "Ticks/s :";
+	private static final String SEC = "1 real sec :";
+	private static final String TR = "Time Ratio :";
 
-	private static int theme = 7; // 6 is snow blue; 7 is the mud orange with nimrod
+	private static int theme = -1; // 6 is snow blue; 7 is the mud orange with nimrod
 	public static int chatBoxHeight = 256;
 	public static int LINUX_WIDTH = 270;
 	public static int MACOS_WIDTH = 230;
@@ -266,22 +262,14 @@ public class MainScene {
 
 	public static boolean menuBarVisible = false;
 
-	private int count = 0;
 	private int solElapsedCache = 0;
-	private int memMax;
-	private int memTotal;
-	private int memUsed, memUsedCache;
-	private int memFree;
-	private int processCpuLoad;
 
 	private double newTimeRatio = 0;
 	private double initial_time_ratio = 0;
 
 	private boolean isMuteCache;
-	private boolean earthTimeFlag = false, marsTimeFlag = false, flag = true;
+	private boolean flag = true;
 	private boolean isMainSceneDoneLoading = false;
-	private boolean isMarsNetOpen = false;
-	private boolean onMenuBarCache = false;
 	private boolean isFullScreenCache = false;
 
 	private DoubleProperty sceneWidth;// = new SimpleDoubleProperty(DEFAULt_WIDTH);//1366-40;
@@ -289,20 +277,17 @@ public class MainScene {
 
 	private volatile transient ExecutorService mainSceneExecutor;
 
-	private String lookAndFeelTheme = "nimrod";
+	private String themeSkin = "nimrod";
 	private String title = null;
 	private String dir = null;
 	private String oldLastSaveStamp = null;
-
-	//private StringProperty timeStamp;
-    //private final BooleanProperty hideProperty = new SimpleBooleanProperty();
 
 	private Pane root;
 	private StackPane mainAnchorPane, //monPane,
 					mapStackPane, minimapStackPane,
 					speedPane, soundPane, calendarPane,
 					settlementBox, chatBoxPane;
-	//private BorderPane borderPane;
+
 	private FlowPane flowPane;
 	private AnchorPane rootAnchorPane, mapAnchorPane ;
 	private SwingNode swingNode, mapNode, minimapNode, monNode, missionNode, resupplyNode, sciNode, guideNode ;
@@ -315,7 +300,6 @@ public class MainScene {
 	private IconNode soundIcon, marsNetIcon, speedIcon;
 	private Button earthTimeButton, marsTimeButton;//, northHemi, southHemi;
 	private Label lastSaveLabel, monthLabel, yearLabel, TPSLabel, upTimeLabel;
-	private Text memUsedText;
 
 	private JFXComboBox<Settlement> sBox;
 	private JFXBadge badgeIcon;
@@ -327,12 +311,6 @@ public class MainScene {
 	private JFXButton soundBtn, marsNetBtn, rotateCWBtn, rotateCCWBtn, recenterBtn, speedBtn; // miniMapBtn, mapBtn,
 	private JFXPopup soundPopup, marsNetBox, marsCalendarPopup, simSpeedPopup;// marsTimePopup;
 	private JFXTabPane jfxTabPane;
-
-	//private Button memBtn, clkBtn;
-	//private StatusBar statusBar;
-	//private Flyout flyout;
-	//private CheckComboBox<String> mapLabelBox;
-	//private HBox lastSaveBar;//, earthTimeBar, marsTimeBar;
 	private VBox mapLabelBox;
 	private ChatBox chatBox;
 	//private DndTabPane dndTabPane;
@@ -680,10 +658,10 @@ public class MainScene {
 
 		InputMap<KeyEvent> ctrlT = consume(keyPressed(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN)), e -> {
 			if (OS.contains("linux")) {
-				if (theme == 6)
-					setTheme(0);
-				else if (theme == 0)
-					setTheme(6);
+				//if (theme == 6)
+				setTheme(0);
+				//else if (theme == 0)
+				//	setTheme(6);
 			}
 			else {
 				if (theme == 6)
@@ -1720,7 +1698,7 @@ public class MainScene {
 
 		String cssFile = null;
 
-        if (desktop.getMainScene().getTheme() == 6)
+        if (theme == 0 || theme == 6)
         	cssFile = "/fxui/css/jfx_blue.css";
         else
         	cssFile = "/fxui/css/jfx_orange.css";
@@ -2202,72 +2180,142 @@ public class MainScene {
 	 * Sets the theme skin of the desktop
 	 */
 	public void setTheme(int theme) {
-		this.theme = theme;
-
-		//desktopPane.getStylesheets().clear();
 
 		if (menuBar.getStylesheets() != null)
 			menuBar.getStylesheets().clear();
-		//statusBar.getStylesheets().clear();
 
 		String cssFile;
 
-		if (theme == 0) { //  snow blue
-			// for numbus theme
-			cssFile = "/fxui/css/snowBlue.css";
-			updateThemeColor(0, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
-			lookAndFeelTheme = "snowBlue";
+		//if (this.theme != theme) {
+			this.theme = theme;
 
-		} else if (theme == 1) { // olive green
-			cssFile = "/fxui/css/oliveskin.css";
-			updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssFile); //DARKOLIVEGREEN
-			lookAndFeelTheme = "LightTabaco";
+			if (theme == 0) { //  snow blue
+				// for numbus theme
+				cssFile = "/fxui/css/snowBlue.css";
+				updateThemeColor(0, Color.rgb(0,107,184), Color.rgb(0,107,184), cssFile); // CADETBLUE // Color.rgb(23,138,255)
+				themeSkin = "snowBlue";
 
-		} else if (theme == 2) { // burgundy red
-			cssFile = "/fxui/css/burgundyskin.css";
-			updateThemeColor(2, Color.rgb(140,0,26), Color.YELLOW, cssFile); // ORANGERED
-			lookAndFeelTheme = "Burdeos";
+			} else if (theme == 1) { // olive green
+				cssFile = "/fxui/css/oliveskin.css";
+				updateThemeColor(1, Color.GREEN, Color.PALEGREEN, cssFile); //DARKOLIVEGREEN
+				themeSkin = "LightTabaco";
 
-		} else if (theme == 3) { // dark chocolate
-			cssFile = "/fxui/css/darkTabaco.css";
-			updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssFile);
-			lookAndFeelTheme = "DarkTabaco";
+			} else if (theme == 2) { // burgundy red
+				cssFile = "/fxui/css/burgundyskin.css";
+				updateThemeColor(2, Color.rgb(140,0,26), Color.YELLOW, cssFile); // ORANGERED
+				themeSkin = "Burdeos";
 
-		} else if (theme == 4) { // grey
-			cssFile = "/fxui/css/darkGrey.css";
-			updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssFile);
-			lookAndFeelTheme = "DarkGrey";
+			} else if (theme == 3) { // dark chocolate
+				cssFile = "/fxui/css/darkTabaco.css";
+				updateThemeColor(3, Color.DARKGOLDENROD, Color.BROWN, cssFile);
+				themeSkin = "DarkTabaco";
 
-		} else if (theme == 5) { // + purple
-			cssFile = "/fxui/css/nightViolet.css";
-			updateThemeColor(5, Color.rgb(73,55,125), Color.rgb(73,55,125), cssFile); // DARKMAGENTA, SLATEBLUE
-			lookAndFeelTheme = "Night";
+			} else if (theme == 4) { // grey
+				cssFile = "/fxui/css/darkGrey.css";
+				updateThemeColor(4, Color.DARKSLATEGREY, Color.DARKGREY, cssFile);
+				themeSkin = "DarkGrey";
 
-		} else if (theme == 6) { // + skyblue
+			} else if (theme == 5) { // + purple
+				cssFile = "/fxui/css/nightViolet.css";
+				updateThemeColor(5, Color.rgb(73,55,125), Color.rgb(73,55,125), cssFile); // DARKMAGENTA, SLATEBLUE
+				themeSkin = "Night";
 
-			cssFile = "/fxui/css/snowBlue.css";
-			updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(255,255,255), cssFile); //(144, 208, 229) light blue // CADETBLUE (0,107,184)// Color.rgb(23,138,255)
-			lookAndFeelTheme = "snowBlue";
+			} else if (theme == 6) { // + skyblue
 
-		} else if (theme == 7) { // mud orange/standard
+				cssFile = "/fxui/css/snowBlue.css";
+				updateThemeColor(6, Color.rgb(0,107,184), Color.rgb(255,255,255), cssFile); //(144, 208, 229) light blue // CADETBLUE (0,107,184)// Color.rgb(23,138,255)
+				themeSkin = "snowBlue";
 
-			cssFile = "/fxui/css/nimrodskin.css";
-			updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(255,255,255), cssFile); //DARKORANGE, CORAL
-			lookAndFeelTheme = "nimrod";
+			} else if (theme == 7) { // mud orange/standard
 
+				cssFile = "/fxui/css/nimrodskin.css";
+				updateThemeColor(7, Color.rgb(156,77,0), Color.rgb(255,255,255), cssFile); //DARKORANGE, CORAL
+				themeSkin = "nimrod";
+
+			}
+
+			SwingUtilities.invokeLater(() -> {
+				// 2016-06-17 Added checking for OS.
+				if (OS.contains("linux")) {
+					// Note: NIMROD theme lib doesn't work on linux
+					setLookAndFeel(NIMBUS_THEME);
+				}
+				else
+					setLookAndFeel(NIMROD_THEME);
+			});
+		//}
+		//logger.info("done with MainScene's changeTheme()");
+	}
+
+	/**
+	 * Sets the look and feel of the UI
+	 * @param nativeLookAndFeel true if native look and feel should be used.
+	 */
+	// 2015-05-02 Edited setLookAndFeel()
+	public void setLookAndFeel(int choice) {
+		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
+		boolean changed = false;
+		if (choice == SYSTEM_THEME) { // theme == "nativeLookAndFeel"
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				changed = true;
+				//themeSkin = "system";
+				//System.out.println("found system");
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		} else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel"
+			try {
+				NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + themeSkin + ".theme"));
+				//NimRODLookAndFeel.setCurrentTheme(nt); // must be declared non-static or not working if switching to a brand new .theme file
+				NimRODLookAndFeel nf = new NimRODLookAndFeel();
+				nf.setCurrentTheme(nt); //must be declared non-static or not working if switching to a brand new .theme file
+				UIManager.setLookAndFeel(nf);
+				changed = true;
+				//System.out.println("found Nimrod");
+
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
+			}
+		} else if (choice == NIMBUS_THEME) {
+			try {
+				boolean foundNimbus = false;
+				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+					if (info.getName().equals("Nimbus")) {
+						// Set Nimbus look & feel if found in JVM.
+						//System.out.println("found Nimbus");
+						UIManager.setLookAndFeel(info.getClassName());
+						foundNimbus = true;
+						//themeSkin = "nimbus";
+						changed = true;
+						//break;
+					}
+				}
+
+				// Metal Look & Feel fallback if Nimbus not present.
+				if (!foundNimbus) {
+					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
+					UIManager.setLookAndFeel(new MetalLookAndFeel());
+					//themeSkin = "metal";
+					changed = true;
+					//System.out.println("found metal");
+				}
+			} catch (Exception e) {
+				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
+			}
 		}
 
-		SwingUtilities.invokeLater(() -> {
-			// 2016-06-17 Added checking for OS.
-			if (OS.contains("linux")) {
-				// Note: NIMROD theme lib doesn't work on linux
-				setLookAndFeel(NIMBUS_THEME);
+		if (changed) {
+			if (desktop != null) {
+				desktop.updateToolWindowLF();
+				desktop.updateUnitWindowLF();
+				SwingUtilities.updateComponentTreeUI(desktop);
+				//desktop.updateAnnouncementWindowLF();
+				// desktop.updateTransportWizardLF();
+				//System.out.println("just updated UI");
 			}
-			else
-				setLookAndFeel(NIMROD_THEME);
-		});
-
-		//logger.info("done with MainScene's changeTheme()");
+		}
+		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
 	}
 
 	/*
@@ -2285,18 +2333,12 @@ public class MainScene {
 
 		//String color = txtColor.replace("0x", "");
 
-		//timeLabel.setTextFill(txtColor2);
-		//lastSaveLabel.setTextFill(txtColor2);
 		jfxTabPane.getStylesheets().clear();
-		//setStylesheet(northHemi, cssFile);
-		//setStylesheet(southHemi, cssFile);
 
 		setStylesheet(marsTimeButton, cssFile);
 		setStylesheet(earthTimeButton, cssFile);
 
 		setStylesheet(lastSaveLabel, cssFile);
-		//setStylesheet(miniMapBtn, cssFile);
-		//setStylesheet(mapBtn, cssFile);
 		setStylesheet(cacheToggle, cssFile);
 		setStylesheet(minimapToggle, cssFile);
 		setStylesheet(mapToggle, cssFile);
@@ -2329,10 +2371,6 @@ public class MainScene {
 		if (theme == 7) {
 			speedIcon.setFill(Color.YELLOW);
 			speedBtn.setGraphic(speedIcon);
-			//speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_menu_24.png"))));
-			//miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_globe_24.png"))));
-			//mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_map_24.png"))));
-			//marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "orange_chat_24.png"))));
 			marsNetIcon.setFill(Color.YELLOW);
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.YELLOW);
@@ -2343,10 +2381,6 @@ public class MainScene {
 		else {
 			speedIcon.setFill(Color.LAVENDER);
 			speedBtn.setGraphic(speedIcon);
-			//speedButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_menu_24.png"))));
-			//miniMapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_globe_24.png"))));
-			//mapBtn.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_map_24.png"))));
-			//marsNetButton.setGraphic(new ImageView(new Image(this.getClass().getResourceAsStream(ROUND_BUTTONS_DIR + "blue_chat_24.png"))));
 			marsNetIcon.setFill(Color.LAVENDER);
 			marsNetBtn.setGraphic(marsNetIcon);
 			soundIcon.setFill(Color.LAVENDER);
@@ -2930,96 +2964,6 @@ public class MainScene {
 
 	}
 
-	/**
-	 * Sets the look and feel of the UI
-	 * @param nativeLookAndFeel true if native look and feel should be used.
-	 */
-	// 2015-05-02 Edited setLookAndFeel()
-	public void setLookAndFeel(int choice) {
-		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
-		boolean changed = false;
-		if (choice == SYSTEM_THEME) { // theme == "nativeLookAndFeel"
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				changed = true;
-				lookAndFeelTheme = "system";
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-		} else if (choice == NIMROD_THEME) { // theme == "nimRODLookAndFeel"
-			try {
-
-				//if (lookAndFeelTheme.equals("nimrod")) // at the start of the sim
-					// Use default theme
-				//	try {
-				//		UIManager.setLookAndFeel(new NimRODLookAndFeel());
-				//		changed = true;
-				//	} catch (Exception e) {
-				//		e.printStackTrace();
-				//	}
-
-				//else { // at the start of the sim
-					/*
-					 * //TODO: let user customize theme in future NimRODTheme nt
-					 * = new NimRODTheme(); nt.setPrimary1(new
-					 * java.awt.Color(10,10,10)); nt.setPrimary2(new
-					 * java.awt.Color(20,20,20)); nt.setPrimary3(new
-					 * java.awt.Color(30,30,30)); NimRODLookAndFeel NimRODLF =
-					 * new NimRODLookAndFeel(); NimRODLF.setCurrentTheme( nt);
-
-					if (theme == 0 || theme == 6) {
-						lookAndFeelTheme = "snowBlue";
-					}
-					else if (theme == 7)
-						lookAndFeelTheme = "nimrod"; // note that nimrod.theme uses all default parameter except overriding the opacity with 220.
-					*/
-					NimRODTheme nt = new NimRODTheme(getClass().getClassLoader().getResource("theme/" + lookAndFeelTheme + ".theme"));
-					NimRODLookAndFeel nf = new NimRODLookAndFeel();
-					nf.setCurrentTheme(nt);
-					UIManager.setLookAndFeel(nf);
-					changed = true;
-				//}
-
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.lookAndFeelError"), e); //$NON-NLS-1$
-			}
-		} else if (choice == NIMBUS_THEME) {
-			try {
-				boolean foundNimbus = false;
-				for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-					if (info.getName().equals("Nimbus")) { //$NON-NLS-1$
-						// Set Nimbus look & feel if found in JVM.
-						UIManager.setLookAndFeel(info.getClassName());
-						foundNimbus = true;
-						lookAndFeelTheme = "nimbus";
-						changed = true;
-						//break;
-					}
-				}
-
-				// Metal Look & Feel fallback if Nimbus not present.
-				if (!foundNimbus) {
-					logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
-					UIManager.setLookAndFeel(new MetalLookAndFeel());
-					lookAndFeelTheme = "metal";
-					changed = true;
-				}
-			} catch (Exception e) {
-				logger.log(Level.WARNING, Msg.getString("MainWindow.log.nimbusError")); //$NON-NLS-1$
-			}
-		}
-
-		if (changed) {
-			if (desktop != null) {
-				SwingUtilities.updateComponentTreeUI(desktop);
-				desktop.updateToolWindowLF();
-				desktop.updateUnitWindowLF();
-				desktop.updateAnnouncementWindowLF();
-				// desktop.updateTransportWizardLF();
-			}
-		}
-		//logger.info("MainScene's setLookAndFeel() is on " + Thread.currentThread().getName() + " Thread");
-	}
 
 	public MainSceneMenu getMainSceneMenu() {
 		return menuBar;
@@ -3427,26 +3371,16 @@ public class MainScene {
 		quote = null;
 		messagePopup = null;
 		topFlapBar = null;
-	    //timeStamp = null;
-	    memUsedText = null;
-		//memBtn = null;
-		//clkBtn = null;
-		//lastSaveBar = null;
-		//statusBar = null;
 		marsNetBox = null;
 		marsNetBtn = null;
 		chatBox = null;
 		mainAnchorPane = null;
 		rootAnchorPane = null;
-		//borderPane = null;
 		newSimThread = null;
 		stage = null;
 		loadingCircleStage = null;
 		savingCircleStage = null;
 		pausingCircleStage = null;
-		//mainTab = null;
-		//nodeTab = null;
-		//dndTabPane = null;
 		timeline = null;
 		notificationPane = null;
 		desktop.destroy();

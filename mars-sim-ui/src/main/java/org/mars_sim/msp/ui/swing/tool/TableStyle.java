@@ -30,8 +30,7 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 public class TableStyle extends ZebraJTable{
 
 	private static final long serialVersionUID = 1L;
-
-	private static int themeCache;
+	//private static int themeCache;
 	//private JTable table;
 	private static JTableHeader theHeader;
 	private static TableHeaderRenderer theRenderer;
@@ -113,10 +112,8 @@ public class TableStyle extends ZebraJTable{
 			// 255 228 225	MistyRose1
 
 	    	if (theme == 0) { // snow + skyblue
-
 	    		// see default colors for nimbus
 	    		// https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary
-
 	    		hFore = new Color(57, 105, 138);// ;//(57, 105, 138) is navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
 	    		hBack = new Color(198, 217, 217); // 255, 255, 120 very light yellow
 	    		back = new Color(255, 255, 255);
@@ -185,10 +182,8 @@ public class TableStyle extends ZebraJTable{
 	    		themeName = "Night";
 	    	}
 	    	else if (theme == 6) { // snow + skyblue
-
 	    		// see default colors for nimbus
 	    		// https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/_nimbusDefaults.html#primary
-
 	    		hBack = new Color(57, 105, 138);// ;//(57, 105, 138) is navy blue; (50, 145,210);//(31, 151, 229); // 100, 149, 237 cornflowerblue , 147, 147, 147 mid grey
 	    		hFore = new Color(198, 217, 217); // 255, 255, 120 very light yellow
 	    		back = new Color(255, 255, 255);
@@ -198,7 +193,6 @@ public class TableStyle extends ZebraJTable{
 	    		grid = Color.WHITE; //new Color(222, 184, 135); // 222 184 135 burlywood very soft orange
 	    		border = new Color(165, 247, 233);//Color.WHITE;//new Color(57, 105, 138);//Color.LIGHT_GRAY;
 	    		themeName = "Snow Blue";
-
 	    	}
 
 	    	else if (theme == 7) { // standard nimrod

@@ -1517,6 +1517,7 @@ implements ClockListener, ComponentListener, UnitListener, UnitManagerListener {
 		while (i.hasNext()) {
 		    ToolWindow toolWindow = i.next();
 			SwingUtilities.updateComponentTreeUI(toolWindow);
+			toolWindow.update();
 			//toolWindow.pack(); // why will it cause help window to stretch?
 		}
 	}

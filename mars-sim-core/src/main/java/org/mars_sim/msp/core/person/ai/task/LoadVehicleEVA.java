@@ -102,7 +102,7 @@ implements Serializable {
         if (roversNeedingEVASuits.size() > 0) {
             int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
             vehicle = roversNeedingEVASuits.get(roverIndex);
-            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
             requiredResources.put(VehicleMaintenance.waterAR, 40D);
@@ -117,7 +117,7 @@ implements Serializable {
         VehicleMission mission = getMissionNeedingLoading();
         if ((vehicle == null) && (mission != null)) {
             vehicle = mission.getVehicle();
-            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = mission.getRequiredResourcesToLoad();
             optionalResources = mission.getOptionalResourcesToLoad();
@@ -147,7 +147,7 @@ implements Serializable {
         if (roversNeedingEVASuits.size() > 0) {
             int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
             vehicle = roversNeedingEVASuits.get(roverIndex);
-            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = new HashMap<Resource, Number>(2);
             requiredResources.put(AmountResource.findAmountResource(LifeSupportType.WATER), 40D);
@@ -162,7 +162,7 @@ implements Serializable {
         VehicleMission mission = getMissionNeedingLoading();
         if ((vehicle == null) && (mission != null)) {
             vehicle = mission.getVehicle();
-            setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
+            setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                     vehicle.getName())); //$NON-NLS-1$
             requiredResources = mission.getRequiredResourcesToLoad();
             optionalResources = mission.getOptionalResourcesToLoad();
@@ -198,9 +198,9 @@ implements Serializable {
             Map<Resource, Number> optionalResources, Map<Class, Integer> requiredEquipment,
             Map<Class, Integer> optionalEquipment) {
         // Use Task constructor.
-        super("Loading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
+        setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                 vehicle.getName())); //$NON-NLS-1$
         this.vehicle = vehicle;
 
@@ -231,10 +231,10 @@ implements Serializable {
             Map<Resource, Number> optionalResources, Map<Class, Integer> requiredEquipment,
             Map<Class, Integer> optionalEquipment) {
         // Use Task constructor.
-        super("Loading vehicle EVA", robot, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, robot, true, RandomUtil.getRandomDouble(50D) + 10D);
 
 /*
-        setDescription(Msg.getString("Task.description.loadVehicleAmountResource.detail",
+        setDescription(Msg.getString("Task.description.loadVehicleEVA.detail",
                 vehicle.getName())); //$NON-NLS-1$
         this.vehicle = vehicle;
 
