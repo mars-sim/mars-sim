@@ -195,7 +195,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		<dependency>
 			<groupId>eu.hansolo</groupId>
 			<artifactId>tilesfx</artifactId>
-			<version>1.4.0</version>
+			<version>1.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.hansolo</groupId>
@@ -212,10 +212,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		  <artifactId>jfxc</artifactId>
 		  <version>1.1</version>
 		</dependency>
-		<dependency>
+<!--	<dependency>
 		 	<groupId>org.oxbow</groupId>
 			<artifactId>swing-bits</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.2.1</version>
+		</dependency>-->
+		<dependency>
+		<!-- https://github.com/akuhtz/oxbow -->
+			<groupId>org.bidib.org.oxbow</groupId>
+			<artifactId>swingbits</artifactId>
+			<version>1.2.2</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.codefx.libfx</groupId>
@@ -455,6 +461,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>glazedlists_java16</artifactId>
 		    <version>1.10.0</version>
 		</dependency>
+		<dependency>
+		<!-- https://tomsondev.bestsolution.at/ -->
+			<groupId>at.bestsolution.efxclipse.rt</groupId>
+			<artifactId>org.eclipse.fx.ui.controls</artifactId>
+			<version>3.0.0-SNAPSHOT</version>
+		</dependency>
         <dependency>
         <!-- https://github.com/edvin/fxldemo
        		 https://github.com/edvin/fxlauncher -->
@@ -462,23 +474,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>fxlauncher</artifactId>
             <version>1.0.15</version>
         </dependency>
+		<dependency>
+		<!-- https://github.com/aalmiray/bootstrapfx -->
+			<groupId>org.kordamp.bootstrapfx</groupId>
+			<artifactId>bootstrapfx-core</artifactId>
+			<version>0.2.1</version>
+		</dependency>
 	</dependencies>
 	<repositories>
-		<repository>
-			<id>oxbow-repository</id>
-			<url>https://github.com/eugener/oxbow/raw/master/maven/repository</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<!-->repository>
-			<id>jme3-repo</id>
-			<name>JME3 maven repo</name>
-			<url>http://updates.jmonkeyengine.org/maven/</url>
-		</repository-->
 	    <repository>
 	        <id>maven-central-repo</id>
 	        <url>http://repo1.maven.org/maven2</url>
@@ -499,18 +502,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-		<repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-		<repository>
-	        <id>spring-snapshots</id>
-	        <name>Spring Snapshots</name>
-	        <url>https://repo.spring.io/libs-snapshot</url>
-	        <snapshots>
-	            <enabled>true</enabled>
-	        </snapshots>
-	    </repository>
 	    <repository>
 	    <!-- jcenter required by ikonli-javafx -->
 	        <id>central</id>
@@ -532,5 +523,45 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 <enabled>true</enabled>
             </releases>
 		</repository>
+		<repository>
+			<name>BestSolution e(fx)clipse snapshots</name>
+			<id>efxclipse-snapshots</id>
+			<url>http://maven.bestsolution.at/efxclipse-snapshots/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<name>BestSolution e(fx)clipse releases</name>
+			<id>efxclipse-releases</id>
+			<url>http://maven.bestsolution.at/efxclipse-releases/</url>
+		</repository>
+		<repository>
+			<id>oxbow-repository</id>
+			<url>https://github.com/eugener/oxbow/raw/master/maven/repository</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<!-->repository>
+			<id>jme3-repo</id>
+			<name>JME3 maven repo</name>
+			<url>http://updates.jmonkeyengine.org/maven/</url>
+		</repository-->
+		<repository>
+            <id>spring-releases</id>
+            <url>https://repo.spring.io/libs-release</url>
+        </repository>
+		<repository>
+	        <id>spring-snapshots</id>
+	        <name>Spring Snapshots</name>
+	        <url>https://repo.spring.io/libs-snapshot</url>
+	        <snapshots>
+	            <enabled>true</enabled>
+	        </snapshots>
+	    </repository>
 	</repositories>
 </project>

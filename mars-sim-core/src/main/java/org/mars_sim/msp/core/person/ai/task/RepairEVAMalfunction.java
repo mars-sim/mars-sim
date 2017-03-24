@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.07 2015-02-26
+ * @version 3.1.0 2017-03-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -137,7 +137,7 @@ implements Repair, Serializable {
      * Gets a malfunctionable entity with an EVA-required malfunction.
      * @param person the person.
      * @return malfunctionable entity.
-     */
+
     private Malfunctionable getEVAMalfunctionEntity(Robot robot) {
         Malfunctionable result = null;
 
@@ -183,6 +183,7 @@ implements Repair, Serializable {
 
         return result;
     }
+*/
 
     private Malfunctionable getEVAMalfunctionEntity(Person person) {
         Malfunctionable result = null;
@@ -258,6 +259,8 @@ implements Repair, Serializable {
 
         return result;
     }
+
+/*
    public static boolean requiresEVA(Robot robot, Malfunctionable entity) {
 
         boolean result = false;
@@ -281,6 +284,7 @@ implements Repair, Serializable {
 
         return result;
     }
+*/
     /**
      * Gets a reparable malfunction requiring an EVA for a given entity.
      * @param person the person to repair.
@@ -327,6 +331,7 @@ implements Repair, Serializable {
         return result;
     }
 
+/*
    private Malfunction getMalfunction(Robot robot, Malfunctionable entity) {
 
         Malfunction result = null;
@@ -366,6 +371,8 @@ implements Repair, Serializable {
 
         return result;
     }
+*/
+
     /**
      * Checks if a malfunction requires EVA repair.
      * @param malfunction the malfunction.
@@ -397,7 +404,7 @@ implements Repair, Serializable {
 
         return hasRepairParts(containerUnit, malfunction);
     }
-
+/*
     public static boolean hasRepairPartsForMalfunction(Robot robot, Unit containerUnit,
             Malfunction malfunction) {
 
@@ -406,7 +413,7 @@ implements Repair, Serializable {
 
         return hasRepairParts(containerUnit, malfunction);
     }
-
+*/
     public static boolean hasRepairParts(Unit containerUnit, Malfunction malfunction) {
 
         boolean result = true;
@@ -592,6 +599,7 @@ implements Repair, Serializable {
 		        }
 
 		}
+/*
 		else if (robot != null) {
 		       if (hasRepairPartsForMalfunction(robot, containerUnit, malfunction)) {
 		            Map<Part, Integer> parts = new HashMap<Part, Integer>(malfunction.getRepairParts());
@@ -609,7 +617,7 @@ implements Repair, Serializable {
 		        }
 
 		}
-
+*/
 
         // Add EVA work to malfunction.
         double workTimeLeft = 0D;

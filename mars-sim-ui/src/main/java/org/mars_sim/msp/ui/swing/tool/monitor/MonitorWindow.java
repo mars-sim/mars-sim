@@ -463,8 +463,8 @@ implements TableModelListener, ActionListener {
 
 			// 2015-09-25 Update skin theme using TableStyle's setTableStyle()
 			if (table != null) { // for pie and bar chart, skip the codes below
-	            TableStyle.setTableStyle(table);
-	            TableStyle.setTableStyle(new RowNumberTable(table));
+	            //TableStyle.setTableStyle(table);
+	            //TableStyle.setTableStyle(new RowNumberTable(table));
 	            //System.out.println("Starting createSearchableBar() for "+ table);
 
 				//statusPanel.remove(_tableSearchableBar);

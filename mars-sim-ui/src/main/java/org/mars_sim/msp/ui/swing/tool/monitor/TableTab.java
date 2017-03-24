@@ -43,6 +43,7 @@ import org.mars_sim.msp.ui.swing.tool.RowNumberTable;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.toolWindow.ToolWindow;
+import org.oxbow.swingbits.table.filter.TableRowFilterSupport;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -59,7 +60,7 @@ extends MonitorTab {
 	//private TableHeaderRenderer theRenderer;
 
 	private TableCellRenderer tableCellRenderer;
-	
+
 	private TableProperties propsWindow;
 	/**
 	 * This internal class provides a fixed image icon that is drawn using a Graphics
@@ -255,13 +256,9 @@ extends MonitorTab {
 
             sortedModel.addTableModelListener(table);
 
-        	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
-            //TableStyle.setTableStyle(table);
-            
          	// Add a mouse listener for the mouse event selecting the sorted column
          	// Not the best way but no double click is provided on Header class
         	// Get the TableColumn header to display sorted column
-
 
            	header = table.getTableHeader();
         	//theRenderer = new TableHeaderRenderer(header.getDefaultRenderer());
@@ -315,15 +312,18 @@ extends MonitorTab {
                     return getCellText(e);
                 };
             };
-
-        	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
-            //TableStyle.setTableStyle(table);
         }
+
+    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+        //TableStyle.setTableStyle(table);
+
+        //2017-03-24 Enable use of RowFilter with Swingbits
+        // see https://github.com/eugener/oxbow/wiki/Table-Filtering
+        //TableRowFilterSupport.forTable(table).apply();
 
         // Set single selection mode if necessary.
         if (singleSelection)
         	table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
 
 		// 2015-06-08 Added RowNumberTable
         JTable rowTable = new RowNumberTable(table);
@@ -383,10 +383,10 @@ extends MonitorTab {
         	propsWindow.show();
         } else {
 			if (propsWindow.isClosed()) {
-				if (!propsWindow.wasOpened()) {				
+				if (!propsWindow.wasOpened()) {
 					propsWindow.setWasOpened(true);
 				}
-				add(propsWindow, 0);				
+				add(propsWindow, 0);
 				try {
 					propsWindow.setClosed(false);
 				}
@@ -406,9 +406,9 @@ extends MonitorTab {
 		propsWindow.getContentPane().repaint();
 		validate();
 		repaint();
-        
+
 	}
-	
+
     /**
      * This return the selected rows in the model that are current
      * selected in this view.

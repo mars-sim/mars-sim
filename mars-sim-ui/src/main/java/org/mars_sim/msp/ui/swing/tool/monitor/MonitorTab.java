@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
+import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 
 
 /**
@@ -48,9 +50,12 @@ extends JPanel {
 		this.mandatory = mandatory;
 		this.setOpaque(false);
 
+    	// 2015-06-10 Switched to using the TableStyle's setTableStyle()
+        //TableStyle.setTableStyle(new ZebraJTable(model));
+
 		// Create a panel
 		setLayout(new BorderLayout());
-		setBorder(MainDesktopPane.newEmptyBorder());
+		//setBorder(MainDesktopPane.newEmptyBorder());
 
 	}
 

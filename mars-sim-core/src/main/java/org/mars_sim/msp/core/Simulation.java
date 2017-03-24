@@ -643,7 +643,7 @@ implements ClockListener, Serializable {
 
         else if (type == AUTOSAVE) {
             String autosaveFilename = lastSave
-            		+ "_sol" + masterClock.getMarsClock().getSolElapsedFromStart()
+            		+ "_Sol" + masterClock.getMarsClock().getSolElapsedFromStart()
             		+ "_r" + BUILD
             		+ DEFAULT_EXTENSION;
             file = new File(AUTOSAVE_DIR, autosaveFilename);

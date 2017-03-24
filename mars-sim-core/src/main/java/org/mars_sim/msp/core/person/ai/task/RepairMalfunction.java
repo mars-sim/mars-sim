@@ -178,8 +178,11 @@ implements Repair, Serializable {
 
    public static boolean requiresEVA(Robot robot, Malfunctionable entity) {
 
-        boolean result = false;
+	   return false;
+
 /*
+	   boolean result = false;
+
         if (entity instanceof Vehicle) {
             // Requires EVA repair on outside vehicles that the person isn't inside.
             Vehicle vehicle = (Vehicle) entity;
@@ -190,7 +193,7 @@ implements Repair, Serializable {
 	        }
         }
         else
-*/
+
         if (entity instanceof Building) {
             // Requires EVA repair on uninhabitable buildings.
             Building building = (Building) entity;
@@ -200,7 +203,11 @@ implements Repair, Serializable {
         }
 
         return result;
+
+*/
     }
+
+
     /**
      * Gets a malfunctional entity with a normal malfunction for a user.
      * @return malfunctional entity.

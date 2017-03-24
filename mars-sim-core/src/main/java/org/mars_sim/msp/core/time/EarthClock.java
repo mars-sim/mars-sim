@@ -41,6 +41,7 @@ implements Serializable {
 
 	//private String fullDateTimeString;
 	private final GregorianCalendar cal;
+	//private final ZonedDateTime cal;
 
 	// Data members
 	private final SimpleDateFormat f0, f1, f2, f3;
@@ -54,13 +55,17 @@ implements Serializable {
 	public EarthClock(String fullDateTimeString) {
 		//this.fullDateTimeString = fullDateTimeString;
 
-		// Use GregorianCalendar constructor
-		cal = new GregorianCalendar();
+
+		// 2017-03-23 Use ZonedDate
+		ZonedDateTime zonedDateTime = ZonedDateTime.now();
+
+		// Convert to GregorianCalendar
+		cal = GregorianCalendar.from(zonedDateTime);
 
 		// Set GMT timezone for calendar
 		SimpleTimeZone zone = new SimpleTimeZone(0, "GMT");
 		cal.setTimeZone(zone);
-		cal.clear();
+		//cal.clear();
 
 		// Initialize formatter
 		f0 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss '(UT)'");
@@ -88,6 +93,7 @@ implements Serializable {
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
+
 
 		// Use Java 8 Date/Time API in java.time package
 		//dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");

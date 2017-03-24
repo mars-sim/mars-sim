@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.ui.javafx;
 
+import org.eclipse.fx.core.ServiceUtils;
+
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
 import com.jfoenix.controls.JFXBadge;
@@ -2186,7 +2188,7 @@ public class MainScene {
 
 		String cssFile;
 
-		//if (this.theme != theme) {
+		if (this.theme != theme) {
 			this.theme = theme;
 
 			if (theme == 0) { //  snow blue
@@ -2243,7 +2245,7 @@ public class MainScene {
 				else
 					setLookAndFeel(NIMROD_THEME);
 			});
-		//}
+		}
 		//logger.info("done with MainScene's changeTheme()");
 	}
 

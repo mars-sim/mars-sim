@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * SystemDateTime.java
- * @version 3.08 2015-03-28
+ * @version 3.1.0 2017-03-24
  * @author Manny Kung
  */
 
 package org.mars_sim.msp.core.time;
 
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -34,16 +35,23 @@ public class SystemDateTime {
         */
        public String getDateTimeStr() {
 
-               Calendar currentCalendar =
-                   Calendar.getInstance();
-               Date currentTime =
-                   currentCalendar.getTime();
-               dateStr = dateFormat
-                   .format(currentTime);
-               timeStr = timeFormat
-                   .format(currentTime);
-               dateTimeStr = dateStr + "_" + timeStr;
-               //System.out.println("dateTimeStr : " + dateTimeStr);
+/*
+    	   Calendar currentCalendar = Calendar.getInstance();
+    	   Date currentTime = currentCalendar.getTime();
+    	   dateStr = dateFormat.format(currentTime);
+    	   timeStr = timeFormat.format(currentTime);
+    	   dateTimeStr = dateStr + "_" + timeStr;
+*/
+
+    	   // Use ISO-8601-like calendar system.
+    	   //e.g. 2007-12-03T10:15:30+01:00 Europe/Paris.
+    	   //e.g. 2014-04-01T01:48:41.750-04:00[America/Montreal]
+
+    	   ZonedDateTime cal = ZonedDateTime.now();
+    	   String s = cal.toString();
+    	   dateTimeStr = (s.substring(0, s.indexOf("."))).replace(":", ".");
+
+    	   //System.out.println("dateTimeStr : " + dateTimeStr);
     	   return dateTimeStr;
        }
    }

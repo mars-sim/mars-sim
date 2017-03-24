@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.javafx.MainScene;
 public class TableStyle extends ZebraJTable{
 
 	private static final long serialVersionUID = 1L;
-	//private static int themeCache;
+	private int themeCache = -1;
 	//private JTable table;
 	private static JTableHeader theHeader;
 	private static TableHeaderRenderer theRenderer;
@@ -72,7 +72,7 @@ public class TableStyle extends ZebraJTable{
 	/*
 	 * Sets theme color for JTable headers and rows and columns
 	 */
-    public static JTable setTableStyle(JTable table) {
+    public static void setTableStyle(JTable table) {
 	   	//logger.info("setTableStyle() is on " + Thread.currentThread().getName() );
 
     	//JTable t = table;
@@ -86,13 +86,13 @@ public class TableStyle extends ZebraJTable{
 			//}
 			//else
 				//SwingUtilities.invokeLater(() ->
-				table = editHeader(table);
+//				table = editHeader(table);
 		//});
 
-		return table;
-    }
+//		return table;
+//    }
 
-    public static JTable editHeader(JTable table) {
+//    public static JTable editHeader(JTable table) {
 
     	int theme = MainScene.getTheme();
 
@@ -236,13 +236,16 @@ public class TableStyle extends ZebraJTable{
 
 			table.repaint();
 
-		   	ZebraJTable z = new ZebraJTable(table.getModel());
+		   	//ZebraJTable
+		   	//z = new ZebraJTable(table.getModel());
 
-			return (JTable) z;
+			//return (JTable) z;
+	    	//return new ZebraJTable(table.getModel());
 	    //}
 
     	//else
-    	//	return (JTable) z;
+    		//return table;
+
     }
 
 }

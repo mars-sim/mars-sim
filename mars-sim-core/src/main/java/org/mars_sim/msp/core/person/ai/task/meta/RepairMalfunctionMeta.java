@@ -28,7 +28,7 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.repairMalfunction"); //$NON-NLS-1$
@@ -87,9 +87,9 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
         if (result > 0D) {
             result = result + result * person.getPreference().getPreferenceScore(this)/5D;
         }
-        
+
         if (result < 0) result = 0;
-        
+
         return result;
     }
 
@@ -123,13 +123,14 @@ public class RepairMalfunctionMeta implements MetaTask, Serializable {
 	                    }
 	                }
 	            }
+
 	        }
 
 	        // Effort-driven task modifier.
 	        result *= robot.getPerformanceRating();
 
         }
-        
+
         return result;
 	}
 }

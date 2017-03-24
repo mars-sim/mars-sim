@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,6 +87,8 @@ import javax.swing.table.TableCellEditor;
 
 import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
+import org.eclipse.fx.core.ServiceUtils;
+import org.eclipse.fx.core.ThreadSynchronize;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -527,9 +530,19 @@ public class ScenarioConfigEditorFX {
 
 				setConfiguration();
 
-				// scene.setCursor(Cursor.WAIT); //Change cursor to wait style
+
 
 				CompletableFuture.supplyAsync(() -> submitTask());
+
+				// Lookup the thready service in the service registry
+				//ThreadSynchronize threadSync = ServiceUtils.getService(ThreadSynchronize.class).get();
+
+				//CompletableFuture.runAsync(() -> submitTask()).thenAcceptAsync( (Consumer<? super Void>) threadSync.wrap(() -> {
+				//	mainScene.createIndicator();
+				//	mainScene.showWaitStage(MainScene.LOADING);
+				//}));
+
+				//threadSync.scheduleExecution(200, runWait()).thenAcceptAsync( d -> submitTask());
 
 				closeWindow();
 
@@ -562,6 +575,17 @@ public class ScenarioConfigEditorFX {
 		// return borderAll;
 	}
 
+	public Runnable runWait() {
+		Simulation.instance().getSimExecutor().execute(new WaitTask());
+		return null;
+	}
+
+	public class WaitTask implements Runnable {
+		public void run() {
+			mainScene.createIndicator();
+			mainScene.showWaitStage(MainScene.LOADING);
+		}
+	}
 
 	public int submitTask() {
 		Simulation.instance().getSimExecutor().execute(new SimulationTask());
@@ -582,7 +606,7 @@ public class ScenarioConfigEditorFX {
 				//mainMenu.prepareScene();
 				//mainMenu.prepareStage();
 				mainMenu.finalizeMainScene();
-				mainScene.hideWaitStage(MainScene.LOADING);
+				//mainScene.hideWaitStage(MainScene.LOADING);
 				// System.out.println("ScenarioConfigEditorFX : done calling prepareStage");
 			});
 			if (multiplayerClient != null)
