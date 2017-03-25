@@ -6,7 +6,7 @@
  * @author Lars Næsbye Christensen
  */
 
-
+/*
 @font-face {
 	-fx-font-family: "Noto", Sans;
 	src: url("../fonts/notosans/NotoSans-Regular.ttf");
@@ -16,7 +16,7 @@
 	-fx-font-family: "Jura";
 	src: url("../fonts/jura/Jura-Regular.ttf");
 }
-
+*/
 
 .root {
 	-fx-base: rgb(50, 50, 50);

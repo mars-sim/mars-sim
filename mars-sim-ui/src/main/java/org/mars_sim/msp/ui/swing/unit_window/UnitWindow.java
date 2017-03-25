@@ -123,8 +123,8 @@ public abstract class UnitWindow extends JInternalFrame {
         mainScene = desktop.getMainScene();
         this.unit = unit;
 
-	    this.setMaximumSize(new Dimension(480, 580));
-	    this.setPreferredSize(new Dimension(480, 580));
+    	this.setMaximumSize(new Dimension(480, 580));
+    	this.setPreferredSize(new Dimension(480, 580));
 
         // Causes titlePane to fill with light pale orange (or else it is rendered transparent by paintComponent)
         //BasicInternalFrameTitlePane titlePane = (BasicInternalFrameTitlePane) ((BasicInternalFrameUI) this.getUI()).getNorthPane();
@@ -436,17 +436,15 @@ public abstract class UnitWindow extends JInternalFrame {
     public void update() {
     	int theme = mainScene.getTheme();
     	if (theme != themeCache) {
+        	themeCache = theme;
 	    	if (theme == 0) {
-	        	factory.update(new Color(0xD6D9DF));
-	        	themeCache = theme;
+	        	factory.update(new Color(0xC6D9D9));//0xD6D9DF));
 			}
     		if (theme == 6) {
 	        	factory.update(new Color(0xC6D9D9));
-	        	themeCache = theme;
 			}
 			else if (theme == 7) {
 		    	factory.update(new Color(0xC1BF9D));
-	        	themeCache = theme;
 			}
     	}
 		// needed for linux compatibility, or else AWT thread suffered from NullPointerException with SynthLabelUI.getPreferredSize()

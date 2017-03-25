@@ -53,6 +53,8 @@ implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	private static final int COL_WDITH = 16;
+
 	private JTextArea taskTextArea;
 	private JTextArea taskPhaseArea;
 	private JTextArea missionTextArea;
@@ -149,7 +151,7 @@ implements ActionListener {
 			}
 		}
 
-		taskTextArea = new JTextArea(2, 20);
+		taskTextArea = new JTextArea(2, COL_WDITH);
 		//if (taskText != null)
 		taskTextArea.setText(taskText);
 		taskTextArea.setLineWrap(true);
@@ -186,7 +188,7 @@ implements ActionListener {
 		        taskPhaseText = "";
 		    }
 		}
-		taskPhaseArea = new JTextArea(2, 20);
+		taskPhaseArea = new JTextArea(2, COL_WDITH);
 		//if (taskPhaseText != null)
 		taskPhaseArea.setText(taskPhaseText);
 		taskPhaseArea.setLineWrap(true);
@@ -244,7 +246,7 @@ implements ActionListener {
 			}
 		}
 
-		missionTextArea = new JTextArea(2, 20);
+		missionTextArea = new JTextArea(2, COL_WDITH);
 		//if (missionText != null)
 		missionTextArea.setText(missionText);
 		missionTextArea.setLineWrap(true);
@@ -277,7 +279,7 @@ implements ActionListener {
 		}
 
 
-		missionPhaseTextArea = new JTextArea(2, 20);
+		missionPhaseTextArea = new JTextArea(2, COL_WDITH);
 		//if (missionPhase.equals(""))
 		missionPhaseTextArea.setText(missionPhaseText);
 		missionPhaseTextArea.setLineWrap(true);
@@ -286,16 +288,19 @@ implements ActionListener {
 
 
 		// Prepare mission button panel.
-		JPanel missionButtonPanel = new JPanel(new GridLayout(1, 8, 10, 10));
+		JPanel missionButtonPanel = new JPanel(new GridLayout(1, 6, 10, 10));
+		missionButtonPanel.setSize(480, 20);
 		missionCenterPanel.add(missionButtonPanel, BorderLayout.NORTH);
 
 		// Prepare mission tool button.
 		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
+		missionButton.setSize(20, 20);
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
 		//missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 		//balloonToolTip.createBalloonTip(missionButton, Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 
 		missionButton.addActionListener(this);
+
 
 		if (person != null) {
 			missionButton.setEnabled(mind.getMission() != null);
@@ -310,7 +315,8 @@ implements ActionListener {
 
 		// Prepare mission monitor button
 		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
-		monitorButton.setMargin(new Insets(5, 5, 5, 5));
+		monitorButton.setSize(20, 20);
+		monitorButton.setMargin(new Insets(1, 1, 1, 1));
 		//monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		//balloonToolTip.createBalloonTip(monitorButton, Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
@@ -322,8 +328,6 @@ implements ActionListener {
 			monitorButton.setEnabled(botMind.getMission() != null);
 		}
 
-		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
-		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
 		missionButtonPanel.add(monitorButton);
 		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));
 		missionButtonPanel.add(new JPanel(new FlowLayout(5, 5, FlowLayout.CENTER)));

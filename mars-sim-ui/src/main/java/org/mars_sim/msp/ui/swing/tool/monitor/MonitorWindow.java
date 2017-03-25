@@ -285,7 +285,9 @@ implements TableModelListener, ActionListener {
 		// Note: must use setSize() to define a starting size
 		setSize(new Dimension(1280, 512));
 		setMinimumSize(new Dimension(768, 200));
-		setPreferredSize(new Dimension(1280, 512));
+		// Need to verify why setPreferredSize() prevents Monitor Window from being resizable
+		// and create spurious error message in linux in some cases
+		//setPreferredSize(new Dimension(1280, 512));
 		setResizable(true);
 		setMaximizable(true);
 
