@@ -22,6 +22,7 @@ import java.time.temporal.ChronoField;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -55,6 +56,9 @@ implements Serializable {
 	public EarthClock(String fullDateTimeString) {
 		//this.fullDateTimeString = fullDateTimeString;
 
+		// see http://www.diffen.com/difference/GMT_vs_UTC
+
+		// To us Java 8's java.time framework. see https://docs.oracle.com/javase/tutorial/datetime/TOC.html
 
 		// 2017-03-23 Use ZonedDate
 		ZonedDateTime zonedDateTime = ZonedDateTime.now();
@@ -68,20 +72,28 @@ implements Serializable {
 		//cal.clear();
 
 		// Initialize formatter
-		f0 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss '(UT)'");
+
+		//2017-03-27 set it to Locale.US
+		f0 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss '(UT)'", Locale.US);
 		f0.setTimeZone(zone);
-		f1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm '(UT)'");
+		//2017-03-27 set it to Locale.US
+		f1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm '(UT)'", Locale.US);
 		f1.setTimeZone(zone);
 
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
 
-		f2 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+		// Note: By default, java set locale to user's machine system locale via Locale.getDefault(Locale.Category.FORMAT));
+		// i.e. f2 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss", Locale.getDefault(Locale.Category.FORMAT));
+		//2017-03-27 set it to Locale.US
+		f2 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss", Locale.US);
+
 		f2.setTimeZone(zone);
 		try {
 			cal.setTime(f2.parse(fullDateTimeString));
-		} catch (ParseException ex) {
-			throw new IllegalStateException(ex);
+		} catch (Exception ex) {//ParseException ex) {
+			ex.printStackTrace();
+			//throw new IllegalStateException(ex);
 		}
 
 		//System.out.println("GMT/UT: cal.getTime() is " + cal.getTime());
@@ -89,11 +101,11 @@ implements Serializable {
 		//System.out.println("this.getTimeStamp() is " + this.getTimeStamp());
 
 		// Initialize a second formatter
-		f3 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");//.SSS"); // :SSS
+		//2017-03-27 set it to Locale.US
+		f3 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss", Locale.US);//.SSS"); // :SSS
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
-
 
 		// Use Java 8 Date/Time API in java.time package
 		//dtFormatter_millis = DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");//.AAAA");//AAAA");

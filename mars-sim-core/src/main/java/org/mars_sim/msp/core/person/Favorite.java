@@ -64,6 +64,20 @@ public class Favorite implements Serializable {
 		return result;
 	}
 
+	public String[] getRandomDishes() {
+		String main = "";
+    	int rand0 = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
+    	main = mealConfigMealList.get(rand0).getMealName();
+
+		String side = main;
+		while (side.equals(main)) {
+			int rand1 = RandomUtil.getRandomInt(mealConfigMealList.size()-1);
+			side = mealConfigMealList.get(rand1).getMealName();
+		}
+
+		return new String[]{main, side};
+	}
+
 	public String getRandomDessert() {
 		String result = "";
     	int rand = RandomUtil.getRandomInt(availableDesserts.length - 1);

@@ -136,7 +136,9 @@ public class QNotification {
             stage = new Stage();
         	stage.getIcons().add(new Image(this.getClass().getResource("/icons/lander_hab64.png").toExternalForm()));
             stage.initStyle(StageStyle.TRANSPARENT);
+            //stage.initModality(Modality.NONE);//APPLICATION_MODAL);//.WINDOW_MODAL);
             stage.setScene(scene);
+            stage.hide();
         }
 
 

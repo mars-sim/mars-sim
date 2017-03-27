@@ -2882,18 +2882,18 @@ public class MainScene {
 
 	public void startPausePopup() {
 		//System.out.println("calling startPausePopup(): messagePopup.numPopups() is " + messagePopup.numPopups());
-		if (messagePopup.numPopups() < 1) {
+		//if (messagePopup.numPopups() < 1) {
             // Note: (NOT WORKING) popups.size() is always zero no matter what.
-			Platform.runLater(() ->
-				messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
-			);
-		}
+		//	Platform.runLater(() ->
+		//		messagePopup.popAMessage(PAUSE, ESC_TO_RESUME, " ", stage, Pos.TOP_CENTER, PNotification.PAUSE_ICON)
+		//	);
+		//}
 	}
 
 	public void stopPausePopup() {
-		Platform.runLater(() ->
-			messagePopup.stop()
-		);
+		//Platform.runLater(() ->
+		//	messagePopup.stop()
+		//);
 
 	}
 
@@ -3189,7 +3189,7 @@ public class MainScene {
 	 	}
 
  		else if (type == PAUSED) {
- 			messagePopup = new MessagePopup();
+ 			//messagePopup = new MessagePopup();
 	 	}
 
 		else

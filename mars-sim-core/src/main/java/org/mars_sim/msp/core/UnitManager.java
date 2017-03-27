@@ -999,10 +999,14 @@ public class UnitManager implements Serializable {
 
 					relationshipManager.addInitialSettler(person, settlement);
 
-					Favorite f = person.getFavorite();
 					// 2015-02-27 and 2015-03-24 Added Favorite class
-					String mainDish = f.getRandomMainDish();
-					String sideDish = f.getRandomSideDish();
+					Favorite f = person.getFavorite();
+
+
+					// 2017-03-27 Use getRandomDishes() to obtain maind and side dishes
+					String[] dishes = f.getRandomDishes();
+					String mainDish = dishes[0];//f.getRandomMainDish();
+					String sideDish = dishes[1];//f.getRandomSideDish();
 					String dessert = f.getRandomDessert();
 					String activity = f.getRandomActivity();
 

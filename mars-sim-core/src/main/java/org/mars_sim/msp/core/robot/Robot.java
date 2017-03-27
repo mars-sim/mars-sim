@@ -216,7 +216,7 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
         s.append(year);
 
         int month = RandomUtil.getRandomInt(11) + 1;
-        String monthString = EarthClock.getMonthForInt(month-1);
+        String monthString = EarthClock.getMonthForInt(month-1).substring(0, 3);
         s.append("-").append(monthString).append("-");
 
         int day;
