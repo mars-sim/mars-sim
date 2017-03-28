@@ -182,10 +182,11 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 		sim = Simulation.instance();
 		masterClock = sim.getMasterClock();
-		if (masterClock != null) { // to avoid NullPointerException during maven
-									// test
+		if (masterClock != null) { // avoid NullPointerException during maven test
 			marsClock = masterClock.getMarsClock();
 			earthClock = masterClock.getEarthClock();
+	        // TODO : avoid declaring a birth clock for each person
+	        // Find a way to use existing EarthClock inside MasterClock, plus the difference in date
 			birthTimeStamp = new EarthClock(createBirthTimeString());
 		}
 

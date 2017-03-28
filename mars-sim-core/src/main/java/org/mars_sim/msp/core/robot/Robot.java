@@ -172,9 +172,9 @@ implements Salvagable,  Malfunctionable, VehicleOperator, MissionMember, Seriali
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString(TYPE);
 
-        String timeString = createBirthTimeString();
-
-        birthTimeStamp = new EarthClock(timeString);
+        // TODO : avoid declaring a birth clock for each person
+        // Find a way to use existing EarthClock inside MasterClock, plus the difference in date
+        birthTimeStamp = new EarthClock(createBirthTimeString());
         attributes = new RoboticAttributeManager(this);
         botMind = new BotMind(this);
         health = new SystemCondition(this);

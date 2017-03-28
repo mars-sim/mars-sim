@@ -34,7 +34,6 @@ public class SystemDateTime {
         * Constructs the portion of the autosave filename string based on local date and time
         */
        public String getDateTimeStr() {
-
 /*
     	   Calendar currentCalendar = Calendar.getInstance();
     	   Date currentTime = currentCalendar.getTime();

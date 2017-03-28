@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -889,9 +890,16 @@ implements ClockListener, Serializable {
 		else {
 			StringBuilder sb = new StringBuilder();
 			int l = lastSave.length();
-			String s = lastSave.substring(l-8, l);
-			sb.append(s.substring(0, 2)).append(":").append(s.substring(2, 4))
-			.append(" ").append(s.substring(6, 8)).append(" (local time)");
+
+			// Past : e.g. 03-22-2017_022018PM
+			//String s = lastSave.substring(l-8, l);
+			//sb.append(s.substring(0, 2)).append(":").append(s.substring(2, 4))
+			//.append(" ").append(s.substring(6, 8)).append(" (local time)");
+
+			// Now e.g. 2007-12-03T10.15.30
+			//String id = ZonedDateTime.now().getZone().toString();
+			String s = lastSave.substring(lastSave.indexOf("T")+1, l).replace(".", ":");
+			sb.append(s).append(" ").append(" (Local Time)");//append(id);
 			return sb.toString();
 		}
 	}
