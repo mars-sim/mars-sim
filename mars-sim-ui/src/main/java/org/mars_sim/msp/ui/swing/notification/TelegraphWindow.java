@@ -45,7 +45,7 @@ import javax.swing.JWindow;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
-import net.miginfocom.swing.MigLayout;
+//import net.miginfocom.swing.MigLayout;
 
 import org.pushingpixels.trident.Timeline;
 
@@ -95,7 +95,7 @@ public class TelegraphWindow extends JWindow {
 	 *            {@link #description}
 	 * @param theConfig
 	 *            {@link #config}
-	 */
+*/
 	public TelegraphWindow(final String theTitle, final String theDescription,
 			final TelegraphConfig theConfig, Telegraph telegraph) {
 		super();
@@ -109,7 +109,7 @@ public class TelegraphWindow extends JWindow {
 				new MatteBorder(config.getBorderThickness(), config
 						.getBorderThickness(), config.getBorderThickness(),
 						config.getBorderThickness(), config.getBorderColor()));
-
+/*
 		// Setting layout
 		setLayout(new MigLayout());
 
@@ -218,6 +218,7 @@ public class TelegraphWindow extends JWindow {
 		// Applying mouselistener from config if needed
 		if (config.getGlobalListener() != null)
 			addMouseListener(config.getGlobalListener());
+*/
 	}
 
 	/**

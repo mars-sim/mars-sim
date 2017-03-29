@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-import org.eclipse.fx.core.ServiceUtils;
 
 import com.jfoenix.controls.JFXPopup.PopupHPosition;
 import com.jfoenix.controls.JFXPopup.PopupVPosition;
@@ -37,7 +36,7 @@ import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.action.Action;
 //import org.controlsfx.glyphfont.FontAwesome;
-import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
+//import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
 import org.fxmisc.wellbehaved.event.InputMap;
 import org.fxmisc.wellbehaved.event.Nodes;
 //import org.kordamp.ikonli.fontawesome.FontAwesome;
@@ -208,8 +207,8 @@ import static org.fxmisc.wellbehaved.event.EventPattern.*;
 import static org.fxmisc.wellbehaved.event.InputHandler.Result.*;
 import static org.fxmisc.wellbehaved.event.InputMap.*;
 
-import org.reactfx.util.FxTimer;
-import org.reactfx.util.Timer;
+//import org.reactfx.util.FxTimer;
+//import org.reactfx.util.Timer;
 
 
 /**

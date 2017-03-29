@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.reactfx.util.FxTimer;
-import org.reactfx.util.Timer;
+//import org.reactfx.util.FxTimer;
+//import org.reactfx.util.Timer;
 //import org.reactfx.util.Duration;
 //import eu.hansolo.enzo.notification.NotifierBuilder;
 //import eu.hansolo.enzo.notification.Notification.Notifier;
@@ -37,7 +37,7 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 
 
-/** The Quotation class creates a quotation in proper format for use by MainScene 
+/** The Quotation class creates a quotation in proper format for use by MainScene
  */
 public class QuotationPopup implements Serializable {
 
@@ -50,49 +50,49 @@ public class QuotationPopup implements Serializable {
 	//private static final int WIDTH = 510;
 	//private static final int CHARS_PER_LINE = 50;
 	private static final int POPUP_IN_MILLISECONDS = 20_000;
-	
-	// Data members		
+
+	// Data members
 	private int new_width = 515;
-	
+
 	private Map<Integer, Quotation> quotations;
-	
+
 	private MainScene mainScene;
     private QNotification.Notifier notifier = QNotification.Notifier.INSTANCE;
-	private Object[] quoteArray;	
+	private Object[] quoteArray;
 	private Quotation q;
 
-	
+
     /** Constructs a quotation object for creating a quote popup
      */
     @SuppressWarnings("restriction")
-	public QuotationPopup(MainScene mainScene) {   
+	public QuotationPopup(MainScene mainScene) {
     	this.mainScene = mainScene;
     	QuotationConfig quotationConfig = SimulationConfig.instance().getQuotationConfiguration();
     	quotations = quotationConfig.getQuotations();
-    	quoteArray = quotations.values().toArray();  
+    	quoteArray = quotations.values().toArray();
     	//Duration d = new Duration(POPUP_IN_MILLISECONDS);
-        //notifier.setPopupLifetime(d);  
+        //notifier.setPopupLifetime(d);
     }
 
     @SuppressWarnings("restriction")
-	public void popAQuote(Stage stage) {	
-     	//notifier = Notification.Notifier.INSTANCE;  
+	public void popAQuote(Stage stage) {
+     	//notifier = Notification.Notifier.INSTANCE;
         //Notification.Notifier notifier = NotifierBuilder.create().build();
                 //.popupLocation(Pos.TOP_RIGHT)
                 //.popupLifeTime(Duration.millis(10000))
                 //.styleSheet(getClass().getResource("mynotification.css").toExternalForm())
-        //        .build();       
+        //        .build();
     	Random rand = new Random();
-    	
+
     	int num = rand.nextInt(quoteArray.length);
     	q = (Quotation)quoteArray[num];
-    	
+
     	String name = q.getName();
-    	String str = "\"" + q.getText() + "\"";	
-		//str = "\"" + wrap(str, CHARS_PER_LINE-1) + "\"";	
-/*   	
-		int strSize = str.length();	
-		//int numLines = (int)Math.ceil((double)strSize/CHARS_PER_LINE);	
+    	String str = "\"" + q.getText() + "\"";
+		//str = "\"" + wrap(str, CHARS_PER_LINE-1) + "\"";
+/*
+		int strSize = str.length();
+		//int numLines = (int)Math.ceil((double)strSize/CHARS_PER_LINE);
 		int nameSize = name.length() + 3;
 		//int remaining = CHARS_PER_LINE * numLines - strSize;
 		int index = str.lastIndexOf(System.lineSeparator());//"\n");
@@ -103,25 +103,25 @@ public class QuotationPopup implements Serializable {
 		int new_height = 0;
 		//new_width = (int)(CHARS_PER_LINE * 10);// + SIZE_ICON;
 		//new_width = 515;
-		
+
 		if (strSize < CHARS_PER_LINE) {
 			// case 1: the quote is a short one-liner, type the author name on the second line.
 			numWhiteSpace = (int)(strSize - nameSize);
-			
+
 			//new_width = (int)(strSize * 10);// + SIZE_ICON + 17;
 
 			new_height = BASE_HEIGHT + HEIGHT_PER_LINE * 2;
-			
+
 			str += System.lineSeparator();//"\n";
-			
+
 			//System.out.println("Case 1 : quote can fit one line ");
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
-			
+
 		}
 		else if (remaining > nameSize) {
 			// case 2: the author name can be fit to the last line with the quote.
 			numWhiteSpace = (int)(remaining - nameSize);
-			
+
 			//new_width = (int)((numWhiteSpace + nameSize) * 7.818);
 			//WIDTH = 40 + new_width;
 
@@ -129,35 +129,35 @@ public class QuotationPopup implements Serializable {
 
 			//System.out.println("Case 2 : last line can fit author's name");
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
-		}	
+		}
 		else {
 			// case 3: author name must be on its own line
-			numWhiteSpace = (int)(CHARS_PER_LINE - nameSize - 3);	
-		
+			numWhiteSpace = (int)(CHARS_PER_LINE - nameSize - 3);
+
 			//new_width = (int)((numWhiteSpace + nameSize) * 7.818);
 			//WIDTH = 40 + new_width;
-			
+
 			new_height = BASE_HEIGHT + HEIGHT_PER_LINE * (numLines + 1);
-		
+
 			str += System.lineSeparator();//"\n";
 			//System.out.println("Case 3 : last line cannot fit author's name");
 			//System.out.println("# of whitespaces inserted b4 author's name : " + numWhiteSpace);
 		}
-*/		
-		
+*/
+
 		//System.out.println("# of remaining whitespaces in the last line: " + remaining);
 		//System.out.println("# of chars in the quote : " + strSize);
 		//System.out.println("# of lines : " + numLines);
 		//System.out.println("CHARS_PER_LINE : " + CHARS_PER_LINE);
 		//System.out.println("height in px : " + height);
 		//System.out.println("WIDTH in px : " + WIDTH);
-		
+
 		StringBuffer nameLine = new StringBuffer (System.lineSeparator());
 		//for (int i = 0; i < 3; i++)
 		nameLine.append("\t\t");
-		nameLine.append("- ").append(name);						
+		nameLine.append("- ").append(name);
 		str += nameLine;
-      
+
         //notifier.setPopupLifetime(new Duration(POPUP_IN_MILLISECONDS));
         QNotification.Notifier.setNotificationOwner(stage);
         QNotification.Notifier.setPane(mainScene.getAnchorPane());
@@ -168,8 +168,8 @@ public class QuotationPopup implements Serializable {
 		notifier.notify("QUOTATION", str, QNotification.QUOTE_ICON); //INFO_ICON);
 
 		stage.requestFocus();
-/*		
- 		// The timeer is for removing the icon in the windows taskbar. 
+/*
+ 		// The timeer is for removing the icon in the windows taskbar.
  		// Using it will clamp the next notifier from having lived the full 20 seconds life time
 		timer = FxTimer.runLater(
 				java.time.Duration.ofMillis(POPUP_IN_MILLISECONDS),
@@ -178,43 +178,43 @@ public class QuotationPopup implements Serializable {
 		        	notifier.stop();
 		        });
 */
-		
+
 		/*
 		Timeline notify_timeline = null;
 		notify_timeline = new Timeline(new KeyFrame(Duration.millis(21000), ae -> {
 			Timeline n = notify_timeline;
 			n.stop();
-			notifier.stop();	
+			notifier.stop();
 		}));
-		
+
 		notify_timeline.setCycleCount(1);//javafx.animation.Animation.INDEFINITE);
 		notify_timeline.play();
 		*/
     }
-    
+
     /*
-     * Wraps the line properly by considering the word and adding a newline character to the end of each line 
+     * Wraps the line properly by considering the word and adding a newline character to the end of each line
      */
     public static String wrap(String in,int len) {
     	in = in.trim();
-    	
-    	if (in.length() < len) 
+
+    	if (in.length() < len)
     		return in;
-    	
+
     	if (in.substring(0, len).contains(System.lineSeparator()))//"\n"))
     		return in.substring(0, in.indexOf(System.lineSeparator())).trim() + System.lineSeparator() + System.lineSeparator()
     		+ wrap(in.substring(in.indexOf(System.lineSeparator()) + 1), len);
-    	
+
     	int place = Math.max(Math.max(in.lastIndexOf(" ",len),in.lastIndexOf("\t",len)),in.lastIndexOf("-",len));
-    	
+
     	return in.substring(0,place).trim() + System.lineSeparator() + wrap(in.substring(place),len);
     }
-    	
+
 
     public int getWidth() {
     	return new_width;
     }
-    
+
 	public void destroy() {
 
 	    quotations.clear();
@@ -223,5 +223,5 @@ public class QuotationPopup implements Serializable {
 	    quoteArray = null;
 	    q = null;
 	}
-    
+
 }

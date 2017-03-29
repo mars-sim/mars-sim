@@ -74,12 +74,12 @@ import org.mars_sim.msp.ui.javafx.autofill.AutoFillTextBox;
 import org.mars_sim.msp.ui.javafx.demo.DragDrop3;
 import org.mars_sim.msp.ui.javafx.demo.PannableView;
 import org.mars_sim.msp.ui.javafx.demo.Story;
-
+/*
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
 import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXDesktopWindowManager;
 import com.sibvisions.rad.ui.javafx.ext.mdi.windowmanagers.FXGlobalModalWindowManager;
-
+*/
 /**
  * The MarsNode class is the is the container for housing
  * new javaFX UI tools.
@@ -95,10 +95,10 @@ public class MarsNode {
 	private MainScene mainScene;
 	private Stage stage;
 	private Scene scene;
-	private FXDesktopWindowManager windowManager;
-	private FXDesktopPane fxDesktopPane;
+	//private FXDesktopWindowManager windowManager;
+	//private FXDesktopPane fxDesktopPane;
 	private Pane jmePane;
-	private FXInternalWindow jmeWindow;
+	//private FXInternalWindow jmeWindow;
 	JPanel panel;
 
 	public MarsNode(MainScene mainScene, Stage stage) {
@@ -106,66 +106,66 @@ public class MarsNode {
 		this.stage = stage;
 		this.scene = stage.getScene();
 
-		windowManager = new FXDesktopWindowManager();
-		
-	}
+		//windowManager = new FXDesktopWindowManager();
 
+	}
+/*
 	public FXDesktopPane createFXDesktopPane() {
 		fxDesktopPane = new FXDesktopPane();
 		fxDesktopPane.setWindowManager(windowManager);
-		
-	
+
+
 		//fxDesktopPane.getScene();
 		//fxDesktopPane.setBackground(Color.BLACK);
-		
+
 		// The FXDesktopPane supports window manager. The standard window manager shows multiple windows on the desktop and handles global windows.
-	
+
 		// It's also possible to set a window manager for single-window mode. This window manager shows the content as maximized window:
-	
+
 		//fxDesktopPane.setWindowManager(new FXGlobalModalWindowManager(new FXSingleWindowManager()));
 		//If you don't need support for global windows:
 		//fxDesktopPane.setWindowManager(new FXSingleWindowManager());
-		
+
 		return fxDesktopPane;
 	}
 
 	public FXDesktopPane getFXDesktopPane() {
 		return fxDesktopPane;
 	}
-	
+
 	public void removeFXInternalWindow(FXInternalWindow fxInternalWindow ) {
 		windowManager.removeWindow(fxInternalWindow);
 	}
-	
+*/
 	//2015-11-10 Added createChatBox()
 	public void createChatBox() {
 		ChatBox cb = new ChatBox(mainScene);
-    	
+
 		TextArea ta = cb.getTextArea();
 		ta.setTooltip(new Tooltip ("Voice chatters from settlement's Comm Nets"));
-		
+
  		AutoFillTextBox autoFillTextBox = cb.getAutoFillTextBox();
   		//autoFillTextBox.setTooltip(new Tooltip ("Use UP/DOWN arrows to scroll input history."));
   		//autoFillTextBox.getTextbox().setPromptText("Type your msg here");// to broadcast to a channel");
-  		
+
 		//TextField tf = cb.getTextField();
 		//tf.setTooltip(new Tooltip ("Broadcast your message to the global channel on Mars"));
 		//tf.setPromptText("Type here");
-				
+
 		ta.appendText("Safe Net : a small dust storm is being built up within 20 km of Alpha Base"
     		  + System.lineSeparator());
-		
+
 		StackPane pane = new StackPane(cb);
 
-		FXInternalWindow window = createFXInternalWindow("Comm Radio", pane, 350, 200, false);
-		window.setMinWidth(350);
-		window.setMinHeight(200);
+		//FXInternalWindow window = createFXInternalWindow("Comm Radio", pane, 350, 200, false);
+		//window.setMinWidth(350);
+		//window.setMinHeight(200);
 		//window.setMaxSize(scene.getWidth(), scene.getHeight());
-	
+
 	}
-	
+
 	public void createMarsMap() {
-/*		
+/*
 	    String fxmlFile = "/fxml/DemoApp.fxml";
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent rootNode = null;
@@ -174,22 +174,22 @@ public class MarsNode {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-*/  		
+*/
 		PannableView p = new PannableView();
 		ScrollPane s = p.createMap();
-		
-        FXInternalWindow window = createFXInternalWindow("MarsScape Map", s, 1280, 700, false);
-        p.setWindow(window);
-        
+
+        //FXInternalWindow window = createFXInternalWindow("MarsScape Map", s, 1280, 700, false);
+        //p.setWindow(window);
+
         //window.setMaxSize(scene.getWidth(), scene.getHeight());
-		window.setMinWidth(1280);
-		window.setMinHeight(700);
+		//window.setMinWidth(1280);
+		//window.setMinHeight(700);
 		//window.setMaximizeable(true);
-	
+
 	}
-	
+
 	public void createEarthMap() {
-		
+
 	    String fxmlFile = "/fxml/DemoApp.fxml";
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent rootNode = null;
@@ -198,25 +198,25 @@ public class MarsNode {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
-        FXInternalWindow window = createFXInternalWindow("Earth Real-time Tiled Map", rootNode, 1280, 700, false);
- 
+
+       // FXInternalWindow window = createFXInternalWindow("Earth Real-time Tiled Map", rootNode, 1280, 700, false);
+
         //window.setMaxSize(scene.getWidth(), scene.getHeight());
-		window.setMinWidth(1280);
-		window.setMinHeight(700);
-	
+		//window.setMinWidth(1280);
+		//window.setMinHeight(700);
+
 	}
-	
-	
+
+
 	public void createDragDrop() {
 		DragDrop3 dd = new DragDrop3();
 		StackPane pane = dd.createDragDropBox();
 
-		FXInternalWindow window = createFXInternalWindow("Drag and Drop", pane, 100, 200, false);
-		window.setMinWidth(600);
-		window.setMinHeight(500);
+		//FXInternalWindow window = createFXInternalWindow("Drag and Drop", pane, 100, 200, false);
+		//window.setMinWidth(600);
+		//window.setMinHeight(500);
 		//window.setMaxSize(scene.getWidth(), scene.getHeight());
-	
+
 	}
 
 	public void createStory() {
@@ -225,9 +225,9 @@ public class MarsNode {
 		StackPane pane = story.createGUI();
 		pane.getStylesheets().add(getClass().getResource("/css/story.css").toExternalForm());
 
-		FXInternalWindow window = createFXInternalWindow("Day One", pane, 800, 400, false);
-		window.setMinWidth(600);
-		window.setMinHeight(500);
+		//FXInternalWindow window = createFXInternalWindow("Day One", pane, 800, 400, false);
+		//window.setMinWidth(600);
+		//window.setMinHeight(500);
 
 		//Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 		//window.setX((screenBounds.getWidth() - fxDesktopPane.getWidth()) / 2);
@@ -241,16 +241,16 @@ public class MarsNode {
 
 		Parent root = null;
 		try {
-			root = javafx.fxml.FXMLLoader.load(getClass().getResource("/materialdesign/MaterialFxTester.fxml")); 
+			root = javafx.fxml.FXMLLoader.load(getClass().getResource("/materialdesign/MaterialFxTester.fxml"));
 			//materialdesign/Materialfx-toggleswitch.fxml"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
+
 		// TODO: can use createFXInternalWindow(String title, StackPane pane, //Pane pane, //Parent parent,
 		//		double prefWidth, double prefHeight, boolean resizable)
-
+/*
 		FXInternalWindow fxInternalWindow = new FXInternalWindow("Material Design Showcase");
 		fxInternalWindow.setContent(root);
 		fxInternalWindow.getStylesheets().add(getClass().getResource("/materialdesign/material-fx-v0_3.css").toExternalForm());
@@ -266,8 +266,9 @@ public class MarsNode {
 
 		windowManager.addWindow(fxInternalWindow);
 		windowManager.updateActiveWindow();
+*/
 	}
-
+/*
 	public void createSettlementWindow() {
 		Pane pane = createPane("black");
 
@@ -305,8 +306,8 @@ public class MarsNode {
 		windowManager.updateActiveWindow();
 		return fxInternalWindow;
 	}
+*/
 
-	
 	/**
 	 * Creates settlement nodes
 	 *@param color
@@ -661,7 +662,7 @@ public class MarsNode {
 		}
 	}
 
-
+/*
 	public void createJMEWindow(Stage stage) {
 		this.scene = stage.getScene();
 
@@ -694,7 +695,7 @@ public class MarsNode {
 
 		windowManager.addWindow(jmeWindow);
 	}
-
+*/
     public void jmeCall() {
 
  		//JmeCanvas jmeCanvas = new JmeCanvas();

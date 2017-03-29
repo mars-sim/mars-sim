@@ -7,8 +7,8 @@ package org.mars_sim.msp.ui.javafx.demo;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXDesktopPane;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,27 +26,27 @@ import javafx.scene.Parent;
 public class PannableView {
   private Image backgroundImage;
   private ScrollPane scroll;
-  
-  public PannableView() {
-	  backgroundImage = new Image(this.getClass().getResource("/maps/Mars_Viking_MDIM21_ClrMosaic_global_2500m(compressed).jpg").toExternalForm());	   	  
-  }
-  
 
-  public static void main(String[] args) { launch(args); }  
-  
+  public PannableView() {
+	  backgroundImage = new Image(this.getClass().getResource("/maps/Mars_Viking_MDIM21_ClrMosaic_global_2500m(compressed).jpg").toExternalForm());
+  }
+
+
+  public static void main(String[] args) { launch(args); }
+ /*
   public void setWindow(FXInternalWindow window) {
 	    // bind the preferred size of the scroll area to the size of the scene.
 	    scroll.prefWidthProperty().bind(window.widthProperty());
 	    scroll.prefHeightProperty().bind(window.widthProperty());
-	    
+
 	    // center the scroll contents.
 	    scroll.setHvalue(scroll.getHmin() + (scroll.getHmax() - scroll.getHmin()) / 2);
 	    scroll.setVvalue(scroll.getVmin() + (scroll.getVmax() - scroll.getVmin()) / 2);
 
   }
-
+*/
   public ScrollPane createMap() {
-	    
+
 	    // construct the scene contents over a stacked background.
 	    StackPane layout = new StackPane();
 	    layout.getChildren().setAll(
@@ -55,15 +55,15 @@ public class PannableView {
 	    );
 
 	    // wrap the scene contents in a pannable scroll pane.
-	    scroll = createScrollPane(layout); 
+	    scroll = createScrollPane(layout);
 	    //StackPane scrollPane = new StackPane();
 	    //scrollPane.getChildren().add(scrollPane);
 	    //return layout;//
 	    return scroll;//scroll;
 	  }
-  
-  
-  /** @return a control to place on the scene. 
+
+
+  /** @return a control to place on the scene.
   private Button createKillButton() {
     final Button killButton = new Button("Kill the evil witch");
     killButton.setStyle("-fx-base: firebrick;");
@@ -88,5 +88,5 @@ public class PannableView {
     scroll.setContent(layout);
     return scroll;
   }
-  
+
 }

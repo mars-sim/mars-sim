@@ -6,8 +6,8 @@
 
 package org.mars_sim.msp.ui.javafx;
 
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
-import com.sibvisions.rad.ui.javafx.ext.scene.StackedScenePane;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+//import com.sibvisions.rad.ui.javafx.ext.scene.StackedScenePane;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -82,7 +82,7 @@ public class Browser {
 	    return webStage;
 	}
 
-
+/*
 	public FXInternalWindow startMSPWebSite() {
 
 
@@ -111,15 +111,15 @@ public class Browser {
 		textField.setTooltip(new Tooltip("Enter your URL here"));
 		textField.setPromptText("mars-sim.sourceforge.net/#development");
 		//textField.setOnAction(eh);
-/*
-		EventHandler<ActionEvent> eh = new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-            	textField.requestFocus();
-            	textField.appendText(((Button) event.getSource()).getText());
-            }
-        };
-*/
+
+		//EventHandler<ActionEvent> eh = new EventHandler<ActionEvent>() {
+        //    @Override
+        //    public void handle(ActionEvent event) {
+        //    	textField.requestFocus();
+        //    	textField.appendText(((Button) event.getSource()).getText());
+        //    }
+        //};
+
 
 		Button homeButton = new Button("Home");
 		Button reloadButton = new Button("Load");
@@ -176,7 +176,7 @@ public class Browser {
 
 	    return fxInternalWindow;
 	}
-
+*/
 
 	public void loadPage(TextField textField, //ProgressBar progressBar,
 			WebEngine webEngine, WebView webView) {

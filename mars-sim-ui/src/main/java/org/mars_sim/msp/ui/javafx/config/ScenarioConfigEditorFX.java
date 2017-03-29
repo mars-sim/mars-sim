@@ -87,8 +87,7 @@ import javax.swing.table.TableCellEditor;
 
 import org.controlsfx.control.MaskerPane;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
-import org.eclipse.fx.core.ServiceUtils;
-import org.eclipse.fx.core.ThreadSynchronize;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
@@ -529,8 +528,6 @@ public class ScenarioConfigEditorFX {
 				});
 
 				setConfiguration();
-
-
 
 				CompletableFuture.supplyAsync(() -> submitTask());
 

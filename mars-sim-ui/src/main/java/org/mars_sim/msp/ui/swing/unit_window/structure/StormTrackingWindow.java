@@ -24,7 +24,7 @@ import javax.swing.event.InternalFrameListener;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 import javafx.embed.swing.SwingNode;
 import javafx.scene.layout.Pane;

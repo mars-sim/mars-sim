@@ -26,7 +26,7 @@ import javax.swing.event.InternalFrameListener;
 import org.controlsfx.control.InfoOverlay;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
+//import com.sibvisions.rad.ui.javafx.ext.mdi.FXInternalWindow;
 
 public class JFXPannableView extends JInternalFrame
 implements InternalFrameListener {

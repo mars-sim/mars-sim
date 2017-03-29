@@ -29,11 +29,11 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
 	private static final String VALUE= "value";
-	
+
 	// Element names
 	private static final String MEAL_LIST = "meal-list";
 	private static final String MAIN_DISH = "main-dish";
@@ -50,9 +50,12 @@ implements Serializable {
 	private Document mealDoc;
 	private List<HotMeal> mealList;
 
+	private List<HotMeal> mainDishes;
+	private List<HotMeal> sideDishes;
+
 	// water consumption rate, cleaning agent per sol
-	private double[] values = new double[] {0,0}; 
-	
+	private double[] values = new double[] {0,0};
+
 	/**
 	 * Constructor.
 	 * @param mealDoc the meal DOM document.
@@ -61,7 +64,7 @@ implements Serializable {
 		this.mealDoc = mealDoc;
 	}
 
-	
+
 	/**
 	 * Gets the water consumption rate.
 	 * @return water rate (kg/meal)
@@ -77,7 +80,7 @@ implements Serializable {
 		}
 	}
 
-	
+
 	/**
 	 * Gets average amount of cleaning agent per sol
 	 * @return rate (kg/sol)
@@ -93,12 +96,12 @@ implements Serializable {
 		}
 	}
 
-	
+
 
 	/*
 	 * Gets the value of an element as a double
 	 * @param an element
-	 * @return a double 
+	 * @return a double
 	 */
 	// 2016-05-31 Added getValueAsDouble()
 	private double getValueAsDouble(String child) {
@@ -107,8 +110,8 @@ implements Serializable {
 		String str = element.getAttributeValue(VALUE);
 		return Double.parseDouble(str);
 	}
-	
-	
+
+
 	/**
 	 * Gets a list of meal.
 	 * @return list of meal
@@ -118,12 +121,10 @@ implements Serializable {
 		//System.out.println("calling getMealList()");
 		if (mealList == null) {
 			mealList = new ArrayList<HotMeal>();
-		
+
 			Element root = mealDoc.getRootElement();
 			Element mealListElement = root.getChild(MEAL_LIST);
 			List<Element> mainDishes = mealListElement.getChildren(MAIN_DISH);
-
-			//Set<Integer> mealIDs = new HashSet<Integer>();
 
 			for (Element mainDish : mainDishes) {
 

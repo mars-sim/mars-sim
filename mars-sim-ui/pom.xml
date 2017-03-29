@@ -55,22 +55,22 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.19</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout-swing</artifactId>
 			<version>5.0</version>
-		</dependency>
+		</dependency> -->
 		<!-- https://mvnrepository.com/artifact/com.miglayout/miglayout-javafx -->
 		<dependency>
 		    <groupId>com.miglayout</groupId>
 		    <artifactId>miglayout-javafx</artifactId>
 		    <version>5.0</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout</artifactId>
 			<version>3.7.4</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.github.insubstantial</groupId>
 			<artifactId>trident</artifactId>
@@ -107,15 +107,15 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>jorbis</artifactId>
 			<version>0.0.17</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
-		</dependency>
+			<version>1.7.25</version>
+		</dependency>-->
 <!--  		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.21</version>
+			<version>1.7.25</version>
 		</dependency>
 -->
 <!-- load nimrodlf 1.2d from mars-sim's maven-repo
@@ -138,16 +138,19 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<version>0.1</version>
 		</dependency>
  -->
-		<dependency>
+		<!-- https://mvnrepository.com/artifact/com.sibvisions.jvx/jfxtensions -->
+		<!-- <dependency>
 			<groupId>com.sibvisions.jvx</groupId>
 			<artifactId>jfxtensions</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.controlsfx</groupId>
 			<artifactId>controlsfx</artifactId>
 			<version>8.40.12</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.jidesoft/jide-oss
+			https://github.com/jidesoft/jide-oss-->
 		<dependency>
 			<groupId>com.jidesoft</groupId>
 			<artifactId>jide-oss</artifactId>
@@ -159,24 +162,28 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>8.9</version>
 		</dependency>
 -->
-	    <dependency>
+	    <!-- https://github.com/TestFX/TestFX-->
+	    <!-- https://mvnrepository.com/artifact/org.testfx/testfx-junit -->
+	    <!-- <dependency>
 	        <groupId>org.testfx</groupId>
 	        <artifactId>testfx-core</artifactId>
-	        <version>4.0.5-alpha</version>
+	        <version>4.0.6-alpha</version>
 	        <scope>test</scope>
-	    </dependency>
-		<dependency>
+	    </dependency> -->
+		<!-- <dependency>
 			<groupId>org.testfx</groupId>
 			<artifactId>testfx-junit</artifactId>
-			<version>4.0.5-alpha</version>
+			<version>4.0.6-alpha</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.loadui/testFx
+			https://github.com/TestFX/TestFX -->
+		<!-- <dependency>
 			<groupId>org.loadui</groupId>
 			<artifactId>testFx</artifactId>
 			<version>3.1.2</version>
         	<scope>test</scope>
-        </dependency>
+        </dependency> -->
 	   	<dependency>
 			<groupId>org.luaj</groupId>
 			<artifactId>luaj-jse</artifactId>
@@ -207,22 +214,24 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>Enzo</artifactId>
 		    <version>0.3.6</version>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 		  <groupId>de.jonato</groupId>
 		  <artifactId>jfxc</artifactId>
 		  <version>1.1</version>
-		</dependency>
+		</dependency>-->
 <!--	<dependency>
 		 	<groupId>org.oxbow</groupId>
 			<artifactId>swing-bits</artifactId>
 			<version>1.2.1</version>
 		</dependency>-->
-		<dependency>
 		<!-- https://github.com/akuhtz/oxbow -->
+		<!--<dependency>
 			<groupId>org.bidib.org.oxbow</groupId>
 			<artifactId>swingbits</artifactId>
 			<version>1.2.2</version>
-		</dependency>
+		</dependency> -->
+		<!-- Needed by BrowserJFX for WebViewHyperlinkListener
+			https://mvnrepository.com/artifact/org.codefx.libfx/LibFX -->
 		<dependency>
 		    <groupId>org.codefx.libfx</groupId>
 		    <artifactId>LibFX</artifactId>
@@ -353,19 +362,20 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>retrolambda</artifactId>
 		    <version>2.5.1</version>
 		</dependency>
-		<dependency>
+		<!-- https://mvnrepository.com/artifact/org.glassfish.hk2.external/javax.inject -->
+		<!-- <dependency>
 		    <groupId>org.glassfish.hk2.external</groupId>
 		    <artifactId>javax.inject</artifactId>
-		    <version>2.5.0-b05</version>
-		</dependency>
-<!-- The above artifacts are Needed by jfoenix -->
+		    <version>2.5.0-b36</version>
+		</dependency> -->
+<!-- The above artifacts are needed by jfoenix -->
 <!-- The following artifacts are Needed by olmectron's material design -->
-	 	<dependency>
+	 	<!-- dependency>
 		    <groupId>io.github.endreman0</groupId>
 		    <artifactId>java-json</artifactId>
 		    <version>0.13.0</version>
 		</dependency>
-		<!--dependency>
+		<dependency>
 		    <groupId>org.jfxtras</groupId>
 		    <artifactId>jfxtras-labs</artifactId>
 		    <version>8.0-r6-SNAPSHOT</version>
@@ -376,11 +386,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>centerdevice-nsmenufx</artifactId>
 		    <version>2.1.4</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>eu.mihosoft.jfx.scaledfx</groupId>
 			<artifactId>scaledfx</artifactId>
 			<version>0.4</version>
-		</dependency>
+		</dependency-->
 <!-- for enzo's funmenu -->
 		<dependency>
 			<groupId>org.kordamp.ikonli</groupId>
@@ -408,21 +418,22 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>ikonli-fontawesome-pack</artifactId>
 		    <version>1.8.0</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.fxmisc.cssfx</groupId>
 			<artifactId>cssfx</artifactId>
 			<version>1.0.0</version>
-		</dependency>
+		</dependency-->
 		<!-- https://mvnrepository.com/artifact/org.fxmisc.richtext/richtextfx
 			 http://mvnrepository.com/artifact/org.fxmisc.richtext/richtextfx
 			 https://github.com/TomasMikula/RichTextFX/wiki/RichTextFX-CSS-Reference-Guide -->
-		<dependency>
+		<!--dependency>
 		    <groupId>org.fxmisc.richtext</groupId>
 		    <artifactId>richtextfx</artifactId>
 		    <version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<!-- https://github.com/TomasMikula/WellBehavedFX
-			 https://mvnrepository.com/artifact/org.fxmisc.wellbehaved/wellbehavedfx -->
+		</dependency-->
+		<!-- Used by MainScene for setting up shortcut keys
+			https://github.com/TomasMikula/WellBehavedFX
+			https://mvnrepository.com/artifact/org.fxmisc.wellbehaved/wellbehavedfx -->
 		<dependency>
 			<groupId>org.fxmisc.wellbehaved</groupId>
 			<artifactId>wellbehavedfx</artifactId>
@@ -439,11 +450,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>charm-down-desktop</artifactId>
 			<version>2.0.1</version>
 		</dependency-->
-		<dependency>
+		<!--<dependency>
 		    <groupId>com.guigarage</groupId>
 		    <artifactId>responsivefx</artifactId>
 		    <version>0.8</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 		<!-- see http://jiconfont.github.io/javafx -->
 		    <groupId>com.github.jiconfont</groupId>
@@ -455,31 +466,31 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>jiconfont-font_awesome</artifactId>
 		    <version>4.7.0.0</version>
 		</dependency>
-		<dependency>
-		<!-- see http://www.glazedlists.com/documentation/tutorial -->
+		<!--dependency>
+		<see http://www.glazedlists.com/documentation/tutorial
 		    <groupId>net.java.dev.glazedlists</groupId>
 		    <artifactId>glazedlists_java16</artifactId>
 		    <version>1.10.0</version>
-		</dependency>
-		<dependency>
-		<!-- https://tomsondev.bestsolution.at/ -->
+		</dependency>-->
+		<!--<dependency>
+		https://tomsondev.bestsolution.at/
 			<groupId>at.bestsolution.efxclipse.rt</groupId>
 			<artifactId>org.eclipse.fx.ui.controls</artifactId>
 			<version>3.0.0-SNAPSHOT</version>
-		</dependency>
-        <dependency>
-        <!-- https://github.com/edvin/fxldemo
-       		 https://github.com/edvin/fxlauncher -->
+		</dependency>-->
+        <!--<dependency>
+        https://github.com/edvin/fxldemo
+       		 https://github.com/edvin/fxlauncher
             <groupId>no.tornado</groupId>
             <artifactId>fxlauncher</artifactId>
             <version>1.0.15</version>
-        </dependency>
-		<dependency>
-		<!-- https://github.com/aalmiray/bootstrapfx -->
+        </dependency>-->
+		<!-- <dependency>
+		https://github.com/aalmiray/bootstrapfx
 			<groupId>org.kordamp.bootstrapfx</groupId>
 			<artifactId>bootstrapfx-core</artifactId>
 			<version>0.2.1</version>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 	<repositories>
 	    <repository>

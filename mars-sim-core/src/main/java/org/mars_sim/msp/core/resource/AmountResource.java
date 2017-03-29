@@ -91,6 +91,26 @@ implements Serializable {
 	public static AmountResource regolithAR;
     public static AmountResource iceAR;
     public static AmountResource rockSamplesAR;
+/*
+    static {
+		foodAR = findAmountResource(LifeSupportType.FOOD);			// 1
+		waterAR = findAmountResource(LifeSupportType.WATER);		// 2
+		oxygenAR = findAmountResource(LifeSupportType.OXYGEN);		// 3
+		carbonDioxideAR = findAmountResource(LifeSupportType.CO2);	// 4
+
+        foodWasteAR = findAmountResource("food waste");			// 16
+        solidWasteAR = findAmountResource("solid waste");		// 17
+        greyWaterAR = findAmountResource("grey water");			// 19
+        tableSaltAR = findAmountResource("table salt"); 		// 23
+        NaClOAR = findAmountResource("sodium hypochlorite");	// 145
+        napkinAR = findAmountResource("napkin");				// 150
+
+    	methaneAR = findAmountResource("methane");			// 8
+        iceAR = findAmountResource("ice");					// 12
+    	regolithAR = findAmountResource("regolith");		// 142
+        rockSamplesAR = findAmountResource("rock samples");	// 143
+    }
+*/
 
 	public AmountResource() {
 		//System.out.print("0");
@@ -113,6 +133,7 @@ implements Serializable {
     	regolithAR = findAmountResource("regolith");		// 142
         rockSamplesAR = findAmountResource("rock samples");	// 143
 		//System.out.print("0");
+
 /*
         ARs = new AmountResource[] {
         		foodAR,
@@ -430,6 +451,7 @@ implements Serializable {
 	public void destroy() {
 		phase = null;
 		//amountResourceConfig = null;
+/*
 		foodAR = null;
 		oxygenAR = null;
 		waterAR = null;
@@ -440,6 +462,7 @@ implements Serializable {
 	    foodWasteAR = null;
 	    solidWasteAR = null;
 	    napkinAR = null;
+*/
 	}
 
 

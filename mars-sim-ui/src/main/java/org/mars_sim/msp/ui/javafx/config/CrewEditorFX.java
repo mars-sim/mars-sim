@@ -77,8 +77,8 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
 
-import de.jonato.jfxc.controls.combobox.AutoCompleteComboBox;
-import de.jonato.jfxc.controls.combobox.FilterComboBox;
+//import de.jonato.jfxc.controls.combobox.AutoCompleteComboBox;
+//import de.jonato.jfxc.controls.combobox.FilterComboBox;
 
 /**
  * CrewEditorFX allows users to design the crew manifest for an initial
