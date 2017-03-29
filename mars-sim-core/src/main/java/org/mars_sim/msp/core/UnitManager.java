@@ -705,22 +705,24 @@ public class UnitManager implements Serializable {
 			}
 
 			// Get person's settlement or randomly determine it if not configured.
-			String settlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
+			String preConfigSettlementName = personConfig.getConfiguredPersonDestination(x, crew_id);
 			//Settlement settlement = null;
-			if (settlementName != null) {
+			if (preConfigSettlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
-				settlement = CollectionUtils.getSettlement(col, settlementName);
+				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
 				if (settlement == null) {
 					// TODO: If settlement cannot be found that matches the settlement name,
 					// should we put the person in a randomly selected settlement?
 					settlement = CollectionUtils.getRandomSettlement(col);
+					logger.log(Level.INFO, name + " is being sent to " + settlement
+							+ " since " + preConfigSettlementName + " doesn't exist.");
 				}
-				
+
 			} else {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getRandomSettlement(col);
 				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
-						+ settlementName + " by random.");
+						+ preConfigSettlementName + " by random.");
 			}
 
 			// If settlement is still null (no settlements available),
@@ -761,8 +763,6 @@ public class UnitManager implements Serializable {
 
 			// TODO: read from file
 			addUnit(person);
-			logger.log(Level.INFO, name + " ends up going to " + settlement
-					+ " since " + settlementName + " doesn't exist.");
 
 			//System.out.println("done with addUnit() in createConfiguredPeople() in UnitManager");
 
@@ -1371,6 +1371,7 @@ public class UnitManager implements Serializable {
 		int size = robotConfig.getNumberOfConfiguredRobots();
 		// Create all configured robot.
 		for (int x = 0; x < size; x++) {
+			boolean isDestinationChange = false;
 			// System.out.println("x is "+ x);
 			// Get robot's name (required)
 			String name = robotConfig.getConfiguredRobotName(x);
@@ -1386,24 +1387,25 @@ public class UnitManager implements Serializable {
 
 			// Get robot's settlement or randomly determine it if not
 			// configured.
-			String settlementName = robotConfig.getConfiguredRobotSettlement(x);
+			String preConfigSettlementName = robotConfig.getConfiguredRobotSettlement(x);
 			// System.out.println("settlementName is " + settlementName);
 			Settlement settlement = null;
-			if (settlementName != null) {
+			if (preConfigSettlementName != null) {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				// Find the settlement instance with that name
-				settlement = CollectionUtils.getSettlement(col, settlementName);
+				settlement = CollectionUtils.getSettlement(col, preConfigSettlementName);
 				if (settlement == null) {
 					// TODO: If settlement cannot be found that matches the settlement name,
 					// should we put the robot in a randomly selected settlement?
 					settlement = CollectionUtils.getRandomSettlement(col);
+					isDestinationChange = true;
 				}
-				
+
 			} else {
 				Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				settlement = CollectionUtils.getRandomSettlement(col);
 				logger.log(Level.INFO, name + " has no destination settlement specified and goes to "
-						+ settlementName + " by random.");
+						+ preConfigSettlementName + " by random.");
 			}
 
 			// If settlement is still null (no settlements available), don't create robot.
@@ -1437,8 +1439,10 @@ public class UnitManager implements Serializable {
 						// Create robot and add to the unit manager.
 						Robot robot = new Robot(name, robotType, "Mars", settlement, settlement.getCoordinates());
 						addUnit(robot);
-						logger.log(Level.INFO, name + " ends up going to " + settlement
-								+ " since " + settlementName + " doesn't exist.");
+
+						if (isDestinationChange)
+							logger.log(Level.INFO, name + " is being sent to " + settlement
+								+ " since " + preConfigSettlementName + " doesn't exist.");
 						// System.out.println("UnitManager : createConfiguredRobots() :
 						// a robot is added !");
 						// System.out.println("robotType is "+robotType.toString());
