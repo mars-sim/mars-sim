@@ -2,7 +2,6 @@
  * Mars Simulation Project
  * BuildingLocation.java
  * @version 3.07 2014-12-06
-
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -18,12 +17,12 @@ public class BuildingLocation implements Serializable, InsidePathLocation {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     // Data members
     private Building building;
     private double xLoc;
     private double yLoc;
-    
+
     /**
      * Constructor
      * @param building the building.
@@ -35,11 +34,11 @@ public class BuildingLocation implements Serializable, InsidePathLocation {
         this.xLoc = xLoc;
         this.yLoc = yLoc;
     }
-    
+
     public Building getBuilding() {
         return building;
     }
-    
+
     @Override
     public double getXLocation() {
         return xLoc;

@@ -319,10 +319,15 @@ implements Serializable, LifeSupportType, Objective {
 		// 2015-12-29 Added CompositionOfAir
 		compositionOfAir = new CompositionOfAir(this);
 
-		// 2016-01-16 Added setObjective()
-		//objectiveName = Msg.getString("ObjectiveType.crop");
-		setObjective(ObjectiveType.CROP_FARM);
-		logger.info("Setting " + this + "'s Objective to " + objectiveType.toString());
+		// 2017-03-29 Set objective()
+		if (template.equals("Trading Outpost"))
+				setObjective(ObjectiveType.TRADE_TOWN);
+		else if (template.equals("Mining Outpost"))
+			setObjective(ObjectiveType.MANUFACTURING);
+		else
+			setObjective(ObjectiveType.CROP_FARM);
+
+		logger.info("Since " + this + " is based on template '" + template + "', set its development objective to " + objectiveType.toString());
 
 		foodAR = AmountResource.findAmountResource(LifeSupportType.FOOD); //foodAR;//
 		oxygenAR = AmountResource.findAmountResource(LifeSupportType.OXYGEN); //oxygenAR;//

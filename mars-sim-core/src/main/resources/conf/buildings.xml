@@ -26,7 +26,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "22.5" >
 		<description> The Lander Hab is the initial habitat for a crew of four.
 	 		It serves as a jack-of-all-trades building that houses many basic but critical functions
-	 		to jump start a settlement. It's commonly used as a central hub providing four connection points 
+	 		to jump start a settlement. It's commonly used as a central hub providing four connection points
 	 		when developing a colony.
 		</description>
 		<!-- The power requirements of the building. -->
@@ -409,11 +409,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-1.6" yloc="-4.9" />
 				</activity>
 			</farming>
-			
+
 			<life-support capacity="10" power-required="20.0" />
-			
+
 			<power-storage capacity="80.0" />
-			
+
 			<research tech-level="2" capacity="4">
 				<research-specialty name="BOTANY" />
 				<activity>
@@ -626,7 +626,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0"
 		wear-lifetime="3340000" maintenance-time="50" room-temperature= "0">
 		<description>The MD1 Nuclear Reactor is a compact, reliable and self-contained
-		 	150kW nuclear reactor coupled with a Stirling engine built for the Martian 
+		 	150kW nuclear reactor coupled with a Stirling engine built for the Martian
 		 	environment. It is a type of Advanced Stirling Radioisotope Generator (ASRG).
 		</description>
 
@@ -638,20 +638,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Standard Power Source" power="100.0" />
 			</power-generation>
-			
+
 			<power-storage capacity="40.0" />
-			
+
 			<!--thermal-generation>
 				<heat-source type="Electric Heating Source" capacity="20.0" />
 			</thermal-generation-->
 		</functions>
 	</building>
-	
+
 	<building type="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature= "0" >
 		<description>
 			The MD4 Nuclear Reactor is a refined, robust, flight-proven, 600kW
-			nuclear fission power plant. It contains components of a heat source, 
+			nuclear fission power plant. It contains components of a heat source,
 			power conversion, heat rejection, power conditioning and distribution system.
 		</description>
 		<power-required base-power="0.0" base-power-down-power="0.0"/>
@@ -660,12 +660,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Standard Power Source" power="300.0" />
 			</power-generation>
-			
+
 			<power-storage capacity="120.0" />
-			
+
 			<!--thermal-generation>
 				<heat-source type="Electric Heating Source" capacity="80.0" />
-			</thermal-generation-->			
+			</thermal-generation-->
 		</functions>
 	</building>
 
@@ -1874,7 +1874,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="6" power-required="12.0" />
 
-			<manufacture tech-level="2" concurrent-processes="1">
+			<manufacture tech-level="4" concurrent-processes="1">
 				<activity>
 					<activity-spot xloc="-1.43" yloc="-1.87" />
 				</activity>
@@ -1898,6 +1898,41 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.36" yloc=".18" />
 				</activity>
 			</recreation>
+
+			<resource-processing power-down-level=".5">
+				<process name="Grey Water Recycling" power-required="1.0" default="off">
+					<input resource="grey water" rate="5.0" ambient="false" />
+					<input resource="oxygen" rate="0.25" ambient="false" />
+					<input resource="chlorine" rate="0.005" ambient="false" />
+
+					<output resource="water" rate="4.5" ambient="false" />
+					<output resource="solid waste" rate="0.005" ambient="false" />
+				</process>
+
+				<process name="Black Water Recycling" power-required="1.0" default="off">
+					<input resource="black water" rate="5.0" ambient="false" />
+					<input resource="oxygen" rate="0.25" ambient="false" />
+					<input resource="chlorine" rate="0.005" ambient="false" />
+					<output resource="water" rate="4.5" ambient="false" />
+					<output resource="toxic waste" rate="0.005" ambient="false" />
+				</process>
+
+				<process name="Waste Incineration" power-required="1.0" default="off">
+					<input resource="toxic waste" rate="0.1" ambient="false" />
+					<input resource="solid waste" rate="0.1" ambient="false" />
+					<output resource="fertilizer" rate="0.025" ambient="false" />
+				</process>
+
+				<process name="Carbon Scrubbing" power-required="2.0" default="off">
+					<input resource="Carbon Dioxide" rate=".0335" ambient="false" />
+					<output resource="Oxygen" rate=".025" ambient="false" />
+				</process>
+
+				<activity>
+					<activity-spot xloc="-2.6" yloc="-2.13" />
+				</activity>
+			</resource-processing>
+
 			<robotic-station slots="2">
 				<activity>
 					<activity-spot xloc="-0.5" yloc="0.5" />
@@ -2171,11 +2206,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0.0" yloc="-3.75" />
 				</activity>
 			</farming>
-			
+
 			<life-support capacity="3" power-required="6.0" />
-			
+
 			<power-storage capacity="40.0" />
-			
+
 			<research tech-level="1" capacity="2">
 				<research-specialty name="BOTANY" />
 				<activity>
