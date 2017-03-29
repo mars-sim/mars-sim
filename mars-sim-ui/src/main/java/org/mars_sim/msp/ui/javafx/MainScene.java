@@ -1018,15 +1018,15 @@ public class MainScene {
 		initial_time_ratio = Simulation.instance().getMasterClock().getDefaultTimeRatio();
 
 		//timeSlider.prefHeightProperty().bind(mapNodePane.heightProperty().multiply(.3d));
-		timeSlider.setMin(0);//initial_ratio/16D);
-		timeSlider.setMax(initial_time_ratio*8D);
-		timeSlider.setValue(initial_time_ratio);
-		timeSlider.setMajorTickUnit(initial_time_ratio*2D);
-		//timeSlider.setMinorTickCount((int)(Math.round(initial_ratio/8D*100.0)/100.0));
+		timeSlider.setMin(0); // need to be zero
+		timeSlider.setMax(12);//initial_time_ratio*32D);//8D);
+		timeSlider.setValue(7);//initial_time_ratio);
+		timeSlider.setMajorTickUnit(1);//initial_time_ratio*4);
+		timeSlider.setMinorTickCount(1);
 		//timeSlider.setShowTickLabels(true);
 		timeSlider.setShowTickMarks(true);
 		timeSlider.setSnapToTicks(true);
-		timeSlider.setBlockIncrement(initial_time_ratio/4D);
+		timeSlider.setBlockIncrement(1);//initial_time_ratio/32D);//4D);
 		timeSlider.setOrientation(Orientation.HORIZONTAL);
 		timeSlider.setIndicatorPosition(IndicatorPosition.RIGHT);
 
@@ -1041,7 +1041,8 @@ public class MainScene {
         			+ "-fx-font-weight: normal;");
         header_label.setPadding(new Insets(10, 5, 5, 10));
 
-		String DEFAULT = " ( Default : ";
+		String DEFAULT = " (Default : ";
+		String CLOSE_PAR = ")";
         int default_ratio = (int)masterClock.getDefaultTimeRatio();
         StringBuilder s0 = new StringBuilder();
 
@@ -1059,7 +1060,7 @@ public class MainScene {
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
 		time_ratio_label.setPadding(new Insets(1, 1, 1, 10));
-		s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(" )");
+		s0.append(timeRatioString((int)initial_time_ratio)).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
 		time_ratio_label.setText(s0.toString());
 
 
@@ -1082,7 +1083,7 @@ public class MainScene {
 		StringBuilder s1 = new StringBuilder();
 		double ratio = masterClock.getTimeRatio();
 		//String factor = String.format(Msg.getString("TimeWindow.timeFormat"), ratio); //$NON-NLS-1$
-		s1.append(masterClock.getTimeString(ratio));
+		s1.append(masterClock.getTimeTruncated(ratio));
 		real_time_label.setText(s1.toString());
 
 		// detect dragging
@@ -1091,29 +1092,28 @@ public class MainScene {
                 Number old_val, Number new_val) {
 
             	if (old_val != new_val) {
-            		//System.out.println("old_val != new_val");
-					//double sliderValue = Math.round(new_val.doubleValue()*100.0)/100.0;
-	            	double sliderValue = new_val.doubleValue();
-	            	double min_ratio = default_ratio/4D;
-	            	StringBuilder s0 = new StringBuilder();
 
-					if (sliderValue <= min_ratio) {
-						newTimeRatio = min_ratio;
-						// if it's below the minimum, set it to the minimum
-						timeSlider.setValue(newTimeRatio);
-					}
-					else {
-						newTimeRatio = sliderValue;
-					}
+	            	double sliderValue = new_val.doubleValue();
+
+	            	if (default_ratio == 64)
+	            		newTimeRatio = Math.pow(2, (int)sliderValue - 1);
+	            	else if (default_ratio == 128)
+	            		newTimeRatio = Math.pow(2, (int)sliderValue);
+	            	else if (default_ratio == 256)
+	            		newTimeRatio = Math.pow(2, (int)sliderValue + 1);
+	            	else if (default_ratio == 512)
+	            		newTimeRatio = Math.pow(2, (int)sliderValue + 2);
+
+	            	//System.out.println("sliderValue : " + sliderValue + "  newTimeRatio : " + newTimeRatio);
 
 					masterClock.setTimeRatio(newTimeRatio);
-					s0.append((int)newTimeRatio).append(DEFAULT).append(default_ratio).append(" )");
+
+	            	StringBuilder s0 = new StringBuilder();
+					s0.append(timeRatioString((int)newTimeRatio)).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
 					time_ratio_label.setText(s0.toString());
 
 					StringBuilder s1 = new StringBuilder();
-					//ratio = masterClock.getTimeRatio();
-					//String factor = String.format(Msg.getString("TimeWindow.timeFormat"), newTimeRatio); //$NON-NLS-1$
-					s1.append(masterClock.getTimeString(newTimeRatio));
+					s1.append(masterClock.getTimeTruncated(newTimeRatio));
 					real_time_label.setText(s1.toString());
 
             	}
@@ -1192,6 +1192,19 @@ public class MainScene {
         vBox.getChildren().addAll(header_label, timeSlider, gridPane);
         speedPane.getChildren().addAll(vBox);
 
+	}
+
+	public String timeRatioString(int t) {
+		String s = null;
+		if (t < 10)
+			s = "   " + t;
+		else if (t < 100)
+			s = "  " + t;
+		else if (t < 1000)
+			s = " " + t;
+		else
+			s = "" + t;
+		return s;
 	}
 
     public static Label createIconLabel(String iconName, int iconSize){

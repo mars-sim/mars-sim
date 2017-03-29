@@ -421,7 +421,7 @@ public class MasterClock implements Serializable { // Runnable,
      * each real-world minute.
      */
     public void setTimeRatio(double ratio) {
-        if (ratio >= 16D && ratio <= 4096D) {
+        if (ratio >= 1D && ratio <= 65536D) {
             timeRatio = Math.round(ratio*100D)/100D;
             //System.out.println("timeRatio : " + timeRatio + " ");
         }
@@ -933,6 +933,50 @@ public class MasterClock implements Serializable { // Runnable,
 
         //b.append(String.format("%5.3f", secs));
         b.append(String.format("%05.2f", secs) + "s");
+
+        return b.toString();
+    }
+
+    /**
+     * the following is a utility. It may be slow. It returns a string in YY:DDD:HH:MM:SS.SSS format
+     * note: it is set up currently to only return hh:mm:ss.s
+     */
+    public String getTimeTruncated(double seconds) {
+
+        //long years = (int) Math.floor(seconds / secsperyear);
+        //long days = (int) ((seconds % secsperyear) / secspday);
+        int hours = (int) ((seconds % secspday) / secsphour);
+        int minutes = (int) ((seconds % secsphour) / secspmin);
+        double secs = (seconds % secspmin);
+
+        StringBuilder b = new StringBuilder();
+/*
+        b.append(years);
+        if(years>0){
+            b.append("yr:");
+        }
+
+        if (days > 0) {
+            b.append(String.format("%03d", days)).append("mon:");
+        } else {
+            b.append("0mon:");
+        }
+*/
+        if (hours > 0) {
+            b.append(String.format("%02d", hours)).append("h ");
+        }
+        //} else {
+        //    b.append("00h ");
+        //}
+
+        if (minutes > 0) {
+            b.append(String.format("%02d", minutes)).append("m ");
+        } else {
+            b.append("00m ");
+        }
+
+        //b.append(String.format("%5.3f", secs));
+        b.append(String.format("%02.0f", secs) + "s");
 
         return b.toString();
     }
