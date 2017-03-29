@@ -1094,13 +1094,13 @@ public class MainScene {
 
 	            	double sliderValue = new_val.doubleValue();
 
-	            	if (default_ratio == 64)
+	            	if (default_ratio <= 64)
 	            		newTimeRatio = Math.pow(2, (int)sliderValue - 1);
-	            	else if (default_ratio == 128)
+	            	else if (default_ratio <= 128)
 	            		newTimeRatio = Math.pow(2, (int)sliderValue);
-	            	else if (default_ratio == 256)
+	            	else if (default_ratio <= 256)
 	            		newTimeRatio = Math.pow(2, (int)sliderValue + 1);
-	            	else if (default_ratio == 512)
+	            	else if (default_ratio <= 512)
 	            		newTimeRatio = Math.pow(2, (int)sliderValue + 2);
 
 	            	//System.out.println("sliderValue : " + sliderValue + "  newTimeRatio : " + newTimeRatio);
@@ -3316,6 +3316,10 @@ public class MainScene {
 	public JFXComboBox<Settlement> getSBox() {
 		return sBox;
 	};
+
+	public Settlement getSettlement() {
+		return sBox.getSelectionModel().getSelectedItem();
+	}
 
 	public void setSettlement(Settlement s) {
 		Platform.runLater(() -> {
