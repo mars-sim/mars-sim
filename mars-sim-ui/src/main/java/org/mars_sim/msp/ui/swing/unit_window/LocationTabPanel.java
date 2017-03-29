@@ -422,13 +422,15 @@ implements ActionListener {
 
         		if (p.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-
         			if (mainScene != null) {
         				mainScene.setSettlement(p.getSettlement());
         			}
         			else {
             			desktop.openToolWindow(SettlementWindow.NAME);
-        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+            			if (mainScene != null)
+            				mainScene.setSettlement(p.getSettlement());
+            			else
+            				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
         			}
 
         			Building b = p.getBuildingLocation();
@@ -452,7 +454,11 @@ implements ActionListener {
         				// still parked inside a garage or within the premise of a settlement
 	        			desktop.openToolWindow(SettlementWindow.NAME);
 	        			//System.out.println("Just open Settlement Map Tool");
-	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+
+	        			if (mainScene != null)
+	        				mainScene.setSettlement(vv.getSettlement());
+	        			else
+	        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(vv.getSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -469,10 +475,19 @@ implements ActionListener {
         			Vehicle vv = p.getVehicle();
 
         			if (vv == null) {
-        				// he's stepped outside the settlement temporally
+
                			desktop.openToolWindow(SettlementWindow.NAME);
             			//System.out.println("Just open Settlement Map Tool");
-             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+
+               			// TODO: Case 1 : person is on a mission on the surface of Mars and just happens to step outside the vehicle temporarily
+
+               			// TODO: Case 2 : person just happens to step outside the settlement at its vicinity temporarily
+/*
+            			if (mainScene != null)
+            				mainScene.setSettlement(p.getSettlement());
+            			else
+            				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(p.getSettlement());
+
 
         				double xLoc = p.getXLocation();
             			double yLoc = p.getYLocation();
@@ -482,6 +497,7 @@ implements ActionListener {
             			mapPanel.setShowBuildingLabels(true);
 
             			mapPanel.selectPerson(p);
+*/
         			}
         			else
         				// he's stepped outside a vehicle
@@ -495,7 +511,10 @@ implements ActionListener {
         		if (r.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         			desktop.openToolWindow(SettlementWindow.NAME);
         			//System.out.println("Just open Settlement Map Tool");
-        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+        			if (mainScene != null)
+        				mainScene.setSettlement(r.getSettlement());
+        			else
+        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
 
         			Building b = r.getBuildingLocation();
         			double xLoc = b.getXLocation();
@@ -518,7 +537,11 @@ implements ActionListener {
         				// still parked inside a garage or within the premise of a settlement
 	        			desktop.openToolWindow(SettlementWindow.NAME);
 	        			//System.out.println("Just open Settlement Map Tool");
-	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+	        			if (mainScene != null)
+	        				mainScene.setSettlement(vv.getSettlement());
+	        			else
+	        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(vv.getSettlement());
+
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
@@ -538,8 +561,12 @@ implements ActionListener {
         				// he's stepped outside the settlement temporally
                			desktop.openToolWindow(SettlementWindow.NAME);
             			//System.out.println("Just open Settlement Map Tool");
-             			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
 
+
+               			// TODO: Case 1 : robot is on a mission on the surface of Mars and just happens to step outside the vehicle temporarily
+
+               			// TODO: Case 2 : robot just happens to step outside the settlement at its vicinity temporarily
+/*
         				double xLoc = r.getXLocation();
             			double yLoc = r.getYLocation();
             			double scale = mapPanel.getScale();
@@ -548,6 +575,7 @@ implements ActionListener {
             			mapPanel.setShowBuildingLabels(true);
 
             			mapPanel.selectRobot(r);
+*/
         			}
         			else
         				// he's stepped outside a vehicle
@@ -556,11 +584,17 @@ implements ActionListener {
 
         	} else if (unit instanceof Vehicle) {
         		v = (Vehicle) unit;
+
+    		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
+
           		if (v.getSettlement() != null) {
         			desktop.openToolWindow(SettlementWindow.NAME);
         			//System.out.println("Just open Settlement Map Tool");
-        		    SettlementMapPanel mapPanel = desktop.getSettlementWindow().getMapPanel();
-        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getSettlement());
+        			if (mainScene != null)
+        				mainScene.setSettlement(v.getSettlement());
+        			else
+        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(v.getSettlement());
+
 
         			double xLoc = v.getXLocation();
         			double yLoc = v.getYLocation();
@@ -581,8 +615,13 @@ implements ActionListener {
 
 	    		if (e.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	    			desktop.openToolWindow(SettlementWindow.NAME);
+
+	    			if (mainScene != null)
+	    				mainScene.setSettlement(e.getSettlement());
+	    			else
+	    				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(e.getSettlement());
+
 	    			//System.out.println("Just open Settlement Map Tool");
-	    			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(e.getSettlement());
 
 /*
 	    			Building b = e.getBuildingLocation();
@@ -608,7 +647,10 @@ implements ActionListener {
 	    				// still parked inside a garage or within the premise of a settlement
 	        			desktop.openToolWindow(SettlementWindow.NAME);
 	        			//System.out.println("Just open Settlement Map Tool");
-	        			mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(r.getSettlement());
+	        			if (mainScene != null)
+	        				mainScene.setSettlement(vv.getSettlement());
+	        			else
+	        				mapPanel.getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(vv.getSettlement());
 
 	        			double xLoc = vv.getXLocation();
 	        			double yLoc = vv.getYLocation();
