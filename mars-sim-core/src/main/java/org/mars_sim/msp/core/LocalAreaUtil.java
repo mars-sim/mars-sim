@@ -198,9 +198,10 @@ public class LocalAreaUtil {
         while (i.hasNext() && result) {
             LocalBoundedObject object = i.next();
             if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
-                result = false;
+                //result = false;
     			//logger.info("checkLocationCollision(): a point location is colliding with an existing vehicle, building, or construction site");
-    			break;
+    			//break;
+    			return false;
             }
         }
 
@@ -224,9 +225,10 @@ public class LocalAreaUtil {
         while (i.hasNext() && result) {
             LocalBoundedObject object = i.next();
             if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, object)) {
-                result = false;
-    			logger.info("checkImmovableCollision(): Colliding with an immovable object (a building or construction site");
-    			break;
+                //result = false;
+    			//logger.info("checkImmovableCollision(): Colliding with an immovable object (a building or construction site");
+    			//break;
+    			return false;
             }
         }
 
@@ -294,7 +296,7 @@ public class LocalAreaUtil {
         return result;
     }
 
-    
+
 /*
     public static boolean checkCollisionMoveVehicle(double xLoc, double yLoc, Coordinates coordinates) {
 
@@ -341,7 +343,7 @@ public class LocalAreaUtil {
         return result;
     }
 
-    /** 
+    /**
      * Checks for collisions with any immovable objects
      * @return true if location doesn't collide with anything.
      * @param LocalBoundedObject object
@@ -355,9 +357,10 @@ public class LocalAreaUtil {
     	while (i.hasNext()) {
     		LocalBoundedObject immovable = i.next();
     		if (getTwoBoundedOjectsIntersected(object, immovable)) {
-    			result = false;
-    			logger.info("LocalAreaUtil: Colliding with an immovable object (a building or construction site");
-    			break;
+    			//result = false;
+    			//logger.info("LocalAreaUtil: Colliding with an immovable object (a building or construction site");
+    			//break;
+    			return false;
     		}
     	}
         return result;
