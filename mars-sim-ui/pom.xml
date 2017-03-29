@@ -355,9 +355,9 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <artifactId>core</artifactId>
 		    <version>8.0b8</version>
 		</dependency>
-		<dependency>
 		<!-- https://github.com/orfjackal/retrolambda
 			 https://mvnrepository.com/artifact/net.orfjackal.retrolambda/retrolambda -->
+		<dependency>
 		    <groupId>net.orfjackal.retrolambda</groupId>
 		    <artifactId>retrolambda</artifactId>
 		    <version>2.5.1</version>

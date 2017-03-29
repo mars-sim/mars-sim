@@ -32,7 +32,7 @@ import org.mars_sim.msp.core.structure.building.function.farming.CropType;
 import org.mars_sim.msp.core.structure.building.function.farming.Farming;
 import org.mars_sim.msp.core.tool.Conversion;
 
-/** 
+/**
  * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
  * This is an effort driven task.
  */
@@ -75,18 +75,18 @@ implements Serializable {
     private Farming greenhouse;
 
     //private SkillManager skillManager;
-    
+
     /**
      * Constructor.
      * @param person the person performing the task.
      */
     public TendGreenhouse(Person person) {
         // Use Task constructor
-        super(NAME, person, false, false, STRESS_MODIFIER, true, 
+        super(NAME, person, false, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(50D));
         // Initialize data members
         if (person.getSettlement() != null) {
-       //     setDescription(Msg.getString("Task.description.tendGreenhouse"));//.detail", 
+       //     setDescription(Msg.getString("Task.description.tendGreenhouse"));//.detail",
                     //person.getParkedSettlement().getName())); //$NON-NLS-1$
         }
         else {
@@ -113,7 +113,7 @@ implements Serializable {
         addPhase(CLEANING);
         addPhase(SAMPLING);
         addPhase(TENDING);
-        
+
         setPhase(TENDING);
     }
 
@@ -123,10 +123,10 @@ implements Serializable {
      */
     public TendGreenhouse(Robot robot) {
         // Use Task constructor
-        super(NAME, robot, false, false, 0, true, 
+        super(NAME, robot, false, false, 0, true,
                 10D + RandomUtil.getRandomDouble(50D));
 
-        
+
         // Initialize data members
         if (robot.getSettlement() != null) {
         //    setDescription(Msg.getString("Task.description.tendGreenhouse"));//
@@ -137,7 +137,7 @@ implements Serializable {
         }
 
 		//skillManager = robot.getBotMind().getSkillManager();
-        
+
         // Get available greenhouse if any.
         Building farmBuilding = getAvailableGreenhouse(robot);
         if (farmBuilding != null) {
@@ -149,21 +149,21 @@ implements Serializable {
         else {
             endTask();
         }
-        
+
         // Initialize phase
         addPhase(INSPECTING);
         addPhase(CLEANING);
         addPhase(SAMPLING);
         addPhase(TENDING);
-        
+
         setPhase(TENDING);
     }
-    
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.FARMING;
     }
-    
+
     protected BuildingFunction getRelatedBuildingRoboticFunction() {
         return BuildingFunction.FARMING;
     }
@@ -172,7 +172,7 @@ implements Serializable {
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
-        }     
+        }
         else if (TENDING.equals(getPhase())) {
             return tendingPhase(time);
         }
@@ -199,7 +199,7 @@ implements Serializable {
     private double tendingPhase(double time) {
 
         double workTime = 0, remainingTime = 0;
-        
+
         // Check if greenhouse has malfunction.
         if (greenhouse.getBuilding().getMalfunctionManager().hasMalfunction()) {
             //endTask();
@@ -210,25 +210,25 @@ implements Serializable {
 		// Obtain a needy crop to work on
 		Crop needyCrop = greenhouse.getNeedyCrop();
     	//System.out.println("1: needyCrop is " + needyCrop.getCropType().getName());
-		
+
 		if (needyCrop == null) {
         	List<Crop> list = greenhouse.getCrops();
         	int size = list.size();
-        	int rand1 = RandomUtil.getRandomInt(0, size-1);	        	
-        	needyCrop = list.get(rand1);    
+        	int rand1 = RandomUtil.getRandomInt(0, size-1);
+        	needyCrop = list.get(rand1);
         	//System.out.println("2: needyCrop is " + needyCrop.getCropType().getName());
     	}
-*/ 
+*/
     	//logger.info("3: needyCrop is " + needyCrop.getCropType().getName());
-  
+
         double factor = 2D;
-        
-		if (person != null) {			
+
+		if (person != null) {
 	        workTime = time * factor;
 		}
-		
+
 		else if (robot != null) {
-		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person
 			// should it incurs penalty on workTime?
 			workTime = time * factor;
 		}
@@ -244,11 +244,11 @@ implements Serializable {
 
         //System.out.println("TendGreenhouse : before greenhouse.addWork(workTime) ");
         // Add this work to the greenhouse.
-        
-		if (person != null) {			
+
+		if (person != null) {
 	        workTime = greenhouse.addWork(workTime, this, person);
 		}
-		
+
 		else {
 	        workTime = greenhouse.addWork(workTime, this, robot);
 		}
@@ -257,41 +257,41 @@ implements Serializable {
         addExperience(time);
 
         // Check for accident in greenhouse.
-        checkForAccident(time);    	
-		       
+        checkForAccident(time);
+
         remainingTime = time - workTime;
-		        
+
         if (remainingTime <= 0) {
         	remainingTime = 0;
         	return remainingTime;
         }
         else {
-	        
+
 	        int rand = RandomUtil.getRandomInt(29);
-			    	
-	        if (rand == 0) {	       		
+
+	        if (rand == 0) {
 				setPhase(INSPECTING);
 				//endTask();
-				return 0;  
+				return 0;
 	    	}
 	    	else if (rand == 1) {
 	    		setPhase(CLEANING);
-	            //endTask();    		
+	            //endTask();
 	    		return 0;
 	    	}
 	    	else if (rand == 2) {
 	    		setPhase(SAMPLING);
-	            //endTask();    		
+	            //endTask();
 	    		return 0;
 	    	}
 	    	else {
-	            //endTask(); 
+	            //endTask();
 	    		return remainingTime;
 	    	}
         }
-        
+
     }
-    
+
     public void setCrop(Crop needyCrop) {
         setDescription(Msg.getString("Task.description.tendGreenhouse.tend", Conversion.capitalize(needyCrop.getCropType().getName())));
 
@@ -304,11 +304,11 @@ implements Serializable {
      */
     private double inspectingPhase(double time) {
     	double remainingTime = time;
-    	
-    	String goal = null;    	
+
+    	String goal = null;
     	int rand = RandomUtil.getRandomInt(7);
-    	
-    	if (rand == 0) 
+
+    	if (rand == 0)
     		goal = "the Environmental Control System";
     	else if (rand == 1)
     		goal = "the HVAC System";
@@ -324,19 +324,19 @@ implements Serializable {
     		goal = "the Thermal Budget";
     	else if (rand == 7)
     		goal = "the Water and Irrigation System";
-    	
+
         setDescription(Msg.getString("Task.description.tendGreenhouse.inspect", goal));
-        
+
    		//System.out.println("inspectingPhase");
-   		
+
         double workTime = 0;
         double factor = .5;//2D;
-        
-		if (person != null) {			
+
+		if (person != null) {
 	        workTime = time * factor;
 		}
 		else if (robot != null) {
-		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person
 			// should it incurs penalty on workTime?
 			workTime = time * factor*.5d;
 		}
@@ -352,24 +352,24 @@ implements Serializable {
 
         // Add this work to the greenhouse.
         //greenhouse.addWork(workTime, null);
-        
+
         // Add experience
         addExperience(time);
 
         // Check for accident in greenhouse.
         checkForAccident(time);
-    	
+
         remainingTime = time - workTime;
-        
+
         if (remainingTime < 0)
         	remainingTime = 0;
         //else
     	//	setPhase(CLEANING);
-        	
+
         endTask();
     	return remainingTime;
     }
-    
+
     /**
      * Performs the cleaning phase.
      * @param time the amount of time (millisols) to perform the phase.
@@ -377,11 +377,11 @@ implements Serializable {
      */
     private double cleaningPhase(double time) {
     	double remainingTime = 0;
-  
-    	String goal = null;    	
+
+    	String goal = null;
     	int rand = RandomUtil.getRandomInt(2);
-    	
-    	if (rand == 0) 
+
+    	if (rand == 0)
     		goal = "the Floor and Walls";
     	else if (rand == 1)
     		goal = "the Canopy";
@@ -389,19 +389,19 @@ implements Serializable {
     		goal = "the Equipment";
     	else if (rand == 2)
     		goal = "Pipings, Trays and Valves";
-    	
+
         setDescription(Msg.getString("Task.description.tendGreenhouse.clean", goal));
-        
+
   		//System.out.println("cleaningPhase");
-  		 
+
         double workTime = 0;
         double factor = .5;//2D;
-        
-		if (person != null) {			
+
+		if (person != null) {
 	        workTime = time * factor;
 		}
 		else if (robot != null) {
-		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+		     // TODO: how to lengthen the work time for a robot even though it moves slower than a person
 			// should it incurs penalty on workTime?
 			workTime = time * factor*.5d;
 		}
@@ -414,7 +414,7 @@ implements Serializable {
         else {
             workTime += workTime * (double) greenhouseSkill;
         }
-  
+
         // Add this work to the greenhouse.
         //greenhouse.addWork(workTime, null);
 
@@ -423,18 +423,18 @@ implements Serializable {
 
         // Check for accident in greenhouse.
         checkForAccident(time);
-    	
+
         remainingTime = time - workTime;
-        
+
         if (remainingTime < 0)
         	remainingTime = 0;
         //else
     	//	setPhase(CLEANING);
-        	
+
         endTask();
     	return remainingTime;
     }
-    
+
     /**
      * Performs the sampling phase in the botany lab
      * @param time the amount of time (millisols) to perform the phase.
@@ -448,34 +448,34 @@ implements Serializable {
 
 		if (type == null) {
 			// Obtain a needy crop to work on
-			if (person != null) {			
-				type = greenhouse.getNeedyCrop(null, person).getCropType();	
+			if (person != null) {
+				type = greenhouse.getNeedyCrop(null, person).getCropType();
 			}
-			
+
 			else {
-				type = greenhouse.getNeedyCrop(null, robot).getCropType();	
+				type = greenhouse.getNeedyCrop(null, robot).getCropType();
 			}
 		}
-		
-		
+
+
 		if (type != null) {
 	      	//System.out.println("type is " + type);
 			boolean isDone = greenhouse.checkBotanyLab(type);
 			//System.out.println("isDone is " + isDone);
 			if (isDone) {
 		        setDescription(Msg.getString("Task.description.tendGreenhouse.sample", Conversion.capitalize(type.getName()) + " for Lab Work"));
-	
+
 		        double factor = .5;//2D;
-		        
-				if (person != null) {			
+
+				if (person != null) {
 			        workTime = time * factor;
 				}
 				else if (robot != null) {
-				     // TODO: how to lengthen the work time for a robot even though it moves slower than a person 
+				     // TODO: how to lengthen the work time for a robot even though it moves slower than a person
 					// should it incurs penalty on workTime?
 					workTime = time * factor*.5d;
 				}
-		
+
 		        // Determine amount of effective work time based on "Botany" skill
 		        int greenhouseSkill = getEffectiveSkillLevel();
 		        if (greenhouseSkill == 0) {
@@ -484,22 +484,22 @@ implements Serializable {
 		        else {
 		            workTime += workTime * (double) greenhouseSkill;
 		        }
-		
+
 		        // Add this work to the greenhouse.
 		        //greenhouse.addWork(workTime, null);
-	      
+
 		        // Add experience
 		        addExperience(time);
-		
+
 		        // Check for accident in greenhouse.
 		        checkForAccident(time);
-		    
+
 			}
-	       
+
 		}
-		
+
         remainingTime = time - workTime;
-        
+
         if (remainingTime < 0)
         	remainingTime = 0;
         //else
@@ -507,7 +507,7 @@ implements Serializable {
         endTask();
     	return remainingTime;
     }
-    
+
     @Override
     protected void addExperience(double time) {
         // Add experience to "Botany" skill
@@ -515,21 +515,21 @@ implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 100D;
         int experienceAptitude = 0;
-		if (person != null) 
+		if (person != null)
 	        experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		else if (robot != null) 
+		else if (robot != null)
 	        experienceAptitude = robot.getRoboticAttributeManager().getAttribute(RoboticAttribute.EXPERIENCE_APTITUDE);
 
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-		if (person != null) 
+		if (person != null)
 			person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
-		else if (robot != null) 
+		else if (robot != null)
 			robot.getBotMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
 
     }
 
-    
+
     /**
      * Check for accident in greenhouse.
      * @param time the amount of time working (in millisols)
@@ -556,7 +556,7 @@ implements Serializable {
         }
     }
 
-    /** 
+    /**
      * Gets the greenhouse the person is tending.
      * @return greenhouse
      */
@@ -575,7 +575,7 @@ implements Serializable {
         Person person = null;
         Robot robot = null;
         BuildingManager buildingManager;
-        
+
         if (unit instanceof Person) {
          	person = (Person) unit;
             LocationSituation location = person.getLocationSituation();
@@ -586,11 +586,13 @@ implements Serializable {
                 //farmBuildings = BuildingManager.getFarmsNeedingWork(farmBuildings);
                 //farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
                 List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
-                
-                if (farmBuildings.size() > 0) {
-                    Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                            person, farmBuildings);
-                    result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
+
+                if (farmBuildings != null) {
+	                if (farmBuildings.size() > 0) {
+	                    Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+	                            person, farmBuildings);
+	                    result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
+	                }
                 }
             }
         }
@@ -605,30 +607,33 @@ implements Serializable {
     			//if (RandomUtil.getRandomInt(4) == 0) // robot is not as inclined to move around
     			//	buildings = BuildingManager.getLeastCrowded4BotBuildings(buildings);
                 List<Building> farmBuildings = buildingManager.getFarmsNeedingWork();
-                
+
                 // 2016-12-01 Choose the building the robot is at.
                 for (Building b : farmBuildings) {
                 	if (b == robot.getBuildingLocation())
                 		return b;
-                	// TODO: choose the building closest to the robot
+                	// TODO: choose the farmBuilding closest to the robot
+                	// TODO: check if other robots are already in this farmBuilding, i.e. checking for the crowdliness of this farmBuilding
                 }
-                
-                if (farmBuildings.size() > 0) {
-                	result = farmBuildings.get(RandomUtil.getRandomInt(0, farmBuildings.size() - 1));
+
+                if (farmBuildings != null) {
+                	if (farmBuildings.size() > 0) {
+                		result = farmBuildings.get(RandomUtil.getRandomInt(0, farmBuildings.size() - 1));
+                	}
                 }
- /*               
+ /*
                 // TODO: add person's good/bad feeling toward robots
                 int size = farmBuildings.size();
                 //System.out.println("size is "+size);
-                int selected = 0; 
-                if (size == 0) 
+                int selected = 0;
+                if (size == 0)
                 	result = null;
                 if (size >= 1) {
-                	selected = RandomUtil.getRandomInt(size-1);         
+                	selected = RandomUtil.getRandomInt(size-1);
                 	result = farmBuildings.get(selected);
                 }
-*/                
-                //System.out.println("getAvailableGreenhouse() : selected is "+selected); 
+*/
+                //System.out.println("getAvailableGreenhouse() : selected is "+selected);
             }
         }
         return result;
@@ -636,17 +641,17 @@ implements Serializable {
 
     @Override
     //TODO: get agility score of a person/robot
-    public int getEffectiveSkillLevel() { 
+    public int getEffectiveSkillLevel() {
     	SkillManager skillManager = null;
-//    	if (skillManager == null) 
-//    		System.out.println("skillManager is null"); 
-		if (person != null) 
+//    	if (skillManager == null)
+//    		System.out.println("skillManager is null");
+		if (person != null)
 			skillManager = person.getMind().getSkillManager();
-		else if (robot != null) 
+		else if (robot != null)
 			skillManager = robot.getBotMind().getSkillManager();
 
         return skillManager.getEffectiveSkillLevel(SkillType.BOTANY);
-    }  
+    }
 
     @Override
     public List<SkillType> getAssociatedSkills() {
@@ -660,7 +665,7 @@ implements Serializable {
         super.destroy();
 
         greenhouse = null;
-/*        
+/*
         TENDING = null;
         INSPECTING  = null;
         CLEANING = null;

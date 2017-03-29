@@ -28,7 +28,7 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.tendGreenhouse"); //$NON-NLS-1$
@@ -84,12 +84,13 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
         	        // 2015-06-07 Added Preference modifier
         	        if (result > 0)
          	         	result = result + result * person.getPreference().getPreferenceScore(this)/5D;
-        	        
+
         	        if (result < 0) result = 0;
                 }
             }
             catch (Exception e) {
-                logger.log(Level.SEVERE, person + " cannot calculate probability : " + e.getMessage());
+                e.printStackTrace();
+            	//logger.log(Level.SEVERE, person + " cannot calculate probability : " + e.getMessage());
             }
 
         }
@@ -124,15 +125,16 @@ public class TendGreenhouseMeta implements MetaTask, Serializable {
 	                    // Crowding modifier.
 	                    //result *= TaskProbabilityUtil.getCrowdingProbabilityModifier(robot, farmingBuilding);
 	                    //result *= TaskProbabilityUtil.getRelationshipModifier(robot, farmingBuilding);
-	               
+
 	    	            // Effort-driven task modifier.
 	    	            result *= robot.getPerformanceRating();
 	    	            //System.out.println("probability is " + result);
-	    	            
+
 	                }
 	            }
 	            catch (Exception e) {
-	                logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
+	                e.printStackTrace();
+	                //logger.log(Level.SEVERE, robot + " cannot calculate probability : " + e.getMessage());
 	            }
 
 
