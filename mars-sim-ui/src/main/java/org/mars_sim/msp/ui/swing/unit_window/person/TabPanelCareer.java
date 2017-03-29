@@ -150,22 +150,21 @@ implements ActionListener {
 
     		solCache = person.getJobHistory().getSolCache();
 
-    		JPanel firstPanel = new JPanel(new GridLayout(2, 1, 5, 0));
+    		JPanel firstPanel = new JPanel(new BorderLayout());//GridLayout(2, 1, 5, 0));
+			//firstPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+			firstPanel.setBorder(new MarsPanelBorder());
 			topContentPanel.add(firstPanel, BorderLayout.NORTH);
 
 			// Prepare job panel
 			JPanel topPanel = new JPanel(new SpringLayout());//GridLayout(2, 2, 0, 0));
-			topPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-			topPanel.setBorder(new MarsPanelBorder());
-			firstPanel.add(topPanel);
 
+			firstPanel.add(topPanel, BorderLayout.CENTER);
 
 
 			// Prepare job label
-			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.CENTER); //$NON-NLS-1$
+			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.RIGHT); //$NON-NLS-1$
 			topPanel.add(jobLabel);
 			//balloonToolTip.createBalloonTip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
-
 
 			// Prepare job combo box
 			jobCache = mind.getJob().getName(person.getGender());
@@ -186,14 +185,11 @@ implements ActionListener {
 
 			//balloonToolTip.createBalloonTip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip")); //$NON-NLS-1$
 
-
 			// check if a job reassignment is still pending for review
 			// if true, disable the combobox
 
-
-
 			// Prepare role label
-			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"));//, JLabel.RIGHT); //$NON-NLS-1$
+			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"), JLabel.RIGHT); //$NON-NLS-1$
 			roleLabel.setSize(10, 2);
 			topPanel.add(roleLabel);//, JLabel.BOTTOM);
 
@@ -201,7 +197,7 @@ implements ActionListener {
 			roleTF = new JTextField(roleCache);
 			roleTF.setEditable(false);
 			//roleTF.setBounds(0, 0, 0, 0);
-			roleTF.setColumns(15);
+			roleTF.setColumns(20);
 
 			// Prepare role panel
 			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); //GridLayout(1, 2));
@@ -211,6 +207,13 @@ implements ActionListener {
 
 			topPanel.add(rolePanel);
 
+			jobChangeLabel = new JLabel();
+			//jobChangeLabel.setSize(300, 30);
+			jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			jobChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
+			jobChangeLabel.setForeground(Color.blue);
+			firstPanel.add(jobChangeLabel, BorderLayout.SOUTH);
+
 			//String roleTip = Msg.getString("TabPanelCareer.roleType.tooltip"); //$NON-NLS-1$
 			//balloonToolTip.createBalloonTip(roleLabel, roleTip);
 			//balloonToolTip.createBalloonTip(roleTF, roleTip);
@@ -218,41 +221,37 @@ implements ActionListener {
 			// 2017-03-28 Prepare SpringLayout
 			SpringUtilities.makeCompactGrid(topPanel,
 			                                2, 2, //rows, cols
-			                                80, 10,        //initX, initY
-			                                20, 10);       //xPad, yPad
+			                                80, 5,        //initX, initY
+			                                10, 1);       //xPad, yPad
 
+
+			JPanel ratingPanel = new JPanel(new BorderLayout());
+			ratingPanel.setBorder(new MarsPanelBorder());
+			topContentPanel.add(ratingPanel, BorderLayout.CENTER);
 
 			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
-			int size = list.size();
+			//int size = list.size();
 
-			JPanel ratingPanel = new JPanel(new GridLayout(2,1,5,5));// GridLayout(1, 2, 0, 0));
-			ratingPanel.setBorder(new MarsPanelBorder());
+			JPanel springPanel = new JPanel(new SpringLayout());//GridLayout(2,1,5,5));// GridLayout(1, 2, 0, 0));
+			ratingPanel.add(springPanel, BorderLayout.CENTER);
+			//raterPanel.setAlignmentY(TOP_ALIGNMENT);
 
-			JPanel aveRatingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));// GridLayout(1, 2, 0, 0));
-			aveRatingPanel.setAlignmentY(BOTTOM_ALIGNMENT);
-			//aveRatingPanel.setBorder(new MarsPanelBorder());
-			//JPanel rPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			JLabel aveRatingLabel = new JLabel("Overall Performance : ");//, JLabel.CENTER);
-			aveRatingPanel.add(aveRatingLabel);
+			JLabel aveRatingLabel = new JLabel("Overall Performance : ", JLabel.RIGHT);
+			springPanel.add(aveRatingLabel);
 
 			aveRater = new StarRater(5, calculateAveRating(list));
+			//aveRater.setHorizontalAlignment(SwingConstants.LEFT);
 			aveRater.setEnabled(false);
+			springPanel.add(aveRater);
 
-			String tip = Msg.getString("TabPanelCareer.aveRater.tooltip");
+			//String tip = Msg.getString("TabPanelCareer.aveRater.tooltip");
 			//balloonToolTip.createBalloonTip(aveRatingLabel, tip); //$NON-NLS-1$
 			//balloonToolTip.createBalloonTip(aveRater, tip); //$NON-NLS-1$
 
-			aveRatingPanel.add(aveRater);
-			ratingPanel.add(aveRatingPanel);
-			firstPanel.add(ratingPanel);
-
-
-			JPanel raterPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));// GridLayout(1, 2, 0, 0));
-			raterPanel.setAlignmentY(TOP_ALIGNMENT);
-			//raterPanel.setBorder(new MarsPanelBorder());
-			JLabel raterLabel = new JLabel("Your Rating : ");//, JLabel.CENTER);
-			raterPanel.add(raterLabel);
+			JLabel raterLabel = new JLabel("Your Rating : ", JLabel.RIGHT);
+			springPanel.add(raterLabel);
 			starRater = new StarRater(5, 0, 0);
+
 			//starRater.setToolTipText("Click to submit your rating to supervisor (once every 7 sols)");
 			//balloonToolTip.createBalloonTip(raterLabel, Msg.getString("TabPanelCareer.raterLabel.tooltip")); //$NON-NLS-1$
 			//balloonToolTip.createBalloonTip(starRater, Msg.getString("TabPanelCareer.starRater.tooltip")); //$NON-NLS-1$
@@ -288,23 +287,20 @@ implements ActionListener {
 	                }
 	            });
 
-	        raterPanel.add(starRater);
-			ratingPanel.add(raterPanel);
+	        springPanel.add(starRater);
 
-			JPanel midPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-			topContentPanel.add(midPanel, BorderLayout.CENTER);
+			// 2017-03-28 Prepare SpringLayout
+			SpringUtilities.makeCompactGrid(springPanel,
+			                                2, 2, //rows, cols
+			                                80, 10,        //initX, initY
+			                                20, 10);       //xPad, yPad
 
-			ratingLabel = new JLabel();
+			ratingLabel = new JLabel("Job Rating");
+			//ratingLabel.setSize(300, 30);
 			ratingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			ratingLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
 			ratingLabel.setForeground(Color.blue);
-			midPanel.add(ratingLabel);
-
-			jobChangeLabel = new JLabel();
-			jobChangeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			jobChangeLabel.setFont(new Font("Courier New", Font.ITALIC, 12));
-			jobChangeLabel.setForeground(Color.blue);
-			midPanel.add(jobChangeLabel);
+			ratingPanel.add(ratingLabel, BorderLayout.SOUTH);
 
 			// 2015-10-30 Added checking if user already submitted rating or submitted a job reassignment that's still not being reviewed
 			checkingJobRating(list);
