@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -38,6 +39,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -50,6 +52,10 @@ extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	private static final String THIRTY_DAY = "30-Day";
+	private static final String ANNUAL = "Annual";
+	private static final String CAREER = "Career";
 
 	// Data cache
 	private double fatigueCache;
@@ -73,11 +79,11 @@ extends TabPanel {
 	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 
 	protected String[] radiationToolTips = {
-		    "Exposure Interval", 
+		    "Exposure Interval",
 		    "[Max for BFO] 30-Day : 250; Annual : 500; Career : 1000",
 		    "[Max for Eye] 30-Day : 1000; Annual : 2000; Career : 4000",
 		    "[Max for Skin] 30-Day : 1500; Annual : 3000; Career : 6000"};
-	
+
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
@@ -105,62 +111,68 @@ extends TabPanel {
 		healthLabelPanel.add(healthLabel);
 
 		// Prepare condition panel
-		JPanel conditionPanel = new JPanel(new GridLayout(5, 2, 0, 0));
+		JPanel conditionPanel = new JPanel(new SpringLayout());//GridLayout(5, 2, 0, 0));
 		conditionPanel.setBorder(new MarsPanelBorder());
+		//conditionPanel.setSize(180, 60);
 		centerContentPanel.add(conditionPanel, BorderLayout.NORTH);
 
 		// Prepare fatigue name label
-		JLabel fatigueNameLabel = new JLabel(Msg.getString("TabPanelHealth.fatigue"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel fatigueNameLabel = new JLabel(Msg.getString("TabPanelHealth.fatigue"), JLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(fatigueNameLabel);
 
 		// Prepare fatigue label
 		fatigueCache = condition.getFatigue();
 		fatigueLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(fatigueCache)), JLabel.RIGHT);
+		        formatter.format(fatigueCache)), JLabel.LEFT);
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
-		JLabel hungerNameLabel = new JLabel(Msg.getString("TabPanelHealth.hunger"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel hungerNameLabel = new JLabel(Msg.getString("TabPanelHealth.hunger"), JLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(hungerNameLabel);
 
 		// Prepare hunger label
 		hungerCache = condition.getHunger();
 		hungerLabel = new JLabel(Msg.getString("TabPanelHealth.millisols", //$NON-NLS-1$
-		        formatter.format(hungerCache)), JLabel.RIGHT);
+		        formatter.format(hungerCache)), JLabel.LEFT);
 		conditionPanel.add(hungerLabel);
 
 		//
 		// Prepare energy name label
-		JLabel energyNameLabel = new JLabel(Msg.getString("TabPanelHealth.energy"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel energyNameLabel = new JLabel(Msg.getString("TabPanelHealth.energy"), JLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(energyNameLabel);
 
 		// Prepare energy label
 		energyCache = condition.getEnergy();
 		energyLabel = new JLabel(Msg.getString("TabPanelHealth.kJ", //$NON-NLS-1$
-		        formatter.format(energyCache)), JLabel.RIGHT);
+		        formatter.format(energyCache)), JLabel.LEFT);
 		conditionPanel.add(energyLabel);
 
 
 		// Prepare stress name label
-		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), JLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(stressNameLabel);
 
 		// Prepare stress label
 		stressCache = condition.getStress();
 		stressLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(stressCache)), JLabel.RIGHT);
+		        formatter.format(stressCache)), JLabel.LEFT);
 		conditionPanel.add(stressLabel);
 
 		// Prepare performance rating label
-		JLabel performanceNameLabel = new JLabel(Msg.getString("TabPanelHealth.performance"), JLabel.LEFT); //$NON-NLS-1$
+		JLabel performanceNameLabel = new JLabel(Msg.getString("TabPanelHealth.performance"), JLabel.RIGHT); //$NON-NLS-1$
 		conditionPanel.add(performanceNameLabel);
 
 		// Performance rating label
 		performanceCache = person.getPerformanceRating() * 100D;
 		performanceLabel = new JLabel(Msg.getString("TabPanelHealth.percentage", //$NON-NLS-1$
-		        formatter.format(performanceCache)), JLabel.RIGHT);
+		        formatter.format(performanceCache)), JLabel.LEFT);
 		conditionPanel.add(performanceLabel);
 
+		// 2017-03-28 Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(conditionPanel,
+		                                5, 2, //rows, cols
+		                                100, 4,        //initX, initY
+		                                50, 3);       //xPad, yPad
 
 		// 2015-04-29 Added radiation dose info
 		// Prepare radiation panel
@@ -172,7 +184,7 @@ extends TabPanel {
 		JLabel radiationLabel = new JLabel(Msg.getString("TabPanelRadiation.label"), JLabel.CENTER); //$NON-NLS-1$
 		radiationPanel.add(radiationLabel, BorderLayout.NORTH);
 		radiationLabel.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
-		
+
 
 		// Prepare radiation scroll panel
 		JScrollPane radiationScrollPanel = new JScrollPane();
@@ -182,11 +194,11 @@ extends TabPanel {
 		radiationTableModel = new RadiationTableModel(person);
 
 		// Create radiation table
-		radiationTable = new ZebraJTable(radiationTableModel) {	
+		radiationTable = new ZebraJTable(radiationTableModel) {
 		    //2016-04-15 Implemented radiation table header tool tips
 		    protected JTableHeader createDefaultTableHeader() {
 		        return new JTableHeader(columnModel) {
-		            public String getToolTipText(MouseEvent e) {		            	
+		            public String getToolTipText(MouseEvent e) {
 		                String tip = null;
 		                java.awt.Point p = e.getPoint();
 		                int index = columnModel.getColumnIndexAtX(p.x);
@@ -202,7 +214,7 @@ extends TabPanel {
 		    }
 		};
 		//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
-		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
+		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 30));
 		radiationTable.setCellSelectionEnabled(false);
 		radiationScrollPanel.setViewportView(radiationTable);
 		//radiationTable.setToolTipText(Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
@@ -350,14 +362,14 @@ extends TabPanel {
 	                                  int row,
 	                                  int column) {
 	        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-	        //setToolTipText(...);	        
+	        //setToolTipText(...);
 	        //BalloonToolTip balloonToolTip = new BalloonToolTip();
 	        //balloonToolTip.createBalloonTip(value, ""); //$NON-NLS-1$
 
 	        return this;
 	    }
 	}
-	
+
 	/**
 	 * Internal class used as model for the radiation dose table.
 	 */
@@ -372,11 +384,11 @@ extends TabPanel {
 		private double dose[][];
 
 		//private BalloonToolTip balloonToolTip = new BalloonToolTip();
-		
+
 		private RadiationTableModel(Person person) {
 			radiation = person.getPhysicalCondition().getRadiationExposure();
 			dose = radiation.getDose();
-			
+
 			//balloonToolTip.createBalloonTip(radiationTable, Msg.getString("TabPanelRadiation.tooltip")); //$NON-NLS-1$
 
 		}
@@ -428,11 +440,11 @@ extends TabPanel {
 			String str = null;
 			if (column == 0) {
 				if (row == 0)
-					str = "30-Day";
+					str = THIRTY_DAY;
 				else if (row == 1)
-					str = "Annual";
+					str = ANNUAL;
 				else if (row == 2)
-					str = "Career";
+					str = CAREER;
 			}
 			else
 				str = Math.round(dose[row][column-1] * 100.0D)/100.0D + "";
@@ -443,7 +455,7 @@ extends TabPanel {
 			dose = radiation.getDose();
 			fireTableDataChanged();
 		}
-		
+
 	}
 
 

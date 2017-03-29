@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.AbstractTableModel;
@@ -42,6 +43,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -87,8 +89,8 @@ extends TabPanel {
 		favoriteLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		favoriteLabelPanel.add(favoriteLabel);
 
-		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 0, 0));
+		// 2017-03-28 Prepare SpringLayout for info panel.
+		JPanel infoPanel = new JPanel(new SpringLayout());//GridLayout(4, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		topContentPanel.add(infoPanel, BorderLayout.NORTH);
 
@@ -152,11 +154,17 @@ extends TabPanel {
 		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
 		JTextField activityTF = new JTextField(Conversion.capitalize(activity));
 		activityTF.setEditable(false);
-		activityTF.setColumns(15);
+		activityTF.setColumns(17);
 		//activityTF.requestFocus();
 		activityTF.setCaretPosition(0);
 		wrapper4.add(activityTF);
 		infoPanel.add(wrapper4);
+
+		// 2017-03-28 Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(infoPanel,
+		                                4, 2, //rows, cols
+		                                50, 10,        //initX, initY
+		                                10, 2);       //xPad, yPad
 
 		//JLabel activityLabel = new JLabel(Conversion.capitalize(activity), JLabel.RIGHT);
 		//infoPanel.add(activityLabel);
@@ -228,11 +236,11 @@ extends TabPanel {
                 //setIcon(value);
 				return this;
 */
-/*		
+/*
             }
         };
-   
-*/        
+
+*/
         //table.getColumnModel().getColumn(1).setCellRenderer(r);
 
 		table.setPreferredScrollableViewportSize(new Dimension(225, 100));

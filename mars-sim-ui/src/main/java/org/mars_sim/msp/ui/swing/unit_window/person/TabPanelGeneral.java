@@ -176,7 +176,7 @@ extends TabPanel {
 		SpringUtilities.makeCompactGrid(infoPanel,
 		                                7, 2, //rows, cols
 		                                50, 10,        //initX, initY
-		                                10, 10);       //xPad, yPad
+		                                10, 5);       //xPad, yPad
 	}
 
 	/**

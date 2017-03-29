@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
@@ -54,6 +55,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.BalloonToolTip;
 import org.mars_sim.msp.ui.swing.tool.MultisortTableHeaderCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.tool.StarRater;
 import org.mars_sim.msp.ui.swing.tool.TableStyle;
 import org.mars_sim.msp.ui.swing.tool.ZebraJTable;
@@ -152,17 +154,16 @@ implements ActionListener {
 			topContentPanel.add(firstPanel, BorderLayout.NORTH);
 
 			// Prepare job panel
-			JPanel topPanel = new JPanel(new GridLayout(2, 2, 0, 0));
+			JPanel topPanel = new JPanel(new SpringLayout());//GridLayout(2, 2, 0, 0));
 			topPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			topPanel.setBorder(new MarsPanelBorder());
 			firstPanel.add(topPanel);
 
-			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new GridLayout(3, 1, 0, 0)); //
-			topPanel.add(jobPanel);
+
 
 			// Prepare job label
 			jobLabel = new JLabel(Msg.getString("TabPanelCareer.jobType"), JLabel.CENTER); //$NON-NLS-1$
-			jobPanel.add(jobLabel);
+			topPanel.add(jobLabel);
 			//balloonToolTip.createBalloonTip(jobLabel, Msg.getString("TabPanelCareer.jobType.tooltip")); //$NON-NLS-1$
 
 
@@ -177,7 +178,12 @@ implements ActionListener {
 			jobComboBox = new JComboBoxMW<Object>(jobNames.toArray());
 			jobComboBox.setSelectedItem(jobCache);
 			jobComboBox.addActionListener(this);
+
+			JPanel jobPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); //new GridLayout(3, 1, 0, 0)); //
 			jobPanel.add(jobComboBox);
+
+			topPanel.add(jobPanel);
+
 			//balloonToolTip.createBalloonTip(jobComboBox, Msg.getString("TabPanelCareer.jobComboBox.tooltip")); //$NON-NLS-1$
 
 
@@ -185,26 +191,36 @@ implements ActionListener {
 			// if true, disable the combobox
 
 
-			// Prepare role panel
-			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //GridLayout(1, 2));
-			//rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-			topPanel.add(rolePanel);
 
 			// Prepare role label
 			roleLabel = new JLabel(Msg.getString("TabPanelCareer.roleType"));//, JLabel.RIGHT); //$NON-NLS-1$
 			roleLabel.setSize(10, 2);
-			rolePanel.add(roleLabel);//, JLabel.BOTTOM);
+			topPanel.add(roleLabel);//, JLabel.BOTTOM);
 
 			roleCache = person.getRole().toString();
 			roleTF = new JTextField(roleCache);
 			roleTF.setEditable(false);
 			//roleTF.setBounds(0, 0, 0, 0);
-			roleTF.setColumns(13);
+			roleTF.setColumns(15);
+
+			// Prepare role panel
+			JPanel rolePanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); //GridLayout(1, 2));
+			//rolePanel.setSize(120, 20);
+			//rolePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 			rolePanel.add(roleTF);
 
-			String roleTip = Msg.getString("TabPanelCareer.roleType.tooltip"); //$NON-NLS-1$
+			topPanel.add(rolePanel);
+
+			//String roleTip = Msg.getString("TabPanelCareer.roleType.tooltip"); //$NON-NLS-1$
 			//balloonToolTip.createBalloonTip(roleLabel, roleTip);
 			//balloonToolTip.createBalloonTip(roleTF, roleTip);
+
+			// 2017-03-28 Prepare SpringLayout
+			SpringUtilities.makeCompactGrid(topPanel,
+			                                2, 2, //rows, cols
+			                                80, 10,        //initX, initY
+			                                20, 10);       //xPad, yPad
+
 
 			List<JobAssignment> list = person.getJobHistory().getJobAssignmentList();
 			int size = list.size();
