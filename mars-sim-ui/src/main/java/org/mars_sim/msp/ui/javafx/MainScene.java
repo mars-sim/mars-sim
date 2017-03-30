@@ -86,6 +86,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -1051,7 +1052,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
-		time_ratio_label0.setPadding(new Insets(1, 1, 1, 10));
+		time_ratio_label0.setPadding(new Insets(1, 1, 1, 5));
 
         Label time_ratio_label = new Label();
         time_ratio_label.setStyle("-fx-text-fill: #206982;"
@@ -1059,7 +1060,7 @@ public class MainScene {
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: normal;");
 		time_ratio_label.setPadding(new Insets(1, 1, 1, 10));
-		s0.append(timeRatioString((int)initial_time_ratio)).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
+		s0.append((int)initial_time_ratio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
 		time_ratio_label.setText(s0.toString());
 
 
@@ -1069,7 +1070,7 @@ public class MainScene {
         			+ "-fx-font-size: 12px;"
         		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
         			+ "-fx-font-weight: italic;");
-        real_time_label0.setPadding(new Insets(1, 1, 1, 10));
+        real_time_label0.setPadding(new Insets(1, 1, 1, 5));
 
 
         Label real_time_label = new Label();
@@ -1108,7 +1109,7 @@ public class MainScene {
 					masterClock.setTimeRatio(newTimeRatio);
 
 	            	StringBuilder s0 = new StringBuilder();
-					s0.append(timeRatioString((int)newTimeRatio)).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
+					s0.append((int)newTimeRatio).append(DEFAULT).append(default_ratio).append(CLOSE_PAR);
 					time_ratio_label.setText(s0.toString());
 
 					StringBuilder s1 = new StringBuilder();
@@ -1126,7 +1127,7 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        TPSLabel0.setPadding(new Insets(1, 1, 1, 10));
+        TPSLabel0.setPadding(new Insets(1, 1, 1, 5));
 
         TPSLabel = new Label();
         TPSLabel.setStyle("-fx-text-fill: #065185;"
@@ -1143,7 +1144,7 @@ public class MainScene {
     			+ "-fx-font-size: 12px;"
     		    + "-fx-text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;"
     			+ "-fx-font-weight: italic;");
-        upTimeLabel0.setPadding(new Insets(1, 1, 1, 10));
+        upTimeLabel0.setPadding(new Insets(1, 1, 1, 5));
 
         upTimeLabel = new Label();
         upTimeLabel.setStyle("-fx-text-fill: #065185;"
@@ -1152,14 +1153,18 @@ public class MainScene {
     			+ "-fx-font-weight: italic;");
         upTimeLabel.setPadding(new Insets(1, 1, 1, 10));
         if (uptimer != null)
-        upTimeLabel.setText (uptimer.getUptime());
-
+        	upTimeLabel.setText (uptimer.getUptime());
 
         GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.CENTER);
-		gridPane.setPadding(new Insets(1, 1, 1, 1));
+		gridPane.setPadding(new Insets(1, 5, 1, 1));
 		gridPane.setHgap(1.0);
 		gridPane.setVgap(1.0);
+
+		ColumnConstraints right = new ColumnConstraints();
+	    right.setPrefWidth(earthTimeButton.getPrefWidth()*.6);
+	    ColumnConstraints left = new ColumnConstraints();
+	    left.setPrefWidth(earthTimeButton.getPrefWidth()*.4);
 
 		GridPane.setConstraints(time_ratio_label, 1, 0);
 		GridPane.setConstraints(real_time_label, 1, 1);
@@ -1171,20 +1176,18 @@ public class MainScene {
 		GridPane.setConstraints(TPSLabel0, 0, 2);
 		GridPane.setConstraints(upTimeLabel0, 0, 3);
 
-		GridPane.setHalignment(time_ratio_label, HPos.RIGHT);
-		GridPane.setHalignment(real_time_label, HPos.RIGHT);
-		GridPane.setHalignment(TPSLabel, HPos.RIGHT);
-		GridPane.setHalignment(upTimeLabel, HPos.RIGHT);
+		GridPane.setHalignment(time_ratio_label, HPos.CENTER);
+		GridPane.setHalignment(real_time_label, HPos.CENTER);
+		GridPane.setHalignment(TPSLabel, HPos.CENTER);
+		GridPane.setHalignment(upTimeLabel, HPos.CENTER);
 
 		GridPane.setHalignment(time_ratio_label0, HPos.RIGHT);
 		GridPane.setHalignment(real_time_label0, HPos.RIGHT);
 		GridPane.setHalignment(TPSLabel0, HPos.RIGHT);
 		GridPane.setHalignment(upTimeLabel0, HPos.RIGHT);
 
-		//GridPane.setValignment(node, VPos.CENTER);
-
+		gridPane.getColumnConstraints().addAll(left, right);
 		gridPane.getChildren().addAll(time_ratio_label0, time_ratio_label, real_time_label0, real_time_label, TPSLabel0, TPSLabel, upTimeLabel0, upTimeLabel);
-
 
         VBox vBox = new VBox();
 		vBox.setAlignment(Pos.CENTER);
@@ -1192,7 +1195,7 @@ public class MainScene {
         speedPane.getChildren().addAll(vBox);
 
 	}
-
+/*
 	public String timeRatioString(int t) {
 		String s = null;
 		if (t < 10)
@@ -1205,7 +1208,7 @@ public class MainScene {
 			s = "" + t;
 		return s;
 	}
-
+*/
     public static Label createIconLabel(String iconName, int iconSize){
         return LabelBuilder.create()
                 .text(iconName)
