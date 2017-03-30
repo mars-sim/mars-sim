@@ -196,12 +196,14 @@ public class TableViewCombo {
     				.replaceAll("[ ]+", " ")
     	    		// remove multiple dot to one single dot
     				.replaceAll("[\\.]+", ".")
+    	    		// remove multiple comma to one single comma
+    				.replaceAll("[\\,]+", ",")
     				//.replaceAll("[\\`\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\_\\+\\-\\=\\{\\}\\|\\;\\'\\:\\,\\/\\<\\>\\?]+", "");
 					//.replaceAll("[`~!@#$%^&*()_+-={}|;':,/<>?]+", "");
     	    		// remove all underscores
     				.replaceAll("[\\_]+", "")
     	    		// remove everything except for dot, letters, digits, underscores and whitespace.
-    				.replaceAll("[^\\w\\s&&[^.]]+", "");
+    				.replaceAll("[^\\w\\s&&[^.]&&[^,]]+", "");
     		//see http://stackoverflow.com/questions/13494912/java-regex-for-replacing-all-special-characters-except-underscore
     	}
     	else if (col == botCol || (col == settlerCol)) {

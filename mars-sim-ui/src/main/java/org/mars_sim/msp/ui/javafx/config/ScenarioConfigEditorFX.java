@@ -1186,6 +1186,14 @@ public class ScenarioConfigEditorFX {
 			int size = getRowCount();
 			for (int x = 0; x < size; x++) {
 
+				/// 2017-03-29 Add checking for comma as well
+				boolean isDot_lat = false;
+				boolean isComma_lat = false;
+				boolean isDot_lon = false;
+				boolean isComma_lon = false;
+
+				// CHECK LATITUDE
+
 				String latStr = tableViewCombo.getAllData().get(x).getLatitude().toString().trim().toUpperCase();;
 
 				// check if it's empty or having a length less than 2 characters.
@@ -1212,33 +1220,39 @@ public class ScenarioConfigEditorFX {
 						));
 				}
 
-				else {
-					String numLatitude = latStr.substring(0, latStr.length() - 1);
-					try {
-						double doubleLatitude = Double.parseDouble(numLatitude.trim());
-						if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-							setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-							return;
-						}
-					}
-					catch(NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
-						e.printStackTrace();
-						return;
-					}
+				//else {
+					//String numLatitude = latStr.substring(0, latStr.length() - 1);
+					//try {
+						//double doubleLatitude = Double.parseDouble(numLatitude.trim());
+						//if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
+							//setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+							//return;
+						//}
+					//}
+					//catch(NumberFormatException e) {
+					//	setError(Msg.getString("SimulationConfigEditor.error.latitudeBeginWith")); //$NON-NLS-1$
+					//	e.printStackTrace();
+					//	return;
+					//}
+				//}
+
+				// check if the second from the last character is a digit or a letter, if a letter, setError
+				if (Character.isLetter(latStr.charAt(latStr.length() - 2))){
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
+					return;
 				}
 
 				// check if the second from the last character is a whitespace or not, if not true, setError
 				if (latStr.charAt(latStr.length() - 2) != ' '){
 					//System.out.println("has no whitespace");
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeMissingSpace")); //$NON-NLS-1$
 					return;
 				}
 
 				if (latStr.length() > 2) {
 					// check if the third from the last character is a digit or not, if not true, setError
 					if (!Character.isDigit(latStr.charAt(latStr.length() - 3))){
-						//System.out.println(">2");
+						System.out.println("3rd from last");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
@@ -1249,9 +1263,14 @@ public class ScenarioConfigEditorFX {
 				//}
 
 				if (latStr.length() > 3) {
+					/// 2017-03-29 Add checking for comma as well
+					if (latStr.charAt(latStr.length() - 4) == '.')
+						isDot_lat = true;
+					if (latStr.charAt(latStr.length() - 4) == ',')
+						isComma_lat = true;
 					// check if the fourth from the last character is a whitespace or not, if not true, setError
-					if (latStr.charAt(latStr.length() - 4) != '.'){
-						//System.out.println(">3");
+					if (!(isDot_lat || isComma_lat)){
+						System.out.println("4th from last : " + latStr.charAt(latStr.length() - 4));
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
@@ -1260,14 +1279,24 @@ public class ScenarioConfigEditorFX {
 				if (latStr.length() > 4) {
 					// check if the fifth from the last character is a digit or not, if not true, setError
 					if (!Character.isDigit(latStr.charAt(latStr.length() - 5))){
-						//System.out.println(">4");
+						System.out.println("5th from last");
 						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
 				}
 
-				String longStr = tableViewCombo.getAllData().get(x).getLongitude().toString().trim().toUpperCase();;
+				if (latStr.length() > 5) {
+					// check if the sixth from the last character is a digit or not, if not true, setError
+					if (!Character.isDigit(latStr.charAt(latStr.length() - 6))){
+						System.out.println("6th from last");
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeBadFormat")); //$NON-NLS-1$
+						return;
+					}
+				}
 
+				// CHECK LONGITUDE
+
+				String longStr = tableViewCombo.getAllData().get(x).getLongitude().toString().trim().toUpperCase();;
 
 				if (longStr == null || longStr.length() < 2 ) {
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
@@ -1284,25 +1313,32 @@ public class ScenarioConfigEditorFX {
 					return;
 				}
 
-				else {
-					String numLong = longStr.substring(0, longStr.length() - 1);
-					try {
-						double doubleLong = Double.parseDouble(numLong.trim());
-						if ((doubleLong < 0) || (doubleLong > 180)) {
-							setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-							return;
-						}
-					}
-					catch(NumberFormatException e) {
-						setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
-						e.printStackTrace();
-						return;
-					}
-				}
+				//else {
+					//String numLong = longStr.substring(0, longStr.length() - 1);
+					//try {
+						//double doubleLong = Double.parseDouble(numLong.trim());
+						//if ((doubleLong < 0) || (doubleLong > 180)) {
+							//setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+							//return;
+						//}
+					//}
+					//catch(NumberFormatException e) {
+					//	setError(Msg.getString("SimulationConfigEditor.error.longitudeBeginWith")); //$NON-NLS-1$
+					//	e.printStackTrace();
+					//	return;
+					//}
+				//}
 
 				// check if the second from the last character is a digit or a letter, if a letter, setError
 				if (Character.isLetter(longStr.charAt(longStr.length() - 2))){
 					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
+					return;
+				}
+
+				// check if the second from the last character is a whitespace or not, if not true, setError
+				if (longStr.charAt(longStr.length() - 2) != ' '){
+					//System.out.println("has no whitespace");
+					setError(Msg.getString("SimulationConfigEditor.error.longitudeMissingSpace")); //$NON-NLS-1$
 					return;
 				}
 
@@ -1313,14 +1349,15 @@ public class ScenarioConfigEditorFX {
 						return;
 					}
 				}
-				//else {
-				//	setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
-				//	return;
-				//}
 
 				if (longStr.length() > 3) {
+					/// 2017-03-29 Add checking for comma as well
+					if (longStr.charAt(longStr.length() - 4) == '.')
+						isDot_lon = true;
+					if (longStr.charAt(longStr.length() - 4) == ',')
+						isComma_lon = true;
 					// check if the fourth from the last character is a whitespace or not, if not true, setError
-					if (longStr.charAt(longStr.length() - 4) != '.'){
+					if (!(isDot_lon || isComma_lon)){
 						setError(Msg.getString("SimulationConfigEditor.error.longitudeBadFormat")); //$NON-NLS-1$
 						return;
 					}
@@ -1334,7 +1371,12 @@ public class ScenarioConfigEditorFX {
 					}
 				}
 
+				// NOW COMPARE BETWEEN LATITUDES
+
 				if (x + 1 < size ) {
+
+					// CHECK LATITUDES
+
 					// if it has another settlement after this one
 					String latNextStr = tableViewCombo.getAllData().get(x+1).getLatitude().toString().trim().toUpperCase();;
 
@@ -1351,9 +1393,27 @@ public class ScenarioConfigEditorFX {
 
 						String numLat = latStr.substring(0, latStr.length() - 1);
 						String numLatNext = latNextStr.substring(0, latNextStr.length() - 1);
+
+						//System.out.println("isComma_lat : " + isComma_lat);
+
+						/// 2017-03-29 Add checking for comma as well
+						if (latNextStr.length() > 3) {
+							if (latNextStr.charAt(latNextStr.length() - 4) == ',')
+								isComma_lat = true;
+						}
+
+						if (isComma_lat) {
+							numLat = numLat.replace(",", ".");
+							numLatNext = numLatNext.replace(",", ".");
+							//System.out.println("numLatNext : " + numLatNext);
+						}
+
 						try {
+
 							double doubleLat = Double.parseDouble(numLat.trim());
 							double doubleLatNext = Double.parseDouble(numLatNext.trim());
+
+
 							if (doubleLat < 0 || doubleLat > 180
 								|| doubleLatNext < 0 || doubleLatNext > 180
 								) {
@@ -1381,6 +1441,8 @@ public class ScenarioConfigEditorFX {
 
 					}
 
+					// CHECK LONGITUDES
+
 					String longNextStr = tableViewCombo.getAllData().get(x+1).getLongitude().toString().trim().toUpperCase();;
 
 					if ( longNextStr == null ||  longNextStr.length() < 2) {
@@ -1395,9 +1457,22 @@ public class ScenarioConfigEditorFX {
 					else {
 						String numLong = longStr.substring(0, longStr.length() - 1);
 						String numLongNext = longNextStr.substring(0, longNextStr.length() - 1);
+
+						/// 2017-03-29 Add checking for comma as well
+						if (longNextStr.length() > 3) {
+							if (longNextStr.charAt(longNextStr.length() - 4) == ',')
+								isComma_lon = true;
+						}
+						if (isComma_lon) {
+							numLong = numLong.replace(",", ".");
+							numLongNext = numLongNext.replace(",", ".");
+						}
+
 						try {
+
 							double doubleLong = Double.parseDouble(numLong.trim());
 							double doubleLongNext = Double.parseDouble(numLongNext.trim());
+
 							if (doubleLong < 0 || doubleLong > 180
 								|| doubleLongNext < 0 || doubleLongNext > 180
 								) {
