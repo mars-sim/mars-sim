@@ -40,13 +40,13 @@
 		<artifactId>plexus-core</artifactId>
 		<version>0.9</version>
 	</dependency>
-	<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+	<!-- https://mvnrepository.com/artifact/com.google.guava/guava (1.4 MB)-->
 	<dependency>
 		<groupId>com.google.guava</groupId>
 		<artifactId>guava</artifactId>
 		<version>21.0</version>
 	</dependency>
-	<!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
+	<!-- https://mvnrepository.com/artifact/com.google.inject/guice (303 KB)-->
    	<dependency>
 		<groupId>com.google.inject</groupId>
 		<artifactId>guice</artifactId>
@@ -67,12 +67,13 @@
 		<version>1.0.4</version>
 	</dependency>
 	<!-- http://tukaani.org/xz/java.html
-		https://mvnrepository.com/artifact/org.tukaani/xz-->
+		https://mvnrepository.com/artifact/org.tukaani/xz (120 KB)-->
 	<dependency>
 		<groupId>org.tukaani</groupId>
 		<artifactId>xz</artifactId>
 		<version>1.6</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.reactfx/reactfx : 418KB -->
 	<dependency>
 		<groupId>org.reactfx</groupId>
 		<artifactId>reactfx</artifactId>

@@ -221,6 +221,9 @@ extends ToolWindow {
         statusBar.addRightComponent(timeLabel, false);
         //statusBar.addRightComponent(new JLabel(new AngledLinesWindowsCornerIcon()), true);
 */
+    	// TODO: use RichTextFX for javaFX mode
+    	// https://github.com/TomasMikula/RichTextFX/wiki/RichTextFX-CSS-Reference-Guide
+
     	// 2015-10-24 Create MarqueeTicker
 		marqueeTicker = new MarqueeTicker(this);
 		//marqueeTicker.setBackground(Color.BLACK);
