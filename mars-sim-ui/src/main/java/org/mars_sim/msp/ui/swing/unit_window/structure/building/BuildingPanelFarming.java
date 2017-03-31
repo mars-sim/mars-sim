@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanelFarming.java
- * @version 3.07 2015-09-19
+ * @version 3.1.0 2017-03-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
@@ -118,13 +118,13 @@ implements Serializable, MouseListener {
 	private CropTableModel cropTableModel;
 
 	private JScrollPane listScrollPanel;
-	
+
 	/** The farming building. */
 	private Farming farm;
 	private CropType cropType;
 	private CropType deletingCropType;
 
-	
+
 	/**
 	 * Constructor.
 	 * @param farm {@link Farming} the farming building this panel is for.
@@ -147,7 +147,7 @@ implements Serializable, MouseListener {
 		add(labelPanel, BorderLayout.NORTH);
 		//labelPanel.setOpaque(false);
 		//labelPanel.setBackground(new Color(0,0,0,128));
-		
+
 		// Prepare farming label
 		// 2014-11-21 Changed font type, size and color and label text
 		// 2014-11-21 Added internationalization for the three labels
@@ -165,7 +165,7 @@ implements Serializable, MouseListener {
 	    radPanel.add(radLabel);
 		//balloonToolTip.createBalloonTip(radLabel, "<html>Estimated amount of available <br> sunlight on top of the <br> greenhouse roof outside</html>");
 		labelPanel.add(radPanel);
-		
+
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
 		JPanel farmersPanel = new JPanel(new FlowLayout());
@@ -243,19 +243,19 @@ implements Serializable, MouseListener {
                 String name = null;
                 java.awt.Point p = e.getPoint();
                 int rowIndex = rowAtPoint(p);
-                int colIndex = columnAtPoint(p);
+                //int colIndex = columnAtPoint(p);
     			StringBuilder result = new StringBuilder("");
 
                 try {
                 	//if (colIndex == 1)
                 		result.append(buildCropToolTip(rowIndex, null)).append("</html>");
                 } catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
-                }			
+                }
     			return result.toString();
 
             }
         }; // end of JTable
-        
+
 		cropTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
 		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
 		cropTable.getColumnModel().getColumn(0).setPreferredWidth(5);
@@ -274,7 +274,7 @@ implements Serializable, MouseListener {
 	    add(queuePanel, BorderLayout.SOUTH);
 	    //queuePanel.setOpaque(false);
 	    //queuePanel.setBackground(new Color(0,0,0,128));
-	    
+
 	    JPanel selectPanel = new JPanel(new FlowLayout());
 	    //selectPanel.setOpaque(false);
 	    //selectPanel.setBackground(new Color(0,0,0,128));
@@ -329,7 +329,7 @@ implements Serializable, MouseListener {
 			}
 			});
 		buttonPanel.add(delButton, BorderLayout.CENTER);
-	    
+
        	// 2014-12-09 Added crop combo box model.
         CropConfig config = SimulationConfig.instance().getCropConfiguration();
 		List<CropType> cropTypeList = config.getCropList();
@@ -337,10 +337,10 @@ implements Serializable, MouseListener {
 		Collections.sort(cropTypeList);
 		cropCache = new ArrayList<CropType>(cropTypeList);
 		comboBoxModel = new DefaultComboBoxModel<CropType>();
-		
+
 		//tooltipArray = new String[cropCache.size()];
 		tooltipArray = new ArrayList();
-		
+
 		Iterator<CropType> i = cropCache.iterator();
 		int j = 0;
 		while (i.hasNext()) {
@@ -349,8 +349,8 @@ implements Serializable, MouseListener {
 			//tooltipArray[j] = buildCropToolTip(j, c).toString();
 	    	tooltipArray.add(buildCropToolTip(j, c).toString());
 	    	j++;
-		}		
-    	//System.out.println("tooltipArray is "+ tooltipArray);	
+		}
+    	//System.out.println("tooltipArray is "+ tooltipArray);
 		//cropType = cropTypeList.get(0);
 
 		// Create comboBox.
@@ -375,7 +375,7 @@ implements Serializable, MouseListener {
             }
             });
 		comboBox.setMaximumRowCount(10);
-	    //balloonToolTip.createBalloonTip(comboBox, "<html>Select a crop from here</html>");	    
+	    //balloonToolTip.createBalloonTip(comboBox, "<html>Select a crop from here</html>");
 	    selectPanel.add(comboBox);
 
 		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); //new FlowLayout(FlowLayout.CENTER));
@@ -393,7 +393,7 @@ implements Serializable, MouseListener {
 	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
 		queueListPanel.add(queueButtonLabelPanel);
 	    queuePanel.add(queueListPanel, BorderLayout.CENTER); // 2nd add
-	    
+
 		// Create scroll panel for population list.
 		listScrollPanel = new JScrollPane();
 		listScrollPanel.setPreferredSize(new Dimension(150, 150));
@@ -409,7 +409,7 @@ implements Serializable, MouseListener {
 		listModel = new ListModel(); //settlement);
 		// Create list
 		list = new JList<CropType>(listModel);
-	    //balloonToolTip.createBalloonTip(list, "<html>Crops in the queue</html>");	
+	    //balloonToolTip.createBalloonTip(list, "<html>Crops in the queue</html>");
 		listScrollPanel.setViewportView(list);
 		list.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
@@ -432,13 +432,13 @@ implements Serializable, MouseListener {
 	 * Builds an tooltip for displaying the growth parameters of a crop
 	 */
 	public StringBuilder buildCropToolTip(int row, CropType ct) {
-		
+
 		StringBuilder result = new StringBuilder("");
 		String cropName, cat;
 		double time;
 		double mass0, mass1;
 		double water, PAR;
- 
+
         if (ct == null) {
     		List<Crop> crops = farm.getCrops();
             Crop crop = crops.get(row);
@@ -458,9 +458,9 @@ implements Serializable, MouseListener {
         	mass1 = ct.getInedibleBiomass();
         	time = ct.getGrowingTime() /1000;
         	PAR = ct.getDailyPAR();
-        	
+
         }
-        
+
         result.append("<html>");
     	result.append("&emsp;&nbsp;Crop Name:&emsp;");
     	result.append(cropName);
@@ -476,7 +476,7 @@ implements Serializable, MouseListener {
     	result.append(water).append(" %");
     	result.append("<br>&nbsp;&nbsp;PAR required:&emsp;");
     	result.append(PAR).append(" mol/m2/day");
-    	
+
     	return result;
 	}
 	/*
@@ -521,7 +521,7 @@ implements Serializable, MouseListener {
 */
     }
 
-    
+
 	/**
 	 * Selects Crop
 	 * @param table
@@ -769,14 +769,14 @@ implements Serializable, MouseListener {
 				//else if (phaseType == PhaseType.GROWING) {
 				//	growth = (int) (growingCompleted * 100D);
 				//}
-				//else 
+				//else
 				if (phaseType == PhaseType.HARVESTING)
 					growth = (int) (growingCompleted * 100D);
 				else if (phaseType == PhaseType.FINISHED)
 					growth = 100;
 				else
-					growth = (int) (growingCompleted * 100D);				
-				
+					growth = (int) (growingCompleted * 100D);
+
 				return String.valueOf(growth) + "%";
 			}
 			// 2014-10-10 mkung: added column 4 showing the crop's category
@@ -790,10 +790,10 @@ implements Serializable, MouseListener {
 		}
 	}
 
-	
+
 	class ComboboxToolTipRenderer extends DefaultListCellRenderer {
 	    ArrayList tooltips;
-	    
+
 	    @Override
 	    public Component getListCellRendererComponent(JList list, Object value,
 	                        int index, boolean isSelected, boolean cellHasFocus) {
@@ -801,8 +801,8 @@ implements Serializable, MouseListener {
 	    	JComponent comp = (JComponent) super.getListCellRendererComponent(list,
 	                value, index, isSelected, cellHasFocus);
 
-	        if (-1 < index && null != value && null != tooltipArray) { 
-	        	list.setToolTipText((String) tooltipArray.get(index));	
+	        if (-1 < index && null != value && null != tooltipArray) {
+	        	list.setToolTipText((String) tooltipArray.get(index));
 	        	//System.out.println("value.toString is "+ value.toString());
 	        	//System.out.println("list.toString is "+ list.toString());
 	        	//balloonToolTip.createListItemBalloonTip(list, (String)(tooltipArray.get(index)), index);
@@ -812,7 +812,7 @@ implements Serializable, MouseListener {
 
 	    public void setTooltips(ArrayList tooltipArray) {
 	        this.tooltips = tooltipArray;
-	        
+
 	    }
 	}
 
@@ -821,7 +821,7 @@ implements Serializable, MouseListener {
 
 		private static final long serialVersionUID = 1L;
 		private String prompt;
-	
+
 		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 	    // Width doesn't matter as the combo box will size
 	    //private Dimension preferredSize = new Dimension(0, 20);
@@ -832,19 +832,19 @@ implements Serializable, MouseListener {
 		public PromptComboBoxRenderer(String prompt) {
 			this.prompt = prompt;
 		}
-	    
+
 		/*
 		 *  Custom rendering to display the prompt text when no item is selected
 		 */
 		// 2014-12-09 Added color rendering
 		public Component getListCellRendererComponent(
 			JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			
+
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			
+
 				Component c = defaultRenderer.getListCellRendererComponent(
 		                list, value, index, isSelected, cellHasFocus);
-    
+
 			if (value == null) {
 				setText(Conversion.capitalize(prompt));
 				return this;
@@ -860,19 +860,19 @@ implements Serializable, MouseListener {
 	            //        list, Conversion.capitalize(value.toString()), index, isSelected, cellHasFocus);
 				//CropType ct = (CropType) value;
 				//setText(Conversion.capitalize(ct.getName()));
-				//String s = buildCropToolTip(index).toString(); 
+				//String s = buildCropToolTip(index).toString();
 			    //balloonToolTip.createBalloonTip(list, s);
 			//}
-			
+
 			if (c instanceof JLabel) {
-				
+
 	            if (isSelected) {
 	                //c.setBackground(Color.orange);
 	            } else {
 	                //c.setBackground(Color.white);
 	                //c.setBackground(new Color(51,25,0,128));
 	            }
-	            
+
 	        } else {
 	        	//c.setBackground(Color.white);
 	            //c.setBackground(new Color(51,25,0,128));
@@ -892,7 +892,7 @@ implements Serializable, MouseListener {
 			cropCache.clear();
 			cropCache = null;
 		}
-		
+
 		farm = null;
 		tooltipArray = null;
 		//balloonToolTip = null;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropType.java
- * @version 3.08 2015-04-08
+ * @version 3.1.0 2017-03-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function.farming;
@@ -40,7 +40,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	private Map<Integer, Phase> phases = new HashMap<>();
 	/** The type of crop */
 	private CropCategoryType cropCategoryType;
-	
+
 
 	/**
 	 * Constructor.
@@ -53,11 +53,11 @@ public class CropType implements Serializable, Comparable<CropType> {
 	 * @param dailyPAR
 	 * @param a map of phases
 	 */
-	public CropType(String name, double growingTime, 
-			CropCategoryType cropCategoryType, double edibleBiomass, 
-			double edibleWaterContent, double inedibleBiomass, 
+	public CropType(String name, double growingTime,
+			CropCategoryType cropCategoryType, double edibleBiomass,
+			double edibleWaterContent, double inedibleBiomass,
 			double dailyPAR, Map<Integer, Phase> phases) {
-		
+
 		this.name = name;
 		this.growingTime = growingTime;
 		this.cropCategoryType = cropCategoryType;
@@ -85,7 +85,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	public double getGrowingTime() {
 		return growingTime;
 	}
-	
+
 	/**
 	* Gets the crop's category type.
 	* @return cropCategoryType
@@ -93,7 +93,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	public CropCategoryType getCropCategoryType() {
 		return cropCategoryType;
 	}
-	
+
 	/**
 	* Gets the edible biomass
 	* @return crop's edible biomass (grams per m^2 per day)
@@ -101,7 +101,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 	public double getEdibleBiomass() {
 		return edibleBiomass;
 	}
-	
+
 	/**
 	* Gets the edible water content
 	* @return crop's edible water content (grams per m^2 per day)
@@ -110,7 +110,7 @@ public class CropType implements Serializable, Comparable<CropType> {
 		//System.out.println(name + "'s water content in getEdibleWaterContent() is " + edibleWaterContent);
 		return edibleWaterContent;
 	}
-	
+
 	/**
 	* Gets the inedible biomass
 	* @return crop's inedible biomass (grams per m^2 per day)
@@ -126,20 +126,20 @@ public class CropType implements Serializable, Comparable<CropType> {
 	public double getDailyPAR() {
 		return dailyPAR;
 	}
-	
+
 	/**
 	 * String representation of this cropType.
 	 * @return The settlement and cropType's name.
 	 */
 	// 2014-12-09 Added toString()
 	public String toString() {
-		return name;//Conversion.capitalize(name);
+		return Conversion.capitalize(name);
 	}
 
 	public Map<Integer, Phase> getPhases() {
 		return phases;
 	}
-	
+
 	/**
 	 * Compares this object with the specified object for order.
 	 * @param o the Object to be compared.

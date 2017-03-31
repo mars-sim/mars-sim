@@ -122,6 +122,7 @@
 			<resource type="kidney bean tissue culture" amount="0.1" />
 			<resource type="lettuce tissue culture" amount="0.1" />
 			<resource type="morel Mushroom tissue culture" amount="0.1" />
+			<resource type="white mustard tissue culture" amount="0.1" />
 			<resource type="peas tissue culture" amount="0.1" />
 			<resource type="peanut tissue culture" amount="0.1" />
 			<resource type="potato tissue culture" amount="0.1" />
@@ -134,10 +135,13 @@
 			<resource type="strawberry tissue culture" amount="0.1" />
 			<resource type="sugarcane tissue culture" amount="0.1" />
 			<resource type="swiss Chard tissue culture" amount="0.1" />
+			<resource type="taro tissue culture" amount="0.1" />			
 			<resource type="tomato tissue culture" amount="0.1" />
 			<resource type="wheat tissue culture" amount="0.1" />
 			<resource type="white onion tissue culture" amount="0.1" />
-
+			<resource type="white rice tissue culture" amount="0.1" />			
+			<resource type="yam tissue culture" amount="0.1" />	
+			
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />
@@ -245,32 +249,36 @@
 			<resource type="Fertilizer" amount="50.0" />
 
 			<!-- Crop -->
-			<resource type="Celery" amount="50.0" />
-			<resource type="Tomato" amount="50.0" />
-			<resource type="Peas" amount="50.0" />
-			<resource type="Swiss Chard" amount="50.0" />
-			<resource type="White Rice" amount="50.0" />
-			<resource type="Soybean" amount="50.0" />
-			<resource type="White Onion" amount="50.0" />
-			<resource type="Rice" amount="50.0" />
-			<resource type="Kidney Bean" amount="50.0" />
-			<resource type="Wheat" amount="50.0" />
+			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cabbage" amount="50.0" />
 			<resource type="Carrot" amount="50.0" />
-			<resource type="Green Onion" amount="50.0" />
-			<resource type="Peanut" amount="50.0" />
-			<resource type="Potato" amount="50.0" />
-			<resource type="Sesame" amount="50.0" />
-			<resource type="Garlic" amount="50.0" />
-			<resource type="Lettuce" amount="50.0" />
-			<resource type="Ginger" amount="50.0" />
-			<resource type="Sugarcane" amount="50.0" />
-			<resource type="Strawberry" amount="50.0" />
-			<resource type="Quinoa" amount="50.0" />
+			<resource type="Celery" amount="50.0" />
 			<resource type="Cranberry" amount="50.0" />
-			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
+			<resource type="Garlic" amount="50.0" />
+			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+			<resource type="Green Onion" amount="50.0" />
+			<resource type="Kidney Bean" amount="50.0" />
+			<resource type="Lettuce" amount="50.0" />
+			<resource type="Peanut" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Quinoa" amount="50.0" />
+			<resource type="Rice" amount="50.0" />
+			<resource type="Soybean" amount="50.0" />
+			<resource type="Strawberry" amount="50.0" />
+			<resource type="Sugarcane" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />
+			<resource type="Taro" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Wheat" amount="50.0" />
+			<resource type="White Rice" amount="50.0" />
+			<resource type="White Onion" amount="50.0" />
+			<resource type="Yam" amount="50.0" />
+			
+			<resource type="Mustard Seed" amount="50.0" />
+			<resource type="Sesame Seed" amount="50.0" />
 
 			<!-- Food Crop Tissue Culture-->
 			<resource type="blueberry tissue culture" amount="0.2" />
@@ -286,6 +294,7 @@
 			<resource type="kidney bean tissue culture" amount="0.2" />
 			<resource type="lettuce tissue culture" amount="0.2" />
 			<resource type="morel Mushroom tissue culture" amount="0.2" />
+			<resource type="white mustard tissue culture" amount="0.2" />
 			<resource type="peas tissue culture" amount="0.2" />
 			<resource type="peanut tissue culture" amount="0.2" />
 			<resource type="potato tissue culture" amount="0.2" />
@@ -298,10 +307,12 @@
 			<resource type="strawberry tissue culture" amount="0.2" />
 			<resource type="sugarcane tissue culture" amount="0.2" />
 			<resource type="swiss Chard tissue culture" amount="0.2" />
+			<resource type="taro tissue culture" amount="0.2" />
 			<resource type="tomato tissue culture" amount="0.2" />
 			<resource type="wheat tissue culture" amount="0.2" />
 			<resource type="white onion tissue culture" amount="0.2" />
-
+			<resource type="white rice tissue culture" amount="0.2" />			
+			<resource type="yam tissue culture" amount="0.2" />	
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -446,32 +457,36 @@
 			<resource type="Fertilizer" amount="50.0" />
 
 			<!-- Crop -->
-			<resource type="Celery" amount="50.0" />
-			<resource type="Tomato" amount="50.0" />
-			<resource type="Peas" amount="50.0" />
-			<resource type="Swiss Chard" amount="50.0" />
-			<resource type="White Rice" amount="50.0" />
-			<resource type="Soybean" amount="50.0" />
-			<resource type="White Onion" amount="50.0" />
-			<resource type="Rice" amount="50.0" />
-			<resource type="Kidney Bean" amount="50.0" />
-			<resource type="Wheat" amount="50.0" />
+			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cabbage" amount="50.0" />
 			<resource type="Carrot" amount="50.0" />
-			<resource type="Green Onion" amount="50.0" />
-			<resource type="Peanut" amount="50.0" />
-			<resource type="Potato" amount="50.0" />
-			<resource type="Sesame" amount="50.0" />
-			<resource type="Garlic" amount="50.0" />
-			<resource type="Lettuce" amount="50.0" />
-			<resource type="Ginger" amount="50.0" />
-			<resource type="Sugarcane" amount="50.0" />
-			<resource type="Strawberry" amount="50.0" />
-			<resource type="Quinoa" amount="50.0" />
+			<resource type="Celery" amount="50.0" />
 			<resource type="Cranberry" amount="50.0" />
-			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
+			<resource type="Garlic" amount="50.0" />
+			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+			<resource type="Green Onion" amount="50.0" />
+			<resource type="Kidney Bean" amount="50.0" />
+			<resource type="Lettuce" amount="50.0" />
+			<resource type="Peanut" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Quinoa" amount="50.0" />
+			<resource type="Rice" amount="50.0" />
+			<resource type="Soybean" amount="50.0" />
+			<resource type="Strawberry" amount="50.0" />
+			<resource type="Sugarcane" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />
+			<resource type="Taro" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Wheat" amount="50.0" />
+			<resource type="White Rice" amount="50.0" />
+			<resource type="White Onion" amount="50.0" />
+			<resource type="Yam" amount="50.0" />
+			
+			<resource type="Mustard Seed" amount="50.0" />
+			<resource type="Sesame Seed" amount="50.0" />
 
 			<!-- Food Crop Tissue Culture-->
 			<resource type="blueberry tissue culture" amount="0.3" />
@@ -487,6 +502,7 @@
 			<resource type="kidney bean tissue culture" amount="0.3" />
 			<resource type="lettuce tissue culture" amount="0.3" />
 			<resource type="morel Mushroom tissue culture" amount="0.3" />
+			<resource type="white mustard tissue culture" amount="0.3" />
 			<resource type="peas tissue culture" amount="0.3" />
 			<resource type="peanut tissue culture" amount="0.3" />
 			<resource type="potato tissue culture" amount="0.3" />
@@ -499,9 +515,12 @@
 			<resource type="strawberry tissue culture" amount="0.3" />
 			<resource type="sugarcane tissue culture" amount="0.3" />
 			<resource type="swiss Chard tissue culture" amount="0.3" />
+			<resource type="taro tissue culture" amount="0.3" />
 			<resource type="tomato tissue culture" amount="0.3" />
 			<resource type="wheat tissue culture" amount="0.3" />
 			<resource type="white onion tissue culture" amount="0.3" />
+			<resource type="white rice tissue culture" amount="0.3" />			
+			<resource type="yam tissue culture" amount="0.3" />			
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -746,32 +765,36 @@
 			<resource type="Fertilizer" amount="50.0" />
 
 			<!-- Crop -->
-			<resource type="Celery" amount="50.0" />
-			<resource type="Tomato" amount="50.0" />
-			<resource type="Peas" amount="50.0" />
-			<resource type="Swiss Chard" amount="50.0" />
-			<resource type="White Rice" amount="50.0" />
-			<resource type="Soybean" amount="50.0" />
-			<resource type="White Onion" amount="50.0" />
-			<resource type="Rice" amount="50.0" />
-			<resource type="Kidney Bean" amount="50.0" />
-			<resource type="Wheat" amount="50.0" />
+			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cabbage" amount="50.0" />
 			<resource type="Carrot" amount="50.0" />
-			<resource type="Green Onion" amount="50.0" />
-			<resource type="Peanut" amount="50.0" />
-			<resource type="Potato" amount="50.0" />
-			<resource type="Sesame" amount="50.0" />
-			<resource type="Garlic" amount="50.0" />
-			<resource type="Lettuce" amount="50.0" />
-			<resource type="Ginger" amount="50.0" />
-			<resource type="Sugarcane" amount="50.0" />
-			<resource type="Strawberry" amount="50.0" />
-			<resource type="Quinoa" amount="50.0" />
+			<resource type="Celery" amount="50.0" />
 			<resource type="Cranberry" amount="50.0" />
-			<resource type="Blueberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
+			<resource type="Garlic" amount="50.0" />
+			<resource type="Ginger" amount="50.0" />
 			<resource type="Green Bell Pepper" amount="50.0" />
+			<resource type="Green Onion" amount="50.0" />
+			<resource type="Kidney Bean" amount="50.0" />
+			<resource type="Lettuce" amount="50.0" />
+			<resource type="Peanut" amount="50.0" />
+			<resource type="Peas" amount="50.0" />
+			<resource type="Potato" amount="50.0" />
+			<resource type="Quinoa" amount="50.0" />
+			<resource type="Rice" amount="50.0" />
+			<resource type="Soybean" amount="50.0" />
+			<resource type="Strawberry" amount="50.0" />
+			<resource type="Sugarcane" amount="50.0" />
+			<resource type="Swiss Chard" amount="50.0" />
+			<resource type="Taro" amount="50.0" />
+			<resource type="Tomato" amount="50.0" />
+			<resource type="Wheat" amount="50.0" />
+			<resource type="White Rice" amount="50.0" />
+			<resource type="White Onion" amount="50.0" />
+			<resource type="Yam" amount="50.0" />
+			
+			<resource type="Mustard Seed" amount="50.0" />
+			<resource type="Sesame Seed" amount="50.0" />
 
 			<!-- Food Crop Tissue Culture-->
 			<resource type="blueberry tissue culture" amount="0.4" />
@@ -787,6 +810,7 @@
 			<resource type="kidney bean tissue culture" amount="0.4" />
 			<resource type="lettuce tissue culture" amount="0.4" />
 			<resource type="morel Mushroom tissue culture" amount="0.4" />
+			<resource type="white mustard tissue culture" amount="0.4" />
 			<resource type="peas tissue culture" amount="0.4" />
 			<resource type="peanut tissue culture" amount="0.4" />
 			<resource type="potato tissue culture" amount="0.4" />
@@ -799,10 +823,13 @@
 			<resource type="strawberry tissue culture" amount="0.4" />
 			<resource type="sugarcane tissue culture" amount="0.4" />
 			<resource type="swiss Chard tissue culture" amount="0.4" />
+			<resource type="taro tissue culture" amount="0.4" />
 			<resource type="tomato tissue culture" amount="0.4" />
 			<resource type="wheat tissue culture" amount="0.4" />
 			<resource type="white onion tissue culture" amount="0.4" />
-
+			<resource type="white rice tissue culture" amount="0.4" />			
+			<resource type="yam tissue culture" amount="0.4" />	
+			
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Conversion.java
- * @version 3.1.0 2016-10-13
+ * @version 3.1.0 2017-03-31
  * @author Manny Kung
  */
 
@@ -27,8 +27,8 @@ public class Conversion {
 
 	}
 */
-	
-	
+
+
 	public static boolean checkVowel(String name) {
 		if (name.toLowerCase().startsWith("a")
 				|| name.startsWith("e")
@@ -39,13 +39,13 @@ public class Conversion {
 		else
 			return false;
 	}
-	
-	
+
+
 	public static String capitalize(String input) {
 		if (input != null) {
 		    StringBuilder titleCase = new StringBuilder();
 		    boolean nextTitleCase = true;
-	
+
 		    for (char c : input.toCharArray()) {
 		        if (Character.isSpaceChar(c) || c == '(' ) {
 		            nextTitleCase = true;
@@ -53,10 +53,10 @@ public class Conversion {
 		            c = Character.toTitleCase(c);
 		            nextTitleCase = false;
 		        }
-	
+
 		        titleCase.append(c);
 		    }
-	
+
 		    return titleCase.toString();
 		}
 		else
