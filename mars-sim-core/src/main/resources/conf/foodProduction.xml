@@ -13,20 +13,20 @@
 	<process name="Package Cabbage into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="50" 
+			process-time="50"
 			power-required="0.1">
 		<description>Cut and freeze dry cabbage into packed food.</description>
-		
+
 		<!-- List of inputs for the process ( parts and resources). -->
 		<inputs>
 			<!-- amount - The amount of the resource in kilograms. -->
 			<part name="refrigerator" number="1" />
 			<resource name="Cabbage" amount="5.0" />
 		</inputs>
-		
+
 		<!-- List of outputs from the process (parts, resources, equipment). -->
 		<outputs>
-			<part name="refrigerator" number="1" />		
+			<part name="refrigerator" number="1" />
 			<resource name="food" amount="3.0" />
 		</outputs>
 	</process>
@@ -34,61 +34,61 @@
 	<process name="Package Carrot into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="50" 
+			process-time="50"
 			power-required="0.1">
-		<description>Cut and freeze dry carrots into packed food.</description>	
+		<description>Cut and freeze dry carrots into packed food.</description>
 		<inputs>
-			<part name="refrigerator" number="1" />		
+			<part name="refrigerator" number="1" />
 			<resource name="Carrot" amount="5.0" />
-		</inputs>	
+		</inputs>
 		<outputs>
-			<part name="refrigerator" number="1" />		
+			<part name="refrigerator" number="1" />
 			<resource name="food" amount="3.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="Package Swiss Chard into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="50" 
+			process-time="50"
 			power-required="0.1">
-		<description>Cut and freeze dry swiss chard into packed food.</description>	
+		<description>Cut and freeze dry swiss chard into packed food.</description>
 		<inputs>
 			<part name="refrigerator" number="1" />
 			<resource name="Swiss Chard" amount="5.0" />
-		</inputs>	
+		</inputs>
 		<outputs>
 			<part name="refrigerator" number="1" />
 			<resource name="food" amount="3.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="Package Potatoes into Preserved Food"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="50" 
+			process-time="50"
 			power-required="0.1">
-		<description>Cut and dry potatoes into packed food.</description>	
+		<description>Cut and dry potatoes into packed food.</description>
 		<inputs>
 			<resource name="Potato" amount="10.0" />
-		</inputs>	
+		</inputs>
 		<outputs>
 			<resource name="food" amount="5.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="Package Quinoa into Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="100" 
+			process-time="100"
 			power-required="0.1">
-		<description>Package puffed Quinoa, honey, nuts and dried fruits into Granola Bar.</description>	
+		<description>Package puffed Quinoa, honey, nuts and dried fruits into Granola Bar.</description>
 		<inputs>
 			<resource name="Quinoa" amount="4.0" />
 			<resource name="Strawberry" amount="0.5" />
 			<resource name="Honey" amount="0.5" />
 			<resource name="Peanut" amount="1.0" />
-		</inputs>	
+		</inputs>
 		<outputs>
 			<resource name="Granola Bar" amount="4.0" />
 		</outputs>
@@ -97,119 +97,119 @@
 	<process name="Package Rice into Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="100" 
+			process-time="100"
 			power-required="0.1">
-		<description>Package puffed rice, honey, nuts and dried fruits into Granola Bar.</description>	
+		<description>Package puffed rice, honey, nuts and dried fruits into Granola Bar.</description>
 		<inputs>
 			<resource name="Rice" amount="4.0" />
 			<resource name="Strawberry" amount="0.5" />
 			<resource name="Honey" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />			
-		</inputs>	
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
 		<outputs>
 			<resource name="Granola Bar" amount="4.0" />
 		</outputs>
 	</process>
-	
+
 		<process name="Package Wheat into Granola Bar"
 			tech="1" skill="0"
 			work-time="50"
-			process-time="100" 
+			process-time="100"
 			power-required="0.1">
-		<description>Package puffed wheat, honey, nuts and dried fruits into Granola Bar.</description>	
+		<description>Package puffed wheat, honey, nuts and dried fruits into Granola Bar.</description>
 		<inputs>
 			<resource name="Wheat" amount="4.0" />
 			<resource name="Strawberry" amount="0.5" />
 			<resource name="Honey" amount="0.5" />
-			<resource name="Peanut" amount="1.0" />		
-		</inputs>	
+			<resource name="Peanut" amount="1.0" />
+		</inputs>
 		<outputs>
 			<resource name="Granola Bar" amount="4.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="Make French Fries from potatoes"
 			tech="1" skill="1"
 			work-time="50"
-			process-time="50" 
+			process-time="50"
 			power-required="0.7">
-		<description>Cut potatoes and make French Fries.</description>	
+		<description>Cut potatoes and make French Fries.</description>
 		<inputs>
 			<resource name="Potato" amount="10.0" />
 			<resource name="Peanut Oil" amount="1.0" />
-		</inputs>	
+		</inputs>
 		<outputs>
 			<resource name="French Fries" amount="10.0" />
 		</outputs>
 	</process>
-	
+
 	<process name="Make Soy Sprouts from Soybeans"
 			tech="1" skill="1"
 			work-time="50"
-			process-time="3000" 
+			process-time="3000"
 			power-required="0.0">
-		<description>Sanitize soybean seeds with sodium hypochlorite. Wash the seeds and soak them in water and 
-			wait for germination. When germinated, freeze dry them. </description>	
+		<description>Sanitize soybean seeds with sodium hypochlorite. Wash the seeds and soak them in water and
+			wait for germination. When germinated, freeze dry them. </description>
 		<inputs>
-			<part name="refrigerator" number="1" />		
+			<part name="refrigerator" number="1" />
 			<resource name="Soybean" amount="3.0" />
 			<resource name="Water" amount="3.0" />
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
-		
+
 		<outputs>
 			<part name="refrigerator" number="1" />
 			<resource name="Soy Sprout" amount="15.0" />
 		</outputs>
 	</process>
-	
+
 		<process name="Make Quinoa Sprouts from Quinoa"
 			tech="1" skill="1"
 			work-time="50"
-			process-time="2000" 
+			process-time="2000"
 			power-required="0.0">
-		<description>Rinse the quinoa seeds in a bowl. Wash the quinoa seeds to remove the soapy coating known as saponin. 
-			Soak in water and drain the water after 30 minutes. Repeat the rinsing and draining process every 8 hours. Put the tray of quinoa in a dark room. Place the cloth back over the quinoa for protection. 
-			The quinoa will sprout into a plate full of spiral-shaped roots that are at least one-quarter inch in length. 
-			Dry out sprouts for up to 12 hours after fully germinated. </description>	
+		<description>Rinse the quinoa seeds in a bowl. Wash the quinoa seeds to remove the soapy coating known as saponin.
+			Soak in water and drain the water after 30 minutes. Repeat the rinsing and draining process every 8 hours. Put the tray of quinoa in a dark room. Place the cloth back over the quinoa for protection.
+			The quinoa will sprout into a plate full of spiral-shaped roots that are at least one-quarter inch in length.
+			Dry out sprouts for up to 12 hours after fully germinated. </description>
 		<inputs>
 			<resource name="Quinoa" amount="3.0" />
 			<resource name="Water" amount="3.0" />
 		</inputs>
-		
+
 		<outputs>
 			<resource name="Quinoa Sprout" amount="15.0" />
 		</outputs>
 	</process>
-	
-	<process name="Make Okara and Soymilk from Soybeans" 
-		tech="1" skill="1" work-time="60" process-time="700" 
+
+	<process name="Make Okara and Soymilk from Soybeans"
+		tech="1" skill="1" work-time="60" process-time="700"
 			power-required="1.0">
-			
-		<description> Make pulp (Okara) and Soymilk from Soybean after 
-			Washing, Dehulling, Soaking, Milling, Paste 
+
+		<description> Make pulp (Okara) and Soymilk from Soybean after
+			Washing, Dehulling, Soaking, Milling, Paste
 			Heating, and Filtration. </description>
 		<inputs>
 			<part name="stove" number="1" />
 			<resource name="Soybean" amount="1.0" />
 			<resource name="Water" amount="16.0" />
-			<resource name="Sugar" amount="0.1" />			
+			<resource name="Sugar" amount="0.1" />
 		</inputs>
 		<outputs>
-			<part name="stove" number="1" />		
+			<part name="stove" number="1" />
 			<resource name="Okara" amount="0.8" />
 			<resource name="Soymilk" amount="12.0" />
 		</outputs>
 	</process>
-	
-	
-	<process name="Press and Refine Peanut Oil from Peanuts" 
-		tech="2" skill="2" work-time="50" process-time="400" 
+
+
+	<process name="Press and Refine Peanut Oil from Peanuts"
+		tech="2" skill="2" work-time="50" process-time="400"
 			power-required="2.0">
-			
+
 		<description>Derive vegetable oil from peanuts. Press and refine it
 			for use </description>
-		
+
 		<inputs>
 			<resource name="Peanut" amount="4.0" />
 		</inputs>
@@ -217,33 +217,33 @@
 			<resource name="Peanut Oil" amount="2.0" />
 		</outputs>
 	</process>
-	
-	<process name="Chop and Roast Peanuts in Oven" 
-		tech="1" skill="1" work-time="50" process-time="300" 
+
+	<process name="Chop and Roast Peanuts in Oven"
+		tech="1" skill="1" work-time="50" process-time="300"
 			power-required="1.0">
-			
+
 		<description>Chopped up peanuts and roast them in oven </description>
-		
+
 		<inputs>
-			<part name="oven" number="1" />	
+			<part name="oven" number="1" />
 			<resource name="Peanut" amount="5.0" />
 			<resource name="Table Salt" amount="0.5" />
 		</inputs>
 		<outputs>
-			<part name="oven" number="1" />			
+			<part name="oven" number="1" />
 			<resource name="Roasted Peanut" amount="5.0" />
 		</outputs>
 	</process>
-	
-		<process name="Make Peanut Butter from Peanuts" 
-		tech="1" skill="1" work-time="50" process-time="50" 
+
+		<process name="Make Peanut Butter from Peanuts"
+		tech="1" skill="1" work-time="50" process-time="50"
 			power-required="0.2">
-			
+
 		<description>Ground peanuts, mix with oil, pour the mixture into food processor.
 		Blend until smooth.</description>
-		
+
 		<inputs>
-			<part name="blender" number="1" />			
+			<part name="blender" number="1" />
 			<!--
 			TODO: add cocoa powder, cinnamon or other spice
 			/>-->
@@ -253,69 +253,69 @@
 			<resource name="Soy Protein" amount="0.1" />
 		</inputs>
 		<outputs>
-			<part name="blender" number="1" />			
+			<part name="blender" number="1" />
 			<resource name="Peanut Butter" amount="3.5" />
 		</outputs>
 	</process>
-	
-	
-	<process name="Package Roast Peanuts into Dry Food " 
-		tech="0" skill="0" work-time="50" process-time="50" 
+
+
+	<process name="Package Roast Peanuts into Dry Food "
+		tech="0" skill="0" work-time="50" process-time="50"
 			power-required="1.0">
-			
+
 		<description>Pack peanuts into dry food</description>
-		
+
 		<inputs>
 			<part name="oven" number="1" />
 			<resource name="Roasted Peanut" amount="5.0" />
 		</inputs>
 		<outputs>
-			<part name="oven" number="1" />	
-			<resource name="food" amount="5.0" />		
+			<part name="oven" number="1" />
+			<resource name="food" amount="5.0" />
 		</outputs>
 	</process>
-	
-	
-	<process name="Bake White Bread from Soy Flour " 
-		tech="1" skill="2" work-time="50" process-time="200" 
+
+
+	<process name="Bake White Bread from Soy Flour "
+		tech="1" skill="2" work-time="50" process-time="200"
 			power-required="1.0">
-			
+
 		<description> Make 2 loaves of White Bread from Soy Flour </description>
-		
+
 		<inputs>
-			<part name="oven" number="1" />	
+			<part name="oven" number="1" />
 			<resource name="Soy Flour" amount="1.0" />
 			<resource name="Water" amount="0.33" />
-			<resource name="Yeast" amount="0.01" />			
+			<resource name="Yeast" amount="0.01" />
 		</inputs>
 		<outputs>
-			<part name="oven" number="1" />			
+			<part name="oven" number="1" />
 			<resource name="White Bread" amount="1.2" />
 		</outputs>
 	</process>
-	
-	<process name="Make Tofu from Okara and Soymilk" 
-		tech="1" skill="2" work-time="50" process-time="500" 
+
+	<process name="Make Tofu from Okara and Soymilk"
+		tech="1" skill="2" work-time="50" process-time="500"
 			power-required="1.0">
-			
-		<description> Boil up Okara-Soymilk mixture, add Epsom Salt as Coagulants, 
+
+		<description> Boil up Okara-Soymilk mixture, add Epsom Salt as Coagulants,
 			gently stir and heat, the curds will separate.</description>
-		
+
 		<inputs>
-			<part name="stove" number="1" />		
+			<part name="stove" number="1" />
 			<resource name="Soymilk" amount="3.0" />
 			<resource name="Okara" amount="0.5" />
-			<resource name="Epsom Salt" amount=".05" />			
+			<resource name="Epsom Salt" amount=".05" />
 		</inputs>
 		<outputs>
 			<part name="stove" number="1" />
-			<resource name="Tofu" amount="2.0" />			
+			<resource name="Tofu" amount="2.0" />
 		</outputs>
 	</process>
-	
-	
-	<process name="Process Soybean into Soy Flour" 
-		tech="1" skill="2" work-time="50" process-time="400" 
+
+
+	<process name="Process Soybean into Soy Flour"
+		tech="1" skill="2" work-time="50" process-time="400"
 			power-required="5.0">
 		<description> Create Defatted Soy Flour by Cracking, Screening, Heating Soybean at 130 deg C with Hot Extrusion and Pressure at 40-60 MPa.  </description>
 		<inputs>
@@ -324,31 +324,31 @@
 			<resource name="Water" amount="5.0" />
 		</inputs>
 		<outputs>
-			<part name="oven" number="1" />		
+			<part name="oven" number="1" />
 			<resource name="Soy Flour" amount="1.0" />
 		</outputs>
 	</process>
 
-	
-	<process name= "Process White Rice into Rice Flour" 
-		tech="1" skill="2" work-time="50" process-time="400" 
+
+	<process name= "Process White Rice into Rice Flour"
+		tech="1" skill="2" work-time="50" process-time="400"
 			power-required="5.0">
 		<description> Cover Rice with cold water. Soak for 3 hours. Finely grind the rice
 		Heat and stir. Cool and dry. </description>
 		<inputs>
 			<resource name="White Rice" amount="5.0" />
 			<resource name="Water" amount="5.0" />
-			
+
 		</inputs>
 		<outputs>
 			<resource name="Rice Flour" amount="5.0" />
 		</outputs>
-		
+
 	</process>
-	
-	<process name="Process Rice into White Rice"   
+
+	<process name="Process Rice into White Rice"
 		tech="1" skill="2" work-time="50" process-time="100" power-required="1.0">
-		<description> Remove hulls, bran layers and germ from rice. 
+		<description> Remove hulls, bran layers and germ from rice.
 		May enrich milled rice with vitamins and minerals </description>
 
 		<inputs>
@@ -359,10 +359,10 @@
 			<resource name="White Rice" amount="5.0" />
 		</outputs>
 	</process>
-	
-		<process name="Process Rice into Brown Rice"   
+
+		<process name="Process Rice into Brown Rice"
 		tech="1" skill="2" work-time="50" process-time="100" power-required="1.0">
-		<description> Remove only hulls from rice. The light brown color is due to the presence of the bran layers 
+		<description> Remove only hulls from rice. The light brown color is due to the presence of the bran layers
 		and the embryo or germ. Brown rice requires longer cooking time than either parboiled or regular-milled white rice </description>
 
 		<inputs>
@@ -373,9 +373,9 @@
 			<resource name="Brown Rice" amount="5.0" />
 		</outputs>
 	</process>
-	
-	<process name="Extract Soy Protein from Soy Flour" 
-		tech="2" skill="2" work-time="50" process-time="400" 
+
+	<process name="Extract Soy Protein from Soy Flour"
+		tech="2" skill="2" work-time="50" process-time="400"
 			power-required="1.0">
 		<description> Create Defatted Soy Proteins from Soy Flour by Alkaline extraction, Centrifugation, Acid Precipitation of Proteins, Centrifugation, Washing,  Spry Drying and Isolation of Proteins   </description>
 		<inputs>
@@ -386,10 +386,10 @@
 			<resource name="Soy Protein" amount="1.0" />
 		</outputs>
 	</process>
-	
-	
-	<process name="Expel Soybean Oil from Soybean" 
-		tech="1" skill="2" work-time="50" process-time="300" 
+
+
+	<process name="Expel Soybean Oil from Soybean"
+		tech="1" skill="2" work-time="50" process-time="300"
 			power-required="1.0">
 		<description> Cracking, Screening, Heating at 130 deg C, Hot extrusion, Pressure at 40-60 MPa. Screening and Decantation of Oil </description>
 		<inputs>
@@ -397,25 +397,25 @@
 			<resource name="Soybean" amount="2.5" />
 		</inputs>
 		<outputs>
-			<part name="oven" number="1" />		
+			<part name="oven" number="1" />
 			<resource name="Soybean Oil" amount="2.5" />
 		</outputs>
 	</process>
 
-	<process name="Press Sesame Oil from Sesame Seeds" 
-		tech="1" skill="2" work-time="50" process-time="300" 
+	<process name="Press Sesame Oil from Sesame Seeds"
+		tech="1" skill="2" work-time="50" process-time="300"
 			power-required="1.0">
 		<description> Continuous pressing by means of expellers is a widely applied process for the extraction of oil from sesame seeds</description>
 		<inputs>
-			<resource name="Sesame" amount="2.5" />
+			<resource name="Sesame Seed" amount="2.5" />
 		</inputs>
 		<outputs>
 			<resource name="Sesame Oil" amount="2.5" />
 		</outputs>
 	</process>
-	
-		<process name="Press Garlic Oil from Garlic" 
-		tech="1" skill="2" work-time="50" process-time="300" 
+
+		<process name="Press Garlic Oil from Garlic"
+		tech="1" skill="2" work-time="50" process-time="300"
 			power-required="1.0">
 		<description> Continuous pressing by means of expellers is a widely applied process for the extraction of oil from Garlic</description>
 		<inputs>
@@ -425,168 +425,185 @@
 			<resource name="Garlic Oil" amount="2.5" />
 		</outputs>
 	</process>
-	
-	<process name="Make Veggie Patty from Veg, Tofu and Spice" 
-		tech="2" skill="2" work-time="70" process-time="200" 
-			power-required="2.0">	
+
+	<process name="Make Veggie Patty from Veg, Tofu and Spice"
+		tech="2" skill="2" work-time="70" process-time="200"
+			power-required="2.0">
 		<description>A Veggie patty imitates a burger patty and is made of
 			textured vegetable protein (like soy), legumes (beans), tofu,
 			nuts, mushrooms, or grains or seeds, like wheat and flax. </description>
 		<inputs>
-			<resource name="Tofu" amount=".5" />
-			<resource name="Lettuce" amount=".5" />
-			<resource name="Cabbage" amount=".5" />
-			<resource name="Potato" amount=".5" />
-			<resource name="Carrot" amount=".5" />
-			<resource name="Sesame" amount=".05" />
-			<resource name="Table Salt" amount=".05" />	
-			<resource name="Soybean" amount="0.5" />
-			<resource name="Soybean Oil" amount="0.1" />
-			<resource name="Sugar" amount=".05" />		
+			<resource name="Tofu" amount="0.5" />
+			<resource name="Lettuce" amount="0.5" />
+			<resource name="Cabbage" amount="0.5" />
+			<resource name="Potato" amount="0.5" />
+			<resource name="Carrot" amount="0.5" />
+			<resource name="Table Salt" amount="0.05" />
+			<resource name="Soybean" amount="0.45" />
+			<resource name="Soybean Oil" amount="0.15" />
+			<resource name="Mustard" amount="0.1" />
+			<resource name="Sugar" amount="0.05" />
 		</inputs>
 		<outputs>
-			<resource name="Veggie Patty" amount="3.0" />			
+			<resource name="Veggie Patty" amount="3.0" />
 		</outputs>
 	</process>
-	
-	<process name="Bake Wheat Bun from Wheat Flour " 
-		tech="1" skill="2" work-time="50" process-time="250" 
-			power-required="1.0">		
+
+	<process name="Bake Wheat Bun from Wheat Flour "
+		tech="1" skill="2" work-time="50" process-time="250"
+			power-required="1.0">
 		<description>Bake Wheat Burger Bun from Wheat Flour </description>
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Wheat Flour" amount="1.0" />
+			<resource name="Wheat Flour" amount="0.95" />
 			<resource name="Water" amount="1" />
-			<resource name="Yeast" amount="0.01" />			
+			<resource name="Yeast" amount="0.01" />
+			<resource name="Sesame Seed" amount="0.05" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
 			<resource name="Wheat Bun" amount="1.0" />
 		</outputs>
 	</process>
-	
-	<process name="Bake Wheat Bread from Wheat Flour " 
-		tech="1" skill="2" work-time="50" process-time="250" 
-			power-required="1.0">		
+
+	<process name="Bake Wheat Bread from Wheat Flour "
+		tech="1" skill="2" work-time="50" process-time="250"
+			power-required="1.0">
 		<description>Bake Wheat Bread from Wheat Flour </description>
 		<inputs>
 			<part name="oven" number="1" />
 			<resource name="Wheat Flour" amount="1.0" />
 			<resource name="Water" amount="0.33" />
-			<resource name="Yeast" amount="0.01" />			
+			<resource name="Yeast" amount="0.01" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
 			<resource name="Wheat Bread" amount="1.0" />
 		</outputs>
 	</process>
-	
-	<process name="Make Wheat Noodles from Wheat Flour " 
-		tech="1" skill="1" work-time="50" process-time="100" 
-			power-required="0.5">		
-		<description> mix flour with water and knead to form dough. Heat paste into flat sheet. 
+
+	<process name="Make Wheat Noodles from Wheat Flour "
+		tech="1" skill="1" work-time="50" process-time="100"
+			power-required="0.5">
+		<description> mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.  </description>
 		<inputs>
 			<!-- <equipment name="pasta machine" number="1" /> -->
 			<resource name="Wheat Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
-			<resource name="Baking Powder" amount="0.02" />			
+			<resource name="Baking Powder" amount="0.02" />
 			<resource name="Soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
 			<resource name="Wheat Noodle" amount="1.0" />
 		</outputs>
 	</process>
-		
 
-	<process name="Make Rice Noodles from Rice Flour " 
-		tech="1" skill="1" work-time="50" process-time="100" 
-			power-required="0.5">		
-		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet. 
+
+	<process name="Make Rice Noodles from Rice Flour "
+		tech="1" skill="1" work-time="50" process-time="100"
+			power-required="0.5">
+		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.</description>
 		<inputs>
 			<!-- <equipment name="pasta machine" number="1" /> -->
 			<resource name="Rice Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
-			<resource name="Baking Powder" amount="0.02" />			
+			<resource name="Baking Powder" amount="0.02" />
 			<resource name="Soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
 			<resource name="Rice Noodle" amount="1.0" />
 		</outputs>
 	</process>
-			
-	<process name="Make Rice Vinegar by Fermentation" 
-		tech="1" skill="2" work-time="50" process-time="30000" 
-			power-required="1.0">		
+
+	<process name="Make Rice Vinegar by Fermentation"
+		tech="1" skill="2" work-time="50" process-time="30000"
+			power-required="1.0">
 		<description>Clean bottle with bleach. Add water to white rice and heat up mixture. Add bacteria and wait for fermentation to complete</description>
 		<inputs>
 			<part name="bottle" number="5" />
-			<part name="autoclave" number="1" />			
+			<part name="autoclave" number="1" />
 			<resource name="White Rice" amount="5.0" />
 			<resource name="Acetic Acid Bacteria" amount="0.3" />
-			<resource name="Sugar" amount=".5" />						
+			<resource name="Sugar" amount=".5" />
 			<resource name="Water" amount="10" />
-			<resource name="sodium hypochlorite" amount="0.003" />				
+			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
 			<part name="bottle" number="5" />
-			<part name="autoclave" number="1" />						
+			<part name="autoclave" number="1" />
 			<resource name="Rice Vinegar" amount="15.0" />
 		</outputs>
 	</process>
-	
 
-	<process name="Make Soy Sauce by Fermentation" 
-		tech="2" skill="2" work-time="100" process-time="30000" 
-			power-required="1.0">		
+	<process name="Make Mustard"
+		tech="1" skill="1" work-time="50" process-time="100"
+			power-required="1.0">
+		<description>Soak seeds, crush and ground. Hulls and bran are sifted out. Liquids added to the seed flour</description>
+		<inputs>
+			<part name="bottle" number="1" />
+			<resource name="Mustard Seed" amount="0.5" />
+			<resource name="Rice Vinegar" amount="0.1" />
+			<resource name="Sugar" amount=".4" />
+			<resource name="Water" amount="4" />
+		</inputs>
+		<outputs>
+			<part name="bottle" number="1" />
+			<resource name="Mustard" amount="5.0" />
+		</outputs>
+	</process>
+
+	<process name="Make Soy Sauce by Fermentation"
+		tech="2" skill="2" work-time="100" process-time="30000"
+			power-required="1.0">
 		<description>Soybeans are first soaked in water for an extended period, and then steamed at high temperatures.
-		Carbohydrates contained in wheat gives soy sauce its fine aroma and adds sweetness to the soy sauce. 
+		Carbohydrates contained in wheat gives soy sauce its fine aroma and adds sweetness to the soy sauce.
 		Wheat is roasted at high temperatures, then crushed by rollers to facilitate fermentation.</description>
 		<inputs>
 			<part name="bottle" number="50" />
-			<part name="autoclave" number="1" />	
+			<part name="autoclave" number="1" />
 			<resource name="Soybean" amount="50.0" />
 			<resource name="Wheat" amount="10.0" />
-			<resource name="Table Salt" amount="1.0" />						
-			<resource name="Water" amount="100.0" />				
+			<resource name="Table Salt" amount="1.0" />
+			<resource name="Water" amount="100.0" />
 		</inputs>
 		<outputs>
-			<part name="bottle" number="50" />		
-			<part name="autoclave" number="1" />	
+			<part name="bottle" number="50" />
+			<part name="autoclave" number="1" />
 			<resource name="Soy Sauce" amount="150.0" />
 		</outputs>
 	</process>
-		
+
 	<!-- https://en.wikipedia.org/wiki/Sugarcane
 		A mature stalk is typically composed of 11–16% fiber, 12–16% soluble sugars, 2–3% nonsugars, and 63–73% water -->
 	<!-- https://en.wikipedia.org/wiki/Bagasse
 		For each 10 tonnes of sugarcane crushed, a sugar factory produces nearly 3 tonnes of wet bagasse.   -->
-	<process name="Derive Sugar, Cane fiber, Bagasse, Sugarcane Juice from Sugarcane" 
-		tech="1" skill="2" work-time="50" process-time="100" 
-			power-required="1.0">		
-		<description>Derive Sugar from Sugarcane. The juice is obtained by 
+	<process name="Derive Sugar, Cane fiber, Bagasse, Sugarcane Juice from Sugarcane"
+		tech="1" skill="2" work-time="50" process-time="100"
+			power-required="1.0">
+		<description>Derive Sugar from Sugarcane. The juice is obtained by
 		crushing peeled sugarcane in a mill or by hand cranked machine. </description>
 		<inputs>
 			<!-- <equipment name="oven" number="1" -->
 			<resource name="Sugarcane" amount="10" />
-			<resource name="Water" amount="1" />				
+			<resource name="Water" amount="1" />
 		</inputs>
 		<outputs>
 			<resource name="Sugar" amount="1.6" />
 			<resource name="cane fiber" amount="1.6" />
-			<!-- resource name="bagasse" amount="1.0" -->			
-			<resource name="Sugarcane Juice" amount="7.3" />			
+			<!-- resource name="bagasse" amount="1.0" -->
+			<resource name="Sugarcane Juice" amount="7.3" />
 		</outputs>
 	</process>
-	
-	<process name="Produce Fiber Cloth from Cane and Soy Fiber" 
-	tech="2" skill="3" work-time="100" process-time="200" 
+
+	<process name="Produce Fiber Cloth from Cane and Soy Fiber"
+	tech="2" skill="3" work-time="100" process-time="200"
 			power-required="3.0">
 		<description>Fiber cloth Weaving </description>
 		<inputs>
 			<resource name="cane fiber" amount="2" />
-			<resource name="Soy Fiber" amount="2" />			
+			<resource name="Soy Fiber" amount="2" />
 		</inputs>
 		<outputs>
 			<resource name="Fiber Cloth" amount="3" />
@@ -594,12 +611,12 @@
 	</process>
 
 
-	<process name="Extract Minerals from Soybean Ash" tech="3" skill="4" work-time="100" process-time="500" 
+	<process name="Extract Minerals from Soybean Ash" tech="3" skill="4" work-time="100" process-time="500"
 			power-required="1.0">
 		<description>Extract minerals from Soybean Ash. </description>
 		<inputs>
-			<resource name="Soybean Ash" amount="1" />	
-				
+			<resource name="Soybean Ash" amount="1" />
+
 		</inputs>
 		<outputs>
 			<resource name="Potassium" amount=".018" />
@@ -610,16 +627,16 @@
 	</process>
 <!-- http://www.soya.be/nutritional-values-of-soybeans.php -->
 
-	<process name="Make Blueberry Muffin" 
-		tech="2" skill="2" work-time="100" process-time="100" 
+	<process name="Make Blueberry Muffin"
+		tech="2" skill="2" work-time="100" process-time="100"
 			power-required="1.0">
 		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry and bake in preheated oven at 200 deg C. </description>
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
 			<resource name="Sugar" amount="0.2" />
-			<resource name="Table Salt" amount="0.1" />			
+			<resource name="Table Salt" amount="0.1" />
 			<resource name="Water" amount="2.0" />
-			<resource name="Honey" amount="0.1" />			
+			<resource name="Honey" amount="0.1" />
 			<resource name="Baking Powder" amount="0.1" />
 			<resource name="Wheat Flour" amount="1.5" />
 		</inputs>
@@ -628,84 +645,84 @@
 		</outputs>
 	</process>
 
-	<process name="Make Cranberry Juice from Cranberry" 
-		tech="1" skill="2" work-time="50" process-time="100" 
-			power-required="1.0">		
-		<description>The juice is obtained by 
+	<process name="Make Cranberry Juice from Cranberry"
+		tech="1" skill="2" work-time="50" process-time="100"
+			power-required="1.0">
+		<description>The juice is obtained by
 		crushing cranberries in a mill or by hand cranked machine. </description>
 		<inputs>
-			<part name="blender" number="1" />		
+			<part name="blender" number="1" />
 			<resource name="Cranberry" amount="2.0" />
-			<resource name="Water" amount="7.0" />		
-			<resource name="Sugar" amount="1" />		
+			<resource name="Water" amount="7.0" />
+			<resource name="Sugar" amount="1" />
 		</inputs>
 		<outputs>
-			<part name="blender" number="1" />			
-			<resource name="Cranberry Juice" amount="10" />			
+			<part name="blender" number="1" />
+			<resource name="Cranberry Juice" amount="10" />
 		</outputs>
 	</process>
-	
-	<process name="Make Cranberry Sauce from Cranberry" 
-		tech="1" skill="2" work-time="50" process-time="100" 
-			power-required="1.0">		
+
+	<process name="Make Cranberry Sauce from Cranberry"
+		tech="1" skill="2" work-time="50" process-time="100"
+			power-required="1.0">
 		<description>Add sugar, slat, ginger to cranberries and cook in the pan over low heat, stirring occasionally for 10 mins,
-		 until the sugar dissolves and the cranberries are soft. Increase the heat to medium and cook until the 
-		 cranberries burst in a few minutes. Reduce the heat to low and stir in the reserved cranberries. 
+		 until the sugar dissolves and the cranberries are soft. Increase the heat to medium and cook until the
+		 cranberries burst in a few minutes. Reduce the heat to low and stir in the reserved cranberries.
 		</description>
 		<inputs>
-			<part name="blender" number="1" />			
+			<part name="blender" number="1" />
 			<resource name="Cranberry" amount="2.0" />
-			<resource name="Water" amount="1.0" />		
+			<resource name="Water" amount="1.0" />
 			<resource name="Sugar" amount=".5" />
-			<resource name="Table Salt" amount=".15" />					
+			<resource name="Table Salt" amount=".15" />
 			<resource name="Ginger" amount=".2" />
 		</inputs>
 		<outputs>
-			<part name="blender" number="1" />			
-			<resource name="Cranberry Sauce" amount="2" />			
+			<part name="blender" number="1" />
+			<resource name="Cranberry Sauce" amount="2" />
 		</outputs>
 	</process>
-	
-	<process name="Make Immune Booster" 
-	 tech="3" skill="4" work-time="20" process-time="100" 
+
+	<process name="Make Immune Booster"
+	 tech="3" skill="4" work-time="20" process-time="100"
 			power-required="1.0">
 		<description>Make Immune Booster with minerals and fiber </description>
 		<inputs>
 			<resource name="Potassium" amount=".018" />
 			<resource name="Calcium" amount=".028" />
 			<resource name="Magnesium" amount=".028" />
-			<resource name="Phosphorus" amount=".07" />	
-			<resource name="Zinc" amount=".01" />	
-			<resource name="cane fiber" amount=".1" />			
+			<resource name="Phosphorus" amount=".07" />
+			<resource name="Zinc" amount=".01" />
+			<resource name="cane fiber" amount=".1" />
 		</inputs>
 		<outputs>
-			<resource name="Immune Booster" amount=".05" />	
+			<resource name="Immune Booster" amount=".05" />
 		</outputs>
-		
+
 	</process>
-	
-		
-	<process name="Make Pizza Dough" 
-		tech="1" skill="2" work-time="50" process-time="60" 
-			power-required="0">			
+
+
+	<process name="Make Pizza Dough"
+		tech="1" skill="2" work-time="50" process-time="60"
+			power-required="0">
 		<description> Make round pizza dough from three types of flours </description>
-		
+
 		<inputs>
-			<part name="oven" number="1" />	
+			<part name="oven" number="1" />
 			<resource name="Soy Flour" amount="0.2" />
-			<resource name="Rice Flour" amount="0.4" />	
-			<resource name="Wheat Flour" amount="0.4" />		
+			<resource name="Rice Flour" amount="0.4" />
+			<resource name="Wheat Flour" amount="0.4" />
 			<resource name="Water" amount="0.33" />
-			<resource name="Yeast" amount="0.01" />	
-			<resource name="Soybean Oil" amount="0.01" />	
-			<resource name="Table Salt" amount="0.01" />						
+			<resource name="Yeast" amount="0.01" />
+			<resource name="Soybean Oil" amount="0.01" />
+			<resource name="Table Salt" amount="0.01" />
 		</inputs>
 		<outputs>
-			<part name="oven" number="1" />			
+			<part name="oven" number="1" />
 			<resource name="Pizza Dough" amount="1.2" />
 		</outputs>
 	</process>
-	
-	
-	
+
+
+
 </foodProduction-processes>

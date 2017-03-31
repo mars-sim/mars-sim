@@ -216,6 +216,49 @@
 	    	Strands of the thick-footed morel fungus serve as a highway for...six times as dense...common soil bacteria.
 	      	-->
 
+	  <crop name="White Mustard" growing-time="82.5" crop-category="leaves"
+	    	edible-biomass="66.67" edible-water-content=".7" inedible-biomass="1.02" daily-PAR="34.56" />
+
+		<!-- ~82.5 day from https://www.hort.purdue.edu/newcrop/afcm/mustard.html
+			Varieties of yellow mustard usually mature in 80 to 85 days whereas brown and oriental types require 90 to 95 days.
+
+			Yellow mustard does not shatter readily and can be straight combined if the crop has matured uniformly (10% moisture)
+
+			For leaves,
+			from http://www.dar.gov.bw/ethopian_mustard_factsheet.pdf
+			"Yield normally ranges from 35 to 75 T/ha. Ethiopian mustard normally flowers during warmer months
+			therefore reducing the harvest period and yield."
+
+			~55 T/ha = 55000 kg/ha = 5500 g/m2
+			mass = 5500/82.5 g/m2/d = 66.67
+
+			For seeds :
+			.845 T/ha = 845 kg/ha = 84.5 g/m2
+			mass = 84.5/82.5 g/m2/day = 1.02
+
+			Growers were producing 800 to 900 lbs/acre of yellow mustard, while brown and oriental mustards were
+			yielding 1,000 to 1,100 lbs/acre
+
+			http://www1.agric.gov.ab.ca/$department/deptdocs.nsf/all/agdex12947
+
+			# days in each phase, from https://myfolia.com/plants/1146-mustard-plant-brassica-juncea,
+
+			Days to Germination :
+			Average 6 days | Min 2 days | Max 20 days (137)
+
+			Days to Transplant : How long until I can plant out Mustard plant?
+			Average 10 days | Min 4 days | Max 32 days (4)
+
+			Days to Maturity : How long until Mustard plant is ready for harvest / bloom?
+			Average 64 days | Min 26 days | Max 130 days (29)
+
+			Total Growing Days : How long does it take to grow Mustard plant?
+			= 80 days
+
+			The seeds contains up to 35% of a semi-drying oil, can be made into lubricant and for lighting.
+
+		 -->
+
 	    <crop name="Peanut"
 	        growing-time="104.0"
 	    	crop-category="legumes"
@@ -224,6 +267,13 @@
 	    	inedible-biomass="18"
 	     	daily-PAR="32.4"
 	    	/>
+
+	    	<!--
+	    	For high yields and superior quality, peanuts require a moderate growing period (110 to 120 days) with a steady,
+	    	rather high temperature and a moderate, uniformly distributed supply of moisture. The growing season should be long,
+	    	 warm and moist, and the harvest season should be dry.
+
+	    	-->
 
 	    <crop name="Peas"
 	        growing-time="75.0"

@@ -82,6 +82,7 @@
 	<resource name="garlic oil" type="food" phase="liquid" edible="true">Oil pressed from Garlic.</resource>
 	<resource name="granola bar" type="food" phase="solid" edible="true">A popular breakfast food and snack food consisting of puffed grain, rolled oats, nuts, honey, dried fruits</resource>
 	<resource name="honey" type="food" phase="liquid" edible="true">Honey extracted from bee hives</resource>
+	<resource name="mustard" type="food" phase="liquid" edible="true">Mustard made from mustard seed</resource>
 	<resource name="peanut butter" type="food" phase="solid" edible="true"></resource>
 	<resource name="peanut oil" type="food" phase="liquid" edible="true"></resource>
 	<resource name="pizza dough" type="food" phase="solid" edible="true"></resource>
@@ -117,6 +118,7 @@
 	<resource name="kidney bean" type="crop" phase="solid" edible="true"></resource>
 	<resource name="lettuce" type="crop" phase="solid" edible="true"></resource>
 	<resource name="morel mushroom" type="crop" phase="solid" edible="true"></resource>
+	<resource name="white mustard" type="crop" phase="solid" edible="true"></resource>
 	<resource name="peanut" type="crop" phase="solid" edible="true"></resource>
 	<resource name="peas" type="crop" phase="solid" edible="true"></resource>
 	<resource name="potato" type="crop" phase="solid" edible="true"></resource>
@@ -124,17 +126,22 @@
 	<resource name="radish" type="crop" phase="solid" edible="true"></resource>
 	<resource name="red beet" type="crop" phase="solid" edible="true"></resource>
 	<resource name="rice" type="crop" phase="solid" edible="true"></resource>
-	<resource name="sesame" type="crop" phase="solid" edible="true">Seeds from sesame plant.</resource>
+	<resource name="sesame" type="crop" phase="solid" edible="true">A flowering plant--source of sesame seeds</resource>
 	<resource name="soybean" type="crop" phase="solid" edible="true">Soybean seeds.</resource>
 	<resource name="strawberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="sugarcane" type="crop" phase="solid" edible="true"></resource>
 	<resource name="sweet potato" type="crop" phase="solid" edible="true"></resource>
 	<resource name="swiss chard" type="crop" phase="solid" edible="true"></resource>
+	<resource name="taro" type="crop" phase="solid" edible="true"></resource>
 	<resource name="tomato" type="crop" phase="solid" edible="true"></resource>
 	<resource name="wheat" type="crop" phase="solid" edible="true">Wheat Kernels are seeds harvested from wheat crop.
 	The kernel is the whole grain, made up of 3 edible parts – bran, germ, and endosperm – protected by an inedible husk </resource>
 	<resource name="white onion" type="crop" phase="solid" edible="true"></resource>
 	<resource name="yam" type="crop" phase="solid" edible="true"></resource>
+
+<!-- Secondary Crop Produce -->
+	<resource name="mustard seed" type="crop" phase="solid" edible="true"></resource>
+	<resource name="sesame seed" type="crop" phase="solid" edible="true">Seeds from sesame plant.</resource>
 
 <!-- Crop tissue culture -->
 <!-- see https://en.wiki2.org/wiki/Plant_tissue_culture

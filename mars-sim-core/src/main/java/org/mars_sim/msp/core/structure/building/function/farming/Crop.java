@@ -75,24 +75,41 @@ public class Crop implements Serializable {
 
     public static final String TISSUE_CULTURE = "tissue culture";
 
+    public static final String TABLE_SALT = "table salt";
 	public static final String FERTILIZER = "fertilizer";
 	public static final String GREY_WATER = "grey water";
     public static final String SOIL = "soil";
     public static final String CROP_WASTE = "crop waste";
+    public static final String FOOD_WASTE = "food waste";
+    public static final String SOLID_WASTE = "solid waste";
+
+    public static final String NAPKIN = "napkin";
+    public static final String NaClO4 = "sodium hypochlorite";
 
 	public static final String OXYGEN = "oxygen";
 	public static final String WATER = "water";
 	public static final String FOOD = "food";
 	public static final String CO2 = "carbon dioxide";
 
+	public static final String METHANE = "methane";			// 8
+	public static final String ICE = "ice";
+	public static final String REGOLITH = "regolith";
+	public static final String ROCK_SAMPLE = "rock samples";
+
+
 	// Data members
-    private double conversion_factor;
+	private boolean hasSeed = false;
+	private boolean isSeedPlant = false;
 
 	private int numLampCache;
     /** Current sol since the start of sim. */
 	private int solCache = 1;
 	/** Current sol of month. */
 	private int currentSol = 1;
+	/** ratio between inedible and edible biomass */
+	private double ratio;
+	/** a factor based on wattToPhotonConversionRatio on Mars */
+    private double conversion_factor;
 	/** Maximum possible food harvest for crop. (kg) */
 	private double maxHarvest;
 	/** Completed work time in current phase (millisols). */
@@ -120,6 +137,7 @@ public class Crop implements Serializable {
 	private double wattToPhotonConversionRatio;
 	private double uPAR;
 	private double diseaseIndex = 0;
+
 	private String cropName, capitalizedCropName, tissue;
 
 	/** Current phase of crop. */
@@ -157,6 +175,8 @@ public class Crop implements Serializable {
     private static AmountResource fertilizerAR; // needed by Farming, Crop
 	private static AmountResource soilAR; // needed by Farming
 
+	private static AmountResource seedAR;
+
 	private Map<Integer, Phase> phases = new HashMap<>();
 
 	DecimalFormat fmt = new DecimalFormat("0.00000");
@@ -186,6 +206,23 @@ public class Crop implements Serializable {
 		cropName = cropType.getName();
 		tissue = cropName + " " + TISSUE_CULTURE;
 
+		//2017-03-30 Add special case for extracting seeds from White Mustard
+		if (cropName.equalsIgnoreCase("White Mustard"))
+			hasSeed = true;
+
+		else if (cropName.equalsIgnoreCase("Sesame"))
+			isSeedPlant = true;
+
+		if (hasSeed) {
+			ratio = cropType.getInedibleBiomass()/cropType.getEdibleBiomass();
+			seedAR = AmountResource.findAmountResource("Mustard Seed");
+		}
+
+		if (isSeedPlant) {
+			ratio = cropType.getInedibleBiomass()/cropType.getEdibleBiomass();
+			seedAR = AmountResource.findAmountResource(cropName + " Seed");
+		}
+
 		cropAR = AmountResource.findAmountResource(cropName);
 		tissueAR = AmountResource.findAmountResource(tissue);
 
@@ -194,17 +231,17 @@ public class Crop implements Serializable {
 		oxygenAR = AmountResource.findAmountResource(OXYGEN);		// 3
 		carbonDioxideAR = AmountResource.findAmountResource(CO2);	// 4
 
-        foodWasteAR = AmountResource.findAmountResource("food waste");			// 16
-        solidWasteAR = AmountResource.findAmountResource("solid waste");		// 17
-        greyWaterAR = AmountResource.findAmountResource("grey water");			// 19
-        tableSaltAR = AmountResource.findAmountResource("table salt"); 		// 23
-        NaClOAR = AmountResource.findAmountResource("sodium hypochlorite");	// 145
-        napkinAR = AmountResource.findAmountResource("napkin");				// 150
+        foodWasteAR = AmountResource.findAmountResource(FOOD_WASTE);			// 16
+        solidWasteAR = AmountResource.findAmountResource(SOLID_WASTE);		// 17
+        greyWaterAR = AmountResource.findAmountResource(GREY_WATER);			// 19
+        tableSaltAR = AmountResource.findAmountResource(TABLE_SALT); 		// 23
+        NaClOAR = AmountResource.findAmountResource(NaClO4);	// 145
+        napkinAR = AmountResource.findAmountResource(NAPKIN);				// 150
 
-    	methaneAR = AmountResource.findAmountResource("methane");			// 8
-        iceAR = AmountResource.findAmountResource("ice");					// 12
-    	regolithAR = AmountResource.findAmountResource("regolith");		// 142
-        rockSamplesAR = AmountResource.findAmountResource("rock samples");	// 143
+    	methaneAR = AmountResource.findAmountResource(METHANE);			// 8
+        iceAR = AmountResource.findAmountResource(ICE);					// 12
+    	regolithAR = AmountResource.findAmountResource(REGOLITH);		// 142
+        rockSamplesAR = AmountResource.findAmountResource(ROCK_SAMPLE);	// 143
 
         cropWasteAR = AmountResource.findAmountResource(CROP_WASTE);
         fertilizerAR = AmountResource.findAmountResource(FERTILIZER);
@@ -427,24 +464,22 @@ public class Crop implements Serializable {
 
 		fractionalGrowthCompleted = growingTimeCompleted/growingTime;
 		// Check on the health of a >25% grown crop
-		if ( fractionalGrowthCompleted > .25D && healthCondition < .1D ) {
+		if ( fractionalGrowthCompleted > .25D && healthCondition < .07D ) {
 			phaseType = PhaseType.FINISHED;
-			logger.info("Crop " + capitalizedCropName + " at " + settlement.getName() + " died of poor health.");
+			logger.info("Crop " + capitalizedCropName + " at " + settlement.getName() + " died of very poor health (" + healthCondition + " %)");
 			// 2015-02-06 Added Crop Waste
-			double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
-			Storage.storeAnResource(amountCropWaste, cropWasteAR, inv);
-			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ capitalizedCropName);
+			Storage.storeAnResource(actualHarvest, cropWasteAR, inv);
+			logger.info(actualHarvest + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 
 		}
 
 		// Seedling (<10% grown crop) is less resilient and more prone to environmental factors
-		if ( (fractionalGrowthCompleted > 0) && (fractionalGrowthCompleted < .1D) && (healthCondition < .15D) ) {
+		if ( (fractionalGrowthCompleted > 0) && (fractionalGrowthCompleted < .1D) && (healthCondition < .2D) ) {
 			phaseType = PhaseType.FINISHED;
-			logger.info("The seedlings of " + capitalizedCropName + " at " + settlement.getName() + " did not survive.");
+			logger.info("The seedlings of " + capitalizedCropName + " had poor health (" + healthCondition + " %) in " + settlement.getName() + " and didn't survive.");
 			// 2015-02-06 Added Crop Waste
-			double amountCropWaste = actualHarvest * cropType.getInedibleBiomass() / ( cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
-			Storage.storeAnResource(amountCropWaste, cropWasteAR, inv);
-			logger.info(amountCropWaste + " kg Crop Waste generated from the dead "+ capitalizedCropName);
+			Storage.storeAnResource(actualHarvest, cropWasteAR, inv);
+			logger.info(actualHarvest + " kg Crop Waste generated from the dead "+ capitalizedCropName);
 			//actualHarvest = 0;
 			//growingTimeCompleted = 0;
 		}
@@ -524,6 +559,7 @@ public class Crop implements Serializable {
 
 		}
 
+		// TODO: for leaves crop, one should be able to harvest leaves anytime and NOT to have to wait until harvest
 		else if (phaseNum < length - 1) {
 			//logger.info("addWork() : crop is in Harvesting phase");
 			currentPhaseWorkCompleted += remainingWorkTime;
@@ -537,7 +573,11 @@ public class Crop implements Serializable {
 				// 2014-10-07 modified parameter list to include crop name
 				double lastHarvest = actualHarvest * (remainingWorkTime - overWorkTime) / w;
 				// Store the crop harvest
-				Storage.storeAnResource(lastHarvest, cropAR, inv);
+				if (isSeedPlant)
+					Storage.storeAnResource(lastHarvest, seedAR, inv);
+				else
+					Storage.storeAnResource(lastHarvest, cropAR, inv);
+
 				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(lastHarvest * 1000.0)/1000.0 + " kg. All Done.");
 				remainingWorkTime = overWorkTime;
 				logger.info("Finished harvesting " + capitalizedCropName
@@ -545,11 +585,18 @@ public class Crop implements Serializable {
 						+ " at " + settlement.getName());
 
 				phaseType = PhaseType.FINISHED;
-				generateCropWaste(lastHarvest);
+
+				// 2017-03-30 Extract Mustard Seed
+				if (hasSeed)
+					Storage.storeAnResource(lastHarvest * ratio, seedAR, inv);
+				else
+					//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
+					// thus no crop waste
+					generateCropWaste(lastHarvest);
+
 
 				// 2015-10-13 Check to see if a botany lab is available
-				boolean done = checkBotanyLab();
-				if (!done)
+				if (!checkBotanyLab())
 					logger.info("Can't find an available lab bench to work on the tissue culture for " + cropName);
 
 			}
@@ -557,10 +604,22 @@ public class Crop implements Serializable {
 				// 2014-10-07 modified parameter list to include crop name
 				double modifiedHarvest = actualHarvest * workTime / w;
 				// Store the crop harvest
-				Storage.storeAnResource(modifiedHarvest, cropAR, inv);
+				if (isSeedPlant)
+					Storage.storeAnResource(modifiedHarvest, seedAR, inv);
+				else
+					Storage.storeAnResource(modifiedHarvest, cropAR, inv);
+
+				// 2017-03-30 Extract Mustard Seed
+				if (hasSeed)
+					Storage.storeAnResource(modifiedHarvest * ratio, seedAR, inv);
+				else
+					//2017-03-30 in case of white mustard, the inedible biomass is used as the seed mass
+					// thus no crop waste
+					generateCropWaste(modifiedHarvest);
+
 				//logger.info("addWork() : harvesting " + cropName + " : " + Math.round(modifiedHarvest * 1000.0)/1000.0 + " kg.");
 				remainingWorkTime = 0D;
-				generateCropWaste(modifiedHarvest);
+
 			}
 		}
 
@@ -676,7 +735,7 @@ public class Crop implements Serializable {
      */
 	public void generateCropWaste(double harvestMass) {
 		// 2015-02-06 Added Crop Waste
-		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() +cropType.getEdibleBiomass());
+		double amountCropWaste = harvestMass * cropType.getInedibleBiomass() / (cropType.getInedibleBiomass() + cropType.getEdibleBiomass());
 		Storage.storeAnResource(amountCropWaste, cropWasteAR, inv);
 		//logger.info("addWork() : " + cropName + " amountCropWaste " + Math.round(amountCropWaste * 1000.0)/1000.0);
 	}
@@ -879,6 +938,8 @@ public class Crop implements Serializable {
 				//	farm.addNumLamp(numLamp - numLampCache);
 				//	numLampCache = numLamp;
 				//}
+
+				// For converting lumens to PAR/PPF, see http://www.thctalk.com/cannabis-forum/showthread.php?55580-Converting-lumens-to-PAR-PPF
 				// Note: do NOT include any losses below
 		    	double supplykW = numLamp * kW_PER_HPS * VISIBLE_RADIATION_HPS * (1-BALLAST_LOSS_HPS) / PHYSIOLOGICAL_LIMIT;
 				turnOnLighting(supplykW);
