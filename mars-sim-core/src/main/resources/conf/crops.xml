@@ -115,15 +115,22 @@
 	    <crop name="Garlic"
 	        growing-time="85"
 	    	crop-category="bulbs"
-	    	edible-biomass="5.5"
-	    	edible-water-content=".58"
-	    	inedible-biomass="2.0"
+	    	edible-biomass="9.41"
+	    	edible-water-content=".59"
+	    	inedible-biomass="0.5"
 	    	daily-PAR="17.28"
 	    	/>
-	    	<!-- http://pharmascope.org/ijrls/index.php/announce/download/202
-	    		 http://nutritiondata.self.com/facts/vegetables-and-vegetable-products/2446/2 -->
-	    	<!-- http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
-	    		5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space, -->
+
+	    	<!--
+	    		4494-6495 kg/hectare from http://www.dpi.nsw.gov.au/__data/assets/pdf_file/0018/470025/Garlic-gross-margin-budget.pdf
+	    		or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space,
+
+	    		garlic about 6 to 10 tonnes/ha from https://www.indiaagronet.com/indiaagronet/crop%20info/onion.htm
+	    		8T/ha = 8000 kg/ha or 800 g/m2
+	    		800/85 = 9.41 g/m2/d
+
+	    		79.7g/136g = 58.6% H20 from http://nutritiondata.self.com/facts/vegetables-and-vegetable-products/2446/2
+	    		-->
 
 
 	     <crop name="Ginger"
@@ -262,14 +269,14 @@
 	    	daily-PAR="15"
 	    	/>
 
-	  <crop name="Red Beet"
-	        growing-time="42"
-	    	crop-category="roots"
-	    	edible-biomass="15"
-	    	edible-water-content=".75"
-	    	inedible-biomass="10"
-	    	daily-PAR="34.56"
-	    	/>
+	  <crop name="Red Beet" growing-time="42" crop-category="roots"
+	    	edible-biomass="7.98" edible-water-content=".75" inedible-biomass="3" daily-PAR="34.56" />
+
+		<!-- 15.7-22.4 T/ha from http://anrcatalog.ucanr.edu/pdf/8096.pdf
+			(22.4-15.7)*100/2/42 = 7.9762 g/m2/d
+
+		 -->
+
 
 	     <crop name="Rice"
 	        growing-time="100.0"
@@ -317,19 +324,24 @@
 	    	TODO:
 	    	 -->
 
-	   <crop name="Sugarcane"
-	        growing-time="180"
-	    	crop-category="grasses"
-	    	edible-biomass="100"
-	    	edible-water-content=".75"
-	    	inedible-biomass="200"
-	    	daily-PAR="34.56"
-	    	/>
-	    	<!-- http://www.fao.org/docrep/005/x4988e/x4988e01.htm
-	    	http://www.fao.org/es/faodef/fdef03e.HTM
-	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants. The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
+	   <crop name="Sugarcane" growing-time="180" crop-category="grasses"
+	    	edible-biomass="73.67" edible-water-content=".75" inedible-biomass="20" daily-PAR="34.56" />
+	    	<!-- CANE, SUGAR AND THE ENVIRONMENT from http://www.fao.org/docrep/005/x4988e/x4988e01.htm
+	    	Both sugar beets and sugar cane have a high water content, accounting for about 75 percent of the total weight of the plants.
+	    	The sugar content of sugar cane ranges from 10 to 15 percent of the total weight, while that of sugar beets is between 13 and 18 percent.
 	    	The protein and fat content of both beets and cane is almost nil.
 	    	100-300 Metric Ton/ha, ~10-15% sugar. After food processing, sugar is 40 kg (= 200 * 20%)
+
+	    	 65.2 T/ha from http://sugarcanecrop.com/introduction/
+
+	    	 Settle on (65.2 + 200)/2 T/ha, = 73.666
+
+	    	 Phases from  http://sugarcanecrop.com/crop_growth_phases/germination_establishment_phase/
+	    	 1. Germination/Establishment
+	    	 2. Tillering
+	    	 3. Grand Growth
+	    	 4. Ripening, Maturation
+
 	    	  -->
 
 
@@ -343,16 +355,49 @@
 	    	/>
 
 
-		<crop name="Swiss Chard"
-	    	growing-time="45.0"
-	    	crop-category="leaves"
-	    	edible-biomass="87.50"
-	    	edible-water-content=".92"
-	    	inedible-biomass="37.69"
-	    	daily-PAR="17.28"
-	    	/>
+		<crop name="Swiss Chard" growing-time="65.0" crop-category="leaves"
+	    	edible-biomass="71.06" edible-water-content=".92" inedible-biomass="37.69" daily-PAR="17.28" />
+
+		<!-- "Swiss Chard is a beet grown for its edible leaves" from http://anrcatalog.ucanr.edu/pdf/8096.pdf
+
+		"short vegetation period, ready for harvest in about 60 to 70 days after planting (Swiader et al.,1992)"
+		from http://www.ccsenet.org/journal/index.php/jas/article/viewFile/5603/6223
+
+		"spring growing (61.74 t · ha-1) in comparison to the autumn season (30.64 t · ha-1)"
+		 (61.74+30.64)/2*100/65 = 71.06
+
+		 previously edible-biomass="87.50" edible-water-content=".92" inedible-biomass="37.69"
 
 
+		-->
+
+	    <crop name="Taro" growing-time="200.0" crop-category="corms"
+	    	edible-biomass="4.7" edible-water-content=".706" inedible-biomass=".05" daily-PAR="34.56" />
+
+	<!--    Taro can be grown for its tubers only where summers are long–at least 200 frost-free, warm days.
+			http://www.harvesttotable.com/2010/03/taro/
+			Taro is a perennial herbaceous plant that grows from 3 to 6 feet tall. Its leaves are light green,
+			elongated, and heart shaped similar to an elephant’s ear. Tubers are spherical and about the size
+			of a tennis ball often covered with brownish skin and hairs; the flesh is pinkish purple, beige or white.
+			Taro requires seven months of hot weather to mature.
+
+			https://naldc.nal.usda.gov/download/295/PDF
+
+			https://en.wikipedia.org/wiki/Taro
+			"The global average yield is 6.2 tones/hectare but varies according to the region.
+			In Asia, average yields reach 12.6 tones/hectare."
+
+			9400 kg/ha /200 day = 47 kg/ha/d = 4.7 g/m2/d
+
+			ave monthly solar rad : 16.8MJ/m2
+
+			https://www.healthaliciousness.com/nutritionfacts/nutrition-comparison.php?o=11518&t=11519&h=&s=100&e=100&r=100
+			percent of water 70.6%, 63.8%
+
+			73.47 g of 104 g H20 http://www.healthbenefitstimes.com/taro/
+
+			http://www.nutrition-and-you.com/taro.html
+	-->
 
 	    <crop name="Tomato"
 	        growing-time="80"
@@ -378,31 +423,45 @@
 		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 
 
-	    <crop name="White Onion"
-	    	growing-time="150.0"
-	    	crop-category="bulbs"
-	    	edible-biomass="81.82"
-	    	edible-water-content=".89"
-	    	inedible-biomass="22.50"
-	     	daily-PAR="17.28"
+	    <crop name="White Onion" growing-time="150.0" crop-category="bulbs"
+	    	edible-biomass="18.33" edible-water-content=".89" inedible-biomass=".08" daily-PAR="17.28"
 	    	/>
 	    	<!-- 1. Onions are a cold-season crop
 		    	ref : http://www.almanac.com/plant/onions
 	    	 2. 170 days :
 	    	 	ref : http://alliumnet.com/images/onion%20growth%20stages.pdf
 			 3. K_C varies in each growth stage
-			 	ref : http://naldc.nal.usda.gov/download/31109/PDF  -->
+			 	ref : http://naldc.nal.usda.gov/download/31109/PDF
+
+			 	1100 kg /ha , 110 g/m2/150 day =
+			 	25-30 T/ha, 2750/150 g/m2/day = 18.33. see https://www.indiaagronet.com/indiaagronet/crop%20info/onion.htm
+			 	-->
+
+	    <crop name="Yam" growing-time="200.0" crop-category="tubers"
+	    	edible-biomass="12.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
+
+			<!-- https://harvestchoice.org/sites/default/files/images/thumbnails/data/yams_y_3.png
+			   ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d
+
+				-->
 
 
-	    <crop name="Yam"
-	    	growing-time="200.0"
-	    	crop-category="tubers"
-	    	edible-biomass="15"
-	    	edible-water-content=".79"
-	    	inedible-biomass="5"
-	     	daily-PAR="34.56"
-	    	/>
 	<!--
+	Conversion :
+
+	edible-biomass : [ gram / m^2 / day ]
+
+	5494 kg/hectare or 549 g/sq meter or .5 kg/sqm or 5 kg/10sqm for 10 sqm space,
+	1000 kg/ha = .1 kg/m2 = 100 g /m2
+
+	for a 100-day crop with 1 T/ha,
+	100 g/m2 / 100 days  = 1 g/m2/day
+
+	for a 200-day crop with 2 T/ha,
+	200 g/m2 / 200 days  = 1 g/m2/day
+
+
+
 	Beetroot conservative: 14; likely: 18 target yield: 25
 	   TODO: multi-year plants
 	-->
@@ -620,6 +679,11 @@
 
 25. Peach Tree:
 	see http://hortsci.ashspublications.org/content/43/6/1813.full
+
+26. VEGETABLE PRODUCTION CHART
+	shows the relationship between feet of row and spacing and yield per 100 feet of row.
+	see http://msue.anr.msu.edu/uploads/files/Table%204.pdf
+
 -->
 
 </crop-configuration>
