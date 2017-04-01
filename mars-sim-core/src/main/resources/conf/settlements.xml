@@ -113,6 +113,7 @@
 			<resource type="cabbage tissue culture" amount="0.1" />
 			<resource type="carrot tissue culture" amount="0.1" />
 			<resource type="celery tissue culture" amount="0.1" />
+			<resource type="corn tissue culture" amount="0.1" />
 			<resource type="cucumber tissue culture" amount="0.1" />
 			<resource type="cranberry tissue culture" amount="0.1" />
 			<resource type="garlic tissue culture" amount="0.1" />
@@ -135,13 +136,13 @@
 			<resource type="strawberry tissue culture" amount="0.1" />
 			<resource type="sugarcane tissue culture" amount="0.1" />
 			<resource type="swiss Chard tissue culture" amount="0.1" />
-			<resource type="taro tissue culture" amount="0.1" />			
+			<resource type="taro tissue culture" amount="0.1" />
 			<resource type="tomato tissue culture" amount="0.1" />
 			<resource type="wheat tissue culture" amount="0.1" />
 			<resource type="white onion tissue culture" amount="0.1" />
-			<resource type="white rice tissue culture" amount="0.1" />			
-			<resource type="yam tissue culture" amount="0.1" />	
-			
+			<resource type="white rice tissue culture" amount="0.1" />
+			<resource type="yam tissue culture" amount="0.1" />
+
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />
@@ -253,6 +254,7 @@
 			<resource type="Cabbage" amount="50.0" />
 			<resource type="Carrot" amount="50.0" />
 			<resource type="Celery" amount="50.0" />
+			<resource type="Corn" amount="50.0" />
 			<resource type="Cranberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Garlic" amount="50.0" />
@@ -276,7 +278,7 @@
 			<resource type="White Rice" amount="50.0" />
 			<resource type="White Onion" amount="50.0" />
 			<resource type="Yam" amount="50.0" />
-			
+
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
@@ -285,6 +287,7 @@
 			<resource type="cabbage tissue culture" amount="0.2" />
 			<resource type="carrot tissue culture" amount="0.2" />
 			<resource type="celery tissue culture" amount="0.2" />
+			<resource type="corn tissue culture" amount="0.2" />
 			<resource type="cucumber tissue culture" amount="0.2" />
 			<resource type="cranberry tissue culture" amount="0.2" />
 			<resource type="garlic tissue culture" amount="0.2" />
@@ -311,8 +314,8 @@
 			<resource type="tomato tissue culture" amount="0.2" />
 			<resource type="wheat tissue culture" amount="0.2" />
 			<resource type="white onion tissue culture" amount="0.2" />
-			<resource type="white rice tissue culture" amount="0.2" />			
-			<resource type="yam tissue culture" amount="0.2" />	
+			<resource type="white rice tissue culture" amount="0.2" />
+			<resource type="yam tissue culture" amount="0.2" />
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -461,6 +464,7 @@
 			<resource type="Cabbage" amount="50.0" />
 			<resource type="Carrot" amount="50.0" />
 			<resource type="Celery" amount="50.0" />
+			<resource type="Corn" amount="50.0" />
 			<resource type="Cranberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Garlic" amount="50.0" />
@@ -484,7 +488,7 @@
 			<resource type="White Rice" amount="50.0" />
 			<resource type="White Onion" amount="50.0" />
 			<resource type="Yam" amount="50.0" />
-			
+
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
@@ -493,6 +497,7 @@
 			<resource type="cabbage tissue culture" amount="0.3" />
 			<resource type="carrot tissue culture" amount="0.3" />
 			<resource type="celery tissue culture" amount="0.3" />
+			<resource type="corn tissue culture" amount="0.3" />
 			<resource type="cucumber tissue culture" amount="0.3" />
 			<resource type="cranberry tissue culture" amount="0.3" />
 			<resource type="garlic tissue culture" amount="0.3" />
@@ -519,8 +524,8 @@
 			<resource type="tomato tissue culture" amount="0.3" />
 			<resource type="wheat tissue culture" amount="0.3" />
 			<resource type="white onion tissue culture" amount="0.3" />
-			<resource type="white rice tissue culture" amount="0.3" />			
-			<resource type="yam tissue culture" amount="0.3" />			
+			<resource type="white rice tissue culture" amount="0.3" />
+			<resource type="yam tissue culture" amount="0.3" />
 
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
@@ -769,6 +774,7 @@
 			<resource type="Cabbage" amount="50.0" />
 			<resource type="Carrot" amount="50.0" />
 			<resource type="Celery" amount="50.0" />
+			<resource type="Corn" amount="50.0" />
 			<resource type="Cranberry" amount="50.0" />
 			<resource type="Cucumber" amount="50.0" />
 			<resource type="Garlic" amount="50.0" />
@@ -792,7 +798,7 @@
 			<resource type="White Rice" amount="50.0" />
 			<resource type="White Onion" amount="50.0" />
 			<resource type="Yam" amount="50.0" />
-			
+
 			<resource type="Mustard Seed" amount="50.0" />
 			<resource type="Sesame Seed" amount="50.0" />
 
@@ -801,6 +807,7 @@
 			<resource type="cabbage tissue culture" amount="0.4" />
 			<resource type="carrot tissue culture" amount="0.4" />
 			<resource type="celery tissue culture" amount="0.4" />
+			<resource type="corn tissue culture" amount="0.4" />
 			<resource type="cucumber tissue culture" amount="0.4" />
 			<resource type="cranberry tissue culture" amount="0.4" />
 			<resource type="garlic tissue culture" amount="0.4" />
@@ -827,9 +834,9 @@
 			<resource type="tomato tissue culture" amount="0.4" />
 			<resource type="wheat tissue culture" amount="0.4" />
 			<resource type="white onion tissue culture" amount="0.4" />
-			<resource type="white rice tissue culture" amount="0.4" />			
-			<resource type="yam tissue culture" amount="0.4" />	
-			
+			<resource type="white rice tissue culture" amount="0.4" />
+			<resource type="yam tissue culture" amount="0.4" />
+
 			<!-- Kitchen Resources -->
 			<resource type="chlorine" amount="50.0" />
 			<resource type="Sodium Hypochlorite" amount="20.0" />

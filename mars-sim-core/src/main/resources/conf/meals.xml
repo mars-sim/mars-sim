@@ -139,8 +139,8 @@
 		</main-dish>
 
 		<main-dish id="18" name="Baked Potatoes" oil="0.05" salt="0.01" category="meal">
-			<ingredient id="0" name="potato" proportion="0.49"/>
-			<ingredient id="1" name="Green Onion" proportion="0.01"/>
+			<ingredient id="0" name="potato" proportion="0.45"/>
+			<ingredient id="1" name="Green Onion" proportion="0.05"/>
 		</main-dish>
 
 		<main-dish id="19" name="Taro Chips" oil="0.15" salt="0.01" category="meal">
@@ -164,28 +164,39 @@
 			<ingredient id="1" name="radish" proportion="0.2"/>
 		</main-dish>
 
-
-		<!--  SOUP BELOW
-		      dry mass in the total proportion of 0.5 -->
-
-		<main-dish id="23" name="Roasted Carrot Soup" oil="0.01" salt="0.005" category="meal">
-			<ingredient id="0" name="Carrot" proportion="0.15"/>
-			<ingredient id="1" name="Green Onion" proportion="0.01"/>
-			<ingredient id="2" name="Celery" proportion="0.19"/>
-			<ingredient id="3" name="Tomato" proportion="0.15"/>
+		<main-dish id="23" name="Corn Mashed Potatoes" oil="0.05" salt="0.005" category="meal">
+			<ingredient id="0" name="Corn" proportion="0.2"/>
+			<ingredient id="1" name="Potato" proportion="0.3"/>
 		</main-dish>
 
-		<main-dish id="24" name="Miso Soup" oil="0.01" salt="0.005" category="meal">
-			<ingredient id="0" name="Sesame" proportion="0.005"/>
-			<ingredient id="1" name="Tofu" proportion="0.44"/>
-			<ingredient id="2" name="Soy Sauce" proportion="0.005"/>
+		<!--  SOUP BELOW
+		      dry mass in the total proportion of .5 kg -->
+
+		<main-dish id="24" name="Sesame Miso Soup" oil="0.01" salt="0.005" category="meal">
+			<ingredient id="0" name="Sesame" proportion="0.025"/>
+			<ingredient id="1" name="Tofu" proportion="0.15"/>
+			<ingredient id="2" name="Soy Sauce" proportion="0.025"/>
 			<ingredient id="3" name="Green Onion" proportion="0.05"/>
+			<ingredient id="4" name="Water" proportion="0.25"/>			
 		</main-dish>
 
 		<main-dish id="25" name="Taro Soup" oil="0.15" salt="0.01" category="meal">
-			<ingredient id="0" name="Taro" proportion="0.5"/>
+			<ingredient id="0" name="Taro" proportion="0.25"/>
+			<ingredient id="1" name="Water" proportion="0.25"/>
 		</main-dish>
 
+		<main-dish id="26" name="Roasted Carrot Soup" oil="0.01" salt="0.005" category="meal">
+			<ingredient id="0" name="Carrot" proportion="0.125"/>
+			<ingredient id="1" name="Celery" proportion="0.125"/>
+			<ingredient id="2" name="Water" proportion="0.25"/>
+		</main-dish>
+
+		<main-dish id="27" name="Sweet Corn Soup" oil="0.01" salt="0.005" category="meal">
+			<ingredient id="0" name="Corn" proportion="0.20"/>
+			<ingredient id="1" name="Garlic" proportion="0.05"/>			
+			<ingredient id="2" name="Water" proportion="0.25"/>
+		</main-dish>		
+		
 	</meal-list>
 
 </meal-configuration>

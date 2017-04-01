@@ -109,6 +109,7 @@
 	<resource name="cabbage" type="crop" phase="solid" edible="true"></resource>
 	<resource name="carrot" type="crop" phase="solid" edible="true"></resource>
 	<resource name="celery" type="crop" phase="solid" edible="true"></resource>
+	<resource name="corn" type="crop" phase="solid" edible="true"></resource>
 	<resource name="cranberry" type="crop" phase="solid" edible="true"></resource>
 	<resource name="cucumber" type="crop" phase="solid" edible="true"></resource>
 	<resource name="garlic" type="crop" phase="solid" edible="true"></resource>

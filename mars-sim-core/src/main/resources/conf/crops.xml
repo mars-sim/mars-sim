@@ -35,6 +35,7 @@
 			daily-PAR : [ mol / m^2 / day ]
 -->
 
+		<!-- https://www.researchgate.net/publication/262910301_Phenological_growth_stages_of_edible_asparagus_Asparagus_officinalis_Codification_and_description_according_to_the_BBCH_scale -->
 
 	   	<crop name="Blueberry"
 	        growing-time="600"
@@ -83,6 +84,35 @@
 	    	daily-PAR="17.28"
 	    	/>
 
+	  <crop name="Corn" growing-time="65" crop-category="grains"
+	    	edible-biomass="12.77" edible-water-content=".76" inedible-biomass="15.0" daily-PAR="34.56" />
+
+		<!--
+		Worldwide, with a yield of over 5 T/ha . Production can be significantly higher in certain regions of the world;
+		2009 forecasts for production in Iowa were 11614 kg/ha
+
+		Use (11.6 + 5)/2 = 8.30 T/ha
+		8.30*100/65 = 12.77 g/m2/d
+
+		http://www.ent.iastate.edu/pest/cornborer/stages-corn-development
+		http://www.ent.iastate.edu/pest/cornborer/insect/damage
+
+		Corn Growth and Development, https://graincrops.ca.uky.edu/files/corngrowthstages_2011.pdf
+		Chad Lee, Univ. of Kentucky, 2005-2011
+
+		CORN DEVELOPMENT AND KEY GROWTH STAGES
+		http://publications.tamu.edu/CORN_SORGHUM/PUB_Corn%20Development%20and%20Key%20Growth%20Stages.pdf
+		Reproductive stage :
+		silking, blister, milk, dough, dent, 1/2 maturity, black layer
+
+		Field corn vs. Sweet corn
+		Although field corn is used mostly to create other products, sweet corn can be used as well.
+		Plastics are manufactured from 		both types of corn to replace petroleum-based products.
+		These include batteries, packaging materials, plastic silverware and other plastic products
+		(such as skin and hair care bottles), toothpaste, candles, shampoo and dozens of others.
+		A corn-based fuel for transportation, ethanol, is added to gasoline and is sold at many gas stations.
+
+ 		-->
 
 	   	<crop name="Cranberry"
 	        growing-time="300"
@@ -294,6 +324,10 @@
 	     	daily-PAR="34.56"
 	    	/>
 
+	    	<!-- A Simulation Model for Potato Growth, http://pdf.usaid.gov/pdf_docs/PNABU293.pdf
+	    	A Model to Simulate Sweet Potato Growth, http://www.idosi.org/wasj/wasj4(4)/14.pdf
+	    	-->
+
 	     <crop name="Quinoa"
 	        growing-time="90.0"
 	    	crop-category="grains"
@@ -417,8 +451,6 @@
 		 (61.74+30.64)/2*100/65 = 71.06
 
 		 previously edible-biomass="87.50" edible-water-content=".92" inedible-biomass="37.69"
-
-
 		-->
 
 	    <crop name="Taro" growing-time="200.0" crop-category="corms"
@@ -447,29 +479,21 @@
 			73.47 g of 104 g H20 http://www.healthbenefitstimes.com/taro/
 
 			http://www.nutrition-and-you.com/taro.html
+
+			phenological growth,
+			1. https://www.researchgate.net/publication/272030000_A_phenological_scale_for_the_development_of_Gladiolus
+			2. http://revistas.inia.es/index.php/sjar/article/view/7340/2514
 	-->
 
-	    <crop name="Tomato"
-	        growing-time="80"
-	    	crop-category="fruits"
-	    	edible-biomass="17"
-	    	edible-water-content=".948"
-	    	inedible-biomass="20"
-	    	daily-PAR="32.4"
-	    	/>
+	    <crop name="Tomato" growing-time="80" crop-category="fruits"
+	    	edible-biomass="17" edible-water-content=".948" inedible-biomass="20" daily-PAR="32.4" />
 	    	<!-- http://www.ers.usda.gov/amber-waves/2005-april/north-american-greenhouse-tomatoes-emerge-as-a-major-market-force.aspx#.VHvwl1XF_ME
 	    	 484 MT/ha for earth greenhouse
 	    	 but 17.06 kg edible on Table 6 of Life support outputs of crops grown in BPC
-	    	  -->
+	    	-->
 
-		    <crop name="Wheat"
-	        growing-time="80"
-	    	crop-category="grains"
-	    	edible-biomass="13"
-	    	edible-water-content=".12"
-	    	inedible-biomass="26"
-	     	daily-PAR="69.12"
-	    	/>
+		    <crop name="Wheat" growing-time="80" crop-category="grains"
+	    		edible-biomass="13" edible-water-content=".12" inedible-biomass="26" daily-PAR="69.12" />
 		<!-- Development stages : http://www.fao.org/docrep/006/Y4011E/y4011e06.htm -->
 
 
@@ -485,18 +509,27 @@
 
 			 	1100 kg /ha , 110 g/m2/150 day =
 			 	25-30 T/ha, 2750/150 g/m2/day = 18.33. see https://www.indiaagronet.com/indiaagronet/crop%20info/onion.htm
-			 	-->
+			-->
 
 	    <crop name="Yam" growing-time="200.0" crop-category="tubers"
 	    	edible-biomass="12.5" edible-water-content=".79" inedible-biomass=".1" daily-PAR="34.56" />
 
 			<!-- https://harvestchoice.org/sites/default/files/images/thumbnails/data/yams_y_3.png
-			   ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d
+			   ~25 T/hectare , 2500 g/m2 /200 days = 12.5 g/m2/d -->
 
-				-->
+	<!-- Rhizomes vs. roots
+	    	 Tumeric
+	    	 Green Pepper
+	    	 Radish
+	    	 broccoli : http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/brocoli.aspx
 
+		Beetroot conservative: 14; likely: 18 target yield: 25
+	   TODO: multi-year plants
 
-	<!--
+	-->
+	</crop-list>
+
+<!--
 	Conversion :
 
 	edible-biomass : [ gram / m^2 / day ]
@@ -509,20 +542,8 @@
 
 	for a 200-day crop with 2 T/ha,
 	200 g/m2 / 200 days  = 1 g/m2/day
+-->
 
-
-
-	Beetroot conservative: 14; likely: 18 target yield: 25
-	   TODO: multi-year plants
-	-->
-
-	<!-- Rhizomes vs. roots
-	    	 Tumeric
-	    	 Green Pepper
-	    	 Radish
-	    	 broccoli : http://www.sqm.com/en-us/productos/nutricionvegetaldeespecialidad/cultivos/brocoli.aspx
-	-->
-	</crop-list>
 
 <!-- References :
 
@@ -734,6 +755,54 @@
 	shows the relationship between feet of row and spacing and yield per 100 feet of row.
 	see http://msue.anr.msu.edu/uploads/files/Table%204.pdf
 
+27. Examples of phenological stages of trees and ginseng
+
+	A. Analyzing phenological stages of three citrus from http://ijagcs.com/wp-content/uploads/2013/10/452-4571.pdf
+	1. Bud Breaking
+	2. Start of Bloom
+	3. Full Bloom
+	4. End of Petal Fall
+	5. Jone Drop
+	6. Cell Expansion
+	7. Color Break
+	8. Fruit Maturity
+	9. Harvest
+
+	B. Phenological stages of the pomegranate tree from http://ucanr.edu/sites/Pomegranates/files/174088.pdf
+	- Bud in winter dormancy
+	- Bud swelling
+	- Red tip
+	- Sprouting of first leaves
+	- Leaf separation
+	- Leaf growth
+	- Lengthening of internodes
+	- Appearance of the flower buds
+	- Swollen calyx
+	- Opening of calyx
+	- Open flower
+	- Petals fall
+	- Fruit setting
+	- Young fruit
+	- Fruit growth
+	- Second bud sprouting
+	 -Fruit ripening
+	 -Leaf fall
+
+28. Phenological stages of North American ginseng,
+	http://wildginsengconservation.com/Non%20McGraw%20Panax%20Pubs/Proctoretal2003.pdf
+
+	- Principal growth stage 0: Germination/Bud Development
+	- Development from rhizome (2nd and 3rd year)
+	- Principal growth stage 1: Leaf development (crop canopy)
+	- Growth from bud (2nd and 3rd year)
+ 	- Principal growth stage 4: Root and perennating bud formation
+	- Principal growth stage 5: Peduncle elongation and inflorescence development
+	- Principal growth stage 6: Flowering and fruit set
+	- Principal growth stage 7: Development of fruit based on seed head diameter
+	- Principal growth stage 8: Ripening of fruit based on fruit colour
+	- Principal growth stage 9: Senescence
+
+29. non-edible source of oil, https://i0.wp.com/naturegoingsmart.com/wp-content/uploads/2016/02/Tab-1-1.png
 -->
 
 </crop-configuration>

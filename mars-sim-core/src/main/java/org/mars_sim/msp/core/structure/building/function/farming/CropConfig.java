@@ -159,15 +159,13 @@ implements Serializable {
 
 					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
 					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
-					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 15D));
-					phases.put(3, new Phase(PhaseType.TILLERING, 1D, 20D));
-					phases.put(4, new Phase(PhaseType.STEM_ELONGATION, 1D, 15D));
-					phases.put(5, new Phase(PhaseType.FLOWERING, 1D, 20D));
-					phases.put(6, new Phase(PhaseType.MILK_DEVELOPMENT, 1D, 5D));
-					phases.put(7, new Phase(PhaseType.DOUGH_DEVELOPING, 1D, 10D));
-					phases.put(8, new Phase(PhaseType.MATURATION, 1D, 15D));
-					phases.put(9, new Phase(PhaseType.HARVESTING, 0.75, 0));
-					phases.put(10, new Phase(PhaseType.FINISHED, 0.1, 0));
+					phases.put(2, new Phase(PhaseType.BUD_SPROUTING, 1D, 20D));
+					phases.put(3, new Phase(PhaseType.VEGETATIVE_DEVELOPMENT, 1D, 20D));
+					phases.put(4, new Phase(PhaseType.FLOWERING, 1D, 15D));
+					phases.put(5, new Phase(PhaseType.REPLACEMENT_CORMS_DEVELOPMENT, 1D, 35D));
+					phases.put(6, new Phase(PhaseType.ANTHESIS, 1D, 10D));
+					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
+					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
 
 				} else if (cat == CropCategoryType.FRUITS) {
 
@@ -194,6 +192,17 @@ implements Serializable {
 					phases.put(9, new Phase(PhaseType.HARVESTING, 0.75, 0));
 					phases.put(10, new Phase(PhaseType.FINISHED, 0.1, 0));
 
+				} else if (cat == CropCategoryType.GRASSES) {
+
+					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
+					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
+					phases.put(2, new Phase(PhaseType.GERMINATION, 1D, 15D));
+					phases.put(3, new Phase(PhaseType.TILLERING, 1D, 20D));
+					phases.put(4, new Phase(PhaseType.GRAND_GROWTH, 1D, 15D));
+					phases.put(5, new Phase(PhaseType.MATURATION, 1D, 15D));
+					phases.put(6, new Phase(PhaseType.HARVESTING, 0.75, 0));
+					phases.put(7, new Phase(PhaseType.FINISHED, 0.1, 0));
+
 				} else if (cat == CropCategoryType.LEAVES) {
 
 					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
@@ -218,14 +227,13 @@ implements Serializable {
 					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
 
 				} else if (cat == CropCategoryType.TUBERS) {
-
 					phases.put(0, new Phase(PhaseType.INCUBATION, INCUBATION_PERIOD, 0));
 					phases.put(1, new Phase(PhaseType.PLANTING, 0.5D, 0));
 					phases.put(2, new Phase(PhaseType.SPROUTING, 1D, 14D));
 					phases.put(3, new Phase(PhaseType.LEAF_DEVELOPMENT, 1D, 5D));
 					phases.put(4, new Phase(PhaseType.TUBER_INITIATION, 1D, 14D));
 					phases.put(5, new Phase(PhaseType.TUBER_FILLING, 1D, 40D));
-					phases.put(6, new Phase(PhaseType.MATURING, 1D, 27D));
+					phases.put(6, new Phase(PhaseType.MATURATION, 1D, 27D));
 					phases.put(7, new Phase(PhaseType.HARVESTING, 0.75, 0));
 					phases.put(8, new Phase(PhaseType.FINISHED, 0.1, 0));
 
