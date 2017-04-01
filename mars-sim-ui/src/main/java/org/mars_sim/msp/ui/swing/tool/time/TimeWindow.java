@@ -250,7 +250,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		earthTimePane.add(earthTimeHeaderLabel, BorderLayout.NORTH);
 
 		// Create Earth time label
-		earthTimeLabel = new JLabel(earthTime.getTimeStamp(), JLabel.CENTER);
+		earthTimeLabel = new JLabel(earthTime.getTimeStampF0(), JLabel.CENTER);
 		earthTimePane.add(earthTimeLabel, BorderLayout.SOUTH);
 
 		// Create uptime panel
@@ -585,7 +585,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
 
 		if (earthTime != null) {
-			String ts = earthTime.getTimeStamp();
+			String ts = earthTime.getTimeStampF0();
 			if (ts != null)
 				//SwingUtilities.invokeLater(() -> {
 					//if (earthTime != null)

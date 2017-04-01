@@ -62,16 +62,16 @@
 
 
 		<!-- Earth start date/time -->
-		<!-- "yyyy-MMM-dd hh:mm:ss" format -->
-		<!-- Default: 2043-Sep-30 00:00:00 -->
-		<!-- Note that changing this date to another value is currently unsupported -->
-		<earth-start-date-time value="2043-Sep-30 00:00:00" />
+		<!-- "yyyy-MM-dd hh:mm:ss" format -->
+		<!-- Default: 2043-09-30 00:00:00 -->
+		<!-- Note that changing this date to another value is currently UNSUPPORTED -->
+		<earth-start-date-time value="2043-09-30 00:00:00 GMT00:00 " />
 
 		<!-- Mars start date/time -->
 		<!-- (See time.txt) -->
 		<!-- "orbit-month-sol millisol" format -->
 		<!-- Default: 15-Adir-01 000.000 -->
-		<!-- Note that changing this date to another value is currently unsupported -->
+		<!-- Note that changing this date to another value is currently UNSUPPORTED -->
 		<mars-start-date-time value="15-Adir-01 000.000" />
 
 		<!-- autosave-interval is the number of minutes the simulation will wait between two successive autosave events -->

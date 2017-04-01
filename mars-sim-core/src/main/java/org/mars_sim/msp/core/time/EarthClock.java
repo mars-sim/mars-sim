@@ -72,18 +72,28 @@ implements Serializable {
 
 		// Set GMT timezone for calendar
 		zone = new SimpleTimeZone(0, "GMT");
+
 		// see http://www.diffen.com/difference/GMT_vs_UTC
-		//cal.setTimeZone(zone);
-		//cal.clear();
+
+		cal.setTimeZone(zone);
+		cal.clear();
 
 		// Set Earth clock to Martian Zero-orbit date-time.
 		// This date may need to be adjusted if it is inaccurate.
 
+		//2017-03-27 set it to Locale.US
+		f0 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss '(UT)'", Locale.US);
+		f0.setTimeZone(zone);
+
+		//2017-03-27 set it to Locale.US
+		f1 = new SimpleDateFormat("yyyy-MM-dd HH:mm '(UT)'", Locale.US);
+		f1.setTimeZone(zone);
+
 		// Note: By default, java set locale to user's machine system locale via Locale.getDefault(Locale.Category.FORMAT));
-		// i.e. f2 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss", Locale.getDefault(Locale.Category.FORMAT));
+		// i.e. f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault(Locale.Category.FORMAT));
 		//2017-03-27 set it to Locale.US
 
-		f2 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss", Locale.US);
+		f2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 		f2.setTimeZone(zone);
 		try {
 			cal.setTime(f2.parse(fullDateTimeString));
@@ -92,17 +102,9 @@ implements Serializable {
 			//throw new IllegalStateException(ex);
 		}
 
-		//2017-03-27 set it to Locale.US
-		f0 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss '(UT)'", Locale.US);
-		f0.setTimeZone(zone);
-
-		//2017-03-27 set it to Locale.US
-		f1 = new SimpleDateFormat("yyyy-MMM-dd HH:mm '(UT)'", Locale.US);
-		f1.setTimeZone(zone);
-
 		// Initialize a second formatter
 		//2017-03-27 set it to Locale.US
-		f3 = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss", Locale.US);//.SSS"); // :SSS
+		f3 = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);//.SSS"); // :SSS
 		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		f3.setTimeZone(gmt);
 		f3.setLenient(false);
@@ -136,9 +138,10 @@ implements Serializable {
 	public static long getMillis(EarthClock clock) {
 		long millis = clock.getCalender().getTimeInMillis();
 
-		Instant instant = Instant.ofEpochMilli(clock.getCalender().getTimeInMillis());
+		//Instant instant = Instant.ofEpochMilli(clock.getCalender().getTimeInMillis());
 		//System.out.println("millis from cal is " + clock.getCalender().getTimeInMillis());
-		System.out.println("instant is " + instant);
+		//System.out.println("instant is " + instant);
+
 		//ZoneId zoneId = ZoneId.of("UTC-0");
 		//LocalDateTime ldt = LocalDateTime.ofInstant(instant, zoneId);// ZoneId.systemDefault());
 
@@ -166,7 +169,7 @@ implements Serializable {
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 01212"
+	 * @return date/time formatted in a string. eg "2055-May-06 03:37:22"
 	 */
 	public String getCurrentDateTimeString(EarthClock clock) {
 		String result = f3.format(cal.getTime());
@@ -290,33 +293,33 @@ implements Serializable {
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * @return date/time formatted in a string. ex "2055-May-06 03:37:22 (UT)"
+	 * @return date/time formatted in a string. ex "2055-05-06 03:37:22 (UT)"
 	 */
 	//2015-01-08 Added if clause
-	public String getTimeStamp() {
-		String result = f0.format(cal.getTime());// + " (UT)";
+	public String getTimeStampF0() {
+		String result = f0.format(cal.getTime());
 		if (result == null) result = "0";
 		return result;
 	}
 
 	/**
 	 * Returns the date/time formatted in a string
-	 * @return date/time formatted in a string. ex "2055-May-06 03:37 (UT)"
+	 * @return date/time formatted in a string. ex "2055-05-06 03:37 (UT)"
 	 */
-	//2016-09-24 Added getTimeStamp2()
-	public String getTimeStamp2() {
-		String result = f1.format(cal.getTime());// + " (UT)";
+	//2016-09-24 Added getTimeStampF1()
+	public String getTimeStampF1() {
+		String result = f1.format(cal.getTime());
 		if (result == null) result = "0";
 		return result;
 	}
 
 	/**
 	 * Returns the date formatted in a string
-	 * @return date formatted in a string. ex "2055-May-06"
+	 * @return date formatted in a string. ex "2055-05-06"
 	 */
-	// Kung: why do we want to deprecate this method with @deprecated tag?
 	public String getDateString() {
-		return getTimeStamp().substring(0,11);
+		String d = getTimeStampF0();
+		return d.substring(0, d.indexOf(" "));
 	}
 
 	/**
@@ -333,7 +336,7 @@ implements Serializable {
 	 * @deprecated
 	 */
 	public String toString() {
-		return getTimeStamp();
+		return getTimeStampF0();
 	}
 
 	public int getDayOfMonth()
@@ -346,6 +349,7 @@ implements Serializable {
 		return cal.get(Calendar.MONTH);
 	}
 
+	// Used by scheduleSecondTask() in EarthMinimalClock only
 	public String getMonthString() {
 		int w = getMonth();
 		StringBuilder s = new StringBuilder();

@@ -376,7 +376,7 @@ implements Serializable {
 	}
 
 	/**
-	 * Gets a ummutable set of all the amount resources.
+	 * Gets an immutable set of all the amount resources.
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
@@ -384,6 +384,18 @@ implements Serializable {
 			set = Collections.unmodifiableSet(amountResourceConfig.getAmountResources());
 		return set;
 	}
+
+/* An example method
+private Set<T> intersection(Collection<T> first, Collection<T> second) {
+	// intersection with an empty collection is empty
+	if (isNullOrEmpty(first) || isNullOrEmpty(second))
+		return new HashSet<>();
+
+	return first.stream()
+			.filter(second::contains)
+			.collect(Collectors.toSet());
+}
+*/
 
 	/**
 	 * gets a sorted map of all amount resource names by calling
@@ -450,8 +462,8 @@ implements Serializable {
 
 	public void destroy() {
 		phase = null;
-		//amountResourceConfig = null;
-/*
+		amountResourceConfig = null;
+
 		foodAR = null;
 		oxygenAR = null;
 		waterAR = null;
@@ -462,7 +474,7 @@ implements Serializable {
 	    foodWasteAR = null;
 	    solidWasteAR = null;
 	    napkinAR = null;
-*/
+
 	}
 
 

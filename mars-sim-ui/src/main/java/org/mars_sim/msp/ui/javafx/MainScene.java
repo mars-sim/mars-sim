@@ -334,9 +334,9 @@ public class MainScene {
 	private ConstructionWizard constructionWizard;
 
 	private QuotationPopup quote;
-	private MessagePopup messagePopup;
+	//private MessagePopup messagePopup;
 
-	private BorderSlideBar topFlapBar;
+	//private BorderSlideBar topFlapBar;
 
     private Simulation sim = Simulation.instance();
     private MasterClock masterClock = sim.getMasterClock();
@@ -701,7 +701,7 @@ public class MainScene {
 		double scaledHorizontalLines = Screen.getPrimary().getBounds().getHeight();
 		// DPI scale factor.
 		double dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
-		//logger.info("DPI Scale Factor is " + dpiScaleFactor);
+		logger.info("DPI Scale Factor is " + dpiScaleFactor);
 
 
 		// Create group to hold swingNode which in turns holds the Swing desktop
@@ -901,16 +901,16 @@ public class MainScene {
 		earthTimeButton.setMaxWidth(Double.MAX_VALUE);
 
 		if (OS.contains("linux")) {
-			earthTimeButton.setMinWidth(LINUX_WIDTH);
-			earthTimeButton.setPrefSize(LINUX_WIDTH, 29);
+			earthTimeButton.setMinWidth(LINUX_WIDTH-5);
+			earthTimeButton.setPrefSize(LINUX_WIDTH-5, 29);
 		}
 		else if (OS.contains("mac")) {
-			earthTimeButton.setMinWidth(MACOS_WIDTH);
-			earthTimeButton.setPrefSize(MACOS_WIDTH, 28);
+			earthTimeButton.setMinWidth(MACOS_WIDTH-10);
+			earthTimeButton.setPrefSize(MACOS_WIDTH-10, 28);
 		}
 		else {
-			earthTimeButton.setMinWidth(WIN_WIDTH);
-			earthTimeButton.setPrefSize(WIN_WIDTH, 33);
+			earthTimeButton.setMinWidth(WIN_WIDTH-15);
+			earthTimeButton.setPrefSize(WIN_WIDTH-15, 33);
 		}
 /*
 		earthTimeBar = new HBox();
@@ -2714,7 +2714,7 @@ public class MainScene {
 		marsTimeButton.setText(m.toString());
 
 		StringBuilder e = new StringBuilder();
-        e.append(EARTH_DATE_TIME).append(earthClock.getTimeStamp2());
+        e.append(EARTH_DATE_TIME).append(earthClock.getTimeStampF1());
 		earthTimeButton.setText(e.toString());
 
 		//2016-09-15 Added oldLastSaveStamp and newLastSaveStamp
@@ -3390,8 +3390,8 @@ public class MainScene {
 
 	public void destroy() {
 		quote = null;
-		messagePopup = null;
-		topFlapBar = null;
+		//messagePopup = null;
+		//topFlapBar = null;
 		marsNetBox = null;
 		marsNetBtn = null;
 		chatBox = null;
