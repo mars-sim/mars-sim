@@ -25,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SpringLayout;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
@@ -43,6 +44,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.Conversion;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
+import org.mars_sim.msp.ui.swing.tool.TableStyle;
 
 /**
  * A panel showing a selected resupply mission details.
@@ -89,81 +92,88 @@ implements ClockListener, HistoricalEventListener {
 		titleLabel.setPreferredSize(new Dimension(-1, 25));
 		infoPane.add(titleLabel, BorderLayout.NORTH);
 
-		// Create the info2 panel.
-		JPanel info2Pane = new JPanel(new GridLayout(6, 1, 3, 3));
-		infoPane.add(info2Pane, BorderLayout.CENTER);
+		// Create the spring panel.
+		JPanel springPane = new JPanel(new SpringLayout());//GridLayout(6, 1, 3, 3));
+		infoPane.add(springPane, BorderLayout.CENTER);
 
 		// Create destination panel.
-		JPanel destinationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(destinationPane);
+		//JPanel destinationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		//info2Pane.add(destinationPane);
 
 		// Create destination title label.
-		JLabel destinationTitleLabel = new JLabel("  Destination : ", JLabel.LEFT);
-		destinationPane.add(destinationTitleLabel);
+		JLabel destinationTitleLabel = new JLabel("Destination : ", JLabel.RIGHT);
+		springPane.add(destinationTitleLabel);
 
 		// Create destination value label.
-		destinationValueLabel = new JLabel("", JLabel.LEFT);
-		destinationPane.add(destinationValueLabel);
+		destinationValueLabel = new JLabel("", JLabel.CENTER);
+		springPane.add(destinationValueLabel);
 
 		// Create state panel.
-		JPanel statePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(statePane);
+		//JPanel statePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//springPane.add(statePane);
 
 		// Create state title label.
-		JLabel stateTitleLabel = new JLabel("  State : ", JLabel.LEFT);
-		statePane.add(stateTitleLabel);
+		JLabel stateTitleLabel = new JLabel("State : ", JLabel.RIGHT);
+		springPane.add(stateTitleLabel);
 
 		// Create state value label.
-		stateValueLabel = new JLabel("", JLabel.LEFT);
-		statePane.add(stateValueLabel);
+		stateValueLabel = new JLabel("", JLabel.CENTER);
+		springPane.add(stateValueLabel);
 
 		// 2016-11-23 Create launch date panel.
-		JPanel launchDatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(launchDatePane);
+		//JPanel launchDatePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//springPane.add(launchDatePane);
 
 		// 2016-11-23 Create launch date title label.
-		JLabel launchDateTitleLabel = new JLabel("  Launch Date : ", JLabel.LEFT);
-		launchDatePane.add(launchDateTitleLabel);
+		JLabel launchDateTitleLabel = new JLabel("Launch Date : ", JLabel.RIGHT);
+		springPane.add(launchDateTitleLabel);
 
 		// 2016-11-23  Create launch date value label.
-		launchDateValueLabel = new JLabel("", JLabel.LEFT);
-		launchDatePane.add(launchDateValueLabel);
-		
+		launchDateValueLabel = new JLabel("", JLabel.CENTER);
+		springPane.add(launchDateValueLabel);
+
 		// Create arrival date panel.
-		JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(arrivalDatePane);
+		//JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//springPane.add(arrivalDatePane);
 
 		// Create arrival date title label.
-		JLabel arrivalDateTitleLabel = new JLabel("  Arrival Date : ", JLabel.LEFT);
-		arrivalDatePane.add(arrivalDateTitleLabel);
+		JLabel arrivalDateTitleLabel = new JLabel("Arrival Date : ", JLabel.RIGHT);
+		springPane.add(arrivalDateTitleLabel);
 
 		// Create arrival date value label.
-		arrivalDateValueLabel = new JLabel("", JLabel.LEFT);
-		arrivalDatePane.add(arrivalDateValueLabel);
-	
+		arrivalDateValueLabel = new JLabel("", JLabel.CENTER);
+		springPane.add(arrivalDateValueLabel);
+
 		// Create time arrival panel.
-		JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(timeArrivalPane);
+		//JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//springPane.add(timeArrivalPane);
 
 		// Create time arrival title label.
-		JLabel timeArrivalTitleLabel = new JLabel("  Time Until Arrival : ", JLabel.LEFT);
-		timeArrivalPane.add(timeArrivalTitleLabel);
+		JLabel timeArrivalTitleLabel = new JLabel("Time Until Arrival : ", JLabel.RIGHT);
+		springPane.add(timeArrivalTitleLabel);
 
 		// Create time arrival value label.
-		timeArrivalValueLabel = new JLabel("", JLabel.LEFT);
-		timeArrivalPane.add(timeArrivalValueLabel);
+		timeArrivalValueLabel = new JLabel("", JLabel.CENTER);
+		springPane.add(timeArrivalValueLabel);
 
 		// Create immigrants panel.
-		JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		info2Pane.add(immigrantsPane);
+		//JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		//springPane.add(immigrantsPane);
 
 		// Create immigrants title label.
-		JLabel immigrantsTitleLabel = new JLabel("  Immigrants : ", JLabel.LEFT);
-		immigrantsPane.add(immigrantsTitleLabel);
+		JLabel immigrantsTitleLabel = new JLabel("Immigrants : ", JLabel.RIGHT);
+		springPane.add(immigrantsTitleLabel);
 
 		// Create immigrants value label.
-		immigrantsValueLabel = new JLabel("", JLabel.LEFT);
-		immigrantsPane.add(immigrantsValueLabel);
+		immigrantsValueLabel = new JLabel("", JLabel.CENTER);
+		springPane.add(immigrantsValueLabel);
+
+		// 2017-03-31 Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(springPane,
+		                                6, 2, //rows, cols
+		                                20, 5,        //initX, initY
+		                                20, 1);       //xPad, yPad
+
 
 		// Create the outer supply panel.
 		JPanel outerSupplyPane = new JPanel(new BorderLayout(0, 0));
@@ -345,8 +355,10 @@ implements ClockListener, HistoricalEventListener {
 
 			// Create table
 			JTable buildingTable = new JTable(tableModel);
+			TableStyle.setTableStyle(buildingTable);
+			buildingTable.setAutoCreateRowSorter(true);
 			buildingTable.setCellSelectionEnabled(false);
-			buildingTable.getColumnModel().getColumn(1).setMaxWidth(50);
+			buildingTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			buildingTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
 			buildingsPanel.add(new JScrollPane(buildingTable), BorderLayout.CENTER);
 
@@ -417,8 +429,10 @@ implements ClockListener, HistoricalEventListener {
 
 			// Create table
 			JTable vehicleTable = new JTable(tableModel);
+			TableStyle.setTableStyle(vehicleTable);
+			vehicleTable.setAutoCreateRowSorter(true);
 			vehicleTable.setCellSelectionEnabled(false);
-			vehicleTable.getColumnModel().getColumn(1).setMaxWidth(50);
+			vehicleTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			vehicleTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
 			vehiclesPanel.add(new JScrollPane(vehicleTable), BorderLayout.CENTER);
 
@@ -475,8 +489,10 @@ implements ClockListener, HistoricalEventListener {
 
 			// Create table
 			JTable equipmentTable = new JTable(tableModel);
+			TableStyle.setTableStyle(equipmentTable);
+			equipmentTable.setAutoCreateRowSorter(true);
 			equipmentTable.setCellSelectionEnabled(false);
-			equipmentTable.getColumnModel().getColumn(1).setMaxWidth(50);
+			equipmentTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			equipmentTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
 			equipmentPanel.add(new JScrollPane(equipmentTable), BorderLayout.CENTER);
 
@@ -516,7 +532,7 @@ implements ClockListener, HistoricalEventListener {
 			    }
 			};
 			tableModel.addColumn("Resource Type");
-			tableModel.addColumn("Amount");
+			tableModel.addColumn("Amount [kg]");
 
 			// Populate table model with data.
 			List<AmountResource> resourceTypes = new ArrayList<AmountResource>(resources.keySet());
@@ -536,8 +552,10 @@ implements ClockListener, HistoricalEventListener {
 
 			// Create table
 			JTable resourcesTable = new JTable(tableModel);
+			TableStyle.setTableStyle(resourcesTable);
+			resourcesTable.setAutoCreateRowSorter(true);
 			resourcesTable.setCellSelectionEnabled(false);
-			resourcesTable.getColumnModel().getColumn(1).setMaxWidth(70);
+			resourcesTable.getColumnModel().getColumn(1).setMaxWidth(120);
 			resourcesTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(1));
 			resourcesPanel.add(new JScrollPane(resourcesTable), BorderLayout.CENTER);
 
@@ -597,8 +615,11 @@ implements ClockListener, HistoricalEventListener {
 
 			// Create table
 			JTable partsTable = new JTable(tableModel);
+			TableStyle.setTableStyle(partsTable);
+			partsTable.setAutoCreateRowSorter(true);
+			partsTable.setAutoCreateRowSorter(true);
 			partsTable.setCellSelectionEnabled(false);
-			partsTable.getColumnModel().getColumn(1).setMaxWidth(50);
+			partsTable.getColumnModel().getColumn(1).setMaxWidth(100);
 			partsTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
 			partsPanel.add(new JScrollPane(partsTable), BorderLayout.CENTER);
 

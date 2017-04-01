@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.medical.DeathInfo;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.SpringUtilities;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 import javax.swing.*;
@@ -65,7 +66,7 @@ implements ActionListener {
 		deathInfoLabelPanel.add(deathInfoLabel);
 
 		// Prepare death label panel
-		JPanel deathLabelPanel = new JPanel(new GridLayout(3, 2, 0, 0));
+		JPanel deathLabelPanel = new JPanel(new SpringLayout());//GridLayout(3, 2, 0, 0));
 		deathLabelPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(deathLabelPanel, BorderLayout.NORTH);
 
@@ -107,6 +108,12 @@ implements ActionListener {
         malTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper3.add(malTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper3);
+
+		// 2017-03-31 Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(deathLabelPanel,
+		                                2, 2, //rows, cols
+		                                50, 5,        //initX, initY
+		                                10, 1);       //xPad, yPad
 
 		// Prepare bottom content panel
 		JPanel bottomContentPanel = new JPanel(new BorderLayout(0, 0));
