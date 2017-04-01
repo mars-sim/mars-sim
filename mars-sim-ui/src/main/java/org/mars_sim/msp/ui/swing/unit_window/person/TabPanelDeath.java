@@ -61,7 +61,7 @@ implements ActionListener {
 		topContentPanel.add(deathInfoLabelPanel);
 
 		// Prepare death info label
-		JLabel deathInfoLabel = new JLabel(Msg.getString("TabPanelDeath.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel deathInfoLabel = new JLabel(Msg.getString("TabPanelDeath.label"), JLabel.LEFT); //$NON-NLS-1$
 		deathInfoLabel.setFont(new Font("Serif", Font.BOLD, 16));
 		deathInfoLabelPanel.add(deathInfoLabel);
 
@@ -79,7 +79,7 @@ implements ActionListener {
         causeTF.setText(death.getIllness().getName());
         causeTF.setEditable(false);
         causeTF.setColumns(20);
-        causeTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        //causeTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper1.add(causeTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper1);
 
@@ -92,7 +92,7 @@ implements ActionListener {
         timeTF.setText(death.getTimeOfDeath());
         timeTF.setEditable(false);
         timeTF.setColumns(20);
-        timeTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        //timeTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper2.add(timeTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper2);
 
@@ -101,32 +101,30 @@ implements ActionListener {
 		deathLabelPanel.add(malfunctionLabel);
 
 		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-        malTF = new JTextField();
+		malTF = new JTextField();
         malTF.setText(death.getMalfunction());
         malTF.setEditable(false);
         malTF.setColumns(20);
-        malTF.setFont(new Font("Serif", Font.PLAIN, 12));
+        //malTF.setFont(new Font("Serif", Font.PLAIN, 12));
         wrapper3.add(malTF);//, BorderLayout.CENTER);
         deathLabelPanel.add(wrapper3);
 
 		// 2017-03-31 Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(deathLabelPanel,
-		                                2, 2, //rows, cols
+		                                3, 2, //rows, cols
 		                                50, 5,        //initX, initY
 		                                10, 1);       //xPad, yPad
 
 		// Prepare bottom content panel
-		JPanel bottomContentPanel = new JPanel(new BorderLayout(0, 0));
+		JPanel bottomContentPanel = new JPanel(new BorderLayout(5, 5));
 		centerContentPanel.add(bottomContentPanel, BorderLayout.CENTER);
-
-		// Prepare location panel
-		JPanel locationPanel = new JPanel(new BorderLayout());
-		locationPanel.setBorder(new MarsPanelBorder());
-		bottomContentPanel.add(locationPanel, BorderLayout.NORTH);
 
 		// Prepare location label panel
 		JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
+		locationLabelPanel.setSize(300, 50);
+		locationLabelPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+		//locationLabelPanel.setBorder(new MarsPanelBorder());
+		bottomContentPanel.add(locationLabelPanel, BorderLayout.CENTER);
 
 		// Prepare center map button
 		JButton centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
@@ -136,12 +134,14 @@ implements ActionListener {
 		locationLabelPanel.add(centerMapButton);
 
 		// Prepare location label
-		JLabel locationLabel = new JLabel(Msg.getString("TabPanelDeath.location"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel locationLabel = new JLabel(Msg.getString("TabPanelDeath.placeOfDeath"), JLabel.CENTER); //$NON-NLS-1$
 		locationLabelPanel.add(locationLabel);
+		//locationPanel.add(locationLabelPanel);
 
 		if (death.getContainerUnit() != null) {
 			// Prepare top container button
 			JButton topContainerButton = new JButton(death.getContainerUnit().getName());
+			topContainerButton.setHorizontalAlignment(SwingConstants.CENTER);
 			topContainerButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
 					DeathInfo death = ((Person) getUnit()).getPhysicalCondition().getDeathDetails();
@@ -151,27 +151,75 @@ implements ActionListener {
 			locationLabelPanel.add(topContainerButton);
 		}
 		else {
-			JLabel locationLabel2 = new JLabel(death.getPlaceOfDeath(), JLabel.CENTER);
-			locationLabelPanel.add(locationLabel2);
+			//JLabel locationLabel2 = new JLabel(death.getPlaceOfDeath(), JLabel.CENTER);
+			//locationLabelPanel.add(locationLabel2);
+			JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
+			JTextField TF4 = new JTextField();
+	        TF4.setText(death.getPlaceOfDeath());
+	        TF4.setEditable(false);
+	        TF4.setColumns(20);
+	        //malTF.setFont(new Font("Serif", Font.PLAIN, 12));
+	        wrapper4.add(TF4);//, BorderLayout.CENTER);
+	        locationLabelPanel.add(wrapper4);
 		}
 
 		// Prepare location coordinates panel
-		JPanel locationCoordsPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-		locationPanel.add(locationCoordsPanel, BorderLayout.CENTER);
+		//JPanel locationCoordsPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+		//locationPanel.add(locationCoordsPanel, BorderLayout.CENTER);
+
+		// Prepare location panel
+		JPanel springPanel = new JPanel(new SpringLayout());//BorderLayout());
+		springPanel.setBorder(new MarsPanelBorder());
+		springPanel.setSize(300, 100);
+		bottomContentPanel.add(springPanel, BorderLayout.SOUTH);
 
 		// Initialize location cache
 		Coordinates deathLocation = death.getLocationOfDeath();
 
+		JLabel label0 = new JLabel(Msg.getString("TabPanelDeath.latitude"), JLabel.RIGHT); //$NON-NLS-1$
+		springPanel.add(label0);
+
 		// Prepare latitude label
-		JLabel latitudeLabel = new JLabel(Msg.getString("TabPanelDeath.latitude")  + " " + deathLocation.getFormattedLatitudeString(), JLabel.CENTER); //$NON-NLS-1$
-		locationCoordsPanel.add(latitudeLabel);
+		JLabel latitudeLabel = new JLabel(deathLocation.getFormattedLatitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		springPanel.add(latitudeLabel);
+
+		JLabel label1 = new JLabel(Msg.getString("TabPanelDeath.longitude"), JLabel.RIGHT); //$NON-NLS-1$
+		springPanel.add(label1);
 
 		// Prepare longitude label
-		JLabel longitudeLabel = new JLabel(Msg.getString("TabPanelDeath.longitude")  + " " + deathLocation.getFormattedLongitudeString(), JLabel.CENTER); //$NON-NLS-1$
-		locationCoordsPanel.add(longitudeLabel);
+		JLabel longitudeLabel = new JLabel(deathLocation.getFormattedLongitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		springPanel.add(longitudeLabel);
 
-		// Add empty panel
-		bottomContentPanel.add(new JPanel(), BorderLayout.CENTER);
+
+		// 2017-03-31 Prepare SpringLayout
+		SpringUtilities.makeCompactGrid(springPanel,
+		                                2, 2, //rows, cols
+		                                140, 10,        //initX, initY
+		                                10, 10);       //xPad, yPad
+
+		// Prepare empty panel
+		JPanel lastWordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		bottomContentPanel.add(lastWordPanel, BorderLayout.NORTH);
+
+		JLabel label2 = new JLabel(Msg.getString("TabPanelDeath.lastWord")); //$NON-NLS-1$
+		lastWordPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+		lastWordPanel.add(label2);
+
+		// Prepare longitude label
+		JTextArea lastWordTA = new JTextArea(7, 25);
+		//lastWordTA.setSize(300, 150);
+		lastWordTA.append(person.getLastWord());
+		lastWordTA.setEditable(false);
+		lastWordTA.setWrapStyleWord(true);
+		lastWordTA.setLineWrap(true);
+		lastWordTA.setCaretPosition(0);
+		JScrollPane scrollPane = new JScrollPane(lastWordTA);
+		lastWordPanel.add(scrollPane);
+
+		//JPanel emptyPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//bottomContentPanel.add(emptyPanel1, BorderLayout.EAST);
+		//JPanel emptyPanel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		//bottomContentPanel.add(emptyPanel2, BorderLayout.WEST);
 	}
 
 	/**

@@ -105,6 +105,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	private String sponsor;
 	private String country;
 	private String bloodType;
+	private String lastWord;
 	/** The person's achievement in scientific fields. */
 	private Map<ScienceType, Double> scientificAchievement;
 	private Map<Integer, Gene> paternal_chromosome;
@@ -704,6 +705,8 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 		mind.setInactive();
 		declaredDead = true;
 
+		setShiftType(ShiftType.OFF);
+
 		if (quarters != null) {
 			LivingAccommodations accommodations = (LivingAccommodations) quarters
 					.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
@@ -1255,6 +1258,14 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	public boolean isDead() {
 		return declaredDead;
+	}
+
+	public void setLastWord(String s) {
+		lastWord = s;
+	}
+
+	public String getLastWord() {
+		return lastWord;
 	}
 
 	@Override

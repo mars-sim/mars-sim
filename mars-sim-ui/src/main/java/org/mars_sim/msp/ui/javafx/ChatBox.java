@@ -27,6 +27,9 @@ import org.mars_sim.msp.core.location.LocationState;
 import org.mars_sim.msp.core.location.LocationStateType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.medical.Complaint;
+import org.mars_sim.msp.core.person.medical.ComplaintType;
+import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.robot.Robot;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -722,7 +725,45 @@ public class ChatBox extends BorderPane {
     		if (isInteger(text, 10))
     			num = Integer.parseUnsignedInt(text, 10);
 
-    		if (num == 1 || text.equalsIgnoreCase("where") || text.equalsIgnoreCase("location")) {// || text.contains("location")) {
+    		// 2017-03-31 Add command "die"
+    		if (text.equalsIgnoreCase("die")) {
+
+    			if (personCache != null) {
+    				questionText = YOU_PROMPT + "I hereby pronounce you dead.";
+
+    				String lastWord = null;
+
+    				int rand = RandomUtil.getRandomInt(8);
+    				// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
+    				if (rand == 0)
+    					lastWord = "This is all too heartbreaking for me. Farewell, my friend.";
+    				else if (rand == 1)
+    					lastWord = "Things just seemed to go too wrong too many times...";
+    				else if (rand == 2)
+    					lastWord = "So I leave this world, where the heart must either break or turn to lead.";
+    				else if (rand == 3)
+    					lastWord = "Let's have no sadness––furrowed brow. There's nothing new in dying now. Though living is no newer.";
+    				else if (rand == 4)
+    					lastWord = "I myself––in order to escape the disgrace of deposition or capitulation––choose death.";
+    				else if (rand == 5)
+    					lastWord = "When all usefulness is over, when one is assured of an unavoidable and imminent death, "
+    							+ "it is the simplest of human rights to choose a quick and easy death in place of a slow and horrible one. ";
+    				else if (rand == 6)
+    					lastWord = "Perhaps I'll find true happiness on the other side.";
+    				else if (rand == 7)
+    					lastWord = "All fled - all done, so lift me on the pyre; The feast is over, and the lamps expire.";
+    				else
+    					lastWord = "My work is done. Goodbye!";
+
+    				responseText.append(lastWord);
+
+    				personCache.setLastWord(lastWord);
+
+    				personCache.getPhysicalCondition().setDead(new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true);
+    			}
+    		}
+
+    		else if (num == 1 || text.equalsIgnoreCase("where") || text.equalsIgnoreCase("location")) {// || text.contains("location")) {
 	    		questionText = YOU_PROMPT + "Where are you ? "; //what is your Location State [Expert Mode only] ?";
 	    		//LocationState state = cache.getLocationState();
 	    		LocationStateType stateType = cache.getLocationStateType();

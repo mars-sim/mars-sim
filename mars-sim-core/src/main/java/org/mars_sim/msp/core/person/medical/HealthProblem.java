@@ -33,7 +33,7 @@ public class HealthProblem implements Serializable {
     private static final int TREATMENT = 1;
     private static final int RECOVERING = 2;
     private static final int CURED = 3;
-    private static final int DEAD = 4;
+    public static final int DEAD = 4;
 
     private Complaint       illness;        // Illness
     private Person          sufferer;       // Person
@@ -72,7 +72,7 @@ public class HealthProblem implements Serializable {
      * Sets the health problem state.
      * @param newState the new state of the health problem.
      */
-    private void setState(int newState) {
+    public void setState(int newState) {
     	state = newState;
     	sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, illness);
 		logger.finer(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
@@ -355,7 +355,7 @@ public class HealthProblem implements Serializable {
                     if (nextPhase == null) {
                         logger.info(sufferer + " is suffering from " + illness);
                         setState(DEAD);
-                        condition.setDead(this);
+                        condition.setDead(this, false);
                     }
                     else {
                         logger.info(sufferer + " is suffering from " + illness + ". Degrading to " + nextPhase);
@@ -390,9 +390,13 @@ public class HealthProblem implements Serializable {
         }
         else buffer.append(illness.getType());
 
-        buffer.append(" at ");
-        buffer.append(getHealthRating());
-        buffer.append("%");
+        int rating = getHealthRating();
+
+        if (rating < 100) {
+            buffer.append(" (");
+            buffer.append(getHealthRating());
+            buffer.append("%)");
+        }
 
         return buffer.toString();
     }

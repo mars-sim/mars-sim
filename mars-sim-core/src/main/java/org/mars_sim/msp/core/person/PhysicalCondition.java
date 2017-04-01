@@ -967,20 +967,31 @@ implements Serializable {
      * This Person is now dead.
      * @param illness The compliant that makes person dead.
      */
-    public void setDead(HealthProblem illness) {
+    public void setDead(HealthProblem illness, Boolean causedByUser) {
         setFatigue(0D);
         setHunger(0D);
         setPerformanceFactor(0D);
         setStress(0D);
         alive = false;
 
+        if (causedByUser) {
+        	person.setDead();
+        	person.buryBody();
+            this.serious = illness;
+            illness.setState(HealthProblem.DEAD);
+            logger.severe(person + " committed suicide as instructed.");
+        }
+
         deathDetails = new DeathInfo(person);
 
-        logger.severe(person + " died due to " + illness);
+       	logger.severe(person + " died. Cause of death : " + illness);
 
-        // Create medical event for death.
-        MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
-        Simulation.instance().getEventManager().registerNewEvent(event);
+        if (!causedByUser) {
+            // Create medical event for death.
+            MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
+            Simulation.instance().getEventManager().registerNewEvent(event);
+        }
+
 
         // Throw unit event.
         person.fireUnitUpdate(UnitEventType.DEATH_EVENT);

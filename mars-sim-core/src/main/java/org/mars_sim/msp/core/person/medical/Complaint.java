@@ -40,10 +40,20 @@ public class Complaint implements Serializable {
     //String nextPhaseStr;					// Temporary next phase complaint name.
     ComplaintType nextPhaseStr;					// Temporary next phase complaint name.
 
+
     /**
      * Create a Medical Complaint instance.
      *
-     * @param name Name of complaint.
+     * @param type ComplaintYype.
+     */
+    public Complaint (ComplaintType type) {
+		this.type = type;
+    }
+
+    /**
+     * Create a Medical Complaint instance.
+     *
+     * @param type ComplaintYype.
      * @param seriousness How serious is this complaint.
      * @param degrade The time it takes before this complaint advances, if this
      * value is zero, then the Person can shelf heel themselves. This value is
@@ -58,16 +68,15 @@ public class Complaint implements Serializable {
      * @param recoveryTreatment Any treatment that is needed for recovery.
      * @param next The complaint that this degrades into unless checked.
      */
-    Complaint(//String name,
-    		ComplaintType type,
+    Complaint(ComplaintType type,
     		int seriousness,
-                             double degrade,
-                             double recovery,
-                             double probability,
-                             double performance,
-                             boolean bedRestRecovery,
-                             Treatment recoveryTreatment,
-                             Complaint next) {
+    		double degrade,
+    		double recovery,
+    		double probability,
+    		double performance,
+    		boolean bedRestRecovery,
+    		Treatment recoveryTreatment,
+    		Complaint next) {
         //this.name = name;
         this.type = type;
         this.seriousness = seriousness;
@@ -84,7 +93,7 @@ public class Complaint implements Serializable {
 
     /**
      * Constructor using string to store next complaint.
-     * @param name name of complaint
+     * @param type ComplaintYype
      * @param seriousness seriousness of complaint
      * @param degrade degrade time until next complaint
      * @param recovery recovery time
@@ -94,14 +103,11 @@ public class Complaint implements Serializable {
      * @param performance performance factor
      * @param bedRestRecovery True if bed rest is required during recovery.
      */
-    Complaint(//String name,
-    		ComplaintType type,
+    Complaint(ComplaintType type,
     		int seriousness, double degrade, double recovery,
     		double probability, Treatment recoveryTreatment,
-    		//String nextStr,
     		ComplaintType nextStr,
     		double performance, boolean bedRestRecovery) {
-    	//this.name = name;
     	this.type = type;
 		this.seriousness = seriousness;
 		this.degradePeriod = degrade;

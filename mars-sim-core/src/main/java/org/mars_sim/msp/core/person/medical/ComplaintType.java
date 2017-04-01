@@ -42,7 +42,8 @@ public enum ComplaintType {
 	HIGH_FATIGUE_COLLAPSE			(Msg.getString("ComplaintType.highFatigueCollapse")), //$NON-NLS-1$
 	FOOD_POISONING					(Msg.getString("ComplaintType.foodPoisoning")), //$NON-NLS-1$
 	HEARTBURN						(Msg.getString("ComplaintType.heartburn")), //$NON-NLS-1$
-	HYPOXEMIA  						(Msg.getString("ComplaintType.hypoxemia")) //$NON-NLS-1$
+	HYPOXEMIA  						(Msg.getString("ComplaintType.hypoxemia")), //$NON-NLS-1$
+	SUICIDE							(Msg.getString("ComplaintType.suicide")) //$NON-NLS-1$
 	;
 
 	private String name;

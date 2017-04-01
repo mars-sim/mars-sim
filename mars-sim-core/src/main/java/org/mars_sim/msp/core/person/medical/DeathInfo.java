@@ -53,6 +53,7 @@ implements Serializable {
     private String placeOfDeath;
     /** Container unit at time of death. */
     private Unit containerUnit;
+
     private Coordinates locationOfDeath;
     /** the person's job at time of death. */
     private Job job;
@@ -85,18 +86,24 @@ implements Serializable {
 
         Complaint serious = person.getPhysicalCondition().getMostSerious();
         if (serious != null) illness = serious.getType();
-
+/*
         if (person.getLocationSituation() == LocationSituation.DEAD)
         	placeOfDeath = "On Mars";
         else if (person.getLocationSituation() == LocationSituation.OUTSIDE)
         	placeOfDeath = "On Mars";
         else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
         	placeOfDeath = "" + person.getBuriedSettlement();
-        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+*/
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
         	// such as died inside a vehicle
             containerUnit = person.getContainerUnit();
             placeOfDeath = containerUnit.getName();
         }
+
+        if (placeOfDeath == null || placeOfDeath.equals(""))
+        	placeOfDeath = "" + person.getBuriedSettlement();
+        if (placeOfDeath == null || placeOfDeath.equals(""))
+        	placeOfDeath = "On Mars";
 
         locationOfDeath = person.getCoordinates();
 
