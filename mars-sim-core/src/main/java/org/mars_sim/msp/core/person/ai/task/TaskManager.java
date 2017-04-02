@@ -190,6 +190,15 @@ implements Serializable {
 		return currentTask;
 	}
 
+	public String getLastTaskName() {
+		return taskNameCache;
+	}
+
+	public String getLastTaskDescription() {
+		return taskDescriptionCache;
+	}
+
+
 	/**
 	 * Sets the current task to null.
 	 */

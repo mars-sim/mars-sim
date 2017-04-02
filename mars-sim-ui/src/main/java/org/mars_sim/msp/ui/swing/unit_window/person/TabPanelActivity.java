@@ -55,12 +55,8 @@ implements ActionListener {
 
 	private static final int COL_WDITH = 16;
 
-	private JTextArea taskTextArea;
-	private JTextArea taskPhaseArea;
-	private JTextArea missionTextArea;
-	private JTextArea missionPhaseTextArea;
-	private JButton monitorButton;
-	private JButton missionButton;
+    private static final String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); //" (at the Moment of Death)" ;
+    private static final String NONE = "None ";
 
 	/** data cache */
 	private String taskTextCache = ""; //$NON-NLS-1$
@@ -72,6 +68,14 @@ implements ActionListener {
 	private String missionPhaseCache = ""; //$NON-NLS-1$
 
 	//private BalloonToolTip balloonToolTip = new BalloonToolTip();
+
+	private JTextArea taskTextArea;
+	private JTextArea taskPhaseArea;
+	private JTextArea missionTextArea;
+	private JTextArea missionPhaseTextArea;
+	private JButton monitorButton;
+	private JButton missionButton;
+
 
 	/**
 	 * Constructor.
@@ -91,18 +95,22 @@ implements ActionListener {
 	    Robot robot = null;
 		Mind mind = null;
 		BotMind botMind = null;
+		TaskManager taskManager = null;
+		BotTaskManager botTaskManager = null;
 		boolean dead = false;
 		DeathInfo deathInfo = null;
 
 	    if (unit instanceof Person) {
 	    	person = (Person) unit;
 			mind = person.getMind();
+			taskManager = mind.getTaskManager();
 			dead = person.getPhysicalCondition().isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 		}
 		else if (unit instanceof Robot) {
 	        robot = (Robot) unit;
 			botMind = robot.getBotMind();
+			botTaskManager = botMind.getBotTaskManager();
 			dead = robot.getSystemCondition().isInoperable();
 			//deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
@@ -139,13 +147,13 @@ implements ActionListener {
 			taskText = deathInfo.getTask();
 		else {
 			if (person != null) {
-				String t = mind.getTaskManager().getTaskDescription(true);
+				String t = taskManager.getTaskDescription(true);
 				//if (!t.toLowerCase().contains("walk"))
 					taskText = t;
 			}
 
 			else if (robot != null) {
-				String t = botMind.getBotTaskManager().getTaskDescription(true);
+				String t = botTaskManager.getTaskDescription(true);
 				//if (!t.toLowerCase().contains("walk"))
 					taskText = t;
 			}
@@ -176,9 +184,9 @@ implements ActionListener {
 			TaskPhase phase = null;
 
 			if (person != null)
-				phase = mind.getTaskManager().getPhase();
+				phase = taskManager.getPhase();
 			else if (robot != null)
-				phase = botMind.getBotTaskManager().getPhase();
+				phase = botTaskManager.getPhase();
 
 
 		    if (phase != null) {
@@ -188,6 +196,7 @@ implements ActionListener {
 		        taskPhaseText = "";
 		    }
 		}
+
 		taskPhaseArea = new JTextArea(2, COL_WDITH);
 		//if (taskPhaseText != null)
 		taskPhaseArea.setText(taskPhaseText);
@@ -344,14 +353,15 @@ implements ActionListener {
 	    Robot robot = null;
 		Mind mind = null;
 		BotMind botMind = null;
+		TaskManager taskManager = null;
+		BotTaskManager botTaskManager = null;
 		boolean dead = false;
 		DeathInfo deathInfo = null;
-	    String DEAD_PHRASE = " " + Msg.getString("TabPanelActivity.dead.phrase"); //" (at the Moment of Death)" ;
 
 	    if (unit instanceof Person) {
 	    	person = (Person) unit;
 			mind = person.getMind();
-			dead = person.getPhysicalCondition().isDead();
+			dead = person.isDead();
 			deathInfo = person.getPhysicalCondition().getDeathDetails();
 		}
 		else if (unit instanceof Robot) {
@@ -361,8 +371,6 @@ implements ActionListener {
 			//deathInfo = robot.getSystemCondition().getDeathDetails();
 		}
 
-		TaskManager taskManager = null;
-		BotTaskManager botTaskManager = null;
 
 		Mission mission = null;
 
@@ -373,16 +381,20 @@ implements ActionListener {
 
 		// Prepare task text area
 		if (dead) {
-			if (deathInfo.getTask() == null || deathInfo.getTask().equals(""))
-				newTaskText = "None " + DEAD_PHRASE;
-			else
-				newTaskText = deathInfo.getTask() + DEAD_PHRASE;
+			String t = deathInfo.getTask();
+			String tp = deathInfo.getTaskPhase();
 
-			if (deathInfo.getTaskPhase() == null || deathInfo.getTaskPhase().equals(""))
-				newTaskPhase = "None " + DEAD_PHRASE;
+			if (t == null || t.equals(""))
+				newTaskText = NONE + DEAD_PHRASE;
 			else
-				newTaskPhase = deathInfo.getTaskPhase() + DEAD_PHRASE;
+				newTaskText = t + DEAD_PHRASE;
+
+			if (tp == null || tp.equals(""))
+				newTaskPhase = NONE + DEAD_PHRASE;
+			else
+				newTaskPhase = tp + DEAD_PHRASE;
 		}
+
 		else {
 
 			if (person != null) {
@@ -399,7 +411,6 @@ implements ActionListener {
 			if (person != null) {
 				newTaskText = taskManager.getTaskDescription(true);
 			}
-
 			else if (robot != null) {
 				newTaskText = botTaskManager.getTaskDescription(true);
 			}
@@ -435,15 +446,18 @@ implements ActionListener {
 
 		// Update mission text area if necessary.
 		if (dead) {
-			if (deathInfo.getMission() == null || deathInfo.getMission().equals(""))
-				newMissionText = "None " + DEAD_PHRASE;
-			else
-				newMissionText = deathInfo.getMission() + DEAD_PHRASE;
+			String m = deathInfo.getMission();
+			String mp = deathInfo.getMissionPhase();
 
-			if (deathInfo.getMissionPhase() == null || deathInfo.getMissionPhase().equals(""))
-				newMissionPhase = "None " + DEAD_PHRASE;
+			if (m == null || m.equals(""))
+				newMissionText = NONE + DEAD_PHRASE;
 			else
-				newMissionPhase = deathInfo.getMissionPhase() + DEAD_PHRASE;
+				newMissionText = m + DEAD_PHRASE;
+
+			if (mp == null || mp.equals(""))
+				newMissionPhase = NONE + DEAD_PHRASE;
+			else
+				newMissionPhase = mp + DEAD_PHRASE;
 		}
 
 		else {

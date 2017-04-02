@@ -733,33 +733,46 @@ public class ChatBox extends BorderPane {
 
     				String lastWord = null;
 
-    				int rand = RandomUtil.getRandomInt(8);
+    				int rand = RandomUtil.getRandomInt(12);
     				// Quotes from http://www.phrases.org.uk/quotes/last-words/suicide-notes.html
+    				// https://www.goodreads.com/quotes/tag/suicide-note
     				if (rand == 0)
     					lastWord = "This is all too heartbreaking for me. Farewell, my friend.";
     				else if (rand == 1)
-    					lastWord = "Things just seemed to go too wrong too many times...";
+    					lastWord = "Things just seem to have gone too wrong too many times...";
     				else if (rand == 2)
     					lastWord = "So I leave this world, where the heart must either break or turn to lead.";
     				else if (rand == 3)
-    					lastWord = "Let's have no sadness––furrowed brow. There's nothing new in dying now. Though living is no newer.";
+    					lastWord = "Let's have no sadness——furrowed brow. There's nothing new in dying now. Though living is no newer.";
     				else if (rand == 4)
-    					lastWord = "I myself––in order to escape the disgrace of deposition or capitulation––choose death.";
+    					lastWord = "I myself——in order to escape the disgrace of deposition or capitulation——choose death.";
     				else if (rand == 5)
     					lastWord = "When all usefulness is over, when one is assured of an unavoidable and imminent death, "
     							+ "it is the simplest of human rights to choose a quick and easy death in place of a slow and horrible one. ";
     				else if (rand == 6)
-    					lastWord = "Perhaps I'll find true happiness on the other side.";
+    					lastWord = "I am going to put myself to sleep now for a bit longer than usual. Call it Eternity.";
     				else if (rand == 7)
-    					lastWord = "All fled - all done, so lift me on the pyre; The feast is over, and the lamps expire.";
+    					lastWord = "All fled——all done, so lift me on the pyre; the feast is over, and the lamps expire.";
+    				else if (rand == 8)
+    					lastWord = "No more pain. Wake no more. Nobody owns.";
+    				else if (rand == 9)
+    					lastWord = "Dear World, I am leaving because I feel I have lived long enough. I am leaving you with your worries in this sweet cesspool. Good luck.";
+    				else if (rand == 10)
+    					lastWord = "This is what I want so don't be sad.";
+    				else if (rand == 11)
+    					lastWord = "I don't want to hurt you or anybody so please forget about me. Just try. Find yourself a better friend.";
     				else
-    					lastWord = "My work is done. Goodbye!";
+    					lastWord = "They tried to get me——I got them first!";
 
     				responseText.append(lastWord);
 
     				personCache.setLastWord(lastWord);
 
     				personCache.getPhysicalCondition().setDead(new HealthProblem(new Complaint(ComplaintType.SUICIDE), personCache), true);
+
+    	    		personCache = null;
+    		    	robotCache = null;
+    		    	settlementCache = null;
     			}
     		}
 
@@ -1395,9 +1408,9 @@ public class ChatBox extends BorderPane {
 						    // Case 4: passed away
 							int rand = RandomUtil.getRandomInt(1);
 							if (rand == 0)
-								responseText = SYSTEM_PROMPT + "I'm sorry. " + text + " has passed away and is buried at " + person.getBuriedSettlement();
+								responseText = SYSTEM_PROMPT + "I'm sorry. " + text + " has passed away and is buried at " + person.getBuriedSettlement().getName();
 							else
-								responseText = SYSTEM_PROMPT + "I'm sorry. " + text + " is dead and is buried at " + person.getBuriedSettlement();
+								responseText = SYSTEM_PROMPT + "Perhaps you don't know that " + text + " is dead and is buried at " + person.getBuriedSettlement().getName();
 						}
 						else
 							unit = person;

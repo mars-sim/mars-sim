@@ -37,7 +37,7 @@ public class TaskSchedule implements Serializable {
 	 * Set the number of Sols to be logged (to limit the memory usage & saved file size)
 	 */
 	public static final int NUM_SOLS = 100;
-	
+
 	public static final int ON_CALL_START = 0;
 	public static final int ON_CALL_END = 999;
 	public static final int A_START = 0;
@@ -64,12 +64,12 @@ public class TaskSchedule implements Serializable {
 	//private List<OneTask> todaySchedule;
 	private Map <Integer, List<OneActivity>> allActivities;
 	private List<OneActivity> todayActivities;
-	
-	
+
+
 	private Map <String, Integer> taskDescriptions;
 	private Map <String, Integer> taskNames;
 	private Map <String, Integer> taskPhases;
-	
+
 	private MarsClock clock;
 	private Person person;
 	private Robot robot;
@@ -105,7 +105,7 @@ public class TaskSchedule implements Serializable {
 		taskDescriptions = new ConcurrentHashMap <String, Integer>();
 		taskNames = new ConcurrentHashMap <String, Integer>();
 		taskPhases = new ConcurrentHashMap <String, Integer>();
-		
+
 		clock = Simulation.instance().getMasterClock().getMarsClock();
 	}
 
@@ -121,14 +121,14 @@ public class TaskSchedule implements Serializable {
 
 		int startTime = (int) clock.getMillisol();
 		int solElapsed = clock.getSolElapsedFromStart();
-		if (solElapsed != solCache) {   
-    		//2016-09-22 Removed the sol log from LAST_SOL ago 
+		if (solElapsed != solCache) {
+    		//2016-09-22 Removed the sol log from LAST_SOL ago
         	if (solElapsed > NUM_SOLS) {
         		int diff = solElapsed - NUM_SOLS;
-        		//schedules.remove(diff);	
+        		//schedules.remove(diff);
         		//if (schedules.containsKey(diff-1))
         		//	schedules.remove(diff-1);
-        		allActivities.remove(diff);	
+        		allActivities.remove(diff);
         		if (allActivities.containsKey(diff-1))
         			allActivities.remove(diff-1);
 
@@ -137,23 +137,23 @@ public class TaskSchedule implements Serializable {
 			// save yesterday's schedule (except on the very first day when there's nothing to save from the prior day
         	//schedules.put(solCache, todaySchedule);
         	allActivities.put(solCache, todayActivities);
-        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed); 
+        	//System.out.println("solCache is " + solCache + "   solElapsed is " + solElapsed);
         	solCache = solElapsed;
         	// create a new schedule for the new day
     		//todaySchedule = new CopyOnWriteArrayList<OneTask>();
     		todayActivities = new CopyOnWriteArrayList<OneActivity>();
     		// 2015-10-21 Added recordYestersolTask()
         	recordYestersolLastTask();
-        	
+
 
 		}
 
 		// 2016-11-29 Add maps
-		int id0 = getID(taskNames, taskName);	
+		int id0 = getID(taskNames, taskName);
 		int id1 = getID(taskDescriptions, description);
-		int id2 = getID(taskPhases, phase);	
-		
-		todayActivities.add(new OneActivity(startTime, id0, id1, id2));	
+		int id2 = getID(taskPhases, phase);
+
+		todayActivities.add(new OneActivity(startTime, id0, id1, id2));
 		// add this task
 		//todaySchedule.add(new OneTask(startTime, taskName, description, phase));
 
@@ -167,9 +167,9 @@ public class TaskSchedule implements Serializable {
 			int size = map.size();
 			map.put(key, size+1);
 			return size+1;
-		}			
+		}
 	}
-	
+
 	public String getString(Map<String, Integer> map, Integer id) {
 	    for(String key : map.keySet()){
 	        if(map.get(key).equals(id)){
@@ -178,11 +178,11 @@ public class TaskSchedule implements Serializable {
 	    }
 	    return null;
 	}
-	
+
 	public String convertTaskName(Integer id) {
 		return getString(taskNames, id);
 	}
-	
+
 	public String convertTaskDescription(Integer id) {
 		return getString(taskDescriptions, id);
 	}
@@ -191,11 +191,11 @@ public class TaskSchedule implements Serializable {
 		return getString(taskPhases, id);
 	}
 
-/*	
+/*
 	private Optional<String> getKey(ConcurrentHashMap<String, Integer> map, Integer value){
 	    return map.entrySet().stream().filter(e -> e.getValue().equals(value)).map(e -> e.getKey()).findFirst();
 	}
-*/	
+*/
 	/*
      * Performs the actions per frame
      * @param time amount of time passing (in millisols).
@@ -243,11 +243,11 @@ public class TaskSchedule implements Serializable {
 	public List<OneActivity> getTodayActivities() {
 		return todayActivities;
 	}
-	
+
 	/**
 	 * Gets all schedules of a person.
 	 * @return schedules
-	 
+
 	public Map <Integer, List<OneTask>> getSchedules() {
 		return schedules;
 	}
@@ -255,7 +255,7 @@ public class TaskSchedule implements Serializable {
 	/**
 	 * Gets the today's schedule.
 	 * @return todaySchedule
-	 
+
 	public List<OneTask> getTodaySchedule() {
 		return todaySchedule;
 	}
@@ -317,8 +317,8 @@ public class TaskSchedule implements Serializable {
 		if (shiftType != null) {
 			if (person != null) {
 				if (shiftTypeCache != null)
-					person.getSettlement().decrementAShift(shiftTypeCache);
-				person.getSettlement().incrementAShift(shiftType);
+					person.getAssociatedSettlement().decrementAShift(shiftTypeCache);
+				person.getAssociatedSettlement().incrementAShift(shiftType);
 			}
 /*			else if (robot != null) {
 				if (shiftTypeCache != null)
@@ -411,7 +411,7 @@ public class TaskSchedule implements Serializable {
 
 		/**
 		 * Gets the description what the actor is doing.
-		 * @return description id 
+		 * @return description id
 		 */
 		public int getDescription() {
 			return description;
@@ -482,7 +482,7 @@ public class TaskSchedule implements Serializable {
 			return phase;
 		}
 	}
-	
+
     public void destroy() {
     	person = null;
     	clock  = null;

@@ -35,6 +35,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.Cooking;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.tool.Conversion;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * This class represents the Physical Condition of a Person.
@@ -976,15 +977,20 @@ implements Serializable {
 
         if (causedByUser) {
         	person.setDead();
-        	person.buryBody();
+
             this.serious = illness;
             illness.setState(HealthProblem.DEAD);
             logger.severe(person + " committed suicide as instructed.");
         }
 
-        deathDetails = new DeathInfo(person);
+        deathDetails = new DeathInfo(person, illness);
 
-       	logger.severe(person + " died. Cause of death : " + illness);
+		person.getMind().setInactive();
+
+    	if (deathDetails.getBodyRetrieved())
+    		person.buryBody();
+
+    	logger.log(Level.SEVERE, "A post-mortem examination was ordered on " + person + ". The cause of death : " + illness.toString().toLowerCase());
 
         if (!causedByUser) {
             // Create medical event for death.

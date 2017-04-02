@@ -48,7 +48,7 @@ import org.mars_sim.msp.core.time.MarsClock;
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
  */
-public abstract class Vehicle extends Unit implements Serializable, 
+public abstract class Vehicle extends Unit implements Serializable,
         Malfunctionable, Salvagable, LocalBoundedObject {
 
     private static Logger logger = Logger.getLogger(Vehicle.class.getName());
@@ -59,13 +59,13 @@ public abstract class Vehicle extends Unit implements Serializable,
     public final static String MALFUNCTION = "Malfunction";
     public final static String MAINTENANCE = "Periodic Maintenance";
     public final static String TOWED = "Towed";
-    
+
     // The error margin for determining vehicle range. (actual distance / safe distance)
     private static double fuel_range_error_margin = 0; //1.7D
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
-    
+
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
     private Direction direction; // Direction vehicle is traveling in
@@ -100,8 +100,8 @@ public abstract class Vehicle extends Unit implements Serializable,
     private VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 
     private Settlement associatedSettlement;
-    
-    /** 
+
+    /**
      * Constructor 1 : prepares a Vehicle object with a given settlement
      * @param name the vehicle's name
      * @param vehicleType the configuration description of the vehicle.
@@ -109,52 +109,52 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param maintenanceWorkTime the work time required for maintenance (millisols)
      */
     Vehicle(String name, String vehicleType, Settlement settlement, double maintenanceWorkTime) {
-	    
+
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
-        
+
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
-    
+
         //2016-11-21 Added associatedSettlement
-        associatedSettlement = settlement;       
+        associatedSettlement = settlement;
         containerUnit = settlement;
         settlement.getInventory().storeUnit(this);
-        
+
         // Initialize vehicle data
         vehicleType = vehicleType.toLowerCase();
         setDescription(vehicleType);
         direction = new Direction(0);
 	    trail = new ArrayList<Coordinates>();
 	    status = PARKED;
-	    
+
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 	    malfunctionManager.addScopeString("Vehicle");
-    			
+
 	    // Set width and length of vehicle.
 	    width = config.getWidth(vehicleType);
 	    length = config.getLength(vehicleType);
-	    
+
 	    // Set base speed.
 	    setBaseSpeed(config.getBaseSpeed(vehicleType));
 
 	    // Set the empty mass of the vehicle.
 	    setBaseMass(config.getEmptyMass(vehicleType));
-	    
+
 	    // Set the fuel efficiency of the vehicle.
 	    fuelEfficiency = config.getFuelEfficiency(getDescription());
-	    
+
 	    // Set initial parked location and facing at settlement.
 	    determinedSettlementParkedLocationAndFacing();
-	    
+
 	    // Initialize operator activity spots.
         operatorActivitySpots = new ArrayList<Point2D>(config.getOperatorActivitySpots(vehicleType));
-        
+
         // Initialize passenger activity spots.
         passengerActivitySpots = new ArrayList<Point2D>(config.getPassengerActivitySpots(vehicleType));
     }
-    
+
     /**
      * Constructor 2 : prepares a Vehicle object for testing (called by MockVehicle)
      * @param name the vehicle's name
@@ -165,21 +165,21 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param fuelEfficiency the fuel efficiency of the vehicle (km/kg)
      * @param maintenanceWorkTime the work time required for maintenance (millisols)
      */
-    protected Vehicle(String name, String vehicleType, Settlement settlement, 
-    		double baseSpeed, double baseMass, double fuelEfficiency, 
+    protected Vehicle(String name, String vehicleType, Settlement settlement,
+    		double baseSpeed, double baseMass, double fuelEfficiency,
     		double maintenanceWorkTime) {
-    	
+
     	// Use Unit constructor
-        super(name, settlement.getCoordinates());   
+        super(name, settlement.getCoordinates());
         this.vehicleType = vehicleType;
-        
+
         fuel_range_error_margin = SimulationConfig.instance().getSettlementConfiguration().loadMissionControl()[1];
 
         //2016-11-21 Added associatedSettlement
         associatedSettlement = settlement;
         containerUnit = settlement;
-        settlement.getInventory().storeUnit(this); 
-        
+        settlement.getInventory().storeUnit(this);
+
         // Initialize vehicle data
         setDescription(vehicleType);
         direction = new Direction(0);
@@ -195,45 +195,45 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    xLocParked = 0D;
 	    yLocParked = 0D;
 	    facingParked = 0D;
-	    
+
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 	    malfunctionManager.addScopeString("Vehicle");
     }
-  
-    
+
+
     public String getDescription(String vehicleType) {
     	return config.getDescription(vehicleType);
     }
     public String getVehicleType() {
     	return vehicleType;
     }
-    
+
     @Override
     public double getWidth() {
         return width;
     }
-    
+
     @Override
     public double getLength() {
         return length;
     }
-    
+
     @Override
     public double getXLocation() {
         return xLocParked;
     }
-    
+
     @Override
     public double getYLocation() {
         return yLocParked;
     }
-    
+
     @Override
     public double getFacing() {
         return facingParked;
     }
-    
+
     /**
      * Gets a list of operator activity spots.
      * @return list of activity spots as Point2D objects.
@@ -241,7 +241,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public List<Point2D> getOperatorActivitySpots() {
         return operatorActivitySpots;
     }
-    
+
     /**
      * Gets a list of passenger activity spots.
      * @return list of activity spots as Point2D objects.
@@ -249,7 +249,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public List<Point2D> getPassengerActivitySpots() {
         return passengerActivitySpots;
     }
-    
+
     /**
      * Sets the location and facing of the vehicle when parked at a settlement.
      * @param xLocation the x location (meters from settlement center - West: positive, East: negative).
@@ -257,33 +257,33 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param facing (degrees from North clockwise).
      */
     public void setParkedLocation(double xLocation, double yLocation, double facing) {
-          
+
 		// Get current human crew positions relative to the vehicle.
         Map<Person, Point2D> currentCrewPositions = getCurrentCrewPositions();
-        
+
         // Get current robot crew positions relative to the vehicle.
         Map<Robot, Point2D> currentRobotCrewPositions = getCurrentRobotCrewPositions();
-	        
+
         // Set new parked location for the vehicle.
 	    this.xLocParked = xLocation;
 	    this.yLocParked = yLocation;
 	    this.facingParked = facing;
-	        
+
 	    // Set the human crew locations to the vehicle's new parked location.
 	    setCrewPositions(currentCrewPositions);
-	    
+
 	    // Set the robot crew locations to the vehicle's new parked location.
 	    setRobotCrewPositions(currentRobotCrewPositions);
     }
-    
+
     /**
      * Gets all human crew member positions relative to within the vehicle.
      * @return map of crew members and their relative vehicle positions.
      */
     private Map<Person, Point2D> getCurrentCrewPositions() {
-        
+
         Map<Person, Point2D> result = null;
-        
+
         // Record current object-relative crew positions if vehicle is crewable.
         if (this instanceof Crewable) {
             Crewable crewable = (Crewable) this;
@@ -291,15 +291,15 @@ public abstract class Vehicle extends Unit implements Serializable,
             Iterator<Person> i = ((Crewable) this).getCrew().iterator();
             while (i.hasNext()) {
                 Person crewmember = i.next();
-                Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(crewmember.getXLocation(), 
+                Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(crewmember.getXLocation(),
                         crewmember.getYLocation(), this);
                 result.put(crewmember, crewPos);
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets all robot crew member positions relative to within the vehicle.
      * @return map of crew members and their relative vehicle positions.
@@ -315,7 +315,7 @@ public abstract class Vehicle extends Unit implements Serializable,
             Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
             while (i.hasNext()) {
                 Robot robotCrewmember = i.next();
-                Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(robotCrewmember.getXLocation(), 
+                Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(robotCrewmember.getXLocation(),
                         robotCrewmember.getYLocation(), this);
                 result.put(robotCrewmember, crewPos);
             }
@@ -323,47 +323,47 @@ public abstract class Vehicle extends Unit implements Serializable,
 
         return result;
     }
-   
+
     /**
      * Sets the positions of all human crew members (if any) to the vehicle's location.
      */
     private void setCrewPositions(Map<Person, Point2D> currentCrewPositions) {
-        
+
         // Only move crew if vehicle is Crewable.
         if (this instanceof Crewable) {
             Iterator<Person> i = ((Crewable) this).getCrew().iterator();
             while (i.hasNext()) {
                 Person crewmember = i.next();
-                
+
                 Point2D currentCrewPos = currentCrewPositions.get(crewmember);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(), 
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(),
                         currentCrewPos.getY(), this);
                 crewmember.setXLocation(settlementLoc.getX());
                 crewmember.setYLocation(settlementLoc.getY());
             }
         }
     }
-    
+
     /**
      * Sets the positions of all robot crew members (if any) to the vehicle's location.
      */
     private void setRobotCrewPositions(Map<Robot, Point2D> currentRobotCrewPositions) {
-        
+
         // Only move crew if vehicle is Crewable.
         if (this instanceof Crewable) {
             Iterator<Robot> i = ((Crewable) this).getRobotCrew().iterator();
             while (i.hasNext()) {
             	Robot robotCrewmember = i.next();
-                
+
                 Point2D currentCrewPos = currentRobotCrewPositions.get(robotCrewmember);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(), 
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(),
                         currentCrewPos.getY(), this);
                 robotCrewmember.setXLocation(settlementLoc.getX());
                 robotCrewmember.setYLocation(settlementLoc.getY());
             }
         }
     }
-    
+
     /** Returns vehicle's current status
      *  @return the vehicle's current status
      */
@@ -374,26 +374,26 @@ public abstract class Vehicle extends Unit implements Serializable,
 
         return status;
     }
-    
+
     /**
      * Updates the vehicle's status.
      */
     private void updateStatus() {
-    	
+
     	// Update status based on current situation.
     	String newStatus = PARKED;
     	if (reservedForMaintenance) newStatus = MAINTENANCE;
     	else if (towingVehicle != null) newStatus = TOWED;
 		else if (malfunctionManager.hasMalfunction()) newStatus = MALFUNCTION;
         else if (speed > 0D) newStatus = MOVING;
-    	
+
     	if (!status.equals(newStatus)) {
     		status = newStatus;
     		fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
     	}
     }
 
-    /** 
+    /**
      * Checks if the vehicle is reserved for any reason.
      * @return true if vehicle is currently reserved
      */
@@ -408,8 +408,8 @@ public abstract class Vehicle extends Unit implements Serializable,
     public boolean isReservedForMission() {
     	return isReservedMission;
     }
-    
-    /** 
+
+    /**
      * Sets if the vehicle is reserved for a mission or not.
      * @param reserved the vehicle's reserved for mission status
      */
@@ -419,7 +419,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     		fireUnitUpdate(UnitEventType.RESERVED_EVENT);
     	}
     }
-    
+
     /**
      * Checks if the vehicle is reserved for maintenance.
      * @return true if reserved for maintenance.
@@ -427,7 +427,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public boolean isReservedForMaintenance() {
         return reservedForMaintenance;
     }
-    
+
     /**
      * Sets if the vehicle is reserved for maintenance or not.
      * @param reserved true if reserved for maintenance
@@ -438,7 +438,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     		fireUnitUpdate(UnitEventType.RESERVED_EVENT);
     	}
     }
-    
+
     /**
      * Sets the vehicle that is currently towing this vehicle.
      * @param towingVehicle the vehicle
@@ -447,7 +447,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     	if (this == towingVehicle) throw new IllegalArgumentException("Vehicle cannot tow itself.");
     	this.towingVehicle = towingVehicle;
     }
-    
+
     /**
      * Gets the vehicle that is currently towing this vehicle.
      * @return towing vehicle
@@ -468,7 +468,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     		return true;
     }
 
-    /** 
+    /**
      * Gets the speed of vehicle
      * @return the vehicle's speed (in km/hr)
      */
@@ -476,7 +476,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         return speed;
     }
 
-    /** 
+    /**
      * Sets the vehicle's current speed
      * @param speed the vehicle's speed (in km/hr)
      */
@@ -486,7 +486,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         fireUnitUpdate(UnitEventType.SPEED_EVENT);
     }
 
-    /** 
+    /**
      * Gets the base speed of vehicle
      * @return the vehicle's base speed (in km/hr)
      */
@@ -494,7 +494,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         return baseSpeed;
     }
 
-    /** 
+    /**
      * Sets the base speed of vehicle
      * @param speed the vehicle's base speed (in km/hr)
      */
@@ -503,7 +503,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         baseSpeed = speed;
     }
 
-    /** 
+    /**
      * Gets the range of the vehicle
      * @return the range of the vehicle (in km)
      * @throws Exception if error getting range.
@@ -520,7 +520,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public double getFuelEfficiency() {
     	return fuelEfficiency;
     }
-    
+
     /** Returns total distance traveled by vehicle (in km.)
      *  @return the total distanced traveled by the vehicle (in km)
      */
@@ -570,7 +570,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         this.direction.setDirection(direction.getDirection());
     }
 
-    /** 
+    /**
      * Gets the operator of the vehicle (person or AI)
      * @return the vehicle operator
      */
@@ -578,7 +578,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    return vehicleOperator;
     }
 
-    /** 
+    /**
      * Sets the operator of the vehicle
      * @param vehicleOperator the vehicle operator
      */
@@ -586,7 +586,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    this.vehicleOperator = vehicleOperator;
 	    fireUnitUpdate(UnitEventType.OPERATOR_EVENT, vehicleOperator);
     }
-    
+
     /**
      * Checks if a particular operator is appropriate for a vehicle.
      * @param operator the operator to check
@@ -601,25 +601,25 @@ public abstract class Vehicle extends Unit implements Serializable,
     public Settlement getSettlement() {
 	    Unit c = containerUnit;
 
-	    if ((c != null) && (c instanceof Settlement)) 
+	    if ((c != null) && (c instanceof Settlement))
 	    	return (Settlement) c;
 	    else
 	    	return null;
-/*	    
+/*
 	    Unit topUnit = getTopContainerUnit();
 
-	    if ((topUnit != null) && (topUnit instanceof Settlement)) 
+	    if ((topUnit != null) && (topUnit instanceof Settlement))
 	    	return (Settlement) topUnit;
 	    else
 	    	return null;
 */
     }
-    
+
     public Building getGarage(Settlement s) {
 		return s.getBuildingManager().getBuilding(this, s);
     }
-    
-    
+
+
     /**
      * Gets the unit's malfunction manager.
      * @return malfunction manager
@@ -669,7 +669,9 @@ public abstract class Vehicle extends Unit implements Serializable,
                 setSpeed(0);
                 setParkedLocation(0D, 0D, getDirection().getDirection());
             }
+            // TODO : will another person take his place as the driver
         }
+
     }
 
     /**
@@ -723,7 +725,7 @@ public abstract class Vehicle extends Unit implements Serializable,
             if (task instanceof HaveConversation)
                    if (!people.contains(person))
                 	   people.add(person);
-            
+
             // Add all people ready for switching to having conversation as task in this vehicle.
             //if (task instanceof Relax)
             //       if (!people.contains(person))
@@ -733,7 +735,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         return people;
     }
 
-    
+
     public Collection<Robot> getAffectedRobots() {
         Collection<Robot> robots = new ConcurrentLinkedQueue<Robot>();
 
@@ -760,7 +762,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 
         return robots;
     }
-    
+
     /**
      * Gets the vehicle's trail as a collection of coordinate locations.
      * @return trail collection
@@ -774,24 +776,24 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param location location to be added to trail
      */
     public void addToTrail(Coordinates location) {
-	    
+
         if (getSettlement() != null) {
             if (trail.size() > 0) trail.clear();
 	    }
 	    else if (trail.size() > 0) {
 	        Coordinates lastLocation = trail.get(trail.size() - 1);
-	        if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D)) 
+	        if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D))
 	            trail.add(new Coordinates(location));
 	    }
 	    else trail.add(new Coordinates(location));
     }
-    
+
     /**
      * Gets the resource type that this vehicle uses for fuel.
      * @return resource type
      */
     public abstract AmountResource getFuelType();
-    
+
     /**
      * Gets the estimated distance traveled in one sol.
      * @return distance traveled (km)
@@ -799,11 +801,11 @@ public abstract class Vehicle extends Unit implements Serializable,
     public double getEstimatedTravelDistancePerSol() {
     	// Get estimated average speed (km / hr).
     	double estSpeed = baseSpeed / 2D;
-    	
+
     	// Return estimated average speed in km / sol.
     	return estSpeed / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
     }
-    
+
     /**
      * Checks if the vehicle's emergency beacon is turned on.
      * @return true if beacon is on.
@@ -811,9 +813,9 @@ public abstract class Vehicle extends Unit implements Serializable,
     public boolean isEmergencyBeacon() {
     	return emergencyBeacon;
     }
-    
+
     /**
-     * Sets the vehicle's emergency beacon on or off. 
+     * Sets the vehicle's emergency beacon on or off.
      * @param isOn true if beacon is on.
      */
     public void setEmergencyBeacon(boolean isOn) {
@@ -822,7 +824,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     		fireUnitUpdate(UnitEventType.EMERGENCY_BEACON_EVENT);
     	}
     }
-    
+
     /**
      * Checks if the item is salvaged.
      * @return true if salvaged.
@@ -830,7 +832,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public boolean isSalvaged() {
         return isSalvaged;
     }
-    
+
     /**
      * Indicate the start of a salvage process on the item.
      * @param info the salvage process info.
@@ -840,7 +842,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         salvageInfo = new SalvageInfo(this, info, settlement);
         isSalvaged = true;
     }
-    
+
     /**
      * Gets the salvage info.
      * @return salvage info or null if item not salvaged.
@@ -848,33 +850,33 @@ public abstract class Vehicle extends Unit implements Serializable,
     public SalvageInfo getSalvageInfo() {
         return salvageInfo;
     }
-    
+
     /**
      * Set initial parked location and facing at settlement.
      */
     public abstract void determinedSettlementParkedLocationAndFacing();
-    
+
     public String getTypeOfDessertLoaded() {
     	return typeOfDessertLoaded;
     }
 
     public void setTypeOfDessertLoaded(String dessertName) {
     	typeOfDessertLoaded = dessertName;
-    }    
-    
+    }
+
 	public static double getErrorMargin() {
 		return fuel_range_error_margin;
 	}
-	
+
     //2016-11-21 Added getAssociatedSettlement()
 	public Settlement getAssociatedSettlement(){
 		return associatedSettlement;
 	}
-	
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         malfunctionManager.destroy();
         malfunctionManager = null;
         direction = null;

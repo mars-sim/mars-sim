@@ -141,7 +141,7 @@ implements Salvagable {
 			return settlement;
 		}
 
-		else if (getLocationSituation() == LocationSituation.DEAD) {
+		else if (getLocationSituation() == LocationSituation.BURIED) {
 			return null;
 		}
 

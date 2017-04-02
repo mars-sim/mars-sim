@@ -89,7 +89,8 @@ implements ActionListener {
 	private static final String OUTSIDE_ON_A_MISSION = " outside on a mission ";
 	private static final String GONE = " gone ";
 	private static final String DECOMMISSIONED = " decommmissed";
-	private static final String DEAD = " dead";
+	private static final String DEAD = "Dead";
+	private static final String BURIED = "Buried";
 
 	private int themeCache;
 
@@ -790,7 +791,12 @@ implements ActionListener {
     		Person p = (Person) unit;
 
     		if (p.isDead()) {
-    			loc = DEAD;
+
+    			if (p.isBuried())
+    				loc = BURIED + AT + p.getBuriedSettlement().getName();
+    			else {
+    				loc = DEAD + IN + p.getContainerUnit().getName();
+    			}
     		}
 
     		else {
@@ -827,9 +833,9 @@ implements ActionListener {
 	    			}
 	    		}
 
-	    		else if (p.getLocationSituation() == LocationSituation.DEAD)
-	    			// case G
-	    			loc = DEAD;// in " + p.getBuriedSettlement().getName();
+	    		else if (p.getLocationSituation() == LocationSituation.BURIED)
+	    			// not possible
+	    			loc = BURIED + AT + p.getBuriedSettlement().getName();
 
 	    		if (p.getLocationStateType() == LocationStateType.SETTLEMENT_VICINITY) {//.getName().equals("Within a settlement's vicinity")) {
 					loc = WITHIN_THE_VINCINITY_OF + topContainerCache;
@@ -892,7 +898,7 @@ implements ActionListener {
 	    			}
 	    		}
 
-	    		else if (r.getLocationSituation() == LocationSituation.DEAD)
+	    		else if (r.getLocationSituation() == LocationSituation.BURIED)
 	    			loc = DECOMMISSIONED;// " decommmissed";// + r.getBuriedSettlement().getName();
 
 	    		else if (r.getLocationSituation() == LocationSituation.IN_VEHICLE) {

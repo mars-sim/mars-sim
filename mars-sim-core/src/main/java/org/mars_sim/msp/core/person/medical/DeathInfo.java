@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person.medical;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -22,6 +24,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 import org.mars_sim.msp.core.robot.Robot;
@@ -45,7 +49,13 @@ implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
 
+    private static Logger logger = Logger.getLogger(DeathInfo.class.getName());
+
+    private static final String IN = " in ";
+
     // Data members
+    private boolean bodyRetrieved = false;
+
     private String timeOfDeath;
     /** Medical cause of death. */
     private ComplaintType illness;
@@ -77,15 +87,21 @@ implements Serializable {
      * The construct creates an instance of a DeathInfo class.
      * @param person the dead person
      */
-    public DeathInfo(Person person) {
+    public DeathInfo(Person person, HealthProblem problem) {
 
         this.gender = person.getGender();
 
         // Initialize data members
         timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getDateTimeStamp();
 
-        Complaint serious = person.getPhysicalCondition().getMostSerious();
-        if (serious != null) illness = serious.getType();
+        if (problem == null) {
+	        Complaint serious = person.getPhysicalCondition().getMostSerious();
+	        if (serious != null) {
+	        	this.illness = serious.getType();
+		     }
+        }
+        else
+        	this.illness = problem.getIllness().getType();
 /*
         if (person.getLocationSituation() == LocationSituation.DEAD)
         	placeOfDeath = "On Mars";
@@ -100,37 +116,49 @@ implements Serializable {
             placeOfDeath = containerUnit.getName();
         }
 
-        if (placeOfDeath == null || placeOfDeath.equals(""))
-        	placeOfDeath = "" + person.getBuriedSettlement();
-        if (placeOfDeath == null || placeOfDeath.equals(""))
-        	placeOfDeath = "On Mars";
+        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+        	placeOfDeath = "An known location on Mars";
+        }
+
+        else if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+        	placeOfDeath = person.getSettlement().getName();
+        	// It's eligible for retrieval
+        	bodyRetrieved = true;
+        }
+
+        else if (person.getLocationSituation() == LocationSituation.BURIED) {
+        	placeOfDeath = person.getBuriedSettlement().getName();
+        }
+
+        else {
+        	placeOfDeath = "An unspecified Location";
+	        //if (placeOfDeath == null || placeOfDeath.equals(""))
+	       // 	placeOfDeath = "" + person.getBuriedSettlement().getName();
+	       // if (placeOfDeath == null || placeOfDeath.equals(""))
+	        //	placeOfDeath = "On Mars";
+        }
 
         locationOfDeath = person.getCoordinates();
 
+        logger.log(Level.SEVERE, person + " passed away in " + placeOfDeath);
+
         Mind mind = person.getMind();
-
-        job = mind.getJob();
-
-        if (mind.getMission() != null) {
-            mission = mind.getMission().getName();
-            missionPhase = mind.getMission().getPhaseDescription();
-        }
 
         TaskManager taskMgr = mind.getTaskManager();
 
-        if (taskMgr.hasTask()) {
-        	if (task == null)
-        		task = taskMgr.getTaskName();
+        task = taskMgr.getTaskName();
+        if (task.equals(""))
+        	task = taskMgr.getLastTaskName();
 
-        	if (taskPhase == null) {
-	            TaskPhase phase = taskMgr.getPhase();
-	            if (phase != null) {
-	                taskPhase = phase.getName();
-	            }
-	            //else {
-	            //    taskPhase = "";
-	            //}
-        	}
+        taskPhase = taskMgr.getTaskDescription(true);
+        if (taskPhase.equals(""))
+            taskPhase = taskMgr.getLastTaskDescription();
+
+
+        Mission mm = mind.getMission();
+        if (mm != null) {
+            mission = mm.getDescription();
+            missionPhase = mm.getPhaseDescription();
         }
 
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -369,4 +397,13 @@ implements Serializable {
         if (malfunction != null) return malfunction;
         else return "";
     }
+
+	public void setBodyRetrieved(boolean b) {
+		bodyRetrieved = b;
+	}
+
+	public boolean getBodyRetrieved() {
+		return bodyRetrieved;
+	}
+
 }

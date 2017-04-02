@@ -119,12 +119,18 @@ implements ActionListener {
 		JPanel bottomContentPanel = new JPanel(new BorderLayout(5, 5));
 		centerContentPanel.add(bottomContentPanel, BorderLayout.CENTER);
 
+		JPanel innerPanel = new JPanel();//new FlowLayout(FlowLayout.CENTER));
+		innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
+		innerPanel.setBorder(new MarsPanelBorder());
+		bottomContentPanel.add(innerPanel, BorderLayout.CENTER);
+
 		// Prepare location label panel
 		JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		locationLabelPanel.setSize(300, 50);
-		locationLabelPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+		//locationLabelPanel.setSize(300, 50);
+		//locationLabelPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 		//locationLabelPanel.setBorder(new MarsPanelBorder());
-		bottomContentPanel.add(locationLabelPanel, BorderLayout.CENTER);
+		//bottomContentPanel.add(locationLabelPanel, BorderLayout.CENTER);
+		innerPanel.add(locationLabelPanel);
 
 		// Prepare center map button
 		JButton centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
@@ -134,7 +140,7 @@ implements ActionListener {
 		locationLabelPanel.add(centerMapButton);
 
 		// Prepare location label
-		JLabel locationLabel = new JLabel(Msg.getString("TabPanelDeath.placeOfDeath"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel locationLabel = new JLabel("  " + Msg.getString("TabPanelDeath.placeOfDeath") + "  ", JLabel.CENTER); //$NON-NLS-1$
 		locationLabelPanel.add(locationLabel);
 		//locationPanel.add(locationLabelPanel);
 
@@ -169,9 +175,10 @@ implements ActionListener {
 
 		// Prepare location panel
 		JPanel springPanel = new JPanel(new SpringLayout());//BorderLayout());
-		springPanel.setBorder(new MarsPanelBorder());
-		springPanel.setSize(300, 100);
-		bottomContentPanel.add(springPanel, BorderLayout.SOUTH);
+		//springPanel.setBorder(new MarsPanelBorder());
+		//springPanel.setSize(300, 100);
+		//bottomContentPanel.add(springPanel, BorderLayout.SOUTH);
+		innerPanel.add(springPanel);
 
 		// Initialize location cache
 		Coordinates deathLocation = death.getLocationOfDeath();
@@ -190,23 +197,23 @@ implements ActionListener {
 		JLabel longitudeLabel = new JLabel(deathLocation.getFormattedLongitudeString(), JLabel.LEFT); //$NON-NLS-1$
 		springPanel.add(longitudeLabel);
 
-
 		// 2017-03-31 Prepare SpringLayout
 		SpringUtilities.makeCompactGrid(springPanel,
 		                                2, 2, //rows, cols
-		                                140, 10,        //initX, initY
+		                                0, 0,        //initX, initY
 		                                10, 10);       //xPad, yPad
 
 		// Prepare empty panel
 		JPanel lastWordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomContentPanel.add(lastWordPanel, BorderLayout.NORTH);
+		//bottomContentPanel.add(lastWordPanel, BorderLayout.NORTH);
+		innerPanel.add(lastWordPanel);
 
 		JLabel label2 = new JLabel(Msg.getString("TabPanelDeath.lastWord")); //$NON-NLS-1$
-		lastWordPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+		lastWordPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 15, 15));
 		lastWordPanel.add(label2);
 
 		// Prepare longitude label
-		JTextArea lastWordTA = new JTextArea(7, 25);
+		JTextArea lastWordTA = new JTextArea(5, 25);
 		//lastWordTA.setSize(300, 150);
 		lastWordTA.append(person.getLastWord());
 		lastWordTA.setEditable(false);
@@ -216,10 +223,6 @@ implements ActionListener {
 		JScrollPane scrollPane = new JScrollPane(lastWordTA);
 		lastWordPanel.add(scrollPane);
 
-		//JPanel emptyPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		//bottomContentPanel.add(emptyPanel1, BorderLayout.EAST);
-		//JPanel emptyPanel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		//bottomContentPanel.add(emptyPanel2, BorderLayout.WEST);
 	}
 
 	/**

@@ -499,7 +499,7 @@ implements Serializable {
 
         // If person is not aboard the rover, board rover.
         if (member.getLocationSituation() != LocationSituation.IN_VEHICLE &&
-                member.getLocationSituation() != LocationSituation.DEAD) {
+                member.getLocationSituation() != LocationSituation.BURIED) {
 
             // Move person to random location within rover.
             Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());

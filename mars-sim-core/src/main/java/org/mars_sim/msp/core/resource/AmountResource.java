@@ -463,7 +463,7 @@ private Set<T> intersection(Collection<T> first, Collection<T> second) {
 	public void destroy() {
 		phase = null;
 		amountResourceConfig = null;
-
+/*
 		foodAR = null;
 		oxygenAR = null;
 		waterAR = null;
@@ -474,7 +474,7 @@ private Set<T> intersection(Collection<T> first, Collection<T> second) {
 	    foodWasteAR = null;
 	    solidWasteAR = null;
 	    napkinAR = null;
-
+*/
 	}
 
 

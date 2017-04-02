@@ -48,6 +48,7 @@ import org.mars_sim.msp.core.structure.building.function.cooking.PreparingDesser
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -344,7 +345,7 @@ extends VehicleMission {
 			} else {
 				// If person is not aboard the rover, board rover.
 				if (member.getLocationSituation() != LocationSituation.IN_VEHICLE
-						&& member.getLocationSituation() != LocationSituation.DEAD) {
+						&& member.getLocationSituation() != LocationSituation.BURIED) {
 
 					// Move person to random location within rover.
 					Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
@@ -432,6 +433,17 @@ extends VehicleMission {
 			if (garageBuilding != null)
 				garage = (VehicleMaintenance) garageBuilding
 				.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+
+	        // 2017-04-01 If operator is dead, retrieve the person
+			Vehicle v = getVehicle();
+			VehicleOperator operator = v.getOperator();
+	        if ((operator != null) && (operator instanceof Person)) {
+	            Person p = (Person) operator;
+	            if (p.isDead()) {
+					v.getInventory().retrieveUnit(p);
+	            	p.getPhysicalCondition().getDeathDetails().setBodyRetrieved(true);
+	            }
+	        }
 		}
 
 		// Have member exit rover if necessary.

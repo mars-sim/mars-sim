@@ -562,18 +562,16 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * @return {@link LocationSituation} the person's location
 	 */
 	public LocationSituation getLocationSituation() {
-		Unit container = getContainerUnit();
-		if (container instanceof Settlement)
-			return LocationSituation.IN_SETTLEMENT;
-		else if (container instanceof Vehicle)
-			return LocationSituation.IN_VEHICLE;
-		else if (container == null)
-			return LocationSituation.OUTSIDE;
+		if (isBuried)
+			return LocationSituation.BURIED;
 		else {
-			if (isBuried)
+			Unit container = getContainerUnit();
+			if (container instanceof Settlement)
+				return LocationSituation.IN_SETTLEMENT;
+			else if (container instanceof Vehicle)
+				return LocationSituation.IN_VEHICLE;
+			else if (container == null)
 				return LocationSituation.OUTSIDE;
-			else if (declaredDead)
-				return LocationSituation.DEAD;
 			else
 				return null;
 		}
@@ -633,9 +631,9 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	// Location Matrix
 	public Settlement getSettlement() {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = (Settlement) getContainerUnit();
-			return settlement;
-			//return (Settlement) getContainerUnit();
+			//Settlement settlement = (Settlement) getContainerUnit();
+			//return settlement;
+			return (Settlement) getContainerUnit();
 		}
 
 		else if (getLocationSituation() == LocationSituation.OUTSIDE)
@@ -648,7 +646,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			return settlement;
 		}
 
-		else if (getLocationSituation() == LocationSituation.DEAD) {
+		else if (getLocationSituation() == LocationSituation.BURIED) {
 			return null;
 		}
 
@@ -681,20 +679,25 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	}
 
 	/**
-	 * Bury the Person at the current location. The person is removed from any
-	 * containing Settlements or Vehicles. The body is fixed at the last
-	 * location of the containing unit.
+	 * Bury the Person at the current location. This happens only if the person
+	 * can be retrieved from any containing Settlements or Vehicles found.
+	 * The body is fixed at the last location of the containing unit.
 	 */
 	public void buryBody() {
 		Unit containerUnit = getContainerUnit();
 		if (containerUnit != null) {
 			// TODO: if a person is dead inside a vehicle that's outside on
 			// Mars,
-			// he should NOT be retrieved until the body arrives at a settlement
+			// should NOT be retrieved until the body arrives at a settlement
+			//Vehicle v = getVehicle();
+			//if (v != null)
+			//	v.getInventory().retrieveUnit(this);
 			containerUnit.getInventory().retrieveUnit(this);
 		}
 		isBuried = true;
-		setAssociatedSettlement(null);
+		//setAssociatedSettlement(null);
+		setBuriedSettlement(associatedSettlement);
+		super.setDescription("Dead");
 	}
 
 	/**
@@ -702,7 +705,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 	 * Person from any Task and remove the associated Mind.
 	 */
 	void setDead() {
-		mind.setInactive();
+		//mind.setInactive();
 		declaredDead = true;
 
 		setShiftType(ShiftType.OFF);
@@ -718,6 +721,7 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			bed = null;
 
 	}
+
 
 	/**
 	 * Person can take action with time passing
@@ -766,11 +770,19 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 				}
 			}
 
-			else if (!declaredDead)
+			else if (!declaredDead) {
 				setDead();
+				mind.setInactive();
+			}
 
-			else if (!isBuried)
-				buryBody();
+		}
+
+		else if (!isBuried) {
+
+			if (health.getDeathDetails() != null)
+				if (health.getDeathDetails().getBodyRetrieved())
+					buryBody();
+
 		}
 
 		// final long time1 = System.nanoTime();
@@ -1074,10 +1086,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 			}
 
 			// set description for this person
-			if (associatedSettlement == null) {
-				setBuriedSettlement(oldSettlement);
-				super.setDescription("Dead");
-			} else
+			//if (associatedSettlement == null) {
+			//	setBuriedSettlement(oldSettlement);
+			//	super.setDescription("Dead");
+			//} else
 				super.setDescription(associatedSettlement.getName());
 		}
 	}
@@ -1258,6 +1270,10 @@ public class Person extends Unit implements VehicleOperator, MissionMember, Seri
 
 	public boolean isDead() {
 		return declaredDead;
+	}
+
+	public boolean isBuried() {
+		return isBuried;
 	}
 
 	public void setLastWord(String s) {
