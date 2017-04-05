@@ -565,8 +565,9 @@ implements Serializable {
 				mars = sim.getMars();
 			if (orbitInfo == null)
 				orbitInfo = mars.getOrbitInfo();
-			
+
 			double L_s = orbitInfo.getL_s();
+			//The Mars dust storm season begins just after perihelion at around Ls = 260°.
 			// When L_s = 250, Mars is at perihelion--when the sun is closed to Mars.
 			// Mars has the highest liklihood of producing a global dust storm
 			// All of the observed storms have begun within 50-60 degrees of Ls of perihelion (Ls ~ 250);
@@ -577,7 +578,8 @@ implements Serializable {
 			if (L_s > 240 && L_s < 271 && localDustStormMap.size() <= 30 && checkStorm < 20) {
 				checkStorm++;
 
-				int num = RandomUtil.getRandomInt(100);
+				int mod = Math.abs(255-(int)L_s)/2;
+				int num = RandomUtil.getRandomInt(100 + mod);
 				if (num < 6) { // arbitrarily set to 5% chance of generating a regional dust storm on each sol
 					//numlocalDustStorm++;
 					DustStorm ds = new DustStorm("Local Storm " + localDustStormMap.size() + 1, DustStormType.LOCAL, marsClock);

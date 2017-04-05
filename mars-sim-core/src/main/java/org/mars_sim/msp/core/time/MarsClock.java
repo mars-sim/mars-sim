@@ -16,9 +16,11 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.OrbitInfo;
 
 /** The MarsClock class keeps track of Martian time.
- *  This uses Shaun Moss's Mars Calendar, which is
- *  described at http://www.virtualmars.net/Time.asp.
+ *  It uses Shaun Moss's Mars Calendar.
  */
+//see also NASA Goddard Space Flight Center's Mars24 to determine the time for a given location on Mars
+// primarily based on Allison and McEwen (2000) (henceforth AM2000)
+// at https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
 public class MarsClock implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -47,21 +49,51 @@ public class MarsClock implements Serializable {
     // The solar longitude Ls is the Mars-Sun angle, measured from the Northern Hemisphere spring equinox where L_s=0.
     // Ls=90 corresponds to summer solstice, just as L_s=180 marks the autumn equinox and L_s=270 the winter solstice (all relative to the northern hemisphere).
     // see http://www-mars.lmd.jussieu.fr/mars/time/solar_longitude.html
-    private static final int SUMMER_SOLSTICE = 168;
-	private static final int AUTUMN_EQUINOX = 346;
-	private static final int WINTER_SOLSTICE = 489;
-	private static final int SPRING_EQUINOX = 643; // or on the -25th sols
+    private static final int SUMMER_SOLSTICE = 168; // (Ls = 90°)
+	private static final int AUTUMNAL_EQUINOX = 346; // (Ls = 180°)
+	private static final int WINTER_SOLSTICE = 489; // (Ls = 270°)
+	private static final int SPRING_EQUINOX = 643; // (Ls = 0°) or on the -25th sols
+
+	// Mars is at aphelion (its greatest distance from the Sun, 249 million kilometers, where it moves most slowly) at Ls = 70 ,  near the northern summer solstice,
+    // Mars is at perihelion (least distance from the Sun, 207 million kilometers, where it moves fastest) at Ls = 250°, near the southern summer solstice.
+	// The Mars dust storm season begins just after perihelion at around Ls = 260°
+
+	public static final int THE_FIRST_SOL = 9353;
 
     // Martian/Gregorian calendar conversion
     public static final double SECONDS_IN_MILLISOL = 88.775244; // 1 millisol = 88.775244 sec
 
-    public static final int THE_FIRST_SOL = 9353;
+	// from https://www.teuse.net/games/mars/mars_dates.html
+	// Demios only takes 30hrs, and Phobos 7.6hrs to rotate around mars
+	//Spring lasts 193.30 sols
+	//Summer lasts 178.64 sols
+	//Autumn lasts 142.70 sols
+	//Winter lasts 153.94 sols
+	// No thats doesnt add up exactly to 668.5921 sols. Worry about that later just like our ancestors did.
+	// That gives us 4 "holidays". Round off the numbers for when they occur.
+	// Spring Equinox at sol 1,
+	// Summer Solstice at sol 193,
+	// Autumnal equinox sol 372,
+	// Winter solstice at sol 515,
+	// Spring again sol 669 or 1 new annus.
+	// This gives them 4 periods to use like we do months.
+	// They are a bit long so maybe they divide them up more later.
+
+    private static final String EARLY = "Early ";
+    private static final String MID = "Mid ";
+    private static final String LATE = "Late ";
+    private static final String SPRING = "Spring";
+    private static final String SUMMER = "Summer";
+    private static final String AUTUMN = "Autumn";
+    private static final String WINTER = "Winter";
 
     // Martian calendar static strings
     private static final String[] MONTH_NAMES = { "Adir", "Bora", "Coan", "Detri",
-        "Edal", "Flo", "Geor", "Heliba", "Idanon", "Jowani", "Kireal", "Larno",
-        "Medior", "Neturima", "Ozulikan", "Pasurabi", "Rudiakel", "Safundo", "Tiunor",
-        "Ulasja", "Vadeun", "Wakumi", "Xetual", "Zungo" };
+        "Edal", "Flo", "Geor", "Heliba",
+        "Idanon", "Jowani", "Kireal", "Larno",
+        "Medior", "Neturima", "Ozulikan", "Pasurabi",
+        "Rudiakel", "Safundo", "Tiunor", "Ulasja",
+        "Vadeun", "Wakumi", "Xetual", "Zungo" };
 
     private static final String[] WEEK_SOL_NAMES = { "Solisol", "Phobosol", "Deimosol",
         "Terrasol", "Hermesol", "Venusol", "Jovisol" };
@@ -607,61 +639,69 @@ public class MarsClock implements Serializable {
     }
 
     /** Returns the current season for the given hemisphere
-     *  @param hemisphere the hemisphere
-     *  NORTHERN_HEMISPHERE or SOUTHERN_HEMISPHERE valid parameters
-     *  @return season as String ("Spring", "Summer", "Autumn" or "Winter")
+     *  @param hemisphere either NORTHERN_HEMISPHERE or SOUTHERN_HEMISPHERE
+     *  @return season String
      */
 	// 2015-02-24 Reconstructed getSeason() based on value of L_s
     public String getSeason(int hemisphere) {
-    	String season = "";
+    	StringBuilder season = new StringBuilder();
     	if (orbitInfo == null)
 			orbitInfo = sim.getMars().getOrbitInfo();
 		double L_s = orbitInfo.getL_s();
     	//System.out.println("    L_s  :" +  L_s );
-    	String modifier = "";
 
-		if (L_s == 360 || L_s < 90 ){
-			if (L_s < 30 )
-				modifier = "Early ";
+        //SUMMER_SOLSTICE = 168;
+    	//AUTUMN_EQUINOX = 346;
+    	//WINTER_SOLSTICE = 489;
+    	//SPRING_EQUINOX = 643; // or on the -25th sols
+
+    	//Spring lasts 193.30 sols
+    	//Summer lasts 178.64 sols
+    	//Autumn lasts 142.70 sols
+    	//Winter lasts 153.94 sols
+
+		if (L_s < 90 || L_s == 360){
+			if (L_s < 30 || L_s == 360)
+				season.append(EARLY);
 			else if (L_s < 60)
-				modifier = "Mid ";
+				season.append(MID);
 			else
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Spring";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Autumn";
+				season.append(LATE);
+            if (hemisphere == NORTHERN_HEMISPHERE) season.append(SPRING);
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season.append(AUTUMN);
         }
 		else if (L_s < 180) {
 			if (L_s < 120)
-				modifier = "Early ";
+				season.append(EARLY);
 			else if (L_s < 150)
-				modifier = "Mid ";
+				season.append(MID);
 			else
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Summer";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Winter";
+				season.append(LATE);
+            if (hemisphere == NORTHERN_HEMISPHERE) season.append(SUMMER);
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season.append(WINTER);
         }
 		else if (L_s < 270){
 			if (L_s < 210)
-				modifier = "Early ";
+				season.append(EARLY);
 			else if (L_s < 240)
-				modifier = "Mid ";
+				season.append(MID);
 			else
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Autumn";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Spring";
+				season.append(LATE);
+            if (hemisphere == NORTHERN_HEMISPHERE) season.append(AUTUMN);
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season.append(SPRING);
         }
 		else if (L_s < 360) {
 			if (L_s < 300)
-				modifier = "Early ";
+				season.append(EARLY);
 			else if (L_s < 330)
-				modifier = "Mid ";
+				season.append(MID);
 			else
-				modifier = "Late ";
-            if (hemisphere == NORTHERN_HEMISPHERE) season = modifier + "Winter";
-            else if (hemisphere == SOUTHERN_HEMISPHERE) season = modifier + "Summer";
+				season.append(LATE);
+            if (hemisphere == NORTHERN_HEMISPHERE) season.append(WINTER);
+            else if (hemisphere == SOUTHERN_HEMISPHERE) season.append(SUMMER);
         }
 
-		return season;
+		return season.toString();
     }
 
 
