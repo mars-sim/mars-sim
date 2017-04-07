@@ -4,6 +4,59 @@ https://mars-sim.github.io/
 
 -----------------------------------------------------------------------------------------
 
+## v3.1.0-Preview 7 (build 39__) - 2017-__-__
+
+### MINIMUM REQUIREMENTS :
+
+1. Dual Core Pentium/Celeron 1.5GHz or above
+
+2. 500 MB to 1.5 GB free RAM dedicated for running mars-sim
+
+3. 64-bit Oracle Java 8 (JRE or JDK 8u71 and higher) OR OpenJDK 8u71 with OpenJFX
+
+
+### KNOWN LIMITATIONS :
+
+1. In MacOS, the Tab bar does NOT work and will freeze mars-sim if clicking on it.
+   (Recommend using MacOS's style top menu to gain access to each Tool).
+
+2. In Linux, the spinning 3D Mars Globe has unwanted black shadow artifact.
+
+3. Not compatible with 32-bit Java 8.
+
+
+### CORE ENGINE IMPROVEMENTS :
+
+1. Add new crops and meals.
+
+2. Exclude sending Gardenbots to Trading Outpost & Mining Outpost at the start of sim.
+
+3.
+
+
+### UI IMPROVEMENT :
+
+1. Center slider in Speed Panel to the default time ratio.
+
+1. Add season (for Northern/Southern Hemisphere) and solar logitude to Calendar Panel.
+
+2. Refine death related info display.
+
+
+### FIXES :
+
+1. Accept the use of comma in lat/lon input in Config Editor.
+
+2. Fix NullPointerException when staring a Mining/Trading Outpost.
+
+3. Correct ParseException due to non-US system locale.
+
+4. Further remove calling Repairbots to go outside to fix vehicles.
+
+5. Remove external fonts to stop startup crash in linux.
+
+-----------------------------------------------------------------------------------------
+
 ## v3.1.0-Preview 6 (build 3899) - 2017-03-22
 
 ### MINIMUM REQUIREMENTS :
